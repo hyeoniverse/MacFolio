@@ -84,7 +84,7 @@
 	margin-left: var(--space-2);
 	padding: 1.5px;
 	border: 1px solid currentColor;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	opacity: 0.95;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .mobile-battery.danger span {
-	background-color: var(--color-danger);
+	background-color: var(--color-system-red);
 }
 
 /* ─── 음악 위젯 (홈 화면, 제어 센터) ─── */
@@ -144,7 +144,7 @@
 	width: 88px;
 	height: 88px;
 	object-fit: cover;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
 }
 
@@ -314,7 +314,7 @@
 .cc-music .music-widget-art {
 	width: calc(var(--cc-cell) * 0.6);
 	height: calc(var(--cc-cell) * 0.6);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	box-shadow: none;
 }
 
@@ -378,7 +378,7 @@
 /* 흰 막대 위에서도 보이도록 */
 .cc-slider i {
 	position: relative;
-	color: var(--color-gray);
+	color: var(--color-system-gray);
 	pointer-events: none;
 }
 
@@ -398,7 +398,7 @@
 	width: calc(var(--cc-cell) * 0.56);
 	height: calc(var(--cc-cell) * 0.56);
 	border-radius: 50%;
-	background-color: var(--color-blue);
+	background-color: var(--color-control-accent);
 	font-size: var(--text-body);
 }
 
@@ -483,7 +483,7 @@
 .switcher-label img {
 	width: 60px;
 	height: 60px;
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 }
 
 /* 전환기 배경: 홈 화면을 흐리게 */

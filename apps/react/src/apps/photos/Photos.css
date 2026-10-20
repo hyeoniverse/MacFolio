@@ -6,7 +6,7 @@
 }
 
 .photos {
-	--photos-glass: color-mix(in srgb, var(--color-window-bg) 72%, transparent);
+	--photos-glass: color-mix(in srgb, var(--color-text-background) 72%, transparent);
 	--photos-cell: 150px;
 	position: relative;
 	display: grid;
@@ -14,8 +14,8 @@
 	gap: var(--space-8);
 	height: 100%;
 	padding: var(--space-8);
-	background-color: var(--color-window-bg);
-	color: var(--color-text);
+	background-color: var(--color-text-background);
+	color: var(--color-label);
 	font-size: var(--text-footnote);
 	text-align: left;
 }
@@ -40,7 +40,7 @@
 /* ─── 사이드바 ─── */
 .photos-sidebar {
 	padding: 0 8px 8px;
-	background-color: var(--color-sidebar-bg);
+	background-color: var(--sidebar-background);
 	overflow-y: auto;
 }
 
@@ -51,7 +51,7 @@
 
 .photos-sidebar-heading {
 	margin: var(--space-14) var(--space-10) var(--space-4);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 }
@@ -63,7 +63,7 @@
 	width: 100%;
 	padding: 5px 10px;
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background: none;
 	font-size: var(--text-footnote);
 	text-align: left;
@@ -73,7 +73,7 @@
 	width: 22px;
 	font-size: var(--text-subhead);
 	text-align: center;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .photos-place-label {
@@ -85,12 +85,12 @@
 
 /* 고른 곳: 아이콘과 글자가 강조색 (macOS 사진) */
 .photos-place.selected {
-	background-color: var(--color-selected-bg);
-	color: var(--color-accent);
+	background-color: var(--color-unemphasized-selected-content-background);
+	color: var(--color-control-accent);
 }
 
 .photos-place.selected > i {
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 }
 
 .photos-album-cover {
@@ -98,7 +98,7 @@
 	width: 22px;
 	height: 22px;
 	border-radius: 5px;
-	background: var(--color-selected-bg);
+	background: var(--color-unemphasized-selected-content-background);
 	overflow: hidden;
 }
 
@@ -109,7 +109,7 @@
 }
 
 .photos-count {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -134,19 +134,19 @@
 	gap: var(--space-10);
 	height: 52px;
 	padding: 0 6px 0 10px;
-	background: linear-gradient(var(--color-window-bg) 30%, transparent);
+	background: linear-gradient(var(--color-text-background) 30%, transparent);
 }
 
 .photos-toolbar-heading h2 {
 	margin: 0;
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-size: var(--text-subhead);
 	font-weight: 700;
 }
 
 .photos-toolbar-heading p {
 	margin: 0;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -171,13 +171,13 @@
 .photos-toolbar-title strong {
 	max-width: 320px;
 	overflow: hidden;
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .photos-toolbar-title span {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	font-variant-numeric: tabular-nums;
 }
@@ -188,7 +188,7 @@
 	align-items: center;
 	height: 34px;
 	padding: 0 4px;
-	border: 1px solid var(--color-window-border);
+	border: 1px solid var(--window-border);
 	border-radius: var(--radius-full);
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
@@ -214,7 +214,7 @@
 
 .photos-capsule button:hover:not(:disabled),
 .photos-capsule button.on {
-	background: var(--color-selected-bg);
+	background: var(--color-unemphasized-selected-content-background);
 }
 
 .photos-segments button {
@@ -223,19 +223,19 @@
 }
 
 .photos-segments button[aria-pressed='true'] {
-	background: var(--color-selected-bg);
+	background: var(--color-unemphasized-selected-content-background);
 	font-weight: 600;
 }
 
 .photos-zoom input {
 	width: 90px;
-	accent-color: var(--color-accent);
+	accent-color: var(--color-control-accent);
 }
 
 .photos-circle {
 	width: 34px;
 	height: 34px;
-	border: 1px solid var(--color-window-border);
+	border: 1px solid var(--window-border);
 	border-radius: 50%;
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
@@ -244,7 +244,7 @@
 .photos-pill {
 	height: 34px;
 	padding: 0 14px;
-	border: 1px solid var(--color-window-border);
+	border: 1px solid var(--window-border);
 	border-radius: var(--radius-full);
 	background: var(--photos-glass);
 	backdrop-filter: blur(12px);
@@ -281,12 +281,12 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-weight: 700;
 }
 
 .photos-group h3 i {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -306,7 +306,7 @@
 .photos-thumb video {
 	max-width: 100%;
 	max-height: 100%;
-	border-radius: var(--radius-xs);
+	border-radius: var(--radius-4);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 	transition: transform 0.2s ease;
 }
@@ -317,9 +317,9 @@
 }
 
 .photos-thumb:focus-visible {
-	outline: 3px solid var(--color-accent);
+	outline: 3px solid var(--color-control-accent);
 	outline-offset: 2px;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 }
 
 .photos-video-badge {
@@ -338,7 +338,7 @@
 	inset: 0;
 	display: flex;
 	flex-direction: column;
-	background: var(--color-window-bg);
+	background: var(--color-text-background);
 	animation: fade-in var(--duration-fast) var(--ease-out);
 }
 
@@ -346,7 +346,7 @@
 	position: relative;
 	flex: none;
 	background: none;
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 }
 
 .photos-viewer-body {
@@ -440,14 +440,14 @@
 	flex: none;
 	width: 220px;
 	padding: var(--space-14) var(--space-16);
-	border-left: 1px solid var(--color-divider);
+	border-left: 1px solid var(--color-separator);
 	overflow-y: auto;
 }
 
 .photos-info h3,
 .photos-info-caption {
 	margin: 0 0 12px;
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-size: var(--text-footnote);
 }
 
@@ -459,7 +459,7 @@
 }
 
 .photos-info dt {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .photos-info dd {
@@ -542,7 +542,7 @@
 }
 
 .photos-view-button i {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -648,17 +648,17 @@
 	border: none;
 	outline: none;
 	background: none;
-	color: var(--color-text);
+	color: var(--color-label);
 	font: inherit;
 }
 
 .photos-caption-field input::placeholder {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .photos-caption-error {
 	display: block;
 	margin-top: var(--space-4);
-	color: var(--color-red);
+	color: var(--color-system-red);
 	font-size: var(--text-footnote);
 }

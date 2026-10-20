@@ -57,7 +57,7 @@
 	height: 5px;
 	margin-bottom: var(--space-8);
 	border-radius: 3px;
-	background-color: var(--color-divider);
+	background-color: var(--color-separator);
 }
 
 @keyframes sheet-in {

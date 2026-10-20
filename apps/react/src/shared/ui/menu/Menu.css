@@ -1,6 +1,6 @@
 /*
  * macOS 메뉴 (shared/ui/menu/Menu.tsx). body에 그려서 앱 창의 색 변수(--memo-* 등)가 닿지 않으므로
- * 전역 색(--color-popover-*, --color-accent)만 쓴다.
+ * 전역 색(--color-popover-*, --color-control-accent)만 쓴다.
  */
 .ui-menu {
 	display: flex;
@@ -9,10 +9,10 @@
 	z-index: var(--z-menu);
 	min-width: 180px;
 	padding: 5px;
-	border-radius: var(--radius-xl);
-	background-color: var(--color-popover-bg);
+	border-radius: var(--radius-14);
+	background-color: var(--color-popover-background);
 	box-shadow: var(--shadow-menu);
-	color: var(--color-popover-text);
+	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	font-size: var(--text-footnote);
 	animation: pop-in var(--duration-fast) var(--ease-out);
@@ -25,7 +25,7 @@
 	gap: 9px;
 	padding: 5px 9px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -43,8 +43,8 @@
 .ui-menu-item:hover:not(:disabled),
 .ui-menu-item:focus-visible {
 	outline: none;
-	background-color: var(--color-accent);
-	color: var(--color-on-accent);
+	background-color: var(--color-control-accent);
+	color: var(--color-alternate-selected-control-text);
 }
 
 .ui-menu-item:disabled {
@@ -55,12 +55,12 @@
 .ui-menu-separator {
 	margin: var(--space-4) var(--space-8);
 	border: none;
-	border-top: 1px solid var(--color-divider);
+	border-top: 1px solid var(--color-separator);
 }
 
 .ui-menu-heading {
 	padding: 4px 9px 2px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-weight: 600;
 }
@@ -82,7 +82,7 @@
 
 .ui-menu-note {
 	padding: 4px 9px 2px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -93,7 +93,7 @@
 	grid-auto-flow: column;
 	gap: var(--space-4);
 	padding: var(--space-4) var(--space-2) var(--space-6);
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 	margin-bottom: var(--space-4);
 }
 
@@ -104,7 +104,7 @@
 	gap: 5px;
 	padding: var(--space-8) var(--space-4);
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -119,7 +119,7 @@
 .ui-menu-row-item:hover:not(:disabled),
 .ui-menu-row-item:focus-visible {
 	outline: none;
-	background-color: var(--color-selected-bg);
+	background-color: var(--color-unemphasized-selected-content-background);
 }
 
 .ui-menu-row-item:disabled {
@@ -138,7 +138,7 @@
 .ui-menu.touch .ui-menu-item {
 	gap: var(--space-14);
 	padding: 11px 12px;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 }
 
 .ui-menu.touch .ui-menu-item i {
@@ -147,12 +147,12 @@
 }
 
 .ui-menu.touch .ui-menu-item:hover:not(:disabled) {
-	background-color: var(--color-selected-bg);
+	background-color: var(--color-unemphasized-selected-content-background);
 	color: inherit;
 }
 
 .ui-menu-item.destructive {
-	color: var(--color-danger);
+	color: var(--color-system-red);
 }
 
 /* 메뉴 막대 메뉴는 열릴 때 메뉴 자체가 초점을 받는다 (키를 받으려고). 테두리는 그리지 않는다 */

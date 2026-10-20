@@ -4,7 +4,7 @@
  */
 @layer components {
 	.ui-empty {
-		color: var(--color-text-secondary);
+		color: var(--color-secondary-label);
 		text-align: center;
 	}
 }

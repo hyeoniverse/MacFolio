@@ -4,7 +4,7 @@
 	height: 100%;
 	overflow: hidden;
 	background-color: var(--phone-page-bg);
-	color: var(--color-text);
+	color: var(--color-label);
 	text-align: left;
 }
 
@@ -65,7 +65,7 @@
 
 .mail-phone-group button > i:first-child {
 	width: 28px;
-	color: var(--color-blue);
+	color: var(--color-control-accent);
 	font-size: 21px;
 	text-align: center;
 }
@@ -75,11 +75,11 @@
 }
 
 .mail-phone-group-count {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .mail-phone-chevron {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 	opacity: 0.6;
 }
@@ -114,7 +114,7 @@
 	height: 10px;
 	margin-top: var(--space-6);
 	border-radius: 50%;
-	background-color: var(--color-blue);
+	background-color: var(--color-control-accent);
 }
 
 .mail-phone-unread.read {
@@ -144,7 +144,7 @@
 
 .mail-phone-item-top time,
 .mail-phone-item-preview {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
 
@@ -225,16 +225,16 @@
 }
 
 .mail-phone-header p {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
 
 .mail-phone-to {
-	color: var(--color-text);
+	color: var(--color-label);
 }
 
 .mail-phone-header time {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
 
@@ -333,7 +333,7 @@
 	border: none;
 	border-radius: 50%;
 	background-color: var(--phone-page-bg);
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-size: var(--text-title3);
 	transition:
 		background-color var(--duration-fast) var(--ease-out),
@@ -341,11 +341,11 @@
 }
 
 .mail-sheet-circle.send {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .mail-sheet-circle.send.ready {
-	background-color: var(--color-blue);
+	background-color: var(--color-control-accent);
 	color: var(--color-white);
 }
 
@@ -373,7 +373,7 @@
 }
 
 .mail-compose.sheet .mail-compose-row > span:first-child {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .mail-compose.sheet .mail-compose-row input {
@@ -389,14 +389,14 @@
 }
 
 .mail-phone-recipient {
-	color: var(--color-blue);
+	color: var(--color-control-accent);
 }
 
 .mail-phone-quote {
 	margin: 8px 0 0;
 	padding-left: var(--space-12);
 	border-left: 2px solid #6d7ed1;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 	white-space: pre-wrap;
 }
@@ -425,7 +425,7 @@
 
 .mail-phone-actions > header p {
 	overflow: hidden;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }

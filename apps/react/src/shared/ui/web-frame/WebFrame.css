@@ -43,7 +43,7 @@
 }
 
 .web-frame-loading a {
-	color: var(--color-blue);
+	color: var(--color-control-accent);
 	text-decoration: none;
 }
 

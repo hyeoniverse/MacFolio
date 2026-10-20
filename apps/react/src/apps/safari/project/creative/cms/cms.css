@@ -52,7 +52,7 @@
 .cm-save-editor textarea {
 	padding: var(--space-10) var(--space-12);
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--cr-bg);
 	color: var(--cr-ink);
 	font: inherit;
@@ -160,7 +160,7 @@
 .cm-life-track li {
 	padding: var(--space-8) var(--space-4);
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--cr-bg);
 	color: var(--cr-muted);
 	font-size: var(--text-caption);
@@ -186,7 +186,7 @@
 	position: relative;
 	padding: var(--space-14) var(--space-16);
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--cr-bg);
 	transition: opacity 0.4s;
 }
@@ -253,7 +253,7 @@
 	gap: var(--space-8);
 	padding: var(--space-14) var(--space-16);
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--cr-bg);
 }
 
@@ -321,7 +321,7 @@
 .cm-mail {
 	overflow: hidden;
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--cr-bg);
 	font-size: var(--text-footnote);
 }
@@ -527,7 +527,7 @@
 	width: 100%;
 	overflow: hidden;
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-xl);
+	border-radius: var(--radius-14);
 	background-color: var(--cr-bg);
 	border-collapse: separate;
 	border-spacing: 0;
@@ -620,7 +620,7 @@
 	width: 34px;
 	height: 34px;
 	border: 1px solid transparent;
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: none;
 	font-size: var(--text-title3);
 	line-height: 1;
@@ -765,7 +765,7 @@
 	height: 28px;
 	padding: 0 6px;
 	border: 1px solid var(--cr-line);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background: none;
 	color: var(--cr-ink);
 	font-size: var(--text-caption2);

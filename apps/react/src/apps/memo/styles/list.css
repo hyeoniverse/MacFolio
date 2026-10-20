@@ -169,7 +169,7 @@
 .memo-find-steps {
 	display: flex;
 	overflow: hidden;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 }
 
@@ -201,7 +201,7 @@
 	flex: none;
 	padding: var(--space-4) var(--space-12);
 	border: none;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font: inherit;
@@ -227,26 +227,26 @@
 }
 
 .memo-find-replace-toggle input {
-	accent-color: var(--color-notes-yellow);
+	accent-color: var(--notes-accent);
 }
 
 /* 찾은 곳 (편집기는 장식, 읽기 화면은 CSS 강조) */
 .memo-find-match {
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 35%, transparent);
+	background-color: color-mix(in srgb, var(--notes-accent) 35%, transparent);
 }
 
 .memo-find-current {
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 }
 
 ::highlight(memo-find) {
-	background-color: color-mix(in srgb, var(--color-notes-yellow) 35%, transparent);
+	background-color: color-mix(in srgb, var(--notes-accent) 35%, transparent);
 }
 
 ::highlight(memo-find-current) {
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 }
 
 .memo-list ul {

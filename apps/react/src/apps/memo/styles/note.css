@@ -146,7 +146,7 @@
 .memo-item-rank.rank-1,
 .memo-item-rank.rank-2,
 .memo-item-rank.rank-3 {
-	background-color: color-mix(in srgb, var(--color-orange) 22%, transparent);
+	background-color: color-mix(in srgb, var(--color-system-orange) 22%, transparent);
 	color: #c76a00;
 }
 
@@ -175,7 +175,7 @@
 	min-width: 0;
 	padding: var(--space-10) var(--space-12);
 	border: 1px solid var(--memo-border);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background: none;
 	color: var(--memo-text);
 	font: inherit;
@@ -351,7 +351,7 @@ button.memo-admin-chip {
 	margin: 0 -3px;
 	padding: 0 3px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: inherit;
 	font: inherit;
@@ -403,8 +403,8 @@ button.memo-admin-chip {
 }
 
 .memo-writer-actions .memo-writer-publish {
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 }
 
 .memo-writer-actions .memo-writer-publish:disabled {
@@ -483,7 +483,7 @@ button.memo-admin-chip {
 	height: 7px;
 	margin-left: var(--space-6);
 	border-radius: 50%;
-	background-color: var(--color-notes-yellow);
+	background-color: var(--notes-accent);
 	vertical-align: 2px;
 }
 
@@ -495,7 +495,7 @@ button.memo-admin-chip {
 /* 버전 기록 */
 .memo-revisions-note {
 	margin-bottom: var(--space-8);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	line-height: 1.5;
 }
@@ -512,12 +512,12 @@ button.memo-admin-chip {
 	gap: 1px;
 	width: 100%;
 	padding: var(--space-6) var(--space-10);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	text-align: left;
 }
 
 .memo-format-panel .memo-revision-list button:hover {
-	background-color: color-mix(in srgb, var(--color-popover-text) 8%, transparent);
+	background-color: color-mix(in srgb, var(--color-label) 8%, transparent);
 }
 
 .memo-revision-list strong {
@@ -526,7 +526,7 @@ button.memo-admin-chip {
 
 .memo-revision-list span {
 	overflow: hidden;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -546,7 +546,7 @@ button.memo-admin-chip {
 	height: auto;
 	padding: 3px 6px;
 	background: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	color: var(--memo-accent);
 	font-size: var(--text-caption);
 }
@@ -555,8 +555,8 @@ button.memo-admin-chip {
 	max-height: 300px;
 	padding: var(--space-10) var(--space-12);
 	overflow-y: auto;
-	border: 1px solid var(--color-divider);
-	border-radius: var(--radius-lg);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-10);
 	font-size: var(--text-caption);
 }
 
@@ -574,14 +574,14 @@ button.memo-admin-chip {
 	margin-top: var(--space-8);
 	padding: 7px 0;
 	border-radius: var(--radius-full);
-	background-color: var(--color-notes-yellow);
-	color: var(--color-on-notes-yellow);
+	background-color: var(--notes-accent);
+	color: var(--notes-on-accent);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
 .memo-writer-status.problem {
-	color: var(--color-danger);
+	color: var(--color-system-red);
 }
 
 .memo-writer-title {

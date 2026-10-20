@@ -21,7 +21,7 @@
 	position: relative;
 	z-index: 4;
 	padding: var(--space-2);
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 }
 
@@ -31,7 +31,7 @@
 	width: 30px;
 	height: 24px;
 	border: none;
-	border-radius: var(--radius-sm);
+	border-radius: var(--radius-6);
 	background: none;
 	color: var(--memo-muted);
 	font-size: var(--text-caption);
@@ -93,7 +93,7 @@
 	gap: var(--space-12);
 	margin-bottom: 1.25rem;
 	padding: var(--space-12) var(--space-14);
-	border-radius: var(--radius-lg);
+	border-radius: var(--radius-10);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-muted);
 	font-size: var(--text-caption);
@@ -243,7 +243,7 @@
 .memo .memo-tag-chip {
 	padding: 3px 9px;
 	border: 1.5px solid transparent;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-8);
 	background-color: var(--memo-search-bg);
 	color: var(--memo-text);
 	font-size: var(--text-caption);

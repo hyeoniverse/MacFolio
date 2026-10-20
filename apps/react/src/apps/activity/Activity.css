@@ -1,8 +1,8 @@
 /* 활동 상태 보기 (#102). 색은 테마 변수만 쓴다 (다크 모드는 styles/theme.css가 바꾼다).
    창 폭에 따라(휴대폰, 좁힌 창) 표가 한 줄로 쌓이게 컨테이너 질의를 쓴다 */
 .activity {
-	--activity-green: var(--color-green);
-	--activity-red: var(--color-red);
+	--activity-green: var(--color-system-green);
+	--activity-red: var(--color-system-red);
 	/* 이 앱의 간격은 세 단만 쓴다: 묶음 사이, 카드 안쪽, 줄 안 (#211) */
 	--activity-gap: var(--space-16);
 	--activity-pad: var(--space-12);
@@ -12,8 +12,8 @@
 	flex-direction: column;
 	height: 100%;
 	min-height: 0;
-	background: var(--color-window-bg);
-	color: var(--color-text);
+	background: var(--color-text-background);
+	color: var(--color-label);
 	font-size: var(--text-footnote);
 	/* 창은 글을 가운데로 둔다: 표와 목록은 왼쪽부터 */
 	text-align: left;
@@ -25,17 +25,17 @@
 	justify-content: space-between;
 	gap: var(--activity-pad);
 	padding: var(--activity-pad) var(--activity-gap);
-	border-bottom: 1px solid var(--color-divider);
-	background: var(--color-titlebar-bg);
+	border-bottom: 1px solid var(--color-separator);
+	background: var(--color-window-background);
 }
 
 /* macOS의 분할 버튼 */
 .activity-tabs {
 	display: flex;
 	overflow-x: auto;
-	border: 1px solid var(--color-window-border);
+	border: 1px solid var(--window-border);
 	border-radius: 7px;
-	background: var(--color-control-bg);
+	background: var(--color-control-background);
 	scrollbar-width: none;
 }
 
@@ -43,9 +43,9 @@
 	flex: none;
 	padding: var(--activity-row) var(--activity-pad);
 	border: none;
-	border-right: 1px solid var(--color-divider);
+	border-right: 1px solid var(--color-separator);
 	background: transparent;
-	color: var(--color-text);
+	color: var(--color-label);
 	font: inherit;
 	cursor: pointer;
 }
@@ -55,8 +55,8 @@
 }
 
 .activity-tabs button[aria-selected='true'] {
-	background: var(--color-selected-bg);
-	color: var(--color-text-strong);
+	background: var(--color-unemphasized-selected-content-background);
+	color: var(--color-label);
 	font-weight: 600;
 }
 
@@ -64,15 +64,15 @@
 	display: flex;
 	align-items: center;
 	gap: var(--activity-row);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .activity-period select {
 	padding: var(--space-2) var(--activity-row);
-	border: 1px solid var(--color-window-border);
-	border-radius: var(--radius-sm);
-	background: var(--color-control-bg);
-	color: var(--color-text);
+	border: 1px solid var(--window-border);
+	border-radius: var(--radius-6);
+	background: var(--color-control-background);
+	color: var(--color-label);
 	font: inherit;
 }
 
@@ -109,25 +109,25 @@
 	flex-direction: column;
 	gap: var(--space-2);
 	padding: var(--activity-pad);
-	border: 1px solid var(--color-divider);
-	border-radius: var(--radius-lg);
-	background: var(--color-sidebar-bg);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-10);
+	background: var(--sidebar-background);
 }
 
 .activity-stat .label {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
 .activity-stat strong {
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-size: var(--text-title2);
 	font-variant-numeric: tabular-nums;
 }
 
 .activity-stat .change {
 	font-size: var(--text-caption);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .activity-stat .change.up {
@@ -142,8 +142,8 @@
 .activity-chart {
 	margin: 0 0 var(--activity-gap);
 	padding: var(--activity-pad);
-	border: 1px solid var(--color-divider);
-	border-radius: var(--radius-lg);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-10);
 }
 
 .activity-chart svg {
@@ -153,7 +153,7 @@
 }
 
 .activity-chart .grid {
-	stroke: var(--color-divider);
+	stroke: var(--color-separator);
 	stroke-width: 1;
 	vector-effect: non-scaling-stroke;
 }
@@ -176,7 +176,7 @@
 }
 
 .activity-chart path.visitors {
-	stroke: var(--color-accent);
+	stroke: var(--color-control-accent);
 	stroke-dasharray: 4 3;
 }
 
@@ -184,7 +184,7 @@
 	display: flex;
 	justify-content: space-between;
 	margin-top: var(--activity-row);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
@@ -197,7 +197,7 @@
 }
 
 .activity-chart .legend i.visitors {
-	border-top: 2px dashed var(--color-accent);
+	border-top: 2px dashed var(--color-control-accent);
 }
 
 /* 표 */
@@ -217,7 +217,7 @@
 	margin: 0 0 var(--activity-row);
 	line-height: 20px;
 	font-size: var(--text-footnote);
-	color: var(--color-text-strong);
+	color: var(--color-label);
 }
 
 .activity-table table {
@@ -228,8 +228,8 @@
 
 .activity-table th {
 	padding: 0;
-	border-bottom: 1px solid var(--color-divider);
-	color: var(--color-text-secondary);
+	border-bottom: 1px solid var(--color-separator);
+	color: var(--color-secondary-label);
 	font-weight: 500;
 	text-align: left;
 }
@@ -266,12 +266,12 @@
 
 .activity-table td {
 	padding: var(--activity-row);
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 	font-variant-numeric: tabular-nums;
 }
 
 .activity-table tbody tr:nth-child(even) {
-	background: var(--color-sidebar-bg);
+	background: var(--sidebar-background);
 }
 
 .activity-table td.name {
@@ -285,7 +285,7 @@
 }
 
 .activity-table td.share {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -299,7 +299,7 @@
 	flex: 1;
 	height: 6px;
 	border-radius: 3px;
-	background: var(--color-selected-bg);
+	background: var(--color-unemphasized-selected-content-background);
 	overflow: hidden;
 }
 
@@ -328,9 +328,9 @@
 	width: 100%;
 	padding: var(--activity-row);
 	border: none;
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 	background: transparent;
-	color: var(--color-text);
+	color: var(--color-label);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -344,12 +344,12 @@
 
 .activity-live li.open > button,
 .activity-live li > button:hover {
-	background: var(--color-selected-bg);
+	background: var(--color-unemphasized-selected-content-background);
 }
 
 .activity-live .when,
 .activity-live .muted {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -361,7 +361,7 @@
 .activity-live ol {
 	margin: 0;
 	padding: var(--activity-row) var(--activity-row) var(--activity-pad) 82px;
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 }
 
 .activity-live ol li {
@@ -381,18 +381,18 @@
 
 .activity-locked i {
 	font-size: 34px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 }
 
 .activity-locked h2 {
 	margin: 0;
 	font-size: var(--text-body);
-	color: var(--color-text-strong);
+	color: var(--color-label);
 }
 
 .activity-locked p {
 	margin: 0;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	line-height: 1.5;
 }
 
@@ -401,8 +401,8 @@
 	padding: var(--activity-row) var(--activity-gap);
 	border: none;
 	border-radius: 7px;
-	background: var(--color-accent);
-	color: var(--color-on-accent);
+	background: var(--color-control-accent);
+	color: var(--color-alternate-selected-control-text);
 	font: inherit;
 	cursor: pointer;
 }
@@ -533,12 +533,12 @@
 .server-conditions th,
 .server-conditions td {
 	padding: var(--activity-row);
-	border-bottom: 1px solid var(--color-divider);
+	border-bottom: 1px solid var(--color-separator);
 	text-align: left;
 }
 
 .server-conditions th {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	font-weight: 500;
 }
@@ -574,7 +574,7 @@
 
 .activity-note {
 	margin: var(--activity-pad) 0 0;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -587,8 +587,8 @@
 .server-billing {
 	margin-bottom: var(--activity-gap);
 	padding: var(--activity-pad);
-	border: 1px solid var(--color-divider);
-	border-radius: var(--radius-lg);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-10);
 }
 
 .server-billing h3 {
@@ -631,7 +631,7 @@
 	height: 6px;
 	overflow: hidden;
 	border-radius: 3px;
-	background: var(--color-divider);
+	background: var(--color-separator);
 }
 
 .server-budget-bar > span {
@@ -668,7 +668,7 @@
 /* ─── utm (#211) ─── */
 .activity-table-note {
 	margin: 0 0 var(--activity-row);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -679,7 +679,7 @@
 	padding: 0;
 	border: none;
 	background: transparent;
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 	font: inherit;
 	text-align: left;
 	text-overflow: ellipsis;
@@ -688,7 +688,7 @@
 }
 
 .activity-table tbody tr.selected {
-	background: var(--color-selected-bg);
+	background: var(--color-unemphasized-selected-content-background);
 }
 
 .activity-table tbody tr.selected td.name button {
@@ -702,14 +702,14 @@
 .utm-builder {
 	margin-bottom: var(--activity-gap);
 	padding: var(--activity-pad);
-	border: 1px solid var(--color-divider);
-	border-radius: var(--radius-lg);
-	background: var(--color-sidebar-bg);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-10);
+	background: var(--sidebar-background);
 }
 
 .utm-builder summary {
 	line-height: 20px;
-	color: var(--color-text-strong);
+	color: var(--color-label);
 	font-weight: 600;
 	cursor: pointer;
 }
@@ -725,16 +725,16 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-4);
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
 .utm-builder-form input {
 	padding: var(--activity-row);
-	border: 1px solid var(--color-window-border);
-	border-radius: var(--radius-sm);
-	background: var(--color-control-bg);
-	color: var(--color-text);
+	border: 1px solid var(--window-border);
+	border-radius: var(--radius-6);
+	background: var(--color-control-background);
+	color: var(--color-label);
 	font: inherit;
 	font-size: var(--text-footnote);
 }
@@ -750,8 +750,8 @@
 	flex: 1;
 	min-width: 0;
 	padding: var(--activity-row);
-	border-radius: var(--radius-sm);
-	background: var(--color-window-bg);
+	border-radius: var(--radius-6);
+	background: var(--color-text-background);
 	font-family: var(--font-mono, ui-monospace, monospace);
 	font-size: var(--text-caption);
 	overflow-wrap: anywhere;

@@ -2,8 +2,8 @@
 .shortcuts {
 	min-height: 100%;
 	padding: 8px 16px 32px;
-	background-color: var(--color-sidebar-bg, var(--color-gray-6));
-	color: var(--color-text);
+	background-color: var(--sidebar-background, var(--color-system-gray-6));
+	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	text-align: left;
 }
@@ -24,7 +24,7 @@
 
 .shortcuts-intro {
 	margin: 0 4px 16px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 }
 
@@ -87,14 +87,14 @@
 
 .shortcut-command {
 	margin: 0 4px 16px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
 	font-size: var(--text-caption);
 }
 
 .shortcut-heading {
 	margin: var(--space-16) 16px 6px;
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 	font-weight: 600;
 	text-transform: uppercase;
@@ -105,8 +105,8 @@
 	display: block;
 	margin-bottom: var(--space-16);
 	overflow: hidden;
-	border-radius: var(--radius-lg);
-	background-color: var(--color-window-bg);
+	border-radius: var(--radius-10);
+	background-color: var(--color-text-background);
 	list-style: none;
 }
 
@@ -123,11 +123,11 @@
 
 .shortcut-row + .shortcut-row,
 .shortcut-group li + li .shortcut-row {
-	box-shadow: 0 -0.5px 0 0 var(--color-divider);
+	box-shadow: 0 -0.5px 0 0 var(--color-separator);
 }
 
 .shortcut-row dt {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
@@ -141,11 +141,11 @@
 	padding: 0;
 	border: none;
 	background: none;
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 }
 
 a.shortcut-row {
-	color: var(--color-accent);
+	color: var(--color-control-accent);
 	font-size: var(--text-callout);
 }
 
@@ -168,21 +168,21 @@ a.shortcut-row {
 }
 
 .shortcut-item small {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 }
 
 .shortcut-tag {
 	flex: none;
 	padding: var(--space-2) var(--space-8);
-	border-radius: var(--radius-lg);
-	background-color: var(--color-sidebar-bg, var(--color-gray-6));
-	color: var(--color-text-secondary);
+	border-radius: var(--radius-10);
+	background-color: var(--sidebar-background, var(--color-system-gray-6));
+	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 }
 
 .shortcut-item i {
-	color: var(--color-text-secondary);
+	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 }
 
@@ -192,16 +192,16 @@ a.shortcut-row {
 }
 
 .shortcut-text.error {
-	color: var(--color-red);
+	color: var(--color-system-red);
 }
 
 /* 다크 모드: iOS처럼 배경보다 목록이 밝다 */
 :root[data-theme='dark'] .shortcuts {
-	background-color: var(--color-window-bg);
+	background-color: var(--color-text-background);
 }
 
 :root[data-theme='dark'] .shortcut-group {
-	background-color: var(--color-titlebar-bg);
+	background-color: var(--color-window-background);
 }
 
 /* ─── 휴대폰 (메모와 같은 모양): 떠 있는 뒤로 가기 아래부터, 회색 바탕 ─── */

@@ -1,0 +1,94 @@
+/*
+ * 1층: 원시값. 실제 값만 담고 뜻은 담지 않는다.
+ * 앱·부품 CSS는 이 이름을 직접 쓰지 않는다 (--palette-*는 Stylelint가 막는다). 2층(semantic.css)이 가리킨다.
+ */
+:root {
+	/* 회색: 숫자가 클수록 어둡다 (라이트 50~600, 다크 700~950) */
+	--palette-gray-50: #f5f5f7;
+	--palette-gray-100: #f2f2f7;
+	--palette-gray-150: #f6f6f6;
+	--palette-gray-200: #e5e5ea;
+	--palette-gray-300: #d6d6d6;
+	--palette-gray-500: #8e8e93;
+	--palette-gray-600: #6e6e73;
+	--palette-gray-400-dark: #98989d;
+	--palette-gray-700: #3a3a3c;
+	--palette-gray-750: #38383a;
+	--palette-gray-800: #2c2c2e;
+	--palette-gray-850: #2a2a2c;
+	--palette-gray-875: #252527;
+	--palette-gray-900: #1e1e1e;
+	--palette-white: #ffffff;
+	--palette-black: #000000;
+
+	/* Apple 시스템 색. -light는 라이트 모양, -dark는 다크 모양의 값 (macOS 색상표 그대로) */
+	--palette-blue-light: #007aff;
+	--palette-blue-dark: #0a84ff;
+	--palette-link-light: #0068da;
+	--palette-link-dark: #419cff;
+	--palette-selection-light: #0063e1;
+	--palette-selection-dark: #0058d0;
+	--palette-red-light: #ff3b30;
+	--palette-red-dark: #ff453a;
+	--palette-green: #34c759;
+	--palette-orange: #ff9f0a;
+	--palette-notes-yellow: #fcb827; /* macOS 메모 앱의 노랑 (Digital Color Meter로 잼, 라이트·다크 같은 값) */
+	--palette-notes-yellow-ink: #2b2100;
+
+	/* 코드 강조: GitHub 밝은/어두운 테마 */
+	--palette-code-red-light: #cf222e;
+	--palette-code-navy-light: #0a3069;
+	--palette-code-blue-light: #0550ae;
+	--palette-code-purple-light: #8250df;
+	--palette-code-brown-light: #953800;
+	--palette-code-gray-light: #6e7781;
+	--palette-code-green-light: #116329;
+	--palette-code-red-dark: #ff7b72;
+	--palette-code-navy-dark: #a5d6ff;
+	--palette-code-blue-dark: #79c0ff;
+	--palette-code-purple-dark: #d2a8ff;
+	--palette-code-brown-dark: #ffa657;
+	--palette-code-gray-dark: #8b949e;
+	--palette-code-green-dark: #7ee787;
+
+	/* 모서리: px 그대로 숫자 이름 (쓰임새 별칭은 semantic.css) */
+	--radius-4: 4px;
+	--radius-6: 6px;
+	--radius-8: 8px;
+	--radius-10: 10px;
+	--radius-14: 14px;
+	--radius-18: 18px;
+	--radius-22: 22px;
+	--radius-full: 999px; /* 알약 */
+
+	/* 그림자: 높이 단계 1~5. 숫자가 클수록 떠 보인다 (쓰임새 별칭은 semantic.css) */
+	--shadow-1: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 4px 14px rgba(0, 0, 0, 0.12);
+	--shadow-2: 0 6px 18px rgba(0, 0, 0, 0.18);
+	--shadow-3: 0 8px 30px rgba(0, 0, 0, 0.18);
+	--shadow-4: 0 18px 40px rgba(0, 0, 0, 0.12);
+	--shadow-5: 0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 10px 30px rgba(0, 0, 0, 0.2);
+
+	/*
+	 * 글자 크기. Apple HIG의 글자 스타일 이름 (14·18px 등 그 밖의 값과 em·rem은 각 CSS에 그대로)
+	 */
+	--text-caption2: 11px;
+	--text-caption: 12px;
+	--text-footnote: 13px;
+	--text-subhead: 15px;
+	--text-callout: 16px;
+	--text-body: 17px;
+	--text-title3: 20px;
+	--text-title2: 22px;
+
+	/* 간격(padding·margin·gap): px 그대로 이름을 붙였다 */
+	--space-2: 2px;
+	--space-4: 4px;
+	--space-6: 6px;
+	--space-8: 8px;
+	--space-10: 10px;
+	--space-12: 12px;
+	--space-14: 14px;
+	--space-16: 16px;
+	--space-20: 20px;
+	--space-24: 24px;
+}

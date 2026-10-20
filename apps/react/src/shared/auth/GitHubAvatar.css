@@ -6,7 +6,7 @@
 	flex: none;
 	overflow: hidden;
 	border-radius: 50%;
-	background: linear-gradient(#b8b8be, var(--color-gray));
+	background: linear-gradient(#b8b8be, var(--color-system-gray));
 	color: var(--color-white);
 }
 
