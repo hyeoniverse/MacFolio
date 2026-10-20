@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { ogImageName, ogImagePng } from './seo/ogImage';
 import { rssXml, seoPosts, siteChannel, sitemapXml, updatedDates, type ContentImages } from './seo/posts';
+import { SITE_ORIGIN } from './seo/site';
 import { DEFAULT_PROJECTS, PROFILE } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
 
@@ -69,6 +71,7 @@ const CONTENT_PREFIX = 'src/apps/memo/content/';
 
 function seoPlugin(): Plugin {
 	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
+	const publicDir = fileURLToPath(new URL('./public', import.meta.url));
 	return {
 		name: 'macfolio-seo',
 		apply: 'build',
@@ -89,6 +92,22 @@ function seoPlugin(): Plugin {
 				}
 			}
 			const posts = await seoPosts(files, { images, updated: contentUpdatedDates(contentDir) });
+			// 사진이 없는 글은 제목으로 공유 카드를 그린다 (seo/ogImage.ts). 서버에 쓴 글은 사이트 기본 그림
+			const fonts = {
+				regular: readFileSync(join(publicDir, 'fonts/AppleSDGothicNeoM.ttf')),
+				bold: readFileSync(join(publicDir, 'fonts/AppleSDGothicNeoB.ttf')),
+			};
+			const icon = `data:image/png;base64,${readFileSync(join(publicDir, 'imgs/memo.png')).toString('base64')}`;
+			const site = siteChannel(PROFILE.name).title;
+			await Promise.all(
+				posts
+					.filter((post) => !post.image)
+					.map(async (post) => {
+						const fileName = ogImageName(post);
+						this.emitFile({ type: 'asset', fileName, source: await ogImagePng(post, { site, icon, fonts }) });
+						post.image = `${SITE_ORIGIN}/${fileName}`;
+					})
+			);
 			this.emitFile({ type: 'asset', fileName: 'seo/posts.json', source: JSON.stringify(posts) });
 			this.emitFile({
 				type: 'asset',
