@@ -2,10 +2,10 @@
 title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
 date: 2026-10-12
 category: 기술 노트/Git
-summary: GitHub의 세 병합 방식이 main의 커밋 그래프·SHA·머지 커밋·되돌리기를 어떻게 바꾸는지 도식으로 정리하고, 고르는 질문 세 개를 MacFolio 저장소(커밋 1,192개, PR 머지 175개)에 대어 왜 Merge commit을 쓰는지 적었다.
+summary: GitHub의 세 병합 방식이 main의 커밋 그래프·SHA·머지 커밋·되돌리기를 어떻게 바꾸는지 도식으로 정리하고, 어느 방식을 고를지 정하는 질문 세 개와 팀 유형별 선택, 저장소 설정으로 한 가지에 고정하는 법을 적었다.
 ---
 
-GitHub PR 페이지의 Merge 버튼을 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것이 맞는지는 저장소마다 다르다. 이 글에서는 무엇이 달라서 답이 갈리는지 정리하고, 마지막에 MacFolio 저장소가 왜 Create a merge commit을 쓰는지 실제 숫자로 적는다.
+GitHub PR 페이지의 Merge 버튼을 누르면 세 가지 방식 가운데 하나를 고르게 된다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것이 맞는지는 저장소마다 다르다. 이 글에서는 무엇이 달라서 답이 갈리는지, 그리고 어떤 질문으로 고르면 되는지 정리한다.
 
 <details id="terms">
 <summary>먼저 알아 둘 용어</summary>
@@ -47,8 +47,6 @@ a1b2c3d Merge pull request #12
 ```
 
 </details>
-
-이 글은 10월 12일 아침 "Rebase and merge와 Create a merge commit은 무엇이 다른가"를 직접 찾아보다가 쓰게 됐다. 처음 초안은 MacFolio 저장소를 기준으로 썼는데, 다른 저장소에서도 읽을 수 있게 일반론으로 고치고 폴더도 새로 만들었다. first-parent, bisect처럼 낯선 용어는 부연 설명을 각주로 달고, 글 앞의 "먼저 알아 둘 용어"는 토글로 접었다. 이 저장소에서도 PR #183이 "This branch cannot be rebased due to conflicts"로 막힌 적이 있어, Rebase 방식의 충돌 이야기는 실제로 겪은 일이다.
 
 ## 같은 PR, 세 가지 기록
 
@@ -123,36 +121,13 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 
 공식 문서: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches).
 
-## MacFolio 저장소에서는
+## 정리
 
-이 저장소는 PR을 모두 Create a merge commit으로 병합했다. Squash로 병합하면 main에 `제목 (#N)` 꼴의 커밋이 남는데, main 쪽 기록에서 그런 커밋은 0개다. 앞의 세 질문에 대어 보면 이유가 숫자로 보인다. 아래는 이 글을 고치는 시점의 `git log`로 센 값이다.
-
-| 센 것                                             | 개수  | 명령                                           |
-| ------------------------------------------------- | ----- | ---------------------------------------------- |
-| 전체 커밋                                         | 1,192 | `git log --oneline \| wc -l`                   |
-| 머지 커밋                                         | 227   | `git log --merges --oneline`                   |
-| └ PR을 병합한 머지 커밋 ("Merge pull request #N") | 175   | `--grep='^Merge pull request'`                 |
-| └ 브랜치 안에서 main을 합친 머지 커밋             | 34    | `--grep="Merge remote-tracking\|Merge branch"` |
-| main 쪽 기록만 (`--first-parent`)                 | 406   | `git log --first-parent --oneline`             |
-| └ 그중 PR 없이 main에 바로 올린 커밋              | 233   | `--first-parent --no-merges`                   |
-
-1. **커밋 단위가 남을 가치가 있는가.** PR 하나에 보통 기능 커밋과 문서 커밋이 따로 있다. 예를 들어 [메뉴 막대의 앱 이름](/memo/menu-bar-app-name)을 만든 PR #101은 기능 커밋(`22c65ac97`)과 블로그 글 커밋(`8d795a4be`)이 나뉘어 있다. 이 블로그 글들은 그런 커밋을 짧은 SHA로 직접 가리킨다. Squash로 합치면 이 구분이 사라진다.
-2. **SHA를 바깥에서 가리키는가.** 가리킨다. API 서버 이미지 태그는 main 커밋의 SHA로 만든다(`.github/workflows/ci.yml`의 `tag=sha-${GITHUB_SHA::7}`). 서버의 `/health`도 이 값을 돌려주고, CI는 그 커밋과 지금 커밋을 `git diff`로 비교해 API를 다시 배포할지 정한다. 되돌릴 때도 예전 태그(`sha-1a2b3c4`)를 넣는다. 커밋을 다시 만드는 Rebase에서는 PR에서 본 SHA와 main의 SHA가 달라진다.
-3. **브랜치 안에 머지 커밋이 있는가.** 34개가 있다. PR이 길어지는 동안 `git merge origin/main`으로 충돌을 풀었기 때문이다. Rebase and merge는 이 머지 커밋을 풀어 헤친다.
-
-세 질문 모두 Create a merge commit 쪽을 가리킨다. 기록이 두 갈래로 섞여 길어지는 단점은 `git log --first-parent`로 거의 지워진다. 1,192줄이 406줄로 줄고, PR마다 "Merge pull request #N" 한 줄로 읽힌다.
-
-## 남은 것·배운 것
-
-- 저장소 설정에서 Squash와 Rebase를 끄지 않았다. 지금까지는 혼자 Merge 버튼을 눌러서 문제가 없었지만, 실수를 막으려면 끄는 편이 낫다.
-- 커밋 메시지는 [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)에서 정한 형식(`feat(react): …`)을 브랜치 커밋마다 지킨다. Merge commit 방식에서는 브랜치 커밋이 그대로 main에 남기 때문에, Squash 방식보다 개별 커밋 메시지가 더 중요하다.
-- 병합 방식은 "기록을 어떻게 읽을 것인가"보다 "무엇이 SHA를 가리키는가"로 정해지는 경우가 많았다. 배포 태그와 글 속 커밋 링크처럼 바깥에서 SHA를 쓰는 곳을 먼저 세어 보면 답이 빨리 나온다.
-
-## 관련 글
-
-- [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)
-- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot)
+- 세 방식은 "변경을 main에 넣는다"는 결과는 같고, main에 남는 기록이 다르다. Merge commit은 커밋과 SHA를 그대로 두고 PR 경계를 머지 커밋으로 남긴다. Squash는 PR 하나를 커밋 하나로 합친다. Rebase는 커밋 단위를 남기되 SHA를 새로 만든다
+- 고를 때는 세 가지를 묻는다. 커밋 단위가 남을 가치가 있는가, SHA를 바깥(배포 태그, 문서 속 커밋 링크, 서명)에서 가리키는가, 브랜치 안에 머지 커밋이 있는가
+- "기록을 어떻게 읽을 것인가"보다 "무엇이 SHA를 가리키는가"로 답이 정해지는 경우가 많다. 바깥에서 SHA를 쓰는 곳부터 세어 보면 빨리 정해진다
+- Merge commit 방식에서는 브랜치의 커밋이 그대로 main에 남으므로, Squash 방식보다 커밋 하나하나의 메시지 규칙이 더 중요하다
+- 한 저장소 안에서는 한 가지로 통일하고, 저장소 설정에서 나머지 방식을 꺼 두어 실수로 다른 방식을 고르지 않게 한다
 
 [^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
 
