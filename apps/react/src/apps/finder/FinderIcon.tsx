@@ -3,8 +3,124 @@ import { env } from '@/shared/config/env';
 import { mediaKind, type FinderItem } from './files';
 import { fileUrl } from './documents';
 
-/** macOS 폴더: 탭이 달린 파란 폴더 */
-const FolderSvg = () => (
+/** 폴더 앞면에 얹는 문양의 선 (macOS처럼 폴더보다 진한 파랑으로 눌러 찍은 듯이) */
+const GLYPH = {
+	fill: 'none',
+	stroke: '#2f7fcb',
+	strokeWidth: 2.2,
+	strokeLinecap: 'round',
+	strokeLinejoin: 'round',
+} as const;
+
+/**
+ * macOS 기본 폴더의 문양 (폴더 id → 앞면 가운데에 그릴 선). 앞면은 y 13~50, 가운데는 (32, 31.5).
+ * 없는 폴더는 문양 없이 그린다
+ */
+const FOLDER_GLYPHS: Record<string, React.ReactNode> = {
+	// 데스크탑: 모니터
+	desktop: (
+		<g {...GLYPH}>
+			<rect x="21" y="22" width="22" height="15" rx="2" />
+			<path d="M28 42h8M32 37v5" />
+		</g>
+	),
+	// 문서: 귀퉁이가 접힌 종이
+	docs: (
+		<g {...GLYPH}>
+			<path d="M26 21h8l6 6v15a1.5 1.5 0 0 1-1.5 1.5h-12.5a1.5 1.5 0 0 1-1.5-1.5v-19.5a1.5 1.5 0 0 1 1.5-1.5z" />
+			<path d="M34 21v6h6" />
+		</g>
+	),
+	// 다운로드: 동그라미 안의 아래 화살표
+	downloads: (
+		<g {...GLYPH}>
+			<circle cx="32" cy="32" r="10" />
+			<path d="M32 26v11M27.5 32.5 32 37l4.5-4.5" />
+		</g>
+	),
+	// 그림: 액자 안의 산과 해
+	pictures: (
+		<g {...GLYPH}>
+			<rect x="21" y="23" width="22" height="17" rx="2" />
+			<path d="m23 38 6-7 4 4 3-3 5 6" />
+			<circle cx="37.5" cy="27.5" r="1.6" />
+		</g>
+	),
+	// 동영상: 필름
+	movies: (
+		<g {...GLYPH}>
+			<rect x="21" y="22" width="22" height="19" rx="2" />
+			<path d="M26 22v19M38 22v19M21 28h5M21 35h5M38 28h5M38 35h5" />
+		</g>
+	),
+	// 음악: 음표
+	music: (
+		<g {...GLYPH}>
+			<path d="M29 39V25l10-2.5v14" />
+			<circle cx="26.5" cy="39" r="2.5" />
+			<circle cx="36.5" cy="36.5" r="2.5" />
+		</g>
+	),
+	// 공용: 마름모 표지판 안의 걷는 사람
+	public: (
+		<g {...GLYPH}>
+			<path d="M32 20.5 43 31.5 32 42.5 21 31.5z" />
+			<circle cx="32.5" cy="26.5" r="1.3" />
+			<path d="M32 29v4.5l-2.5 3.5M32 33.5l2.5 3.5M29.5 31l2.5-1.5 2.5 1.5" />
+		</g>
+	),
+	// 블로그: 연필
+	blog: (
+		<g {...GLYPH}>
+			<path d="m24 40 1.5-5.5L36 24l4 4-10.5 10.5z" />
+			<path d="m33.5 26.5 4 4" />
+		</g>
+	),
+	// 응용 프로그램: macOS처럼 연필·붓·자로 만든 A
+	apps: (
+		<g {...GLYPH}>
+			<path d="M26 41 32 22l6 19M28 35h8" />
+		</g>
+	),
+	// 홈: 집
+	home: (
+		<g {...GLYPH}>
+			<path d="M22 31.5 32 23l10 8.5" />
+			<path d="M25 29v12h14V29" />
+			<path d="M30 41v-6h4v6" />
+		</g>
+	),
+	// 사용자: 두 사람
+	users: (
+		<g {...GLYPH}>
+			<circle cx="28" cy="27" r="3.2" />
+			<path d="M21.5 40a6.5 6.5 0 0 1 13 0" />
+			<circle cx="37.5" cy="28.5" r="2.6" />
+			<path d="M35.5 34.5a5.5 5.5 0 0 1 7.5 5.5" />
+		</g>
+	),
+};
+
+/** 디스크 (Macintosh HD): 은색 외장 디스크처럼 */
+const DriveSvg = () => (
+	<svg viewBox="0 0 64 52" aria-hidden="true" className="finder-svg">
+		<defs>
+			<linearGradient id="finder-drive" x1="0" y1="0" x2="0" y2="1">
+				<stop offset="0" stopColor="#f2f2f5" />
+				<stop offset="1" stopColor="#c7c7cc" />
+			</linearGradient>
+		</defs>
+		<rect x="4" y="12" width="56" height="30" rx="5" fill="url(#finder-drive)" stroke="#a1a1a6" strokeWidth="1.2" />
+		<rect x="4" y="12" width="56" height="2" rx="1" fill="#ffffff" opacity="0.8" />
+		<circle cx="52" cy="34" r="1.8" fill="#34c759" />
+		{[12, 17, 22, 27].map((x) => (
+			<rect key={x} x={x} y="32" width="2" height="5" rx="1" fill="#8e8e93" />
+		))}
+	</svg>
+);
+
+/** macOS 폴더: 탭이 달린 파란 폴더. glyph가 있으면 앞면에 얹는다 */
+const FolderSvg: React.FC<{ glyph?: React.ReactNode }> = ({ glyph }) => (
 	<svg viewBox="0 0 64 52" aria-hidden="true" className="finder-svg">
 		<defs>
 			<linearGradient id="finder-folder-back" x1="0" y1="0" x2="0" y2="1">
@@ -22,6 +138,7 @@ const FolderSvg = () => (
 		/>
 		<rect x="4" y="13" width="56" height="37" rx="4" fill="url(#finder-folder-front)" />
 		<rect x="4" y="13" width="56" height="1.5" rx="0.75" fill="#ffffff" opacity="0.55" />
+		{glyph}
 	</svg>
 );
 
@@ -146,7 +263,7 @@ const AliasBadge = () => (
 const FinderIcon: React.FC<{ item: FinderItem }> = ({ item }) => {
 	switch (item.kind) {
 		case 'folder':
-			return <FolderSvg />;
+			return item.id === 'mac' ? <DriveSvg /> : <FolderSvg glyph={FOLDER_GLYPHS[item.id]} />;
 		case 'alias':
 			return (
 				<>
