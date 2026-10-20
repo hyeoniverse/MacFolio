@@ -47,7 +47,7 @@
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
-	background: linear-gradient(180deg, #b8bcc6, #8e929c);
+	background: var(--memo-avatar-gradient);
 	color: var(--color-white);
 	font-size: var(--text-footnote);
 	font-weight: 600;

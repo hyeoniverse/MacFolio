@@ -33,13 +33,16 @@ export default {
 					px([2, 4, 6, 8, 10, 12, 14, 16, 20, 24]),
 				],
 				'/^(color|background|background-color|border-color|outline-color|fill|stroke)$/': [namedColor],
+				'/^background(-image)?$/': [/gradient\([^;]*(#[0-9a-f]{3,8}\b|rgba?\()/i],
 				'/.*/': [/var\(--palette-/],
 			},
 			{
 				message: (property, value) =>
-					value.includes('--palette-')
-						? `${property}: ${value} — 원시값(--palette-*) 대신 의미 토큰(--color-* 등, styles/tokens/semantic.css)을 쓰세요`
-						: `${property}: ${value}는 이름이 있는 값입니다. styles/tokens/의 토큰(var(--…))을 쓰세요 (흰·검정은 --color-white·--color-black)`,
+					value.includes('gradient(')
+						? `${property}: 색을 직접 적은 그라데이션 — 앱 루트의 앱 토큰(--앱이름-…)이나 --gradient-*·--color-* 토큰으로 옮기세요`
+						: value.includes('--palette-')
+							? `${property}: ${value} — 원시값(--palette-*) 대신 의미 토큰(--color-* 등, styles/tokens/semantic.css)을 쓰세요`
+							: `${property}: ${value}는 이름이 있는 값입니다. styles/tokens/의 토큰(var(--…))을 쓰세요 (흰·검정은 --color-white·--color-black)`,
 			},
 		],
 	},

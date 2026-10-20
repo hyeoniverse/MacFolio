@@ -254,7 +254,7 @@
 }
 
 .about-pane-monogram {
-	background: linear-gradient(160deg, var(--color-system-gray), #5a5a5f);
+	background: var(--gradient-graphite);
 	color: var(--color-white);
 	font-size: var(--text-title2);
 	font-weight: 600;

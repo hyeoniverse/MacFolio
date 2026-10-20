@@ -3,6 +3,13 @@
  * 하늘 색은 sky-<모양>과 day/night로 고른다 (forecast.ts의 Sky)
  */
 .weather {
+	--weather-temperature-gradient: linear-gradient(
+		90deg,
+		#5ac8fa,
+		#a5de37,
+		#ffcc00,
+		#ff9500
+	); /* 기온 막대: 차가움 → 더움 */
 	--weather-glass: rgba(18, 20, 34, 0.45);
 	--weather-rain-icon: #9ad8ff;
 	--weather-bolt-icon: #ffe066;
@@ -603,7 +610,7 @@
 	bottom: 0;
 	min-width: 6px;
 	border-radius: inherit;
-	background: linear-gradient(90deg, #5ac8fa, #a5de37, #ffcc00, #ff9500);
+	background: var(--weather-temperature-gradient);
 }
 
 .weather-day-now {

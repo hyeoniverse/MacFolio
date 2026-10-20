@@ -1,6 +1,13 @@
 /* 시스템 설정: 데스크톱 창과 각 칸 (휴대폰은 SettingsMobile.css, 프로젝트 편집기는 projects/styles/) */
 
 .settings {
+	/* 앱 토큰: 화면 모드 미리보기의 다크 화면, 개인정보 칸의 둥근 아이콘 */
+	--settings-dark-sample-bar: #2c2c2e;
+	--settings-dark-sample-bg: #1e1e1e;
+	--settings-icon-blue: linear-gradient(180deg, #3d9bff, #0a6cf5);
+	--settings-icon-green: linear-gradient(180deg, #4cd964, #28b443);
+	--settings-icon-orange: linear-gradient(180deg, #ffb340, #ff8a00);
+	--settings-icon-gray: linear-gradient(180deg, #a1a1a6, #7c7c80);
 	display: flex;
 	height: 100%;
 	/* 창 높이 안에 딱 맞춘다: 넘치는 것은 사이드바·패널이 각자 스크롤한다 (창 전체가 한 번 더 스크롤되지 않게) */
@@ -140,12 +147,12 @@
 }
 
 .theme-preview-dark {
-	background: linear-gradient(#2c2c2e 0 25%, #1e1e1e 25%);
+	background: linear-gradient(var(--settings-dark-sample-bar) 0 25%, var(--settings-dark-sample-bg) 25%);
 }
 
 .theme-preview-system {
 	background:
-		linear-gradient(90deg, transparent 50%, #1e1e1e 50%),
+		linear-gradient(90deg, transparent 50%, var(--settings-dark-sample-bg) 50%),
 		linear-gradient(var(--color-system-gray-6) 0 25%, var(--color-white) 25%);
 }
 
@@ -471,19 +478,19 @@
 }
 
 .privacy-icon.blue {
-	background: linear-gradient(180deg, #3d9bff, #0a6cf5);
+	background: var(--settings-icon-blue);
 }
 
 .privacy-icon.green {
-	background: linear-gradient(180deg, #4cd964, #28b443);
+	background: var(--settings-icon-green);
 }
 
 .privacy-icon.orange {
-	background: linear-gradient(180deg, #ffb340, #ff8a00);
+	background: var(--settings-icon-orange);
 }
 
 .privacy-icon.gray {
-	background: linear-gradient(180deg, #a1a1a6, #7c7c80);
+	background: var(--settings-icon-gray);
 }
 
 .privacy-group {

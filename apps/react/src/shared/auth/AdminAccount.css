@@ -30,7 +30,7 @@
 .admin-account-avatar.placeholder {
 	display: grid;
 	place-items: center;
-	background: linear-gradient(#b8b8be, var(--color-system-gray));
+	background: var(--gradient-avatar-placeholder);
 	color: var(--color-white);
 	font-size: var(--text-title1);
 }

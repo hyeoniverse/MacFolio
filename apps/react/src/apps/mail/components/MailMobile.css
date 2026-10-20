@@ -246,7 +246,7 @@
 	display: grid;
 	flex: none;
 	place-items: center;
-	background: linear-gradient(#8e9fe0, #6d7ed1);
+	background: var(--mail-avatar-gradient);
 	color: var(--color-white);
 	font-weight: 600;
 }
