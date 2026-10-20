@@ -523,7 +523,7 @@
 .container.mobile :where(.memo-shell[data-compact]) .memo-folders.editing li.reordering {
 	z-index: 2;
 	background-color: var(--phone-card-bg);
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+	box-shadow: var(--shadow-card);
 	transition: none;
 }
 

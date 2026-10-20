@@ -212,7 +212,7 @@
 	height: 48px;
 	border-radius: 11px;
 	object-fit: cover;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+	box-shadow: var(--shadow-raised);
 }
 
 .finder-grid .finder-name {
@@ -769,7 +769,7 @@
 	max-height: 100%;
 	border-radius: var(--radius-4);
 	background: var(--color-black);
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+	box-shadow: var(--shadow-raised);
 	pointer-events: none;
 }
 

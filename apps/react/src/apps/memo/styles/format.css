@@ -39,9 +39,7 @@
 	padding: var(--space-8);
 	border-radius: var(--radius-14);
 	background-color: var(--color-popover-background);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.15),
-		0 12px 32px rgba(0, 0, 0, 0.22);
+	box-shadow: var(--shadow-menu);
 	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	animation: pop-in var(--duration-fast) var(--ease-out);
@@ -215,7 +213,7 @@
 
 .memo-format-panel .memo-image-tabs button[aria-selected='true'] {
 	background-color: var(--color-popover-background);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--shadow-raised);
 	font-weight: 600;
 }
 

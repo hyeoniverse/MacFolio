@@ -12,9 +12,7 @@
 	border: 0.5px solid var(--window-border);
 	border-radius: 16px;
 	background-color: var(--color-window-background);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.12),
-		0 22px 70px rgba(0, 0, 0, 0.35);
+	box-shadow: var(--shadow-modal);
 	color: var(--color-label);
 	text-align: center;
 	transform: translate(-50%, -50%);
@@ -75,7 +73,7 @@
 	margin-bottom: var(--space-16);
 	border-radius: 50%;
 	object-fit: cover;
-	box-shadow: var(--shadow-2);
+	box-shadow: var(--shadow-3);
 }
 
 .about-mac-photo.monogram {

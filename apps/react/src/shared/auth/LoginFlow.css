@@ -23,9 +23,7 @@
 	padding: 22px 20px 16px;
 	border-radius: 16px;
 	background-color: var(--color-popover-background);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.2),
-		0 20px 60px rgba(0, 0, 0, 0.35);
+	box-shadow: var(--shadow-modal);
 	color: var(--color-label);
 	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
 	text-align: center;

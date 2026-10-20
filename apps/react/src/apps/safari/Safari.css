@@ -335,7 +335,7 @@
 	padding: var(--space-8);
 	border-radius: var(--radius-14);
 	background-color: var(--color-white);
-	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+	box-shadow: var(--shadow-raised);
 	object-fit: contain;
 }
 

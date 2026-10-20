@@ -79,7 +79,7 @@
 .projects-table-row.reordering {
 	z-index: 2;
 	background: var(--pe-box);
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+	box-shadow: var(--shadow-card);
 	color: var(--color-label);
 	transition: none;
 }

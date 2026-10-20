@@ -59,7 +59,7 @@
 	border-radius: 20px;
 	color: var(--color-white);
 	text-align: left;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	box-shadow: var(--shadow-card);
 	transition: transform var(--duration-fast) ease;
 }
 

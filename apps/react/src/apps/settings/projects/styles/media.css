@@ -92,7 +92,7 @@ button.projects-thumb:focus-visible {
 	max-height: calc(100vh - 150px);
 	border-radius: var(--radius-8);
 	background: var(--color-black);
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	box-shadow: var(--shadow-modal);
 	object-fit: contain;
 }
 

@@ -191,7 +191,7 @@
 	width: max-content;
 	max-width: var(--room, calc(320px / var(--s, 1)));
 	text-wrap: balance;
-	box-shadow: var(--shadow-2);
+	box-shadow: var(--shadow-3);
 	pointer-events: none;
 	animation: cr-bubble 0.35s cubic-bezier(0.3, 1.5, 0.5, 1);
 	transform-origin: right bottom;
@@ -386,7 +386,7 @@
 	border: 1px solid var(--cr-line);
 	border-radius: var(--radius-14);
 	background-color: var(--cr-line);
-	box-shadow: var(--shadow-4);
+	box-shadow: var(--shadow-5);
 }
 
 .cr-compare-tag {

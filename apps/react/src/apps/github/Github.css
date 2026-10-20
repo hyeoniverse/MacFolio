@@ -750,7 +750,7 @@
 
 .gh-repo:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+	box-shadow: var(--shadow-card);
 }
 
 /* 기여 달력: 올린 칸이 살짝 커진다 */

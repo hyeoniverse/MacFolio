@@ -18,9 +18,7 @@
 	overflow: hidden;
 	border-radius: var(--radius-10);
 	background: var(--color-text-background);
-	box-shadow:
-		0 0 0 0.5px rgba(0, 0, 0, 0.22),
-		0 8px 24px rgba(0, 0, 0, 0.14);
+	box-shadow: var(--shadow-menu);
 }
 
 .projects-preview-chrome {
