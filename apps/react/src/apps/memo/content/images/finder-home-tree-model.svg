@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="520" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">가상본을 어떻게 표현했나: 전과 후</text>
+
+  <!-- 전 -->
+  <rect x="20" y="50" width="290" height="250" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="32" y="74" font-size="13" font-weight="600" fill="#b91c1c">전: 폴더의 한 변형</text>
+  <rect x="36" y="88" width="258" height="78" rx="6" fill="#fff" stroke="#fca5a5"/>
+  <text x="48" y="110" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">kind: 'folder'</text>
+  <text x="48" y="128" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#b91c1c">children: []  ← 늘 비어 있음</text>
+  <text x="48" y="146" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">aliasOf?: 'docs:포트폴리오'</text>
+  <text x="36" y="190" font-size="11" fill="#374151">kind === 'folder'로 고르는 곳에 그대로 섞인다</text>
+  <text x="36" y="208" font-size="11" fill="#374151">쓰는 곳마다 aliasOf를 직접 확인해야 한다 (12곳)</text>
+  <text x="36" y="226" font-size="11" fill="#b91c1c">잊으면 오류 없이 "빈 폴더"로 열린다</text>
+  <text x="36" y="244" font-size="11" fill="#374151">타입으로는 멀쩡한 폴더라 컴파일러가 못 잡는다</text>
+  <text x="36" y="280" font-size="11" fill="#6b7280">미리보기 열기 창: go(item.id) → 빈 목록</text>
+
+  <!-- 후 -->
+  <rect x="330" y="50" width="290" height="250" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="342" y="74" font-size="13" font-weight="600" fill="#4f46e5">후: 따로 된 종류</text>
+  <rect x="346" y="88" width="258" height="78" rx="6" fill="#fff" stroke="#a5b4fc"/>
+  <text x="358" y="110" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">kind: 'alias'</text>
+  <text x="358" y="128" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#4f46e5">target: 'docs:포트폴리오'</text>
+  <text x="358" y="146" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#6b7280">(children 없음)</text>
+  <text x="346" y="190" font-size="11" fill="#374151">kind === 'folder'에 섞이지 않는다</text>
+  <text x="346" y="208" font-size="11" fill="#374151">폴더처럼 다루려면 resolveAlias로 원래 폴더를 찾는다</text>
+  <text x="346" y="226" font-size="11" fill="#4f46e5">KIND_LABELS(Record)·open의 never 검사가</text>
+  <text x="346" y="244" font-size="11" fill="#4f46e5">새 종류를 빠뜨리면 컴파일 오류를 낸다</text>
+  <text x="346" y="280" font-size="11" fill="#6b7280">열기 창: target으로 간다 → 프로젝트 폴더</text>
+
+  <!-- 트리 -->
+  <rect x="20" y="320" width="600" height="182" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="32" y="344" font-size="13" font-weight="600" fill="#1f2937">그다음: 따로 된 꼭대기 넷 → 디스크 하나 아래 트리</text>
+  <text x="36" y="372" font-size="12" fill="#6b7280">전</text>
+  <g font-size="12" fill="#374151">
+    <rect x="70" y="358" width="70" height="22" rx="4" fill="#fff" stroke="#d1d5db"/><text x="105" y="373" text-anchor="middle">데스크탑</text>
+    <rect x="148" y="358" width="54" height="22" rx="4" fill="#fff" stroke="#d1d5db"/><text x="175" y="373" text-anchor="middle">문서</text>
+    <rect x="210" y="358" width="62" height="22" rx="4" fill="#fff" stroke="#d1d5db"/><text x="241" y="373" text-anchor="middle">블로그</text>
+    <rect x="280" y="358" width="104" height="22" rx="4" fill="#fff" stroke="#d1d5db"/><text x="332" y="373" text-anchor="middle">응용 프로그램</text>
+  </g>
+  <text x="396" y="373" font-size="11" fill="#6b7280">서로 남남, 사이드바 = 이 목록</text>
+  <text x="36" y="412" font-size="12" fill="#6b7280">후</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">
+    <text x="70" y="412">Macintosh HD</text>
+    <text x="70" y="432">├─ 응용 프로그램</text>
+    <text x="70" y="452">└─ 사용자 › hyeoniverse</text>
+    <text x="118" y="472">├─ 데스크탑 · 문서 · 블로그</text>
+    <text x="118" y="492">└─ 공용 · 그림 · 다운로드 · 동영상 · 음악</text>
+  </g>
+  <text x="396" y="432" font-size="11" fill="#4f46e5">사이드바 즐겨찾기 = 트리 안 폴더로</text>
+  <text x="396" y="448" font-size="11" fill="#4f46e5">가는 바로가기</text>
+  <text x="396" y="472" font-size="11" fill="#6b7280">폴더 id는 그대로 → 서버·API 그대로</text>
+</svg>
