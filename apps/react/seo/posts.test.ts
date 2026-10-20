@@ -47,7 +47,8 @@ describe('검색엔진용 파일', () => {
 		expect(xml).toContain('<loc>https://macfolio.hyeoniverse.com/safari/qru</loc>');
 	});
 
-	it('저장소의 모든 글과 프로젝트가 sitemap에 있다', async () => {
+	// 저장소의 글을 모두 HTML로 바꾸므로 글이 늘수록 느려진다. 로컬 1초, CI 3~8초라 기본 5초로는 CI에서 가끔 끊긴다
+	it('저장소의 모든 글과 프로젝트가 sitemap에 있다', { timeout: 30_000 }, async () => {
 		const dir = fileURLToPath(new URL('../src/apps/memo/content', import.meta.url));
 		const names = readdirSync(dir).filter((name) => name.endsWith('.md'));
 		const posts = await seoPosts(
