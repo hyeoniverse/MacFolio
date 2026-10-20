@@ -601,6 +601,21 @@
 	object-fit: contain;
 }
 
+/* 바탕화면의 가상본: 폴더 왼쪽 아래의 화살표. Finder.css(처음 열 때 불러온다)에 기대지 않고 여기서 자리를 정한다 */
+.preview-open-thumb {
+	position: relative;
+}
+
+.preview-open-thumb .finder-alias-badge {
+	position: absolute;
+	bottom: 16px;
+	left: 14px;
+	width: 17px;
+	height: 17px;
+	filter: drop-shadow(0 0.5px 1px rgb(0 0 0 / 0.35));
+	pointer-events: none;
+}
+
 /* 미리보기가 열 수 없는 파일(문서·글·앱): macOS 열기 창처럼 흐리게, 고를 수 없다 */
 .preview-open-file.unusable {
 	opacity: 0.4;

@@ -1,5 +1,5 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { fakeFiles } from './fakeFiles';
 import { fakeApi } from './fakeApi';
 
@@ -22,6 +22,16 @@ async function openFinder(page: Page) {
 }
 
 const sidebar = (finder: ReturnType<typeof appWindow>) => finder.getByRole('navigation', { name: '즐겨찾기' });
+
+/** 가상본의 화살표가 그 항목의 아이콘 칸 안에 있는지 (열기 창: .preview-open-thumb) */
+async function expectBadgeInside(option: Locator) {
+	const thumb = (await option.locator('.preview-open-thumb').boundingBox())!;
+	const badge = (await option.locator('.finder-alias-badge').boundingBox())!;
+	expect(badge.x).toBeGreaterThanOrEqual(thumb.x);
+	expect(badge.y).toBeGreaterThanOrEqual(thumb.y);
+	expect(badge.x + badge.width).toBeLessThanOrEqual(thumb.x + thumb.width);
+	expect(badge.y + badge.height).toBeLessThanOrEqual(thumb.y + thumb.height);
+}
 
 test.describe('Finder', () => {
 	test('문서 폴더에서 시작하고, 저장소 문서를 Finder 안에서 읽는다', async ({ page }) => {
@@ -415,6 +425,18 @@ test.describe('Finder', () => {
 			]);
 		});
 
+		test('QuickTime Player의 열기 창에서도 데스크탑 가상본의 화살표는 아이콘 칸 안에', async ({ page }) => {
+			await enterDesktop(page);
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'quicktime', exact: true }).click();
+			const panel = appWindow(page, 'quicktime').getByRole('dialog', { name: '열기' });
+			await panel.getByRole('button', { name: '데스크탑', exact: true }).click();
+			for (const name of ['이력서', '포트폴리오', '자격증'])
+				await expectBadgeInside(
+					panel.getByRole('listbox', { name: '데스크탑' }).getByRole('option', { name, exact: true })
+				);
+		});
+
 		test('열기 창에서 데스크탑의 포트폴리오(가상본)를 열면 문서 › 포트폴리오가 열린다', async ({ page }) => {
 			await fakeFiles(page);
 			await enterDesktop(page);
@@ -422,10 +444,12 @@ test.describe('Finder', () => {
 			await page.locator('.launchpad-modal').getByRole('button', { name: 'preview', exact: true }).click();
 			const panel = appWindow(page, 'preview').getByRole('dialog', { name: '열기' });
 			await panel.getByRole('button', { name: '데스크탑', exact: true }).click();
-			await panel
+			const alias = panel
 				.getByRole('listbox', { name: '데스크탑' })
-				.getByRole('option', { name: '포트폴리오', exact: true })
-				.dblclick();
+				.getByRole('option', { name: '포트폴리오', exact: true });
+			// 가상본 화살표는 그 아이콘 칸 안에 (Finder를 열지 않아 Finder.css가 없어도)
+			await expectBadgeInside(alias);
+			await alias.dblclick();
 			await expect(
 				panel.getByRole('listbox', { name: '포트폴리오' }).getByRole('option', { name: 'MacFolio', exact: true })
 			).toBeVisible();
