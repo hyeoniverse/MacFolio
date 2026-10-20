@@ -1,18 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import {
-	addFolder,
 	ALL_CATEGORY,
 	EMPTY_TAG_SELECTION,
 	isTagSelectionActive,
-	moveFolder,
 	keepFolder,
-	movePost,
 	onlyTag,
 	type Post,
 	RECENTLY_DELETED_DAYS,
-	removeFolder,
-	renameFolder,
 	reorderFolders,
 	setLocked,
 	setPinned,
@@ -20,7 +15,6 @@ import {
 	TAG_VIEW,
 	type TagSelection,
 	tagSelectionNote,
-	type FolderPath,
 	postSlug,
 } from '@macfolio/desktop-core/memo';
 import AppWindow from '@/desktop/window/Window';
@@ -28,21 +22,20 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import FolderSidebar from './components/FolderSidebar';
 import PaneResizer from './components/PaneResizer';
-import { loadPaneWidth, loadTextScale, savePaneWidth, saveTextScale, stepTextScale, TEXT_SCALES } from './memoStorage';
+import { savePaneWidth } from './memoStorage';
 import { cssVars } from '@/shared/lib/cssVars';
-import { SortMenu, ToolbarLead, ViewSwitch, type View } from './components/MemoToolbar';
+import { SortMenu, ToolbarLead, ViewSwitch } from './components/MemoToolbar';
 
 import Menu from '@/shared/ui/menu/Menu';
 import PostWriter, { type PostWriterHandle } from './writer/PostWriter';
-import RevisionsPanel from './components/RevisionsPanel';
+import RevisionsPopover from './components/RevisionsPopover';
 import MemoSearch from './components/MemoSearch';
 import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/usePopover';
 import type { PostDraft } from './postsApi';
-import { linkedId, shareLink } from '@/shared/lib/appLink';
+import { shareLink } from '@/shared/lib/appLink';
 import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
-import { createPortal } from 'react-dom';
 import '@/apps/memo/Memo.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import TagChips from './components/TagChips';
@@ -50,7 +43,10 @@ import MemoMarkdown from './components/MemoMarkdown';
 import { NewDraftItem, NoteCard, NoteItem, NoteSections } from './components/NoteList';
 import PostFooter from './components/PostFooter';
 import ReaderBody from './components/ReaderBody';
-import { useShellSize } from './useShellSize';
+import { useFolderActions } from './useFolderActions';
+import { useMemoLayout } from './useMemoLayout';
+import { usePickedNotes } from './usePickedNotes';
+import TextSizeControl from './components/TextSizeControl';
 import { useMemoLibrary } from './useMemoLibrary';
 import { useNoteView } from './useNoteView';
 import { useNewDraft } from './useNewDraft';
@@ -66,15 +62,8 @@ import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } fro
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
 
-/** 칸을 넓혀도 본문은 이만큼(px) 남긴다 */
-const READER_MIN = 360;
-
 /** 본문 문자열을 메모 본문 모양으로 (편집기의 미리 보기, 버전 기록) */
 const renderMarkdown = (body: string) => <MemoMarkdown>{body}</MemoMarkdown>;
-
-type Pane = 'folders' | 'list' | 'reader';
-
-const PANES: Pane[] = ['folders', 'list', 'reader'];
 
 /**
  * 메모: 블로그 글을 읽는 공간. macOS 메모처럼 떠 있는 폴더 사이드바 · 글 목록 · 본문,
@@ -145,48 +134,36 @@ const Memo: React.FC = () => {
 	const [readerView, setReaderView] = useState(false);
 	/** 휴대폰(모바일 셸) 안인지: 본문을 iOS 메모처럼 떠 있는 버튼으로 그린다 */
 	const phone = useIsMobile();
-	/** 휴대폰 메모 선택: 고른 메모들 (null = 고르는 중 아님) */
-	const [picked, setPicked] = useState<Set<string> | null>(null);
 	/** 검색 칸에 초점이 있는지, 도구를 모은 ••• 메뉴 (검색하는 동안 다른 도구를 접고 검색 칸을 넓힌다) */
 	const [searchFocused, setSearchFocused] = useState(false);
 	const [moreMenu, setMoreMenu] = useState<{ x: number; y: number } | null>(null);
 	const searching = searchFocused || moreMenu !== null;
-	// 좁은 창에서는 한 칸씩 보여준다 (iOS 메모처럼 폴더 → 목록 → 본문). 넓은 창에서는 쓰지 않는다.
-	// 글 주소로 들어왔으면 본문부터
-	const [pane, setPaneState] = useState<Pane>(() => (linkedId('memo') ? 'reader' : 'list'));
-	// 넘어간 방향. 앞으로 가면 오른쪽에서, 뒤로 가면 왼쪽에서 들어온다 (처음에는 애니메이션 없음)
-	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
-	/** 사용자가 사이드바를 직접 열거나 닫았으면 그 값, 아니면 창 폭으로 정한다 */
-	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
-	// 사이드바 너비(px): 경계를 끌어 바꾸고 이 브라우저에 남긴다. 끄는 동안은 칸 너비 애니메이션을 끈다
-	const [sidebarWidth, setSidebarWidth] = useState(() => loadPaneWidth('sidebar'));
-	const [listWidth, setListWidth] = useState(() => loadPaneWidth('list'));
-	/** 읽기 화면 글자 크기 (보는 사람마다 이 브라우저에 남는다) */
-	const [textScale, setTextScale] = useState(loadTextScale);
-	const [resizing, setResizing] = useState(false);
-	const memoRef = useRef<HTMLDivElement>(null);
-	/**
-	 * 칸 하나를 넓힐 수 있는 최대 너비: 창 너비에서 다른 칸과 본문 최소 너비(READER_MIN)를 뺀 값.
-	 * 넓은 창에서는 PANE_WIDTHS의 최대가 먼저 걸린다
-	 */
-	const roomFor = (others: number) => () => (memoRef.current?.clientWidth ?? Infinity) - others - READER_MIN;
-	const [view, setView] = useState<View>('list');
-	/** 갤러리에서 카드를 눌러 글을 연 상태 */
-	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
-	const shellRef = useRef<HTMLDivElement>(null);
-	const shellSize = useShellSize(shellRef);
-	// 휴대폰 화면에서는 폭과 상관없이 한 칸씩. 모양도 이 값을 따른다 (memo-shell의 data-compact)
-	const compact = phone || shellSize.compact;
-	const narrow = shellSize.narrow;
-	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
-	const sidebarOpen = compact || (sidebarChoice ?? !narrow);
+	const {
+		pane,
+		nav,
+		setPane,
+		compact,
+		shellRef,
+		memoRef,
+		sidebarOpen,
+		toggleSidebar,
+		sidebarWidth,
+		setSidebarWidth,
+		listWidth,
+		setListWidth,
+		resizing,
+		setResizing,
+		roomFor,
+		view,
+		changeView,
+		galleryNoteOpen,
+		setGalleryNoteOpen,
+		textScale,
+		setTextScale,
+	} = useMemoLayout(phone);
+	const { picked, setPicked, pickedPosts, togglePicked, movePicked } = usePickedNotes(organized, edit);
 	/** 메모 우클릭 메뉴 */
 	const [noteMenu, setNoteMenu] = useState<{ slug: string; x: number; y: number } | null>(null);
-
-	const setPane = (next: Pane) => {
-		setNav(PANES.indexOf(next) > PANES.indexOf(pane) ? 'forward' : 'back');
-		setPaneState(next);
-	};
 
 	const readerScroll = useRef<HTMLDivElement>(null);
 	// 다른 글을 열면 본문 맨 위부터
@@ -197,7 +174,6 @@ const Memo: React.FC = () => {
 		setQuery('');
 		setSelectedSlug(post.slug);
 	};
-	const toggleSidebar = () => setSidebarChoice(!sidebarOpen);
 
 	/** 태그를 고르면 태그로 보기, 다 풀면 모든 글로 */
 	const changeTags = (next: TagSelection) => {
@@ -234,33 +210,7 @@ const Memo: React.FC = () => {
 		setPane('reader');
 	});
 
-	/** 폴더를 target 폴더 안(모든 글이면 맨 위)으로 옮긴다. 고른 폴더를 옮겼으면 새 경로를 따라간다 */
-	const moveFolderTo = (path: FolderPath, target: string) => {
-		const parent = target === ALL_CATEGORY ? '' : target;
-		edit((prev) => moveFolder(prev, path, parent, folderPaths));
-		const moved = `${parent ? `${parent}/` : ''}${path.split('/').at(-1)}`;
-		if (category === path || category.startsWith(`${path}/`)) setCategory(moved + category.slice(path.length));
-	};
-
-	/** 메모 선택: 누를 때마다 넣고 뺀다 */
-	const togglePicked = (slug: string) =>
-		setPicked((current) => {
-			const next = new Set(current);
-			if (next.has(slug)) next.delete(slug);
-			else next.add(slug);
-			return next;
-		});
-	const pickedPosts = picked ? organized.filter((post) => picked.has(post.slug)) : [];
-	/** 고른 메모들을 한 폴더로 옮기고 고르기를 끝낸다 */
-	const movePicked = (path: FolderPath) => {
-		edit((prev) => pickedPosts.reduce((next, post) => movePost(next, post.slug, path, post.category), prev));
-		setPicked(null);
-	};
-
-	const changeView = (next: View) => {
-		setView(next);
-		setGalleryNoteOpen(false);
-	};
+	const folderActions = useFolderActions({ edit, category, setCategory, selectFolder, folderPaths });
 
 	const togglePin = (post: Post) => edit((prev) => setPinned(prev, post.slug, !post.pinned));
 	/** 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게). 다시 눌러 풀면 바로 고칠 수 있다 */
@@ -387,7 +337,7 @@ const Memo: React.FC = () => {
 		edit,
 		onRemove: (post) => void removePost(post),
 		onRestore: (post, folder) => void restoreDeleted(post, folder),
-		onMoveFolder: (path, target) => moveFolderTo(path, target),
+		onMoveFolder: folderActions.moveTo,
 	});
 	/** 메모 하나에 할 수 있는 일 (메뉴들이 함께 쓴다, noteMenus.tsx) */
 	const noteActions: NoteActions = {
@@ -480,44 +430,8 @@ const Memo: React.FC = () => {
 	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모. 읽기 화면으로 보는 중이면 아니다) */
 	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked && !readerView));
 
-	/** 읽기 화면 글자 크기: 본문 오른쪽 아래에 떠 있는 가− / 가+ 알약 (편집기를 보이는 중에는 뺀다) */
-	const textSizeControl = () => {
-		const change = (step: 1 | -1) => {
-			const next = stepTextScale(textScale, step);
-			setTextScale(next);
-			saveTextScale(next);
-		};
-		return (
-			selected &&
-			!writing && (
-				<div className="memo-text-size" role="group" aria-label="글자 크기">
-					<button
-						type="button"
-						aria-label="글자 작게"
-						title="글자 작게"
-						disabled={textScale === TEXT_SCALES[0]}
-						onClick={() => change(-1)}
-					>
-						<span className="small" aria-hidden="true">
-							가
-						</span>
-					</button>
-					<button
-						type="button"
-						aria-label="글자 크게"
-						title="글자 크게"
-						disabled={textScale === TEXT_SCALES.at(-1)}
-						onClick={() => change(1)}
-					>
-						<span className="large" aria-hidden="true">
-							가
-						</span>
-					</button>
-				</div>
-			)
-		);
-	};
-
+	/** 목록 위의 메모 개수 */
+	const countLabel = inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`;
 	const empty = (
 		<>
 			{status === 'loading' && <EmptyState className="memo-empty">불러오는 중…</EmptyState>}
@@ -617,23 +531,10 @@ const Memo: React.FC = () => {
 						popular={popular?.length ?? null}
 						current={category}
 						onSelect={selectFolder}
-						onAddFolder={(parent, name) => {
-							edit((prev) => addFolder(prev, parent, name));
-							selectFolder(parent ? `${parent}/${name}` : name);
-						}}
-						onRenameFolder={(path, name) => {
-							edit((prev) => renameFolder(prev, path, name));
-							// 고른 폴더(또는 그 안)의 이름이 바뀌면 새 경로를 따라간다
-							if (category === path || category.startsWith(`${path}/`)) {
-								const renamed = [...path.split('/').slice(0, -1), name].join('/');
-								setCategory(renamed + category.slice(path.length));
-							}
-						}}
-						onRemoveFolder={(path) => {
-							edit((prev) => removeFolder(prev, path));
-							if (category === path || category.startsWith(`${path}/`)) selectFolder(ALL_CATEGORY);
-						}}
-						onMoveFolder={moveFolderTo}
+						onAddFolder={folderActions.add}
+						onRenameFolder={folderActions.rename}
+						onRemoveFolder={folderActions.remove}
+						onMoveFolder={folderActions.moveTo}
 						onReorderFolders={(siblings) => edit((prev) => reorderFolders(prev, siblings))}
 						dragging={dragging}
 						onDragFolder={setDragging}
@@ -673,7 +574,7 @@ const Memo: React.FC = () => {
 							<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 							<div className="memo-toolbar-heading">
 								<h2>{categoryName}</h2>
-								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
+								<p>{countLabel}</p>
 							</div>
 						</Toolbar>
 						<div className="memo-scroll">
@@ -684,7 +585,7 @@ const Memo: React.FC = () => {
 							<div className="memo-phone-title">
 								{/* 휴대폰의 태그 화면은 제목이 늘 '태그'이고, 고른 태그는 아래 칩 줄이 보여 준다 (iOS 메모) */}
 								<h2>{phone && inTags ? '태그' : categoryName}</h2>
-								<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
+								<p>{countLabel}</p>
 							</div>
 							{phone && inTags && (
 								<TagChips
@@ -755,7 +656,7 @@ const Memo: React.FC = () => {
 								<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
 								<div className="memo-toolbar-heading">
 									<h2>{categoryName}</h2>
-									<p>{inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`}</p>
+									<p>{countLabel}</p>
 								</div>
 								{sortMenu()}
 								<ViewSwitch view={view} onChange={changeView} />
@@ -887,33 +788,22 @@ const Memo: React.FC = () => {
 								</div>
 							)}
 						</div>
-						{textSizeControl()}
+						{selected && !writing && <TextSizeControl scale={textScale} onChange={setTextScale} />}
 					</article>
 
-					{revisionsOpen &&
-						editing &&
-						selected &&
-						createPortal(
-							<div
-								ref={revisionsPanelExit}
-								className="memo-format-panel memo-format-panel-wide"
-								role="dialog"
-								aria-label="버전 기록"
-								style={revisionsPosition}
-							>
-								<RevisionsPanel
-									key={selected.slug}
-									slug={selected.slug}
-									original={repoPosts.find((item) => item.slug === selected.slug) ?? null}
-									renderMarkdown={renderMarkdown}
-									onRestore={(content) => {
-										writerRef.current?.replaceContent(content);
-										setRevisionsOpen(false);
-									}}
-								/>
-							</div>,
-							document.body
-						)}
+					{revisionsOpen && editing && selected && (
+						<RevisionsPopover
+							slug={selected.slug}
+							original={repoPosts.find((item) => item.slug === selected.slug) ?? null}
+							panelRef={revisionsPanelExit}
+							position={revisionsPosition}
+							renderMarkdown={renderMarkdown}
+							onRestore={(content) => {
+								writerRef.current?.replaceContent(content);
+								setRevisionsOpen(false);
+							}}
+						/>
+					)}
 					{moreMenu && (
 						<Menu
 							label="도구 더 보기"
