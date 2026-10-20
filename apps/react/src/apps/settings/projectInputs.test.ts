@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { blankProject } from '@macfolio/desktop-core/site';
-import { formatPeriod, languageOptions, parsePeriod, stackOptions, suggest } from './projectInputs';
+import { languageOptions, stackOptions, suggest } from './projectInputs';
+import { formatPeriod, parsePeriod } from './projects/period';
 
 describe('기간', () => {
 	it('프로젝트에 적힌 기간을 읽는다 (날짜 둘, 끝 대신 글, 끝을 모름)', () => {
