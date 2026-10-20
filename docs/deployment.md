@@ -571,7 +571,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 1. **새 키** (내 컴퓨터): `ssh-keygen -t ed25519 -f ~/.ssh/oracle-macfolio.key -C macfolio-admin`. 암호(passphrase)를 넣었다면 그것도 함께 보관한다
 2. **임시 VM**: 원래 서버와 같은 가용 도메인에 Ubuntu, `VM.Standard.E2.1.Micro`(무료 2대 중 하나)로 만든다. SSH keys는 **Paste public keys**에 `~/.ssh/oracle-macfolio.key.pub` 내용을 넣는다. 원래 서버를 끄기 전에 만들어 두고 접속까지 확인하면 멈추는 시간이 준다
 3. **원래 서버 멈추고 부트 볼륨 떼기**: 콘솔에서 원래 서버 → Stop → Boot volume → Detach. 떼기 전에 Boot volume backup을 하나 만들어 두면 되돌릴 수 있다
-4. **임시 VM에 붙이기**: 임시 VM 화면의 Attach block volume 버튼이 비활성화(disabled)되어 있으면 콘솔 오른쪽 위 `>_` → **Cloud Shell**에서 CLI로 붙인다 (처음 열면 안내 투어가 떠서 다른 명령을 `Invalid command`로 막는다. Ctrl+C로 빠져나온다)
+4. **임시 VM에 붙이기**: 임시 VM 화면의 Attach block volume 버튼이 비활성화(disabled)되어 있으면 콘솔 맨 위 막대 오른쪽의 **Cloud Shell/Code Editor 아이콘** → **Cloud Shell**(화면 아래에 터미널이 열린다. 열기 전에 맨 위 막대의 리전이 서버 리전인지 본다)에서 CLI로 붙인다 (처음 열면 안내 투어가 떠서 다른 명령을 `Invalid command`로 막는다. Ctrl+C로 빠져나온다)
 
    ```bash
    AD=$(oci iam availability-domain list --query 'data[0].name' --raw-output)
@@ -601,7 +601,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
    - `/dev/sdb1`이면 임시 VM이 **원래 서버 디스크로 부팅된** 것이다. 두 디스크가 같은 이미지라 루트 이름표(`cloudimg-rootfs`)가 같아서, 붙인 채로 재부팅되면 이렇게 된다. 이때는 cloud-init이 새 VM의 첫 부팅으로 여겨 **임시 VM에 넣은 공개 키를 이미 `authorized_keys`에 넣었고, 호스트 키를 새로 만들었다**. DB·API·터널도 이 VM에서 떠 있다. 키를 따로 넣을 필요는 없다 (`grep macfolio-admin ~/.ssh/authorized_keys`로 확인)
    - 어느 쪽이든 원래 서버 디스크가 붙어 있는 동안 임시 VM을 재부팅하지 않는다
 
-6. **되돌리기** (Cloud Shell): 임시 VM을 정상 종료(`SOFTSTOP`, `STOP`은 전원을 바로 끈다)하고 떼어 원래 서버에 붙여 켠다
+6. **되돌리기** (Cloud Shell): 임시 VM을 정상 종료(`SOFTSTOP`. `STOP`은 전원을 바로 끈다. `SOFTSTOP`도 OS 종료를 15분까지만 기다린다)하고 떼어 원래 서버에 붙여 켠다
 
    ```bash
    oci compute instance action --instance-id "$RESCUE" --action SOFTSTOP
