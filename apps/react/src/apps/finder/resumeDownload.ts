@@ -47,9 +47,9 @@ export const RESUME_PDF_KEYS: Record<ResumeLang, string> = { ko: 'resume-pdf:ko'
 export const resumePdfLang = (key: string): ResumeLang | null =>
 	key === RESUME_PDF_KEYS.ko ? 'ko' : key === RESUME_PDF_KEYS.en ? 'en' : null;
 
-/** 내려받을 파일 이름: 국문 '<이름>_이력서.pdf', 영문 'Resume_<Name>.pdf' */
-export const resumePdfName = (lang: ResumeLang, name: string) =>
-	lang === 'en' ? `Resume_${name.replace(/\s+/g, '_')}.pdf` : `${name}_이력서.pdf`;
+/** 이력서 파일 이름 (확장자 없이): 국문 '<이름>_이력서', 영문 'Resume_<Name>'. Finder 문서·PDF와 내려받는 파일이 같이 쓴다 */
+export const resumeFileName = (lang: ResumeLang, name: string) =>
+	lang === 'en' ? `Resume_${name.replace(/\s+/g, '_')}` : `${name}_이력서`;
 
 /** 이력서 PDF를 만든다 (사진은 프로필의 GitHub 사진) */
 export async function resumePdfBlob(lang: ResumeLang = 'ko'): Promise<{ blob: Blob; name: string }> {
@@ -61,7 +61,7 @@ export async function resumePdfBlob(lang: ResumeLang = 'ko'): Promise<{ blob: Bl
 		ownerPhoto(githubLogin(profile)),
 	]);
 	const blob = await pdf(resumeDocument({ resume, photo })).toBlob();
-	return { blob, name: resumePdfName(lang, resume.name || profile.name) };
+	return { blob, name: `${resumeFileName(lang, resume.name || profile.name)}.pdf` };
 }
 
 /** 이력서 PDF를 만들어 내려받는다 */

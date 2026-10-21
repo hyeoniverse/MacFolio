@@ -97,7 +97,7 @@ test.describe('Finder', () => {
 		const finder = await openFinder(page);
 		await finder.getByRole('option', { name: '이력서', exact: true }).dblclick();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
-		await finder.getByRole('option', { name: '김정현_이력서', exact: true }).dblclick();
+		await finder.getByRole('option', { name: '김정현_이력서.md' }).dblclick();
 		const editor = appWindow(page, 'textedit');
 		await expect(editor.locator('.textedit-title')).toHaveText(/^김정현_이력서\.md/);
 		return editor;
@@ -176,12 +176,12 @@ test.describe('Finder', () => {
 		const finder = await openFinder(page);
 		await finder.getByRole('option', { name: '이력서', exact: true }).dblclick();
 		await expect(finder.getByRole('option')).toHaveText([
-			/김정현_이력서$/,
+			/김정현_이력서\.md/,
 			/김정현_이력서\.pdf/,
-			/Resume_Jeonghyeon_Kim$/,
+			/Resume_Jeonghyeon_Kim\.md/,
 			/Resume_Jeonghyeon_Kim\.pdf/,
 		]);
-		await finder.getByRole('option', { name: 'Resume_Jeonghyeon_Kim', exact: true }).dblclick();
+		await finder.getByRole('option', { name: 'Resume_Jeonghyeon_Kim.md' }).dblclick();
 		const editor = appWindow(page, 'textedit');
 		await expect(editor.getByRole('article', { name: 'resume.en.md' }).getByRole('heading', { level: 1 })).toHaveText(
 			'Jeonghyeon Kim'

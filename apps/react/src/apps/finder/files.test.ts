@@ -126,7 +126,7 @@ describe('buildLocations', () => {
 		expect(find(tree, 'docs:docs/deployment.md')).toMatchObject({ kind: 'doc', path: 'docs/deployment.md' });
 	});
 
-	it('이력서: 데이터로 만든 이력서 문서·PDF를 이력서 폴더에 둔다', () => {
+	it('이력서: 데이터로 만든 이력서 문서·PDF를 이력서 폴더에 두고, 이름에 확장자를 붙인다 (.md는 경로에서)', () => {
 		const withResume = buildLocations({
 			docs: [],
 			posts: [],
@@ -134,17 +134,17 @@ describe('buildLocations', () => {
 			apps: [],
 			resume: [
 				{ kind: 'doc', id: 'docs:resume.md', name: '김정현_이력서', path: 'resume.md' },
-				{ kind: 'pdf', id: 'file:resume-pdf:ko', name: '김정현_이력서.pdf', key: 'resume-pdf:ko' },
+				{ kind: 'pdf', id: 'file:resume-pdf:ko', name: '김정현_이력서', key: 'resume-pdf:ko' },
 			],
 		});
-		expect(names(find(withResume, 'docs:이력서') as FolderItem)).toEqual(['김정현_이력서', '김정현_이력서.pdf']);
+		expect(names(find(withResume, 'docs:이력서') as FolderItem)).toEqual(['김정현_이력서.md', '김정현_이력서.pdf']);
 		expect(find(withResume, 'docs:resume.md')).toMatchObject({
 			kind: 'doc',
-			name: '김정현_이력서',
+			name: '김정현_이력서.md',
 			path: 'resume.md',
 		});
 		// 문서 폴더 맨 위에는 따로 두지 않는다
-		expect(names(find(withResume, 'docs') as FolderItem)).not.toContain('김정현_이력서');
+		expect(names(find(withResume, 'docs') as FolderItem)).not.toContain('김정현_이력서.md');
 	});
 
 	it('블로그: 카테고리를 폴더로, 폴더가 위에, 글은 최신순, 폴더 수정일은 가장 최근 글', () => {

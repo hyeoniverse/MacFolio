@@ -9,7 +9,7 @@ import { buildTree, find, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
 import { DOC_PATHS } from './docsBundle';
 import { parseResume, RESUME_DOC, RESUME_DOC_EN } from './resumeModel';
-import { RESUME_PDF_KEYS, resumePdfName } from './resumeDownload';
+import { RESUME_PDF_KEYS, resumeFileName } from './resumeDownload';
 import { useResume } from '@/shared/site/resumeStore';
 import { useProfile } from '@/shared/site/profileStore';
 import { ALBUMS } from '@/apps/photos/albums';
@@ -77,19 +77,19 @@ function useTree(): { roots: FolderItem[]; trash: FolderItem } {
 				{
 					kind: 'doc',
 					id: `docs:${RESUME_DOC_EN}`,
-					name: resumePdfName('en', englishName).replace(/\.pdf$/, ''),
+					name: resumeFileName('en', englishName),
 					path: RESUME_DOC_EN,
 				},
 				{
 					kind: 'pdf',
 					id: `file:${RESUME_PDF_KEYS.ko}`,
-					name: resumePdfName('ko', ownerName),
+					name: resumeFileName('ko', ownerName),
 					key: RESUME_PDF_KEYS.ko,
 				},
 				{
 					kind: 'pdf',
 					id: `file:${RESUME_PDF_KEYS.en}`,
-					name: resumePdfName('en', englishName),
+					name: resumeFileName('en', englishName),
 					key: RESUME_PDF_KEYS.en,
 				},
 			],

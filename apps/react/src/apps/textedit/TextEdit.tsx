@@ -4,7 +4,8 @@ import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { useCanEditMemo } from '@/apps/memo/useCanEditMemo';
 import DocView from '@/apps/finder/DocView';
-import { downloadResume, resumePdfName } from '@/apps/finder/resumeDownload';
+import { downloadResume, resumeFileName } from '@/apps/finder/resumeDownload';
+import { withExtension } from '@/apps/finder/files';
 import { parseResume, resumeLangOf } from '@/apps/finder/resumeModel';
 import { useResume } from '@/shared/site/resumeStore';
 import { useProfile } from '@/shared/site/profileStore';
@@ -127,13 +128,17 @@ const TextEdit: React.FC = () => {
 		},
 	]);
 
+	// 문서 이름: Finder와 같다 (이력서는 이름에, 저장소 문서는 경로에서 확장자를 그대로)
 	const name = !path
 		? '텍스트 편집기'
-		: lang === 'ko'
-			? `${profile.name}_이력서.md`
-			: lang === 'en'
-				? resumePdfName('en', englishName).replace(/\.pdf$/, '.md')
-				: path.split('/').at(-1)!;
+		: lang
+			? withExtension({
+					kind: 'doc',
+					id: path,
+					path,
+					name: resumeFileName(lang, lang === 'en' ? englishName : profile.name),
+				}).name
+			: path.split('/').at(-1)!;
 	// macOS처럼 제목 뒤에 문서 상태를 붙인다 (저장소 문서는 잠긴 문서)
 	const status = !path ? '' : resume ? (source ? '원문' : '') : '잠김';
 	const title = status ? `${name} — ${status}` : name;

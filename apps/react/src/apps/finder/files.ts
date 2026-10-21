@@ -134,7 +134,8 @@ export interface TreeInput {
 	tracks?: { id: string; title: string; artist: string; album: string; artwork: string; playlistId: string }[];
 	/** 관리자가 정한 폴더 구조 (만든 폴더, 옮긴 파일, 바탕화면의 가상본). 없으면 기본 구조 */
 	layout?: FinderLayoutValue;
-	/** 데이터로 만드는 이력서: 국문·영문 Markdown 문서와 그 PDF. 문서 › 이력서 안에 올린 파일과 함께 둔다 */
+	/** 데이터로 만드는 이력서: 국문·영문 Markdown 문서와 그 PDF. 문서 › 이력서 안에 올린 파일과 함께 둔다.
+	 *  이름에는 확장자를 쓰지 않는다 (문서는 경로의 확장자, PDF는 .pdf를 withExtension이 붙인다) */
 	resume?: (DocItem | FileItem)[];
 }
 
@@ -183,6 +184,18 @@ const latest = (items: FinderItem[]) =>
  * 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서·포트폴리오·자격증 (R2의 파일. 프로젝트 폴더의 파일은 빼고).
  * 프로젝트 폴더들은 포트폴리오 안에 (폴더가 위에 이름순, 그다음 파일)
  */
+/** 파일 이름 끝의 확장자 (점 포함). 없으면 '' */
+const extensionOf = (name: string) => /\.[^./]+$/.exec(name)?.[0] ?? '';
+
+/**
+ * 이름에 확장자를 붙인다 (Finder는 파일 이름에 확장자를 보인다). 문서는 경로의 확장자(.md), PDF는 .pdf.
+ * 이미 붙어 있으면 그대로 둔다
+ */
+export function withExtension<T extends DocItem | FileItem>(item: T): T {
+	const extension = item.kind === 'doc' ? extensionOf(item.path) : item.kind === 'pdf' ? '.pdf' : '';
+	return !extension || item.name.endsWith(extension) ? item : { ...item, name: `${item.name}${extension}` };
+}
+
 function docsFolder(
 	paths: string[],
 	files: DocumentEntry[],
@@ -201,7 +214,7 @@ function docsFolder(
 		name,
 		children: [
 			...(name === '포트폴리오' ? projects : []),
-			...(name === '이력서' && resume ? resume : []),
+			...(name === '이력서' && resume ? resume.map(withExtension) : []),
 			...files.filter((file) => file.folder === name).map(fileItem),
 		].sort(byName),
 		emptyNote: FOLDER_NOTES[name],
