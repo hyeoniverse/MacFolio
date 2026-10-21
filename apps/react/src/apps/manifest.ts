@@ -139,8 +139,8 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		icon: 'tips.svg',
 		inDock: false,
 		inLaunchpad: true,
-		windowSize: { width: 560, height: 640 },
-		minSize: { width: 360, height: 420 },
+		windowSize: { width: 980, height: 700 },
+		minSize: { width: 520, height: 480 },
 	},
 	weather: {
 		label: '날씨',

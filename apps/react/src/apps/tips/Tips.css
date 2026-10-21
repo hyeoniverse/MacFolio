@@ -1,293 +1,532 @@
-/* 팁 앱: 노란 전구 아이콘의 머리 카드와 팁 목록 */
+/* 팁 앱 (macOS 팁): 위쪽 막대, 첫 화면의 큰 제목·찾기·카드, 사용 설명서(왼쪽 목차 + 본문) */
 .tips {
+	display: flex;
+	flex-direction: column;
 	height: 100%;
-	overflow: auto;
 	background-color: var(--color-window-background);
 	color: var(--color-label);
+	text-align: left;
 	container-type: inline-size;
 }
 
-.tips-hero {
-	padding: var(--space-24) var(--space-20) var(--space-20);
+/* 위쪽 막대: 신호등 오른쪽에 뒤로·앞으로 알약, 홈 버튼, 제목 */
+.tips-bar {
+	/* 통합형 창의 제목 표시줄(z-index 3) 위로: 단추를 누를 수 있게 */
+	position: relative;
+	z-index: 4;
+	display: flex;
+	flex: none;
+	gap: var(--space-8);
+	align-items: center;
+	height: 52px;
+	padding: 0 var(--space-16) 0 84px;
+}
+
+.tips-bar-pill {
+	display: inline-flex;
+	padding: var(--space-2);
+	border-radius: var(--radius-full);
+	background-color: var(--color-system-fill);
+}
+
+.tips-bar-pill button,
+.tips-bar-round {
+	display: inline-grid;
+	width: 30px;
+	height: 28px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--radius-full);
+	background: none;
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	place-items: center;
+	cursor: pointer;
+}
+
+.tips-bar-round {
+	width: 32px;
+	height: 32px;
+	background-color: var(--color-system-fill);
+}
+
+.tips-bar-pill button:disabled,
+.tips-bar-round:disabled {
+	color: var(--color-secondary-label);
+	cursor: default;
+	opacity: 0.5;
+}
+
+.tips-bar-pill button:not(:disabled):hover,
+.tips-bar-round:not(:disabled):hover {
+	background-color: var(--color-secondary-system-fill);
+}
+
+.tips-bar-title {
+	overflow: hidden;
+	font-size: var(--text-body);
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tips-scroll {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+}
+
+/* 첫 화면 */
+.tips-home {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: var(--space-12) var(--space-24) var(--space-24);
+}
+
+.tips-hero-title {
+	margin: var(--space-16) 0 var(--space-16);
+	font-size: var(--text-large-title);
+	font-weight: 700;
 	text-align: center;
 }
 
-.tips-hero img {
-	width: 72px;
-	height: 72px;
-}
-
-.tips-hero h1 {
-	margin: var(--space-10) 0 var(--space-4);
-	font-size: var(--text-title2);
-	font-weight: 700;
-}
-
-.tips-hero p {
-	margin: 0;
+.tips-search {
+	display: flex;
+	gap: var(--space-8);
+	align-items: center;
+	max-width: 420px;
+	margin: 0 auto var(--space-24);
+	padding: var(--space-8) var(--space-14);
+	border-radius: var(--radius-full);
+	background-color: var(--color-system-fill);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
 
-.tips-start {
-	height: 32px;
-	margin-top: var(--space-14);
-	padding: 0 var(--space-16);
-	border: 0;
-	border-radius: var(--radius-full);
-	background-color: var(--color-control-accent);
-	color: var(--color-white);
-	font-size: var(--text-subhead);
-	font-weight: 600;
-}
-
-.tips-list {
-	display: grid;
-	gap: var(--space-10);
-	margin: 0;
-	padding: 0 var(--space-16) var(--space-20);
-	list-style: none;
-}
-
-.tips-item {
-	display: flex;
-	align-items: center;
-	gap: var(--space-12);
-	padding: var(--space-12) var(--space-14);
-	border-radius: var(--radius-14);
-	background-color: var(--color-text-background);
-	box-shadow: var(--shadow-raised);
-}
-
-.tips-item-icon {
-	display: grid;
-	flex: none;
-	place-items: center;
-	width: 36px;
-	height: 36px;
-	border-radius: var(--radius-8);
-	background-color: var(--tips-yellow);
-	color: var(--color-white);
-}
-
-.tips-item-text {
+.tips-search input {
 	flex: 1;
 	min-width: 0;
-	text-align: left;
-}
-
-.tips-item-text h3 {
-	margin: 0 0 var(--space-2);
-	font-size: var(--text-subhead);
-	font-weight: 700;
-}
-
-.tips-item-text p {
-	margin: 0;
-	color: var(--color-secondary-label);
-	font-size: var(--text-footnote);
-	line-height: 1.45;
-}
-
-.tips-item-show {
-	flex: none;
-	height: 28px;
-	padding: 0 var(--space-12);
 	border: 0;
-	border-radius: var(--radius-8);
-	background-color: var(--color-unemphasized-selected-content-background);
-	color: var(--color-control-accent);
-	font-size: var(--text-footnote);
-	font-weight: 600;
-}
-
-.tips {
-	--tips-yellow: var(--color-system-yellow);
-}
-
-/* 모음 제목 (사용법, 화면에서 짚어 보기) */
-.tips-section {
-	margin: var(--space-8) var(--space-16) var(--space-8);
-	font-size: var(--text-subhead);
-	font-weight: 700;
-	text-align: left;
-}
-
-/* 사용법 카드: 아이콘 · 제목 · 한 줄 · 팁 수 */
-.tips-guides {
-	display: grid;
-	gap: var(--space-10);
-	margin: 0 0 var(--space-16);
-	padding: 0 var(--space-16);
-	list-style: none;
-}
-
-.tips-guide-card {
-	display: flex;
-	align-items: center;
-	gap: var(--space-12);
-	width: 100%;
-	padding: var(--space-14);
-	border: 0;
-	border-radius: var(--radius-14);
-	background-color: var(--color-text-background);
-	box-shadow: var(--shadow-raised);
+	background: none;
 	color: var(--color-label);
+	font: inherit;
+	outline: none;
+}
+
+.tips-results {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.tips-result {
+	display: flex;
+	gap: var(--space-12);
+	align-items: center;
+	padding: var(--space-10) var(--space-12);
+	border: 0;
+	border-radius: var(--radius-10);
+	background: none;
+	color: inherit;
 	text-align: left;
+	cursor: pointer;
 }
 
-.tips-guide-card:hover {
-	filter: brightness(0.98);
+.tips-result:hover {
+	background-color: var(--color-system-fill);
 }
 
-.tips-guide-card-text {
-	display: grid;
-	flex: 1;
+.tips-result i {
+	width: 20px;
+	color: var(--color-control-accent);
+	text-align: center;
+}
+
+.tips-result span,
+.tips-feature-list button span {
+	display: flex;
+	flex-direction: column;
 	gap: var(--space-2);
 	min-width: 0;
 }
 
-.tips-guide-card-text strong {
+.tips-result strong,
+.tips-feature-list strong {
 	font-size: var(--text-subhead);
 }
 
-.tips-guide-card-text span {
+.tips-result small,
+.tips-feature-list small {
 	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
 }
 
-.tips-guide-card-count {
-	flex: none;
-	color: var(--color-control-accent);
-	font-size: var(--text-caption);
-	font-weight: 600;
-}
-
-.tips-guide-icon {
-	display: grid;
-	flex: none;
-	place-items: center;
-	width: 44px;
-	height: 44px;
-	border-radius: var(--radius-10);
-	background-color: var(--tips-yellow);
-	color: var(--color-white);
-	font-size: var(--text-callout);
-}
-
-/* 사용법 한 편: 돌아가기, 머리, 번호 붙은 단계 */
-.tips-guide {
-	padding: var(--space-12) var(--space-16) var(--space-24);
-	text-align: left;
-}
-
-.tips-back {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-4);
-	padding: var(--space-4) 0;
-	border: 0;
-	background: none;
-	color: var(--color-control-accent);
-	font-size: var(--text-subhead);
-}
-
-.tips-guide-head {
-	margin: var(--space-12) 0 var(--space-16);
-}
-
-.tips-guide-head .tips-guide-icon {
-	width: 56px;
-	height: 56px;
-	border-radius: var(--radius-14);
-	font-size: var(--text-title3);
-}
-
-.tips-guide-head h1 {
-	margin: var(--space-10) 0 var(--space-4);
-	font-size: var(--text-title2);
-	font-weight: 700;
-}
-
-.tips-guide-head p {
-	margin: 0;
+.tips-empty {
 	color: var(--color-secondary-label);
+	text-align: center;
+}
+
+/* 둘러보기: 왼쪽 큰 카드, 오른쪽 세 줄 */
+.tips-featured {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: var(--space-24);
+	align-items: center;
+	margin-bottom: var(--space-24);
+}
+
+.tips-feature-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+	align-items: flex-start;
+	justify-content: flex-end;
+	min-height: 220px;
+	padding: var(--space-20);
+	border: 0;
+	border-radius: var(--radius-18);
+	background: linear-gradient(135deg, var(--color-system-yellow), var(--color-system-orange));
+	color: var(--color-white);
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-feature-badge img {
+	width: 64px;
+	height: 64px;
+	margin-bottom: var(--space-8);
+}
+
+.tips-feature-card strong {
+	font-size: var(--text-title2);
+}
+
+.tips-feature-card span {
 	font-size: var(--text-subhead);
 }
 
-.tips-steps {
-	display: grid;
-	gap: var(--space-10);
-	margin: 0 0 var(--space-20);
+.tips-feature-list {
+	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.tips-step {
+.tips-feature-list li + li {
+	border-top: 1px solid var(--color-separator);
+}
+
+.tips-feature-list button {
 	display: flex;
-	gap: var(--space-12);
-	padding: var(--space-14);
-	border-radius: var(--radius-14);
-	background-color: var(--color-text-background);
-	box-shadow: var(--shadow-raised);
-}
-
-.tips-step-icon {
-	display: grid;
-	flex: none;
-	place-items: center;
-	width: 36px;
-	height: 36px;
-	border-radius: var(--radius-10);
-	background-color: var(--color-unemphasized-selected-content-background);
-	color: var(--color-control-accent);
-}
-
-.tips-step-text {
-	flex: 1;
-	min-width: 0;
-}
-
-.tips-step-text h2 {
-	display: flex;
+	gap: var(--space-14);
 	align-items: center;
-	gap: var(--space-6);
-	margin: 0 0 var(--space-4);
-	font-size: var(--text-subhead);
+	width: 100%;
+	padding: var(--space-14) var(--space-4);
+	border: 0;
+	background: none;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-feature-list .tips-feature-icon {
+	display: inline-grid;
+	flex: none;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--radius-10);
+	background-color: var(--color-system-fill);
+	color: var(--color-control-accent);
+	place-items: center;
+}
+
+.tips-heading,
+.tips-subheading {
+	text-align: left;
+}
+
+.tips-heading {
+	margin: var(--space-24) 0 var(--space-12);
+	font-size: var(--text-title2);
 	font-weight: 700;
 }
 
-.tips-step-number {
-	display: inline-grid;
-	flex: none;
-	place-items: center;
-	width: 18px;
-	height: 18px;
-	border-radius: var(--radius-full);
-	background-color: var(--tips-yellow);
-	color: var(--color-white);
-	font-size: var(--text-caption2);
+.tips-heading-large {
+	font-size: var(--text-title1);
 }
 
-.tips-step-text p {
+.tips-subheading {
+	margin: 0 0 var(--space-12);
+	color: var(--color-secondary-label);
+	font-size: var(--text-body);
+	font-weight: 600;
+}
+
+/* 회색 둥근 카드 */
+.tips-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: var(--space-16);
 	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tips-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	width: 100%;
+	height: 100%;
+	padding: var(--space-12);
+	border: 0;
+	border-radius: var(--radius-18);
+	background-color: var(--color-system-fill);
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-card:hover {
+	background-color: var(--color-secondary-system-fill);
+}
+
+.tips-card-art {
+	display: grid;
+	margin-bottom: var(--space-8);
+	border-radius: var(--radius-14);
+	background-color: var(--color-window-background);
+	color: var(--color-control-accent);
+	font-size: var(--text-large-title);
+	aspect-ratio: 2 / 1;
+	place-items: center;
+}
+
+.tips-card-art img {
+	width: 56px;
+	height: 56px;
+}
+
+.tips-card strong {
+	font-size: var(--text-body);
+}
+
+.tips-card span:not(.tips-card-art) {
 	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
-	line-height: 1.55;
+}
+
+.tips-card small {
+	margin-top: auto;
+	padding-top: var(--space-6);
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+}
+
+/* 사용 설명서: 왼쪽 목차, 오른쪽 본문 */
+.tips-manual {
+	display: grid;
+	grid-template-columns: 200px minmax(0, 1fr);
+	min-height: 100%;
+}
+
+.tips-toc {
+	position: sticky;
+	top: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	align-self: start;
+	padding: var(--space-12);
+}
+
+.tips-toc button {
+	padding: var(--space-6) var(--space-10);
+	border: 0;
+	border-radius: var(--radius-8);
+	background: none;
+	color: var(--color-label);
+	font-size: var(--text-subhead);
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-toc button:hover,
+.tips-toc button.active {
+	background-color: var(--color-system-fill);
+}
+
+.tips-manual-body {
+	max-width: 680px;
+	padding: var(--space-16) var(--space-24) var(--space-24);
+}
+
+.tips-manual-head {
+	display: flex;
+	gap: var(--space-16);
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-16);
+}
+
+.tips-manual-head h1,
+.tips-spot h1 {
+	margin: 0;
+	font-size: var(--text-large-title);
+	font-weight: 700;
+}
+
+.tips-manual-sub {
+	margin: var(--space-4) 0 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-title3);
+}
+
+.tips-manual-icon {
+	flex: none;
+	width: 96px;
+	height: 96px;
+}
+
+.tips-manual-fa {
+	display: grid;
+	border-radius: var(--radius-22);
+	background-color: var(--color-system-fill);
+	font-size: var(--text-large-title);
+	place-items: center;
+}
+
+.tips-manual-intro {
+	margin: 0 0 var(--space-20);
+	font-size: var(--text-body);
+	line-height: 1.6;
+}
+
+.tips-manual-section {
+	display: flex;
+	gap: var(--space-14);
+	padding: var(--space-16) 0;
+	border-top: 1px solid var(--color-separator);
+	scroll-margin-top: var(--space-12);
+}
+
+.tips-manual-section-icon {
+	display: inline-grid;
+	flex: none;
+	width: 36px;
+	height: 36px;
+	border-radius: var(--radius-10);
+	background-color: var(--color-system-fill);
+	color: var(--color-control-accent);
+	place-items: center;
+}
+
+.tips-manual-section h2 {
+	margin: 0 0 var(--space-4);
+	font-size: var(--text-title3);
+	font-weight: 600;
+}
+
+.tips-manual-section p {
+	margin: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-body);
+	line-height: 1.6;
 }
 
 .tips-keys {
 	display: inline-block;
 	margin-top: var(--space-6);
 	padding: var(--space-2) var(--space-6);
-	border: 1px solid var(--color-separator);
 	border-radius: var(--radius-6);
-	color: var(--color-secondary-label);
+	background-color: var(--color-system-fill);
 	font-family: inherit;
-	font-size: var(--text-caption);
+	font-size: var(--text-footnote);
 }
 
-.tips-guide > .tips-start {
-	display: block;
+.tips-link {
+	margin-top: var(--space-16);
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--color-link);
+	font-size: var(--text-body);
+	cursor: pointer;
+}
+
+/* 화면에서 짚어 보기 */
+.tips-spot {
+	max-width: 720px;
 	margin: 0 auto;
+	padding: var(--space-16) var(--space-24) var(--space-24);
+}
+
+.tips-spot-list {
+	margin: var(--space-20) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tips-spot-list li {
+	display: flex;
+	gap: var(--space-12);
+	align-items: center;
+	padding: var(--space-12) 0;
+	border-top: 1px solid var(--color-separator);
+}
+
+.tips-spot-list li > i {
+	width: 24px;
+	color: var(--color-control-accent);
+	text-align: center;
+}
+
+.tips-spot-list span {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.tips-spot-list small {
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.tips-show {
+	flex: none;
+	padding: var(--space-4) var(--space-12);
+	border: 0;
+	border-radius: var(--radius-full);
+	background-color: var(--color-control-accent);
+	color: var(--color-white);
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+/* 좁은 창·휴대폰: 목차를 숨기고 둘러보기를 한 줄씩 */
+@container (width < 640px) {
+	.tips-featured,
+	.tips-manual {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.tips-toc {
+		display: none;
+	}
+
+	.tips-hero-title {
+		font-size: var(--text-title1);
+	}
+
+	.tips-home,
+	.tips-manual-body,
+	.tips-spot {
+		padding-inline: var(--space-16);
+	}
+
+	.tips-manual-icon {
+		width: 64px;
+		height: 64px;
+	}
 }
