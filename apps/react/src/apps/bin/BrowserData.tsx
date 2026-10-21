@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAppState } from '@/desktop/useAppState';
-import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { useOpenDocument } from '@/apps/textedit/openDocument';
 import { DEFAULT_SETTINGS } from '@/shared/settings/settings';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
@@ -34,7 +33,7 @@ const CookieNote = () => (
  * 서버에 남는 것은 개인정보 문서(docs/privacy.md)로 잇는다
  */
 const BrowserData = () => {
-	const { openApp } = useAppState();
+	const openDocument = useOpenDocument();
 	const [stored, setStored] = useState(readBrowserData);
 	const [confirm, setConfirm] = useState(false);
 	const refresh = () => {
@@ -109,8 +108,7 @@ const BrowserData = () => {
 					type="button"
 					className="bin-link"
 					onClick={() => {
-						requestFinderDoc('docs/privacy.md');
-						openApp('finder');
+						openDocument('docs/privacy.md');
 					}}
 				>
 					개인정보 문서

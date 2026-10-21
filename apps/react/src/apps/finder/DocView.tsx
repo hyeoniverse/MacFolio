@@ -9,6 +9,7 @@ import { colorSchemeOf, resolveImage, resolveLink } from './repoDocs';
 import { DOC_IMAGES, DOC_SOURCES, docSource } from './docsBundle';
 import { useResume } from '@/shared/site/resumeStore';
 import { projectLinkId } from './resumeModel';
+import './DocView.css';
 
 const DOC_SET = new Set(Object.keys(DOC_SOURCES));
 

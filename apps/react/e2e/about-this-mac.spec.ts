@@ -93,8 +93,8 @@ test.describe('이 Mac에 관하여', () => {
 		const about = page.getByRole('dialog', { name: '이 Mac에 관하여' });
 		await about.getByRole('button', { name: '개인정보 처리 방침' }).click();
 		await expect(about).toBeHidden();
-		const finder = appWindow(page, 'finder');
-		await expect(finder.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
+		const editor = appWindow(page, 'textedit');
+		await expect(editor.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
 			'개인정보: 무엇을 모으고 얼마나 두나'
 		);
 	});

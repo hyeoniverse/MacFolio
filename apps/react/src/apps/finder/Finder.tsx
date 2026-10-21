@@ -30,13 +30,8 @@ import { useDocumentDrop } from './useDocumentDrop';
 import { downloadFile } from './documents';
 import { openInPlayer } from '@/apps/quicktime/playerStore';
 import { canSetWallpaper, setDesktopWallpaper } from './setWallpaper';
-import { docSource } from './docsBundle';
-import { docTitle } from './repoDocs';
-import { finderDocRequest, finderFolderRequest } from './openDoc';
-import DocView from './DocView';
-import { downloadResume } from './resumeDownload';
-import ResumeEditor from './ResumeEditor';
-import { RESUME_DOC } from './resumeModel';
+import { finderFolderRequest } from './openDoc';
+import { useOpenDocument } from '@/apps/textedit/openDocument';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import { openInPreview } from '@/apps/preview/previewStore';
@@ -52,7 +47,8 @@ import EmptyState from '@/shared/ui/empty-state/EmptyState';
 type View = 'icons' | 'list';
 
 /** 지나온 곳 하나: 폴더, 또는 Finder 안에서 읽는 문서 */
-type Place = { folder: string } | { doc: string };
+/** 지금 보는 폴더. 문서(.md)는 Finder 안이 아니라 텍스트 편집기에서 연다 */
+type Place = { folder: string };
 
 const LOCATION_ICONS: Record<string, string> = {
 	desktop: 'fa-solid fa-display',
@@ -100,37 +96,19 @@ const Finder: React.FC = () => {
 	const place = history.places[history.at];
 	const [view, setView] = useState<View>('icons');
 	const [selected, setSelected] = useState<string | null>(null);
-	// 이력서 PDF를 만드는 중 (처음에는 글꼴을 받느라 몇 초 걸린다)
-	const [downloading, setDownloading] = useState(false);
-	// 관리자가 이력서를 고치는 중 (다른 곳으로 가면 끝난다)
-	const [editingResume, setEditingResume] = useState(false);
+	const openDocument = useOpenDocument();
 	const [query, setQuery] = useState('');
 	const content = useRef<HTMLDivElement>(null);
 
 	const go = (next: Place) => {
-		setEditingResume(false);
 		setHistory(({ places, at }) => ({ places: [...places.slice(0, at + 1), next], at: at + 1 }));
 		setSelected(null);
 		setQuery('');
 	};
 	const step = (delta: number) => {
-		setEditingResume(false);
 		setHistory((current) => ({ ...current, at: Math.min(current.places.length - 1, Math.max(0, current.at + delta)) }));
 		setSelected(null);
 	};
-
-	// 바깥에서 온 문서 열기 요청 (openDoc.ts). 묶어 둔 문서만 연다. 휴대폰은 FinderMobile이 받는다
-	useEffect(() => {
-		if (mobile) return;
-		const take = () => {
-			const { path } = finderDocRequest.getState();
-			if (!path) return;
-			finderDocRequest.setState({ path: null });
-			if (docSource(path) !== undefined) go({ doc: path });
-		};
-		take();
-		return finderDocRequest.subscribe(take);
-	}, [mobile]);
 
 	// 바탕화면 폴더 아이콘에서 온 폴더 열기 요청 (openDoc.ts의 requestFinderFolder)
 	useEffect(() => {
@@ -145,7 +123,7 @@ const Finder: React.FC = () => {
 		return finderFolderRequest.subscribe(take);
 	}, [mobile]);
 
-	const folder = 'folder' in place ? (find(locations, place.folder) as FolderItem | null) : null;
+	const folder = find(locations, place.folder) as FolderItem | null;
 	// 관리자가 컴퓨터의 파일을 놓아 올릴 수 있는 폴더 (문서·데스크탑·프로젝트·만든 폴더)
 	const drop = useDocumentDrop(locations, folder?.id ?? null);
 	const dropFolder = drop.canUpload(folder?.id) ? folder!.id : null;
@@ -154,13 +132,8 @@ const Finder: React.FC = () => {
 	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
 	const direction = useMoveDirection(history.at, undefined, `${view}|${searching}`);
 	const items: FinderItem[] = searching ? search(locations, query) : (folder?.children ?? []);
-	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
-	// 문서는 트리의 이름 (데이터로 만든 이력서는 경로가 아니라 '이름_이력서'), 트리에 없으면 파일 이름
-	const title = searching
-		? `‘${query.trim()}’ 찾기`
-		: 'doc' in place
-			? (crumbs.at(-1)?.name ?? place.doc.split('/').at(-1)!)
-			: (folder?.name ?? 'Finder');
+	const crumbs = pathTo(locations, place.folder);
+	const title = searching ? `‘${query.trim()}’ 찾기` : (folder?.name ?? 'Finder');
 	// 사이드바에서 칠할 곳: 경로에서 가장 안쪽의 사이드바 항목 (이력서 안이면 이력서, 그 밖의 문서면 문서, 홈의 다른 폴더면 홈)
 	const location = [...crumbs].reverse().find((crumb) => SIDEBAR_IDS.includes(crumb.id))?.id ?? null;
 	const favorites = foldersOf(locations, FAVORITE_SIDEBAR);
@@ -272,7 +245,8 @@ const Finder: React.FC = () => {
 				go({ folder: item.target });
 				return;
 			case 'doc':
-				go({ doc: item.path });
+				// Markdown 문서는 텍스트 편집기에서 (macOS에서 .md를 열면 텍스트 편집기가 뜨듯)
+				openDocument(item.path);
 				return;
 			case 'file': {
 				// 동영상·소리는 QuickTime Player, 그 밖은 macOS에서 다른 앱으로 열듯 받아서 연다
@@ -539,38 +513,22 @@ const Finder: React.FC = () => {
 							<h1 key={title} className="finder-title motion-swap">
 								{title}
 							</h1>
-							{'doc' in place && place.doc === RESUME_DOC && drop.admin && !editingResume && (
-								<IconButton icon="fa-solid fa-pen" label="이력서 편집" onClick={() => setEditingResume(true)} />
-							)}
-							{'doc' in place && place.doc === RESUME_DOC && !editingResume && (
+							<div className="finder-views" role="group" aria-label="보기">
 								<IconButton
-									icon={downloading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-arrow-down'}
-									label={downloading ? 'PDF 만드는 중' : 'PDF 다운로드'}
-									disabled={downloading}
-									onClick={() => {
-										setDownloading(true);
-										void downloadResume().finally(() => setDownloading(false));
-									}}
+									icon="fa-solid fa-table-cells-large"
+									label="아이콘으로 보기"
+									on={view === 'icons'}
+									aria-pressed={view === 'icons'}
+									onClick={() => setView('icons')}
 								/>
-							)}
-							{'folder' in place && (
-								<div className="finder-views" role="group" aria-label="보기">
-									<IconButton
-										icon="fa-solid fa-table-cells-large"
-										label="아이콘으로 보기"
-										on={view === 'icons'}
-										aria-pressed={view === 'icons'}
-										onClick={() => setView('icons')}
-									/>
-									<IconButton
-										icon="fa-solid fa-list"
-										label="목록으로 보기"
-										on={view === 'list'}
-										aria-pressed={view === 'list'}
-										onClick={() => setView('list')}
-									/>
-								</div>
-							)}
+								<IconButton
+									icon="fa-solid fa-list"
+									label="목록으로 보기"
+									on={view === 'list'}
+									aria-pressed={view === 'list'}
+									onClick={() => setView('list')}
+								/>
+							</div>
 							<SearchField
 								className="finder-search"
 								label="이름으로 찾기"
@@ -578,7 +536,6 @@ const Finder: React.FC = () => {
 								onChange={(event) => {
 									setQuery(event.target.value);
 									setSelected(null);
-									if ('doc' in place && event.target.value) go({ folder: location ?? 'docs' });
 								}}
 							/>
 						</Toolbar>
@@ -599,7 +556,7 @@ const Finder: React.FC = () => {
 
 						<div
 							ref={content}
-							data-folder-target={'folder' in place && !searching ? folder?.id : undefined}
+							data-folder-target={!searching ? folder?.id : undefined}
 							className={`finder-content${
 								(drop.target && drop.target === dropFolder) || (dropId !== null && dropId === folder?.id)
 									? ' drop-target'
@@ -611,22 +568,12 @@ const Finder: React.FC = () => {
 							onKeyDown={onKeyDown}
 							onClick={() => setSelected(null)}
 							onContextMenu={(event) => {
-								if (!('folder' in place)) return;
 								event.preventDefault();
 								setSelected(null);
 								setMenu({ anchor: { x: event.clientX, y: event.clientY }, item: null });
 							}}
 						>
-							{'doc' in place && place.doc === RESUME_DOC && editingResume ? (
-								<ResumeEditor onDone={() => setEditingResume(false)} />
-							) : 'doc' in place ? (
-								<DocView
-									path={place.doc}
-									dark={dark}
-									onOpenDoc={(path) => go({ doc: path })}
-									onOpenProject={(id) => open({ kind: 'project', id: `projects/${id}`, name: id, projectId: id })}
-								/>
-							) : empty ? (
+							{empty ? (
 								<EmptyState className="finder-empty">
 									{drop.admin && dropFolder
 										? '파일을 여기에 끌어다 놓으면 올라갑니다 (PDF·그림·문서·영상·소리·ZIP, 20MB까지).'
@@ -697,14 +644,12 @@ const Finder: React.FC = () => {
 												{crumb.name}
 											</button>
 										) : (
-											<span>
-												{crumb.kind === 'doc' ? docTitle(crumb.path, docSource(crumb.path) ?? '') : crumb.name}
-											</span>
+											<span>{crumb.name}</span>
 										)}
 									</React.Fragment>
 								))}
 							</nav>
-							{'folder' in place && <span className="finder-count">{countLabel(items.length)}</span>}
+							<span className="finder-count">{countLabel(items.length)}</span>
 						</div>
 					</div>
 				</div>

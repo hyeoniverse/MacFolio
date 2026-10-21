@@ -23,6 +23,8 @@ import QuickTime from '@/apps/quicktime/QuickTime';
 const Memo = lazy(() => import('@/apps/memo/Memo'));
 // Finder는 저장소 문서를 묶어 두어서 처음 열 때 불러온다
 const Finder = lazy(() => import('@/apps/finder/Finder'));
+// Markdown 보기(react-markdown)를 싣는 앱이라 처음 열 때 불러온다
+const TextEdit = lazy(() => import('@/apps/textedit/TextEdit'));
 
 /** 창으로 열리는 앱의 컴포넌트. 여기 없는 앱은 Dock 아이콘만 있다. */
 const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
@@ -40,6 +42,7 @@ const APP_COMPONENTS: Partial<Record<AppName, ComponentType>> = {
 	activity: Activity,
 	weather: Weather,
 	preview: Preview,
+	textedit: TextEdit,
 	quicktime: QuickTime,
 	photos: Photos,
 	bin: Bin,

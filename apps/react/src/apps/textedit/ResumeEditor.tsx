@@ -7,7 +7,7 @@ import { resetResume, saveResume, useResumeState } from '@/shared/site/resumeSto
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
-import { importProfile, importProject } from './resumeImport';
+import { importProfile, importProject } from '@/apps/finder/resumeImport';
 
 interface Props {
 	/** 저장하거나 취소하면 보기로 돌아간다 */
