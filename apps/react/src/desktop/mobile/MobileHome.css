@@ -187,6 +187,10 @@
 	font-size: var(--text-title3);
 }
 
+.mobile-album-sheet section + section {
+	margin-top: var(--space-20);
+}
+
 .mobile-album-sheet ul {
 	margin: 0;
 	padding: 0;

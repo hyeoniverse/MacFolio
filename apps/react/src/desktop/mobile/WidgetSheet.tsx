@@ -1,4 +1,3 @@
-import { ALBUMS } from '@/apps/photos/albums';
 import Sheet from '@/shared/ui/sheet/Sheet';
 import {
 	pageToAdd,
@@ -9,6 +8,7 @@ import {
 	type WidgetSize,
 } from '@/desktop/widgets/catalog';
 import Widget from '@/desktop/widgets/Widget';
+import { usePhotoSources } from '@/desktop/widgets/usePhotoSources';
 
 const SIZE_LABEL: Record<WidgetSize, string> = { small: '작게', medium: '중간' };
 
@@ -62,24 +62,34 @@ export const AlbumSheet = ({
 	onChoose: (album: string | undefined) => void;
 	onClose: () => void;
 }) => {
-	const all = !ALBUMS.some((item) => item.id === album);
-	const options = [{ id: undefined, name: '모든 앨범' }, ...ALBUMS.map(({ id, name }) => ({ id, name }))];
+	const sources = usePhotoSources();
+	const all = !sources.some((item) => item.id === album);
+	const groups: [string, { id: string | undefined; name: string }[]][] = [
+		['앨범', [{ id: undefined, name: '모든 앨범' }, ...sources.filter((source) => source.group === 'album')]],
+		['그림 폴더', sources.filter((source) => source.group === 'folder')],
+	];
 	return (
 		<Sheet label="사진 위젯의 앨범" variant="card" className="mobile-album-sheet" onClose={onClose}>
-			<h2>앨범</h2>
-			<ul role="radiogroup" aria-label="앨범">
-				{options.map((option) => {
-					const checked = option.id === undefined ? all : option.id === album;
-					return (
-						<li key={option.id ?? 'all'}>
-							<button type="button" role="radio" aria-checked={checked} onClick={() => onChoose(option.id)}>
-								{option.name}
-								{checked && <i className="fa-solid fa-check" aria-hidden="true"></i>}
-							</button>
-						</li>
-					);
-				})}
-			</ul>
+			{groups
+				.filter(([, options]) => options.length > 0)
+				.map(([heading, options]) => (
+					<section key={heading}>
+						<h2>{heading}</h2>
+						<ul role="radiogroup" aria-label={heading}>
+							{options.map((option) => {
+								const checked = option.id === undefined ? all : option.id === album;
+								return (
+									<li key={option.id ?? 'all'}>
+										<button type="button" role="radio" aria-checked={checked} onClick={() => onChoose(option.id)}>
+											{option.name}
+											{checked && <i className="fa-solid fa-check" aria-hidden="true"></i>}
+										</button>
+									</li>
+								);
+							})}
+						</ul>
+					</section>
+				))}
 		</Sheet>
 	);
 };

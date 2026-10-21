@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { test, expect, enterDesktop, appWindow } from './fixtures';
 import { fakeApi } from './fakeApi';
 import { fakeWeather } from './fakeWeather';
+import { fakeFiles } from './fakeFiles';
 
 const widget = (page: Page, label: string) =>
 	page.locator('.desktop-widgets').getByRole('group', { name: `${label} 위젯` });
@@ -128,6 +129,32 @@ test.describe('바탕화면 위젯', () => {
 		await page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' }).click();
 		await expect(photos.locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'sproutfarm' });
+	});
+
+	test('사진 위젯은 Finder › 그림에 만든 폴더의 그림도 보여 준다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.finderLayout = {
+			folders: [{ id: 'folder:widget01', name: '위젯 사진', parent: 'pictures' }],
+			files: { 'file:pictures/sea.png': 'folder:widget01' },
+			aliases: null,
+		};
+		await fakeFiles(page, [{ id: 'p1', folder: '그림', name: '바다.png', key: 'pictures/sea.png', kind: 'image' }]);
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await page
+			.getByRole('dialog', { name: '위젯 갤러리' })
+			.getByRole('button', { name: '사진 위젯 (작게) 더하기' })
+			.click();
+		await page.keyboard.press('Escape');
+		const photos = widget(page, '사진');
+		await photos.click({ button: 'right' });
+		await expect(page.getByRole('menu')).toContainText('그림 폴더');
+		await page.getByRole('menuitemcheckbox', { name: '위젯 사진' }).click();
+		await expect(photos.locator('figcaption')).toHaveText('위젯 사진');
+		await expect(photos.locator('img')).toHaveAttribute('src', '/files/pictures/sea.png');
+		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'folder:widget01' });
 	});
 
 	test('위젯 편집: 바탕화면 메뉴에서 갤러리를 열어 더하고, 지우기 단추로 빼고, 완료나 Esc로 닫는다', async ({

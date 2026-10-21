@@ -8,7 +8,12 @@
 	overflow: hidden;
 	border-radius: var(--radius-window);
 	background-color: var(--widget-background);
-	box-shadow: var(--widget-shadow);
+	/* 유리: 뒤를 흐리게 비추고, 가장자리에 가는 빛 */
+	-webkit-backdrop-filter: var(--widget-blur);
+	backdrop-filter: var(--widget-blur);
+	box-shadow:
+		inset 0 0 0 1px var(--widget-edge),
+		var(--widget-shadow);
 	color: var(--widget-label);
 	text-align: left;
 	-webkit-user-select: none;
@@ -40,13 +45,17 @@
 }
 
 /* ─── 날씨 ─── */
-/* 하늘 색 바탕에 흰 글자 (macOS·iOS 날씨 위젯). 색은 날씨 앱(Weather.css)의 하늘 색과 같다 */
+/* 하늘 색 유리에 흰 글자 (macOS·iOS 날씨 위젯). 색은 날씨 앱(Weather.css)의 하늘 색과 같고, 뒤가 조금 비친다 */
 .widget-weather {
 	--sky-top: #4f86c6;
 	--sky-bottom: #8db4dc;
 	container-type: size;
-	background-color: var(--sky-top);
-	background-image: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+	background-color: transparent;
+	background-image: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--sky-top) 78%, transparent),
+		color-mix(in srgb, var(--sky-bottom) 72%, transparent)
+	);
 	color: var(--color-white);
 }
 
@@ -264,7 +273,7 @@
 
 .widget-calendar-month td[aria-current='date'] span {
 	background-color: var(--widget-label);
-	color: var(--widget-background);
+	color: var(--widget-on-label);
 	font-weight: 700;
 }
 
@@ -290,6 +299,7 @@
 
 /* ─── 시계 ─── */
 .widget-clock-body {
+	container-type: size;
 	display: flex;
 	flex: 1;
 	flex-direction: column;
@@ -299,10 +309,12 @@
 	min-height: 0;
 }
 
+/* 판은 너비와 (도시 이름을 뺀) 높이 가운데 작은 쪽에 맞춘다: 휴대폰에서 위젯 줄이 낮아져도 잘리지 않는다 */
 .widget-clock-face {
 	position: relative;
 	container-type: inline-size;
-	width: 78%;
+	flex: none;
+	width: min(78cqw, calc(100cqh - 1.4em - var(--space-4)));
 	aspect-ratio: 1;
 	border-radius: var(--radius-full);
 	background-color: var(--widget-fill);
@@ -406,7 +418,7 @@
 	gap: var(--space-8);
 	padding: var(--space-10) var(--space-14);
 	border-bottom: 2px dotted var(--widget-separator);
-	background-color: var(--notes-accent);
+	background-color: color-mix(in srgb, var(--notes-accent) 88%, transparent);
 	color: var(--color-white);
 	font-size: var(--text-footnote);
 	font-weight: 600;
@@ -511,7 +523,7 @@
    칸 크기는 그래프 높이에서 정해 7줄이 꼭 맞고, 1년 치 중 다 들어가는 주만 보인다
    (가장 최근 주가 오른쪽 끝, 넘친 옛 주는 다음 줄로 넘겨 가린다) */
 .widget-github {
-	--grass-0: var(--widget-fill);
+	--grass-0: color-mix(in srgb, var(--widget-label) 9%, transparent);
 	--grass-1: #c8f0d1;
 	--grass-2: #86dc99;
 	--grass-3: #34c759;

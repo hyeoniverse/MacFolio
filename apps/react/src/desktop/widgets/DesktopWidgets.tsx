@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { AppName } from '@/apps/manifest';
-import { ALBUMS } from '@/apps/photos/albums';
 import { useAppState } from '@/desktop/useAppState';
 import { cssVars } from '@/shared/lib/cssVars';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
@@ -18,6 +17,7 @@ import {
 } from './catalog';
 import { cellToPoint, dropAt, firstFree, pixelSize, resize, visibleLayout, type Point, type Viewport } from './layout';
 import Widget from './Widget';
+import { usePhotoSources } from './usePhotoSources';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from './widgetEditor';
 import './DesktopWidgets.css';
 
@@ -55,6 +55,7 @@ const DesktopWidgets: React.FC = () => {
 	const pending = useRef<{ id: string; start: Point; origin: Point; moved: boolean } | null>(null);
 	const swallowClick = useRef(false);
 
+	const photoSources = usePhotoSources();
 	const save = (next: PlacedWidget[]) => {
 		setWidgets(next);
 		writeJson(STORAGE_KEYS.desktopWidgets, next);
@@ -141,14 +142,27 @@ const DesktopWidgets: React.FC = () => {
 							{ heading: '앨범' },
 							{
 								label: '모든 앨범',
-								checked: !ALBUMS.some((album) => album.id === target.album),
+								checked: !photoSources.some((source) => source.id === target.album),
 								onSelect: () => chooseAlbum(target.id, undefined),
 							},
-							...ALBUMS.map((album) => ({
-								label: album.name,
-								checked: target.album === album.id,
-								onSelect: () => chooseAlbum(target.id, album.id),
-							})),
+							...photoSources
+								.filter((source) => source.group === 'album')
+								.map((source) => ({
+									label: source.name,
+									checked: target.album === source.id,
+									onSelect: () => chooseAlbum(target.id, source.id),
+								})),
+							// Finder › 그림에 만든 폴더 (관리자가 올린 그림)
+							...(photoSources.some((source) => source.group === 'folder')
+								? (['separator', { heading: '그림 폴더' }] satisfies MenuItem[])
+								: []),
+							...photoSources
+								.filter((source) => source.group === 'folder')
+								.map((source) => ({
+									label: source.name,
+									checked: target.album === source.id,
+									onSelect: () => chooseAlbum(target.id, source.id),
+								})),
 						] satisfies MenuItem[])
 					: []),
 				'separator',
