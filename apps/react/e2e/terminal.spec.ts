@@ -33,12 +33,12 @@ test.describe('터미널', () => {
 		await expect(output.getByRole('link', { name: 'https://qryou-app.web.app' })).toHaveAttribute('target', '_blank');
 	});
 
-	test('resume는 웃는 Mac·고양이 그림과 함께 이력서 전체를 터미널에 그린다', async ({ page }) => {
+	test('resume는 고양이 그림과 함께 이력서 Markdown을 터미널에 그린다', async ({ page }) => {
 		const { output, run } = await openTerminal(page);
 		await run('resume');
 		const art = output.locator('pre.terminal-line.art');
 		await expect(art.first()).toContainText('┏━┓┏━╸┏━┓');
-		await expect(art.filter({ hasText: '[ PROJECTS ]' })).toHaveCount(1);
+		await expect(output).toContainText('── 프로젝트 ──');
 		await expect(art.last()).toContainText('thanks for reading!');
 		await expect(output).toContainText('화면에서 서버까지, 끝까지 만들고 운영하는 개발자');
 		await expect(output).toContainText('MacFolio');

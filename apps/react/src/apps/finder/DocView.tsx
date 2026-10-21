@@ -7,7 +7,8 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import { rehypeHighlightCode } from '@/apps/memo/highlight';
 import { colorSchemeOf, resolveImage, resolveLink } from './repoDocs';
 import { DOC_IMAGES, DOC_SOURCES, docSource } from './docsBundle';
-import { projectLinkId } from './resumeDoc';
+import { useResume } from '@/shared/site/resumeStore';
+import { projectLinkId } from './resumeModel';
 
 const DOC_SET = new Set(Object.keys(DOC_SOURCES));
 
@@ -64,6 +65,8 @@ interface DocViewProps {
  * (rehype-sanitize의 기본값), 코드 블록은 메모와 같은 색으로, mermaid 코드 블록은 그림으로 그린다.
  */
 const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc, onOpenProject }) => {
+	// 이력서는 관리자가 고치면 바로 다시 그린다 (저장소 문서는 바뀌지 않는다)
+	useResume();
 	const source = docSource(path) ?? '';
 	const openDoc = useRef(onOpenDoc);
 	const openProject = useRef(onOpenProject);

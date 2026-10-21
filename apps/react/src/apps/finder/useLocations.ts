@@ -8,7 +8,7 @@ import { useProjectsVersion } from '@/shared/site/siteContent';
 import { buildTree, find, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
 import { DOC_PATHS } from './docsBundle';
-import { RESUME_DOC } from './resumeDoc';
+import { RESUME_DOC } from './resumeModel';
 import { useProfile } from '@/shared/site/profileStore';
 import { ALBUMS } from '@/apps/photos/albums';
 import { ALBUMS as MUSIC_ALBUMS, ALL_SONGS, TRACKS } from '@/apps/music/library';

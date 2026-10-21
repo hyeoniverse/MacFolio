@@ -72,15 +72,15 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('article', { name: 'README.md' })).toBeVisible();
 	});
 
-	test('이력서 폴더에는 데이터로 만든 이력서가 있고, 프로젝트 이름을 누르면 Safari에서 연다', async ({ page }) => {
+	test('이력서 폴더에는 Markdown 이력서가 있고, 프로젝트 이름을 누르면 Safari에서 연다', async ({ page }) => {
 		const finder = await openFinder(page);
 		await finder.getByRole('option', { name: '이력서', exact: true }).dblclick();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
 		const resume = finder.getByRole('article', { name: 'resume.md' });
-		await expect(resume.getByRole('heading', { level: 1 })).toHaveText('김정현 이력서');
+		await expect(resume.getByRole('heading', { level: 1 })).toHaveText('김정현');
 		// 프로젝트 이름·기간은 프로젝트 데이터에서 읽는다
-		await expect(resume.getByRole('heading', { name: 'MacFolio', exact: true })).toBeVisible();
+		await expect(resume.getByRole('heading', { name: /^MacFolio \| 2024\.10/ })).toBeVisible();
 		// 경로 막대로 위 폴더에
 		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '이력서' }).click();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
@@ -95,6 +95,48 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('button', { name: 'PDF 다운로드' })).toBeEnabled();
 		await resume.getByRole('link', { name: 'MacFolio', exact: true }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();
+	});
+
+	test('관리자는 이력서를 그 자리에서 고치고, 설정의 프로필·프로젝트를 불러와 저장한다 ', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const finder = await openFinder(page);
+		await finder.getByRole('option', { name: '이력서', exact: true }).dblclick();
+		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
+		await finder.getByRole('button', { name: '이력서 편집' }).click();
+		const field = finder.getByRole('textbox', { name: '이력서 Markdown' });
+		await expect(field).toHaveValue(/^# 김정현/);
+		// 저장은 바뀐 게 있을 때만
+		await expect(finder.getByRole('button', { name: '저장' })).toBeDisabled();
+
+		// 한 줄 소개를 고치고, 프로젝트 하나를 불러온다 (이력서에 없던 WTD는 프로젝트 절 끝에 들어간다)
+		await field.fill((await field.inputValue()).replace('끝까지 만들고 운영하는 개발자', '끝까지 책임지는 개발자'));
+		await finder.getByRole('button', { name: '불러오기' }).click();
+		await page.getByRole('menu', { name: '불러오기' }).getByRole('menuitem', { name: 'WTD (What To Do)' }).click();
+		await expect(field).toHaveValue(/### \[WTD \(What To Do\)\]\(#project\/whattodo\)/);
+		await finder.getByRole('button', { name: '저장' }).click();
+
+		// 저장하면 보기로 돌아가 바뀐 글이 보이고, 서버에 Markdown 한 장이 간다
+		const resume = finder.getByRole('article', { name: 'resume.md' });
+		await expect(resume).toContainText('끝까지 책임지는 개발자');
+		await expect(resume.getByRole('heading', { name: /^WTD \(What To Do\) \|/ })).toBeVisible();
+		expect(api.siteResume?.markdown).toContain('> 화면에서 서버까지, 끝까지 책임지는 개발자');
+
+		// 터미널 resume도 같은 글을 그린다
+		await dockItem(page, 'terminal').click();
+		const input = appWindow(page, 'terminal').getByRole('textbox', { name: '명령어 입력' });
+		await input.fill('resume');
+		await input.press('Enter');
+		await expect(appWindow(page, 'terminal').getByRole('log', { name: '터미널 출력' })).toContainText(
+			'끝까지 책임지는 개발자'
+		);
+	});
+
+	test('방문자에게는 이력서 편집 버튼이 없다', async ({ page }) => {
+		const finder = await openFinder(page);
+		await finder.getByRole('option', { name: '이력서', exact: true }).dblclick();
+		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
+		await expect(finder.getByRole('button', { name: 'PDF 다운로드' })).toBeVisible();
+		await expect(finder.getByRole('button', { name: '이력서 편집' })).toHaveCount(0);
 	});
 
 	test('블로그: 메모에서 만든 빈 폴더도 보인다', async ({ page }) => {

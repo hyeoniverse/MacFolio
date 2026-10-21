@@ -789,3 +789,49 @@
 	color: var(--color-white);
 	font-size: 9px;
 }
+
+/* ─── 이력서 편집기 (관리자): Markdown 한 장을 그 자리에서 고친다 ─── */
+.finder-resume-editor {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-8);
+	height: 100%;
+	padding: var(--space-12) var(--space-16) var(--space-16);
+}
+
+.finder-resume-editor-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-8);
+}
+
+.finder-resume-editor-count {
+	margin-left: auto;
+	color: var(--color-tertiary-label);
+	font-size: var(--text-caption);
+	font-variant-numeric: tabular-nums;
+}
+
+.finder-resume-editor-errors {
+	margin: 0;
+	padding: var(--space-8) var(--space-12) var(--space-8) var(--space-24);
+	border-radius: var(--radius-8);
+	background: color-mix(in srgb, var(--color-system-red) 12%, transparent);
+	color: var(--color-system-red);
+	font-size: var(--text-caption);
+}
+
+.finder-resume-editor-field {
+	flex: 1;
+	min-height: 0;
+	padding: var(--space-12);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-8);
+	background: var(--color-text-background);
+	color: var(--color-label);
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: var(--text-caption);
+	line-height: 1.6;
+	resize: none;
+}

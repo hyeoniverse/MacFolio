@@ -21,7 +21,7 @@ import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import { downloadResume } from './resumeDownload';
-import { RESUME_DOC } from './resumeDoc';
+import { RESUME_DOC } from './resumeModel';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import '@/apps/finder/FinderMobile.css';

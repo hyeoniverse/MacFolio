@@ -1,9 +1,7 @@
 // 빌드할 때 저장소 문서와 그 그림을 묶는다 (Vite import.meta.glob). Finder를 처음 열 때 함께 불러온다.
-import { PROJECTS } from '@/shared/profile';
-import { RESUME } from '@/shared/profile/resume';
-import { getProfile } from '@/shared/site/profileStore';
+import { getResume } from '@/shared/site/resumeStore';
 import { repoPath } from './repoDocs';
-import { RESUME_DOC, resumeMarkdown } from './resumeDoc';
+import { RESUME_DOC } from './resumeModel';
 
 const sources = import.meta.glob<string>(
 	['../../../../../README.md', '../../../../../CONTRIBUTING.md', '../../../../../docs/*.md'],
@@ -31,6 +29,5 @@ export const DOC_PATHS = Object.keys(DOC_SOURCES).sort(
 	(a, b) => a.split('/').length - b.split('/').length || a.localeCompare(b)
 );
 
-/** Finder에서 읽는 문서의 원문: 저장소 문서, 또는 데이터로 그 자리에서 만드는 이력서. 없으면 undefined */
-export const docSource = (path: string): string | undefined =>
-	path === RESUME_DOC ? resumeMarkdown(getProfile(), PROJECTS, RESUME) : DOC_SOURCES[path];
+/** Finder에서 읽는 문서의 원문: 저장소 문서, 또는 이력서 Markdown(관리자가 저장한 것, 없으면 기본 이력서). 없으면 undefined */
+export const docSource = (path: string): string | undefined => (path === RESUME_DOC ? getResume() : DOC_SOURCES[path]);

@@ -556,7 +556,7 @@ test.describe('모바일', () => {
 		expect((await download).url()).toMatch(/\/files\/resume\/test\.pdf\?download=1$/);
 	});
 
-	test('파일: 데이터로 만든 이력서를 읽고, 공유 › PDF 다운로드로 바로 내려받는다', async ({ page }) => {
+	test('파일: Markdown 이력서를 읽고, 공유 › PDF 다운로드로 바로 내려받는다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '파일')).tap();
 		const files = appWindow(page, 'finder');
@@ -566,7 +566,7 @@ test.describe('모바일', () => {
 		await files.getByRole('button', { name: /김정현_이력서/ }).tap();
 		await expect(files.locator('.files-phone-bar-title')).toHaveText('김정현_이력서');
 		await expect(files.getByRole('article', { name: 'resume.md' }).getByRole('heading', { level: 1 })).toHaveText(
-			'김정현 이력서'
+			'김정현'
 		);
 		await files.getByRole('button', { name: '공유' }).tap();
 		const download = page.waitForEvent('download');

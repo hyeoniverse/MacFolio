@@ -35,7 +35,8 @@ import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
 import DocView from './DocView';
 import { downloadResume } from './resumeDownload';
-import { RESUME_DOC } from './resumeDoc';
+import ResumeEditor from './ResumeEditor';
+import { RESUME_DOC } from './resumeModel';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import { openInPreview } from '@/apps/preview/previewStore';
@@ -101,15 +102,19 @@ const Finder: React.FC = () => {
 	const [selected, setSelected] = useState<string | null>(null);
 	// 이력서 PDF를 만드는 중 (처음에는 글꼴을 받느라 몇 초 걸린다)
 	const [downloading, setDownloading] = useState(false);
+	// 관리자가 이력서를 고치는 중 (다른 곳으로 가면 끝난다)
+	const [editingResume, setEditingResume] = useState(false);
 	const [query, setQuery] = useState('');
 	const content = useRef<HTMLDivElement>(null);
 
 	const go = (next: Place) => {
+		setEditingResume(false);
 		setHistory(({ places, at }) => ({ places: [...places.slice(0, at + 1), next], at: at + 1 }));
 		setSelected(null);
 		setQuery('');
 	};
 	const step = (delta: number) => {
+		setEditingResume(false);
 		setHistory((current) => ({ ...current, at: Math.min(current.places.length - 1, Math.max(0, current.at + delta)) }));
 		setSelected(null);
 	};
@@ -534,7 +539,10 @@ const Finder: React.FC = () => {
 							<h1 key={title} className="finder-title motion-swap">
 								{title}
 							</h1>
-							{'doc' in place && place.doc === RESUME_DOC && (
+							{'doc' in place && place.doc === RESUME_DOC && drop.admin && !editingResume && (
+								<IconButton icon="fa-solid fa-pen" label="이력서 편집" onClick={() => setEditingResume(true)} />
+							)}
+							{'doc' in place && place.doc === RESUME_DOC && !editingResume && (
 								<IconButton
 									icon={downloading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-arrow-down'}
 									label={downloading ? 'PDF 만드는 중' : 'PDF 다운로드'}
@@ -609,7 +617,9 @@ const Finder: React.FC = () => {
 								setMenu({ anchor: { x: event.clientX, y: event.clientY }, item: null });
 							}}
 						>
-							{'doc' in place ? (
+							{'doc' in place && place.doc === RESUME_DOC && editingResume ? (
+								<ResumeEditor onDone={() => setEditingResume(false)} />
+							) : 'doc' in place ? (
 								<DocView
 									path={place.doc}
 									dark={dark}

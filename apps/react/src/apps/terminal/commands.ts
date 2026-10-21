@@ -1,7 +1,8 @@
 // 터미널 명령어. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 명령은 출력할 줄(lines)과 화면에서 실행할 효과(effects)를 돌려준다.
 import { PROJECTS } from '@/shared/profile';
-import { RESUME } from '@/shared/profile/resume';
+import { getResume } from '@/shared/site/resumeStore';
+import { parseResume, type ResumeSection } from '@/apps/finder/resumeModel';
 import { getProfile } from '@/shared/site/profileStore';
 import { fullName } from '@/desktop/about/profileInfo';
 import type { AppName } from '@/apps/manifest';
@@ -98,8 +99,8 @@ const RESUME_ART = [
 	'   ╰─────────╯',
 ].join('\n');
 
-/** 절 머리: ╶─[ SKILLS ]────╴ (글자 수와 상관없이 같은 폭) */
-const section = (label: string): Line => art(`╶─[ ${label} ]${'─'.repeat(Math.max(4, 34 - label.length))}╴`);
+/** 절 머리: ── 제목 ── (제목은 이력서 글의 ## 제목이라 한글일 수 있어 그림이 아니라 제목 줄로 그린다) */
+const section = (label: string): Line => heading(`── ${label} ──`);
 
 /** 끝 인사 */
 const RESUME_BYE = '  ~ thanks for reading! ~  (=^.^=)';
@@ -145,61 +146,45 @@ export const COMMANDS: Record<string, Command> = {
 	resume: {
 		description: '이력서를 그려 보여 주기',
 		run: () => {
-			const profile = getProfile();
-			// 번호는 projects 목록의 번호라 project <번호>로 이어서 볼 수 있다 (단축어는 줄을 누르면 그 명령)
-			const numbered = (id: string) => {
-				const index = PROJECTS.findIndex((project) => project.id === id);
-				return index < 0 ? null : { project: PROJECTS[index], marker: `${index + 1}.` };
+			const resume = parseResume(getResume());
+			// 이력서의 프로젝트가 projects 목록에 있으면 그 번호를 붙여 project <번호>로 이어서 볼 수 있다 (단축어는 줄을 누르면 그 명령)
+			const marker = (projectId?: string) => {
+				const index = projectId ? PROJECTS.findIndex((project) => project.id === projectId) : -1;
+				return index < 0 ? '•' : `${index + 1}.`;
 			};
-			// 터미널은 좁아서 긴 문장 대신 짧은 줄로: 할 수 있는 일은 기술만, 성과는 제목만, 수상은 이름만 (전체는 Finder의 이력서)
+			// 터미널은 좁아서 긴 문장 대신 짧은 줄로: 목록은 기술(없으면 설명), 성과는 제목만 (전체는 Finder의 이력서)
+			const lines = (item: ResumeSection): Line[] => {
+				switch (item.kind) {
+					case 'cards':
+						return item.entries.map((entry) => pair(`★ ${entry.title}`, entry.detail ?? ''));
+					case 'list':
+						return item.entries.map((entry) =>
+							pair(entry.title, entry.tools.length ? entry.tools.join(' · ') : (entry.detail ?? ''))
+						);
+					case 'rows':
+						return item.entries.map((entry) => (entry.period ? pair(entry.period, entry.title) : text(entry.title)));
+					case 'projects':
+						return item.projects.map((project): Line => ({
+							kind: 'item',
+							marker: marker(project.projectId),
+							title: project.name,
+							tag: project.meta[0],
+							// 성과 제목을 설명 아래 줄로: 번호에 맞춰 들여 쓴 채 줄바꿈된다 (상세 칸은 줄바꿈을 그대로 그린다)
+							detail: [project.description, ...project.bullets.map((bullet) => `✓ ${bullet.title}`)]
+								.filter(Boolean)
+								.join('\n'),
+						}));
+					case 'text':
+						return item.lines.map(text);
+				}
+			};
 			return output([
 				art(RESUME_ART),
 				text(''),
-				heading(`${profile.name} · ${RESUME.role}`),
-				text(`“${RESUME.motto}”`),
-				muted(`${profile.email} · ${profile.github}`),
-				text(''),
-				section('STRENGTHS'),
-				...RESUME.strengths.map((item) => pair(`★ ${item.title}`, item.detail)),
-				text(''),
-				section('SKILLS'),
-				...RESUME.capabilities.map((item) => pair(item.area, item.tools.join(' · '))),
-				text(''),
-				section('PROJECTS'),
-				...RESUME.featured.flatMap(({ id, bullets }): Line[] => {
-					const found = numbered(id);
-					if (!found) return [];
-					return [
-						{
-							kind: 'item',
-							marker: found.marker,
-							title: found.project.name,
-							tag: found.project.period,
-							// 성과 제목을 설명 아래 줄로: 번호에 맞춰 들여 쓴 채 줄바꿈된다 (상세 칸은 줄바꿈을 그대로 그린다)
-							detail: [found.project.description, ...bullets.map((bullet) => `✓ ${bullet.title}`)].join('\n'),
-						},
-					];
-				}),
-				...RESUME.minor.flatMap(({ id, line }): Line[] => {
-					const found = numbered(id);
-					return found
-						? [
-								{
-									kind: 'item',
-									marker: found.marker,
-									title: found.project.name,
-									tag: found.project.period,
-									detail: line,
-								},
-							]
-						: [];
-				}),
-				text(''),
-				section('AWARDS'),
-				...RESUME.awards.map((item) => pair(item.period, item.title)),
-				text(''),
-				section('EDUCATION'),
-				...RESUME.education.map((item) => pair(item.period, item.title)),
+				heading([resume.name, resume.role].filter(Boolean).join(' · ')),
+				...(resume.motto ? [text(`“${resume.motto}”`)] : []),
+				...(resume.contact.length ? [muted(resume.contact.join(' · '))] : []),
+				...resume.sections.flatMap((item) => [text(''), section(item.title), ...lines(item)]),
 				text(''),
 				art(RESUME_BYE),
 				muted('자세히 보려면: project <번호> · 전체 이력서와 PDF는 Finder › 문서 › 이력서'),
