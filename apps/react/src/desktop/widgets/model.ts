@@ -60,3 +60,30 @@ export function shortDate(date: string, today: { year: number; month: number; da
 	if (days === 1) return '어제';
 	return year === today.year ? `${month}월 ${day}일` : `${year}. ${month}. ${day}.`;
 }
+
+/** 위젯의 글 한 편 (본문 없이) */
+export interface RecentPost {
+	slug: string;
+	title: string;
+	date: string;
+	category: string;
+}
+
+/**
+ * 빌드한 저장소의 최근 글에 서버 글(관리자가 사이트에서 쓴 글)을 합친다. 메모 앱과 같은 규칙:
+ * 같은 주소는 서버 글이 대신하고, 지운 글·예약 글(deleted)은 저장소 글까지 가린다. 최신 글이 먼저
+ */
+export function mergeRecentPosts(
+	repo: readonly RecentPost[],
+	server: readonly (RecentPost & { deleted: boolean })[],
+	limit: number
+): RecentPost[] {
+	const bySlug = new Map(repo.map((post) => [post.slug, post]));
+	for (const { deleted, slug, title, date, category } of server) {
+		if (deleted) bySlug.delete(slug);
+		else bySlug.set(slug, { slug, title, date, category });
+	}
+	return [...bySlug.values()]
+		.sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
+		.slice(0, limit);
+}

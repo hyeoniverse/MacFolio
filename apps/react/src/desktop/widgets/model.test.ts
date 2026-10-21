@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { handAngles, monthGrid, seoulDate, shortDate } from './model';
+import { handAngles, mergeRecentPosts, monthGrid, seoulDate, shortDate } from './model';
 
 describe('위젯 값', () => {
 	it('서울 기준 날짜와 시각 (UTC 자정 넘어도 서울 날짜)', () => {
@@ -33,5 +33,22 @@ describe('위젯 값', () => {
 		expect(shortDate('2026-10-20', today)).toBe('어제');
 		expect(shortDate('2026-10-03', today)).toBe('10월 3일');
 		expect(shortDate('2025-12-31', today)).toBe('2025. 12. 31.');
+	});
+
+	it('최근 글: 서버 글이 같은 주소를 대신하고, 지운 글은 가리고, 새 글은 날짜 순으로 들어간다', () => {
+		const post = (slug: string, date: string, title = slug) => ({ slug, title, date, category: '개발기' });
+		const repo = [post('c', '2026-10-20'), post('b', '2026-10-19'), post('a', '2026-10-18')];
+		const merged = mergeRecentPosts(
+			repo,
+			[
+				{ ...post('new', '2026-10-21'), deleted: false },
+				{ ...post('b', '2026-10-19', '고친 제목'), deleted: false },
+				{ ...post('c', '', ''), deleted: true },
+			],
+			3
+		);
+		expect(merged.map((item) => item.slug)).toEqual(['new', 'b', 'a']);
+		expect(merged[1].title).toBe('고친 제목');
+		expect(mergeRecentPosts(repo, [], 2).map((item) => item.slug)).toEqual(['c', 'b']);
 	});
 });
