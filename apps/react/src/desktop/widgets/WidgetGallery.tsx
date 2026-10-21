@@ -32,11 +32,25 @@ const KindIcon = ({ kind }: { kind: WidgetKind }) => {
 	);
 };
 
+/** '모든 위젯' 아이콘: macOS 위젯 갤러리처럼 작은 위젯 둘과 세로로 긴 위젯 하나의 선 그림 (바탕 없이) */
+const AllWidgetsGlyph = () => (
+	<svg className="widget-gallery-icon all" viewBox="0 0 26 26" aria-hidden="true">
+		<rect x="2.5" y="6" width="8" height="6" rx="1.6" />
+		<rect x="2.5" y="14" width="8" height="6" rx="1.6" />
+		<rect x="13" y="6" width="10.5" height="14" rx="1.8" />
+	</svg>
+);
+
 /**
  * 위젯 갤러리 (macOS의 '위젯 편집…'): 화면 아래 유리 판. 왼쪽은 찾기와 위젯 종류, 오른쪽은 고른 종류(처음엔 모두)의
  * 크기마다 실제 위젯 미리보기. 누르면 바탕화면의 빈 칸에 더한다
  */
-const WidgetGallery = ({ onAdd }: { onAdd: (kind: WidgetKind, size: WidgetSize) => void }) => {
+const WidgetGallery = ({
+	onAdd,
+}: {
+	/** from: 누른 미리보기의 화면 자리 (거기서 바탕화면으로 날아간다) */
+	onAdd: (kind: WidgetKind, size: WidgetSize, from: { x: number; y: number }) => void;
+}) => {
 	const [kind, setKind] = useState<WidgetKind | null>(null);
 	const [query, setQuery] = useState('');
 	const needle = query.trim().toLowerCase();
@@ -60,9 +74,7 @@ const WidgetGallery = ({ onAdd }: { onAdd: (kind: WidgetKind, size: WidgetSize) 
 				<ul>
 					<li>
 						<button type="button" aria-current={kind === null || undefined} onClick={() => setKind(null)}>
-							<span className="widget-gallery-icon glyph" aria-hidden="true">
-								<i className="fa-solid fa-table-cells-large"></i>
-							</span>
+							<AllWidgetsGlyph />
 							모든 위젯
 						</button>
 					</li>
@@ -97,7 +109,10 @@ const WidgetGallery = ({ onAdd }: { onAdd: (kind: WidgetKind, size: WidgetSize) 
 										type="button"
 										className="widget-gallery-item"
 										aria-label={`${WIDGET_INFO[item].label} 위젯 (${SIZE_LABEL[size]}) 더하기`}
-										onClick={() => onAdd(item, size)}
+										onClick={(event) => {
+											const rect = event.currentTarget.getBoundingClientRect();
+											onAdd(item, size, { x: rect.left, y: rect.top });
+										}}
 									>
 										<span className="widget-gallery-preview" style={pixelSize(size)} inert>
 											<Widget kind={item} size={size} open={() => {}} />

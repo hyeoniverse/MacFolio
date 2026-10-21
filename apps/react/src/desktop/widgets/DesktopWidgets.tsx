@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { cssVars } from '@/shared/lib/cssVars';
+import { prefersReducedMotion } from '@/shared/lib/media';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
@@ -52,6 +53,10 @@ const DesktopWidgets: React.FC = () => {
 	const [menu, setMenu] = useState<{ anchor: Point; id: string } | null>(null);
 	const pending = useRef<{ id: string; start: Point; origin: Point; moved: boolean } | null>(null);
 	const swallowClick = useRef(false);
+	// 갤러리에서 고른 위젯이 미리보기 자리에서 바탕화면의 빈 칸으로 날아가는 중 (끝나면 놓는다)
+	const [flight, setFlight] = useState<{ widget: PlacedWidget; from: Point } | null>(null);
+	const layer = useRef<HTMLDivElement>(null);
+	const flying = useRef<HTMLDivElement>(null);
 
 	const photoSources = usePhotoSources();
 	const save = (next: PlacedWidget[]) => {
@@ -64,11 +69,46 @@ const DesktopWidgets: React.FC = () => {
 		bringAppToFront(app);
 	};
 
-	const add = (kind: WidgetKind, size: WidgetSize) => {
+	/** 빈 칸에 더한다. from(갤러리 미리보기의 자리)이 있으면 거기서 날아가 놓인다 (움직임 줄이기면 바로) */
+	const add = (kind: WidgetKind, size: WidgetSize, from?: Point) => {
+		if (flight) return;
 		const cell = firstFree(size, visible, viewport);
 		if (!cell) return;
-		save([...widgets, { id: newWidgetId(kind, widgets), kind, size, ...cell }]);
+		const widget = { id: newWidgetId(kind, widgets), kind, size, ...cell };
+		if (from && !prefersReducedMotion()) setFlight({ widget, from });
+		else save([...widgets, widget]);
 	};
+
+	// 날기: 미리보기 자리에서 칸 자리까지 옮기며 살짝 커졌다가 내려앉는다. 끝나면 저장해 진짜 위젯으로 바꾼다
+	useLayoutEffect(() => {
+		const element = flying.current;
+		const container = layer.current?.getBoundingClientRect();
+		if (!flight || !element || !container) return;
+		const to = cellToPoint(flight.widget);
+		const dx = container.left + to.x - flight.from.x;
+		const dy = container.top + to.y - flight.from.y;
+		const animation = element.animate(
+			[
+				{ transform: 'translate(0, 0) scale(1)', boxShadow: 'var(--shadow-widget)' },
+				{ transform: `translate(${dx * 0.85}px, ${dy * 0.85}px) scale(1.06)`, offset: 0.7 },
+				{ transform: `translate(${dx}px, ${dy}px) scale(1)` },
+			],
+			{ duration: 560, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' }
+		);
+		let done = false;
+		const land = () => {
+			if (done) return;
+			done = true;
+			setWidgets((current) => {
+				const next = [...current, flight.widget];
+				writeJson(STORAGE_KEYS.desktopWidgets, next);
+				return next;
+			});
+			setFlight(null);
+		};
+		animation.finished.then(land, land);
+		return () => animation.cancel();
+	}, [flight]);
 	const remove = (id: string) => save(widgets.filter((widget) => widget.id !== id));
 	/** 사진 위젯의 앨범 (undefined면 모든 앨범) */
 	const chooseAlbum = (id: string, album: string | undefined) =>
@@ -172,7 +212,7 @@ const DesktopWidgets: React.FC = () => {
 
 	return (
 		<>
-			<div className={`desktop-widgets${editing ? ' editing' : ''}`} aria-label="위젯">
+			<div ref={layer} className={`desktop-widgets${editing ? ' editing' : ''}`} aria-label="위젯">
 				{visible.map((widget) => {
 					const point = cellToPoint(widget);
 					const offset = drag?.id === widget.id ? drag.offset : { x: 0, y: 0 };
@@ -227,6 +267,18 @@ const DesktopWidgets: React.FC = () => {
 				<Menu label="위젯 메뉴" anchor={menu.anchor} items={menuItems} onClose={() => setMenu(null)} />
 			)}
 			{editing && <WidgetGallery onAdd={add} />}
+			{/* 날아가는 위젯: 갤러리 시트보다 위 층의 겉모습만 (누를 수 없고 화면 읽기에 보이지 않는다) */}
+			{flight && (
+				<div
+					ref={flying}
+					className="desktop-widget-flight"
+					style={{ left: flight.from.x, top: flight.from.y, ...pixelSize(flight.widget.size) }}
+					aria-hidden="true"
+					inert
+				>
+					<Widget kind={flight.widget.kind} size={flight.widget.size} open={() => {}} />
+				</div>
+			)}
 		</>
 	);
 };

@@ -156,6 +156,7 @@
 	--z-menubar: 1001;
 	--z-app-switcher: 1400; /* 휴대폰 앱 전환기 */
 	--z-widget-gallery: 1450; /* 바탕화면 위젯 갤러리: 창·Dock 위, 이 Mac에 관하여 아래 */
+	--z-widget-flight: 1451; /* 갤러리에서 고른 위젯이 바탕화면으로 날아가는 겉모습: 갤러리 바로 위 */
 	--z-about: 1500; /* 이 Mac에 관하여 */
 	--z-launchpad: 2000;
 	--z-control-center: 2000; /* 휴대폰 제어 센터 */

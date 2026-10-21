@@ -52,3 +52,16 @@
 .desktop-widgets.editing .desktop-widget > .widget {
 	cursor: grab;
 }
+
+/* 갤러리에서 고른 위젯이 빈 칸으로 날아가는 겉모습 (DesktopWidgets의 flight). 갤러리 시트보다 위 */
+.desktop-widget-flight {
+	position: fixed;
+	z-index: var(--z-widget-flight);
+	display: flex;
+	border-radius: var(--radius-window);
+	pointer-events: none;
+}
+
+.desktop-widget-flight > .widget {
+	flex: 1;
+}

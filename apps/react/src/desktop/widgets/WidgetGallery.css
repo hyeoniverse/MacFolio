@@ -117,6 +117,13 @@
 	object-fit: cover;
 }
 
+.widget-gallery-icon.all {
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.5;
+	color: var(--color-secondary-label);
+}
+
 .widget-gallery-icon.glyph {
 	display: grid;
 	place-items: center;

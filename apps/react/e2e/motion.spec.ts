@@ -150,4 +150,19 @@ test.describe('움직임: 나타나고 사라지기, 화면 바뀌기', () => {
 			.toContain('fade-out');
 		await expect(page.locator('.wallpaper-fade')).toHaveCount(0);
 	});
+
+	test('위젯 갤러리에서 고른 위젯은 미리보기 자리에서 빈 칸으로 날아간 뒤 놓인다', async ({ page }) => {
+		await enterDesktop(page);
+		await appWindow(page, 'safari').locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await page.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
+		// 나는 동안은 겉모습만 있고 아직 놓이지 않았다
+		const flight = page.locator('.desktop-widget-flight');
+		await expect(flight).toHaveCount(1);
+		await expect(page.locator('.desktop-widgets').getByRole('group', { name: '시계 위젯' })).toHaveCount(0);
+		// 내려앉으면 진짜 위젯이 되고 겉모습은 없어진다
+		await expect(page.locator('.desktop-widgets').getByRole('group', { name: '시계 위젯' })).toBeVisible();
+		await expect(flight).toHaveCount(0);
+	});
 });
