@@ -17,7 +17,7 @@ flowchart LR
     browser["브라우저<br/>(React SPA)"]
 
     subgraph cf["Cloudflare"]
-        workers["Workers 정적 자산<br/>macfolio.hyeoniverse.com"]
+        workers["Worker + 정적 자산<br/>macfolio.hyeoniverse.com"]
         tunnel["Tunnel<br/>macfolio-api.hyeoniverse.com"]
     end
 
@@ -35,6 +35,7 @@ flowchart LR
     subgraph ci["CI/CD"]
         repo["GitHub 저장소"]
         actions["GitHub Actions<br/>lint · type · unit · e2e"]
+        ghcr["GHCR<br/>API 이미지"]
     end
 
     browser -- "화면" --> workers
@@ -44,12 +45,13 @@ flowchart LR
     api -- "캐시" --> github
     api --> photos
     repo --> actions -- "통과한 커밋만 wrangler deploy" --> workers
-    repo -. "git pull → compose 재빌드" .-> api
+    workers -. "GET /site · /posts (첫 화면·SEO)" .-> tunnel
+    actions -- "API가 바뀐 커밋만" --> ghcr -- "SSH → ops/deploy.sh<br/>실패 시 이전 이미지로" --> api
 ```
 
 - **같은 사이트, 다른 하위 도메인**: 프론트엔드와 API를 `hyeoniverse.com` 아래에 둬서 `SameSite=Lax` 세션 쿠키가 함께 갑니다. API를 `*.workers.dev`나 IP 주소로 두면 로그인이 되지 않습니다.
 - **들어오는 문이 없는 서버**: `cloudflared`가 Cloudflare로 나가는 연결을 열고, 요청은 그 연결로만 들어옵니다. 방화벽에 80·443을 열지 않고, 인증서도 Cloudflare가 맡습니다. compose에는 `ports`가 하나도 없어서 DB는 컨테이너 네트워크 밖에서 보이지 않습니다.
-- **검사 뒤에 배포**: 프론트엔드는 main에서 `check`(실제 PostgreSQL로 도는 API e2e와 브라우저 E2E 포함)를 통과한 커밋만 Workers에 올라갑니다. API는 서버에서 `git pull` 후 다시 빌드하고, 시작할 때 `prisma migrate deploy`로 마이그레이션을 적용합니다.
+- **검사 뒤에 배포**: 프론트엔드는 main에서 `check`(실제 PostgreSQL로 도는 API e2e와 브라우저 E2E 포함)를 통과한 커밋만 Workers에 올라갑니다. API는 바뀐 커밋만 Actions가 이미지로 만들어 GHCR에 올리고, SSH로 서버의 `ops/deploy.sh`를 불러 바꿉니다. 새 컨테이너가 헬스 체크를 통과하지 못하면 이전 이미지로 되돌립니다. 시작할 때 `prisma migrate deploy`로 마이그레이션을 적용합니다(DB는 되돌리지 않으므로 마이그레이션은 이전 코드와도 맞아야 합니다).
 
 ## 요청이 지나가는 길
 
