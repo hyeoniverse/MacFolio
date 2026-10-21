@@ -20,6 +20,8 @@ import { downloadFile, openFileInNewTab } from './documents';
 import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
+import { printDoc } from './printDoc';
+import { RESUME_DOC } from './resumeDoc';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import '@/apps/finder/FinderMobile.css';
@@ -80,6 +82,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const [closed, setClosed] = useState<Record<string, boolean>>({});
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
+	const docScroll = useRef<HTMLDivElement>(null);
 
 	// 화면이 바뀐 방식: 들어가면 오른쪽에서, 돌아오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
 	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
@@ -214,10 +217,44 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		return (
 			<div className="files-phone doc">
 				{navigation}
+				{/* 데이터로 만든 이력서: 공유 › PDF로 저장 (브라우저 인쇄 창에서 PDF로) */}
+				{screen.doc === RESUME_DOC && (
+					<IconButton
+						ref={moreButton}
+						className="files-phone-more"
+						label="공유"
+						icon="fa-solid fa-arrow-up-from-bracket"
+						aria-haspopup="menu"
+						aria-expanded={menu !== null}
+						onClick={(event) => {
+							const rect = event.currentTarget.getBoundingClientRect();
+							setMenu(menu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
+						}}
+					/>
+				)}
+				{screen.doc === RESUME_DOC && menu && (
+					<Menu
+						label="공유"
+						variant="ios"
+						anchor={menu}
+						trigger={moreButton}
+						onClose={() => setMenu(null)}
+						items={[
+							{
+								label: 'PDF로 저장',
+								icon: 'fa-solid fa-file-arrow-down',
+								onSelect: () => {
+									const article = docScroll.current?.querySelector<HTMLElement>('.finder-doc');
+									if (article) printDoc(article, title);
+								},
+							},
+						]}
+					/>
+				)}
 				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
 					{title}
 				</h2>
-				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
+				<div ref={docScroll} key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
 					<DocView
 						path={screen.doc}
 						dark={dark}
