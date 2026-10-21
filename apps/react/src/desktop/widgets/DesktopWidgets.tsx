@@ -46,7 +46,7 @@ const loadWidgets = () => parseWidgets(readJson(STORAGE_KEYS.desktopWidgets)) ??
  * 바탕화면 아이콘보다 위, 창·Dock·메뉴 막대보다 아래 층이다
  */
 const DesktopWidgets: React.FC = () => {
-	const { openApp, bringAppToFront } = useAppState();
+	const { apps, openApp, bringAppToFront, minimizeApp, maximizeApp } = useAppState();
 	const viewport = useViewport();
 	const editing = useWidgetEditing();
 	const [widgets, setWidgets] = useState<PlacedWidget[]>(loadWidgets);
@@ -58,6 +58,11 @@ const DesktopWidgets: React.FC = () => {
 	const [flight, setFlight] = useState<{ widget: PlacedWidget; from: Point } | null>(null);
 	const layer = useRef<HTMLDivElement>(null);
 	const flying = useRef<HTMLDivElement>(null);
+	// 끄는 위젯이 갤러리 시트 자리로 내려가면 시트를 잠시 내린다 (끄기를 시작할 때 시트의 위 변을 재 둔다)
+	const [sheetAway, setSheetAway] = useState(false);
+	const sheetTop = useRef(Infinity);
+	// 편집하는 동안 내려 둔 창 (편집이 끝나면 이것만 다시 띄운다)
+	const hidden = useRef<AppName[]>([]);
 
 	const photoSources = usePhotoSources();
 	const save = (next: PlacedWidget[]) => {
@@ -128,6 +133,25 @@ const DesktopWidgets: React.FC = () => {
 	const changeSize = (id: string, size: WidgetSize) =>
 		save(visible.map((widget) => (widget.id === id ? resize(widget, size, visible, viewport, iconRects) : widget)));
 
+	// 편집하는 동안은 열린 창을 모두 내려 바탕화면을 보이고, 끝나면 내렸던 창만 그 순서 그대로 다시 띄운다
+	const appsNow = useRef(apps);
+	useEffect(() => {
+		appsNow.current = apps;
+	}, [apps]);
+	useEffect(() => {
+		if (!editing) return;
+		const open = (Object.keys(appsNow.current) as AppName[]).filter(
+			(name) => appsNow.current[name].isRunning && !appsNow.current[name].isMinimized
+		);
+		hidden.current = open;
+		open.forEach(minimizeApp);
+		return () => {
+			// 편집 중에 닫았거나 사용자가 직접 띄운 창은 그대로다 (다시 띄우기는 최소화를 풀 뿐이다)
+			hidden.current.forEach(maximizeApp);
+			hidden.current = [];
+		};
+	}, [editing, minimizeApp, maximizeApp]);
+
 	// 편집 중에 Esc를 누르거나 갤러리·위젯 바깥(빈 바탕화면, Dock 등)을 누르면 끝낸다 (macOS처럼)
 	useEffect(() => {
 		if (!editing) return;
@@ -169,8 +193,14 @@ const DesktopWidgets: React.FC = () => {
 			if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
 			start.moved = true;
 			event.currentTarget.setPointerCapture(event.pointerId);
+			sheetTop.current = document.querySelector('.widget-gallery')?.getBoundingClientRect().top ?? Infinity;
 		}
 		setDrag({ id: start.id, offset: { x: dx, y: dy } });
+		const widget = visible.find((item) => item.id === start.id);
+		if (widget) {
+			const bottom = layer.current!.getBoundingClientRect().top + start.origin.y + dy + pixelSize(widget.size).height;
+			setSheetAway(bottom > sheetTop.current);
+		}
 	};
 	const onPointerUp = (event: React.PointerEvent) => {
 		const start = pending.current;
@@ -186,6 +216,7 @@ const DesktopWidgets: React.FC = () => {
 			save(visible.map((item) => (item.id === widget.id ? { ...item, ...cell } : item)));
 		}
 		setDrag(null);
+		setSheetAway(false);
 		// 끌기를 끝낸 위젯이 눌려 앱이 열리지 않게
 		swallowClick.current = true;
 	};
@@ -256,6 +287,7 @@ const DesktopWidgets: React.FC = () => {
 							onPointerCancel={() => {
 								pending.current = null;
 								setDrag(null);
+								setSheetAway(false);
 							}}
 							onClickCapture={(event) => {
 								if (!swallowClick.current && !editing) return;
@@ -290,7 +322,7 @@ const DesktopWidgets: React.FC = () => {
 			{menu && target && (
 				<Menu label="위젯 메뉴" anchor={menu.anchor} items={menuItems} onClose={() => setMenu(null)} />
 			)}
-			{editing && <WidgetGallery onAdd={add} />}
+			{editing && <WidgetGallery onAdd={add} away={sheetAway} />}
 			{/* 날아가는 위젯: 갤러리 시트보다 위 층의 겉모습만 (누를 수 없고 화면 읽기에 보이지 않는다) */}
 			{flight && (
 				<div

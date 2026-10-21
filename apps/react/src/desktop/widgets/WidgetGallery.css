@@ -37,6 +37,23 @@
 	}
 }
 
+/* 편집이 끝나면 아래로 내려가며 사라진다 (useExitMotion의 복사본) */
+@keyframes widget-gallery-out {
+	to {
+		transform: translate(-50%, 100%);
+	}
+}
+
+/* 위젯을 시트 자리로 끄는 동안: 잠시 아래로 내려 두고, 놓으면 다시 올라온다 */
+.widget-gallery {
+	transition: transform var(--duration) var(--ease-out);
+}
+
+.widget-gallery.away {
+	transform: translate(-50%, 100%);
+	pointer-events: none;
+}
+
 /* ─── 사이드바 ─── */
 .widget-gallery-sidebar {
 	display: flex;

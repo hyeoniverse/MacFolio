@@ -3,6 +3,7 @@ import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { appIconUrl } from '@/shared/config/appIcon';
 import Button from '@/shared/ui/button/Button';
 import SearchField from '@/shared/ui/search-field/SearchField';
+import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
 import { SIZE_LABEL, WIDGET_INFO, WIDGET_KINDS, type WidgetKind, type WidgetSize } from './catalog';
 import { pixelSize } from './layout';
 import Widget from './Widget';
@@ -47,10 +48,15 @@ const AllWidgetsGlyph = () => (
  */
 const WidgetGallery = ({
 	onAdd,
+	away = false,
 }: {
 	/** from: 누른 미리보기의 화면 자리 (거기서 바탕화면으로 날아간다) */
 	onAdd: (kind: WidgetKind, size: WidgetSize, from: { x: number; y: number }) => void;
+	/** 위젯을 시트 자리로 끄는 동안 잠시 내려 둔다 */
+	away?: boolean;
 }) => {
+	// 편집이 끝나 빠질 때 아래로 내려가며 사라진다
+	const exit = useExitMotion<HTMLDivElement>('widget-gallery-out');
 	const [kind, setKind] = useState<WidgetKind | null>(null);
 	const [query, setQuery] = useState('');
 	const needle = query.trim().toLowerCase();
@@ -63,7 +69,7 @@ const WidgetGallery = ({
 	const shown = kind && kinds.includes(kind) ? [kind] : kinds;
 
 	return (
-		<div className="widget-gallery" role="dialog" aria-label="위젯 갤러리">
+		<div ref={exit} className={`widget-gallery${away ? ' away' : ''}`} role="dialog" aria-label="위젯 갤러리">
 			<nav className="widget-gallery-sidebar" aria-label="위젯 종류">
 				<SearchField
 					className="widget-gallery-search"

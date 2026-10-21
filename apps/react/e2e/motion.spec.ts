@@ -165,4 +165,31 @@ test.describe('움직임: 나타나고 사라지기, 화면 바뀌기', () => {
 		await expect(page.locator('.desktop-widgets').getByRole('group', { name: '시계 위젯' })).toBeVisible();
 		await expect(flight).toHaveCount(0);
 	});
+
+	test('위젯을 갤러리 시트 쪽으로 끌면 시트가 잠시 내려가고, 편집을 끝내면 시트가 아래로 내려가며 사라진다', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		await expect(gallery).toBeVisible();
+		const sheetTop = (await gallery.boundingBox())!.y;
+
+		const weather = (await page.locator('.desktop-widgets').getByRole('group', { name: '날씨 위젯' }).boundingBox())!;
+		await page.mouse.move(weather.x + 40, weather.y + 40);
+		await page.mouse.down();
+		await page.mouse.move(weather.x + 60, weather.y + 60, { steps: 4 });
+		await expect(gallery).not.toHaveClass(/away/);
+		await page.mouse.move(weather.x + 60, sheetTop + 40, { steps: 8 });
+		await expect(gallery).toHaveClass(/away/);
+		await page.mouse.up();
+		await expect(gallery).not.toHaveClass(/away/);
+
+		const exits = await recordExits(page);
+		await gallery.getByRole('button', { name: '완료' }).click();
+		await expect(gallery).toHaveCount(0);
+		await expect.poll(exits).toContain('widget-gallery-out');
+		await expect(page.locator('[data-exiting]')).toHaveCount(0);
+	});
 });

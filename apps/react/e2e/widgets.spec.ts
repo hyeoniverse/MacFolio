@@ -231,4 +231,15 @@ test.describe('바탕화면 위젯', () => {
 		await expect(gallery).toBeHidden();
 		await expect(page.getByRole('button', { name: '날씨 위젯 제거' })).toHaveCount(0);
 	});
+
+	test('위젯을 편집하는 동안은 열린 창을 내려 두고, 끝나면 그 창만 다시 띄운다', async ({ page }) => {
+		await enterDesktop(page);
+		const safari = appWindow(page, 'safari');
+		await expect(safari).toBeVisible();
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await expect(safari).toBeHidden();
+		await page.getByRole('dialog', { name: '위젯 갤러리' }).getByRole('button', { name: '완료' }).click();
+		await expect(safari).toBeVisible();
+	});
 });

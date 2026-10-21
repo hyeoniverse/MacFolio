@@ -10,7 +10,8 @@ export type ExitMotion =
 	| 'panel-out-right'
 	| 'panel-out-down'
 	| 'sheet-out'
-	| 'dim-out';
+	| 'dim-out'
+	| 'widget-gallery-out';
 
 const DURATION: Record<ExitMotion, number> = {
 	'pop-out': 140,
@@ -21,6 +22,7 @@ const DURATION: Record<ExitMotion, number> = {
 	'panel-out-down': 240,
 	'sheet-out': 240,
 	'dim-out': 240,
+	'widget-gallery-out': 280,
 };
 
 /**
