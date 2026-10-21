@@ -17,7 +17,7 @@ import {
 } from './files';
 import FileView from './FileView';
 import { downloadFile, openFileInNewTab } from './documents';
-import { DOC_SOURCES } from './docsBundle';
+import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
 import FinderIcon from './FinderIcon';
@@ -112,7 +112,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			const { path } = finderDocRequest.getState();
 			if (!path) return;
 			finderDocRequest.setState({ path: null });
-			if (DOC_SOURCES[path] !== undefined) setStack((current) => [...current, { doc: path }]);
+			if (docSource(path) !== undefined) setStack((current) => [...current, { doc: path }]);
 		};
 		take();
 		return finderDocRequest.subscribe(take);
@@ -132,7 +132,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		!target
 			? TAB_TITLES[tab]
 			: 'doc' in target
-				? target.doc.split('/').at(-1)!
+				? (find(roots, `docs:${target.doc}`)?.name ?? target.doc.split('/').at(-1)!)
 				: (find(roots, 'file' in target ? target.file : target.folder)?.name ?? TAB_TITLES[tab]);
 	const title = titleOf(screen);
 	const searching = query.trim() !== '';
@@ -218,7 +218,12 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 					{title}
 				</h2>
 				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
-					<DocView path={screen.doc} dark={dark} onOpenDoc={(path) => push({ doc: path })} />
+					<DocView
+						path={screen.doc}
+						dark={dark}
+						onOpenDoc={(path) => push({ doc: path })}
+						onOpenProject={(id) => onOpenElsewhere({ kind: 'project', id: `projects/${id}`, name: id, projectId: id })}
+					/>
 				</div>
 			</div>
 		);

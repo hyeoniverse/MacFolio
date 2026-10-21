@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { complete, formatDate, parse, runCommand, toBlocks, type CommandContext, type Line } from './commands';
 import { commandInValue, projectCommand, SHORTCUTS } from './shortcutList';
 import { PROJECTS } from '@/shared/profile';
+import { RESUME } from '@/shared/profile/resume';
+import { RESUME_DOC } from '@/apps/finder/resumeDoc';
 
 const context: CommandContext = {
 	history: ['whoami', 'skills'],
@@ -30,6 +32,15 @@ describe('parse', () => {
 });
 
 describe('runCommand', () => {
+	it('resume는 요약을 보여 주고 Finder에서 이력서 전체를 연다', () => {
+		const result = runCommand('resume', context);
+		expect(texts(result.lines)[1]).toBe(RESUME.motto);
+		expect(texts(result.lines)).toContain(
+			`주요 프로젝트: ${RESUME.featured.map(({ id }) => PROJECTS.find((p) => p.id === id)!.name).join(', ')}`
+		);
+		expect(result.effects).toEqual([{ type: 'open-doc', path: RESUME_DOC }]);
+	});
+
 	it('빈 입력은 아무것도 하지 않는다', () => {
 		expect(runCommand('   ', context)).toEqual({ lines: [], effects: [] });
 	});

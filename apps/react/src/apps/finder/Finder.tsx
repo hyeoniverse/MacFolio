@@ -30,7 +30,7 @@ import { useDocumentDrop } from './useDocumentDrop';
 import { downloadFile } from './documents';
 import { openInPlayer } from '@/apps/quicktime/playerStore';
 import { canSetWallpaper, setDesktopWallpaper } from './setWallpaper';
-import { DOC_SOURCES } from './docsBundle';
+import { docSource } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
 import DocView from './DocView';
@@ -117,7 +117,7 @@ const Finder: React.FC = () => {
 			const { path } = finderDocRequest.getState();
 			if (!path) return;
 			finderDocRequest.setState({ path: null });
-			if (DOC_SOURCES[path] !== undefined) go({ doc: path });
+			if (docSource(path) !== undefined) go({ doc: path });
 		};
 		take();
 		return finderDocRequest.subscribe(take);
@@ -145,12 +145,13 @@ const Finder: React.FC = () => {
 	const placeKey = `${JSON.stringify(place)}|${view}|${searching}`;
 	const direction = useMoveDirection(history.at, undefined, `${view}|${searching}`);
 	const items: FinderItem[] = searching ? search(locations, query) : (folder?.children ?? []);
+	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
+	// 문서는 트리의 이름 (데이터로 만든 이력서는 경로가 아니라 '이름_이력서'), 트리에 없으면 파일 이름
 	const title = searching
 		? `‘${query.trim()}’ 찾기`
 		: 'doc' in place
-			? place.doc.split('/').at(-1)!
+			? (crumbs.at(-1)?.name ?? place.doc.split('/').at(-1)!)
 			: (folder?.name ?? 'Finder');
-	const crumbs = 'folder' in place ? pathTo(locations, place.folder) : pathTo(locations, `docs:${place.doc}`);
 	// 사이드바에서 칠할 곳: 경로에서 가장 안쪽의 사이드바 항목 (이력서 안이면 이력서, 그 밖의 문서면 문서, 홈의 다른 폴더면 홈)
 	const location = [...crumbs].reverse().find((crumb) => SIDEBAR_IDS.includes(crumb.id))?.id ?? null;
 	const favorites = foldersOf(locations, FAVORITE_SIDEBAR);
@@ -594,7 +595,12 @@ const Finder: React.FC = () => {
 							}}
 						>
 							{'doc' in place ? (
-								<DocView path={place.doc} dark={dark} onOpenDoc={(path) => go({ doc: path })} />
+								<DocView
+									path={place.doc}
+									dark={dark}
+									onOpenDoc={(path) => go({ doc: path })}
+									onOpenProject={(id) => open({ kind: 'project', id: `projects/${id}`, name: id, projectId: id })}
+								/>
 							) : empty ? (
 								<EmptyState className="finder-empty">
 									{drop.admin && dropFolder
@@ -667,7 +673,7 @@ const Finder: React.FC = () => {
 											</button>
 										) : (
 											<span>
-												{crumb.kind === 'doc' ? docTitle(crumb.path, DOC_SOURCES[crumb.path] ?? '') : crumb.name}
+												{crumb.kind === 'doc' ? docTitle(crumb.path, docSource(crumb.path) ?? '') : crumb.name}
 											</span>
 										)}
 									</React.Fragment>

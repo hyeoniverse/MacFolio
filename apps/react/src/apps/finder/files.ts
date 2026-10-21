@@ -134,6 +134,8 @@ export interface TreeInput {
 	tracks?: { id: string; title: string; artist: string; album: string; artwork: string; playlistId: string }[];
 	/** 관리자가 정한 폴더 구조 (만든 폴더, 옮긴 파일, 바탕화면의 가상본). 없으면 기본 구조 */
 	layout?: FinderLayoutValue;
+	/** 데이터로 만드는 이력서 문서 (resumeDoc.ts). 문서 › 이력서 안에 올린 파일과 함께 둔다 */
+	resume?: { path: string; name: string };
 }
 
 /** 빈 문서 파일 폴더의 안내 */
@@ -181,7 +183,12 @@ const latest = (items: FinderItem[]) =>
  * 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서·포트폴리오·자격증 (R2의 파일. 프로젝트 폴더의 파일은 빼고).
  * 프로젝트 폴더들은 포트폴리오 안에 (폴더가 위에 이름순, 그다음 파일)
  */
-function docsFolder(paths: string[], files: DocumentEntry[], projects: FolderItem[] = []): FolderItem {
+function docsFolder(
+	paths: string[],
+	files: DocumentEntry[],
+	projects: FolderItem[] = [],
+	resume?: TreeInput['resume']
+): FolderItem {
 	const docs: FinderItem[] = paths.map((path) => ({
 		kind: 'doc',
 		id: `docs:${path}`,
@@ -194,6 +201,9 @@ function docsFolder(paths: string[], files: DocumentEntry[], projects: FolderIte
 		name,
 		children: [
 			...(name === '포트폴리오' ? projects : []),
+			...(name === '이력서' && resume
+				? [{ kind: 'doc' as const, id: `docs:${resume.path}`, name: resume.name, path: resume.path }]
+				: []),
 			...files.filter((file) => file.folder === name).map(fileItem),
 		].sort(byName),
 		emptyNote: FOLDER_NOTES[name],
@@ -381,6 +391,7 @@ export function buildTree({
 	albums = [],
 	tracks = [],
 	layout,
+	resume,
 }: TreeInput): { roots: FolderItem[]; trash: FolderItem } {
 	const trash: FolderItem = {
 		kind: 'folder',
@@ -398,7 +409,7 @@ export function buildTree({
 			children: files.filter((file) => file.folder === DESKTOP_DOCUMENT_FOLDER).map(fileItem),
 			emptyNote: '바탕화면이 비어 있습니다.',
 		},
-		docsFolder(docs, files, projectFolders(projects, files)),
+		docsFolder(docs, files, projectFolders(projects, files), resume),
 		blogFolder(posts, blogFolders),
 		picturesFolder(albums),
 		musicFolder(tracks),

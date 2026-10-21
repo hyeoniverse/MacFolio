@@ -126,6 +126,23 @@ describe('buildLocations', () => {
 		expect(find(tree, 'docs:docs/deployment.md')).toMatchObject({ kind: 'doc', path: 'docs/deployment.md' });
 	});
 
+	it('이력서: 데이터로 만든 이력서 문서를 이력서 폴더에 둔다', () => {
+		const withResume = buildLocations({
+			docs: [],
+			posts: [],
+			projects: [],
+			apps: [],
+			resume: { path: 'resume.md', name: '김정현_이력서' },
+		});
+		expect(find(withResume, 'docs:resume.md')).toMatchObject({
+			kind: 'doc',
+			name: '김정현_이력서',
+			path: 'resume.md',
+		});
+		// 문서 폴더 맨 위에는 따로 두지 않는다
+		expect(names(find(withResume, 'docs') as FolderItem)).not.toContain('김정현_이력서');
+	});
+
 	it('블로그: 카테고리를 폴더로, 폴더가 위에, 글은 최신순, 폴더 수정일은 가장 최근 글', () => {
 		const blog = find(tree, 'blog') as FolderItem;
 		expect(names(blog)).toEqual(['개발기', '기타']);

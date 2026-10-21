@@ -1,6 +1,8 @@
 // 터미널 명령어. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 명령은 출력할 줄(lines)과 화면에서 실행할 효과(effects)를 돌려준다.
 import { PROJECTS } from '@/shared/profile';
+import { RESUME } from '@/shared/profile/resume';
+import { RESUME_DOC } from '@/apps/finder/resumeDoc';
 import { getProfile } from '@/shared/site/profileStore';
 import { fullName } from '@/desktop/about/profileInfo';
 import type { AppName } from '@/apps/manifest';
@@ -20,7 +22,12 @@ export type Line =
 	| { kind: 'item'; marker: string; title: string; detail?: string; tag?: string };
 
 export type Effect =
-	{ type: 'clear' } | { type: 'open-app'; app: AppName } | { type: 'open-url'; url: string } | { type: 'close' };
+	| { type: 'clear' }
+	| { type: 'open-app'; app: AppName }
+	| { type: 'open-url'; url: string }
+	/** Finder에서 문서를 연다 (예: 이력서) */
+	| { type: 'open-doc'; path: string }
+	| { type: 'close' };
 
 /** 화면에 그릴 묶음. 연속된 pair·item 줄은 한 묶음이 되어 한 격자(목록)로 그려진다. */
 export type Block =
@@ -118,6 +125,29 @@ export const COMMANDS: Record<string, Command> = {
 				pair('Owner', `${profile.name} · ${profile.role}`),
 				pair('Stack', profile.siteStack.join(', ')),
 			]);
+		},
+	},
+	resume: {
+		description: '이력서 요약 (Finder에서 전체 열기)',
+		run: () => {
+			const profile = getProfile();
+			const names = new Map(PROJECTS.map((project) => [project.id, project.name]));
+			return output(
+				[
+					heading(`${profile.name} · ${RESUME.role}`),
+					text(RESUME.motto),
+					...RESUME.strengths.map((item) => pair(item.title, item.detail)),
+					pair(
+						'주요 프로젝트',
+						RESUME.featured
+							.map(({ id }) => names.get(id))
+							.filter(Boolean)
+							.join(', ')
+					),
+					muted('Finder에서 이력서 전체를 엽니다.'),
+				],
+				[{ type: 'open-doc', path: RESUME_DOC }]
+			);
 		},
 	},
 	skills: {

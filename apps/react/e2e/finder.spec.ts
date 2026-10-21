@@ -71,15 +71,21 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('article', { name: 'README.md' })).toBeVisible();
 	});
 
-	test('빈 이력서 폴더에는 안내가 보인다', async ({ page }) => {
+	test('이력서 폴더에는 데이터로 만든 이력서가 있고, 프로젝트 이름을 누르면 Safari에서 연다', async ({ page }) => {
 		const finder = await openFinder(page);
-		await finder.getByRole('option', { name: '이력서' }).dblclick();
+		await finder.getByRole('option', { name: '이력서', exact: true }).dblclick();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
-		await expect(finder.getByText('공개용 이력서를 준비하고 있습니다.')).toBeVisible();
-		await expect(finder.locator('.finder-count')).toHaveText('비어 있음');
+		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
+		const resume = finder.getByRole('article', { name: 'resume.md' });
+		await expect(resume.getByRole('heading', { level: 1 })).toHaveText('김정현 이력서');
+		// 프로젝트 이름·기간은 프로젝트 데이터에서 읽는다
+		await expect(resume.getByRole('heading', { name: 'MacFolio', exact: true })).toBeVisible();
 		// 경로 막대로 위 폴더에
-		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '문서' }).click();
-		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('문서');
+		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '이력서' }).click();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
+		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
+		await resume.getByRole('link', { name: 'MacFolio', exact: true }).click();
+		await expect(appWindow(page, 'safari')).toBeVisible();
 	});
 
 	test('블로그: 메모에서 만든 빈 폴더도 보인다', async ({ page }) => {
@@ -194,14 +200,12 @@ test.describe('Finder', () => {
 	});
 
 	test.describe('문서 파일 (R2)', () => {
-		test('빈 이력서·자격증 폴더는 폴더마다 안내를 보이고, 포트폴리오에는 프로젝트 폴더가 있다', async ({ page }) => {
+		test('빈 자격증 폴더는 안내를 보이고, 포트폴리오에는 프로젝트 폴더가 있다', async ({ page }) => {
 			await fakeFiles(page, []);
 			const finder = await openFinder(page);
 			const docs = finder.getByRole('listbox', { name: '문서' });
-			for (const [name, note] of [
-				['이력서', '공개용 이력서를 준비하고 있습니다.'],
-				['자격증', '자격증 사본을 준비하고 있습니다.'],
-			]) {
+			// 이력서 폴더는 데이터로 만든 이력서가 있어 비어 있지 않다
+			for (const [name, note] of [['자격증', '자격증 사본을 준비하고 있습니다.']]) {
 				await docs.getByRole('option', { name, exact: true }).dblclick();
 				await expect(finder.getByRole('heading', { level: 1 })).toHaveText(name);
 				await expect(finder.getByText(note)).toBeVisible();
