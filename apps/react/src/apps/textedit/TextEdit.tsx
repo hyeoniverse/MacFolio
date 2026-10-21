@@ -11,6 +11,7 @@ import { useResumeState } from '@/shared/site/resumeStore';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
 import { requestOpen } from '@/shared/lib/openRequest';
+import MarkdownToolbar from './MarkdownToolbar';
 import ResumeEditor from './ResumeEditor';
 import { resetTextEdit, stepTextEdit, useTextEdit, openInTextEdit } from './textEditStore';
 import './TextEdit.css';
@@ -122,6 +123,8 @@ const TextEdit: React.FC = () => {
 							</span>
 						)}
 					</div>
+					{/* 읽기: 같은 서식 막대를 꺼진 채로 (잠긴 문서). 고치기는 이력서 편집에서 */}
+					{path && !editing && <MarkdownToolbar text="" cursor={0} />}
 				</header>
 				<div className="textedit-body">
 					{!path ? (

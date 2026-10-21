@@ -77,3 +77,12 @@ export function setHeading(text: string, start: number, end: number, level: numb
 		lines.map((line) => `${level ? `${'#'.repeat(level)} ` : ''}${line.replace(/^#{1,6} /, '')}`)
 	);
 }
+
+/** 지금 줄이 목록·번호 목록·인용인지 (서식 막대에서 그 버튼을 켠다) */
+export function lineKindAt(text: string, at: number): 'list' | 'ordered' | 'quote' | null {
+	const line = text.slice(text.lastIndexOf('\n', at - 1) + 1);
+	if (line.startsWith('- ')) return 'list';
+	if (/^\d+\. /.test(line)) return 'ordered';
+	if (line.startsWith('> ')) return 'quote';
+	return null;
+}

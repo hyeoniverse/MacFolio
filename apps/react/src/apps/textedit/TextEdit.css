@@ -101,25 +101,24 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* 서식 막대: 옅은 회색 알약 묶음 (B I S 코드 │ 링크 │ 문단 스타일 │ 목록) */
+/* 서식 막대 (macOS 텍스트 편집기): 흰 바탕에 옅은 회색 알약 묶음. 높이 24px, 묶음 사이 8px */
 .textedit-format {
 	display: flex;
 	flex: none;
 	align-items: center;
 	gap: var(--space-8);
-	padding: 0 var(--space-12) var(--space-10);
-	border-bottom: 1px solid var(--color-separator);
+	padding: 0 var(--space-10) var(--space-10);
 	overflow: hidden;
+	font-size: var(--text-footnote);
 	white-space: nowrap;
 }
 
 .textedit-seg,
-.textedit-chip {
+.textedit-popup {
 	display: inline-flex;
 	flex: none;
 	align-items: center;
-	height: 30px;
-	border: 0;
+	height: 24px;
 	border-radius: var(--radius-6);
 	background-color: var(--textedit-chip);
 	color: var(--color-label);
@@ -132,29 +131,23 @@
 .textedit-tool {
 	display: inline-grid;
 	place-items: center;
-	width: 32px;
-	height: 22px;
+	width: 26px;
+	height: 18px;
+	padding: 0;
 	border: 0;
 	background: none;
 	color: inherit;
 	font-family: inherit;
-	font-size: var(--text-subheadline);
+	font-size: var(--text-footnote);
 }
 
+.textedit-tool:disabled {
+	color: var(--color-secondary-label);
+}
+
+/* 묶음 안의 가는 세로 구분선 */
 .textedit-tool + .textedit-tool {
 	border-left: 1px solid var(--color-separator);
-}
-
-.textedit-seg-wide .textedit-tool {
-	width: 40px;
-	height: 26px;
-	border-left: 0;
-	border-radius: var(--radius-4);
-}
-
-.textedit-tool:hover,
-.textedit-chip:hover {
-	filter: brightness(0.94);
 }
 
 .textedit-tool-bold {
@@ -175,56 +168,118 @@
 	font-size: var(--text-caption2);
 }
 
-.textedit-tool-link {
-	justify-content: center;
-	width: 34px;
+/* 링크: 흰 네모에 테두리 (글자 색 옆의 칸 자리) */
+.textedit-square .textedit-tool {
+	width: 24px;
+	height: 24px;
 	border: 1px solid var(--color-separator);
-	background-color: transparent;
+	border-radius: var(--radius-6);
+	background-color: var(--color-text-background);
 }
 
+/* 줄 묶음 (정렬 자리): 칸이 넓고, 지금 줄의 종류는 파랗게 */
+.textedit-seg-lines .textedit-tool {
+	width: 30px;
+	height: 20px;
+	border-left: 0;
+	border-radius: var(--radius-4);
+}
+
+.textedit-seg-lines .textedit-tool + .textedit-tool {
+	box-shadow: -1px 0 0 var(--color-separator);
+}
+
+.textedit-tool.on {
+	background-color: var(--color-control-accent);
+	box-shadow: none !important;
+	color: var(--color-white);
+}
+
+/* 팝업 (글꼴 자리): 왼쪽 글자, 오른쪽 위아래 화살표 */
 .textedit-popup {
 	position: relative;
-	gap: var(--space-8);
-	padding: 0 var(--space-10);
+	padding: 0 var(--space-8) 0 var(--space-10);
 }
 
 .textedit-popup select {
-	min-width: 96px;
-	padding: 0;
+	min-width: 100px;
+	padding: 0 var(--space-16) 0 0;
 	border: 0;
 	appearance: none;
 	background: none;
 	color: inherit;
 	font: inherit;
-	font-size: var(--text-subheadline);
+}
+
+.textedit-popup select:disabled {
+	opacity: 1;
+	color: var(--color-secondary-label);
 }
 
 .textedit-popup i {
+	position: absolute;
+	right: var(--space-8);
 	pointer-events: none;
 	font-size: var(--text-caption2);
 }
 
-/* 눈금자: 1cm = 38px로 고정 (ResumeEditor의 RULER_CM). 2cm마다 숫자, 1cm·0.25cm마다 눈금 */
+/* 눈금자: 1cm = 38px로 고정 (MarkdownToolbar의 RULER_CM). 위에 탭 멈춤(▶), 아래 숫자와 눈금 */
 .textedit-ruler {
 	position: relative;
 	flex: none;
-	height: 26px;
+	height: 30px;
 	overflow: hidden;
-	margin: 0 var(--space-8);
-	border-bottom: 1px solid var(--color-separator);
+	border-top: 1px solid var(--color-separator);
+	border-bottom: 2px solid var(--color-separator);
 	background:
-		repeating-linear-gradient(to right, var(--color-secondary-label) 0 1px, transparent 1px 38px) 0 100% / 100% 10px
+		repeating-linear-gradient(to right, var(--color-secondary-label) 0 1px, transparent 1px 76px) 10px 100% / 100% 12px
 			no-repeat,
-		repeating-linear-gradient(to right, var(--color-separator) 0 1px, transparent 1px 9.5px) 0 100% / 100% 5px no-repeat;
+		repeating-linear-gradient(to right, var(--color-secondary-label) 0 1px, transparent 1px 38px) 10px 12px / 100% 4px
+			no-repeat,
+		repeating-linear-gradient(to right, var(--color-separator) 0 1px, transparent 1px 9.5px) 10px 12px / 100% 3px
+			no-repeat;
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 }
 
-.textedit-ruler span {
+.textedit-ruler-number {
 	position: absolute;
-	bottom: 6px;
-	padding-left: var(--space-2);
+	bottom: 1px;
+	margin-left: var(--space-12);
 	line-height: 1;
+}
+
+.textedit-ruler-tab {
+	position: absolute;
+	top: 3px;
+	width: 0;
+	height: 0;
+	margin-left: var(--space-10);
+	border-top: 5px solid transparent;
+	border-bottom: 5px solid transparent;
+	border-left: 7px solid var(--color-secondary-label);
+}
+
+/* 왼쪽 들여쓰기 표시 (▼ 위에 가로 막대) */
+.textedit-ruler-indent {
+	position: absolute;
+	top: 3px;
+	left: 5px;
+	width: 0;
+	height: 0;
+	border-top: 8px solid var(--color-secondary-label);
+	border-right: 5px solid transparent;
+	border-left: 5px solid transparent;
+}
+
+.textedit-ruler-indent::before {
+	content: '';
+	position: absolute;
+	top: -10px;
+	left: -5px;
+	width: 10px;
+	height: 2px;
+	background-color: var(--color-secondary-label);
 }
 
 .finder-resume-editor-errors {
@@ -253,7 +308,7 @@
 
 /* 좁은 창: 목록 묶음은 접는다 */
 @container (max-width: 560px) {
-	.textedit-seg-wide {
+	.textedit-seg-lines {
 		display: none;
 	}
 }
