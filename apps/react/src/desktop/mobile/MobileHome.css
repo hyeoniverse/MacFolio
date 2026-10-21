@@ -226,11 +226,16 @@
 /* 위젯 갤러리 시트 */
 .mobile-widget-sheet {
 	--ui-sheet-bg: var(--color-window-background);
-	/* 위 상태 표시줄은 시트를 덮으므로 그만큼 내린다 */
-	padding: var(--mobile-statusbar-height) var(--space-20) var(--space-24);
+	padding: var(--space-8) var(--space-20) var(--space-24);
 	overflow-y: auto;
 	color: var(--color-label);
 	text-shadow: none;
+}
+
+/* iOS 위젯 갤러리처럼 화면의 아래 4/5만: 위에 흐린 홈 화면이 남아, 그곳을 누르면 닫힌다
+   (.ui-sheet.page의 높이보다 앞서게 두 이름으로) */
+.ui-sheet.mobile-widget-sheet {
+	height: 80%;
 }
 
 .mobile-widget-sheet h2 {

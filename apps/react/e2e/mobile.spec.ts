@@ -1572,8 +1572,15 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await page.getByRole('button', { name: 'GitHub 위젯 제거' }).click();
 		await expect(firstPage.getByRole('group', { name: 'GitHub 위젯' })).toHaveCount(0);
 
+		// 갤러리 시트는 화면의 아래 4/5만 덮는다: 위의 흐린 홈 화면을 누르면 닫히고, 편집은 그대로다
 		await page.getByRole('button', { name: '위젯 더하기' }).click();
 		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		await expect(gallery).toBeVisible();
+		await page.mouse.click(page.viewportSize()!.width / 2, 60);
+		await expect(gallery).toBeHidden();
+		await expect(home).toHaveClass(/editing/);
+
+		await page.getByRole('button', { name: '위젯 더하기' }).click();
 		await gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
 		await expect(gallery).toBeHidden();
 		await expect(firstPage.getByRole('group', { name: '시계 위젯' })).toBeVisible();
@@ -1608,8 +1615,15 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await page.mouse.down();
 		await expect(page.locator('.mobile-home')).toHaveClass(/editing/);
 		await page.mouse.up();
+		// 갤러리 시트는 화면의 아래 4/5만 덮는다: 위의 흐린 홈 화면을 누르면 닫히고, 편집은 그대로다
 		await page.getByRole('button', { name: '위젯 더하기' }).click();
 		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		await expect(gallery).toBeVisible();
+		await page.mouse.click(page.viewportSize()!.width / 2, 60);
+		await expect(gallery).toBeHidden();
+		await expect(page.locator('.mobile-home')).toHaveClass(/editing/);
+
+		await page.getByRole('button', { name: '위젯 더하기' }).click();
 		await gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
 		// 1쪽이 차서 3쪽에 놓이고 3쪽으로 넘어간다
 		await expect(page.getByRole('tab', { name: '3쪽' })).toHaveAttribute('aria-selected', 'true');
