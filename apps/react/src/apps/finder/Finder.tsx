@@ -34,7 +34,7 @@ import { docSource } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
 import DocView from './DocView';
-import { printDoc } from './printDoc';
+import { printCurrentResume } from './resumePrint';
 import { RESUME_DOC } from './resumeDoc';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
@@ -533,14 +533,7 @@ const Finder: React.FC = () => {
 								{title}
 							</h1>
 							{'doc' in place && place.doc === RESUME_DOC && (
-								<IconButton
-									icon="fa-solid fa-file-arrow-down"
-									label="PDF로 저장"
-									onClick={() => {
-										const article = content.current?.querySelector<HTMLElement>('.finder-doc');
-										if (article) printDoc(article, title);
-									}}
-								/>
+								<IconButton icon="fa-solid fa-file-arrow-down" label="PDF로 저장" onClick={printCurrentResume} />
 							)}
 							{'folder' in place && (
 								<div className="finder-views" role="group" aria-label="보기">

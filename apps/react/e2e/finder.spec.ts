@@ -84,14 +84,12 @@ test.describe('Finder', () => {
 		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '이력서' }).click();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
-		// PDF로 저장: 본문만 복사해 브라우저 인쇄 창을 연다 (인쇄 창은 막아 둔다)
-		await page.evaluate(() => {
-			window.print = () => undefined;
-		});
+		// PDF로 저장: 데이터로 인쇄 전용 문서를 만들어 보이지 않는 iframe에서 인쇄한다 (앱의 다크 모드와 상관없이 흰 종이)
 		await finder.getByRole('button', { name: 'PDF로 저장' }).click();
-		await expect(page.locator('#finder-print-root .finder-doc h1')).toHaveText('김정현 이력서');
-		await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
-		await expect(page.locator('#finder-print-root')).toHaveCount(0);
+		const sheet = page.frameLocator('#resume-print-frame');
+		await expect(sheet.locator('h1')).toContainText('김정현');
+		await expect(sheet.locator('h3').first()).toHaveText('MacFolio');
+		await expect(sheet.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
 		await resume.getByRole('link', { name: 'MacFolio', exact: true }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 	});

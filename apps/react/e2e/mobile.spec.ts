@@ -568,12 +568,9 @@ test.describe('모바일', () => {
 		await expect(files.getByRole('article', { name: 'resume.md' }).getByRole('heading', { level: 1 })).toHaveText(
 			'김정현 이력서'
 		);
-		await page.evaluate(() => {
-			window.print = () => undefined;
-		});
 		await files.getByRole('button', { name: '공유' }).tap();
 		await page.getByRole('menu', { name: '공유' }).getByRole('menuitem', { name: 'PDF로 저장' }).tap();
-		await expect(page.locator('#finder-print-root .finder-doc h1')).toHaveText('김정현 이력서');
+		await expect(page.frameLocator('#resume-print-frame').locator('h1')).toContainText('김정현');
 	});
 
 	test('파일은 iOS 파일 앱처럼: 최근 항목·둘러보기 탭, 폴더는 한 화면씩, ••• 로 목록 보기', async ({ page }) => {

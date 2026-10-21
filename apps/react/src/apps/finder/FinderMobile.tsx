@@ -20,7 +20,7 @@ import { downloadFile, openFileInNewTab } from './documents';
 import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
-import { printDoc } from './printDoc';
+import { printCurrentResume } from './resumePrint';
 import { RESUME_DOC } from './resumeDoc';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
@@ -82,7 +82,6 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const [closed, setClosed] = useState<Record<string, boolean>>({});
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
-	const docScroll = useRef<HTMLDivElement>(null);
 
 	// 화면이 바뀐 방식: 들어가면 오른쪽에서, 돌아오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
 	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
@@ -243,10 +242,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 							{
 								label: 'PDF로 저장',
 								icon: 'fa-solid fa-file-arrow-down',
-								onSelect: () => {
-									const article = docScroll.current?.querySelector<HTMLElement>('.finder-doc');
-									if (article) printDoc(article, title);
-								},
+								onSelect: printCurrentResume,
 							},
 						]}
 					/>
@@ -254,7 +250,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
 					{title}
 				</h2>
-				<div ref={docScroll} key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
+				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
 					<DocView
 						path={screen.doc}
 						dark={dark}
