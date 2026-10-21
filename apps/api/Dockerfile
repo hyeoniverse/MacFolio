@@ -10,11 +10,13 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/api/package.json apps/api/
 COPY packages/desktop-core/package.json packages/desktop-core/
 COPY packages/contracts/package.json packages/contracts/
+COPY packages/og-card/package.json packages/og-card/
 RUN pnpm install --frozen-lockfile --filter @macfolio/api...
-# 화면과 함께 쓰는 규칙(desktop-core)과 요청·응답 모양(contracts)을 먼저 빌드한다. api는 그 dist를 쓴다
+# 화면과 함께 쓰는 규칙(desktop-core), 요청·응답 모양(contracts), 공유 카드(og-card)를 먼저 빌드한다. api는 그 dist를 쓴다
 COPY packages/desktop-core packages/desktop-core
 COPY packages/contracts packages/contracts
-RUN pnpm --filter @macfolio/desktop-core --filter @macfolio/contracts build
+COPY packages/og-card packages/og-card
+RUN pnpm --filter @macfolio/desktop-core --filter @macfolio/contracts --filter @macfolio/og-card build
 COPY apps/api apps/api
 RUN pnpm --filter @macfolio/api build
 # 실행에 필요한 것만 따로 모은다 (개발 의존성 제외)
@@ -30,6 +32,10 @@ COPY --from=build /repo/apps/api/dist ./dist
 # 시작할 때 마이그레이션을 적용한다 (Prisma CLI, 스키마, 마이그레이션 파일)
 COPY --from=build /repo/apps/api/prisma ./prisma
 COPY --from=build /repo/apps/api/prisma.config.ts ./
+# 공유 카드(GET /posts/<글>/og.png)의 글꼴과 아이콘. 사이트의 public 폴더에서 이것만 가져온다 (Dockerfile.dockerignore)
+COPY apps/react/public/fonts/AppleSDGothicNeoM.ttf apps/react/public/fonts/AppleSDGothicNeoB.ttf ./og-assets/fonts/
+COPY apps/react/public/imgs/memo.png ./og-assets/imgs/
+ENV OG_ASSETS_DIR=/app/og-assets
 USER node
 EXPOSE 4000
 # 컨테이너가 살아 있고 DB에 닿는지. 배포 스크립트(ops/deploy.sh)가 healthy가 될 때까지 기다린다.

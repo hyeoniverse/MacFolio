@@ -5,7 +5,7 @@ import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import { rehypeHighlightCode } from '@/apps/memo/highlight';
-import { resolveImage, resolveLink } from './repoDocs';
+import { colorSchemeOf, resolveImage, resolveLink } from './repoDocs';
 import { DOC_IMAGES, DOC_SOURCES, docSource } from './docsBundle';
 import { projectLinkId } from './resumeDoc';
 
@@ -119,6 +119,13 @@ const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc, onOpenProject 
 					loading="lazy"
 				/>
 			),
+			// 라이트·다크 그림(<picture>): 사이트의 화면 모드에 맞는 것만 남기고 주소를 묶은 그림으로 바꾼다
+			source: ({ node: _node, srcSet, media, ...props }) => {
+				const scheme = colorSchemeOf(media);
+				if (scheme && scheme !== (dark ? 'dark' : 'light')) return null;
+				const src = typeof srcSet === 'string' ? resolveImage(path, srcSet, DOC_IMAGES) : undefined;
+				return <source {...props} srcSet={src} media={scheme ? undefined : media} />;
+			},
 			pre: ({ node, children, ...props }) => {
 				const code = node?.children[0];
 				const classes =

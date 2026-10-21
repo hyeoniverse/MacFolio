@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	Param,
+	ParseIntPipe,
+	Post,
+	Put,
+	Res,
+	UseGuards,
+} from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -6,12 +18,15 @@ import {
 	ApiNoContentResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
+	ApiProduces,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
+import type { Response } from 'express';
+import { PostCardService } from './card.service.js';
 import { PostsService } from './posts.service.js';
 import { RateLimit } from '../common/rate-limit.js';
 
@@ -32,12 +47,35 @@ const POST_EXAMPLE = {
 @ApiTags('posts')
 @Controller('posts')
 export class PostsController {
-	constructor(private readonly posts: PostsService) {}
+	constructor(
+		private readonly posts: PostsService,
+		private readonly cards: PostCardService
+	) {}
 
 	@Get()
 	@ApiOkResponse({ description: '게시한 글 중 날짜가 된 것과, 저장소 글을 가릴 표시(지운 글·예약 글)' })
 	list() {
 		return this.posts.listPublic();
+	}
+
+	@Get(':slug/og.png')
+	@ApiProduces('image/png')
+	@ApiOkResponse({
+		description:
+			'공유 카드 그림 (1200×630 PNG, 글 제목으로 그린다). 사이트의 og:image가 쓴다. 주소에 붙는 ?v=는 캐시를 바꾸려는 값이라 보지 않는다',
+	})
+	@ApiNotFoundResponse({ description: '방문자에게 보이는 글이 없다 (임시 저장, 지운 글, 예약 글 포함)' })
+	async card(@Param('slug') slug: string, @Res() res: Response) {
+		const png = await this.cards.png(slug);
+		res.set({
+			'Content-Type': 'image/png',
+			// 카카오톡·X 등 다른 곳에서 불러간다 (helmet 기본값은 same-origin)
+			'Cross-Origin-Resource-Policy': 'cross-origin',
+			'X-Content-Type-Options': 'nosniff',
+			// 제목이 바뀌면 사이트가 ?v=를 바꿔 새 주소로 부른다. 같은 주소는 하루 동안 Cloudflare와 브라우저가 들고 있는다
+			'Cache-Control': 'public, max-age=86400',
+		});
+		res.send(png);
 	}
 
 	@Get('admin')

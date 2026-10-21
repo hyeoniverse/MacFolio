@@ -1,0 +1,17 @@
+{
+	// Node에서만 돈다 (글꼴 파일을 읽고 resvg 네이티브 모듈로 굽는다).
+	// 서버(Node)가 빌드한 결과를 쓰므로 NodeNext로 검사한다 (상대 경로 import에 .js를 붙인다)
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"types": ["node"],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"strict": true,
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true
+	},
+	"include": ["src", "eslint.config.js"]
+}

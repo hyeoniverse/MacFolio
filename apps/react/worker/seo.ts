@@ -5,7 +5,7 @@
 // 넣은 내용은 화면에 보이지 않게 숨기고(index.html의 .seo-content), 앱이 그리기 시작하면 React가 root 안을 통째로 바꾼다
 import { readProfile } from '@macfolio/contracts';
 import { mergeProjects, readProjects, type Project } from '@macfolio/desktop-core/site';
-import { SITE_ORIGIN, type SeoPost } from '../seo/site';
+import { lastModified, SITE_ORIGIN, siteChannel, type SeoPost } from '../seo/site';
 import { DEFAULT_PROJECTS, PROFILE } from '../src/shared/profile';
 
 export { SITE_ORIGIN, type SeoPost };
@@ -26,10 +26,13 @@ export interface SeoPage {
 	type: 'website' | 'article';
 	image: string;
 	publishedTime?: string;
+	modifiedTime?: string;
 	jsonLd: Record<string, unknown> | null;
 	/** <div id="root"> 안에 넣을 HTML (이미 이스케이프한 것) */
 	body: string;
 	noindex: boolean;
+	/** 글·프로젝트 주소인데 그런 글·프로젝트가 없다 (글 목록을 모두 받았으면 Worker가 404로 답한다) */
+	notFound?: boolean;
 }
 
 interface SiteData {
@@ -74,8 +77,8 @@ const imageUrl = (src: string | undefined) => {
 	return OG_IMAGE;
 };
 
-const siteTitle = (data: SiteData) => `${data.profile.name}의 Mac`;
-const siteDescription = (data: SiteData) => `macOS 데스크톱을 웹으로 구현한 ${data.profile.name}의 포트폴리오`;
+const siteTitle = (data: SiteData) => siteChannel(data.profile.name).title;
+const siteDescription = (data: SiteData) => siteChannel(data.profile.name).description;
 
 const personLd = (data: SiteData) => ({
 	'@type': 'Person',
@@ -134,23 +137,26 @@ function homePage(data: SiteData, canonical: string | null): SeoPage {
 function postPage(data: SiteData, post: SeoPost): SeoPage {
 	const url = `${SITE_ORIGIN}${postPath(post.slug)}`;
 	const tags = post.tags.length ? `<ul>${post.tags.map((tag) => `<li>#${escapeHtml(tag)}</li>`).join('')}</ul>` : '';
+	const image = post.image ?? OG_IMAGE;
 	return {
 		title: `${post.title} — ${siteTitle(data)}`,
 		description: post.summary,
 		canonical: url,
 		type: 'article',
-		image: OG_IMAGE,
+		image,
 		publishedTime: post.date,
+		modifiedTime: post.updated,
 		jsonLd: {
 			'@context': 'https://schema.org',
 			'@type': 'BlogPosting',
 			headline: post.title,
 			description: post.summary,
 			datePublished: post.date,
+			dateModified: lastModified(post),
 			inLanguage: 'ko',
 			url,
 			mainEntityOfPage: url,
-			image: OG_IMAGE,
+			image,
 			articleSection: post.category,
 			...(post.tags.length && { keywords: post.tags.join(', ') }),
 			author: personLd(data),
@@ -215,7 +221,7 @@ const decodeSegment = (segment: string) => {
 };
 
 /**
- * 주소의 페이지. 글·프로젝트 주소인데 그런 글·프로젝트가 없으면 색인하지 않게(noindex) 한다.
+ * 주소의 페이지. 글·프로젝트 주소인데 그런 글·프로젝트가 없으면 색인하지 않게(noindex) 하고 notFound로 표시한다.
  * 다른 앱 주소(/finder 등)는 첫 화면과 같은 내용이라 canonical을 첫 화면으로
  */
 export function seoPage(pathname: string, data: SiteData): SeoPage {
@@ -226,7 +232,7 @@ export function seoPage(pathname: string, data: SiteData): SeoPage {
 		if (post) return postPage(data, post);
 		const project = match[1] === 'safari' ? data.projects.find((item) => item.id === id) : undefined;
 		if (project) return projectPage(data, project);
-		return { ...homePage(data, null), noindex: true };
+		return { ...homePage(data, null), noindex: true, notFound: true };
 	}
 	return homePage(data, `${SITE_ORIGIN}/`);
 }
@@ -246,6 +252,7 @@ function headTags(page: SeoPage): string {
 		meta('property', 'og:image', page.image),
 		meta('property', 'og:locale', 'ko_KR'),
 		page.publishedTime && meta('property', 'article:published_time', page.publishedTime),
+		page.modifiedTime && meta('property', 'article:modified_time', page.modifiedTime),
 		meta('name', 'twitter:card', 'summary_large_image'),
 		meta('name', 'twitter:title', page.title),
 		meta('name', 'twitter:description', page.description),
@@ -283,7 +290,9 @@ function readSeoPosts(value: unknown): SeoPost[] {
 			typeof item.summary === 'string' &&
 			typeof item.category === 'string' &&
 			typeof item.html === 'string' &&
-			Array.isArray(item.tags)
+			Array.isArray(item.tags) &&
+			(item.updated === undefined || typeof item.updated === 'string') &&
+			(item.image === undefined || typeof item.image === 'string')
 	);
 }
 

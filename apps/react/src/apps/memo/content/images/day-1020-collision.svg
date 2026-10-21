@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="380" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">같은 저녁, 두 작업이 만난 곳 (18~24시)</text>
+<path d="M80.0 56 V320" stroke="#eef0f3"/><text x="80.0" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M166.7 56 V320" stroke="#eef0f3"/><text x="166.7" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">19시</text>
+<path d="M253.3 56 V320" stroke="#eef0f3"/><text x="253.3" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">20시</text>
+<path d="M340.0 56 V320" stroke="#eef0f3"/><text x="340.0" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M426.7 56 V320" stroke="#eef0f3"/><text x="426.7" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">22시</text>
+<path d="M513.3 56 V320" stroke="#eef0f3"/><text x="513.3" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">23시</text>
+<path d="M600.0 56 V320" stroke="#eef0f3"/><text x="600.0" y="338" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<text x="20" y="100" font-size="12" font-weight="600" fill="#3730a3">토큰</text><text x="20" y="116" font-size="10.5" fill="#6b7280">리팩토링</text>
+<path d="M80 108 H600" stroke="#a5b4fc" stroke-width="3"/>
+<text x="20" y="220" font-size="12" font-weight="600" fill="#9d174d">Finder</text><text x="20" y="236" font-size="10.5" fill="#6b7280">그림·음악</text>
+<path d="M80 228 H600" stroke="#f9a8d4" stroke-width="3"/>
+<circle cx="197.0" cy="108" r="6" fill="#6366f1"/>
+<circle cx="358.8" cy="108" r="6" fill="#6366f1"/>
+<circle cx="491.7" cy="108" r="6" fill="#6366f1"/>
+<text x="197.0" y="78" font-size="11" font-weight="600" fill="#3730a3" text-anchor="middle">#280 머지 (19:21)</text>
+<text x="197.0" y="92" font-size="10.5" fill="#4338ca" text-anchor="middle">숫자 4px를 막는 규칙</text>
+<text x="358.8" y="142" font-size="11" font-weight="600" fill="#3730a3" text-anchor="middle">#286 머지 (21:13)</text>
+<text x="358.8" y="156" font-size="10.5" fill="#4338ca" text-anchor="middle">--radius-xs → --radius-4</text>
+<text x="491.7" y="78" font-size="11" font-weight="600" fill="#3730a3" text-anchor="middle">#288~#292 머지 (22:45~)</text>
+<text x="491.7" y="92" font-size="10.5" fill="#4338ca" text-anchor="middle">날색·--ui-*·움직임·그림자</text>
+<circle cx="321.2" cy="228" r="6" fill="#db2777"/>
+<circle cx="328.4" cy="228" r="6" fill="#db2777"/>
+<circle cx="493.1" cy="228" r="6" fill="#db2777"/>
+<text x="313.2" y="258" font-size="11" font-weight="600" fill="#9d174d" text-anchor="end">#287 커밋 (20:47)</text>
+<text x="313.2" y="272" font-size="10.5" fill="#be185d" text-anchor="end">border-radius: 4px</text>
+<text x="336.4" y="292" font-size="11" font-weight="600" fill="#9d174d" text-anchor="start">CI 린트 실패 → 고침 (20:52)</text>
+<text x="336.4" y="306" font-size="10.5" fill="#be185d" text-anchor="start">var(--radius-xs)</text>
+<text x="493.1" y="258" font-size="11" font-weight="600" fill="#9d174d" text-anchor="middle">옛 이름이 사라져 다시 고침 (22:46)</text>
+<text x="493.1" y="272" font-size="10.5" fill="#be185d" text-anchor="middle">var(--radius-4)</text>
+<text x="320" y="366" text-anchor="middle" font-size="10.5" fill="#6b7280">한쪽이 규칙과 이름을 바꾸는 동안 다른 쪽이 그 이름을 새로 썼다. 린트가 잡은 것은 첫 번째뿐이다</text>
+</svg>

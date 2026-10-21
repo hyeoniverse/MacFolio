@@ -7,47 +7,189 @@
 Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를 읽습니다.<br>
 휴대폰으로 열면 iOS 홈 화면이 됩니다.
 
-[**macfolio.hyeoniverse.com**](https://macfolio.hyeoniverse.com) · [API 문서](https://macfolio-api.hyeoniverse.com/docs) · [로드맵](https://github.com/hyeoniverse/MacFolio/issues/8)
+<a href="https://macfolio.hyeoniverse.com"><img src="https://img.shields.io/badge/%EC%82%AC%EC%9D%B4%ED%8A%B8_%EC%97%B4%EA%B8%B0-macfolio.hyeoniverse.com-111111?style=for-the-badge" alt="사이트 열기"></a>
+<a href="https://macfolio-api.hyeoniverse.com/docs"><img src="https://img.shields.io/badge/API_%EB%AC%B8%EC%84%9C-Swagger-85ea2d?style=for-the-badge&logo=swagger&logoColor=black" alt="API 문서"></a>
+<a href="https://macfolio.hyeoniverse.com/memo/day-1020"><img src="https://img.shields.io/badge/%EA%B0%9C%EB%B0%9C%EA%B8%B0-%EB%A9%94%EB%AA%A8_%EC%95%B1-ffcc00?style=for-the-badge" alt="개발기"></a>
 
 [![CI](https://github.com/hyeoniverse/MacFolio/actions/workflows/ci.yml/badge.svg)](https://github.com/hyeoniverse/MacFolio/actions/workflows/ci.yml)
 ![React 19](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)
 ![NestJS](https://img.shields.io/badge/NestJS-12-e0234e?logo=nestjs&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169e1?logo=postgresql&logoColor=white)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-f38020?logo=cloudflare&logoColor=white)
 
-<img src="docs/images/desktop.jpg" alt="MacFolio 데스크톱 화면. 메뉴 막대, 메모 앱 창, 아래쪽 Dock" width="100%">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-hero-dark.jpg">
+  <img src="docs/images/readme-hero-light.jpg" alt="MacFolio 데스크톱. 메뉴 막대, 메모 앱에 열린 블로그 글, 바탕화면 폴더, 아래쪽 Dock" width="100%">
+</picture>
 
-</div>
+<sub>GitHub를 다크 모드로 보면 사이트도 다크 모드로 보입니다.</sub>
 
-## 둘러보기
+<br>
 
 <table>
   <tr>
-    <td width="50%"><img src="apps/react/src/apps/memo/content/images/memo-editor.jpg" alt="메모 앱 편집기"></td>
-    <td width="50%"><img src="apps/react/src/apps/memo/content/images/messages-bubbles.jpg" alt="메시지 앱"></td>
-  </tr>
-  <tr>
-    <td><b>메모 = 블로그</b><br>폴더·갤러리 보기, 검색과 찾기·대치. 관리자로 로그인하면 글이 곧 편집기가 되고, 임시 저장·게시·버전 기록을 남깁니다.</td>
-    <td><b>메시지</b><br>로그인 없이 피드백을 남기고 답글을 답니다. 이름은 방문자 쿠키로 정해지고(🦊 날쌘 여우), 같은 브라우저에서 내 글을 지웁니다.</td>
-  </tr>
-  <tr>
-    <td><img src="apps/react/src/apps/memo/content/images/comments.jpg" alt="블로그 댓글"></td>
-    <td><img src="apps/react/src/apps/memo/content/images/admin-signed-in.jpg" alt="시스템 설정의 계정 화면"></td>
-  </tr>
-  <tr>
-    <td><b>댓글</b><br>로그인 없이 방문자 이름으로 쓰고 같은 브라우저에서 지웁니다. 서버에는 방문자 토큰과 IP의 HMAC만 남습니다.</td>
-    <td><b>관리자 로그인</b><br>GitHub OAuth로 내 계정만 들여보냅니다. 비밀번호가 없고, DB에는 세션 토큰의 해시만 둡니다.</td>
-  </tr>
-  <tr>
-    <td><img src="apps/react/src/apps/memo/content/images/mobile-devices.jpg" alt="iPhone과 Android에서 본 홈 화면"></td>
-    <td><img src="apps/react/src/apps/memo/content/images/sproutfarm-window.jpg" alt="새싹 농장 게임 창"></td>
-  </tr>
-  <tr>
-    <td><b>모바일</b><br>휴대폰에서는 iOS 홈 화면과 위젯, 제어 센터 스와이프로 바뀝니다.</td>
-    <td><b>프로젝트</b><br>배포한 게임(새싹 농장)을 창 안에서 바로 실행합니다. Safari, GitHub 앱에서 다른 프로젝트를 봅니다.</td>
+    <td align="center" width="25%"><h3>1인</h3>개발</td>
+    <td align="center" width="25%"><h3>0원</h3>운영비</td>
+    <td align="center" width="25%"><h3>0개</h3>열린 포트</td>
+    <td align="center" width="25%"><h3>200편+</h3>개발기</td>
   </tr>
 </table>
+
+[데모](#데모) · [기능](#기능) · [정보 구조](#정보-구조) · [사용법](#사용법) · [아키텍처](#아키텍처) · [기술 스택](#기술-스택) · [로컬에서 실행](#로컬에서-실행) · [문서](#문서)
+
+</div>
+
+## 데모
+
+<div align="center">
+  <img src="docs/images/readme-demo.webp" alt="Dock에서 메모 앱을 열고, 글을 골라 읽고, 창을 끌어 옮긴 뒤 음악 앱을 여는 모습" width="100%">
+  <br>
+  <sub>Dock에서 메모 앱 열기 → 글 읽기 → 창 끌어 옮기기 → 음악 앱 열기 (배포한 사이트 그대로)</sub>
+</div>
+
+## 기능
+
+앱 20여 개가 macOS처럼 창으로 열립니다. 아래 화면은 모두 배포한 사이트에서 찍었습니다.
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="docs/images/readme-memo.jpg" alt="메모 앱. 왼쪽 폴더, 가운데 글 목록, 오른쪽 본문">
+      <h4>📝 메모 = 블로그</h4>
+      폴더(분류) · 목록/갤러리 보기 · 검색과 찾기·대치. 관리자로 로그인하면 글이 곧 편집기가 되고, 임시 저장 · 게시 · 버전 기록 · 예약 발행을 남깁니다.
+    </td>
+    <td width="50%" valign="top">
+      <img src="docs/images/readme-finder.jpg" alt="Finder. hyeoniverse 홈 폴더의 공용·그림·다운로드·데스크탑·동영상·문서·블로그·음악 폴더">
+      <h4>🗂️ Finder</h4>
+      Macintosh HD › 사용자 › 홈 트리로 문서 · 블로그 · 사진 · 음악을 파일처럼 둘러봅니다. 저장소의 README와 docs도 여기서 읽고, 관리자는 파일을 끌어다 올립니다.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <img src="docs/images/readme-safari.jpg" alt="Safari. 프로젝트 탭과 MacFolio 소개 페이지">
+      <h4>🧭 Safari = 프로젝트</h4>
+      프로젝트마다 소개 페이지를 탭으로 넘겨 봅니다. 배포한 사이트(게임 새싹 농장 등)는 Dock의 프로젝트 앱으로 창 안에서 바로 실행합니다.
+    </td>
+    <td valign="top">
+      <img src="docs/images/readme-music.jpg" alt="음악 앱. 재생 목록과 지금 재생 중인 곡">
+      <h4>🎵 음악</h4>
+      재생 목록 · 셔플 · 반복 · 대기열. 메뉴 막대와 휴대폰 위젯에서도 재생을 조작합니다.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <img src="docs/images/readme-photos.jpg" alt="사진 앱. 보관함과 프로젝트별 앨범">
+      <h4>🖼️ 사진</h4>
+      프로젝트 화면 모음을 앨범으로 묶어 비율을 지킨 격자로 보여 줍니다. 동영상도 같은 보관함에 둡니다.
+    </td>
+    <td valign="top">
+      <img src="docs/images/readme-terminal.jpg" alt="터미널. neofetch 결과">
+      <h4>⌨️ 터미널</h4>
+      <code>help</code> · <code>whoami</code> · <code>neofetch</code> · <code>skills</code> · <code>projects</code> · <code>open memo</code>. 휴대폰에서는 명령을 눌러 실행하는 <b>단축어</b>가 됩니다.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <img src="docs/images/readme-settings.jpg" alt="시스템 설정. 배경화면 고르기">
+      <h4>⚙️ 시스템 설정</h4>
+      화면 모드(라이트 · 다크 · 자동), 배경화면(관리자가 올린 사진 · 동영상 포함), 사운드, 개인정보, 관리자 계정.
+    </td>
+    <td valign="top">
+      <img src="docs/images/readme-activity.jpg" alt="활동 상태 보기. 방문 수, 그래프, 많이 연 앱, 들어온 곳">
+      <h4>📈 활동 상태 보기</h4>
+      방문 · 순방문자 · 앱 열기 · 머문 시간, 유입 경로, 지역 · 기기, 실시간, 서버 상태. 쿠키 없이 하루 해시로 셉니다.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top">
+      <img src="docs/images/readme-weather.jpg" alt="날씨 앱. 서울의 현재 기온과 시간별·10일 예보">
+      <h4>⛅ 날씨</h4>
+      도시를 검색해 시간별 · 10일 예보, 체감 온도, 습도, 바람을 봅니다 (Open-Meteo).
+    </td>
+    <td valign="top">
+      <img src="docs/images/readme-apidocs.jpg" alt="API 문서 앱. 엔드포인트 목록">
+      <h4>📚 API 문서</h4>
+      백엔드의 OpenAPI 문서를 사이트 안 앱으로 엽니다. 엔드포인트마다 요청 · 응답 예시를 봅니다.
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="25%"><img src="docs/images/readme-mobile-home.jpg" alt="휴대폰 홈 화면. 프로필·음악 위젯과 앱 아이콘"></td>
+    <td width="25%"><img src="docs/images/readme-mobile-memo.jpg" alt="휴대폰에서 연 블로그 글"></td>
+    <td width="50%" valign="top">
+      <h4>📱 휴대폰</h4>
+      화면 폭이 767px 이하면 iOS 홈 화면이 됩니다. 프로필 · 음악 위젯, 페이지를 넘기는 홈 화면, 아래에서 쓸어 올려 홈으로, 위에서 쓸어 내려 제어 센터.<br><br>
+      Finder는 <b>파일</b>, 터미널은 <b>단축어</b>, 관리자 로그인은 <b>암호</b> 앱으로 바뀝니다. 공유 버튼은 공유 시트를 엽니다.
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/messages-bubbles.jpg" alt="메시지 앱"><h4>💬 메시지</h4>로그인 없이 피드백을 남기고 답글을 답니다. 이름은 방문자 쿠키로 정해지고(🦊 날쌘 여우), 같은 브라우저에서 내 글을 지웁니다.</td>
+    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/comments.jpg" alt="블로그 댓글"><h4>🗨️ 댓글 · 좋아요</h4>방문자 이름으로 쓰고 같은 브라우저에서 지웁니다. 서버에는 방문자 토큰과 IP의 HMAC만 남습니다.</td>
+    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/admin-signed-in.jpg" alt="시스템 설정의 계정 화면"><h4>🔐 관리자 로그인</h4>GitHub OAuth로 내 계정만 들여보냅니다. 비밀번호가 없고, DB에는 세션 토큰의 해시만 둡니다.</td>
+  </tr>
+</table>
+
+## 정보 구조
+
+사이트는 주소 하나(`/`)에서 데스크톱 하나를 그립니다. 화면 폭이 767px 이하면 같은 앱을 iOS 홈 화면으로 보여 줍니다. 앱 이름·아이콘·Dock 자리는 `src/apps/manifest.ts` 한 곳에서 정하고, Dock·Launchpad·터미널 `open`·휴대폰 홈 화면이 모두 이 목록을 읽습니다.
+
+```mermaid
+flowchart TB
+    site(["macfolio.hyeoniverse.com"])
+    site --> desktop["데스크톱<br/>(화면 폭 768px 이상)"]
+    site --> mobile["휴대폰<br/>(767px 이하)"]
+
+    desktop --> menubar["메뉴 막대<br/>Apple 메뉴(관리자 로그인) · 앱 메뉴 · 상태 아이콘 · 시계"]
+    desktop --> icons["바탕화면<br/>이력서 · 포트폴리오 · 자격증 (문서 폴더의 가상본)"]
+    desktop --> dock["Dock"]
+    dock --> builtin["기본 앱<br/>Finder · 음악 · Safari · 사진 · 메시지 · 메모<br/>GitHub · 메일 · 공유 · 터미널 · 시스템 설정"]
+    dock --> projects["프로젝트 앱 (배포한 사이트를 창 안에서 실행)<br/>HYEONIVERSE · NewPick · QRU · WTD · 새싹 농장"]
+    dock --> launchpad["Launchpad<br/>API 문서 · 활동 상태 보기 · 날씨 · 미리보기 · QuickTime Player"]
+    dock --> bin["휴지통<br/>버린 기능 · 지운 메모 · 서버 파일 · 브라우저 데이터"]
+
+    mobile --> home["홈 화면<br/>앱 아이콘 · 위젯 · Dock"]
+    mobile --> control["제어 센터<br/>(위에서 아래로 쓸기)"]
+    home --> renamed["이름이 바뀌는 앱<br/>Finder → 파일 · 터미널 → 단축어<br/>관리자 로그인 → 암호"]
+    home -. "데스크톱에만" .-> desktoponly["휴지통 · 미리보기 · QuickTime Player"]
+
+    builtin --> memo["메모 = 블로그<br/>폴더(분류, 3단계까지) › 글"]
+    builtin --> safari["Safari<br/>프로젝트 페이지"]
+    memo --> memoUrl[/"/memo/&lt;글&gt;"/]
+    safari --> safariUrl[/"/safari/&lt;프로젝트&gt;"/]
+```
+
+**Finder의 파일 트리**: macOS처럼 디스크 아래에 사용자 폴더가 있고, 사이트의 문서·글·사진·음악을 파일처럼 둘러봅니다.
+
+```text
+Macintosh HD
+├── 응용 프로그램        앱 목록 (열면 그 앱이 열린다)
+└── 사용자
+    └── hyeoniverse      홈
+        ├── 데스크탑      바탕화면에 올린 파일
+        ├── 문서          이력서 · 포트폴리오(프로젝트 폴더) · 자격증 · 저장소 문서
+        ├── 블로그        메모 앱의 폴더와 글
+        ├── 그림          사진 앱의 앨범
+        ├── 음악          음악 앱의 아티스트 › 앨범 › 곡
+        └── 공용 · 다운로드 · 동영상
+```
+
+**주소**: 앱 화면 중 공유할 만한 것만 주소가 있습니다. 들어오면 로딩 화면 다음에 그 앱이 그 화면으로 열리고, 창을 고르면 주소 막대가 맨 앞 창의 주소로 바뀝니다.
+
+| 주소                  | 화면                      | 검색 로봇이 받는 것                                       |
+| --------------------- | ------------------------- | --------------------------------------------------------- |
+| `/`                   | 데스크톱                  | 소개, 모든 글·프로젝트 링크, Person·WebSite 구조화 데이터 |
+| `/memo/<글>`          | 메모 앱에서 그 글         | 글 본문(그림 포함), BlogPosting, 공유 카드                |
+| `/safari/<프로젝트>`  | Safari에서 그 프로젝트    | 프로젝트 소개, CreativeWork                               |
+| `/sitemap.xml`        | 사이트맵                  | 첫 화면·모든 글(고친 날)·모든 프로젝트                    |
+| `/rss.xml`            | RSS 피드                  | 모든 글의 제목·요약                                       |
+| 없는 글·프로젝트 주소 | 데스크톱 (404, `noindex`) |                                                           |
 
 ## 사용법
 
@@ -60,7 +202,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 | 블로그 읽기        | 메모 앱. 왼쪽 폴더로 좁히고, 위의 버튼으로 목록/갤러리를 바꾸고, 검색 칸에서 찾습니다        |
 | 링크 공유하기      | 메모의 글, Safari의 프로젝트에서 공유 버튼을 누르면 주소가 복사됩니다 (휴대폰은 공유 시트)   |
 | 피드백 남기기      | 메시지 앱에서 내용만 적습니다. 이름은 자동으로 정해지고, 같은 브라우저에서 지울 수 있습니다  |
-| 저에 대해 알아보기 | 터미널에서 `help`, `about`, `skills`, `projects`, `contact`                                  |
+| 저에 대해 알아보기 | 터미널에서 `help`, `whoami`, `neofetch`, `skills`, `projects`, `contact`                     |
 | 화면 바꾸기        | 시스템 설정 → 화면 모드(라이트·다크), 배경화면                                               |
 | 남긴 데이터 지우기 | Dock 오른쪽 끝의 휴지통 → 이 사이트가 브라우저에 남긴 설정·검색어를 보고 비웁니다            |
 
@@ -78,9 +220,131 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 화면의 편집 버튼을 숨기는 것은 안내일 뿐이고, 권한은 서버가 요청마다 확인합니다.
 
+## 아키텍처
+
+### 시스템 구성
+
+프론트엔드는 Cloudflare 위의 Worker와 정적 파일, API는 Oracle Cloud의 무료 VM 한 대입니다. 서버는 들어오는 포트를 열지 않고, Cloudflare Tunnel로만 요청을 받습니다. 운영비는 0원입니다.
+
+```mermaid
+flowchart LR
+    browser["브라우저<br/>React SPA"]
+    crawler["검색 로봇 · 메신저"]
+
+    subgraph cf["Cloudflare"]
+        worker["Worker<br/>첫 화면 HTML · SEO · CSP<br/>sitemap.xml · rss.xml"]
+        assets["정적 자산<br/>Vite 빌드 결과 · 공유 카드"]
+        r2[("R2<br/>문서 파일")]
+        tunnel["Tunnel<br/>macfolio-api."]
+    end
+
+    subgraph vm["Oracle VM · Docker Compose (바깥 포트 없음)"]
+        cloudflared["cloudflared"]
+        api["NestJS API"]
+        db[("PostgreSQL 17<br/>글 · 댓글 · 파일 · 세션 해시")]
+    end
+
+    ext["외부 서비스<br/>GitHub OAuth · Resend · Turnstile<br/>Groq · Gemini · DeepL · TTS · Workers AI<br/>Unsplash · Pexels · OCI"]
+
+    browser -- "macfolio." --> worker
+    crawler --> worker
+    worker --> assets
+    worker -- "/files/*" --> r2
+    worker -- "GET /site · /posts" --> tunnel
+    browser -- "API · 세션 쿠키" --> tunnel
+    tunnel --> cloudflared --> api -- Prisma --> db
+    api --> ext
+```
+
+- **같은 사이트, 다른 하위 도메인**: 프론트엔드(`macfolio.`)와 API(`macfolio-api.`)가 `hyeoniverse.com` 아래에 있어서 `SameSite=Lax` 세션 쿠키가 함께 갑니다.
+- **Worker는 첫 화면만**: 있는 파일(`/assets/*`, 그림)은 Cloudflare가 Worker를 거치지 않고 바로 줍니다. Worker에는 첫 화면, 앱 주소, sitemap·RSS, `/files/*`만 옵니다.
+- **API가 멈춰도 사이트는 뜬다**: Worker는 API를 1.5초만 기다리고, 닿지 않으면 저장소의 글과 코드의 기본 프로필로 그립니다. 화면도 API 없이 로그인·편집만 꺼진 채 돕니다.
+
+요청이 지나가는 층, 데이터 모델, 설계 결정 표는 [docs/backend-design.md](docs/backend-design.md)에 정리했습니다.
+
+### 첫 화면이 그려지기까지
+
+사이트는 자바스크립트로만 그려서, 스크립트를 돌리지 않는 크롤러에게는 빈 화면입니다. 그래서 Worker가 주소마다 제목·설명·구조화 데이터와 숨긴 본문을 `index.html`에 넣어 보냅니다.
+
+```mermaid
+sequenceDiagram
+    participant B as 브라우저 · 크롤러
+    participant W as Worker
+    participant S as 정적 자산
+    participant A as API
+
+    B->>W: GET /memo/merge-strategies
+    par 함께 묻는다
+        W->>S: index.html · seo/posts.json (빌드한 글)
+        W->>A: GET /site (관리자가 고친 프로필·프로젝트)
+        W->>A: GET /posts (서버에 쓴 글)
+    end
+    Note over W: 저장소 글 + 서버 글을 합치고<br/>head(title · og · JSON-LD)와 숨긴 본문을 넣고<br/>CSP를 사이트 콘텐츠에 맞춘다
+    W-->>B: HTML (없는 글이면 404 + noindex)
+    B->>S: JS · CSS · 글꼴
+    Note over B: React가 root를 통째로 바꿔 데스크톱을 그린다
+    B->>A: 댓글 · 좋아요 · 관리자 세션 …
+```
+
+### 패키지
+
+pnpm workspaces와 Turborepo로 묶은 모노레포입니다. 화면과 서버가 같은 규칙을 쓰도록 공용 패키지로 뺐습니다.
+
+```mermaid
+flowchart BT
+    core["packages/desktop-core<br/>창 · 메모 · 음악 · 사이트 규칙<br/>(React · DOM 금지)"]
+    contracts["packages/contracts<br/>API 요청 · 응답 zod 스키마"]
+    og["packages/og-card<br/>공유 카드 PNG (satori · resvg)"]
+    react["apps/react<br/>데스크톱 화면 + Worker"]
+    api["apps/api<br/>NestJS API"]
+
+    contracts --> core
+    react -- "src를 바로 (source 조건)" --> core
+    react -- "타입만" --> contracts
+    api -- "빌드한 dist" --> core
+    api -- "검증" --> contracts
+    react -- "빌드할 때 저장소 글 카드" --> og
+    api -- "서버에 쓴 글 카드" --> og
+```
+
+- **같은 규칙을 한 번만**: 글 주소·날짜·길이, 폴더 경로, 사이트 프로필 검사는 `desktop-core`에, API의 요청·응답 모양은 `contracts`에 있습니다. 화면과 서버가 같은 함수로 검사해서 한쪽만 바뀌지 않습니다.
+- **다시 빌드하지 않는 개발**: 화면(Vite·Vitest)은 패키지의 `src`를 바로 읽고, 서버(Node)는 빌드한 `dist`를 씁니다. Turborepo가 패키지를 먼저 빌드합니다(`dependsOn: ["^build"]`).
+
+### CI/CD
+
+```mermaid
+flowchart LR
+    pr(["PR"])
+    push(["main에 머지"])
+
+    subgraph check["check"]
+        direction TB
+        c1["audit · 포맷 · 린트 · 순환 의존"] --> c2["타입 · 단위 시험 · 빌드"] --> c3["API e2e<br/>(실제 PostgreSQL)"]
+    end
+    e2e["브라우저 E2E<br/>Playwright 6칸 동시<br/>데스크톱 · iPhone · Android"]
+
+    pr --> check
+    pr --> e2e
+    pr --> preview["preview<br/>PR마다 미리보기 주소"]
+    pr --> conventions["conventions<br/>브랜치 · 커밋 · PR 제목"]
+    push --> check
+    push -- "PR에서 통과한 트리와 같으면 다시 돌리지 않음" --> e2e
+
+    check --> gate{"둘 다 통과"}
+    e2e --> gate
+    gate -- "API가 바뀌었으면" --> apiimage["api-image<br/>GHCR에 이미지"] --> apideploy["api-deploy<br/>SSH → deploy.sh<br/>헬스 체크 실패 시 되돌림"] --> deploy
+    gate -- "API 그대로면" --> deploy["deploy<br/>wrangler deploy"]
+```
+
+그 밖에 정해진 시간마다 도는 검사가 있습니다: Semgrep 정적 분석(`sast`), gitleaks 비밀 값 스캔(`secrets`), 10분마다 사이트·API 헬스 체크(`uptime`).
+
 ## 기술 스택
 
-한눈에 보면 이렇습니다. 아래에 **왜 골랐는지, 어디에 어떻게 썼는지**를 적었습니다. 결정 과정은 [#8](https://github.com/hyeoniverse/MacFolio/issues/8)에 있습니다.
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=react,ts,vite,nestjs,prisma,postgres,pnpm,cloudflare,docker,githubactions&perline=10" alt="React, TypeScript, Vite, NestJS, Prisma, PostgreSQL, pnpm, Cloudflare, Docker, GitHub Actions">
+</p>
+
+결정 과정은 [#8](https://github.com/hyeoniverse/MacFolio/issues/8)에 있습니다.
 
 | 영역       | 사용한 것                                                                                 |
 | ---------- | ----------------------------------------------------------------------------------------- |
@@ -89,9 +353,12 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 | 모노레포   | pnpm workspaces, Turborepo                                                                |
 | 테스트     | Vitest(단위), Playwright(E2E: 데스크톱·iPhone·Android), supertest(API e2e)                |
 | 배포       | Cloudflare Workers(프론트엔드), Oracle Cloud VM + Docker Compose + Cloudflare Tunnel(API) |
-| CI         | GitHub Actions: 포맷 → 린트 → 타입 체크 → 테스트 → 빌드 → API e2e → E2E, 규칙 검사        |
+| CI         | GitHub Actions: 포맷 → 린트 → 순환 의존 → 타입 → 테스트 → 빌드 → API e2e → E2E, 보안 검사 |
 
-### 프론트엔드
+각 항목을 펼치면 **왜 골랐는지, 어디에 어떻게 썼는지**가 나옵니다.
+
+<details>
+<summary><b>프론트엔드</b> — React 19 · Vite · Milkdown · react-markdown</summary>
 
 **React 19 + TypeScript + Vite**
 
@@ -114,7 +381,10 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 - **왜:** 방문자에게는 편집기가 필요 없습니다. 가벼운 렌더러로 표·체크리스트(GFM)까지 보여 주고, 코드 문법 강조는 편집기와 같은 lowlight를 써서 두 화면의 색을 똑같이 맞췄습니다
 - **어떻게:** 이미지는 캡션·크게 보기·내려받기 버튼이 있는 컴포넌트로 바꿔 그리고, 글 안에서 찾기는 DOM을 건드리지 않고 CSS Custom Highlight API(`::highlight()`)로 칠합니다
 
-### 백엔드
+</details>
+
+<details>
+<summary><b>백엔드</b> — NestJS · Prisma 7 · PostgreSQL · GitHub OAuth</summary>
 
 구성도, 요청 흐름, 데이터 모델, 설계 결정 표는 [docs/backend-design.md](docs/backend-design.md)에 정리했습니다.
 
@@ -142,12 +412,18 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 - **왜:** 관리자는 저 한 명입니다. 비밀번호를 만들면 해시·재설정까지 만들어야 해서, 이미 쓰는 GitHub 계정으로 확인합니다
 - **어떻게:** `state` 쿠키로 로그인 CSRF를 막고, 계정 이름이 아니라 바뀌지 않는 숫자 ID로 관리자를 가립니다. 세션 쿠키는 `httpOnly`·`Secure`·`SameSite=Lax`, 12시간
 
-### 모노레포: pnpm workspaces + Turborepo
+</details>
+
+<details>
+<summary><b>모노레포: pnpm workspaces + Turborepo</b></summary>
 
 - **왜:** 프론트엔드와 API를 한 저장소에 두고 한 번에 고치고 테스트하려고 모노레포로 묶었습니다. pnpm은 설치가 빠르고 의존성이 엄격하고, Turborepo는 패키지 사이 빌드 순서와 캐시를 맡습니다
-- **어떻게:** 루트의 `pnpm build`·`pnpm test`·`pnpm lint`가 두 앱을 함께 돌립니다. `pnpm dev:all`로 프론트엔드와 API를 같이 띄웁니다
+- **어떻게:** 루트의 `pnpm build`·`pnpm test`·`pnpm lint`가 두 앱과 두 패키지(`desktop-core`, `contracts`)를 함께 돌립니다. `pnpm dev:all`로 프론트엔드와 API를 같이 띄웁니다. `pnpm cycles`(madge)가 순환 import를 막습니다
 
-### 테스트
+</details>
+
+<details>
+<summary><b>테스트</b> — Vitest · Playwright · supertest</summary>
 
 **Vitest (단위)**: 창 위치 계산, 메모 정리·검색·찾기 규칙, 입력 규칙, 세션·해시처럼 화면과 떨어진 순수 함수를 확인합니다. Vite와 설정을 같이 써서 따로 번들 설정이 없습니다
 
@@ -161,17 +437,24 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 **supertest (API e2e)**: 실제 PostgreSQL에 붙여 권한(비관리자는 401, 규칙 위반은 400), 해시만 저장하는지, 요청 제한(429)까지 확인합니다. GitHub에 요청하는 부분만 가짜로 바꿉니다
 
-### 배포
+</details>
+
+<details>
+<summary><b>배포</b> — Cloudflare Workers · Oracle Cloud VM · Cloudflare Tunnel</summary>
 
 **Cloudflare Workers (프론트엔드)**
 
-- **왜:** 정적 파일이라 서버가 필요 없고, 도메인 DNS가 이미 Cloudflare에 있습니다. main에 머지하면 빌드·배포되고, PR마다 미리보기 주소가 생깁니다
-- **어떻게:** Worker 스크립트 없이 `dist`만 정적 자산으로 올리고, 없는 경로는 `index.html`로 보냅니다(SPA)
+- **왜:** 화면은 정적 파일이라 서버가 필요 없고, 도메인 DNS가 이미 Cloudflare에 있습니다. main에 머지하면 빌드·배포되고, PR마다 미리보기 주소가 생깁니다
+- **어떻게:** `dist`를 정적 자산으로 올리고, 그 앞에 작은 Worker(`apps/react/worker/`)를 둡니다
+  - 첫 화면과 앱 주소: 관리자가 고친 사이트 콘텐츠를 `index.html`에 넣고, 그 데모 주소까지 허용하는 CSP를 붙입니다
+  - 검색: 주소마다 제목·설명·Open Graph·구조화 데이터와 숨긴 본문을 넣고, sitemap·RSS를 서버에 쓴 글까지 합쳐 만듭니다. 없는 글 주소는 404입니다
+  - 문서 파일(`/files/<키>`)은 R2 버킷에서 같은 주소로 내줍니다 (Finder가 PDF를 iframe에 띄우도록)
+  - 빌드할 때 저장소 글을 HTML로 그려 두고(`seo/posts.json`), 사진이 없는 글은 제목으로 공유 카드(1200×630 PNG)를 그립니다
 
 **Oracle Cloud Always Free VM + Docker Compose (API)**
 
 - **왜:** 기간 제한 없이 무료인 VM입니다. Render 같은 무료 호스팅은 15분 동안 요청이 없으면 잠들어, 깨어나는 데 1분쯤 걸립니다. EC2와 같은 구조(리눅스 VM + Docker)라 직접 운영해 볼 수 있습니다
-- **어떻게:** Postgres, API, cloudflared를 compose로 함께 띄웁니다. 멀티 스테이지 Dockerfile로 실행 이미지에는 컴파일 결과와 실행 의존성만 넣고, amd64·arm64 모두 빌드됩니다
+- **어떻게:** Postgres, API, cloudflared를 compose로 함께 띄웁니다. 멀티 스테이지 Dockerfile로 실행 이미지에는 컴파일 결과와 실행 의존성만 넣습니다. main에 API 변경이 들어오면 Actions가 이미지를 GHCR에 올리고, SSH로 서버의 `ops/deploy.sh`를 부릅니다. 새 컨테이너가 헬스 체크를 통과하지 못하면 이전 이미지로 되돌립니다([되돌리기 훈련](docs/rollback-drill.md)). 배포 키는 `deploy.sh`만 돌 수 있게 묶여 있습니다
 
 **Cloudflare Tunnel (HTTPS)**
 
@@ -180,26 +463,40 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 자세한 순서는 [docs/deployment.md](docs/deployment.md)에 있습니다.
 
-### CI: GitHub Actions
+</details>
 
-- PR과 main push마다 포맷 → 린트 → 타입 체크 → 단위 테스트 → 빌드 → API e2e(PostgreSQL 서비스 컨테이너) → 브라우저 E2E를 차례로 돌립니다. 실패하면 Playwright 리포트를 올립니다
+<details>
+<summary><b>CI: GitHub Actions</b></summary>
+
+- PR과 main push마다 의존성 취약점 → 포맷 → 린트 → 순환 의존 → 타입 체크 → 단위 테스트 → 빌드 → API e2e(PostgreSQL 서비스 컨테이너)를 `check` 한 잡에서 돌리고, 브라우저 E2E는 그와 동시에 6칸으로 나눠 돌립니다. 실패하면 Playwright 리포트를 올립니다. main에서는 PR에서 이미 통과한 것과 같은 코드면 E2E를 다시 돌리지 않습니다
 - `conventions`: 브랜치 이름, PR 제목, 커밋 메시지가 [작업 규칙](CONTRIBUTING.md)을 따르는지 확인합니다
-- main에 들어온 커밋은 `check`를 통과해야 `deploy`가 Cloudflare Workers에 올립니다. 같은 저장소의 PR은 `preview`가 미리보기 주소를 PR에 남깁니다 (프론트엔드가 바뀐 PR만)
+- main에 들어온 커밋은 시험을 통과해야 배포됩니다. API가 바뀌었으면 API를 먼저 배포하고(`api-image` → `api-deploy`), 그다음 `deploy`가 Cloudflare Workers에 올립니다. 새 화면이 옛 API에 먼저 닿지 않게 하는 순서입니다
+- 같은 저장소의 PR은 `preview`가 미리보기 주소를 PR 댓글에 남깁니다 (프론트엔드가 바뀐 PR만). 미리보기는 `noindex`라 검색에 나오지 않습니다
+- `sast`(Semgrep), `secrets`(gitleaks), `uptime`(10분마다 헬스 체크)은 따로 돕니다
 - `main`의 Ruleset이 `check`와 `conventions`를 필수 검사로 걸어 두어, 둘 다 통과해야 머지됩니다([설정 방법](CONTRIBUTING.md#저장소-설정))
+
+</details>
 
 ## 구조
 
 ```
 apps/
   react/                  데스크톱 UI (Vite + React)
-    src/apps/             앱마다 폴더 하나 (manifest.ts가 앱 목록의 단일 출처)
-    src/apps/memo/content 블로그 글 (Markdown)
+    src/apps/             앱마다 폴더 하나 (manifest.ts가 앱 목록의 단일 출처, registry.ts가 컴포넌트 연결)
+    src/apps/memo/content 블로그 글 (Markdown)과 그림
     src/desktop/          창, Dock, 메뉴 막대, 모바일 셸 (화면과 hook 연결)
-    e2e/                  Playwright
-  api/                    NestJS API (관리자 로그인, 글, 댓글, 이미지, 메모 정리)
+    src/shared/           공통 UI 부품(ui/), API 호출, 저장소, 프로필·프로젝트
+    worker/               Cloudflare Worker: 첫 화면, SEO, CSP, sitemap·RSS, R2 문서 파일
+    seo/                  빌드할 때 만드는 검색용 파일 (글 HTML, sitemap, RSS, 공유 카드)
+    e2e/                  Playwright (가짜 API: e2e/fakeApi.ts)
+  api/                    NestJS API (관리자 로그인, 글, 댓글, 메시지, 파일, 데모, 자원 감시)
+    prisma/               스키마와 마이그레이션 (CHECK 제약은 SQL로)
 packages/
-  desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리, 메모, 음악 (React·DOM 없이 테스트, 서버와 함께 쓰는 규칙)
-docs/                     백엔드 설계, 배포, 마이그레이션 기록
+  desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리, 메모, 음악, 사이트 규칙 (React·DOM 없이 테스트)
+  contracts/              API 요청·응답의 zod 스키마 (서버는 검증, 화면은 타입)
+  og-card/                글의 공유 카드 그림 (빌드는 저장소 글, API는 서버에 쓴 글을 그린다)
+ops/                      서버 스크립트: 배포·되돌리기, 백업·복원, 보안 점검
+docs/                     백엔드 설계, 배포, UI 부품, 보안 점검, 개인정보, 마이그레이션 기록
 wrangler.jsonc            Cloudflare Workers 설정
 ```
 
@@ -266,14 +563,16 @@ pinned: true # 목록 맨 위에 고정 (선택)
 - `title`과 `date`(YYYY-MM-DD)는 필수입니다. 없거나 형식이 틀리면 목록에서 빠지고, 개발 서버 콘솔에 경고가 나옵니다.
 - `category`는 왼쪽 폴더가 됩니다. `/`로 하위 폴더를 만들 수 있고, 상위 폴더를 고르면 하위 폴더의 글까지 보입니다. 없으면 "기타"로 들어갑니다.
 - 이미지는 `content/images/`에 넣고 글 파일 기준 상대 경로로 씁니다. 갤러리 보기에서는 본문의 첫 이미지가 카드 미리보기가 됩니다.
+- 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 그린 카드입니다(`packages/og-card`). 사이트에서 쓴 글의 카드는 API가 그립니다(`GET /posts/<글>/og.png`). sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
 
 ## 배포
 
-| 무엇       | 어디에                                               | 어떻게                           |
-| ---------- | ---------------------------------------------------- | -------------------------------- |
-| 프론트엔드 | Cloudflare Workers                                   | main에 머지하면 GitHub Actions가 |
-| API        | Oracle Cloud Always Free VM (Docker Compose)         | 서버에서 `git pull` 후 다시 빌드 |
-| HTTPS      | Cloudflare Tunnel (서버는 SSH 말고 포트를 열지 않음) |                                  |
+| 무엇       | 어디에                                               | 어떻게                                                                       |
+| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 프론트엔드 | Cloudflare Workers (+ R2 문서 파일)                  | main에 머지하면 GitHub Actions가 `wrangler deploy`                           |
+| API        | Oracle Cloud Always Free VM (Docker Compose)         | API가 바뀐 커밋이면 Actions가 GHCR 이미지 → SSH `deploy.sh` (실패 시 되돌림) |
+| DB 백업    | 서버와 R2                                            | 매일 cron과 배포 직전에 `ops/backup.sh`, 복원은 `ops/restore.sh`             |
+| HTTPS      | Cloudflare Tunnel (서버는 SSH 말고 포트를 열지 않음) |                                                                              |
 
 VM 만들기부터 OAuth App, 터널, 환경 변수, 문제 해결까지 [docs/deployment.md](docs/deployment.md)에 정리했습니다.
 
@@ -299,6 +598,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 - [되돌리기 훈련](docs/rollback-drill.md): 헬스 체크가 실패하는 버전을 서버에 일부러 배포해 자동 되돌리기를 확인하는 절차
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
+- [개인정보 처리](docs/privacy.md): 무엇을 어떻게 저장하고 언제 지우는지
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
 - 개발기: 사이트의 메모 앱 → 개발기 폴더 (`apps/react/src/apps/memo/content/`)
 

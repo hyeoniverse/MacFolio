@@ -111,6 +111,15 @@ export class PostsService {
 		});
 	}
 
+	/** 방문자에게 보이는 글 하나의 제목·날짜·분류 (공유 카드용). 없거나 지웠거나 아직 날짜가 안 됐으면 404 */
+	async findPublic(slug: string, now = today()): Promise<{ title: string; date: string; category: string }> {
+		this.checkSlug(slug);
+		const row = await this.prisma.post.findUnique({ where: { slug } });
+		if (!row || row.deleted || row.title === null || row.date === null || row.date > now)
+			throw new NotFoundException('글이 없습니다.');
+		return { title: row.title, date: row.date, category: row.category ?? '' };
+	}
+
 	async listAdmin(): Promise<AdminPost[]> {
 		await this.purgeExpired();
 		const rows = await this.prisma.post.findMany({ include: WITH_COUNT, orderBy: { slug: 'asc' } });

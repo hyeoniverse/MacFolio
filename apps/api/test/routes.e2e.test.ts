@@ -51,6 +51,7 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'POST /auth/logout': 'public',
 
 	'GET /posts': 'public',
+	'GET /posts/:slug/og.png': 'public',
 	'GET /posts/admin': 'admin',
 	'POST /posts': 'admin',
 	'PUT /posts/:slug/draft': 'admin',

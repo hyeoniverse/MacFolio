@@ -216,7 +216,7 @@ jobs:
           echo "서버의 API: ${deployed:-알 수 없음}"
           if [ -z "$commit" ] || ! git cat-file -e "$commit^{commit}" 2>/dev/null; then
             echo "api=true" >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "$commit" "$GITHUB_SHA" -- apps/api packages/desktop-core packages/contracts package.json pnpm-lock.yaml pnpm-workspace.yaml ops/deploy.sh; then
+          elif git diff --quiet "$commit" "$GITHUB_SHA" -- apps/api packages/desktop-core packages/contracts packages/og-card apps/react/public/fonts apps/react/public/imgs/memo.png package.json pnpm-lock.yaml pnpm-workspace.yaml ops/deploy.sh; then
             echo "api=false" >> "$GITHUB_OUTPUT"
           else
             echo "api=true" >> "$GITHUB_OUTPUT"
@@ -282,6 +282,9 @@ jobs:
       url: https://macfolio.hyeoniverse.com
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # 글마다 마지막으로 고친 날(sitemap lastmod, dateModified)을 git 기록에서 읽는다 (vite.config.ts의 seoPlugin)
+          fetch-depth: 0
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:

@@ -1,5 +1,6 @@
 // 환경 변수를 읽어 검사한다. 잘못되었으면 서버를 띄우지 않고 바로 알린다.
 
+import { fileURLToPath } from 'node:url';
 import type { OciCredentials } from './resources/oci.js';
 import type { R2Credentials } from './documents/r2.js';
 import { RATE_LIMIT_DEFAULTS, type RateLimitName } from './common/rate-limit.js';
@@ -117,6 +118,8 @@ export interface AppConfig {
 	 * 없으면 목록은 그대로 보이고 올리기·지우기만 503
 	 */
 	documents: { r2?: R2Credentials };
+	/** 공유 카드(GET /posts/<글>/og.png)의 글꼴·아이콘이 있는 폴더: 사이트의 public 폴더. 배포 이미지는 /app/og-assets (Dockerfile) */
+	ogAssetsDir: string;
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
 	auth: {
 		githubClientId?: string;
@@ -203,6 +206,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 			perIpPerDay: Number(env.SUMMARY_PER_IP_PER_DAY ?? 3) || 3,
 			totalPerDay: Number(env.SUMMARY_TOTAL_PER_DAY ?? 50) || 50,
 		},
+		// 저장소에서 돌리면 apps/react/public (src/config.ts와 dist/config.js 모두 두 단계 위가 apps)
+		ogAssetsDir: env.OG_ASSETS_DIR || fileURLToPath(new URL('../../react/public', import.meta.url)),
 		documents: {
 			r2:
 				env.R2_ACCOUNT_ID && env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY
