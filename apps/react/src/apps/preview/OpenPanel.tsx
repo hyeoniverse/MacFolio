@@ -25,9 +25,15 @@ import {
 	previewFolder,
 	search,
 	sidebarIdOf,
+	type DocItem,
 	type FileItem,
 	type FinderItem,
 } from '@/apps/finder/files';
+
+/** 열기 창에서 고를 수 있는 것: 올린 파일과 저장소 문서(.md, 텍스트 편집기) */
+export type Openable = FileItem | DocItem;
+const isOpenableKind = (item: FinderItem): item is Openable =>
+	item.kind === 'pdf' || item.kind === 'image' || item.kind === 'file' || item.kind === 'doc';
 import { useLocations } from '@/apps/finder/useLocations';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import AppsGlyph from '@/apps/finder/AppsGlyph';
@@ -50,25 +56,26 @@ const LOCATION_ICONS: Record<string, LucideIcon | typeof AppsGlyph> = {
 };
 
 /** 미리보기가 열 수 있는 것: PDF와 그림 */
-const canPreview = (item: FileItem) => item.kind === 'pdf' || item.kind === 'image';
+const canPreview = (item: Openable) => item.kind === 'pdf' || item.kind === 'image';
 
 /** 이 열기 창을 띄운 앱. 기본은 미리보기 */
 export interface OpenPanelApp {
 	name: string;
 	icon: string;
 	/** 열 수 있는 파일인지 (그 밖의 파일은 흐리게, 고를 수 없다) */
-	canOpen: (item: FileItem) => boolean;
+	canOpen: (item: Openable) => boolean;
 }
 
 const PREVIEW_APP: OpenPanelApp = { name: '미리보기', icon: '/imgs/preview.svg', canOpen: canPreview };
 
 /** 올린 파일 전부 (폴더를 따라 내려간다, 같은 파일은 한 번) */
-const allFiles = (items: FinderItem[], seen = new Set<string>()): FileItem[] =>
+const allFiles = (items: FinderItem[], seen = new Set<string>()): Openable[] =>
 	items.flatMap((item) => {
 		if (item.kind === 'folder') return allFiles(item.children, seen);
-		if (item.kind !== 'pdf' && item.kind !== 'image' && item.kind !== 'file') return [];
-		if (seen.has(item.key)) return [];
-		seen.add(item.key);
+		if (!isOpenableKind(item)) return [];
+		const key = item.kind === 'doc' ? item.id : item.key;
+		if (seen.has(key)) return [];
+		seen.add(key);
 		return [item];
 	});
 
@@ -108,14 +115,13 @@ const ItemThumb: React.FC<{ item: FinderItem }> = ({ item }) => {
  * Finder와 같은 파일 트리를 둘러본다: 왼쪽은 미리보기(iCloud)·최근 항목과 즐겨찾기(문서·프로젝트·블로그·응용 프로그램),
  * 폴더는 두 번 눌러 들어가고 뒤로·앞으로로 오간다. 미리보기가 열 수 없는 파일(문서·글·앱)은 흐리게 보이고 고를 수 없다
  */
-const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => void; app?: OpenPanelApp }> = ({
+const OpenPanel: React.FC<{ onOpen: (file: Openable) => void; onCancel: () => void; app?: OpenPanelApp }> = ({
 	onOpen,
 	onCancel,
 	app = PREVIEW_APP,
 }) => {
 	const locations = useLocations();
-	const isFile = (item: FinderItem): item is FileItem =>
-		(item.kind === 'pdf' || item.kind === 'image' || item.kind === 'file') && app.canOpen(item);
+	const isFile = (item: FinderItem): item is Openable => isOpenableKind(item) && app.canOpen(item);
 	const [history, setHistory] = useState<{ places: Place[]; at: number }>({ places: ['preview'], at: 0 });
 	const place = history.places[history.at];
 	const [query, setQuery] = useState('');
@@ -134,7 +140,7 @@ const OpenPanel: React.FC<{ onOpen: (file: FileItem) => void; onCancel: () => vo
 	const files = useMemo(
 		() =>
 			app === PREVIEW_APP
-				? (previewFolder(locations).children as FileItem[])
+				? (previewFolder(locations).children as Openable[])
 				: allFiles(locations).filter((item) => app.canOpen(item)),
 		[locations, app]
 	);

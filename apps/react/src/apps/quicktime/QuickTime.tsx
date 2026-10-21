@@ -89,7 +89,9 @@ const QuickTime: React.FC = () => {
 			<AppWindow title="QuickTime Player" appName="quicktime" chrome="unified">
 				<OpenPanel
 					app={OPEN_APP}
-					onOpen={(item) => openInPlayer({ key: item.key, name: item.name, media: mediaKind(item.name)! })}
+					onOpen={(item) =>
+						item.kind !== 'doc' && openInPlayer({ key: item.key, name: item.name, media: mediaKind(item.name)! })
+					}
 					onCancel={() => closeApp('quicktime')}
 				/>
 			</AppWindow>

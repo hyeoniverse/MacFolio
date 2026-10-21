@@ -1,5 +1,5 @@
-/* 텍스트 편집기 (macOS TextEdit). 통합형 창: 위 막대에 신호등·뒤로/앞으로·문서 이름, 이력서면 편집·PDF 버튼.
-   아래는 흰 종이 바탕에 Markdown 문서 (DocView), 관리자가 이력서를 고칠 때는 편집기 */
+/* 텍스트 편집기 (macOS TextEdit). 통합형 창: 제목 줄(신호등·문서 이름·문서 단위 버튼), 서식 막대, 눈금자.
+   아래는 흰 종이 바탕에 Markdown 문서 (DocView), 관리자가 이력서를 고칠 때는 원문 편집기 */
 .textedit {
 	display: flex;
 	flex-direction: column;
@@ -10,10 +10,9 @@
 	container-type: inline-size;
 }
 
-/* 위: 제목 줄(신호등 옆). .md는 일반 텍스트 문서라 서식 막대·눈금자가 없다 */
+/* 위: 제목 줄 + 서식 막대 + 눈금자 (눈금자의 아래 선이 종이와의 경계) */
 .textedit-head {
 	flex: none;
-	border-bottom: 1px solid var(--color-separator);
 }
 
 .textedit-titlebar {
@@ -42,24 +41,72 @@
 	z-index: 4;
 	display: flex;
 	flex: none;
+	align-items: center;
 	gap: var(--space-6);
 }
 
+/* 제목 줄 버튼: 모두 같은 높이·글자 크기의 회색 알약 (아이콘 + 글자). 저장만 파랗게, 켜진 토글은 진하게 */
 .textedit-action {
 	display: inline-flex;
 	align-items: center;
-	gap: var(--space-4);
+	gap: var(--space-6);
 	height: 26px;
 	padding: 0 var(--space-10);
 	border: 0;
 	border-radius: var(--radius-6);
 	background-color: var(--textedit-chip);
 	color: var(--color-label);
+	font-size: var(--text-footnote);
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.textedit-action i {
 	font-size: var(--text-caption1);
+}
+
+.textedit-action .textedit-action-caret {
+	margin-left: calc(var(--space-2) * -1);
+	font-size: var(--text-caption2);
+	opacity: 0.6;
 }
 
 .textedit-action:hover:not(:disabled) {
 	filter: brightness(0.95);
+}
+
+.textedit-action:disabled {
+	color: var(--color-secondary-label);
+	opacity: 0.6;
+}
+
+.textedit-action.on {
+	background-color: var(--color-unemphasized-selected-content-background);
+	color: var(--color-control-accent);
+}
+
+.textedit-action.primary {
+	background-color: var(--color-control-accent);
+	color: var(--color-white);
+}
+
+.textedit-action.primary:disabled {
+	background-color: var(--textedit-chip);
+	color: var(--color-secondary-label);
+}
+
+/* 버튼 묶음 사이의 가는 세로선 */
+.textedit-actions-divider {
+	position: relative;
+	z-index: 4;
+	flex: none;
+	width: 1px;
+	height: 18px;
+	background-color: var(--color-separator);
+}
+
+.textedit-toolbar-slot {
+	display: contents;
 }
 
 .textedit {
@@ -91,11 +138,23 @@
 	display: contents;
 }
 
-.textedit-actions .ui-button {
-	height: 26px;
+/* 편집기: 종이 위에 오른쪽 아래 구석의 글자 수 */
+.finder-resume-editor {
+	position: relative;
+}
+
+.finder-resume-editor-dirty {
+	color: var(--color-system-orange);
 }
 
 .finder-resume-editor-count {
+	position: absolute;
+	right: var(--space-12);
+	bottom: var(--space-8);
+	padding: var(--space-2) var(--space-6);
+	border-radius: var(--radius-4);
+	background-color: var(--color-text-background);
+	pointer-events: none;
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption2);
 	font-variant-numeric: tabular-nums;

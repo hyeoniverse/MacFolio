@@ -284,6 +284,7 @@ const Preview: React.FC = () => {
 			{!file ? (
 				<OpenPanel
 					onOpen={(entry) =>
+						entry.kind !== 'doc' &&
 						openInPreview({ key: entry.key, name: entry.name, kind: entry.kind as 'pdf' | 'image', size: entry.size })
 					}
 					onCancel={() => closeApp('preview')}

@@ -82,6 +82,16 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('문서');
 	});
 
+	test('문서 없이 텍스트 편집기를 열면 열기 창이 뜨고, Markdown 문서만 연다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'textedit', exact: true }).click();
+		// 처음 보이는 곳은 이 앱이 여는 파일 전부 (Markdown 문서)
+		const editor = appWindow(page, 'textedit');
+		await editor.getByRole('option', { name: 'README.md' }).dblclick();
+		await expect(editor.getByRole('article', { name: 'README.md' })).toBeVisible();
+	});
+
 	/** 문서 › 이력서 폴더의 이력서를 텍스트 편집기로 연다 */
 	async function openResume(page: Page) {
 		const finder = await openFinder(page);
@@ -89,7 +99,7 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
 		const editor = appWindow(page, 'textedit');
-		await expect(editor.locator('.textedit-title')).toHaveText('김정현_이력서.md');
+		await expect(editor.locator('.textedit-title')).toHaveText(/^김정현_이력서\.md/);
 		return editor;
 	}
 
@@ -112,10 +122,9 @@ test.describe('Finder', () => {
 		await expect(appWindow(page, 'safari')).toBeVisible();
 	});
 
-	test('관리자는 텍스트 편집기에서 이력서를 고치고, 설정의 프로필·프로젝트를 불러와 저장한다', async ({ page }) => {
+	test('관리자는 메모처럼 열자마자 이력서를 고치고, 서식 막대·불러오기·실행 취소를 쓰고 저장한다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const editor = await openResume(page);
-		await editor.getByRole('button', { name: '이력서 편집' }).click();
 		const field = editor.getByRole('textbox', { name: '이력서 Markdown' });
 		await expect(field).toHaveValue(/^# 김정현/);
 		// 저장은 바뀐 게 있을 때만
@@ -126,9 +135,20 @@ test.describe('Finder', () => {
 		await editor.getByRole('button', { name: '불러오기' }).click();
 		await page.getByRole('menu', { name: '불러오기' }).getByRole('menuitem', { name: 'WTD (What To Do)' }).click();
 		await expect(field).toHaveValue(/### \[WTD \(What To Do\)\]\(#project\/whattodo\)/);
-		await editor.getByRole('button', { name: '저장' }).click();
 
-		// 저장하면 보기로 돌아가 바뀐 글이 보이고, 서버에 Markdown 한 장이 간다
+		// 서식 막대로 첫 줄을 굵게 하고, 실행 취소로 되돌린다 (불러오기는 그대로)
+		await field.focus();
+		await field.evaluate((element: HTMLTextAreaElement) => element.setSelectionRange(2, 5));
+		await editor.getByRole('button', { name: '굵게' }).click();
+		await expect(field).toHaveValue(/^# \*\*김정현\*\*/);
+		await page.keyboard.press('ControlOrMeta+z');
+		await expect(field).toHaveValue(/^# 김정현\n/);
+		await expect(field).toHaveValue(/#project\/whattodo/);
+		await editor.getByRole('button', { name: '저장' }).click();
+		await expect(editor.getByRole('button', { name: '저장' })).toBeDisabled();
+
+		// 저장한 모양은 미리보기로, 서버에 Markdown 한 장이 간다
+		await editor.getByRole('button', { name: '미리보기' }).click();
 		const resume = editor.getByRole('article', { name: 'resume.md' });
 		await expect(resume).toContainText('끝까지 책임지는 개발자');
 		await expect(resume.getByRole('heading', { name: /^WTD \(What To Do\) \|/ })).toBeVisible();
@@ -144,10 +164,11 @@ test.describe('Finder', () => {
 		);
 	});
 
-	test('방문자에게는 이력서 편집 버튼이 없다', async ({ page }) => {
+	test('방문자는 이력서를 읽기만 한다 (서식 막대는 꺼져 있다)', async ({ page }) => {
 		const editor = await openResume(page);
 		await expect(editor.getByRole('button', { name: 'PDF 다운로드' })).toBeVisible();
-		await expect(editor.getByRole('button', { name: '이력서 편집' })).toHaveCount(0);
+		await expect(editor.getByRole('textbox', { name: '이력서 Markdown' })).toHaveCount(0);
+		await expect(editor.getByRole('button', { name: '굵게' })).toBeDisabled();
 	});
 
 	test('블로그: 메모에서 만든 빈 폴더도 보인다', async ({ page }) => {
