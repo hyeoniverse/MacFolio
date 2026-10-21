@@ -5,6 +5,9 @@
 	--tips-glass-strong: color-mix(in srgb, var(--color-text-background) 75%, transparent);
 	--tips-glass-edge: color-mix(in srgb, var(--color-label) 8%, transparent);
 	--tips-glass-blur: blur(24px) saturate(180%);
+	/* 카드의 그림 칸: 반투명 회색으로 바탕과 나눈다 (그림자 대신 테두리) */
+	--tips-card-gray: color-mix(in srgb, var(--color-system-gray) 14%, var(--tips-glass));
+	--tips-card-gray-hover: color-mix(in srgb, var(--color-system-gray) 22%, var(--tips-glass));
 
 	display: flex;
 	flex-direction: column;
@@ -128,7 +131,6 @@
 	border: 1px solid var(--tips-glass-edge);
 	background-color: var(--tips-glass);
 	backdrop-filter: var(--tips-glass-blur);
-	box-shadow: var(--shadow-card);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
@@ -222,7 +224,6 @@
 		var(--tips-glass)
 	);
 	backdrop-filter: var(--tips-glass-blur);
-	box-shadow: var(--shadow-card);
 	color: var(--color-label);
 	text-align: left;
 	cursor: pointer;
@@ -293,6 +294,31 @@
 	font-size: var(--text-title2);
 }
 
+.tips-heading-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+}
+
+.tips-see-all {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--color-link);
+	font-size: var(--text-subhead);
+	cursor: pointer;
+}
+
+.tips-page-title {
+	margin: var(--space-8) 0 0;
+	font-size: var(--text-title1);
+	font-weight: 600;
+}
+
+.tips-page-title + .tips-manual-sub {
+	margin-bottom: var(--space-20);
+}
+
 .tips-subheading {
 	margin: 0 0 var(--space-12);
 	color: var(--color-secondary-label);
@@ -328,11 +354,10 @@
 .tips-card-art {
 	display: grid;
 	margin-bottom: var(--space-8);
-	border: 1px solid var(--tips-glass-edge);
+	border: 1px solid var(--color-separator);
 	border-radius: var(--radius-14);
-	background-color: var(--tips-glass);
+	background-color: var(--tips-card-gray);
 	backdrop-filter: var(--tips-glass-blur);
-	box-shadow: var(--shadow-card);
 	color: var(--color-control-accent);
 	font-size: var(--text-title1);
 	aspect-ratio: 16 / 9;
@@ -341,7 +366,7 @@
 }
 
 .tips-card:hover .tips-card-art {
-	background-color: var(--tips-glass-strong);
+	background-color: var(--tips-card-gray-hover);
 }
 
 .tips-card-art img {

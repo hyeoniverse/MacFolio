@@ -75,6 +75,20 @@ test.describe('처음 방문 둘러보기 (팁)', () => {
 		await guide.getByRole('button', { name: /메모 열기/ }).click();
 		await expect(appWindow(page, 'memo')).toBeVisible();
 	});
+
+	test('팁 앱의 사용 설명서: 모두 보기로 모든 앱의 설명서를 보고, 하나를 연다', async ({ page }) => {
+		await enterDesktop(page);
+		await page.locator('.dock').getByRole('button', { name: 'launchpad', exact: true }).click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'tips', exact: true }).click();
+		const tips = appWindow(page, 'tips');
+		const manuals = tips.getByRole('list', { name: '사용 설명서' });
+		await expect(manuals.getByRole('listitem')).toHaveCount(8);
+		await tips.getByRole('button', { name: '모두 보기' }).click();
+		await expect(tips.getByRole('heading', { level: 1 })).toHaveText('사용 설명서');
+		expect(await manuals.getByRole('listitem').count()).toBeGreaterThan(8);
+		await manuals.getByRole('button', { name: /날씨/ }).click();
+		await expect(tips.getByRole('article', { name: '날씨 사용 설명서' })).toBeVisible();
+	});
 });
 
 test.describe('처음 방문 둘러보기: 휴대폰', () => {

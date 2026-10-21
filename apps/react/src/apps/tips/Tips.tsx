@@ -7,11 +7,19 @@ import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { startTour } from '@/desktop/tour/tourStore';
 import { stepsFor, tipSteps, type TourStep } from '@/desktop/tour/tourSteps';
 import { GUIDES, type GuideStep } from './guides';
-import { MANUALS } from './manuals';
+import { MANUALS, type Manual } from './manuals';
 import './Tips.css';
 
 /** 보는 곳: 첫 화면, 팁 모음 하나, 앱 사용 설명서 하나, 화면에서 짚어 보기 */
-type Route = { kind: 'home' } | { kind: 'guide'; id: string } | { kind: 'manual'; app: AppName } | { kind: 'spot' };
+type Route =
+	| { kind: 'home' }
+	| { kind: 'guide'; id: string }
+	| { kind: 'manual'; app: AppName }
+	| { kind: 'manuals' }
+	| { kind: 'spot' };
+
+/** 첫 화면에 보일 사용 설명서 수: 나머지는 '모두 보기'에서 */
+const HOME_MANUALS = 8;
 
 const sameRoute = (a: Route, b: Route) => JSON.stringify(a) === JSON.stringify(b);
 const appLabel = (app: AppName) => APP_MANIFEST[app].label;
@@ -120,6 +128,23 @@ const ManualPage = ({
 	);
 };
 
+/** 사용 설명서 카드 모음: 앱 아이콘 칸, 그 아래 이름과 한 줄 */
+const ManualCards = ({ manuals, onOpen }: { manuals: Manual[]; onOpen: (app: AppName) => void }) => (
+	<ul className="tips-cards" aria-label="사용 설명서">
+		{manuals.map((each) => (
+			<li key={each.app}>
+				<button type="button" className="tips-card tips-app-card" onClick={() => onOpen(each.app)}>
+					<span className="tips-card-art" aria-hidden="true">
+						<img src={appIcon(each.app)} alt="" />
+					</span>
+					<strong>{appLabel(each.app)}</strong>
+					<span>{each.summary}</span>
+				</button>
+			</li>
+		))}
+	</ul>
+);
+
 /**
  * 팁 (macOS 팁 앱): 처음 온 사람을 위한 안내.
  * - 첫 화면: '도움이 필요하세요?'와 찾기, 둘러보기 카드, 팁 모음(블로그 읽는 법·창과 Dock·연락하는 법·화면에서 짚어 보기),
@@ -162,7 +187,9 @@ const Tips = () => {
 				? guide.title
 				: manual
 					? `${appLabel(manual.app)} 사용 설명서`
-					: '화면에서 짚어 보기';
+					: route.kind === 'manuals'
+						? '사용 설명서'
+						: '화면에서 짚어 보기';
 
 	return (
 		<AppWindow title={title} appName="tips" chrome="unified">
@@ -296,25 +323,14 @@ const Tips = () => {
 										</li>
 									</ul>
 
-									<h2 className="tips-heading tips-heading-large">사용 설명서</h2>
+									<div className="tips-heading-row">
+										<h2 className="tips-heading tips-heading-large">사용 설명서</h2>
+										<button type="button" className="tips-see-all" onClick={() => go({ kind: 'manuals' })}>
+											모두 보기
+										</button>
+									</div>
 									<h3 className="tips-subheading">사용자의 앱</h3>
-									<ul className="tips-cards" aria-label="사용 설명서">
-										{MANUALS.map((each) => (
-											<li key={each.app}>
-												<button
-													type="button"
-													className="tips-card tips-app-card"
-													onClick={() => go({ kind: 'manual', app: each.app })}
-												>
-													<span className="tips-card-art" aria-hidden="true">
-														<img src={appIcon(each.app)} alt="" />
-													</span>
-													<strong>{appLabel(each.app)}</strong>
-													<span>{each.summary}</span>
-												</button>
-											</li>
-										))}
-									</ul>
+									<ManualCards manuals={MANUALS.slice(0, HOME_MANUALS)} onOpen={(app) => go({ kind: 'manual', app })} />
 								</>
 							)}
 						</div>
@@ -344,6 +360,14 @@ const Tips = () => {
 							onOpen={() => launch(manual.app)}
 							phone={phone}
 						/>
+					)}
+
+					{route.kind === 'manuals' && (
+						<div className="tips-home">
+							<h1 className="tips-page-title">사용 설명서</h1>
+							<p className="tips-manual-sub">이 사이트의 모든 앱 {MANUALS.length}개를 하나씩 알려 드려요.</p>
+							<ManualCards manuals={MANUALS} onOpen={(app) => go({ kind: 'manual', app })} />
+						</div>
 					)}
 
 					{route.kind === 'spot' && (
