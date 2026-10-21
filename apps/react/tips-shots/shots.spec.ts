@@ -8,7 +8,7 @@ const OUT = 'public/imgs/tips';
 
 async function shot(page: Page, target: Locator, name: string) {
 	await page.waitForTimeout(400);
-	await target.screenshot({ path: `${OUT}/${name}.jpg`, type: 'jpeg', quality: 80, animations: 'disabled' });
+	await target.screenshot({ path: `${OUT}/${name}.jpg`, type: 'jpeg', quality: 90, animations: 'disabled' });
 }
 
 async function open(page: Page, app: string, { fill = true } = {}) {
