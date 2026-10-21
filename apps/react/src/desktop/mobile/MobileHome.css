@@ -295,12 +295,15 @@
 }
 
 /* 페이지: 옆으로 넘긴다. 스크롤이 아니라 트랙을 옮긴다 (MobileHome이 끌기를 듣는다).
-   세로 쓸기는 브라우저에 맡겨 제어 센터가 받는다 */
+   세로 쓸기는 브라우저에 맡겨 제어 센터가 받는다.
+   편집 중 떨리는 위젯의 모서리와 왼쪽 위 − 단추가 상태 표시줄 쪽으로 나가므로, 자르는 선을 위로 16px 올린다
+   (안쪽 여백만큼 바깥 여백을 빼서 내용 자리는 그대로) */
 .mobile-pages {
 	display: flex;
 	flex: 1;
 	min-height: 0;
-	margin-inline: -20px;
+	margin: calc(var(--space-16) * -1) -20px 0;
+	padding-top: var(--space-16);
 	overflow: hidden;
 	touch-action: pan-y;
 }

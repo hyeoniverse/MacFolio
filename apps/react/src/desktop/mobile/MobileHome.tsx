@@ -108,7 +108,8 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			if (!grid || !icon) return;
 			const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
 			const rowHeight = icon.offsetHeight;
-			const height = pagesEl.clientHeight;
+			// 위쪽 안쪽 여백은 떨리는 위젯이 잘리지 않게 둔 자리라 내용 높이에서 뺀다 (MobileHome.css)
+			const height = pagesEl.clientHeight - parseFloat(getComputedStyle(pagesEl).paddingTop);
 			// 위젯 줄 높이: 위젯 아래에 아이콘 두 줄은 늘 들어가게 (작은 화면에서 위젯이 앱을 밀어내 잘리지 않게)
 			const area = pagesEl.querySelector<HTMLElement>('.mobile-widgets');
 			if (area?.clientWidth) {
