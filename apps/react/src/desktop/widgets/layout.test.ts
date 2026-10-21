@@ -142,3 +142,38 @@ describe('위젯 목록 저장', () => {
 		]);
 	});
 });
+
+describe('바탕화면 아이콘을 피한다', () => {
+	const screen = { width: 1440, height: 900 };
+	// 첫 칸(0, 0)의 가운데에 걸친 폴더 아이콘 하나
+	const { x, y } = cellToPoint({ col: 0, row: 0 });
+	const icon = { left: x + 40, top: y + 40, right: x + 136, bottom: y + 140 };
+	const at = (col: number, row: number, size: PlacedWidget['size'] = 'small'): PlacedWidget => ({
+		id: `w${col}${row}`,
+		kind: 'clock',
+		size,
+		col,
+		row,
+	});
+
+	it('아이콘이 있는 칸에는 놓지 않고, 다음 빈 칸을 고른다', () => {
+		expect(canPlace({ col: 0, row: 0 }, 'small', [], screen, undefined, [icon])).toBe(false);
+		expect(firstFree('small', [], screen, [icon])).toEqual({ col: 1, row: 0 });
+		// 중간 위젯은 두 칸이라 (0,0)에서 시작하지 못한다
+		expect(firstFree('medium', [], screen, [icon])).toEqual({ col: 1, row: 0 });
+	});
+
+	it('아이콘 위로 끌어 놓으면 제자리, 아이콘을 가리게 된 위젯은 빈 칸에 그린다 (저장한 자리는 그대로)', () => {
+		const widget = at(2, 1);
+		expect(dropAt(widget, { x, y }, [widget], screen, [icon])).toEqual({ col: 2, row: 1 });
+		const covered = at(0, 0);
+		expect(visibleLayout([covered], screen, [icon])).toEqual([{ ...covered, col: 1, row: 0 }]);
+		expect(visibleLayout([covered], screen)).toEqual([covered]);
+	});
+
+	it('크기를 키울 때 아이콘에 걸리면 빈 칸으로 옮긴다', () => {
+		const right = cellToPoint({ col: 1, row: 0 });
+		const block = { left: right.x + 10, top: right.y + 10, right: right.x + 100, bottom: right.y + 100 };
+		expect(resize(at(0, 0), 'medium', [at(0, 0)], screen, [block])).toMatchObject({ col: 2, row: 0, size: 'medium' });
+	});
+});

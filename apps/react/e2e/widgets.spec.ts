@@ -194,4 +194,41 @@ test.describe('바탕화면 위젯', () => {
 		await page.keyboard.press('Escape');
 		await expect(gallery).toBeHidden();
 	});
+
+	test('위젯은 바탕화면 아이콘(폴더)을 가리지 않는다: 아이콘 자리에 저장된 위젯도 빈 칸에 그린다', async ({ page }) => {
+		await page.setViewportSize({ width: 1440, height: 900 });
+		// 오른쪽 위 아이콘 열에 걸치는 자리 (1440 폭에서 열 6~7은 아이콘 열과 겹친다)
+		await page.addInitScript(() => {
+			localStorage.setItem(
+				'macfolio:desktop:widgets',
+				JSON.stringify([{ id: 'github', kind: 'github', size: 'medium', col: 6, row: 0 }])
+			);
+		});
+		await enterDesktop(page);
+		await closeSafari(page);
+		const box = (await widget(page, 'GitHub').boundingBox())!;
+		const icons = page.locator('[data-desktop-icon]');
+		await expect(icons.first()).toBeVisible();
+		for (const icon of await icons.all()) {
+			const b = (await icon.boundingBox())!;
+			const overlap =
+				box.x < b.x + b.width && b.x < box.x + box.width && box.y < b.y + b.height && b.y < box.y + box.height;
+			expect(overlap).toBe(false);
+		}
+	});
+
+	test('위젯 편집은 갤러리·위젯 바깥(빈 바탕화면)을 누르면 끝난다', async ({ page }) => {
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		await expect(gallery).toBeVisible();
+		// 위젯을 눌러도 끝나지 않는다
+		await widget(page, '날씨').click();
+		await expect(gallery).toBeVisible();
+		await page.mouse.click(page.viewportSize()!.width - 320, 300);
+		await expect(gallery).toBeHidden();
+		await expect(page.getByRole('button', { name: '날씨 위젯 제거' })).toHaveCount(0);
+	});
 });

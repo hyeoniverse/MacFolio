@@ -31,6 +31,7 @@ import {
 	type Point,
 	type Viewport,
 } from './layout';
+import { desktopIconRects } from './iconRects';
 import './DesktopIcons.css';
 
 /** 이만큼 움직여야 끌기로 본다 (그보다 작으면 클릭) */
@@ -95,6 +96,15 @@ const DesktopIcons: React.FC = () => {
 
 	const [saved, setSaved] = useState<Record<string, Cell>>(() => parseSaved(readJson(STORAGE_KEYS.desktopIcons)));
 	const cells = useMemo(() => arrange(ids, saved, viewport), [ids, saved, viewport]);
+	// 아이콘 자리를 알린다: 바탕화면 위젯이 이 자리를 피해 놓인다 (iconRects.ts)
+	useEffect(() => {
+		desktopIconRects.setState({
+			rects: ids.map((id) => {
+				const { x, y } = cellToPoint(cells[id], viewport);
+				return { left: x, top: y, right: x + CELL.width, bottom: y + CELL.height };
+			}),
+		});
+	}, [ids, cells, viewport]);
 	const save = (next: Record<string, Cell>) => {
 		setSaved(next);
 		writeJson(STORAGE_KEYS.desktopIcons, next);

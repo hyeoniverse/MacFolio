@@ -1,6 +1,7 @@
 // 바탕화면 위젯의 자리 계산. React와 DOM에 의존하지 않는 순수 함수만 둔다 (layout.test.ts).
 // 자리는 픽셀이 아니라 칸으로 다룬다: 바탕화면 아이콘이 오른쪽 위에 붙는 것과 달리 위젯은 왼쪽 위부터 놓인다 (macOS와 같다).
 // 작은 위젯이 한 칸, 중간 위젯이 가로로 두 칸이다. 저장(localStorage)도 칸으로 한다
+import type { Rect } from '@/desktop/icons/layout';
 import type { PlacedWidget, WidgetSize } from './catalog';
 
 /** 작은 위젯의 한 변 */
@@ -62,34 +63,61 @@ export function overlaps(a: Cell & { size: WidgetSize }, b: Cell & { size: Widge
 	return a.col < b.col + sb.cols && b.col < a.col + sa.cols && a.row < b.row + sb.rows && b.row < a.row + sa.rows;
 }
 
-/** 이 칸에 놓을 수 있는지: 화면 안이고 다른 위젯과 겹치지 않는다 */
+/** 위젯이 그 칸에서 차지하는 화면 자리 */
+export function cellRect(cell: Cell, size: WidgetSize): Rect {
+	const { x, y } = cellToPoint(cell);
+	const { width, height } = pixelSize(size);
+	return { left: x, top: y, right: x + width, bottom: y + height };
+}
+
+/** 두 자리가 겹치는지 (변만 닿으면 겹치지 않는다) */
+const meets = (a: Rect, b: Rect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
+/**
+ * 이 칸에 놓을 수 있는지: 화면 안이고, 다른 위젯과 겹치지 않고, 바탕화면 아이콘(폴더 등, blocked)을 가리지 않는다
+ */
 export function canPlace(
 	cell: Cell,
 	size: WidgetSize,
 	others: readonly PlacedWidget[],
 	viewport: Viewport,
-	except?: string
+	except?: string,
+	blocked: readonly Rect[] = []
 ): boolean {
 	const { cols, rows } = gridOf(viewport);
 	const span = spanOf(size);
 	if (cell.col < 0 || cell.row < 0 || cell.col + span.cols > cols || cell.row + span.rows > rows) return false;
+	const rect = cellRect(cell, size);
+	if (blocked.some((icon) => meets(rect, icon))) return false;
 	return others.every((other) => other.id === except || !overlaps({ ...cell, size }, other));
 }
 
-/** 빈 칸 중 처음 것: 위 줄부터, 왼쪽부터. 자리가 없으면 null */
-export function firstFree(size: WidgetSize, others: readonly PlacedWidget[], viewport: Viewport): Cell | null {
+/** 빈 칸 중 처음 것: 위 줄부터, 왼쪽부터 (아이콘 자리는 건너뛴다). 자리가 없으면 null */
+export function firstFree(
+	size: WidgetSize,
+	others: readonly PlacedWidget[],
+	viewport: Viewport,
+	blocked: readonly Rect[] = []
+): Cell | null {
 	const { cols, rows } = gridOf(viewport);
 	for (let row = 0; row < rows; row++)
-		for (let col = 0; col < cols; col++) if (canPlace({ col, row }, size, others, viewport)) return { col, row };
+		for (let col = 0; col < cols; col++)
+			if (canPlace({ col, row }, size, others, viewport, undefined, blocked)) return { col, row };
 	return null;
 }
 
 /**
  * 끌어 놓은 자리. 놓은 칸이 비어 있으면 거기, 다른 위젯과 겹치면 놓기 전 자리로 돌아간다 (macOS처럼 밀어내지 않는다)
  */
-export function dropAt(widget: PlacedWidget, point: Point, all: readonly PlacedWidget[], viewport: Viewport): Cell {
+export function dropAt(
+	widget: PlacedWidget,
+	point: Point,
+	all: readonly PlacedWidget[],
+	viewport: Viewport,
+	blocked: readonly Rect[] = []
+): Cell {
 	const cell = pointToCell(point, widget.size, viewport);
-	return canPlace(cell, widget.size, all, viewport, widget.id) ? cell : { col: widget.col, row: widget.row };
+	return canPlace(cell, widget.size, all, viewport, widget.id, blocked) ? cell : { col: widget.col, row: widget.row };
 }
 
 /** 크기를 바꾼다. 그 자리에서 커질 수 없으면 빈 칸으로 옮기고, 빈 칸도 없으면 그대로 */
@@ -97,27 +125,34 @@ export function resize(
 	widget: PlacedWidget,
 	size: WidgetSize,
 	all: readonly PlacedWidget[],
-	viewport: Viewport
+	viewport: Viewport,
+	blocked: readonly Rect[] = []
 ): PlacedWidget {
-	if (canPlace(widget, size, all, viewport, widget.id)) return { ...widget, size };
+	if (canPlace(widget, size, all, viewport, widget.id, blocked)) return { ...widget, size };
 	const cell = firstFree(
 		size,
 		all.filter((other) => other.id !== widget.id),
-		viewport
+		viewport,
+		blocked
 	);
 	return cell ? { ...widget, ...cell, size } : widget;
 }
 
 /**
- * 지금 화면에 그릴 자리. 저장한 자리가 화면 밖이거나(창을 줄였다) 겹치면 빈 칸으로 옮기고, 빈 칸도 없으면 그리지 않는다.
- * 저장한 값은 바꾸지 않는다: 창을 다시 키우면 원래 자리로 돌아간다
+ * 지금 화면에 그릴 자리. 저장한 자리가 화면 밖이거나(창을 줄였다) 겹치거나 아이콘을 가리면 빈 칸으로 옮기고,
+ * 빈 칸도 없으면 그리지 않는다. 저장한 값은 바꾸지 않는다: 창을 다시 키우면(아이콘을 치우면) 원래 자리로 돌아간다
  */
-export function visibleLayout(widgets: readonly PlacedWidget[], viewport: Viewport): PlacedWidget[] {
+export function visibleLayout(
+	widgets: readonly PlacedWidget[],
+	viewport: Viewport,
+	blocked: readonly Rect[] = []
+): PlacedWidget[] {
 	const placed: PlacedWidget[] = [];
 	const moved: PlacedWidget[] = [];
-	for (const widget of widgets) (canPlace(widget, widget.size, placed, viewport) ? placed : moved).push(widget);
+	for (const widget of widgets)
+		(canPlace(widget, widget.size, placed, viewport, undefined, blocked) ? placed : moved).push(widget);
 	for (const widget of moved) {
-		const cell = firstFree(widget.size, placed, viewport);
+		const cell = firstFree(widget.size, placed, viewport, blocked);
 		if (cell) placed.push({ ...widget, ...cell });
 	}
 	return widgets.flatMap((widget) => placed.find((item) => item.id === widget.id) ?? []);

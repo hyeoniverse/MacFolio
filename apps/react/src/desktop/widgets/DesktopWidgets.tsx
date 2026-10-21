@@ -1,4 +1,5 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { desktopIconRects } from '@/desktop/icons/iconRects';
 import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { cssVars } from '@/shared/lib/cssVars';
@@ -63,7 +64,9 @@ const DesktopWidgets: React.FC = () => {
 		setWidgets(next);
 		writeJson(STORAGE_KEYS.desktopWidgets, next);
 	};
-	const visible = visibleLayout(widgets, viewport);
+	// 바탕화면 아이콘(폴더 등) 자리: 위젯이 가리지 않게 피한다
+	const { rects: iconRects } = useSyncExternalStore(desktopIconRects.subscribe, desktopIconRects.getState);
+	const visible = visibleLayout(widgets, viewport, iconRects);
 	const open = (app: AppName) => {
 		openApp(app);
 		bringAppToFront(app);
@@ -72,14 +75,15 @@ const DesktopWidgets: React.FC = () => {
 	/** 빈 칸에 더한다. from(갤러리 미리보기의 자리)이 있으면 거기서 날아가 놓인다 (움직임 줄이기면 바로) */
 	const add = (kind: WidgetKind, size: WidgetSize, from?: Point) => {
 		if (flight) return;
-		const cell = firstFree(size, visible, viewport);
+		const cell = firstFree(size, visible, viewport, iconRects);
 		if (!cell) return;
 		const widget = { id: newWidgetId(kind, widgets), kind, size, ...cell };
 		if (from && !prefersReducedMotion()) setFlight({ widget, from });
 		else save([...widgets, widget]);
 	};
 
-	// 날기: 미리보기 자리에서 칸 자리까지 옮기며 살짝 커졌다가 내려앉는다. 끝나면 저장해 진짜 위젯으로 바꾼다
+	// 날기 (쫀득하게): 미리보기가 톡 튀어 오르며 커지고, 칸 자리까지 휙 날아가, 내려앉을 때 납작하게 눌렸다가
+	// 위로 살짝 튀고 제 모양으로 돌아온다. 끝나면 저장해 진짜 위젯으로 바꾼다
 	useLayoutEffect(() => {
 		const element = flying.current;
 		const container = layer.current?.getBoundingClientRect();
@@ -87,13 +91,21 @@ const DesktopWidgets: React.FC = () => {
 		const to = cellToPoint(flight.widget);
 		const dx = container.left + to.x - flight.from.x;
 		const dy = container.top + to.y - flight.from.y;
+		const at = (x: number, y: number, sx: number, sy = sx) => `translate(${x}px, ${y}px) scale(${sx}, ${sy})`;
 		const animation = element.animate(
 			[
-				{ transform: 'translate(0, 0) scale(1)', boxShadow: 'var(--shadow-widget)' },
-				{ transform: `translate(${dx * 0.85}px, ${dy * 0.85}px) scale(1.06)`, offset: 0.7 },
-				{ transform: `translate(${dx}px, ${dy}px) scale(1)` },
+				{ transform: at(0, 0, 1), easing: 'cubic-bezier(0.3, 1.6, 0.6, 1)' },
+				// 톡 튀어 오른다
+				{ transform: at(0, -12, 1.1), offset: 0.16, easing: 'cubic-bezier(0.55, 0, 0.25, 1)' },
+				// 휙 날아가 칸 바로 위에서 길쭉해진다
+				{ transform: at(dx, dy - 6, 0.98, 1.06), offset: 0.66, easing: 'ease-out' },
+				// 내려앉으며 납작하게 눌리고
+				{ transform: at(dx, dy + 2, 1.08, 0.9), offset: 0.78, easing: 'ease-in-out' },
+				// 위로 살짝 튀었다가
+				{ transform: at(dx, dy - 2, 0.97, 1.04), offset: 0.89, easing: 'ease-in-out' },
+				{ transform: at(dx, dy, 1) },
 			],
-			{ duration: 560, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' }
+			{ duration: 760, fill: 'forwards' }
 		);
 		let done = false;
 		const land = () => {
@@ -114,16 +126,28 @@ const DesktopWidgets: React.FC = () => {
 	const chooseAlbum = (id: string, album: string | undefined) =>
 		save(widgets.map((widget) => (widget.id === id ? { ...widget, album } : widget)));
 	const changeSize = (id: string, size: WidgetSize) =>
-		save(visible.map((widget) => (widget.id === id ? resize(widget, size, visible, viewport) : widget)));
+		save(visible.map((widget) => (widget.id === id ? resize(widget, size, visible, viewport, iconRects) : widget)));
 
-	// 편집 중에 Esc를 누르면 끝낸다
+	// 편집 중에 Esc를 누르거나 갤러리·위젯 바깥(빈 바탕화면, Dock 등)을 누르면 끝낸다 (macOS처럼)
 	useEffect(() => {
 		if (!editing) return;
 		const onKey = (event: KeyboardEvent) => {
 			if (event.key === 'Escape') closeWidgetEditor();
 		};
+		const onPointerDown = (event: PointerEvent) => {
+			const target = event.target as Element | null;
+			if (
+				target?.closest('.widget-gallery, .desktop-widget, .desktop-widget-flight, [role="menu"], [role="alertdialog"]')
+			)
+				return;
+			closeWidgetEditor();
+		};
 		window.addEventListener('keydown', onKey);
-		return () => window.removeEventListener('keydown', onKey);
+		window.addEventListener('pointerdown', onPointerDown, true);
+		return () => {
+			window.removeEventListener('keydown', onKey);
+			window.removeEventListener('pointerdown', onPointerDown, true);
+		};
 	}, [editing]);
 
 	const onPointerDown = (event: React.PointerEvent, widget: PlacedWidget) => {
@@ -158,7 +182,7 @@ const DesktopWidgets: React.FC = () => {
 				x: start.origin.x + event.clientX - start.start.x,
 				y: start.origin.y + event.clientY - start.start.y,
 			};
-			const cell = dropAt(widget, point, visible, viewport);
+			const cell = dropAt(widget, point, visible, viewport, iconRects);
 			save(visible.map((item) => (item.id === widget.id ? { ...item, ...cell } : item)));
 		}
 		setDrag(null);
