@@ -24,8 +24,9 @@ const LINE_TOOLS: [MarkdownFormat, string, string][] = [
 	['quote', '인용(한 줄 소개)', 'fa-solid fa-quote-left'],
 ];
 const HEADINGS = ['본문', '제목 1', '제목 2', '제목 3'];
-/** 눈금자 숫자 (0~20) */
-const RULER = Array.from({ length: 11 }, (_, index) => index * 2);
+/** 눈금자 숫자: 1칸(1cm)은 늘 같은 너비라, 창을 넓히면 숫자가 더 보일 뿐 간격은 그대로다 (넘치는 숫자는 잘린다) */
+const RULER = Array.from({ length: 26 }, (_, index) => index * 2);
+const RULER_CM = 38;
 
 interface Props {
 	/** 저장하거나 취소하면 보기로 돌아간다 */
@@ -209,7 +210,7 @@ const ResumeEditor: React.FC<Props> = ({ onDone, actionsSlot }) => {
 			</div>
 			<div className="textedit-ruler" aria-hidden="true">
 				{RULER.map((mark) => (
-					<span key={mark} style={{ left: `${mark * 5}%` }}>
+					<span key={mark} style={{ left: mark * RULER_CM }}>
 						{mark}
 					</span>
 				))}
