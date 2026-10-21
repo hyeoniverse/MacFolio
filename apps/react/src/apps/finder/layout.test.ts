@@ -12,6 +12,7 @@ import {
 	type AliasItem,
 } from './files';
 import {
+	canCreateIn,
 	canDropInto,
 	canMove,
 	canRename,
@@ -125,6 +126,25 @@ describe('폴더 구조 겹치기', () => {
 		]);
 	});
 
+	it('그림: 새 폴더를 만들고 그림을 올린다 (사진 앱의 앨범 폴더에는 못 한다)', () => {
+		const widget = { id: 'folder:pics0001', name: '위젯', parent: 'pictures' };
+		const withPicture = buildLocations({
+			...input({ ...EMPTY_FINDER_LAYOUT, folders: [widget] }),
+			files: [...files, { id: 'd3', folder: '그림', name: '바다.jpg', key: 'pictures/s.jpg', kind: 'image' }],
+		});
+		expect(canCreateIn(folder(withPicture, 'pictures'))).toBe(true);
+		expect(canCreateIn(folder(withPicture, 'pictures/qru'))).toBe(false);
+		expect(names(folder(withPicture, 'pictures'))).toEqual(['위젯', 'QRU', '바다.jpg']);
+		expect(find(withPicture, 'file:pictures/s.jpg')).toMatchObject({ home: 'pictures' });
+		expect(uploadPlan(withPicture, find(withPicture, 'pictures'))).toMatchObject({ folder: '그림', place: null });
+		expect(uploadPlan(withPicture, find(withPicture, widget.id))).toMatchObject({ folder: '그림', place: widget.id });
+		expect(uploadPlan(withPicture, find(withPicture, 'pictures/qru'))).toBeNull();
+		// 올린 그림을 만든 폴더로 옮긴다
+		const picture = find(withPicture, 'file:pictures/s.jpg')!;
+		expect(canDropInto(withPicture, [picture], folder(withPicture, widget.id))).toBe(true);
+		expect(canDropInto(withPicture, [picture], folder(withPicture, 'pictures/qru'))).toBe(false);
+	});
+
 	it('파일을 만든 폴더로 옮긴다 (R2 키는 그대로), 원래 폴더로 돌아오면 적어 둔 자리를 지운다', () => {
 		const layout: FinderLayoutValue = {
 			...EMPTY_FINDER_LAYOUT,
@@ -204,6 +224,28 @@ describe('폴더 구조 겹치기', () => {
 			state(EMPTY_FINDER_LAYOUT, renamed.organization)
 		);
 		expect(find(build(EMPTY_FINDER_LAYOUT, nested.organization), 'blog/모음/개발기')).not.toBeNull();
+	});
+
+	it('휴지통: 같은 이름을 여러 번 버리고, 되돌릴 때 겹치면 번호를 붙인다', () => {
+		const layout: FinderLayoutValue = {
+			...EMPTY_FINDER_LAYOUT,
+			folders: [
+				{ id: 'folder:aaaa', name: '작업', parent: 'desktop' },
+				{ id: 'folder:bbbb', name: '작업', parent: 'trash' },
+			],
+			trash: { 'folder:bbbb': 'desktop' },
+		};
+		const trashed = trashChange(build(layout), [folder(build(layout), 'folder:aaaa')], state(layout)).layout!;
+		expect(trashed.folders.map((item) => item.parent)).toEqual(['trash', 'trash']);
+		// 바탕화면에 새 작업 폴더가 생긴 뒤 둘 다 되돌린다
+		const later = { ...trashed, folders: [...trashed.folders, { id: 'folder:cccc', name: '작업', parent: 'desktop' }] };
+		const tree = buildTree({ ...TREE_INPUT, layout: later });
+		const back = putBackChange([...tree.roots, tree.trash], tree.trash.children, state(later)).layout!;
+		expect(back.folders.map(({ name, parent }) => `${parent}/${name}`)).toEqual([
+			'desktop/작업 2',
+			'desktop/작업 3',
+			'desktop/작업',
+		]);
 	});
 
 	it('이름 검사와 휴지통: 폴더를 지우면 안의 폴더와 파일도 (파일은 서버에서 지운다)', () => {

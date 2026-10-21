@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import { find, mediaKind, TRASH_ID, type FinderItem, type FolderItem } from '@/apps/finder/files';
-import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
+import { ADMIN_ONLY_NOTE, canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
 import { uploadInto } from '@/apps/finder/useDocumentDrop';
 import { addLocalFiles } from '@/apps/finder/localFiles';
 import { canSetWallpaper, setDesktopWallpaper } from '@/apps/finder/setWallpaper';
@@ -331,9 +331,11 @@ const DesktopIcons: React.FC = () => {
 					disabled: !edit.admin || !canTrash(menuTarget),
 					onSelect: () => edit.trash([menuTarget], () => setSelected([])),
 				},
+				...(edit.admin ? [] : (['separator', { note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
 			]
 		: [
 				{ label: '새 폴더', onSelect: newFolder, disabled: !edit.admin || !desktop },
+				...(edit.admin ? [] : ([{ note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
 				'separator',
 				{ label: '정리하기', onSelect: () => save(cleanUp(ids, viewport)) },
 				{ label: '이름순으로 정리', onSelect: () => save(cleanUp(byName, viewport)) },

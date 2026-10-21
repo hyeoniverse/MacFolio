@@ -53,7 +53,7 @@
 
 **올리기(관리자)**: 관리자로 로그인하고 Finder의 문서 › 이력서·포트폴리오·자격증 폴더 안, 또는 문서 › 포트폴리오 › <프로젝트> 폴더 안(또는 그 폴더 아이콘 위)에 파일을 끌어다 놓는다. 프로젝트 폴더의 파일은 폴더 값 `project:<프로젝트 id>`로 올라간다. 파일은 API 서버를 거치지 않는다.
 
-1. 브라우저 → API `POST /documents/uploads` (폴더·이름·크기): API가 관리자인지, 종류·크기가 맞는지 보고 R2에 바로 올릴 **서명 주소**(5분, `Content-Length`가 그 크기여야 받는다)를 준다. 키는 `resume|portfolio|certificates/<무작위>.<확장자>`, 프로젝트 폴더는 `projects/<프로젝트 id>/<무작위>.<확장자>`
+1. 브라우저 → API `POST /documents/uploads` (폴더·이름·크기): API가 관리자인지, 종류·크기가 맞는지 보고 R2에 바로 올릴 **서명 주소**(5분, `Content-Length`가 그 크기여야 받는다)를 준다. 키는 `resume|portfolio|certificates|desktop|pictures/<무작위>.<확장자>`(바탕화면은 `desktop`, 홈 › 그림은 `pictures`), 프로젝트 폴더는 `projects/<프로젝트 id>/<무작위>.<확장자>`
 2. 브라우저 → R2 `PUT <서명 주소>` (진행률이 Finder 아래에 보인다)
 3. 브라우저 → API `POST /documents`: API가 R2에 HEAD로 정말 올라갔는지·크기가 맞는지 확인하고 목록에 더한다
 

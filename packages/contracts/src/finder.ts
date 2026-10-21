@@ -7,12 +7,12 @@ import { requestBody } from './parse.js';
 /** 관리자가 만든 폴더 id: folder:<무작위 소문자·숫자> */
 export const FINDER_FOLDER_ID = /^folder:[a-z0-9]{4,24}$/;
 /**
- * 관리자 폴더·파일을 둘 수 있는 기본 폴더: 데스크탑, 문서, 문서의 이력서·포트폴리오·자격증, 프로젝트마다의 폴더.
- * 블로그·응용 프로그램·사진 폴더에는 둘 수 없다. 프로젝트 폴더는 문서 › 포트폴리오 안에 있다.
+ * 관리자 폴더·파일을 둘 수 있는 기본 폴더: 데스크탑, 문서, 문서의 이력서·포트폴리오·자격증, 그림, 프로젝트마다의 폴더.
+ * 블로그·응용 프로그램·음악 폴더와 그림 안의 앨범 폴더(사진 앱의 것)에는 둘 수 없다. 프로젝트 폴더는 문서 › 포트폴리오 안에 있다.
  * trash는 휴지통: 휴지통으로 보낸 만든 폴더·파일은 여기 있다가, 비우면 지워지고 되돌리면 원래 자리로 간다
  */
 export const FINDER_BUILTIN_PARENT =
-	/^(trash|desktop|docs|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
+	/^(trash|desktop|docs|pictures|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
 /** 옮긴 파일의 Finder id: file:<R2 키> (예: file:resume/abc.pdf) */
 export const FINDER_FILE_ID = /^file:[A-Za-z0-9][\w./-]{0,199}$/;
 /**
@@ -81,7 +81,7 @@ export interface FinderLayoutValue {
 
 /**
  * 구조 규칙: 폴더 id가 겹치지 않고, 상위 폴더가 있고(기본 폴더이거나 만든 폴더), 고리가 없고, 깊이가 넘치지 않고,
- * 같은 폴더 안의 만든 폴더끼리 이름이 겹치지 않는다(대소문자 무시). 문제마다 문구 하나
+ * 같은 폴더 안의 만든 폴더끼리 이름이 겹치지 않는다(대소문자 무시, 휴지통은 빼고). 문제마다 문구 하나
  */
 export function finderLayoutErrors(layout: FinderLayoutValue): string[] {
 	const errors: string[] = [];
@@ -106,8 +106,10 @@ export function finderLayoutErrors(layout: FinderLayoutValue): string[] {
 			}
 		}
 	}
+	// 휴지통 안은 이름이 겹쳐도 된다 (macOS처럼 같은 이름의 폴더를 여러 번 버릴 수 있다. 되돌릴 때 겹치면 번호를 붙인다)
 	const seen = new Set<string>();
 	for (const item of layout.folders) {
+		if (item.parent === 'trash') continue;
 		const key = `${item.parent}\n${item.name.toLowerCase()}`;
 		if (seen.has(key)) errors.push(`같은 이름의 폴더가 이미 있습니다: ${item.name}`);
 		seen.add(key);

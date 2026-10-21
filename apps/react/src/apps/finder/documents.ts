@@ -14,12 +14,20 @@ import {
 	type ProjectDocumentFolder,
 	type DocumentUploadTicket,
 	MAX_DOCUMENT_BYTES,
+	PICTURES_DOCUMENT_FOLDER,
 } from '@macfolio/contracts';
 import { createStore } from '@macfolio/desktop-core';
 import { api } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 
-export { DESKTOP_DOCUMENT_FOLDER, DOCUMENT_FOLDERS, type DocumentFolder, type DocumentFolderValue, documentProjectId };
+export {
+	DESKTOP_DOCUMENT_FOLDER,
+	PICTURES_DOCUMENT_FOLDER,
+	DOCUMENT_FOLDERS,
+	type DocumentFolder,
+	type DocumentFolderValue,
+	documentProjectId,
+};
 
 /** 프로젝트 폴더의 폴더 값 (project:<프로젝트 id>) */
 export const projectFolderValue = (projectId: string): ProjectDocumentFolder => `project:${projectId}`;

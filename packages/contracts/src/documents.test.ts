@@ -31,6 +31,10 @@ describe('문서 파일 규칙', () => {
 			value: { folder: '이력서', name: '이력서.pdf', size: 1000 },
 		});
 		expect('errors' in parse(DocumentUploadRequest, { folder: '사진', name: 'a.pdf', size: 1 })).toBe(true);
+		// 홈 › 그림 (사진 위젯이 보여 준다)
+		expect(parse(DocumentUploadRequest, { folder: '그림', name: '바다.jpg', size: 1 })).toEqual({
+			value: { folder: '그림', name: '바다.jpg', size: 1 },
+		});
 		// 프로젝트 폴더: project:<프로젝트 id>
 		expect(parse(DocumentUploadRequest, { folder: 'project:macfolio', name: '발표.pdf', size: 1 })).toEqual({
 			value: { folder: 'project:macfolio', name: '발표.pdf', size: 1 },
@@ -45,6 +49,8 @@ describe('문서 파일 규칙', () => {
 	it('폴더 값의 키 앞부분', () => {
 		expect(documentFolderKey('이력서')).toBe('resume');
 		expect(documentFolderKey('project:macfolio')).toBe('projects/macfolio');
+		expect(documentFolderKey('데스크탑')).toBe('desktop');
+		expect(documentFolderKey('그림')).toBe('pictures');
 		expect(documentProjectId('project:macfolio')).toBe('macfolio');
 		expect(documentProjectId('자격증')).toBeNull();
 	});

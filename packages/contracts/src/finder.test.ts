@@ -15,6 +15,7 @@ describe('Finder 구조 규칙', () => {
 				folder('aaaa', ' 발표 ', 'docs'),
 				folder('bbbb', '초안', 'folder:aaaa'),
 				folder('cccc', '작업', 'desktop'),
+				folder('dddd', '위젯', 'pictures'),
 			],
 			files: { 'file:resume/abc.pdf': 'folder:bbbb', 'file:projects/macfolio/x.png': 'projects/macfolio' },
 			aliases: ['docs:이력서', 'projects'],
@@ -29,6 +30,9 @@ describe('Finder 구조 규칙', () => {
 		expect(bad({ folders: [folder('aaaa', '가', 'blog')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'apps')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'projects')] })).toBe(true);
+		// 그림 안의 앨범 폴더(사진 앱의 것)와 음악에는 만들 수 없다
+		expect(bad({ folders: [folder('aaaa', '가', 'pictures/macfolio')] })).toBe(true);
+		expect(bad({ folders: [folder('aaaa', '가', 'music')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'folder:bbbb'), folder('bbbb', '나', 'folder:aaaa')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', 'A', 'docs'), folder('bbbb', 'a', 'docs')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'docs'), folder('aaaa', '나', 'docs')] })).toBe(true);
@@ -36,6 +40,13 @@ describe('Finder 구조 규칙', () => {
 		expect(bad({ files: { 'post:hello': 'docs' } })).toBe(true);
 		expect(bad({ aliases: ['folder:aaaa'] })).toBe(true);
 		expect(bad({ folders: [{ id: 'x', name: '가', parent: 'docs' }] })).toBe(true);
+	});
+
+	it('휴지통 안은 이름이 겹쳐도 된다', () => {
+		const parsed = parse(FinderLayout, {
+			folders: [folder('aaaa', '작업', 'trash'), folder('bbbb', '작업', 'trash'), folder('cccc', '작업', 'desktop')],
+		});
+		expect('value' in parsed).toBe(true);
 	});
 
 	it('이름: 비었거나 / 가 있거나 너무 길면 안 된다', () => {

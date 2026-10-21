@@ -130,6 +130,17 @@ describe('문서 파일 올리기', () => {
 		expect(file).toMatchObject({ folder: 'project:macfolio', kind: 'pdf', key });
 	});
 
+	it('그림 폴더: pictures/ 아래 키, 다른 폴더의 키는 받지 않는다', async () => {
+		const { service } = setup();
+		const { key } = service.uploadTicket({ folder: '그림', name: '바다.jpg', size: 1234 });
+		expect(key).toMatch(/^pictures\/[\w-]{16}\.jpg$/);
+		await expect(service.create({ folder: '데스크탑', name: '바다.jpg', key, size: 1234 }, 'h')).rejects.toThrow(
+			BadRequestException
+		);
+		const file = await service.create({ folder: '그림', name: '바다.jpg', key, size: 1234 }, 'h');
+		expect(file).toMatchObject({ folder: '그림', kind: 'image', key });
+	});
+
 	it('목록: 이력서·포트폴리오·자격증 다음 프로젝트 폴더를 id 순으로, 그 안은 올린 순서', async () => {
 		const { service } = setup();
 		const add = async (folder: string, name: string) => {
