@@ -316,33 +316,32 @@
 	gap: var(--space-2);
 	width: 100%;
 	height: 100%;
-	padding: 0 0 var(--space-12);
-	overflow: hidden;
-	border: 1px solid var(--tips-glass-edge);
-	border-radius: var(--radius-14);
-	background-color: var(--tips-glass);
-	backdrop-filter: var(--tips-glass-blur);
-	box-shadow: var(--shadow-card);
+	padding: 0;
+	border: 0;
+	background: none;
 	color: inherit;
 	text-align: left;
 	cursor: pointer;
 }
 
-.tips-card:hover {
-	background-color: var(--tips-glass-strong);
-}
-
-.tips-card > :not(.tips-card-art) {
-	padding-inline: var(--space-12);
-}
-
+/* 카드는 그림 칸만: 제목·설명은 카드 밖 아래에 (macOS 팁 앱처럼) */
 .tips-card-art {
 	display: grid;
-	margin-bottom: var(--space-4);
+	margin-bottom: var(--space-8);
+	border: 1px solid var(--tips-glass-edge);
+	border-radius: var(--radius-14);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+	box-shadow: var(--shadow-card);
 	color: var(--color-control-accent);
 	font-size: var(--text-title1);
 	aspect-ratio: 16 / 9;
 	place-items: center;
+	transition: background-color 0.15s ease;
+}
+
+.tips-card:hover .tips-card-art {
+	background-color: var(--tips-glass-strong);
 }
 
 .tips-card-art img {
