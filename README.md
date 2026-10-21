@@ -30,10 +30,10 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 <table>
   <tr>
-    <td align="center" width="25%"><h3>1인</h3>화면부터 서버까지</td>
-    <td align="center" width="25%"><h3>0원</h3>서버 운영비</td>
-    <td align="center" width="25%"><h3>0개</h3>바깥에 연 서버 포트</td>
-    <td align="center" width="25%"><h3>200편+</h3>메모 앱의 개발기</td>
+    <td align="center" width="25%"><h3>1인</h3>개발</td>
+    <td align="center" width="25%"><h3>0원</h3>운영비</td>
+    <td align="center" width="25%"><h3>0개</h3>열린 포트</td>
+    <td align="center" width="25%"><h3>200편+</h3>개발기</td>
   </tr>
 </table>
 
