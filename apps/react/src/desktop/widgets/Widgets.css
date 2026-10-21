@@ -233,8 +233,9 @@
 }
 
 .widget-calendar {
-	/* 작은 숫자가 빽빽해 무늬 있는 배경화면 위에서 읽히도록 진한 판 (흐림·가장자리 빛은 그대로) */
+	/* 작은 숫자가 빽빽해 무늬 있는 배경화면 위에서도 읽히도록 비치지 않는 판 */
 	--widget-background: var(--widget-background-solid);
+	--widget-blur: none;
 	container-type: size;
 }
 
@@ -399,8 +400,9 @@
 /* ─── 최근 글 ─── */
 /* macOS 메모 위젯: 노란 머리띠(폴더 아이콘과 이름) 아래 점선, 그 아래 한 줄씩 구분선 */
 .widget-posts {
-	/* 줄글 제목이 배경화면과 겹치지 않게 진한 판 */
+	/* 줄글 제목이 배경화면과 겹치지 않게 비치지 않는 판 */
 	--widget-background: var(--widget-background-solid);
+	--widget-blur: none;
 	container-type: size;
 	padding: 0;
 }
