@@ -34,7 +34,7 @@ import { docSource } from './docsBundle';
 import { docTitle } from './repoDocs';
 import { finderDocRequest, finderFolderRequest } from './openDoc';
 import DocView from './DocView';
-import { printCurrentResume } from './resumePrint';
+import { downloadResume } from './resumeDownload';
 import { RESUME_DOC } from './resumeDoc';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
@@ -99,6 +99,8 @@ const Finder: React.FC = () => {
 	const place = history.places[history.at];
 	const [view, setView] = useState<View>('icons');
 	const [selected, setSelected] = useState<string | null>(null);
+	// 이력서 PDF를 만드는 중 (처음에는 글꼴을 받느라 몇 초 걸린다)
+	const [downloading, setDownloading] = useState(false);
 	const [query, setQuery] = useState('');
 	const content = useRef<HTMLDivElement>(null);
 
@@ -533,7 +535,15 @@ const Finder: React.FC = () => {
 								{title}
 							</h1>
 							{'doc' in place && place.doc === RESUME_DOC && (
-								<IconButton icon="fa-solid fa-file-arrow-down" label="PDF로 저장" onClick={printCurrentResume} />
+								<IconButton
+									icon={downloading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-arrow-down'}
+									label={downloading ? 'PDF 만드는 중' : 'PDF 다운로드'}
+									disabled={downloading}
+									onClick={() => {
+										setDownloading(true);
+										void downloadResume().finally(() => setDownloading(false));
+									}}
+								/>
 							)}
 							{'folder' in place && (
 								<div className="finder-views" role="group" aria-label="보기">

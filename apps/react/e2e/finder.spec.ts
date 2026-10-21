@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Locator, Page } from '@playwright/test';
 import { fakeFiles } from './fakeFiles';
@@ -84,12 +85,14 @@ test.describe('Finder', () => {
 		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '이력서' }).click();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
-		// PDF로 저장: 데이터로 인쇄 전용 문서를 만들어 보이지 않는 iframe에서 인쇄한다 (앱의 다크 모드와 상관없이 흰 종이)
-		await finder.getByRole('button', { name: 'PDF로 저장' }).click();
-		const sheet = page.frameLocator('#resume-print-frame');
-		await expect(sheet.locator('h1')).toContainText('김정현');
-		await expect(sheet.locator('h3').first()).toHaveText('MacFolio');
-		await expect(sheet.locator('body')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+		// PDF 다운로드: 누르는 순간의 데이터로 브라우저에서 PDF를 만들어 바로 내려받는다
+		const download = page.waitForEvent('download');
+		await finder.getByRole('button', { name: 'PDF 다운로드' }).click();
+		const file = await download;
+		expect(file.suggestedFilename()).toBe('김정현_이력서.pdf');
+		const bytes = readFileSync(await file.path());
+		expect(bytes.subarray(0, 5).toString()).toBe('%PDF-');
+		await expect(finder.getByRole('button', { name: 'PDF 다운로드' })).toBeEnabled();
 		await resume.getByRole('link', { name: 'MacFolio', exact: true }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 	});

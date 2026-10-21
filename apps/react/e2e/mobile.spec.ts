@@ -556,7 +556,7 @@ test.describe('모바일', () => {
 		expect((await download).url()).toMatch(/\/files\/resume\/test\.pdf\?download=1$/);
 	});
 
-	test('파일: 데이터로 만든 이력서를 읽고, 공유 › PDF로 저장으로 인쇄 창을 연다', async ({ page }) => {
+	test('파일: 데이터로 만든 이력서를 읽고, 공유 › PDF 다운로드로 바로 내려받는다', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '파일')).tap();
 		const files = appWindow(page, 'finder');
@@ -569,8 +569,9 @@ test.describe('모바일', () => {
 			'김정현 이력서'
 		);
 		await files.getByRole('button', { name: '공유' }).tap();
-		await page.getByRole('menu', { name: '공유' }).getByRole('menuitem', { name: 'PDF로 저장' }).tap();
-		await expect(page.frameLocator('#resume-print-frame').locator('h1')).toContainText('김정현');
+		const download = page.waitForEvent('download');
+		await page.getByRole('menu', { name: '공유' }).getByRole('menuitem', { name: 'PDF 다운로드' }).tap();
+		expect((await download).suggestedFilename()).toBe('김정현_이력서.pdf');
 	});
 
 	test('파일은 iOS 파일 앱처럼: 최근 항목·둘러보기 탭, 폴더는 한 화면씩, ••• 로 목록 보기', async ({ page }) => {

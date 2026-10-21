@@ -20,7 +20,7 @@ import { downloadFile, openFileInNewTab } from './documents';
 import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
-import { printCurrentResume } from './resumePrint';
+import { downloadResume } from './resumeDownload';
 import { RESUME_DOC } from './resumeDoc';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
@@ -216,7 +216,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		return (
 			<div className="files-phone doc">
 				{navigation}
-				{/* 데이터로 만든 이력서: 공유 › PDF로 저장 (브라우저 인쇄 창에서 PDF로) */}
+				{/* 데이터로 만든 이력서: 공유 › PDF 다운로드 (누르는 순간의 데이터로 만든 PDF) */}
 				{screen.doc === RESUME_DOC && (
 					<IconButton
 						ref={moreButton}
@@ -240,9 +240,9 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 						onClose={() => setMenu(null)}
 						items={[
 							{
-								label: 'PDF로 저장',
+								label: 'PDF 다운로드',
 								icon: 'fa-solid fa-file-arrow-down',
-								onSelect: printCurrentResume,
+								onSelect: () => void downloadResume(),
 							},
 						]}
 					/>
