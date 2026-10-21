@@ -85,8 +85,8 @@
 
 .tips-hero-title {
 	margin: var(--space-16) 0 var(--space-16);
-	font-size: var(--text-large-title);
-	font-weight: 700;
+	font-size: var(--text-title1);
+	font-weight: 600;
 	text-align: center;
 }
 
@@ -153,6 +153,7 @@
 .tips-result strong,
 .tips-feature-list strong {
 	font-size: var(--text-subhead);
+	font-weight: 500;
 }
 
 .tips-result small,
@@ -185,23 +186,30 @@
 	padding: var(--space-20);
 	border: 0;
 	border-radius: var(--radius-18);
-	background: linear-gradient(135deg, var(--color-system-yellow), var(--color-system-orange));
-	color: var(--color-white);
+	background: linear-gradient(
+		160deg,
+		color-mix(in srgb, var(--color-system-yellow) 22%, transparent),
+		color-mix(in srgb, var(--color-system-orange) 10%, transparent)
+	);
+	color: var(--color-label);
 	text-align: left;
 	cursor: pointer;
 }
 
 .tips-feature-badge img {
-	width: 64px;
-	height: 64px;
+	width: 56px;
+	height: 56px;
 	margin-bottom: var(--space-8);
+	border-radius: var(--radius-14);
 }
 
 .tips-feature-card strong {
-	font-size: var(--text-title2);
+	font-size: var(--text-title3);
+	font-weight: 600;
 }
 
 .tips-feature-card span {
+	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
 
@@ -231,11 +239,10 @@
 .tips-feature-list .tips-feature-icon {
 	display: inline-grid;
 	flex: none;
-	width: 40px;
-	height: 40px;
-	border-radius: var(--radius-10);
-	background-color: var(--color-system-fill);
+	width: 28px;
+	height: 28px;
 	color: var(--color-control-accent);
+	font-size: var(--text-title3);
 	place-items: center;
 }
 
@@ -246,19 +253,19 @@
 
 .tips-heading {
 	margin: var(--space-24) 0 var(--space-12);
-	font-size: var(--text-title2);
-	font-weight: 700;
+	font-size: var(--text-title3);
+	font-weight: 600;
 }
 
 .tips-heading-large {
-	font-size: var(--text-title1);
+	font-size: var(--text-title2);
 }
 
 .tips-subheading {
 	margin: 0 0 var(--space-12);
 	color: var(--color-secondary-label);
-	font-size: var(--text-body);
-	font-weight: 600;
+	font-size: var(--text-subhead);
+	font-weight: 500;
 }
 
 /* 회색 둥근 카드 */
@@ -274,40 +281,45 @@
 .tips-card {
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-4);
+	gap: var(--space-2);
 	width: 100%;
 	height: 100%;
-	padding: var(--space-12);
+	padding: 0 0 var(--space-12);
+	overflow: hidden;
 	border: 0;
-	border-radius: var(--radius-18);
-	background-color: var(--color-system-fill);
+	border-radius: var(--radius-14);
+	background-color: var(--color-tertiary-system-fill);
 	color: inherit;
 	text-align: left;
 	cursor: pointer;
 }
 
 .tips-card:hover {
-	background-color: var(--color-secondary-system-fill);
+	background-color: var(--color-system-fill);
+}
+
+.tips-card > :not(.tips-card-art) {
+	padding-inline: var(--space-12);
 }
 
 .tips-card-art {
 	display: grid;
-	margin-bottom: var(--space-8);
-	border-radius: var(--radius-14);
-	background-color: var(--color-window-background);
+	margin-bottom: var(--space-4);
 	color: var(--color-control-accent);
-	font-size: var(--text-large-title);
-	aspect-ratio: 2 / 1;
+	font-size: var(--text-title1);
+	aspect-ratio: 16 / 9;
 	place-items: center;
 }
 
 .tips-card-art img {
-	width: 56px;
-	height: 56px;
+	width: 52px;
+	height: 52px;
+	border-radius: var(--radius-14);
 }
 
 .tips-card strong {
-	font-size: var(--text-body);
+	font-size: var(--text-subhead);
+	font-weight: 600;
 }
 
 .tips-card span:not(.tips-card-art) {
@@ -344,15 +356,16 @@
 	border: 0;
 	border-radius: var(--radius-8);
 	background: none;
-	color: var(--color-label);
-	font-size: var(--text-subhead);
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
 	text-align: left;
 	cursor: pointer;
 }
 
 .tips-toc button:hover,
 .tips-toc button.active {
-	background-color: var(--color-system-fill);
+	background-color: var(--color-tertiary-system-fill);
+	color: var(--color-label);
 }
 
 .tips-manual-body {
@@ -371,20 +384,21 @@
 .tips-manual-head h1,
 .tips-spot h1 {
 	margin: 0;
-	font-size: var(--text-large-title);
-	font-weight: 700;
+	font-size: var(--text-title1);
+	font-weight: 600;
 }
 
 .tips-manual-sub {
 	margin: var(--space-4) 0 0;
 	color: var(--color-secondary-label);
-	font-size: var(--text-title3);
+	font-size: var(--text-body);
 }
 
 .tips-manual-icon {
 	flex: none;
-	width: 96px;
-	height: 96px;
+	width: 80px;
+	height: 80px;
+	border-radius: var(--radius-18);
 }
 
 .tips-manual-fa {
@@ -412,24 +426,22 @@
 .tips-manual-section-icon {
 	display: inline-grid;
 	flex: none;
-	width: 36px;
-	height: 36px;
-	border-radius: var(--radius-10);
-	background-color: var(--color-system-fill);
+	width: 24px;
+	height: 24px;
 	color: var(--color-control-accent);
 	place-items: center;
 }
 
 .tips-manual-section h2 {
 	margin: 0 0 var(--space-4);
-	font-size: var(--text-title3);
+	font-size: var(--text-body);
 	font-weight: 600;
 }
 
 .tips-manual-section p {
 	margin: 0;
 	color: var(--color-secondary-label);
-	font-size: var(--text-body);
+	font-size: var(--text-subhead);
 	line-height: 1.6;
 }
 
@@ -526,7 +538,8 @@
 	}
 
 	.tips-manual-icon {
-		width: 64px;
-		height: 64px;
+		width: 56px;
+		height: 56px;
+		border-radius: var(--radius-14);
 	}
 }
