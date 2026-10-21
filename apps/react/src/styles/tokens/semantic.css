@@ -55,6 +55,7 @@
 	--color-material-label: rgba(0, 0, 0, 0.6); /* 머티리얼 위의 작은 표시 (Dock 실행 중 점) */
 	--color-material-widget: rgba(255, 255, 255, 0.48); /* 바탕화면·홈 화면 위젯의 유리 판 */
 	--color-material-widget-edge: rgba(255, 255, 255, 0.6); /* 유리 판 가장자리의 빛 */
+	--color-material-widget-solid: rgba(255, 255, 255, 0.88); /* 글이 많은 위젯(캘린더·메모)의 진한 판 */
 
 	/* 메모 앱의 노란 강조 */
 	--color-notes-yellow: var(--palette-notes-yellow);
@@ -196,6 +197,7 @@
 	--color-material-label: rgba(255, 255, 255, 0.75);
 	--color-material-widget: rgba(28, 28, 32, 0.45);
 	--color-material-widget-edge: rgba(255, 255, 255, 0.14);
+	--color-material-widget-solid: rgba(30, 30, 34, 0.88);
 
 	--color-material-notification: rgba(44, 44, 46, 0.78);
 	--color-material-notification-control: rgba(58, 58, 60, 0.95);

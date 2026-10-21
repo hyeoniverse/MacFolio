@@ -19,8 +19,10 @@
 	--dock-indicator-color: var(--color-material-label);
 	--launchpad-background: var(--color-material-fullscreen);
 
-	/* 위젯 (desktop/widgets): 배경화면이 흐리게 비치는 유리 판 (Dock·메뉴 막대와 같은 머티리얼). 날씨는 비치는 하늘 색, 메모는 노란 머리띠 */
+	/* 위젯 (desktop/widgets): 배경화면이 흐리게 비치는 유리 판 (Dock·메뉴 막대와 같은 머티리얼).
+	   글이 많은 캘린더·메모는 진한 판(solid), 날씨는 불투명한 하늘 색 */
 	--widget-background: var(--color-material-widget);
+	--widget-background-solid: var(--color-material-widget-solid);
 	--widget-edge: var(--color-material-widget-edge);
 	--widget-blur: blur(28px) saturate(170%);
 	--widget-on-label: var(--color-window-background); /* 진한 동그라미(캘린더의 오늘) 위 글자 */
