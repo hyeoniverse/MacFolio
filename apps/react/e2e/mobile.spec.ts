@@ -1529,6 +1529,79 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await expect(pageWidgets(1).nth(0)).toContainText('19°');
 	});
 
+	test('길게 누르면 편집: 위젯을 빼고, +의 갤러리에서 지금 페이지에 더하고, 완료로 끝낸다. 구성은 남는다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		const home = page.locator('.mobile-home');
+		const firstPage = page.locator('.mobile-page').first().locator('.mobile-widgets');
+		// 아이콘 위를 길게 누른다: 편집이 되고, 그 앱은 열리지 않는다
+		const icon = (await page
+			.getByRole('navigation', { name: '앱', exact: true })
+			.locator('.mobile-app')
+			.first()
+			.boundingBox())!;
+		await page.mouse.move(icon.x + icon.width / 2, icon.y + icon.height / 2);
+		await page.mouse.down();
+		await expect(home).toHaveClass(/editing/);
+		await page.mouse.up();
+		await expect(page.locator('.container.mobile')).toHaveCount(0);
+
+		// 편집 중에는 앱이 열리지 않는다
+		await page.getByRole('navigation', { name: '앱', exact: true }).locator('.mobile-app').first().click();
+		await expect(page.locator('.container.mobile')).toHaveCount(0);
+
+		await page.getByRole('button', { name: '음악 위젯 제거' }).click();
+		await expect(firstPage.getByRole('group', { name: '음악 위젯' })).toHaveCount(0);
+
+		await page.getByRole('button', { name: '위젯 더하기' }).click();
+		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		await gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
+		await expect(gallery).toBeHidden();
+		await expect(firstPage.getByRole('group', { name: '시계 위젯' })).toBeVisible();
+
+		await page.getByRole('button', { name: '완료' }).click();
+		await expect(home).not.toHaveClass(/editing/);
+		await expect(page.getByRole('button', { name: '위젯 더하기' })).toHaveCount(0);
+
+		await page.reload();
+		await page.locator('.loading-container').tap();
+		await expect(page.locator('.loading-container')).toBeHidden({ timeout: 20_000 });
+		expect(
+			await firstPage
+				.locator('[role="group"]')
+				.evaluateAll((items) => items.map((item) => item.getAttribute('aria-label')))
+		).toEqual(['소개 위젯', '시계 위젯']);
+	});
+
+	test('페이지에 자리가 없으면 자리가 있는 페이지에 더하고, 어디에도 없으면 고를 수 없다', async ({ page }) => {
+		await page.addInitScript(() => {
+			const medium = (id: string) => ({ id, kind: 'github', size: 'medium' });
+			const full = (prefix: string) => [medium(`${prefix}1`), medium(`${prefix}2`), medium(`${prefix}3`)];
+			localStorage.setItem(
+				'macfolio:mobile:widgets',
+				JSON.stringify([full('a'), full('b'), [medium('c1'), medium('c2')]])
+			);
+		});
+		await enterHome(page);
+		// 1쪽은 위젯으로 가득해 아이콘이 없을 수 있어 위젯을 길게 누른다
+		const widget = (await page.locator('.mobile-page').first().locator('.widget').first().boundingBox())!;
+		await page.mouse.move(widget.x + widget.width / 2, widget.y + widget.height / 2);
+		await page.mouse.down();
+		await expect(page.locator('.mobile-home')).toHaveClass(/editing/);
+		await page.mouse.up();
+		await page.getByRole('button', { name: '위젯 더하기' }).click();
+		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		await gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
+		// 1쪽이 차서 3쪽에 놓이고 3쪽으로 넘어간다
+		await expect(page.getByRole('tab', { name: '3쪽' })).toHaveAttribute('aria-selected', 'true');
+		await expect(page.locator('.mobile-page').nth(2).getByRole('group', { name: '시계 위젯' })).toBeVisible();
+		// 이제 3쪽도 줄이 찼다 (중간 둘 + 작은 하나 = 3줄): 중간 위젯은 고를 수 없고, 작은 위젯은 시계 옆에 들어간다
+		await page.getByRole('button', { name: '위젯 더하기' }).click();
+		await expect(gallery.getByRole('button', { name: '소개 위젯 (중간) 더하기' })).toBeDisabled();
+		await expect(gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' })).toBeEnabled();
+	});
+
 	test('최근 글을 누르면 메모가 그 글을 연다', async ({ page }) => {
 		await enterHome(page);
 		await page.getByRole('tab', { name: '2쪽' }).click();

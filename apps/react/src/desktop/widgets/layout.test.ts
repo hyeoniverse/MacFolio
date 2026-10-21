@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_DESKTOP_WIDGETS, newWidgetId, parseWidgets, type PlacedWidget } from './catalog';
+import {
+	DEFAULT_DESKTOP_WIDGETS,
+	DEFAULT_MOBILE_WIDGETS,
+	newWidgetId,
+	pageToAdd,
+	parseMobileWidgets,
+	parseWidgets,
+	widgetRows,
+	type PlacedWidget,
+} from './catalog';
 import {
 	canPlace,
 	cellToPoint,
@@ -95,5 +104,34 @@ describe('위젯 목록 저장', () => {
 	it('새 id는 종류 이름, 겹치면 번호를 붙인다', () => {
 		expect(newWidgetId('clock', [])).toBe('clock');
 		expect(newWidgetId('clock', [{ id: 'clock' }, { id: 'clock-2' }])).toBe('clock-3');
+	});
+
+	it('휴대폰 위젯 줄 수: 작은 위젯은 둘이 한 줄, 중간 위젯은 혼자 한 줄', () => {
+		expect(widgetRows([])).toBe(0);
+		expect(widgetRows([{ size: 'small' }, { size: 'small' }, { size: 'medium' }])).toBe(2);
+		expect(widgetRows([{ size: 'small' }, { size: 'medium' }, { size: 'small' }])).toBe(2);
+		expect(DEFAULT_MOBILE_WIDGETS.map(widgetRows)).toEqual([2, 2, 2]);
+	});
+
+	it('휴대폰에 더할 페이지: 지금 페이지에 자리가 있으면 거기, 없으면 자리가 있는 첫 페이지', () => {
+		const medium = { size: 'medium' as const };
+		const full = [medium, medium, medium];
+		expect(pageToAdd([[medium], full, []], 0, 'medium')).toBe(0);
+		expect(pageToAdd([[medium], full, []], 1, 'medium')).toBe(0);
+		expect(pageToAdd([full, full, full], 0, 'small')).toBe(-1);
+	});
+
+	it('저장한 휴대폰 위젯: 페이지는 세 개로 맞추고, 줄이 넘치거나 틀린 위젯은 뺀다', () => {
+		expect(parseMobileWidgets({})).toBeNull();
+		const medium = (id: string) => ({ id, kind: 'github', size: 'medium' });
+		expect(
+			parseMobileWidgets([
+				[medium('a'), medium('b'), medium('c'), medium('d')],
+				[
+					{ id: 'a', kind: 'clock', size: 'small' },
+					{ id: 'e', kind: 'clock', size: 'medium' },
+				],
+			])
+		).toEqual([[medium('a'), medium('b'), medium('c')], [], []]);
 	});
 });

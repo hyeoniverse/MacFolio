@@ -75,12 +75,11 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 	},
 	{
 		id: 'desktop-widgets',
-		name: '바탕화면 위젯',
-		description: '바탕화면에 더하거나 지운 위젯과 그 크기·자리',
+		name: '위젯',
+		description: '바탕화면과 휴대폰 홈 화면에 더하거나 지운 위젯과 그 크기·자리',
 		storage: 'local',
-		keys: [STORAGE_KEYS.desktopWidgets],
-		afterClear: '새로고침하면 바탕화면 위젯이 처음 네 개로 돌아갑니다',
-		summarize: (raw) => countOf(raw, '위젯'),
+		keys: [STORAGE_KEYS.desktopWidgets, STORAGE_KEYS.mobileWidgets],
+		afterClear: '새로고침하면 위젯이 처음 모양으로 돌아갑니다',
 	},
 	{
 		id: 'local-messages',

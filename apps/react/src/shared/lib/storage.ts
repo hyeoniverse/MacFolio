@@ -17,6 +17,8 @@ export const STORAGE_KEYS = {
 	desktopIcons: 'macfolio:desktop:icons',
 	/** 바탕화면 위젯의 종류·크기·칸 (desktop/widgets) */
 	desktopWidgets: 'macfolio:desktop:widgets',
+	/** 휴대폰 홈 화면의 페이지마다 위젯 (desktop/mobile/MobileHome) */
+	mobileWidgets: 'macfolio:mobile:widgets',
 	/** 저장 형식 버전이 바뀌면 키를 바꾼다 */
 	messages: 'macfolio:messages:v2',
 	messagesVisitor: 'macfolio:messages:visitor',

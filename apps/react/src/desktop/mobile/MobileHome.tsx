@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import '@/desktop/mobile/MobileHome.css';
 import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
@@ -6,8 +6,21 @@ import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import WallpaperVideo from '@/desktop/WallpaperVideo';
 import { openSwitcher } from '@/desktop/mobile/switcherStore';
 import { appIconUrl } from '@/shared/config/appIcon';
-import { MOBILE_WIDGET_PAGES } from '@/desktop/widgets/catalog';
+import {
+	DEFAULT_MOBILE_WIDGETS,
+	MOBILE_WIDGET_PAGE_COUNT,
+	newWidgetId,
+	pageToAdd,
+	parseMobileWidgets,
+	WIDGET_INFO,
+	type PageWidget,
+	type WidgetKind,
+	type WidgetSize,
+} from '@/desktop/widgets/catalog';
 import Widget from '@/desktop/widgets/Widget';
+import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from '@/desktop/widgets/widgetEditor';
+import WidgetSheet from '@/desktop/mobile/WidgetSheet';
+import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit } from '@/desktop/mobile/homePages';
 
 /** 홈 화면 아래 Dock에 둘 앱 */
@@ -41,19 +54,28 @@ const DECIDE_PX = 8;
 const WHEEL_PAGE_PX = 50;
 /** 트랙패드 한 번 밀기로 여러 페이지가 넘어가지 않게 잠깐 쉰다 */
 const WHEEL_REST_MS = 450;
+/** 이만큼 누르고 있으면 위젯 편집 (iOS의 길게 누르기) */
+const LONG_PRESS_MS = 550;
+
+const loadWidgets = () => parseMobileWidgets(readJson(STORAGE_KEYS.mobileWidgets)) ?? DEFAULT_MOBILE_WIDGETS;
 
 /**
  * 좁은 화면에서 데스크톱(StatusBar·Dock) 대신 보여주는 iOS 홈 화면.
  * 앱을 누르면 화면을 가득 채워 열리고(AppWindow 모바일 모드), 홈 인디케이터로 돌아온다.
  * 앱이 한 화면에 다 들어가지 않으면 스크롤하지 않고 페이지를 더 만든다 (옆으로 넘기고, 아래 점이 지금 페이지)
  * 넘기기는 브라우저 스크롤에 맡기지 않고 직접 한다: 손가락·마우스·펜 모두 Pointer Events로 끌면 페이지가 따라오고,
- * 놓을 때 끈 거리와 빠르기로 넘길지 정한다(pageAfterSwipe). 트랙패드로 옆으로 밀어도 넘어간다
+ * 놓을 때 끈 거리와 빠르기로 넘길지 정한다(pageAfterSwipe). 트랙패드로 옆으로 밀어도 넘어간다.
+ * 앞 페이지들의 위에는 위젯이 있다. 길게 누르면 편집: 위젯마다 지우기(−), 왼쪽 위 +로 위젯 갤러리, 완료나 빈 곳을 누르면 끝
  */
 const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	const pagesRef = useRef<HTMLDivElement>(null);
+	const editing = useWidgetEditing();
+	const [widgets, setWidgets] = useState<PageWidget[][]>(loadWidgets);
+	const [gallery, setGallery] = useState(false);
+	const longPress = useRef<number | undefined>(undefined);
 	// 칸 수: 위젯이 있는 페이지마다(위젯 아래)와 나머지 페이지. 화면 크기가 바뀌면 다시 잰다
 	const [slots, setSlots] = useState({
-		leading: MOBILE_WIDGET_PAGES.map(() => GRID_APPS.length),
+		leading: Array.from({ length: MOBILE_WIDGET_PAGE_COUNT }, () => GRID_APPS.length),
 		rest: GRID_APPS.length,
 	});
 	const [page, setPage] = useState(0);
@@ -100,6 +122,31 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	// 화면이 커져 페이지가 줄면 마지막 페이지에 선다
 	const current = Math.min(page, pages.length - 1);
 
+	const save = (next: PageWidget[][]) => {
+		setWidgets(next);
+		writeJson(STORAGE_KEYS.mobileWidgets, next);
+	};
+	const removeWidget = (id: string) => save(widgets.map((list) => list.filter((widget) => widget.id !== id)));
+	/** 지금 페이지(자리가 없으면 자리가 있는 첫 페이지) 끝에 더하고 그 페이지로 간다 */
+	const addWidget = (kind: WidgetKind, size: WidgetSize) => {
+		const target = pageToAdd(widgets, current, size);
+		if (target < 0) return;
+		const id = newWidgetId(kind, widgets.flat());
+		save(widgets.map((list, index) => (index === target ? [...list, { id, kind, size }] : list)));
+		setPage(target);
+		setGallery(false);
+	};
+	const stopEditing = () => {
+		setGallery(false);
+		closeWidgetEditor();
+	};
+	// 편집 중에는 앱과 위젯을 열지 않는다
+	const open = (app: AppName) => {
+		if (!editing) launch(app);
+	};
+	const cancelLongPress = () => window.clearTimeout(longPress.current);
+	useEffect(() => cancelLongPress, []);
+
 	const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
 		// 음악 위젯의 재생 위치 막대처럼 스스로 끄는 것은 그대로 둔다
 		if (event.button !== 0 || (event.target as Element).closest('[role="slider"], input')) return;
@@ -111,6 +158,15 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			state: 'undecided',
 		};
 		swallowClick.current = false;
+		// 길게 누르면(움직이지 않고) 위젯 편집. 이어지는 클릭은 앱을 열지 않는다
+		cancelLongPress();
+		if (!editing)
+			longPress.current = window.setTimeout(() => {
+				if (gesture.current?.state !== 'undecided') return;
+				gesture.current.state = 'other';
+				swallowClick.current = true;
+				openWidgetEditor();
+			}, LONG_PRESS_MS);
 	};
 	const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
 		const start = gesture.current;
@@ -119,6 +175,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		const dy = event.clientY - start.y;
 		if (start.state === 'undecided') {
 			if (Math.hypot(dx, dy) < DECIDE_PX) return;
+			cancelLongPress();
 			// 세로로 움직였으면 제어 센터 쓸기에 넘긴다
 			start.state = Math.abs(dx) > Math.abs(dy) ? 'drag' : 'other';
 			if (start.state === 'other') return;
@@ -127,6 +184,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		setDrag(dragOffset(current, pages.length, dx));
 	};
 	const onPointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
+		cancelLongPress();
 		const start = gesture.current;
 		gesture.current = null;
 		if (!start || start.id !== event.pointerId || start.state !== 'drag') return;
@@ -137,6 +195,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		swallowClick.current = true;
 	};
 	const onPointerCancel = () => {
+		cancelLongPress();
 		gesture.current = null;
 		setDrag(null);
 	};
@@ -152,8 +211,9 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	};
 
 	return (
-		<div className="mobile-home">
+		<div className={`mobile-home${editing ? ' editing' : ''}`}>
 			<WallpaperVideo kind="ios" />
+
 			<div
 				ref={pagesRef}
 				className="mobile-pages"
@@ -168,6 +228,10 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 					event.stopPropagation();
 					event.preventDefault();
 				}}
+				onClick={(event) => {
+					// 편집 중에 위젯·앱이 아닌 빈 곳을 누르면 끝낸다 (iOS와 같다)
+					if (editing && !(event.target as Element).closest('.widget, .mobile-app, button')) stopEditing();
+				}}
 			>
 				<div
 					className={`mobile-pages-track ${drag !== null ? 'dragging' : ''}`}
@@ -181,16 +245,28 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 							aria-hidden={index !== current || undefined}
 							inert={index !== current || undefined}
 						>
-							{MOBILE_WIDGET_PAGES[index] && (
+							{index < MOBILE_WIDGET_PAGE_COUNT && (
 								<div className="mobile-widgets">
-									{MOBILE_WIDGET_PAGES[index].map(({ kind, size }) => (
-										<Widget key={kind} kind={kind} size={size} open={launch} />
+									{(widgets[index] ?? []).map(({ id, kind, size }) => (
+										<div key={id} className="mobile-widget-slot" data-size={size}>
+											<Widget kind={kind} size={size} open={open} />
+											{editing && (
+												<button
+													type="button"
+													className="mobile-widget-remove"
+													aria-label={`${WIDGET_INFO[kind].label} 위젯 제거`}
+													onClick={() => removeWidget(id)}
+												>
+													<i className="fa-solid fa-minus" aria-hidden="true"></i>
+												</button>
+											)}
+										</div>
 									))}
 								</div>
 							)}
 							<nav className="mobile-grid" aria-label={index === 0 ? '앱' : `앱 ${index + 1}쪽`}>
 								{apps.map((name) => (
-									<AppIcon key={name} name={name} showLabel onLaunch={() => launch(name)} />
+									<AppIcon key={name} name={name} showLabel onLaunch={() => open(name)} />
 								))}
 							</nav>
 						</section>
@@ -198,28 +274,43 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 				</div>
 			</div>
 
-			{pages.length > 1 && (
-				<div className="mobile-page-dots" role="tablist" aria-label="홈 화면 페이지">
-					{pages.map((_, index) => (
-						<button
-							key={index}
-							type="button"
-							role="tab"
-							aria-selected={current === index}
-							aria-label={`${index + 1}쪽`}
-							onClick={() => setPage(index)}
-						/>
-					))}
-				</div>
-			)}
+			{/* 페이지 점. 편집 중에는 양옆에 위젯 더하기(+)와 완료 (상태 표시줄 자리는 제어 센터가 쓴다) */}
+			<div className="mobile-page-row">
+				{editing && (
+					<button type="button" className="mobile-edit-add" aria-label="위젯 더하기" onClick={() => setGallery(true)}>
+						<i className="fa-solid fa-plus" aria-hidden="true"></i>
+					</button>
+				)}
+				{pages.length > 1 && (
+					<div className="mobile-page-dots" role="tablist" aria-label="홈 화면 페이지">
+						{pages.map((_, index) => (
+							<button
+								key={index}
+								type="button"
+								role="tab"
+								aria-selected={current === index}
+								aria-label={`${index + 1}쪽`}
+								onClick={() => setPage(index)}
+							/>
+						))}
+					</div>
+				)}
+				{editing && (
+					<button type="button" className="mobile-edit-done" onClick={stopEditing}>
+						완료
+					</button>
+				)}
+			</div>
 
 			<HomeIndicator className="home-gesture" fallbackTone="light" onSwitcher={openSwitcher} />
 
 			<nav className="mobile-dock" aria-label="Dock">
 				{MOBILE_DOCK.map((name) => (
-					<AppIcon key={name} name={name} showLabel={false} onLaunch={() => launch(name)} />
+					<AppIcon key={name} name={name} showLabel={false} onLaunch={() => open(name)} />
 				))}
 			</nav>
+
+			{gallery && <WidgetSheet pages={widgets} current={current} onAdd={addWidget} onClose={() => setGallery(false)} />}
 		</div>
 	);
 };
