@@ -166,6 +166,16 @@ test.describe('바탕화면 위젯', () => {
 		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
 		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
 		await expect(gallery).toBeVisible();
+		const previews = gallery.getByRole('button', { name: /위젯 \(.+\) 더하기$/ });
+		await expect(previews).toHaveCount(14);
+
+		// 사이드바: 종류를 고르면 그 위젯의 크기들만, 찾으면 맞는 종류만
+		const kinds = gallery.getByRole('navigation', { name: '위젯 종류' });
+		await kinds.getByRole('button', { name: '날씨' }).click();
+		await expect(previews).toHaveCount(2);
+		await kinds.getByRole('button', { name: '모든 위젯' }).click();
+		await gallery.getByRole('searchbox', { name: '위젯 검색' }).fill('시각');
+		await expect(previews).toHaveCount(1);
 
 		await gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
 		await expect(widget(page, '시계')).toBeVisible();

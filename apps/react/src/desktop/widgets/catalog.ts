@@ -16,6 +16,9 @@ export interface WidgetInfo {
 	sizes: readonly WidgetSize[];
 }
 
+/** 크기 이름 (메뉴·갤러리) */
+export const SIZE_LABEL: Record<WidgetSize, string> = { small: '작게', medium: '중간' };
+
 export const WIDGET_INFO: Record<WidgetKind, WidgetInfo> = {
 	weather: { label: '날씨', description: '날씨 앱의 첫 도시의 지금 날씨와 예보', sizes: ['small', 'medium'] },
 	calendar: { label: '캘린더', description: '오늘 날짜와 이달의 달력', sizes: ['small', 'medium'] },

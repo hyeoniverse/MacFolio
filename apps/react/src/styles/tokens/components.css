@@ -36,6 +36,8 @@
 	--widget-fill: var(--color-tertiary-system-fill); /* 시계 판, 작은 음악 위젯의 재생 단추 */
 	--widget-accent: var(--color-system-red); /* 캘린더의 달·요일, 시계의 초침 */
 	--widget-shadow: var(--shadow-widget);
+	--widget-gallery-background: var(--color-material-gallery); /* 위젯 편집… 의 유리 판 */
+	--widget-gallery-sidebar: var(--color-material-gallery-sidebar);
 
 	/* 메모 앱의 노란 강조 (날짜 고르기도 같이 쓴다) */
 	--notes-accent: var(--color-notes-yellow);

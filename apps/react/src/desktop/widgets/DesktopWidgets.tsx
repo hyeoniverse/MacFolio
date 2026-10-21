@@ -3,28 +3,26 @@ import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { cssVars } from '@/shared/lib/cssVars';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
-import Button from '@/shared/ui/button/Button';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
 	DEFAULT_DESKTOP_WIDGETS,
 	newWidgetId,
 	parseWidgets,
+	SIZE_LABEL,
 	WIDGET_INFO,
-	WIDGET_KINDS,
 	type PlacedWidget,
 	type WidgetKind,
 	type WidgetSize,
 } from './catalog';
 import { cellToPoint, dropAt, firstFree, pixelSize, resize, visibleLayout, type Point, type Viewport } from './layout';
 import Widget from './Widget';
+import WidgetGallery from './WidgetGallery';
 import { usePhotoSources } from './usePhotoSources';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from './widgetEditor';
 import './DesktopWidgets.css';
 
 /** 이만큼 움직여야 끌기로 본다 (그보다 작으면 클릭) */
 const DRAG_THRESHOLD = 4;
-
-const SIZE_LABEL: Record<WidgetSize, string> = { small: '작게', medium: '중간' };
 
 const viewportNow = (): Viewport => ({ width: window.innerWidth, height: window.innerHeight });
 
@@ -232,38 +230,5 @@ const DesktopWidgets: React.FC = () => {
 		</>
 	);
 };
-
-/** 위젯 갤러리 (macOS의 '위젯 편집…'): 화면 아래에 종류와 크기마다 미리보기를 늘어놓고, 누르면 빈 칸에 더한다 */
-const WidgetGallery = ({ onAdd }: { onAdd: (kind: WidgetKind, size: WidgetSize) => void }) => (
-	<div className="widget-gallery" role="dialog" aria-label="위젯 갤러리">
-		<div className="widget-gallery-header">
-			<h2>위젯</h2>
-			<p>누르면 바탕화면의 빈 칸에 놓입니다. 놓은 위젯은 끌어서 옮기고, 오른쪽 클릭으로 크기를 바꿉니다.</p>
-			<Button tone="primary" onClick={closeWidgetEditor}>
-				완료
-			</Button>
-		</div>
-		<ul className="widget-gallery-list">
-			{WIDGET_KINDS.flatMap((kind) =>
-				WIDGET_INFO[kind].sizes.map((size) => (
-					<li key={`${kind}-${size}`}>
-						<button
-							type="button"
-							className="widget-gallery-item"
-							aria-label={`${WIDGET_INFO[kind].label} 위젯 (${SIZE_LABEL[size]}) 더하기`}
-							onClick={() => onAdd(kind, size)}
-						>
-							<span className="widget-gallery-preview" style={pixelSize(size)} inert>
-								<Widget kind={kind} size={size} open={() => {}} />
-							</span>
-							<strong>{WIDGET_INFO[kind].label}</strong>
-							<span>{WIDGET_INFO[kind].description}</span>
-						</button>
-					</li>
-				))
-			)}
-		</ul>
-	</div>
-);
 
 export default DesktopWidgets;

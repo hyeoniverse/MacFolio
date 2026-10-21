@@ -55,6 +55,8 @@
 	--color-material-label: rgba(0, 0, 0, 0.6); /* 머티리얼 위의 작은 표시 (Dock 실행 중 점) */
 	--color-material-widget: rgba(255, 255, 255, 0.48); /* 바탕화면·홈 화면 위젯의 유리 판 */
 	--color-material-widget-edge: rgba(255, 255, 255, 0.6); /* 유리 판 가장자리의 빛 */
+	--color-material-gallery: rgba(246, 246, 248, 0.62); /* 위젯 갤러리처럼 화면 아래 뜨는 큰 유리 판 */
+	--color-material-gallery-sidebar: rgba(255, 255, 255, 0.32); /* 그 판 안의 사이드바 */
 	/* 불투명한 위젯 판(캘린더·메모): 위가 밝고 아래로 조금 어두워지는 그라데이션, 윗변의 빛과 아랫변의 그늘 */
 	--color-widget-solid-top: var(--palette-white);
 	--color-widget-solid-bottom: var(--palette-gray-100);
@@ -202,6 +204,8 @@
 	--color-material-label: rgba(255, 255, 255, 0.75);
 	--color-material-widget: rgba(28, 28, 32, 0.45);
 	--color-material-widget-edge: rgba(255, 255, 255, 0.14);
+	--color-material-gallery: rgba(36, 36, 40, 0.62);
+	--color-material-gallery-sidebar: rgba(255, 255, 255, 0.05);
 	--color-widget-solid-top: var(--palette-gray-700);
 	--color-widget-solid-bottom: var(--palette-gray-850);
 	--color-widget-highlight: rgba(255, 255, 255, 0.12);
