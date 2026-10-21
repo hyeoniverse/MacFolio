@@ -87,8 +87,8 @@ const DesktopWidgets: React.FC = () => {
 		else save([...widgets, widget]);
 	};
 
-	// 날기 (쫀득하게): 미리보기가 톡 튀어 오르며 커지고, 칸 자리까지 휙 날아가, 내려앉을 때 납작하게 눌렸다가
-	// 위로 살짝 튀고 제 모양으로 돌아온다. 끝나면 저장해 진짜 위젯으로 바꾼다
+	// 날기: 미리보기가 살짝 들려 커지고, 칸 자리까지 부드럽게 날아가, 내려앉을 때 한 번만 살며시 눌렸다가 제 모양으로.
+	// 끝나면 저장해 진짜 위젯으로 바꾼다
 	useLayoutEffect(() => {
 		const element = flying.current;
 		const container = layer.current?.getBoundingClientRect();
@@ -99,18 +99,16 @@ const DesktopWidgets: React.FC = () => {
 		const at = (x: number, y: number, sx: number, sy = sx) => `translate(${x}px, ${y}px) scale(${sx}, ${sy})`;
 		const animation = element.animate(
 			[
-				{ transform: at(0, 0, 1), easing: 'cubic-bezier(0.3, 1.6, 0.6, 1)' },
-				// 톡 튀어 오른다
-				{ transform: at(0, -12, 1.1), offset: 0.16, easing: 'cubic-bezier(0.55, 0, 0.25, 1)' },
-				// 휙 날아가 칸 바로 위에서 길쭉해진다
-				{ transform: at(dx, dy - 6, 0.98, 1.06), offset: 0.66, easing: 'ease-out' },
-				// 내려앉으며 납작하게 눌리고
-				{ transform: at(dx, dy + 2, 1.08, 0.9), offset: 0.78, easing: 'ease-in-out' },
-				// 위로 살짝 튀었다가
-				{ transform: at(dx, dy - 2, 0.97, 1.04), offset: 0.89, easing: 'ease-in-out' },
+				{ transform: at(0, 0, 1), easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
+				// 살짝 들린다
+				{ transform: at(0, -6, 1.04), offset: 0.18, easing: 'cubic-bezier(0.45, 0, 0.2, 1)' },
+				// 칸 자리까지 날아간다
+				{ transform: at(dx, dy, 1.02), offset: 0.8, easing: 'ease-out' },
+				// 내려앉으며 한 번만 살며시 눌린다
+				{ transform: at(dx, dy, 1.015, 0.985), offset: 0.9, easing: 'ease-out' },
 				{ transform: at(dx, dy, 1) },
 			],
-			{ duration: 760, fill: 'forwards' }
+			{ duration: 620, fill: 'forwards' }
 		);
 		let done = false;
 		const land = () => {
