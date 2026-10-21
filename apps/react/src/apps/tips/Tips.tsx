@@ -121,10 +121,14 @@ const ManualPage = ({
 				<p className="tips-manual-intro">{intro}</p>
 				{articles?.map((each, index) => (
 					<section key={each.title} id={`tips-section-${index}`} className="tips-article">
-						<span className="tips-article-art" aria-hidden="true">
-							<i className={each.icon} />
-							{art && <img src={art} alt="" />}
-						</span>
+						{each.image ? (
+							<img className="tips-article-shot" src={each.image} alt={`${each.title} 화면`} loading="lazy" />
+						) : (
+							<span className="tips-article-art" aria-hidden="true">
+								<i className={each.icon} />
+								{art && <img src={art} alt="" />}
+							</span>
+						)}
 						<div className="tips-article-text">
 							<h2>{each.title}</h2>
 							{each.paragraphs.map((paragraph) => (

@@ -7,8 +7,10 @@ export interface ManualArticle {
 	title: string;
 	/** 문단마다 한 줄 */
 	paragraphs: string[];
-	/** 그림 칸에 크게 보일 아이콘 */
+	/** 그림이 없을 때 그림 칸에 크게 보일 아이콘 (찾기 결과에도) */
 	icon: string;
+	/** 실제 화면 그림 (public/imgs/tips, tips-shots/shots.spec.ts가 찍는다) */
+	image?: string;
 	/** 데스크톱 단축키 (보기용) */
 	keys?: string;
 }
@@ -603,4 +605,9 @@ const ARTICLES: Partial<Record<AppName, ManualArticle[]>> = {
 	],
 };
 
-for (const manual of MANUALS) manual.articles = ARTICLES[manual.app];
+// 그림은 앱마다 절 순서대로 <앱>-<번호>.jpg
+for (const manual of MANUALS)
+	manual.articles = ARTICLES[manual.app]?.map((article, index) => ({
+		...article,
+		image: `/imgs/tips/${manual.app}-${index + 1}.jpg`,
+	}));

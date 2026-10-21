@@ -531,7 +531,7 @@
 /* 글 형식의 절 (기능이 많은 앱): 그림 칸과 큰 제목·문단을 번갈아 좌우로 */
 .tips-article {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+	grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
 	gap: var(--space-24);
 	align-items: center;
 	padding: var(--space-24) 0;
@@ -539,8 +539,20 @@
 	scroll-margin-top: var(--space-12);
 }
 
-.tips-article:nth-of-type(even) .tips-article-art {
+.tips-article:nth-of-type(even) .tips-article-art,
+.tips-article:nth-of-type(even) .tips-article-shot {
 	order: 2;
+}
+
+/* 실제 화면 그림: 창의 왼쪽 위(사이드바·목록)가 보이게 자른다 */
+.tips-article-shot {
+	display: block;
+	width: 100%;
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-14);
+	object-fit: cover;
+	object-position: left top;
+	aspect-ratio: 16 / 10;
 }
 
 .tips-article-art {
@@ -648,7 +660,8 @@
 		gap: var(--space-14);
 	}
 
-	.tips-article:nth-of-type(even) .tips-article-art {
+	.tips-article:nth-of-type(even) .tips-article-art,
+	.tips-article:nth-of-type(even) .tips-article-shot {
 		order: 0;
 	}
 
