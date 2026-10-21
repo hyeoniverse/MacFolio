@@ -12,7 +12,7 @@ const binStore = createStore<{ empty: boolean }>({ empty: true });
 
 /** 지금 비었는지 다시 본다 (휴지통에서 비운 직후처럼 바로 바꿔야 할 때 부른다) */
 export function refreshBin() {
-	const empty = readBrowserData().length === 0;
+	const empty = readBrowserData().every(({ item }) => item.fillsTrash === false);
 	if (binStore.getState().empty !== empty) binStore.setState({ empty });
 }
 

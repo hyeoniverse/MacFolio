@@ -4,6 +4,8 @@ import Desktop from '@/desktop/Desktop';
 import LoadingScreen from '@/desktop/loading/LoadingScreen';
 import LoginFlow from '@/shared/auth/LoginFlow';
 import { returnedFromLogin } from '@/shared/auth/adminStore';
+import Tour from '@/desktop/tour/Tour';
+import { startFirstVisitTour } from '@/desktop/tour/firstVisit';
 
 const App: React.FC = () => {
 	// GitHub 로그인에서 돌아왔으면 "클릭하여 시작" 로딩 화면을 건너뛰고 바로 결과를 보여 준다
@@ -17,6 +19,8 @@ const App: React.FC = () => {
 	// 로딩이 완료되면 LoadingScreen을 제거하기 위한 콜백 함수
 	const handleLoadingComplete = () => {
 		setIsLoading(false);
+		// 처음 온 사람에게는 둘러보기를 띄운다 (한 번 보거나 건너뛰면 다시 띄우지 않는다)
+		startFirstVisitTour();
 	};
 
 	return (
@@ -27,6 +31,7 @@ const App: React.FC = () => {
 			{isLoading && <LoadingScreen onLoadingComplete={handleLoadingComplete} />}
 			{/* 로그인하러 다녀올 때의 안내와 결과 */}
 			{!isLoading && <LoginFlow />}
+			<Tour />
 		</div>
 	);
 };

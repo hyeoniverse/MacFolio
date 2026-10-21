@@ -1,0 +1,687 @@
+/* 팁 앱 (macOS 팁): 위쪽 막대, 첫 화면의 큰 제목·찾기·카드, 사용 설명서(왼쪽 목차 + 본문) */
+.tips {
+	/* 유리 판: 뒤의 옅은 빛이 비치는 반투명 흰 판 (다크 모드에서는 반투명 검은 판) */
+	--tips-glass: color-mix(in srgb, var(--color-text-background) 55%, transparent);
+	--tips-glass-strong: color-mix(in srgb, var(--color-text-background) 75%, transparent);
+	--tips-glass-edge: color-mix(in srgb, var(--color-label) 8%, transparent);
+	--tips-glass-blur: blur(24px) saturate(180%);
+	/* 카드의 그림 칸: 반투명 회색으로 바탕과 나눈다 (그림자 대신 테두리) */
+	--tips-card-gray: color-mix(in srgb, var(--color-system-gray) 14%, var(--tips-glass));
+	--tips-card-gray-hover: color-mix(in srgb, var(--color-system-gray) 22%, var(--tips-glass));
+
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	/* 흰 바탕에 노랑·파랑·분홍의 옅은 빛을 깔아 유리 판 뒤로 비치게 한다 */
+	background:
+		radial-gradient(
+			40rem 26rem at 8% 0%,
+			color-mix(in srgb, var(--color-system-yellow) 26%, transparent),
+			transparent 70%
+		),
+		radial-gradient(
+			36rem 28rem at 100% 20%,
+			color-mix(in srgb, var(--color-system-cyan) 20%, transparent),
+			transparent 70%
+		),
+		radial-gradient(
+			40rem 30rem at 40% 100%,
+			color-mix(in srgb, var(--color-system-pink) 14%, transparent),
+			transparent 70%
+		),
+		var(--color-text-background);
+	color: var(--color-label);
+	text-align: left;
+	container-type: inline-size;
+}
+
+/* 위쪽 막대: 신호등 오른쪽에 뒤로·앞으로 알약, 홈 버튼, 제목 */
+.tips-bar {
+	/* 통합형 창의 제목 표시줄(z-index 3) 위로: 단추를 누를 수 있게 */
+	position: relative;
+	z-index: 4;
+	display: flex;
+	flex: none;
+	gap: var(--space-8);
+	align-items: center;
+	height: 52px;
+	padding: 0 var(--space-16) 0 84px;
+}
+
+.tips-bar-pill {
+	display: inline-flex;
+	padding: var(--space-2);
+	border-radius: var(--radius-full);
+	border: 1px solid var(--tips-glass-edge);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+}
+
+.tips-bar-pill button,
+.tips-bar-round {
+	display: inline-grid;
+	width: 30px;
+	height: 28px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--radius-full);
+	background: none;
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	place-items: center;
+	cursor: pointer;
+}
+
+.tips-bar-round {
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--tips-glass-edge);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+}
+
+.tips-bar-pill button:disabled,
+.tips-bar-round:disabled {
+	color: var(--color-secondary-label);
+	cursor: default;
+	opacity: 0.5;
+}
+
+.tips-bar-pill button:not(:disabled):hover,
+.tips-bar-round:not(:disabled):hover {
+	background-color: var(--tips-glass-strong);
+}
+
+.tips-bar-title {
+	overflow: hidden;
+	font-size: var(--text-body);
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.tips-scroll {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+}
+
+/* 첫 화면 */
+.tips-home {
+	max-width: 960px;
+	margin: 0 auto;
+	padding: var(--space-12) var(--space-24) var(--space-24);
+}
+
+.tips-hero-title {
+	margin: var(--space-16) 0 var(--space-16);
+	font-size: var(--text-title1);
+	font-weight: 600;
+	text-align: center;
+}
+
+.tips-search {
+	display: flex;
+	gap: var(--space-8);
+	align-items: center;
+	max-width: 420px;
+	margin: 0 auto var(--space-24);
+	padding: var(--space-8) var(--space-14);
+	border-radius: var(--radius-full);
+	border: 1px solid var(--tips-glass-edge);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+	color: var(--color-secondary-label);
+	font-size: var(--text-subhead);
+}
+
+.tips-search input {
+	flex: 1;
+	min-width: 0;
+	border: 0;
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	outline: none;
+}
+
+.tips-results {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+}
+
+.tips-result {
+	display: flex;
+	gap: var(--space-12);
+	align-items: center;
+	padding: var(--space-10) var(--space-12);
+	border: 0;
+	border-radius: var(--radius-10);
+	background: none;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-result:hover {
+	background-color: var(--color-system-fill);
+}
+
+.tips-result i {
+	width: 20px;
+	color: var(--color-control-accent);
+	text-align: center;
+}
+
+.tips-result span,
+.tips-feature-list button span {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.tips-result strong,
+.tips-feature-list strong {
+	font-size: var(--text-subhead);
+	font-weight: 500;
+}
+
+.tips-result small,
+.tips-feature-list small {
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.tips-empty {
+	color: var(--color-secondary-label);
+	text-align: center;
+}
+
+/* 둘러보기: 왼쪽 큰 카드, 오른쪽 세 줄 */
+.tips-featured {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	gap: var(--space-24);
+	align-items: center;
+	margin-bottom: var(--space-24);
+}
+
+.tips-feature-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+	align-items: flex-start;
+	justify-content: flex-end;
+	min-height: 220px;
+	padding: var(--space-20);
+	border: 1px solid var(--tips-glass-edge);
+	border-radius: var(--radius-18);
+	background: linear-gradient(
+		160deg,
+		color-mix(in srgb, var(--color-system-yellow) 30%, var(--tips-glass)),
+		var(--tips-glass)
+	);
+	backdrop-filter: var(--tips-glass-blur);
+	color: var(--color-label);
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-feature-badge img {
+	width: 56px;
+	height: 56px;
+	margin-bottom: var(--space-8);
+	border-radius: var(--radius-14);
+}
+
+.tips-feature-card strong {
+	font-size: var(--text-title3);
+	font-weight: 600;
+}
+
+.tips-feature-card span {
+	color: var(--color-secondary-label);
+	font-size: var(--text-subhead);
+}
+
+.tips-feature-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tips-feature-list li + li {
+	border-top: 1px solid var(--color-separator);
+}
+
+.tips-feature-list button {
+	display: flex;
+	gap: var(--space-14);
+	align-items: center;
+	width: 100%;
+	padding: var(--space-14) var(--space-4);
+	border: 0;
+	background: none;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-feature-list .tips-feature-icon {
+	display: inline-grid;
+	flex: none;
+	width: 28px;
+	height: 28px;
+	color: var(--color-control-accent);
+	font-size: var(--text-title3);
+	place-items: center;
+}
+
+.tips-heading,
+.tips-subheading {
+	text-align: left;
+}
+
+.tips-heading {
+	margin: var(--space-24) 0 var(--space-12);
+	font-size: var(--text-title3);
+	font-weight: 600;
+}
+
+.tips-heading-large {
+	font-size: var(--text-title2);
+}
+
+.tips-heading-row {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+}
+
+.tips-see-all {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--color-link);
+	font-size: var(--text-subhead);
+	cursor: pointer;
+}
+
+.tips-page-title {
+	margin: var(--space-8) 0 0;
+	font-size: var(--text-title1);
+	font-weight: 600;
+}
+
+.tips-page-title + .tips-manual-sub {
+	margin-bottom: var(--space-20);
+}
+
+.tips-subheading {
+	margin: 0 0 var(--space-12);
+	color: var(--color-secondary-label);
+	font-size: var(--text-subhead);
+	font-weight: 500;
+}
+
+/* 회색 둥근 카드 */
+.tips-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: var(--space-16);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tips-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* 카드는 그림 칸만: 제목·설명은 카드 밖 아래에 (macOS 팁 앱처럼) */
+.tips-card-art {
+	display: grid;
+	margin-bottom: var(--space-8);
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-14);
+	background-color: var(--tips-card-gray);
+	backdrop-filter: var(--tips-glass-blur);
+	color: var(--color-control-accent);
+	font-size: var(--text-title1);
+	aspect-ratio: 16 / 9;
+	place-items: center;
+	transition: background-color 0.15s ease;
+}
+
+.tips-card:hover .tips-card-art {
+	background-color: var(--tips-card-gray-hover);
+}
+
+.tips-card-art img {
+	width: 52px;
+	height: 52px;
+	border-radius: var(--radius-14);
+}
+
+.tips-card strong {
+	font-size: var(--text-subhead);
+	font-weight: 600;
+}
+
+.tips-card span:not(.tips-card-art) {
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.tips-card small {
+	margin-top: auto;
+	padding-top: var(--space-6);
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+}
+
+/* 사용 설명서: 왼쪽 목차, 오른쪽 본문 */
+.tips-manual {
+	display: grid;
+	grid-template-columns: 200px minmax(0, 1fr);
+	min-height: 100%;
+}
+
+.tips-toc {
+	position: sticky;
+	top: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	align-self: start;
+	margin: var(--space-8) 0 var(--space-12) var(--space-12);
+	padding: var(--space-8);
+	border: 1px solid var(--tips-glass-edge);
+	border-radius: var(--radius-14);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+}
+
+.tips-toc button {
+	padding: var(--space-6) var(--space-10);
+	border: 0;
+	border-radius: var(--radius-8);
+	background: none;
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+	text-align: left;
+	cursor: pointer;
+}
+
+.tips-toc button:hover,
+.tips-toc button.active {
+	background-color: var(--tips-glass-strong);
+	color: var(--color-label);
+}
+
+.tips-manual-body {
+	max-width: 860px;
+	padding: var(--space-16) var(--space-24) var(--space-24);
+}
+
+.tips-manual-head {
+	display: flex;
+	gap: var(--space-16);
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: var(--space-16);
+}
+
+.tips-manual-head h1,
+.tips-spot h1 {
+	margin: 0;
+	font-size: var(--text-title1);
+	font-weight: 600;
+}
+
+.tips-manual-sub {
+	margin: var(--space-4) 0 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-body);
+}
+
+.tips-manual-icon {
+	flex: none;
+	width: 80px;
+	height: 80px;
+	border-radius: var(--radius-18);
+}
+
+.tips-manual-fa {
+	display: grid;
+	border-radius: var(--radius-22);
+	background-color: var(--color-system-fill);
+	font-size: var(--text-large-title);
+	place-items: center;
+}
+
+.tips-manual-intro {
+	margin: 0 0 var(--space-20);
+	font-size: var(--text-body);
+	line-height: 1.6;
+}
+
+.tips-manual-section {
+	display: flex;
+	gap: var(--space-14);
+	padding: var(--space-16) 0;
+	border-top: 1px solid var(--color-separator);
+	scroll-margin-top: var(--space-12);
+}
+
+.tips-manual-section-icon {
+	display: inline-grid;
+	flex: none;
+	width: 24px;
+	height: 24px;
+	color: var(--color-control-accent);
+	place-items: center;
+}
+
+.tips-manual-section h2 {
+	margin: 0 0 var(--space-4);
+	font-size: var(--text-body);
+	font-weight: 600;
+}
+
+.tips-manual-section p {
+	margin: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-subhead);
+	line-height: 1.6;
+}
+
+.tips-keys {
+	display: inline-block;
+	margin-top: var(--space-6);
+	padding: var(--space-2) var(--space-6);
+	border-radius: var(--radius-6);
+	background-color: var(--color-system-fill);
+	font-family: inherit;
+	font-size: var(--text-footnote);
+}
+
+.tips-link {
+	margin-top: var(--space-16);
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--color-link);
+	font-size: var(--text-body);
+	cursor: pointer;
+}
+
+/* 글 형식의 절 (기능이 많은 앱): 그림 칸과 큰 제목·문단을 번갈아 좌우로 */
+.tips-article {
+	display: grid;
+	grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+	gap: var(--space-24);
+	align-items: center;
+	padding: var(--space-24) 0;
+	border-top: 1px solid var(--color-separator);
+	scroll-margin-top: var(--space-12);
+}
+
+.tips-article:nth-of-type(even) .tips-article-art,
+.tips-article:nth-of-type(even) .tips-article-shot {
+	order: 2;
+}
+
+/* 실제 화면 그림: 창의 왼쪽 위(사이드바·목록)가 보이게 자른다 */
+.tips-article-shot {
+	display: block;
+	width: 100%;
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-14);
+	object-fit: cover;
+	object-position: left top;
+	aspect-ratio: 16 / 10;
+}
+
+.tips-article-art {
+	position: relative;
+	display: grid;
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-18);
+	background-color: var(--tips-card-gray);
+	color: var(--color-control-accent);
+	font-size: var(--text-large-title);
+	aspect-ratio: 4 / 3;
+	place-items: center;
+}
+
+.tips-article-art i {
+	font-size: 2.5em;
+}
+
+.tips-article-art img {
+	position: absolute;
+	right: var(--space-12);
+	bottom: var(--space-12);
+	width: 40px;
+	height: 40px;
+	border-radius: var(--radius-10);
+}
+
+.tips-article-text h2 {
+	margin: 0 0 var(--space-12);
+	font-size: var(--text-title1);
+	font-weight: 600;
+}
+
+.tips-article-text p {
+	margin: 0 0 var(--space-10);
+	color: var(--color-label);
+	font-size: var(--text-body);
+	line-height: 1.7;
+}
+
+/* 화면에서 짚어 보기 */
+.tips-spot {
+	max-width: 720px;
+	margin: 0 auto;
+	padding: var(--space-16) var(--space-24) var(--space-24);
+}
+
+.tips-spot-list {
+	margin: var(--space-20) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tips-spot-list li {
+	display: flex;
+	gap: var(--space-12);
+	align-items: center;
+	padding: var(--space-12) 0;
+	border-top: 1px solid var(--color-separator);
+}
+
+.tips-spot-list li > i {
+	width: 24px;
+	color: var(--color-control-accent);
+	text-align: center;
+}
+
+.tips-spot-list span {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.tips-spot-list small {
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.tips-show {
+	flex: none;
+	padding: var(--space-4) var(--space-12);
+	border: 0;
+	border-radius: var(--radius-full);
+	background-color: var(--color-control-accent);
+	color: var(--color-white);
+	font-size: var(--text-footnote);
+	cursor: pointer;
+}
+
+/* 좁은 창·휴대폰: 목차를 숨기고 둘러보기를 한 줄씩 */
+@container (width < 640px) {
+	.tips-featured,
+	.tips-manual {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.tips-toc {
+		display: none;
+	}
+
+	.tips-article {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--space-14);
+	}
+
+	.tips-article:nth-of-type(even) .tips-article-art,
+	.tips-article:nth-of-type(even) .tips-article-shot {
+		order: 0;
+	}
+
+	.tips-article-art {
+		aspect-ratio: 16 / 9;
+	}
+
+	.tips-hero-title {
+		font-size: var(--text-title1);
+	}
+
+	.tips-home,
+	.tips-manual-body,
+	.tips-spot {
+		padding-inline: var(--space-16);
+	}
+
+	.tips-manual-icon {
+		width: 56px;
+		height: 56px;
+		border-radius: var(--radius-14);
+	}
+}

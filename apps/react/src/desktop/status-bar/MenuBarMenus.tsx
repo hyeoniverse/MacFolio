@@ -1,3 +1,5 @@
+import { startTour } from '@/desktop/tour/tourStore';
+import { currentSteps } from '@/desktop/tour/firstVisit';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST } from '@/apps/manifest';
 import { REPO_URL } from '@/apps/finder/repoDocs';
@@ -42,6 +44,7 @@ const MenuBarMenus = () => {
 			quit: () => activeApp && sendWindowCommand(activeApp, 'quit'),
 		},
 		help: [
+			{ label: 'MacFolio 둘러보기', icon: 'fa-regular fa-lightbulb', onSelect: () => startTour(currentSteps()) },
 			{ label: '키보드 단축키…', icon: 'fa-regular fa-keyboard', onSelect: () => setShortcutsOpen(true) },
 			{ label: '문제 알리기…', icon: 'fa-solid fa-bug', onSelect: () => openExternal(`${REPO_URL}/issues/new/choose`) },
 		],

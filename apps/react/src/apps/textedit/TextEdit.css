@@ -62,7 +62,7 @@
 }
 
 .textedit-action i {
-	font-size: var(--text-caption1);
+	font-size: var(--text-caption);
 }
 
 .textedit-action .textedit-action-caret {
