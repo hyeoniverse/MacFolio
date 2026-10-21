@@ -4,11 +4,12 @@
 // 배포한 사이트는 Worker가 HTML에 내용을 넣어 주므로(apps/react/worker) 기다리지 않는다. 로컬·시험은 API에 묻는다
 import { useSyncExternalStore } from 'react';
 import { readProjects, mergeProjects, type SiteProjects } from '@macfolio/desktop-core/site';
-import { readProfile, type SiteView } from '@macfolio/contracts';
+import { readProfile, readResume, type SiteView } from '@macfolio/contracts';
 import { api, reasonsFrom } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { setSiteProfile } from './profileStore';
+import { setSiteResume } from './resumeStore';
 import { completeProject } from './publicImages';
 
 /** 올린 그림(/files/<id>)은 API 주소라, 로컬의 http 주소도 받는다 (서버와 같은 규칙) */
@@ -61,6 +62,8 @@ export const setSavedProjects = (projects: SiteProjects | null) => {
 export function applySiteContent(body: unknown) {
 	const content = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
 	setSiteProfile(readProfile(content.profile));
+	setSiteResume(readResume(content.resume));
+	setSiteResume(readResume(content.resumeEn), 'en');
 	savedProjects = readProjects(content.projects, PARSE_OPTIONS);
 	fillProjects(savedProjects);
 }

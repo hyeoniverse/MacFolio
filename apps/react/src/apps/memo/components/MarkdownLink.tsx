@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppState } from '@/desktop/useAppState';
 import { bundledDocOf } from '@/apps/finder/repoDocs';
-import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { useOpenDocument } from '@/apps/textedit/openDocument';
 import { appLinkOf } from '@/shared/lib/appLink';
 import { requestOpen } from '@/shared/lib/openRequest';
 
@@ -52,6 +52,7 @@ function scrollToAnchor(link: HTMLAnchorElement, id: string) {
  */
 const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 	const { openApp } = useAppState();
+	const openDocument = useOpenDocument();
 	const link = appLinkOf(href);
 	const doc = bundledDocOf(href);
 
@@ -82,8 +83,7 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 				onClick={(event) => {
 					if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 					event.preventDefault();
-					requestFinderDoc(doc);
-					openApp('finder');
+					openDocument(doc);
 				}}
 			>
 				{children}

@@ -127,7 +127,6 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await fakeApi(page, { signedIn: true });
 		const { docs, puts } = await fakeDocuments(page);
 		const finder = await openResumeFolder(page);
-		await expect(finder.getByText('파일을 여기에 끌어다 놓으면 올라갑니다')).toBeVisible();
 
 		const pdf = [...tinyPdf()];
 		await dropFile(page, '[data-app="finder"] .finder-content', '새 이력서.pdf', pdf);
@@ -196,7 +195,8 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		const finder = await openResumeFolder(page);
 
 		// 이력서 안에 새 폴더를 만들고 그 아이콘 위에 놓는다 → 이력서에 올리고 그 폴더에 둔다
-		await finder.locator('.finder-content').click({ button: 'right', position: { x: 20, y: 20 } });
+		// 맨 앞 칸에는 데이터로 만든 이력서가 있어 그 옆 빈 곳을 누른다
+		await finder.locator('.finder-content').click({ button: 'right', position: { x: 300, y: 200 } });
 		await page.getByRole('menuitem', { name: '새 폴더' }).click();
 		await finder.getByRole('textbox', { name: '이름' }).press('Enter');
 		await expect.poll(() => api.finderLayout.folders.length).toBe(1);
@@ -298,7 +298,10 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(panel.getByRole('button', { name: 'QuickTime Player' })).toHaveAttribute('aria-current', 'true');
 		await panel.getByRole('button', { name: '문서' }).click();
 		await panel.getByRole('option', { name: '이력서', exact: true }).dblclick();
-		await expect(panel.getByRole('option', { name: '이력서.pdf' })).toHaveAttribute('aria-disabled', 'true');
+		await expect(panel.getByRole('option', { name: '이력서.pdf', exact: true })).toHaveAttribute(
+			'aria-disabled',
+			'true'
+		);
 		const clip = panel.getByRole('option', { name: '소개 영상.mp4' });
 		await expect(clip).not.toHaveAttribute('aria-disabled', 'true');
 		await clip.click();
@@ -311,7 +314,6 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		const api = await fakeApi(page);
 		const { puts, docs } = await fakeDocuments(page);
 		const finder = await openResumeFolder(page);
-		await expect(finder.getByText('공개용 이력서를 준비하고 있습니다.')).toBeVisible();
 		await dropFile(page, '[data-app="finder"] .finder-content', '새 이력서.pdf', [...tinyPdf()]);
 		await expect(finder.getByRole('option', { name: '새 이력서.pdf' })).toBeVisible();
 		await expect(page.getByText('내 화면에만 추가됨')).toBeVisible();

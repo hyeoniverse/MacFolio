@@ -5,7 +5,7 @@ import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { REPO_URL } from '@/apps/finder/repoDocs';
 import { settingsStore } from '@/shared/settings/settingsStore';
 import { fetchTodayVisitors, openExternal } from '@/shared/analytics/analytics';
-import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { useOpenDocument } from '@/apps/textedit/openDocument';
 import { openAbout } from '@/desktop/about/aboutStore';
 
 /**
@@ -17,6 +17,7 @@ const AppleMenu = () => {
 	const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 	const button = useRef<HTMLButtonElement>(null);
 	const { openApp } = useAppState();
+	const openDocument = useOpenDocument();
 	const { status, login } = useAdmin();
 	// 오늘 방문자 수 (#102): 메뉴를 열 때마다 묻는다. 서버가 1분 동안 같은 값을 준다
 	const [visitors, setVisitors] = useState<number | null>(null);
@@ -39,8 +40,7 @@ const AppleMenu = () => {
 		{
 			label: '개인정보 처리 방침',
 			onSelect: () => {
-				requestFinderDoc('docs/privacy.md');
-				openApp('finder');
+				openDocument('docs/privacy.md');
 			},
 		},
 		'separator',

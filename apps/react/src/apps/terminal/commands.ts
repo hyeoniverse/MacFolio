@@ -1,6 +1,8 @@
 // 터미널 명령어. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 명령은 출력할 줄(lines)과 화면에서 실행할 효과(effects)를 돌려준다.
 import { PROJECTS } from '@/shared/profile';
+import { getResume } from '@/shared/site/resumeStore';
+import { parseResume, type ResumeSection } from '@/apps/finder/resumeModel';
 import { getProfile } from '@/shared/site/profileStore';
 import { fullName } from '@/desktop/about/profileInfo';
 import type { AppName } from '@/apps/manifest';
@@ -14,6 +16,8 @@ export type Line =
 	| { kind: 'text'; text: string }
 	| { kind: 'heading'; text: string }
 	| { kind: 'muted'; text: string }
+	/** 고정폭 그림 (줄바꿈·공백을 그대로) */
+	| { kind: 'art'; text: string }
 	| { kind: 'error'; text: string }
 	| { kind: 'link'; label: string; href: string }
 	| { kind: 'pair'; key: string; value: string; href?: string }
@@ -66,6 +70,7 @@ interface Command {
 const text = (value: string): Line => ({ kind: 'text', text: value });
 const heading = (value: string): Line => ({ kind: 'heading', text: value });
 const muted = (value: string): Line => ({ kind: 'muted', text: value });
+const art = (value: string): Line => ({ kind: 'art', text: value });
 const error = (value: string): Line => ({ kind: 'error', text: value });
 const pair = (key: string, value: string, href?: string): Line => ({ kind: 'pair', key, value, href });
 const output = (lines: Line[], effects: Effect[] = []): CommandResult => ({ lines, effects });
@@ -81,6 +86,24 @@ const two = (n: number) => String(n).padStart(2, '0');
 export function formatDate(date: Date): string {
 	return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${WEEKDAYS[date.getDay()]}) ${two(date.getHours())}:${two(date.getMinutes())}:${two(date.getSeconds())}`;
 }
+
+// resume의 그림들. 모든 글자가 한 칸 폭(상자 그리기 문자·ASCII)이라 어느 고정폭 글꼴에서도 줄이 맞는다.
+// 한글은 그림 안에 넣지 않는다 (두 칸 폭이라 오른쪽 테두리가 어긋난다)
+
+/** 첫머리: 노트북 위로 얼굴을 내민 고양이와 RESUME 글자 */
+const RESUME_ART = [
+	'      /\\_/\\         ┏━┓┏━╸┏━┓╻ ╻┏┳┓┏━╸',
+	'     ( ^w^ )        ┣┳┛┣╸ ┗━┓┃ ┃┃┃┃┣╸',
+	'   ╭─┴─────┴─╮      ╹┗╸┗━╸┗━┛┗━┛╹ ╹┗━╸',
+	'   │ >_      │      hi! nice to meet u :)',
+	'   ╰─────────╯',
+].join('\n');
+
+/** 절 머리: ── 제목 ── (제목은 이력서 글의 ## 제목이라 한글일 수 있어 그림이 아니라 제목 줄로 그린다) */
+const section = (label: string): Line => heading(`── ${label} ──`);
+
+/** 끝 인사 */
+const RESUME_BYE = '  ~ thanks for reading! ~  (=^.^=)';
 
 export const COMMANDS: Record<string, Command> = {
 	help: {
@@ -117,6 +140,54 @@ export const COMMANDS: Record<string, Command> = {
 				pair('Shell', 'zsh (흉내)'),
 				pair('Owner', `${profile.name} · ${profile.role}`),
 				pair('Stack', profile.siteStack.join(', ')),
+			]);
+		},
+	},
+	resume: {
+		description: '이력서를 그려 보여 주기',
+		run: () => {
+			const resume = parseResume(getResume());
+			// 이력서의 프로젝트가 projects 목록에 있으면 그 번호를 붙여 project <번호>로 이어서 볼 수 있다 (단축어는 줄을 누르면 그 명령)
+			const marker = (projectId?: string) => {
+				const index = projectId ? PROJECTS.findIndex((project) => project.id === projectId) : -1;
+				return index < 0 ? '•' : `${index + 1}.`;
+			};
+			// 터미널은 좁아서 긴 문장 대신 짧은 줄로: 목록은 기술(없으면 설명), 성과는 제목만 (전체는 Finder의 이력서)
+			const lines = (item: ResumeSection): Line[] => {
+				switch (item.kind) {
+					case 'cards':
+						return item.entries.map((entry) => pair(`★ ${entry.title}`, entry.detail ?? ''));
+					case 'list':
+						return item.entries.map((entry) =>
+							pair(entry.title, entry.tools.length ? entry.tools.join(' · ') : (entry.detail ?? ''))
+						);
+					case 'rows':
+						return item.entries.map((entry) => (entry.period ? pair(entry.period, entry.title) : text(entry.title)));
+					case 'projects':
+						return item.projects.map((project): Line => ({
+							kind: 'item',
+							marker: marker(project.projectId),
+							title: project.name,
+							tag: project.meta[0],
+							// 성과 제목을 설명 아래 줄로: 번호에 맞춰 들여 쓴 채 줄바꿈된다 (상세 칸은 줄바꿈을 그대로 그린다)
+							detail: [project.description, ...project.bullets.map((bullet) => `✓ ${bullet.title}`)]
+								.filter(Boolean)
+								.join('\n'),
+						}));
+					case 'text':
+						return item.lines.map(text);
+				}
+			};
+			return output([
+				art(RESUME_ART),
+				text(''),
+				heading([resume.name, resume.role].filter(Boolean).join(' · ')),
+				...(resume.motto ? [text(`“${resume.motto}”`)] : []),
+				...(resume.contact.length ? [muted(resume.contact.join(' · '))] : []),
+				...resume.sections.flatMap((item) => [text(''), section(item.title), ...lines(item)]),
+				text(''),
+				art(RESUME_BYE),
+				muted('자세히 보려면: project <번호> · 전체 이력서와 PDF는 Finder › 문서 › 이력서'),
 			]);
 		},
 	},

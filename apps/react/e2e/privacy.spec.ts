@@ -36,8 +36,8 @@ test.describe('개인정보 보호 및 보안', () => {
 		await expect(checks).toContainText('관리자만 바꿀 수 있습니다');
 
 		await settings.getByRole('button', { name: '더 알아보기…' }).click();
-		const finder = appWindow(page, 'finder');
-		await expect(finder.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
+		const editor = appWindow(page, 'textedit');
+		await expect(editor.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
 			'개인정보: 무엇을 모으고 얼마나 두나'
 		);
 	});

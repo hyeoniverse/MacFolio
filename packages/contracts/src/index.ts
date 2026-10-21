@@ -72,7 +72,16 @@ export {
 	TodayVisitors,
 	Totals,
 } from './analytics.js';
-export { parseProfile, ProfileInput, readProfile, SiteView } from './site.js';
+export {
+	parseProfile,
+	parseResume,
+	ProfileInput,
+	readProfile,
+	readResume,
+	RESUME_LIMITS,
+	ResumeInput,
+	SiteView,
+} from './site.js';
 export {
 	CAPTION_MAX,
 	CaptionInput,

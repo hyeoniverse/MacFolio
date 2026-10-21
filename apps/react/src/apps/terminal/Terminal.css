@@ -43,6 +43,14 @@
 	overflow-wrap: anywhere;
 }
 
+.terminal-line.art {
+	margin: 0;
+	color: var(--terminal-link);
+	font: inherit;
+	white-space: pre;
+	overflow-wrap: normal;
+}
+
 .terminal-line.heading {
 	font-weight: 700;
 }
@@ -129,6 +137,8 @@
 .terminal-item-detail {
 	display: block;
 	color: var(--terminal-muted);
+	/* resume의 프로젝트 성과처럼 여러 줄인 설명 */
+	white-space: pre-line;
 }
 
 .terminal-input-line {

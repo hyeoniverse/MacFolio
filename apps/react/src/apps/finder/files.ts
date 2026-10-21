@@ -134,6 +134,9 @@ export interface TreeInput {
 	tracks?: { id: string; title: string; artist: string; album: string; artwork: string; playlistId: string }[];
 	/** 관리자가 정한 폴더 구조 (만든 폴더, 옮긴 파일, 바탕화면의 가상본). 없으면 기본 구조 */
 	layout?: FinderLayoutValue;
+	/** 데이터로 만드는 이력서: 국문·영문 Markdown 문서와 그 PDF. 문서 › 이력서 안에 올린 파일과 함께 둔다.
+	 *  이름에는 확장자를 쓰지 않는다 (문서는 경로의 확장자, PDF는 .pdf를 withExtension이 붙인다) */
+	resume?: (DocItem | FileItem)[];
 }
 
 /** 빈 문서 파일 폴더의 안내 */
@@ -181,7 +184,24 @@ const latest = (items: FinderItem[]) =>
  * 문서 폴더: 저장소 맨 위 문서와 docs/ 안의 문서, 그리고 이력서·포트폴리오·자격증 (R2의 파일. 프로젝트 폴더의 파일은 빼고).
  * 프로젝트 폴더들은 포트폴리오 안에 (폴더가 위에 이름순, 그다음 파일)
  */
-function docsFolder(paths: string[], files: DocumentEntry[], projects: FolderItem[] = []): FolderItem {
+/** 파일 이름 끝의 확장자 (점 포함). 없으면 '' */
+const extensionOf = (name: string) => /\.[^./]+$/.exec(name)?.[0] ?? '';
+
+/**
+ * 이름에 확장자를 붙인다 (Finder는 파일 이름에 확장자를 보인다). 문서는 경로의 확장자(.md), PDF는 .pdf.
+ * 이미 붙어 있으면 그대로 둔다
+ */
+export function withExtension<T extends DocItem | FileItem>(item: T): T {
+	const extension = item.kind === 'doc' ? extensionOf(item.path) : item.kind === 'pdf' ? '.pdf' : '';
+	return !extension || item.name.endsWith(extension) ? item : { ...item, name: `${item.name}${extension}` };
+}
+
+function docsFolder(
+	paths: string[],
+	files: DocumentEntry[],
+	projects: FolderItem[] = [],
+	resume?: TreeInput['resume']
+): FolderItem {
 	const docs: FinderItem[] = paths.map((path) => ({
 		kind: 'doc',
 		id: `docs:${path}`,
@@ -194,6 +214,7 @@ function docsFolder(paths: string[], files: DocumentEntry[], projects: FolderIte
 		name,
 		children: [
 			...(name === '포트폴리오' ? projects : []),
+			...(name === '이력서' && resume ? resume.map(withExtension) : []),
 			...files.filter((file) => file.folder === name).map(fileItem),
 		].sort(byName),
 		emptyNote: FOLDER_NOTES[name],
@@ -381,6 +402,7 @@ export function buildTree({
 	albums = [],
 	tracks = [],
 	layout,
+	resume,
 }: TreeInput): { roots: FolderItem[]; trash: FolderItem } {
 	const trash: FolderItem = {
 		kind: 'folder',
@@ -398,7 +420,7 @@ export function buildTree({
 			children: files.filter((file) => file.folder === DESKTOP_DOCUMENT_FOLDER).map(fileItem),
 			emptyNote: '바탕화면이 비어 있습니다.',
 		},
-		docsFolder(docs, files, projectFolders(projects, files)),
+		docsFolder(docs, files, projectFolders(projects, files), resume),
 		blogFolder(posts, blogFolders),
 		picturesFolder(albums),
 		musicFolder(tracks),
@@ -608,9 +630,9 @@ export function previewFolder(locations: FinderItem[]): FolderItem {
 		kind: 'folder',
 		id: 'preview',
 		name: '미리보기',
-		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
+		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림과 데이터로 만드는 이력서 PDF는 iCloud의 미리보기 폴더에 들어 있지 않다
 		children: files(foldersOf(locations, ['desktop', 'docs']))
-			.filter((item) => item.id.startsWith('file:'))
+			.filter((item) => item.id.startsWith('file:') && !item.key.startsWith('resume-pdf:'))
 			.sort((a, b) => a.name.localeCompare(b.name, 'ko')),
 		emptyNote: '파일이 없습니다.',
 	};

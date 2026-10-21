@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useAppState } from '@/desktop/useAppState';
-import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { useOpenDocument } from '@/apps/textedit/openDocument';
 import { analyticsEnabled } from '@/shared/analytics/analytics';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
@@ -20,7 +19,7 @@ const CHECKS: { id: HumanCheck; label: string; note: string; icon: string; color
  * 사람 확인(Cloudflare Turnstile)은 사이트 전체 설정이라 관리자만 켜고 끈다. 방문자에게는 지금 어디에 켜져 있는지 보인다
  */
 const PrivacyPane = () => {
-	const { openApp } = useAppState();
+	const openDocument = useOpenDocument();
 	const admin = useAdmin().status === 'signed-in';
 	const { settings, failed } = useSecurity();
 	const [saving, setSaving] = useState<HumanCheck | null>(null);
@@ -47,8 +46,7 @@ const PrivacyPane = () => {
 						<Button
 							className="privacy-more"
 							onClick={() => {
-								requestFinderDoc('docs/privacy.md');
-								openApp('finder');
+								openDocument('docs/privacy.md');
 							}}
 						>
 							더 알아보기…

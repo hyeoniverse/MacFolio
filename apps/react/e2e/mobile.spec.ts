@@ -556,6 +556,24 @@ test.describe('모바일', () => {
 		expect((await download).url()).toMatch(/\/files\/resume\/test\.pdf\?download=1$/);
 	});
 
+	test('파일: Markdown 이력서를 읽고, 공유 › PDF 다운로드로 바로 내려받는다', async ({ page }) => {
+		await enterHome(page);
+		await (await homeApp(page, '파일')).tap();
+		const files = appWindow(page, 'finder');
+		await files.getByRole('navigation', { name: '파일 탭' }).getByRole('button', { name: '둘러보기' }).tap();
+		await files.getByRole('region', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).tap();
+		await files.getByRole('button', { name: /^이력서/ }).tap();
+		await files.getByRole('button', { name: /김정현_이력서\.md/ }).tap();
+		await expect(files.locator('.files-phone-bar-title')).toHaveText('김정현_이력서.md');
+		await expect(files.getByRole('article', { name: 'resume.md' }).getByRole('heading', { level: 1 })).toHaveText(
+			'김정현'
+		);
+		await files.getByRole('button', { name: '공유' }).tap();
+		const download = page.waitForEvent('download');
+		await page.getByRole('menu', { name: '공유' }).getByRole('menuitem', { name: 'PDF 다운로드' }).tap();
+		expect((await download).suggestedFilename()).toBe('김정현_이력서.pdf');
+	});
+
 	test('파일은 iOS 파일 앱처럼: 최근 항목·둘러보기 탭, 폴더는 한 화면씩, ••• 로 목록 보기', async ({ page }) => {
 		await enterHome(page);
 		await (await homeApp(page, '파일')).tap();

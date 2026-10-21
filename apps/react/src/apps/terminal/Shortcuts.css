@@ -85,6 +85,16 @@
 
 /* 결과 화면 */
 
+/* resume의 그림: 고정폭으로 줄을 맞추고, 좁은 화면에서는 옆으로 밀어 본다 */
+.shortcut-art {
+	margin: 0 var(--space-16) var(--space-8);
+	overflow-x: auto;
+	color: var(--color-link);
+	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-size: var(--text-caption2);
+	line-height: 1.25;
+}
+
 .shortcut-command {
 	margin: 0 var(--space-4) var(--space-16);
 	color: var(--color-secondary-label);
@@ -170,6 +180,8 @@ a.shortcut-row {
 .shortcut-item small {
 	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
+	/* resume의 프로젝트 성과처럼 여러 줄인 설명 */
+	white-space: pre-line;
 }
 
 .shortcut-tag {

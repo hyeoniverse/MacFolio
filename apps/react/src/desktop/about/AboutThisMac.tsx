@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
-import { requestFinderDoc } from '@/apps/finder/openDoc';
+import { useOpenDocument } from '@/apps/textedit/openDocument';
 import { requestedSection } from '@/apps/settings/settingsRequest';
 import { photoUrl, useProfile } from '@/shared/site/profileStore';
 import { profileRows } from './profileInfo';
@@ -17,6 +17,7 @@ import Button from '@/shared/ui/button/Button';
 const AboutThisMac = () => {
 	const open = useAboutOpen();
 	const { openApp } = useAppState();
+	const openDocument = useOpenDocument();
 	const profile = useProfile();
 	const photo = photoUrl(profile);
 	/** 불러오지 못한 사진 주소 (프로필의 GitHub 주소가 바뀌면 다시 시도한다) */
@@ -99,8 +100,7 @@ const AboutThisMac = () => {
 				className="about-mac-link"
 				onClick={() => {
 					closeAbout();
-					requestFinderDoc('docs/privacy.md');
-					openApp('finder');
+					openDocument('docs/privacy.md');
 				}}
 			>
 				개인정보 처리 방침

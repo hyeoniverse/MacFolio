@@ -20,6 +20,7 @@ export const BUILTIN_APP_NAMES = [
 	'activity',
 	'weather',
 	'preview',
+	'textedit',
 	'quicktime',
 	'bin',
 ] as const;
@@ -146,6 +147,16 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		inLaunchpad: true,
 		desktopOnly: true,
 		windowSize: { width: 760, height: 620 },
+		minSize: { width: 420, height: 320 },
+	},
+	// Markdown 문서 읽기·이력서 편집 (macOS 텍스트 편집기). Finder의 .md를 열면 뜬다. 휴대폰에서는 파일 앱 안에서 읽는다
+	textedit: {
+		label: '텍스트 편집기',
+		icon: 'textedit.svg',
+		inDock: false,
+		inLaunchpad: true,
+		desktopOnly: true,
+		windowSize: { width: 780, height: 680 },
 		minSize: { width: 420, height: 320 },
 	},
 	// 동영상·소리 재생 (macOS QuickTime Player). Finder의 mp4·mov·mp3 등을 열면 뜬다. 휴대폰에서는 파일 앱 안에서 바로 재생한다

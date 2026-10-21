@@ -8,6 +8,10 @@ import { useProjectsVersion } from '@/shared/site/siteContent';
 import { buildTree, find, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
 import { DOC_PATHS } from './docsBundle';
+import { parseResume, RESUME_DOC, RESUME_DOC_EN } from './resumeModel';
+import { RESUME_PDF_KEYS, resumeFileName } from './resumeDownload';
+import { useResume } from '@/shared/site/resumeStore';
+import { useProfile } from '@/shared/site/profileStore';
 import { ALBUMS } from '@/apps/photos/albums';
 import { ALBUMS as MUSIC_ALBUMS, ALL_SONGS, TRACKS } from '@/apps/music/library';
 import { useLocalFiles } from './localFiles';
@@ -47,6 +51,9 @@ function useTree(): { roots: FolderItem[]; trash: FolderItem } {
 
 	// 시스템 설정에서 프로젝트를 저장하면 프로젝트 폴더도 새로고침 없이 바뀐다
 	const projectsVersion = useProjectsVersion();
+	const ownerName = useProfile().name;
+	// 영문 이력서의 이름 (# 줄). 영문 파일 이름에 쓴다
+	const englishName = parseResume(useResume('en')).name || 'Resume';
 	const documents = useDocumentEntries();
 	useEffect(() => {
 		void loadDocuments();
@@ -64,6 +71,28 @@ function useTree(): { roots: FolderItem[]; trash: FolderItem } {
 				icon: APP_MANIFEST[name].icon,
 			})),
 			files: documents,
+			// 이력서: 국문·영문 Markdown(텍스트 편집기)과 그 PDF(미리보기, 열 때마다 지금 글로 만든다)
+			resume: [
+				{ kind: 'doc', id: `docs:${RESUME_DOC}`, name: `${ownerName}_이력서`, path: RESUME_DOC },
+				{
+					kind: 'doc',
+					id: `docs:${RESUME_DOC_EN}`,
+					name: resumeFileName('en', englishName),
+					path: RESUME_DOC_EN,
+				},
+				{
+					kind: 'pdf',
+					id: `file:${RESUME_PDF_KEYS.ko}`,
+					name: resumeFileName('ko', ownerName),
+					key: RESUME_PDF_KEYS.ko,
+				},
+				{
+					kind: 'pdf',
+					id: `file:${RESUME_PDF_KEYS.en}`,
+					name: resumeFileName('en', englishName),
+					key: RESUME_PDF_KEYS.en,
+				},
+			],
 			albums: ALBUMS,
 			// 곡마다 그 앨범의 재생 목록 (음악 앱의 보관함 › 앨범과 같은 id)
 			tracks: TRACKS.map((track) => ({
@@ -79,5 +108,5 @@ function useTree(): { roots: FolderItem[]; trash: FolderItem } {
 		}
 		return tree;
 		// eslint-disable-next-line react-hooks/exhaustive-deps -- PROJECTS는 안만 바뀌는 배열이라 판(version)으로 다시 계산한다
-	}, [posts, blogFolders, projectsVersion, documents, layout, localFiles]);
+	}, [posts, blogFolders, projectsVersion, documents, layout, localFiles, ownerName, englishName]);
 }

@@ -13,6 +13,7 @@ export interface Shortcut {
 export const SHORTCUTS: Shortcut[] = [
 	{ command: 'whoami', title: '자기소개', icon: 'fa-solid fa-user', colors: ['#5e9bff', '#3867e0'] },
 	{ command: 'skills', title: '기술 스택', icon: 'fa-solid fa-code', colors: ['#ffac4a', '#f07b1e'] },
+	{ command: 'resume', title: '이력서', icon: 'fa-solid fa-file-lines', colors: ['#ffd04d', '#f0a21e'] },
 	{ command: 'projects', title: '프로젝트', icon: 'fa-solid fa-folder-open', colors: ['#4fd67a', '#1fa651'] },
 	{ command: 'contact', title: '연락처', icon: 'fa-solid fa-address-card', colors: ['#3fd0d4', '#1597a8'] },
 	{ command: 'neofetch', title: '이 사이트', icon: 'fa-solid fa-mobile-screen', colors: ['#b27cff', '#7c4ddb'] },
