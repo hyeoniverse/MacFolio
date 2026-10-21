@@ -19,6 +19,10 @@
 	background: var(--color-scrim-strong);
 
 	border-radius: 0.8rem;
+	cursor: pointer;
+	/* 끄는 동안 화면이 스크롤되거나 글자가 골라지지 않게 */
+	touch-action: none;
+	user-select: none;
 }
 
 .volume-level {
@@ -30,34 +34,15 @@
 	background-color: var(--color-on-media-label);
 }
 
+/* 키보드(방향키)와 화면 읽기용 음량 막대. 보이지 않고, 누르기·끌기는 칸 전체가 받는다 (VolumeMenu.tsx) */
 .volume-slider {
-	display: flex;
-	z-index: 3;
-	width: 9rem;
-	height: 3rem;
-	cursor: pointer;
-	border-radius: 2rem;
-	transform: rotate(-90deg);
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	pointer-events: none;
 	opacity: 0;
-}
-
-.volume-slider::-webkit-slider-thumb {
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	width: 60px;
-	height: 60px;
-	background-color: var(--color-white);
-	cursor: pointer;
-	-webkit-appearance: none;
-	border-radius: 50%;
-}
-
-.volume-slider::-moz-range-thumb {
-	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-	width: 60px;
-	height: 60px;
-	background-color: var(--color-white);
-	cursor: pointer;
-	border-radius: 50%;
 }
 
 .volume-icon {
