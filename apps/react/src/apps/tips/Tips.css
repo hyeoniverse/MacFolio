@@ -1,9 +1,32 @@
 /* 팁 앱 (macOS 팁): 위쪽 막대, 첫 화면의 큰 제목·찾기·카드, 사용 설명서(왼쪽 목차 + 본문) */
 .tips {
+	/* 유리 판: 뒤의 옅은 빛이 비치는 반투명 흰 판 (다크 모드에서는 반투명 검은 판) */
+	--tips-glass: color-mix(in srgb, var(--color-text-background) 55%, transparent);
+	--tips-glass-strong: color-mix(in srgb, var(--color-text-background) 75%, transparent);
+	--tips-glass-edge: color-mix(in srgb, var(--color-label) 8%, transparent);
+	--tips-glass-blur: blur(24px) saturate(180%);
+
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	background-color: var(--color-window-background);
+	/* 흰 바탕에 노랑·파랑·분홍의 옅은 빛을 깔아 유리 판 뒤로 비치게 한다 */
+	background:
+		radial-gradient(
+			40rem 26rem at 8% 0%,
+			color-mix(in srgb, var(--color-system-yellow) 26%, transparent),
+			transparent 70%
+		),
+		radial-gradient(
+			36rem 28rem at 100% 20%,
+			color-mix(in srgb, var(--color-system-cyan) 20%, transparent),
+			transparent 70%
+		),
+		radial-gradient(
+			40rem 30rem at 40% 100%,
+			color-mix(in srgb, var(--color-system-pink) 14%, transparent),
+			transparent 70%
+		),
+		var(--color-text-background);
 	color: var(--color-label);
 	text-align: left;
 	container-type: inline-size;
@@ -26,7 +49,9 @@
 	display: inline-flex;
 	padding: var(--space-2);
 	border-radius: var(--radius-full);
-	background-color: var(--color-system-fill);
+	border: 1px solid var(--tips-glass-edge);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
 }
 
 .tips-bar-pill button,
@@ -47,7 +72,9 @@
 .tips-bar-round {
 	width: 32px;
 	height: 32px;
-	background-color: var(--color-system-fill);
+	border: 1px solid var(--tips-glass-edge);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
 }
 
 .tips-bar-pill button:disabled,
@@ -59,7 +86,7 @@
 
 .tips-bar-pill button:not(:disabled):hover,
 .tips-bar-round:not(:disabled):hover {
-	background-color: var(--color-secondary-system-fill);
+	background-color: var(--tips-glass-strong);
 }
 
 .tips-bar-title {
@@ -98,7 +125,10 @@
 	margin: 0 auto var(--space-24);
 	padding: var(--space-8) var(--space-14);
 	border-radius: var(--radius-full);
-	background-color: var(--color-system-fill);
+	border: 1px solid var(--tips-glass-edge);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+	box-shadow: var(--shadow-card);
 	color: var(--color-secondary-label);
 	font-size: var(--text-subhead);
 }
@@ -184,13 +214,15 @@
 	justify-content: flex-end;
 	min-height: 220px;
 	padding: var(--space-20);
-	border: 0;
+	border: 1px solid var(--tips-glass-edge);
 	border-radius: var(--radius-18);
 	background: linear-gradient(
 		160deg,
-		color-mix(in srgb, var(--color-system-yellow) 22%, transparent),
-		color-mix(in srgb, var(--color-system-orange) 10%, transparent)
+		color-mix(in srgb, var(--color-system-yellow) 30%, var(--tips-glass)),
+		var(--tips-glass)
 	);
+	backdrop-filter: var(--tips-glass-blur);
+	box-shadow: var(--shadow-card);
 	color: var(--color-label);
 	text-align: left;
 	cursor: pointer;
@@ -286,16 +318,18 @@
 	height: 100%;
 	padding: 0 0 var(--space-12);
 	overflow: hidden;
-	border: 0;
+	border: 1px solid var(--tips-glass-edge);
 	border-radius: var(--radius-14);
-	background-color: var(--color-tertiary-system-fill);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
+	box-shadow: var(--shadow-card);
 	color: inherit;
 	text-align: left;
 	cursor: pointer;
 }
 
 .tips-card:hover {
-	background-color: var(--color-system-fill);
+	background-color: var(--tips-glass-strong);
 }
 
 .tips-card > :not(.tips-card-art) {
@@ -348,7 +382,12 @@
 	flex-direction: column;
 	gap: var(--space-2);
 	align-self: start;
-	padding: var(--space-12);
+	margin: var(--space-8) 0 var(--space-12) var(--space-12);
+	padding: var(--space-8);
+	border: 1px solid var(--tips-glass-edge);
+	border-radius: var(--radius-14);
+	background-color: var(--tips-glass);
+	backdrop-filter: var(--tips-glass-blur);
 }
 
 .tips-toc button {
@@ -364,7 +403,7 @@
 
 .tips-toc button:hover,
 .tips-toc button.active {
-	background-color: var(--color-tertiary-system-fill);
+	background-color: var(--tips-glass-strong);
 	color: var(--color-label);
 }
 
