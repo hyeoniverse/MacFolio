@@ -11,7 +11,12 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { DESKTOP_DOCUMENT_FOLDER, DOCUMENT_FOLDERS, MAX_DOCUMENT_BYTES } from '@macfolio/contracts';
+import {
+	DESKTOP_DOCUMENT_FOLDER,
+	DOCUMENT_FOLDERS,
+	MAX_DOCUMENT_BYTES,
+	PICTURES_DOCUMENT_FOLDER,
+} from '@macfolio/contracts';
 import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
@@ -20,9 +25,9 @@ import { DocumentsService } from './documents.service.js';
 
 const fileFields = {
 	folder: {
-		description: '이력서·포트폴리오·자격증, 데스크탑(바탕화면), 또는 프로젝트 폴더 project:<프로젝트 id>',
+		description: '이력서·포트폴리오·자격증, 데스크탑(바탕화면), 그림, 또는 프로젝트 폴더 project:<프로젝트 id>',
 		oneOf: [
-			{ type: 'string', enum: [...DOCUMENT_FOLDERS, DESKTOP_DOCUMENT_FOLDER] },
+			{ type: 'string', enum: [...DOCUMENT_FOLDERS, DESKTOP_DOCUMENT_FOLDER, PICTURES_DOCUMENT_FOLDER] },
 			{ type: 'string', pattern: '^project:[a-z0-9][a-z0-9-]{0,39}$', example: 'project:macfolio' },
 		],
 	},

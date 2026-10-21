@@ -41,6 +41,13 @@ describe('Finder 구조 규칙', () => {
 		expect(bad({ folders: [{ id: 'x', name: '가', parent: 'docs' }] })).toBe(true);
 	});
 
+	it('휴지통 안은 이름이 겹쳐도 된다', () => {
+		const parsed = parse(FinderLayout, {
+			folders: [folder('aaaa', '작업', 'trash'), folder('bbbb', '작업', 'trash'), folder('cccc', '작업', 'desktop')],
+		});
+		expect('value' in parsed).toBe(true);
+	});
+
 	it('이름: 비었거나 / 가 있거나 너무 길면 안 된다', () => {
 		expect(finderNameError('  ')).not.toBeNull();
 		expect(finderNameError('a/b')).not.toBeNull();

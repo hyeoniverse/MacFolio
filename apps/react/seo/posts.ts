@@ -97,4 +97,22 @@ export async function seoPosts(
 		});
 }
 
+/** 위젯에 보일 최근 글 (빌드할 때 'virtual:recent-posts'로 넣는다). 본문 없이 제목·날짜·분류만 */
+export interface RecentPost {
+	slug: string;
+	title: string;
+	date: string;
+	category: string;
+}
+
+/** 최신 글 limit편 (날짜가 같으면 주소 순). 미래 날짜(예약 글)는 뺀다 */
+export async function recentPosts(files: Record<string, string>, limit: number, today: string): Promise<RecentPost[]> {
+	const posts = await createStaticPostRepository(files).list();
+	return posts
+		.filter((post) => post.date <= today)
+		.sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
+		.slice(0, limit)
+		.map(({ slug, title, date, category }) => ({ slug, title, date, category }));
+}
+
 export { rssXml, siteChannel, sitemapXml } from './site';

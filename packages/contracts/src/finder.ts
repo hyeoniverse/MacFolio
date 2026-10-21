@@ -82,7 +82,7 @@ export interface FinderLayoutValue {
 
 /**
  * 구조 규칙: 폴더 id가 겹치지 않고, 상위 폴더가 있고(기본 폴더이거나 만든 폴더), 고리가 없고, 깊이가 넘치지 않고,
- * 같은 폴더 안의 만든 폴더끼리 이름이 겹치지 않는다(대소문자 무시). 문제마다 문구 하나
+ * 같은 폴더 안의 만든 폴더끼리 이름이 겹치지 않는다(대소문자 무시, 휴지통은 빼고). 문제마다 문구 하나
  */
 export function finderLayoutErrors(layout: FinderLayoutValue): string[] {
 	const errors: string[] = [];
@@ -107,8 +107,10 @@ export function finderLayoutErrors(layout: FinderLayoutValue): string[] {
 			}
 		}
 	}
+	// 휴지통 안은 이름이 겹쳐도 된다 (macOS처럼 같은 이름의 폴더를 여러 번 버릴 수 있다. 되돌릴 때 겹치면 번호를 붙인다)
 	const seen = new Set<string>();
 	for (const item of layout.folders) {
+		if (item.parent === 'trash') continue;
 		const key = `${item.parent}\n${item.name.toLowerCase()}`;
 		if (seen.has(key)) errors.push(`같은 이름의 폴더가 이미 있습니다: ${item.name}`);
 		seen.add(key);

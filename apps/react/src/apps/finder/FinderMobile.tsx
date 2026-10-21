@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
-import Menu from '@/shared/ui/menu/Menu';
+import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
 	find,
 	KIND_LABELS,
@@ -16,7 +16,7 @@ import {
 	type SortKey,
 } from './files';
 import FileView from './FileView';
-import { downloadFile, openFileInNewTab } from './documents';
+import { downloadFile, openFileInNewTab, PICTURES_DOCUMENT_FOLDER } from './documents';
 import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
@@ -28,6 +28,10 @@ import '@/apps/finder/FinderMobile.css';
 import SearchField from '@/shared/ui/search-field/SearchField';
 import IconButton from '@/shared/ui/button/IconButton';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
+import { finderRenaming, stemLength, useFinderEdit } from './useFinderEdit';
+import { ADMIN_ONLY_NOTE, canCreateIn, canRename, canTrash, uploadPlan } from './edit';
+import { uploadInto } from './useDocumentDrop';
+import InlineName from './InlineName';
 
 type Tab = 'recents' | 'browse';
 type View = 'icons' | 'list';
@@ -42,12 +46,19 @@ const LOCATION_ICONS: Record<string, string> = {
 	desktop: 'fa-solid fa-display',
 	docs: 'fa-regular fa-file-lines',
 	blog: 'fa-regular fa-pen-to-square',
+	pictures: 'fa-regular fa-image',
 };
+
+/** 둘러보기의 즐겨찾기: 데스크톱 사이드바의 즐겨찾기에 그림을 더한다 (휴대폰에는 홈 폴더로 가는 길이 없어서. 사진 위젯의 그림 폴더) */
+const PHONE_FAVORITE_IDS = [...FAVORITE_IDS.slice(0, 3), 'pictures', ...FAVORITE_IDS.slice(3)];
 
 const formatDate = (date: string) => {
 	const [y, m, d] = date.split('-').map(Number);
 	return `${y}. ${m}. ${d}.`;
 };
+
+/** 길게 누르면 항목 메뉴 (iOS 파일의 길게 누르기) */
+const LONG_PRESS_MS = 500;
 
 /** 이름 아래 한 줄: 폴더는 항목 수, 파일은 날짜(없으면 종류) */
 const summary = (item: FinderItem) =>
@@ -62,7 +73,7 @@ const summary = (item: FinderItem) =>
 					: KIND_LABELS[item.kind];
 
 interface Props {
-	locations: FinderItem[];
+	locations: FolderItem[];
 	/** 글·프로젝트·앱을 그 앱에서 연다 (Finder와 같다) */
 	onOpenElsewhere: (item: FinderItem) => void;
 	dark: boolean;
@@ -82,6 +93,12 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 	const [closed, setClosed] = useState<Record<string, boolean>>({});
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
+	// 관리자의 편집 (데스크톱 Finder와 같은 useFinderEdit): 길게 누른 항목의 메뉴, 이름을 고치는 항목, 올릴 파일을 고르는 칸
+	const edit = useFinderEdit(locations, 'screen');
+	const [itemMenu, setItemMenu] = useState<{ item: FinderItem; x: number; y: number } | null>(null);
+	const renaming = useSyncExternalStore(finderRenaming.subscribe, () => finderRenaming.getState().id);
+	const picker = useRef<HTMLInputElement>(null);
+	const press = useRef<{ timer: number; x: number; y: number; fired: boolean } | null>(null);
 
 	// 화면이 바뀐 방식: 들어가면 오른쪽에서, 돌아오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
 	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
@@ -273,28 +290,117 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 					: sortItems(recentItems(locations), sort)
 				: [];
 
+	// 메뉴는 iOS처럼 누른 항목 바로 아래에 (항목을 가리지 않는다. 화면 밖으로 나가면 Menu가 안으로 옮긴다)
+	const openItemMenu = (item: FinderItem, target: Element) => {
+		const rect = target.getBoundingClientRect();
+		setItemMenu({ item, x: rect.left + rect.width / 2 - 125, y: rect.bottom + 6 });
+	};
+	const startPress = (item: FinderItem, event: React.PointerEvent) => {
+		if (event.pointerType === 'mouse') return;
+		const { clientX: x, clientY: y, currentTarget } = event;
+		const timer = window.setTimeout(() => {
+			if (press.current) press.current.fired = true;
+			openItemMenu(item, currentTarget);
+		}, LONG_PRESS_MS);
+		press.current = { timer, x, y, fired: false };
+	};
+	// 손가락이 움직이면(넘기기) 길게 누르기가 아니다
+	const movePress = (event: React.PointerEvent) => {
+		const current = press.current;
+		if (current && !current.fired && Math.hypot(event.clientX - current.x, event.clientY - current.y) > 8) {
+			window.clearTimeout(current.timer);
+			press.current = null;
+		}
+	};
+	const endPress = () => {
+		if (press.current && !press.current.fired) {
+			window.clearTimeout(press.current.timer);
+			press.current = null;
+		}
+	};
+
+	// 이 폴더에 새 폴더를 만들거나 파일을 올릴 수 있는지 (관리자만. 찾는 중이 아닐 때)
+	const editable = folder?.kind === 'folder' && !searching ? folder : null;
+	const upload = editable ? uploadPlan(locations, editable) : null;
+	const itemMenuItems: MenuItem[] = itemMenu
+		? [
+				{ label: '열기', icon: 'fa-regular fa-folder-open', onSelect: () => open(itemMenu.item) },
+				'separator',
+				{
+					label: '이름 변경',
+					icon: 'fa-solid fa-pen',
+					disabled: !edit.admin || !canRename(itemMenu.item),
+					onSelect: () => finderRenaming.setState({ id: itemMenu.item.id }),
+				},
+				{
+					label: '휴지통으로 이동',
+					icon: 'fa-regular fa-trash-can',
+					destructive: true,
+					disabled: !edit.admin || !canTrash(itemMenu.item),
+					onSelect: () => edit.trash([itemMenu.item]),
+				},
+				...(edit.admin ? [] : (['separator', { note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
+			]
+		: [];
+
 	const grid = (
 		<ul
 			key={`${view}:${sort}`}
 			className={`files-phone-items ${view}`}
 			aria-label={searching ? `‘${query.trim()}’ 찾기` : title}
 		>
-			{items.map((item) => (
-				<li key={item.id}>
-					<button type="button" className="files-phone-item" onClick={() => open(item)}>
-						<span className="files-phone-icon" aria-hidden="true">
-							<FinderIcon item={item} />
-						</span>
-						<span className="files-phone-text">
-							<span className="files-phone-name">{item.name}</span>
-							<span className="files-phone-summary">{summary(item)}</span>
-						</span>
-						{view === 'list' && (item.kind === 'folder' || item.kind === 'alias') && (
-							<i className="fa-solid fa-chevron-right files-phone-chevron" aria-hidden="true" />
-						)}
-					</button>
-				</li>
-			))}
+			{items.map((item) =>
+				renaming === item.id ? (
+					// 이름 고치기: 아이콘 아래(목록은 옆) 이름 자리에 입력 칸
+					<li key={item.id}>
+						<div className="files-phone-item">
+							<span className="files-phone-icon" aria-hidden="true">
+								<FinderIcon item={item} />
+							</span>
+							<span className="files-phone-text">
+								<InlineName
+									name={item.name}
+									select={stemLength(item, item.name)}
+									className="files-phone-rename"
+									onCommit={(name) => void edit.rename(item, name)}
+									onCancel={() => finderRenaming.setState({ id: null })}
+								/>
+							</span>
+						</div>
+					</li>
+				) : (
+					<li key={item.id}>
+						<button
+							type="button"
+							className="files-phone-item"
+							onClick={() => {
+								// 길게 눌러 메뉴를 띄운 뒤의 누르기는 열지 않는다
+								if (press.current?.fired) press.current = null;
+								else open(item);
+							}}
+							onPointerDown={(event) => startPress(item, event)}
+							onPointerMove={movePress}
+							onPointerUp={endPress}
+							onPointerCancel={endPress}
+							onContextMenu={(event) => {
+								event.preventDefault();
+								openItemMenu(item, event.currentTarget);
+							}}
+						>
+							<span className="files-phone-icon" aria-hidden="true">
+								<FinderIcon item={item} />
+							</span>
+							<span className="files-phone-text">
+								<span className="files-phone-name">{item.name}</span>
+								<span className="files-phone-summary">{summary(item)}</span>
+							</span>
+							{view === 'list' && (item.kind === 'folder' || item.kind === 'alias') && (
+								<i className="fa-solid fa-chevron-right files-phone-chevron" aria-hidden="true" />
+							)}
+						</button>
+					</li>
+				)
+			)}
 		</ul>
 	);
 
@@ -347,7 +453,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 						{(
 							[
 								['위치', [preview]],
-								['즐겨찾기', foldersOf(locations, FAVORITE_IDS)],
+								['즐겨찾기', foldersOf(locations, PHONE_FAVORITE_IDS)],
 							] as [string, FolderItem[]][]
 						).map(([heading, places]) => (
 							<section key={heading} className="files-phone-section" aria-label={heading}>
@@ -402,6 +508,28 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 					trigger={moreButton}
 					onClose={() => setMenu(null)}
 					items={[
+						...(editable
+							? ([
+									{
+										label: '새 폴더',
+										icon: 'fa-solid fa-folder-plus',
+										disabled: !edit.admin || !canCreateIn(editable),
+										onSelect: () => edit.newFolder(editable),
+									},
+									...(upload
+										? [
+												{
+													label: upload.folder === PICTURES_DOCUMENT_FOLDER ? '사진 올리기' : '파일 올리기',
+													icon: 'fa-solid fa-arrow-up-from-bracket',
+													disabled: !edit.admin,
+													onSelect: () => picker.current?.click(),
+												},
+											]
+										: []),
+									...(edit.admin ? [] : (['separator', { note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
+									'separator',
+								] satisfies MenuItem[])
+							: []),
 						{
 							label: '아이콘',
 							icon: 'fa-solid fa-table-cells-large',
@@ -416,6 +544,33 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 					]}
 				/>
 			)}
+
+			{itemMenu && (
+				<Menu
+					label={itemMenu.item.name}
+					variant="ios"
+					anchor={{ x: itemMenu.x, y: itemMenu.y }}
+					onClose={() => setItemMenu(null)}
+					items={itemMenuItems}
+				/>
+			)}
+			{/* 사진·파일 올리기 (••• › 올리기): 고른 파일을 이 폴더에 */}
+			{edit.admin && editable && upload && (
+				<input
+					ref={picker}
+					type="file"
+					multiple
+					hidden
+					accept={upload.folder === PICTURES_DOCUMENT_FOLDER ? 'image/*' : undefined}
+					aria-label="올릴 파일"
+					onChange={(event) => {
+						const files = [...(event.target.files ?? [])];
+						event.target.value = '';
+						if (files.length) void uploadInto(locations, editable.id, files);
+					}}
+				/>
+			)}
+			{edit.dialog}
 		</div>
 	);
 };

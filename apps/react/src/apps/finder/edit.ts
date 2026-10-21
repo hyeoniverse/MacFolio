@@ -38,6 +38,9 @@ export function editKind(item: FinderItem): EditKind | null {
 	return null;
 }
 
+/** 방문자에게 흐린 편집 메뉴 아래 보이는 안내 */
+export const ADMIN_ONLY_NOTE = '관리자로 로그인하면 편집할 수 있습니다.';
+
 export const canRename = (item: FinderItem) => ['folder', 'file', 'blog-folder'].includes(editKind(item) ?? '');
 export const canMove = (item: FinderItem) => ['folder', 'file', 'blog-folder', 'post'].includes(editKind(item) ?? '');
 /** 블로그 폴더는 메모처럼 비어 있을 때만 지운다 (글은 메모에서 지운다) */
@@ -107,11 +110,11 @@ export function nameProblem(siblings: FinderItem[], name: string, self?: string)
 	return null;
 }
 
-/** 새 폴더 이름: 이름 없는 폴더, 이름 없는 폴더 2, 3 … (macOS와 같다) */
+/** 새 폴더 이름: 이름 없는 폴더, 이름 없는 폴더 2, 3 … (macOS와 같다). 겹치지 않게 번호를 붙일 때도 쓴다 */
 export function untitledName(siblings: FinderItem[], base = '이름 없는 폴더'): string {
 	const taken = new Set(siblings.map((item) => item.name.toLowerCase()));
-	if (!taken.has(base)) return base;
-	for (let n = 2; ; n++) if (!taken.has(`${base} ${n}`)) return `${base} ${n}`;
+	if (!taken.has(base.toLowerCase())) return base;
+	for (let n = 2; ; n++) if (!taken.has(`${base} ${n}`.toLowerCase())) return `${base} ${n}`;
 }
 
 /** 새 폴더 id (folder:<무작위 소문자·숫자 10자>) */
@@ -258,7 +261,10 @@ export function trashChange(
 	return { layout: { ...layout, trash }, organization };
 }
 
-/** 휴지통의 항목을 원래 폴더로 되돌린다 (그 폴더가 없어졌으면 올린 폴더, 그것도 없으면 데스크탑) */
+/**
+ * 휴지통의 항목을 원래 폴더로 되돌린다 (그 폴더가 없어졌으면 올린 폴더, 그것도 없으면 데스크탑).
+ * 그 사이 같은 이름의 폴더가 생겼으면 macOS처럼 번호를 붙인다 (작업 → 작업 2)
+ */
 export function putBackChange(roots: FinderItem[], items: FinderItem[], state: { layout: FinderLayoutValue }): Change {
 	let { layout } = state;
 	const trash = { ...(layout.trash ?? {}) };
@@ -267,12 +273,19 @@ export function putBackChange(roots: FinderItem[], items: FinderItem[], state: {
 		delete trash[item.id];
 		const home = isFileItem(item) ? item.home : undefined;
 		const back = saved && find(roots, saved)?.kind === 'folder' ? saved : (home ?? 'desktop');
-		if (editKind(item) === 'folder')
+		if (editKind(item) === 'folder') {
+			const into = find(roots, back);
+			// 이미 되돌린 폴더(layout에 back으로 적힌 것)도 겹치는지 본다
+			const siblings: { name: string }[] = [
+				...(into?.kind === 'folder' ? into.children.filter((child) => child.id !== item.id) : []),
+				...layout.folders.filter((folder) => folder.parent === back && folder.id !== item.id),
+			];
+			const name = untitledName(siblings as FinderItem[], item.name);
 			layout = {
 				...layout,
-				folders: layout.folders.map((folder) => (folder.id === item.id ? { ...folder, parent: back } : folder)),
+				folders: layout.folders.map((folder) => (folder.id === item.id ? { ...folder, parent: back, name } : folder)),
 			};
-		else if (isFileItem(item)) {
+		} else if (isFileItem(item)) {
 			const { [item.id]: _, ...rest } = layout.files;
 			layout = { ...layout, files: back === home ? rest : { ...rest, [item.id]: back } };
 		}

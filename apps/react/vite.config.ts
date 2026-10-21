@@ -6,7 +6,7 @@ import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv
 import react from '@vitejs/plugin-react';
 // 빌드한 dist가 아니라 src를 바로 쓴다 (seo/posts.ts가 desktop-core를 읽는 것과 같다)
 import { loadOgAssets, ogImagePng } from '../../packages/og-card/src/index';
-import { rssXml, seoPosts, siteChannel, sitemapXml, updatedDates, type ContentImages } from './seo/posts';
+import { recentPosts, rssXml, seoPosts, siteChannel, sitemapXml, updatedDates, type ContentImages } from './seo/posts';
 import { ogCardVersion, SITE_ORIGIN } from './seo/site';
 import { DEFAULT_PROJECTS, PROFILE } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
@@ -120,6 +120,33 @@ function seoPlugin(): Plugin {
 	};
 }
 
+/** 위젯에 넣는 최근 글 수 */
+const RECENT_POSTS = 6;
+
+/**
+ * 'virtual:recent-posts': 저장소의 최근 글 (제목·날짜·분류). 바탕화면·홈 화면 위젯이 첫 화면에서 쓰는데,
+ * 메모 앱의 글 묶음(본문 전체)을 불러오지 않으려고 작은 목록만 따로 만든다. 개발 서버에서는 글이 바뀌면 다시 만든다
+ */
+function recentPostsPlugin(): Plugin {
+	const id = 'virtual:recent-posts';
+	const resolved = `\0${id}`;
+	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
+	return {
+		name: 'macfolio-recent-posts',
+		resolveId: (source) => (source === id ? resolved : null),
+		async load(source) {
+			if (source !== resolved) return null;
+			const names = readdirSync(contentDir).filter((name) => name.endsWith('.md'));
+			for (const name of names) this.addWatchFile(join(contentDir, name));
+			const files = Object.fromEntries(
+				names.map((name) => [`./content/${name}`, readFileSync(join(contentDir, name), 'utf8')])
+			);
+			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
+			return `export default ${JSON.stringify(await recentPosts(files, RECENT_POSTS, today))};`;
+		},
+	};
+}
+
 /** public/imgs 아래의 그림·영상 (프로젝트의 화면 모음 폴더: src/shared/site/publicImages.ts) */
 const IMAGE_FILE = /\.(png|jpe?g|webp|gif|avif|svg|mp4)$/i;
 
@@ -177,7 +204,7 @@ const FILES_ORIGIN =
 	'https://macfolio.hyeoniverse.com';
 
 export default defineConfig({
-	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin(), seoPlugin()],
+	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin(), recentPostsPlugin(), seoPlugin()],
 	// 단위 시험(Vitest)도 desktop-core의 src를 읽는다
 	ssr: { resolve: { conditions: ['source', ...defaultServerConditions] } },
 	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. main이 아닌 브랜치면 그 PR 미리보기로, main이면 배포한 사이트로 넘긴다.

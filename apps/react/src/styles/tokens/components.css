@@ -19,6 +19,26 @@
 	--dock-indicator-color: var(--color-material-label);
 	--launchpad-background: var(--color-material-fullscreen);
 
+	/* 위젯 (desktop/widgets): 배경화면이 흐리게 비치는 유리 판 (Dock·메뉴 막대와 같은 머티리얼).
+	   글이 많은 캘린더·메모는 불투명한 판(팝오버 바탕, 다크 모드를 따른다), 날씨는 불투명한 하늘 색 */
+	--widget-background: var(--color-material-widget);
+	--widget-background-solid: var(--color-popover-background);
+	--widget-solid-top: var(--color-widget-solid-top);
+	--widget-solid-bottom: var(--color-widget-solid-bottom);
+	--widget-highlight: var(--color-widget-highlight); /* 윗변의 빛 */
+	--widget-lowlight: var(--color-widget-lowlight); /* 아랫변의 그늘 */
+	--widget-edge: var(--color-material-widget-edge);
+	--widget-blur: blur(28px) saturate(170%);
+	--widget-on-label: var(--color-window-background); /* 진한 동그라미(캘린더의 오늘) 위 글자 */
+	--widget-label: var(--color-label);
+	--widget-secondary-label: var(--color-secondary-label);
+	--widget-separator: var(--color-separator); /* 메모 위젯의 줄 사이 */
+	--widget-fill: var(--color-tertiary-system-fill); /* 시계 판, 작은 음악 위젯의 재생 단추 */
+	--widget-accent: var(--color-system-red); /* 캘린더의 달·요일, 시계의 초침 */
+	--widget-shadow: var(--shadow-widget);
+	--widget-gallery-background: var(--color-material-gallery); /* 위젯 편집… 의 유리 판 */
+	--widget-gallery-sidebar: var(--color-material-gallery-sidebar);
+
 	/* 메모 앱의 노란 강조 (날짜 고르기도 같이 쓴다) */
 	--notes-accent: var(--color-notes-yellow);
 	--notes-on-accent: var(--color-on-notes-yellow);

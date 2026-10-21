@@ -76,6 +76,14 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		afterClear: '새로고침하면 바탕화면 아이콘이 오른쪽 위 처음 자리로 돌아갑니다',
 	},
 	{
+		id: 'desktop-widgets',
+		name: '위젯',
+		description: '바탕화면과 휴대폰 홈 화면에 더하거나 지운 위젯과 그 크기·자리',
+		storage: 'local',
+		keys: [STORAGE_KEYS.desktopWidgets, STORAGE_KEYS.mobileWidgets],
+		afterClear: '새로고침하면 위젯이 처음 모양으로 돌아갑니다',
+	},
+	{
 		id: 'tour',
 		name: '둘러보기를 본 기록',
 		description: '처음 방문 때 뜨는 둘러보기를 마쳤거나 건너뛰었다는 표시 (다음 방문에 다시 띄우지 않으려고)',

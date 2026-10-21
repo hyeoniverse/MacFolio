@@ -9,6 +9,7 @@ import AppErrorBoundary from '@/desktop/window/AppErrorBoundary';
 import StatusBar from '@/desktop/status-bar/StatusBar';
 import Dock from '@/desktop/dock/Dock';
 import DesktopIcons from '@/desktop/icons/DesktopIcons';
+import DesktopWidgets from '@/desktop/widgets/DesktopWidgets';
 import MobileShell from '@/desktop/mobile/MobileShell';
 import WallpaperVideo from '@/desktop/WallpaperVideo';
 import Notifications from '@/desktop/notifications/Notifications';
@@ -78,6 +79,8 @@ const Desktop = () => {
 							<WallpaperVideo kind="mac" />
 							{/* 바탕화면 아이콘은 가장 아래 층: 창·Dock·메뉴 막대가 덮는다 */}
 							<DesktopIcons />
+							{/* 위젯은 아이콘 위, 창 아래 */}
+							<DesktopWidgets />
 							<StatusBar />
 							<OpenedApps />
 							<Dock />

@@ -36,6 +36,8 @@ export {
 	DocumentUploadRequest,
 	DocumentUploadTicket,
 	MAX_DOCUMENT_BYTES,
+	PICTURES_DOCUMENT_FOLDER,
+	type PicturesDocumentFolder,
 	type ProjectDocumentFolder,
 } from './documents.js';
 export {

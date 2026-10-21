@@ -22,71 +22,293 @@
 	filter: brightness(0.7);
 }
 
-/* 홈 화면 위젯 공통: iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고, 안쪽 여백을 같게 */
+/* 홈 화면 위젯 (desktop/widgets의 Widget): iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고,
+   작은 위젯은 아이콘 두 칸 폭의 정사각형, 중간 위젯은 한 줄을 다 쓴다. 색은 데스크톱과 같은 불투명한 판 */
 .mobile-home {
 	--home-icon: 60px;
 	--widget-inset: calc((100% / 4 - var(--home-icon)) / 2);
-	--widget-padding: 16px;
 }
 
-.mobile-widget,
-.mobile-music-widget {
+.mobile-widgets {
+	display: grid;
+	flex: none;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-16);
 	margin-inline: var(--widget-inset);
 }
 
-/* 소개 위젯 */
-.mobile-widget {
-	padding: var(--widget-padding);
-	border-radius: var(--radius-window);
-	background-color: var(--color-on-media-fill);
-	backdrop-filter: blur(24px) saturate(160%);
-	box-shadow: var(--shadow-4);
-	text-align: left;
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+.mobile-widgets .widget {
+	aspect-ratio: 1;
+	text-shadow: none;
 }
 
-.mobile-widget h1 {
-	font-size: var(--text-title1);
-	font-weight: 700;
-	line-height: 1.2;
+/* 위젯 한 칸: 편집 중의 지우기 단추가 위젯 모서리에 붙는다 */
+.mobile-widget-slot {
+	position: relative;
+	display: flex;
+	min-width: 0;
 }
 
-.mobile-widget p {
-	margin-top: var(--space-4);
-	font-size: var(--text-footnote);
-	opacity: 0.95;
+.mobile-widget-slot > .widget {
+	flex: 1;
+	min-width: 0;
 }
 
-.mobile-widget .mobile-widget-eyebrow {
-	margin: 0 0 var(--space-2);
+/* 중간 위젯: 작은 위젯 둘과 사이만큼 넓고, 높이는 작은 위젯과 같다 */
+.mobile-widget-slot[data-size='medium'] {
+	grid-column: span 2;
+}
+
+.mobile-widgets .widget-medium {
+	aspect-ratio: 2.1;
+}
+
+/* 잰 뒤: 줄 높이는 MobileHome이 정한다 (정사각형이 기본, 화면이 낮으면 아이콘 두 줄이 남게 줄인다) */
+.mobile-pages[style*='--widget-row'] .mobile-widgets {
+	grid-auto-rows: var(--widget-row);
+}
+
+.mobile-pages[style*='--widget-row'] .mobile-widgets .widget {
+	aspect-ratio: auto;
+}
+
+/* ─── 편집 (길게 누르기): iOS처럼 위젯과 아이콘이 떨리고, 위젯마다 지우기 단추 ─── */
+.mobile-home.editing .mobile-widget-slot,
+.mobile-home.editing .mobile-app img {
+	animation: home-jiggle 0.3s ease-in-out infinite alternate;
+}
+
+.mobile-home.editing .mobile-widget-slot:nth-child(even),
+.mobile-home.editing .mobile-app:nth-child(even) img {
+	animation-delay: -0.15s;
+}
+
+@keyframes home-jiggle {
+	from {
+		transform: rotate(-0.8deg);
+	}
+
+	to {
+		transform: rotate(0.8deg);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mobile-home.editing .mobile-widget-slot,
+	.mobile-home.editing .mobile-app img {
+		animation: none;
+	}
+}
+
+.mobile-widget-remove {
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--color-on-media-fill-strong);
+	backdrop-filter: blur(12px);
+	color: var(--color-white);
+	font-size: var(--text-caption);
+	cursor: pointer;
+}
+
+/* 페이지 점 줄: 편집 중에는 양옆에 + 와 완료 */
+.mobile-page-row {
+	position: relative;
+	display: flex;
+	flex: none;
+	justify-content: center;
+	align-items: center;
+}
+
+.mobile-page-row > button {
+	position: absolute;
+	top: 50%;
+	height: 32px;
+	padding: 0 var(--space-14);
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--color-on-media-fill-strong);
+	backdrop-filter: blur(12px);
+	color: var(--color-white);
+	font: inherit;
+	font-size: var(--text-subhead);
+	font-weight: 600;
+	transform: translateY(-50%);
+	cursor: pointer;
+}
+
+.mobile-page-row > .mobile-edit-add {
+	left: 0;
+	width: 32px;
+	padding: 0;
+}
+
+.mobile-page-row > .mobile-edit-done {
+	right: 0;
+}
+
+/* 편집 중 사진 위젯의 앨범 단추 (오른쪽 아래) */
+.mobile-widget-option {
+	position: absolute;
+	right: var(--space-8);
+	bottom: var(--space-8);
+	z-index: 2;
+	height: 26px;
+	padding: 0 var(--space-10);
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--color-material-hud);
+	backdrop-filter: blur(12px);
+	color: var(--color-white);
+	font: inherit;
 	font-size: var(--text-caption);
 	font-weight: 600;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	opacity: 0.8;
+	cursor: pointer;
 }
 
-.mobile-widget .mobile-widget-meta {
-	margin-top: var(--space-10);
+/* 앨범 고르기 시트 */
+.mobile-album-sheet {
+	--ui-sheet-bg: var(--color-window-background);
+	padding: var(--space-8) var(--space-20) var(--space-24);
+	color: var(--color-label);
+	text-shadow: none;
+}
+
+.mobile-album-sheet h2 {
+	margin: 0 0 var(--space-12);
+	font-size: var(--text-title3);
+}
+
+.mobile-album-sheet section + section {
+	margin-top: var(--space-20);
+}
+
+.mobile-album-sheet ul {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	border-radius: var(--radius-10);
+	background-color: var(--color-control-background);
+	list-style: none;
+}
+
+.mobile-album-sheet li + li {
+	border-top: 1px solid var(--color-separator);
+}
+
+.mobile-album-sheet button {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	padding: var(--space-12) var(--space-16);
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: var(--text-body);
+	text-align: left;
+	cursor: pointer;
+}
+
+.mobile-album-sheet button i {
+	color: var(--color-control-accent);
+}
+
+/* 위젯 갤러리 시트 */
+.mobile-widget-sheet {
+	--ui-sheet-bg: var(--color-window-background);
+	padding: var(--space-8) var(--space-20) var(--space-24);
+	overflow-y: auto;
+	color: var(--color-label);
+	text-shadow: none;
+}
+
+/* iOS 위젯 갤러리처럼 화면의 아래 4/5만: 위에 흐린 홈 화면이 남아, 그곳을 누르면 닫힌다
+   (.ui-sheet.page의 높이보다 앞서게 두 이름으로) */
+.ui-sheet.mobile-widget-sheet {
+	height: 80%;
+}
+
+.mobile-widget-sheet h2 {
+	margin: var(--space-8) 0 var(--space-16);
+	font-size: var(--text-title2);
+}
+
+.mobile-widget-sheet ul {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-20) var(--space-16);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.mobile-widget-sheet li[data-size='medium'] {
+	grid-column: span 2;
+}
+
+.mobile-widget-sheet button {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-4);
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.mobile-widget-sheet button:disabled {
+	opacity: 0.4;
+	cursor: default;
+}
+
+.mobile-widget-sheet-preview {
+	display: flex;
+	margin-bottom: var(--space-4);
+}
+
+.mobile-widget-sheet-preview > .widget {
+	flex: 1;
+	aspect-ratio: 1;
+	box-shadow: var(--shadow-card);
+}
+
+.mobile-widget-sheet li[data-size='medium'] .widget {
+	aspect-ratio: 2.1;
+}
+
+.mobile-widget-sheet strong {
+	font-size: var(--text-footnote);
+}
+
+.mobile-widget-sheet button > span:last-child {
 	font-size: var(--text-caption);
-	opacity: 0.85;
-}
-
-/* 음악 위젯 */
-.mobile-music-widget {
-	flex: none;
-	margin-top: var(--space-14);
-	padding: var(--widget-padding);
-	box-shadow: var(--shadow-4);
+	color: var(--color-secondary-label);
 }
 
 /* 페이지: 옆으로 넘긴다. 스크롤이 아니라 트랙을 옮긴다 (MobileHome이 끌기를 듣는다).
-   세로 쓸기는 브라우저에 맡겨 제어 센터가 받는다 */
+   세로 쓸기는 브라우저에 맡겨 제어 센터가 받는다.
+   편집 중 떨리는 위젯의 모서리와 왼쪽 위 − 단추가 상태 표시줄 쪽으로 나가므로, 자르는 선을 위로 16px 올린다
+   (안쪽 여백만큼 바깥 여백을 빼서 내용 자리는 그대로) */
 .mobile-pages {
 	display: flex;
 	flex: 1;
 	min-height: 0;
-	margin-inline: -20px;
+	margin: calc(var(--space-16) * -1) -20px 0;
+	padding-top: var(--space-16);
 	overflow: hidden;
 	touch-action: pan-y;
 }
@@ -110,10 +332,6 @@
 	width: 100%;
 	min-height: 0;
 	padding-inline: var(--space-20);
-}
-
-.mobile-widgets {
-	flex: none;
 }
 
 /* 앱 격자: 4열. 들어가는 만큼만 놓고 나머지는 다음 페이지로 (MobileHome이 재서 나눈다) */
@@ -212,8 +430,7 @@
 
 /* 가로로 눕힌 휴대폰: 위젯을 숨기고 한 줄에 더 많이 놓는다 */
 @media (orientation: landscape) {
-	.mobile-widget,
-	.mobile-music-widget {
+	.mobile-widgets {
 		display: none;
 	}
 

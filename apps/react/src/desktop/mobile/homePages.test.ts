@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit } from './homePages';
+import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from './homePages';
 
 describe('홈 화면 페이지', () => {
 	it('높이에 들어가는 줄 수 (줄 사이는 마지막 줄 뒤에 없다), 적어도 한 줄', () => {
@@ -8,13 +8,29 @@ describe('홈 화면 페이지', () => {
 		expect(rowsThatFit(10, 82, 22)).toBe(1);
 	});
 
-	it('첫 페이지는 위젯 아래 칸만큼, 나머지는 한 페이지씩', () => {
+	it('위젯이 있는 페이지는 위젯 아래 칸만큼, 나머지는 한 페이지씩', () => {
 		const apps = Array.from({ length: 23 }, (_, index) => index);
-		const pages = pageApps(apps, 8, 20);
-		expect(pages.map((page) => page.length)).toEqual([8, 15]);
+		const pages = pageApps(apps, [8, 4], 20);
+		expect(pages.map((page) => page.length)).toEqual([8, 4, 11]);
 		expect(pages.flat()).toEqual(apps);
-		expect(pageApps(apps, 24, 24).map((page) => page.length)).toEqual([23]);
-		expect(pageApps([1, 2, 3], 0, 0)).toEqual([[1], [2], [3]]);
+		expect(pageApps(apps, [24], 24).map((page) => page.length)).toEqual([23]);
+		expect(pageApps([1, 2, 3], [0], 0)).toEqual([[1], [2], [3]]);
+	});
+
+	it('위젯 페이지는 앱이 모자라도 만든다', () => {
+		expect(pageApps([1, 2], [8, 8, 8], 20)).toEqual([[1, 2], [], []]);
+		expect(pageApps([], [], 20)).toEqual([[]]);
+	});
+});
+
+describe('widgetRowHeight', () => {
+	const gaps = { widget: 16, top: 24, icon: 22 };
+	it('자리가 넉넉하면 정사각형, 모자라면 아이콘 두 줄이 들어가게 줄인다', () => {
+		// 아이콘 두 줄 = 82×2 + 22 = 186, 위젯 두 줄 사이 16, 위와 사이 24
+		expect(widgetRowHeight(800, [2, 2, 1], 155, 82, gaps)).toBe(155);
+		expect(widgetRowHeight(460, [2, 2, 1], 155, 82, gaps)).toBe(117);
+		expect(widgetRowHeight(300, [2], 155, 82, gaps)).toBe(112);
+		expect(widgetRowHeight(300, [0, 0], 155, 82, gaps)).toBe(155);
 	});
 });
 

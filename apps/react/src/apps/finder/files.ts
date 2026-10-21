@@ -9,6 +9,7 @@ import {
 	type DocumentEntry,
 	type DocumentFolder,
 	type DocumentFolderValue,
+	PICTURES_DOCUMENT_FOLDER,
 	projectFolderValue,
 } from './documents';
 
@@ -168,7 +169,9 @@ const fileItem = (file: DocumentEntry): FileItem => {
 			? `projects/${project[1]}`
 			: file.folder === DESKTOP_DOCUMENT_FOLDER
 				? 'desktop'
-				: `docs:${file.folder}`,
+				: file.folder === PICTURES_DOCUMENT_FOLDER
+					? 'pictures'
+					: `docs:${file.folder}`,
 	};
 };
 
@@ -263,22 +266,26 @@ function projectFolders(projects: TreeInput['projects'], files: DocumentEntry[])
 
 /**
  * 그림 폴더: 사진 앱의 앨범마다 폴더 하나 (다른 폴더처럼 이름순). 사진의 원래 자리다
- * (예전에는 프로젝트 폴더 안의 사진 폴더에 두어 같은 사진이 두 곳에 있었다)
+ * (예전에는 프로젝트 폴더 안의 사진 폴더에 두어 같은 사진이 두 곳에 있었다).
+ * 관리자가 올린 그림(폴더 값 그림, 키 pictures/…)도 여기 있고, 관리자가 만든 폴더로 옮길 수 있다 (사진 위젯의 앨범이 된다)
  */
-function picturesFolder(albums: Album[]): FolderItem {
-	return {
-		kind: 'folder',
-		id: 'pictures',
-		name: '그림',
-		children: albums
+function picturesFolder(albums: Album[], files: DocumentEntry[]): FolderItem {
+	const children: FinderItem[] = [
+		...albums
 			.map((album): FolderItem => ({
 				kind: 'folder',
 				id: `pictures/${album.id}`,
 				name: album.name,
 				children: albumPhotos(album),
 			}))
-			.filter((folder) => folder.children.length > 0)
-			.sort(byName),
+			.filter((folder) => folder.children.length > 0),
+		...files.filter((file) => file.folder === PICTURES_DOCUMENT_FOLDER).map(fileItem),
+	];
+	return {
+		kind: 'folder',
+		id: 'pictures',
+		name: '그림',
+		children: children.sort(byName),
 		emptyNote: '그림이 없습니다.',
 	};
 }
@@ -422,7 +429,7 @@ export function buildTree({
 		},
 		docsFolder(docs, files, projectFolders(projects, files), resume),
 		blogFolder(posts, blogFolders),
-		picturesFolder(albums),
+		picturesFolder(albums, files),
 		musicFolder(tracks),
 		...EMPTY_HOME_FOLDERS.map((folder): FolderItem => ({ kind: 'folder', ...folder, children: [] })),
 	];
@@ -528,12 +535,13 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 }
 
 /**
- * 관리자가 파일을 놓아 올릴 수 있는 폴더면 그 API 폴더 값: 문서 › 이력서 → 이력서, 프로젝트 › <프로젝트> → project:<id>.
- * 다른 폴더(사진 등)와 폴더가 아닌 항목은 null
+ * 관리자가 파일을 놓아 올릴 수 있는 폴더면 그 API 폴더 값: 문서 › 이력서 → 이력서, 프로젝트 › <프로젝트> → project:<id>, 그림 → 그림.
+ * 다른 폴더(그림 안의 앨범 등)와 폴더가 아닌 항목은 null
  */
 export function uploadFolderOf(item: FinderItem | null | undefined): DocumentFolderValue | null {
 	if (!item || item.kind !== 'folder') return null;
 	if (item.id === 'desktop') return DESKTOP_DOCUMENT_FOLDER;
+	if (item.id === 'pictures') return PICTURES_DOCUMENT_FOLDER;
 	if (item.id === `docs:${item.name}` && (DOCUMENT_FOLDERS as readonly string[]).includes(item.name))
 		return item.name as DocumentFolder;
 	const project = /^projects\/([^/]+)$/.exec(item.id);

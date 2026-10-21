@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import FinderIcon from '@/apps/finder/FinderIcon';
 import { find, mediaKind, TRASH_ID, type FinderItem, type FolderItem } from '@/apps/finder/files';
-import { canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
+import { ADMIN_ONLY_NOTE, canMove, canRename, canTrash, uploadPlan } from '@/apps/finder/edit';
 import { uploadInto } from '@/apps/finder/useDocumentDrop';
 import { addLocalFiles } from '@/apps/finder/localFiles';
 import { canSetWallpaper, setDesktopWallpaper } from '@/apps/finder/setWallpaper';
@@ -14,6 +14,7 @@ import { useLocations } from '@/apps/finder/useLocations';
 import { openInPreview } from '@/apps/preview/previewStore';
 import { requestedSection } from '@/apps/settings/settingsRequest';
 import { useAppState } from '@/desktop/useAppState';
+import { openWidgetEditor } from '@/desktop/widgets/widgetEditor';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
@@ -30,6 +31,7 @@ import {
 	type Point,
 	type Viewport,
 } from './layout';
+import { desktopIconRects } from './iconRects';
 import './DesktopIcons.css';
 
 /** 이만큼 움직여야 끌기로 본다 (그보다 작으면 클릭) */
@@ -94,6 +96,15 @@ const DesktopIcons: React.FC = () => {
 
 	const [saved, setSaved] = useState<Record<string, Cell>>(() => parseSaved(readJson(STORAGE_KEYS.desktopIcons)));
 	const cells = useMemo(() => arrange(ids, saved, viewport), [ids, saved, viewport]);
+	// 아이콘 자리를 알린다: 바탕화면 위젯이 이 자리를 피해 놓인다 (iconRects.ts)
+	useEffect(() => {
+		desktopIconRects.setState({
+			rects: ids.map((id) => {
+				const { x, y } = cellToPoint(cells[id], viewport);
+				return { left: x, top: y, right: x + CELL.width, bottom: y + CELL.height };
+			}),
+		});
+	}, [ids, cells, viewport]);
 	const save = (next: Record<string, Cell>) => {
 		setSaved(next);
 		writeJson(STORAGE_KEYS.desktopIcons, next);
@@ -330,13 +341,16 @@ const DesktopIcons: React.FC = () => {
 					disabled: !edit.admin || !canTrash(menuTarget),
 					onSelect: () => edit.trash([menuTarget], () => setSelected([])),
 				},
+				...(edit.admin ? [] : (['separator', { note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
 			]
 		: [
 				{ label: '새 폴더', onSelect: newFolder, disabled: !edit.admin || !desktop },
+				...(edit.admin ? [] : ([{ note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
 				'separator',
 				{ label: '정리하기', onSelect: () => save(cleanUp(ids, viewport)) },
 				{ label: '이름순으로 정리', onSelect: () => save(cleanUp(byName, viewport)) },
 				'separator',
+				{ label: '위젯 편집…', onSelect: openWidgetEditor },
 				{
 					label: '배경화면 변경…',
 					onSelect: () => {

@@ -399,3 +399,28 @@
 	max-height: 100%;
 	background: var(--color-black);
 }
+
+/* 길게 누르면 메뉴 (iOS의 글자 고르기·미리보기 풍선은 띄우지 않는다) */
+.files-phone-item {
+	-webkit-touch-callout: none;
+	user-select: none;
+}
+
+/* 이름 고치기: 이름 자리에 입력 칸 */
+.files-phone-rename {
+	width: 100%;
+	max-width: 160px;
+	text-align: inherit;
+}
+
+/* 가상본 화살표: 아이콘 칸의 왼쪽 아래 (칸이 기준이 아니면 화면 아래로 빠져 크게 그려졌다) */
+.files-phone-icon {
+	position: relative;
+}
+
+.files-phone-icon .finder-alias-badge {
+	bottom: 14%;
+	left: 10%;
+	width: 26%;
+	max-width: 20px;
+}

@@ -14,6 +14,8 @@ export const test = base.extend<{ pageErrors: Error[]; noApi: void; cspViolation
 			});
 			// 기술 칸의 npm 검색은 바깥으로 나가지 않게 빈 결과 (시험에서 결과가 필요하면 다시 route한다)
 			await page.route('https://registry.npmjs.org/**', (route) => route.fulfill({ json: { objects: [] } }));
+			// 바탕화면·홈 화면의 날씨 위젯도 바깥으로 나가지 않게 (날씨가 필요한 시험은 fakeWeather로 덮는다: 나중에 건 route가 먼저다)
+			await page.route('https://api.open-meteo.com/**', (route) => route.fulfill({ status: 503, body: '' }));
 			await use();
 		},
 		{ auto: true },

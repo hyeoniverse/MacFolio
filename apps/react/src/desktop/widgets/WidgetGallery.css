@@ -1,0 +1,282 @@
+/*
+ * 위젯 갤러리 (WidgetGallery): 화면 아래 가장자리에 붙어 올라오는 유리 시트 (macOS '위젯 편집…').
+ * 위 두 모서리만 둥글고 아래는 화면 밖으로 이어진다. 왼쪽 사이드바(찾기·종류), 오른쪽 미리보기 격자, 아래 안내와 완료.
+ * 판이 Dock 위를 덮는다
+ */
+.widget-gallery {
+	position: fixed;
+	left: 50%;
+	bottom: 0;
+	z-index: var(--z-widget-gallery);
+	display: grid;
+	grid-template-columns: 230px minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr) auto;
+	box-sizing: border-box;
+	width: min(1100px, calc(100vw - 32px));
+	height: min(580px, calc(100vh - 120px));
+	overflow: hidden;
+	border-radius: var(--radius-window) var(--radius-window) 0 0;
+	background-color: var(--widget-gallery-background);
+	-webkit-backdrop-filter: blur(40px) saturate(180%);
+	backdrop-filter: blur(40px) saturate(180%);
+	/* 가장자리 빛은 위와 양옆만 (아래는 화면 밖) */
+	box-shadow:
+		inset 0 1px 0 var(--widget-edge),
+		inset 1px 0 0 var(--widget-edge),
+		inset -1px 0 0 var(--widget-edge),
+		var(--shadow-modal);
+	color: var(--color-label);
+	transform: translateX(-50%);
+	animation: widget-gallery-in var(--duration) var(--ease-out);
+}
+
+/* 화면 아래에서 올라온다 (가운데 맞춤의 translateX를 함께 적는다) */
+@keyframes widget-gallery-in {
+	from {
+		transform: translate(-50%, 100%);
+	}
+}
+
+/* 편집이 끝나면 아래로 내려가며 사라진다 (useExitMotion의 복사본) */
+@keyframes widget-gallery-out {
+	to {
+		transform: translate(-50%, 100%);
+	}
+}
+
+/* 위젯을 시트 자리로 끄는 동안: 잠시 아래로 내려 두고, 놓으면 다시 올라온다 */
+.widget-gallery {
+	transition: transform var(--duration) var(--ease-out);
+}
+
+.widget-gallery.away {
+	transform: translate(-50%, 100%);
+	pointer-events: none;
+}
+
+/* ─── 사이드바 ─── */
+.widget-gallery-sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-12);
+	min-height: 0;
+	padding: var(--space-16) var(--space-12);
+	border-right: 1px solid var(--color-material-separator);
+	background-color: var(--widget-gallery-sidebar);
+}
+
+.widget-gallery-search {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	padding: var(--space-6) var(--space-10);
+	border-radius: var(--radius-8);
+	background-color: var(--color-tertiary-system-fill);
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+.widget-gallery-search:focus-within {
+	box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-control-accent) 45%, transparent);
+}
+
+.widget-gallery-search input {
+	flex: 1;
+	min-width: 0;
+	border: none;
+	background: none;
+	color: var(--color-label);
+	font: inherit;
+	outline: none;
+}
+
+.widget-gallery-sidebar ul {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-height: 0;
+	margin: 0;
+	padding: 0;
+	overflow-y: auto;
+	list-style: none;
+}
+
+.widget-gallery-sidebar button {
+	display: flex;
+	align-items: center;
+	gap: var(--space-10);
+	width: 100%;
+	padding: var(--space-6) var(--space-8);
+	border: none;
+	border-radius: var(--radius-8);
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: var(--text-subhead);
+	text-align: left;
+	cursor: pointer;
+}
+
+.widget-gallery-sidebar button:hover {
+	background-color: var(--color-tertiary-system-fill);
+}
+
+.widget-gallery-sidebar button[aria-current='true'] {
+	background-color: var(--color-unemphasized-selected-content-background);
+	font-weight: 600;
+}
+
+.widget-gallery-icon {
+	flex: none;
+	width: 26px;
+	height: 26px;
+	border-radius: var(--radius-6);
+	object-fit: cover;
+}
+
+.widget-gallery-icon.all {
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.5;
+	color: var(--color-secondary-label);
+}
+
+.widget-gallery-icon.glyph {
+	display: grid;
+	place-items: center;
+	background-color: var(--color-popover-background);
+	box-shadow: var(--shadow-raised);
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+}
+
+/* ─── 미리보기 ─── */
+.widget-gallery-main {
+	min-height: 0;
+	/* 올렸을 때 커지는 위젯과 + 단추가 잘리지 않게 안쪽 여백을 넉넉히 */
+	padding: var(--space-16) var(--space-24) var(--space-24);
+	overflow-y: auto;
+}
+
+.widget-gallery-main header {
+	margin-bottom: var(--space-16);
+}
+
+.widget-gallery-main h2 {
+	margin: 0;
+	font-size: var(--text-title3);
+}
+
+.widget-gallery-main header p {
+	margin: var(--space-4) 0 0;
+	font-size: var(--text-footnote);
+	color: var(--color-secondary-label);
+}
+
+.widget-gallery-heading.widget-gallery-heading {
+	margin-bottom: var(--space-16);
+	font-size: var(--text-subhead);
+	font-weight: 600;
+	color: var(--color-secondary-label);
+}
+
+.widget-gallery-empty {
+	color: var(--color-secondary-label);
+}
+
+.widget-gallery-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-24) var(--space-20);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.widget-gallery-cell {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-8);
+}
+
+.widget-gallery-item {
+	position: relative;
+	display: flex;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-window);
+	background: none;
+	color: inherit;
+	font: inherit;
+	cursor: copy;
+	transition: transform var(--duration-fast) ease;
+}
+
+.widget-gallery-preview {
+	display: flex;
+	flex: none;
+}
+
+.widget-gallery-preview > .widget {
+	flex: 1;
+}
+
+.widget-gallery-item:hover,
+.widget-gallery-item:focus-visible {
+	transform: translateY(-2px) scale(1.03);
+}
+
+.widget-gallery-item:focus-visible {
+	outline: 3px solid var(--color-control-accent);
+	outline-offset: 3px;
+}
+
+/* 올리면 왼쪽 위 모서리에 초록 + (macOS 위젯 갤러리) */
+.widget-gallery-plus {
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	border-radius: var(--radius-full);
+	background-color: var(--color-system-green);
+	box-shadow: var(--shadow-raised);
+	color: var(--color-white);
+	font-size: var(--text-caption2);
+	opacity: 0;
+	transform: scale(0.6);
+	transition:
+		opacity var(--duration-fast) ease,
+		transform var(--duration-fast) ease;
+}
+
+.widget-gallery-item:hover .widget-gallery-plus,
+.widget-gallery-item:focus-visible .widget-gallery-plus {
+	opacity: 1;
+	transform: scale(1);
+}
+
+.widget-gallery-caption {
+	font-size: var(--text-caption);
+	color: var(--color-secondary-label);
+}
+
+/* ─── 아래 줄 ─── */
+.widget-gallery-footer {
+	grid-column: 1 / -1;
+	display: flex;
+	align-items: center;
+	gap: var(--space-16);
+	padding: var(--space-12) var(--space-20) var(--space-16);
+	border-top: 1px solid var(--color-material-separator);
+}
+
+.widget-gallery-footer p {
+	flex: 1;
+	margin: 0;
+	font-size: var(--text-footnote);
+	color: var(--color-secondary-label);
+}

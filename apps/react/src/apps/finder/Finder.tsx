@@ -23,7 +23,7 @@ import {
 	type FolderItem,
 } from './files';
 import { FINDER_DRAG_TYPE, finderDrag, finderRenaming, stemLength, useFinderEdit } from './useFinderEdit';
-import { canCreateIn, canMove, canRename, canTrash } from './edit';
+import { ADMIN_ONLY_NOTE, canCreateIn, canMove, canRename, canTrash } from './edit';
 import InlineName from './InlineName';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { useDocumentDrop } from './useDocumentDrop';
@@ -444,9 +444,11 @@ const Finder: React.FC = () => {
 					disabled: !edit.admin || !canTrash(menu.item),
 					onSelect: () => edit.trash([menu.item!], () => setSelected(null)),
 				},
+				...(edit.admin ? [] : (['separator', { note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
 			]
 		: [
 				{ label: '새 폴더', disabled: !edit.admin || !canCreateIn(folder) || searching, onSelect: newFolder },
+				...(edit.admin ? [] : ([{ note: ADMIN_ONLY_NOTE }] satisfies MenuItem[])),
 				'separator',
 				{ label: '아이콘으로 보기', checked: view === 'icons', onSelect: () => setView('icons') },
 				{ label: '목록으로 보기', checked: view === 'list', onSelect: () => setView('list') },

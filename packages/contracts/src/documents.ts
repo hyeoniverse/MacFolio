@@ -18,8 +18,12 @@ export type ProjectDocumentFolder = `project:${string}`;
 /** 바탕화면(데스크탑)에 바로 놓은 파일의 폴더 값. R2 키는 desktop/ 아래. 문서 폴더 목록(DOCUMENT_FOLDERS)에는 없다 */
 export const DESKTOP_DOCUMENT_FOLDER = '데스크탑';
 export type DesktopDocumentFolder = typeof DESKTOP_DOCUMENT_FOLDER;
-/** 문서 폴더 값: 이력서·포트폴리오·자격증, 데스크탑, 또는 프로젝트 폴더 */
-export type DocumentFolderValue = DocumentFolder | DesktopDocumentFolder | ProjectDocumentFolder;
+/** 홈 › 그림에 올린 파일의 폴더 값. R2 키는 pictures/ 아래. 사진 위젯이 이 폴더(와 그 안에 만든 폴더)의 그림을 보여 준다 */
+export const PICTURES_DOCUMENT_FOLDER = '그림';
+export type PicturesDocumentFolder = typeof PICTURES_DOCUMENT_FOLDER;
+/** 문서 폴더 값: 이력서·포트폴리오·자격증, 데스크탑, 그림, 또는 프로젝트 폴더 */
+export type DocumentFolderValue =
+	DocumentFolder | DesktopDocumentFolder | PicturesDocumentFolder | ProjectDocumentFolder;
 /** 프로젝트 id 모양 (desktop-core의 프로젝트 목록 규칙과 같다) */
 export const DOCUMENT_PROJECT_ID = /^[a-z0-9][a-z0-9-]{0,39}$/;
 const PROJECT_FOLDER = /^project:([a-z0-9][a-z0-9-]{0,39})$/;
@@ -33,7 +37,9 @@ export function documentProjectId(folder: string): string | null {
 export function documentFolderKey(folder: DocumentFolderValue): string {
 	const projectId = documentProjectId(folder);
 	if (projectId) return `projects/${projectId}`;
-	return folder === DESKTOP_DOCUMENT_FOLDER ? 'desktop' : DOCUMENT_FOLDER_KEYS[folder as DocumentFolder];
+	if (folder === DESKTOP_DOCUMENT_FOLDER) return 'desktop';
+	if (folder === PICTURES_DOCUMENT_FOLDER) return 'pictures';
+	return DOCUMENT_FOLDER_KEYS[folder as DocumentFolder];
 }
 
 /**
@@ -101,11 +107,12 @@ export function cleanDocumentName(name: unknown): string | null {
 	return cleaned ? Array.from(cleaned).slice(0, DOCUMENT_NAME_MAX).join('') : null;
 }
 
-const FOLDER_ERROR = '이력서·포트폴리오·자격증·데스크탑 폴더나 프로젝트 폴더에만 올릴 수 있습니다.';
-/** 폴더: 세 문서 폴더 이름 또는 project:<프로젝트 id> */
-const folder = z.union([z.enum([...DOCUMENT_FOLDERS, DESKTOP_DOCUMENT_FOLDER]), z.string().regex(PROJECT_FOLDER)], {
-	error: FOLDER_ERROR,
-}) as unknown as z.ZodType<DocumentFolderValue>;
+const FOLDER_ERROR = '이력서·포트폴리오·자격증·데스크탑·그림 폴더나 프로젝트 폴더에만 올릴 수 있습니다.';
+/** 폴더: 세 문서 폴더 이름, 데스크탑, 그림, 또는 project:<프로젝트 id> */
+const folder = z.union(
+	[z.enum([...DOCUMENT_FOLDERS, DESKTOP_DOCUMENT_FOLDER, PICTURES_DOCUMENT_FOLDER]), z.string().regex(PROJECT_FOLDER)],
+	{ error: FOLDER_ERROR }
+) as unknown as z.ZodType<DocumentFolderValue>;
 const name = z.preprocess(
 	cleanDocumentName,
 	z
@@ -142,7 +149,7 @@ export type DocumentRename = z.infer<typeof DocumentRename>;
 /** 목록의 파일 하나 */
 export const DocumentFile = z.object({
 	id: z.string(),
-	/** 이력서 | 포트폴리오 | 자격증 | project:<프로젝트 id> */
+	/** 이력서 | 포트폴리오 | 자격증 | 데스크탑 | 그림 | project:<프로젝트 id> */
 	folder,
 	name: z.string(),
 	/** R2 키. 사이트 주소 /files/<key>로 받는다 */

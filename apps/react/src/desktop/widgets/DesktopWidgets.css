@@ -1,0 +1,67 @@
+/* 바탕화면 위젯 층 (DesktopWidgets.tsx): 바탕화면 아이콘 위, 창·Dock·메뉴 막대 아래.
+   층은 화면을 덮지만 포인터는 위젯만 받는다 (빈 곳은 그 아래 아이콘 층이 받아 사각형 고르기·메뉴를 한다) */
+.desktop-widgets {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.desktop-widget {
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	pointer-events: auto;
+	touch-action: none;
+	transform: translate(var(--x), var(--y));
+	transition: transform var(--duration-fast) ease;
+}
+
+.desktop-widget > .widget {
+	flex: 1;
+}
+
+/* 끄는 동안은 손을 바로 따라가고, 다른 위젯 위로 지나간다 */
+.desktop-widget.dragging {
+	z-index: 1;
+	opacity: 0.9;
+	transition: none;
+}
+
+/* 편집 중: macOS처럼 위젯마다 왼쪽 위에 지우기 단추 */
+.desktop-widget-remove {
+	position: absolute;
+	top: -8px;
+	left: -8px;
+	z-index: 2;
+	display: grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--color-secondary-label);
+	color: var(--color-white);
+	font-size: var(--text-caption2);
+	box-shadow: var(--shadow-raised);
+	cursor: pointer;
+}
+
+.desktop-widgets.editing .desktop-widget > .widget {
+	cursor: grab;
+}
+
+/* 갤러리에서 고른 위젯이 빈 칸으로 날아가는 겉모습 (DesktopWidgets의 flight). 갤러리 시트보다 위 */
+.desktop-widget-flight {
+	position: fixed;
+	z-index: var(--z-widget-flight);
+	display: flex;
+	border-radius: var(--radius-window);
+	pointer-events: none;
+}
+
+.desktop-widget-flight > .widget {
+	flex: 1;
+}

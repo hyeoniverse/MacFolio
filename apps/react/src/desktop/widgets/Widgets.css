@@ -1,0 +1,691 @@
+/* 위젯 공통 (Widget.tsx). 크기는 놓는 곳이 정한다: 바탕화면은 칸 크기(DesktopWidgets), 휴대폰은 격자 칸(MobileHome) */
+.widget {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: var(--space-14);
+	overflow: hidden;
+	border-radius: var(--radius-window);
+	background-color: var(--widget-background);
+	/* 유리: 뒤를 흐리게 비추고, 가장자리에 가는 빛 */
+	-webkit-backdrop-filter: var(--widget-blur);
+	backdrop-filter: var(--widget-blur);
+	box-shadow:
+		inset 0 0 0 1px var(--widget-edge),
+		var(--widget-shadow);
+	color: var(--widget-label);
+	text-align: left;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.widget p,
+.widget h2,
+.widget ul {
+	margin: 0;
+}
+
+.widget .widget-title {
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.widget .widget-note {
+	font-size: var(--text-caption);
+	color: var(--widget-secondary-label);
+}
+
+.widget button {
+	font: inherit;
+	color: inherit;
+}
+
+/* 불투명한 판(캘린더·메모): 비치지 않는 대신 위에서 아래로 옅은 그라데이션과 윗변의 빛·아랫변의 그늘로 두께를 준다 */
+.widget-calendar,
+.widget-posts {
+	background-image: linear-gradient(180deg, var(--widget-solid-top), var(--widget-solid-bottom));
+	box-shadow:
+		inset 0 1px 0 var(--widget-highlight),
+		inset 0 -1px 0 var(--widget-lowlight),
+		var(--widget-shadow);
+}
+
+/* ─── 날씨 ─── */
+/* 하늘 색 바탕에 흰 글자 (macOS·iOS 날씨 위젯). 색은 날씨 앱(Weather.css)의 하늘 색과 같다.
+   하늘 색이 곧 날씨라 비치게 하지 않는다 (배경화면과 섞이면 맑은 하늘이 탁한 보라가 된다) */
+.widget-weather {
+	--sky-top: #4f86c6;
+	--sky-bottom: #8db4dc;
+	container-type: size;
+	background-color: var(--sky-top);
+	/* 위쪽에 번지는 옅은 빛을 하늘 색 위에 겹쳐 둥글게 부푼 판처럼 */
+	background-image:
+		radial-gradient(120% 70% at 30% 0%, color-mix(in srgb, var(--color-white) 22%, transparent), transparent 70%),
+		linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+	box-shadow:
+		inset 0 1px 0 color-mix(in srgb, var(--color-white) 30%, transparent),
+		inset 0 -1px 0 color-mix(in srgb, var(--color-black) 20%, transparent),
+		var(--widget-shadow);
+	color: var(--color-white);
+}
+
+.widget-weather:has([data-sky='clear'][data-day]) {
+	--sky-top: #2f7fd1;
+	--sky-bottom: #6fb4ee;
+}
+.widget-weather:has([data-sky='clear']:not([data-day])) {
+	--sky-top: #0d1230;
+	--sky-bottom: #2b3160;
+}
+.widget-weather:has([data-sky='partly'][data-day]) {
+	--sky-top: #4a7fbd;
+	--sky-bottom: #8fb3d9;
+}
+.widget-weather:has([data-sky='partly']:not([data-day])) {
+	--sky-top: #161a35;
+	--sky-bottom: #363b63;
+}
+.widget-weather:has([data-sky='cloudy'][data-day], [data-sky='fog'][data-day]) {
+	--sky-top: #66788c;
+	--sky-bottom: #9cabba;
+}
+.widget-weather:has([data-sky='cloudy']:not([data-day]), [data-sky='fog']:not([data-day])) {
+	--sky-top: #1b1d34;
+	--sky-bottom: #3d3f5e;
+}
+.widget-weather:has([data-sky='rain'][data-day], [data-sky='drizzle'][data-day]) {
+	--sky-top: #45566b;
+	--sky-bottom: #77889a;
+}
+.widget-weather:has([data-sky='rain']:not([data-day]), [data-sky='drizzle']:not([data-day])) {
+	--sky-top: #181c2c;
+	--sky-bottom: #343a50;
+}
+.widget-weather:has([data-sky='snow'][data-day]) {
+	--sky-top: #7f98b4;
+	--sky-bottom: #bccddf;
+}
+.widget-weather:has([data-sky='snow']:not([data-day])) {
+	--sky-top: #34445a;
+	--sky-bottom: #5a6b81;
+}
+.widget-weather:has([data-sky='storm']) {
+	--sky-top: #262c38;
+	--sky-bottom: #4a5366;
+}
+
+.widget-weather .widget-note {
+	color: var(--color-on-media-label);
+}
+
+.widget-weather-body {
+	display: flex;
+	flex: 1;
+	gap: var(--space-14);
+	min-height: 0;
+}
+
+.widget-weather-now {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	min-width: 0;
+	width: 100%;
+}
+
+.widget-medium .widget-weather-now {
+	width: 40%;
+}
+
+.widget-weather .widget-title {
+	font-size: var(--text-subhead);
+	font-weight: 700;
+}
+
+.widget-weather-temp {
+	font-size: 44px;
+	font-weight: 300;
+	line-height: 1.05;
+}
+
+.widget-weather-icon {
+	margin-top: auto;
+	font-size: var(--text-callout);
+}
+
+.widget-weather-label {
+	margin-top: var(--space-2);
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+.widget-weather-now .widget-note {
+	font-size: var(--text-caption);
+	font-weight: 600;
+	color: var(--color-white);
+}
+
+.widget-weather-hours {
+	display: flex;
+	flex: 1;
+	justify-content: space-between;
+	align-items: flex-end;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.widget-weather-hours li {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-8);
+	font-size: var(--text-caption);
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.widget-weather-hours li span:first-child {
+	color: var(--color-on-media-label);
+	font-weight: 400;
+}
+
+/* 휴대폰에서 위젯 줄이 낮아지면(안쪽 높이 120px 아래) 날씨 아이콘을 빼고 글자를 줄여 넘치지 않게.
+   데스크톱 작은 위젯의 안쪽은 136px이라 걸리지 않는다 */
+@container (max-height: 120px) {
+	.widget-weather-now .widget-weather-icon {
+		display: none;
+	}
+
+	.widget-weather-temp {
+		margin-bottom: auto;
+		font-size: var(--text-title1);
+	}
+}
+
+/* ─── 캘린더 ─── */
+/* macOS 캘린더 위젯: 이달 달력, 오늘은 진한 동그라미, 주말은 흐리게. 중간은 왼쪽에 오늘을 크게 */
+.widget-calendar-body {
+	display: flex;
+	flex: 1;
+	gap: var(--space-16);
+	min-height: 0;
+}
+
+.widget-calendar-today {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+}
+
+.widget-calendar-weekday {
+	font-size: var(--text-footnote);
+	font-weight: 700;
+	color: var(--widget-accent);
+}
+
+.widget-calendar-day {
+	font-size: 54px;
+	font-weight: 300;
+	line-height: 1;
+}
+
+.widget-calendar-month {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.widget-calendar-title {
+	margin-bottom: var(--space-4);
+	padding-left: var(--space-4);
+	font-size: var(--text-caption);
+	font-weight: 700;
+	color: var(--widget-accent);
+}
+
+.widget-calendar {
+	/* 작은 숫자가 빽빽해 무늬 있는 배경화면 위에서도 읽히도록 비치지 않는 판 */
+	--widget-background: var(--widget-background-solid);
+	--widget-blur: none;
+	container-type: size;
+}
+
+.widget-calendar-month table {
+	flex: 1;
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--text-caption2);
+	font-variant-numeric: tabular-nums;
+	font-weight: 600;
+	text-align: center;
+}
+
+.widget-calendar-month th {
+	font-weight: 600;
+	color: var(--widget-secondary-label);
+}
+
+.widget-calendar-month td {
+	padding: 0;
+}
+
+.widget-calendar-month td:first-child,
+.widget-calendar-month td:last-child {
+	color: var(--widget-secondary-label);
+}
+
+.widget-calendar-month td span {
+	display: inline-grid;
+	place-items: center;
+	width: 1.75em;
+	height: 1.75em;
+	border-radius: var(--radius-full);
+}
+
+.widget-calendar-month td[aria-current='date'] span {
+	background-color: var(--widget-label);
+	box-shadow: var(--shadow-raised);
+	color: var(--widget-on-label);
+	font-weight: 700;
+}
+
+/* 휴대폰에서 위젯 줄이 낮아지면(안쪽 높이 120px 아래) 달 이름을 빼고 글자·동그라미를 줄여 여섯 주가 다 들어가게 */
+@container (max-height: 120px) {
+	.widget-calendar-title {
+		display: none;
+	}
+
+	.widget-calendar-month table {
+		font-size: 9px;
+	}
+
+	.widget-calendar-month td span {
+		width: 1.45em;
+		height: 1.45em;
+	}
+
+	.widget-calendar-day {
+		font-size: 40px;
+	}
+}
+
+/* ─── 시계 ─── */
+.widget-clock-body {
+	container-type: size;
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-4);
+	min-height: 0;
+}
+
+/* 판은 너비와 (도시 이름을 뺀) 높이 가운데 작은 쪽에 맞춘다: 휴대폰에서 위젯 줄이 낮아져도 잘리지 않는다 */
+.widget-clock-face {
+	position: relative;
+	container-type: inline-size;
+	flex: none;
+	width: min(78cqw, calc(100cqh - 1.4em - var(--space-4)));
+	aspect-ratio: 1;
+	border-radius: var(--radius-full);
+	background-color: var(--widget-fill);
+	color: var(--widget-label);
+}
+
+/* 숫자: 가운데에서 그 시각 방향으로 반지름만큼 나가고, 글자는 똑바로 선다 */
+.widget-clock-number {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: var(--text-caption2);
+	font-weight: 600;
+	line-height: 1;
+	transform: translate(-50%, -50%) rotate(calc(var(--n) * 30deg)) translateY(-38cqw) rotate(calc(var(--n) * -30deg));
+}
+
+.widget-clock-hand {
+	position: absolute;
+	left: 50%;
+	bottom: 50%;
+	width: 3px;
+	border-radius: var(--radius-full);
+	background-color: var(--widget-label);
+	transform: translateX(-50%) rotate(var(--angle));
+	transform-origin: 50% 100%;
+}
+
+.widget-clock-hand.hour {
+	height: 26%;
+}
+
+.widget-clock-hand.minute {
+	height: 38%;
+}
+
+.widget-clock-hand.second {
+	width: 1px;
+	height: 40%;
+	background-color: var(--widget-accent);
+}
+
+.widget-clock-city {
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+/* ─── 음악 ─── */
+.widget-music.music-widget {
+	flex: 1;
+	margin: calc(var(--space-14) * -1);
+	cursor: inherit;
+}
+
+.widget-music-small {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-height: 0;
+}
+
+.widget-music-small img {
+	width: 56px;
+	height: 56px;
+	margin-bottom: auto;
+	border-radius: var(--radius-8);
+	object-fit: cover;
+}
+
+.widget-music-small button {
+	position: absolute;
+	top: var(--space-14);
+	right: var(--space-14);
+	width: 32px;
+	height: 32px;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--widget-fill);
+	cursor: pointer;
+}
+
+/* ─── 최근 글 ─── */
+/* macOS 메모 위젯: 노란 머리띠(폴더 아이콘과 이름) 아래 점선, 그 아래 한 줄씩 구분선 */
+.widget-posts {
+	/* 줄글 제목이 배경화면과 겹치지 않게 비치지 않는 판 */
+	--widget-background: var(--widget-background-solid);
+	--widget-blur: none;
+	container-type: size;
+	padding: 0;
+}
+
+.widget-posts-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.widget-posts-header {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: var(--space-8);
+	padding: var(--space-10) var(--space-14);
+	border-bottom: 2px dotted var(--widget-separator);
+	background-color: var(--notes-accent);
+	/* 위가 조금 밝은 노랑, 윗변에 빛 */
+	background-image: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--color-white) 22%, var(--notes-accent)),
+		var(--notes-accent)
+	);
+	box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-white) 45%, transparent);
+	color: var(--color-white);
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.widget-posts-body ul {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	padding: var(--space-4) var(--space-14) 0;
+	list-style: none;
+}
+
+.widget-posts-body li + li {
+	border-top: 1px solid var(--widget-separator);
+}
+
+.widget-posts-body button {
+	display: flex;
+	align-items: baseline;
+	gap: var(--space-8);
+	width: 100%;
+	padding: var(--space-8) 0;
+	border: none;
+	background: none;
+	text-align: left;
+	cursor: pointer;
+}
+
+.widget-posts-body strong {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	font-size: var(--text-footnote);
+	font-weight: 400;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.widget-posts-body button .widget-note {
+	flex: none;
+}
+
+.widget-posts-body button:hover strong {
+	text-decoration: underline;
+}
+
+.widget-posts-empty {
+	padding: var(--space-10) var(--space-14);
+}
+
+/* 작은 위젯은 날짜를 빼고 제목을 두 줄까지 */
+.widget-small .widget-posts-body button .widget-note {
+	display: none;
+}
+
+.widget-small .widget-posts-body strong {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	white-space: normal;
+}
+
+/* 휴대폰에서 화면이 낮아 위젯 줄을 줄이면(안쪽 높이 130px 아래) 셋째 글을 반쯤 잘라 보이지 않고 뺀다.
+   데스크톱 위젯의 안쪽은 164px이라 세 편이 다 보인다 */
+@container (max-height: 130px) {
+	.widget-posts-body li:nth-child(n + 3) {
+		display: none;
+	}
+}
+
+/* ─── 사진 ─── */
+.widget-photos {
+	padding: 0;
+}
+
+.widget-photo-body {
+	position: relative;
+	flex: 1;
+	margin: 0;
+	min-height: 0;
+}
+
+.widget-photo-body img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.widget-photo-body figcaption {
+	position: absolute;
+	left: var(--space-12);
+	bottom: var(--space-10);
+	font-size: var(--text-caption);
+	font-weight: 700;
+	color: var(--color-white);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── GitHub ─── */
+/* 기여 그래프(잔디): 다른 위젯과 같은 판에 macOS 초록 단계의 둥근 칸, 가장 많이 한 날은 새싹이 돋는다.
+   칸 크기는 그래프 높이에서 정해 7줄이 꼭 맞고, 1년 치 중 다 들어가는 주만 보인다
+   (가장 최근 주가 오른쪽 끝, 넘친 옛 주는 다음 줄로 넘겨 가린다) */
+.widget-github {
+	--grass-0: color-mix(in srgb, var(--widget-label) 9%, transparent);
+	--grass-1: #c8f0d1;
+	--grass-2: #86dc99;
+	--grass-3: #34c759;
+	--grass-4: #248a3d;
+	--grass-sprout: #ffffff;
+}
+
+:root[data-theme='dark'] .widget-github {
+	--grass-1: #1d4a2a;
+	--grass-2: #22713a;
+	--grass-3: #2aa54b;
+	--grass-4: #30d158;
+	--grass-sprout: #0b2a14;
+}
+
+.widget-github-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-10);
+	min-height: 0;
+}
+
+.widget-github-header {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	font-size: var(--text-footnote);
+	font-weight: 700;
+}
+
+.widget-github-header > i {
+	color: var(--grass-3);
+}
+
+.widget-github-header .widget-note {
+	margin-left: auto;
+	font-weight: 500;
+	white-space: nowrap;
+}
+
+.widget-github-graph {
+	container-type: size;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.widget-github-weeks {
+	--gap: 3px;
+	--cell: min(calc((100cqh - 6 * var(--gap)) / 7), 15px);
+	display: flex;
+	flex-direction: row-reverse;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	gap: var(--cell) var(--gap);
+	height: 100%;
+}
+
+.widget-github-week {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+.widget-github-day {
+	display: grid;
+	place-items: center;
+	width: var(--cell);
+	height: var(--cell);
+	border-radius: calc(var(--cell) * 0.3);
+	background-color: var(--grass-0);
+}
+
+.widget-github-day i {
+	font-size: calc(var(--cell) * 0.62);
+	color: var(--grass-sprout);
+}
+
+.widget-github-day[data-level='none'] {
+	visibility: hidden;
+}
+
+.widget-github-day[data-level='1'] {
+	background-color: var(--grass-1);
+}
+
+.widget-github-day[data-level='2'] {
+	background-color: var(--grass-2);
+}
+
+.widget-github-day[data-level='3'] {
+	background-color: var(--grass-3);
+}
+
+.widget-github-day[data-level='4'] {
+	background-color: var(--grass-4);
+}
+
+/* 칸이 아주 작으면(휴대폰에서 위젯 줄을 줄였을 때) 새싹은 빼고 색만 */
+@container (max-height: 80px) {
+	.widget-github-day i {
+		display: none;
+	}
+}
+
+/* ─── 소개 ─── */
+.widget-profile-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.widget-profile-eyebrow {
+	font-size: var(--text-caption);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--widget-secondary-label);
+}
+
+.widget-profile-body h2 {
+	margin-top: var(--space-2);
+	font-size: var(--text-title1);
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.widget-profile-body p {
+	margin-top: var(--space-4);
+	font-size: var(--text-footnote);
+}
+
+.widget-profile-body .widget-note {
+	margin-top: auto;
+}
