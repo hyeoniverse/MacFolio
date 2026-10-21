@@ -100,7 +100,7 @@ user="${user%%:*}"
 - **[포트]** 111번(rpcbind)이 바깥에서 듣고 있었다. Oracle Ubuntu 이미지가 NFS용으로 켜 두는 것이다. `sudo systemctl disable --now rpcbind.socket rpcbind.service`를 하자 "triggering units are still active"라는 경고가 나와서 꺼진 것인지 헷갈렸고, `sudo reboot`로 다시 띄운 뒤 `docker compose ps`로 컨테이너 셋이 다시 healthy인지 봤다
 - **[컨테이너]** cloudflared의 사용자가 `?`로 나오고 `exec: "sh": executable file not found`가 찍혔다. 셸이 없는 distroless 이미지라 그렇다. 이것이 위 '첫 실행에서 고친 두 곳'의 두 번째다
 
-방화벽은 `sudo iptables -S INPUT`으로 22번 허용 규칙이 있는 것을 같이 봤다. 스크립트를 고친 PR을 받은 뒤 다시 돌려 **모두 OK**를 확인했다.
+방화벽은 `sudo iptables -S INPUT`으로 22번 허용 규칙이 있는 것을 같이 봤다. 스크립트를 고친 PR을 머지한 뒤 다시 돌려 **모두 OK**를 확인했다.
 
 ## 따라 하는 방법
 

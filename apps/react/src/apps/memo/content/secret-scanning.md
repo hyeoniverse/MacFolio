@@ -117,7 +117,7 @@ PR과 main push마다, 그리고 월요일마다 돈다. 월요일에도 도는 
 
 ## 저장소 설정을 실제로 켠 과정
 
-코드 쪽을 머지한 뒤 남은 두 가지(비밀 값 검사 켜기, `secrets`를 필수 검사로)를 했는지 다시 확인했고, 하는 방법을 문서와 PR에 남기게 했다. 설정 화면에 들어가 보니 안내와 이름이 달랐다. "Secret scanning"이 아니라 **Secret Protection**이라는 이름이었고, 이미 켜져 있었다. 안내에 있던 Push protection의 "Block commits that contain supported secrets" 문구는 화면에서 찾지 못했다. 그래서 문서에 예전 이름과 지금 이름을 함께 적었다.
+코드 쪽을 머지한 뒤 남은 두 가지(비밀 값 검사 켜기, `secrets`를 필수 검사로)를 했는지 다시 확인했고, 하는 방법을 문서와 PR에 남겼다. 설정 화면에 들어가 보니 문서에 적어 둔 이름과 달랐다. "Secret scanning"이 아니라 **Secret Protection**이라는 이름이었고, 이미 켜져 있었다. 문서에 적어 둔 Push protection의 "Block commits that contain supported secrets" 문구는 화면에서 찾지 못했다. 그래서 문서에 예전 이름과 지금 이름을 함께 적었다.
 
 ## 따라 하는 방법
 

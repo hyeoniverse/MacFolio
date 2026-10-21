@@ -182,7 +182,7 @@ Unable to start instance: Operation cannot be performed. Boot volume is not curr
 
 ### 시행착오: 콘솔 버튼이 비활성화되어 있었다
 
-임시 VM 화면에서 붙이려 했는데 **Attach block volume** 버튼이 비활성화(disabled)되어 눌리지 않았고, 마우스를 올려도 이유를 알려 주는 툴팁이 없었다. 그 대신 눌리는 버튼은 **Replace boot volume**이었다. **이것은 누르면 안 된다.** 임시 VM의 디스크 자체를 원래 서버 디스크로 바꿔 끼우는 기능이라, 우리가 원하는 "두 번째 디스크로 꽂기"가 아니다.
+임시 VM 화면에서 붙이려 했는데 **Attach block volume** 버튼이 비활성화(disabled)되어 눌리지 않았고, 마우스를 올려도 이유를 알려 주는 툴팁이 없었다. 그 대신 눌리는 버튼은 **Replace boot volume**이었다. **이것은 누르면 안 된다.** 임시 VM의 디스크 자체를 원래 서버 디스크로 바꿔 끼우는 기능이라, 내가 원하는 "두 번째 디스크로 꽂기"가 아니다.
 
 화면 대신 콘솔 안의 터미널인 **Cloud Shell**에서 OCI CLI로 붙였다. Cloud Shell은 따로 설치하거나 로그인할 것이 없다. 콘솔에 로그인한 계정 권한으로 `oci` 명령이 바로 된다.
 
