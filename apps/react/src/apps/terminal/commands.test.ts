@@ -3,7 +3,6 @@ import { complete, formatDate, parse, runCommand, toBlocks, type CommandContext,
 import { commandInValue, projectCommand, SHORTCUTS } from './shortcutList';
 import { PROJECTS } from '@/shared/profile';
 import { RESUME } from '@/shared/profile/resume';
-import { RESUME_DOC } from '@/apps/finder/resumeDoc';
 
 const context: CommandContext = {
 	history: ['whoami', 'skills'],
@@ -32,13 +31,20 @@ describe('parse', () => {
 });
 
 describe('runCommand', () => {
-	it('resume는 요약을 보여 주고 Finder에서 이력서 전체를 연다', () => {
+	it('resume는 웃는 Mac 그림과 함께 직함·한 줄 소개·강점·주요 프로젝트를 그린다 (다른 앱을 열지 않는다)', () => {
 		const result = runCommand('resume', context);
-		expect(texts(result.lines)[1]).toBe(RESUME.motto);
-		expect(texts(result.lines)).toContain(
-			`주요 프로젝트: ${RESUME.featured.map(({ id }) => PROJECTS.find((p) => p.id === id)!.name).join(', ')}`
-		);
-		expect(result.effects).toEqual([{ type: 'open-doc', path: RESUME_DOC }]);
+		expect(result.lines[0]).toMatchObject({ kind: 'art' });
+		expect(texts(result.lines)).toContain(`“${RESUME.motto}”`);
+		for (const item of RESUME.strengths) expect(texts(result.lines)).toContain(`★ ${item.title}: ${item.detail}`);
+		const projects = result.lines
+			.filter((line) => line.kind === 'item')
+			.map((line) => line.kind === 'item' && line.title);
+		expect(projects).toEqual(RESUME.featured.map(({ id }) => PROJECTS.find((p) => p.id === id)!.name));
+		// 번호는 projects 목록의 번호 (project <번호>로 이어서 본다)
+		const first = result.lines.find((line) => line.kind === 'item');
+		const index = PROJECTS.findIndex((p) => p.id === RESUME.featured[0].id);
+		expect(first).toMatchObject({ marker: `${index + 1}.` });
+		expect(result.effects).toEqual([]);
 	});
 
 	it('빈 입력은 아무것도 하지 않는다', () => {

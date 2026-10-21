@@ -33,12 +33,14 @@ test.describe('터미널', () => {
 		await expect(output.getByRole('link', { name: 'https://qryou-app.web.app' })).toHaveAttribute('target', '_blank');
 	});
 
-	test('resume는 요약을 보여 주고 Finder에서 이력서 전체를 연다', async ({ page }) => {
+	test('resume는 웃는 Mac 그림과 함께 이력서를 터미널에 그린다', async ({ page }) => {
 		const { output, run } = await openTerminal(page);
 		await run('resume');
+		await expect(output.locator('pre.terminal-line.art')).toContainText('┏━┓┏━╸┏━┓');
 		await expect(output).toContainText('화면에서 서버까지, 끝까지 만들고 운영하는 개발자');
-		const finder = appWindow(page, 'finder');
-		await expect(finder.getByRole('article', { name: 'resume.md' })).toBeVisible();
+		await expect(output).toContainText('MacFolio');
+		// 다른 앱은 열지 않는다
+		await expect(appWindow(page, 'finder')).toHaveCount(0);
 	});
 
 	test('없는 명령은 zsh처럼 알려준다', async ({ page }) => {

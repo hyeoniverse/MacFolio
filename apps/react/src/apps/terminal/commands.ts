@@ -2,7 +2,6 @@
 // 명령은 출력할 줄(lines)과 화면에서 실행할 효과(effects)를 돌려준다.
 import { PROJECTS } from '@/shared/profile';
 import { RESUME } from '@/shared/profile/resume';
-import { RESUME_DOC } from '@/apps/finder/resumeDoc';
 import { getProfile } from '@/shared/site/profileStore';
 import { fullName } from '@/desktop/about/profileInfo';
 import type { AppName } from '@/apps/manifest';
@@ -16,18 +15,15 @@ export type Line =
 	| { kind: 'text'; text: string }
 	| { kind: 'heading'; text: string }
 	| { kind: 'muted'; text: string }
+	/** 고정폭 그림 (줄바꿈·공백을 그대로) */
+	| { kind: 'art'; text: string }
 	| { kind: 'error'; text: string }
 	| { kind: 'link'; label: string; href: string }
 	| { kind: 'pair'; key: string; value: string; href?: string }
 	| { kind: 'item'; marker: string; title: string; detail?: string; tag?: string };
 
 export type Effect =
-	| { type: 'clear' }
-	| { type: 'open-app'; app: AppName }
-	| { type: 'open-url'; url: string }
-	/** Finder에서 문서를 연다 (예: 이력서) */
-	| { type: 'open-doc'; path: string }
-	| { type: 'close' };
+	{ type: 'clear' } | { type: 'open-app'; app: AppName } | { type: 'open-url'; url: string } | { type: 'close' };
 
 /** 화면에 그릴 묶음. 연속된 pair·item 줄은 한 묶음이 되어 한 격자(목록)로 그려진다. */
 export type Block =
@@ -73,6 +69,7 @@ interface Command {
 const text = (value: string): Line => ({ kind: 'text', text: value });
 const heading = (value: string): Line => ({ kind: 'heading', text: value });
 const muted = (value: string): Line => ({ kind: 'muted', text: value });
+const art = (value: string): Line => ({ kind: 'art', text: value });
 const error = (value: string): Line => ({ kind: 'error', text: value });
 const pair = (key: string, value: string, href?: string): Line => ({ kind: 'pair', key, value, href });
 const output = (lines: Line[], effects: Effect[] = []): CommandResult => ({ lines, effects });
@@ -88,6 +85,16 @@ const two = (n: number) => String(n).padStart(2, '0');
 export function formatDate(date: Date): string {
 	return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${WEEKDAYS[date.getDay()]}) ${two(date.getHours())}:${two(date.getMinutes())}:${two(date.getSeconds())}`;
 }
+
+/** resume의 그림: 웃는 Mac과 RESUME 글자 (모든 글자가 한 칸 폭이라 어느 고정폭 글꼴에서도 줄이 맞는다) */
+const RESUME_ART = [
+	'  ╭──────────╮',
+	'  │ ╭──────╮ │   ┏━┓┏━╸┏━┓╻ ╻┏┳┓┏━╸',
+	'  │ │ ^‿^  │ │   ┣┳┛┣╸ ┗━┓┃ ┃┃┃┃┣╸ ',
+	'  │ ╰──────╯ │   ╹┗╸┗━╸┗━┛┗━┛╹ ╹┗━╸',
+	'  ╰───┬──┬───╯',
+	'    ━━┷━━┷━━',
+].join('\n');
 
 export const COMMANDS: Record<string, Command> = {
 	help: {
@@ -128,26 +135,33 @@ export const COMMANDS: Record<string, Command> = {
 		},
 	},
 	resume: {
-		description: '이력서 요약 (Finder에서 전체 열기)',
+		description: '이력서를 그려 보여 주기',
 		run: () => {
 			const profile = getProfile();
-			const names = new Map(PROJECTS.map((project) => [project.id, project.name]));
-			return output(
-				[
-					heading(`${profile.name} · ${RESUME.role}`),
-					text(RESUME.motto),
-					...RESUME.strengths.map((item) => pair(item.title, item.detail)),
-					pair(
-						'주요 프로젝트',
-						RESUME.featured
-							.map(({ id }) => names.get(id))
-							.filter(Boolean)
-							.join(', ')
-					),
-					muted('Finder에서 이력서 전체를 엽니다.'),
-				],
-				[{ type: 'open-doc', path: RESUME_DOC }]
-			);
+			return output([
+				art(RESUME_ART),
+				heading(`${profile.name} · ${RESUME.role}`),
+				text(`“${RESUME.motto}”`),
+				text(''),
+				...RESUME.strengths.map((item) => pair(`★ ${item.title}`, item.detail)),
+				text(''),
+				// 번호는 projects 목록의 번호라 project <번호>로 이어서 볼 수 있다 (단축어는 줄을 누르면 그 명령)
+				...RESUME.featured.flatMap(({ id }): Line[] => {
+					const index = PROJECTS.findIndex((project) => project.id === id);
+					if (index < 0) return [];
+					const project = PROJECTS[index];
+					return [
+						{
+							kind: 'item',
+							marker: `${index + 1}.`,
+							title: project.name,
+							tag: project.period,
+							detail: project.description,
+						},
+					];
+				}),
+				muted('자세히 보려면: project <번호> · 전체 이력서와 PDF는 Finder › 문서 › 이력서'),
+			]);
 		},
 	},
 	skills: {

@@ -87,6 +87,7 @@ const BlockView: React.FC<{ block: Block }> = ({ block }) => {
 		);
 	}
 	if (line.kind === 'pair' || line.kind === 'item') return null;
+	if (line.kind === 'art') return <pre className="terminal-line art">{line.text}</pre>;
 	return <div className={`terminal-line ${line.kind}`}>{line.text || '\u00a0'}</div>;
 };
 
