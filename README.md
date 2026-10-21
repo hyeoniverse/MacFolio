@@ -260,6 +260,8 @@ flowchart LR
 - **Worker는 첫 화면만**: 있는 파일(`/assets/*`, 그림)은 Cloudflare가 Worker를 거치지 않고 바로 줍니다. Worker에는 첫 화면, 앱 주소, sitemap·RSS, `/files/*`만 옵니다.
 - **API가 멈춰도 사이트는 뜬다**: Worker는 API를 1.5초만 기다리고, 닿지 않으면 저장소의 글과 코드의 기본 프로필로 그립니다. 화면도 API 없이 로그인·편집만 꺼진 채 돕니다.
 
+요청이 지나가는 층, 데이터 모델, 설계 결정 표는 [docs/backend-design.md](docs/backend-design.md)에 정리했습니다.
+
 ### 첫 화면이 그려지기까지
 
 사이트는 자바스크립트로만 그려서, 스크립트를 돌리지 않는 크롤러에게는 빈 화면입니다. 그래서 Worker가 주소마다 제목·설명·구조화 데이터와 숨긴 본문을 `index.html`에 넣어 보냅니다.
