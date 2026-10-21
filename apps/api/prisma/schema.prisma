@@ -363,6 +363,8 @@ model SiteContent {
   projects  Json?
   /// 이력서 Markdown ({ markdown }). Finder의 이력서 문서·PDF·터미널 resume가 모두 이 글 하나에서 나온다. 모양은 @macfolio/contracts의 ResumeInput
   resume    Json?
+  /// 영문 이력서 Markdown ({ markdown }). 모양은 resume과 같다
+  resumeEn  Json?
   updatedAt DateTime @updatedAt
   updatedBy String?
 }

@@ -563,7 +563,7 @@ test.describe('모바일', () => {
 		await files.getByRole('navigation', { name: '파일 탭' }).getByRole('button', { name: '둘러보기' }).tap();
 		await files.getByRole('region', { name: '즐겨찾기' }).getByRole('button', { name: '문서' }).tap();
 		await files.getByRole('button', { name: /^이력서/ }).tap();
-		await files.getByRole('button', { name: /김정현_이력서/ }).tap();
+		await files.getByRole('button', { name: /^김정현_이력서(?!\.pdf)/ }).tap();
 		await expect(files.locator('.files-phone-bar-title')).toHaveText('김정현_이력서');
 		await expect(files.getByRole('article', { name: 'resume.md' }).getByRole('heading', { level: 1 })).toHaveText(
 			'김정현'

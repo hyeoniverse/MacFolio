@@ -25,6 +25,7 @@ export interface FakeApiState {
 	siteProjects: { items: Record<string, unknown>[] } | null;
 	/** 관리자가 저장한 이력서 Markdown ({ markdown }). null이면 화면이 기본 이력서를 쓴다 */
 	siteResume: { markdown: string } | null;
+	siteResumeEn: { markdown: string } | null;
 	/** 관리자가 고친 사진 캡션 { 사진 주소: 캡션 } (GET·PUT /photos/captions) */
 	photoCaptions: Record<string, string>;
 	/** /health가 돌려줄 상태. blocked는 서버는 응답하지만 이 주소를 CORS로 허용하지 않는 경우 (PR 미리보기) */
@@ -360,6 +361,7 @@ export async function fakeApi(
 		siteProfile: null,
 		siteProjects: null,
 		siteResume: null,
+		siteResumeEn: null,
 		health: 'ok',
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		finderLayout: { folders: [], files: {}, aliases: null, trash: {} },
@@ -622,7 +624,13 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: { profile: state.siteProfile, projects: state.siteProjects, resume: state.siteResume, updatedAt: null },
+				json: {
+					profile: state.siteProfile,
+					projects: state.siteProjects,
+					resume: state.siteResume,
+					resumeEn: state.siteResumeEn,
+					updatedAt: null,
+				},
 			});
 		}
 		if (path === '/site/projects') {
@@ -632,17 +640,31 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: { profile: state.siteProfile, projects: state.siteProjects, resume: state.siteResume, updatedAt: null },
+				json: {
+					profile: state.siteProfile,
+					projects: state.siteProjects,
+					resume: state.siteResume,
+					resumeEn: state.siteResumeEn,
+					updatedAt: null,
+				},
 			});
 		}
-		if (path === '/site/resume') {
+		if (path === '/site/resume' || path === '/site/resume/en') {
 			if (!state.signedIn) return route.fulfill(unauthorized);
 			// 검사는 화면이 서버와 같은 규칙(contracts의 parseResume)으로 먼저 한다
-			state.siteResume = request.method() === 'PUT' ? request.postDataJSON() : null;
+			const saved = request.method() === 'PUT' ? request.postDataJSON() : null;
+			if (path === '/site/resume') state.siteResume = saved;
+			else state.siteResumeEn = saved;
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: { profile: state.siteProfile, projects: state.siteProjects, resume: state.siteResume, updatedAt: null },
+				json: {
+					profile: state.siteProfile,
+					projects: state.siteProjects,
+					resume: state.siteResume,
+					resumeEn: state.siteResumeEn,
+					updatedAt: null,
+				},
 			});
 		}
 		if (path === '/site/profile') {
@@ -652,7 +674,13 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: { profile: state.siteProfile, projects: state.siteProjects, resume: state.siteResume, updatedAt: null },
+				json: {
+					profile: state.siteProfile,
+					projects: state.siteProjects,
+					resume: state.siteResume,
+					resumeEn: state.siteResumeEn,
+					updatedAt: null,
+				},
 			});
 		}
 		if (path === '/memo/organization') {

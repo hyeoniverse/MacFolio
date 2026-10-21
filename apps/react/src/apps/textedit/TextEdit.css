@@ -371,3 +371,20 @@
 		display: none;
 	}
 }
+
+/* 서식대로 고치는 편집기 (Milkdown): 읽기 화면(.finder-doc)과 같은 모양의 종이 */
+.textedit-rich-scroll {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+}
+
+.textedit-rich .ProseMirror {
+	min-height: 100%;
+	outline: none;
+	white-space: pre-wrap;
+}
+
+.textedit-rich .milkdown {
+	height: 100%;
+}

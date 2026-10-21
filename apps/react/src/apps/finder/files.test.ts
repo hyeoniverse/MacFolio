@@ -126,14 +126,18 @@ describe('buildLocations', () => {
 		expect(find(tree, 'docs:docs/deployment.md')).toMatchObject({ kind: 'doc', path: 'docs/deployment.md' });
 	});
 
-	it('이력서: 데이터로 만든 이력서 문서를 이력서 폴더에 둔다', () => {
+	it('이력서: 데이터로 만든 이력서 문서·PDF를 이력서 폴더에 둔다', () => {
 		const withResume = buildLocations({
 			docs: [],
 			posts: [],
 			projects: [],
 			apps: [],
-			resume: { path: 'resume.md', name: '김정현_이력서' },
+			resume: [
+				{ kind: 'doc', id: 'docs:resume.md', name: '김정현_이력서', path: 'resume.md' },
+				{ kind: 'pdf', id: 'file:resume-pdf:ko', name: '김정현_이력서.pdf', key: 'resume-pdf:ko' },
+			],
 		});
+		expect(names(find(withResume, 'docs:이력서') as FolderItem)).toEqual(['김정현_이력서', '김정현_이력서.pdf']);
 		expect(find(withResume, 'docs:resume.md')).toMatchObject({
 			kind: 'doc',
 			name: '김정현_이력서',

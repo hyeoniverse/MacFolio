@@ -63,6 +63,7 @@ export function applySiteContent(body: unknown) {
 	const content = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
 	setSiteProfile(readProfile(content.profile));
 	setSiteResume(readResume(content.resume));
+	setSiteResume(readResume(content.resumeEn), 'en');
 	savedProjects = readProjects(content.projects, PARSE_OPTIONS);
 	fillProjects(savedProjects);
 }

@@ -67,7 +67,8 @@ interface DocViewProps {
  */
 const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc, onOpenProject }) => {
 	// 이력서는 관리자가 고치면 바로 다시 그린다 (저장소 문서는 바뀌지 않는다)
-	useResume();
+	useResume('ko');
+	useResume('en');
 	const source = docSource(path) ?? '';
 	const openDoc = useRef(onOpenDoc);
 	const openProject = useRef(onOpenProject);

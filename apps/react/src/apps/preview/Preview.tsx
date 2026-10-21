@@ -9,6 +9,8 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import '@/shared/ui/button/Button.css';
 import { downloadFile, fileUrl, formatSize, openFileInNewTab } from '@/apps/finder/documents';
+import { downloadResume, resumePdfBlob, resumePdfLang } from '@/apps/finder/resumeDownload';
+import { useResume } from '@/shared/site/resumeStore';
 import {
 	closeInPreview,
 	openInPreview,
@@ -38,16 +40,39 @@ const nextZoom = (scale: number, direction: 1 | -1) =>
 		? (ZOOMS.find((step) => step > scale + 0.001) ?? null)
 		: ([...ZOOMS].reverse().find((step) => step < scale - 0.001) ?? null);
 
-/** 열린 PDF 문서들 (사이드바와 본문이 같이 쓴다) */
+/** 만든 이력서 PDF의 주소 (blob:). 열 때와 이력서 글이 바뀔 때 새로 만든다 */
+const generated = new Map<string, string>();
+
+/** PDF의 주소: 올린 파일은 /files/<key>, 이력서 PDF는 지금 Markdown으로 만든 blob: 주소 */
+async function pdfSource(key: string): Promise<string> {
+	const lang = resumePdfLang(key);
+	if (!lang) return fileUrl(key);
+	const { blob } = await resumePdfBlob(lang);
+	const url = URL.createObjectURL(blob);
+	const old = generated.get(key);
+	if (old) URL.revokeObjectURL(old);
+	generated.set(key, url);
+	return url;
+}
+
+/** 열린 PDF 문서들 (사이드바와 본문이 같이 쓴다). 이력서 글이 바뀌면 이력서 PDF를 다시 만든다 */
 function usePdfDocuments(files: PreviewFile[]) {
 	const [docs, setDocs] = useState<Record<string, PDFDocumentProxy | 'error'>>({});
+	const resumes = `${useResume('ko')}\u0000${useResume('en')}`;
+	const [shownResumes, setShownResumes] = useState(resumes);
+	if (shownResumes !== resumes) {
+		setShownResumes(resumes);
+		setDocs((all) => Object.fromEntries(Object.entries(all).filter(([key]) => !resumePdfLang(key))));
+	}
 	useEffect(() => {
 		for (const file of files) {
 			if (file.kind !== 'pdf' || docs[file.key]) continue;
-			loadPdf(fileUrl(file.key)).then(
-				(doc) => setDocs((all) => ({ ...all, [file.key]: doc })),
-				() => setDocs((all) => ({ ...all, [file.key]: 'error' }))
-			);
+			pdfSource(file.key)
+				.then(loadPdf)
+				.then(
+					(doc) => setDocs((all) => ({ ...all, [file.key]: doc })),
+					() => setDocs((all) => ({ ...all, [file.key]: 'error' }))
+				);
 		}
 	}, [files, docs]);
 	return docs;
@@ -390,12 +415,16 @@ const Preview: React.FC = () => {
 											{
 												label: '다운로드',
 												icon: 'fa-solid fa-download',
-												onSelect: () => downloadFile(file.key, file.name),
+												onSelect: () => {
+													const lang = resumePdfLang(file.key);
+													if (lang) void downloadResume(lang);
+													else downloadFile(file.key, file.name);
+												},
 											},
 											{
 												label: '새 탭에서 열기',
 												icon: 'fa-solid fa-arrow-up-right-from-square',
-												onSelect: () => openFileInNewTab(file.key),
+												onSelect: () => openFileInNewTab(generated.get(file.key) ?? file.key),
 											},
 											{
 												label: '슬라이드쇼',

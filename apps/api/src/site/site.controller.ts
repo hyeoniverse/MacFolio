@@ -44,6 +44,9 @@ const PROJECTS_EXAMPLE = {
 const RESUME_EXAMPLE = {
 	markdown: '# 김정현\n\n> 화면에서 서버까지, 끝까지 만들고 운영하는 개발자\n\n## 강점\n- **끝까지 운영** — …',
 };
+const RESUME_EN_EXAMPLE = {
+	markdown: '# Jeonghyeon Kim\n\n> I build and run products end to end\n\n## Strengths\n- **Ships and operates** — …',
+};
 
 /**
  * 사이트 콘텐츠: 사이트 주인의 프로필·프로젝트·이력서. 이 저장소를 가져다 띄우는 사람이 코드를 고치지 않고 시스템 설정에서 바꾼다.
@@ -58,7 +61,13 @@ export class SiteController {
 	@ApiOkResponse({
 		description: '관리자가 저장한 프로필·프로젝트·이력서 (없으면 null)와 마지막으로 바꾼 시각',
 		schema: {
-			example: { profile: PROFILE_EXAMPLE, projects: PROJECTS_EXAMPLE, resume: RESUME_EXAMPLE, updatedAt: null },
+			example: {
+				profile: PROFILE_EXAMPLE,
+				projects: PROJECTS_EXAMPLE,
+				resume: RESUME_EXAMPLE,
+				resumeEn: null,
+				updatedAt: null,
+			},
 		},
 	})
 	view() {
@@ -134,5 +143,27 @@ export class SiteController {
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	resetResume(@CurrentAdmin() admin: AdminIdentity) {
 		return this.site.resetResume(admin.login);
+	}
+
+	@Put('resume/en')
+	@UseGuards(AdminGuard)
+	@RateLimit('write')
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiBody({ schema: { example: RESUME_EN_EXAMPLE } })
+	@ApiOkResponse({ description: '저장한 뒤의 사이트 콘텐츠 (영문 이력서는 resumeEn)' })
+	@ApiBadRequestResponse({ description: '규칙을 어겼다 (비었음, 길이, 쓸 수 없는 글자). message에 이유를 담는다' })
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	saveResumeEn(@Body() body: unknown, @CurrentAdmin() admin: AdminIdentity) {
+		return this.site.saveResume(body, admin.login, 'en');
+	}
+
+	@Delete('resume/en')
+	@UseGuards(AdminGuard)
+	@RateLimit('write')
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiOkResponse({ description: '저장한 영문 이력서를 지웠다 (코드의 기본 영문 이력서로 돌아간다)' })
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	resetResumeEn(@CurrentAdmin() admin: AdminIdentity) {
+		return this.site.resetResume(admin.login, 'en');
 	}
 }

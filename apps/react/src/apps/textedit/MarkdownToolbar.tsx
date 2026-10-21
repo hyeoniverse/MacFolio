@@ -1,4 +1,5 @@
-import { headingAt, lineKindAt, type MarkdownFormat } from './markdownFormat';
+import type { MarkdownFormat } from './markdownFormat';
+import { EMPTY_RICH_STATE, type RichState } from './richControls';
 
 /** 글자 묶음 (macOS 서식 막대의 B I U S 자리): [형식, 이름, 글자] */
 const TEXT_TOOLS: [MarkdownFormat, string, string][] = [
@@ -21,9 +22,8 @@ const RULER = Array.from({ length: 26 }, (_, index) => index * 2);
 const TABS = Array.from({ length: 40 }, (_, index) => (index + 1) * 1.25);
 
 interface Props {
-	/** 원문(커서가 있는 줄의 문단 스타일·줄 종류를 읽는다) */
-	text: string;
-	cursor: number;
+	/** 커서 자리의 서식 (켜진 버튼, 문단 스타일) */
+	state?: RichState;
 	/** 없으면 읽기 전용: 버튼이 모두 꺼진다 (잠긴 문서의 서식 막대) */
 	onFormat?: (format: MarkdownFormat) => void;
 	onHeading?: (level: number) => void;
@@ -33,10 +33,16 @@ interface Props {
  * 텍스트 편집기의 Markdown 서식 막대와 눈금자. 모양은 macOS 텍스트 편집기의 서식 막대를 따르고,
  * 버튼은 Markdown이 가진 서식만 둔다 (글자 묶음 · 링크 · 문단 스타일 · 줄 묶음)
  */
-const MarkdownToolbar = ({ text, cursor, onFormat, onHeading }: Props) => {
+const MarkdownToolbar = ({ state = EMPTY_RICH_STATE, onFormat, onHeading }: Props) => {
 	const disabled = !onFormat;
-	const level = headingAt(text, cursor);
-	const kind = lineKindAt(text, cursor);
+	const { level, kind, marks } = state;
+	const markOn: Partial<Record<MarkdownFormat, boolean>> = {
+		bold: marks.bold,
+		italic: marks.italic,
+		strike: marks.strike,
+		code: marks.code,
+		link: marks.link,
+	};
 	const button = (format: MarkdownFormat, label: string, face: string, on = false) => (
 		<button
 			key={format}
@@ -57,8 +63,10 @@ const MarkdownToolbar = ({ text, cursor, onFormat, onHeading }: Props) => {
 	return (
 		<>
 			<div className="textedit-format" role="toolbar" aria-label="Markdown 서식">
-				<span className="textedit-seg">{TEXT_TOOLS.map(([format, label, face]) => button(format, label, face))}</span>
-				<span className="textedit-square">{button('link', '링크', 'fa-solid fa-link')}</span>
+				<span className="textedit-seg">
+					{TEXT_TOOLS.map(([format, label, face]) => button(format, label, face, markOn[format]))}
+				</span>
+				<span className="textedit-square">{button('link', '링크', 'fa-solid fa-link', marks.link)}</span>
 				<label className="textedit-popup">
 					<select
 						aria-label="문단 스타일"

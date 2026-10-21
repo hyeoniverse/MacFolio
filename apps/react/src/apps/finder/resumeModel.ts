@@ -13,8 +13,13 @@
 //
 // 첫 절이 날짜 없는 목록이면 강점 카드로 그린다.
 
-/** Finder 안의 이력서 문서 경로 (저장소 문서와 겹치지 않는 이름) */
+/** Finder 안의 이력서 문서 경로 (저장소 문서와 겹치지 않는 이름): 국문, 영문 */
 export const RESUME_DOC = 'resume.md';
+export const RESUME_DOC_EN = 'resume.en.md';
+
+/** 이력서 문서면 그 언어, 아니면 null */
+export const resumeLangOf = (path: string | null): 'ko' | 'en' | null =>
+	path === RESUME_DOC ? 'ko' : path === RESUME_DOC_EN ? 'en' : null;
 
 /** 프로젝트 링크의 앞부분. 누르면 Safari의 그 프로젝트를 연다 (DocView) */
 export const PROJECT_LINK = '#project/';

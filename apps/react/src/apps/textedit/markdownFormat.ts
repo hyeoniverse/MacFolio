@@ -86,3 +86,12 @@ export function lineKindAt(text: string, at: number): 'list' | 'ordered' | 'quot
 	if (line.startsWith('> ')) return 'quote';
 	return null;
 }
+
+/**
+ * 서식 편집기(Milkdown)가 내놓은 Markdown을 이력서 원문 모양으로 되돌린다. 편집기는 맨 주소·메일을 <…>로 감싸고,
+ * 강조가 될 수 없는 자리의 *도 \*로 쓴다 (A* 경로). 둘 다 이력서 규칙(resumeModel)과 PDF가 읽는 원문과 달라진다
+ */
+export const fromEditorMarkdown = (markdown: string) =>
+	markdown
+		.replace(/<((?:https?:\/\/|mailto:)[^\s<>]+|[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+)>/g, '$1')
+		.replace(/(\S)\\\*(?=\s|$)/gm, '$1*');

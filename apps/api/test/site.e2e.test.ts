@@ -72,7 +72,9 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 	});
 
 	it('처음에는 저장한 프로필이 없다 (화면은 코드의 기본값). 관리자가 쓴 글은 기본 이름', async () => {
-		await request(server).get('/site').expect(200, { profile: null, projects: null, resume: null, updatedAt: null });
+		await request(server)
+			.get('/site')
+			.expect(200, { profile: null, projects: null, resume: null, resumeEn: null, updatedAt: null });
 		const comment = await request(server)
 			.post('/posts/cra-to-vite/comments')
 			.set('Cookie', adminCookie)
@@ -138,6 +140,24 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 		await request(server).delete('/site/resume').expect(401);
 		const reset = await request(server).delete('/site/resume').set('Cookie', adminCookie).expect(200);
 		expect(reset.body.resume).toBeNull();
+	});
+
+	it('영문 이력서: 국문과 따로 저장하고 지운다 (한쪽을 바꿔도 다른 쪽은 그대로)', async () => {
+		const ko = '# 홍길동\n\n## 강점\n- **운영** — 서비스 운영';
+		const en = '# Gildong Hong\n\n## Strengths\n- **Ships** — runs services';
+		await request(server).put('/site/resume/en').send({ markdown: en }).expect(401);
+		await request(server).put('/site/resume').set('Cookie', adminCookie).send({ markdown: ko }).expect(200);
+		const saved = await request(server)
+			.put('/site/resume/en')
+			.set('Cookie', adminCookie)
+			.send({ markdown: en })
+			.expect(200);
+		expect(saved.body.resumeEn).toEqual({ markdown: en });
+		expect(saved.body.resume).toEqual({ markdown: ko });
+		const reset = await request(server).delete('/site/resume/en').set('Cookie', adminCookie).expect(200);
+		expect(reset.body.resumeEn).toBeNull();
+		expect(reset.body.resume).toEqual({ markdown: ko });
+		await request(server).delete('/site/resume').set('Cookie', adminCookie).expect(200);
 	});
 
 	it('프로젝트: 관리자만 저장하고, https가 아닌 링크·앱 이름과 겹치는 id는 이유와 함께 거절한다. 지우면 기본값으로', async () => {

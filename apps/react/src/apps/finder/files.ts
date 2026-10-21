@@ -134,8 +134,8 @@ export interface TreeInput {
 	tracks?: { id: string; title: string; artist: string; album: string; artwork: string; playlistId: string }[];
 	/** 관리자가 정한 폴더 구조 (만든 폴더, 옮긴 파일, 바탕화면의 가상본). 없으면 기본 구조 */
 	layout?: FinderLayoutValue;
-	/** 데이터로 만드는 이력서 문서 (resumeDoc.ts). 문서 › 이력서 안에 올린 파일과 함께 둔다 */
-	resume?: { path: string; name: string };
+	/** 데이터로 만드는 이력서: 국문·영문 Markdown 문서와 그 PDF. 문서 › 이력서 안에 올린 파일과 함께 둔다 */
+	resume?: (DocItem | FileItem)[];
 }
 
 /** 빈 문서 파일 폴더의 안내 */
@@ -201,9 +201,7 @@ function docsFolder(
 		name,
 		children: [
 			...(name === '포트폴리오' ? projects : []),
-			...(name === '이력서' && resume
-				? [{ kind: 'doc' as const, id: `docs:${resume.path}`, name: resume.name, path: resume.path }]
-				: []),
+			...(name === '이력서' && resume ? resume : []),
 			...files.filter((file) => file.folder === name).map(fileItem),
 		].sort(byName),
 		emptyNote: FOLDER_NOTES[name],
@@ -619,9 +617,9 @@ export function previewFolder(locations: FinderItem[]): FolderItem {
 		kind: 'folder',
 		id: 'preview',
 		name: '미리보기',
-		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림은 iCloud의 미리보기 폴더에 들어 있지 않다
+		// 올린 문서 파일(R2, id가 file:)만: 프로젝트의 사진 폴더 그림과 데이터로 만드는 이력서 PDF는 iCloud의 미리보기 폴더에 들어 있지 않다
 		children: files(foldersOf(locations, ['desktop', 'docs']))
-			.filter((item) => item.id.startsWith('file:'))
+			.filter((item) => item.id.startsWith('file:') && !item.key.startsWith('resume-pdf:'))
 			.sort((a, b) => a.name.localeCompare(b.name, 'ko')),
 		emptyNote: '파일이 없습니다.',
 	};

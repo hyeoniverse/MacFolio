@@ -154,7 +154,7 @@ export function readResume(stored: unknown): ResumeInput | null {
 	return 'value' in parsed ? parsed.value : null;
 }
 
-/** GET /site, PUT·DELETE /site/profile·/site/projects·/site/resume의 응답 */
+/** GET /site, PUT·DELETE /site/profile·/site/projects·/site/resume·/site/resume/en의 응답 */
 export const SiteView = z.object({
 	/** 관리자가 저장한 프로필 (없으면 null: 화면이 코드의 기본값을 쓴다) */
 	profile: ProfileInput.nullable(),
@@ -162,6 +162,8 @@ export const SiteView = z.object({
 	projects: StoredProjects.nullable(),
 	/** 관리자가 저장한 이력서 Markdown. 없으면 null: 화면이 코드의 기본 이력서를 쓴다 (예전 서버는 이 필드가 없다) */
 	resume: ResumeInput.nullable().optional(),
+	/** 관리자가 저장한 영문 이력서 Markdown (PUT /site/resume/en). 없으면 null: 코드의 기본 영문 이력서 */
+	resumeEn: ResumeInput.nullable().optional(),
 	/** ISO 8601. 저장한 적이 없으면 null */
 	updatedAt: z.string().nullable(),
 });

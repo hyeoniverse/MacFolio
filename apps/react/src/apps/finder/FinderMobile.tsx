@@ -20,8 +20,8 @@ import { downloadFile, openFileInNewTab } from './documents';
 import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
-import { downloadResume } from './resumeDownload';
-import { RESUME_DOC } from './resumeModel';
+import { downloadResume, resumePdfLang } from './resumeDownload';
+import { resumeLangOf } from './resumeModel';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import '@/apps/finder/FinderMobile.css';
@@ -124,6 +124,8 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		if (item.kind === 'folder') push({ folder: item.id });
 		else if (item.kind === 'alias') push({ folder: item.target });
 		else if (item.kind === 'doc') push({ doc: item.path });
+		// 이력서 PDF(만든 파일)는 휴대폰에서는 바로 만들어 받는다
+		else if (item.kind === 'pdf' && resumePdfLang(item.key)) void downloadResume(resumePdfLang(item.key)!);
 		else if (item.kind === 'pdf' || item.kind === 'image' || (item.kind === 'file' && mediaKind(item.name)))
 			push({ file: item.id });
 		else if (item.kind === 'file') downloadFile(item.key, item.name);
@@ -217,7 +219,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			<div className="files-phone doc">
 				{navigation}
 				{/* 데이터로 만든 이력서: 공유 › PDF 다운로드 (누르는 순간의 데이터로 만든 PDF) */}
-				{screen.doc === RESUME_DOC && (
+				{resumeLangOf(screen.doc) && (
 					<IconButton
 						ref={moreButton}
 						className="files-phone-more"
@@ -231,7 +233,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 						}}
 					/>
 				)}
-				{screen.doc === RESUME_DOC && menu && (
+				{resumeLangOf(screen.doc) && menu && (
 					<Menu
 						label="공유"
 						variant="ios"
@@ -242,7 +244,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 							{
 								label: 'PDF 다운로드',
 								icon: 'fa-solid fa-file-arrow-down',
-								onSelect: () => void downloadResume(),
+								onSelect: () => void downloadResume(resumeLangOf(screen.doc)!),
 							},
 						]}
 					/>

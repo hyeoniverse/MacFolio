@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyMarkdown, headingAt, setHeading } from './markdownFormat';
+import { applyMarkdown, fromEditorMarkdown, headingAt, setHeading } from './markdownFormat';
 
 describe('Markdown 도구 막대', () => {
 	it('굵게: 고른 글자를 감싸고, 다시 누르면 벗긴다', () => {
@@ -35,5 +35,12 @@ describe('Markdown 도구 막대', () => {
 		expect(setHeading('## 절', 2, 2, 3).text).toBe('### 절');
 		expect(setHeading('### 절', 0, 0, 0).text).toBe('절');
 		expect(setHeading('글', 0, 0, 1).text).toBe('# 글');
+	});
+
+	it('편집기의 Markdown을 이력서 원문 모양으로: <주소>·<메일>을 풀고, 강조가 아닌 \\*를 *로', () => {
+		expect(fromEditorMarkdown('<a@b.com> · 설명 <https://x.com>')).toBe('a@b.com · 설명 https://x.com');
+		expect(fromEditorMarkdown('A\\* 경로 탐색')).toBe('A* 경로 탐색');
+		// 강조 기호와 링크는 그대로
+		expect(fromEditorMarkdown('**굵게** [이름](#project/x)')).toBe('**굵게** [이름](#project/x)');
 	});
 });

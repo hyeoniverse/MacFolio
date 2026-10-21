@@ -298,7 +298,7 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		await expect(panel.getByRole('button', { name: 'QuickTime Player' })).toHaveAttribute('aria-current', 'true');
 		await panel.getByRole('button', { name: '문서' }).click();
 		await panel.getByRole('option', { name: '이력서', exact: true }).dblclick();
-		await expect(panel.getByRole('option', { name: '이력서.pdf' })).toHaveAttribute('aria-disabled', 'true');
+		await expect(panel.getByRole('option', { name: '이력서.pdf', exact: true })).toHaveAttribute('aria-disabled', 'true');
 		const clip = panel.getByRole('option', { name: '소개 영상.mp4' });
 		await expect(clip).not.toHaveAttribute('aria-disabled', 'true');
 		await clip.click();
