@@ -32,6 +32,7 @@ const TextEdit: React.FC = () => {
 	const dark = useResolvedTheme() === 'dark';
 	const [editing, setEditing] = useState(false);
 	const [downloading, setDownloading] = useState(false);
+	const [actionsSlot, setActionsSlot] = useState<HTMLSpanElement | null>(null);
 	const resume = path === RESUME_DOC;
 
 	// 다른 문서로 가면 편집을 끝낸다
@@ -102,6 +103,8 @@ const TextEdit: React.FC = () => {
 					{/* 제목: 신호등 옆에 (macOS 텍스트 편집기는 .md를 일반 텍스트로 열어 서식 막대·눈금자가 없다) */}
 					<div className="textedit-titlebar">
 						<h1 className="textedit-title">{title}</h1>
+						{/* 편집 중에는 편집기가 불러오기·취소·저장을 여기에 둔다 */}
+						<span ref={setActionsSlot} className="textedit-actions-slot" />
 						{resume && !editing && (
 							<span className="textedit-actions">
 								{admin && (
@@ -124,7 +127,7 @@ const TextEdit: React.FC = () => {
 					{!path ? (
 						<EmptyState className="textedit-empty">Finder에서 Markdown 문서를 열면 여기에서 읽습니다.</EmptyState>
 					) : resume && editing ? (
-						<ResumeEditor onDone={() => setEditing(false)} />
+						<ResumeEditor onDone={() => setEditing(false)} actionsSlot={actionsSlot} />
 					) : (
 						<DocView
 							path={path}

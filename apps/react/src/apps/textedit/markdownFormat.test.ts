@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyMarkdown } from './markdownFormat';
+import { applyMarkdown, headingAt, setHeading } from './markdownFormat';
 
 describe('Markdown 도구 막대', () => {
 	it('굵게: 고른 글자를 감싸고, 다시 누르면 벗긴다', () => {
@@ -8,7 +8,8 @@ describe('Markdown 도구 막대', () => {
 		expect(applyMarkdown(once.text, once.start, once.end, 'bold')).toEqual({ text: '안녕 세상', start: 3, end: 5 });
 	});
 
-	it('코드·기울임도 같은 방식', () => {
+	it('코드·기울임·취소선도 같은 방식', () => {
+		expect(applyMarkdown('x', 0, 1, 'strike').text).toBe('~~x~~');
 		expect(applyMarkdown('React', 0, 5, 'code').text).toBe('`React`');
 		expect(applyMarkdown('a', 0, 1, 'italic').text).toBe('_a_');
 	});
@@ -24,7 +25,15 @@ describe('Markdown 도구 막대', () => {
 		const listed = applyMarkdown(text, 2, 7, 'list');
 		expect(listed.text).toBe('- 첫 줄\n- 둘째 줄\n셋째 줄');
 		expect(applyMarkdown(listed.text, listed.start, listed.end, 'list').text).toBe(text);
-		expect(applyMarkdown('제목', 1, 1, 'heading').text).toBe('### 제목');
+		expect(applyMarkdown('항목', 1, 1, 'ordered').text).toBe('1. 항목');
 		expect(applyMarkdown('a\nb', 2, 2, 'quote').text).toBe('a\n> b');
+	});
+
+	it('문단 스타일: 줄의 # 단계를 읽고 바꾼다', () => {
+		expect(headingAt('글\n## 절', 6)).toBe(2);
+		expect(headingAt('본문', 1)).toBe(0);
+		expect(setHeading('## 절', 2, 2, 3).text).toBe('### 절');
+		expect(setHeading('### 절', 0, 0, 0).text).toBe('절');
+		expect(setHeading('글', 0, 0, 1).text).toBe('# 글');
 	});
 });

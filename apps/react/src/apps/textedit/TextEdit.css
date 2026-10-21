@@ -80,32 +80,158 @@
 	height: 100%;
 }
 
-/* ─── 이력서 편집기 (관리자): Markdown 한 장을 그 자리에서 고친다 ─── */
+/* ─── 이력서 편집기 (관리자): Markdown 원문을 흰 종이에서 고친다. 위에 서식 막대와 눈금자 ─── */
 .finder-resume-editor {
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-8);
 	height: 100%;
-	padding: var(--space-12) var(--space-16) var(--space-16);
 }
 
-.finder-resume-editor-bar {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: var(--space-8);
+.textedit-actions-slot {
+	display: contents;
+}
+
+.textedit-actions .ui-button {
+	height: 26px;
 }
 
 .finder-resume-editor-count {
-	margin-left: auto;
 	color: var(--color-secondary-label);
-	opacity: 0.7;
-	font-size: var(--text-caption);
+	font-size: var(--text-caption2);
 	font-variant-numeric: tabular-nums;
 }
 
+/* 서식 막대: 옅은 회색 알약 묶음 (B I S 코드 │ 링크 │ 문단 스타일 │ 목록) */
+.textedit-format {
+	display: flex;
+	flex: none;
+	align-items: center;
+	gap: var(--space-8);
+	padding: 0 var(--space-12) var(--space-10);
+	border-bottom: 1px solid var(--color-separator);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.textedit-seg,
+.textedit-chip {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	height: 30px;
+	border: 0;
+	border-radius: var(--radius-6);
+	background-color: var(--textedit-chip);
+	color: var(--color-label);
+}
+
+.textedit-seg {
+	padding: 0 var(--space-2);
+}
+
+.textedit-tool {
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 22px;
+	border: 0;
+	background: none;
+	color: inherit;
+	font-family: inherit;
+	font-size: var(--text-subheadline);
+}
+
+.textedit-tool + .textedit-tool {
+	border-left: 1px solid var(--color-separator);
+}
+
+.textedit-seg-wide .textedit-tool {
+	width: 40px;
+	height: 26px;
+	border-left: 0;
+	border-radius: var(--radius-4);
+}
+
+.textedit-tool:hover,
+.textedit-chip:hover {
+	filter: brightness(0.94);
+}
+
+.textedit-tool-bold {
+	font-weight: 700;
+}
+
+.textedit-tool-italic {
+	font-family: Georgia, serif;
+	font-style: italic;
+}
+
+.textedit-tool-strike {
+	text-decoration: line-through;
+}
+
+.textedit-tool-code {
+	font-family: ui-monospace, Menlo, monospace;
+	font-size: var(--text-caption2);
+}
+
+.textedit-tool-link {
+	justify-content: center;
+	width: 34px;
+	border: 1px solid var(--color-separator);
+	background-color: transparent;
+}
+
+.textedit-popup {
+	position: relative;
+	gap: var(--space-8);
+	padding: 0 var(--space-10);
+}
+
+.textedit-popup select {
+	min-width: 96px;
+	padding: 0;
+	border: 0;
+	appearance: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	font-size: var(--text-subheadline);
+}
+
+.textedit-popup i {
+	pointer-events: none;
+	font-size: var(--text-caption2);
+}
+
+/* 눈금자: 0~20, 2마다 숫자, 사이에 작은 눈금 */
+.textedit-ruler {
+	position: relative;
+	flex: none;
+	height: 26px;
+	margin: 0 var(--space-8);
+	border-bottom: 1px solid var(--color-separator);
+	background:
+		repeating-linear-gradient(to right, var(--color-secondary-label) 0 1px, transparent 1px 10%) 0 100% / 100% 10px
+			no-repeat,
+		repeating-linear-gradient(to right, var(--color-separator) 0 1px, transparent 1px 2.5%) 0 100% / 100% 5px no-repeat;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption2);
+}
+
+.textedit-ruler span {
+	position: absolute;
+	bottom: 6px;
+	padding-left: var(--space-2);
+	line-height: 1;
+}
+
+.textedit-ruler span:last-child {
+	transform: translateX(-100%);
+}
+
 .finder-resume-editor-errors {
-	margin: 0;
+	margin: var(--space-8) var(--space-12) 0;
 	padding: var(--space-8) var(--space-12) var(--space-8) var(--space-24);
 	border-radius: var(--radius-8);
 	background: color-mix(in srgb, var(--color-system-red) 12%, transparent);
@@ -113,12 +239,13 @@
 	font-size: var(--text-caption);
 }
 
+/* 종이: 테두리 없이 창 끝까지 */
 .finder-resume-editor-field {
 	flex: 1;
 	min-height: 0;
-	padding: var(--space-12);
-	border: 1px solid var(--color-separator);
-	border-radius: var(--radius-8);
+	padding: var(--space-8) var(--space-12);
+	border: 0;
+	outline: none;
 	background: var(--color-text-background);
 	color: var(--color-label);
 	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
@@ -127,31 +254,9 @@
 	resize: none;
 }
 
-/* Markdown 도구 막대: 옅은 회색 알약 안에 서식 버튼 (macOS 텍스트 편집기의 서식 막대 모양) */
-.textedit-md-tools {
-	display: flex;
-	align-self: flex-start;
-	padding: var(--space-2);
-	border-radius: var(--radius-6);
-	background-color: var(--textedit-chip);
-}
-
-.textedit-md-tool {
-	display: inline-grid;
-	place-items: center;
-	width: 32px;
-	height: 26px;
-	border: 0;
-	border-radius: var(--radius-4);
-	background: none;
-	color: var(--color-label);
-	font-size: var(--text-caption1);
-}
-
-.textedit-md-tool + .textedit-md-tool {
-	box-shadow: -1px 0 0 var(--color-separator);
-}
-
-.textedit-md-tool:hover {
-	background-color: var(--color-unemphasized-selected-content-background);
+/* 좁은 창: 목록 묶음은 접는다 */
+@container (max-width: 560px) {
+	.textedit-seg-wide {
+		display: none;
+	}
 }

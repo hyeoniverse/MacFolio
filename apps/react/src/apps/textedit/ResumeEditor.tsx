@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { parseResume as checkResume, RESUME_LIMITS } from '@macfolio/contracts';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { PROJECTS } from '@/shared/profile';
@@ -8,22 +9,29 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { importProfile, importProject } from '@/apps/finder/resumeImport';
-import { applyMarkdown, type MarkdownFormat } from './markdownFormat';
+import { applyMarkdown, headingAt, setHeading, type Edit, type MarkdownFormat } from './markdownFormat';
 
-/** Markdown 도구 막대의 버튼: [형식, 이름, 아이콘(Font Awesome) 또는 글자] */
-const TOOLS: [MarkdownFormat, string, string][] = [
-	['heading', '제목', 'fa-solid fa-heading'],
-	['bold', '굵게', 'fa-solid fa-bold'],
-	['italic', '기울임', 'fa-solid fa-italic'],
-	['code', '코드(기술 칩)', 'fa-solid fa-code'],
-	['link', '링크', 'fa-solid fa-link'],
-	['list', '목록', 'fa-solid fa-list-ul'],
+/** Markdown 서식 막대 (macOS 텍스트 편집기의 서식 막대 모양): 묶음마다 [형식, 이름, 아이콘 또는 글자] */
+const TEXT_TOOLS: [MarkdownFormat, string, string][] = [
+	['bold', '굵게', 'B'],
+	['italic', '기울임', 'I'],
+	['strike', '취소선', 'S'],
+	['code', '코드(기술 칩)', '</>'],
+];
+const LINE_TOOLS: [MarkdownFormat, string, string][] = [
+	['list', '글머리 목록', 'fa-solid fa-list-ul'],
+	['ordered', '번호 목록', 'fa-solid fa-list-ol'],
 	['quote', '인용(한 줄 소개)', 'fa-solid fa-quote-left'],
 ];
+const HEADINGS = ['본문', '제목 1', '제목 2', '제목 3'];
+/** 눈금자 숫자 (0~20) */
+const RULER = Array.from({ length: 11 }, (_, index) => index * 2);
 
 interface Props {
 	/** 저장하거나 취소하면 보기로 돌아간다 */
 	onDone: () => void;
+	/** 불러오기·저장 같은 문서 단위 버튼을 둘 제목 줄의 자리 (텍스트 편집기 창). 없으면 서식 막대 끝에 둔다 */
+	actionsSlot?: HTMLElement | null;
 }
 
 /**
@@ -31,7 +39,8 @@ interface Props {
  * 저장하면 서버에 남아 모든 방문자의 이력서 문서·PDF·터미널 resume가 바뀐다.
  * '불러오기'로 시스템 설정의 프로필(이름·연락처)과 프로젝트(이름·기간·구분·기술·설명)를 글에 넣는다. 넣은 뒤로는 이 글의 일부다
  */
-const ResumeEditor: React.FC<Props> = ({ onDone }) => {
+const ResumeEditor: React.FC<Props> = ({ onDone, actionsSlot }) => {
+	const [level, setLevel] = useState(0);
 	const { markdown, custom } = useResumeState();
 	const [draft, setDraft] = useState(markdown);
 	const [errors, setErrors] = useState<string[]>([]);
@@ -99,47 +108,111 @@ const ResumeEditor: React.FC<Props> = ({ onDone }) => {
 		onDone();
 	};
 
-	/** 고른 글자에 Markdown 서식을 넣고, 바꾼 범위를 다시 고른다 */
-	const applyFormat = (format: MarkdownFormat) => {
+	/** 입력칸의 글을 바꾸고, 바꾼 범위를 다시 고른다 */
+	const applyEdit = (make: (start: number, end: number) => Edit) => {
 		const textarea = field.current;
 		if (!textarea) return;
-		const edit = applyMarkdown(draft, textarea.selectionStart, textarea.selectionEnd, format);
+		const edit = make(textarea.selectionStart, textarea.selectionEnd);
 		setDraft(edit.text);
+		setLevel(headingAt(edit.text, edit.start));
 		requestAnimationFrame(() => {
 			textarea.focus();
 			textarea.setSelectionRange(edit.start, edit.end);
 		});
 	};
+	const applyFormat = (format: MarkdownFormat) => applyEdit((start, end) => applyMarkdown(draft, start, end, format));
+	/** 커서가 옮겨 가면 문단 스타일 팝업도 그 줄을 따른다 */
+	const followCursor = () => {
+		const textarea = field.current;
+		if (textarea) setLevel(headingAt(textarea.value, textarea.selectionStart));
+	};
+
+	const tool = ([format, label, face]: [MarkdownFormat, string, string]) => (
+		<button
+			key={format}
+			type="button"
+			className={`textedit-tool textedit-tool-${format}`}
+			aria-label={label}
+			title={label}
+			// 누르는 동안 입력칸의 선택이 풀리지 않게
+			onMouseDown={(event) => event.preventDefault()}
+			onClick={() => applyFormat(format)}
+		>
+			{face.startsWith('fa-') ? <i className={face} aria-hidden="true" /> : face}
+		</button>
+	);
+
+	const actions = (
+		<span className="textedit-actions">
+			<Button
+				ref={importButton}
+				icon="fa-solid fa-file-import"
+				aria-haspopup="menu"
+				aria-expanded={menu !== null}
+				onClick={(event) => {
+					const rect = event.currentTarget.getBoundingClientRect();
+					setMenu(menu ? null : { x: rect.left, y: rect.bottom + 4 });
+				}}
+			>
+				불러오기
+			</Button>
+			{custom && (
+				<Button disabled={busy} onClick={() => setConfirmingReset(true)}>
+					기본 이력서로 되돌리기
+				</Button>
+			)}
+			<span className="finder-resume-editor-count" aria-live="polite">
+				{draft.length.toLocaleString('ko-KR')} / {RESUME_LIMITS.markdown.toLocaleString('ko-KR')}
+			</span>
+			<Button disabled={busy} onClick={onDone}>
+				취소
+			</Button>
+			<Button tone="primary" disabled={busy || draft === markdown} onClick={() => void save()}>
+				저장
+			</Button>
+		</span>
+	);
 
 	return (
 		<div className="finder-resume-editor">
-			<div className="finder-resume-editor-bar" role="toolbar" aria-label="이력서 편집">
-				<Button
-					ref={importButton}
-					icon="fa-solid fa-file-import"
-					aria-haspopup="menu"
-					aria-expanded={menu !== null}
-					onClick={(event) => {
-						const rect = event.currentTarget.getBoundingClientRect();
-						setMenu(menu ? null : { x: rect.left, y: rect.bottom + 4 });
-					}}
+			{actionsSlot ? createPortal(actions, actionsSlot) : actions}
+			<div className="textedit-format" role="toolbar" aria-label="Markdown 서식">
+				<span className="textedit-seg">{TEXT_TOOLS.map(tool)}</span>
+				<button
+					type="button"
+					className="textedit-chip textedit-tool-link"
+					aria-label="링크"
+					title="링크"
+					onMouseDown={(event) => event.preventDefault()}
+					onClick={() => applyFormat('link')}
 				>
-					불러오기
-				</Button>
-				{custom && (
-					<Button disabled={busy} onClick={() => setConfirmingReset(true)}>
-						기본 이력서로 되돌리기
-					</Button>
-				)}
-				<span className="finder-resume-editor-count" aria-live="polite">
-					{draft.length.toLocaleString('ko-KR')} / {RESUME_LIMITS.markdown.toLocaleString('ko-KR')}
-				</span>
-				<Button disabled={busy} onClick={onDone}>
-					취소
-				</Button>
-				<Button tone="primary" disabled={busy || draft === markdown} onClick={() => void save()}>
-					저장
-				</Button>
+					<i className="fa-solid fa-link" aria-hidden="true" />
+				</button>
+				<label className="textedit-chip textedit-popup">
+					<select
+						aria-label="문단 스타일"
+						value={level}
+						onChange={(event) => {
+							const next = Number(event.target.value);
+							applyEdit((start, end) => setHeading(draft, start, end, next));
+						}}
+					>
+						{HEADINGS.map((name, index) => (
+							<option key={name} value={index}>
+								{name}
+							</option>
+						))}
+					</select>
+					<i className="fa-solid fa-sort" aria-hidden="true" />
+				</label>
+				<span className="textedit-seg textedit-seg-wide">{LINE_TOOLS.map(tool)}</span>
+			</div>
+			<div className="textedit-ruler" aria-hidden="true">
+				{RULER.map((mark) => (
+					<span key={mark} style={{ left: `${mark * 5}%` }}>
+						{mark}
+					</span>
+				))}
 			</div>
 			{errors.length > 0 && (
 				<ul className="finder-resume-editor-errors" role="alert">
@@ -148,22 +221,6 @@ const ResumeEditor: React.FC<Props> = ({ onDone }) => {
 					))}
 				</ul>
 			)}
-			<div className="textedit-md-tools" role="toolbar" aria-label="Markdown 서식">
-				{TOOLS.map(([format, label, icon]) => (
-					<button
-						key={format}
-						type="button"
-						className="textedit-md-tool"
-						aria-label={label}
-						title={label}
-						// 누르는 동안 입력칸의 선택이 풀리지 않게
-						onMouseDown={(event) => event.preventDefault()}
-						onClick={() => applyFormat(format)}
-					>
-						<i className={icon} aria-hidden="true" />
-					</button>
-				))}
-			</div>
 			<textarea
 				ref={field}
 				className="finder-resume-editor-field"
@@ -171,6 +228,7 @@ const ResumeEditor: React.FC<Props> = ({ onDone }) => {
 				spellCheck={false}
 				value={draft}
 				onChange={(event) => setDraft(event.target.value)}
+				onSelect={followCursor}
 			/>
 			{menu && (
 				<Menu label="불러오기" anchor={menu} items={importItems} trigger={importButton} onClose={() => setMenu(null)} />
