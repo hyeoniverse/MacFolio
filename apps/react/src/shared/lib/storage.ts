@@ -15,6 +15,8 @@ export const STORAGE_KEYS = {
 	weatherUnit: 'macfolio:weather:unit',
 	/** 바탕화면 아이콘의 칸 (desktop/icons) */
 	desktopIcons: 'macfolio:desktop:icons',
+	/** 처음 방문 둘러보기를 마쳤거나 건너뛰었는지 (desktop/tour) */
+	tour: 'macfolio:tour',
 	/** 저장 형식 버전이 바뀌면 키를 바꾼다 */
 	messages: 'macfolio:messages:v2',
 	messagesVisitor: 'macfolio:messages:visitor',

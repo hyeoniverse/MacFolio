@@ -1,0 +1,106 @@
+/* 팁 앱: 노란 전구 아이콘의 머리 카드와 팁 목록 */
+.tips {
+	height: 100%;
+	overflow: auto;
+	background-color: var(--color-window-background);
+	color: var(--color-label);
+	container-type: inline-size;
+}
+
+.tips-hero {
+	padding: var(--space-24) var(--space-20) var(--space-20);
+	text-align: center;
+}
+
+.tips-hero img {
+	width: 72px;
+	height: 72px;
+}
+
+.tips-hero h1 {
+	margin: var(--space-10) 0 var(--space-4);
+	font-size: var(--text-title2);
+	font-weight: 700;
+}
+
+.tips-hero p {
+	margin: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-subheadline);
+}
+
+.tips-start {
+	height: 32px;
+	margin-top: var(--space-14);
+	padding: 0 var(--space-16);
+	border: 0;
+	border-radius: var(--radius-full);
+	background-color: var(--color-control-accent);
+	color: var(--color-white);
+	font-size: var(--text-subheadline);
+	font-weight: 600;
+}
+
+.tips-list {
+	display: grid;
+	gap: var(--space-10);
+	margin: 0;
+	padding: 0 var(--space-16) var(--space-20);
+	list-style: none;
+}
+
+.tips-item {
+	display: flex;
+	align-items: center;
+	gap: var(--space-12);
+	padding: var(--space-12) var(--space-14);
+	border-radius: var(--radius-12);
+	background-color: var(--color-text-background);
+	box-shadow: var(--shadow-raised);
+}
+
+.tips-item-icon {
+	display: grid;
+	flex: none;
+	place-items: center;
+	width: 36px;
+	height: 36px;
+	border-radius: var(--radius-8);
+	background-color: var(--tips-yellow);
+	color: var(--color-white);
+}
+
+.tips-item-text {
+	flex: 1;
+	min-width: 0;
+	text-align: left;
+}
+
+.tips-item-text h2 {
+	margin: 0 0 var(--space-2);
+	font-size: var(--text-subheadline);
+	font-weight: 700;
+}
+
+.tips-item-text p {
+	margin: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-footnote);
+	line-height: 1.45;
+}
+
+.tips-item-show {
+	flex: none;
+	height: 28px;
+	padding: 0 var(--space-12);
+	border: 0;
+	border-radius: var(--radius-8);
+	background-color: var(--color-unemphasized-selected-content-background);
+	color: var(--color-control-accent);
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.tips {
+	--tips-yellow: var(--color-system-yellow);
+}

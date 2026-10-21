@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="100 100 824 824">
+	<!-- 팁 앱 (macOS·iOS): 노란 둥근 네모 위에 흰 전구. 유리 부분은 둥글고, 아래에 나사 두 줄 -->
+	<defs>
+		<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+			<stop offset="0" stop-color="#ffd84d"/>
+			<stop offset="1" stop-color="#ffb20f"/>
+		</linearGradient>
+	</defs>
+	<rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+	<g fill="#fff">
+		<path d="M512 230c-118 0-210 92-210 205 0 74 38 128 78 170 28 30 42 58 46 92h172c4-34 18-62 46-92 40-42 78-96 78-170 0-113-92-205-210-205z"/>
+		<rect x="420" y="722" width="184" height="40" rx="20"/>
+		<rect x="436" y="778" width="152" height="40" rx="20"/>
+	</g>
+	<path d="M470 540l42 60 42-60" fill="none" stroke="#ffc21f" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
