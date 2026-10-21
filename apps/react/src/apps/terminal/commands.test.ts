@@ -31,11 +31,12 @@ describe('parse', () => {
 });
 
 describe('runCommand', () => {
-	it('resume는 웃는 Mac·고양이 그림과 함께 이력서 전체(강점·할 수 있는 일·프로젝트·수상·교육)를 그린다', () => {
+	it('resume는 고양이 그림과 함께 이력서(강점·할 수 있는 일·프로젝트·수상·교육)를 짧은 줄로 그린다', () => {
 		const result = runCommand('resume', context);
 		const lines = texts(result.lines);
 		expect(result.lines[0]).toMatchObject({ kind: 'art' });
-		expect(result.lines.filter((line) => line.kind === 'art').length).toBeGreaterThanOrEqual(8);
+		// 첫머리 그림, 절 머리 5개(STRENGTHS·SKILLS·PROJECTS·AWARDS·EDUCATION), 끝 인사
+		expect(result.lines.filter((line) => line.kind === 'art')).toHaveLength(7);
 		expect(lines).toContain(`“${RESUME.motto}”`);
 		for (const item of RESUME.strengths) expect(lines).toContain(`★ ${item.title}: ${item.detail}`);
 		for (const item of RESUME.capabilities) expect(lines.some((line) => line.startsWith(`${item.area}: `))).toBe(true);
@@ -48,7 +49,7 @@ describe('runCommand', () => {
 		);
 		const firstItem = result.lines.find((line) => line.kind === 'item');
 		const bullet = RESUME.featured[0].bullets[0];
-		expect(firstItem?.kind === 'item' && firstItem.detail).toContain(`\n· ${bullet.title} — ${bullet.detail}`);
+		expect(firstItem?.kind === 'item' && firstItem.detail).toContain(`\n✓ ${bullet.title}`);
 		// 번호는 projects 목록의 번호 (project <번호>로 이어서 본다)
 		const first = result.lines.find((line) => line.kind === 'item');
 		const index = PROJECTS.findIndex((p) => p.id === RESUME.featured[0].id);

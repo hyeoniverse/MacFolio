@@ -89,24 +89,20 @@ export function formatDate(date: Date): string {
 // resume의 그림들. 모든 글자가 한 칸 폭(상자 그리기 문자·ASCII)이라 어느 고정폭 글꼴에서도 줄이 맞는다.
 // 한글은 그림 안에 넣지 않는다 (두 칸 폭이라 오른쪽 테두리가 어긋난다)
 
-/** 첫머리: 말풍선을 단 웃는 Mac과 RESUME 글자 */
+/** 첫머리: 노트북 위로 얼굴을 내민 고양이와 RESUME 글자 */
 const RESUME_ART = [
-	'                  .--------------------.',
-	'                 (  hi! nice to meet u  )',
-	"  ╭──────────╮    `--.-----------------'",
-	"  │ ╭──────╮ │       .'",
-	'  │ │ ^  ^ │ │   ┏━┓┏━╸┏━┓╻ ╻┏┳┓┏━╸',
-	'  │ │ \\__/ │ │   ┣┳┛┣╸ ┗━┓┃ ┃┃┃┃┣╸',
-	'  │ ╰──────╯ │   ╹┗╸┗━╸┗━┛┗━┛╹ ╹┗━╸',
-	'  ╰───┬──┬───╯',
-	'    ━━┷━━┷━━',
+	'      /\\_/\\         ┏━┓┏━╸┏━┓╻ ╻┏┳┓┏━╸',
+	'     ( ^w^ )        ┣┳┛┣╸ ┗━┓┃ ┃┃┃┃┣╸',
+	'   ╭─┴─────┴─╮      ╹┗╸┗━╸┗━┛┗━┛╹ ╹┗━╸',
+	'   │ >_      │      hi! nice to meet u :)',
+	'   ╰─────────╯',
 ].join('\n');
 
 /** 절 머리: ╶─[ SKILLS ]────╴ (글자 수와 상관없이 같은 폭) */
 const section = (label: string): Line => art(`╶─[ ${label} ]${'─'.repeat(Math.max(4, 34 - label.length))}╴`);
 
-/** 끝: 고양이 인사 */
-const RESUME_BYE = ['   /\\_/\\', '  ( o.o )   thanks for reading!', '   > ^ <    -- contact me anytime'].join('\n');
+/** 끝 인사 */
+const RESUME_BYE = '  ~ thanks for reading! ~  (=^.^=)';
 
 export const COMMANDS: Record<string, Command> = {
 	help: {
@@ -155,17 +151,20 @@ export const COMMANDS: Record<string, Command> = {
 				const index = PROJECTS.findIndex((project) => project.id === id);
 				return index < 0 ? null : { project: PROJECTS[index], marker: `${index + 1}.` };
 			};
-			const entries = (items: typeof RESUME.awards) =>
-				items.map((item) => pair(item.period, item.detail ? `${item.title} (${item.detail})` : item.title));
+			// 터미널은 좁아서 긴 문장 대신 짧은 줄로: 할 수 있는 일은 기술만, 성과는 제목만, 수상은 이름만 (전체는 Finder의 이력서)
 			return output([
 				art(RESUME_ART),
+				text(''),
 				heading(`${profile.name} · ${RESUME.role}`),
 				text(`“${RESUME.motto}”`),
-				pair('연락', `${profile.email} · ${profile.github}`),
+				muted(`${profile.email} · ${profile.github}`),
+				text(''),
 				section('STRENGTHS'),
 				...RESUME.strengths.map((item) => pair(`★ ${item.title}`, item.detail)),
+				text(''),
 				section('SKILLS'),
-				...RESUME.capabilities.map((item) => pair(item.area, `${item.detail} (${item.tools.join(', ')})`)),
+				...RESUME.capabilities.map((item) => pair(item.area, item.tools.join(' · '))),
+				text(''),
 				section('PROJECTS'),
 				...RESUME.featured.flatMap(({ id, bullets }): Line[] => {
 					const found = numbered(id);
@@ -176,15 +175,11 @@ export const COMMANDS: Record<string, Command> = {
 							marker: found.marker,
 							title: found.project.name,
 							tag: found.project.period,
-							// 성과는 설명 아래 줄로: 번호 뒤에 맞춰 들여 쓴 채 줄바꿈된다 (상세 칸은 줄바꿈을 그대로 그린다)
-							detail: [
-								found.project.description,
-								...bullets.map((bullet) => `· ${bullet.title} — ${bullet.detail}`),
-							].join('\n'),
+							// 성과 제목을 설명 아래 줄로: 번호에 맞춰 들여 쓴 채 줄바꿈된다 (상세 칸은 줄바꿈을 그대로 그린다)
+							detail: [found.project.description, ...bullets.map((bullet) => `✓ ${bullet.title}`)].join('\n'),
 						},
 					];
 				}),
-				section('MORE PROJECTS'),
 				...RESUME.minor.flatMap(({ id, line }): Line[] => {
 					const found = numbered(id);
 					return found
@@ -199,10 +194,13 @@ export const COMMANDS: Record<string, Command> = {
 							]
 						: [];
 				}),
+				text(''),
 				section('AWARDS'),
-				...entries(RESUME.awards),
+				...RESUME.awards.map((item) => pair(item.period, item.title)),
+				text(''),
 				section('EDUCATION'),
-				...entries(RESUME.education),
+				...RESUME.education.map((item) => pair(item.period, item.title)),
+				text(''),
 				art(RESUME_BYE),
 				muted('자세히 보려면: project <번호> · 전체 이력서와 PDF는 Finder › 문서 › 이력서'),
 			]);
