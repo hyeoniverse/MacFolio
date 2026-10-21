@@ -84,6 +84,14 @@ test.describe('Finder', () => {
 		await finder.getByRole('navigation', { name: '경로' }).getByRole('button', { name: '이력서' }).click();
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
+		// PDF로 저장: 본문만 복사해 브라우저 인쇄 창을 연다 (인쇄 창은 막아 둔다)
+		await page.evaluate(() => {
+			window.print = () => undefined;
+		});
+		await finder.getByRole('button', { name: 'PDF로 저장' }).click();
+		await expect(page.locator('#finder-print-root .finder-doc h1')).toHaveText('김정현 이력서');
+		await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
+		await expect(page.locator('#finder-print-root')).toHaveCount(0);
 		await resume.getByRole('link', { name: 'MacFolio', exact: true }).click();
 		await expect(appWindow(page, 'safari')).toBeVisible();
 	});
