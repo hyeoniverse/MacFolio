@@ -44,6 +44,16 @@
 	color: inherit;
 }
 
+/* 불투명한 판(캘린더·메모): 비치지 않는 대신 위에서 아래로 옅은 그라데이션과 윗변의 빛·아랫변의 그늘로 두께를 준다 */
+.widget-calendar,
+.widget-posts {
+	background-image: linear-gradient(180deg, var(--widget-solid-top), var(--widget-solid-bottom));
+	box-shadow:
+		inset 0 1px 0 var(--widget-highlight),
+		inset 0 -1px 0 var(--widget-lowlight),
+		var(--widget-shadow);
+}
+
 /* ─── 날씨 ─── */
 /* 하늘 색 바탕에 흰 글자 (macOS·iOS 날씨 위젯). 색은 날씨 앱(Weather.css)의 하늘 색과 같다.
    하늘 색이 곧 날씨라 비치게 하지 않는다 (배경화면과 섞이면 맑은 하늘이 탁한 보라가 된다) */
@@ -52,7 +62,14 @@
 	--sky-bottom: #8db4dc;
 	container-type: size;
 	background-color: var(--sky-top);
-	background-image: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+	/* 위쪽에 번지는 옅은 빛을 하늘 색 위에 겹쳐 둥글게 부푼 판처럼 */
+	background-image:
+		radial-gradient(120% 70% at 30% 0%, color-mix(in srgb, var(--color-white) 22%, transparent), transparent 70%),
+		linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
+	box-shadow:
+		inset 0 1px 0 color-mix(in srgb, var(--color-white) 30%, transparent),
+		inset 0 -1px 0 color-mix(in srgb, var(--color-black) 20%, transparent),
+		var(--widget-shadow);
 	color: var(--color-white);
 }
 
@@ -273,6 +290,7 @@
 
 .widget-calendar-month td[aria-current='date'] span {
 	background-color: var(--widget-label);
+	box-shadow: var(--shadow-raised);
 	color: var(--widget-on-label);
 	font-weight: 700;
 }
@@ -422,6 +440,13 @@
 	padding: var(--space-10) var(--space-14);
 	border-bottom: 2px dotted var(--widget-separator);
 	background-color: var(--notes-accent);
+	/* 위가 조금 밝은 노랑, 윗변에 빛 */
+	background-image: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--color-white) 22%, var(--notes-accent)),
+		var(--notes-accent)
+	);
+	box-shadow: inset 0 1px 0 color-mix(in srgb, var(--color-white) 45%, transparent);
 	color: var(--color-white);
 	font-size: var(--text-footnote);
 	font-weight: 600;

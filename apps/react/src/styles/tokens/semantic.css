@@ -55,6 +55,11 @@
 	--color-material-label: rgba(0, 0, 0, 0.6); /* 머티리얼 위의 작은 표시 (Dock 실행 중 점) */
 	--color-material-widget: rgba(255, 255, 255, 0.48); /* 바탕화면·홈 화면 위젯의 유리 판 */
 	--color-material-widget-edge: rgba(255, 255, 255, 0.6); /* 유리 판 가장자리의 빛 */
+	/* 불투명한 위젯 판(캘린더·메모): 위가 밝고 아래로 조금 어두워지는 그라데이션, 윗변의 빛과 아랫변의 그늘 */
+	--color-widget-solid-top: var(--palette-white);
+	--color-widget-solid-bottom: var(--palette-gray-100);
+	--color-widget-highlight: rgba(255, 255, 255, 0.95);
+	--color-widget-lowlight: rgba(0, 0, 0, 0.06);
 
 	/* 메모 앱의 노란 강조 */
 	--color-notes-yellow: var(--palette-notes-yellow);
@@ -134,6 +139,7 @@
 	--shadow-raised: var(--shadow-1); /* 스위치 손잡이·칩·썸네일처럼 바탕에 살짝 얹힌 것 */
 	--shadow-float: var(--shadow-2); /* 휴대폰 떠 있는 버튼 */
 	--shadow-card: var(--shadow-3); /* 떠 있는 카드·타일·끄는 줄 */
+	--shadow-widget: var(--shadow-lifted); /* 바탕화면·홈 화면 위젯 */
 	--shadow-menu: var(--shadow-6); /* 메뉴·날짜 고르기·떠 있는 판 */
 	--shadow-modal: var(--shadow-7); /* 대화상자·라이트박스·시트 */
 	--shadow-window: 10px 10px 10px rgba(0, 0, 0, 0.5);
@@ -196,6 +202,10 @@
 	--color-material-label: rgba(255, 255, 255, 0.75);
 	--color-material-widget: rgba(28, 28, 32, 0.45);
 	--color-material-widget-edge: rgba(255, 255, 255, 0.14);
+	--color-widget-solid-top: var(--palette-gray-700);
+	--color-widget-solid-bottom: var(--palette-gray-850);
+	--color-widget-highlight: rgba(255, 255, 255, 0.12);
+	--color-widget-lowlight: rgba(0, 0, 0, 0.35);
 
 	--color-material-notification: rgba(44, 44, 46, 0.78);
 	--color-material-notification-control: rgba(58, 58, 60, 0.95);
