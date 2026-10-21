@@ -23,7 +23,7 @@ test.describe('바탕화면 위젯', () => {
 		await enterDesktop(page);
 		await closeSafari(page);
 		await expect(widget(page, '날씨')).toContainText('19°');
-		await expect(widget(page, '캘린더')).toContainText('요일');
+		await expect(widget(page, '캘린더').locator('td[aria-current="date"]')).toHaveCount(1);
 		await expect(widget(page, '음악')).toBeVisible();
 		// 잔디: 서버가 없으면 안내만 (자료가 있을 때의 모양은 단위 시험과 GitHub 앱 시험이 본다)
 		await expect(widget(page, 'GitHub')).toContainText('기여 기록을 불러오지 못했습니다');
@@ -35,17 +35,25 @@ test.describe('바탕화면 위젯', () => {
 		expect(Math.round(calendar.y)).toBe(Math.round(weather.y));
 	});
 
-	test('GitHub 잔디: 서버의 기여 기록을 주마다 한 열로, 중간은 20주·작게는 8주', async ({ page }) => {
+	test('GitHub 잔디: 지난 1년을 그리고 가장 최근 주가 오른쪽 끝에 들어온다. 작게로 바꿔도 같다', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page);
 		await closeSafari(page);
 		const github = widget(page, 'GitHub');
-		await expect(github.locator('.widget-github-week')).toHaveCount(20);
-		await expect(github.locator('.widget-github-day[data-level="4"]').first()).toBeVisible();
-		await expect(github).toContainText('최근 20주 기여');
+		await expect(github).toContainText('지난 1년');
+		// 가장 최근 날(마지막 칸)이 위젯 안 오른쪽에 있다: 옛 주는 왼쪽으로 잘린다
+		const inside = async () => {
+			const box = (await github.boundingBox())!;
+			// 최근 주가 먼저 그려진다 (오른쪽 끝부터)
+			const last = (await github.locator('.widget-github-day:not([data-level="none"])').first().boundingBox())!;
+			expect(last.x + last.width).toBeLessThanOrEqual(box.x + box.width);
+			expect(last.x + last.width).toBeGreaterThan(box.x + box.width - 40);
+		};
+		await inside();
 		await github.click({ button: 'right' });
 		await page.getByRole('menuitemcheckbox', { name: '작게' }).click();
-		await expect(github.locator('.widget-github-week')).toHaveCount(8);
+		await expect(github).not.toContainText('지난 1년');
+		await inside();
 	});
 
 	test('최근 글을 누르면 메모가 그 글을 열고, 위젯의 빈 곳을 누르면 그 앱이 열린다', async ({ page }) => {

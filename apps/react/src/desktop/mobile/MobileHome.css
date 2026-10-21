@@ -23,14 +23,10 @@
 }
 
 /* 홈 화면 위젯 (desktop/widgets의 Widget): iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고,
-   작은 위젯은 아이콘 두 칸 폭의 정사각형, 중간 위젯은 한 줄을 다 쓴다. 사진 위에 얹는 흰 막으로 칠한다 */
+   작은 위젯은 아이콘 두 칸 폭의 정사각형, 중간 위젯은 한 줄을 다 쓴다. 색은 데스크톱과 같은 불투명한 판 */
 .mobile-home {
 	--home-icon: 60px;
 	--widget-inset: calc((100% / 4 - var(--home-icon)) / 2);
-	--widget-background: var(--color-on-media-fill);
-	--widget-label: var(--color-white);
-	--widget-secondary-label: var(--color-on-media-label);
-	--widget-fill: var(--color-on-media-fill);
 }
 
 .mobile-widgets {
@@ -43,8 +39,7 @@
 
 .mobile-widgets .widget {
 	aspect-ratio: 1;
-	box-shadow: var(--shadow-4);
-	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	text-shadow: none;
 }
 
 /* 위젯 한 칸: 편집 중의 지우기 단추가 위젯 모서리에 붙는다 */
@@ -227,10 +222,6 @@
 /* 위젯 갤러리 시트 */
 .mobile-widget-sheet {
 	--ui-sheet-bg: var(--color-window-background);
-	--widget-background: var(--color-material-notification);
-	--widget-label: var(--color-label);
-	--widget-secondary-label: var(--color-secondary-label);
-	--widget-fill: var(--color-system-fill);
 	/* 위 상태 표시줄은 시트를 덮으므로 그만큼 내린다 */
 	padding: var(--mobile-statusbar-height) var(--space-20) var(--space-24);
 	overflow-y: auto;

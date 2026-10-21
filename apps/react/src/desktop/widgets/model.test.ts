@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { handAngles, mergeRecentPosts, monthGrid, seoulDate, shortDate } from './model';
+import { handAngles, mergeRecentPosts, monthGrid, seoulDate, shortDate, streakOf } from './model';
 
 describe('위젯 값', () => {
 	it('서울 기준 날짜와 시각 (UTC 자정 넘어도 서울 날짜)', () => {
@@ -50,5 +50,13 @@ describe('위젯 값', () => {
 		expect(merged.map((item) => item.slug)).toEqual(['new', 'b', 'a']);
 		expect(merged[1].title).toBe('고친 제목');
 		expect(mergeRecentPosts(repo, [], 2).map((item) => item.slug)).toEqual(['c', 'b']);
+	});
+
+	it('연속 기여 일수: 최근 날부터, 오늘이 아직 0이면 어제부터 센다', () => {
+		const days = (...counts: number[]) => counts.map((count) => ({ count }));
+		expect(streakOf(days(1, 0, 2, 3, 1))).toBe(3);
+		expect(streakOf(days(1, 2, 3, 0))).toBe(3);
+		expect(streakOf(days(1, 0, 0))).toBe(0);
+		expect(streakOf([])).toBe(0);
 	});
 });

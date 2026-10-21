@@ -1626,8 +1626,8 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await fakeApi(page);
 		await enterHome(page);
 		const github = page.locator('.mobile-page').first().getByRole('group', { name: 'GitHub 위젯' });
-		await expect(github.locator('.widget-github-week')).toHaveCount(20);
-		await expect(github.getByRole('img', { name: /최근 20주 기여 \d+회/ })).toBeVisible();
+		await expect(github.locator('.widget-github-day[data-level="4"]').last()).toBeVisible();
+		await expect(github.getByRole('img', { name: /지난 1년 기여 \d+회/ })).toBeVisible();
 	});
 
 	test('위젯이 있어도 위젯 아래에 앱이 두 줄은 들어가고 잘리지 않는다', async ({ page }) => {

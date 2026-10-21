@@ -87,3 +87,15 @@ export function mergeRecentPosts(
 		.sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
 		.slice(0, limit);
 }
+
+/**
+ * 연속 기여 일수: 가장 최근 날부터 거꾸로 기여가 있는 날을 센다. 오늘(마지막 날)이 아직 0이면 어제부터 센다
+ * (GitHub 프로필처럼 오늘 아직 안 했어도 이어지는 중으로 본다)
+ */
+export function streakOf(days: readonly { count: number }[]): number {
+	let index = days.length - 1;
+	if (index >= 0 && days[index].count === 0) index--;
+	let streak = 0;
+	for (; index >= 0 && days[index].count > 0; index--) streak++;
+	return streak;
+}
