@@ -432,7 +432,7 @@
 }
 
 .tips-manual-body {
-	max-width: 680px;
+	max-width: 860px;
 	padding: var(--space-16) var(--space-24) var(--space-24);
 }
 
@@ -528,6 +528,59 @@
 	cursor: pointer;
 }
 
+/* 글 형식의 절 (기능이 많은 앱): 그림 칸과 큰 제목·문단을 번갈아 좌우로 */
+.tips-article {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+	gap: var(--space-24);
+	align-items: center;
+	padding: var(--space-24) 0;
+	border-top: 1px solid var(--color-separator);
+	scroll-margin-top: var(--space-12);
+}
+
+.tips-article:nth-of-type(even) .tips-article-art {
+	order: 2;
+}
+
+.tips-article-art {
+	position: relative;
+	display: grid;
+	border: 1px solid var(--color-separator);
+	border-radius: var(--radius-18);
+	background-color: var(--tips-card-gray);
+	color: var(--color-control-accent);
+	font-size: var(--text-large-title);
+	aspect-ratio: 4 / 3;
+	place-items: center;
+}
+
+.tips-article-art i {
+	font-size: 2.5em;
+}
+
+.tips-article-art img {
+	position: absolute;
+	right: var(--space-12);
+	bottom: var(--space-12);
+	width: 40px;
+	height: 40px;
+	border-radius: var(--radius-10);
+}
+
+.tips-article-text h2 {
+	margin: 0 0 var(--space-12);
+	font-size: var(--text-title1);
+	font-weight: 600;
+}
+
+.tips-article-text p {
+	margin: 0 0 var(--space-10);
+	color: var(--color-label);
+	font-size: var(--text-body);
+	line-height: 1.7;
+}
+
 /* 화면에서 짚어 보기 */
 .tips-spot {
 	max-width: 720px;
@@ -588,6 +641,19 @@
 
 	.tips-toc {
 		display: none;
+	}
+
+	.tips-article {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--space-14);
+	}
+
+	.tips-article:nth-of-type(even) .tips-article-art {
+		order: 0;
+	}
+
+	.tips-article-art {
+		aspect-ratio: 16 / 9;
 	}
 
 	.tips-hero-title {

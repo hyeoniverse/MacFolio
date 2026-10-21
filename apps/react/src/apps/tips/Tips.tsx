@@ -7,7 +7,7 @@ import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { startTour } from '@/desktop/tour/tourStore';
 import { stepsFor, tipSteps, type TourStep } from '@/desktop/tour/tourSteps';
 import { GUIDES, type GuideStep } from './guides';
-import { MANUALS, type Manual } from './manuals';
+import { MANUALS, type Manual, type ManualArticle } from './manuals';
 import './Tips.css';
 
 /** 보는 곳: 첫 화면, 팁 모음 하나, 앱 사용 설명서 하나, 화면에서 짚어 보기 */
@@ -47,11 +47,16 @@ function searchAll(query: string): SearchHit[] {
 			}))
 		),
 		...MANUALS.flatMap((manual) =>
-			manual.sections.filter(matches).map((step) => ({
-				route: { kind: 'manual', app: manual.app } as Route,
-				place: `${appLabel(manual.app)} 사용 설명서`,
-				...step,
-			}))
+			(manual.articles
+				? manual.articles.map(({ title, paragraphs, icon }) => ({ title, body: paragraphs.join(' '), icon }))
+				: manual.sections
+			)
+				.filter(matches)
+				.map((step) => ({
+					route: { kind: 'manual', app: manual.app } as Route,
+					place: `${appLabel(manual.app)} 사용 설명서`,
+					...step,
+				}))
 		),
 	];
 }
@@ -66,6 +71,8 @@ const ManualPage = ({
 	intro,
 	icon,
 	sections,
+	articles,
+	art,
 	openLabel,
 	onOpen,
 	phone,
@@ -75,6 +82,10 @@ const ManualPage = ({
 	intro: string;
 	icon: { src: string } | { fa: string };
 	sections: GuideStep[];
+	/** 글 형식의 절: 있으면 sections 대신 큰 제목·문단·그림 칸으로 보여 준다 */
+	articles?: ManualArticle[];
+	/** 글 형식의 그림 칸 구석에 둘 앱 아이콘 */
+	art?: string;
 	openLabel: string;
 	onOpen: () => void;
 	phone: boolean;
@@ -87,7 +98,7 @@ const ManualPage = ({
 				<button type="button" className="active" onClick={() => go(-1)}>
 					환영합니다
 				</button>
-				{sections.map((section, index) => (
+				{(articles ?? sections).map((section, index) => (
 					<button key={section.title} type="button" onClick={() => go(index)}>
 						{section.title}
 					</button>
@@ -108,18 +119,34 @@ const ManualPage = ({
 					)}
 				</header>
 				<p className="tips-manual-intro">{intro}</p>
-				{sections.map((section, index) => (
-					<section key={section.title} id={`tips-section-${index}`} className="tips-manual-section">
-						<span className="tips-manual-section-icon" aria-hidden="true">
-							<i className={section.icon} />
+				{articles?.map((each, index) => (
+					<section key={each.title} id={`tips-section-${index}`} className="tips-article">
+						<span className="tips-article-art" aria-hidden="true">
+							<i className={each.icon} />
+							{art && <img src={art} alt="" />}
 						</span>
-						<div>
-							<h2>{section.title}</h2>
-							<p>{section.body}</p>
-							{section.keys && !phone && <kbd className="tips-keys">{section.keys}</kbd>}
+						<div className="tips-article-text">
+							<h2>{each.title}</h2>
+							{each.paragraphs.map((paragraph) => (
+								<p key={paragraph}>{paragraph}</p>
+							))}
+							{each.keys && !phone && <kbd className="tips-keys">{each.keys}</kbd>}
 						</div>
 					</section>
 				))}
+				{!articles &&
+					sections.map((section, index) => (
+						<section key={section.title} id={`tips-section-${index}`} className="tips-manual-section">
+							<span className="tips-manual-section-icon" aria-hidden="true">
+								<i className={section.icon} />
+							</span>
+							<div>
+								<h2>{section.title}</h2>
+								<p>{section.body}</p>
+								{section.keys && !phone && <kbd className="tips-keys">{section.keys}</kbd>}
+							</div>
+						</section>
+					))}
 				<button type="button" className="tips-link" onClick={onOpen}>
 					{openLabel} ›
 				</button>
@@ -220,7 +247,8 @@ const Tips = () => {
 					{route.kind !== 'home' && <span className="tips-bar-title">{title}</span>}
 				</header>
 
-				<div className="tips-scroll">
+				{/* 보는 곳이 바뀌면 맨 위부터 (스크롤을 새로) */}
+				<div key={JSON.stringify(route)} className="tips-scroll">
 					{route.kind === 'home' && (
 						<div className="tips-home">
 							<h1 className="tips-hero-title">도움이 필요하세요? 여기서 확인할 수 있습니다.</h1>
@@ -356,6 +384,8 @@ const Tips = () => {
 							intro={manual.intro}
 							icon={{ src: appIcon(manual.app) }}
 							sections={manual.sections}
+							articles={manual.articles}
+							art={appIcon(manual.app)}
 							openLabel={`${appLabel(manual.app)} 열기`}
 							onOpen={() => launch(manual.app)}
 							phone={phone}

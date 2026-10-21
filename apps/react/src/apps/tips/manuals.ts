@@ -2,6 +2,17 @@
 import { PROJECT_APPS, type AppName } from '@/apps/manifest';
 import { GUIDES, type GuideStep } from './guides';
 
+/** 글 형식의 절 (macOS 팁 앱의 'OO 사용 설명서'처럼): 큰 제목과 여러 문단, 곁들인 그림 칸 */
+export interface ManualArticle {
+	title: string;
+	/** 문단마다 한 줄 */
+	paragraphs: string[];
+	/** 그림 칸에 크게 보일 아이콘 */
+	icon: string;
+	/** 데스크톱 단축키 (보기용) */
+	keys?: string;
+}
+
 export interface Manual {
 	/** 열 앱 (아이콘·이름은 manifest에서) */
 	app: AppName;
@@ -10,6 +21,8 @@ export interface Manual {
 	/** 설명서 첫머리의 소개 */
 	intro: string;
 	sections: GuideStep[];
+	/** 기능이 많거나 중요한 앱: 짧은 팁 대신 글로 자세히 쓴다 (있으면 sections 대신 이것을 보여 준다) */
+	articles?: ManualArticle[];
 }
 
 const stepsOf = (id: string) => GUIDES.find((guide) => guide.id === id)!.steps;
@@ -408,3 +421,186 @@ export const MANUALS: Manual[] = [
 		],
 	})),
 ];
+
+/** 기능이 많거나 중요한 앱의 글 형식 설명서 */
+const ARTICLES: Partial<Record<AppName, ManualArticle[]>> = {
+	memo: [
+		{
+			title: '메모 앱 시작하기',
+			icon: 'fa-solid fa-note-sticky',
+			paragraphs: [
+				'메모 앱은 이 사이트의 블로그예요. 개발하면서 부딪힌 문제와 해결 과정, 프로젝트를 마치고 쓴 회고를 Mac의 메모처럼 폴더에 나눠 두었어요.',
+				'창은 세 칸으로 되어 있어요. 왼쪽 사이드바에서 폴더를 고르면 가운데 목록이 그 폴더의 글로 바뀌고, 목록에서 글을 누르면 오른쪽에 본문이 펼쳐져요. 맨 위의 핀 표시가 붙은 글은 먼저 읽어 주셨으면 하는 고정 글이에요.',
+			],
+		},
+		{
+			title: '읽고 싶은 글 찾기',
+			icon: 'fa-solid fa-magnifying-glass',
+			keys: '⌥1 목록 · ⌥2 갤러리',
+			paragraphs: [
+				'목록 위의 검색 칸에 낱말을 쓰면 모든 글의 제목과 본문에서 찾아요. 검색 조건으로 태그만 고르거나 제목으로 좁힐 수도 있어요.',
+				'글 위의 #태그를 누르면 같은 태그가 붙은 글만 모여요. 여러 태그를 고르면 모두 붙은 글만 볼지, 하나라도 붙은 글을 볼지 정할 수 있어요.',
+				'도구 막대의 보기 버튼으로 제목이 촘촘한 목록과 대표 그림이 보이는 갤러리를 오가고, 정렬 메뉴에서 최신순·제목순이나 날짜별 묶기를 골라 보세요.',
+			],
+		},
+		{
+			title: '편하게 읽기',
+			icon: 'fa-solid fa-book-open',
+			keys: '⌘F',
+			paragraphs: [
+				'본문 오른쪽 아래에 떠 있는 가− / 가+ 버튼으로 글자 크기를 바꿔요. 고른 크기는 다음에 와도 그대로예요.',
+				'긴 글에서 특정 낱말을 찾고 싶으면 찾기를 여세요. 찾은 곳이 노랗게 칠해지고, 다음·이전으로 옮겨 다닐 수 있어요.',
+				'코드 블록 오른쪽 위의 복사 버튼으로 코드를 그대로 가져갈 수 있고, 그림을 누르면 크게 볼 수 있어요.',
+			],
+		},
+		{
+			title: '반응 남기기와 공유하기',
+			icon: 'fa-solid fa-heart',
+			paragraphs: [
+				'글 끝에서 좋아요를 누르거나 댓글을 남겨 주세요. 로그인은 필요 없어요. 아래의 이전 글·다음 글로 같은 폴더의 글을 이어서 읽을 수 있어요.',
+				'마음에 드는 글은 공유 버튼으로 주소를 복사해 보내 주세요. 받은 사람이 열면 이 사이트에서 그 글이 바로 펼쳐져요.',
+			],
+		},
+	],
+	finder: [
+		{
+			title: 'Finder 시작하기',
+			icon: 'fa-solid fa-folder-open',
+			paragraphs: [
+				'Finder는 이 사이트에 있는 파일을 진짜 Mac처럼 폴더로 보여 줘요. 이력서와 포트폴리오, 설계 문서, 블로그 글까지 모두 여기서 찾을 수 있어요.',
+				'왼쪽 사이드바의 즐겨찾기에서 데스크탑, 문서, 이력서, 포트폴리오, 블로그, 응용 프로그램으로 바로 갈 수 있어요. 폴더를 두 번 누르면 안으로 들어가고, 도구 막대의 뒤로·앞으로 버튼으로 오가요.',
+			],
+		},
+		{
+			title: '파일 열기',
+			icon: 'fa-solid fa-arrow-pointer',
+			paragraphs: [
+				'파일을 두 번 누르면 알맞은 앱에서 열려요. Markdown 문서는 텍스트 편집기에서, PDF와 그림은 미리보기에서, 블로그 글은 메모에서, 동영상은 QuickTime Player에서 열려요.',
+				'도구 막대의 보기 버튼으로 큰 아이콘과 이름·날짜가 함께 보이는 목록을 바꿀 수 있고, 오른쪽 위 찾기 칸에 이름을 쓰면 모든 폴더에서 찾아요.',
+			],
+		},
+		{
+			title: '이력서 보기',
+			icon: 'fa-solid fa-file-lines',
+			paragraphs: [
+				'문서 › 이력서 폴더에 국문과 영문 이력서가 있어요. .md 파일은 텍스트 편집기에서 정리된 모양으로 열리고, .pdf 파일은 지금 이력서 내용으로 바로 만든 PDF가 미리보기에서 열려요.',
+				'따로 내려받지 않아도 되고, 이력서가 바뀌면 PDF도 언제나 최신 내용이에요.',
+			],
+		},
+	],
+	safari: [
+		{
+			title: 'Safari 시작하기',
+			icon: 'fa-solid fa-compass',
+			paragraphs: [
+				'Safari는 제 프로젝트를 소개하는 브라우저예요. 프로젝트마다 탭이 하나씩 열려 있고, 탭을 고르면 그 프로젝트를 소개하는 페이지가 보여요.',
+				'페이지에는 어떤 문제를 풀려고 만들었는지, 주요 기능과 구현에서 신경 쓴 점, 화면 모음, 기술 사양이 차례로 정리되어 있어요.',
+			],
+		},
+		{
+			title: '탭 다루기',
+			icon: 'fa-solid fa-table-columns',
+			keys: '⌥⇧[ · ⌥⇧]',
+			paragraphs: [
+				'위쪽 탭을 누르거나 단축키로 다른 프로젝트로 넘어가요. 다 본 탭은 닫을 수 있고, + 로 연 새 탭의 시작 페이지에서 다시 열 수 있어요.',
+			],
+		},
+		{
+			title: '실제 서비스 써 보기',
+			icon: 'fa-solid fa-arrow-up-right-from-square',
+			paragraphs: [
+				'주소창을 누르면 그 프로젝트의 실제 데모가 새 탭에서 열려요. 데모가 없는 프로젝트는 GitHub 저장소로 이어져요.',
+				'창 안에서 바로 써 볼 수 있는 프로젝트는 Dock에 자기 앱 아이콘이 있어요. 아이콘을 누르면 배포한 사이트가 창으로 열려요.',
+				'공유 버튼은 이 프로젝트 소개 페이지의 주소를 복사해요. 받은 사람이 열면 Safari에서 같은 페이지가 열려요.',
+			],
+		},
+	],
+	terminal: [
+		{
+			title: '터미널 시작하기',
+			icon: 'fa-solid fa-terminal',
+			paragraphs: [
+				'터미널은 명령어로 저를 알아보는 곳이에요. 진짜 터미널처럼 명령을 치고 Enter를 누르면 결과가 나와요. 무엇을 쳐야 할지 모르겠다면 help부터 쳐 보세요.',
+				'휴대폰에서는 단축어 앱으로 바뀌어요. 자기소개, 기술 스택, 이력서 같은 타일을 누르면 그 명령이 실행돼요.',
+			],
+		},
+		{
+			title: '저를 알아보는 명령',
+			icon: 'fa-solid fa-user',
+			paragraphs: [
+				'whoami는 자기소개, skills는 다룰 수 있는 기술, resume은 이력서를 터미널에 그려 보여 줘요. contact로 연락하는 방법을, neofetch로 이 사이트의 정보를 볼 수 있어요.',
+				'projects는 프로젝트 목록을, project 뒤에 이름을 붙이면 그 프로젝트를 자세히 보여 줘요. open 뒤에 앱 이름을 쓰면 그 앱이 열려요.',
+			],
+		},
+		{
+			title: '더 빠르게 쓰기',
+			icon: 'fa-regular fa-keyboard',
+			keys: 'Tab · ↑↓ · ⌃L',
+			paragraphs: [
+				'명령을 조금 치고 Tab을 누르면 나머지를 채워 줘요. 위·아래 방향키로 앞서 친 명령을 다시 불러오고, history로 친 명령을 모두 볼 수 있어요.',
+				'화면이 가득 차면 clear를 치거나 ⌃L을 누르세요. exit를 치면 터미널이 닫혀요.',
+			],
+		},
+	],
+	messages: [
+		{
+			title: '방명록 시작하기',
+			icon: 'fa-solid fa-comments',
+			paragraphs: [
+				'메시지 앱은 이 사이트의 방명록이에요. 사이트를 둘러본 감상이나 의견, 피드백을 편하게 남겨 주세요. 가입이나 로그인은 필요 없어요.',
+				'남기는 사람의 이름은 "🦊 날쌘 여우"처럼 저절로 붙어요. 남긴 글은 다른 방문자도 함께 볼 수 있어요.',
+			],
+		},
+		{
+			title: '글 남기기와 답글',
+			icon: 'fa-solid fa-pen-to-square',
+			paragraphs: [
+				'쓰기 버튼으로 새 피드백을 남기면 목록에 항목 하나가 생겨요. 목록에서 항목을 누르면 대화가 열리고, 누구나 어느 피드백에나 답글을 달 수 있어요.',
+				'제가 읽으면 답글로 답해 드려요. 창이 좁을 때는 목록과 대화가 한 화면씩 보여요.',
+			],
+		},
+	],
+	mail: [
+		{
+			title: '메일 보내기',
+			icon: 'fa-solid fa-envelope',
+			paragraphs: [
+				'메일 앱에서 쓴 메일은 실제로 제 메일함으로 가요. 채용이나 협업 제안처럼 길게 이야기하고 싶을 때 써 주세요.',
+				'받는 사람은 이미 저로 정해져 있어요. 이름, 답장받을 주소, 제목과 내용을 쓰고 보내면 돼요. 답장받을 주소를 빠뜨리면 답장을 드릴 수 없으니 꼭 적어 주세요.',
+			],
+		},
+		{
+			title: '보낸 메일 확인하기',
+			icon: 'fa-solid fa-paper-plane',
+			paragraphs: [
+				'보낸 메일은 보낸 편지함에 남아요. 이 기록은 지금 쓰는 브라우저에만 저장되므로 다른 기기에서는 보이지 않고, 휴지통 › 내 브라우저 데이터에서 지울 수 있어요.',
+			],
+		},
+	],
+	settings: [
+		{
+			title: '나만의 화면 만들기',
+			icon: 'fa-solid fa-circle-half-stroke',
+			paragraphs: [
+				'시스템 설정의 화면 모드에서 라이트, 다크, 자동을 고를 수 있어요. 자동을 고르면 기기 설정을 따라 바뀌어요. Apple 메뉴의 다크 모드로도 바로 켜고 끌 수 있어요.',
+				'배경화면에서는 데스크톱과 휴대폰의 배경을 따로 고르고, 움직이는 배경도 쓸 수 있어요. 고른 설정은 이 브라우저에 남아 다음에 와도 그대로예요.',
+			],
+		},
+		{
+			title: '사운드와 개인정보',
+			icon: 'fa-solid fa-hand',
+			paragraphs: [
+				'사운드에서는 마우스를 누르고 뗄 때 딸깍 소리가 나는 클릭 소리를 켜고 끌 수 있어요. 개인정보 보호 및 보안에서는 이 사이트가 무엇을 기록하고 어디에 남기는지 확인할 수 있어요.',
+			],
+		},
+		{
+			title: '이 사이트에 관하여',
+			icon: 'fa-solid fa-circle-info',
+			paragraphs: [
+				'정보에서는 이 사이트를 만든 사람과 사이트의 구성을 볼 수 있어요. 관리자로 로그인하면 GitHub와 프로젝트 칸이 더 나와, 화면에 보일 저장소와 프로젝트를 고칠 수 있어요.',
+			],
+		},
+	],
+};
+
+for (const manual of MANUALS) manual.articles = ARTICLES[manual.app];
