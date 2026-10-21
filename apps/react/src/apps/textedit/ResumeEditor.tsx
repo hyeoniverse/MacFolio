@@ -84,6 +84,13 @@ const ResumeEditor: React.FC<Props> = ({ lang, source, actionsSlot, toolbarSlot,
 		return () => onHistory(null);
 	}, [source, onHistory]);
 
+	/** 지금 글: 서식 편집기는 바뀐 글을 조금 늦게 알리므로 편집기에서 바로 읽는다 (방금 친 글자까지) */
+	const currentDraft = () => {
+		const now = source ? draft : controls.current?.markdown() || draft;
+		if (now !== draft) setDraft(now);
+		return now;
+	};
+
 	/** 글 전체를 바꾼다 (불러오기, 변경 취소). 서식 편집기에서는 실행 취소로 되돌릴 수 있다 */
 	const replace = (next: string) => {
 		setDraft(next);
@@ -95,7 +102,7 @@ const ResumeEditor: React.FC<Props> = ({ lang, source, actionsSlot, toolbarSlot,
 			label: '프로필 (이름·연락처)',
 			icon: 'fa-solid fa-user',
 			hint: '시스템 설정 › 정보의 이름·이메일·GitHub로 머리를 바꿉니다. 직함과 한 줄 소개는 그대로 둡니다',
-			onSelect: () => replace(importProfile(draft, getProfile(), location.host)),
+			onSelect: () => replace(importProfile(currentDraft(), getProfile(), location.host)),
 		},
 		'separator',
 		{ heading: '프로젝트 (시스템 설정 › 프로젝트)' },
@@ -104,7 +111,7 @@ const ResumeEditor: React.FC<Props> = ({ lang, source, actionsSlot, toolbarSlot,
 			icon: 'fa-solid fa-folder',
 			hint: '이름·기간·구분·기술·설명을 넣습니다. 이미 있으면 그 부분만 지금 값으로 바꾸고 성과는 그대로 둡니다',
 			onSelect: () => {
-				const result = importProject(draft, project);
+				const result = importProject(currentDraft(), project);
 				replace(result.markdown);
 				notify({
 					app: 'finder',
@@ -120,7 +127,7 @@ const ResumeEditor: React.FC<Props> = ({ lang, source, actionsSlot, toolbarSlot,
 
 	const save = async () => {
 		// 서버와 같은 규칙으로 먼저 확인한다 (서버도 다시 확인한다)
-		const parsed = checkResume({ markdown: draft });
+		const parsed = checkResume({ markdown: currentDraft() });
 		if ('errors' in parsed) return setErrors(parsed.errors);
 		setErrors([]);
 		setBusy(true);

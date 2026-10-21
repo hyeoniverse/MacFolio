@@ -20,7 +20,7 @@ import {
 import { gfm, remarkGFMPlugin, strikethroughInputRule, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
 import { lift } from '@milkdown/kit/prose/commands';
 import { Plugin, type EditorState } from '@milkdown/kit/prose/state';
-import { $prose, $remark, callCommand, replaceAll } from '@milkdown/kit/utils';
+import { $prose, $remark, callCommand, getMarkdown, replaceAll } from '@milkdown/kit/utils';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import { GFM_OPTIONS } from '@/apps/memo/markdownPlugins';
@@ -156,6 +156,7 @@ const Inner = ({ markdown, onChange, onState, onReady }: Props) => {
 					ctx.get(editorViewCtx).focus();
 				}),
 			replace: (next) => run(replaceAll(next)),
+			markdown: () => fromEditorMarkdown(get()?.action(getMarkdown()) ?? ''),
 			undo: () => run((ctx) => callCommand(undoCommand.key)(ctx)),
 			redo: () => run((ctx) => callCommand(redoCommand.key)(ctx)),
 			focus: () => run((ctx) => ctx.get(editorViewCtx).focus()),

@@ -22,6 +22,8 @@ export interface RichControls {
 	heading: (level: number) => void;
 	/** 글 전체를 바꾼다 (불러오기, 변경 취소). 실행 취소로 되돌릴 수 있다 */
 	replace: (markdown: string) => void;
+	/** 지금 글 (Markdown). 편집기는 바뀐 글을 조금 늦게 알리므로, 불러오기·저장처럼 지금 글이 필요할 때 읽는다 */
+	markdown: () => string;
 	undo: () => void;
 	redo: () => void;
 	focus: () => void;
