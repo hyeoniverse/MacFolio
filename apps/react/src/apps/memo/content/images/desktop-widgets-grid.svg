@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>위젯 칸 격자와 놓기 규칙</title>
+<rect width="640" height="380" fill="#ffffff"/>
+
+<text x="24" y="34" font-size="15" font-weight="700" fill="#1f2937">데스크톱: 180px 칸 격자</text>
+<text x="24" y="54" font-size="11.5" fill="#6b7280">작은 위젯 164px 한 칸, 중간 위젯 가로 두 칸 (사이 16px 포함 344px)</text>
+
+<g stroke="#e5e7eb" fill="none">
+<rect x="24" y="70" width="80" height="80" rx="8"/><rect x="112" y="70" width="80" height="80" rx="8"/><rect x="200" y="70" width="80" height="80" rx="8"/><rect x="288" y="70" width="80" height="80" rx="8"/>
+<rect x="24" y="158" width="80" height="80" rx="8"/><rect x="112" y="158" width="80" height="80" rx="8"/><rect x="200" y="158" width="80" height="80" rx="8"/><rect x="288" y="158" width="80" height="80" rx="8"/>
+<rect x="24" y="246" width="80" height="80" rx="8"/><rect x="112" y="246" width="80" height="80" rx="8"/><rect x="200" y="246" width="80" height="80" rx="8"/><rect x="288" y="246" width="80" height="80" rx="8"/>
+</g>
+<rect x="24" y="70" width="80" height="80" rx="10" fill="#dbeafe" stroke="#60a5fa"/>
+<text x="64" y="114" font-size="12" fill="#1e40af" text-anchor="middle">날씨</text>
+<rect x="112" y="70" width="168" height="80" rx="10" fill="#fde68a" stroke="#f59e0b"/>
+<text x="196" y="114" font-size="12" fill="#92400e" text-anchor="middle">최근 글 (중간)</text>
+<rect x="24" y="158" width="80" height="80" rx="10" fill="#fbcfe8" stroke="#f472b6" stroke-dasharray="4 3"/>
+<text x="64" y="202" font-size="12" fill="#9d174d" text-anchor="middle">캘린더</text>
+
+<path d="M104 198 C170 198 220 220 240 250" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#ok)"/>
+<rect x="200" y="246" width="80" height="80" rx="10" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="240" y="290" font-size="11" fill="#15803d" text-anchor="middle">빈 칸: 붙는다</text>
+<path d="M64 158 C64 140 100 130 140 128" stroke="#ef4444" stroke-width="2" fill="none" marker-end="url(#no)"/>
+<text x="150" y="168" font-size="11" fill="#b91c1c">다른 위젯 위: 제자리로</text>
+
+<defs>
+<marker id="ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#22c55e"/></marker>
+<marker id="no" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ef4444"/></marker>
+</defs>
+
+<text x="24" y="356" font-size="11" fill="#6b7280">창을 줄여 칸 밖으로 나간 위젯은 빈 칸에 그리고, 저장한 자리는 그대로 둔다</text>
+
+<line x1="400" y1="70" x2="400" y2="330" stroke="#e5e7eb"/>
+
+<text x="424" y="34" font-size="15" font-weight="700" fill="#1f2937">휴대폰: 페이지마다 3줄</text>
+<text x="424" y="54" font-size="11.5" fill="#6b7280">작은 위젯 둘이 한 줄, 중간 위젯은 혼자 한 줄</text>
+<rect x="424" y="70" width="190" height="260" rx="22" fill="#eef2ff" stroke="#c7d2fe"/>
+<rect x="438" y="84" width="76" height="76" rx="12" fill="#ffffff" stroke="#a5b4fc"/>
+<text x="476" y="126" font-size="11" fill="#3730a3" text-anchor="middle">날씨</text>
+<rect x="524" y="84" width="76" height="76" rx="12" fill="#ffffff" stroke="#a5b4fc"/>
+<text x="562" y="126" font-size="11" fill="#3730a3" text-anchor="middle">캘린더</text>
+<text x="608" y="126" font-size="10" fill="#6b7280" text-anchor="end"></text>
+<rect x="438" y="168" width="162" height="76" rx="12" fill="#ffffff" stroke="#a5b4fc"/>
+<text x="519" y="210" font-size="11" fill="#3730a3" text-anchor="middle">최근 글 (중간)</text>
+<rect x="438" y="252" width="162" height="64" rx="12" fill="none" stroke="#a5b4fc" stroke-dasharray="4 3"/>
+<text x="519" y="288" font-size="11" fill="#6366f1" text-anchor="middle">3번째 줄: 아직 빈자리</text>
+<text x="424" y="356" font-size="11" fill="#6b7280">가득 차면 자리가 있는 다음 페이지에 더한다</text>
+</svg>
