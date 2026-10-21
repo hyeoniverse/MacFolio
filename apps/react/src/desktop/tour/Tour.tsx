@@ -17,9 +17,14 @@ const CARD_WIDTH = 300;
 const EDGE = 16;
 const GAP = 14;
 
+/** 비출 자리 (여유를 두되 화면 안으로: 메뉴 막대처럼 맨 위에 붙은 것도 테두리가 잘리지 않게) */
 const boxOf = (el: Element): Box => {
 	const rect = el.getBoundingClientRect();
-	return { top: rect.top - PAD, left: rect.left - PAD, width: rect.width + PAD * 2, height: rect.height + PAD * 2 };
+	const top = Math.max(2, rect.top - PAD);
+	const left = Math.max(2, rect.left - PAD);
+	const bottom = Math.min(window.innerHeight - 2, rect.bottom + PAD);
+	const right = Math.min(window.innerWidth - 2, rect.right + PAD);
+	return { top, left, width: right - left, height: bottom - top };
 };
 const sameBox = (a: Box | null, b: Box | null) =>
 	a === b || (!!a && !!b && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height);
@@ -50,7 +55,17 @@ const Tour = () => {
 	useEffect(() => {
 		if (!target) return;
 		const found = document.querySelector(target);
-		if (!found) {
+		// 문서에 있어도 화면 밖(휴대폰 홈 화면의 다른 쪽, 숨은 칸)이면 없는 것으로 친다
+		const rect = found?.getBoundingClientRect();
+		const visible =
+			rect &&
+			rect.width > 0 &&
+			rect.height > 0 &&
+			rect.right > 0 &&
+			rect.bottom > 0 &&
+			rect.left < window.innerWidth &&
+			rect.top < window.innerHeight;
+		if (!visible) {
 			// 화면에 없는 곳은 건너뛴다 (하나만 보여 줄 때는 닫는다)
 			if (single) endTour();
 			else stepTour(1);

@@ -22,7 +22,7 @@ test.describe('처음 방문 둘러보기 (팁)', () => {
 		await expect(card.getByRole('heading')).not.toHaveText('이력서부터 보세요');
 
 		// 다음 버튼으로 끝까지
-		for (let guard = 0; guard < 10 && (await card.getByRole('button', { name: '다음' }).count()); guard++)
+		for (let guard = 0; guard < 25 && (await card.getByRole('button', { name: '다음' }).count()); guard++)
 			await card.getByRole('button', { name: '다음' }).click();
 		await expect(card.getByRole('heading')).toHaveText('이제 마음껏 둘러보세요');
 		await card.getByRole('button', { name: '시작하기' }).click();
@@ -56,6 +56,23 @@ test.describe('처음 방문 둘러보기 (팁)', () => {
 		await expect(tips).toBeHidden();
 		await card.getByRole('button', { name: '확인' }).click();
 		await expect(card).toHaveCount(0);
+	});
+
+	test('팁 앱의 사용법: 블로그 읽는 법을 단계별로 읽고, 메모를 연다', async ({ page }) => {
+		await enterDesktop(page);
+		await page.locator('.dock').getByRole('button', { name: 'launchpad', exact: true }).click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'tips', exact: true }).click();
+		const tips = appWindow(page, 'tips');
+		await tips.getByRole('button', { name: /블로그 읽는 법/ }).click();
+		const guide = tips.getByRole('article', { name: '블로그 읽는 법' });
+		await expect(guide.getByRole('listitem').first()).toContainText('폴더에서 주제를 고르세요');
+		await expect(guide.getByText('⌘F')).toBeVisible();
+		// 돌아가기로 모음으로, 다시 열어 끝의 '메모 열기'로 메모를 연다
+		await tips.getByRole('button', { name: '팁' }).click();
+		await expect(tips.getByRole('heading', { level: 1 })).toHaveText('MacFolio 둘러보기');
+		await tips.getByRole('button', { name: /블로그 읽는 법/ }).click();
+		await guide.getByRole('button', { name: '메모 열기' }).click();
+		await expect(appWindow(page, 'memo')).toBeVisible();
 	});
 });
 
