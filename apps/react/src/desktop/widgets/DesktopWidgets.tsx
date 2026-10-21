@@ -87,7 +87,7 @@ const DesktopWidgets: React.FC = () => {
 		else save([...widgets, widget]);
 	};
 
-	// 날기: 미리보기가 살짝 들려 커지고, 칸 자리까지 부드럽게 날아가, 내려앉을 때 한 번만 살며시 눌렸다가 제 모양으로.
+	// 날기: 미리보기 자리에서 칸 자리까지 크기 그대로 부드럽게 옮긴다 (튀거나 눌리지 않는다).
 	// 끝나면 저장해 진짜 위젯으로 바꾼다
 	useLayoutEffect(() => {
 		const element = flying.current;
@@ -96,19 +96,9 @@ const DesktopWidgets: React.FC = () => {
 		const to = cellToPoint(flight.widget);
 		const dx = container.left + to.x - flight.from.x;
 		const dy = container.top + to.y - flight.from.y;
-		const at = (x: number, y: number, sx: number, sy = sx) => `translate(${x}px, ${y}px) scale(${sx}, ${sy})`;
 		const animation = element.animate(
-			[
-				{ transform: at(0, 0, 1), easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
-				// 살짝 들린다
-				{ transform: at(0, -6, 1.04), offset: 0.18, easing: 'cubic-bezier(0.45, 0, 0.2, 1)' },
-				// 칸 자리까지 날아간다
-				{ transform: at(dx, dy, 1.02), offset: 0.8, easing: 'ease-out' },
-				// 내려앉으며 한 번만 살며시 눌린다
-				{ transform: at(dx, dy, 1.015, 0.985), offset: 0.9, easing: 'ease-out' },
-				{ transform: at(dx, dy, 1) },
-			],
-			{ duration: 620, fill: 'forwards' }
+			[{ transform: 'translate(0, 0)' }, { transform: `translate(${dx}px, ${dy}px)` }],
+			{ duration: 480, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', fill: 'forwards' }
 		);
 		let done = false;
 		const land = () => {
