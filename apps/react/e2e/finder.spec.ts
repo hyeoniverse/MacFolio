@@ -51,8 +51,8 @@ test.describe('Finder', () => {
 		const editor = appWindow(page, 'textedit');
 		const doc = editor.getByRole('article', { name: 'README.md' });
 		await expect(doc.getByRole('heading', { level: 1 })).toContainText('MacFolio');
-		await expect(editor.getByRole('heading', { level: 1, name: 'README.md' })).toBeVisible();
-		await expect(editor.getByText('Markdown 문서 · 읽기 전용')).toBeVisible();
+		// macOS처럼 제목 막대에 문서 이름, 저장소 문서는 잠긴 문서
+		await expect(editor.locator('.textedit-title')).toHaveText('README.md — 잠김');
 
 		// 목록은 본문 안으로 들여 쓰고, 하위 목록은 한 단계 더 들여 쓴다
 		const box = async (selector: string) => (await doc.locator(selector).first().boundingBox())!;
@@ -69,10 +69,14 @@ test.describe('Finder', () => {
 		await expect(design.getByRole('heading', { level: 1 })).toHaveText('백엔드 설계');
 		// Mermaid 코드 블록은 그림으로
 		await expect(design.locator('.finder-doc-mermaid svg').first()).toBeVisible({ timeout: 15_000 });
-		await editor.getByRole('button', { name: '뒤로' }).click();
+		// 뒤로·앞으로는 보기 메뉴 (macOS 텍스트 편집기에는 도구 막대가 없다)
+		const view = async (label: string) => {
+			await page.getByRole('group', { name: '메뉴 막대' }).getByRole('button', { name: '보기' }).click();
+			await page.getByRole('menuitem', { name: label }).click();
+		};
+		await view('뒤로');
 		await expect(editor.getByRole('article', { name: 'README.md' })).toBeVisible();
-		await expect(editor.getByRole('button', { name: '뒤로' })).toBeDisabled();
-		await editor.getByRole('button', { name: '앞으로' }).click();
+		await view('앞으로');
 		await expect(design).toBeVisible();
 		// Finder는 문서 폴더에 그대로 있다
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('문서');
@@ -85,7 +89,7 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('이력서');
 		await finder.getByRole('option', { name: '김정현_이력서' }).dblclick();
 		const editor = appWindow(page, 'textedit');
-		await expect(editor.getByRole('heading', { level: 1, name: '김정현_이력서' })).toBeVisible();
+		await expect(editor.locator('.textedit-title')).toHaveText('김정현_이력서.md');
 		return editor;
 	}
 
