@@ -61,7 +61,10 @@ test.describe('Finder', () => {
 		expect(nested.x).toBeGreaterThan(list.x);
 
 		// 다른 문서 링크는 같은 창에서 열고, 뒤로·앞으로 오간다
-		await doc.getByRole('link', { name: 'docs/backend-design.md' }).first().click();
+		const link = doc.getByRole('link', { name: 'docs/backend-design.md' }).first();
+		// 창이 열리며 움직이는 동안 누르지 않게, 링크를 화면에 둔 뒤 누른다
+		await link.scrollIntoViewIfNeeded();
+		await link.click();
 		const design = editor.getByRole('article', { name: 'docs/backend-design.md' });
 		await expect(design.getByRole('heading', { level: 1 })).toHaveText('백엔드 설계');
 		// Mermaid 코드 블록은 그림으로
