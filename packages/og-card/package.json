@@ -1,0 +1,36 @@
+{
+	"name": "@macfolio/og-card",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"description": "글의 공유 카드 그림(1200×630 PNG)을 그린다. 프론트엔드 빌드는 저장소 글을, API는 서버에 쓴 글을 그린다. 빌드는 src를 바로 쓰고(source 조건), 서버(Node)는 빌드한 dist를 쓴다",
+	"exports": {
+		".": {
+			"source": "./src/index.ts",
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json",
+		"typecheck": "tsc",
+		"lint": "eslint . --max-warnings 0",
+		"test": "vitest run"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@resvg/resvg-js": "^2.6.2",
+		"satori": "^0.63.2"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@types/node": "^26.6.5",
+		"@typescript/native": "npm:typescript@~7.0.2",
+		"eslint": "^10.12.0",
+		"typescript": "npm:@typescript/typescript6@^6.0.2",
+		"typescript-eslint": "^8.71.2",
+		"vitest": "^5.0.5"
+	}
+}

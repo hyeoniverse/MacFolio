@@ -1,24 +1,44 @@
-// 사진이 없는 글의 공유 카드 그림 (1200×630 PNG). 빌드할 때 글 제목으로 그린다 (vite.config.ts의 seoPlugin).
+// 사진이 없는 글의 공유 카드 그림 (1200×630 PNG). 글 제목으로 메모 앱 창 모양 카드를 그린다.
+// - 저장소 글: 프론트엔드 빌드가 그려 dist/og/에 넣는다 (apps/react/vite.config.ts의 seoPlugin)
+// - 서버에 쓴 글: API가 요청이 오면 그린다 (GET /posts/<글>/og.png)
 // satori가 글자를 글꼴의 윤곽선으로 바꾼 SVG를 만들고, resvg가 PNG로 굽는다. 시스템 글꼴을 읽지 않아 어느 컴퓨터에서나 같다
 import { renderAsync } from '@resvg/resvg-js';
-import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import satori, { type Font } from 'satori';
-import type { SeoPost } from './site';
+
+/** 카드에 쓰는 글의 값 */
+export interface OgPost {
+	title: string;
+	/** YYYY-MM-DD */
+	date: string;
+	/** 폴더 경로 (개발기/MacFolio) */
+	category: string;
+}
 
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
-/**
- * 카드 파일 이름. 제목·날짜·분류가 바뀌면 이름도 바뀐다
- * (공유 카드는 메신저·SNS가 주소 단위로 오래 캐시해서, 같은 이름이면 옛 그림이 남는다)
- */
-export const ogImageName = (post: Pick<SeoPost, 'slug' | 'title' | 'date' | 'category'>) =>
-	`og/${post.slug}-${createHash('sha256').update(`${post.title}\n${post.date}\n${post.category}`).digest('hex').slice(0, 8)}.png`;
-
-/** 카드에 쓰는 글꼴: public/fonts의 Apple SD Gothic Neo (사이트 화면과 같다) */
+/** 카드에 쓰는 글꼴: apps/react/public/fonts의 Apple SD Gothic Neo (사이트 화면과 같다) */
 export interface OgFonts {
 	regular: Buffer;
 	bold: Buffer;
+}
+
+/** 카드를 그리는 데 드는 파일: 글꼴 둘과 메모 앱 아이콘(data: 주소) */
+export interface OgAssets {
+	fonts: OgFonts;
+	icon: string;
+}
+
+/** 사이트의 public 폴더(apps/react/public)에서 글꼴과 아이콘을 읽는다 */
+export async function loadOgAssets(publicDir: string): Promise<OgAssets> {
+	const [regular, bold, icon] = await Promise.all([
+		readFile(join(publicDir, 'fonts/AppleSDGothicNeoM.ttf')),
+		readFile(join(publicDir, 'fonts/AppleSDGothicNeoB.ttf')),
+		readFile(join(publicDir, 'imgs/memo.png')),
+	]);
+	return { fonts: { regular, bold }, icon: `data:image/png;base64,${icon.toString('base64')}` };
 }
 
 /** satori가 읽는 요소 (JSX 없이 쓴다) */
@@ -34,7 +54,7 @@ const h = (type: string, style: Record<string, unknown>, children?: Node['props'
 const dot = (color: string) => h('div', { width: 22, height: 22, borderRadius: 11, background: color });
 
 /** 메모 앱 창 하나: 신호등 단추, 폴더 경로, 제목(세 줄까지), 날짜와 사이트 이름 */
-function card(post: Pick<SeoPost, 'title' | 'date' | 'category'>, site: string, icon: string): Node {
+function card(post: OgPost, site: string, icon: string): Node {
 	const folder = post.category.split('/').join(' › ');
 	return h(
 		'div',
@@ -114,11 +134,8 @@ const fontListOf = (fonts: OgFonts) => {
 	return list;
 };
 
-/** 글 하나의 카드 PNG. icon은 메모 앱 아이콘(data: 주소) */
-export async function ogImagePng(
-	post: Pick<SeoPost, 'title' | 'date' | 'category'>,
-	{ site, icon, fonts }: { site: string; icon: string; fonts: OgFonts }
-): Promise<Buffer> {
+/** 글 하나의 카드 PNG. site는 카드 오른쪽 아래의 사이트 이름 */
+export async function ogImagePng(post: OgPost, { site, icon, fonts }: OgAssets & { site: string }): Promise<Buffer> {
 	const svg = await satori(card(post, site, icon) as Parameters<typeof satori>[0], {
 		width: OG_WIDTH,
 		height: OG_HEIGHT,

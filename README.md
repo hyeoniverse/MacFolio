@@ -205,6 +205,7 @@ pnpm workspaces와 Turborepo로 묶은 모노레포입니다. 화면과 서버�
 flowchart BT
     core["packages/desktop-core<br/>창 · 메모 · 음악 · 사이트 규칙<br/>(React · DOM 금지)"]
     contracts["packages/contracts<br/>API 요청 · 응답 zod 스키마"]
+    og["packages/og-card<br/>공유 카드 PNG (satori · resvg)"]
     react["apps/react<br/>데스크톱 화면 + Worker"]
     api["apps/api<br/>NestJS API"]
 
@@ -213,6 +214,8 @@ flowchart BT
     react -- "타입만" --> contracts
     api -- "빌드한 dist" --> core
     api -- "검증" --> contracts
+    react -- "빌드할 때 저장소 글 카드" --> og
+    api -- "서버에 쓴 글 카드" --> og
 ```
 
 - **같은 규칙을 한 번만**: 글 주소·날짜·길이, 폴더 경로, 사이트 프로필 검사는 `desktop-core`에, API의 요청·응답 모양은 `contracts`에 있습니다. 화면과 서버가 같은 함수로 검사해서 한쪽만 바뀌지 않습니다.
@@ -378,6 +381,7 @@ apps/
 packages/
   desktop-core/           프레임워크와 무관한 로직: 저장소, 창 관리, 메모, 음악, 사이트 규칙 (React·DOM 없이 테스트)
   contracts/              API 요청·응답의 zod 스키마 (서버는 검증, 화면은 타입)
+  og-card/                글의 공유 카드 그림 (빌드는 저장소 글, API는 서버에 쓴 글을 그린다)
 ops/                      서버 스크립트: 배포·되돌리기, 백업·복원, 보안 점검
 docs/                     백엔드 설계, 배포, UI 부품, 보안 점검, 개인정보, 마이그레이션 기록
 wrangler.jsonc            Cloudflare Workers 설정
@@ -446,7 +450,7 @@ pinned: true # 목록 맨 위에 고정 (선택)
 - `title`과 `date`(YYYY-MM-DD)는 필수입니다. 없거나 형식이 틀리면 목록에서 빠지고, 개발 서버 콘솔에 경고가 나옵니다.
 - `category`는 왼쪽 폴더가 됩니다. `/`로 하위 폴더를 만들 수 있고, 상위 폴더를 고르면 하위 폴더의 글까지 보입니다. 없으면 "기타"로 들어갑니다.
 - 이미지는 `content/images/`에 넣고 글 파일 기준 상대 경로로 씁니다. 갤러리 보기에서는 본문의 첫 이미지가 카드 미리보기가 됩니다.
-- 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 그린 카드입니다. sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
+- 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 그린 카드입니다(`packages/og-card`). 사이트에서 쓴 글의 카드는 API가 그립니다(`GET /posts/<글>/og.png`). sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
 
 ## 배포
 

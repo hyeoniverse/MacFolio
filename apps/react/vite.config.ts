@@ -4,9 +4,10 @@ import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { ogImageName, ogImagePng } from './seo/ogImage';
+// 빌드한 dist가 아니라 src를 바로 쓴다 (seo/posts.ts가 desktop-core를 읽는 것과 같다)
+import { loadOgAssets, ogImagePng } from '../../packages/og-card/src/index';
 import { rssXml, seoPosts, siteChannel, sitemapXml, updatedDates, type ContentImages } from './seo/posts';
-import { SITE_ORIGIN } from './seo/site';
+import { ogCardVersion, SITE_ORIGIN } from './seo/site';
 import { DEFAULT_PROJECTS, PROFILE } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
 
@@ -92,19 +93,16 @@ function seoPlugin(): Plugin {
 				}
 			}
 			const posts = await seoPosts(files, { images, updated: contentUpdatedDates(contentDir) });
-			// 사진이 없는 글은 제목으로 공유 카드를 그린다 (seo/ogImage.ts). 서버에 쓴 글은 사이트 기본 그림
-			const fonts = {
-				regular: readFileSync(join(publicDir, 'fonts/AppleSDGothicNeoM.ttf')),
-				bold: readFileSync(join(publicDir, 'fonts/AppleSDGothicNeoB.ttf')),
-			};
-			const icon = `data:image/png;base64,${readFileSync(join(publicDir, 'imgs/memo.png')).toString('base64')}`;
+			// 사진이 없는 글은 제목으로 공유 카드를 그린다 (packages/og-card). 서버에 쓴 글은 API가 그린다 (worker/serverPosts.ts)
+			const assets = await loadOgAssets(publicDir);
 			const site = siteChannel(PROFILE.name).title;
 			await Promise.all(
 				posts
 					.filter((post) => !post.image)
 					.map(async (post) => {
-						const fileName = ogImageName(post);
-						this.emitFile({ type: 'asset', fileName, source: await ogImagePng(post, { site, icon, fonts }) });
+						// 이름에 내용의 해시를 붙인다: 제목을 고치면 새 주소가 되어 메신저·SNS의 캐시에 옛 그림이 남지 않는다
+						const fileName = `og/${post.slug}-${ogCardVersion(post)}.png`;
+						this.emitFile({ type: 'asset', fileName, source: await ogImagePng(post, { site, ...assets }) });
 						post.image = `${SITE_ORIGIN}/${fileName}`;
 					})
 			);
