@@ -22,62 +22,35 @@
 	filter: brightness(0.7);
 }
 
-/* 홈 화면 위젯 공통: iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고, 안쪽 여백을 같게 */
+/* 홈 화면 위젯 (desktop/widgets의 Widget): iOS처럼 가장자리를 아이콘 줄(4열 격자 안의 60px 아이콘)에 맞추고,
+   작은 위젯은 아이콘 두 칸 폭의 정사각형, 중간 위젯은 한 줄을 다 쓴다. 사진 위에 얹는 흰 막으로 칠한다 */
 .mobile-home {
 	--home-icon: 60px;
 	--widget-inset: calc((100% / 4 - var(--home-icon)) / 2);
-	--widget-padding: 16px;
+	--widget-background: var(--color-on-media-fill);
+	--widget-label: var(--color-white);
+	--widget-secondary-label: var(--color-on-media-label);
+	--widget-fill: var(--color-on-media-fill);
 }
 
-.mobile-widget,
-.mobile-music-widget {
+.mobile-widgets {
+	display: grid;
+	flex: none;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--space-16);
 	margin-inline: var(--widget-inset);
 }
 
-/* 소개 위젯 */
-.mobile-widget {
-	padding: var(--widget-padding);
-	border-radius: var(--radius-window);
-	background-color: var(--color-on-media-fill);
-	backdrop-filter: blur(24px) saturate(160%);
+.mobile-widgets .widget {
+	aspect-ratio: 1;
 	box-shadow: var(--shadow-4);
-	text-align: left;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
-.mobile-widget h1 {
-	font-size: var(--text-title1);
-	font-weight: 700;
-	line-height: 1.2;
-}
-
-.mobile-widget p {
-	margin-top: var(--space-4);
-	font-size: var(--text-footnote);
-	opacity: 0.95;
-}
-
-.mobile-widget .mobile-widget-eyebrow {
-	margin: 0 0 var(--space-2);
-	font-size: var(--text-caption);
-	font-weight: 600;
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-	opacity: 0.8;
-}
-
-.mobile-widget .mobile-widget-meta {
-	margin-top: var(--space-10);
-	font-size: var(--text-caption);
-	opacity: 0.85;
-}
-
-/* 음악 위젯 */
-.mobile-music-widget {
-	flex: none;
-	margin-top: var(--space-14);
-	padding: var(--widget-padding);
-	box-shadow: var(--shadow-4);
+/* 중간 위젯: 작은 위젯 둘과 사이만큼 넓고, 높이는 작은 위젯과 같다 */
+.mobile-widgets .widget-medium {
+	grid-column: span 2;
+	aspect-ratio: 2.1;
 }
 
 /* 페이지: 옆으로 넘긴다. 스크롤이 아니라 트랙을 옮긴다 (MobileHome이 끌기를 듣는다).
@@ -110,10 +83,6 @@
 	width: 100%;
 	min-height: 0;
 	padding-inline: var(--space-20);
-}
-
-.mobile-widgets {
-	flex: none;
 }
 
 /* 앱 격자: 4열. 들어가는 만큼만 놓고 나머지는 다음 페이지로 (MobileHome이 재서 나눈다) */
@@ -212,8 +181,7 @@
 
 /* 가로로 눕힌 휴대폰: 위젯을 숨기고 한 줄에 더 많이 놓는다 */
 @media (orientation: landscape) {
-	.mobile-widget,
-	.mobile-music-widget {
+	.mobile-widgets {
 		display: none;
 	}
 

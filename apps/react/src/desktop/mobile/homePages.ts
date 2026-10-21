@@ -7,13 +7,21 @@ export function rowsThatFit(height: number, rowHeight: number, rowGap: number): 
 	return Math.max(1, Math.floor((height + rowGap) / (rowHeight + rowGap)));
 }
 
-/** 앱을 페이지로 나눈다: 첫 페이지(위젯 아래)는 firstSlots칸, 그다음부터는 slotsPerPage칸씩 */
-export function pageApps<T>(apps: readonly T[], firstSlots: number, slotsPerPage: number): T[][] {
-	const first = Math.max(1, firstSlots);
+/**
+ * 앱을 페이지로 나눈다: 위젯이 있는 앞 페이지들은 위젯 아래 칸 수(leadingSlots)만큼, 그다음부터는 slotsPerPage칸씩.
+ * 위젯이 있는 페이지는 앱이 모자라도 모두 만든다 (빈 칸은 그대로)
+ */
+export function pageApps<T>(apps: readonly T[], leadingSlots: readonly number[], slotsPerPage: number): T[][] {
+	const pages: T[][] = [];
+	let start = 0;
+	for (const slots of leadingSlots) {
+		const count = Math.max(1, slots);
+		pages.push(apps.slice(start, start + count));
+		start += count;
+	}
 	const rest = Math.max(1, slotsPerPage);
-	const pages: T[][] = [apps.slice(0, first)];
-	for (let start = first; start < apps.length; start += rest) pages.push(apps.slice(start, start + rest));
-	return pages;
+	for (; start < apps.length; start += rest) pages.push(apps.slice(start, start + rest));
+	return pages.length ? pages : [[]];
 }
 
 /** 폭의 이만큼 넘게 끌고 놓으면 다음 페이지로 */

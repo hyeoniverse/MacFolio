@@ -2,12 +2,12 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import '@/desktop/mobile/MobileHome.css';
 import { APP_MANIFEST, APP_NAMES, type AppName } from '@/apps/manifest';
 import { WINDOW_APPS } from '@/apps/registry';
-import MusicWidget from '@/desktop/mobile/MusicWidget';
 import HomeIndicator from '@/desktop/mobile/HomeIndicator';
 import WallpaperVideo from '@/desktop/WallpaperVideo';
 import { openSwitcher } from '@/desktop/mobile/switcherStore';
 import { appIconUrl } from '@/shared/config/appIcon';
-import { useProfile } from '@/shared/site/profileStore';
+import { MOBILE_WIDGET_PAGES } from '@/desktop/widgets/catalog';
+import Widget from '@/desktop/widgets/Widget';
 import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit } from '@/desktop/mobile/homePages';
 
 /** 홈 화면 아래 Dock에 둘 앱 */
@@ -33,7 +33,7 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
 
 /** 아이콘 줄 사이 (CSS의 row-gap과 같다) */
 const ROW_GAP = 22;
-/** 첫 페이지에서 위젯과 아이콘 사이 (CSS의 margin-top과 같다) */
+/** 위젯과 아이콘 사이 (CSS의 margin-top과 같다) */
 const GRID_TOP = 24;
 /** 이만큼 움직이기 전에는 옆으로 끄는지 아직 모른다 (누르기·세로 쓸기와 구분) */
 const DECIDE_PX = 8;
@@ -50,11 +50,12 @@ const WHEEL_REST_MS = 450;
  * 놓을 때 끈 거리와 빠르기로 넘길지 정한다(pageAfterSwipe). 트랙패드로 옆으로 밀어도 넘어간다
  */
 const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
-	const profile = useProfile();
 	const pagesRef = useRef<HTMLDivElement>(null);
-	const widgetsRef = useRef<HTMLDivElement>(null);
-	// 칸 수: 첫 페이지(위젯 아래)와 나머지 페이지. 화면 크기가 바뀌면 다시 잰다
-	const [slots, setSlots] = useState({ first: GRID_APPS.length, rest: GRID_APPS.length });
+	// 칸 수: 위젯이 있는 페이지마다(위젯 아래)와 나머지 페이지. 화면 크기가 바뀌면 다시 잰다
+	const [slots, setSlots] = useState({
+		leading: MOBILE_WIDGET_PAGES.map(() => GRID_APPS.length),
+		rest: GRID_APPS.length,
+	});
 	const [page, setPage] = useState(0);
 	// 끄는 중인 거리 (끌지 않으면 null)
 	const [drag, setDrag] = useState<number | null>(null);
@@ -77,20 +78,25 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			if (!grid || !icon) return;
 			const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
 			const rowHeight = icon.offsetHeight;
-			const widgets = widgetsRef.current?.offsetHeight ?? 0;
 			const height = pagesEl.clientHeight;
-			const first = rowsThatFit(height - widgets - GRID_TOP, rowHeight, ROW_GAP) * columns;
+			// 위젯 묶음의 높이 (가로로 눕혀 위젯을 숨기면 0)
+			const widgets = [...pagesEl.querySelectorAll<HTMLElement>('.mobile-widgets')].map((element) =>
+				element.offsetHeight ? element.offsetHeight + GRID_TOP : 0
+			);
+			const leading = widgets.map((used) => rowsThatFit(height - used, rowHeight, ROW_GAP) * columns);
 			const rest = rowsThatFit(height, rowHeight, ROW_GAP) * columns;
-			setSlots((current) => (current.first === first && current.rest === rest ? current : { first, rest }));
+			setSlots((current) =>
+				current.rest === rest && current.leading.join() === leading.join() ? current : { leading, rest }
+			);
 		};
 		measure();
 		const observer = new ResizeObserver(measure);
 		observer.observe(pagesEl);
-		if (widgetsRef.current) observer.observe(widgetsRef.current);
+		for (const element of pagesEl.querySelectorAll('.mobile-widgets')) observer.observe(element);
 		return () => observer.disconnect();
 	}, []);
 
-	const pages = pageApps(GRID_APPS, slots.first, slots.rest);
+	const pages = pageApps(GRID_APPS, slots.leading, slots.rest);
 	// 화면이 커져 페이지가 줄면 마지막 페이지에 선다
 	const current = Math.min(page, pages.length - 1);
 
@@ -175,18 +181,11 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 							aria-hidden={index !== current || undefined}
 							inert={index !== current || undefined}
 						>
-							{index === 0 && (
-								<div ref={widgetsRef} className="mobile-widgets">
-									<section className="mobile-widget" aria-label="소개">
-										<p className="mobile-widget-eyebrow">Portfolio</p>
-										<h1>{profile.name}</h1>
-										<p>{profile.role}</p>
-										<p className="mobile-widget-meta">
-											<i className="fa-solid fa-location-dot" aria-hidden="true"></i> {profile.location}
-										</p>
-									</section>
-
-									<MusicWidget className="mobile-music-widget" onOpen={() => launch('music')} />
+							{MOBILE_WIDGET_PAGES[index] && (
+								<div className="mobile-widgets">
+									{MOBILE_WIDGET_PAGES[index].map(({ kind, size }) => (
+										<Widget key={kind} kind={kind} size={size} open={launch} />
+									))}
 								</div>
 							)}
 							<nav className="mobile-grid" aria-label={index === 0 ? '앱' : `앱 ${index + 1}쪽`}>

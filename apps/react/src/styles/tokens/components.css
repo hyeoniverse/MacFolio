@@ -19,6 +19,14 @@
 	--dock-indicator-color: var(--color-material-label);
 	--launchpad-background: var(--color-material-fullscreen);
 
+	/* 위젯 (desktop/widgets): 바탕화면 위의 반투명 판. 휴대폰 홈 화면은 MobileHome.css가 사진 위의 흰 막으로 바꾼다 */
+	--widget-background: var(--color-material-notification);
+	--widget-label: var(--color-label);
+	--widget-secondary-label: var(--color-secondary-label);
+	--widget-fill: var(--color-system-fill); /* 위젯 안의 칸 (기여 그래프의 빈 날) */
+	--widget-accent: var(--color-system-red); /* 캘린더의 요일·오늘, 시계의 초침 */
+	--widget-graph: var(--color-system-green); /* 기여 그래프 */
+
 	/* 메모 앱의 노란 강조 (날짜 고르기도 같이 쓴다) */
 	--notes-accent: var(--color-notes-yellow);
 	--notes-on-accent: var(--color-on-notes-yellow);

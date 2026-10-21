@@ -17,3 +17,9 @@ declare module 'virtual:public-images' {
 	const folders: Record<string, string[]>;
 	export default folders;
 }
+
+/** 저장소의 최근 글 (vite.config.ts의 recentPostsPlugin). 위젯이 메모 앱의 글 묶음 없이 쓴다 */
+declare module 'virtual:recent-posts' {
+	const posts: { slug: string; title: string; date: string; category: string }[];
+	export default posts;
+}

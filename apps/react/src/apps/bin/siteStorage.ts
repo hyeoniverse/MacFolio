@@ -74,6 +74,15 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		afterClear: '새로고침하면 바탕화면 아이콘이 오른쪽 위 처음 자리로 돌아갑니다',
 	},
 	{
+		id: 'desktop-widgets',
+		name: '바탕화면 위젯',
+		description: '바탕화면에 더하거나 지운 위젯과 그 크기·자리',
+		storage: 'local',
+		keys: [STORAGE_KEYS.desktopWidgets],
+		afterClear: '새로고침하면 바탕화면 위젯이 처음 네 개로 돌아갑니다',
+		summarize: (raw) => countOf(raw, '위젯'),
+	},
+	{
 		id: 'local-messages',
 		name: '이 브라우저에 저장한 메시지',
 		description: '서버 없이 띄운 사이트에서 메시지 앱에 쓴 글과, 그 글을 쓴 사람을 가리는 무작위 값',

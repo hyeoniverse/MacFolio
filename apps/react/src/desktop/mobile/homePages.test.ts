@@ -8,13 +8,18 @@ describe('홈 화면 페이지', () => {
 		expect(rowsThatFit(10, 82, 22)).toBe(1);
 	});
 
-	it('첫 페이지는 위젯 아래 칸만큼, 나머지는 한 페이지씩', () => {
+	it('위젯이 있는 페이지는 위젯 아래 칸만큼, 나머지는 한 페이지씩', () => {
 		const apps = Array.from({ length: 23 }, (_, index) => index);
-		const pages = pageApps(apps, 8, 20);
-		expect(pages.map((page) => page.length)).toEqual([8, 15]);
+		const pages = pageApps(apps, [8, 4], 20);
+		expect(pages.map((page) => page.length)).toEqual([8, 4, 11]);
 		expect(pages.flat()).toEqual(apps);
-		expect(pageApps(apps, 24, 24).map((page) => page.length)).toEqual([23]);
-		expect(pageApps([1, 2, 3], 0, 0)).toEqual([[1], [2], [3]]);
+		expect(pageApps(apps, [24], 24).map((page) => page.length)).toEqual([23]);
+		expect(pageApps([1, 2, 3], [0], 0)).toEqual([[1], [2], [3]]);
+	});
+
+	it('위젯 페이지는 앱이 모자라도 만든다', () => {
+		expect(pageApps([1, 2], [8, 8, 8], 20)).toEqual([[1, 2], [], []]);
+		expect(pageApps([], [], 20)).toEqual([[]]);
 	});
 });
 

@@ -1505,6 +1505,40 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 	});
 });
 
+test.describe('휴대폰 홈 화면 위젯', () => {
+	test('페이지마다 위에 위젯: 1쪽 소개·음악, 2쪽 날씨·캘린더·최근 글, 3쪽 GitHub·사진·시계', async ({ page }) => {
+		await fakeWeather(page);
+		await enterHome(page);
+		const pageWidgets = (index: number) =>
+			page.locator('.mobile-page').nth(index).locator('.mobile-widgets [role="group"]');
+		const labels = async (index: number) =>
+			pageWidgets(index).evaluateAll((items) => items.map((item) => item.getAttribute('aria-label')));
+		expect(await labels(0)).toEqual(['소개 위젯', '음악 위젯']);
+		expect(await labels(1)).toEqual(['날씨 위젯', '캘린더 위젯', '최근 글 위젯']);
+		expect(await labels(2)).toEqual(['GitHub 위젯', '사진 위젯', '시계 위젯']);
+
+		// 작은 위젯 둘이 한 줄, 중간 위젯은 한 줄을 다 쓰고 높이는 작은 위젯과 같다
+		await page.getByRole('tab', { name: '2쪽' }).click();
+		const [weather, calendar, posts] = await Promise.all(
+			[0, 1, 2].map(async (index) => (await pageWidgets(1).nth(index).boundingBox())!)
+		);
+		expect(Math.round(weather.y)).toBe(Math.round(calendar.y));
+		expect(Math.abs(weather.width - weather.height)).toBeLessThan(2);
+		expect(posts.width).toBeGreaterThan(weather.width * 2);
+		expect(Math.abs(posts.height - weather.height)).toBeLessThan(4);
+		await expect(pageWidgets(1).nth(0)).toContainText('19°');
+	});
+
+	test('최근 글을 누르면 메모가 그 글을 연다', async ({ page }) => {
+		await enterHome(page);
+		await page.getByRole('tab', { name: '2쪽' }).click();
+		const first = page.getByRole('group', { name: '최근 글 위젯' }).getByRole('button').first();
+		const title = (await first.locator('strong').textContent())!;
+		await first.click();
+		await expect(appWindow(page, 'memo').getByRole('heading', { level: 1, name: title })).toBeVisible();
+	});
+});
+
 test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () => {
 	/**
 	 * 화면 키보드를 흉내 낸다. 브라우저 시험에서는 키보드가 뜨지 않아서, iOS Safari처럼 보이는 곳(visualViewport)만 줄인다

@@ -1,0 +1,436 @@
+/* 위젯 공통 (Widget.tsx). 크기는 놓는 곳이 정한다: 바탕화면은 칸 크기(DesktopWidgets), 휴대폰은 격자 칸(MobileHome) */
+.widget {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	padding: var(--space-14);
+	overflow: hidden;
+	border-radius: var(--radius-window);
+	background-color: var(--widget-background);
+	backdrop-filter: blur(24px) saturate(160%);
+	box-shadow: var(--shadow-card);
+	color: var(--widget-label);
+	text-align: left;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.widget p,
+.widget h2,
+.widget ul {
+	margin: 0;
+}
+
+.widget .widget-title {
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.widget .widget-note {
+	font-size: var(--text-caption);
+	color: var(--widget-secondary-label);
+}
+
+.widget button {
+	font: inherit;
+	color: inherit;
+}
+
+/* ─── 날씨 ─── */
+.widget-weather-body {
+	display: flex;
+	flex: 1;
+	gap: var(--space-14);
+	min-height: 0;
+}
+
+.widget-weather-now {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+	min-width: 0;
+	width: 100%;
+}
+
+.widget-medium .widget-weather-now {
+	width: 40%;
+}
+
+.widget-weather-temp {
+	font-size: var(--text-large-title);
+	font-weight: 300;
+	line-height: 1.1;
+}
+
+.widget-weather-icon {
+	margin-top: auto;
+	font-size: var(--text-body);
+	color: var(--widget-secondary-label);
+}
+
+/* 맑은 낮은 해 색 */
+.widget-weather-body[data-day][data-sky='clear'] .widget-weather-icon,
+.widget-weather-body[data-day][data-sky='partly'] .widget-weather-icon {
+	color: var(--color-system-yellow);
+}
+
+.widget-weather-label {
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+.widget-weather-hours {
+	display: flex;
+	flex: 1;
+	justify-content: space-between;
+	align-items: flex-end;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.widget-weather-hours li {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-8);
+	font-size: var(--text-caption);
+	white-space: nowrap;
+}
+
+.widget-weather-hours li span:first-child {
+	color: var(--widget-secondary-label);
+}
+
+/* ─── 캘린더 ─── */
+.widget-calendar-body {
+	display: flex;
+	flex: 1;
+	gap: var(--space-16);
+	min-height: 0;
+}
+
+.widget-calendar-today {
+	display: flex;
+	flex: none;
+	flex-direction: column;
+}
+
+.widget-calendar-weekday {
+	font-size: var(--text-footnote);
+	font-weight: 700;
+	color: var(--widget-accent);
+}
+
+.widget-calendar-day {
+	font-size: 54px;
+	font-weight: 300;
+	line-height: 1;
+}
+
+.widget-calendar-today .widget-note {
+	margin-top: auto;
+}
+
+.widget-calendar-month {
+	flex: 1;
+	border-collapse: collapse;
+	font-size: var(--text-caption2);
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+}
+
+.widget-calendar-month th {
+	font-weight: 600;
+	color: var(--widget-secondary-label);
+}
+
+.widget-calendar-month th:first-child,
+.widget-calendar-month td:first-child {
+	color: var(--widget-accent);
+}
+
+.widget-calendar-month td[aria-current='date'] {
+	border-radius: var(--radius-full);
+	background-color: var(--widget-accent);
+	color: var(--color-white);
+	font-weight: 700;
+}
+
+/* ─── 시계 ─── */
+.widget-clock-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-4);
+	min-height: 0;
+}
+
+.widget-clock-face {
+	position: relative;
+	container-type: inline-size;
+	width: 78%;
+	aspect-ratio: 1;
+	border-radius: var(--radius-full);
+	background-color: var(--color-white);
+	color: var(--color-black);
+	box-shadow: var(--shadow-raised);
+}
+
+/* 숫자: 가운데에서 그 시각 방향으로 반지름만큼 나가고, 글자는 똑바로 선다 */
+.widget-clock-number {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	font-size: var(--text-caption2);
+	font-weight: 600;
+	line-height: 1;
+	transform: translate(-50%, -50%) rotate(calc(var(--n) * 30deg)) translateY(-38cqw) rotate(calc(var(--n) * -30deg));
+}
+
+.widget-clock-hand {
+	position: absolute;
+	left: 50%;
+	bottom: 50%;
+	width: 3px;
+	border-radius: var(--radius-full);
+	background-color: var(--color-black);
+	transform: translateX(-50%) rotate(var(--angle));
+	transform-origin: 50% 100%;
+}
+
+.widget-clock-hand.hour {
+	height: 26%;
+}
+
+.widget-clock-hand.minute {
+	height: 38%;
+}
+
+.widget-clock-hand.second {
+	width: 1px;
+	height: 40%;
+	background-color: var(--widget-accent);
+}
+
+.widget-clock-city {
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+/* ─── 음악 ─── */
+.widget-music.music-widget {
+	flex: 1;
+	margin: calc(var(--space-14) * -1);
+	cursor: inherit;
+}
+
+.widget-music-small {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-height: 0;
+}
+
+.widget-music-small img {
+	width: 56px;
+	height: 56px;
+	margin-bottom: auto;
+	border-radius: var(--radius-8);
+	object-fit: cover;
+}
+
+.widget-music-small button {
+	position: absolute;
+	top: var(--space-14);
+	right: var(--space-14);
+	width: 32px;
+	height: 32px;
+	border: none;
+	border-radius: var(--radius-full);
+	background-color: var(--widget-fill);
+	cursor: pointer;
+}
+
+/* ─── 최근 글 ─── */
+.widget-posts-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-8);
+	min-height: 0;
+}
+
+.widget-posts-header,
+.widget-github-header {
+	display: flex;
+	align-items: baseline;
+	gap: var(--space-6);
+	font-size: var(--text-caption);
+	font-weight: 700;
+}
+
+.widget-posts-header i {
+	color: var(--notes-accent);
+}
+
+.widget-github-header .widget-note {
+	margin-left: auto;
+	font-weight: 400;
+}
+
+.widget-posts-body ul {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-6);
+	min-height: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.widget-posts-body button {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	padding: 0;
+	border: none;
+	background: none;
+	text-align: left;
+	cursor: pointer;
+}
+
+.widget-posts-body strong {
+	overflow: hidden;
+	font-size: var(--text-footnote);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 작은 위젯은 글 하나를 세 줄까지 */
+.widget-small .widget-posts-body strong {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	white-space: normal;
+}
+
+.widget-posts-body button:hover strong {
+	text-decoration: underline;
+}
+
+/* ─── 사진 ─── */
+.widget-photos {
+	padding: 0;
+}
+
+.widget-photo-body {
+	position: relative;
+	flex: 1;
+	margin: 0;
+	min-height: 0;
+}
+
+.widget-photo-body img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.widget-photo-body figcaption {
+	position: absolute;
+	left: var(--space-12);
+	bottom: var(--space-10);
+	font-size: var(--text-caption);
+	font-weight: 700;
+	color: var(--color-white);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* ─── GitHub ─── */
+.widget-github-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-10);
+	min-height: 0;
+}
+
+.widget-github-graph {
+	display: flex;
+	flex: 1;
+	justify-content: space-between;
+	min-height: 0;
+}
+
+.widget-github-week {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.widget-github-day {
+	width: 11px;
+	height: 11px;
+	border-radius: 2px;
+	background-color: var(--widget-fill);
+}
+
+.widget-github-day[data-level='none'] {
+	visibility: hidden;
+}
+
+.widget-github-day[data-level='1'] {
+	background-color: color-mix(in srgb, var(--widget-graph) 35%, var(--widget-fill));
+}
+
+.widget-github-day[data-level='2'] {
+	background-color: color-mix(in srgb, var(--widget-graph) 60%, var(--widget-fill));
+}
+
+.widget-github-day[data-level='3'] {
+	background-color: color-mix(in srgb, var(--widget-graph) 80%, var(--widget-fill));
+}
+
+.widget-github-day[data-level='4'] {
+	background-color: var(--widget-graph);
+}
+
+/* ─── 소개 ─── */
+.widget-profile-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+}
+
+.widget-profile-eyebrow {
+	font-size: var(--text-caption);
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--widget-secondary-label);
+}
+
+.widget-profile-body h2 {
+	margin-top: var(--space-2);
+	font-size: var(--text-title1);
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.widget-profile-body p {
+	margin-top: var(--space-4);
+	font-size: var(--text-footnote);
+}
+
+.widget-profile-body .widget-note {
+	margin-top: auto;
+}

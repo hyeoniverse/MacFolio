@@ -14,6 +14,7 @@ import { useLocations } from '@/apps/finder/useLocations';
 import { openInPreview } from '@/apps/preview/previewStore';
 import { requestedSection } from '@/apps/settings/settingsRequest';
 import { useAppState } from '@/desktop/useAppState';
+import { openWidgetEditor } from '@/desktop/widgets/widgetEditor';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
@@ -337,6 +338,7 @@ const DesktopIcons: React.FC = () => {
 				{ label: '정리하기', onSelect: () => save(cleanUp(ids, viewport)) },
 				{ label: '이름순으로 정리', onSelect: () => save(cleanUp(byName, viewport)) },
 				'separator',
+				{ label: '위젯 편집…', onSelect: openWidgetEditor },
 				{
 					label: '배경화면 변경…',
 					onSelect: () => {
