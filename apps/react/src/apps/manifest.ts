@@ -21,6 +21,7 @@ export const BUILTIN_APP_NAMES = [
 	'weather',
 	'preview',
 	'textedit',
+	'tips',
 	'quicktime',
 	'bin',
 ] as const;
@@ -132,6 +133,15 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		windowSize: { width: 1000, height: 640 },
 	},
 	// 날씨 (macOS 날씨 앱 모양). Open-Meteo의 공개 데이터로 장소마다 지금 날씨와 시간별·10일 일기예보. Dock에는 고정하지 않는다
+	// 처음 온 사람을 위한 안내 (macOS·iOS 팁 앱). 둘러보기를 다시 보거나 팁 하나씩 화면에서 짚어 본다
+	tips: {
+		label: '팁',
+		icon: 'tips.svg',
+		inDock: false,
+		inLaunchpad: true,
+		windowSize: { width: 980, height: 700 },
+		minSize: { width: 520, height: 480 },
+	},
 	weather: {
 		label: '날씨',
 		icon: 'weather.svg',

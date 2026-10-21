@@ -1,0 +1,151 @@
+/* 둘러보기: 화면을 어둡게 덮고 한 곳만 밝게 비춘다. 덮개는 클릭을 막지 않는다 (카드만 눌린다) */
+.tour {
+	position: fixed;
+	z-index: var(--z-tour);
+	inset: 0;
+	pointer-events: none;
+}
+
+.tour-dim {
+	position: absolute;
+	inset: 0;
+	background-color: var(--tour-dim);
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+/* 비춘 곳: 바깥을 어둡게 하는 큰 그림자 + 숨 쉬는 테두리 */
+.tour-spotlight {
+	position: absolute;
+	border-radius: var(--radius-14);
+	box-shadow: 0 0 0 9999px var(--tour-dim);
+	transition:
+		top var(--duration) var(--ease-out),
+		left var(--duration) var(--ease-out),
+		width var(--duration) var(--ease-out),
+		height var(--duration) var(--ease-out);
+}
+
+.tour-spotlight::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border: 2px solid var(--color-control-accent);
+	border-radius: inherit;
+	animation: tour-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes tour-pulse {
+	50% {
+		transform: scale(1.06);
+		opacity: 0.4;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.tour-spotlight {
+		transition: none;
+	}
+
+	.tour-spotlight::after {
+		animation: none;
+	}
+}
+
+/* 카드: 팁 앱처럼 흰 카드에 제목·설명·버튼 */
+.tour-card {
+	position: absolute;
+	width: 300px;
+	padding: var(--space-16);
+	border-radius: var(--radius-18);
+	background-color: var(--color-window-background);
+	box-shadow: var(--shadow-modal);
+	pointer-events: auto;
+	color: var(--color-label);
+	animation: fade-in var(--duration) var(--ease-out);
+}
+
+.tour-center .tour-card {
+	top: 50%;
+	left: 50%;
+	width: min(340px, calc(100vw - 32px));
+	transform: translate(-50%, -50%);
+	text-align: center;
+}
+
+.tour-card-icon {
+	width: 64px;
+	height: 64px;
+	margin-bottom: var(--space-8);
+}
+
+.tour-card h2 {
+	margin: 0 0 var(--space-6);
+	font-size: var(--text-body);
+	font-weight: 700;
+}
+
+.tour-card p {
+	margin: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-subhead);
+	line-height: 1.5;
+}
+
+.tour-card .tour-card-hint {
+	margin-top: var(--space-8);
+	color: var(--color-control-accent);
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.tour-card-bar {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	margin-top: var(--space-14);
+}
+
+.tour-center .tour-card-bar {
+	justify-content: center;
+}
+
+.tour-card-count {
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	font-variant-numeric: tabular-nums;
+}
+
+.tour-card-buttons {
+	display: flex;
+	gap: var(--space-6);
+	margin-left: auto;
+}
+
+.tour-center .tour-card-buttons {
+	margin-left: 0;
+}
+
+.tour-button {
+	height: 28px;
+	padding: 0 var(--space-12);
+	border: 0;
+	border-radius: var(--radius-8);
+	background-color: var(--color-unemphasized-selected-content-background);
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}
+
+.tour-button.primary {
+	background-color: var(--color-control-accent);
+	color: var(--color-white);
+}
+
+.tour-button.quiet {
+	background: none;
+	color: var(--color-secondary-label);
+}
+
+.tour {
+	--tour-dim: rgba(0, 0, 0, 0.45);
+}
