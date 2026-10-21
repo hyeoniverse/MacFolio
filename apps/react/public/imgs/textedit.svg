@@ -11,13 +11,13 @@
 	</defs>
 	<g clip-path="url(#squircle)">
 		<rect x="100" y="100" width="824" height="824" fill="url(#bg)"/>
-		<g stroke="#c9cacf" stroke-width="7">
+		<g stroke="#c9cacf" stroke-width="12">
 			<line x1="100" y1="300" x2="924" y2="300"/>
 			<line x1="100" y1="470" x2="924" y2="470"/>
 			<line x1="100" y1="640" x2="924" y2="640"/>
 			<line x1="100" y1="810" x2="924" y2="810"/>
 		</g>
-		<line x1="290" y1="100" x2="290" y2="924" stroke="#ec8f8c" stroke-width="7"/>
+		<line x1="290" y1="100" x2="290" y2="924" stroke="#ec8f8c" stroke-width="12"/>
 	</g>
 	<rect x="101.5" y="101.5" width="821" height="821" rx="184" fill="none" stroke="#000" stroke-opacity="0.08" stroke-width="3"/>
 </svg>
