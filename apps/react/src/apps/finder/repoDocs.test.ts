@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { bundledDocOf, docTitle, normalizePath, repoPath, resolveImage, resolveLink, REPO_URL } from './repoDocs';
+import {
+	bundledDocOf,
+	colorSchemeOf,
+	docTitle,
+	normalizePath,
+	repoPath,
+	resolveImage,
+	resolveLink,
+	REPO_URL,
+} from './repoDocs';
 
 const docs = new Set(['README.md', 'CONTRIBUTING.md', 'docs/deployment.md', 'docs/backend-design.md']);
 
@@ -42,6 +51,15 @@ describe('resolveLink', () => {
 			type: 'external',
 			url: 'mailto:a@example.com',
 		});
+	});
+});
+
+describe('colorSchemeOf', () => {
+	it('<source media>가 화면 모드를 고르는 것이면 그 모드, 아니면 null', () => {
+		expect(colorSchemeOf('(prefers-color-scheme: dark)')).toBe('dark');
+		expect(colorSchemeOf('(prefers-color-scheme:light)')).toBe('light');
+		expect(colorSchemeOf('(min-width: 600px)')).toBeNull();
+		expect(colorSchemeOf(undefined)).toBeNull();
 	});
 });
 

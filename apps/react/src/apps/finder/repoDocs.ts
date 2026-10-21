@@ -64,6 +64,14 @@ export function resolveImage(from: string, src: string, images: Readonly<Record<
 	return images[target] ?? `${RAW_URL}/${encodeURI(target)}`;
 }
 
+/**
+ * <picture>의 <source media>가 화면 모드를 고르는 것이면 그 모드 (GitHub README의 라이트·다크 그림).
+ * Finder는 시스템이 아니라 사이트의 화면 모드를 따르므로, media를 그대로 두지 않고 이 값으로 고른다
+ */
+export function colorSchemeOf(media: string | undefined): 'light' | 'dark' | null {
+	return (/prefers-color-scheme:\s*(light|dark)/.exec(media ?? '')?.[1] as 'light' | 'dark' | undefined) ?? null;
+}
+
 /** 문서 제목: 첫 # 제목, 없으면 파일 이름 */
 export function docTitle(path: string, source: string): string {
 	return /^#\s+(.+)$/m.exec(source)?.[1].trim() ?? path.split('/').at(-1)!;
