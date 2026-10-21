@@ -127,7 +127,7 @@ pnpm why <패키지>                        # 누가 그 하위 패키지를 끌
 
 ## 그 뒤: 다른 도구로 한 번 더
 
-10월 18일 보안 점검을 하면서 같은 일을 다른 도구로도 돌렸다([docs/security-scan.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/security-scan.md)). OWASP Dependency-Check는 첫 실행에서 NVD 데이터를 받다가 `Invalid API Key`로 멈췄다. 13.0.0부터 NVD API 키 없이는 데이터를 받지 않는다. 키를 받으려 [NVD 신청 양식](https://nvd.nist.gov/developers/request-an-api-key)을 채워 보냈지만 메일이 오지 않았고, 안내대로 몇 가지를 더 해 봐도 마찬가지였다. 그래서 키 없이 잠금 파일의 정확한 버전으로 OSV 데이터베이스와 맞추는 osv-scanner로 대신하고, 그 이유를 문서에 남긴 뒤 그 항목을 닫았다. osv-scanner는 `pnpm audit`과 같은 결과를 냈다.
+10월 18일 보안 점검을 하면서 같은 일을 다른 도구로도 돌렸다([docs/security-scan.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/security-scan.md)). OWASP Dependency-Check는 첫 실행에서 NVD 데이터를 받다가 `Invalid API Key`로 멈췄다. 13.0.0부터 NVD API 키 없이는 데이터를 받지 않는다. 키를 받으려 [NVD 신청 양식](https://nvd.nist.gov/developers/request-an-api-key)을 채워 보냈지만 메일이 오지 않았고, 찾아본 방법 몇 가지를 더 해 봐도 마찬가지였다. 그래서 키 없이 잠금 파일의 정확한 버전으로 OSV 데이터베이스와 맞추는 osv-scanner로 대신하고, 그 이유를 문서에 남긴 뒤 그 항목을 닫았다. osv-scanner는 `pnpm audit`과 같은 결과를 냈다.
 
 ```bash
 osv-scanner scan source --lockfile pnpm-lock.yaml

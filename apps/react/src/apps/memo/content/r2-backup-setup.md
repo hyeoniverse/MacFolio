@@ -143,7 +143,7 @@ docker compose exec -T db psql -U macfolio -d postgres -c 'drop database restore
 
 ## 이 순서를 만든 까닭
 
-처음 서버를 업데이트할 때는 안내받은 명령을 그대로 붙여 넣었다. 10월 2일에는 `cd ~/deploy && docker compose exec -T db pg_dump …`를 서버가 아니라 내 맥 터미널에서 돌려 `no such file or directory`가 났고, 다음 날 서버에서 `pg_dump ... > backup.sql`을 돌렸더니 이번에는 호스트에 `pg_dump`가 없다고 했다(`Command 'pg_dump' not found`). DB는 컨테이너 안에 있으니 `docker compose exec`로 컨테이너의 `pg_dump`를 불러야 했다. 손으로 하는 백업은 이렇게 틀리기 쉬워서, 명령을 `ops/backup.sh` 하나로 묶고 cron에 맡겼다.
+처음 서버를 업데이트할 때는 찾아 둔 명령을 그대로 붙여 넣었다. 10월 2일에는 `cd ~/deploy && docker compose exec -T db pg_dump …`를 서버가 아니라 내 맥 터미널에서 돌려 `no such file or directory`가 났고, 다음 날 서버에서 `pg_dump ... > backup.sql`을 돌렸더니 이번에는 호스트에 `pg_dump`가 없다고 했다(`Command 'pg_dump' not found`). DB는 컨테이너 안에 있으니 `docker compose exec`로 컨테이너의 `pg_dump`를 불러야 했다. 손으로 하는 백업은 이렇게 틀리기 쉬워서, 명령을 `ops/backup.sh` 하나로 묶고 cron에 맡겼다.
 
 ## 문서와 스크립트
 

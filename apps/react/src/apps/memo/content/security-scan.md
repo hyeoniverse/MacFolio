@@ -125,7 +125,7 @@ echo "Semgrep: 전체 $(jq '.results | length' semgrep.json)건, ERROR ${errors}
 
 ## Dependency-Check를 다시 시도한 일
 
-점검 뒤 Dependency-Check를 마저 돌리려고 NVD API 키를 받으려 했다. NVD 사이트의 신청 양식을 채우고 보냈는데 메일이 오지 않고 화면이 멈춰 있었다. 안내받은 방법 세 가지를 차례로 해 봐도 같았다. 그래서 Dependency-Check는 osv-scanner로 대신한다는 지금 판단을 그대로 두고, 그 내용을 정리해 이슈를 닫았다.
+점검 뒤 Dependency-Check를 마저 돌리려고 NVD API 키를 받으려 했다. NVD 사이트의 신청 양식을 채우고 보냈는데 메일이 오지 않고 화면이 멈춰 있었다. 찾아본 방법 세 가지를 차례로 해 봐도 같았다. 그래서 Dependency-Check는 osv-scanner로 대신한다는 지금 판단을 그대로 두고, 그 내용을 정리해 이슈를 닫았다.
 
 ## 다시 돌리는 방법
 

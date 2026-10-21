@@ -93,7 +93,7 @@ export function RateLimit(name: RateLimitName) {
 
 ## 서버에서 해야 하는 일
 
-요청 제한은 IP로 센다. API 앞에 Cloudflare Tunnel이 있어서, 서버가 `X-Forwarded-For`를 믿지 않으면 모든 방문자가 터널 하나의 IP로 보여 한 사람이 걸리면 모두가 걸린다. 이 PR을 머지하기 전에 환경 변수를 고쳐야 하는지 물었고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지부터 확인했다. 이 값은 이번 변경만이 아니라 기존 로그인·댓글 제한에도 필요하다.
+요청 제한은 IP로 센다. API 앞에 Cloudflare Tunnel이 있어서, 서버가 `X-Forwarded-For`를 믿지 않으면 모든 방문자가 터널 하나의 IP로 보여 한 사람이 걸리면 모두가 걸린다. 이 PR을 머지하기 전에 환경 변수를 고쳐야 하는지 따져 보려고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지부터 확인했다. 이 값은 이번 변경만이 아니라 기존 로그인·댓글 제한에도 필요하다.
 
 ```bash
 grep '^TRUST_PROXY=' ~/deploy/api.env     # TRUST_PROXY=1

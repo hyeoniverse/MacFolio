@@ -112,7 +112,7 @@ cd ~/deploy && docker compose up -d api
 
 ## 로컬에서도 "연결할 수 없음"
 
-배포 서버를 고친 뒤 로컬(`pnpm dev:all`)에서 보려니, 이번엔 로컬에서 연결이 안 됐다. 로컬 API는 켜져 있었고 DB도 정상이었다. 어떤 주소를 허용하는지 물어보니 `http://localhost:5173`은 없고 `https://macfolio.hyeoniverse.com`만 허용했다. 서버에 넣을 값을 준비하면서 로컬 `apps/api/.env`의 `CORS_ORIGINS`가 배포 값으로 바뀌어 있었다.
+배포 서버를 고친 뒤 로컬(`pnpm dev:all`)에서 보려니, 이번엔 로컬에서 연결이 안 됐다. 로컬 API는 켜져 있었고 DB도 정상이었다. 어떤 주소를 허용하는지 확인해 보니 `http://localhost:5173`은 없고 `https://macfolio.hyeoniverse.com`만 허용했다. 서버에 넣을 값을 준비하면서 로컬 `apps/api/.env`의 `CORS_ORIGINS`가 배포 값으로 바뀌어 있었다.
 
 로컬 API는 `.env` 하나만 읽고, 배포 서버는 서버의 `~/deploy/api.env`만 읽는다. 파일은 이미 나뉘어 있었는데, 배포용 값을 적어 둘 곳이 따로 없어서 로컬 파일에 섞였다. 그래서 자리를 정했다.
 
