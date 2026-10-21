@@ -35,6 +35,12 @@ const VolumeMenu = () => {
 		);
 	}, [panel, open]);
 
+	/** 누른(끈) 높이 그대로 음량: 칸 맨 아래 0, 맨 위 1 */
+	const setFromPointer = (event: React.PointerEvent<HTMLDivElement>) => {
+		const rect = event.currentTarget.getBoundingClientRect();
+		setVolume(Math.min(1, Math.max(0, (rect.bottom - event.clientY) / rect.height)));
+	};
+
 	const icon = iconOf(volume);
 	return (
 		<span className="volume-menu">
@@ -57,6 +63,13 @@ const VolumeMenu = () => {
 						role="dialog"
 						aria-label="음량"
 						style={position ?? { visibility: 'hidden' }}
+						onPointerDown={(event) => {
+							event.currentTarget.setPointerCapture(event.pointerId);
+							setFromPointer(event);
+						}}
+						onPointerMove={(event) => {
+							if (event.currentTarget.hasPointerCapture(event.pointerId)) setFromPointer(event);
+						}}
 					>
 						<div className="volume-level" style={{ height: `${volume * 100}%` }} />
 						<input

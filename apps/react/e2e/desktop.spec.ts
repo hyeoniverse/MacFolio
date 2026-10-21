@@ -38,6 +38,21 @@ test.describe('데스크톱', () => {
 		await popup.getByRole('slider', { name: '음량' }).fill('0.3');
 		await expect(page.locator('.macos-statusbar').getByRole('button', { name: '음량 30%' })).toBeVisible();
 
+		// 칸을 누른 높이 그대로: 맨 위 근처는 거의 100%, 아래 근처는 거의 0%, 가운데는 50% (손잡이 자리와 상관없이)
+		const volumeName = async () => Number((await button.getAttribute('aria-label'))!.match(/\d+/)![0]);
+		await page.mouse.click(box.x + box.width / 2, box.y + 2);
+		expect(await volumeName()).toBeGreaterThanOrEqual(95);
+		await page.mouse.click(box.x + box.width / 2, box.y + box.height - 2);
+		expect(await volumeName()).toBeLessThanOrEqual(5);
+		await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+		expect(Math.abs((await volumeName()) - 50)).toBeLessThanOrEqual(3);
+		// 끌면 따라간다
+		await page.mouse.move(box.x + box.width / 2, box.y + box.height - 4);
+		await page.mouse.down();
+		await page.mouse.move(box.x + box.width / 2, box.y + box.height / 4, { steps: 5 });
+		await page.mouse.up();
+		expect(Math.abs((await volumeName()) - 75)).toBeLessThanOrEqual(4);
+
 		await page.keyboard.press('Escape');
 		await expect(popup).toBeHidden();
 		await button.click();
