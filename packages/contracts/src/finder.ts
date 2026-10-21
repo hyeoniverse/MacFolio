@@ -7,12 +7,13 @@ import { requestBody } from './parse.js';
 /** 관리자가 만든 폴더 id: folder:<무작위 소문자·숫자> */
 export const FINDER_FOLDER_ID = /^folder:[a-z0-9]{4,24}$/;
 /**
- * 관리자 폴더·파일을 둘 수 있는 기본 폴더: 데스크탑, 문서, 문서의 이력서·포트폴리오·자격증, 그림, 프로젝트마다의 폴더.
- * 블로그·응용 프로그램·음악 폴더와 그림 안의 앨범 폴더(사진 앱의 것)에는 둘 수 없다. 프로젝트 폴더는 문서 › 포트폴리오 안에 있다.
+ * 관리자 폴더·파일을 둘 수 있는 기본 폴더: 데스크탑, 문서, 문서의 이력서·포트폴리오·자격증, 프로젝트마다의 폴더,
+ * 그림. 블로그·응용 프로그램·음악 폴더와 그림 안의 앨범 폴더(사진 앱이 채운다)에는 둘 수 없다.
+ * 프로젝트 폴더는 문서 › 포트폴리오 안에 있다.
  * trash는 휴지통: 휴지통으로 보낸 만든 폴더·파일은 여기 있다가, 비우면 지워지고 되돌리면 원래 자리로 간다
  */
 export const FINDER_BUILTIN_PARENT =
-	/^(trash|desktop|docs|pictures|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
+	/^(trash|desktop|docs|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39}|pictures)$/;
 /** 옮긴 파일의 Finder id: file:<R2 키> (예: file:resume/abc.pdf) */
 export const FINDER_FILE_ID = /^file:[A-Za-z0-9][\w./-]{0,199}$/;
 /**

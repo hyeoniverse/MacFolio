@@ -482,7 +482,7 @@ function applyLayout(roots: FolderItem[], layout: FinderLayoutValue | undefined)
 			desktop.children.push({ kind: 'alias', id: `alias:${target}`, name: real.name, target });
 	}
 
-	// 만든 폴더: 기본 자리(데스크탑·문서·문서 폴더·프로젝트 폴더)까지 고리 없이 올라갈 수 있는 것만
+	// 만든 폴더: 기본 자리(데스크탑·문서·문서 폴더·프로젝트 폴더·그림)까지 고리 없이 올라갈 수 있는 것만
 	const made = new Map((layout?.folders ?? []).map((folder) => [folder.id, folder]));
 	const reachesRoot = (id: string) => {
 		const seen = new Set<string>();

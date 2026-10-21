@@ -9,13 +9,13 @@ describe('Finder 구조 규칙', () => {
 		expect(parse(FinderLayout, {})).toEqual({ value: EMPTY_FINDER_LAYOUT });
 	});
 
-	it('기본 폴더와 만든 폴더 아래에 폴더·파일을 둔다', () => {
+	it('기본 폴더(그림 포함)와 만든 폴더 아래에 폴더·파일을 둔다', () => {
 		const input = {
 			folders: [
 				folder('aaaa', ' 발표 ', 'docs'),
 				folder('bbbb', '초안', 'folder:aaaa'),
 				folder('cccc', '작업', 'desktop'),
-				folder('dddd', '위젯', 'pictures'),
+				folder('dddd', '스크린샷', 'pictures'),
 			],
 			files: { 'file:resume/abc.pdf': 'folder:bbbb', 'file:projects/macfolio/x.png': 'projects/macfolio' },
 			aliases: ['docs:이력서', 'projects'],
@@ -24,15 +24,14 @@ describe('Finder 구조 규칙', () => {
 		expect('value' in parsed && parsed.value.folders[0].name).toBe('발표');
 	});
 
-	it('없는 상위 폴더, 블로그·응용 프로그램, 고리, 겹친 이름은 거절', () => {
+	it('없는 상위 폴더, 블로그·응용 프로그램·음악, 고리, 겹친 이름은 거절', () => {
 		const bad = (value: object) => 'errors' in parse(FinderLayout, value);
 		expect(bad({ folders: [folder('aaaa', '가', 'folder:zzzz')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'blog')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'apps')] })).toBe(true);
-		expect(bad({ folders: [folder('aaaa', '가', 'projects')] })).toBe(true);
-		// 그림 안의 앨범 폴더(사진 앱의 것)와 음악에는 만들 수 없다
-		expect(bad({ folders: [folder('aaaa', '가', 'pictures/macfolio')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'music')] })).toBe(true);
+		expect(bad({ folders: [folder('aaaa', '가', 'pictures/macfolio')] })).toBe(true);
+		expect(bad({ folders: [folder('aaaa', '가', 'projects')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'folder:bbbb'), folder('bbbb', '나', 'folder:aaaa')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', 'A', 'docs'), folder('bbbb', 'a', 'docs')] })).toBe(true);
 		expect(bad({ folders: [folder('aaaa', '가', 'docs'), folder('aaaa', '나', 'docs')] })).toBe(true);

@@ -203,6 +203,10 @@ describe('폴더 구조 겹치기', () => {
 		expect(canDropInto(roots, [find(roots, 'post:a')!], folder(roots, 'docs'))).toBe(false);
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'blog'))).toBe(false);
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'pictures/qru'))).toBe(false);
+		// 그림 폴더에는 새 폴더를 만들고 파일을 놓을 수 있다 (앨범 폴더는 사진 앱이 채우므로 안 된다)
+		expect(canCreateIn(folder(roots, 'pictures'))).toBe(true);
+		expect(canCreateIn(folder(roots, 'pictures/qru'))).toBe(false);
+		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], folder(roots, 'pictures'))).toBe(true);
 		// 가상본 위에 놓으면 원래 폴더로
 		const alias = folder(roots, 'desktop').children.find((item) => item.id === 'alias:docs:자격증')!;
 		expect(canDropInto(roots, [find(roots, 'file:resume/r.pdf')!], alias)).toBe(true);
