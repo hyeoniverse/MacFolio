@@ -4,16 +4,16 @@ import { ALBUMS } from '@/apps/photos/albums';
 /** 사진을 넘기는 간격 */
 const INTERVAL_MS = 10_000;
 
-/** 사진 앱의 프로젝트 화면을 차례로 (영상·SVG는 뺀다) */
-const PhotoWidget = () => {
+/** 사진 앱의 앨범을 차례로 (album이 없거나 없어진 앨범이면 모든 앨범). 영상·SVG는 뺀다 */
+const PhotoWidget = ({ album }: { album?: string }) => {
 	const photos = useMemo(
 		() =>
-			ALBUMS.flatMap((album) =>
-				album.photos
+			(ALBUMS.some((item) => item.id === album) ? ALBUMS.filter((item) => item.id === album) : ALBUMS).flatMap((item) =>
+				item.photos
 					.filter((photo) => !photo.video && !/\.svg$/i.test(photo.src))
-					.map((photo) => ({ ...photo, album: album.name }))
+					.map((photo) => ({ ...photo, album: item.name }))
 			),
-		[]
+		[album]
 	);
 	const [index, setIndex] = useState(0);
 	useEffect(() => {

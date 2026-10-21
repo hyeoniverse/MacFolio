@@ -2,7 +2,7 @@ import type { AppName } from '@/apps/manifest';
 import { useMusic } from '@/apps/music/useMusic';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import { requestOpen } from '@/shared/lib/openRequest';
-import { WIDGET_INFO, type WidgetKind, type WidgetSize } from './catalog';
+import { WIDGET_INFO, type WidgetKind, type WidgetOptions, type WidgetSize } from './catalog';
 import CalendarWidget from './CalendarWidget';
 import ClockWidget from './ClockWidget';
 import GithubWidget from './GithubWidget';
@@ -42,6 +42,8 @@ const MusicSmall = () => {
 interface Props {
 	kind: WidgetKind;
 	size: WidgetSize;
+	/** 위젯마다 고른 값 (사진 위젯의 앨범) */
+	options?: WidgetOptions;
 	/** 앱을 연다 (데스크톱은 창, 휴대폰은 화면 가득) */
 	open: (app: AppName) => void;
 	className?: string;
@@ -51,7 +53,7 @@ interface Props {
  * 위젯 하나 (데스크톱 바탕화면과 휴대폰 홈 화면이 같이 쓴다). 크기와 종류에 맞는 내용을 그리고,
  * 단추·글 같은 조작이 아닌 곳을 누르면 그 위젯의 앱을 연다
  */
-const Widget = ({ kind, size, open, className = '' }: Props) => {
+const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 	const app = APP_OF[kind];
 	const openPost = (slug: string) => {
 		requestOpen('memo', slug);
@@ -76,10 +78,10 @@ const Widget = ({ kind, size, open, className = '' }: Props) => {
 			body = <PostsWidget size={size} openPost={openPost} />;
 			break;
 		case 'photos':
-			body = <PhotoWidget />;
+			body = <PhotoWidget album={options?.album} />;
 			break;
 		case 'github':
-			body = <GithubWidget />;
+			body = <GithubWidget size={size} />;
 			break;
 		case 'profile':
 			body = <ProfileWidget />;

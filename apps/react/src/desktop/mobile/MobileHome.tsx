@@ -11,6 +11,7 @@ import {
 	MOBILE_WIDGET_PAGE_COUNT,
 	newWidgetId,
 	pageToAdd,
+	widgetRows,
 	parseMobileWidgets,
 	WIDGET_INFO,
 	type PageWidget,
@@ -19,9 +20,10 @@ import {
 } from '@/desktop/widgets/catalog';
 import Widget from '@/desktop/widgets/Widget';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from '@/desktop/widgets/widgetEditor';
-import WidgetSheet from '@/desktop/mobile/WidgetSheet';
+import WidgetSheet, { AlbumSheet } from '@/desktop/mobile/WidgetSheet';
+import { cssVars } from '@/shared/lib/cssVars';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
-import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit } from '@/desktop/mobile/homePages';
+import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from '@/desktop/mobile/homePages';
 
 /** 홈 화면 아래 Dock에 둘 앱 */
 const MOBILE_DOCK: AppName[] = ['safari', 'messages', 'mail', 'music'];
@@ -46,6 +48,8 @@ const AppIcon = ({ name, showLabel, onLaunch }: { name: AppName; showLabel: bool
 
 /** 아이콘 줄 사이 (CSS의 row-gap과 같다) */
 const ROW_GAP = 22;
+/** 위젯 사이 (CSS의 .mobile-widgets gap과 같다) */
+const WIDGET_GAP = 16;
 /** 위젯과 아이콘 사이 (CSS의 margin-top과 같다) */
 const GRID_TOP = 24;
 /** 이만큼 움직이기 전에는 옆으로 끄는지 아직 모른다 (누르기·세로 쓸기와 구분) */
@@ -72,6 +76,8 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	const editing = useWidgetEditing();
 	const [widgets, setWidgets] = useState<PageWidget[][]>(loadWidgets);
 	const [gallery, setGallery] = useState(false);
+	// 앨범을 고르는 사진 위젯 (id)
+	const [albumFor, setAlbumFor] = useState<string | null>(null);
 	const longPress = useRef<number | undefined>(undefined);
 	// 칸 수: 위젯이 있는 페이지마다(위젯 아래)와 나머지 페이지. 화면 크기가 바뀌면 다시 잰다
 	const [slots, setSlots] = useState({
@@ -90,6 +96,8 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	} | null>(null);
 	const swallowClick = useRef(false);
 	const wheel = useRef({ sum: 0, restUntil: 0 });
+	// 위젯 한 줄의 높이 (재기 전에는 null: 위젯은 정사각형)
+	const [widgetRow, setWidgetRow] = useState<number | null>(null);
 
 	useLayoutEffect(() => {
 		const pagesEl = pagesRef.current;
@@ -101,11 +109,22 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			const columns = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
 			const rowHeight = icon.offsetHeight;
 			const height = pagesEl.clientHeight;
+			// 위젯 줄 높이: 위젯 아래에 아이콘 두 줄은 늘 들어가게 (작은 화면에서 위젯이 앱을 밀어내 잘리지 않게)
+			const area = pagesEl.querySelector<HTMLElement>('.mobile-widgets');
+			if (area?.clientWidth) {
+				const square = (area.clientWidth - WIDGET_GAP) / 2;
+				const row = widgetRowHeight(height, widgets.map(widgetRows), square, rowHeight, {
+					widget: WIDGET_GAP,
+					top: GRID_TOP,
+					icon: ROW_GAP,
+				});
+				setWidgetRow((current) => (current === row ? current : row));
+			}
 			// 위젯 묶음의 높이 (가로로 눕혀 위젯을 숨기면 0)
-			const widgets = [...pagesEl.querySelectorAll<HTMLElement>('.mobile-widgets')].map((element) =>
+			const widgetHeights = [...pagesEl.querySelectorAll<HTMLElement>('.mobile-widgets')].map((element) =>
 				element.offsetHeight ? element.offsetHeight + GRID_TOP : 0
 			);
-			const leading = widgets.map((used) => rowsThatFit(height - used, rowHeight, ROW_GAP) * columns);
+			const leading = widgetHeights.map((used) => rowsThatFit(height - used, rowHeight, ROW_GAP) * columns);
 			const rest = rowsThatFit(height, rowHeight, ROW_GAP) * columns;
 			setSlots((current) =>
 				current.rest === rest && current.leading.join() === leading.join() ? current : { leading, rest }
@@ -116,7 +135,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		observer.observe(pagesEl);
 		for (const element of pagesEl.querySelectorAll('.mobile-widgets')) observer.observe(element);
 		return () => observer.disconnect();
-	}, []);
+	}, [widgets]);
 
 	const pages = pageApps(GRID_APPS, slots.leading, slots.rest);
 	// 화면이 커져 페이지가 줄면 마지막 페이지에 선다
@@ -127,6 +146,10 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		writeJson(STORAGE_KEYS.mobileWidgets, next);
 	};
 	const removeWidget = (id: string) => save(widgets.map((list) => list.filter((widget) => widget.id !== id)));
+	const chooseAlbum = (id: string, album: string | undefined) => {
+		save(widgets.map((list) => list.map((widget) => (widget.id === id ? { ...widget, album } : widget))));
+		setAlbumFor(null);
+	};
 	/** 지금 페이지(자리가 없으면 자리가 있는 첫 페이지) 끝에 더하고 그 페이지로 간다 */
 	const addWidget = (kind: WidgetKind, size: WidgetSize) => {
 		const target = pageToAdd(widgets, current, size);
@@ -138,6 +161,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	};
 	const stopEditing = () => {
 		setGallery(false);
+		setAlbumFor(null);
 		closeWidgetEditor();
 	};
 	// 편집 중에는 앱과 위젯을 열지 않는다
@@ -217,6 +241,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			<div
 				ref={pagesRef}
 				className="mobile-pages"
+				style={widgetRow ? cssVars({ 'widget-row': `${widgetRow}px` }) : undefined}
 				onPointerDown={onPointerDown}
 				onPointerMove={onPointerMove}
 				onPointerUp={onPointerUp}
@@ -247,21 +272,34 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 						>
 							{index < MOBILE_WIDGET_PAGE_COUNT && (
 								<div className="mobile-widgets">
-									{(widgets[index] ?? []).map(({ id, kind, size }) => (
-										<div key={id} className="mobile-widget-slot" data-size={size}>
-											<Widget kind={kind} size={size} open={open} />
-											{editing && (
-												<button
-													type="button"
-													className="mobile-widget-remove"
-													aria-label={`${WIDGET_INFO[kind].label} 위젯 제거`}
-													onClick={() => removeWidget(id)}
-												>
-													<i className="fa-solid fa-minus" aria-hidden="true"></i>
-												</button>
-											)}
-										</div>
-									))}
+									{(widgets[index] ?? []).map((widget) => {
+										const { id, kind, size } = widget;
+										return (
+											<div key={id} className="mobile-widget-slot" data-size={size}>
+												<Widget kind={kind} size={size} options={widget} open={open} />
+												{editing && kind === 'photos' && (
+													<button
+														type="button"
+														className="mobile-widget-option"
+														aria-label="사진 위젯의 앨범 고르기"
+														onClick={() => setAlbumFor(id)}
+													>
+														앨범
+													</button>
+												)}
+												{editing && (
+													<button
+														type="button"
+														className="mobile-widget-remove"
+														aria-label={`${WIDGET_INFO[kind].label} 위젯 제거`}
+														onClick={() => removeWidget(id)}
+													>
+														<i className="fa-solid fa-minus" aria-hidden="true"></i>
+													</button>
+												)}
+											</div>
+										);
+									})}
 								</div>
 							)}
 							<nav className="mobile-grid" aria-label={index === 0 ? '앱' : `앱 ${index + 1}쪽`}>
@@ -311,6 +349,13 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			</nav>
 
 			{gallery && <WidgetSheet pages={widgets} current={current} onAdd={addWidget} onClose={() => setGallery(false)} />}
+			{albumFor && (
+				<AlbumSheet
+					album={widgets.flat().find((widget) => widget.id === albumFor)?.album}
+					onChoose={(album) => chooseAlbum(albumFor, album)}
+					onClose={() => setAlbumFor(null)}
+				/>
+			)}
 		</div>
 	);
 };

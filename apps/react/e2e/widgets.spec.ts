@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { test, expect, enterDesktop, appWindow } from './fixtures';
+import { fakeApi } from './fakeApi';
 import { fakeWeather } from './fakeWeather';
 
 const widget = (page: Page, label: string) =>
@@ -17,19 +18,34 @@ const saved = (page: Page) =>
 	>;
 
 test.describe('바탕화면 위젯', () => {
-	test('처음에는 왼쪽 위에 날씨·캘린더·음악·최근 글', async ({ page }) => {
+	test('처음에는 왼쪽 위에 날씨·캘린더·GitHub 잔디, 그 아래 음악·최근 글', async ({ page }) => {
 		await fakeWeather(page);
 		await enterDesktop(page);
 		await closeSafari(page);
 		await expect(widget(page, '날씨')).toContainText('19°');
 		await expect(widget(page, '캘린더')).toContainText('요일');
 		await expect(widget(page, '음악')).toBeVisible();
+		// 잔디: 서버가 없으면 안내만 (자료가 있을 때의 모양은 단위 시험과 GitHub 앱 시험이 본다)
+		await expect(widget(page, 'GitHub')).toContainText('기여 기록을 불러오지 못했습니다');
 		await expect(widget(page, '최근 글').getByRole('listitem')).toHaveCount(3);
 		const weather = (await widget(page, '날씨').boundingBox())!;
 		const calendar = (await widget(page, '캘린더').boundingBox())!;
 		expect(weather.x).toBeLessThan(60);
 		expect(calendar.x).toBeGreaterThan(weather.x + weather.width);
 		expect(Math.round(calendar.y)).toBe(Math.round(weather.y));
+	});
+
+	test('GitHub 잔디: 서버의 기여 기록을 주마다 한 열로, 중간은 20주·작게는 8주', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await closeSafari(page);
+		const github = widget(page, 'GitHub');
+		await expect(github.locator('.widget-github-week')).toHaveCount(20);
+		await expect(github.locator('.widget-github-day[data-level="4"]').first()).toBeVisible();
+		await expect(github).toContainText('최근 20주 기여');
+		await github.click({ button: 'right' });
+		await page.getByRole('menuitemcheckbox', { name: '작게' }).click();
+		await expect(github.locator('.widget-github-week')).toHaveCount(8);
 	});
 
 	test('최근 글을 누르면 메모가 그 글을 열고, 위젯의 빈 곳을 누르면 그 앱이 열린다', async ({ page }) => {
@@ -85,7 +101,25 @@ test.describe('바탕화면 위젯', () => {
 		await calendar.click({ button: 'right' });
 		await page.getByRole('menuitem', { name: '위젯 제거' }).click();
 		await expect(calendar).toHaveCount(0);
-		expect((await saved(page))?.map((item) => item.id)).toEqual(['weather', 'music', 'posts']);
+		expect((await saved(page))?.map((item) => item.id)).toEqual(['weather', 'github', 'music', 'posts']);
+	});
+
+	test('사진 위젯은 오른쪽 클릭 메뉴에서 앨범을 고른다', async ({ page }) => {
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await page
+			.getByRole('dialog', { name: '위젯 갤러리' })
+			.getByRole('button', { name: '사진 위젯 (작게) 더하기' })
+			.click();
+		await page.keyboard.press('Escape');
+		const photos = widget(page, '사진');
+		await photos.click({ button: 'right' });
+		await expect(page.getByRole('menuitemcheckbox', { name: '모든 앨범' })).toHaveAttribute('aria-checked', 'true');
+		await page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' }).click();
+		await expect(photos.locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
+		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'sproutfarm' });
 	});
 
 	test('위젯 편집: 바탕화면 메뉴에서 갤러리를 열어 더하고, 지우기 단추로 빼고, 완료나 Esc로 닫는다', async ({

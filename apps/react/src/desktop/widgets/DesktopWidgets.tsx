@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { AppName } from '@/apps/manifest';
+import { ALBUMS } from '@/apps/photos/albums';
 import { useAppState } from '@/desktop/useAppState';
 import { cssVars } from '@/shared/lib/cssVars';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
@@ -70,6 +71,9 @@ const DesktopWidgets: React.FC = () => {
 		save([...widgets, { id: newWidgetId(kind, widgets), kind, size, ...cell }]);
 	};
 	const remove = (id: string) => save(widgets.filter((widget) => widget.id !== id));
+	/** 사진 위젯의 앨범 (undefined면 모든 앨범) */
+	const chooseAlbum = (id: string, album: string | undefined) =>
+		save(widgets.map((widget) => (widget.id === id ? { ...widget, album } : widget)));
 	const changeSize = (id: string, size: WidgetSize) =>
 		save(visible.map((widget) => (widget.id === id ? resize(widget, size, visible, viewport) : widget)));
 
@@ -131,6 +135,22 @@ const DesktopWidgets: React.FC = () => {
 					checked: target.size === size,
 					onSelect: () => changeSize(target.id, size),
 				})),
+				...(target.kind === 'photos'
+					? ([
+							'separator',
+							{ heading: '앨범' },
+							{
+								label: '모든 앨범',
+								checked: !ALBUMS.some((album) => album.id === target.album),
+								onSelect: () => chooseAlbum(target.id, undefined),
+							},
+							...ALBUMS.map((album) => ({
+								label: album.name,
+								checked: target.album === album.id,
+								onSelect: () => chooseAlbum(target.id, album.id),
+							})),
+						] satisfies MenuItem[])
+					: []),
 				'separator',
 				{ label: '위젯 제거', destructive: true, onSelect: () => remove(target.id) },
 				'separator',
@@ -176,7 +196,7 @@ const DesktopWidgets: React.FC = () => {
 								setMenu({ anchor: { x: event.clientX, y: event.clientY }, id: widget.id });
 							}}
 						>
-							<Widget kind={widget.kind} size={widget.size} open={open} />
+							<Widget kind={widget.kind} size={widget.size} options={widget} open={open} />
 							{editing && (
 								<button
 									type="button"

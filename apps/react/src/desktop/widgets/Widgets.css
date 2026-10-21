@@ -106,6 +106,23 @@
 	color: var(--widget-secondary-label);
 }
 
+/* 휴대폰에서 위젯 줄이 낮아지면(안쪽 높이 120px 아래) 날씨 아이콘을 빼고 글자를 줄여 넘치지 않게.
+   데스크톱 작은 위젯의 안쪽은 136px이라 걸리지 않는다 */
+.widget-weather {
+	container-type: size;
+}
+
+@container (max-height: 120px) {
+	.widget-weather-now .widget-weather-icon {
+		display: none;
+	}
+
+	.widget-weather-temp {
+		margin-bottom: auto;
+		font-size: var(--text-title1);
+	}
+}
+
 /* ─── 캘린더 ─── */
 .widget-calendar-body {
 	display: flex;
@@ -312,6 +329,18 @@
 	font-size: var(--text-footnote);
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+/* 휴대폰에서 화면이 낮아 위젯 줄을 줄이면(안쪽 높이 130px 아래) 셋째 글을 반쯤 잘라 보이지 않고 뺀다.
+   데스크톱 위젯의 안쪽은 136px이라 세 편이 다 보인다 */
+.widget-posts {
+	container-type: size;
+}
+
+@container (max-height: 130px) {
+	.widget-posts-body li:nth-child(n + 3) {
+		display: none;
+	}
 }
 
 /* 작은 위젯은 글 하나를 세 줄까지 */

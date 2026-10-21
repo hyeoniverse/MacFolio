@@ -1155,6 +1155,8 @@ test.describe('모바일', () => {
 
 	test('홈 화면의 음악 위젯: 빈 곳을 누르면 음악 앱이 열리고, 재생 위치 막대는 앱을 열지 않는다', async ({ page }) => {
 		await enterHome(page);
+		// 음악 위젯은 2쪽에 있다
+		await page.getByRole('tab', { name: '2쪽' }).click();
 		const widget = page.locator('.mobile-home').getByRole('region', { name: '음악' });
 		await expect(widget).toBeVisible();
 		await expect(widget.getByRole('button', { name: '재생' })).toBeVisible();
@@ -1402,11 +1404,8 @@ test.describe('모바일', () => {
 		await music.getByRole('button', { name: /지브리/ }).tap();
 		await music.locator('.music-track').first().tap();
 		const widgetPlay = () =>
-			page
-				.locator('.mobile-home')
-				.getByRole('region', { name: '음악' })
-				.locator('.music-widget-controls button')
-				.nth(1);
+			// 음악 위젯은 2쪽(지금은 가려진 페이지)에 있어 역할이 아니라 자리로 찾는다
+			page.locator('.mobile-home .music-widget .music-widget-controls button').nth(1);
 		await expect(widgetPlay()).toHaveAttribute('aria-label', '일시 정지');
 
 		const indicator = (await music.locator('.home-indicator').boundingBox())!;
@@ -1506,26 +1505,27 @@ test.describe('휴대폰 홈 화면 페이지', () => {
 });
 
 test.describe('휴대폰 홈 화면 위젯', () => {
-	test('페이지마다 위에 위젯: 1쪽 소개·음악, 2쪽 날씨·캘린더·최근 글, 3쪽 GitHub·사진·시계', async ({ page }) => {
+	test('페이지마다 위에 위젯: 1쪽 소개·GitHub 잔디, 2쪽 날씨·캘린더·음악, 3쪽 최근 글·사진·시계', async ({ page }) => {
 		await fakeWeather(page);
 		await enterHome(page);
 		const pageWidgets = (index: number) =>
 			page.locator('.mobile-page').nth(index).locator('.mobile-widgets [role="group"]');
 		const labels = async (index: number) =>
 			pageWidgets(index).evaluateAll((items) => items.map((item) => item.getAttribute('aria-label')));
-		expect(await labels(0)).toEqual(['소개 위젯', '음악 위젯']);
-		expect(await labels(1)).toEqual(['날씨 위젯', '캘린더 위젯', '최근 글 위젯']);
-		expect(await labels(2)).toEqual(['GitHub 위젯', '사진 위젯', '시계 위젯']);
+		expect(await labels(0)).toEqual(['소개 위젯', 'GitHub 위젯']);
+		expect(await labels(1)).toEqual(['날씨 위젯', '캘린더 위젯', '음악 위젯']);
+		expect(await labels(2)).toEqual(['최근 글 위젯', '사진 위젯', '시계 위젯']);
 
 		// 작은 위젯 둘이 한 줄, 중간 위젯은 한 줄을 다 쓰고 높이는 작은 위젯과 같다
 		await page.getByRole('tab', { name: '2쪽' }).click();
-		const [weather, calendar, posts] = await Promise.all(
+		const [weather, calendar, music] = await Promise.all(
 			[0, 1, 2].map(async (index) => (await pageWidgets(1).nth(index).boundingBox())!)
 		);
 		expect(Math.round(weather.y)).toBe(Math.round(calendar.y));
-		expect(Math.abs(weather.width - weather.height)).toBeLessThan(2);
-		expect(posts.width).toBeGreaterThan(weather.width * 2);
-		expect(Math.abs(posts.height - weather.height)).toBeLessThan(4);
+		// 작은 위젯은 정사각형이 기본이고, 화면이 낮으면 아이콘 두 줄이 들어가게 높이만 줄인다
+		expect(weather.height).toBeLessThanOrEqual(weather.width + 1);
+		expect(music.width).toBeGreaterThan(weather.width * 2);
+		expect(Math.abs(music.height - weather.height)).toBeLessThan(4);
 		await expect(pageWidgets(1).nth(0)).toContainText('19°');
 	});
 
@@ -1551,8 +1551,8 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await page.getByRole('navigation', { name: '앱', exact: true }).locator('.mobile-app').first().click();
 		await expect(page.locator('.container.mobile')).toHaveCount(0);
 
-		await page.getByRole('button', { name: '음악 위젯 제거' }).click();
-		await expect(firstPage.getByRole('group', { name: '음악 위젯' })).toHaveCount(0);
+		await page.getByRole('button', { name: 'GitHub 위젯 제거' }).click();
+		await expect(firstPage.getByRole('group', { name: 'GitHub 위젯' })).toHaveCount(0);
 
 		await page.getByRole('button', { name: '위젯 더하기' }).click();
 		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
@@ -1602,9 +1602,44 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await expect(gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' })).toBeEnabled();
 	});
 
+	test('편집 중 사진 위젯의 앨범 단추로 앨범을 고른다', async ({ page }) => {
+		await enterHome(page);
+		await page.getByRole('tab', { name: '3쪽' }).click();
+		const photos = page.getByRole('group', { name: '사진 위젯' });
+		const box = (await photos.boundingBox())!;
+		await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+		await page.mouse.down();
+		await expect(page.locator('.mobile-home')).toHaveClass(/editing/);
+		await page.mouse.up();
+		await page.getByRole('button', { name: '사진 위젯의 앨범 고르기' }).click();
+		const sheet = page.getByRole('dialog', { name: '사진 위젯의 앨범' });
+		await expect(sheet.getByRole('radio', { name: '모든 앨범' })).toHaveAttribute('aria-checked', 'true');
+		await sheet.getByRole('radio', { name: 'SproutFarm 새싹 농장' }).click();
+		await expect(sheet).toBeHidden();
+		await expect(photos.locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
+		expect(await page.evaluate(() => JSON.parse(localStorage.getItem('macfolio:mobile:widgets')!)[2][1].album)).toBe(
+			'sproutfarm'
+		);
+	});
+
+	test('1쪽의 GitHub 잔디가 서버의 기여 기록을 그린다', async ({ page }) => {
+		await fakeApi(page);
+		await enterHome(page);
+		const github = page.locator('.mobile-page').first().getByRole('group', { name: 'GitHub 위젯' });
+		await expect(github.locator('.widget-github-week')).toHaveCount(20);
+		await expect(github.getByRole('img', { name: /최근 20주 기여 \d+회/ })).toBeVisible();
+	});
+
+	test('위젯이 있어도 위젯 아래에 앱이 두 줄은 들어가고 잘리지 않는다', async ({ page }) => {
+		await enterHome(page);
+		const grid = page.getByRole('navigation', { name: '앱', exact: true });
+		expect(await grid.locator('.mobile-app').count()).toBeGreaterThanOrEqual(8);
+		expect(await grid.evaluate((element) => element.scrollHeight <= element.clientHeight)).toBe(true);
+	});
+
 	test('최근 글을 누르면 메모가 그 글을 연다', async ({ page }) => {
 		await enterHome(page);
-		await page.getByRole('tab', { name: '2쪽' }).click();
+		await page.getByRole('tab', { name: '3쪽' }).click();
 		const first = page.getByRole('group', { name: '최근 글 위젯' }).getByRole('button').first();
 		const title = (await first.locator('strong').textContent())!;
 		await first.click();

@@ -1,3 +1,4 @@
+import { ALBUMS } from '@/apps/photos/albums';
 import Sheet from '@/shared/ui/sheet/Sheet';
 import {
 	pageToAdd,
@@ -50,5 +51,37 @@ const WidgetSheet = ({ pages, current, onAdd, onClose }: Props) => (
 		</ul>
 	</Sheet>
 );
+
+/** 사진 위젯의 앨범 고르기 (편집 중에 위젯의 '앨범' 단추로 연다) */
+export const AlbumSheet = ({
+	album,
+	onChoose,
+	onClose,
+}: {
+	album: string | undefined;
+	onChoose: (album: string | undefined) => void;
+	onClose: () => void;
+}) => {
+	const all = !ALBUMS.some((item) => item.id === album);
+	const options = [{ id: undefined, name: '모든 앨범' }, ...ALBUMS.map(({ id, name }) => ({ id, name }))];
+	return (
+		<Sheet label="사진 위젯의 앨범" variant="card" className="mobile-album-sheet" onClose={onClose}>
+			<h2>앨범</h2>
+			<ul role="radiogroup" aria-label="앨범">
+				{options.map((option) => {
+					const checked = option.id === undefined ? all : option.id === album;
+					return (
+						<li key={option.id ?? 'all'}>
+							<button type="button" role="radio" aria-checked={checked} onClick={() => onChoose(option.id)}>
+								{option.name}
+								{checked && <i className="fa-solid fa-check" aria-hidden="true"></i>}
+							</button>
+						</li>
+					);
+				})}
+			</ul>
+		</Sheet>
+	);
+};
 
 export default WidgetSheet;

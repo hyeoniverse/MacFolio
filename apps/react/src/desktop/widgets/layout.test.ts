@@ -133,5 +133,12 @@ describe('위젯 목록 저장', () => {
 				],
 			])
 		).toEqual([[medium('a'), medium('b'), medium('c')], [], []]);
+		// 사진 위젯의 앨범은 글자면 남긴다 (없어진 앨범이면 위젯이 모든 앨범을 보인다)
+		expect(parseMobileWidgets([[{ id: 'p', kind: 'photos', size: 'small', album: 'qru' }]])?.[0]).toEqual([
+			{ id: 'p', kind: 'photos', size: 'small', album: 'qru' },
+		]);
+		expect(parseWidgets([{ id: 'p', kind: 'photos', size: 'small', col: 0, row: 0, album: 3 }])).toEqual([
+			{ id: 'p', kind: 'photos', size: 'small', col: 0, row: 0 },
+		]);
 	});
 });

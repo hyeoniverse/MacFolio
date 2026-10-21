@@ -7,6 +7,33 @@ export function rowsThatFit(height: number, rowHeight: number, rowGap: number): 
 	return Math.max(1, Math.floor((height + rowGap) / (rowHeight + rowGap)));
 }
 
+/** 위젯 아래에 늘 남겨 둘 아이콘 줄 수 (위젯이 화면을 다 차지해 앱이 잘리지 않게) */
+export const MIN_ICON_ROWS = 2;
+/** 위젯 한 줄의 가장 낮은 높이 (이보다 줄이면 내용이 들어가지 않는다) */
+export const MIN_WIDGET_ROW = 112;
+
+/**
+ * 위젯 한 줄의 높이: 정사각형(작은 위젯의 폭)이 기본이고, 위젯 아래에 아이콘 MIN_ICON_ROWS줄이 들어가도록 줄인다.
+ * 위젯 줄 수가 가장 많은 페이지에 맞춰 모든 페이지가 같은 높이를 쓴다. 너무 낮아지면 MIN_WIDGET_ROW에서 멈춘다
+ * @param height 페이지 높이
+ * @param widgetRows 페이지마다 위젯 줄 수
+ * @param square 작은 위젯의 폭
+ * @param gaps 위젯 사이, 위젯과 아이콘 사이, 아이콘 줄 사이
+ */
+export function widgetRowHeight(
+	height: number,
+	widgetRows: readonly number[],
+	square: number,
+	iconRow: number,
+	gaps: { widget: number; top: number; icon: number }
+): number {
+	const rows = Math.max(0, ...widgetRows);
+	if (rows === 0) return square;
+	const icons = MIN_ICON_ROWS * iconRow + (MIN_ICON_ROWS - 1) * gaps.icon;
+	const room = Math.floor((height - gaps.top - icons - (rows - 1) * gaps.widget) / rows);
+	return Math.max(MIN_WIDGET_ROW, Math.min(square, room));
+}
+
 /**
  * 앱을 페이지로 나눈다: 위젯이 있는 앞 페이지들은 위젯 아래 칸 수(leadingSlots)만큼, 그다음부터는 slotsPerPage칸씩.
  * 위젯이 있는 페이지는 앱이 모자라도 모두 만든다 (빈 칸은 그대로)

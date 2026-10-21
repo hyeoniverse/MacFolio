@@ -22,13 +22,18 @@ export const WIDGET_INFO: Record<WidgetKind, WidgetInfo> = {
 	clock: { label: '시계', description: '지금 시각 (서울)', sizes: ['small'] },
 	music: { label: '음악', description: '지금 재생 중인 곡과 재생 버튼', sizes: ['medium', 'small'] },
 	posts: { label: '최근 글', description: '메모 앱에 새로 올라온 글', sizes: ['medium', 'small'] },
-	photos: { label: '사진', description: '사진 앱의 프로젝트 화면을 차례로', sizes: ['small', 'medium'] },
-	github: { label: 'GitHub', description: '최근 기여 그래프', sizes: ['medium'] },
+	photos: { label: '사진', description: '사진 앱의 앨범(고른 것이나 모두)을 차례로', sizes: ['small', 'medium'] },
+	github: { label: 'GitHub', description: '기여 그래프 (잔디)', sizes: ['medium', 'small'] },
 	profile: { label: '소개', description: '이름과 하는 일', sizes: ['medium'] },
 };
 
 /** 바탕화면에 놓인 위젯 하나. col·row는 위젯 격자의 칸 (layout.ts) */
-export interface PlacedWidget {
+/** 위젯마다 고르는 값 (사진 위젯의 앨범: 사진 앱의 앨범 id. 없으면 모든 앨범) */
+export interface WidgetOptions {
+	album?: string;
+}
+
+export interface PlacedWidget extends WidgetOptions {
 	id: string;
 	kind: WidgetKind;
 	size: WidgetSize;
@@ -36,16 +41,17 @@ export interface PlacedWidget {
 	row: number;
 }
 
-/** 처음 바탕화면: 왼쪽 위에 날씨·캘린더, 그 아래 음악, 최근 글 */
+/** 처음 바탕화면: 왼쪽 위에 날씨·캘린더·GitHub 잔디, 그 아래 음악, 최근 글 */
 export const DEFAULT_DESKTOP_WIDGETS: PlacedWidget[] = [
 	{ id: 'weather', kind: 'weather', size: 'small', col: 0, row: 0 },
 	{ id: 'calendar', kind: 'calendar', size: 'small', col: 1, row: 0 },
+	{ id: 'github', kind: 'github', size: 'medium', col: 2, row: 0 },
 	{ id: 'music', kind: 'music', size: 'medium', col: 0, row: 1 },
 	{ id: 'posts', kind: 'posts', size: 'medium', col: 0, row: 2 },
 ];
 
 /** 휴대폰 홈 화면의 위젯 하나 (페이지 안의 순서대로 놓인다) */
-export interface PageWidget {
+export interface PageWidget extends WidgetOptions {
 	id: string;
 	kind: WidgetKind;
 	size: WidgetSize;
@@ -60,15 +66,15 @@ export const MAX_WIDGET_ROWS = 3;
 export const DEFAULT_MOBILE_WIDGETS: PageWidget[][] = [
 	[
 		{ id: 'profile', kind: 'profile', size: 'medium' },
-		{ id: 'music', kind: 'music', size: 'medium' },
+		{ id: 'github', kind: 'github', size: 'medium' },
 	],
 	[
 		{ id: 'weather', kind: 'weather', size: 'small' },
 		{ id: 'calendar', kind: 'calendar', size: 'small' },
-		{ id: 'posts', kind: 'posts', size: 'medium' },
+		{ id: 'music', kind: 'music', size: 'medium' },
 	],
 	[
-		{ id: 'github', kind: 'github', size: 'medium' },
+		{ id: 'posts', kind: 'posts', size: 'medium' },
 		{ id: 'photos', kind: 'photos', size: 'small' },
 		{ id: 'clock', kind: 'clock', size: 'small' },
 	],
@@ -94,6 +100,10 @@ export function pageToAdd(
 	return pages.findIndex((page) => fitsOnPage(page, size));
 }
 
+/** 저장한 고른 값 (앨범 id는 글자만 받는다: 없어진 앨범이면 위젯이 모든 앨범을 보인다) */
+const optionsOf = (album: unknown): WidgetOptions =>
+	typeof album === 'string' && album.length <= 100 ? { album } : {};
+
 const isKind = (value: unknown): value is WidgetKind =>
 	typeof value === 'string' && (WIDGET_KINDS as readonly string[]).includes(value);
 
@@ -104,12 +114,12 @@ export function parseWidgets(raw: unknown): PlacedWidget[] | null {
 	const ids = new Set<string>();
 	for (const item of raw) {
 		if (typeof item !== 'object' || item === null) continue;
-		const { id, kind, size, col, row } = item as Record<string, unknown>;
+		const { id, kind, size, col, row, album } = item as Record<string, unknown>;
 		if (typeof id !== 'string' || ids.has(id) || !isKind(kind)) continue;
 		if (!(WIDGET_INFO[kind].sizes as readonly unknown[]).includes(size)) continue;
 		if (!Number.isInteger(col) || !Number.isInteger(row) || (col as number) < 0 || (row as number) < 0) continue;
 		ids.add(id);
-		widgets.push({ id, kind, size: size as WidgetSize, col: col as number, row: row as number });
+		widgets.push({ id, kind, size: size as WidgetSize, col: col as number, row: row as number, ...optionsOf(album) });
 	}
 	return widgets;
 }
@@ -127,12 +137,12 @@ export function parseMobileWidgets(raw: unknown): PageWidget[][] | null {
 		if (!Array.isArray(items)) return page;
 		for (const item of items) {
 			if (typeof item !== 'object' || item === null) continue;
-			const { id, kind, size } = item as Record<string, unknown>;
+			const { id, kind, size, album } = item as Record<string, unknown>;
 			if (typeof id !== 'string' || ids.has(id) || !isKind(kind)) continue;
 			if (!(WIDGET_INFO[kind].sizes as readonly unknown[]).includes(size)) continue;
 			if (!fitsOnPage(page, size as WidgetSize)) continue;
 			ids.add(id);
-			page.push({ id, kind, size: size as WidgetSize });
+			page.push({ id, kind, size: size as WidgetSize, ...optionsOf(album) });
 		}
 		return page;
 	});
