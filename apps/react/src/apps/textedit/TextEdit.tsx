@@ -99,7 +99,7 @@ const TextEdit: React.FC = () => {
 		<AppWindow title={title} appName="textedit" chrome="unified">
 			<div className="textedit">
 				<header className="textedit-head">
-					{/* 제목: 신호등 옆에 (macOS 텍스트 편집기처럼 도구 막대 없이 제목과 서식 막대만) */}
+					{/* 제목: 신호등 옆에 (macOS 텍스트 편집기는 .md를 일반 텍스트로 열어 서식 막대·눈금자가 없다) */}
 					<div className="textedit-titlebar">
 						<h1 className="textedit-title">{title}</h1>
 						{resume && !editing && (
@@ -119,55 +119,6 @@ const TextEdit: React.FC = () => {
 							</span>
 						)}
 					</div>
-					{/* 서식 막대와 눈금자: 서식 있는 문서(보기)에서만. 고칠 때는 Markdown 원문이라 일반 텍스트 문서처럼 없다.
-					    글자 서식은 Markdown이 정하므로 모양만 그린다 */}
-					{path && !editing && (
-						<div className="textedit-format" aria-hidden="true">
-							<span className="textedit-seg">
-								<b>B</b>
-								<i>I</i>
-								<u>U</u>
-								<s>S</s>
-							</span>
-							<span className="textedit-swatch" />
-							<span className="textedit-chip textedit-highlight">가</span>
-							<span className="textedit-chip textedit-popup textedit-font">
-								Apple SD 산돌고딕 Neo
-								<i className="fa-solid fa-sort" />
-							</span>
-							<span className="textedit-chip textedit-popup textedit-weight">
-								일반체
-								<i className="fa-solid fa-sort" />
-							</span>
-							<span className="textedit-size">
-								13
-								<i className="fa-solid fa-chevron-down" />
-							</span>
-							<span className="textedit-seg textedit-align">
-								<i className="fa-solid fa-align-left on" />
-								<i className="fa-solid fa-align-center" />
-								<i className="fa-solid fa-align-right" />
-								<i className="fa-solid fa-align-justify" />
-							</span>
-							<span className="textedit-chip textedit-list">
-								<i className="fa-solid fa-list-ul" />
-								<i className="fa-solid fa-chevron-down" />
-							</span>
-							<span className="textedit-chip textedit-popup textedit-spacing">
-								1.0
-								<i className="fa-solid fa-sort" />
-							</span>
-						</div>
-					)}
-					{path && !editing && (
-						<div className="textedit-ruler" aria-hidden="true">
-							{Array.from({ length: 11 }, (_, index) => (
-								<span key={index} style={{ left: `${index * 10}%` }}>
-									{index * 2}
-								</span>
-							))}
-						</div>
-					)}
 				</header>
 				<div className="textedit-body">
 					{!path ? (

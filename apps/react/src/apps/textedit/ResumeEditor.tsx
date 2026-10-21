@@ -8,6 +8,18 @@ import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import Button from '@/shared/ui/button/Button';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { importProfile, importProject } from '@/apps/finder/resumeImport';
+import { applyMarkdown, type MarkdownFormat } from './markdownFormat';
+
+/** Markdown 도구 막대의 버튼: [형식, 이름, 아이콘(Font Awesome) 또는 글자] */
+const TOOLS: [MarkdownFormat, string, string][] = [
+	['heading', '제목', 'fa-solid fa-heading'],
+	['bold', '굵게', 'fa-solid fa-bold'],
+	['italic', '기울임', 'fa-solid fa-italic'],
+	['code', '코드(기술 칩)', 'fa-solid fa-code'],
+	['link', '링크', 'fa-solid fa-link'],
+	['list', '목록', 'fa-solid fa-list-ul'],
+	['quote', '인용(한 줄 소개)', 'fa-solid fa-quote-left'],
+];
 
 interface Props {
 	/** 저장하거나 취소하면 보기로 돌아간다 */
@@ -87,6 +99,18 @@ const ResumeEditor: React.FC<Props> = ({ onDone }) => {
 		onDone();
 	};
 
+	/** 고른 글자에 Markdown 서식을 넣고, 바꾼 범위를 다시 고른다 */
+	const applyFormat = (format: MarkdownFormat) => {
+		const textarea = field.current;
+		if (!textarea) return;
+		const edit = applyMarkdown(draft, textarea.selectionStart, textarea.selectionEnd, format);
+		setDraft(edit.text);
+		requestAnimationFrame(() => {
+			textarea.focus();
+			textarea.setSelectionRange(edit.start, edit.end);
+		});
+	};
+
 	return (
 		<div className="finder-resume-editor">
 			<div className="finder-resume-editor-bar" role="toolbar" aria-label="이력서 편집">
@@ -124,6 +148,22 @@ const ResumeEditor: React.FC<Props> = ({ onDone }) => {
 					))}
 				</ul>
 			)}
+			<div className="textedit-md-tools" role="toolbar" aria-label="Markdown 서식">
+				{TOOLS.map(([format, label, icon]) => (
+					<button
+						key={format}
+						type="button"
+						className="textedit-md-tool"
+						aria-label={label}
+						title={label}
+						// 누르는 동안 입력칸의 선택이 풀리지 않게
+						onMouseDown={(event) => event.preventDefault()}
+						onClick={() => applyFormat(format)}
+					>
+						<i className={icon} aria-hidden="true" />
+					</button>
+				))}
+			</div>
 			<textarea
 				ref={field}
 				className="finder-resume-editor-field"

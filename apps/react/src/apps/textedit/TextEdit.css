@@ -10,7 +10,7 @@
 	container-type: inline-size;
 }
 
-/* 위: 제목 줄(신호등 옆) + 서식 막대 + 눈금자. macOS 텍스트 편집기처럼 흰 바탕 한 덩어리 */
+/* 위: 제목 줄(신호등 옆). .md는 일반 텍스트 문서라 서식 막대·눈금자가 없다 */
 .textedit-head {
 	flex: none;
 	border-bottom: 1px solid var(--color-separator);
@@ -64,152 +64,10 @@
 
 .textedit {
 	--textedit-chip: rgba(0, 0, 0, 0.06);
-	--textedit-strike: var(--color-system-red);
 }
 
 :root[data-theme='dark'] .textedit {
 	--textedit-chip: rgba(255, 255, 255, 0.1);
-}
-
-/* 서식 막대: 옅은 회색 알약들 (B I U S, 글자 색, 글꼴, 굵기, 크기, 정렬, 목록, 줄 간격) */
-.textedit-format {
-	display: flex;
-	align-items: center;
-	gap: var(--space-8);
-	padding: 0 var(--space-12) var(--space-10);
-	overflow: hidden;
-	font-size: var(--text-subheadline);
-	white-space: nowrap;
-}
-
-.textedit-format > * {
-	display: inline-flex;
-	flex: none;
-	align-items: center;
-	height: 30px;
-	border-radius: var(--radius-6);
-}
-
-.textedit-seg,
-.textedit-chip {
-	background-color: var(--textedit-chip);
-}
-
-.textedit-seg {
-	padding: 0 var(--space-2);
-}
-
-.textedit-seg > * {
-	display: inline-grid;
-	place-items: center;
-	width: 28px;
-	height: 22px;
-	font-style: normal;
-}
-
-.textedit-seg > i:not([class]) {
-	font-style: italic;
-}
-
-.textedit-seg > * + * {
-	border-left: 1px solid var(--color-separator);
-}
-
-.textedit-align > * {
-	width: 36px;
-	height: 26px;
-	border-left: 0 !important;
-	border-radius: var(--radius-4);
-	font-style: normal !important;
-}
-
-.textedit-align .on {
-	background-color: var(--color-control-accent);
-	color: var(--color-white);
-}
-
-.textedit-swatch {
-	width: 30px;
-	border: 1px solid var(--color-separator);
-	background-color: var(--color-label);
-}
-
-.textedit-chip {
-	gap: var(--space-10);
-	padding: 0 var(--space-10);
-}
-
-.textedit-highlight {
-	width: 30px;
-	justify-content: center;
-	padding: 0;
-	border: 1px solid var(--color-separator);
-	background: linear-gradient(to top right, transparent 46%, var(--textedit-strike) 48% 52%, transparent 54%);
-}
-
-.textedit-font {
-	min-width: 170px;
-	justify-content: space-between;
-}
-
-.textedit-weight {
-	min-width: 120px;
-	justify-content: space-between;
-}
-
-.textedit-size {
-	gap: var(--space-12);
-	padding: 0 var(--space-4) 0 var(--space-10);
-	border: 1px solid var(--color-separator);
-}
-
-.textedit-size i {
-	display: inline-grid;
-	place-items: center;
-	width: 30px;
-	height: 22px;
-	border-radius: var(--radius-4);
-	background-color: var(--textedit-chip);
-	font-size: var(--text-caption2);
-}
-
-.textedit-list i:last-child {
-	font-size: 10px;
-}
-
-/* 눈금자: 0~20cm, 2마다 숫자, 사이에 작은 눈금.  */
-.textedit-ruler {
-	position: relative;
-	height: 30px;
-	margin: 0 var(--space-12);
-	border-top: 1px solid var(--color-separator);
-	background:
-		repeating-linear-gradient(to right, var(--color-secondary-label) 0 1px, transparent 1px 5%) 0 100% / 100% 10px
-			no-repeat,
-		repeating-linear-gradient(to right, var(--color-separator) 0 1px, transparent 1px 2.5%) 0 calc(100% - 8px) / 100%
-			6px no-repeat;
-	color: var(--color-secondary-label);
-	font-size: var(--text-caption2);
-}
-
-.textedit-ruler span {
-	position: absolute;
-	bottom: 2px;
-	padding-left: var(--space-2);
-	line-height: 1;
-}
-
-.textedit-ruler span:last-child {
-	transform: translateX(-100%);
-}
-
-/* 좁은 창(기본 크기 포함): 굵기·목록·줄 간격은 접는다 */
-@container (max-width: 860px) {
-	.textedit-weight,
-	.textedit-list,
-	.textedit-spacing {
-		display: none;
-	}
 }
 
 .textedit-body {
@@ -267,4 +125,33 @@
 	font-size: var(--text-caption);
 	line-height: 1.6;
 	resize: none;
+}
+
+/* Markdown 도구 막대: 옅은 회색 알약 안에 서식 버튼 (macOS 텍스트 편집기의 서식 막대 모양) */
+.textedit-md-tools {
+	display: flex;
+	align-self: flex-start;
+	padding: var(--space-2);
+	border-radius: var(--radius-6);
+	background-color: var(--textedit-chip);
+}
+
+.textedit-md-tool {
+	display: inline-grid;
+	place-items: center;
+	width: 32px;
+	height: 26px;
+	border: 0;
+	border-radius: var(--radius-4);
+	background: none;
+	color: var(--color-label);
+	font-size: var(--text-caption1);
+}
+
+.textedit-md-tool + .textedit-md-tool {
+	box-shadow: -1px 0 0 var(--color-separator);
+}
+
+.textedit-md-tool:hover {
+	background-color: var(--color-unemphasized-selected-content-background);
 }
