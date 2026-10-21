@@ -326,6 +326,7 @@ export const RESERVED_PROJECT_IDS = [
 	'activity',
 	'weather',
 	'preview',
+	'textedit',
 	'quicktime',
 	'bin',
 	'launchpad',

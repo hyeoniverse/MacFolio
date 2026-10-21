@@ -17,9 +17,11 @@ import {
 } from './files';
 import FileView from './FileView';
 import { downloadFile, openFileInNewTab, PICTURES_DOCUMENT_FOLDER } from './documents';
-import { DOC_SOURCES } from './docsBundle';
+import { docSource } from './docsBundle';
 import { finderDocRequest } from './openDoc';
 import DocView from './DocView';
+import { downloadResume, resumePdfLang } from './resumeDownload';
+import { resumeLangOf } from './resumeModel';
 import FinderIcon from './FinderIcon';
 import AppsGlyph from './AppsGlyph';
 import '@/apps/finder/FinderMobile.css';
@@ -129,7 +131,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 			const { path } = finderDocRequest.getState();
 			if (!path) return;
 			finderDocRequest.setState({ path: null });
-			if (DOC_SOURCES[path] !== undefined) setStack((current) => [...current, { doc: path }]);
+			if (docSource(path) !== undefined) setStack((current) => [...current, { doc: path }]);
 		};
 		take();
 		return finderDocRequest.subscribe(take);
@@ -139,6 +141,8 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		if (item.kind === 'folder') push({ folder: item.id });
 		else if (item.kind === 'alias') push({ folder: item.target });
 		else if (item.kind === 'doc') push({ doc: item.path });
+		// 이력서 PDF(만든 파일)는 휴대폰에서는 바로 만들어 받는다
+		else if (item.kind === 'pdf' && resumePdfLang(item.key)) void downloadResume(resumePdfLang(item.key)!);
 		else if (item.kind === 'pdf' || item.kind === 'image' || (item.kind === 'file' && mediaKind(item.name)))
 			push({ file: item.id });
 		else if (item.kind === 'file') downloadFile(item.key, item.name);
@@ -149,7 +153,7 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		!target
 			? TAB_TITLES[tab]
 			: 'doc' in target
-				? target.doc.split('/').at(-1)!
+				? (find(roots, `docs:${target.doc}`)?.name ?? target.doc.split('/').at(-1)!)
 				: (find(roots, 'file' in target ? target.file : target.folder)?.name ?? TAB_TITLES[tab]);
 	const title = titleOf(screen);
 	const searching = query.trim() !== '';
@@ -231,11 +235,47 @@ const FinderMobile: React.FC<Props> = ({ locations, onOpenElsewhere, dark }) => 
 		return (
 			<div className="files-phone doc">
 				{navigation}
+				{/* 데이터로 만든 이력서: 공유 › PDF 다운로드 (누르는 순간의 데이터로 만든 PDF) */}
+				{resumeLangOf(screen.doc) && (
+					<IconButton
+						ref={moreButton}
+						className="files-phone-more"
+						label="공유"
+						icon="fa-solid fa-arrow-up-from-bracket"
+						aria-haspopup="menu"
+						aria-expanded={menu !== null}
+						onClick={(event) => {
+							const rect = event.currentTarget.getBoundingClientRect();
+							setMenu(menu ? null : { x: rect.right - 250, y: rect.bottom + 8 });
+						}}
+					/>
+				)}
+				{resumeLangOf(screen.doc) && menu && (
+					<Menu
+						label="공유"
+						variant="ios"
+						anchor={menu}
+						trigger={moreButton}
+						onClose={() => setMenu(null)}
+						items={[
+							{
+								label: 'PDF 다운로드',
+								icon: 'fa-solid fa-file-arrow-down',
+								onSelect: () => void downloadResume(resumeLangOf(screen.doc)!),
+							},
+						]}
+					/>
+				)}
 				<h2 key={`title:${screenKey}`} className="files-phone-bar-title">
 					{title}
 				</h2>
 				<div key={screenKey} className="files-phone-scroll" data-motion={motion ?? undefined}>
-					<DocView path={screen.doc} dark={dark} onOpenDoc={(path) => push({ doc: path })} />
+					<DocView
+						path={screen.doc}
+						dark={dark}
+						onOpenDoc={(path) => push({ doc: path })}
+						onOpenProject={(id) => onOpenElsewhere({ kind: 'project', id: `projects/${id}`, name: id, projectId: id })}
+					/>
 				</div>
 			</div>
 		);

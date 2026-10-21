@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseProfile, readProfile, SiteView } from './site.js';
+import { parseProfile, parseResume, readProfile, readResume, RESUME_LIMITS, SiteView } from './site.js';
 import { parse } from './parse.js';
 
 const valid = {
@@ -82,6 +82,38 @@ describe('사이트 프로필', () => {
 		});
 		expect(parse(SiteView, { profile: null, projects: { items: 'x' }, updatedAt: null })).toEqual({
 			errors: ['items 목록을 보내 주세요.'],
+		});
+	});
+});
+
+describe('ResumeInput', () => {
+	it('이력서 Markdown 한 장: 줄바꿈을 \\n으로 맞추고 앞뒤를 다듬는다', () => {
+		expect(parseResume({ markdown: '\r\n# 김정현\r\n\r\n## 강점\r\n- 끝까지 운영\t!\n' })).toEqual({
+			value: { markdown: '# 김정현\n\n## 강점\n- 끝까지 운영\t!' },
+		});
+	});
+
+	it('비었거나, 너무 길거나, 제어 문자가 있으면 이유를 돌려준다', () => {
+		expect(parseResume({ markdown: '  \n ' })).toEqual({ errors: ['이력서 내용을 입력해 주세요.'] });
+		expect(parseResume({ markdown: 'a'.repeat(RESUME_LIMITS.markdown + 1) })).toEqual({
+			errors: ['이력서는 20,000자까지입니다.'],
+		});
+		expect(parseResume({ markdown: '# 이름\u0007' })).toEqual({ errors: ['이력서에 쓸 수 없는 글자가 있습니다.'] });
+		expect(parseResume({ markdown: 3 })).toEqual({ errors: ['이력서는 글자여야 합니다.'] });
+		expect(parseResume(null)).toEqual({ errors: ['이력서를 보내 주세요.'] });
+	});
+
+	it('저장해 둔 값 읽기 (틀렸으면 null), 응답에 실린다 (예전 응답에는 없어도 된다)', () => {
+		expect(readResume({ markdown: '# 이름' })).toEqual({ markdown: '# 이름' });
+		expect(readResume({ markdown: '' })).toBeNull();
+		expect(readResume(null)).toBeNull();
+		expect(parse(SiteView, { profile: null, projects: null, resume: { markdown: '# 이름' }, updatedAt: null })).toEqual(
+			{
+				value: { profile: null, projects: null, resume: { markdown: '# 이름' }, updatedAt: null },
+			}
+		);
+		expect(parse(SiteView, { profile: null, projects: null, updatedAt: null })).toEqual({
+			value: { profile: null, projects: null, updatedAt: null },
 		});
 	});
 });

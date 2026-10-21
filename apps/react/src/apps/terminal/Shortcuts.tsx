@@ -94,6 +94,7 @@ const ResultBlock: React.FC<{ block: Block; onRun: (page: Page) => void }> = ({ 
 	}
 	// 터미널용 안내("project <번호>로 자세히 보기")는 누르는 화면에서는 필요 없다
 	if (line.kind === 'muted') return null;
+	if (line.kind === 'art') return <pre className="shortcut-art">{line.text}</pre>;
 	if (line.kind === 'text' || line.kind === 'error') {
 		return <p className={`shortcut-text ${line.kind}`}>{line.text}</p>;
 	}

@@ -6,7 +6,10 @@ import remarkGfm from 'remark-gfm';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import { rehypeHighlightCode } from '@/apps/memo/highlight';
 import { colorSchemeOf, resolveImage, resolveLink } from './repoDocs';
-import { DOC_IMAGES, DOC_SOURCES } from './docsBundle';
+import { DOC_IMAGES, DOC_SOURCES, docSource } from './docsBundle';
+import { useResume } from '@/shared/site/resumeStore';
+import { projectLinkId } from './resumeModel';
+import './DocView.css';
 
 const DOC_SET = new Set(Object.keys(DOC_SOURCES));
 
@@ -54,17 +57,24 @@ interface DocViewProps {
 	dark: boolean;
 	/** 다른 문서 링크를 누르면 Finder에서 연다 */
 	onOpenDoc: (path: string) => void;
+	/** 이력서의 프로젝트 링크를 누르면 Safari에서 연다 */
+	onOpenProject?: (id: string) => void;
 }
 
 /**
  * 저장소 문서를 GitHub처럼 그린다. 문서 안의 HTML(가운데 정렬, 그림)은 GitHub와 같은 규칙으로 거르고
  * (rehype-sanitize의 기본값), 코드 블록은 메모와 같은 색으로, mermaid 코드 블록은 그림으로 그린다.
  */
-const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc }) => {
-	const source = DOC_SOURCES[path] ?? '';
+const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc, onOpenProject }) => {
+	// 이력서는 관리자가 고치면 바로 다시 그린다 (저장소 문서는 바뀌지 않는다)
+	useResume('ko');
+	useResume('en');
+	const source = docSource(path) ?? '';
 	const openDoc = useRef(onOpenDoc);
+	const openProject = useRef(onOpenProject);
 	useEffect(() => {
 		openDoc.current = onOpenDoc;
+		openProject.current = onOpenProject;
 	});
 
 	// 렌더링마다 새 컴포넌트를 넘기면 react-markdown이 요소를 다시 마운트해서,
@@ -72,6 +82,20 @@ const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc }) => {
 	const components = useMemo<Components>(
 		() => ({
 			a: ({ node: _node, href = '', children, ...props }) => {
+				const projectId = projectLinkId(href);
+				if (projectId)
+					return (
+						<a
+							{...props}
+							href={href}
+							onClick={(event) => {
+								event.preventDefault();
+								openProject.current?.(projectId);
+							}}
+						>
+							{children}
+						</a>
+					);
 				const target = resolveLink(path, href, DOC_SET);
 				if (target.type === 'doc')
 					return (

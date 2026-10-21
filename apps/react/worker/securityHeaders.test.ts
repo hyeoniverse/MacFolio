@@ -41,17 +41,18 @@ describe('보안 헤더', () => {
 		expect(csp['script-src']).not.toContain('https://newpick-tan.vercel.app');
 	});
 
-	it('인라인·eval 스크립트와 플러그인을 막고, 다른 사이트의 iframe에 들어가지 않는다', () => {
+	it('인라인·eval 스크립트와 플러그인을 막고(WebAssembly 컴파일만 연다), 다른 사이트의 iframe에 들어가지 않는다', () => {
 		const csp = parse(contentSecurityPolicy({}));
-		expect(csp['script-src']).toEqual(["'self'", 'https://challenges.cloudflare.com']);
+		expect(csp['script-src']).toEqual(["'self'", "'wasm-unsafe-eval'", 'https://challenges.cloudflare.com']);
 		expect(csp['object-src']).toEqual(["'none'"]);
 		expect(csp['base-uri']).toEqual(["'self'"]);
 		expect(csp['frame-ancestors']).toEqual(["'self'"]);
 		// API 주소가 없는 빌드에는 바깥 연결 출처가 Turnstile, 날씨 앱의 Open-Meteo, 기술 칸의 npm 검색, 문서 올리기의 R2뿐이다.
-		// blob:은 이 탭이 만든 주소(방문자가 놓은 PDF)라 바깥 출처가 아니다
+		// blob:은 이 탭이 만든 주소(방문자가 놓은 PDF), data:는 이력서 PDF의 WebAssembly 몸통이라 바깥 출처가 아니다
 		expect(csp['connect-src']).toEqual([
 			"'self'",
 			'blob:',
+			'data:',
 			'https://challenges.cloudflare.com',
 			'https://api.open-meteo.com',
 			'https://geocoding-api.open-meteo.com',

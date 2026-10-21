@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { parseProfile, readProfile, type SiteView } from '@macfolio/contracts';
+import { parseProfile, parseResume, readProfile, readResume, type SiteView } from '@macfolio/contracts';
 import { parseProjects, readProjects } from '@macfolio/desktop-core/site';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { OWNER_NAME } from '../comments/rules.js';
@@ -15,6 +15,10 @@ export type { SiteView };
  * 사이트 콘텐츠: 관리자가 시스템 설정에서 고친 사이트 주인의 정보와 프로젝트. 누구나 읽고, 관리자만 바꾼다.
  * 쓰기마다 DB를 읽지 않게 메모리에 들고 있다 (바꾸면 새로 읽는다). 관리자가 쓴 댓글·메시지의 이름도 여기서 정한다
  */
+/** 이력서 언어 → 칸 */
+export type ResumeLang = 'ko' | 'en';
+const RESUME_COLUMN = { ko: 'resume', en: 'resumeEn' } as const;
+
 @Injectable()
 export class SiteService {
 	private cache: Promise<SiteView> | null = null;
@@ -33,6 +37,8 @@ export class SiteService {
 		this.cache ??= this.prisma.siteContent.findUnique({ where: { id: ROW_ID } }).then((row) => ({
 			profile: readProfile(row?.profile),
 			projects: readProjects(row?.projects, this.parseOptions),
+			resume: readResume(row?.resume),
+			resumeEn: readResume(row?.resumeEn),
 			updatedAt: row?.updatedAt.toISOString() ?? null,
 		}));
 		this.cache.catch(() => (this.cache = null));
@@ -89,6 +95,32 @@ export class SiteService {
 			where: { id: ROW_ID },
 			create: { id: ROW_ID, projects: Prisma.DbNull, updatedBy: admin },
 			update: { projects: Prisma.DbNull, updatedBy: admin },
+		});
+		this.cache = null;
+		return this.view();
+	}
+
+	/** 이력서 Markdown을 통째로 바꾼다 (lang: 국문 resume, 영문 resumeEn). 규칙을 어기면 400 */
+	async saveResume(input: unknown, admin: string, lang: ResumeLang = 'ko'): Promise<SiteView> {
+		const parsed = parseResume(input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		const data = { [RESUME_COLUMN[lang]]: parsed.value as unknown as Prisma.InputJsonValue };
+		await this.prisma.siteContent.upsert({
+			where: { id: ROW_ID },
+			create: { id: ROW_ID, ...data, updatedBy: admin },
+			update: { ...data, updatedBy: admin },
+		});
+		this.cache = null;
+		return this.view();
+	}
+
+	/** 저장한 이력서를 지운다 (코드의 기본 이력서로 돌아간다) */
+	async resetResume(admin: string, lang: ResumeLang = 'ko'): Promise<SiteView> {
+		const data = { [RESUME_COLUMN[lang]]: Prisma.DbNull };
+		await this.prisma.siteContent.upsert({
+			where: { id: ROW_ID },
+			create: { id: ROW_ID, ...data, updatedBy: admin },
+			update: { ...data, updatedBy: admin },
 		});
 		this.cache = null;
 		return this.view();

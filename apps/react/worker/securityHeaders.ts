@@ -41,7 +41,8 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 	const directives: Record<string, string[]> = {
 		'default-src': ["'self'"],
 		// 인라인 스크립트는 없다 (테마 적용 스크립트도 public/theme-boot.js 파일이다)
-		'script-src': ["'self'", TURNSTILE],
+		// 'wasm-unsafe-eval': WebAssembly 컴파일만 연다 (이력서 PDF의 레이아웃 엔진). 자바스크립트 eval은 그대로 막는다
+		'script-src': ["'self'", "'wasm-unsafe-eval'", TURNSTILE],
 		// React의 style 속성, Mermaid·Scalar가 만드는 <style> 때문에 인라인 스타일은 연다
 		'style-src': ["'self'", "'unsafe-inline'"],
 		// GitHub README·글의 바깥 그림은 주소를 미리 알 수 없다. 그림은 스크립트를 실행하지 못하니 https 전체를 연다
@@ -50,7 +51,8 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		'font-src': ["'self'", 'data:'],
 		// R2: 관리자가 문서 파일을 서명 주소로 바로 올린다 (계정마다 주소가 달라 * 하나로 연다. 서명이 없으면 쓸 수 없다)
 		// blob:: 방문자가 놓은 PDF(이 탭의 blob 주소)를 pdf.js가 fetch로 읽는다 (Finder localFiles)
-		'connect-src': ["'self'", 'blob:', ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
+		// data:: 이력서 PDF의 레이아웃 엔진(WebAssembly)이 자기 몸통을 data: 주소로 읽는다. 바깥으로 나가는 연결은 아니다
+		'connect-src': ["'self'", 'blob:', 'data:', ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
 		'frame-src': ["'self'", TURNSTILE, ...origins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],

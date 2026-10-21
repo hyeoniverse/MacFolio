@@ -61,8 +61,8 @@ test.describe('휴지통', () => {
 		await enterDesktop(page);
 		await dockItem(page, 'bin').click();
 		await appWindow(page, 'bin').getByRole('button', { name: '개인정보 문서' }).click();
-		const finder = appWindow(page, 'finder');
-		await expect(finder.getByRole('heading', { level: 1, name: 'privacy.md' })).toBeVisible();
+		const editor = appWindow(page, 'textedit');
+		await expect(editor.getByRole('article', { name: 'docs/privacy.md' })).toBeVisible();
 	});
 
 	test('방문자에게는 서버 파일이 없다', async ({ page }) => {
