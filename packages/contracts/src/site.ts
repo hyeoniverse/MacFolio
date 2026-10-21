@@ -107,12 +107,61 @@ const StoredProjects = z.custom<SiteProjects>(
 	'items 목록을 보내 주세요.'
 );
 
-/** GET /site, PUT·DELETE /site/profile·/site/projects의 응답 */
+/** 이력서 Markdown 한 장의 한도 (A4 두 쪽이 넉넉히 들어가는 길이) */
+export const RESUME_LIMITS = { markdown: 20_000 } as const;
+
+/** 줄바꿈(\n·\r)과 탭 말고 제어 문자가 있는지 (이력서는 여러 줄 글이다) */
+const hasControlInText = (value: string) =>
+	[...value].some((char) => {
+		const code = char.charCodeAt(0);
+		return (code < 0x20 && code !== 0x09 && code !== 0x0a && code !== 0x0d) || code === 0x7f;
+	});
+
+/**
+ * PUT /site/resume 몸통: 이력서 Markdown 한 장. Finder의 이력서 문서·PDF·터미널 resume가 모두 이 글 하나에서 나온다.
+ * 줄바꿈은 \n으로 맞추고 앞뒤 빈 줄을 다듬는다
+ */
+export const ResumeInput = z.object(
+	{
+		markdown: z.unknown().transform((raw, ctx) => {
+			if (typeof raw !== 'string') {
+				ctx.addIssue({ code: 'custom', message: '이력서는 글자여야 합니다.' });
+				return '';
+			}
+			const value = raw.replace(/\r\n?/g, '\n').trim();
+			if (!value) ctx.addIssue({ code: 'custom', message: '이력서 내용을 입력해 주세요.' });
+			else if (value.length > RESUME_LIMITS.markdown)
+				ctx.addIssue({
+					code: 'custom',
+					message: `이력서는 ${RESUME_LIMITS.markdown.toLocaleString('ko-KR')}자까지입니다.`,
+				});
+			else if (hasControlInText(value))
+				ctx.addIssue({ code: 'custom', message: '이력서에 쓸 수 없는 글자가 있습니다.' });
+			return value;
+		}),
+	},
+	{ error: '이력서를 보내 주세요.' }
+);
+export type ResumeInput = z.infer<typeof ResumeInput>;
+
+/** 요청 본문을 검사해 이력서로 바꾼다 */
+export const parseResume = (input: unknown) => parse(ResumeInput, input);
+
+/** 저장해 둔 이력서(DB)를 읽을 때: 규칙에 맞으면 그 값, 아니면 null (기본 이력서를 쓴다) */
+export function readResume(stored: unknown): ResumeInput | null {
+	if (stored === null || stored === undefined) return null;
+	const parsed = parseResume(stored);
+	return 'value' in parsed ? parsed.value : null;
+}
+
+/** GET /site, PUT·DELETE /site/profile·/site/projects·/site/resume의 응답 */
 export const SiteView = z.object({
 	/** 관리자가 저장한 프로필 (없으면 null: 화면이 코드의 기본값을 쓴다) */
 	profile: ProfileInput.nullable(),
 	/** 관리자가 고친 프로젝트. 없으면 null: 화면이 코드의 기본값을 쓴다 */
 	projects: StoredProjects.nullable(),
+	/** 관리자가 저장한 이력서 Markdown. 없으면 null: 화면이 코드의 기본 이력서를 쓴다 (예전 서버는 이 필드가 없다) */
+	resume: ResumeInput.nullable().optional(),
 	/** ISO 8601. 저장한 적이 없으면 null */
 	updatedAt: z.string().nullable(),
 });

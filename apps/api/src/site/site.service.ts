@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { parseProfile, readProfile, type SiteView } from '@macfolio/contracts';
+import { parseProfile, parseResume, readProfile, readResume, type SiteView } from '@macfolio/contracts';
 import { parseProjects, readProjects } from '@macfolio/desktop-core/site';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { OWNER_NAME } from '../comments/rules.js';
@@ -33,6 +33,7 @@ export class SiteService {
 		this.cache ??= this.prisma.siteContent.findUnique({ where: { id: ROW_ID } }).then((row) => ({
 			profile: readProfile(row?.profile),
 			projects: readProjects(row?.projects, this.parseOptions),
+			resume: readResume(row?.resume),
 			updatedAt: row?.updatedAt.toISOString() ?? null,
 		}));
 		this.cache.catch(() => (this.cache = null));
@@ -89,6 +90,31 @@ export class SiteService {
 			where: { id: ROW_ID },
 			create: { id: ROW_ID, projects: Prisma.DbNull, updatedBy: admin },
 			update: { projects: Prisma.DbNull, updatedBy: admin },
+		});
+		this.cache = null;
+		return this.view();
+	}
+
+	/** 이력서 Markdown을 통째로 바꾼다. 규칙을 어기면 400 */
+	async saveResume(input: unknown, admin: string): Promise<SiteView> {
+		const parsed = parseResume(input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		const resume = parsed.value as unknown as Prisma.InputJsonValue;
+		await this.prisma.siteContent.upsert({
+			where: { id: ROW_ID },
+			create: { id: ROW_ID, resume, updatedBy: admin },
+			update: { resume, updatedBy: admin },
+		});
+		this.cache = null;
+		return this.view();
+	}
+
+	/** 저장한 이력서를 지운다 (코드의 기본 이력서로 돌아간다) */
+	async resetResume(admin: string): Promise<SiteView> {
+		await this.prisma.siteContent.upsert({
+			where: { id: ROW_ID },
+			create: { id: ROW_ID, resume: Prisma.DbNull, updatedBy: admin },
+			update: { resume: Prisma.DbNull, updatedBy: admin },
 		});
 		this.cache = null;
 		return this.view();
