@@ -1,28 +1,40 @@
 /*
- * 위젯 갤러리 (WidgetGallery): 화면 아래 가운데 떠 있는 유리 판 (macOS '위젯 편집…').
- * 왼쪽 사이드바(찾기·종류), 오른쪽 미리보기 격자, 아래 안내와 완료. 판이 Dock 위를 덮는다
+ * 위젯 갤러리 (WidgetGallery): 화면 아래 가장자리에 붙어 올라오는 유리 시트 (macOS '위젯 편집…').
+ * 위 두 모서리만 둥글고 아래는 화면 밖으로 이어진다. 왼쪽 사이드바(찾기·종류), 오른쪽 미리보기 격자, 아래 안내와 완료.
+ * 판이 Dock 위를 덮는다
  */
 .widget-gallery {
 	position: fixed;
 	left: 50%;
-	bottom: var(--space-16);
+	bottom: 0;
 	z-index: var(--z-widget-gallery);
 	display: grid;
 	grid-template-columns: 230px minmax(0, 1fr);
 	grid-template-rows: minmax(0, 1fr) auto;
 	box-sizing: border-box;
 	width: min(1100px, calc(100vw - 32px));
-	height: min(560px, calc(100vh - 120px));
+	height: min(580px, calc(100vh - 120px));
 	overflow: hidden;
-	border-radius: var(--radius-window);
+	border-radius: var(--radius-window) var(--radius-window) 0 0;
 	background-color: var(--widget-gallery-background);
 	-webkit-backdrop-filter: blur(40px) saturate(180%);
 	backdrop-filter: blur(40px) saturate(180%);
+	/* 가장자리 빛은 위와 양옆만 (아래는 화면 밖) */
 	box-shadow:
-		inset 0 0 0 1px var(--widget-edge),
+		inset 0 1px 0 var(--widget-edge),
+		inset 1px 0 0 var(--widget-edge),
+		inset -1px 0 0 var(--widget-edge),
 		var(--shadow-modal);
 	color: var(--color-label);
 	transform: translateX(-50%);
+	animation: widget-gallery-in var(--duration) var(--ease-out);
+}
+
+/* 화면 아래에서 올라온다 (가운데 맞춤의 translateX를 함께 적는다) */
+@keyframes widget-gallery-in {
+	from {
+		transform: translate(-50%, 100%);
+	}
 }
 
 /* ─── 사이드바 ─── */
@@ -234,7 +246,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-16);
-	padding: var(--space-12) var(--space-20);
+	padding: var(--space-12) var(--space-20) var(--space-16);
 	border-top: 1px solid var(--color-material-separator);
 }
 
