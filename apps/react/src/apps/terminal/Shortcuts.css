@@ -180,6 +180,8 @@ a.shortcut-row {
 .shortcut-item small {
 	color: var(--color-secondary-label);
 	font-size: var(--text-footnote);
+	/* resume의 프로젝트 성과처럼 여러 줄인 설명 */
+	white-space: pre-line;
 }
 
 .shortcut-tag {

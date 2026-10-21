@@ -137,6 +137,8 @@
 .terminal-item-detail {
 	display: block;
 	color: var(--terminal-muted);
+	/* resume의 프로젝트 성과처럼 여러 줄인 설명 */
+	white-space: pre-line;
 }
 
 .terminal-input-line {

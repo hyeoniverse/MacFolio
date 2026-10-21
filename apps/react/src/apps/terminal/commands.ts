@@ -86,15 +86,27 @@ export function formatDate(date: Date): string {
 	return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${WEEKDAYS[date.getDay()]}) ${two(date.getHours())}:${two(date.getMinutes())}:${two(date.getSeconds())}`;
 }
 
-/** resume의 그림: 웃는 Mac과 RESUME 글자 (모든 글자가 한 칸 폭이라 어느 고정폭 글꼴에서도 줄이 맞는다) */
+// resume의 그림들. 모든 글자가 한 칸 폭(상자 그리기 문자·ASCII)이라 어느 고정폭 글꼴에서도 줄이 맞는다.
+// 한글은 그림 안에 넣지 않는다 (두 칸 폭이라 오른쪽 테두리가 어긋난다)
+
+/** 첫머리: 말풍선을 단 웃는 Mac과 RESUME 글자 */
 const RESUME_ART = [
-	'  ╭──────────╮',
-	'  │ ╭──────╮ │   ┏━┓┏━╸┏━┓╻ ╻┏┳┓┏━╸',
-	'  │ │ ^‿^  │ │   ┣┳┛┣╸ ┗━┓┃ ┃┃┃┃┣╸ ',
+	'                  .--------------------.',
+	'                 (  hi! nice to meet u  )',
+	"  ╭──────────╮    `--.-----------------'",
+	"  │ ╭──────╮ │       .'",
+	'  │ │ ^  ^ │ │   ┏━┓┏━╸┏━┓╻ ╻┏┳┓┏━╸',
+	'  │ │ \\__/ │ │   ┣┳┛┣╸ ┗━┓┃ ┃┃┃┃┣╸',
 	'  │ ╰──────╯ │   ╹┗╸┗━╸┗━┛┗━┛╹ ╹┗━╸',
 	'  ╰───┬──┬───╯',
 	'    ━━┷━━┷━━',
 ].join('\n');
+
+/** 절 머리: ╶─[ SKILLS ]────╴ (글자 수와 상관없이 같은 폭) */
+const section = (label: string): Line => art(`╶─[ ${label} ]${'─'.repeat(Math.max(4, 34 - label.length))}╴`);
+
+/** 끝: 고양이 인사 */
+const RESUME_BYE = ['   /\\_/\\', '  ( o.o )   thanks for reading!', '   > ^ <    -- contact me anytime'].join('\n');
 
 export const COMMANDS: Record<string, Command> = {
 	help: {
@@ -138,28 +150,60 @@ export const COMMANDS: Record<string, Command> = {
 		description: '이력서를 그려 보여 주기',
 		run: () => {
 			const profile = getProfile();
+			// 번호는 projects 목록의 번호라 project <번호>로 이어서 볼 수 있다 (단축어는 줄을 누르면 그 명령)
+			const numbered = (id: string) => {
+				const index = PROJECTS.findIndex((project) => project.id === id);
+				return index < 0 ? null : { project: PROJECTS[index], marker: `${index + 1}.` };
+			};
+			const entries = (items: typeof RESUME.awards) =>
+				items.map((item) => pair(item.period, item.detail ? `${item.title} (${item.detail})` : item.title));
 			return output([
 				art(RESUME_ART),
 				heading(`${profile.name} · ${RESUME.role}`),
 				text(`“${RESUME.motto}”`),
-				text(''),
+				pair('연락', `${profile.email} · ${profile.github}`),
+				section('STRENGTHS'),
 				...RESUME.strengths.map((item) => pair(`★ ${item.title}`, item.detail)),
-				text(''),
-				// 번호는 projects 목록의 번호라 project <번호>로 이어서 볼 수 있다 (단축어는 줄을 누르면 그 명령)
-				...RESUME.featured.flatMap(({ id }): Line[] => {
-					const index = PROJECTS.findIndex((project) => project.id === id);
-					if (index < 0) return [];
-					const project = PROJECTS[index];
+				section('SKILLS'),
+				...RESUME.capabilities.map((item) => pair(item.area, `${item.detail} (${item.tools.join(', ')})`)),
+				section('PROJECTS'),
+				...RESUME.featured.flatMap(({ id, bullets }): Line[] => {
+					const found = numbered(id);
+					if (!found) return [];
 					return [
 						{
 							kind: 'item',
-							marker: `${index + 1}.`,
-							title: project.name,
-							tag: project.period,
-							detail: project.description,
+							marker: found.marker,
+							title: found.project.name,
+							tag: found.project.period,
+							// 성과는 설명 아래 줄로: 번호 뒤에 맞춰 들여 쓴 채 줄바꿈된다 (상세 칸은 줄바꿈을 그대로 그린다)
+							detail: [
+								found.project.description,
+								...bullets.map((bullet) => `· ${bullet.title} — ${bullet.detail}`),
+							].join('\n'),
 						},
 					];
 				}),
+				section('MORE PROJECTS'),
+				...RESUME.minor.flatMap(({ id, line }): Line[] => {
+					const found = numbered(id);
+					return found
+						? [
+								{
+									kind: 'item',
+									marker: found.marker,
+									title: found.project.name,
+									tag: found.project.period,
+									detail: line,
+								},
+							]
+						: [];
+				}),
+				section('AWARDS'),
+				...entries(RESUME.awards),
+				section('EDUCATION'),
+				...entries(RESUME.education),
+				art(RESUME_BYE),
 				muted('자세히 보려면: project <번호> · 전체 이력서와 PDF는 Finder › 문서 › 이력서'),
 			]);
 		},
