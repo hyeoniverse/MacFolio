@@ -63,7 +63,7 @@ const reactionsOf = ({ views, comments, likes }: PostStats) =>
 		.join(' · ');
 
 /**
- * 목록의 메모 한 줄: 제목, 날짜·요약, 폴더 (최근 삭제된 메모는 남은 날).
+ * 목록의 메모 한 줄: 제목, 날짜·요약, 폴더·조회수 (최근 삭제된 메모는 남은 날).
  * 인기글에서는 제목 앞에 순위, 날짜·요약 자리에 조회·댓글·좋아요
  */
 export const NoteItem = ({
@@ -76,7 +76,14 @@ export const NoteItem = ({
 	active,
 	today,
 	popularity,
-}: NoteProps & { active: boolean; today: Date; popularity?: { rank: number; stats: PostStats } }) => (
+	views,
+}: NoteProps & {
+	active: boolean;
+	today: Date;
+	popularity?: { rank: number; stats: PostStats };
+	/** 조회수 (서버가 없거나 인기글이면 undefined: 감춘다. 인기글은 반응 자리에 보인다) */
+	views?: number;
+}) => (
 	<ListRow
 		className={`memo-item ${active ? 'active' : ''} ${dragging ? 'dragging' : ''} ${picked ? 'picking' : ''}`}
 		{...drag}
@@ -107,6 +114,7 @@ export const NoteItem = ({
 		</span>
 		<span className="memo-item-folder">
 			<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
+			{views !== undefined && <span className="memo-item-views">조회 {views.toLocaleString()}</span>}
 			{post.deletedAt && <span className="memo-item-purge">{daysUntilPurge(post.deletedAt, today)}일 남음</span>}
 		</span>
 	</ListRow>
