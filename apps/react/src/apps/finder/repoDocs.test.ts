@@ -83,6 +83,9 @@ it('docTitle: 첫 # 제목, 없으면 파일 이름', () => {
 it('bundledDocOf: GitHub의 저장소 문서 주소면 Finder에서 열 경로, 아니면 null', () => {
 	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/rollback-drill.md`)).toBe('docs/rollback-drill.md');
 	expect(bundledDocOf(`${REPO_URL}/blob/main/README.md`)).toBe('README.md');
+	// 번역과 docs/ 안 폴더의 문서도 (따로 적지 않아도)
+	expect(bundledDocOf(`${REPO_URL}/blob/main/README.en.md`)).toBe('README.en.md');
+	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/en/deployment.md`)).toBe('docs/en/deployment.md');
 	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/a.md#제목`)).toBeNull();
 	expect(bundledDocOf(`${REPO_URL}/blob/main/ops/deploy.sh`)).toBeNull();
 	expect(bundledDocOf(`${REPO_URL}/blob/main/docs/images/a.md`)).toBeNull();

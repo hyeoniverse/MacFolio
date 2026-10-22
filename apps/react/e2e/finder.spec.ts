@@ -82,6 +82,27 @@ test.describe('Finder', () => {
 		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('문서');
 	});
 
+	test('문서의 영어판은 English 폴더에 있고, 맨 위의 한국어 링크로 한국어판을 연다 (새 문서는 따로 적지 않아도 들어온다)', async ({
+		page,
+	}) => {
+		const finder = await openFinder(page);
+		const files = finder.getByRole('listbox', { name: '문서' });
+		await expect(files.getByRole('option', { name: 'README.en.md' })).toBeVisible();
+		await files.getByRole('option', { name: 'English' }).dblclick();
+		await expect(finder.getByRole('heading', { level: 1 })).toHaveText('English');
+		const english = finder.getByRole('listbox', { name: 'English' });
+		await expect(english.getByRole('option', { name: 'privacy.md' })).toBeVisible();
+		await english.getByRole('option', { name: 'deployment.md' }).dblclick();
+
+		const editor = appWindow(page, 'textedit');
+		const doc = editor.getByRole('article', { name: 'docs/en/deployment.md' });
+		await expect(doc.getByRole('heading', { level: 1 })).toHaveText('Deployment');
+		await doc.getByRole('link', { name: '한국어' }).click();
+		await expect(
+			editor.getByRole('article', { name: 'docs/deployment.md' }).getByRole('heading', { level: 1 })
+		).toHaveText('배포');
+	});
+
 	test('문서 없이 텍스트 편집기를 열면 열기 창이 뜨고, Markdown 문서만 연다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'launchpad').click();

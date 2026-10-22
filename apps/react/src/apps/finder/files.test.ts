@@ -126,6 +126,28 @@ describe('buildLocations', () => {
 		expect(find(tree, 'docs:docs/deployment.md')).toMatchObject({ kind: 'doc', path: 'docs/deployment.md' });
 	});
 
+	it('문서: docs/ 안 폴더의 문서는 그 폴더로 묶는다 (영어판은 English 폴더, 같은 이름의 한국어판과 섞이지 않게)', () => {
+		const withEnglish = buildLocations({
+			docs: ['README.md', 'README.en.md', 'docs/deployment.md', 'docs/en/deployment.md', 'docs/en/ui.md'],
+			posts: [],
+			projects: [],
+			apps: [],
+		});
+		const docs = find(withEnglish, 'docs') as FolderItem;
+		expect(names(docs).filter((name) => !['이력서', '자격증', '포트폴리오'].includes(name))).toEqual([
+			'English',
+			'deployment.md',
+			'README.en.md',
+			'README.md',
+		]);
+		const english = find(withEnglish, 'docs:docs/en') as FolderItem;
+		expect(names(english)).toEqual(['deployment.md', 'ui.md']);
+		expect(find(withEnglish, 'docs:docs/en/deployment.md')).toMatchObject({
+			kind: 'doc',
+			path: 'docs/en/deployment.md',
+		});
+	});
+
 	it('이력서: 데이터로 만든 이력서 문서·PDF를 이력서 폴더에 두고, 이름에 확장자를 붙인다 (.md는 경로에서)', () => {
 		const withResume = buildLocations({
 			docs: [],
