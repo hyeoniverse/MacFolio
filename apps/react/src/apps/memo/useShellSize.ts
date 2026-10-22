@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useElementWidth } from '@/shared/hooks/useElementWidth';
 
 /**
  * 이 폭 이하면 한 칸씩 보인다 (styles/compact.css의 [data-compact] 규칙이 이 값을 따른다).
@@ -9,15 +9,8 @@ const COMPACT_WIDTH = 700;
 /** 이 폭 이하면 폴더 사이드바를 처음에 닫아 둔다 (macOS 메모처럼). 목록과 본문에 자리를 준다 */
 const NARROW_WIDTH = 860;
 
-/** 메모 창의 폭으로 정하는 모양: 한 칸씩(compact), 사이드바를 닫아 둘 만큼 좁음(narrow) */
-export function useShellSize(ref: React.RefObject<HTMLElement | null>) {
-	const [width, setWidth] = useState(Infinity);
-	useEffect(() => {
-		const element = ref.current;
-		if (!element) return;
-		const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
-		observer.observe(element);
-		return () => observer.disconnect();
-	}, [ref]);
-	return { compact: width <= COMPACT_WIDTH, narrow: width <= NARROW_WIDTH };
+/** 메모 창의 폭으로 정하는 모양: 한 칸씩(compact), 사이드바를 닫아 둘 만큼 좁음(narrow). 메모 칸에 attach를 붙인다 */
+export function useShellSize<T extends HTMLElement>() {
+	const { ref, attach, width } = useElementWidth<T>();
+	return { ref, attach, compact: width <= COMPACT_WIDTH, narrow: width <= NARROW_WIDTH };
 }

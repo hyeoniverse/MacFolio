@@ -43,8 +43,7 @@ const Weather = () => {
 	const [sidebarHidden, setSidebarHidden] = useState(false);
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
-	const shell = useRef<HTMLDivElement>(null);
-	const compact = useCompact(shell);
+	const { attach: attachShell, compact } = useCompact<HTMLDivElement>();
 	const { forecastOf, reload } = useForecasts(places, unit);
 	/** 한글을 조합하는 중인지 (조합 중에는 Open-Meteo에 묻지 않는다) */
 	const [composing, setComposing] = useState(false);
@@ -120,7 +119,7 @@ const Weather = () => {
 			{/* iOS 날씨처럼 홈으로 가는 버튼이 없다 (홈 바로 나간다) */}
 			<MobileNavigation hideHome />
 			<div
-				ref={shell}
+				ref={attachShell}
 				className={`weather sky-${weather?.sky ?? 'cloudy'} ${weather?.day === false ? 'night' : 'day'}`}
 				data-compact={compact || undefined}
 			>
