@@ -44,6 +44,8 @@ test.describe('사진 (#21)', () => {
 		await expect(photos.getByRole('heading', { name: 'widget' })).toBeVisible();
 		await expect(photos.locator('.photos-thumb')).toHaveCount(2);
 		await expect(photos.locator('.photos-thumb video')).toHaveCount(1);
+		// 프로젝트 앨범이 아니라 프로젝트 페이지 단추는 없다
+		await expect(photos.getByRole('button', { name: '프로젝트 페이지' })).toHaveCount(0);
 	});
 
 	test('보관함 = 앨범 사진의 합, 비디오는 영상만, 앨범을 고른다', async ({ page }) => {

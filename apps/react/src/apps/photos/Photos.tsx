@@ -6,7 +6,7 @@ import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { requestOpen } from '@/shared/lib/openRequest';
-import { countText } from './albums';
+import { countText, isProjectAlbum } from './albums';
 import { usePhotoLibrary } from './usePhotoLibrary';
 import { Thumb, Viewer, type Shown } from './PhotoParts';
 import Menu from '@/shared/ui/menu/Menu';
@@ -302,6 +302,7 @@ const Photos = () => {
 									</div>
 									<div className="photos-toolbar-group end">
 										{album &&
+											isProjectAlbum(album) &&
 											(compact ? (
 												<IconButton
 													variant="circle"

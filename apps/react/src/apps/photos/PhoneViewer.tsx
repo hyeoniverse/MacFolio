@@ -1,9 +1,9 @@
 // 휴대폰 사진 크게 보기 (iOS 사진): 밀어서 넘기기, 띠, 정보·공유 막대
 import { useEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
-import Menu from '@/shared/ui/menu/Menu';
+import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { shareLink } from '@/shared/lib/appLink';
-import { fileNameOf, formatBytes, formatOf, megapixels } from './albums';
+import { fileNameOf, formatBytes, formatOf, isProjectAlbum, megapixels } from './albums';
 import { CaptionField, Thumb, type Shown } from './PhotoParts';
 import { captionOf, useCaptions } from './captionsApi';
 import { useMoveDirection } from '@/shared/ui/motion/useMoveDirection';
@@ -58,6 +58,8 @@ export const PhoneViewer = ({
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const strip = useRef<HTMLUListElement>(null);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
+	// Finder 폴더 앨범에는 프로젝트 페이지가 없어 공유·페이지 열기를 감춘다
+	const project = isProjectAlbum(photo.album);
 	const share = () => void shareLink({ app: 'safari', id: photo.album.id }, photo.album.name);
 
 	const move = (delta: number) => onMove(Math.min(photos.length - 1, Math.max(0, index + delta)));
@@ -181,9 +183,11 @@ export const PhoneViewer = ({
 								<li>앨범 {photo.album.photos.length}장</li>
 							</ul>
 						</section>
-						<button type="button" className="photos-phone-info-action" onClick={() => onOpenProject(photo.album.id)}>
-							{photo.album.name} 페이지 열기…
-						</button>
+						{project && (
+							<button type="button" className="photos-phone-info-action" onClick={() => onOpenProject(photo.album.id)}>
+								{photo.album.name} 페이지 열기…
+							</button>
+						)}
 					</div>
 				</aside>
 			)}
@@ -209,6 +213,7 @@ export const PhoneViewer = ({
 					className="photos-phone-round"
 					label="공유"
 					icon="fa-solid fa-arrow-up-from-bracket"
+					disabled={!project}
 					onClick={share}
 				/>
 				<div className="photos-phone-pill">
@@ -231,19 +236,23 @@ export const PhoneViewer = ({
 					trigger={moreButton}
 					onClose={() => setMenu(null)}
 					items={[
-						{ label: '공유', icon: 'fa-solid fa-arrow-up-from-bracket', onSelect: share },
+						{ label: '공유', icon: 'fa-solid fa-arrow-up-from-bracket', disabled: !project, onSelect: share },
 						{
 							label: liked ? '좋아요 취소' : '좋아요',
 							icon: liked ? 'fa-solid fa-heart' : 'fa-regular fa-heart',
 							onSelect: onToggleLike,
 						},
 						{ label: '정보', icon: 'fa-solid fa-circle-info', onSelect: () => setInfo(true) },
-						'separator',
-						{
-							label: `${photo.album.name} 페이지 열기`,
-							icon: 'fa-regular fa-compass',
-							onSelect: () => onOpenProject(photo.album.id),
-						},
+						...(project
+							? ([
+									'separator',
+									{
+										label: `${photo.album.name} 페이지 열기`,
+										icon: 'fa-regular fa-compass',
+										onSelect: () => onOpenProject(photo.album.id),
+									},
+								] satisfies MenuItem[])
+							: []),
 					]}
 				/>
 			)}
