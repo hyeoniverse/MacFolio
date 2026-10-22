@@ -50,6 +50,8 @@ export interface FakeApiState {
 	layoutSaves: number;
 	/** 받은 PUT 요청 수 */
 	saves: number;
+	/** 받은 글 임시 저장·게시 수 (PUT /posts/:slug/draft, POST /posts, POST /posts/:slug/publish) */
+	postSaves: number;
 	/** 글마다 댓글 (가짜 서버는 비밀번호를 그대로 들고 있다) */
 	comments: Record<string, FakeComment[]>;
 	/** 보안 설정 (GET·PUT /security): 곳마다 사람 확인을 켰는지, 서버에 Turnstile 키가 있는지 */
@@ -370,6 +372,7 @@ export async function fakeApi(
 		finderLayout: { folders: [], files: {}, aliases: null, trash: {} },
 		layoutSaves: 0,
 		saves: 0,
+		postSaves: 0,
 		comments: {},
 		postLikes: {},
 		security: {
@@ -1161,6 +1164,7 @@ export async function fakeApi(
 					headers: cors(origin),
 					json: { statusCode: 400, message: ['제목을 입력해주세요.'] },
 				});
+			state.postSaves += 1;
 			if (action === 'publish') {
 				const existing = find(slug!);
 				const revisions = [

@@ -12,6 +12,35 @@ async function openMemo(page: Page, api: FakeApiState) {
 }
 
 test.describe('바로 고치기 (관리자)', () => {
+	test('고치지 않고 본문을 누르거나 토글을 펼치고 접기만 하면 저장하지 않는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: 'Mac에서 Homebrew와 npm 설정하기' }).click();
+		const editor = memo.locator('.ProseMirror');
+		await expect(editor).toBeVisible();
+
+		// 본문 여기저기를 누르고 키로 커서만 옮긴다
+		await editor.locator('> p').first().click();
+		await page.keyboard.press('End');
+		await page.keyboard.press('ArrowDown');
+		await editor.locator('> p').nth(2).click();
+
+		// 저장한 글에서 접혀 있는 토글(<details id="terms">)을 펼쳤다가 접는다
+		const details = editor.locator('.memo-details').first();
+		const summary = details.locator('.memo-details-summary');
+		await expect(details).toHaveAttribute('data-open', 'false');
+		await summary.click({ position: { x: 6, y: 10 } });
+		await expect(details).toHaveClass(/memo-details-revealed/);
+		await expect(details.locator('table')).toBeVisible();
+		await summary.click({ position: { x: 6, y: 10 } });
+		await expect(details.locator('table')).toBeHidden();
+
+		await page.waitForTimeout(1500);
+		expect(api.postSaves).toBe(0);
+		expect(api.posts).toEqual([]);
+		await expect(memo.getByRole('status').filter({ hasText: '임시 저장됨' })).toHaveCount(0);
+	});
+
 	test('끝에 태그 줄이 있는 글을 고쳐 저장해도 첫 태그가 \\#로 깨지지 않는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
@@ -222,17 +251,21 @@ test.describe('바로 고치기 (관리자)', () => {
 			.poll(() => api.posts[0]?.body)
 			.toBe('<details open>\n<summary>목차</summary>\n\n접힌 내용\n\n</details>\n');
 
-		// › 를 누르면 접히고, 접힌 상태로 저장된다
+		// › 를 누르면 화면에서만 접힌다: 글은 그대로라 저장하지 않는다
+		const saves = api.postSaves;
 		await details.locator('.memo-details-summary').click({ position: { x: 6, y: 10 } });
-		await expect(details).toHaveAttribute('data-open', 'false');
+		await expect(details).toHaveClass(/memo-details-collapsed/);
 		await expect(details.getByText('접힌 내용')).toBeHidden();
-		await expect.poll(() => api.posts[0]?.body).toContain('<details>\n<summary>목차</summary>');
+		await page.waitForTimeout(1200);
+		expect(api.postSaves).toBe(saves);
+		expect(api.posts[0]?.body).toContain('<details open>\n<summary>목차</summary>');
 
 		// 제목 줄에서 Enter: 펼치고 내용 맨 위에 새 줄
 		await details.locator('.memo-details-summary').click();
 		await page.keyboard.press('End');
 		await page.keyboard.press('Enter');
-		await expect(details).toHaveAttribute('data-open', 'true');
+		await expect(details).not.toHaveClass(/memo-details-collapsed/);
+		await expect(details.getByText('접힌 내용')).toBeVisible();
 		await page.keyboard.type('첫 줄');
 		await expect.poll(() => api.posts[0]?.body).toContain('<summary>목차</summary>\n\n첫 줄\n\n접힌 내용');
 

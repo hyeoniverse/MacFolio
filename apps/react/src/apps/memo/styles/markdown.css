@@ -186,7 +186,7 @@
 }
 
 /* 편집기의 토글 목록 (writer/details.ts): 읽기 화면의 접기 블록과 같은 모양. 요약 앞의 › 를 누르면 접고 펼친다 */
-.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) {
+.memo-inline-editor .memo-details:is([data-open='true']:not(.memo-details-collapsed), .memo-details-revealed) {
 	padding-bottom: 0.9em;
 }
 
@@ -212,7 +212,9 @@
 	cursor: pointer;
 }
 
-.memo-inline-editor .memo-details:is([data-open='true'], .memo-details-revealed) > .memo-details-summary::before {
+.memo-inline-editor
+	.memo-details:is([data-open='true']:not(.memo-details-collapsed), .memo-details-revealed)
+	> .memo-details-summary::before {
 	transform: rotate(45deg);
 }
 
@@ -223,8 +225,10 @@
 	pointer-events: none;
 }
 
-/* 접힌 블록의 내용 (링크를 따라가며 화면에서만 펼친 블록은 보인다: writer/anchors.ts) */
-.memo-inline-editor .memo-details[data-open='false']:not(.memo-details-revealed) > :not(.memo-details-summary) {
+/* 접힌 블록의 내용: 접은 글이거나 화면에서만 접은 블록 (화면에서만 펼친 블록은 보인다: writer/anchors.ts) */
+.memo-inline-editor
+	.memo-details:is([data-open='false']:not(.memo-details-revealed), .memo-details-collapsed)
+	> :not(.memo-details-summary) {
 	display: none;
 }
 
