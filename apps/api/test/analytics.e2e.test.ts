@@ -159,6 +159,42 @@ describe('트래픽 분석 (e2e)', () => {
 			.expect(400);
 	});
 
+	it('검색엔진이 넘겨준 검색어: 다듬어 저장하고 관리자에게만 보인다', async () => {
+		await send(visit('v-search01', { referrer: 'search.naver.com', searchTerm: '  MacFolio   포트폴리오 ' })).expect(
+			204
+		);
+		await send(visit('v-search02', { referrer: 'www.google.com' }), { 'User-Agent': `${CHROME_MAC} Edg/140.0` }).expect(
+			204
+		);
+		expect(
+			(await prisma.analyticsEvent.findFirst({ where: { visitId: 'v-search01', type: 'visit' } }))?.searchTerm
+		).toBe('macfolio 포트폴리오');
+		const today = kstDay(new Date());
+
+		// 방문자용 요약은 1분 동안 같은 값을 주므로(앞 시험이 오늘 하루를 물었다) 다른 기간으로 묻는다
+		const visitor = await request(server())
+			.get('/analytics/summary')
+			.query({ from: shiftDay(today, -1), to: today })
+			.expect(200);
+		expect(visitor.body.breakdown.searchTerm).toEqual([]);
+		expect(visitor.body.breakdown.referrerGroup).toEqual([{ key: '검색', value: 2 }]);
+		expect(JSON.stringify(visitor.body)).not.toContain('포트폴리오');
+
+		const admin = await request(server())
+			.get('/analytics/summary')
+			.set('Cookie', adminCookie)
+			.query({ from: today, to: today })
+			.expect(200);
+		expect(admin.body.breakdown.searchTerm).toEqual([{ key: 'macfolio 포트폴리오', value: 1 }]);
+	});
+
+	it('Search Console 검색어는 관리자만. 서비스 계정이 없으면 configured: false', async () => {
+		await request(server()).get('/analytics/search').expect(401);
+		await request(server()).post('/analytics/search/sync').expect(401);
+		const response = await request(server()).get('/analytics/search').set('Cookie', adminCookie).expect(200);
+		expect(response.body).toMatchObject({ configured: false, rows: [], syncedAt: null, latestDay: null });
+	});
+
 	it('utm (#211): 매체·조합·term·content 표와 조합 하나의 일별 추이(utm=, 관리자만). 값은 소문자로 다듬는다', async () => {
 		const today = kstDay(new Date());
 		const yesterday = shiftDay(today, -1);

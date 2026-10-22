@@ -170,6 +170,17 @@ describe('하루치 집계', () => {
 		expect(rows.some((row) => row.metric === 'utm' && /frontend|footer/.test(row.key))).toBe(false);
 	});
 
+	it('검색어는 검색엔진이 넘겨준 방문만 센다 (없으면 세지 않는다)', () => {
+		const rows = aggregate([
+			event({ referrer: 'search.naver.com', searchTerm: 'macfolio' }),
+			event({ visitId: 'v2', referrer: 'search.naver.com', searchTerm: 'macfolio' }),
+			event({ visitId: 'v3', referrer: 'www.google.com' }),
+		]);
+		expect(rows.filter((row) => row.metric === 'searchTerm')).toEqual([
+			{ metric: 'searchTerm', key: 'macfolio', value: 2 },
+		]);
+	});
+
 	it('이벤트가 없는 날도 visits 0을 남긴다 (모았다는 표시)', () => {
 		expect(aggregate([])).toEqual([{ metric: 'visits', key: '', value: 0 }]);
 	});

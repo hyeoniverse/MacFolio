@@ -62,6 +62,34 @@ test.describe('트래픽 분석 수집 (#102)', () => {
 		expect(JSON.stringify(api.analytics)).not.toMatch(/cookie|userAgent|ip"/i);
 	});
 
+	test('검색엔진이 들어온 주소에 검색어를 실어 보냈으면 호스트와 함께 그 검색어를 보낸다 (구글처럼 호스트만 오면 보내지 않는다)', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page);
+		await enableAnalytics(page);
+		await page.goto('/', {
+			referer:
+				'https://search.naver.com/search.naver?where=nexearch&query=MacFolio+%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4',
+		});
+		await page.locator('.loading-container').click();
+		await hideTab(page);
+		await expect
+			.poll(() => api.analytics.flatMap((batch) => batch.events)[0])
+			.toMatchObject({
+				type: 'visit',
+				referrer: 'search.naver.com',
+				searchTerm: 'macfolio 포트폴리오',
+			});
+
+		await page.goto('/', { referer: 'https://www.google.com/' });
+		await page.locator('.loading-container').click();
+		await hideTab(page);
+		await expect.poll(() => api.analytics.length).toBeGreaterThanOrEqual(2);
+		const visits = api.analytics.flatMap((batch) => batch.events).filter((event) => event.type === 'visit');
+		expect(visits.at(-1)).toMatchObject({ referrer: 'www.google.com' });
+		expect(visits.at(-1)).not.toHaveProperty('searchTerm');
+	});
+
 	test('utm_*는 읽은 뒤 주소창에서 지운다 (다른 쿼리·조각은 그대로). 새로 고쳐도 같은 utm이 다시 가지 않는다 (#211)', async ({
 		page,
 	}) => {

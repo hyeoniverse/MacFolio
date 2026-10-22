@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/shared/config/env', () => ({ env: { apiUrl: 'https://api.example' } }));
 
-const { analyticsEnabled, entryOf, linkLabel, referrerHost, utmOf, withoutUtm } = await import('./analytics');
+const { analyticsEnabled, entryOf, linkLabel, referrerHost, searchTermOf, utmOf, withoutUtm } =
+	await import('./analytics');
 const { newlyOpened } = await import('./usage');
 
 describe('수집을 켜는 때', () => {
@@ -67,6 +68,7 @@ describe('보내는 값 줄이기', () => {
 		const href = 'https://macfolio.hyeoniverse.com/?utm_source=linkedin&utm_medium=social&utm_campaign=resume-2026';
 		expect(entryOf(href, 'https://macfolio.hyeoniverse.com/memo/a')).toEqual({
 			referrer: undefined,
+			searchTerm: undefined,
 			utmSource: 'linkedin',
 			utmMedium: 'social',
 			utmCampaign: 'resume-2026',
@@ -81,6 +83,37 @@ describe('보내는 값 줄이기', () => {
 		expect(entryOf('https://macfolio.hyeoniverse.com/', 'https://macfolio.hyeoniverse.com/')).toMatchObject({
 			referrer: undefined,
 			utmSource: undefined,
+		});
+	});
+
+	it('검색엔진이 주소에 검색어를 실어 보냈으면 그 검색어를 다듬어 보낸다', () => {
+		expect(
+			searchTermOf(
+				'https://search.naver.com/search.naver?where=nexearch&query=MacFolio++%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4'
+			)
+		).toBe('macfolio 포트폴리오');
+		expect(searchTermOf('https://m.search.naver.com/search.naver?query=%EA%B9%80%EC%A0%95%ED%98%84')).toBe('김정현');
+		expect(searchTermOf('https://search.daum.net/search?w=tot&q=macfolio')).toBe('macfolio');
+		expect(searchTermOf('https://www.google.co.kr/search?q=macfolio')).toBe('macfolio');
+		expect(searchTermOf('https://search.yahoo.co.jp/search?p=macfolio')).toBe('macfolio');
+		// 요즘 브라우저가 넘기는 호스트만 있는 주소, 검색엔진이 아닌 곳, 비었거나 틀린 주소
+		expect(searchTermOf('https://www.google.com/')).toBeUndefined();
+		expect(searchTermOf('https://github.com/search?q=macfolio')).toBeUndefined();
+		expect(searchTermOf('https://www.bing.com/search?q=+')).toBeUndefined();
+		expect(searchTermOf('')).toBeUndefined();
+		expect(searchTermOf('not a url')).toBeUndefined();
+	});
+
+	it('들어온 곳이 검색엔진이면 호스트와 함께 검색어를 보낸다 (사이트 안에서 온 것은 보내지 않는다)', () => {
+		expect(
+			entryOf('https://macfolio.hyeoniverse.com/', 'https://search.naver.com/search.naver?query=macfolio')
+		).toMatchObject({
+			referrer: 'search.naver.com',
+			searchTerm: 'macfolio',
+		});
+		expect(entryOf('https://macfolio.hyeoniverse.com/', 'https://www.google.com/')).toMatchObject({
+			referrer: 'www.google.com',
+			searchTerm: undefined,
 		});
 	});
 

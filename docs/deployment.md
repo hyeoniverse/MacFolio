@@ -834,6 +834,62 @@ curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,
 
 `available`이 `false`면 서버에 키(사이트·비밀)가 둘 다 있지 않은 것이다. 이때는 켜 두어도 확인하지 않는다.
 
+### 검색어 (Google Search Console)
+
+활동 상태 보기의 **검색어** 탭(관리자)은 구글 검색어를 Search Console에서 가져온다. 구글은 검색어를 사이트에 넘기지 않아서 이 방법뿐이다. 서버가 서비스 계정으로 6시간마다 가져오고, 설정이 없으면 탭에 넣는 방법이 보인다. 그래서 아래를 하기 전에 배포해도 된다. 비용은 없다.
+
+**1. Search Console에 사이트가 있는지**
+
+[search.google.com/search-console](https://search.google.com/search-console)에서 사이트 속성을 확인해 둔다. 없으면 **속성 추가**:
+
+- **도메인 속성** (`hyeoniverse.com`, 하위 도메인까지 모두): Cloudflare DNS에 화면의 TXT 레코드를 더해 확인한다. `GSC_SITE_URL=sc-domain:hyeoniverse.com`
+- **URL 접두어 속성** (`https://macfolio.hyeoniverse.com/`만): HTML 태그·파일 등으로 확인한다. `GSC_SITE_URL=https://macfolio.hyeoniverse.com/` (끝의 `/`까지)
+
+새로 더한 속성은 그날부터 자료가 쌓인다 (2~3일 늦게 보인다).
+
+**2. 서비스 계정과 키** — [console.cloud.google.com](https://console.cloud.google.com)
+
+1. 프로젝트를 하나 고르거나 만든다 (예: `macfolio`)
+2. **APIs & Services → Library**에서 **Google Search Console API**를 찾아 **Enable**
+3. **IAM & Admin → Service Accounts → Create service account** (예: `macfolio-search`). 역할(권한)은 주지 않는다
+4. 만든 계정 → **Keys → Add key → Create new key → JSON**. 내려받은 파일은 다시 받을 수 없다
+
+**3. Search Console에 서비스 계정 더하기**
+
+Search Console → 그 속성 → **설정 → 사용자 및 권한 → 사용자 추가**에서 서비스 계정의 이메일(`…@….iam.gserviceaccount.com`)을 넣고 권한은 **제한됨**. 읽기만 한다.
+
+**4. 서버에 넣기**
+
+키가 셸 기록이나 저장소에 남지 않게 파일로 옮겨서 필요한 두 값만 꺼낸다. Mac에서:
+
+```bash
+scp ~/Downloads/<내려받은키>.json <서버>:~/deploy/gsc.json
+```
+
+서버에서:
+
+```bash
+cd ~/deploy
+# client_email과 private_key(줄바꿈을 \n으로 바꾼 한 줄)를 api.env에 더한다
+python3 -c 'import json; k = json.load(open("gsc.json")); print("GSC_CLIENT_EMAIL=" + k["client_email"]); print("GSC_PRIVATE_KEY=\"" + k["private_key"].replace("\n", "\\n") + "\"")' >> api.env
+rm gsc.json
+echo 'GSC_SITE_URL=sc-domain:hyeoniverse.com' >> api.env   # 1에서 정한 속성
+chmod 600 api.env
+docker compose up -d api
+```
+
+**5. 확인**
+
+사이트에서 관리자로 로그인 → **활동 상태 보기 → 검색어** 탭에서 **지금 가져오기**를 누른다. 처음에는 16개월치를 받는다 (서버도 뜬 뒤 1분이면 스스로 가져온다). "N월 N일까지의 자료"가 보이면 끝이다.
+
+**6. 안 될 때** (탭의 상태 줄 아래에 Google이 돌려준 이유가 그대로 보인다)
+
+| 메시지                                              | 원인과 해결                                                                                                   |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `403` `PERMISSION_DENIED` … `sufficient permission` | 3을 하지 않았거나 `GSC_SITE_URL`이 속성과 다르다 (도메인 속성은 `sc-domain:`, URL 접두어 속성은 끝의 `/`까지) |
+| `403` … `has not been used` / `SERVICE_DISABLED`    | 2-2의 API를 켜지 않았다. 켠 뒤 몇 분 기다린다                                                                 |
+| `400` `invalid_grant`                               | 키가 틀렸거나(다른 계정의 키, 줄바꿈이 깨짐) 서버 시각이 틀렸다 (`date -u`로 확인)                            |
+
 ### 비밀 값 바꾸기
 
 비밀 값이 채팅·스크린샷·로그에 드러났으면 새로 발급한다.

@@ -10,6 +10,7 @@ import LineChart from './LineChart';
 import StatTable from './StatTable';
 import Server from './Server';
 import { UtmBuilder, UtmTables } from './Utm';
+import SearchKeywordsPanel from './SearchKeywords';
 import { requestedTab } from './useServerResources';
 import {
 	ActivityError,
@@ -31,6 +32,7 @@ import EmptyState from '@/shared/ui/empty-state/EmptyState';
 const TABS = [
 	{ id: 'overview', label: '개요' },
 	{ id: 'referrers', label: '유입 경로' },
+	{ id: 'search', label: '검색어' },
 	{ id: 'content', label: '앱·글' },
 	{ id: 'audience', label: '지역·기기' },
 	{ id: 'live', label: '실시간' },
@@ -292,6 +294,8 @@ const Activity = () => {
 			return <AdminOnly what="실시간 방문은 방문 흐름과 가린 IP가 있어서 관리자에게만 보입니다." />;
 		if (tab === 'server' && !admin)
 			return <AdminOnly what="서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다." />;
+		if (tab === 'search' && !admin)
+			return <AdminOnly what="검색어는 누가 무엇을 찾다 들어왔는지 드러날 수 있어 관리자에게만 보입니다." />;
 		if (error) return <EmptyState className="activity-empty error">{error}</EmptyState>;
 		if (tab === 'live') return <Live visits={live} />;
 		if (tab === 'server') return <Server status={resources} />;
@@ -315,6 +319,16 @@ const Activity = () => {
 							<AdminOnly what="들어온 곳의 주소와 캠페인(utm)은 관리자에게만 보입니다. 방문자에게는 검색·소셜·직접·링크 묶음만 보입니다." />
 						)}
 					</>
+				);
+			case 'search':
+				return (
+					<SearchKeywordsPanel
+						from={summary.from}
+						to={summary.to}
+						visitTerms={breakdown.searchTerm}
+						postTitle={postTitle}
+						reloads={reloads}
+					/>
 				);
 			case 'content':
 				return (

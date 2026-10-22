@@ -17,6 +17,7 @@ import { AuthService } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { AnalyticsRecorder } from './analytics-recorder.service.js';
 import { AnalyticsStats } from './analytics-stats.service.js';
+import { SearchKeywordsService } from './search-keywords.service.js';
 import { RateLimit } from '../common/rate-limit.js';
 
 /**
@@ -29,6 +30,7 @@ export class AnalyticsController {
 	constructor(
 		private readonly recorder: AnalyticsRecorder,
 		private readonly stats: AnalyticsStats,
+		private readonly search: SearchKeywordsService,
 		private readonly auth: AuthService
 	) {}
 
@@ -44,6 +46,7 @@ export class AnalyticsController {
 				visitId: 'v-1a2b3c4d5e6f',
 				events: [
 					{ type: 'visit', path: '/memo/hello', referrer: 'github.com', device: 'desktop', language: 'ko-KR' },
+					{ type: 'visit', path: '/', referrer: 'search.naver.com', searchTerm: 'macfolio', device: 'mobile' },
 					{ type: 'app', app: 'memo' },
 					{ type: 'item', app: 'memo', item: 'hello' },
 					{ type: 'leave', duration: 95000 },
@@ -84,7 +87,7 @@ export class AnalyticsController {
 	@ApiOkResponse({
 		description:
 			'일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다. ' +
-			'관리자(scope: admin)에게만 들어온 곳의 호스트와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다',
+			'관리자(scope: admin)에게만 들어온 곳의 호스트·검색어와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다',
 	})
 	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일), utm이 틀렸다' })
 	async summary(
@@ -103,6 +106,39 @@ export class AnalyticsController {
 	@ApiBadRequestResponse({ description: 'app이 틀렸다' })
 	views(@Query('app') app: unknown) {
 		return this.stats.views(app);
+	}
+
+	@Get('search')
+	@UseGuards(AdminGuard)
+	@ApiCookieAuth()
+	@ApiQuery({ name: 'from', required: false, description: 'YYYY-MM-DD (기본: to의 6일 전)' })
+	@ApiQuery({ name: 'to', required: false, description: 'YYYY-MM-DD (기본: 오늘, 한국 시간)' })
+	@ApiOkResponse({
+		description:
+			'Google Search Console의 검색어: 기간의 (검색어, 페이지)마다 클릭·노출과 평균 순위, 노출 많은 순 1000줄까지. ' +
+			'서버에 서비스 계정(GSC_*)이 없으면 configured: false. Search Console은 2~3일 늦다',
+	})
+	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일)' })
+	@ApiUnauthorizedResponse({ description: '관리자 로그인이 필요하다' })
+	searchKeywords(@Query('from') from: unknown, @Query('to') to: unknown) {
+		return this.search.keywords(from, to);
+	}
+
+	@Post('search/sync')
+	@UseGuards(AdminGuard)
+	@RateLimit('write')
+	@ApiCookieAuth()
+	@ApiQuery({ name: 'from', required: false, description: 'YYYY-MM-DD (기본: to의 6일 전)' })
+	@ApiQuery({ name: 'to', required: false, description: 'YYYY-MM-DD (기본: 오늘, 한국 시간)' })
+	@ApiOkResponse({
+		description:
+			'Search Console에서 지금 가져오고(서버는 6시간마다 저절로 가져온다), 그 기간의 검색어를 GET과 같은 모양으로 준다',
+	})
+	@ApiUnauthorizedResponse({ description: '관리자 로그인이 필요하다' })
+	@HttpCode(200)
+	async syncSearchKeywords(@Query('from') from: unknown, @Query('to') to: unknown) {
+		await this.search.sync();
+		return this.search.keywords(from, to);
 	}
 
 	@Get('live')

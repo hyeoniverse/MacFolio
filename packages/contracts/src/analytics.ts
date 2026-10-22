@@ -41,6 +41,18 @@ export const splitUtmKey = (key: string): [string, string, string] => {
 	return [source, medium, campaign];
 };
 
+/** 검색어 하나의 상한 (글자 수) */
+export const SEARCH_TERM_MAX = 100;
+
+/**
+ * 검색어를 다듬는다: 앞뒤 공백을 빼고, 이어진 공백은 하나로, 소문자로, 100자까지. 비면 undefined.
+ * 사이트(검색엔진이 넘겨준 주소에서 읽을 때)와 서버(EventInput)가 같은 규칙을 쓴다
+ */
+export function cleanSearchTerm(value: string | null | undefined): string | undefined {
+	const cleaned = (value ?? '').trim().replace(/\s+/g, ' ').toLowerCase().slice(0, SEARCH_TERM_MAX).trim();
+	return cleaned || undefined;
+}
+
 /** 비었으면(undefined·null·'') 없는 것으로, 길이가 맞는 글자면 그대로 */
 const text = (max: number, name: string) =>
 	z.preprocess(
@@ -61,6 +73,11 @@ export const EventInput = z.object({
 	referrer: text(253, 'referrer')
 		.transform((referrer) => referrer?.toLowerCase())
 		.refine((referrer) => !referrer || HOST.test(referrer), 'referrer는 호스트만 받습니다.'),
+	/**
+	 * 검색엔진이 들어온 주소에 검색어를 실어 보냈을 때만 (네이버의 query 등). 구글·빙은 보내지 않는다.
+	 * 경로·다른 값은 받지 않는다. cleanSearchTerm으로 다듬는다
+	 */
+	searchTerm: text(SEARCH_TERM_MAX, 'searchTerm').transform(cleanSearchTerm),
 	/** utm 값은 cleanUtm으로 다듬어 저장한다 (소문자, 공백은 '-') */
 	utmSource: text(UTM_MAX, 'utmSource').transform(cleanUtm),
 	utmMedium: text(UTM_MAX, 'utmMedium').transform(cleanUtm),
@@ -111,6 +128,7 @@ export type EventBatch = z.infer<typeof EventBatch>;
 export const BREAKDOWNS = [
 	'referrerGroup',
 	'referrer',
+	'searchTerm',
 	'source',
 	'medium',
 	'campaign',
@@ -128,10 +146,19 @@ export const BREAKDOWNS = [
 ] as const;
 export type Breakdown = (typeof BREAKDOWNS)[number];
 /**
- * 방문자에게는 감추는 표: 들어온 곳의 호스트와 utm (지원한 곳 이름이 드러날 수 있다).
+ * 방문자에게는 감추는 표: 들어온 곳의 호스트와 검색어, utm (지원한 곳 이름이 드러날 수 있다).
  * utm은 출처·매체·캠페인 조합 (키는 utmKey), term·content는 조합에 붙이지 않고 따로 센다
  */
-export const ADMIN_ONLY_BREAKDOWNS = ['referrer', 'source', 'medium', 'campaign', 'utm', 'term', 'content'] as const;
+export const ADMIN_ONLY_BREAKDOWNS = [
+	'referrer',
+	'searchTerm',
+	'source',
+	'medium',
+	'campaign',
+	'utm',
+	'term',
+	'content',
+] as const;
 
 /** 요약의 utm= 거르기의 상한 (출처·매체·캠페인 셋과 구분자 둘) */
 export const UTM_FILTER_MAX = UTM_MAX * 3 + UTM_KEY_SEPARATOR.length * 2;
@@ -201,3 +228,31 @@ export type TodayVisitors = z.infer<typeof TodayVisitors>;
 /** GET /analytics/views?app=: 앱의 항목마다 조회수 */
 export const AppViews = z.object({ app: z.string(), views: z.record(z.string(), z.number().int()) });
 export type AppViews = z.infer<typeof AppViews>;
+
+/** Search Console 검색어 한 줄: 기간 동안 이 검색어로 이 페이지가 보이고(노출) 눌린(클릭) 수, 노출마다의 평균 순위 */
+export const SearchQueryRow = z.object({
+	query: z.string(),
+	/** 검색 결과에 나온 페이지 주소 */
+	page: z.string(),
+	clicks: z.number().int(),
+	impressions: z.number().int(),
+	/** 노출로 가중한 평균 순위 (1이 맨 위) */
+	position: z.number(),
+});
+export type SearchQueryRow = z.infer<typeof SearchQueryRow>;
+
+/** GET /analytics/search (관리자): Google Search Console에서 날마다 가져온 검색어 */
+export const SearchKeywords = z.object({
+	/** 서버에 Search Console 서비스 계정이 있는지. 없으면 rows는 비어 있다 */
+	configured: z.boolean(),
+	from: z.string(),
+	to: z.string(),
+	/** 마지막으로 가져온 시각과 그때의 실패 이유 */
+	syncedAt: z.string().nullable(),
+	error: z.string().nullable(),
+	/** 가져온 자료의 마지막 날 (Search Console은 2~3일 늦다) */
+	latestDay: z.string().nullable(),
+	/** 노출 많은 순 */
+	rows: z.array(SearchQueryRow),
+});
+export type SearchKeywords = z.infer<typeof SearchKeywords>;
