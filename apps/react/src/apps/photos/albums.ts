@@ -65,6 +65,9 @@ export function albumsOf(projects: readonly Project[]): Album[] {
 
 export const ALBUMS = albumsOf(PROJECTS);
 
+/** 프로젝트의 앨범인지 (Finder › 그림의 폴더 앨범이면 아니다: 프로젝트 페이지·링크가 없다) */
+export const isProjectAlbum = (album: Album) => ALBUMS.some((entry) => entry.id === album.id);
+
 /** 프로젝트 기간의 시작일 (예: "2024.12.26 – 2025.02.05" → 2024-12-26). 사진에는 날짜가 없어 앨범의 기간으로 순서를 정한다. 모르면 null */
 export function periodStart(period?: string): number | null {
 	const match = period?.match(/(\d{4})\.(\d{1,2})(?:\.(\d{1,2}))?/);

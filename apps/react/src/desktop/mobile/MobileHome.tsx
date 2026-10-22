@@ -15,12 +15,13 @@ import {
 	parseMobileWidgets,
 	WIDGET_INFO,
 	type PageWidget,
+	type PostsMode,
 	type WidgetKind,
 	type WidgetSize,
 } from '@/desktop/widgets/catalog';
 import Widget from '@/desktop/widgets/Widget';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from '@/desktop/widgets/widgetEditor';
-import WidgetSheet, { AlbumSheet } from '@/desktop/mobile/WidgetSheet';
+import WidgetSheet, { AlbumSheet, PostsModeSheet } from '@/desktop/mobile/WidgetSheet';
 import { cssVars } from '@/shared/lib/cssVars';
 import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from '@/desktop/mobile/homePages';
@@ -78,6 +79,8 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	const [gallery, setGallery] = useState(false);
 	// 앨범을 고르는 사진 위젯 (id)
 	const [albumFor, setAlbumFor] = useState<string | null>(null);
+	// 보일 글을 고르는 메모 위젯 (id)
+	const [postsFor, setPostsFor] = useState<string | null>(null);
 	const longPress = useRef<number | undefined>(undefined);
 	// 칸 수: 위젯이 있는 페이지마다(위젯 아래)와 나머지 페이지. 화면 크기가 바뀌면 다시 잰다
 	const [slots, setSlots] = useState({
@@ -151,6 +154,10 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		save(widgets.map((list) => list.map((widget) => (widget.id === id ? { ...widget, album } : widget))));
 		setAlbumFor(null);
 	};
+	const choosePosts = (id: string, posts: PostsMode) => {
+		save(widgets.map((list) => list.map((widget) => (widget.id === id ? { ...widget, posts } : widget))));
+		setPostsFor(null);
+	};
 	/** 지금 페이지(자리가 없으면 자리가 있는 첫 페이지) 끝에 더하고 그 페이지로 간다 */
 	const addWidget = (kind: WidgetKind, size: WidgetSize) => {
 		const target = pageToAdd(widgets, current, size);
@@ -163,6 +170,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	const stopEditing = () => {
 		setGallery(false);
 		setAlbumFor(null);
+		setPostsFor(null);
 		closeWidgetEditor();
 	};
 	// 편집 중에는 앱과 위젯을 열지 않는다
@@ -288,6 +296,16 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 														앨범
 													</button>
 												)}
+												{editing && kind === 'posts' && (
+													<button
+														type="button"
+														className="mobile-widget-option"
+														aria-label="메모 위젯에 보일 글 고르기"
+														onClick={() => setPostsFor(id)}
+													>
+														글
+													</button>
+												)}
 												{editing && (
 													<button
 														type="button"
@@ -355,6 +373,13 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 					album={widgets.flat().find((widget) => widget.id === albumFor)?.album}
 					onChoose={(album) => chooseAlbum(albumFor, album)}
 					onClose={() => setAlbumFor(null)}
+				/>
+			)}
+			{postsFor && (
+				<PostsModeSheet
+					mode={widgets.flat().find((widget) => widget.id === postsFor)?.posts}
+					onChoose={(posts) => choosePosts(postsFor, posts)}
+					onClose={() => setPostsFor(null)}
 				/>
 			)}
 		</div>

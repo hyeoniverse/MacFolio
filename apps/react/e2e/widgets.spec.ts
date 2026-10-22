@@ -28,7 +28,7 @@ test.describe('바탕화면 위젯', () => {
 		await expect(widget(page, '음악')).toBeVisible();
 		// 잔디: 서버가 없으면 안내만 (자료가 있을 때의 모양은 단위 시험과 GitHub 앱 시험이 본다)
 		await expect(widget(page, 'GitHub')).toContainText('기여 기록을 불러오지 못했습니다');
-		await expect(widget(page, '최근 글').getByRole('listitem')).toHaveCount(3);
+		await expect(widget(page, '메모').getByRole('listitem')).toHaveCount(3);
 		const weather = (await widget(page, '날씨').boundingBox())!;
 		const calendar = (await widget(page, '캘린더').boundingBox())!;
 		expect(weather.x).toBeLessThan(60);
@@ -60,7 +60,7 @@ test.describe('바탕화면 위젯', () => {
 	test('최근 글을 누르면 메모가 그 글을 열고, 위젯의 빈 곳을 누르면 그 앱이 열린다', async ({ page }) => {
 		await enterDesktop(page);
 		await closeSafari(page);
-		const first = widget(page, '최근 글').getByRole('button').first();
+		const first = widget(page, '메모').getByRole('button').first();
 		const title = (await first.locator('strong').textContent())!;
 		await first.click();
 		await expect(appWindow(page, 'memo').getByRole('heading', { level: 1, name: title })).toBeVisible();
@@ -128,6 +128,12 @@ test.describe('바탕화면 위젯', () => {
 		await expect(page.getByRole('menuitemcheckbox', { name: '모든 앨범' })).toHaveAttribute('aria-checked', 'true');
 		await page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' }).click();
 		await expect(photos.locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
+		// 소리 단추는 그림일 때도 늘 같은 자리(오른쪽 아래)에 있다
+		const sound = photos.getByRole('button', { name: '소리 켜기' });
+		await expect(sound).toBeVisible();
+		const [widgetBox, soundBox] = [(await photos.boundingBox())!, (await sound.boundingBox())!];
+		expect(soundBox.x).toBeGreaterThan(widgetBox.x + widgetBox.width / 2);
+		expect(soundBox.y).toBeGreaterThan(widgetBox.y + widgetBox.height / 2);
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'sproutfarm' });
 	});
 
@@ -155,6 +161,75 @@ test.describe('바탕화면 위젯', () => {
 		await expect(photos.locator('figcaption')).toHaveText('위젯 사진');
 		await expect(photos.locator('img')).toHaveAttribute('src', '/files/pictures/sea.png');
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'folder:widget01' });
+	});
+
+	test('메모 위젯은 오른쪽 클릭 메뉴에서 최근 글·인기글·랜덤을 고른다', async ({ page }) => {
+		await enterDesktop(page);
+		await closeSafari(page);
+		const memo = widget(page, '메모');
+		await expect(memo.locator('.widget-posts-header')).toHaveText('최근 글');
+		await memo.click({ button: 'right' });
+		await expect(page.getByRole('menuitemcheckbox', { name: '최근 글' })).toHaveAttribute('aria-checked', 'true');
+		// 서버가 없으면 조회·반응이 없어 인기글이 비어 있다
+		await page.getByRole('menuitemcheckbox', { name: '인기글' }).click();
+		await expect(memo.locator('.widget-posts-header')).toHaveText('인기글');
+		await expect(memo).toContainText('아직 인기글이 없습니다');
+		await memo.click({ button: 'right' });
+		await page.getByRole('menuitemcheckbox', { name: '랜덤' }).click();
+		await expect(memo.locator('.widget-posts-header')).toHaveText('랜덤');
+		await expect(memo.getByRole('listitem')).toHaveCount(3);
+		expect((await saved(page))?.find((item) => item.kind === 'posts')).toMatchObject({ posts: 'random' });
+	});
+
+	test('사진 위젯은 영상을 소리 없이 재생하고, 단추로 소리를 켠다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.finderLayout = { folders: [], files: {}, aliases: null };
+		await fakeFiles(page, [{ id: 'v1', folder: '그림', name: '파도.mp4', key: 'pictures/wave.mp4', kind: 'file' }]);
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await page
+			.getByRole('dialog', { name: '위젯 갤러리' })
+			.getByRole('button', { name: '사진 위젯 (작게) 더하기' })
+			.click();
+		await page.keyboard.press('Escape');
+		const photos = widget(page, '사진');
+		await photos.click({ button: 'right' });
+		await page.getByRole('menuitemcheckbox', { name: '그림' }).click();
+		const video = photos.locator('video');
+		await expect(video).toHaveAttribute('src', '/files/pictures/wave.mp4');
+		expect(await video.evaluate((el: HTMLVideoElement) => el.muted && el.autoplay)).toBe(true);
+		await photos.getByRole('button', { name: '소리 켜기' }).click();
+		expect(await video.evaluate((el: HTMLVideoElement) => el.muted)).toBe(false);
+		await expect(photos.getByRole('button', { name: '소리 끄기' })).toHaveAttribute('aria-pressed', 'true');
+		// 일시 정지하면 영상이 멈추고, 재생하면 다시 돈다
+		await photos.getByRole('button', { name: '일시 정지' }).click();
+		expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+		await photos.getByRole('button', { name: '재생' }).click();
+		await expect(photos.getByRole('button', { name: '일시 정지' })).toBeVisible();
+	});
+
+	test('사진 위젯의 GIF는 일시 정지하면 지금 장면에서 멈춘다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.finderLayout = { folders: [], files: {}, aliases: null };
+		await fakeFiles(page, [{ id: 'g1', folder: '그림', name: '움짤.gif', key: 'pictures/loop.gif', kind: 'image' }]);
+		await page.addInitScript(() =>
+			localStorage.setItem(
+				'macfolio:desktop:widgets',
+				JSON.stringify([{ id: 'photos', kind: 'photos', size: 'small', col: 3, row: 0, album: 'pictures' }])
+			)
+		);
+		await enterDesktop(page);
+		await closeSafari(page);
+		const photos = widget(page, '사진');
+		await expect(photos.locator('img')).toHaveAttribute('src', '/files/pictures/loop.gif');
+		await expect(photos.locator('canvas')).toHaveCount(0);
+		await photos.getByRole('button', { name: '일시 정지' }).click();
+		// 멈춘 장면을 그린 캔버스가 그림 위를 덮는다
+		await expect(photos.locator('canvas.widget-photo-frame')).toBeVisible();
+		await photos.getByRole('button', { name: '재생' }).click();
+		await expect(photos.locator('canvas')).toHaveCount(0);
 	});
 
 	test('위젯 편집: 바탕화면 메뉴에서 갤러리를 열어 더하고, 지우기 단추로 빼고, 완료나 Esc로 닫는다', async ({

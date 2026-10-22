@@ -530,10 +530,71 @@
 	min-height: 0;
 }
 
-.widget-photo-body img {
+.widget-photo-body img,
+.widget-photo-body video,
+.widget-photo-frame {
+	display: block;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+}
+
+/* 일시 정지로 멈춘 GIF의 장면 (그림 위에 그대로 덮는다) */
+.widget-photo-frame {
+	position: absolute;
+	inset: 0;
+}
+
+/* 오른쪽 아래의 일시 정지·소리 단추 (늘 같은 자리) */
+.widget-photo-controls {
+	position: absolute;
+	right: var(--space-10);
+	bottom: var(--space-10);
+	display: flex;
+	gap: var(--space-6);
+}
+
+/* 사진 위에 뜬 작은 유리 단추, 가까이 가면 또렷해진다 */
+.widget-photo-control {
+	display: grid;
+	width: 22px;
+	height: 22px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--radius-full);
+	/* 유리: 비치는 흰 판에 흐림·채도, 가는 밝은 테두리와 위쪽 빛, 옅은 그림자 */
+	background: linear-gradient(
+		160deg,
+		color-mix(in srgb, var(--color-white) 62%, transparent),
+		color-mix(in srgb, var(--color-white) 34%, transparent)
+	);
+	-webkit-backdrop-filter: blur(12px) saturate(180%);
+	backdrop-filter: blur(12px) saturate(180%);
+	box-shadow:
+		inset 0 0 0 0.5px color-mix(in srgb, var(--color-white) 55%, transparent),
+		inset 0 1px 0 color-mix(in srgb, var(--color-white) 45%, transparent),
+		0 1px 4px color-mix(in srgb, var(--color-black) 18%, transparent);
+	/* 흰 유리 위라 아이콘은 짙게: 밝은 영상·어두운 영상 어디서든 보인다 */
+	color: color-mix(in srgb, var(--color-black) 72%, transparent);
+	opacity: 0.7;
+	place-items: center;
+	cursor: pointer;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.widget-photo-control svg {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentcolor;
+	stroke-width: 1.6;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.widget-photo-control:hover,
+.widget-photo-control:focus-visible {
+	opacity: 1;
 }
 
 .widget-photo-body figcaption {

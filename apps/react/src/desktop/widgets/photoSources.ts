@@ -1,7 +1,7 @@
 // 사진 위젯이 보여 줄 수 있는 곳: 사진 앱의 앨범과, 관리자가 Finder › 그림에 올린 그림(그림 폴더와 그 안에 만든 폴더)
 import type { FinderLayoutValue } from '@macfolio/contracts';
 import type { Album } from '@/apps/photos/albums';
-import { buildTree, find, type FinderItem } from '@/apps/finder/files';
+import { buildTree, find, mediaKind, type FinderItem } from '@/apps/finder/files';
 import { fileUrl, type DocumentEntry } from '@/apps/finder/documents';
 
 export interface PhotoSource {
@@ -10,24 +10,25 @@ export interface PhotoSource {
 	name: string;
 	/** 앨범(사진 앱) 또는 그림 폴더(Finder) */
 	group: 'album' | 'folder';
-	photos: { src: string; caption: string }[];
+	/** video면 영상 (위젯이 소리 없이 재생한다) */
+	photos: { src: string; caption: string; video?: boolean }[];
 }
 
-/** 사진 앱의 앨범. 영상·SVG는 뺀다 */
+/** 사진 앱의 앨범. SVG는 뺀다 (영상은 위젯이 소리 없이 재생한다) */
 export const albumSources = (albums: readonly Album[]): PhotoSource[] =>
 	albums.map((album) => ({
 		id: album.id,
 		name: album.name,
 		group: 'album',
 		photos: album.photos
-			.filter((photo) => !photo.video && !/\.svg$/i.test(photo.src))
-			.map(({ src, caption }) => ({ src, caption })),
+			.filter((photo) => !/\.svg$/i.test(photo.src))
+			.map(({ src, caption, video }) => ({ src, caption, ...(video && { video: true }) })),
 	}));
 
 const stem = (name: string) => name.replace(/\.[^.]+$/, '');
 
 /**
- * Finder › 그림의 폴더들: 그림 폴더 바로 안에 올린 그림(있을 때만)과, 그 안에 만든 폴더마다 (안쪽 폴더까지).
+ * Finder › 그림의 폴더들: 그림 폴더 바로 안에 올린 그림·영상(있을 때만)과, 그 안에 만든 폴더마다 (안쪽 폴더까지).
  * 앨범 폴더(pictures/<앨범>)는 사진 앱의 앨범과 같아서 뺀다. 폴더 안에 바로 든 그림만 보여 준다
  */
 export function folderSources(files: DocumentEntry[], layout: FinderLayoutValue): PhotoSource[] {
@@ -35,7 +36,13 @@ export function folderSources(files: DocumentEntry[], layout: FinderLayoutValue)
 	const pictures = find(roots, 'pictures');
 	if (pictures?.kind !== 'folder') return [];
 	const photosIn = (items: FinderItem[]) =>
-		items.flatMap((item) => (item.kind === 'image' ? [{ src: fileUrl(item.key), caption: stem(item.name) }] : []));
+		items.flatMap((item) =>
+			item.kind === 'image'
+				? [{ src: fileUrl(item.key), caption: stem(item.name) }]
+				: item.kind === 'file' && mediaKind(item.name) === 'video'
+					? [{ src: fileUrl(item.key), caption: stem(item.name), video: true }]
+					: []
+		);
 	const sources: PhotoSource[] = [];
 	const own = photosIn(pictures.children);
 	if (own.length) sources.push({ id: 'pictures', name: pictures.name, group: 'folder', photos: own });

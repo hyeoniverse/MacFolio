@@ -1535,7 +1535,7 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 			pageWidgets(index).evaluateAll((items) => items.map((item) => item.getAttribute('aria-label')));
 		expect(await labels(0)).toEqual(['소개 위젯', 'GitHub 위젯']);
 		expect(await labels(1)).toEqual(['날씨 위젯', '캘린더 위젯', '음악 위젯']);
-		expect(await labels(2)).toEqual(['최근 글 위젯', '사진 위젯', '시계 위젯']);
+		expect(await labels(2)).toEqual(['메모 위젯', '사진 위젯', '시계 위젯']);
 
 		// 작은 위젯 둘이 한 줄, 중간 위젯은 한 줄을 다 쓰고 높이는 작은 위젯과 같다
 		await page.getByRole('tab', { name: '2쪽' }).click();
@@ -1675,7 +1675,7 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 	test('최근 글을 누르면 메모가 그 글을 연다', async ({ page }) => {
 		await enterHome(page);
 		await page.getByRole('tab', { name: '3쪽' }).click();
-		const first = page.getByRole('group', { name: '최근 글 위젯' }).getByRole('button').first();
+		const first = page.getByRole('group', { name: '메모 위젯' }).getByRole('button').first();
 		const title = (await first.locator('strong').textContent())!;
 		await first.click();
 		await expect(appWindow(page, 'memo').getByRole('heading', { level: 1, name: title })).toBeVisible();

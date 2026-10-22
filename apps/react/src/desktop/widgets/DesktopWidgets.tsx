@@ -10,9 +10,12 @@ import {
 	DEFAULT_DESKTOP_WIDGETS,
 	newWidgetId,
 	parseWidgets,
+	POSTS_MODE_LABEL,
+	POSTS_MODES,
 	SIZE_LABEL,
 	WIDGET_INFO,
 	type PlacedWidget,
+	type PostsMode,
 	type WidgetKind,
 	type WidgetSize,
 } from './catalog';
@@ -118,6 +121,9 @@ const DesktopWidgets: React.FC = () => {
 	/** 사진 위젯의 앨범 (undefined면 모든 앨범) */
 	const chooseAlbum = (id: string, album: string | undefined) =>
 		save(widgets.map((widget) => (widget.id === id ? { ...widget, album } : widget)));
+	/** 메모 위젯이 보일 글 */
+	const choosePosts = (id: string, posts: PostsMode) =>
+		save(widgets.map((widget) => (widget.id === id ? { ...widget, posts } : widget)));
 	const changeSize = (id: string, size: WidgetSize) =>
 		save(visible.map((widget) => (widget.id === id ? resize(widget, size, visible, viewport, iconRects) : widget)));
 
@@ -217,6 +223,17 @@ const DesktopWidgets: React.FC = () => {
 					checked: target.size === size,
 					onSelect: () => changeSize(target.id, size),
 				})),
+				...(target.kind === 'posts'
+					? ([
+							'separator',
+							{ heading: '보일 글' },
+							...POSTS_MODES.map((mode) => ({
+								label: POSTS_MODE_LABEL[mode],
+								checked: (target.posts ?? 'recent') === mode,
+								onSelect: () => choosePosts(target.id, mode),
+							})),
+						] satisfies MenuItem[])
+					: []),
 				...(target.kind === 'photos'
 					? ([
 							'separator',

@@ -24,16 +24,30 @@ export const WIDGET_INFO: Record<WidgetKind, WidgetInfo> = {
 	calendar: { label: '캘린더', description: '오늘 날짜와 이달의 달력', sizes: ['small', 'medium'] },
 	clock: { label: '시계', description: '지금 시각 (서울)', sizes: ['small'] },
 	music: { label: '음악', description: '지금 재생 중인 곡과 재생 버튼', sizes: ['medium', 'small'] },
-	posts: { label: '최근 글', description: '메모 앱에 새로 올라온 글', sizes: ['medium', 'small'] },
-	photos: { label: '사진', description: '사진 앱의 앨범(고른 것이나 모두)을 차례로', sizes: ['small', 'medium'] },
+	posts: { label: '메모', description: '메모 앱의 최근 글·인기글·랜덤 글', sizes: ['medium', 'small'] },
+	photos: {
+		label: '사진',
+		description: '사진 앱의 앨범(고른 것이나 모두)을 차례로, 영상은 소리 없이 재생',
+		sizes: ['small', 'medium'],
+	},
 	github: { label: 'GitHub', description: '기여 그래프 (잔디)', sizes: ['medium', 'small'] },
 	profile: { label: '소개', description: '이름과 하는 일', sizes: ['medium'] },
 };
 
 /** 바탕화면에 놓인 위젯 하나. col·row는 위젯 격자의 칸 (layout.ts) */
-/** 위젯마다 고르는 값 (사진 위젯의 앨범: 사진 앱의 앨범 id. 없으면 모든 앨범) */
+/** 메모 위젯이 보일 글: 최근 글, 인기글(메모 앱의 인기글 순위), 랜덤 */
+export const POSTS_MODES = ['recent', 'popular', 'random'] as const;
+export type PostsMode = (typeof POSTS_MODES)[number];
+export const POSTS_MODE_LABEL: Record<PostsMode, string> = { recent: '최근 글', popular: '인기글', random: '랜덤' };
+
+/**
+ * 위젯마다 고르는 값.
+ * - album: 사진 위젯의 앨범(사진 앱의 앨범 id 또는 그림 폴더). 없으면 모든 앨범
+ * - posts: 메모 위젯이 보일 글. 없으면 최근 글
+ */
 export interface WidgetOptions {
 	album?: string;
+	posts?: PostsMode;
 }
 
 export interface PlacedWidget extends WidgetOptions {
@@ -103,9 +117,11 @@ export function pageToAdd(
 	return pages.findIndex((page) => fitsOnPage(page, size));
 }
 
-/** 저장한 고른 값 (앨범 id는 글자만 받는다: 없어진 앨범이면 위젯이 모든 앨범을 보인다) */
-const optionsOf = (album: unknown): WidgetOptions =>
-	typeof album === 'string' && album.length <= 100 ? { album } : {};
+/** 저장한 고른 값 (앨범 id는 글자만 받는다: 없어진 앨범이면 위젯이 모든 앨범을 보인다. 모르는 글 보기는 버린다) */
+const optionsOf = (album: unknown, posts: unknown): WidgetOptions => ({
+	...(typeof album === 'string' && album.length <= 100 && { album }),
+	...((POSTS_MODES as readonly unknown[]).includes(posts) && { posts: posts as PostsMode }),
+});
 
 const isKind = (value: unknown): value is WidgetKind =>
 	typeof value === 'string' && (WIDGET_KINDS as readonly string[]).includes(value);
@@ -117,12 +133,19 @@ export function parseWidgets(raw: unknown): PlacedWidget[] | null {
 	const ids = new Set<string>();
 	for (const item of raw) {
 		if (typeof item !== 'object' || item === null) continue;
-		const { id, kind, size, col, row, album } = item as Record<string, unknown>;
+		const { id, kind, size, col, row, album, posts } = item as Record<string, unknown>;
 		if (typeof id !== 'string' || ids.has(id) || !isKind(kind)) continue;
 		if (!(WIDGET_INFO[kind].sizes as readonly unknown[]).includes(size)) continue;
 		if (!Number.isInteger(col) || !Number.isInteger(row) || (col as number) < 0 || (row as number) < 0) continue;
 		ids.add(id);
-		widgets.push({ id, kind, size: size as WidgetSize, col: col as number, row: row as number, ...optionsOf(album) });
+		widgets.push({
+			id,
+			kind,
+			size: size as WidgetSize,
+			col: col as number,
+			row: row as number,
+			...optionsOf(album, posts),
+		});
 	}
 	return widgets;
 }
@@ -140,12 +163,12 @@ export function parseMobileWidgets(raw: unknown): PageWidget[][] | null {
 		if (!Array.isArray(items)) return page;
 		for (const item of items) {
 			if (typeof item !== 'object' || item === null) continue;
-			const { id, kind, size, album } = item as Record<string, unknown>;
+			const { id, kind, size, album, posts } = item as Record<string, unknown>;
 			if (typeof id !== 'string' || ids.has(id) || !isKind(kind)) continue;
 			if (!(WIDGET_INFO[kind].sizes as readonly unknown[]).includes(size)) continue;
 			if (!fitsOnPage(page, size as WidgetSize)) continue;
 			ids.add(id);
-			page.push({ id, kind, size: size as WidgetSize, ...optionsOf(album) });
+			page.push({ id, kind, size: size as WidgetSize, ...optionsOf(album, posts) });
 		}
 		return page;
 	});

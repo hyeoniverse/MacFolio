@@ -75,7 +75,7 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 			body = size === 'medium' ? <MusicWidget className="widget-music" onOpen={() => {}} /> : <MusicSmall />;
 			break;
 		case 'posts':
-			body = <PostsWidget size={size} openPost={openPost} />;
+			body = <PostsWidget size={size} mode={options?.posts} openPost={openPost} />;
 			break;
 		case 'photos':
 			body = <PhotoWidget album={options?.album} />;

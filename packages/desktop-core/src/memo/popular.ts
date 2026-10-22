@@ -1,6 +1,5 @@
 // 인기글: 조회수·댓글 수·좋아요 수로 점수를 매겨 위에서 10개.
 // 조회수는 /analytics/views, 댓글·좋아요 수는 /posts/stats (서버는 저장소 Markdown 글을 모르므로 순위는 화면에서 매긴다)
-import type { Post } from './posts.js';
 
 /** 글 하나의 반응 */
 export interface PostStats {
@@ -32,7 +31,11 @@ export const statsOf = (stats: Record<string, Partial<PostStats>>, slug: string)
  * 점수가 높은 순서로 limit개. 반응이 하나도 없는 글은 넣지 않는다.
  * 점수가 같으면 좋아요, 댓글, 조회가 많은 글, 그래도 같으면 최근 글
  */
-export function popularPosts(posts: Post[], stats: Record<string, Partial<PostStats>>, limit = POPULAR_LIMIT): Post[] {
+export function popularPosts<T extends { slug: string; date: string }>(
+	posts: readonly T[],
+	stats: Record<string, Partial<PostStats>>,
+	limit = POPULAR_LIMIT
+): T[] {
 	return posts
 		.map((post) => ({ post, stats: statsOf(stats, post.slug) }))
 		.map((entry) => ({ ...entry, score: popularityScore(entry.stats) }))

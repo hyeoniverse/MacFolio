@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { shareLink } from '@/shared/lib/appLink';
 import { useAdmin } from '@/shared/auth/adminStore';
 import type { Album, Photo } from './albums';
-import { CAPTION_MAX } from './albums';
+import { CAPTION_MAX, isProjectAlbum } from './albums';
 import { captionOf, saveCaption, useCaptions } from './captionsApi';
 import { initialSwipe, swipeStep, type SwipeState } from './swipe';
 import { useExitMotion } from '@/shared/ui/motion/useExitMotion';
@@ -226,23 +226,27 @@ export const Viewer = ({
 							icon="fa-solid fa-circle-info"
 							onClick={() => setInfo((value) => !value)}
 						/>
-						<IconButton
-							label="프로젝트 페이지 링크 공유"
-							icon="fa-solid fa-arrow-up-from-bracket"
-							onClick={() => void shareLink({ app: 'safari', id: photo.album.id }, photo.album.name)}
-						/>
+						{isProjectAlbum(photo.album) && (
+							<IconButton
+								label="프로젝트 페이지 링크 공유"
+								icon="fa-solid fa-arrow-up-from-bracket"
+								onClick={() => void shareLink({ app: 'safari', id: photo.album.id }, photo.album.name)}
+							/>
+						)}
 					</div>
-					{/* 좁은 창에서는 나침반 동그라미만 (Photos.css) */}
-					<button
-						type="button"
-						className="photos-pill photos-project-button"
-						aria-label={`${photo.album.name} 페이지`}
-						title={`${photo.album.name} 페이지`}
-						onClick={() => onOpenProject(photo.album.id)}
-					>
-						<i className="fa-regular fa-compass" aria-hidden="true" />
-						<span>{photo.album.name} 페이지</span>
-					</button>
+					{/* 좁은 창에서는 나침반 동그라미만 (Photos.css). Finder 폴더 앨범에는 프로젝트가 없다 */}
+					{isProjectAlbum(photo.album) && (
+						<button
+							type="button"
+							className="photos-pill photos-project-button"
+							aria-label={`${photo.album.name} 페이지`}
+							title={`${photo.album.name} 페이지`}
+							onClick={() => onOpenProject(photo.album.id)}
+						>
+							<i className="fa-regular fa-compass" aria-hidden="true" />
+							<span>{photo.album.name} 페이지</span>
+						</button>
+					)}
 				</div>
 			</header>
 			<div className="photos-viewer-body">

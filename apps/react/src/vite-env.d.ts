@@ -23,3 +23,9 @@ declare module 'virtual:recent-posts' {
 	const posts: { slug: string; title: string; date: string; category: string }[];
 	export default posts;
 }
+
+/** 저장소의 모든 글, 최신 글이 먼저 (vite.config.ts의 recentPostsPlugin). 메모 위젯의 인기글·랜덤이 그때 불러온다 */
+declare module 'virtual:post-index' {
+	const posts: { slug: string; title: string; date: string; category: string }[];
+	export default posts;
+}

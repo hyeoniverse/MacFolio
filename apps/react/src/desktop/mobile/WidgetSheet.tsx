@@ -1,9 +1,12 @@
 import Sheet from '@/shared/ui/sheet/Sheet';
 import {
 	pageToAdd,
+	POSTS_MODE_LABEL,
+	POSTS_MODES,
 	WIDGET_INFO,
 	WIDGET_KINDS,
 	type PageWidget,
+	type PostsMode,
 	type WidgetKind,
 	type WidgetSize,
 } from '@/desktop/widgets/catalog';
@@ -49,6 +52,36 @@ const WidgetSheet = ({ pages, current, onAdd, onClose }: Props) => (
 				})
 			)}
 		</ul>
+	</Sheet>
+);
+
+/** 메모 위젯이 보일 글 고르기 (편집 중에 위젯의 '글' 단추로 연다) */
+export const PostsModeSheet = ({
+	mode,
+	onChoose,
+	onClose,
+}: {
+	mode: PostsMode | undefined;
+	onChoose: (mode: PostsMode) => void;
+	onClose: () => void;
+}) => (
+	<Sheet label="메모 위젯에 보일 글" variant="card" className="mobile-album-sheet" onClose={onClose}>
+		<section>
+			<h2>보일 글</h2>
+			<ul role="radiogroup" aria-label="보일 글">
+				{POSTS_MODES.map((option) => {
+					const checked = (mode ?? 'recent') === option;
+					return (
+						<li key={option}>
+							<button type="button" role="radio" aria-checked={checked} onClick={() => onChoose(option)}>
+								{POSTS_MODE_LABEL[option]}
+								{checked && <i className="fa-solid fa-check" aria-hidden="true"></i>}
+							</button>
+						</li>
+					);
+				})}
+			</ul>
+		</section>
 	</Sheet>
 );
 

@@ -6,7 +6,8 @@ import AppWindow from '@/desktop/window/Window';
 import { useAppState } from '@/desktop/useAppState';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { requestOpen } from '@/shared/lib/openRequest';
-import { ALBUMS, ALBUMS_BY_AGE, ALL_PHOTOS, countText } from './albums';
+import { countText, isProjectAlbum } from './albums';
+import { usePhotoLibrary } from './usePhotoLibrary';
 import { Thumb, Viewer, type Shown } from './PhotoParts';
 import Menu from '@/shared/ui/menu/Menu';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
@@ -69,12 +70,14 @@ const Photos = () => {
 	// 관리자가 고친 캡션 (서버). 앱을 열 때 한 번 받는다
 	const captions = useCaptions();
 	useEffect(() => loadCaptions(), []);
-	const album = place.kind === 'album' ? ALBUMS.find((entry) => entry.id === place.id) : undefined;
+	// 프로젝트 앨범과 Finder › 그림의 폴더
+	const { albums, albumsByAge, allPhotos } = usePhotoLibrary();
+	const album = place.kind === 'album' ? albums.find((entry) => entry.id === place.id) : undefined;
 	const photos: Shown[] = album
 		? album.photos.map((photo) => ({ ...photo, album }))
 		: place.kind === 'videos'
-			? ALL_PHOTOS.filter((photo) => photo.video)
-			: ALL_PHOTOS;
+			? allPhotos.filter((photo) => photo.video)
+			: allPhotos;
 	const title = album?.name ?? (place.kind === 'videos' ? '비디오' : '보관함');
 	const showGroups = place.kind === 'all' && grouped;
 	// 격자는 맨 아래(최신)부터 보인다. 크게 보기는 격자 위에 열려 닫으면 보던 자리 그대로
@@ -102,7 +105,7 @@ const Photos = () => {
 				{ label: '보관함', checked: place.kind === 'all', onSelect: () => go({ kind: 'all' }) },
 				{ label: '비디오', checked: place.kind === 'videos', onSelect: () => go({ kind: 'videos' }) },
 				'separator',
-				...ALBUMS.map((entry) => ({
+				...albums.map((entry) => ({
 					label: entry.name,
 					checked: album?.id === entry.id,
 					onSelect: () => go({ kind: 'album', id: entry.id }),
@@ -187,17 +190,17 @@ const Photos = () => {
 								{ kind: 'all' },
 								'보관함',
 								<i className={PLACE_ICON.all} aria-hidden="true" />,
-								ALL_PHOTOS.length
+								allPhotos.length
 							)}
 							<p className="photos-sidebar-heading">고정됨</p>
 							{placeButton(
 								{ kind: 'videos' },
 								'비디오',
 								<i className={PLACE_ICON.videos} aria-hidden="true" />,
-								ALL_PHOTOS.filter((photo) => photo.video).length
+								allPhotos.filter((photo) => photo.video).length
 							)}
 							<p className="photos-sidebar-heading">앨범</p>
-							{ALBUMS.map((entry) =>
+							{albums.map((entry) =>
 								placeButton(
 									{ kind: 'album', id: entry.id },
 									entry.name,
@@ -219,7 +222,7 @@ const Photos = () => {
 						>
 							<div ref={scrollBox} className="photos-scroll">
 								{showGroups ? (
-									ALBUMS_BY_AGE.map((entry) => {
+									albumsByAge.map((entry) => {
 										const start = photos.findIndex((photo) => photo.album.id === entry.id);
 										return (
 											<section key={`${entry.id}|${size}`} className="photos-group motion-swap" aria-label={entry.name}>
@@ -299,6 +302,7 @@ const Photos = () => {
 									</div>
 									<div className="photos-toolbar-group end">
 										{album &&
+											isProjectAlbum(album) &&
 											(compact ? (
 												<IconButton
 													variant="circle"

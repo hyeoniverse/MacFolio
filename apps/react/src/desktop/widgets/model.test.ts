@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { handAngles, mergeRecentPosts, monthGrid, seoulDate, shortDate, streakOf } from './model';
+import {
+	handAngles,
+	mergeRecentPosts,
+	monthGrid,
+	popularOf,
+	randomOf,
+	seededRandom,
+	seoulDate,
+	shortDate,
+	streakOf,
+} from './model';
 
 describe('위젯 값', () => {
 	it('서울 기준 날짜와 시각 (UTC 자정 넘어도 서울 날짜)', () => {
@@ -58,5 +68,31 @@ describe('위젯 값', () => {
 		expect(streakOf(days(1, 2, 3, 0))).toBe(3);
 		expect(streakOf(days(1, 0, 0))).toBe(0);
 		expect(streakOf([])).toBe(0);
+	});
+
+	it('메모 위젯의 인기글: 메모 앱과 같은 점수(조회 1, 좋아요 3, 댓글 5)로, 반응 없는 글은 빼고', () => {
+		const posts = ['a', 'b', 'c', 'd'].map((slug, i) => ({
+			slug,
+			title: slug,
+			date: `2026-10-0${i + 1}`,
+			category: '',
+		}));
+		const stats = { a: { views: 10 }, b: { likes: 2, comments: 1 }, c: { views: 3 } };
+		// a 10점, b 3×2+5×1=11점, c 3점, d 0점
+		expect(popularOf(posts, stats, 3).map((post) => post.slug)).toEqual(['b', 'a', 'c']);
+		expect(popularOf(posts, {}, 3)).toEqual([]);
+	});
+
+	it('메모 위젯의 랜덤: 겹치지 않게 고르고, 같은 seed면 같은 글', () => {
+		const posts = Array.from({ length: 10 }, (_, i) => ({
+			slug: `p${i}`,
+			title: '',
+			date: '2026-10-01',
+			category: '',
+		}));
+		const first = randomOf(posts, 3, seededRandom(0.42)).map((post) => post.slug);
+		expect(new Set(first).size).toBe(3);
+		expect(randomOf(posts, 3, seededRandom(0.42)).map((post) => post.slug)).toEqual(first);
+		expect(randomOf(posts.slice(0, 2), 3, seededRandom(0.1))).toHaveLength(2);
 	});
 });

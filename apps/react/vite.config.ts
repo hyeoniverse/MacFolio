@@ -130,19 +130,23 @@ const RECENT_POSTS = 6;
 function recentPostsPlugin(): Plugin {
 	const id = 'virtual:recent-posts';
 	const resolved = `\0${id}`;
+	// 'virtual:post-index': 모든 글의 제목·날짜·분류 (메모 위젯의 인기글·랜덤이 그때 불러온다. 첫 화면에는 넣지 않는다)
+	const indexId = 'virtual:post-index';
+	const indexResolved = `\0${indexId}`;
 	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
 	return {
 		name: 'macfolio-recent-posts',
-		resolveId: (source) => (source === id ? resolved : null),
+		resolveId: (source) => (source === id ? resolved : source === indexId ? indexResolved : null),
 		async load(source) {
-			if (source !== resolved) return null;
+			if (source !== resolved && source !== indexResolved) return null;
 			const names = readdirSync(contentDir).filter((name) => name.endsWith('.md'));
 			for (const name of names) this.addWatchFile(join(contentDir, name));
 			const files = Object.fromEntries(
 				names.map((name) => [`./content/${name}`, readFileSync(join(contentDir, name), 'utf8')])
 			);
 			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
-			return `export default ${JSON.stringify(await recentPosts(files, RECENT_POSTS, today))};`;
+			const limit = source === resolved ? RECENT_POSTS : Infinity;
+			return `export default ${JSON.stringify(await recentPosts(files, limit, today))};`;
 		},
 	};
 }
