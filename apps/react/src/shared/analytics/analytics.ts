@@ -5,7 +5,7 @@ import { env } from '@/shared/config/env';
 import { api } from '@/shared/api/client';
 import { isMobileViewport } from '@/desktop/layout';
 import { getViewport } from '@/shared/hooks/useViewport';
-import { cleanUtm, MAX_EVENTS, type AppViews, type TodayVisitors } from '@macfolio/contracts';
+import { cleanSearchTerm, cleanUtm, MAX_EVENTS, type AppViews, type TodayVisitors } from '@macfolio/contracts';
 
 declare global {
 	/** E2E 테스트가 수집을 켜고 끄는 자리 (로컬 주소에서는 기본으로 보내지 않는다) */
@@ -17,6 +17,7 @@ export type AnalyticsEvent =
 			type: 'visit';
 			path: string;
 			referrer?: string;
+			searchTerm?: string;
 			utmSource?: string;
 			utmMedium?: string;
 			utmCampaign?: string;
@@ -52,6 +53,34 @@ export function referrerHost(referrer: string, ownHost: string): string | undefi
 	try {
 		const host = new URL(referrer).hostname.toLowerCase();
 		return host && host !== ownHost.toLowerCase() ? host : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+/** 검색엔진마다 결과 주소에서 검색어를 싣는 이름 */
+const SEARCH_PARAMS: [RegExp, string][] = [
+	[/(^|\.)naver\.com$/, 'query'],
+	[/(^|\.)daum\.net$/, 'q'],
+	[/(^|\.)google\.[a-z.]+$/, 'q'],
+	[/(^|\.)bing\.com$/, 'q'],
+	[/(^|\.)yahoo\.(com|co\.jp)$/, 'p'],
+	[/(^|\.)duckduckgo\.com$/, 'q'],
+	[/(^|\.)baidu\.com$/, 'wd'],
+	[/(^|\.)yandex\.[a-z.]+$/, 'text'],
+	[/(^|\.)ecosia\.org$/, 'q'],
+];
+
+/**
+ * 검색엔진이 들어온 주소에 실어 보낸 검색어 (cleanSearchTerm으로 다듬는다). 검색엔진이 아니거나 싣지 않았으면 undefined.
+ * 요즘 브라우저는 다른 사이트로 갈 때 주소의 호스트만 넘기고, 구글·빙은 늘 그렇다. 검색엔진이 전체 주소를 넘기도록 정한 경우에만 남는다
+ */
+export function searchTermOf(referrer: string): string | undefined {
+	try {
+		const url = new URL(referrer);
+		const host = url.hostname.toLowerCase();
+		const param = SEARCH_PARAMS.find(([pattern]) => pattern.test(host))?.[1];
+		return param ? cleanSearchTerm(url.searchParams.get(param)) : undefined;
 	} catch {
 		return undefined;
 	}
@@ -93,12 +122,13 @@ export function withoutUtm(href: string): string | null {
 }
 
 /**
- * 페이지를 연 이벤트의 들어온 곳: 바깥 호스트(사이트 안에서 온 것은 비운다 = '직접')와 utm.
+ * 페이지를 연 이벤트의 들어온 곳: 바깥 호스트(사이트 안에서 온 것은 비운다 = '직접'), 검색엔진이 넘겨준 검색어, utm.
  * 사이트 안에서 온 것이어도 utm이 있으면 utm을 그대로 보낸다 (조합 표는 utm으로 센다)
  */
 export function entryOf(href: string, referrer: string) {
 	const url = new URL(href);
-	return { referrer: referrerHost(referrer, url.hostname), ...utmOf(url.search) };
+	const host = referrerHost(referrer, url.hostname);
+	return { referrer: host, searchTerm: host ? searchTermOf(referrer) : undefined, ...utmOf(url.search) };
 }
 
 /** 바깥 링크를 남기는 이름: 호스트와 경로만 (검색어·조각은 버린다). 바깥 주소가 아니면 null */

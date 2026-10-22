@@ -321,6 +321,72 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await activity.getByRole('tab', { name: '서버' }).click();
 		await expect(activity.getByText('서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다.')).toBeVisible();
 	});
+	test('관리자: 검색어 탭에서 Search Console의 검색어·페이지를 보고, 페이지를 골라 그 검색어만 보고, 지금 가져온다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '검색어' }).click();
+
+		await expect(activity.locator('.search-console-bar')).toContainText('10월 5일까지의 자료');
+		// 검색어마다 클릭·노출을 더하고 순위는 노출로 가중한 평균 ((1.4×240 + 3.5×60) / 300 = 1.8). 노출 많은 순
+		const queries = activity.getByRole('table', { name: '검색어', exact: true });
+		await expect(queries.locator('tbody tr')).toHaveText([
+			/^macfolio203001\.8$/,
+			/^macos 포트폴리오 사이트61807\.2$/,
+			/^cra vite 마이그레이션91505\.1$/,
+			/^milkdown 편집기3448\.8$/,
+		]);
+		// 순위를 누르면 작은 것(위)부터
+		await queries.getByRole('button', { name: '순위' }).click();
+		await expect(queries.locator('tbody tr').first()).toContainText('macfolio');
+		await expect(queries.locator('tbody tr').last()).toContainText('milkdown');
+
+		// 블로그 글 페이지는 글 제목으로. 누르면 그 페이지의 검색어만
+		const pages = activity.getByRole('table', { name: '페이지' });
+		await expect(pages).toContainText('macfolio.hyeoniverse.com');
+		await pages.getByRole('button', { name: '메모 › CRA에서 Vite로 옮기기' }).click();
+		const filtered = activity.getByRole('table', { name: '검색어 · 메모 › CRA에서 Vite로 옮기기' });
+		// 고른 정렬(순위)은 그대로
+		await expect(filtered.locator('tbody tr')).toHaveText([/^macfolio2603\.5$/, /^cra vite 마이그레이션91505\.1$/]);
+
+		// 검색엔진이 넘겨준 방문의 검색어
+		await expect(activity.getByRole('table', { name: '검색엔진이 넘겨준 검색어' })).toContainText('김정현 포트폴리오2');
+
+		await activity.getByRole('button', { name: '지금 가져오기' }).click();
+		await expect.poll(() => api.searchSyncs).toBe(1);
+		await expect(activity.locator('.search-console-bar')).toContainText('10월 8일 12:00에 가져옴');
+	});
+
+	test('검색어: 서버에 Search Console이 없으면 켜는 방법을 보인다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.searchKeywords = { ...api.searchKeywords, configured: false, rows: [], syncedAt: null, latestDay: null };
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '검색어' }).click();
+		await expect(activity).toContainText('GSC_SITE_URL·GSC_CLIENT_EMAIL·GSC_PRIVATE_KEY');
+		await expect(activity.getByRole('button', { name: '지금 가져오기' })).toHaveCount(0);
+	});
+
+	test('검색어 탭은 방문자에게 관리자만 볼 수 있다고 보이고, 검색어는 어디에도 없다', async ({ page }) => {
+		await fakeApi(page);
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '검색어' }).click();
+		await expect(
+			activity.getByText('검색어는 누가 무엇을 찾다 들어왔는지 드러날 수 있어 관리자에게만 보입니다.')
+		).toBeVisible();
+		await activity.getByRole('tab', { name: '유입 경로' }).click();
+		await expect(activity).not.toContainText(/김정현 포트폴리오|macos 포트폴리오/);
+	});
+
 	test('보기 탭은 ←·→ 키로 옮기며 고르고, Tab으로는 고른 탭에만 들어온다', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page);

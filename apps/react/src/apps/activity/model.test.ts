@@ -1,5 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { buildUtmUrl, change, eventLabel, formatDuration, kstToday, labelOf, periodRange, utmLabel } from './model';
+import {
+	buildUtmUrl,
+	change,
+	eventLabel,
+	formatDuration,
+	groupSearchRows,
+	kstToday,
+	labelOf,
+	memoSlugOf,
+	periodRange,
+	searchPageLabel,
+	utmLabel,
+} from './model';
 
 describe('활동 상태 보기의 값 바꾸기', () => {
 	it('기간은 오늘(한국 시간)까지', () => {
@@ -68,5 +80,39 @@ describe('utm (#211)', () => {
 		);
 		expect(buildUtmUrl('', { ...empty, campaign: 'x' }, origin)).toBe(`${origin}/?utm_campaign=x`);
 		expect(buildUtmUrl('javascript:alert(1)', empty, origin)).toBeNull();
+	});
+});
+
+describe('Search Console 검색어', () => {
+	const rows = [
+		{ query: 'macfolio', page: 'https://example.com/', clicks: 3, impressions: 10, position: 2 },
+		{ query: 'macfolio', page: 'https://example.com/memo/a', clicks: 1, impressions: 30, position: 4 },
+		{ query: '포트폴리오', page: 'https://example.com/', clicks: 0, impressions: 5, position: 9 },
+	];
+
+	it('검색어로 묶으면 클릭·노출을 더하고 순위는 노출로 가중해 평균한다. 노출 많은 순', () => {
+		expect(groupSearchRows(rows, 'query')).toEqual([
+			{ key: 'macfolio', clicks: 4, impressions: 40, position: 3.5 },
+			{ key: '포트폴리오', clicks: 0, impressions: 5, position: 9 },
+		]);
+	});
+
+	it('페이지로 묶고, 페이지 하나의 검색어만 볼 수 있다', () => {
+		expect(groupSearchRows(rows, 'page').map(({ key, impressions }) => [key, impressions])).toEqual([
+			['https://example.com/memo/a', 30],
+			['https://example.com/', 15],
+		]);
+		expect(groupSearchRows(rows, 'query', 'https://example.com/').map(({ key }) => key)).toEqual([
+			'macfolio',
+			'포트폴리오',
+		]);
+	});
+
+	it('페이지 이름: https://와 끝의 /를 떼고, 블로그 글이면 글 주소를 안다', () => {
+		expect(searchPageLabel('https://example.com/')).toBe('example.com');
+		expect(searchPageLabel('https://example.com/memo/a')).toBe('example.com/memo/a');
+		expect(memoSlugOf('https://example.com/memo/%ED%95%9C%EA%B8%80')).toBe('한글');
+		expect(memoSlugOf('https://example.com/safari/x')).toBeNull();
+		expect(memoSlugOf('not a url')).toBeNull();
 	});
 });

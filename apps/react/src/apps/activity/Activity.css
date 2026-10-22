@@ -415,8 +415,11 @@
 		align-items: stretch;
 	}
 
+	/* 탭 일곱 개가 휴대폰 폭에 다 들어오게 옆 여백을 줄인다 (넘치면 옆으로 민다) */
 	.activity-tabs button {
 		flex: 1;
+		padding-inline: var(--activity-row);
+		white-space: nowrap;
 	}
 
 	/* 기간은 탭 줄 아래 오른쪽 끝 (넓은 창에서도 오른쪽 끝이다) */
@@ -671,6 +674,44 @@
 	margin: 0 0 var(--activity-row);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
+}
+
+/* 검색어 탭: Search Console 상태 줄과 클릭·노출·순위 표 */
+.search-console-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--activity-pad);
+	margin-bottom: var(--activity-gap);
+}
+
+.search-console-bar p {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	margin: 0;
+	min-width: 0;
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+}
+
+.search-console-bar strong {
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+}
+
+.search-console-bar .ui-button {
+	flex: none;
+}
+
+.search-console-error {
+	margin: 0 0 var(--activity-gap);
+	color: var(--activity-red);
+	font-size: var(--text-caption);
+}
+
+.search-table th.value {
+	width: 15%;
 }
 
 /* 고를 수 있는 줄(조합 표): 이름이 버튼 */

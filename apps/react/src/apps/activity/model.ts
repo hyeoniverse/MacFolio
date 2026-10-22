@@ -1,6 +1,6 @@
 // '활동 상태 보기'의 순수 계산: 기간, 비교, 표에 보이는 이름. 서버 호출은 activityApi.ts
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
-import { cleanUtm, splitUtmKey } from '@macfolio/contracts';
+import { cleanUtm, splitUtmKey, type SearchQueryRow } from '@macfolio/contracts';
 import type { Breakdown, LiveVisit } from './activityApi';
 
 export const PERIODS = [
@@ -110,4 +110,50 @@ export function buildUtmUrl(target: string, fields: UtmFields, origin: string): 
 		else url.searchParams.delete(`utm_${name}`);
 	}
 	return url.toString();
+}
+
+/** Search Console 표의 한 줄: 검색어나 페이지마다 클릭·노출과 노출로 가중한 평균 순위 */
+export interface SearchStat {
+	key: string;
+	clicks: number;
+	impressions: number;
+	position: number;
+}
+
+/**
+ * (검색어, 페이지) 줄을 검색어나 페이지로 묶는다. 순위는 노출로 가중한 평균 (소수 한 자리). 노출 많은 순.
+ * page를 주면 그 페이지의 검색어만 묶는다
+ */
+export function groupSearchRows(rows: SearchQueryRow[], by: 'query' | 'page', page?: string | null): SearchStat[] {
+	const groups = new Map<string, { clicks: number; impressions: number; weighted: number }>();
+	for (const row of rows) {
+		if (page && row.page !== page) continue;
+		const key = row[by];
+		const group = groups.get(key) ?? { clicks: 0, impressions: 0, weighted: 0 };
+		group.clicks += row.clicks;
+		group.impressions += row.impressions;
+		group.weighted += row.position * row.impressions;
+		groups.set(key, group);
+	}
+	return [...groups]
+		.map(([key, { clicks, impressions, weighted }]) => ({
+			key,
+			clicks,
+			impressions,
+			position: impressions ? Math.round((weighted / impressions) * 10) / 10 : 0,
+		}))
+		.sort((a, b) => b.impressions - a.impressions || b.clicks - a.clicks || a.key.localeCompare(b.key));
+}
+
+/** 페이지 주소를 표에 보일 이름으로: https://와 끝의 /를 뗀다 (사이트 첫 화면은 호스트만) */
+export const searchPageLabel = (page: string) => page.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+/** 페이지 주소가 블로그 글이면 그 글 주소 (/memo/<글>) */
+export function memoSlugOf(page: string): string | null {
+	try {
+		const match = /^\/memo\/([^/]+)\/?$/.exec(new URL(page).pathname);
+		return match ? decodeURIComponent(match[1]) : null;
+	} catch {
+		return null;
+	}
 }

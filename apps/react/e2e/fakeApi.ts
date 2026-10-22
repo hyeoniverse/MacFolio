@@ -90,6 +90,9 @@ export interface FakeApiState {
 	/** 서버 자원 (GET /resources, 관리자만). 서버의 RESOURCE_MONITOR가 off면 mode만 */
 	resources: Record<string, unknown>;
 	analyticsQueries: string[];
+	/** 검색어 탭 (GET /analytics/search, 관리자만)과 '지금 가져오기'(POST /analytics/search/sync)를 누른 수 */
+	searchKeywords: Record<string, unknown>;
+	searchSyncs: number;
 	/** 메일 앱의 연락 메일 (#25): 서버가 보낼 수 있는지, 사람 확인 키, 받은 메일, 다음 보내기를 거절할 응답 */
 	contact: {
 		enabled: boolean;
@@ -392,6 +395,8 @@ export async function fakeApi(
 		analyticsLive: fakeAnalyticsLive(),
 		resources: { mode: 'off' },
 		analyticsQueries: [],
+		searchKeywords: fakeSearchKeywords(),
+		searchSyncs: 0,
 		contact: { enabled: true, turnstileSiteKey: null, sent: [], mine: [], inbox: fakeInbox(), replies: [] },
 		analyticsViews: { memo: { 'cra-to-vite': 42, 'post-editor': 7 } },
 		photoCaptions: {},
@@ -527,7 +532,7 @@ export async function fakeApi(
 				breakdown: Record<string, { key: string; value: number }[]>;
 			};
 			if (!state.signedIn) {
-				const hidden = ['referrer', 'source', 'medium', 'campaign', 'utm', 'term', 'content'];
+				const hidden = ['referrer', 'searchTerm', 'source', 'medium', 'campaign', 'utm', 'term', 'content'];
 				const json = {
 					...summary,
 					scope: 'public',
@@ -556,6 +561,16 @@ export async function fakeApi(
 					},
 				}),
 			};
+			return route.fulfill({ status: 200, headers: cors(origin), json });
+		}
+		if (path === '/analytics/search' || path === '/analytics/search/sync') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			if (path.endsWith('/sync')) {
+				state.searchSyncs += 1;
+				state.searchKeywords = { ...state.searchKeywords, syncedAt: '2026-10-08T03:00:00.000Z' };
+			}
+			const { searchParams } = new URL(request.url());
+			const json = { ...state.searchKeywords, from: searchParams.get('from'), to: searchParams.get('to') };
 			return route.fulfill({ status: 200, headers: cors(origin), json });
 		}
 		if (path === '/resources') {
@@ -1273,6 +1288,26 @@ export async function fakeApi(
 }
 
 /** 활동 상태 보기의 요약 (7일). 숫자는 API(apps/api/src/analytics)의 응답 모양 그대로 */
+/** Search Console 검색어: (검색어, 페이지)마다 클릭·노출·평균 순위 */
+function fakeSearchKeywords() {
+	const site = 'https://macfolio.hyeoniverse.com';
+	return {
+		configured: true,
+		from: '2026-10-01',
+		to: '2026-10-07',
+		syncedAt: '2026-10-07T21:00:00.000Z',
+		error: null,
+		latestDay: '2026-10-05',
+		rows: [
+			{ query: 'macfolio', page: `${site}/`, clicks: 18, impressions: 240, position: 1.4 },
+			{ query: 'macos 포트폴리오 사이트', page: `${site}/`, clicks: 6, impressions: 180, position: 7.2 },
+			{ query: 'cra vite 마이그레이션', page: `${site}/memo/cra-to-vite`, clicks: 9, impressions: 150, position: 5.1 },
+			{ query: 'macfolio', page: `${site}/memo/cra-to-vite`, clicks: 2, impressions: 60, position: 3.5 },
+			{ query: 'milkdown 편집기', page: `${site}/memo/post-editor`, clicks: 3, impressions: 44, position: 8.8 },
+		],
+	};
+}
+
 function fakeAnalyticsSummary() {
 	const days = ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04', '2026-10-05', '2026-10-06', '2026-10-07'];
 	const visits = [150, 180, 160, 210, 190, 170, 224];
@@ -1313,6 +1348,11 @@ function fakeAnalyticsSummary() {
 			],
 			term: [],
 			content: [{ key: 'footer', value: 3 }],
+			// 검색엔진이 넘겨준 검색어 (네이버 등)
+			searchTerm: [
+				{ key: 'macfolio', value: 6 },
+				{ key: '김정현 포트폴리오', value: 2 },
+			],
 			app: [
 				{ key: 'memo', value: 900 },
 				{ key: 'safari', value: 700 },
