@@ -30,6 +30,16 @@ describe('sortBy', () => {
 		expect(sortBy(posts, { sort: 'title', order: 'desc' }).map((p) => p.title)).toEqual(['다', '나', '가']);
 	});
 
+	it('같은 날은 올린 때 순: 최신 순이면 나중에 올린 글이 위, 오래된 순이면 아래. 올린 때를 모르면(아직 커밋하지 않은 글) 가장 최근', () => {
+		const sameDay = [
+			{ ...post('가', '2026-09-28'), createdAt: '2026-09-28T09:00:00.000Z' },
+			{ ...post('나', '2026-09-28'), createdAt: '2026-09-28T03:00:00.000Z' },
+			post('다', '2026-09-28'),
+		];
+		expect(sortBy(sameDay, { sort: 'date', order: 'desc' }).map((p) => p.title)).toEqual(['다', '가', '나']);
+		expect(sortBy(sameDay, { sort: 'date', order: 'asc' }).map((p) => p.title)).toEqual(['나', '가', '다']);
+	});
+
 	it('원래 배열은 바꾸지 않는다', () => {
 		const copy = [...posts];
 		sortBy(posts, { sort: 'title', order: 'asc' });

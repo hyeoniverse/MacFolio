@@ -45,6 +45,8 @@ const toAdmin = (row: Row): AdminPost => ({
 	deleted: row.deleted,
 	deletedAt: row.deletedAt?.toISOString() ?? null,
 	revisions: row._count.revisions,
+	// 같은 날 글의 순서 (머리말의 날짜에는 시각이 없다)
+	createdAt: row.createdAt.toISOString(),
 });
 
 const draftFields = (input: PostInput) => ({
@@ -107,6 +109,8 @@ export class PostsService {
 				summary: row.summary ?? '',
 				body: row.body!,
 				deleted: false,
+				// 같은 날 글의 순서 (머리말의 날짜에는 시각이 없다)
+				createdAt: row.createdAt.toISOString(),
 			};
 		});
 	}

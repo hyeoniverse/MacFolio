@@ -21,6 +21,11 @@ export interface Post {
 	status?: PostStatus;
 	/** 관리자에게만: '최근 삭제된 항목'의 글이면 지운 때 (ISO) */
 	deletedAt?: string;
+	/**
+	 * 올린 때 (ISO, UTC). 같은 날 글의 순서를 정한다 (머리말의 date에는 시각이 없다).
+	 * 저장소 글은 git에 처음 들어온 커밋, 서버 글은 서버에 처음 만든 때. 모르면(아직 커밋하지 않은 글) 가장 최근으로 본다
+	 */
+	createdAt?: string;
 }
 
 /** 관리자가 보는 게시 상태 */
@@ -102,6 +107,8 @@ export interface ServerPost {
 	summary: string;
 	body: string;
 	deleted: boolean;
+	/** 서버에 처음 만든 때 (ISO). 같은 날 글의 순서에 쓴다. 이 값을 주기 전의 API에는 없다 */
+	createdAt?: string;
 }
 
 /**
@@ -124,6 +131,8 @@ export function mergeServerPosts(posts: Post[], server: ServerPost[]): Post[] {
 			summary: item.summary || excerpt(item.body),
 			body: item.body,
 			...(original?.pinned && { pinned: true }),
+			// 저장소 글을 서버에서 고쳐도 올린 때는 저장소에 처음 들어온 때
+			...((original?.createdAt ?? item.createdAt) && { createdAt: original?.createdAt ?? item.createdAt }),
 		});
 	}
 	return sortPosts([...bySlug.values()]);
@@ -151,9 +160,17 @@ export interface AdminPost {
 	deletedAt: string | null;
 	/** 남은 버전 수 */
 	revisions: number;
+	/** 서버에 처음 만든 때 (ISO). 같은 날 글의 순서에 쓴다. 이 값을 주기 전의 API에는 없다 */
+	createdAt?: string;
 }
 
-const toListPost = (slug: PostSlug, content: PostContent, pinned: boolean | undefined, status: PostStatus): Post => ({
+const toListPost = (
+	slug: PostSlug,
+	content: PostContent,
+	pinned: boolean | undefined,
+	status: PostStatus,
+	createdAt?: string
+): Post => ({
 	slug,
 	title: content.title,
 	date: content.date,
@@ -162,6 +179,7 @@ const toListPost = (slug: PostSlug, content: PostContent, pinned: boolean | unde
 	body: content.body,
 	...(pinned && { pinned: true }),
 	status,
+	...(createdAt && { createdAt }),
 });
 
 /**
@@ -181,11 +199,17 @@ export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: strin
 		const fromRepo = original.get(item.slug);
 		bySlug.set(
 			item.slug,
-			toListPost(item.slug, content, fromRepo?.pinned, {
-				draftOnly: !item.published && !fromRepo,
-				changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
-				scheduled: item.published && item.published.date > today ? item.published.date : null,
-			})
+			toListPost(
+				item.slug,
+				content,
+				fromRepo?.pinned,
+				{
+					draftOnly: !item.published && !fromRepo,
+					changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
+					scheduled: item.published && item.published.date > today ? item.published.date : null,
+				},
+				fromRepo?.createdAt ?? item.createdAt
+			)
 		);
 	}
 	return sortPosts([...bySlug.values()]);
@@ -217,14 +241,23 @@ export function daysUntilPurge(deletedAt: string, now: Date): number {
 
 const NO_STATUS: PostStatus = { draftOnly: false, changed: false, scheduled: null };
 
-/** 최신 글이 위로. 같은 날이면 제목 순 */
+/** 올린 때의 비교 값. 모르면 가장 최근으로 (아직 커밋하지 않은, 지금 쓰고 있는 글) */
+const createdKey = (post: { createdAt?: string }) => post.createdAt ?? '\uffff';
+
+/** 올린 때로 비교한다: 먼저 올린 글이 앞 (오름차순). 같은 날 글의 순서에 쓴다 */
+export const compareCreated = (a: { createdAt?: string }, b: { createdAt?: string }) =>
+	createdKey(a).localeCompare(createdKey(b));
+
+/** 최신 글이 위로. 같은 날이면 나중에 올린 글이 위로, 올린 때도 같으면 제목 순 */
 export function sortPosts(posts: Post[]): Post[] {
-	return [...posts].sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
+	return [...posts].sort(
+		(a, b) => b.date.localeCompare(a.date) || compareCreated(b, a) || a.title.localeCompare(b.title)
+	);
 }
 
 /**
  * 날짜 순으로 바로 옆의 글: 이전 글은 더 오래된 글, 다음 글은 더 최근 글 (블로그의 흔한 관례).
- * 같은 날이면 목록과 같은 순서(제목 순)를 따른다. 목록을 어떻게 정렬해 보고 있든 날짜로 잇는다.
+ * 같은 날이면 목록과 같은 순서(올린 때, 그다음 제목)를 따른다. 목록을 어떻게 정렬해 보고 있든 날짜로 잇는다.
  */
 export function adjacentPosts(posts: Post[], slug: PostSlug): { older: Post | null; newer: Post | null } {
 	const ordered = sortPosts(posts);

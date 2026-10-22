@@ -12,10 +12,15 @@ let loading: Promise<PostRepository> | null = null;
 export function getPostRepository(): PostRepository {
 	repository ??= {
 		async list() {
-			loading ??= import('./contentFiles').then(({ files }) =>
-				createStaticPostRepository(files, (path) => {
-					if (import.meta.env.DEV) console.warn(`[memo] 머리말(title, date)이 잘못된 글: ${path}`);
-				})
+			loading ??= import('./contentFiles').then(({ files, created }) =>
+				createStaticPostRepository(
+					files,
+					(path) => {
+						if (import.meta.env.DEV) console.warn(`[memo] 머리말(title, date)이 잘못된 글: ${path}`);
+					},
+					// 같은 날 글은 나중에 올린 글이 위로 (git에 처음 더한 때)
+					created
+				)
 			);
 			return (await loading).list();
 		},

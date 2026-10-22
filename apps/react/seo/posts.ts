@@ -66,35 +66,53 @@ export function updatedDates(log: string): Record<string, string> {
 	return dates;
 }
 
-/** 빌드가 넘기는 것: 빌드한 그림 주소, 글 slug → 마지막으로 고친 날 */
+/**
+ * `git log --diff-filter=A --format=%x00%cI --name-only --relative`의 출력 → 글 slug → 올린 때 (처음 더한 커밋, ISO UTC).
+ * 같은 날 글의 순서를 정한다 (머리말의 날짜에는 시각이 없다). 기록은 최신 커밋이 먼저라, 지웠다 다시 더한 글은 가장 처음 더한 때
+ */
+export function createdTimes(log: string): Record<string, string> {
+	const times: Record<string, string> = {};
+	for (const commit of log.split('\0')) {
+		const [time, ...names] = commit.trim().split('\n');
+		const at = Date.parse(time ?? '');
+		if (!Number.isFinite(at)) continue;
+		for (const name of names) {
+			const slug = /^([^/]+)\.md$/.exec(name.trim())?.[1];
+			if (slug) times[slug] = new Date(at).toISOString();
+		}
+	}
+	return times;
+}
+
+/** 빌드가 넘기는 것: 빌드한 그림 주소, 글 slug → 마지막으로 고친 날, 글 slug → 올린 때 */
 export interface SeoPostOptions {
 	images?: ContentImages;
 	updated?: Record<string, string>;
+	created?: Record<string, string>;
 }
 
 /** 파일 경로 → 내용에서 글 목록 (최신 글이 먼저). 머리말이 잘못된 파일은 화면처럼 뺀다 */
 export async function seoPosts(
 	files: Record<string, string>,
-	{ images = {}, updated = {} }: SeoPostOptions = {}
+	{ images = {}, updated = {}, created = {} }: SeoPostOptions = {}
 ): Promise<SeoPost[]> {
-	const posts = await createStaticPostRepository(files).list();
-	return [...posts]
-		.sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
-		.map((post) => {
-			const changed = updated[post.slug];
-			const image = cardImage(post.body, images);
-			return {
-				slug: post.slug,
-				title: post.title,
-				date: post.date,
-				summary: post.summary,
-				category: post.category,
-				tags: tagsOf(post.body),
-				html: markdownHtml(post.body, images),
-				...(changed && changed > post.date && { updated: changed }),
-				...(image && { image }),
-			};
-		});
+	// 사이트의 메모 목록과 같은 순서: 최신 글이 먼저, 같은 날이면 나중에 올린 글이 먼저 (sortPosts)
+	const posts = await createStaticPostRepository(files, undefined, created).list();
+	return posts.map((post) => {
+		const changed = updated[post.slug];
+		const image = cardImage(post.body, images);
+		return {
+			slug: post.slug,
+			title: post.title,
+			date: post.date,
+			summary: post.summary,
+			category: post.category,
+			tags: tagsOf(post.body),
+			html: markdownHtml(post.body, images),
+			...(changed && changed > post.date && { updated: changed }),
+			...(image && { image }),
+		};
+	});
 }
 
 /** 위젯에 보일 최근 글 (빌드할 때 'virtual:recent-posts'로 넣는다). 본문 없이 제목·날짜·분류만 */
@@ -105,12 +123,16 @@ export interface RecentPost {
 	category: string;
 }
 
-/** 최신 글 limit편 (날짜가 같으면 주소 순). 미래 날짜(예약 글)는 뺀다 */
-export async function recentPosts(files: Record<string, string>, limit: number, today: string): Promise<RecentPost[]> {
-	const posts = await createStaticPostRepository(files).list();
+/** 최신 글 limit편 (날짜가 같으면 나중에 올린 글이 먼저, 메모 목록과 같다). 미래 날짜(예약 글)는 뺀다 */
+export async function recentPosts(
+	files: Record<string, string>,
+	limit: number,
+	today: string,
+	created: Record<string, string> = {}
+): Promise<RecentPost[]> {
+	const posts = await createStaticPostRepository(files, undefined, created).list();
 	return posts
 		.filter((post) => post.date <= today)
-		.sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
 		.slice(0, limit)
 		.map(({ slug, title, date, category }) => ({ slug, title, date, category }));
 }

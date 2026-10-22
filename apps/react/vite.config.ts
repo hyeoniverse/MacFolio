@@ -6,7 +6,16 @@ import { defaultClientConditions, defaultServerConditions, defineConfig, loadEnv
 import react from '@vitejs/plugin-react';
 // 빌드한 dist가 아니라 src를 바로 쓴다 (seo/posts.ts가 desktop-core를 읽는 것과 같다)
 import { loadOgAssets, ogImagePng } from '../../packages/og-card/src/index';
-import { recentPosts, rssXml, seoPosts, siteChannel, sitemapXml, updatedDates, type ContentImages } from './seo/posts';
+import {
+	createdTimes,
+	recentPosts,
+	rssXml,
+	seoPosts,
+	siteChannel,
+	sitemapXml,
+	updatedDates,
+	type ContentImages,
+} from './seo/posts';
 import { ogCardVersion, SITE_ORIGIN } from './seo/site';
 import { DEFAULT_PROJECTS, PROFILE } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
@@ -68,6 +77,25 @@ function contentUpdatedDates(contentDir: string): Record<string, string> {
 	}
 }
 
+/**
+ * 글 파일마다 올린 때 (git에 처음 더한 커밋). 같은 날 글의 순서를 정한다.
+ * 기록을 일부만 받은 저장소(shallow clone)는 처음 더한 커밋이 없으니 쓰지 않는다: 같은 날 글은 제목 순이 된다
+ */
+function contentCreatedTimes(contentDir: string): Record<string, string> {
+	try {
+		const git = (args: string) =>
+			execSync(`git ${args}`, {
+				cwd: contentDir,
+				stdio: ['ignore', 'pipe', 'ignore'],
+				maxBuffer: 64 * 1024 * 1024,
+			}).toString();
+		if (git('rev-parse --is-shallow-repository').trim() !== 'false') return {};
+		return createdTimes(git('log --diff-filter=A --format=%x00%cI --name-only --relative -- .'));
+	} catch {
+		return {};
+	}
+}
+
 const CONTENT_PREFIX = 'src/apps/memo/content/';
 
 function seoPlugin(): Plugin {
@@ -92,7 +120,11 @@ function seoPlugin(): Plugin {
 					if (at !== -1) images[path.slice(at + CONTENT_PREFIX.length)] = `/${output.fileName}`;
 				}
 			}
-			const posts = await seoPosts(files, { images, updated: contentUpdatedDates(contentDir) });
+			const posts = await seoPosts(files, {
+				images,
+				updated: contentUpdatedDates(contentDir),
+				created: contentCreatedTimes(contentDir),
+			});
 			// 사진이 없는 글은 제목으로 공유 카드를 그린다 (packages/og-card). 서버에 쓴 글은 API가 그린다 (worker/serverPosts.ts)
 			const assets = await loadOgAssets(publicDir);
 			const site = siteChannel(PROFILE.name).title;
@@ -133,11 +165,16 @@ function recentPostsPlugin(): Plugin {
 	// 'virtual:post-index': 모든 글의 제목·날짜·분류 (메모 위젯의 인기글·랜덤이 그때 불러온다. 첫 화면에는 넣지 않는다)
 	const indexId = 'virtual:post-index';
 	const indexResolved = `\0${indexId}`;
+	// 'virtual:post-created': 글마다 올린 때 (git). 메모 앱이 글 원문 묶음과 함께 불러와 같은 날 글의 순서를 정한다
+	const createdId = 'virtual:post-created';
+	const createdResolved = `\0${createdId}`;
 	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
 	return {
 		name: 'macfolio-recent-posts',
-		resolveId: (source) => (source === id ? resolved : source === indexId ? indexResolved : null),
+		resolveId: (source) =>
+			source === id ? resolved : source === indexId ? indexResolved : source === createdId ? createdResolved : null,
 		async load(source) {
+			if (source === createdResolved) return `export default ${JSON.stringify(contentCreatedTimes(contentDir))};`;
 			if (source !== resolved && source !== indexResolved) return null;
 			const names = readdirSync(contentDir).filter((name) => name.endsWith('.md'));
 			for (const name of names) this.addWatchFile(join(contentDir, name));
@@ -146,7 +183,7 @@ function recentPostsPlugin(): Plugin {
 			);
 			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
 			const limit = source === resolved ? RECENT_POSTS : Infinity;
-			return `export default ${JSON.stringify(await recentPosts(files, limit, today))};`;
+			return `export default ${JSON.stringify(await recentPosts(files, limit, today, contentCreatedTimes(contentDir)))};`;
 		},
 	};
 }

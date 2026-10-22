@@ -97,7 +97,9 @@ describe('블로그 글 (e2e)', () => {
 		expect(published.body).toMatchObject({ draft: null, published: { body: '게시한 본문' }, revisions: 1 });
 		expect(published.body.publishedAt).toEqual(expect.any(String));
 		const list = await request(server()).get('/posts').expect(200);
-		expect(list.body).toEqual([{ slug, ...POST, body: '게시한 본문', deleted: false }]);
+		expect(list.body).toEqual([
+			{ slug, ...POST, body: '게시한 본문', deleted: false, createdAt: expect.stringMatching(/^\d{4}-\d{2}-\d{2}T/) },
+		]);
 	});
 
 	it('게시한 글을 고쳐도 게시할 때까지 방문자는 게시한 내용을 본다. 버리면 게시한 내용으로 돌아간다', async () => {
