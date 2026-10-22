@@ -23,6 +23,27 @@ test.describe('메모 (블로그)', () => {
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(firstTitle);
 	});
 
+	test('최소화했다가 다시 열어도 넓은 창 모양이고, 그 뒤에 창을 좁히면 한 칸씩 보인다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const shell = memo.locator('.memo-shell');
+		await expect(shell).not.toHaveAttribute('data-compact');
+
+		await memo.getByRole('button', { name: '최소화', exact: true }).click();
+		await expect(memo).toBeHidden();
+		await dockItem(page, 'memo').click();
+		await expect(memo.locator('.memo-item').first()).toBeVisible();
+		// 전에는 빠질 때 잰 폭 0이 남아, 다시 열면 넓은 창에서도 휴대폰 모양(한 칸씩)이 됐다
+		await expect(shell).not.toHaveAttribute('data-compact');
+
+		// 다시 연 칸도 폭을 잰다: 창을 좁히면 한 칸씩
+		const handle = (await memo.locator('.resize-handle.bottom-right').boundingBox())!;
+		await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(handle.x - 400, handle.y + handle.height / 2, { steps: 8 });
+		await page.mouse.up();
+		await expect(shell).toHaveAttribute('data-compact', 'true');
+	});
+
 	test('본문 위 도구 막대: 목록/갤러리 버튼과 검색 칸 사이에 간격이 있다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const toolbar = memo.locator('.memo-reader-toolbar');

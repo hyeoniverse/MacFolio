@@ -1,5 +1,6 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useElementWidth } from '@/shared/hooks/useElementWidth';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import PhotosMobile from './PhotosMobile';
 import AppWindow from '@/desktop/window/Window';
@@ -26,20 +27,6 @@ const COMPACT_PX = 760;
 /** 이보다 좁으면 사이드바는 처음에 접혀 있고, 열면 격자 위에 뜬다 (격자가 너무 좁아지지 않게) */
 const OVERLAY_PX = 560;
 
-/** 사진 창의 폭 (컨테이너 질의로 못 하는 것: 사이드바를 접을지, 막대 버튼을 무엇으로 그릴지) */
-function useWidth(element: React.RefObject<HTMLElement | null>) {
-	const [width, setWidth] = useState(Infinity);
-	useLayoutEffect(() => {
-		const target = element.current;
-		if (!target) return;
-		// 관찰을 시작하면 곧바로 지금 폭을 한 번 알려 준다 (그리기 전에)
-		const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
-		observer.observe(target);
-		return () => observer.disconnect();
-	}, [element]);
-	return width;
-}
-
 const PLACE_ICON: Record<'all' | 'videos', string> = {
 	all: 'fa-solid fa-photo-film',
 	videos: 'fa-solid fa-video',
@@ -58,8 +45,8 @@ const Photos = () => {
 	const [size, setSize] = useState(1);
 	const [viewing, setViewing] = useState<number | null>(null);
 	// 창 폭에 따라: 좁으면 막대를 줄이고, 더 좁으면 사이드바를 접는다 (macOS 사진). 사이드바 버튼으로 직접 여닫으면 그것을 따른다
-	const shell = useRef<HTMLDivElement>(null);
-	const width = useWidth(shell);
+	// 사진 창의 폭 (컨테이너 질의로 못 하는 것: 사이드바를 접을지, 막대 버튼을 무엇으로 그릴지)
+	const { attach: attachShell, width } = useElementWidth<HTMLDivElement>();
 	const compact = width < COMPACT_PX;
 	const overlay = width < OVERLAY_PX;
 	const [sidebarChoice, setSidebarChoice] = useState<boolean | null>(null);
@@ -171,7 +158,7 @@ const Photos = () => {
 			{mobile ? (
 				<PhotosMobile onOpenProject={openProject} />
 			) : (
-				<div ref={shell} className="photos-shell">
+				<div ref={attachShell} className="photos-shell">
 					<div
 						className={`photos ${sidebarOpen ? '' : 'no-sidebar'} ${sidebarOpen && overlay ? 'overlay' : ''} ${compact ? 'compact' : ''}`}
 						style={cssVars({ 'photos-cell': `${CELL_SIZES[size]}px` })}

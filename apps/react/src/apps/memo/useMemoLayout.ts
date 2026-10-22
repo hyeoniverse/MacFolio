@@ -34,8 +34,7 @@ export function useMemoLayout(phone: boolean) {
 	const [view, setView] = useState<View>('list');
 	/** 갤러리에서 카드를 눌러 글을 연 상태 */
 	const [galleryNoteOpen, setGalleryNoteOpen] = useState(false);
-	const shellRef = useRef<HTMLDivElement>(null);
-	const shellSize = useShellSize(shellRef);
+	const shellSize = useShellSize<HTMLDivElement>();
 	// 휴대폰 화면에서는 폭과 상관없이 한 칸씩. 모양도 이 값을 따른다 (memo-shell의 data-compact)
 	const compact = phone || shellSize.compact;
 	// 한 칸씩 볼 때는 폴더가 따로 한 화면이라 닫지 않는다
@@ -49,7 +48,8 @@ export function useMemoLayout(phone: boolean) {
 			setPaneState(next);
 		},
 		compact,
-		shellRef,
+		shellRef: shellSize.ref,
+		attachShell: shellSize.attach,
 		memoRef,
 		sidebarOpen,
 		toggleSidebar: () => setSidebarChoice(!sidebarOpen),
