@@ -7,7 +7,7 @@ const track = (n: number, title: string, artist: string, album: string): Track =
 	title,
 	artist,
 	album,
-	artwork: `${env.imageUrl}/Album_${n}.png`,
+	artwork: `${env.imageUrl}/Album_${n}.webp`,
 	src: `${env.musicUrl}/${n}.mp3`,
 });
 

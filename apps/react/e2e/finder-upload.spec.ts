@@ -161,7 +161,7 @@ test.describe('Finder 문서 올리기 (관리자)', () => {
 		expect(docs).toHaveLength(2);
 
 		// Dock의 휴지통 › 버린 항목: 되돌려 놓기는 원래 폴더로
-		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin\.png$/);
+		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin\.webp$/);
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
 		const trashed = bin.getByRole('listbox', { name: '휴지통 항목' });

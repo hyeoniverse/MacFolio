@@ -77,7 +77,7 @@ const Dock: React.FC = () => {
 				))}
 				<DockItem
 					label="launchpad"
-					icon={`${imgUrl}/launchpad.png`}
+					icon={`${imgUrl}/launchpad.webp`}
 					isActive={false}
 					isHidden={false}
 					onClick={handleLaunchpadClick}
@@ -86,7 +86,7 @@ const Dock: React.FC = () => {
 				{/* Finder·바탕화면의 항목을 끌어다 놓으면 휴지통으로 이동 */}
 				<DockItem
 					label="bin"
-					icon={binEmpty ? `${imgUrl}/bin-empty.png` : iconOf('bin')}
+					icon={binEmpty ? `${imgUrl}/bin-empty.webp` : iconOf('bin')}
 					isActive={false}
 					isHidden={false}
 					onClick={() => handleAppOpen('bin')}

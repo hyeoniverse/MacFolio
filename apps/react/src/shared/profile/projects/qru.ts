@@ -153,7 +153,7 @@ export const QRU: Project = {
 	icon: projectImage('qru', 'icon.png'),
 	app: {
 		label: 'QRU',
-		icon: 'projects/qru/app-icon.png',
+		icon: 'projects/qru/app-icon.webp',
 		barColor: '#b8efed',
 		windowSize: { width: 1080, height: 700 },
 	},
