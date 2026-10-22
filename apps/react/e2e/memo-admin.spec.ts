@@ -14,6 +14,8 @@ async function openMemo(page: Page, api?: FakeApiState) {
 	await dockItem(page, 'memo').click();
 	const memo = appWindow(page, 'memo');
 	await expect(memo).toBeVisible();
+	// 글 원문 묶음은 메모를 처음 열 때 받는다: 목록이 채워진 뒤에 편집한다 (폴더 이름이 겹치는지도 글 목록으로 본다)
+	await expect(memo.locator('.memo-item').first()).toBeVisible();
 	return memo;
 }
 
