@@ -1,5 +1,6 @@
 // 성능 측정: Lighthouse(첫 로딩)와 Playwright(들어간 뒤 받는 양·걸린 시간·메모리)를 같은 조건으로 여러 번 재 가운데값을 낸다.
 // 사용: node scripts/perf/serve.mjs dist 4810 & node scripts/perf/measure.mjs http://localhost:4810 결과.json [횟수]
+// THROTTLING=devtools를 붙이면 Lighthouse가 브라우저를 실제로 느리게 해서 잰다 (기본은 빠르게 받은 기록으로 느린 망을 계산하는 simulate)
 // Lighthouse는 pnpm dlx lighthouse@12.8.2로 돌린다 (의존성에 넣지 않는다). 크롬은 Playwright가 받은 것을 쓴다
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -10,6 +11,7 @@ import { chromium, devices } from '@playwright/test';
 const base = process.argv[2] ?? 'http://localhost:4810';
 const out = process.argv[3] ?? 'perf.json';
 const runs = Number(process.argv[4] ?? 3);
+const throttling = process.env.THROTTLING === 'devtools' ? ['--throttling-method=devtools'] : [];
 const chrome = chromium.executablePath();
 const median = (values) => {
 	const sorted = [...values].sort((a, b) => a - b);
@@ -29,6 +31,7 @@ function lighthouse(form) {
 			'--quiet',
 			'--chrome-flags=--headless=new',
 			'--only-categories=performance',
+			...throttling,
 			'--output=json',
 			`--output-path=${file}`,
 			...(form === 'desktop' ? ['--preset=desktop'] : []),
