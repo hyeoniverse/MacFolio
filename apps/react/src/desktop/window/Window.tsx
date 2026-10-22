@@ -3,7 +3,8 @@ import '@/desktop/window/Window.css';
 import { useAppState } from '@/desktop/useAppState';
 import type { AppName } from '@/apps/manifest';
 import { useWindowFrame } from '@/desktop/window/useWindowFrame';
-import type { ResizeDirection } from '@/desktop/window/geometry';
+import { revealShift, type ResizeDirection } from '@/desktop/window/geometry';
+import { useViewport } from '@/shared/hooks/useViewport';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import MobileAppFrame from '@/desktop/mobile/MobileAppFrame';
 import { switcherStore, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
@@ -43,7 +44,8 @@ const FRAME_MS = 300;
  * 앱 컴포넌트는 표시 여부를 따로 확인하지 않아도 된다.
  */
 const AppWindow: React.FC<AppWindowProps> = ({ title, appName, children, onClick, chrome = 'titlebar' }) => {
-	const { apps, closeApp, quitApp, minimizeApp, bringAppToFront, goHome } = useAppState();
+	const { apps, closeApp, quitApp, minimizeApp, bringAppToFront, goHome, desktopRevealed } = useAppState();
+	const viewport = useViewport();
 	const isMobile = useIsMobile();
 	const { rect, toggleMaximize, dragHandlers, resizeHandlers } = useWindowFrame(appName);
 	const frameRef = useRef<HTMLDivElement>(null);
@@ -119,13 +121,15 @@ const AppWindow: React.FC<AppWindowProps> = ({ title, appName, children, onClick
 			ref={frameRef}
 			data-app={appName}
 			aria-label={chrome === 'unified' ? title : undefined}
-			className={`container ${chrome === 'unified' ? 'unified' : ''}`}
+			className={`container ${chrome === 'unified' ? 'unified' : ''}${desktopRevealed ? ' revealed' : ''}`}
 			style={{
 				left: rect.x,
 				top: rect.y,
 				width: rect.width,
 				height: rect.height,
 				zIndex,
+				// 바탕화면 보기: 가까운 가장자리로 밀려나 조금만 남는다. 누르면(맨 앞으로) 모든 창이 돌아온다
+				translate: desktopRevealed ? `${revealShift(rect, viewport)}px 0` : undefined,
 			}}
 			// 캡처 단계에서 처리해야 제목 표시줄·핸들이 이벤트 전파를 막아도 맨 앞으로 온다
 			onPointerDownCapture={() => bringAppToFront(appName)}

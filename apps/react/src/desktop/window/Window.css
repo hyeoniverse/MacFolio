@@ -19,13 +19,24 @@
 	border-radius: 0.8rem;
 }
 
+/* 바탕화면 보기: 창이 화면 가장자리로 미끄러져 나가고 돌아온다 (Window.tsx의 translate, geometry.ts의 revealShift) */
+.container {
+	transition: translate var(--duration-slow) var(--ease-out);
+}
+
+/* 밀려난 창은 어디를 눌러도 안의 것이 아니라 창이 받는다: 눌러서 모든 창을 되돌린다 */
+.container.revealed > * {
+	pointer-events: none;
+}
+
 /* 전체 화면 전환: 위치·크기가 부드럽게 바뀐다 (Window.tsx의 FRAME_MS) */
 .container.frame-animating {
 	transition:
 		left 0.3s var(--ease-out),
 		top 0.3s var(--ease-out),
 		width 0.3s var(--ease-out),
-		height 0.3s var(--ease-out);
+		height 0.3s var(--ease-out),
+		translate var(--duration-slow) var(--ease-out);
 }
 
 /* 닫히는 중에는 누를 수 없다 */

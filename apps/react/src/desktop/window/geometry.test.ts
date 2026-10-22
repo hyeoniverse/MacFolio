@@ -7,6 +7,8 @@ import {
 	MIN_SIZE,
 	moveRect,
 	resizeRect,
+	REVEAL_PEEK,
+	revealShift,
 	STATUSBAR_HEIGHT,
 } from './geometry';
 
@@ -124,5 +126,21 @@ describe('maximizedRect', () => {
 
 	it('아주 작은 화면에서도 최소 높이는 지킨다', () => {
 		expect(maximizedRect({ width: 800, height: 300 }).height).toBe(MIN_SIZE.height);
+	});
+});
+
+describe('revealShift', () => {
+	it('화면 왼쪽 반에 있는 창은 왼쪽 가장자리로, 조금만 남긴다', () => {
+		const rect = { x: 100, y: 100, width: 640, height: 400 };
+		const shift = revealShift(rect, viewport);
+		expect(shift).toBeLessThan(0);
+		expect(rect.x + shift + rect.width).toBe(REVEAL_PEEK);
+	});
+
+	it('화면 오른쪽 반에 있는 창은 오른쪽 가장자리로, 조금만 남긴다', () => {
+		const rect = { x: 900, y: 100, width: 640, height: 400 };
+		const shift = revealShift(rect, viewport);
+		expect(shift).toBeGreaterThan(0);
+		expect(rect.x + shift).toBe(viewport.width - REVEAL_PEEK);
 	});
 });

@@ -127,3 +127,88 @@ test.describe('팝업', () => {
 		await expect(dialog).toBeHidden();
 	});
 });
+
+test.describe('바탕화면 보기', () => {
+	/** 아이콘·위젯·창이 없는 바탕화면 빈 곳 (바탕화면 판 자신이 받는 곳) */
+	async function wallpaperPoint(page: Page) {
+		const point = await page.evaluate(() => {
+			for (let x = 40; x < window.innerWidth - 40; x += 40)
+				for (let y = 60; y < window.innerHeight - 160; y += 40)
+					if (document.elementFromPoint(x, y)?.classList.contains('desktop-icons')) return { x, y };
+			return null;
+		});
+		expect(point).not.toBeNull();
+		return point!;
+	}
+
+	test('바탕화면 빈 곳을 누르면 창이 가까운 가장자리로 밀려나 조금만 남고, 다시 누르면 돌아온다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		await expect(github).toBeVisible();
+		const before = (await github.boundingBox())!;
+		const viewport = page.viewportSize()!;
+
+		const point = await wallpaperPoint(page);
+		await page.mouse.click(point.x, point.y);
+		await expect(github).toHaveClass(/revealed/);
+		const away = (await github.boundingBox())!;
+		const toLeft = before.x + before.width / 2 < viewport.width / 2;
+		// 가장자리에 40px만 남는다
+		if (toLeft) expect(away.x + away.width).toBeCloseTo(40, 0);
+		else expect(away.x).toBeCloseTo(viewport.width - 40, 0);
+		expect(away.y).toBeCloseTo(before.y, 0);
+		// 메뉴 막대는 Finder
+		await expect(page.locator('.macos-statusbar')).toContainText('Finder');
+
+		await page.mouse.click(point.x, point.y);
+		await expect(github).not.toHaveClass(/revealed/);
+		expect((await github.boundingBox())!.x).toBeCloseTo(before.x, 0);
+	});
+
+	test('밀려난 창의 남은 곳을 누르면 모든 창이 돌아오고 그 창이 맨 앞이 된다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		await expect(github).toBeVisible();
+		const before = (await github.boundingBox())!;
+		const point = await wallpaperPoint(page);
+		await page.mouse.click(point.x, point.y);
+		await expect(github).toHaveClass(/revealed/);
+
+		const away = (await github.boundingBox())!;
+		const viewport = page.viewportSize()!;
+		const peekX = away.x < 0 ? 20 : viewport.width - 20;
+		await page.mouse.click(peekX, away.y + away.height / 2);
+		await expect(github).not.toHaveClass(/revealed/);
+		expect((await github.boundingBox())!.x).toBeCloseTo(before.x, 0);
+		await expect(page.locator('.macos-statusbar')).toContainText('GitHub');
+	});
+
+	test('창을 치운 채 Dock에서 앱을 열면 창이 모두 돌아온다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		await expect(github).toBeVisible();
+		const point = await wallpaperPoint(page);
+		await page.mouse.click(point.x, point.y);
+		await expect(github).toHaveClass(/revealed/);
+
+		await dockItem(page, 'terminal').click();
+		await expect(github).not.toHaveClass(/revealed/);
+		await expect(appWindow(page, 'terminal')).not.toHaveClass(/revealed/);
+	});
+
+	test('바탕화면을 끌어 아이콘을 고르는 것은 창을 치우지 않는다', async ({ page }) => {
+		await enterDesktop(page);
+		await dockItem(page, 'github').click();
+		const github = appWindow(page, 'github');
+		await expect(github).toBeVisible();
+		const point = await wallpaperPoint(page);
+		await page.mouse.move(point.x, point.y);
+		await page.mouse.down();
+		await page.mouse.move(point.x + 30, point.y + 30, { steps: 5 });
+		await page.mouse.up();
+		await expect(github).not.toHaveClass(/revealed/);
+	});
+});

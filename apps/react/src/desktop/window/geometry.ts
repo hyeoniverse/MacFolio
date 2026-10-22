@@ -86,3 +86,15 @@ export function maximizedRect(viewport: Viewport): Rect {
 	const height = Math.max(MIN_SIZE.height, viewport.height - STATUSBAR_HEIGHT - DOCK_RESERVED_HEIGHT);
 	return { x: 0, y: STATUSBAR_HEIGHT, width: viewport.width, height };
 }
+
+/** 바탕화면 보기에서 화면 가장자리에 남기는 창의 폭 (눌러서 창을 되돌릴 수 있게) */
+export const REVEAL_PEEK = 40;
+
+/**
+ * 바탕화면 보기: 창을 가까운 왼쪽·오른쪽 가장자리로 밀어 낼 거리 (x). 창은 REVEAL_PEEK만큼 화면에 남는다.
+ * 가운데가 화면 왼쪽 반에 있으면 왼쪽으로, 아니면 오른쪽으로 (macOS Sonoma처럼)
+ */
+export function revealShift(rect: Rect, viewport: Viewport): number {
+	const toLeft = rect.x + rect.width / 2 < viewport.width / 2;
+	return toLeft ? REVEAL_PEEK - (rect.x + rect.width) : viewport.width - REVEAL_PEEK - rect.x;
+}

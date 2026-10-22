@@ -24,6 +24,35 @@ describe('createWindowStore', () => {
 		expect(activeApp(store.getState())).toBe('finder');
 	});
 
+	it('바탕화면을 누르면 창을 치우고, 다시 누르면 돌아온다', () => {
+		const store = setup();
+		store.toggleDesktopRevealed();
+		expect(store.getState().desktopRevealed).toBe(true);
+		expect(activeApp(store.getState())).toBeNull();
+		store.toggleDesktopRevealed();
+		expect(store.getState().desktopRevealed).toBe(false);
+	});
+
+	it('치워 둔 창은 창을 누르거나 앱을 열면 돌아온다', () => {
+		const store = setup();
+		store.toggleDesktopRevealed();
+		store.bringToFront('finder');
+		expect(store.getState().desktopRevealed).toBe(false);
+		store.toggleDesktopRevealed();
+		store.open('memo');
+		expect(store.getState().desktopRevealed).toBe(false);
+	});
+
+	it('떠 있는 창이 없으면 바탕화면을 눌러도 치울 것이 없다', () => {
+		const store = setup();
+		store.minimize('finder');
+		const listener = vi.fn();
+		store.subscribe(listener);
+		store.toggleDesktopRevealed();
+		expect(store.getState().desktopRevealed).toBe(false);
+		expect(listener).not.toHaveBeenCalled();
+	});
+
 	it('이미 창 밖에 있으면 구독자에게 다시 알리지 않는다', () => {
 		const store = setup();
 		store.focusDesktop();
