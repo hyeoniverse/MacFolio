@@ -38,6 +38,11 @@ export interface AppContextType {
 	/** 창 밖을 눌렀다. 창이나 앱을 다시 누르거나 열 때까지 activeApp은 null */
 	focusDesktop: () => void;
 
+	/** 바탕화면 보기: 바탕화면을 눌러 창을 화면 가장자리로 치웠다. 창을 누르거나 앱을 열면 돌아온다 */
+	desktopRevealed: boolean;
+	/** 바탕화면을 눌렀다: 창을 치우거나, 치워 둔 창을 되돌린다 */
+	toggleDesktopRevealed: () => void;
+
 	/** 실행 중인 앱을 모두 최소화한다. 모바일에서 홈 화면으로 돌아갈 때 쓴다. */
 	goHome: () => void;
 }

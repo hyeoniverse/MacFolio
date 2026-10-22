@@ -66,6 +66,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 			maximizeApp: store.restore,
 			bringAppToFront: store.bringToFront,
 			focusDesktop: store.focusDesktop,
+			toggleDesktopRevealed: store.toggleDesktopRevealed,
 			goHome: store.goHome,
 			keepAlive: store.keepAlive,
 		}),
@@ -77,6 +78,7 @@ export const AppStateProvider: React.FC<{ children: ReactNode }> = ({ children }
 			value={{
 				apps,
 				activeApp: activeAppOf(state),
+				desktopRevealed: state.desktopRevealed,
 				isAppRunning: (name) => APP_MANIFEST[name].alwaysRunning === true || isAppRunningIn(state, name),
 				...actions,
 			}}

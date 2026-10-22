@@ -76,7 +76,7 @@ type Pending =
  * 창·Dock·메뉴 막대보다 아래 층이라 창이 덮으면 가려진다
  */
 const DesktopIcons: React.FC = () => {
-	const { openApp, bringAppToFront } = useAppState();
+	const { openApp, bringAppToFront, toggleDesktopRevealed } = useAppState();
 	// 첫 화면에 늘 있어서 블로그 글 묶음은 받지 않는다 (Finder 등이 받았으면 함께 쓴다)
 	const locations = useLocations({ posts: false });
 	const viewport = useViewport();
@@ -238,6 +238,13 @@ const DesktopIcons: React.FC = () => {
 		const current = pending.current;
 		pending.current = null;
 		setBand(null);
+		if (current?.kind === 'band') {
+			// 빈 곳을 끌지 않고 눌렀다 뗐다: 바탕화면 보기 (창을 가장자리로 치우고, 다시 누르면 되돌린다)
+			const point = pointOf(event);
+			const still = Math.hypot(point.x - current.start.x, point.y - current.start.y) < DRAG_THRESHOLD;
+			if (still && !event.metaKey && !event.shiftKey) toggleDesktopRevealed();
+			return;
+		}
 		if (current?.kind !== 'icon') return;
 		// 관리자: 폴더 아이콘이나 Finder 창의 폴더 위에 놓으면 그 폴더로 옮긴다 (자리를 바꾸지 않고)
 		const target = current.moved && edit.admin ? dropTargetAt(pointOf(event), current.id) : null;

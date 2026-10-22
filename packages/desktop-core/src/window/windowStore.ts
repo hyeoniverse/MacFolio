@@ -18,6 +18,11 @@ export interface WindowState<Name extends string> {
 	apps: AppWindows<Name>;
 	/** 창 밖(바탕화면·메뉴 막대·Dock)을 눌렀는지. 창을 누르거나 앱을 열면 다시 false */
 	desktopFocused: boolean;
+	/**
+	 * 바탕화면 보기: 바탕화면을 눌러 창을 모두 화면 가장자리로 치웠는지 (macOS Sonoma의 '배경화면을 클릭하여 데스크탑 보기').
+	 * 바탕화면을 다시 누르거나, 창을 누르거나, 앱을 열면 창이 돌아온다
+	 */
+	desktopRevealed: boolean;
 	/** 창 없이도 실행 중인 앱 (음악 재생 등). 앱이 keepAlive로 켜고, 창을 닫거나(close) 종료(quit)하면 꺼진다 */
 	alive: Partial<Record<Name, true>>;
 }
@@ -33,6 +38,10 @@ export const isAppRunning = <Name extends string>(state: WindowState<Name>, name
 export const activeApp = <Name extends string>(state: WindowState<Name>): Name | null =>
 	state.desktopFocused ? null : foregroundApp(state.apps);
 
+/** 화면에 떠 있는 창이 있는지 (최소화한 창은 빼고) */
+const hasVisibleWindow = <Name extends string>(apps: AppWindows<Name>): boolean =>
+	Object.values<AppWindow>(apps).some((app) => app.isRunning && !app.isMinimized);
+
 const without = <Name extends string>(alive: Partial<Record<Name, true>>, name: Name) => {
 	const next = { ...alive };
 	delete next[name];
@@ -40,12 +49,14 @@ const without = <Name extends string>(alive: Partial<Record<Name, true>>, name: 
 };
 
 export function createWindowStore<Name extends string>(apps: AppWindows<Name>) {
-	const store = createStore<WindowState<Name>>({ apps, desktopFocused: false, alive: {} });
+	const store = createStore<WindowState<Name>>({ apps, desktopFocused: false, desktopRevealed: false, alive: {} });
+	// 창이나 앱으로 돌아오면(desktopFocused가 false) 치워 둔 창도 돌아온다
 	const update = (change: (apps: AppWindows<Name>) => AppWindows<Name>, desktopFocused?: boolean) =>
 		store.setState((state) => ({
 			...state,
 			apps: change(state.apps),
 			desktopFocused: desktopFocused ?? state.desktopFocused,
+			desktopRevealed: desktopFocused === false ? false : state.desktopRevealed,
 		}));
 	const patch = (name: Name, change: Partial<AppWindow>) =>
 		update((apps) => ({ ...apps, [name]: { ...apps[name], ...change } }));
@@ -100,6 +111,18 @@ export function createWindowStore<Name extends string>(apps: AppWindows<Name>) {
 		bringToFront: (name: Name) => update((apps) => bringToFront(apps, name), false),
 		/** 창 밖을 눌렀다. 창이나 앱을 다시 누르거나 열 때까지 activeApp은 null */
 		focusDesktop: () => store.setState((state) => (state.desktopFocused ? state : { ...state, desktopFocused: true })),
+		/**
+		 * 바탕화면을 눌렀다 (눌러서 끌지 않고 뗐다): 창을 화면 가장자리로 치우고, 치워 둔 상태면 되돌린다.
+		 * 떠 있는 창이 없으면 치울 것도 없다
+		 */
+		toggleDesktopRevealed: () =>
+			store.setState((state) =>
+				state.desktopRevealed
+					? { ...state, desktopRevealed: false }
+					: hasVisibleWindow(state.apps)
+						? { ...state, desktopRevealed: true, desktopFocused: true }
+						: state
+			),
 		/** 실행 중인 앱을 모두 최소화한다 (모바일에서 홈 화면으로) */
 		goHome: () => update(minimizeAll),
 	};
