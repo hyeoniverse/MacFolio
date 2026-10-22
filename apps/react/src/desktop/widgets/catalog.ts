@@ -44,7 +44,7 @@ export const WIDGET_INFO: Record<WidgetKind, WidgetInfo> = {
 	profile: { label: '소개', description: '이름과 하는 일', sizes: ['medium'] },
 	quote: {
 		label: '명언',
-		description: '개발에 관한 짧은 말. 날마다 바뀌고, 누르면 다음 말',
+		description: '개발·디자인에 관한 짧은 말. 날마다 바뀌고, 누르면 다음 말',
 		sizes: ['medium', 'small'],
 	},
 };

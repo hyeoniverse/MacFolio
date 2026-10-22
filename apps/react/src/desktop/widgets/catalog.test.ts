@@ -43,6 +43,12 @@ describe('명언 위젯', () => {
 		expect(quoteOf('날짜 아님')).toBe(QUOTES[0]);
 	});
 
+	it('말이 넉넉하고(두 달 남짓 겹치지 않는다) 같은 말이 없으며, 작은 위젯에 들어갈 만큼 짧다', () => {
+		expect(QUOTES.length).toBeGreaterThanOrEqual(60);
+		expect(new Set(QUOTES.map((quote) => quote.text)).size).toBe(QUOTES.length);
+		for (const quote of QUOTES) expect(quote.text.length, quote.text).toBeLessThanOrEqual(120);
+	});
+
 	it('말마다 원문·우리말·말한 사람이 있다', () => {
 		for (const quote of QUOTES) {
 			expect(quote.text.length).toBeGreaterThan(0);
