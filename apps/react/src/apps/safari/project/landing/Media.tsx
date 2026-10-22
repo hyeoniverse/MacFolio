@@ -1,5 +1,6 @@
 // 그림·영상 한 장, 그리고 그림이 없는 항목의 비주얼. 다크 테마 그림이 있으면 사이트가 다크일 때 그것을 보인다 (landing.css)
-import React from 'react';
+import React, { useRef } from 'react';
+import { useNearView } from '@/apps/safari/project/useNearView';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
 import { iconOf, type LandingMedia, type LandingPoint } from './content';
 
@@ -11,20 +12,7 @@ export const Media: React.FC<{ media: LandingMedia; className?: string; eager?: 
 }) => {
 	const alt = decorative ? '' : media.alt;
 	const cls = ['lk-media', className].filter(Boolean).join(' ');
-	if (media.kind === 'video')
-		return (
-			<video
-				className={cls}
-				src={media.src}
-				muted
-				loop
-				playsInline
-				autoPlay={!prefersReducedMotion()}
-				controls={prefersReducedMotion()}
-				aria-label={alt || undefined}
-				aria-hidden={decorative || undefined}
-			/>
-		);
+	if (media.kind === 'video') return <LazyVideo className={cls} src={media.src} alt={alt} decorative={decorative} />;
 	if (!media.dark) return <img className={cls} src={media.src} alt={alt} loading={eager ? 'eager' : 'lazy'} />;
 	// 라이트·다크 두 장: 지금 테마에 맞는 한 장만 보인다 (CSS)
 	return (
@@ -32,6 +20,31 @@ export const Media: React.FC<{ media: LandingMedia; className?: string; eager?: 
 			<img className="lk-media-light" src={media.src} alt={alt} loading={eager ? 'eager' : 'lazy'} />
 			<img className="lk-media-dark" src={media.dark} alt="" aria-hidden="true" loading="lazy" />
 		</span>
+	);
+};
+
+/** 화면 가까이 왔을 때 받아 돌기 시작하는 영상 (처음 연 페이지가 화면 밖 영상까지 받지 않게) */
+const LazyVideo: React.FC<{ className: string; src: string; alt: string; decorative: boolean }> = ({
+	className,
+	src,
+	alt,
+	decorative,
+}) => {
+	const ref = useRef<HTMLVideoElement>(null);
+	const near = useNearView(ref);
+	return (
+		<video
+			ref={ref}
+			className={className}
+			src={near ? src : undefined}
+			muted
+			loop
+			playsInline
+			autoPlay={!prefersReducedMotion()}
+			controls={prefersReducedMotion()}
+			aria-label={alt || undefined}
+			aria-hidden={decorative || undefined}
+		/>
 	);
 };
 

@@ -21,6 +21,20 @@ export const TRACKS: Track[] = [
 	track(7, 'Affections Touching Across Time', 'Kaoru Wada', 'Inuyasha'),
 ];
 
+/**
+ * 곡 길이 (초). 목록에 시간을 보여 주려고 처음에는 앱이 켜질 때 곡마다 메타데이터를 받아 쟀는데,
+ * 그러면 첫 방문에 MP3 일곱 개의 앞부분(수백 KB)을 받는다. 곡을 바꾸면 파일에서 다시 잰다 (mutagen 등)
+ */
+export const TRACK_SECONDS: Record<string, number> = {
+	t1: 349.13,
+	t2: 294.58,
+	t3: 311.3,
+	t4: 232.36,
+	t5: 209.66,
+	t6: 209.68,
+	t7: 148.06,
+};
+
 export const ALL_SONGS = 'all';
 
 export const PLAYLISTS: Playlist[] = [

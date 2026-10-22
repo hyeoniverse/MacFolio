@@ -16,8 +16,10 @@
 }
 
 .loading-icon {
+	/* Font Awesome 글자로 8rem일 때와 같은 크기 (모양 384×512) */
+	width: 6rem;
+	height: 8rem;
 	margin-bottom: 2rem;
-	font-size: 8rem;
 	color: var(--color-white);
 	filter: drop-shadow(0 0 0.3rem var(--color-white));
 }

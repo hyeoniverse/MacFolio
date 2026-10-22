@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ProjectChapter, ProjectPoint } from '@/shared/profile';
 import { onScrollFrame, viewOf } from '@/apps/safari/project/scroll';
 import { prefersReducedMotion } from '@/apps/safari/project/reveal';
+import { useNearView } from '@/apps/safari/project/useNearView';
 import '@/apps/safari/project/CreativeParts.css';
 
 /** 밀대가 혼자 한 번 흔들리는 데 걸리는 시간과, 다음 흔들림까지 쉬는 시간 (ms) */
@@ -138,7 +139,7 @@ export const ScrollFrames: React.FC<{ frames: string[]; title: string }> = ({ fr
 			<figure className="cr-feature-media cr-scrollstick">
 				<div className="cr-scrollframes" ref={box}>
 					{frames.map((src, i) => (
-						<img key={src} src={src} alt={i === 0 ? `${title}: 스크롤하며 넘어가는 화면` : ''} />
+						<img key={src} src={src} alt={i === 0 ? `${title}: 스크롤하며 넘어가는 화면` : ''} loading="lazy" />
 					))}
 					<span className="cr-scrollframes-bar" aria-hidden="true">
 						<i />
@@ -211,7 +212,7 @@ export const ZoomImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) 
 					if (event.target === event.currentTarget) dialog.current?.close();
 				}}
 			>
-				<img src={src} alt={alt} />
+				<img src={src} alt={alt} loading="lazy" />
 				<button type="button" onClick={() => dialog.current?.close()} aria-label="닫기">
 					<i className="fa-solid fa-xmark" aria-hidden="true" />
 				</button>
@@ -234,9 +235,22 @@ export const Clip: React.FC<{ src: string; label: string }> = ({ src, label }) =
 		observer.observe(node);
 		return () => observer.disconnect();
 	}, []);
-	// 첫 화면 그림(같은 이름의 .jpg)을 미리 보여 준다 (영상을 못 트는 브라우저에서도 빈칸이 아니게)
+	// 첫 화면 그림(같은 이름의 .jpg)을 미리 보여 준다 (영상을 못 트는 브라우저에서도 빈칸이 아니게).
+	// 영상과 그림은 화면 가까이 왔을 때 받는다 (useNearView)
+	const near = useNearView(video);
 	const poster = src.replace(/\.mp4$/, '.jpg');
-	return <video ref={video} src={src} poster={poster} aria-label={label} muted loop playsInline preload="metadata" />;
+	return (
+		<video
+			ref={video}
+			src={near ? src : undefined}
+			poster={near ? poster : undefined}
+			aria-label={label}
+			muted
+			loop
+			playsInline
+			preload="metadata"
+		/>
+	);
 };
 
 /** 기능 하나에 붙는 화면: 영상, 라이트·다크 밀대, 그림, 레이아웃 고르기 중 하나 (편집에서 넣은 그림이 갈래 도식보다 먼저) */

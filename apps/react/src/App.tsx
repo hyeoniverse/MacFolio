@@ -11,6 +11,11 @@ const App: React.FC = () => {
 	// GitHub 로그인에서 돌아왔으면 "클릭하여 시작" 로딩 화면을 건너뛰고 바로 결과를 보여 준다
 	const [isLoading, setIsLoading] = useState(() => !returnedFromLogin());
 
+	// 처음 그렸으면 스크립트를 받는 동안의 첫 그림(index.html의 #boot-splash)을 지운다. 로딩 화면이 같은 자리에 그대로 이어진다
+	useEffect(() => {
+		document.getElementById('boot-splash')?.remove();
+	}, []);
+
 	// 로딩 화면이 없으면 로딩 화면 대신 배경화면을 드러낸다 (index.html의 booting)
 	useEffect(() => {
 		if (!isLoading) document.documentElement.classList.remove('booting');
