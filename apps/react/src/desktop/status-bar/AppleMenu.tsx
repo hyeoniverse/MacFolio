@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAppState } from '@/desktop/useAppState';
-import { signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
+import { refreshAdmin, signIn, signOut, useAdmin } from '@/shared/auth/adminStore';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import { REPO_URL } from '@/apps/finder/repoDocs';
 import { settingsStore } from '@/shared/settings/settingsStore';
@@ -46,14 +46,20 @@ const AppleMenu = () => {
 		'separator',
 		...(status === 'signed-in'
 			? ([{ note: `${login}(으)로 로그인됨` }, { label: '로그아웃', onSelect: () => void signOut() }] as MenuItem[])
-			: [
-					{
-						label: '관리자 로그인…',
-						disabled: status !== 'signed-out',
-						hint: status === 'signed-out' ? undefined : '관리자 서버에 연결되어 있지 않습니다',
-						onSelect: signIn,
-					},
-				]),
+			: status === 'offline'
+				? // 서버에 닿지 못했으면 설정에 가지 않고 여기서 바로 다시 묻는다 (닿으면 로그인할 수 있게 된다)
+					([
+						{ note: '관리자 서버에 연결할 수 없습니다' },
+						{ label: '다시 확인', onSelect: () => void refreshAdmin() },
+					] as MenuItem[])
+				: [
+						{
+							label: status === 'checking' ? '로그인 확인하는 중…' : '관리자 로그인…',
+							disabled: status !== 'signed-out',
+							hint: status === 'disabled' ? '관리자 서버가 아직 연결되지 않았습니다' : undefined,
+							onSelect: signIn,
+						},
+					]),
 	];
 
 	return (
