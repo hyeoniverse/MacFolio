@@ -11,10 +11,10 @@
 <rect x="331.1" y="84" width="105.4" height="22" fill="#34c759"/>
 <text x="444.6" y="100" font-size="12" fill="#1d1d1f">4,748</text>
 <text x="158" y="145" font-size="13" text-anchor="end" fill="#1d1d1f">휴대폰 · 고친 뒤</text>
-<rect x="170.0" y="130" width="12.2" height="22" fill="#0a84ff"/>
-<rect x="182.2" y="130" width="16.0" height="22" fill="#ff9f0a"/>
-<rect x="198.2" y="130" width="25.4" height="22" fill="#34c759"/>
-<text x="231.6" y="146" font-size="12" fill="#1d1d1f">955</text>
+<rect x="170.0" y="130" width="12.4" height="22" fill="#0a84ff"/>
+<rect x="182.4" y="130" width="16.0" height="22" fill="#ff9f0a"/>
+<rect x="198.4" y="130" width="9.2" height="22" fill="#34c759"/>
+<text x="215.6" y="146" font-size="12" fill="#1d1d1f">669</text>
 <text x="158" y="191" font-size="13" text-anchor="end" fill="#1d1d1f">데스크톱 · 고치기 전</text>
 <rect x="170.0" y="176" width="63.6" height="22" fill="#0a84ff"/>
 <rect x="233.6" y="176" width="97.5" height="22" fill="#ff9f0a"/>
@@ -22,8 +22,8 @@
 <rect x="612.4" y="176" width="57.6" height="22" fill="#af52de"/>
 <text x="678.0" y="192" font-size="12" fill="#1d1d1f">8,905</text>
 <text x="158" y="237" font-size="13" text-anchor="end" fill="#1d1d1f">데스크톱 · 고친 뒤</text>
-<rect x="170.0" y="222" width="17.2" height="22" fill="#0a84ff"/>
-<rect x="187.2" y="222" width="22.3" height="22" fill="#ff9f0a"/>
-<rect x="209.5" y="222" width="76.0" height="22" fill="#34c759"/>
-<text x="293.5" y="238" font-size="12" fill="#1d1d1f">2,056</text>
+<rect x="170.0" y="222" width="17.3" height="22" fill="#0a84ff"/>
+<rect x="187.3" y="222" width="22.3" height="22" fill="#ff9f0a"/>
+<rect x="209.6" y="222" width="57.4" height="22" fill="#34c759"/>
+<text x="275.0" y="238" font-size="12" fill="#1d1d1f">1,728</text>
 </svg>
