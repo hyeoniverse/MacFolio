@@ -37,7 +37,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
   </tr>
 </table>
 
-[데모](#데모) · [기능](#기능) · [정보 구조](#정보-구조) · [사용법](#사용법) · [아키텍처](#아키텍처) · [기술 스택](#기술-스택) · [로컬에서 실행](#로컬에서-실행) · [문서](#문서)
+[데모](#데모) · [기능](#기능) · [정보 구조](#정보-구조) · [사용법](#사용법) · [아키텍처](#아키텍처) · [기술 스택](#기술-스택) · [로컬에서 실행](#로컬에서-실행) · [성능](#성능) · [문서](#문서)
 
 </div>
 
@@ -589,6 +589,19 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 
 측정 방법과 전환 과정은 [docs/migration-cra-to-vite.md](docs/migration-cra-to-vite.md)에 정리했습니다.
 
+## 성능
+
+첫 방문 성능을 Lighthouse로 재고, 느린 원인(3.8MB 글꼴, 첫 묶음에 들어 있던 블로그 원문 2.4MB와 모든 앱 코드, 큰 그림·영상, JS가 그리던 로딩 화면)을 고친 뒤 같은 조건으로 다시 쟀습니다. 5번씩 잰 가운데값입니다.
+
+| 항목              | 휴대폰 전 → 후        | 데스크톱 전 → 후      |
+| ----------------- | --------------------- | --------------------- |
+| Lighthouse 성능   | 55 → **68**           | 62 → **90**           |
+| FCP               | 14.3초 → **4.0초**    | 2.5초 → **0.8초**     |
+| LCP               | 25.7초 → **6.2초**    | 5.8초 → **1.9초**     |
+| 첫 방문에 받는 양 | 4,893KB → **1,011KB** | 9,050KB → **2,177KB** |
+
+측정 조건, 원인, 고친 것, 다시 재는 방법은 [docs/performance.md](docs/performance.md)에 정리했습니다.
+
 ## 문서
 
 - [작업 규칙](CONTRIBUTING.md): 브랜치, 커밋, 이슈, PR, 저장소 설정(필수 검사)
@@ -597,6 +610,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 - [배포](docs/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [되돌리기 훈련](docs/rollback-drill.md): 헬스 체크가 실패하는 버전을 서버에 일부러 배포해 자동 되돌리기를 확인하는 절차
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
+- [성능 측정](docs/performance.md): Lighthouse 측정 조건과 결과, 느린 원인과 고친 것, 다시 재는 방법
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
 - [개인정보 처리](docs/privacy.md): 무엇을 어떻게 저장하고 언제 지우는지
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
