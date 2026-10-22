@@ -19,6 +19,14 @@ describe('보안 헤더', () => {
 		expect(originOf('autosave')).toBeNull();
 	});
 
+	it('HYEONIVERSE 데모가 있으면 그 사이트의 블로그 출처도 프레임에 연다(없으면 열지 않는다)', () => {
+		const withSite = parse(contentSecurityPolicy({ frameUrls: ['https://www.hyeoniverse.com'] }));
+		expect(withSite['frame-src']).toContain('https://www.hyeoniverse.com');
+		expect(withSite['frame-src']).toContain('https://blog.hyeoniverse.com');
+		const without = parse(contentSecurityPolicy({ frameUrls: ['https://newpick-tan.vercel.app'] }));
+		expect(without['frame-src']).not.toContain('https://blog.hyeoniverse.com');
+	});
+
 	it('API 주소는 연결·미디어에, 데모 주소는 프레임에만 출처로 들어간다', () => {
 		const csp = parse(
 			contentSecurityPolicy({
