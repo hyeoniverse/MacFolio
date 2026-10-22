@@ -1,79 +1,87 @@
 ---
-title: 같은 Safari, 다른 화면 — macOS와 iOS, 브라우저마다 다르게 그리는 곳
+title: macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점
 date: 2026-10-22
 category: 기술 노트/브라우저
-summary: 맥의 Safari에서 맞게 보인 화면이 아이폰의 Safari에서는 틀리게 보일 수 있다. 엔진과 운영체제가 화면을 그리는 길을 정리하고, macOS·iOS Safari와 Chrome·Firefox가 다르게 그리는 곳, 흉내 내는 시험이 놓치는 것, 프론트엔드가 조심할 점을 공식 문서와 함께 적었다.
+summary: macOS Safari에서 정상으로 보인 화면이 iOS Safari에서는 다르게 그려질 수 있다. 렌더링 엔진과 운영체제의 관계, macOS와 iOS WebKit의 합성 방식 차이, Chrome·Safari·Firefox의 차이, 기기 에뮬레이션 테스트가 놓치는 부분을 정리하고, 자주 생기는 문제를 도식과 코드로 비교했다.
 ---
 
-"Safari에서 확인했다"는 말은 어느 Safari인지까지 말해 주지 않는다. 맥의 Safari와 아이폰의 Safari는 같은 WebKit이지만, 같은 CSS를 다르게 그릴 때가 있다. 아이폰의 Chrome은 Chrome이지만 화면은 WebKit이 그린다. 이 글은 브라우저마다, 운영체제마다 화면이 갈리는 곳을 일반론으로 정리한다. 실제로 겪은 예는 [아이폰에서만 각진 음악 위젯](/memo/music-widget-ios-corners)에 따로 적었다.
+macOS Safari에서 확인한 화면이 iOS Safari에서도 같게 보인다는 보장은 없다. 두 브라우저는 같은 WebKit 엔진을 쓰지만, 같은 CSS를 다르게 렌더링하는 경우가 있다. 반대로 iOS의 Chrome은 이름은 Chrome이어도 렌더링은 WebKit이 한다. 이 글에서는 브라우저와 운영체제에 따라 렌더링 결과가 달라지는 지점과 그 대응 방법을 정리한다. 실제로 겪은 사례는 [iOS Safari에서만 음악 위젯 모서리가 각지는 문제](/memo/music-widget-ios-corners)에 따로 적었다.
 
 <details id="terms">
 <summary>먼저 알아 둘 용어</summary>
 
-| 용어                  | 뜻                                                                                                      |
-| --------------------- | ------------------------------------------------------------------------------------------------------- |
-| 엔진                  | HTML·CSS·JS를 읽어 화면을 그리는 부분. Chrome은 Blink, Firefox는 Gecko, Safari는 WebKit                 |
-| 층 (layer)            | 브라우저가 페이지를 여러 장으로 나눠 그린 것. 움직이거나 효과가 걸린 부분은 따로 된 층이 된다           |
-| 합성 (compositing)    | 나눠 그린 층을 GPU에서 한 화면으로 합치는 일. 운영체제의 그래픽 체계(macOS·iOS는 Core Animation)를 쓴다 |
-| 뷰포트                | 페이지가 보이는 창. 휴대폰은 주소 막대·화면 키보드가 나오고 들어가며 크기가 바뀐다                      |
-| 기기 흉내 (emulation) | 데스크톱 브라우저가 휴대폰의 화면 크기·터치·User-Agent를 흉내 내는 것. 엔진은 바뀌지 않는다             |
+| 용어                            | 뜻                                                                                                                         |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 렌더링 엔진                     | HTML·CSS·JS를 해석해 화면을 그리는 부분. Chrome은 Blink, Firefox는 Gecko, Safari는 WebKit을 쓴다                           |
+| 합성 레이어 (compositing layer) | 브라우저가 페이지의 일부를 따로 분리해 그린 단위. `transform`, `filter`, 동영상처럼 GPU 처리가 필요한 요소가 주로 분리된다 |
+| 합성 (compositing)              | 분리해 그린 레이어를 GPU에서 한 화면으로 합치는 과정. macOS와 iOS는 Core Animation이 담당한다                              |
+| 뷰포트                          | 페이지가 표시되는 영역. 모바일에서는 주소 표시줄과 화면 키보드에 따라 크기가 바뀐다                                        |
+| 기기 에뮬레이션                 | 데스크톱 브라우저가 모바일의 화면 크기, 터치 입력, User-Agent를 흉내 내는 기능. 렌더링 엔진은 바뀌지 않는다                |
 
 </details>
 
-## 브라우저 이름보다 엔진과 운영체제
+## 브라우저보다 렌더링 엔진과 운영체제를 봐야 한다
 
-![브라우저와 운영체제에 따른 엔진](./images/safari-macos-ios-rendering-engines.svg 'iOS에서는 Chrome·Firefox도 WebKit으로 그린다')
+![브라우저와 운영체제별 렌더링 엔진](./images/safari-macos-ios-rendering-engines.svg 'iOS에서는 Chrome과 Firefox도 WebKit으로 렌더링한다')
 
-iOS·iPadOS에서 웹을 보여 주는 앱은 WebKit을 써야 한다는 App Store 규칙이 있다. 그래서 아이폰의 Chrome·Firefox·Edge는 이름만 다를 뿐 화면은 Safari와 같은 엔진이 그린다. EU(iOS 17.4부터)와 일본에서는 다른 엔진을 쓸 수 있는 길이 열렸지만, 그 밖에서는 여전히 WebKit이다. 그러니 iOS에서만 나는 문제는 "Safari 문제"가 아니라 "iOS WebKit 문제"로 보는 편이 맞다. 아이폰의 Chrome에서도 똑같이 난다.
+App Store 심사 지침은 iOS·iPadOS에서 웹 페이지를 보여 주는 앱에 WebKit 사용을 요구한다. 따라서 iOS의 Chrome, Firefox, Edge는 모두 Safari와 같은 WebKit으로 렌더링한다. EU(iOS 17.4 이상)와 일본에서는 다른 엔진을 쓸 수 있는 권한이 생겼지만, 그 밖의 지역에서는 여전히 WebKit만 쓸 수 있다. iOS에서만 생기는 렌더링 문제는 Safari 하나의 문제가 아니라 iOS WebKit의 문제이고, iOS Chrome에서도 똑같이 재현된다.
 
-반대로 같은 이름의 브라우저도 운영체제가 다르면 다르다. Windows·Android의 Chrome은 Blink이고 iOS의 Chrome은 WebKit이다.
+반대로 같은 이름의 브라우저라도 운영체제가 다르면 엔진이 다를 수 있다. Windows와 Android의 Chrome은 Blink를 쓰지만, iOS의 Chrome은 WebKit을 쓴다.
 
-## 같은 WebKit, macOS와 iOS가 갈리는 곳
+## 같은 WebKit이라도 macOS와 iOS는 다르다
 
-엔진이 같아도 그린 것을 화면에 내는 길과 기기의 조건이 다르다.
+렌더링 엔진이 같아도 레이어를 합성하는 방식과 기기의 제약이 다르다.
 
-| 차이        | macOS Safari                                                       | iOS Safari                                                                                   |
-| ----------- | ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
-| 기기        | 메모리·GPU가 넉넉하다                                              | 메모리가 빠듯해 층을 아껴 쓰고, 큰 층은 타일로 나눠 그린다                                   |
-| 층 나누기   | 효과가 걸려도 함께 그리는 경우가 많다                              | `filter`, `backdrop-filter`, `transform`, 영상이 따로 된 층이 되기 쉽다                      |
-| 둥근 자르기 | 부모의 `overflow: hidden` + `border-radius`가 대개 자식까지 자른다 | 따로 된 자식 층에 둥근 자르기가 전해지지 않아 네모로 남는 경우가 있다                        |
-| 뷰포트      | 창 크기가 곧 뷰포트                                                | 주소 막대가 접히고 펴지며 높이가 바뀐다. 노치·둥근 모서리·홈 표시줄이 화면을 가린다          |
-| 화면 키보드 | 없다                                                               | 키보드가 화면을 덮는다. 레이아웃 뷰포트는 그대로이고 보이는 부분(visual viewport)만 줄어든다 |
-| 입력        | 마우스. `:hover`가 자연스럽다                                      | 손가락. 누른 뒤 `:hover`가 남는다. 16px보다 작은 입력 칸을 누르면 화면을 확대한다            |
-| 소리·영상   | 사람이 누르기 전에는 소리를 내지 못한다                            | 같고, 영상은 `playsinline`이 없으면 전체 화면으로 재생한다                                   |
+| 항목                   | macOS Safari                                                           | iOS Safari                                                                                    |
+| ---------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| 하드웨어               | 메모리와 GPU 자원에 여유가 있다                                        | 메모리가 제한적이어서 레이어를 적게 만들고, 큰 레이어는 타일 단위로 나눠 그린다               |
+| 레이어 분리            | 효과가 걸린 요소도 부모와 함께 그리는 경우가 많다                      | `filter`, `backdrop-filter`, `transform`, 동영상이 별도 레이어로 분리되기 쉽다                |
+| `border-radius` 클리핑 | 부모의 `overflow: hidden` + `border-radius`가 대체로 자식까지 적용된다 | 별도 레이어로 분리된 자식에는 둥근 클리핑이 적용되지 않아 사각형으로 남는 경우가 있다         |
+| 뷰포트 높이            | 창 크기가 그대로 뷰포트가 된다                                         | 주소 표시줄이 접히고 펼쳐지면서 높이가 바뀐다. 카메라 영역과 홈 표시줄이 화면 일부를 가린다   |
+| 화면 키보드            | 없다                                                                   | 키보드가 화면을 덮는다. 레이아웃 뷰포트는 그대로이고, 보이는 영역(visual viewport)만 줄어든다 |
+| 입력                   | 마우스. `:hover`가 의도대로 동작한다                                   | 터치. 탭한 뒤에도 `:hover` 상태가 남는다. 16px 미만 입력 칸에 포커스가 가면 화면이 확대된다   |
+| 미디어 재생            | 사용자 동작 없이는 소리를 재생할 수 없다                               | 같은 제한에 더해, `playsinline`이 없는 동영상은 전체 화면으로 재생된다                        |
 
-맥에서 확인했다고 아이폰에서 맞다고 볼 수 없는 것은 주로 앞의 세 줄, 그리는 방식에서 온다. 뒤의 네 줄은 휴대폰이라는 기기에서 오므로 Android에서도 비슷하게 겪는다.
+앞의 세 항목은 레이어 합성 방식에서 생기는 차이라서 macOS에서 확인한 결과를 iOS에 그대로 적용할 수 없다. 나머지 네 항목은 모바일 기기의 특성이므로 Android 브라우저에서도 비슷한 문제가 생긴다.
 
-## 엔진마다 다른 곳
+## 렌더링 엔진별 차이
 
-엔진이 다르면 지원하는 기능, 기본값, 개인정보 보호 정책이 다르다.
+엔진이 다르면 지원하는 CSS 기능, 기본 스타일, 개인정보 보호 정책이 다르다.
 
-| 주제                                 | Chrome (Blink)                               | Safari (WebKit)                                               | Firefox (Gecko)                  |
-| ------------------------------------ | -------------------------------------------- | ------------------------------------------------------------- | -------------------------------- |
-| 흐린 유리 `backdrop-filter`          | 접두어 없이                                  | 오랫동안 `-webkit-` 접두어가 필요했다                         | 접두어 없이                      |
-| 효과와 둥근 자르기                   | 대개 잘 잘린다                               | iOS에서 따로 된 층이 빠져나갈 수 있다                         | 대개 잘 잘린다                   |
-| 스크롤바                             | 운영체제를 따른다. Windows는 자리를 차지한다 | macOS는 기본이 겹쳐 뜨는 스크롤바                             | 운영체제를 따른다                |
-| 글자 다듬기 `-webkit-font-smoothing` | macOS에서만 듣는다                           | macOS에서만 듣는다                                            | 비슷한 `-moz-osx-font-smoothing` |
-| 영상 자동 재생                       | 소리 없는 영상은 된다                        | 소리 없으면 되고, iPhone은 `playsinline`이 있어야 화면 안에서 | 소리 없는 영상은 된다            |
-| 개인정보 보호                        | 셋 중 가장 덜 막는다                         | ITP: 다른 사이트의 쿠키·저장소를 강하게 막는다                | 쿠키를 사이트마다 나눠 담는다    |
+| 항목                           | Chrome (Blink)                                                            | Safari (WebKit)                                                                      | Firefox (Gecko)                       |
+| ------------------------------ | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------- |
+| `backdrop-filter`              | 벤더 접두사 없이 지원                                                     | 오랫동안 `-webkit-` 접두사가 필요했다                                                | 벤더 접두사 없이 지원                 |
+| 효과가 걸린 자식의 둥근 클리핑 | 대체로 정상                                                               | iOS에서 별도 레이어가 클리핑을 벗어날 수 있다                                        | 대체로 정상                           |
+| 스크롤바                       | 운영체제 설정을 따른다. Windows에서는 스크롤바가 레이아웃 너비를 차지한다 | macOS는 기본값이 오버레이 스크롤바다                                                 | 운영체제 설정을 따른다                |
+| `-webkit-font-smoothing`       | macOS에서만 적용                                                          | macOS에서만 적용                                                                     | 대신 `-moz-osx-font-smoothing`을 쓴다 |
+| 동영상 자동 재생               | 음소거한 동영상은 자동 재생된다                                           | 음소거하면 자동 재생된다. iPhone에서는 `playsinline`이 있어야 페이지 안에서 재생된다 | 음소거한 동영상은 자동 재생된다       |
+| 개인정보 보호                  | 세 브라우저 중 제한이 가장 적다                                           | ITP가 서드 파티 쿠키와 저장소를 강하게 제한한다                                      | 쿠키를 사이트별로 분리해 저장한다     |
 
-같은 엔진 안에서도 버전마다 지원이 다르다. 새 기능을 쓸 때는 [caniuse.com](https://caniuse.com)에서 Safari와 Safari on iOS 줄을 따로 본다. 두 줄의 버전이 다를 때가 있다.
+같은 엔진이라도 버전마다 지원 범위가 다르다. 새 CSS 기능을 쓰기 전에는 [caniuse.com](https://caniuse.com)에서 Safari와 Safari on iOS 항목을 따로 확인한다. 두 항목의 지원 버전이 다른 경우가 있다.
 
-## 흉내 내는 시험이 놓치는 것
+## 기기 에뮬레이션 테스트가 놓치는 부분
 
-| 확인하는 곳                           | 엔진                  | 잡아내는 것                | 못 잡는 것                         |
-| ------------------------------------- | --------------------- | -------------------------- | ---------------------------------- |
-| Chrome 개발자 도구의 기기 모드        | Blink                 | 화면 폭, 터치, 미디어 쿼리 | WebKit만의 차이 전부               |
-| Playwright의 기기 흉내를 Chromium으로 | Blink                 | 레이아웃, 터치 흐름, 회귀  | 위와 같다                          |
-| Playwright WebKit                     | WebKit (데스크톱에서) | WebKit의 CSS·JS 지원 차이  | iOS의 합성, 화면 키보드, 주소 막대 |
-| Xcode의 iOS 시뮬레이터                | WebKit (iOS)          | 대부분의 iOS Safari 동작   | 실제 GPU·메모리에서만 나는 것 일부 |
-| 실제 아이폰                           | WebKit (iOS)          | 전부                       | —                                  |
+| 테스트 환경                           | 렌더링 엔진       | 확인할 수 있는 것                 | 확인할 수 없는 것                                 |
+| ------------------------------------- | ----------------- | --------------------------------- | ------------------------------------------------- |
+| Chrome 개발자 도구의 기기 모드        | Blink             | 화면 너비, 터치 입력, 미디어 쿼리 | WebKit에서만 생기는 차이 전부                     |
+| Playwright 기기 에뮬레이션 (Chromium) | Blink             | 레이아웃, 터치 흐름, 회귀         | 위와 같다                                         |
+| Playwright WebKit                     | WebKit (데스크톱) | WebKit의 CSS·JS 지원 범위         | iOS의 레이어 합성, 화면 키보드, 주소 표시줄       |
+| Xcode iOS 시뮬레이터                  | WebKit (iOS)      | iOS Safari 동작 대부분            | 실기기의 GPU와 메모리 조건에서만 생기는 일부 문제 |
+| 실제 iPhone                           | WebKit (iOS)      | 전부                              | —                                                 |
 
-기기 흉내는 화면 크기와 터치를 바꿀 뿐 엔진을 바꾸지 않는다. CI에서 "iPhone" 이름으로 돈 시험이 Chromium이었다면, 그 시험은 WebKit에 대해 아무것도 말해 주지 않는다. 흉내는 레이아웃이 깨졌는지를 빠르게 잡는 데 쓰고, 그리는 방식은 시뮬레이터나 실제 기기에서 본다.
+기기 에뮬레이션은 화면 크기와 입력 방식만 바꾸고 렌더링 엔진은 바꾸지 않는다. CI에서 'iPhone' 프로젝트로 실행한 테스트가 Chromium으로 돌았다면, 그 결과는 WebKit 렌더링에 대해 아무것도 보장하지 않는다. 에뮬레이션은 레이아웃 회귀를 빠르게 잡는 용도로 쓰고, 렌더링 결과는 iOS 시뮬레이터나 실기기에서 확인해야 한다.
 
-## 자주 부딪히는 곳과 다루는 법
+## 자주 생기는 문제와 대응 방법
 
-**효과가 걸린 자식과 둥근 모서리.** iOS에서 `filter`·`backdrop-filter`·`transform`·영상이 `overflow: hidden` + `border-radius` 안에 있으면 꼭짓점이 각질 수 있다. 자르는 쪽에 `clip-path`를 한 번 더 준다. 그림을 다 그린 뒤 그 모양으로 자르므로 따로 된 층도 함께 잘린다.
+아래 그림은 각 문제의 증상과 수정 결과를 비교한 도식이다. 실제 기기의 스크린샷이 아니다.
+
+### 효과가 걸린 자식 요소와 둥근 모서리
+
+iOS에서 `filter`, `backdrop-filter`, `transform`이 걸린 자식이나 동영상이 `overflow: hidden` + `border-radius` 안에 있으면 모서리가 각지게 그려질 수 있다. 자식이 별도 레이어로 분리되면서 부모의 둥근 클리핑이 적용되지 않기 때문이다.
+
+![둥근 클리핑을 벗어난 블러 레이어](./images/music-widget-ios-corners-layers.svg '블러 처리한 자식 레이어가 사각형으로 남는다 (왼쪽), clip-path를 더하면 둥글게 잘린다 (오른쪽)')
+
+부모에 `clip-path`를 함께 지정한다. `clip-path`는 자식까지 모두 그린 결과를 지정한 모양으로 자르기 때문에, 별도 레이어로 분리된 자식도 함께 잘린다.
 
 ```css
 .card {
@@ -83,73 +91,131 @@ iOS·iPadOS에서 웹을 보여 주는 앱은 WebKit을 써야 한다는 App Sto
 }
 ```
 
-**높이 100%.** `vh`는 주소 막대가 접힌 큰 뷰포트를 기준으로 해서, 주소 막대가 펴져 있으면 아래가 가려진다. 늘 보이는 높이가 필요하면 `dvh`(지금 높이) 또는 `svh`(가장 작은 높이)를 쓴다.
+### `100vh`로 지정한 화면 높이
+
+`vh`는 주소 표시줄이 접혔을 때의 높이(large viewport)를 기준으로 계산된다. 주소 표시줄이 펼쳐져 있으면 `100vh`인 요소의 아래쪽이 표시줄에 가려진다.
+
+![100vh와 100dvh 비교](./images/safari-macos-ios-rendering-vh.svg '100vh인 화면은 아래쪽 버튼이 주소 표시줄에 가려지고, 100dvh는 표시줄 위까지만 차지한다')
+
+항상 보이는 높이가 필요하면 `dvh`(현재 높이)나 `svh`(주소 표시줄이 펼쳐졌을 때의 높이)를 쓴다. `dvh`를 지원하지 않는 브라우저를 위해 `vh`를 먼저 선언해 둔다.
 
 ```css
 .screen {
-	height: 100vh; /* dvh를 모르는 브라우저 */
+	height: 100vh;
 	height: 100dvh;
 }
 ```
 
-**노치와 홈 표시줄.** 화면 가장자리까지 그리려면 `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`로 화면을 다 쓰고, 가려지는 자리는 `env(safe-area-inset-*)`로 비운다.
+### 카메라 영역과 홈 표시줄
+
+`viewport-fit=cover`로 화면 가장자리까지 그리면, 여백을 주지 않은 요소가 카메라 영역과 홈 표시줄에 가려진다.
+
+![safe-area 여백 비교](./images/safari-macos-ios-rendering-safe-area.svg '여백이 없으면 상단 메뉴와 하단 탭 막대가 가려지고, safe-area 여백을 주면 보인다')
+
+가려지는 영역의 크기는 `env(safe-area-inset-*)`로 얻는다.
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
 
 ```css
-.bottom-bar {
+.tab-bar {
 	padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 ```
 
-**입력 칸 확대.** iOS Safari는 글자가 16px보다 작은 입력 칸을 누르면 화면을 확대한다. 확대를 막으려고 `maximum-scale=1`로 사용자 확대까지 막기보다, 입력 칸의 글자를 16px 이상으로 둔다.
+### 16px 미만 입력 칸의 자동 확대
 
-**`:hover`.** 손가락으로 누르면 `:hover`가 남아 버튼이 계속 강조된다. 강조는 마우스처럼 올릴 수 있는 입력에서만 준다.
+iOS Safari는 글자 크기가 16px 미만인 입력 칸에 포커스가 가면 페이지를 확대한다. 입력을 마쳐도 원래 배율로 자동으로 돌아오지 않는다.
+
+![입력 칸 글자 크기에 따른 확대](./images/safari-macos-ios-rendering-input-zoom.svg '14px 입력 칸은 포커스 시 화면이 확대되고, 16px은 배율이 유지된다')
+
+입력 칸의 글자 크기를 16px 이상으로 지정한다. `maximum-scale=1`로 확대를 막는 방법도 있지만, 사용자가 직접 확대하는 기능까지 막혀 접근성이 떨어진다.
+
+```css
+input,
+textarea,
+select {
+	font-size: 16px;
+}
+```
+
+### 탭한 뒤에도 남는 `:hover`
+
+모바일 브라우저는 탭을 hover로도 처리해서, 다른 곳을 탭할 때까지 `:hover` 스타일이 유지된다.
+
+![:hover 처리 비교](./images/safari-macos-ios-rendering-hover.svg ':hover만 쓰면 탭한 항목이 계속 강조되고, hover 미디어 쿼리 안에 두면 터치 기기에서는 적용되지 않는다')
+
+hover 효과는 마우스처럼 hover가 가능한 입력 장치에서만 적용되도록 미디어 쿼리 안에 둔다.
 
 ```css
 @media (hover: hover) {
-	.button:hover {
-		background: var(--hover);
+	.item:hover {
+		background: var(--hover-background);
 	}
 }
 ```
 
-**소리와 영상.** 소리는 사람이 누른 뒤에 낸다. 배경 영상은 소리를 끄고 화면 안에서 재생하게 한다. React의 `muted` 속성은 HTML 속성으로 쓰이지 않을 때가 있어, 자동 재생이 막히면 요소에 직접 켠다.
+### 화면 키보드에 가려지는 고정 요소
+
+iOS에서는 화면 키보드가 올라와도 레이아웃 뷰포트가 줄어들지 않는다. `position: fixed; bottom: 0`으로 고정한 입력 막대는 키보드 뒤에 가려진다.
+
+![화면 키보드와 고정 요소](./images/safari-macos-ios-rendering-keyboard.svg '하단에 고정한 입력 막대는 키보드에 가려지고, visualViewport 높이로 위치를 계산하면 키보드 위에 보인다')
+
+키보드를 뺀 실제 표시 영역은 `window.visualViewport`로 얻는다. `resize` 이벤트에서 키보드 높이를 계산해 요소의 위치를 옮긴다.
+
+```js
+const viewport = window.visualViewport;
+viewport.addEventListener('resize', () => {
+	const keyboard = window.innerHeight - viewport.height - viewport.offsetTop;
+	inputBar.style.bottom = `${Math.max(0, keyboard)}px`;
+});
+```
+
+### 동영상 재생과 `playsinline`
+
+iPhone Safari는 `playsinline` 속성이 없는 `<video>`를 재생하면 전체 화면 플레이어로 전환한다. 자동 재생은 소리가 없거나 음소거된 동영상에만 허용된다.
+
+![playsinline 유무 비교](./images/safari-macos-ios-rendering-video.svg 'playsinline이 없으면 전체 화면 플레이어로 열리고, 있으면 페이지 안에서 재생된다')
 
 ```html
 <video src="loop.mp4" autoplay muted loop playsinline></video>
 ```
 
-**화면 키보드.** iOS는 키보드가 나와도 레이아웃 뷰포트를 줄이지 않는다. 입력 칸 위에 붙는 막대는 `window.visualViewport`의 크기와 `resize` 이벤트로 자리를 잡는다.
+React의 `muted` prop은 DOM 속성으로 반영되지 않는 경우가 있어서 자동 재생이 막힐 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다.
 
-**개인정보 보호.** 다른 사이트에 두는 쿠키·저장소는 Safari에서 먼저 막힌다. 페이지를 떠날 때 보내는 요청(`navigator.sendBeacon`)처럼 다른 주소로 가는 요청은 응답 머리글(CORS, CORP)까지 Safari에서 따로 확인한다.
+### 서드 파티 쿠키와 교차 출처 요청
 
-## 정리: 조심할 점
+Safari의 ITP는 다른 사이트의 쿠키와 저장소를 다른 브라우저보다 먼저 차단한다. `navigator.sendBeacon`처럼 다른 출처로 보내는 요청은 Safari에서 응답 헤더(CORS, Cross-Origin-Resource-Policy)까지 따로 확인한다.
 
-1. **"Safari에서 됐다"를 나눠 말한다.** macOS Safari, iOS Safari, iPad의 Safari(데스크톱 사이트로 열린다)는 다르다. iOS의 Chrome도 WebKit이다
-2. **흉내와 진짜를 나눈다.** 기기 모드와 Playwright의 기기 흉내는 레이아웃 회귀에, 효과(흐림·유리·영상·애니메이션)는 시뮬레이터나 실제 기기에
-3. **효과가 걸린 곳은 자르기를 의심한다.** `filter`, `backdrop-filter`, `transform`, `will-change`, 영상이 둥근 모서리 안에 있으면 iOS에서 꼭짓점을 본다
-4. **화면 높이는 늘 변한다고 본다.** `dvh`·`svh`, `env(safe-area-inset-*)`, `visualViewport`
-5. **입력은 터치를 먼저 생각한다.** 16px 미만 입력 칸, `:hover`에만 기대는 동작, 너무 작은 누를 자리를 피한다
-6. **자동으로 일어나는 일은 막힌다고 본다.** 소리, 전체 화면, 클립보드, 알림은 사람이 누른 뒤에
-7. **새 기능은 지원 표를 두 줄 본다.** Safari와 Safari on iOS를 따로 보고, 없으면 `@supports`로 나눠 예전 모양을 남긴다
-8. **개인정보 보호를 기능 차이로 본다.** 쿠키·저장소·다른 주소로 가는 요청은 Safari에서 따로 확인한다
+## 정리
+
+1. **"Safari에서 확인했다"는 말에 플랫폼을 붙인다.** macOS Safari, iOS Safari, iPadOS Safari(기본으로 데스크톱 사이트를 요청한다)는 결과가 다르다. iOS Chrome도 WebKit이다
+2. **에뮬레이션과 실기기의 용도를 나눈다.** 기기 모드와 Playwright 에뮬레이션은 레이아웃 회귀 확인에, 블러·`backdrop-filter`·동영상·애니메이션은 시뮬레이터나 실기기 확인에 쓴다
+3. **GPU 효과가 걸린 요소는 클리핑을 확인한다.** `filter`, `backdrop-filter`, `transform`, `will-change`, 동영상이 둥근 모서리 안에 있으면 iOS에서 모서리를 확인한다
+4. **뷰포트 높이가 바뀐다는 전제로 레이아웃을 잡는다.** `dvh`·`svh`, `env(safe-area-inset-*)`, `visualViewport`를 쓴다
+5. **터치 입력을 기준으로 설계한다.** 16px 미만 입력 칸, `:hover`에만 의존하는 동작, 44px보다 작은 터치 영역을 피한다
+6. **사용자 동작이 필요한 기능을 구분한다.** 소리 재생, 전체 화면, 클립보드, 알림은 사용자 동작 이후에 실행한다
+7. **새 CSS 기능은 Safari와 Safari on iOS의 지원 범위를 따로 확인한다.** 지원하지 않는 환경은 `@supports`로 분기해 기존 스타일을 유지한다
+8. **개인정보 보호 정책도 브라우저 차이로 다룬다.** 쿠키, 저장소, 교차 출처 요청을 다루는 코드는 Safari에서 따로 테스트한다
 
 ## 참고 문서
 
 - [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) 2.5.6 (Apple)
-  - "웹을 보여 주는 앱은 알맞은 WebKit 프레임워크와 WebKit JavaScript를 써야 한다." 다른 브라우저 엔진을 쓰는 권한은 EU와 일본에서 신청할 수 있다.
+  - "웹을 탐색하는 앱은 적절한 WebKit 프레임워크와 WebKit JavaScript를 사용해야 한다." 다른 브라우저 엔진을 쓰기 위한 권한은 EU와 일본에서 신청할 수 있다.
 - [Using alternative browser engines in the European Union](https://developer.apple.com/support/alternative-browser-engines/) (Apple)
-  - 다른 엔진을 쓰는 기능은 "iOS 17.4 또는 iPadOS 18 이상 기기의 EU 사용자에게" 열려 있다.
+  - 다른 브라우저 엔진은 "iOS 17.4 또는 iPadOS 18 이상을 실행하는 기기의 EU 사용자"에게 제공된다.
 - [length: 뷰포트 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/length) (MDN)
-  - `vh`는 "큰 뷰포트 크기를 기준으로 한 `lvh`와 같다." 큰 뷰포트는 브라우저 화면 요소가 접혔을 때를 채우므로 "펴지면 내용이 가려질 수 있다." `dv*`는 화면 요소가 나오고 들어가는 것과 상관없이 "뷰포트에 딱 맞게" 크기가 정해진다.
+  - `vh`는 "large viewport 크기를 기준으로 하는 `lvh`와 같다." large viewport는 브라우저 UI가 접혔을 때를 기준으로 하므로, UI가 펼쳐지면 "콘텐츠가 가려질 수 있다." `dv*` 단위는 브라우저 UI의 표시 여부와 관계없이 콘텐츠가 "뷰포트에 정확히 맞도록" 크기가 정해진다.
 - [env()](https://developer.mozilla.org/en-US/docs/Web/CSS/env) (MDN)
-  - `safe-area-inset-*`는 직사각형이 아닌 화면 모양에 "잘리지 않고 내용을 둘 수 있는" 거리이고, 원래 iOS 브라우저가 노치와 둥근 모서리에 가리지 않게 하려고 내놓은 값이다.
+  - `safe-area-inset-*`는 사각형이 아닌 화면 모양 때문에 "잘리지 않고 콘텐츠를 배치할 수 있는" 영역까지의 거리이며, 원래 iOS 브라우저가 노치와 둥근 모서리에 콘텐츠가 가리지 않도록 제공한 값이다.
 - [New video policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/) (WebKit)
-  - 소리 트랙이 없거나 `muted`인 영상은 사람이 누르지 않아도 자동 재생할 수 있고, 사람이 누르지 않았는데 소리를 켜면 "재생이 멈춘다." iPhone에서 `playsinline`이 없는 영상은 전체 화면으로 재생한다.
+  - 오디오 트랙이 없거나 `muted`인 동영상은 사용자 동작 없이 자동 재생할 수 있고, 사용자 동작 없이 음소거를 해제하면 "재생이 일시 정지된다." iPhone에서 `playsinline`이 없는 동영상은 전체 화면으로 재생된다.
 - [hover](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover) (MDN)
-  - `hover: none`은 주된 입력이 올릴 수 없거나 쉽게 올릴 수 없는 경우다. "많은 휴대 기기는 사용자가 불편하게 길게 누르면 올리기를 흉내 낸다."
+  - `hover: none`은 주 입력 장치가 hover를 할 수 없거나 쉽게 할 수 없는 경우다. "많은 모바일 기기는 사용자가 길게 탭하면 hover를 흉내 낸다."
 
 ## 관련 글
 
-- [아이폰에서만 각진 음악 위젯 - 흐린 배경이 둥근 자르기를 빠져나갈 때](/memo/music-widget-ios-corners)
+- [iOS Safari에서만 음악 위젯 모서리가 각지는 문제 — 블러 레이어와 border-radius 클리핑](/memo/music-widget-ios-corners)
 
-#프론트엔드 #CSS #Safari #iOS #크로스브라우징
+#TIL #프론트엔드 #CSS #Safari #iOS #크로스브라우징
