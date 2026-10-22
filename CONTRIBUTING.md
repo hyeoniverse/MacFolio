@@ -82,6 +82,7 @@ test: 글 순서에 기대지 않게 E2E 고침
   - 앱 고유의 그림(그라데이션·브랜드 색)은 앱 루트의 앱 토큰(`--weather-*`, `--settings-icon-*` …)에 이름을 붙여 쓴다. 여러 곳에서 같은 모양이면 `--gradient-*`로 올린다
   - 앱·부품 CSS는 2·3층(과 글자·간격·모서리 크기)만 쓰고 `--palette-*`는 직접 쓰지 않는다. 이름이 있는 값은 숫자 대신 이름을 쓴다. `pnpm lint`의 Stylelint가 둘 다 막는다 (`apps/react/stylelint.config.mjs`)
 - API의 컨트롤러나 DTO를 바꾸면 `pnpm --filter @macfolio/api openapi`로 `apps/react/src/apps/apidocs/openapi.json`을 다시 만들어 함께 커밋한다. 사이트의 'API 문서' 앱이 이 파일을 그린다. 빠뜨리면 `pnpm test`(`apps/api/src/openapi.test.ts`)가 실패한다
+- README와 `docs/`의 문서는 영어판(`README.en.md`, `docs/en/`)이 따로 있다. 한국어가 원본이고, 한국어 문서를 고치면 같은 PR에서 영어판도 같이 고친다. 영어판의 상대 경로는 한 단계 깊다(`../images/`, `../../apps/`)
 
 ### 마이그레이션
 

@@ -1,3 +1,5 @@
+**한국어** | [English](en/security-scan.md)
+
 # 보안 점검 (SAST·SCA)
 
 MacFolio 코드와 의존성을 정적 분석(SAST)·구성 요소 분석(SCA) 도구로 점검하고, 발견 항목마다 판정과 근거를 적는다 (#213). 점검일은 2026-10-18, 기준 커밋은 `aa23e0a`(main)이다.

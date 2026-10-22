@@ -2,6 +2,8 @@
 
 # MacFolio
 
+**한국어** · [English](README.en.md)
+
 **macOS 데스크톱을 웹으로 옮긴 포트폴리오**
 
 Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를 읽습니다.<br>

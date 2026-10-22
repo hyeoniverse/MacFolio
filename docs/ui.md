@@ -1,3 +1,5 @@
+**한국어** | [English](en/ui.md)
+
 # 공통 UI 부품 (`apps/react/src/shared/ui`)
 
 앱 여럿이 같은 모양·동작으로 쓰는 부품이 여기 있다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계의 첫 항목으로, 지금 있는 것의 props와 쓰는 곳을 적고, 새로 뽑을 후보를 지금 코드의 수로 다시 쟀다. 수는 2026-10-11 `main` 기준이다.

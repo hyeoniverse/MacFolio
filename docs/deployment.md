@@ -1,3 +1,5 @@
+**한국어** | [English](en/deployment.md)
+
 # 배포
 
 프론트엔드는 Cloudflare Workers에, API는 Oracle Cloud Always Free VM에 올린다. 서버는 포트를 열지 않고 Cloudflare Tunnel로만 바깥과 연결한다.
