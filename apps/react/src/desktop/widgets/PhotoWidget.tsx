@@ -48,7 +48,7 @@ const PhotoWidget = ({ album }: { album?: string }) => {
 						onPointerDown={(event) => event.stopPropagation()}
 						onClick={() => setMuted((value) => !value)}
 					>
-						<i className={`fa-solid ${muted ? 'fa-volume-xmark' : 'fa-volume-high'}`} aria-hidden="true"></i>
+						<i className={`fa-solid ${muted ? 'fa-volume-xmark' : 'fa-volume-low'}`} aria-hidden="true"></i>
 					</button>
 				</>
 			) : (
