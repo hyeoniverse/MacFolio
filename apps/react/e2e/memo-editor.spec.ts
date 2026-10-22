@@ -12,6 +12,22 @@ async function openMemo(page: Page, api: FakeApiState) {
 }
 
 test.describe('바로 고치기 (관리자)', () => {
+	test('끝에 태그 줄이 있는 글을 고쳐 저장해도 첫 태그가 \\#로 깨지지 않는다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '테스트를 붙이자 보인 버그들' }).click();
+		const editor = memo.locator('.ProseMirror');
+		await expect(editor).toBeVisible();
+		await editor.locator('> p').first().click();
+		await page.waitForTimeout(100);
+		await page.keyboard.press('Home');
+		await page.keyboard.type('덧붙임. ');
+		await expect.poll(() => api.posts[0]?.body).toContain('덧붙임.');
+		const body = api.posts[0]!.body;
+		expect(body).toContain('\n#MacFolio #테스트 #Playwright');
+		expect(body).not.toContain('\\#');
+	});
+
 	test('글을 열면 편집 버튼 없이 제목·본문·날짜·폴더를 바로 고치고, 멈추면 저장된다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true, organization: { folders: ['읽을거리'] } });
 		const memo = await openMemo(page, api);

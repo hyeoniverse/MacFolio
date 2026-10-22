@@ -29,7 +29,7 @@ import { CONTENT_IMAGES } from '../contentImages';
 import { keyboardInset } from '@/shared/hooks/useKeyboardInset';
 import { editorControls, EMPTY_FORMAT, type Box } from './editorControls';
 import { formatStateOf, runFormat } from './formatCommands';
-import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
+import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown, unescapeTags } from './markdownImages';
 import { GFM_OPTIONS } from '../markdownPlugins';
 
 interface Props {
@@ -330,7 +330,8 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 						},
 					}));
 					ctx.get(listenerCtx).markdownUpdated((_ctx, next, prev) => {
-						if (next !== prev) onChangeRef.current(plainTableAlign(fromEditorMarkdown(next, CONTENT_IMAGES)));
+						if (next !== prev)
+							onChangeRef.current(unescapeTags(plainTableAlign(fromEditorMarkdown(next, CONTENT_IMAGES))));
 					});
 				})
 				.use(commonmark)
