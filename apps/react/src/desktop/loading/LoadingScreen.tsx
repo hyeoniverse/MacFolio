@@ -6,11 +6,20 @@ import AppleLogo from '@/shared/ui/AppleLogo';
 import { env } from '@/shared/config/env';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
+declare global {
+	interface Window {
+		/** 앱이 뜨기 전에 첫 그림(#boot-splash)을 눌렀는지 (public/theme-boot.js가 적는다) */
+		__macfolioTapped?: boolean;
+	}
+}
+
 interface LoadingScreenProps {
+	/** 눌러서 시작했다 (진행 막대가 차기 시작한다) */
+	onStart?: () => void;
 	onLoadingComplete: () => void;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, onLoadingComplete }) => {
 	const [progress, setProgress] = useState(0);
 	const startLabel = `${useIsMobile() ? '탭' : '클릭'}하여 로딩을 시작하세요`;
 	const isInteractedRef = useRef(false);
@@ -20,6 +29,11 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 	const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
+	// 부르는 쪽이 그릴 때마다 새 함수를 넘겨도 진행 막대를 다시 시작하지 않게, 늘 지금의 함수를 부른다
+	const callbacks = useRef({ onStart, onLoadingComplete });
+	useEffect(() => {
+		callbacks.current = { onStart, onLoadingComplete };
+	}, [onStart, onLoadingComplete]);
 
 	// 로딩 화면이 화면을 덮었으니 배경화면을 보여도 된다 (index.html의 booting)
 	useEffect(() => {
@@ -31,6 +45,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 			if (!isInteractedRef.current) {
 				isInteractedRef.current = true;
 				setStarted(true);
+				callbacks.current.onStart?.();
 				audioRef.current = new Audio(`${mp3Url}/mac-startup.mp3`);
 
 				audioRef.current.play().catch((error) => {
@@ -51,8 +66,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 									easing: 'ease-out',
 									fill: 'forwards',
 								});
-								if (fade) fade.onfinish = onLoadingComplete;
-								else onLoadingComplete();
+								const done = () => callbacks.current.onLoadingComplete();
+								if (fade) fade.onfinish = done;
+								else done();
 							}, 0);
 							return 100;
 						}
@@ -63,13 +79,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadingComplete }) => {
 		};
 
 		document.addEventListener('click', startLoading);
+		// 스크립트를 받는 동안 첫 그림을 이미 눌렀으면 바로 시작한다 (public/theme-boot.js)
+		if (window.__macfolioTapped) startLoading();
 
 		return () => {
 			clearInterval(timerRef.current ?? undefined);
 			audioRef.current?.pause();
 			document.removeEventListener('click', startLoading);
 		};
-	}, [mp3Url, onLoadingComplete]);
+	}, [mp3Url]);
 
 	return (
 		<div ref={containerRef} className="loading-container">
