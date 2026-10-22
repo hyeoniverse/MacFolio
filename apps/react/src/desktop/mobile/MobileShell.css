@@ -127,6 +127,9 @@
 	text-align: left;
 	cursor: pointer;
 	isolation: isolate;
+	/* iPhone Safari는 흐리게 한 배경(::before, filter)을 따로 그려서 overflow·border-radius로 자르지 못한다 (꼭짓점이 각져 보인다).
+	   clip-path로 같은 둥근 모양을 한 번 더 자른다 */
+	clip-path: inset(0 round var(--radius-window));
 }
 
 /* 앨범 커버를 흐리게 깐 배경 */
