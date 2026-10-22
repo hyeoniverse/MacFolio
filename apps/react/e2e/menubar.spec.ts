@@ -305,6 +305,8 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 		await dockItem(page, 'mail').click();
 		const mail = appWindow(page, 'mail');
 		await expect(appName(page)).toHaveText('메일');
+		// 앱은 처음 열 때 받는다: 단축키는 메일이 그려진 뒤에 듣는다
+		await expect(mail.getByRole('region', { name: '받은 편지함' })).toBeVisible();
 		await page.keyboard.press('Alt+KeyN');
 		await expect(mail.getByRole('form', { name: '새로운 메시지' })).toBeVisible();
 

@@ -77,7 +77,8 @@ type Pending =
  */
 const DesktopIcons: React.FC = () => {
 	const { openApp, bringAppToFront } = useAppState();
-	const locations = useLocations();
+	// 첫 화면에 늘 있어서 블로그 글 묶음은 받지 않는다 (Finder 등이 받았으면 함께 쓴다)
+	const locations = useLocations({ posts: false });
 	const viewport = useViewport();
 	const layer = useRef<HTMLDivElement>(null);
 

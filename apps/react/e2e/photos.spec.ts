@@ -29,6 +29,8 @@ test.describe('사진 (#21)', () => {
 	test('보관함 = 앨범 사진의 합, 비디오는 영상만, 앨범을 고른다', async ({ page }) => {
 		const photos = await openPhotos(page);
 		const sidebar = photos.getByRole('complementary', { name: '사진 보관함' });
+		// 앱은 처음 열 때 받는다: 보관함이 그려질 때까지
+		await expect(sidebar.locator('.photos-place .photos-count').first()).toBeVisible();
 		const counts = (await sidebar.locator('.photos-place .photos-count').allTextContents()).map(Number);
 		const [all, videos, ...albums] = counts;
 		expect(albums.length).toBeGreaterThan(3);

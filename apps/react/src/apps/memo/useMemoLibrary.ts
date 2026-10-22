@@ -18,6 +18,8 @@ import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { fetchViews } from '@/shared/analytics/analytics';
 import { fetchPostCounts, type Likes, type PostCounts } from './likes/likesApi';
+// 글 원문 묶음은 메모 앱과 함께 받는다: 메모를 열면 목록이 비어 보이는 순간 없이 바로 채워지게 (첫 화면은 이 묶음을 받지 않는다)
+import '@/apps/memo/repository/contentFiles';
 
 /** 날짜 묶음·예약 공개의 기준이 되는 오늘 (YYYY-MM-DD) */
 const isoDate = (date: Date) =>

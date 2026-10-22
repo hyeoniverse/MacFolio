@@ -175,6 +175,53 @@ function publicImagesPlugin(): Plugin {
 }
 
 /**
+ * 첫 화면의 묶음을 미리 받기: main.tsx는 사이트 콘텐츠를 합친 뒤에야 boot.tsx를 import()로 부르므로, 브라우저는 main을 받아
+ * 실행하기 전까지 boot 묶음이 있는 줄 모른다. index.html에 boot와 그 묶음이 바로 쓰는 묶음·CSS를 미리 받기로 적어
+ * main과 함께 받게 한다 (실행 순서는 그대로). 빌드할 때만
+ */
+function bootPreloadPlugin(): Plugin {
+	return {
+		name: 'macfolio-boot-preload',
+		apply: 'build',
+		transformIndexHtml: {
+			order: 'post',
+			handler(html, ctx) {
+				const bundle = ctx.bundle;
+				// api-docs.html 같은 다른 페이지에는 넣지 않는다
+				if (!bundle || !ctx.filename.endsWith('/index.html')) return;
+				const chunks = Object.values(bundle).filter((item) => item.type === 'chunk');
+				const boot = chunks.find((chunk) => chunk.facadeModuleId?.endsWith('/src/boot.tsx'));
+				if (!boot) return;
+				const files = new Set<string>();
+				const css = new Set<string>();
+				const visit = (fileName: string) => {
+					if (files.has(fileName)) return;
+					files.add(fileName);
+					const chunk = chunks.find((item) => item.fileName === fileName);
+					chunk?.viteMetadata?.importedCss.forEach((file) => css.add(file));
+					chunk?.imports.forEach(visit);
+				};
+				visit(boot.fileName);
+				// main이 바로 쓰는 묶음은 Vite가 이미 적었다
+				const fresh = (file: string) => !html.includes(`href="/${file}"`);
+				return [
+					...[...files].filter(fresh).map((file) => ({
+						tag: 'link',
+						attrs: { rel: 'modulepreload', crossorigin: true, href: `/${file}` },
+						injectTo: 'head' as const,
+					})),
+					...[...css].filter(fresh).map((file) => ({
+						tag: 'link',
+						attrs: { rel: 'preload', as: 'style', href: `/${file}` },
+						injectTo: 'head' as const,
+					})),
+				];
+			},
+		},
+	};
+}
+
+/**
  * 지금 브랜치의 PR 미리보기 주소 (ci.yml의 preview 작업과 같은 별칭 규칙). main이거나 git을 읽지 못하면 null.
  * 브랜치에서 바꾼 /files/*(새 파일 종류, Range)는 배포한 사이트에 아직 없어서, 그 브랜치의 미리보기 Worker가 내줘야 한다
  */
@@ -204,7 +251,14 @@ const FILES_ORIGIN =
 	'https://macfolio.hyeoniverse.com';
 
 export default defineConfig({
-	plugins: [react(), securityHeadersPlugin(), publicImagesPlugin(), recentPostsPlugin(), seoPlugin()],
+	plugins: [
+		react(),
+		securityHeadersPlugin(),
+		publicImagesPlugin(),
+		recentPostsPlugin(),
+		seoPlugin(),
+		bootPreloadPlugin(),
+	],
 	// 단위 시험(Vitest)도 desktop-core의 src를 읽는다
 	ssr: { resolve: { conditions: ['source', ...defaultServerConditions] } },
 	// 로컬 개발(pnpm dev)에는 사이트 Worker가 없어 /files/*(R2 문서 파일)를 내줄 곳이 없다. main이 아닌 브랜치면 그 PR 미리보기로, main이면 배포한 사이트로 넘긴다.

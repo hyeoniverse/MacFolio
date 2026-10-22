@@ -13,6 +13,9 @@ import DesktopWidgets from '@/desktop/widgets/DesktopWidgets';
 import MobileShell from '@/desktop/mobile/MobileShell';
 import WallpaperVideo from '@/desktop/WallpaperVideo';
 import Notifications from '@/desktop/notifications/Notifications';
+// 창 틀·홈 인디케이터 같은 셸의 모양. 창(Window.tsx)은 앱이 처음 열릴 때 불러오지만(apps/registry.ts),
+// 홈 화면의 홈 인디케이터·앱 전환기도 이 CSS를 쓰므로 셸이 처음부터 싣는다
+import '@/desktop/window/Window.css';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 
 /**

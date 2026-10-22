@@ -7,6 +7,8 @@ async function openMemo(page: Page) {
 	await dockItem(page, 'memo').click();
 	const memo = appWindow(page, 'memo');
 	await expect(memo).toBeVisible();
+	// 앱 코드와 글 묶음은 처음 열 때 받는다: 목록이 채워질 때까지
+	await expect(memo.locator('.memo-item').first()).toBeVisible();
 	return memo;
 }
 
