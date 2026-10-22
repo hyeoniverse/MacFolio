@@ -199,18 +199,39 @@ export function withExtension<T extends DocItem | FileItem>(item: T): T {
 	return !extension || item.name.endsWith(extension) ? item : { ...item, name: `${item.name}${extension}` };
 }
 
+/** docs/ 안 폴더의 이름 (언어 폴더는 그 언어로). 없으면 폴더 이름 그대로 */
+const DOC_FOLDER_NAMES: Record<string, string> = { en: 'English' };
+
+const docItem = (path: string): DocItem => ({ kind: 'doc', id: `docs:${path}`, name: path.split('/').at(-1)!, path });
+
+/**
+ * 저장소 문서: 맨 위 문서와 docs/ 바로 아래 문서는 문서 폴더에 바로, docs/ 안 폴더(docs/en/ …)의 문서는 그 폴더로 묶는다.
+ * 같은 이름(deployment.md)이 한국어판과 영어판에 함께 있어도 섞이지 않게
+ */
+function repoDocItems(paths: string[]): FinderItem[] {
+	const loose: FinderItem[] = [];
+	const nested = new Map<string, DocItem[]>();
+	for (const path of paths) {
+		const dir = /^docs\/([^/]+)\//.exec(path)?.[1];
+		if (!dir) loose.push(docItem(path));
+		else nested.set(dir, [...(nested.get(dir) ?? []), docItem(path)]);
+	}
+	const folders = [...nested].map(([dir, docs]): FolderItem => ({
+		kind: 'folder',
+		id: `docs:docs/${dir}`,
+		name: DOC_FOLDER_NAMES[dir] ?? dir,
+		children: docs.sort(byName),
+	}));
+	return [...loose, ...folders];
+}
+
 function docsFolder(
 	paths: string[],
 	files: DocumentEntry[],
 	projects: FolderItem[] = [],
 	resume?: TreeInput['resume']
 ): FolderItem {
-	const docs: FinderItem[] = paths.map((path) => ({
-		kind: 'doc',
-		id: `docs:${path}`,
-		name: path.split('/').at(-1)!,
-		path,
-	}));
+	const docs = repoDocItems(paths);
 	const folders = DOCUMENT_FOLDERS.map((name): FolderItem => ({
 		kind: 'folder',
 		id: `docs:${name}`,

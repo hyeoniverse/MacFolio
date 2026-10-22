@@ -635,7 +635,8 @@ test.describe('모바일', () => {
 
 		// 검색은 위치 전체에서
 		await files.getByRole('searchbox', { name: '검색' }).fill('deploy');
-		await expect(files.getByRole('button', { name: /deployment\.md/ })).toBeVisible();
+		// 한국어판과 영어판(docs/en) 둘 다
+		await expect(files.getByRole('button', { name: /deployment\.md/ })).toHaveCount(2);
 	});
 
 	test('상태 표시줄 글자 색은 밑의 실제 화면을 따른다: 음악의 어두운 지금 재생 중 위에서는 흰 글자, 닫으면 검은 글자', async ({

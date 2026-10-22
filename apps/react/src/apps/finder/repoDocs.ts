@@ -36,8 +36,8 @@ export function resolveLink(from: string, href: string, docs: ReadonlySet<string
 	return { type: 'external', url: `${REPO_URL}/blob/main/${encodeURI(target)}${hash ? `#${hash}` : ''}` };
 }
 
-/** Finder에 묶어 두는 문서의 모양 (docsBundle.ts의 glob과 같다): README.md, CONTRIBUTING.md, docs/<이름>.md */
-const BUNDLED_DOC = /^(README\.md|CONTRIBUTING\.md|docs\/[^/]+\.md)$/;
+/** Finder에 묶어 두는 문서의 모양 (docsBundle.ts의 glob과 같다): README·CONTRIBUTING과 그 번역(README.en.md), docs/ 아래 모든 .md (그림 폴더는 빼고) */
+const BUNDLED_DOC = /^((README|CONTRIBUTING)[^/]*\.md|docs\/(?!images\/)(?:[^/]+\/)*[^/]+\.md)$/;
 
 /**
  * 글 안 링크가 GitHub의 저장소 문서(…/blob/main/docs/a.md)를 가리키면 그 문서 경로. 아니면 null.

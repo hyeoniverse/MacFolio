@@ -1,3 +1,5 @@
+**한국어** | [English](en/privacy.md)
+
 # 개인정보: 무엇을 모으고 얼마나 두나
 
 MacFolio(macfolio.hyeoniverse.com)가 방문자에 대해 서버에 남기는 것을 모두 적는다. 코드가 바뀌면 이 문서도 같이 바꾼다.

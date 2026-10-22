@@ -1,10 +1,16 @@
 // 빌드할 때 저장소 문서와 그 그림을 묶는다 (Vite import.meta.glob). Finder를 처음 열 때 함께 불러온다.
+// 경로 모양은 docPaths.ts의 glob, repoDocs.ts의 BUNDLED_DOC와 같아야 한다: 새 문서(번역, docs/ 아래 폴더)도 따로 적지 않아도 들어온다
 import { getResume } from '@/shared/site/resumeStore';
 import { repoPath } from './repoDocs';
 import { resumeLangOf } from './resumeModel';
 
 const sources = import.meta.glob<string>(
-	['../../../../../README.md', '../../../../../CONTRIBUTING.md', '../../../../../docs/*.md'],
+	[
+		'../../../../../README*.md',
+		'../../../../../CONTRIBUTING*.md',
+		'../../../../../docs/**/*.md',
+		'!../../../../../docs/images/**',
+	],
 	{ query: '?raw', import: 'default', eager: true }
 );
 

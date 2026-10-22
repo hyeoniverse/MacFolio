@@ -1,3 +1,5 @@
+**한국어** | [English](en/migration-cra-to-vite.md)
+
 # CRA → Vite 마이그레이션
 
 Create React App(CRA)으로 만든 프로젝트를 Vite로 옮겼다. dev 서버 시작은 약 8배, 프로덕션 빌드는 약 3배 빨라졌고, 설치되는 패키지 수는 1,438개에서 171개로 줄었다.

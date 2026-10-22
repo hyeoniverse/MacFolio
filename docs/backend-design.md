@@ -1,3 +1,5 @@
+**한국어** | [English](en/backend-design.md)
+
 # 백엔드 설계
 
 MacFolio API 서버(`apps/api`)의 구성과 설계 결정을 정리한 문서입니다. 배포 순서는 [deployment.md](deployment.md)에, 기술을 고른 이유는 [README](../README.md#백엔드)에 있습니다.
