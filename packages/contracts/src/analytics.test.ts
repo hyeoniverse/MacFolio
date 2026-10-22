@@ -3,9 +3,11 @@ import {
 	ADMIN_ONLY_BREAKDOWNS,
 	AppViews,
 	BREAKDOWNS,
+	cleanSearchTerm,
 	cleanUtm,
 	EventBatch,
 	MAX_EVENTS,
+	SearchKeywords,
 	splitUtmKey,
 	Summary,
 	Totals,
@@ -55,7 +57,7 @@ describe('이벤트 묶음 검사', () => {
 });
 
 describe('응답 모양', () => {
-	it('요약은 표 열여섯 개를 모두 가진다', () => {
+	it('요약은 표 열일곱 개를 모두 가진다', () => {
 		const totals = { visits: 1, visitors: 1, appOpens: 0, avgDurationSec: null };
 		expect(parse(Totals, totals)).toEqual({ value: totals });
 		const summary = {
@@ -68,6 +70,7 @@ describe('응답 모양', () => {
 			breakdown: {
 				referrerGroup: [{ key: '직접', value: 1 }],
 				referrer: [],
+				searchTerm: [],
 				source: [],
 				medium: [],
 				campaign: [],
@@ -89,6 +92,44 @@ describe('응답 모양', () => {
 		expect(parse(AppViews, { app: 'memo', views: { 'my-post': 3 } })).toEqual({
 			value: { app: 'memo', views: { 'my-post': 3 } },
 		});
+	});
+});
+
+describe('검색어', () => {
+	it('검색어는 공백을 하나로 줄이고 소문자로 100자까지 다듬는다 (utm과 달리 공백을 그대로 둔다)', () => {
+		expect(cleanSearchTerm('  MacFolio   포트폴리오 ')).toBe('macfolio 포트폴리오');
+		expect(cleanSearchTerm('   ')).toBeUndefined();
+		expect(cleanSearchTerm(null)).toBeUndefined();
+		expect(cleanSearchTerm('가'.repeat(150))).toHaveLength(100);
+	});
+
+	it('방문 이벤트는 다듬은 검색어를 받는다', () => {
+		const parsed = parse(EventBatch, {
+			visitId: 'v-1a2b3c4d',
+			events: [{ type: 'visit', referrer: 'search.naver.com', searchTerm: ' 김정현  포트폴리오' }],
+		});
+		expect(parsed).toEqual({
+			value: {
+				visitId: 'v-1a2b3c4d',
+				events: [{ type: 'visit', referrer: 'search.naver.com', searchTerm: '김정현 포트폴리오' }],
+			},
+		});
+		expect(
+			parse(EventBatch, { visitId: 'v-1a2b3c4d', events: [{ type: 'visit', searchTerm: 'x'.repeat(101) }] })
+		).toHaveProperty('errors');
+	});
+
+	it('Search Console 검색어 응답 모양', () => {
+		const keywords = {
+			configured: true,
+			from: '2026-10-01',
+			to: '2026-10-07',
+			syncedAt: '2026-10-08T00:00:00.000Z',
+			error: null,
+			latestDay: '2026-10-05',
+			rows: [{ query: 'macfolio', page: 'https://example.com/', clicks: 3, impressions: 40, position: 2.5 }],
+		};
+		expect(parse(SearchKeywords, keywords)).toEqual({ value: keywords });
 	});
 });
 

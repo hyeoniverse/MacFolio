@@ -3,6 +3,7 @@
 import { fileURLToPath } from 'node:url';
 import type { OciCredentials } from './resources/oci.js';
 import type { R2Credentials } from './documents/r2.js';
+import type { SearchConsoleCredentials } from './analytics/search-console.js';
 import { RATE_LIMIT_DEFAULTS, type RateLimitName } from './common/rate-limit.js';
 import { parseMonitorMode, type MonitorMode } from './resources/rules.js';
 
@@ -118,6 +119,11 @@ export interface AppConfig {
 	 * 없으면 목록은 그대로 보이고 올리기·지우기만 503
 	 */
 	documents: { r2?: R2Credentials };
+	/**
+	 * 검색어 (활동 상태 보기 → 검색어 탭, 관리자만): Google Search Console을 읽는 서비스 계정. 세 값이 다 있어야 켜진다.
+	 * 서비스 계정을 Search Console 속성의 사용자(제한된 권한)로 더해 둬야 한다 (docs/deployment.md)
+	 */
+	searchConsole?: SearchConsoleCredentials;
 	/** 공유 카드(GET /posts/<글>/og.png)의 글꼴·아이콘이 있는 폴더: 사이트의 public 폴더. 배포 이미지는 /app/og-assets (Dockerfile) */
 	ogAssetsDir: string;
 	/** 관리자 로그인. GitHub OAuth App 값이 없으면 로그인만 막히고 나머지는 동작한다 */
@@ -251,6 +257,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 						}
 					: undefined,
 		},
+		searchConsole:
+			env.GSC_SITE_URL && env.GSC_CLIENT_EMAIL && env.GSC_PRIVATE_KEY
+				? { siteUrl: env.GSC_SITE_URL, clientEmail: env.GSC_CLIENT_EMAIL, privateKey: env.GSC_PRIVATE_KEY }
+				: undefined,
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,
 			githubClientSecret: env.GITHUB_CLIENT_SECRET || undefined,

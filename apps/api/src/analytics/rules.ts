@@ -73,6 +73,21 @@ export const kstDay = (date: Date) => new Date(date.getTime() + 9 * 60 * 60 * 10
 export const shiftDay = (day: string, days: number) =>
 	new Date(Date.parse(`${day}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
 
+/** 조회 기간의 상한 (일) */
+export const MAX_RANGE_DAYS = 366;
+
+/**
+ * ?from=&to= 기간 (YYYY-MM-DD, 한국 시간). to가 없으면 오늘, from이 없으면 to의 6일 전.
+ * 1~366일이 아니면 null (from > to 포함)
+ */
+export function rangeOf(fromInput: unknown, toInput: unknown, today: string) {
+	const day = /^\d{4}-\d{2}-\d{2}$/;
+	const to = typeof toInput === 'string' && day.test(toInput) ? toInput : today;
+	const from = typeof fromInput === 'string' && day.test(fromInput) ? fromInput : shiftDay(to, -6);
+	const length = Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000) + 1;
+	return length >= 1 && length <= MAX_RANGE_DAYS ? { from, to, length } : null;
+}
+
 /** 같은 날 같은 사람(IP + 브라우저)이면 같은 값. 날이 바뀌면 달라진다 */
 export const dayHash = (day: string, ip: string, userAgent: string, secret: string) =>
 	createHmac('sha256', secret).update(`analytics:${day}:${ip}:${userAgent}`).digest('hex');
@@ -85,6 +100,7 @@ export interface StoredEvent {
 	app?: string | null;
 	item?: string | null;
 	referrer?: string | null;
+	searchTerm?: string | null;
 	utmSource?: string | null;
 	utmMedium?: string | null;
 	utmCampaign?: string | null;
@@ -105,11 +121,12 @@ export interface StatRow {
 }
 
 /**
- * 방문(visit)마다 세는 지표: 들어온 곳, utm, 나라, 기기 …
+ * 방문(visit)마다 세는 지표: 들어온 곳, 검색어(검색엔진이 넘겨줄 때만), utm, 나라, 기기 …
  * utm은 출처·매체·캠페인 조합(셋 다 비면 세지 않는다). term·content는 값이 많아 조합에 붙이지 않고 따로 센다 (#211)
  */
 const PER_VISIT = [
 	'referrer',
+	'searchTerm',
 	'source',
 	'medium',
 	'campaign',
@@ -143,6 +160,7 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 			add('visits', '');
 			const values: Record<(typeof PER_VISIT)[number], string | null | undefined> = {
 				referrer: event.referrer ?? '',
+				searchTerm: event.searchTerm,
 				source: event.utmSource,
 				medium: event.utmMedium,
 				campaign: event.utmCampaign,

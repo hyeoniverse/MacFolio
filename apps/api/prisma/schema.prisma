@@ -247,6 +247,8 @@ model AnalyticsEvent {
   /// 검색어·광고 문구 (utm_term)와 같은 링크의 자리 구분 (utm_content). 조합 표에 붙이지 않고 따로 센다
   utmTerm     String?
   utmContent  String?
+  /// 검색엔진이 들어온 주소에 실어 보낸 검색어 (네이버 등, 보낼 때만). 구글·빙은 보내지 않아 Search Console(SearchQueryStat)로 본다
+  searchTerm  String?
   /// CF-IPCountry (예: KR)
   country     String?
   /// desktop, mobile (화면 폭)
@@ -267,13 +269,30 @@ model AnalyticsEvent {
 /// 날마다 모은 분석 숫자 (#102). 이벤트를 지운 뒤에도 계속 남는다. (날짜, 지표, 키)마다 한 행
 model DailyStat {
   day    String
-  /// visits, visitors, appOpens, durationSec, durationVisits, referrer, source, campaign, app, item, link, country, device, browser, os, language
+  /// visits, visitors, appOpens, durationSec, durationVisits, referrer, searchTerm, source, campaign, app, item, link, country, device, browser, os, language
   metric String
   /// 지표 안의 이름 (예: referrer의 github.com). 합계 지표는 빈 문자열
   key    String
   value  Int
 
   @@id([day, metric, key])
+}
+
+/// Google Search Console의 검색어 (날짜, 검색어, 페이지마다 클릭·노출·평균 순위). 서버가 날마다 가져와 덮어쓴다.
+/// 사람을 가리는 값이 없는 합계라 계속 둔다 (Search Console은 드문 검색어를 빼고 준다)
+model SearchQueryStat {
+  /// Search Console의 날짜 (태평양 시간, YYYY-MM-DD)
+  day         String
+  query       String
+  /// 검색 결과에 나온 페이지 주소
+  page        String
+  clicks      Int
+  impressions Int
+  /// 그날 노출의 평균 순위 (1이 맨 위)
+  position    Float
+
+  @@id([day, query, page])
+  @@index([day])
 }
 
 /// 사진 앱의 캡션 (#21). 사진은 프로젝트 정보에서 꺼내므로 원래 캡션은 코드에 있고, 관리자가 고친 것만 사진 주소로 덮는다

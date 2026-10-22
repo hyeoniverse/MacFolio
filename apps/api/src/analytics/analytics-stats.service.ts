@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsRollup } from './analytics-rollup.service.js';
-import { aggregate, kstDay, referrerGroup, shiftDay, type StatRow } from './rules.js';
+import { aggregate, kstDay, MAX_RANGE_DAYS, rangeOf, referrerGroup, shiftDay, type StatRow } from './rules.js';
 import {
 	ADMIN_ONLY_BREAKDOWNS,
 	APP_NAME,
@@ -22,8 +22,6 @@ export type LiveVisit = ContractLiveVisit;
 
 /** "오늘 방문자"를 다시 세는 간격 */
 const TODAY_CACHE_MS = 60_000;
-/** 요약 기간의 상한 */
-const MAX_RANGE_DAYS = 366;
 /** 방문자용 요약과 조회수를 다시 계산하는 간격 (누구나 부르는 경로라 DB를 매번 읽지 않는다) */
 const PUBLIC_CACHE_MS = 60_000;
 
@@ -93,12 +91,9 @@ export class AnalyticsStats {
 		if (utmInput !== undefined && (typeof utmInput !== 'string' || !utmInput || utmInput.length > UTM_FILTER_MAX))
 			throw new BadRequestException(`utm은 ${UTM_FILTER_MAX}자 이하의 조합 키입니다.`);
 		const today = kstDay(now);
-		const day = /^\d{4}-\d{2}-\d{2}$/;
-		const to = typeof toInput === 'string' && day.test(toInput) ? toInput : today;
-		const from = typeof fromInput === 'string' && day.test(fromInput) ? fromInput : shiftDay(to, -6);
-		const length = Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000) + 1;
-		if (!(length >= 1 && length <= MAX_RANGE_DAYS))
-			throw new BadRequestException(`기간은 1~${MAX_RANGE_DAYS}일입니다 (from ≤ to).`);
+		const range = rangeOf(fromInput, toInput, today);
+		if (!range) throw new BadRequestException(`기간은 1~${MAX_RANGE_DAYS}일입니다 (from ≤ to).`);
+		const { from, to, length } = range;
 		if (admin) return this.computeSummary(from, to, length, today, 'admin', now, utmInput);
 		return this.cached(`summary:${from}:${to}`, now, () => this.computeSummary(from, to, length, today, 'public', now));
 	}

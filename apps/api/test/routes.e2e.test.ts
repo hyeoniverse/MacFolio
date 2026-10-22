@@ -134,6 +134,8 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'GET /analytics/summary': 'public',
 	'GET /analytics/views': 'public',
 	'GET /analytics/live': 'admin',
+	'GET /analytics/search': 'admin',
+	'POST /analytics/search/sync': 'admin',
 
 	'GET /resources': 'admin',
 
@@ -302,6 +304,8 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 		// 몸통 없이 동작하는 쓰기 경로와, 파일 업로드가 아닌 몸통이 필요 없는 경로는 뺀다
 		const noBody = new Set([
 			'POST /auth/logout',
+			// Search Console에서 지금 가져온다 (기간은 쿼리)
+			'POST /analytics/search/sync',
 			// 저장한 프로필을 지운다 (코드의 기본값으로)
 			'DELETE /site/profile',
 			'DELETE /site/projects',
