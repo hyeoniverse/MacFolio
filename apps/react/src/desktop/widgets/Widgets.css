@@ -531,18 +531,31 @@
 }
 
 .widget-photo-body img,
-.widget-photo-body video {
+.widget-photo-body video,
+.widget-photo-frame {
 	display: block;
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-/* 영상의 소리 켜기·끄기 (오른쪽 위, 기본은 꺼짐): 영상 위에 뜬 작은 유리 단추, 가까이 가면 또렷해진다 */
-.widget-photo-sound {
+/* 일시 정지로 멈춘 GIF의 장면 (그림 위에 그대로 덮는다) */
+.widget-photo-frame {
 	position: absolute;
-	top: var(--space-8);
-	right: var(--space-8);
+	inset: 0;
+}
+
+/* 오른쪽 아래의 일시 정지·소리 단추 (늘 같은 자리) */
+.widget-photo-controls {
+	position: absolute;
+	right: var(--space-10);
+	bottom: var(--space-10);
+	display: flex;
+	gap: var(--space-6);
+}
+
+/* 사진 위에 뜬 작은 유리 단추, 가까이 가면 또렷해진다 */
+.widget-photo-control {
 	display: grid;
 	width: 22px;
 	height: 22px;
@@ -570,8 +583,8 @@
 	transition: opacity var(--duration-fast) var(--ease-out);
 }
 
-.widget-photo-sound:hover,
-.widget-photo-sound:focus-visible {
+.widget-photo-control:hover,
+.widget-photo-control:focus-visible {
 	opacity: 1;
 }
 

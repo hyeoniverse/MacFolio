@@ -128,6 +128,12 @@ test.describe('바탕화면 위젯', () => {
 		await expect(page.getByRole('menuitemcheckbox', { name: '모든 앨범' })).toHaveAttribute('aria-checked', 'true');
 		await page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' }).click();
 		await expect(photos.locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
+		// 소리 단추는 그림일 때도 늘 같은 자리(오른쪽 아래)에 있다
+		const sound = photos.getByRole('button', { name: '소리 켜기' });
+		await expect(sound).toBeVisible();
+		const [widgetBox, soundBox] = [(await photos.boundingBox())!, (await sound.boundingBox())!];
+		expect(soundBox.x).toBeGreaterThan(widgetBox.x + widgetBox.width / 2);
+		expect(soundBox.y).toBeGreaterThan(widgetBox.y + widgetBox.height / 2);
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'sproutfarm' });
 	});
 
@@ -197,6 +203,33 @@ test.describe('바탕화면 위젯', () => {
 		await photos.getByRole('button', { name: '소리 켜기' }).click();
 		expect(await video.evaluate((el: HTMLVideoElement) => el.muted)).toBe(false);
 		await expect(photos.getByRole('button', { name: '소리 끄기' })).toHaveAttribute('aria-pressed', 'true');
+		// 일시 정지하면 영상이 멈추고, 재생하면 다시 돈다
+		await photos.getByRole('button', { name: '일시 정지' }).click();
+		expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+		await photos.getByRole('button', { name: '재생' }).click();
+		await expect(photos.getByRole('button', { name: '일시 정지' })).toBeVisible();
+	});
+
+	test('사진 위젯의 GIF는 일시 정지하면 지금 장면에서 멈춘다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.finderLayout = { folders: [], files: {}, aliases: null };
+		await fakeFiles(page, [{ id: 'g1', folder: '그림', name: '움짤.gif', key: 'pictures/loop.gif', kind: 'image' }]);
+		await page.addInitScript(() =>
+			localStorage.setItem(
+				'macfolio:desktop:widgets',
+				JSON.stringify([{ id: 'photos', kind: 'photos', size: 'small', col: 3, row: 0, album: 'pictures' }])
+			)
+		);
+		await enterDesktop(page);
+		await closeSafari(page);
+		const photos = widget(page, '사진');
+		await expect(photos.locator('img')).toHaveAttribute('src', '/files/pictures/loop.gif');
+		await expect(photos.locator('canvas')).toHaveCount(0);
+		await photos.getByRole('button', { name: '일시 정지' }).click();
+		// 멈춘 장면을 그린 캔버스가 그림 위를 덮는다
+		await expect(photos.locator('canvas.widget-photo-frame')).toBeVisible();
+		await photos.getByRole('button', { name: '재생' }).click();
+		await expect(photos.locator('canvas')).toHaveCount(0);
 	});
 
 	test('위젯 편집: 바탕화면 메뉴에서 갤러리를 열어 더하고, 지우기 단추로 빼고, 완료나 Esc로 닫는다', async ({
