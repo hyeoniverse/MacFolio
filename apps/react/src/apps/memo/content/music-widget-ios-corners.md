@@ -72,7 +72,7 @@ summary: 휴대폰 홈 화면의 음악 위젯만 실제 아이폰 Safari에서 
 
 ## 관련 글
 
-- [같은 Safari, 다른 화면 - macOS와 iOS, 브라우저마다 다르게 그리는 곳](/memo/safari-macos-ios-rendering)
+- [같은 Safari, 다른 화면 — macOS와 iOS, 브라우저마다 다르게 그리는 곳](/memo/safari-macos-ios-rendering)
 - [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets)
 - [휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style)
 
