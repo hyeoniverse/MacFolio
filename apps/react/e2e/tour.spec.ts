@@ -76,6 +76,33 @@ test.describe('처음 방문 둘러보기 (팁)', () => {
 		await expect(appWindow(page, 'memo')).toBeVisible();
 	});
 
+	test('팁 앱: 위쪽 막대의 빈 곳을 끌면 창이 움직이고, 두 번 누르면 커진다. 막대의 단추는 그대로 눌린다', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		await page.locator('.dock').getByRole('button', { name: 'launchpad', exact: true }).click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'tips', exact: true }).click();
+		const tips = appWindow(page, 'tips');
+		await expect(tips.getByRole('heading', { level: 1 })).toBeVisible();
+		// 막대 가운데의 빈 곳 (전에는 막대가 제목 표시줄을 덮어 끌리지 않았다)
+		const bar = (await tips.locator('.tips-bar').boundingBox())!;
+		const before = (await tips.boundingBox())!;
+		await page.mouse.move(bar.x + bar.width / 2, bar.y + bar.height / 2);
+		await page.mouse.down();
+		await page.mouse.move(bar.x + bar.width / 2 + 120, bar.y + bar.height / 2 + 60, { steps: 6 });
+		await page.mouse.up();
+		await expect.poll(async () => Math.round((await tips.boundingBox())!.x - before.x)).toBe(120);
+
+		const moved = (await tips.locator('.tips-bar').boundingBox())!;
+		await page.mouse.dblclick(moved.x + moved.width / 2, moved.y + moved.height / 2);
+		await expect.poll(async () => (await tips.boundingBox())!.width).toBeGreaterThan(before.width);
+
+		// 단추는 여전히 막대 위에서 눌린다
+		await tips.getByRole('button', { name: /블로그 읽는 법/ }).click();
+		await tips.getByRole('button', { name: '홈' }).click();
+		await expect(tips.getByRole('heading', { level: 1 })).toHaveText(/도움이 필요하세요/);
+	});
+
 	test('팁 앱의 사용 설명서: 모두 보기로 모든 앱의 설명서를 보고, 하나를 연다', async ({ page }) => {
 		await enterDesktop(page);
 		await page.locator('.dock').getByRole('button', { name: 'launchpad', exact: true }).click();
