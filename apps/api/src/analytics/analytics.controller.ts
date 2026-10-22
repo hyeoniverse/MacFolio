@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Header, HttpCode, Post, Query, Req, UseGuards } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -35,6 +35,8 @@ export class AnalyticsController {
 	@Post('events')
 	@RateLimit('events')
 	@HttpCode(204)
+	// Safari는 sendBeacon(no-cors) 응답에도 CORP를 따져서, helmet 기본값(same-origin)이면 다른 주소의 사이트가 보낸 것을 취소한다
+	@Header('Cross-Origin-Resource-Policy', 'cross-origin')
 	@ApiConsumes('text/plain', 'application/json')
 	@ApiBody({
 		schema: {
