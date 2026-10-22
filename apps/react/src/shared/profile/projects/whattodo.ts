@@ -152,7 +152,7 @@ export const WHATTODO: Project = {
 	icon: projectImage('whattodo', 'icon.png'),
 	app: {
 		label: 'WTD',
-		icon: 'projects/whattodo/app-icon.png',
+		icon: 'projects/whattodo/app-icon.webp',
 		barColor: '#3b82f6',
 		windowSize: { width: 1080, height: 700 },
 	},

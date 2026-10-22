@@ -952,8 +952,18 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(placeholder.locator('strong')).toHaveText('쓰다 만 제목');
 
 		// 본문 없이 다른 글로 옮겨 가면 접히며 사라진다 (저장하지 않는다)
+		// 접히는 것은 0.28초뿐이라, 글 원문을 받느라 바쁜 CI에서는 그 사이를 놓친다. 붙었던 적이 있는지를 지켜본다
+		await page.evaluate(() => {
+			const seen = new MutationObserver(() => {
+				if (document.querySelector('.memo-new-item.leaving')) {
+					document.documentElement.dataset.sawLeaving = '1';
+					seen.disconnect();
+				}
+			});
+			seen.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+		});
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).click();
-		await expect(placeholder).toHaveClass(/leaving/);
+		await expect(page.locator('html')).toHaveAttribute('data-saw-leaving', '1');
 		await expect(placeholder).toHaveCount(0);
 		expect(api.posts).toEqual([]);
 	});

@@ -29,7 +29,8 @@
 			 * 글자가 비치지 않게 숨기고, 화면 읽기 프로그램에는 남긴다. 앱이 그리기 시작하면 React가 #root 안을 바꾼다
 			 */
 			/*
-			 * 첫 그림 (#boot-splash): 스크립트를 받는 동안에도 로딩 화면과 같은 자리에 사과와 진행 막대 자리를 바로 그린다.
+			 * 첫 그림 (#boot-splash): 스크립트를 받는 동안에도 로딩 화면과 같은 자리에 사과·시작 안내·진행 막대를 바로 그린다.
+			 * 스크립트가 오기 전에 누르면 theme-boot.js가 적어 두고, 로딩 화면이 뜨자마자 시작한다.
 			 * 예전에는 스크립트(첫 묶음)를 다 받고 React가 그릴 때까지 검은 화면이라, 느린 휴대폰에서 첫 그림이 5초 넘게 늦었다.
 			 * 앱이 처음 그리면(App.tsx) 지운다. 크기·자리는 desktop/loading/LoadingScreen.css와 같다
 			 */
@@ -54,10 +55,30 @@
 
 			#boot-splash p {
 				margin: 1rem;
-				visibility: hidden;
+				color: #fff;
+				font:
+					1rem -apple-system,
+					'Apple SD Gothic Neo',
+					'Malgun Gothic',
+					sans-serif;
 			}
 
-			#boot-splash span {
+			/* 안내는 로딩 화면처럼 휴대폰은 탭, 데스크톱은 클릭 (desktop/layout.ts의 isMobileViewport와 같은 조건) */
+			#boot-splash .tap {
+				display: none;
+			}
+
+			@media (max-width: 767px), (max-width: 1023px) and (max-height: 499px) {
+				#boot-splash .tap {
+					display: inline;
+				}
+
+				#boot-splash .click {
+					display: none;
+				}
+			}
+
+			#boot-splash .track {
 				width: 11rem;
 				height: 0.5rem;
 				border-radius: 0.5rem;
@@ -86,8 +107,8 @@
 					d="M319.1 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7-55.8 .9-115.1 44.5-115.1 133.2 0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zM262.5 104.5c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"
 				/>
 			</svg>
-			<p>&nbsp;</p>
-			<span></span>
+			<p><span class="tap">탭</span><span class="click">클릭</span>하여 로딩을 시작하세요</p>
+			<div class="track"></div>
 		</div>
 		<div id="root"></div>
 		<script type="module" src="/src/main.tsx"></script>

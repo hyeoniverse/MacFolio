@@ -7,6 +7,7 @@ import { settingsStore } from '@/shared/settings/settingsStore';
 import { fetchTodayVisitors, openExternal } from '@/shared/analytics/analytics';
 import { useOpenDocument } from '@/apps/textedit/openDocument';
 import { openAbout } from '@/desktop/about/aboutStore';
+import AppleLogo from '@/shared/ui/AppleLogo';
 
 /**
  * 메뉴 막대의 Apple 메뉴. 이 Mac에 관하여(만든 사람의 프로필), 오늘 방문자 수, 시스템 설정, 다크 모드, 사이트 바로가기(API 문서, 저장소, 개인정보 처리 방침),
@@ -76,7 +77,8 @@ const AppleMenu = () => {
 					setAnchor(anchor ? null : { x: rect.left, y: rect.bottom + 3 });
 				}}
 			>
-				<i className="fa-brands fa-apple" aria-hidden="true" />
+				{/* 글꼴(Font Awesome brands, 113KB) 대신 SVG: 메뉴 막대는 첫 화면에 늘 있다 */}
+				<AppleLogo />
 			</button>
 			{anchor && (
 				<Menu label="Apple 메뉴" anchor={anchor} items={items} trigger={button} onClose={() => setAnchor(null)} />

@@ -149,7 +149,7 @@ export const NEWPICK: Project = {
 	icon: projectImage('newpick', 'icon.svg'),
 	app: {
 		label: 'NewPick',
-		icon: 'projects/newpick/app-icon.png',
+		icon: 'projects/newpick/app-icon.webp',
 		barColor: '#ffffff',
 		windowSize: { width: 1080, height: 700 },
 	},

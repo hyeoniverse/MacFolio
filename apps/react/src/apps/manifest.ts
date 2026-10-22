@@ -84,19 +84,19 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 	// 사이트의 문서·프로젝트·블로그 글·앱을 파일처럼 둘러본다. 휴대폰에서는 iOS처럼 '파일'
 	finder: {
 		label: 'Finder',
-		icon: 'finder.png',
+		icon: 'finder.webp',
 		inDock: true,
 		alwaysRunning: true,
 		mobile: { label: '파일', icon: 'files.svg' },
 		windowSize: { width: 820, height: 520 },
 	},
-	music: { label: '음악', icon: 'music.png', inDock: true, windowSize: { width: 960, height: 600 } },
-	safari: { label: 'Safari', icon: 'safari.png', inDock: true, runningAtStart: true },
-	photos: { label: '사진', icon: 'photos.png', inDock: true, windowSize: { width: 980, height: 640 } },
-	messages: { label: '메시지', icon: 'messages.png', inDock: true, windowSize: { width: 860, height: 560 } },
-	memo: { label: '메모', icon: 'memo.png', inDock: true, windowSize: { width: 900, height: 600 } },
-	github: { label: 'GitHub', icon: 'github.png', inDock: true },
-	mail: { label: '메일', icon: 'mail.png', inDock: true, windowSize: { width: 900, height: 560 } },
+	music: { label: '음악', icon: 'music.webp', inDock: true, windowSize: { width: 960, height: 600 } },
+	safari: { label: 'Safari', icon: 'safari.webp', inDock: true, runningAtStart: true },
+	photos: { label: '사진', icon: 'photos.webp', inDock: true, windowSize: { width: 980, height: 640 } },
+	messages: { label: '메시지', icon: 'messages.webp', inDock: true, windowSize: { width: 860, height: 560 } },
+	memo: { label: '메모', icon: 'memo.webp', inDock: true, windowSize: { width: 900, height: 600 } },
+	github: { label: 'GitHub', icon: 'github.webp', inDock: true },
+	mail: { label: '메일', icon: 'mail.webp', inDock: true, windowSize: { width: 900, height: 560 } },
 	share: { label: '공유', icon: 'share.svg', inDock: true, action: { type: 'share' } },
 	// 휴대폰 키보드로 명령어를 치기는 불편해서, 모바일에서는 같은 명령을 눌러서 실행하는 '단축어'로 보여준다
 	terminal: {
@@ -109,7 +109,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 	// 사이드바와 패널이 함께 들어가는 크기보다 작게 줄이지 않는다 (macOS 시스템 설정처럼)
 	settings: {
 		label: '시스템 설정',
-		icon: 'settings.png',
+		icon: 'settings.webp',
 		inDock: true,
 		windowSize: { width: 780, height: 540 },
 		minSize: { width: 680, height: 420 },
@@ -180,7 +180,7 @@ const BUILTIN_MANIFEST: Record<BuiltinAppName, AppManifest> = {
 		minSize: { width: 360, height: 240 },
 	},
 	// 이 사이트에서 버린 기능과, 관리자에게는 지운 메모. Dock 오른쪽 끝에 따로 있고 휴대폰 홈 화면에는 두지 않는다
-	bin: { label: '휴지통', icon: 'bin.png', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },
+	bin: { label: '휴지통', icon: 'bin.webp', inDock: false, desktopOnly: true, windowSize: { width: 860, height: 540 } },
 };
 
 /**

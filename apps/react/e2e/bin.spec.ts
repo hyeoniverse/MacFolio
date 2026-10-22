@@ -14,7 +14,7 @@ test.describe('휴지통', () => {
 		await enterDesktop(page);
 		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 		// 남긴 것이 있으면 Dock의 휴지통에 종이가 담겨 있다
-		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin\.png$/);
+		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin\.webp$/);
 		await dockItem(page, 'bin').click();
 		const bin = appWindow(page, 'bin');
 		const list = bin.getByRole('list', { name: '내 브라우저 데이터' });
@@ -40,7 +40,7 @@ test.describe('휴지통', () => {
 		await expect(bin.locator('.bin-browser img')).toHaveCount(0);
 		await expect(bin.getByRole('button', { name: '휴지통 비우기' })).toBeDisabled();
 		await expect(bin.locator('.bin-statusbar')).toHaveText('0개의 항목');
-		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin-empty\.png$/);
+		await expect(dockItem(page, 'bin').locator('img')).toHaveAttribute('src', /\/bin-empty\.webp$/);
 		expect(await page.evaluate(() => localStorage.getItem('macfolio:memo:recent-finds'))).toBeNull();
 		// 사이트가 지울 수 없는 쿠키 안내는 비어 있어도 아래 안내에 짧게 남는다
 		await expect(bin.locator('.bin-files-note')).toContainText('macfolio_visitor');
@@ -49,12 +49,12 @@ test.describe('휴지통', () => {
 	test('처음 온 브라우저는 Dock의 휴지통이 비어 있고, 설정을 바꾸면 종이가 담긴다', async ({ page }) => {
 		await enterDesktop(page);
 		const icon = dockItem(page, 'bin').locator('img');
-		await expect(icon).toHaveAttribute('src', /\/bin-empty\.png$/);
+		await expect(icon).toHaveAttribute('src', /\/bin-empty\.webp$/);
 		await dockItem(page, 'settings').click();
 		const settings = appWindow(page, 'settings');
 		await settings.getByRole('button', { name: '화면 모드' }).click();
 		await settings.getByRole('radio', { name: '다크' }).click();
-		await expect(icon).toHaveAttribute('src', /\/bin\.png$/);
+		await expect(icon).toHaveAttribute('src', /\/bin\.webp$/);
 	});
 
 	test('개인정보 문서를 누르면 Finder가 그 문서를 연다', async ({ page }) => {

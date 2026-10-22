@@ -2,6 +2,32 @@ import type { Page } from '@playwright/test';
 import { test, expect, enterDesktop, dockItem, appWindow, zIndexOf, desktopPoint } from './fixtures';
 
 test.describe('데스크톱', () => {
+	test('로딩 화면을 누르기 전에는 바탕화면을 그리지 않는다 (가려진 화면을 미리 그리지 않는다)', async ({ page }) => {
+		await page.goto('/');
+		const loading = page.locator('.loading-container');
+		await expect(loading).toContainText('클릭하여');
+		await expect(page.locator('.dock')).toHaveCount(0);
+		await loading.click();
+		await expect(page.locator('.dock')).toBeVisible();
+		await expect(loading).toBeHidden({ timeout: 20_000 });
+	});
+
+	test('스크립트를 받는 동안 첫 그림을 눌러도, 로딩 화면이 뜨자마자 시작한다 (두 번 누르지 않는다)', async ({
+		page,
+	}) => {
+		await page.route('**/assets/main-*.js', async (route) => {
+			await new Promise((resolve) => setTimeout(resolve, 1500));
+			await route.continue();
+		});
+		await page.goto('/', { waitUntil: 'commit' });
+		const splash = page.locator('#boot-splash');
+		await expect(splash).toContainText('클릭하여 로딩을 시작하세요');
+		await splash.click();
+		// 다시 누르지 않아도 진행 막대가 차고 바탕화면이 뜬다
+		await expect(page.locator('.loading-container')).toBeHidden({ timeout: 20_000 });
+		await expect(page.locator('.dock')).toBeVisible();
+	});
+
 	test('메뉴 막대의 시간이 바뀌어도 옆의 아이콘은 움직이지 않는다', async ({ page }) => {
 		// 가장 짧은 시간(1:11 AM)과 가장 긴 시간(12:00 PM). 시계는 1초마다 Date를 다시 읽는다
 		await page.clock.setFixedTime(new Date(2026, 9, 3, 1, 11));

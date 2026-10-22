@@ -660,7 +660,7 @@ export const HYEONIVERSE: Project = {
 	icon: projectImage('hyeoniverse', 'icon.svg'),
 	app: {
 		label: 'HYEONIVERSE',
-		icon: 'projects/hyeoniverse/app-icon.png',
+		icon: 'projects/hyeoniverse/app-icon.webp',
 		barColor: '#f8f6f0',
 		windowSize: { width: 1080, height: 700 },
 	},
