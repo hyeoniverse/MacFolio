@@ -125,6 +125,10 @@ test.describe('프로젝트 관리', () => {
 		await expect(live.getByRole('tab', { name: /DevCourse/ })).toHaveCount(0);
 		// 사진 앨범이 바뀌었으니(DevCourse를 숨김) 새로고침을 권한다. 새로고침해도 그대로
 		await settings.getByRole('button', { name: '지금 새로고침' }).click();
+		// 새로고침하면 로딩 화면부터: 눌러야 바탕화면을 그린다
+		const loading = page.locator('.loading-container');
+		await loading.click();
+		await expect(loading).toBeHidden({ timeout: 20_000 });
 		await expect(appWindow(page, 'safari').getByRole('tab').first()).toContainText('맥폴리오');
 		await expect(appWindow(page, 'safari').getByRole('tab', { name: /DevCourse/ })).toHaveCount(0);
 	});
