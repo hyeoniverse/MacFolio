@@ -753,16 +753,15 @@
 }
 
 /* ─── 명언 ─── */
-/* 판 전체가 단추: 누르면 다음 말. 큰 따옴표를 왼쪽 위에, 말한 사람은 아래 */
+/* 빈 곳을 누르면 다른 말 (오른쪽 위 단추도). 큰 따옴표를 왼쪽 위에, 말한 사람은 아래 */
 .widget-quote-body {
 	display: flex;
 	flex: 1;
 	flex-direction: column;
 	min-height: 0;
+	position: relative;
 	margin: calc(-1 * var(--space-14));
 	padding: var(--space-14);
-	border: none;
-	background: transparent;
 	text-align: left;
 	cursor: pointer;
 	/* 높이에 맞춰 줄 수를 고른다: 휴대폰의 위젯 줄은 바탕화면보다 낮다 */
@@ -778,13 +777,30 @@
 	color: var(--widget-accent);
 }
 
+.widget-quote-next {
+	position: absolute;
+	top: var(--space-10);
+	right: var(--space-10);
+	width: 24px;
+	height: 24px;
+	background-color: var(--widget-fill);
+	color: var(--widget-secondary-label);
+	font-size: var(--text-caption);
+	opacity: 0.6;
+}
+
+.widget-quote-next:hover,
+.widget-quote-next:focus-visible {
+	opacity: 1;
+}
+
 .widget-quote-text {
 	display: flex;
 	flex: 1;
 	flex-direction: column;
 	gap: var(--space-4);
 	min-height: 0;
-	margin-top: var(--space-8);
+	margin: var(--space-8) 0 0;
 	overflow: hidden;
 }
 
@@ -826,8 +842,10 @@
 		display: none;
 	}
 
+	/* 따옴표 자리가 없으니 오른쪽 위 단추 밑으로 글이 들어가지 않게 비운다 */
 	.widget-quote-text {
 		margin-top: 0;
+		padding-right: var(--space-24);
 	}
 
 	.widget-quote-text q,

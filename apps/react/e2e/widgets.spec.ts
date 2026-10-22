@@ -164,7 +164,9 @@ test.describe('바탕화면 위젯', () => {
 		expect(mobile.flat().find((item: { id: string }) => item.id === 'photos')).toMatchObject({ album: 'sproutfarm' });
 	});
 
-	test('명언 위젯: 개발에 관한 말과 말한 사람. 누르면 다른 말, 앱은 열지 않는다', async ({ page }) => {
+	test('명언 위젯: 말과 말한 사람. 빈 곳이나 단추를 누르면 다른 말, 앱은 열지 않고, 다른 위젯처럼 끌어 옮긴다', async ({
+		page,
+	}) => {
 		await enterDesktop(page);
 		await closeSafari(page);
 		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
@@ -178,11 +180,32 @@ test.describe('바탕화면 위젯', () => {
 		await expect(quote.locator('q')).not.toBeEmpty();
 		await expect(quote.locator('.widget-quote-ko')).not.toBeEmpty();
 		await expect(quote.locator('.widget-quote-author')).toHaveText(/^— /);
+		// 빈 곳을 누르면 다른 말 (앱은 열지 않는다)
 		const first = await quote.locator('q').textContent();
-		await quote.getByRole('button').click();
+		await quote.locator('.widget-quote-author').click();
 		await expect(quote.locator('q')).not.toHaveText(first!);
 		await expect(page.locator('[data-app]:visible')).toHaveCount(0);
-		expect((await saved(page))?.find((item) => item.kind === 'quote')).toMatchObject({ size: 'medium' });
+		// 키보드로는 단추로
+		const second = await quote.locator('q').textContent();
+		await quote.getByRole('button', { name: '다른 말 보기' }).focus();
+		await page.keyboard.press('Enter');
+		await expect(quote.locator('q')).not.toHaveText(second!);
+
+		// 다른 위젯처럼 끌어 옮긴다 (판 전체가 단추이면 끌기가 시작되지 않는다)
+		const box = (await quote.boundingBox())!;
+		const placed = (await saved(page))?.find((item) => item.kind === 'quote');
+		expect(placed).toMatchObject({ size: 'medium' });
+		await page.mouse.move(box.x + 60, box.y + box.height - 20);
+		await page.mouse.down();
+		await page.mouse.move(box.x + 60, box.y + box.height - 20 + 180, { steps: 10 });
+		await page.mouse.up();
+		await expect
+			.poll(async () => (await saved(page))?.find((item) => item.kind === 'quote')?.row)
+			.toBe(placed!.row + 1);
+		// 끈 뒤에는 말이 바뀌지 않는다
+		const third = await quote.locator('q').textContent();
+		await page.waitForTimeout(200);
+		await expect(quote.locator('q')).toHaveText(third!);
 	});
 
 	test('사진 위젯은 Finder › 그림에 만든 폴더의 그림도 보여 준다', async ({ page }) => {
