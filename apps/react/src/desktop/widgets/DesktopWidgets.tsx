@@ -4,12 +4,10 @@ import type { AppName } from '@/apps/manifest';
 import { useAppState } from '@/desktop/useAppState';
 import { cssVars } from '@/shared/lib/cssVars';
 import { prefersReducedMotion } from '@/shared/lib/media';
-import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
+import { STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
-	DEFAULT_DESKTOP_WIDGETS,
 	newWidgetId,
-	parseWidgets,
 	POSTS_MODE_LABEL,
 	POSTS_MODES,
 	SIZE_LABEL,
@@ -17,8 +15,11 @@ import {
 	type PlacedWidget,
 	type PostsMode,
 	type WidgetKind,
+	type WidgetOptions,
 	type WidgetSize,
+	withOptions,
 } from './catalog';
+import { loadDesktopWidgets, shareOptions } from './sharedOptions';
 import { cellToPoint, dropAt, firstFree, pixelSize, resize, visibleLayout, type Point, type Viewport } from './layout';
 import Widget from './Widget';
 import WidgetGallery from './WidgetGallery';
@@ -41,8 +42,6 @@ function useViewport(): Viewport {
 	return viewport;
 }
 
-const loadWidgets = () => parseWidgets(readJson(STORAGE_KEYS.desktopWidgets)) ?? DEFAULT_DESKTOP_WIDGETS;
-
 /**
  * 바탕화면 위젯 (macOS Sonoma처럼). 왼쪽 위부터 칸에 맞춰 놓이고, 끌어 옮기면 빈 칸에 붙는다(자리는 브라우저에 저장).
  * 오른쪽 클릭 메뉴로 크기를 바꾸거나 지우고, '위젯 편집…'에서 갤러리를 열어 더한다.
@@ -52,7 +51,7 @@ const DesktopWidgets: React.FC = () => {
 	const { apps, openApp, bringAppToFront, minimizeApp, maximizeApp } = useAppState();
 	const viewport = useViewport();
 	const editing = useWidgetEditing();
-	const [widgets, setWidgets] = useState<PlacedWidget[]>(loadWidgets);
+	const [widgets, setWidgets] = useState<PlacedWidget[]>(loadDesktopWidgets);
 	const [drag, setDrag] = useState<{ id: string; offset: Point } | null>(null);
 	const [menu, setMenu] = useState<{ anchor: Point; id: string } | null>(null);
 	const pending = useRef<{ id: string; start: Point; origin: Point; moved: boolean } | null>(null);
@@ -118,12 +117,17 @@ const DesktopWidgets: React.FC = () => {
 		return () => animation.cancel();
 	}, [flight]);
 	const remove = (id: string) => save(widgets.filter((widget) => widget.id !== id));
+	/** 고른 값을 적는다. 휴대폰 홈 화면의 같은 위젯도 같이 바뀐다 (sharedOptions.ts) */
+	const choose = (id: string, options: WidgetOptions) => {
+		const kind = widgets.find((widget) => widget.id === id)?.kind;
+		if (!kind) return;
+		save(withOptions(widgets, id, kind, options));
+		shareOptions('mobile', id, kind, options);
+	};
 	/** 사진 위젯의 앨범 (undefined면 모든 앨범) */
-	const chooseAlbum = (id: string, album: string | undefined) =>
-		save(widgets.map((widget) => (widget.id === id ? { ...widget, album } : widget)));
+	const chooseAlbum = (id: string, album: string | undefined) => choose(id, { album });
 	/** 메모 위젯이 보일 글 */
-	const choosePosts = (id: string, posts: PostsMode) =>
-		save(widgets.map((widget) => (widget.id === id ? { ...widget, posts } : widget)));
+	const choosePosts = (id: string, posts: PostsMode) => choose(id, { posts });
 	const changeSize = (id: string, size: WidgetSize) =>
 		save(visible.map((widget) => (widget.id === id ? resize(widget, size, visible, viewport, iconRects) : widget)));
 

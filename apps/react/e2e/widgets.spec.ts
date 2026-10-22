@@ -137,6 +137,54 @@ test.describe('바탕화면 위젯', () => {
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'sproutfarm' });
 	});
 
+	test('사진 위젯에서 고른 앨범은 휴대폰 홈 화면의 같은 사진 위젯에도 보인다 (위젯 자리는 따로 저장해도)', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await page
+			.getByRole('dialog', { name: '위젯 갤러리' })
+			.getByRole('button', { name: '사진 위젯 (작게) 더하기' })
+			.click();
+		await page.keyboard.press('Escape');
+		await widget(page, '사진').click({ button: 'right' });
+		await page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' }).click();
+		await expect(widget(page, '사진').locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
+
+		// 같은 브라우저를 좁히면 휴대폰 홈 화면: 처음부터 있는 사진 위젯(같은 id)이 같은 앨범을 보인다
+		await page.setViewportSize({ width: 390, height: 844 });
+		const home = page.locator('.mobile-home');
+		await home.getByRole('tab', { name: '3쪽' }).click();
+		await expect(home.getByRole('group', { name: '사진 위젯' }).locator('figcaption')).toHaveText(
+			'SproutFarm 새싹 농장'
+		);
+		const mobile = await page.evaluate(() => JSON.parse(localStorage.getItem('macfolio:mobile:widgets') ?? 'null'));
+		expect(mobile.flat().find((item: { id: string }) => item.id === 'photos')).toMatchObject({ album: 'sproutfarm' });
+	});
+
+	test('명언 위젯: 개발에 관한 말과 말한 사람. 누르면 다음 말, 앱은 열지 않는다', async ({ page }) => {
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		await page
+			.getByRole('dialog', { name: '위젯 갤러리' })
+			.getByRole('button', { name: '명언 위젯 (중간) 더하기' })
+			.click();
+		await page.keyboard.press('Escape');
+		const quote = widget(page, '명언');
+		await expect(quote.locator('q')).not.toBeEmpty();
+		await expect(quote.locator('.widget-quote-ko')).not.toBeEmpty();
+		await expect(quote.locator('.widget-quote-author')).toHaveText(/^— /);
+		const first = await quote.locator('q').textContent();
+		await quote.getByRole('button').click();
+		await expect(quote.locator('q')).not.toHaveText(first!);
+		await expect(page.locator('[data-app]:visible')).toHaveCount(0);
+		expect((await saved(page))?.find((item) => item.kind === 'quote')).toMatchObject({ size: 'medium' });
+	});
+
 	test('사진 위젯은 Finder › 그림에 만든 폴더의 그림도 보여 준다', async ({ page }) => {
 		const api = await fakeApi(page);
 		api.finderLayout = {
@@ -242,7 +290,7 @@ test.describe('바탕화면 위젯', () => {
 		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
 		await expect(gallery).toBeVisible();
 		const previews = gallery.getByRole('button', { name: /위젯 \(.+\) 더하기$/ });
-		await expect(previews).toHaveCount(14);
+		await expect(previews).toHaveCount(16);
 
 		// 사이드바: 종류를 고르면 그 위젯의 크기들만, 찾으면 맞는 종류만
 		const kinds = gallery.getByRole('navigation', { name: '위젯 종류' });

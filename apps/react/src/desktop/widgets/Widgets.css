@@ -46,7 +46,8 @@
 
 /* 불투명한 판(캘린더·메모): 비치지 않는 대신 위에서 아래로 옅은 그라데이션과 윗변의 빛·아랫변의 그늘로 두께를 준다 */
 .widget-calendar,
-.widget-posts {
+.widget-posts,
+.widget-quote {
 	background-image: linear-gradient(180deg, var(--widget-solid-top), var(--widget-solid-bottom));
 	box-shadow:
 		inset 0 1px 0 var(--widget-highlight),
@@ -749,4 +750,96 @@
 
 .widget-profile-body .widget-note {
 	margin-top: auto;
+}
+
+/* ─── 명언 ─── */
+/* 판 전체가 단추: 누르면 다음 말. 큰 따옴표를 왼쪽 위에, 말한 사람은 아래 */
+.widget-quote-body {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	min-height: 0;
+	margin: calc(-1 * var(--space-14));
+	padding: var(--space-14);
+	border: none;
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+	/* 높이에 맞춰 줄 수를 고른다: 휴대폰의 위젯 줄은 바탕화면보다 낮다 */
+	container-type: size;
+}
+
+.widget-quote-mark {
+	height: 0.55em;
+	font-family: Georgia, 'Times New Roman', serif;
+	font-size: 44px;
+	font-weight: 700;
+	line-height: 1;
+	color: var(--widget-accent);
+}
+
+.widget-quote-text {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-4);
+	min-height: 0;
+	margin-top: var(--space-8);
+	overflow: hidden;
+}
+
+.widget-quote-text q {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	font-size: var(--text-body);
+	font-weight: 600;
+	line-height: 1.3;
+	quotes: none;
+}
+
+.widget-quote-ko {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	font-size: var(--text-footnote);
+	color: var(--widget-secondary-label);
+}
+
+.widget-small .widget-quote-text q {
+	-webkit-line-clamp: 4;
+	font-size: var(--text-footnote);
+}
+
+.widget-quote-author {
+	margin-top: var(--space-6);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 낮은 칸(휴대폰 홈 화면): 따옴표를 빼고 줄을 줄여, 마지막 줄이 반쯤 잘리지 않게 */
+@container (max-height: 120px) {
+	.widget-quote-mark {
+		display: none;
+	}
+
+	.widget-quote-text {
+		margin-top: 0;
+	}
+
+	.widget-quote-text q,
+	.widget-small .widget-quote-text q {
+		-webkit-line-clamp: 3;
+	}
+
+	.widget-medium .widget-quote-text q {
+		-webkit-line-clamp: 2;
+	}
+
+	.widget-quote-ko {
+		-webkit-line-clamp: 1;
+	}
 }

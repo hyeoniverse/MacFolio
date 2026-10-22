@@ -9,6 +9,7 @@ import GithubWidget from './GithubWidget';
 import PhotoWidget from './PhotoWidget';
 import PostsWidget from './PostsWidget';
 import ProfileWidget from './ProfileWidget';
+import QuoteWidget from './QuoteWidget';
 import WeatherWidget from './WeatherWidget';
 import './Widgets.css';
 
@@ -22,6 +23,7 @@ const APP_OF: Record<WidgetKind, AppName | null> = {
 	photos: 'photos',
 	github: 'github',
 	profile: null,
+	quote: null,
 };
 
 /** 작은 음악 위젯: 앨범 그림, 곡 이름, 재생 버튼 */
@@ -85,6 +87,9 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 			break;
 		case 'profile':
 			body = <ProfileWidget />;
+			break;
+		case 'quote':
+			body = <QuoteWidget size={size} />;
 			break;
 	}
 	return (
