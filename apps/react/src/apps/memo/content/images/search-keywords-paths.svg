@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>검색어를 아는 두 길. 위: 검색엔진이 들어온 주소에 검색어를 실어 보내면(네이버 등) 사이트가 읽어 방문과 함께 보낸다. 구글·빙은 호스트만 와서 알 수 없다. 아래: 서버가 6시간마다 서비스 계정 JWT로 Search Console에서 날짜·검색어·페이지별 노출·클릭·순위를 가져와 둔다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+</defs>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">검색어를 아는 두 길</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">방문 하나에 붙는 검색어는 검색엔진이 넘겨줄 때만 있다. 구글 검색어는 구글이 센 합계로만 본다</text>
+<text x="32" y="92" font-size="11.5" fill="#4f46e5" font-weight="700">① 방문할 때 (사이트가 읽는다)</text>
+<rect x="32" y="104" width="150" height="74" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.2"/>
+<text x="107.0" y="126" font-size="12" fill="#4f46e5" font-weight="600" text-anchor="middle">검색 결과를 누름</text>
+<text x="107.0" y="144" font-size="10.5" fill="#374151" text-anchor="middle">document.referrer</text>
+<rect x="250" y="98" width="190" height="58" rx="9" fill="#f0fdf4" stroke="#15803d" stroke-width="1.2"/>
+<text x="345.0" y="120" font-size="12" fill="#15803d" font-weight="600" text-anchor="middle">네이버 등: 주소 전체</text>
+<text x="345.0" y="138" font-size="10.5" fill="#374151" text-anchor="middle">…search.naver?query=…</text>
+<rect x="250" y="166" width="190" height="50" rx="9" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.2"/>
+<text x="345.0" y="188" font-size="12" fill="#b91c1c" font-weight="600" text-anchor="middle">구글·빙: 호스트만</text>
+<text x="345.0" y="206" font-size="10.5" fill="#374151" text-anchor="middle">https://www.google.com/</text>
+<path d="M182 132 L248 126" stroke="#15803d" stroke-width="1.5" fill="none" marker-end="url(#a-green)"/>
+<path d="M182 152 L248 190" stroke="#b91c1c" stroke-width="1.5" fill="none" marker-end="url(#a-red)"/>
+<rect x="500" y="98" width="150" height="58" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="575.0" y="120" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">visit 이벤트</text>
+<text x="575.0" y="138" font-size="10.5" fill="#374151" text-anchor="middle">referrer + searchTerm</text>
+<path d="M440 127 L498 127" stroke="#15803d" stroke-width="1.5" fill="none" marker-end="url(#a-green)"/>
+<text x="469" y="120" font-size="10" fill="#15803d" text-anchor="middle">검색어 칸</text>
+<text x="545" y="196" font-size="10.5" fill="#b91c1c" text-anchor="middle">검색어 없음 (호스트만 센다)</text>
+<path d="M440 191 L470 191" stroke="#b91c1c" stroke-width="1.5" fill="none" marker-end="url(#a-red)"/>
+<rect x="690" y="98" width="140" height="58" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="760.0" y="120" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">DailyStat</text>
+<text x="760.0" y="138" font-size="10.5" fill="#374151" text-anchor="middle">searchTerm 표 (관리자)</text>
+<path d="M650 127 L688 127" stroke="#374151" stroke-width="1.5" fill="none" marker-end="url(#a-gray)"/>
+<line x1="32" y1="236" x2="828" y2="236" stroke="#e5e7eb" stroke-dasharray="4 4"/>
+<text x="32" y="262" font-size="11.5" fill="#4f46e5" font-weight="700">② 서버가 6시간마다 (구글이 센 합계를 가져온다)</text>
+<rect x="32" y="276" width="150" height="74" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.2"/>
+<text x="107.0" y="298" font-size="12" fill="#4f46e5" font-weight="600" text-anchor="middle">서비스 계정 JWT</text>
+<text x="107.0" y="316" font-size="10.5" fill="#374151" text-anchor="middle">RS256으로 서명</text>
+<text x="107.0" y="331" font-size="10.5" fill="#374151" text-anchor="middle">→ 접근 토큰 (1시간)</text>
+<rect x="222" y="276" width="190" height="74" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="317.0" y="298" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">Search Console API</text>
+<text x="317.0" y="316" font-size="10.5" fill="#374151" text-anchor="middle">searchAnalytics/query</text>
+<text x="317.0" y="331" font-size="10.5" fill="#374151" text-anchor="middle">날짜 · 검색어 · 페이지</text>
+<path d="M182 313 L220 313" stroke="#4f46e5" stroke-width="1.5" fill="none" marker-end="url(#a-blue)"/>
+<rect x="452" y="276" width="190" height="74" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.2"/>
+<text x="547.0" y="298" font-size="12" fill="#1f2937" font-weight="600" text-anchor="middle">SearchQueryStat</text>
+<text x="547.0" y="316" font-size="10.5" fill="#374151" text-anchor="middle">처음 16개월, 다음부터</text>
+<text x="547.0" y="331" font-size="10.5" fill="#374151" text-anchor="middle">마지막 날 7일 전부터 갈아 끼움</text>
+<path d="M412 313 L450 313" stroke="#374151" stroke-width="1.5" fill="none" marker-end="url(#a-gray)"/>
+<rect x="682" y="276" width="148" height="74" rx="9" fill="#f0fdf4" stroke="#15803d" stroke-width="1.2"/>
+<text x="756.0" y="298" font-size="12" fill="#15803d" font-weight="600" text-anchor="middle">검색어 탭</text>
+<text x="756.0" y="316" font-size="10.5" fill="#374151" text-anchor="middle">클릭 · 노출 · 순위</text>
+<text x="756.0" y="331" font-size="10.5" fill="#374151" text-anchor="middle">(관리자)</text>
+<path d="M642 313 L680 313" stroke="#15803d" stroke-width="1.5" fill="none" marker-end="url(#a-green)"/>
+<text x="32" y="378" font-size="10.5" fill="#6b7280">Search Console은 2~3일 늦고, 사람을 알아볼 수 있는 드문 검색어는 빼고 준다. 방문 하나와 이어지지 않는다</text>
+</svg>
