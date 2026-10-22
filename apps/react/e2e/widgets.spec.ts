@@ -164,7 +164,7 @@ test.describe('바탕화면 위젯', () => {
 		expect(mobile.flat().find((item: { id: string }) => item.id === 'photos')).toMatchObject({ album: 'sproutfarm' });
 	});
 
-	test('명언 위젯: 개발에 관한 말과 말한 사람. 누르면 다음 말, 앱은 열지 않는다', async ({ page }) => {
+	test('명언 위젯: 개발에 관한 말과 말한 사람. 누르면 다른 말, 앱은 열지 않는다', async ({ page }) => {
 		await enterDesktop(page);
 		await closeSafari(page);
 		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fillOptions, parseWidgets, withOptions, type PageWidget, type PlacedWidget } from './catalog';
-import { QUOTES, quoteOf } from './quotes';
+import { otherQuoteIndex, QUOTES, quoteOf } from './quotes';
 
 const desktop: PlacedWidget[] = [
 	{ id: 'photos', kind: 'photos', size: 'small', col: 0, row: 0, album: 'pictures' },
@@ -43,8 +43,21 @@ describe('명언 위젯', () => {
 		expect(quoteOf('날짜 아님')).toBe(QUOTES[0]);
 	});
 
-	it('말이 넉넉하고(두 달 남짓 겹치지 않는다) 같은 말이 없으며, 작은 위젯에 들어갈 만큼 짧다', () => {
-		expect(QUOTES.length).toBeGreaterThanOrEqual(60);
+	it('누르면 지금 말이 아닌 다른 말을 무작위로 고른다', () => {
+		for (const random of [0, 0.3, 0.5, 0.999]) {
+			const next = otherQuoteIndex(5, QUOTES.length, () => random);
+			expect(next).not.toBe(5);
+			expect(next).toBeGreaterThanOrEqual(0);
+			expect(next).toBeLessThan(QUOTES.length);
+		}
+		// 무작위 값이 고르게 나오면 지금 말을 뺀 모든 말이 나온다
+		const seen = new Set(Array.from({ length: 9 }, (_, i) => otherQuoteIndex(3, 10, () => i / 9)));
+		expect([...seen].sort((a, b) => a - b)).toEqual([0, 1, 2, 4, 5, 6, 7, 8, 9]);
+		expect(otherQuoteIndex(0, 1)).toBe(0);
+	});
+
+	it('말이 넉넉하고(넉 달 남짓 겹치지 않는다) 같은 말이 없으며, 작은 위젯에 들어갈 만큼 짧다', () => {
+		expect(QUOTES.length).toBeGreaterThanOrEqual(120);
 		expect(new Set(QUOTES.map((quote) => quote.text)).size).toBe(QUOTES.length);
 		for (const quote of QUOTES) expect(quote.text.length, quote.text).toBeLessThanOrEqual(120);
 	});
