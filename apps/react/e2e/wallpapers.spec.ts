@@ -97,7 +97,7 @@ test.describe('관리자가 더한 배경화면', () => {
 		await expect(mac.getByRole('radio', { name: '노을' })).toHaveCount(0);
 		await expect(settings.getByRole('radio', { name: 'High Sierra' })).toBeChecked();
 		expect(api.wallpapers).toEqual([]);
-		await expect.poll(() => desktopWallpaper(page)).toContain('/imgs/wallpapers/highsierra.jpg');
+		await expect.poll(() => desktopWallpaper(page)).toContain('/imgs/wallpapers/highsierra.webp');
 	});
 
 	test('관리자는 오른쪽 클릭 메뉴로 이름을 바꾸고, 긴 이름은 칸 폭에서 자른다', async ({ page }) => {
@@ -221,7 +221,7 @@ test.describe('관리자가 더한 배경화면', () => {
 			)
 		);
 		await enterDesktop(page);
-		await expect.poll(() => desktopWallpaper(page)).toContain('/imgs/wallpapers/highsierra.jpg');
+		await expect.poll(() => desktopWallpaper(page)).toContain('/imgs/wallpapers/highsierra.webp');
 	});
 
 	test('서버에 닿지 못하면 기본 배경화면만 보인다', async ({ page }) => {

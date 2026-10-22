@@ -50,6 +50,17 @@ html {
 	font-family: -apple-system, MacSystemFont, Arial, sans-serif;
 }
 
+/*
+ * 휴대폰 화면에서는 바탕에도 휴대폰 배경화면을 깐다 (홈 화면이 같은 그림을 쓴다).
+ * 데스크톱 배경화면(2048px, 350KB)을 휴대폰에서 받지 않으려고. 조건은 desktop/layout.ts의 isMobileViewport와 같다
+ */
+@media (max-width: 767px), (max-width: 1023px) and (max-height: 499px) {
+	body,
+	html {
+		background-image: var(--wallpaper-mobile);
+	}
+}
+
 /* 화면에는 보이지 않고 스크린 리더만 읽는 이름 */
 .visually-hidden {
 	position: absolute;
