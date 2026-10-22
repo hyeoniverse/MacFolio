@@ -1,4 +1,5 @@
-// 위젯이 그릴 값 계산 (달력 칸, 시계 바늘, 날짜 글자). React와 DOM에 의존하지 않는 순수 함수만 둔다 (model.test.ts)
+// 위젯이 그릴 값 계산 (달력 칸, 시계 바늘, 날짜 글자, 메모 위젯의 글 고르기). React와 DOM에 의존하지 않는 순수 함수만 둔다 (model.test.ts)
+import { popularPosts, type PostStats } from '@macfolio/desktop-core/memo';
 
 /** 사이트의 시각은 서울 기준 (메뉴 막대의 시계와 같다) */
 export const TIME_ZONE = 'Asia/Seoul';
@@ -86,6 +87,33 @@ export function mergeRecentPosts(
 	return [...bySlug.values()]
 		.sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug))
 		.slice(0, limit);
+}
+
+/** 메모 위젯의 인기글: 메모 앱의 인기글과 같은 점수(조회 1, 좋아요 3, 댓글 5)로 위에서 limit편. 반응이 없는 글은 뺀다 */
+export const popularOf = (
+	posts: readonly RecentPost[],
+	stats: Record<string, Partial<PostStats>>,
+	limit: number
+): RecentPost[] => popularPosts(posts, stats, limit);
+
+/** 0~1 사이 값을 차례로 내는 작은 난수 (같은 seed면 같은 차례: 다시 그려도 고른 글이 바뀌지 않게) */
+export function seededRandom(seed: number): () => number {
+	let state = Math.floor(seed * 2 ** 32) >>> 0;
+	return () => {
+		state = (state + 0x6d2b79f5) >>> 0;
+		let t = state;
+		t = Math.imul(t ^ (t >>> 15), t | 1);
+		t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+		return ((t ^ (t >>> 14)) >>> 0) / 2 ** 32;
+	};
+}
+
+/** 메모 위젯의 랜덤: 글 중에서 겹치지 않게 limit편 (random은 0~1 사이 값을 내는 함수) */
+export function randomOf(posts: readonly RecentPost[], limit: number, random: () => number): RecentPost[] {
+	const pool = [...posts];
+	const picked: RecentPost[] = [];
+	while (picked.length < limit && pool.length) picked.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+	return picked;
 }
 
 /**

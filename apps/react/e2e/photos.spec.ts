@@ -1,6 +1,7 @@
 import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import type { Locator, Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
+import { fakeFiles } from './fakeFiles';
 
 const openPhotos = async (page: Page) => {
 	await enterDesktop(page);
@@ -26,6 +27,25 @@ async function expectInfoFits(viewer: Locator) {
 }
 
 test.describe('사진 (#21)', () => {
+	test('Finder › 그림에 올린 그림·영상도 폴더마다 앨범으로 보인다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.finderLayout = {
+			folders: [{ id: 'folder:widget01', name: 'widget', parent: 'pictures' }],
+			files: { 'file:pictures/sea.png': 'folder:widget01', 'file:pictures/wave.mp4': 'folder:widget01' },
+			aliases: null,
+		};
+		await fakeFiles(page, [
+			{ id: 'p1', folder: '그림', name: '바다.png', key: 'pictures/sea.png', kind: 'image' },
+			{ id: 'v1', folder: '그림', name: '파도.mp4', key: 'pictures/wave.mp4', kind: 'file' },
+		]);
+		const photos = await openPhotos(page);
+		const sidebar = photos.getByRole('complementary', { name: '사진 보관함' });
+		await sidebar.getByRole('button', { name: /^widget/ }).click();
+		await expect(photos.getByRole('heading', { name: 'widget' })).toBeVisible();
+		await expect(photos.locator('.photos-thumb')).toHaveCount(2);
+		await expect(photos.locator('.photos-thumb video')).toHaveCount(1);
+	});
+
 	test('보관함 = 앨범 사진의 합, 비디오는 영상만, 앨범을 고른다', async ({ page }) => {
 		const photos = await openPhotos(page);
 		const sidebar = photos.getByRole('complementary', { name: '사진 보관함' });

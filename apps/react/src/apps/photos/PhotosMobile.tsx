@@ -1,11 +1,12 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
-import { ALBUMS, ALBUMS_BY_AGE, ALL_PHOTOS, countText } from './albums';
+import { countText } from './albums';
+import { usePhotoLibrary } from './usePhotoLibrary';
 import { Thumb, type Shown } from './PhotoParts';
 import { useCaptions } from './captionsApi';
 import { Card, Grid, Shelf } from './PhotoGrid';
-import { type Opened, type Tab, VIDEOS, type Viewing, coverOf, keyOf, searchPhotos } from './photosMobile.model';
+import { type Opened, type Tab, type Viewing, coverOf, keyOf, searchPhotos } from './photosMobile.model';
 import { PhoneViewer } from './PhoneViewer';
 import '@/apps/photos/Photos.css';
 import '@/apps/photos/PhotosMobile.css';
@@ -29,15 +30,18 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	const [menu, setMenu] = useState<{ x: number; y: number } | null>(null);
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const captions = useCaptions();
+	// 프로젝트 앨범과 Finder › 그림의 폴더
+	const { albums, albumsByAge, allPhotos } = usePhotoLibrary();
+	const videos = allPhotos.filter((photo) => photo.video);
 	// 화면이 바뀐 방식: 앨범으로 들어가면 오른쪽에서, 나오면 왼쪽에서, 탭을 바꾸면 서서히 (처음에는 움직이지 않는다)
 	const [motion, setMotion] = useState<'forward' | 'back' | 'fade' | null>(null);
 
-	const album = opened?.kind === 'album' ? ALBUMS.find((entry) => entry.id === opened.id) : undefined;
+	const album = opened?.kind === 'album' ? albums.find((entry) => entry.id === opened.id) : undefined;
 	const photos: Shown[] = album
 		? album.photos.map((photo) => ({ ...photo, album }))
 		: opened?.kind === 'videos'
-			? VIDEOS
-			: ALL_PHOTOS;
+			? videos
+			: allPhotos;
 	const title = album?.name ?? (opened?.kind === 'videos' ? '비디오' : '보관함');
 	const showGrid = tab === 'library' || opened !== null;
 
@@ -128,8 +132,8 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	);
 
 	if (searching) {
-		const results = searchPhotos(query, captions);
-		const firstPicture = ALL_PHOTOS.find((photo) => !photo.video);
+		const results = searchPhotos(allPhotos, query, captions);
+		const firstPicture = allPhotos.find((photo) => !photo.video);
 		const recentCover = recent ?? firstPicture;
 		return (
 			<div className="photos-phone search">
@@ -156,15 +160,15 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 											label="최근 확인한 항목"
 											cover={<Thumb photo={recentCover} />}
 											onOpen={() => {
-												const index = ALL_PHOTOS.findIndex((photo) => keyOf(photo) === keyOf(recentCover));
-												view(ALL_PHOTOS, Math.max(0, index));
+												const index = allPhotos.findIndex((photo) => keyOf(photo) === keyOf(recentCover));
+												view(allPhotos, Math.max(0, index));
 											}}
 										/>
 									)}
 									<Card
 										label="비디오"
-										note={`${VIDEOS.length}개`}
-										cover={<video src={`${VIDEOS[0]?.src}#t=0.1`} muted playsInline preload="metadata" />}
+										note={`${videos.length}개`}
+										cover={<video src={`${videos[0]?.src}#t=0.1`} muted playsInline preload="metadata" />}
 										onOpen={() => {
 											setSearching(false);
 											setTab('collections');
@@ -174,7 +178,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 								</div>
 							</section>
 							<ul className="photos-phone-suggestions" aria-label="추천 검색어">
-								{ALBUMS.map((entry) => (
+								{albums.map((entry) => (
 									<li key={entry.id}>
 										<button type="button" onClick={() => setQuery(entry.name)}>
 											{entry.name}
@@ -241,7 +245,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 							<p>{countText(photos)}</p>
 						</header>
 						{tab === 'library' && !opened && grouped ? (
-							ALBUMS_BY_AGE.map((entry) => {
+							albumsByAge.map((entry) => {
 								const list = entry.photos.map((photo) => ({ ...photo, album: entry }));
 								return (
 									<section key={entry.id} className="photos-phone-group" aria-label={entry.name}>
@@ -263,11 +267,11 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 						<header className="photos-phone-title">
 							<h2>모음</h2>
 							<p>
-								앨범 {ALBUMS.length}개 · {countText(ALL_PHOTOS)}
+								앨범 {albums.length}개 · {countText(allPhotos)}
 							</p>
 						</header>
 						<Shelf title="추억">
-							{ALBUMS.map((entry) => (
+							{albums.map((entry) => (
 								<Card
 									key={entry.id}
 									big
@@ -281,16 +285,17 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 						<Shelf title="고정됨">
 							<Card
 								label="비디오"
-								note={`${VIDEOS.length}개`}
-								cover={<video src={`${VIDEOS[0]?.src}#t=0.1`} muted playsInline preload="metadata" />}
+								note={`${videos.length}개`}
+								cover={<video src={`${videos[0]?.src}#t=0.1`} muted playsInline preload="metadata" />}
 								onOpen={() => open({ kind: 'videos' })}
 							/>
 							<Card
 								label="모든 사진"
-								note={`${ALL_PHOTOS.length}개`}
+								note={`${allPhotos.length}개`}
 								cover={
 									<span className="photos-mosaic">
-										{ALL_PHOTOS.filter((photo) => !photo.video)
+										{allPhotos
+											.filter((photo) => !photo.video)
 											.slice(0, 9)
 											.map((photo) => (
 												<img key={photo.src} src={photo.src} alt="" loading="lazy" />
@@ -301,7 +306,7 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 							/>
 						</Shelf>
 						<Shelf title="앨범">
-							{ALBUMS.map((entry) => (
+							{albums.map((entry) => (
 								<Card
 									key={entry.id}
 									label={entry.name}

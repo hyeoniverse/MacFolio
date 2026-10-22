@@ -101,6 +101,18 @@ describe('위젯 목록 저장', () => {
 		).toEqual([{ id: 'a', kind: 'weather', size: 'medium', col: 0, row: 0 }]);
 	});
 
+	it('메모 위젯이 보일 글은 아는 값만 남긴다', () => {
+		expect(
+			parseWidgets([
+				{ id: 'a', kind: 'posts', size: 'medium', col: 0, row: 0, posts: 'popular' },
+				{ id: 'b', kind: 'posts', size: 'small', col: 0, row: 1, posts: 'best' },
+			])
+		).toEqual([
+			{ id: 'a', kind: 'posts', size: 'medium', col: 0, row: 0, posts: 'popular' },
+			{ id: 'b', kind: 'posts', size: 'small', col: 0, row: 1 },
+		]);
+	});
+
 	it('새 id는 종류 이름, 겹치면 번호를 붙인다', () => {
 		expect(newWidgetId('clock', [])).toBe('clock');
 		expect(newWidgetId('clock', [{ id: 'clock' }, { id: 'clock-2' }])).toBe('clock-3');
