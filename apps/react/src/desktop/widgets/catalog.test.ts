@@ -56,8 +56,9 @@ describe('명언 위젯', () => {
 		expect(otherQuoteIndex(0, 1)).toBe(0);
 	});
 
-	it('말이 넉넉하고(넉 달 남짓 겹치지 않는다) 같은 말이 없으며, 작은 위젯에 들어갈 만큼 짧다', () => {
-		expect(QUOTES.length).toBeGreaterThanOrEqual(120);
+	it('말이 365개이고(한 해 동안 겹치지 않는다) 같은 말이 없으며, 작은 위젯에 들어갈 만큼 짧다', () => {
+		// 하루에 하나씩, 한 해 동안 같은 말이 나오지 않는다
+		expect(QUOTES).toHaveLength(365);
 		expect(new Set(QUOTES.map((quote) => quote.text)).size).toBe(QUOTES.length);
 		for (const quote of QUOTES) expect(quote.text.length, quote.text).toBeLessThanOrEqual(120);
 	});
