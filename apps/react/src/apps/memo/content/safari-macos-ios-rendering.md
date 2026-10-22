@@ -1,7 +1,7 @@
 ---
 title: 같은 Safari, 다른 화면 — macOS와 iOS, 브라우저마다 다르게 그리는 곳
 date: 2026-10-22
-category: 기술 노트/프론트엔드
+category: 기술 노트/브라우저
 summary: 맥의 Safari에서 맞게 보인 화면이 아이폰의 Safari에서는 틀리게 보일 수 있다. 엔진과 운영체제가 화면을 그리는 길을 정리하고, macOS·iOS Safari와 Chrome·Firefox가 다르게 그리는 곳, 흉내 내는 시험이 놓치는 것, 프론트엔드가 조심할 점을 공식 문서와 함께 적었다.
 ---
 
