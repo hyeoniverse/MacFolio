@@ -9,7 +9,8 @@ import { useLocations } from '@/apps/finder/useLocations';
  * Finder 창에서 끄는 것은 HTML 끌어 놓기, 바탕화면 아이콘은 포인터로 끌다가 놓는 자리(data-dock-trash)를 찾는다 (DesktopIcons)
  */
 export function useDockTrashDrop() {
-	const locations = useLocations();
+	// 첫 화면에 늘 있어서 블로그 글 묶음은 받지 않는다 (Finder 등이 받았으면 함께 쓴다)
+	const locations = useLocations({ posts: false });
 	const edit = useFinderEdit(locations);
 	const [over, setOver] = useState(false);
 	const dragged = () =>

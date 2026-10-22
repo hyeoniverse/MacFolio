@@ -136,7 +136,7 @@ export function resolveTheme(preference: ThemePreference, systemPrefersDark: boo
 /** 배경화면 이미지 주소. 어두운 버전이 있으면 화면 모드를 따른다 */
 export function wallpaperUrl(wallpaper: Wallpaper, theme: ResolvedTheme, thumbnail = false): string {
 	const file = theme === 'dark' && wallpaper.dark ? wallpaper.dark : wallpaper.light;
-	return `${WALLPAPER_DIR}/${thumbnail ? 'thumbs/' : ''}${file}.jpg`;
+	return `${WALLPAPER_DIR}/${thumbnail ? 'thumbs/' : ''}${file}.webp`;
 }
 
 const findWallpaper = <W extends Wallpaper>(list: readonly W[], id: string): W =>

@@ -416,7 +416,8 @@ test.describe('모바일', () => {
 		const bar = (await statusBar.boundingBox())!;
 		expect((await frame.boundingBox())!.y).toBe(bar.y + bar.height);
 		expect(await webFrame.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgb(59, 130, 246)');
-		expect(await look()).toMatchObject({ color: 'rgb(255, 255, 255)', background: 'rgba(0, 0, 0, 0)' });
+		// 앱은 처음 열 때 받아서, 막대 밑을 다시 읽어(0.8초마다) 색이 바뀐다
+		await expect.poll(look).toMatchObject({ color: 'rgb(255, 255, 255)', background: 'rgba(0, 0, 0, 0)' });
 		// 페이지를 가리는 홈 버튼은 없다 (홈 바가 홈으로 간다)
 		await expect(page.locator('.container.mobile .mobile-navbar-home')).toHaveCount(0);
 
@@ -597,6 +598,8 @@ test.describe('모바일', () => {
 		});
 		expect(textLeft).toBeGreaterThan(backBox.x + backBox.width);
 		const recents = files.getByRole('list', { name: '최근 항목' });
+		// 블로그 글은 파일 앱을 처음 열 때 받는다: 최근 항목이 채워질 때까지
+		await expect(recents.locator('.files-phone-summary').nth(3)).toBeVisible();
 		const dates = await recents.locator('.files-phone-summary').allTextContents();
 		expect(dates.length).toBeGreaterThan(3);
 		const asKey = (date: string) =>

@@ -3,14 +3,22 @@ import { createStaticPostRepository, type PostRepository } from '@macfolio/deskt
 export type { PostRepository } from '@macfolio/desktop-core/memo';
 
 let repository: PostRepository | null = null;
+let loading: Promise<PostRepository> | null = null;
 
-/** 지금은 저장소 안의 Markdown 파일을 읽는다. 관리자 글쓰기(#9)가 생기면 여기서 구현체를 고른다. */
+/**
+ * 저장소 안의 Markdown 글. 글 원문 묶음(contentFiles.ts, 글 200편이면 2MB가 넘는다)은 처음 목록을 물을 때 따로 받는다.
+ * 첫 화면이 이 묶음을 기다리지 않게 하려고 (예전에는 첫 방문의 공용 묶음에 들어 있었다)
+ */
 export function getPostRepository(): PostRepository {
-	if (!repository) {
-		const files = import.meta.glob<string>('../content/*.md', { query: '?raw', import: 'default', eager: true });
-		repository = createStaticPostRepository(files, (path) => {
-			if (import.meta.env.DEV) console.warn(`[memo] 머리말(title, date)이 잘못된 글: ${path}`);
-		});
-	}
+	repository ??= {
+		async list() {
+			loading ??= import('./contentFiles').then(({ files }) =>
+				createStaticPostRepository(files, (path) => {
+					if (import.meta.env.DEV) console.warn(`[memo] 머리말(title, date)이 잘못된 글: ${path}`);
+				})
+			);
+			return (await loading).list();
+		},
+	};
 	return repository;
 }

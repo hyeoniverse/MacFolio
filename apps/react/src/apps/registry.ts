@@ -2,29 +2,27 @@
 import { createElement, lazy, type ComponentType } from 'react';
 import { PROJECT_APPS, WINDOW_APP_NAMES, type AppName } from '@/apps/manifest';
 
-import Safari from '@/apps/safari/Safari';
-import Music from '@/apps/music/Music';
-import Github from '@/apps/github/Github';
-import Mail from '@/apps/mail/Mail';
-import Settings from '@/apps/settings/Settings';
-import Messages from '@/apps/messages/Messages';
-import Terminal from '@/apps/terminal/Terminal';
-import ProjectApp from '@/apps/project/ProjectApp';
-import Passwords from '@/apps/passwords/Passwords';
-import ApiDocs from '@/apps/apidocs/ApiDocs';
-import Activity from '@/apps/activity/Activity';
-import Photos from '@/apps/photos/Photos';
-import Bin from '@/apps/bin/Bin';
-import Weather from '@/apps/weather/Weather';
-import Preview from '@/apps/preview/Preview';
-import QuickTime from '@/apps/quicktime/QuickTime';
-import Tips from '@/apps/tips/Tips';
-
-// Markdown 렌더러가 무거워서 메모(블로그)는 처음 열 때 불러온다
+// 모든 앱은 처음 열 때 불러온다. 첫 화면(로딩·바탕화면)이 앱 코드를 기다리지 않게 하려고
+// (예전에는 메모·Finder·텍스트 편집기만 따로 떼고 나머지 앱은 첫 묶음에 들어 있어 첫 방문에 890KB를 받았다)
+const Safari = lazy(() => import('@/apps/safari/Safari'));
+const Music = lazy(() => import('@/apps/music/Music'));
+const Github = lazy(() => import('@/apps/github/Github'));
+const Mail = lazy(() => import('@/apps/mail/Mail'));
+const Settings = lazy(() => import('@/apps/settings/Settings'));
+const Messages = lazy(() => import('@/apps/messages/Messages'));
+const Terminal = lazy(() => import('@/apps/terminal/Terminal'));
+const ProjectApp = lazy(() => import('@/apps/project/ProjectApp'));
+const Passwords = lazy(() => import('@/apps/passwords/Passwords'));
+const ApiDocs = lazy(() => import('@/apps/apidocs/ApiDocs'));
+const Activity = lazy(() => import('@/apps/activity/Activity'));
+const Photos = lazy(() => import('@/apps/photos/Photos'));
+const Bin = lazy(() => import('@/apps/bin/Bin'));
+const Weather = lazy(() => import('@/apps/weather/Weather'));
+const Preview = lazy(() => import('@/apps/preview/Preview'));
+const QuickTime = lazy(() => import('@/apps/quicktime/QuickTime'));
+const Tips = lazy(() => import('@/apps/tips/Tips'));
 const Memo = lazy(() => import('@/apps/memo/Memo'));
-// Finder는 저장소 문서를 묶어 두어서 처음 열 때 불러온다
 const Finder = lazy(() => import('@/apps/finder/Finder'));
-// Markdown 보기(react-markdown)를 싣는 앱이라 처음 열 때 불러온다
 const TextEdit = lazy(() => import('@/apps/textedit/TextEdit'));
 
 /** 창으로 열리는 앱의 컴포넌트. 여기 없는 앱은 Dock 아이콘만 있다. */

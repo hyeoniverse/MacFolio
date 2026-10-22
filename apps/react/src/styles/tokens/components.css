@@ -70,6 +70,6 @@
 	--ui-switch-focus: var(--color-control-accent);
 
 	/* 배경화면 (Settings에서 바꾼다) */
-	--wallpaper: url('/imgs/wallpapers/highsierra.jpg');
-	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.jpg');
+	--wallpaper: url('/imgs/wallpapers/highsierra.webp');
+	--wallpaper-mobile: url('/imgs/wallpapers/ios-sky-light.webp');
 }

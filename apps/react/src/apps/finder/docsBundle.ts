@@ -24,11 +24,6 @@ export const DOC_IMAGES: Record<string, string> = Object.fromEntries(
 	Object.entries(imageUrls).map(([key, url]) => [repoPath(key), url])
 );
 
-/** 문서 경로 (README, CONTRIBUTING이 먼저) */
-export const DOC_PATHS = Object.keys(DOC_SOURCES).sort(
-	(a, b) => a.split('/').length - b.split('/').length || a.localeCompare(b)
-);
-
 /** Finder에서 읽는 문서의 원문: 저장소 문서, 또는 이력서 Markdown(관리자가 저장한 것, 없으면 기본 이력서). 없으면 undefined */
 export const docSource = (path: string): string | undefined => {
 	const lang = resumeLangOf(path);

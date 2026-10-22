@@ -5,7 +5,10 @@ import type { Locator, Page } from '@playwright/test';
 async function openMessages(page: Page) {
 	await enterDesktop(page);
 	await dockItem(page, 'messages').click();
-	return appWindow(page, 'messages');
+	const messages = appWindow(page, 'messages');
+	// 앱은 처음 열 때 받는다: 입력 칸(서버에 닿지 못하면 경고창)이 그려질 때까지
+	await expect(messages.getByRole('textbox', { name: '메시지' }).or(messages.getByRole('alertdialog'))).toBeVisible();
+	return messages;
 }
 
 const textbox = (messages: Locator) => messages.getByRole('textbox', { name: '메시지' });

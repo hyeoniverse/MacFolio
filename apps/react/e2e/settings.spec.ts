@@ -75,15 +75,15 @@ test.describe('Settings', () => {
 		await settings.getByRole('radiogroup', { name: 'macOS 배경화면' }).getByRole('radio', { name: 'Sonoma' }).click();
 
 		const background = () => page.evaluate(() => getComputedStyle(document.body).backgroundImage);
-		await expect.poll(background).toContain('sonoma-light.jpg');
+		await expect.poll(background).toContain('sonoma-light.webp');
 
 		// 다크 모드에서는 어두운 버전
 		await settings.getByRole('button', { name: '화면 모드' }).click();
 		await settings.getByRole('radio', { name: '다크' }).click();
-		await expect.poll(background).toContain('sonoma-dark.jpg');
+		await expect.poll(background).toContain('sonoma-dark.webp');
 
 		await page.reload();
-		await expect.poll(background).toContain('sonoma-dark.jpg');
+		await expect.poll(background).toContain('sonoma-dark.webp');
 	});
 });
 

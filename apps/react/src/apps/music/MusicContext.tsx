@@ -3,24 +3,8 @@ import { createPlayerStore, currentTrackId } from '@macfolio/desktop-core/music'
 import { isMobileViewport } from '@/desktop/layout';
 import { getViewport } from '@/shared/hooks/useViewport';
 import { useAppState } from '@/desktop/useAppState';
-import { ALL_SONGS, findPlaylist, findTrack, TRACKS } from './library';
+import { ALL_SONGS, findPlaylist, findTrack, TRACK_SECONDS } from './library';
 import { MusicContext } from './useMusic';
-
-/** 곡 길이를 미리 알아 둔다 (목록에 시간을 보여주려고). 메타데이터만 받는다 */
-function useTrackDurations() {
-	const [durations, setDurations] = useState<Record<string, number>>({});
-	useEffect(() => {
-		const probes = TRACKS.map((t) => {
-			const audio = new Audio();
-			audio.preload = 'metadata';
-			audio.onloadedmetadata = () => setDurations((prev) => ({ ...prev, [t.id]: audio.duration }));
-			audio.src = t.src;
-			return audio;
-		});
-		return () => probes.forEach((audio) => audio.removeAttribute('src'));
-	}, []);
-	return durations;
-}
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -36,7 +20,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 	const [duration, setDuration] = useState(0);
 	const [isBuffering, setIsBuffering] = useState(false);
 	const [volume, setVolumeState] = useState(1);
-	const durations = useTrackDurations();
+	const durations = TRACK_SECONDS;
 	const track = findTrack(currentTrackId(playerState));
 
 	/** 곡이 바뀐 뒤 이어서 재생할지 (src를 바꾸면 audio가 멈추므로 기억해 둔다) */
@@ -163,7 +147,7 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 				queue,
 				isPlaying,
 				currentTime,
-				duration,
+				duration: duration || TRACK_SECONDS[track.id] || 0,
 				isBuffering,
 				volume,
 				shuffle,
@@ -184,7 +168,8 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 			{children}
 			<audio
 				ref={audioRef}
-				preload="metadata"
+				// 누르기 전에는 받지 않는다 (첫 방문에 곡을 받지 않게). 길이는 그동안 TRACK_SECONDS로 보인다
+				preload="none"
 				onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
 				onDurationChange={(event) => setDuration(event.currentTarget.duration || 0)}
 				onWaiting={() => setIsBuffering(true)}

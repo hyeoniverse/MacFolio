@@ -97,10 +97,10 @@ describe('wallpaperCss', () => {
 	it('어두운 버전이 있으면 화면 모드를 따른다', () => {
 		const settings = { ...DEFAULT_SETTINGS, wallpaper: 'sonoma', mobileWallpaper: 'kaleidoscope' } as const;
 		expect(wallpaperCss(settings, 'light')).toEqual({
-			desktop: "url('/imgs/wallpapers/sonoma-light.jpg')",
-			mobile: "url('/imgs/wallpapers/ios-kaleidoscope-light.jpg')",
+			desktop: "url('/imgs/wallpapers/sonoma-light.webp')",
+			mobile: "url('/imgs/wallpapers/ios-kaleidoscope-light.webp')",
 		});
-		expect(wallpaperCss(settings, 'dark').desktop).toContain('sonoma-dark.jpg');
+		expect(wallpaperCss(settings, 'dark').desktop).toContain('sonoma-dark.webp');
 	});
 
 	it('더한 배경화면은 화면 모드와 상관없이 그 이미지 한 장', () => {
@@ -111,7 +111,7 @@ describe('wallpaperCss', () => {
 	});
 
 	it('어두운 버전이 없으면 같은 이미지를 쓴다', () => {
-		expect(wallpaperCss(DEFAULT_SETTINGS, 'dark').desktop).toContain('highsierra.jpg');
+		expect(wallpaperCss(DEFAULT_SETTINGS, 'dark').desktop).toContain('highsierra.webp');
 	});
 
 	it('모든 배경화면은 파일 이름이 겹치지 않는다', () => {

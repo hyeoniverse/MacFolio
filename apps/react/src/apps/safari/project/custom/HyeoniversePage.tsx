@@ -84,7 +84,7 @@ const Chapter: React.FC<{ chapter: ProjectChapter; no: string }> = ({ chapter, n
 				{chapter.image.dark ? (
 					<Compare light={chapter.image.src} dark={chapter.image.dark} alt={chapter.image.alt} />
 				) : (
-					<img src={chapter.image.src} alt={chapter.image.alt} />
+					<img src={chapter.image.src} alt={chapter.image.alt} loading="lazy" />
 				)}
 				<figcaption>{chapter.image.alt}</figcaption>
 			</figure>

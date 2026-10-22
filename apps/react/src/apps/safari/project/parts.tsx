@@ -93,7 +93,7 @@ export const Facts: React.FC<{ project: Project; className?: string }> = ({ proj
 export const Shot: React.FC<{ project: Project; className?: string }> = ({ project, className = 'sp-shot' }) =>
 	project.image ? (
 		<figure className={className}>
-			<img src={project.image} alt={`${project.name} 화면`} />
+			<img src={project.image} alt={`${project.name} 화면`} loading="lazy" />
 		</figure>
 	) : null;
 

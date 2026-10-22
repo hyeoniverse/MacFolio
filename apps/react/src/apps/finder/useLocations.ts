@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
+import { createStore } from '@macfolio/desktop-core';
 import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
 import { getPostRepository } from '@/apps/memo/repository';
 import { organizePosts, type Post } from '@macfolio/desktop-core/memo';
@@ -7,7 +8,7 @@ import { PROJECTS } from '@/shared/profile';
 import { useProjectsVersion } from '@/shared/site/siteContent';
 import { buildTree, find, type FolderItem } from './files';
 import { loadDocuments, useDocumentEntries } from './documents';
-import { DOC_PATHS } from './docsBundle';
+import { DOC_PATHS } from './docPaths';
 import { parseResume, RESUME_DOC, RESUME_DOC_EN } from './resumeModel';
 import { RESUME_PDF_KEYS, resumeFileName } from './resumeDownload';
 import { useResume } from '@/shared/site/resumeStore';
@@ -21,28 +22,35 @@ import { useLocalFiles } from './localFiles';
  * (프로젝트 폴더는 문서 › 포트폴리오 안, 사진은 프로젝트 폴더 안에). 사이드바의 즐겨찾기는 files.ts의 FAVORITE_IDS.
  * Finder와 미리보기의 열기 창이 같은 트리를 본다: 글 목록·프로젝트·올린 문서 파일이 바뀌면 둘 다 바뀐다
  */
-export function useLocations(): FolderItem[] {
-	return useTree().roots;
+export function useLocations({ posts = true }: { posts?: boolean } = {}): FolderItem[] {
+	return useTree(posts).roots;
 }
 
 /** 휴지통 폴더 (휴지통 앱이 보인다). 안의 항목을 되돌리거나 지울 때는 [...위치, 휴지통]에서 찾는다 */
 export function useTrash(): FolderItem {
-	return useTree().trash;
+	return useTree(true).trash;
 }
 
-function useTree(): { roots: FolderItem[]; trash: FolderItem } {
-	const [list, setList] = useState<Post[]>([]);
+/**
+ * 블로그 글 목록 (모든 트리가 함께 본다). 글 원문 묶음은 2MB가 넘어서 블로그 폴더가 필요한 곳(Finder·열기 창·휴지통)이
+ * 처음 부를 때 받는다. 바탕화면 아이콘·Dock 휴지통처럼 첫 화면에 늘 있는 곳은 받지 않고, 누가 받았으면 함께 쓴다
+ */
+const postsStore = createStore<{ list: Post[] }>({ list: [] });
+let postsLoading: Promise<void> | null = null;
+const loadPosts = () =>
+	(postsLoading ??= getPostRepository()
+		.list()
+		.then((list) => postsStore.setState({ list }))
+		.catch(() => {
+			postsLoading = null;
+		}));
+
+function useTree(withPosts: boolean): { roots: FolderItem[]; trash: FolderItem } {
+	const { list } = useSyncExternalStore(postsStore.subscribe, postsStore.getState);
 	useEffect(() => {
-		let alive = true;
-		getPostRepository()
-			.list()
-			.then((loaded) => alive && setList(loaded))
-			.catch(() => undefined);
+		if (withPosts) void loadPosts();
 		void loadStructure();
-		return () => {
-			alive = false;
-		};
-	}, []);
+	}, [withPosts]);
 	// 관리자가 정한 구조 (structure.ts). 블로그는 메모의 정리 내용(옮긴 글·옮긴 폴더·만든 폴더)을 적용해 메모 사이드바와 같은 폴더로 묶는다.
 	// 글이 없는 빈 폴더도 보인다
 	const { layout, organization } = useStructure();
