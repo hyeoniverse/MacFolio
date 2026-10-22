@@ -127,6 +127,23 @@ test.describe('관리자 로그인', () => {
 		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
 	});
 
+	test('관리자 서버에 닿지 못하면 Apple 메뉴에서 바로 다시 확인하고, 닿으면 로그인할 수 있다', async ({ page }) => {
+		await fakeApi(page);
+		// 처음에는 /auth/me가 닿지 않는다 (서버가 잠깐 꺼진 것처럼)
+		const down = (route: { abort: () => Promise<void> }) => route.abort();
+		await page.route(`${FAKE_API}/auth/me`, down);
+		await enterDesktop(page);
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await expect(appleMenu(page)).toContainText('관리자 서버에 연결할 수 없습니다');
+		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toHaveCount(0);
+
+		// 서버가 돌아온 뒤 다시 확인하면 로그인할 수 있게 된다
+		await page.unroute(`${FAKE_API}/auth/me`, down);
+		await appleMenu(page).getByRole('menuitem', { name: '다시 확인' }).click();
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
+	});
+
 	test('관리자 서버가 없으면 로그인 버튼이 꺼져 있다', async ({ page }) => {
 		await enterDesktop(page);
 		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
