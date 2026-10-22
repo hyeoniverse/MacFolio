@@ -2,7 +2,7 @@
 title: iOS Safari에서만 음악 위젯 모서리가 각지는 문제 — 블러 레이어와 border-radius 클리핑
 date: 2026-10-22
 category: 개발기/MacFolio/프론트엔드
-summary: 홈 화면의 음악 위젯만 iOS Safari에서 모서리가 각지게 그려졌다. 배경 블러에 쓴 filter가 별도 합성 레이어를 만들면서 부모의 overflow: hidden + border-radius 클리핑이 적용되지 않은 것이 원인이었다. macOS Safari와 Playwright WebKit에서는 재현되지 않았고, clip-path로 같은 모양을 한 번 더 잘라 해결했다.
+summary: 홈 화면의 음악 위젯만 iOS Safari에서 모서리가 각지게 그려졌다. 배경 블러에 쓴 filter가 별도 합성 레이어를 만들면서 부모의 border-radius 클리핑이 적용되지 않은 것이 원인이었다. clip-path로 같은 모양을 한 번 더 잘라 해결했다.
 ---
 
 휴대폰 홈 화면의 위젯은 모두 모서리가 둥글다. 그런데 실제 아이폰의 Safari에서 열어 보니 음악 위젯만 네 모서리가 각지게 그려졌다. 맥북 Safari의 반응형 디자인 모드로 같은 화면 크기를 띄우면 정상이었고, 다른 위젯은 아이폰에서도 둥글게 나왔다.
