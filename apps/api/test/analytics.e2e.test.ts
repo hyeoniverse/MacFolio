@@ -101,6 +101,13 @@ describe('트래픽 분석 (e2e)', () => {
 		expect(stored).not.toContain('AppleWebKit');
 	});
 
+	it('다른 주소의 사이트가 보낸 sendBeacon을 Safari가 버리지 않게 CORP는 cross-origin. 다른 경로는 helmet 기본값', async () => {
+		const response = await send(visit('v-corp0001')).expect(204);
+		expect(response.headers['cross-origin-resource-policy']).toBe('cross-origin');
+		const health = await request(app.getHttpServer()).get('/health');
+		expect(health.headers['cross-origin-resource-policy']).toBe('same-origin');
+	});
+
 	it('로봇과 관리자 세션은 받기만 하고 저장하지 않는다. 형식이 틀리면 400', async () => {
 		await send(visit('v-bbbbbbbb'), { 'User-Agent': 'Googlebot/2.1' }).expect(204);
 		await send(visit('v-cccccccc'), { Cookie: adminCookie }).expect(204);
