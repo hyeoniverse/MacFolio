@@ -19,6 +19,7 @@ const actions = (): NoteActions => ({
 	remove: vi.fn(),
 	restore: vi.fn(),
 	purge: vi.fn(),
+	revert: vi.fn(),
 });
 
 /** 메뉴 항목을 읽기 쉬운 줄로: 글자(못 누르면 [x]), 줄은 '—', 가로 줄은 [a | b] */
@@ -34,6 +35,26 @@ const shape = (items: MenuItem[]) =>
 	);
 
 describe('메모 메뉴', () => {
+	it('서버에서 고친 저장소 글에만 저장소 글로 되돌리기가 있다 (잠긴 메모는 누를 수 없다)', () => {
+		const overrides = post({ status: { draftOnly: false, changed: false, scheduled: null, overridesRepo: true } });
+		expect(shape(noteContextItems(overrides, actions()))).toEqual([
+			'메모 고정',
+			'메모 잠그기',
+			'—',
+			'저장소 글로 되돌리기',
+			'메모 삭제',
+		]);
+		expect(shape(noteContextItems({ ...overrides, locked: true }, actions()))).toContain('저장소 글로 되돌리기 [x]');
+		const act = actions();
+		const item = noteContextItems(overrides, act).find(
+			(entry) => entry !== 'separator' && 'label' in entry && entry.label === '저장소 글로 되돌리기'
+		) as { onSelect: () => void };
+		item.onSelect();
+		expect(act.revert).toHaveBeenCalledWith(overrides);
+		// 저장소에 없는 서버 글이나 고치지 않은 저장소 글에는 없다
+		expect(shape(noteContextItems(post(), actions()))).not.toContain('저장소 글로 되돌리기');
+	});
+
 	it('우클릭: 고정·잠그기·삭제, 고정·잠긴 메모는 해제 글자이고 잠긴 메모는 지울 수 없다', () => {
 		expect(shape(noteContextItems(post(), actions()))).toEqual(['메모 고정', '메모 잠그기', '—', '메모 삭제']);
 		expect(shape(noteContextItems(post({ pinned: true, locked: true }), actions()))).toEqual([

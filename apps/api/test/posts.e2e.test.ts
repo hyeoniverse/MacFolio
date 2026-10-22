@@ -279,6 +279,22 @@ describe('블로그 글 (e2e)', () => {
 		expect((await admin('get', '/posts/admin')).body[0]).toMatchObject({ deleted: true, deletedAt: null, draft: null });
 	});
 
+	it('저장소 글로 되돌리면 서버의 게시 내용·임시 저장·버전이 사라져 방문자 목록에서도 빠진다 (저장소 파일이 보인다)', async () => {
+		await request(server()).delete('/posts/cra-to-vite/server-copy').expect(401);
+		await admin('post', '/posts/cra-to-vite/publish').send(POST).expect(200);
+		await admin('put', '/posts/cra-to-vite/draft')
+			.send({ ...POST, title: '고치는 중' })
+			.expect(200);
+		expect((await request(server()).get('/posts')).body).toEqual([expect.objectContaining({ slug: 'cra-to-vite' })]);
+
+		await admin('delete', '/posts/cra-to-vite/server-copy').expect(204);
+		expect((await request(server()).get('/posts')).body).toEqual([]);
+		expect((await admin('get', '/posts/admin')).body).toEqual([]);
+		expect(await prisma.postRevision.count({ where: { postSlug: 'cra-to-vite' } })).toBe(0);
+		// 서버에 없는 글이면 404
+		await admin('delete', '/posts/cra-to-vite/server-copy').expect(404);
+	});
+
 	it('잠근 글은 임시 저장·게시·버리기·지우기를 409로 막고, 잠금을 풀면 다시 된다', async () => {
 		const created = await admin('post', '/posts').send(POST).expect(201);
 		const slug = created.body.slug as string;
@@ -289,6 +305,7 @@ describe('블로그 글 (e2e)', () => {
 		await admin('post', `/posts/${slug}/publish`).send(POST).expect(409);
 		await admin('delete', `/posts/${slug}/draft`).expect(409);
 		await admin('delete', `/posts/${slug}`).expect(409);
+		await admin('delete', `/posts/${slug}/server-copy`).expect(409);
 		await admin('put', '/memo/organization')
 			.send({ folders: [], posts: {}, moves: [], pins: {}, locks: {} })
 			.expect(200);

@@ -315,6 +315,7 @@ const Memo: React.FC = () => {
 		restoreDeleted,
 		purgeDeleted,
 		emptyTrash,
+		revertPost,
 		alert: trashAlert,
 	} = useTrash({
 		adminPosts,
@@ -328,6 +329,8 @@ const Memo: React.FC = () => {
 			selectFolder(folder);
 		},
 		onTrashGone: () => selectFolder(ALL_CATEGORY),
+		// 서버 글을 빼고 편집기를 새로 그린다: 임시 저장을 버렸을 때와 같다 (useNewDraft)
+		onReverted: (slug) => draft.onDiscarded(slug, null),
 	});
 	// 끌어 놓기 (관리자): 글·지운 글·폴더 (useNoteDrag)
 	const { dragging, setDragging, canDrop, drop, dragPost } = useNoteDrag({
@@ -348,6 +351,7 @@ const Memo: React.FC = () => {
 		remove: (post) => void removePost(post),
 		restore: (post) => void restoreDeleted(post),
 		purge: (post) => void purgeDeleted(post),
+		revert: (post) => void revertPost(post),
 	};
 
 	/** 관리자 도구: 새 메모, 서식, 버전 기록, 지우기 (최근 삭제된 메모면 되돌려 놓기·즉시 삭제) */

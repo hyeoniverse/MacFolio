@@ -1053,7 +1053,7 @@ export async function fakeApi(
 
 		// 글: 누구나 게시한 글을 읽고, 로그인했을 때만 임시 저장·게시·버리기·지우기 (apps/api와 같은 규칙)
 		const postPath = path.match(
-			/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions|restore|permanent)(?:\/(\d+))?)?$/
+			/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions|restore|permanent|server-copy)(?:\/(\d+))?)?$/
 		);
 		if (postPath) {
 			const [, slug, action, revisionId] = postPath;
@@ -1105,6 +1105,12 @@ export async function fakeApi(
 					deleted: true,
 					deletedAt: new Date().toISOString(),
 				});
+				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			// 저장소 글로 되돌리기: 서버의 글을 통째로 지운다 (저장소 파일이 다시 보인다)
+			if (action === 'server-copy' && method === 'DELETE') {
+				if (!find(slug!)) return route.fulfill({ status: 404, headers: cors(origin), json: { statusCode: 404 } });
+				state.posts = state.posts.filter((item) => item.slug !== slug);
 				return route.fulfill({ status: 204, headers: cors(origin) });
 			}
 			if (action === 'restore' || action === 'permanent') {
