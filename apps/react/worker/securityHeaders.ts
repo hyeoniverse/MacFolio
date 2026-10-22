@@ -28,11 +28,25 @@ export function originOf(url: string): string | null {
 	}
 }
 
+/**
+ * 창 안의 사이트가 제 iframe 안에서 넘어가는 같은 사이트의 다른 출처. 데모 주소가 왼쪽 출처일 때만 오른쪽도 프레임에 연다
+ * (HYEONIVERSE 의 메뉴 Posts 는 blog.hyeoniverse.com 으로 간다 — 열지 않으면 그 순간 창이 ERR_BLOCKED_BY_CSP 로 막힌다)
+ */
+const FRAME_SIBLINGS: Readonly<Record<string, readonly string[]>> = {
+	'https://www.hyeoniverse.com': ['https://blog.hyeoniverse.com'],
+};
+
 /** R2의 S3 호환 주소 (https://<계정 ID>.r2.cloudflarestorage.com) */
 const R2_ENDPOINT = 'https://*.r2.cloudflarestorage.com';
 
 function origins(urls: readonly (string | undefined)[]): string[] {
 	return [...new Set(urls.map((url) => (url ? originOf(url) : null)).filter((o): o is string => o !== null))].sort();
+}
+
+/** 프레임에 여는 출처 — 데모 주소의 출처와 그 출처가 넘어가는 같은 사이트의 출처(FRAME_SIBLINGS) */
+function frameOrigins(urls: readonly string[]): string[] {
+	const own = origins(urls);
+	return origins([...own, ...own.flatMap((origin) => FRAME_SIBLINGS[origin] ?? [])]);
 }
 
 /** Content-Security-Policy 값 */
@@ -53,7 +67,7 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		// blob:: 방문자가 놓은 PDF(이 탭의 blob 주소)를 pdf.js가 fetch로 읽는다 (Finder localFiles)
 		// data:: 이력서 PDF의 레이아웃 엔진(WebAssembly)이 자기 몸통을 data: 주소로 읽는다. 바깥으로 나가는 연결은 아니다
 		'connect-src': ["'self'", 'blob:', 'data:', ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
-		'frame-src': ["'self'", TURNSTILE, ...origins(frameUrls)],
+		'frame-src': ["'self'", TURNSTILE, ...frameOrigins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],
 		'base-uri': ["'self'"],
