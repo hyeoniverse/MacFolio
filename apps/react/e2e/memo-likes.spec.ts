@@ -113,6 +113,21 @@ test.describe('인기글', () => {
 		await expect(items.nth(2)).toContainText(`3${EDITOR}`);
 	});
 
+	test('인기글이 아닌 목록 줄과 본문 위 날짜 줄에도 조회수를 보인다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.analyticsViews = { memo: { 'cra-to-vite': 1234 } };
+		const memo = await openMemo(page);
+		await memo.getByRole('searchbox').first().fill('Vite');
+		const item = memo.locator('.memo-list .memo-item').filter({ hasText: CRA });
+		await expect(item.locator('.memo-item-views')).toHaveText('조회 1,234');
+		// 조회가 없던 글은 0
+		await expect(
+			memo.locator('.memo-list .memo-item').filter({ hasNotText: CRA }).first().locator('.memo-item-views')
+		).toHaveText('조회 0');
+		await item.click();
+		await expect(memo.locator('.memo-reader-views')).toHaveText(' · 조회 1,234');
+	});
+
 	test('반응이 있는 글이 많아도 10개까지, 순위는 검색으로 걸러도 그대로', async ({ page }) => {
 		const api = await fakeApi(page);
 		// 저장소의 글마다 조회수 1~N (파일 이름 순서대로)

@@ -265,6 +265,7 @@ const Memo: React.FC = () => {
 								? { rank: (popular?.indexOf(post.slug) ?? 0) + 1, stats: statsOf(stats, post.slug) }
 								: undefined
 						}
+						views={!inPopular && views ? (views[post.slug] ?? 0) : undefined}
 					/>
 				);
 			}}
