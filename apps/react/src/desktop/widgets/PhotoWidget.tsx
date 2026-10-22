@@ -7,6 +7,20 @@ const INTERVAL_MS = 10_000;
 
 const isGif = (src: string) => /\.gif(\?|$)/i.test(src);
 
+/** 가는 선 아이콘 (Font Awesome 무료 아이콘은 굵은 것뿐이라 작은 유리 단추에서 무거워 보인다) */
+const ICON_PATHS = {
+	pause: 'M9 6v12M15 6v12',
+	play: 'M8 5.5v13l10.5-6.5z',
+	muted: 'M4 9.5h3l4.5-4v13l-4.5-4H4zM16 9.5l5 5M21 9.5l-5 5',
+	sound: 'M4 9.5h3l4.5-4v13l-4.5-4H4zM16 9a4.5 4.5 0 0 1 0 6',
+} as const;
+
+const LineIcon = ({ name }: { name: keyof typeof ICON_PATHS }) => (
+	<svg viewBox="0 0 24 24" aria-hidden="true">
+		<path d={ICON_PATHS[name]} />
+	</svg>
+);
+
 /** 위젯 위에 뜬 작은 유리 단추. 누를 때 위젯 끌기·앱 열기가 일어나지 않게 막는다 */
 const ControlButton = ({
 	label,
@@ -16,7 +30,7 @@ const ControlButton = ({
 }: {
 	label: string;
 	pressed: boolean;
-	icon: string;
+	icon: keyof typeof ICON_PATHS;
 	onClick: () => void;
 }) => (
 	<button
@@ -27,7 +41,7 @@ const ControlButton = ({
 		onPointerDown={(event) => event.stopPropagation()}
 		onClick={onClick}
 	>
-		<i className={`fa-solid ${icon}`} aria-hidden="true"></i>
+		<LineIcon name={icon} />
 	</button>
 );
 
@@ -100,14 +114,14 @@ const PhotoWidget = ({ album }: { album?: string }) => {
 				<ControlButton
 					label={paused ? '재생' : '일시 정지'}
 					pressed={paused}
-					icon={paused ? 'fa-play' : 'fa-pause'}
+					icon={paused ? 'play' : 'pause'}
 					onClick={() => setPaused((value) => !value)}
 				/>
 				{/* 소리는 영상에만 쓰이지만, 그림일 때 사라지면 헷갈려서 늘 둔다. 고른 값은 다음 영상에도 그대로 */}
 				<ControlButton
 					label={muted ? '소리 켜기' : '소리 끄기'}
 					pressed={!muted}
-					icon={muted ? 'fa-volume-xmark' : 'fa-volume-low'}
+					icon={muted ? 'muted' : 'sound'}
 					onClick={() => setMuted((value) => !value)}
 				/>
 			</div>
