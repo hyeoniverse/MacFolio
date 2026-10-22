@@ -23,7 +23,7 @@ export interface Post {
 	deletedAt?: string;
 	/**
 	 * 올린 때 (ISO, UTC). 같은 날 글의 순서를 정한다 (머리말의 date에는 시각이 없다).
-	 * 저장소 글은 git에 처음 들어온 커밋, 서버 글은 서버에 처음 만든 때. 모르면(아직 커밋하지 않은 글) 가장 최근으로 본다
+	 * 저장소 글은 git에 처음 들어온 커밋, 서버 글은 처음 게시한 때. 모르면(아직 커밋하지 않았거나 게시하지 않은 글) 가장 최근으로 본다
 	 */
 	createdAt?: string;
 }
@@ -107,7 +107,7 @@ export interface ServerPost {
 	summary: string;
 	body: string;
 	deleted: boolean;
-	/** 서버에 처음 만든 때 (ISO). 같은 날 글의 순서에 쓴다. 이 값을 주기 전의 API에는 없다 */
+	/** 처음 게시한 때 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
 	createdAt?: string;
 }
 
@@ -160,7 +160,7 @@ export interface AdminPost {
 	deletedAt: string | null;
 	/** 남은 버전 수 */
 	revisions: number;
-	/** 서버에 처음 만든 때 (ISO). 같은 날 글의 순서에 쓴다. 이 값을 주기 전의 API에는 없다 */
+	/** 처음 게시한 때 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
 	createdAt?: string;
 }
 
