@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 356" width="760" height="356" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="356" rx="16" fill="#f5f5f7"/>
+<text x="24" y="36" font-size="17" fill="#1d1d1f" font-weight="700">첫 번들 수신 순서: modulepreload 전후 (개념도)</text>
+<text x="24" y="72" font-size="14" fill="#1d1d1f" font-weight="700">전</text>
+<rect x="120" y="80" width="90" height="20" rx="4" fill="#8e8e93"/><text x="126" y="94" font-size="11" fill="#fff">index.html</text>
+<rect x="210" y="106" width="120" height="20" rx="4" fill="#0a84ff"/><text x="216" y="120" font-size="11" fill="#fff">main.js</text>
+<rect x="330" y="106" width="60" height="20" rx="4" fill="#ffcc00"/><text x="334" y="120" font-size="11" fill="#1d1d1f">실행</text>
+<rect x="390" y="132" width="110" height="20" rx="4" fill="#0a84ff"/><text x="396" y="146" font-size="11" fill="#fff">boot.js</text>
+<rect x="500" y="158" width="110" height="20" rx="4" fill="#0a84ff"/><text x="506" y="172" font-size="11" fill="#fff">boot의 의존 번들</text>
+<text x="392" y="196" font-size="12" fill="#d70015">main을 실행해 import()를 만나야 boot를 요청한다: 왕복이 한 번씩 늘어난다</text>
+<text x="24" y="236" font-size="14" fill="#1d1d1f" font-weight="700">후</text>
+<rect x="120" y="244" width="90" height="20" rx="4" fill="#8e8e93"/><text x="126" y="258" font-size="11" fill="#fff">index.html</text>
+<rect x="210" y="270" width="120" height="20" rx="4" fill="#0a84ff"/><text x="216" y="284" font-size="11" fill="#fff">main.js</text>
+<rect x="210" y="296" width="120" height="20" rx="4" fill="#0a84ff"/><text x="216" y="310" font-size="11" fill="#fff">boot.js (preload)</text>
+<rect x="210" y="322" width="130" height="20" rx="4" fill="#0a84ff"/><text x="216" y="336" font-size="11" fill="#fff">boot의 의존 번들 (preload)</text>
+<rect x="340" y="270" width="60" height="20" rx="4" fill="#ffcc00"/><text x="344" y="284" font-size="11" fill="#1d1d1f">실행</text>
+<text x="420" y="300" font-size="12" fill="#248a3d">HTML에 적힌 &lt;link rel="modulepreload"&gt;로 함께 수신한다</text>
+<text x="420" y="318" font-size="12" fill="#248a3d">실행 순서는 그대로: main 실행 후 boot를 import()</text>
+</svg>

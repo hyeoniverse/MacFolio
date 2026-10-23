@@ -624,18 +624,26 @@ The measurement method and migration process are in [docs/en/migration-cra-to-vi
 
 ## Performance
 
-I measured first-visit performance with Lighthouse, fixed the causes of slowness (3.8MB of fonts, 2.4MB of raw blog text and all app code in the initial bundle, large images · videos, a loading screen drawn by JS, and a desktop pre-rendered behind the loading screen) in three rounds, and measured again under the same conditions. Values are the median of 5 local runs.
+I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB of fonts, 2.4MB of raw blog text and all app code in the initial bundle, large images · videos, a loading screen rendered by JS, and a desktop pre-rendered behind the loading screen) in three rounds, and measured again under the same conditions. The re-measurement (Round 4) split the quote widget data that had crept into the initial bundle, bringing the `boot` bundle back from 65KB to 47KB compressed.
 
-| Item                         | Phone before → after | Desktop before → after |
-| ---------------------------- | -------------------- | ---------------------- |
-| Lighthouse performance       | 55 → **78~87**       | 62 → **98**            |
-| FCP                          | 14.3s → **3.2s**     | 2.5s → **0.7s**        |
-| LCP                          | 25.7s → **3.2s**     | 5.8s → **1.1s**        |
-| Transfer size on first visit | 4,893KB → **483KB**  | 9,050KB → **771KB**    |
+**Local** (median of 5 runs, ranges show run-to-run spread)
 
-The production site (after the first deploy) went from 53 → 73 on phone (LCP 31.5 → 7.1s) and 60 → 89 on desktop (LCP 5.8 → 2.1s).
+| Item                         | Phone before → Round 3 → Round 4 | Desktop before → Round 3 → Round 4 |
+| ---------------------------- | -------------------------------- | ---------------------------------- |
+| Lighthouse performance       | 55 → 78~87 → **78~97**           | 62 → 98 → **98~100**               |
+| FCP                          | 14.3s → 3.2s → **2.1~3.2s**      | 2.5s → 0.7s → **0.7s**             |
+| LCP                          | 25.7s → 3.2s → **2.1~4.5s**      | 5.8s → 1.1s → **0.7~1.1s**         |
+| Transfer size on first visit | 4,893KB → 483KB → **485KB**      | 9,050KB → 771KB → **772KB**        |
 
-Measurement conditions, causes, fixes, and how to measure again are in [docs/en/performance.md](docs/en/performance.md).
+**Production** (median of 5 runs)
+
+| Item                         | Phone before → after Round 1 → after Round 3 | Desktop before → after Round 1 → after Round 3 |
+| ---------------------------- | -------------------------------------------- | ---------------------------------------------- |
+| Lighthouse performance       | 53 → 73 → **98**                             | 60 → 89 → **97**                               |
+| LCP                          | 31.5s → 7.1s → **1.9s**                      | 5.8s → 2.1s → **1.0s**                         |
+| Transfer size on first visit | 6,342KB → 1,239KB → **602KB**                | 7,134KB → 3,229KB → **889KB**                  |
+
+Measurement conditions, bottlenecks, fixes, and how to measure again are in [docs/en/performance.md](docs/en/performance.md); the re-measurement is written up in [the re-measurement post](apps/react/src/apps/memo/content/site-performance-remeasure.md) (Korean).
 
 ## Docs
 
@@ -645,7 +653,7 @@ Measurement conditions, causes, fixes, and how to measure again are in [docs/en/
 - [Deployment](docs/en/deployment.md): Cloudflare Workers, Oracle VM, Cloudflare Tunnel, GitHub OAuth
 - [Rollback drill](docs/en/rollback-drill.md): the procedure for deliberately deploying a version that fails the health check to the server to verify automatic rollback
 - [CRA → Vite migration](docs/en/migration-cra-to-vite.md)
-- [Performance measurement](docs/en/performance.md): Lighthouse measurement conditions and results, causes of slowness and fixes, how to measure again
+- [Performance measurement](docs/en/performance.md): Lighthouse measurement conditions and results, bottlenecks and fixes, how to measure again
 - [Security scan](docs/en/security-scan.md): Semgrep · pnpm audit · osv-scanner results with per-item verdicts, licenses, CI criteria
 - [Privacy](docs/en/privacy.md): what is stored, how, and when it's deleted
 - [API](apps/api/README.md): running locally, tests, structure

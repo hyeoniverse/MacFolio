@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 344" width="760" height="344" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="344" rx="16" fill="#f5f5f7"/>
+<text x="24" y="36" font-size="17" fill="#1d1d1f" font-weight="700">휴대폰 첫 화면 렌더링 순서 (Lighthouse 휴대폰 조건, 초)</text>
+<line x1="150.0" y1="58" x2="150.0" y2="300" stroke="#e5e5ea"/><text x="150.0" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">0</text>
+<line x1="194.6" y1="58" x2="194.6" y2="300" stroke="#e5e5ea"/><text x="194.6" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">2</text>
+<line x1="239.2" y1="58" x2="239.2" y2="300" stroke="#e5e5ea"/><text x="239.2" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">4</text>
+<line x1="283.8" y1="58" x2="283.8" y2="300" stroke="#e5e5ea"/><text x="283.8" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">6</text>
+<line x1="328.5" y1="58" x2="328.5" y2="300" stroke="#e5e5ea"/><text x="328.5" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">8</text>
+<line x1="373.1" y1="58" x2="373.1" y2="300" stroke="#e5e5ea"/><text x="373.1" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">10</text>
+<line x1="417.7" y1="58" x2="417.7" y2="300" stroke="#e5e5ea"/><text x="417.7" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">12</text>
+<line x1="462.3" y1="58" x2="462.3" y2="300" stroke="#e5e5ea"/><text x="462.3" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">14</text>
+<line x1="506.9" y1="58" x2="506.9" y2="300" stroke="#e5e5ea"/><text x="506.9" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">16</text>
+<line x1="551.5" y1="58" x2="551.5" y2="300" stroke="#e5e5ea"/><text x="551.5" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">18</text>
+<line x1="596.2" y1="58" x2="596.2" y2="300" stroke="#e5e5ea"/><text x="596.2" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">20</text>
+<line x1="640.8" y1="58" x2="640.8" y2="300" stroke="#e5e5ea"/><text x="640.8" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">22</text>
+<line x1="685.4" y1="58" x2="685.4" y2="300" stroke="#e5e5ea"/><text x="685.4" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">24</text>
+<line x1="730.0" y1="58" x2="730.0" y2="300" stroke="#e5e5ea"/><text x="730.0" y="54" font-size="11" fill="#8e8e93" text-anchor="middle">26</text>
+<text x="138" y="89" font-size="13" fill="#1d1d1f" font-weight="600" text-anchor="end">개선 전</text>
+<rect x="150.0" y="72" width="319.0" height="26" rx="4" fill="#1d1d1f"/>
+<text x="156.0" y="89" font-size="11" fill="#fff">검은 화면 (JS 첫 번들 수신 중)</text>
+<rect x="469.0" y="72" width="261.0" height="26" rx="4" fill="#636366"/>
+<text x="475.0" y="89" font-size="11" fill="#fff">React 로딩 화면 + 뒤에서 바탕화면 렌더링</text>
+<line x1="469.0" y1="68" x2="469.0" y2="102" stroke="#ff9f0a" stroke-width="2"/><text x="473.0" y="114" font-size="11" fill="#ff9f0a" font-weight="700">FCP 14.3</text>
+<line x1="723.3" y1="68" x2="723.3" y2="102" stroke="#ff3b30" stroke-width="2"/><text x="719.3" y="114" font-size="11" fill="#ff3b30" font-weight="700" text-anchor="end">LCP 25.7</text>
+<text x="138" y="165" font-size="13" fill="#1d1d1f" font-weight="600" text-anchor="end">1차</text>
+<rect x="150.0" y="148" width="89.2" height="26" rx="4" fill="#1d1d1f"/>
+<rect x="239.2" y="148" width="490.8" height="26" rx="4" fill="#3a3a3c"/>
+<text x="245.2" y="165" font-size="11" fill="#fff">HTML 첫 렌더링(사과) → React 로딩 화면</text>
+<rect x="239.2" y="140" width="49.1" height="6" rx="3" fill="#af52de" stroke="#8e8e93" stroke-dasharray="4 3" fill-opacity="0.6"/>
+<line x1="239.2" y1="144" x2="239.2" y2="178" stroke="#ff9f0a" stroke-width="2"/><text x="243.2" y="190" font-size="11" fill="#ff9f0a" font-weight="700">FCP 4.0</text>
+<line x1="288.3" y1="144" x2="288.3" y2="178" stroke="#ff3b30" stroke-width="2"/><text x="292.3" y="190" font-size="11" fill="#ff3b30" font-weight="700">LCP 6.2 (가려진 홈 화면)</text>
+<text x="138" y="241" font-size="13" fill="#1d1d1f" font-weight="600" text-anchor="end">3차</text>
+<rect x="150.0" y="224" width="71.4" height="26" rx="4" fill="#1d1d1f"/>
+<rect x="221.4" y="224" width="508.6" height="26" rx="4" fill="#3a3a3c"/>
+<text x="227.4" y="241" font-size="11" fill="#fff">HTML 첫 렌더링(사과 + 시작 안내), 홈 화면은 진입 후</text>
+<line x1="221.4" y1="220" x2="221.4" y2="254" stroke="#34c759" stroke-width="2"/><text x="225.4" y="266" font-size="11" fill="#34c759" font-weight="700">FCP = LCP 3.2</text>
+<rect x="24" y="314" width="14" height="12" rx="3" fill="#1d1d1f"/><text x="44" y="324" font-size="12" fill="#3a3a3c">아무것도 없는 화면</text>
+<rect x="184" y="314" width="14" height="12" rx="3" fill="#3a3a3c"/><text x="204" y="324" font-size="12" fill="#3a3a3c">로딩 화면이 표시되는 구간</text>
+<rect x="364" y="314" width="14" height="12" rx="3" fill="#af52de" fill-opacity="0.35" stroke="#8e8e93" stroke-dasharray="4 3"/><text x="384" y="324" font-size="12" fill="#3a3a3c">로딩 화면 뒤에서 보이지 않는 홈 화면을 렌더링하던 구간</text>
+</svg>
