@@ -199,8 +199,8 @@ const MobileAppFrame: React.FC<Props> = ({
 					<span />
 					<span />
 				</div>
-				{/* 홈으로 가는 버튼을 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
-				{(nav?.onBack || !nav?.hideHome) && (
+				{/* 홈으로 가는 버튼을 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다. hideBack이면 그리지 않는다 (Esc는 그대로) */}
+				{!nav?.hideBack && (nav?.onBack || !nav?.hideHome) && (
 					<div
 						className={`mobile-navbar ${nav?.placement === 'bottom' ? 'bottom' : ''} ${nav?.immersive ? 'hidden' : ''}`}
 					>

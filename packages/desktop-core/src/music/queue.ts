@@ -62,6 +62,24 @@ export function buildQueue(trackIds: string[], startId: string, shuffle: boolean
 	return { order: [startId, ...rest], position: 0 };
 }
 
+/** 지금 곡 다음에 재생할 곡 id 순서 ('다음 재생' 목록). 끝에 닿으면 처음부터 지금 곡 앞까지 이어진다 */
+export const upcoming = (queue: Queue): string[] => [
+	...queue.order.slice(queue.position + 1),
+	...queue.order.slice(0, queue.position),
+];
+
+/**
+ * '다음 재생' 목록에서 from번째 곡을 to번째로 옮긴 대기열. 지금 곡을 맨 앞(position 0)에 두고 나머지를 바뀐 순서로 잇는다.
+ * 범위를 벗어나거나 자리가 같으면 그대로 돌려준다
+ */
+export function moveUpcoming(queue: Queue, from: number, to: number): Queue {
+	const rest = upcoming(queue);
+	if (from === to || from < 0 || to < 0 || from >= rest.length || to >= rest.length) return queue;
+	const [moved] = rest.splice(from, 1);
+	rest.splice(to, 0, moved);
+	return { order: [queue.order[queue.position], ...rest], position: 0 };
+}
+
 /** 다음 곡 위치. 끝에서 반복이 꺼져 있으면 null (재생을 멈춘다) */
 export function nextPosition(queue: Queue, repeat: RepeatMode): number | null {
 	if (queue.position + 1 < queue.order.length) return queue.position + 1;

@@ -476,96 +476,6 @@
 	display: none;
 }
 
-/* ─── 지금 재생 중 (모바일 시트: shared/ui의 Sheet cover. 덮는 자리·움직임은 Sheet.css) ─── */
-.music-now-playing {
-	--ui-sheet-bg: #1c1c1e;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: var(--space-16);
-	padding: var(--space-24) var(--space-24) var(--space-24);
-	color: var(--color-white);
-	isolation: isolate;
-}
-
-/* 앨범 표지를 흐리게 깐 배경 */
-.music-now-playing::before {
-	position: absolute;
-	inset: -40px;
-	z-index: -1;
-	background: var(--artwork) center / cover;
-	filter: blur(40px) brightness(0.55);
-	content: '';
-}
-
-.music-now-art {
-	width: min(76vw, 320px);
-	aspect-ratio: 1;
-	object-fit: cover;
-	border-radius: var(--radius-14);
-	box-shadow: var(--shadow-modal);
-	transform: scale(0.84);
-	transition: transform var(--duration-slow) var(--ease-spring);
-}
-
-.music-now-art.playing {
-	transform: scale(1);
-}
-
-.music-now-info {
-	display: flex;
-	flex-direction: column;
-	align-self: stretch;
-}
-
-.music-now-info strong {
-	font-size: var(--text-title3);
-}
-
-.music-now-info span {
-	font-size: var(--text-callout);
-	opacity: 0.7;
-}
-
-.music-now-playing .music-transport {
-	align-self: stretch;
-	justify-content: space-between;
-	font-size: var(--text-title1);
-}
-
-.music-now-playing .music-transport .music-play {
-	font-size: 36px;
-}
-
-.music-now-playing .music-toggle {
-	color: var(--color-on-media-secondary-label);
-}
-
-.music-now-playing .music-toggle.on {
-	color: var(--color-white);
-}
-
-.music-now-playing .volume-bar {
-	align-self: stretch;
-	color: var(--color-white);
-}
-
-.music-now-playing .music-up-next {
-	align-self: stretch;
-	padding: var(--space-12) 0 0;
-	border: none;
-	animation: none;
-}
-
-.music-now-playing .music-up-next p,
-.music-now-playing .music-up-next small {
-	color: var(--color-on-media-secondary-label);
-}
-
-.music-now-playing .music-up-next button:hover {
-	background-color: var(--color-on-media-fill-subtle);
-}
-
 /* ─── 좁은 창 (모바일): 보관함 → 재생 목록을 한 화면씩, 아래 미니 플레이어 ─── */
 @container (max-width: 640px) {
 	.music,
@@ -1018,22 +928,10 @@
 	margin-bottom: calc(var(--space-8) + var(--phone-bottom-inset));
 }
 
-/* 휴대폰: 시트는 떠 있는 뒤로 가기(닫기) 아래에 깔고, 그 동그라미 자리만큼 위를 비운다 */
-.container.mobile .music-now-playing {
-	z-index: 5;
-	padding-top: calc(var(--phone-top) + 56px);
-	padding-bottom: calc(28px + var(--phone-bottom-inset));
-}
-
 /* ─── 움직임 ─── */
 /* 곡이 바뀌면 재생 막대의 표지·제목이 새로 나타난다 */
 .music-track-swap {
 	animation: fade-in var(--duration) var(--ease-out);
-}
-
-/* 지금 재생 중의 큰 표지는 곡이 바뀌면 살짝 커지며 나타난다 */
-.music-now-art {
-	animation: pop-in var(--duration-slow) var(--ease-out);
 }
 
 /* 재생·일시 정지 아이콘은 바뀔 때 톡 튄다 */

@@ -40,6 +40,18 @@
 	opacity: 0.8;
 }
 
+/* 이름 아래 흐린 둘째 줄 (detail) */
+.ui-menu-item-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.ui-menu-item-detail {
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+}
+
 .ui-menu-item:hover:not(:disabled),
 .ui-menu-item:focus-visible {
 	outline: none;
@@ -139,6 +151,10 @@
 	gap: var(--space-14);
 	padding: var(--space-10) var(--space-12);
 	border-radius: var(--radius-10);
+}
+
+.ui-menu.touch .ui-menu-item-detail {
+	font-size: var(--text-footnote);
 }
 
 .ui-menu.touch .ui-menu-item i {

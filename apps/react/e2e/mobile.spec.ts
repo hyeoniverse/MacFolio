@@ -656,7 +656,7 @@ test.describe('모바일', () => {
 		await expect(music.getByRole('dialog', { name: '지금 재생 중' })).toBeVisible();
 		await expect.poll(color).toBe('rgb(255, 255, 255)');
 
-		await music.locator('.mobile-navbar-home').tap();
+		await music.getByRole('button', { name: '지금 재생 중 닫기' }).tap();
 		await expect.poll(color).toBe('rgb(28, 28, 30)');
 	});
 
@@ -1128,6 +1128,8 @@ test.describe('모바일', () => {
 		const sheet = music.getByRole('dialog', { name: '지금 재생 중' });
 		await expect(sheet).toBeVisible();
 		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
+		// 다음 재생 목록은 대기열 버튼으로 연다 (iOS 18)
+		await sheet.getByRole('button', { name: '대기열' }).tap();
 		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
 
 		// 옆으로 밀어도 시트는 가로로 움직이지 않는다 (흐린 표지 배경이 시트 밖까지 그려져 있다)
@@ -1136,8 +1138,9 @@ test.describe('모바일', () => {
 		await expect.poll(() => sheet.evaluate((el) => el.scrollLeft)).toBe(0);
 		expect(await sheet.evaluate((el) => getComputedStyle(el).overflowX)).toBe('hidden');
 
-		// 닫기는 시트 위에 떠 있는 뒤로 가기 하나
-		await music.locator('.mobile-navbar-home').tap();
+		// 떠 있는 뒤로 가기는 없고, 닫기는 맨 위 손잡이 (쓸어내리기·누르기)
+		await expect(music.locator('.mobile-navbar-home')).toHaveCount(0);
+		await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).tap();
 		await expect(sheet).toBeHidden();
 
 		// 플레이리스트로 돌아오고, 보관함 맨 위에는 지금 재생 중인 목록의 표지
@@ -1181,7 +1184,8 @@ test.describe('모바일', () => {
 		// 음악 위젯은 1쪽에 있다
 		const widget = page.locator('.mobile-home').getByRole('region', { name: '음악' });
 		await expect(widget).toBeVisible();
-		await expect(widget.getByRole('button', { name: '재생' })).toBeVisible();
+		// 휴대폰도 로딩 화면을 누르면 배경 음악이 재생된다
+		await expect(widget.getByRole('button', { name: '일시 정지' })).toBeVisible();
 
 		await widget.getByRole('slider', { name: '재생 위치' }).tap();
 		await expect(appWindow(page, 'music')).toBeHidden();

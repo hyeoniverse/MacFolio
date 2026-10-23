@@ -1,7 +1,15 @@
 // 무엇을 어떤 순서로 재생하는지: 재생 목록, 대기열, 셔플, 반복. 소리를 내는 일(Audio)과 재생 시간·음량은 앱이 맡고,
 // 동작마다 돌려주는 값으로 앱이 Audio를 어떻게 할지 정한다
 import { createStore } from '../store.js';
-import { buildQueue, nextPosition, nextRepeatMode, previousPosition, type Queue, type RepeatMode } from './queue.js';
+import {
+	buildQueue,
+	moveUpcoming,
+	nextPosition,
+	nextRepeatMode,
+	previousPosition,
+	type Queue,
+	type RepeatMode,
+} from './queue.js';
 
 export interface PlayerState {
 	/** 지금 재생 중인 재생 목록 */
@@ -76,6 +84,16 @@ export function createPlayerStore({
 					queue: buildQueue(trackIdsOf(state.playlistId), currentTrackId(state), shuffle, random),
 				};
 			}),
+		/** 대기열의 그 곡으로 건너뛴다 (순서는 그대로). 대기열에 없는 곡이면 false */
+		jumpTo: (trackId: string): boolean => {
+			const position = store.getState().queue.order.indexOf(trackId);
+			if (position === -1) return false;
+			moveTo(position);
+			return true;
+		},
+		/** '다음 재생' 목록의 순서를 바꾼다 (지금 곡은 그대로 재생한다) */
+		moveUpcoming: (from: number, to: number) =>
+			store.setState((state) => ({ ...state, queue: moveUpcoming(state.queue, from, to) })),
 		cycleRepeat: () => store.setState((state) => ({ ...state, repeat: nextRepeatMode(state.repeat) })),
 		setRepeat: (repeat: RepeatMode) => store.setState({ repeat }),
 	};

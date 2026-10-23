@@ -28,6 +28,10 @@ export interface MusicContextType {
 	/** 반복 방식을 바로 고른다 (메뉴 막대의 '제어') */
 	setRepeat: (mode: RepeatMode) => void;
 	stopAndReset: () => void;
+	/** 대기열의 곡으로 건너뛰어 재생한다 (대기열 순서는 그대로) */
+	jumpTo: (trackId: string) => void;
+	/** '다음 재생' 목록에서 from번째 곡을 to번째로 옮긴다 */
+	moveUpcoming: (from: number, to: number) => void;
 }
 
 export const MusicContext = createContext<MusicContextType | undefined>(undefined);
