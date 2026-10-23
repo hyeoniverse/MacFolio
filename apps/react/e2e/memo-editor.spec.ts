@@ -1466,6 +1466,44 @@ test.describe('한국어 사이의 굵게', () => {
 });
 
 test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동하지 않는다)', () => {
+	test('상자는 편집기 안에 머문다: 오른쪽 끝의 링크는 상자를 편집기 안쪽으로 밀어 잘리지 않게 한다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		// 한 문단에 링크를 흩어 두어 줄의 왼쪽·가운데·오른쪽 끝에 링크가 오게 한다
+		const words = Array.from(
+			{ length: 14 },
+			(_, index) => `앞 글자 [링크${index + 1}](https://example.com/page-${index + 1}) 뒤 글자`
+		);
+		const content = {
+			title: '링크 위치 시험',
+			date: '2026-10-16',
+			category: '기술 노트/Git',
+			summary: '',
+			body: `첫 문단\n\n${words.join(' ')}`,
+		};
+		api.posts = [{ slug: 'link-edge', ...content, deleted: false, published: content }];
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '링크 위치 시험' }).click();
+		const editor = memo.locator('.ProseMirror');
+		const bounds = (await memo.locator('.memo-inline-editor').boundingBox())!;
+		const hover = memo.locator('.memo-link-hover');
+		const links = editor.locator('a');
+		let rightmost = 0;
+		for (let index = 0; index < (await links.count()); index++) {
+			const link = links.nth(index);
+			await link.hover();
+			await expect(hover).toBeVisible();
+			const box = (await hover.boundingBox())!;
+			const linkBox = (await link.boundingBox())!;
+			expect(box.x).toBeGreaterThanOrEqual(bounds.x);
+			expect(box.x + box.width).toBeLessThanOrEqual(bounds.x + bounds.width);
+			rightmost = Math.max(rightmost, linkBox.x + linkBox.width - bounds.x);
+		}
+		// 줄 오른쪽 끝(편집기 폭의 70% 너머)에 있는 링크도 확인했다
+		expect(rightmost).toBeGreaterThan(bounds.width * 0.7);
+	});
+
 	test('링크에 마우스를 올리면 이동 버튼이 뜨고, 글 링크는 그 글로, 바깥 링크는 새 탭으로 연다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const content = {

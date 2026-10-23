@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { linkActionLabel, linkTargetOf, type LinkTarget } from '../linkTarget';
 import { useOpenLink } from '../useOpenLink';
 
@@ -6,11 +6,13 @@ import { useOpenLink } from '../useOpenLink';
 const HIDE_DELAY_MS = 300;
 /** 링크가 보이는 영역(스크롤 영역)의 위쪽에 이만큼 가까우면 버튼을 링크 아래에 띄운다 (위가 잘리지 않게) */
 const ROOM_ABOVE = 56;
+/** 편집기 가장자리와 상자 사이에 남길 틈 */
+const EDGE = 8;
 
 interface Shown {
 	target: LinkTarget;
 	href: string;
-	/** 편집기 기준 위치 (링크의 첫 줄) */
+	/** 편집기 기준 위치 (링크의 첫 줄). 상자의 왼쪽을 링크 시작에 맞추되, 편집기 밖으로 나가면 안쪽으로 민다 */
 	left: number;
 	top: number;
 	below: boolean;
@@ -45,6 +47,15 @@ const LinkHover = () => {
 	const marker = useRef<HTMLSpanElement>(null);
 	const hideTimer = useRef(0);
 	const [shown, setShown] = useState<Shown | null>(null);
+	const box = useRef<HTMLDivElement>(null);
+	// 상자를 그린 뒤 실제 폭을 재어 편집기 좌우 경계 안에 둔다 (오른쪽 끝의 링크도 잘리지 않게)
+	useLayoutEffect(() => {
+		const element = box.current;
+		const root = element?.parentElement;
+		if (!element || !root || !shown) return;
+		const max = root.clientWidth - element.offsetWidth - EDGE;
+		element.style.left = `${Math.max(EDGE, Math.min(shown.left, max))}px`;
+	}, [shown]);
 	const openLink = useOpenLink();
 
 	const cancelHide = () => window.clearTimeout(hideTimer.current);
@@ -113,6 +124,7 @@ const LinkHover = () => {
 			{shown && (
 				<div
 					className={`memo-link-hover ${shown.below ? 'below' : ''}`}
+					ref={box}
 					style={{ left: shown.left, top: shown.top }}
 					onMouseEnter={cancelHide}
 					onMouseLeave={hideSoon}
