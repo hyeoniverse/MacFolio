@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from './homePages';
+import { dragOffset, iconRowsBelow, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from './homePages';
 
 describe('홈 화면 페이지', () => {
 	it('높이에 들어가는 줄 수 (줄 사이는 마지막 줄 뒤에 없다), 적어도 한 줄', () => {
@@ -14,7 +14,9 @@ describe('홈 화면 페이지', () => {
 		expect(pages.map((page) => page.length)).toEqual([8, 4, 11]);
 		expect(pages.flat()).toEqual(apps);
 		expect(pageApps(apps, [24], 24).map((page) => page.length)).toEqual([23]);
-		expect(pageApps([1, 2, 3], [0], 0)).toEqual([[1], [2], [3]]);
+		// 위젯이 다 차지한 페이지(0칸)는 앱 없이 두고 다음 페이지부터 놓는다
+		expect(pageApps([1, 2, 3], [0], 0)).toEqual([[], [1], [2], [3]]);
+		expect(pageApps([1, 2, 3], [2, 0, 4], 8)).toEqual([[1, 2], [], [3]]);
 	});
 
 	it('위젯 페이지는 앱이 모자라도 만든다', () => {
@@ -25,12 +27,25 @@ describe('홈 화면 페이지', () => {
 
 describe('widgetRowHeight', () => {
 	const gaps = { widget: 16, top: 24, icon: 22 };
-	it('자리가 넉넉하면 정사각형, 모자라면 아이콘 두 줄이 들어가게 줄인다', () => {
+	it('자리가 넉넉하면 정사각형, 모자라면 위젯 두 줄 아래 아이콘 두 줄과 위젯 세 줄이 들어가게 줄인다', () => {
 		// 아이콘 두 줄 = 82×2 + 22 = 186, 위젯 두 줄 사이 16, 위와 사이 24
-		expect(widgetRowHeight(800, [2, 2, 1], 155, 82, gaps)).toBe(155);
-		expect(widgetRowHeight(460, [2, 2, 1], 155, 82, gaps)).toBe(117);
-		expect(widgetRowHeight(300, [2], 155, 82, gaps)).toBe(112);
-		expect(widgetRowHeight(300, [0, 0], 155, 82, gaps)).toBe(155);
+		expect(widgetRowHeight(800, 155, 82, gaps)).toBe(155);
+		expect(widgetRowHeight(460, 155, 82, gaps)).toBe(117);
+		expect(widgetRowHeight(300, 155, 82, gaps)).toBe(112);
+		// 위젯 세 줄 (사이 16×2)이 들어가야 한다: (400 - 32) / 3 = 122
+		expect(widgetRowHeight(400, 200, 20, gaps)).toBe(122);
+	});
+
+	it('위젯 줄 수를 받지 않는다: 한 페이지가 세 줄이 되어도 다른 페이지의 위젯 크기는 그대로다', () => {
+		expect(widgetRowHeight.length).toBe(4);
+	});
+});
+
+describe('iconRowsBelow', () => {
+	it('위젯이 페이지를 다 차지하면 0줄 (rowsThatFit은 적어도 한 줄)', () => {
+		expect(iconRowsBelow(40, 82, 22)).toBe(0);
+		expect(rowsThatFit(40, 82, 22)).toBe(1);
+		expect(iconRowsBelow(186, 82, 22)).toBe(2);
 	});
 });
 

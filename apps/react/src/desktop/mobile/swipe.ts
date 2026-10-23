@@ -50,9 +50,13 @@ export function scrollWins(boxes: ScrollBox[], direction: SwipeDirection): boole
 	);
 }
 
+/** 스스로 끄는 동작이 있는 요소 안인지 */
+export const ownsGesture = (target: EventTarget | null) =>
+	target instanceof Element && target.closest(OWN_GESTURE) !== null;
+
 /** 이 요소에서 시작한 손가락으로 제어 센터를 여닫아도 되는지 */
 export function canStartSwipe(target: EventTarget | null, direction: SwipeDirection): boolean {
-	if (!(target instanceof Element) || target.closest(OWN_GESTURE)) return false;
+	if (!(target instanceof Element) || ownsGesture(target)) return false;
 	const boxes: ScrollBox[] = [];
 	for (let element: Element | null = target; element; element = element.parentElement) {
 		const { overflowY } = getComputedStyle(element);
