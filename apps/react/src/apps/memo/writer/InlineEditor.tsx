@@ -20,7 +20,8 @@ import { uploadAndInsert } from './attachmentsApi';
 import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
 import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';
-import LinkHover from './LinkHover';
+import { linkOpener, linkOpenPlugin } from './linkOpen';
+import { useOpenLink } from '../useOpenLink';
 import { findPlugin } from './findPlugin';
 import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
 import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
@@ -280,6 +281,14 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 		onChangeRef.current = onChange;
 		onReadyRef.current = onReady;
 	});
+	// 링크 버튼(linkOpen.ts)이 읽기 화면과 같은 규칙으로 연다
+	const openLink = useOpenLink();
+	useEffect(() => {
+		linkOpener.current = openLink;
+		return () => {
+			if (linkOpener.current === openLink) linkOpener.current = null;
+		};
+	}, [openLink]);
 
 	const { get, loading } = useEditor(
 		(root) =>
@@ -366,7 +375,8 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 				.use(gapClickPlugin)
 				.use(findPlugin)
 				.use(codeHighlight)
-				.use(tagHighlight),
+				.use(tagHighlight)
+				.use(linkOpenPlugin),
 		[]
 	);
 
@@ -390,7 +400,6 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 		<>
 			<Milkdown />
 			<TableHandles />
-			<LinkHover />
 		</>
 	);
 };

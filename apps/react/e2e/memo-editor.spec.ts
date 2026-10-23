@@ -1466,7 +1466,9 @@ test.describe('한국어 사이의 굵게', () => {
 });
 
 test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동하지 않는다)', () => {
-	test('링크에 마우스를 올리면 이동 버튼이 뜨고, 글 링크는 그 글로, 바깥 링크는 새 탭으로 연다', async ({ page }) => {
+	test('링크에 마우스를 올리면 링크 끝에 이동 버튼이 끼워지고(글자를 가리지 않는다), 글 링크는 그 글로, 바깥 링크는 새 탭으로 연다', async ({
+		page,
+	}) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const content = {
 			title: '링크 시험',
@@ -1482,23 +1484,31 @@ test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동�
 		const memo = await openMemo(page, api);
 		await memo.locator('.memo-item', { hasText: '링크 시험' }).click();
 		const editor = memo.locator('.ProseMirror');
-		const hover = memo.locator('.memo-link-hover');
+		const open = editor.locator('.memo-link-open');
 
-		// 바깥 링크: 새 탭에서 연다
-		await editor.locator('a', { hasText: '예시' }).hover();
-		await expect(hover.getByRole('button', { name: '새 탭에서 열기' })).toBeVisible();
-		await expect(hover).toContainText('example.com/docs');
+		// 바깥 링크: 링크 끝에 버튼, 새 탭에서 연다
+		const example = editor.locator('a', { hasText: '예시' });
+		await example.hover();
+		await expect(open).toHaveCount(1);
+		await expect(open).toHaveAttribute('aria-label', '새 탭에서 열기: https://example.com/docs');
+		// 링크 글자 바로 뒤에 끼워진다: 링크와 겹치지 않고, 뒤 글자(" 링크")는 버튼 뒤로 밀린다
+		const linkBox = (await example.boundingBox())!;
+		const buttonBox = (await open.boundingBox())!;
+		expect(buttonBox.x).toBeGreaterThanOrEqual(linkBox.x + linkBox.width - 0.5);
+		expect(Math.abs(buttonBox.y + buttonBox.height / 2 - (linkBox.y + linkBox.height / 2))).toBeLessThan(
+			linkBox.height / 2
+		);
 		const popup = page.waitForEvent('popup');
-		await hover.getByRole('button', { name: '새 탭에서 열기' }).click();
+		await open.click();
 		expect((await popup).url()).toBe('https://example.com/docs');
+		// 버튼은 저장하지 않는다
+		await expect(open).toHaveCount(0);
 
 		// 글 링크: 버튼으로 마우스를 옮기는 동안 남아 있고, 누르면 메모에서 그 글을 연다
 		await editor.locator('a', { hasText: '성능 리포트' }).hover();
-		const go = hover.getByRole('button', { name: '글로 이동' });
-		await expect(go).toBeVisible();
-		await go.hover();
-		await go.click();
-		// 주소 막대는 맨 앞 창이 보는 글을 따른다
+		await expect(open).toHaveAttribute('aria-label', '글로 이동: /memo/site-performance-report');
+		await open.hover();
+		await open.click();
 		await expect(page).toHaveURL(/\/memo\/site-performance-report$/);
 		await expect(memo.locator('.memo-item', { hasText: '성능 측정 리포트' })).toHaveClass(/active/);
 		// 편집하던 글은 바뀌지 않았다
