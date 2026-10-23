@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { newSlug, parsePostInput, type PostInput } from './rules.js';
+import { newSlug, parsePostInput, parseSecretInput, type PostInput } from './rules.js';
 import { isPostSlug, type PostSlug } from '@macfolio/desktop-core/memo';
 import type { AdminPost, RevisionSummary, ServerPost } from '@macfolio/contracts';
 
@@ -45,6 +45,7 @@ const toAdmin = (row: Row): AdminPost => ({
 	deleted: row.deleted,
 	deletedAt: row.deletedAt?.toISOString() ?? null,
 	revisions: row._count.revisions,
+	secret: row.secret,
 	// 같은 날 글의 순서 (머리말의 날짜에는 시각이 없다). 게시한 적 없으면 없다
 	...(row.firstPublishedAt && { createdAt: row.firstPublishedAt.toISOString() }),
 });
@@ -91,11 +92,13 @@ export class PostsService {
 
 	/**
 	 * 방문자용: 게시한 글 중 날짜가 된 것, 그리고 저장소 글을 가릴 표시(지운 글, 예약 글).
-	 * 임시 저장과 게시한 적 없는 글은 내보내지 않는다
+	 * 임시 저장과 게시한 적 없는 글은 내보내지 않는다.
+	 * 비밀 글은 가리는 표시로도 내보내지 않는다 (주소가 있다는 것도 알리지 않는다). 관리자 세션이어도 같다:
+	 * 이 응답은 Worker(첫 화면·sitemap·RSS)와 최근 글 위젯이 쿠키 없이 쓰는 공개 목록이고, 관리자는 /posts/admin으로 본다
 	 */
 	async listPublic(now = today()): Promise<PublicPost[]> {
 		const rows = await this.prisma.post.findMany({
-			where: { OR: [{ deleted: true }, { title: { not: null } }] },
+			where: { secret: false, OR: [{ deleted: true }, { title: { not: null } }] },
 			orderBy: { slug: 'asc' },
 		});
 		return rows.map((row) => {
@@ -115,11 +118,11 @@ export class PostsService {
 		});
 	}
 
-	/** 방문자에게 보이는 글 하나의 제목·날짜·분류 (공유 카드용). 없거나 지웠거나 아직 날짜가 안 됐으면 404 */
+	/** 방문자에게 보이는 글 하나의 제목·날짜·분류 (공유 카드용). 없거나 지웠거나 아직 날짜가 안 됐거나 비밀 글이면 404 */
 	async findPublic(slug: string, now = today()): Promise<{ title: string; date: string; category: string }> {
 		this.checkSlug(slug);
 		const row = await this.prisma.post.findUnique({ where: { slug } });
-		if (!row || row.deleted || row.title === null || row.date === null || row.date > now)
+		if (!row || row.deleted || row.secret || row.title === null || row.date === null || row.date > now)
 			throw new NotFoundException('글이 없습니다.');
 		return { title: row.title, date: row.date, category: row.category ?? '' };
 	}
@@ -197,6 +200,27 @@ export class PostsService {
 			return tx.post.findUniqueOrThrow({ where: { slug }, include: WITH_COUNT });
 		});
 		return toAdmin(row);
+	}
+
+	/**
+	 * 비밀 글로 지정하거나 푼다. 게시한 내용·임시 저장·버전은 그대로 두고 보이는 범위만 바꾼다.
+	 * 서버에 있는 글만 (없으면 404, '최근 삭제된 항목'의 글도 404). 잠근 글이면 409.
+	 * 서버는 저장소에 같은 주소의 파일이 있는지 모르므로, 저장소 글을 고친 글을 비밀로 지정하면 방문자에게는 저장소의 원래 글이 보인다
+	 * (화면은 서버에만 있는 글에만 이 메뉴를 보인다)
+	 */
+	async setSecret(slug: string, input: unknown, admin: string): Promise<AdminPost> {
+		this.checkSlug(slug);
+		const parsed = parseSecretInput(input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		await this.checkUnlocked(slug);
+		const row = await this.prisma.post.findUnique({ where: { slug } });
+		if (!row || row.deleted) throw new NotFoundException('글이 없습니다.');
+		const updated = await this.prisma.post.update({
+			where: { slug },
+			data: { secret: parsed.value.secret, updatedBy: admin },
+			include: WITH_COUNT,
+		});
+		return toAdmin(updated);
 	}
 
 	/**

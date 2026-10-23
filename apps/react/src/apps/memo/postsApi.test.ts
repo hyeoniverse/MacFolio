@@ -8,6 +8,7 @@ import {
 	fetchServerPosts,
 	publishPost,
 	saveDraft,
+	setPostSecret,
 } from './postsApi';
 
 const respond = (status: number, body?: unknown) =>
@@ -51,6 +52,21 @@ describe('postsApi', () => {
 		expect(publish).toHaveBeenCalledWith('http://api/posts/a/publish', expect.objectContaining({ method: 'POST' }));
 		await expect(discardDraft('http://api', 'a', respond(200, ADMIN))).resolves.toEqual({ ok: true, post: ADMIN });
 		await expect(discardDraft('http://api', 'a', respond(200))).resolves.toEqual({ ok: true, post: null });
+	});
+
+	it('비밀 글 지정·해제는 PUT /posts/:slug/secret에 { secret }을 보내고, 거절되면 이유를 돌려준다', async () => {
+		const secret = respond(200, { ...ADMIN, secret: true });
+		await expect(setPostSecret('http://api', 'a', true, secret)).resolves.toEqual({
+			ok: true,
+			post: { ...ADMIN, secret: true },
+		});
+		expect(secret).toHaveBeenCalledWith(
+			'http://api/posts/a/secret',
+			expect.objectContaining({ method: 'PUT', body: JSON.stringify({ secret: true }) })
+		);
+		await expect(
+			setPostSecret('http://api', 'a', false, respond(409, { message: '잠긴 메모입니다. 잠금을 풀고 고치세요.' }))
+		).resolves.toEqual({ ok: false, errors: ['잠긴 메모입니다. 잠금을 풀고 고치세요.'] });
 	});
 
 	it('관리자 목록과 버전은 읽지 못하면 null', async () => {

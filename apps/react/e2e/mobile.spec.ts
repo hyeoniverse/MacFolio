@@ -771,12 +771,13 @@ test.describe('모바일', () => {
 		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
 		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
 
-		// ••• 메뉴: 맨 위에 고정·잠그기, 그 아래 찾기·읽기 화면·삭제
+		// ••• 메뉴: 맨 위에 고정·잠그기, 비밀 글(저장소 글이라 꺼져 있다), 그 아래 찾기·읽기 화면·삭제
 		await top.getByRole('button', { name: '메모 동작' }).tap();
 		const menu = page.getByRole('menu', { name: '메모 동작' });
 		await expect(menu.getByRole('menuitem')).toHaveText([
 			'메모 고정',
 			'잠그기',
+			'비밀 글로 지정',
 			'메모에서 찾기',
 			'읽기 화면으로 보기',
 			'삭제',

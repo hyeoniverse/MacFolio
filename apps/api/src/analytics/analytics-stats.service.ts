@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsRollup } from './analytics-rollup.service.js';
+import { SecretPosts, withoutSecret } from '../posts/secret-posts.service.js';
 import {
 	aggregate,
 	IP_RETENTION_DAYS,
@@ -31,6 +32,8 @@ export type LiveVisit = ContractLiveVisit;
 
 /** 실시간으로 거슬러 보는 최대 기간 (분): 가린 IP를 두는 기간 */
 export const LIVE_MAX_MINUTES = IP_RETENTION_DAYS * 24 * 60;
+/** 트래픽 분석의 글 항목 키 앞부분 (memo/<글 주소>) */
+const MEMO_PREFIX = 'memo/';
 /** 실시간에 읽는 이벤트 수 상한 */
 const LIVE_EVENT_LIMIT = 20_000;
 
@@ -63,8 +66,22 @@ export class AnalyticsStats {
 
 	constructor(
 		private readonly prisma: PrismaService,
-		private readonly rollup: AnalyticsRollup
+		private readonly rollup: AnalyticsRollup,
+		private readonly secret: SecretPosts
 	) {}
+
+	/**
+	 * 방문자에게 주는 요약에서 비밀 글(글 표의 memo/<주소>)을 뺀다.
+	 * 캐시한 값을 꺼낸 뒤에 거른다: 방금 비밀로 지정한 글도 1분 캐시에 남지 않는다
+	 */
+	private async hideSecretItems(summary: Summary): Promise<Summary> {
+		const secret = await this.secret.slugs();
+		if (secret.size === 0) return summary;
+		const item = summary.breakdown.item.filter(
+			({ key }) => !(key.startsWith(MEMO_PREFIX) && secret.has(key.slice(MEMO_PREFIX.length)))
+		);
+		return { ...summary, breakdown: { ...summary.breakdown, item } };
+	}
 
 	/** 방문자에게 주는 값: 같은 질문이면 1분 동안 같은 값 */
 	private async cached<T>(key: string, now: Date, compute: () => Promise<T>): Promise<T> {
@@ -109,7 +126,9 @@ export class AnalyticsStats {
 		if (!range) throw new BadRequestException(`기간은 1~${MAX_RANGE_DAYS}일입니다 (from ≤ to).`);
 		const { from, to, length } = range;
 		if (admin) return this.computeSummary(from, to, length, today, 'admin', now, utmInput);
-		return this.cached(`summary:${from}:${to}`, now, () => this.computeSummary(from, to, length, today, 'public', now));
+		return this.hideSecretItems(
+			await this.cached(`summary:${from}:${to}`, now, () => this.computeSummary(from, to, length, today, 'public', now))
+		);
 	}
 
 	private async computeSummary(
@@ -175,11 +194,17 @@ export class AnalyticsStats {
 
 	/**
 	 * 앱의 항목(메모의 글, Safari의 프로젝트)마다 전체 기간 조회수. 한 방문에서 같은 글을 여러 번 열어도 1.
-	 * 누구나 본다 (블로그 글의 조회수). 1분 동안 같은 값을 준다
+	 * 누구나 본다 (블로그 글의 조회수). 1분 동안 같은 값을 준다. 관리자가 아니면 비밀 글(메모)을 뺀다
 	 */
-	async views(appInput: unknown, now = new Date()): Promise<AppViews> {
+	async views(appInput: unknown, now = new Date(), admin = false): Promise<AppViews> {
 		const app = typeof appInput === 'string' && APP_NAME.test(appInput) ? appInput : null;
 		if (!app) throw new BadRequestException('app이 올바르지 않습니다 (예: memo).');
+		const all = await this.allViews(app, now);
+		if (admin || app !== 'memo') return all;
+		return { app, views: withoutSecret(all.views, await this.secret.slugs()) };
+	}
+
+	private allViews(app: string, now: Date): Promise<AppViews> {
 		return this.cached(`views:${app}`, now, async () => {
 			await this.rollup.maintainIfStale(now);
 			const today = kstDay(now);

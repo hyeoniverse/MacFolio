@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
 	adjacentPosts,
+	canBeSecret,
 	mergeAdminPosts,
 	mergeServerPosts,
 	buildFolderTree,
@@ -340,6 +341,26 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		);
 		expect(merged.map((post) => [post.slug, post.status?.scheduled])).toEqual([['later', '2026-10-03']]);
 	});
+
+	it('비밀 글은 상태에 secret을 단다. 서버에만 있는 글만 비밀로 지정할 수 있다 (canBeSecret)', () => {
+		const merged = mergeAdminPosts(
+			[repo],
+			[
+				admin('secret', { published: content('비밀 글'), secret: true }),
+				admin('open', { published: content('공개 글'), secret: false }),
+				admin('repo', { draft: content('저장소 글 고치는 중') }),
+			],
+			TODAY
+		);
+		const bySlug = Object.fromEntries(merged.map((post) => [post.slug, post]));
+		expect(bySlug.secret.status).toMatchObject({ secret: true });
+		expect(bySlug.open.status).not.toHaveProperty('secret');
+		expect(canBeSecret(bySlug.secret)).toBe(true);
+		expect(canBeSecret(bySlug.open)).toBe(true);
+		// 저장소 글을 고친 글과 저장소 글은 공개 저장소에 원문이 있다
+		expect(canBeSecret(bySlug.repo)).toBe(false);
+		expect(canBeSecret(repo)).toBe(false);
+	});
 });
 
 describe('검색 조건', () => {
@@ -362,6 +383,7 @@ describe('검색 조건', () => {
 		make('pin', '본문', { pinned: true }),
 		make('draft', '본문', { status: { draftOnly: true, changed: false, scheduled: null } }),
 		make('later', '본문', { status: { draftOnly: false, changed: false, scheduled: '2026-10-03' } }),
+		make('secret', '본문', { status: { draftOnly: false, changed: false, scheduled: null, secret: true } }),
 	];
 	it.each([
 		['checklist', ['check']],
@@ -372,6 +394,7 @@ describe('검색 조건', () => {
 		['pinned', ['pin']],
 		['draft', ['draft']],
 		['scheduled', ['later']],
+		['secret', ['secret']],
 	] as const)('%s', (filter, slugs) => {
 		expect(filterPosts(posts, ALL_CATEGORY, '', filter).map((post) => post.slug)).toEqual(slugs);
 	});

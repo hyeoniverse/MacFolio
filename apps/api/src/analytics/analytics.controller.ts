@@ -94,7 +94,7 @@ export class AnalyticsController {
 	})
 	@ApiOkResponse({
 		description:
-			'일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다. ' +
+			'일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다 (글 표에서 비밀 글은 관리자에게만). ' +
 			'관리자(scope: admin)에게만 들어온 곳의 호스트·검색어와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다',
 	})
 	@ApiBadRequestResponse({ description: '기간이 틀렸다 (1~366일), utm이 틀렸다' })
@@ -110,10 +110,13 @@ export class AnalyticsController {
 
 	@Get('views')
 	@ApiQuery({ name: 'app', required: true, description: '앱 이름 (memo: 블로그 글, safari: 프로젝트)' })
-	@ApiOkResponse({ description: '항목마다 전체 기간 조회수 (한 방문에서 같은 글은 한 번). 누구나 본다' })
+	@ApiOkResponse({
+		description: '항목마다 전체 기간 조회수 (한 방문에서 같은 글은 한 번). 누구나 본다. 비밀 글은 관리자에게만',
+	})
 	@ApiBadRequestResponse({ description: 'app이 틀렸다' })
-	views(@Query('app') app: unknown) {
-		return this.stats.views(app);
+	async views(@Query('app') app: unknown, @Req() request: Request) {
+		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
+		return this.stats.views(app, new Date(), !!admin);
 	}
 
 	@Get('search')

@@ -6,6 +6,7 @@ import {
 	filterPosts,
 	ALL_CATEGORY,
 	POPULAR_VIEW,
+	POST_FILTERS,
 	TAG_VIEW,
 	type FolderNode,
 	type Post,
@@ -34,9 +35,9 @@ export function postsInView(
 	return filterPosts(posts, category, '');
 }
 
-/** 임시 저장·예약 글 조건은 관리자에게만 있다. 방문자에게는 조건 없이 */
+/** 임시 저장·예약·비밀 글 조건은 관리자에게만 있다 (POST_FILTERS의 adminOnly). 방문자에게는 조건 없이 */
 export const filterFor = (filter: PostFilter | null, editing: boolean): PostFilter | null =>
-	editing || (filter !== 'draft' && filter !== 'scheduled') ? filter : null;
+	editing || !POST_FILTERS.some((item) => item.id === filter && item.adminOnly) ? filter : null;
 
 /**
  * 목록에 보일 글. 최근 삭제된 항목은 지운 순서 그대로 검색어로만 거르고,

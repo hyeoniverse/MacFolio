@@ -153,6 +153,28 @@
 	opacity: 0.7;
 }
 
+/* 비밀 글 (관리자에게만 보이는 글): 목록·카드의 제목 앞 */
+.memo-item-secret {
+	margin-right: var(--space-4);
+	color: var(--memo-secret);
+	font-size: 0.85em;
+}
+
+/* 비밀 글 알약: 본문 위 날짜 줄 (읽기 화면, 편집기) */
+.memo-secret-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	margin-left: var(--space-6);
+	padding: 0 var(--space-6);
+	border-radius: var(--radius-full);
+	background-color: color-mix(in srgb, var(--memo-secret) 14%, transparent);
+	color: var(--memo-secret);
+	font-weight: 600;
+	line-height: 1.6;
+	white-space: nowrap;
+}
+
 .memo-locked-note {
 	display: flex;
 	align-items: center;

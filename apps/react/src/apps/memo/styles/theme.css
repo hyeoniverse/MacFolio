@@ -6,6 +6,8 @@
 	--memo-rank-bronze: #c76a00;
 	--memo-scheduled-bg: #3b82f6;
 	--memo-scheduled-text: #2563eb;
+	/* 비밀 글: Apple의 systemIndigo */
+	--memo-secret: #5856d6;
 	--memo-bg: var(--color-text-background);
 	--memo-sidebar-bg: var(--sidebar-background);
 	--memo-list-bg: #fafafa;
@@ -38,6 +40,7 @@
 	--memo-danger: #ff6961;
 	--memo-like: #ff375f;
 	--memo-fill: rgba(118, 118, 128, 0.24);
+	--memo-secret: #7d7aff;
 }
 
 /* 공통 버튼(shared/ui/button)의 색: 도구 막대 버튼은 흐린 글자색, 켜지면 노란 바탕. 글자 버튼은 알약 모양 */

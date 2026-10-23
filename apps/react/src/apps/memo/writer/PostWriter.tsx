@@ -12,6 +12,7 @@ import { discardDraft, publishPost, saveDraft, type PostDraft } from '../postsAp
 import { env } from '@/shared/config/env';
 import DatePicker from '@/shared/ui/date/DatePicker';
 import Button from '@/shared/ui/button/Button';
+import SecretBadge from '../components/SecretBadge';
 
 // 편집기(Milkdown)는 관리자에게만 필요해서 처음 쓸 때 불러온다
 const InlineEditor = lazy(() => import('./InlineEditor'));
@@ -301,6 +302,7 @@ const PostWriter = ({
 						change({ category });
 					}}
 				/>
+				{post?.status?.secret && <SecretBadge />}
 				<span className="memo-writer-actions">
 					<span
 						className={`memo-writer-status ${status.kind === 'invalid' || status.kind === 'error' ? 'problem' : ''}`}
@@ -318,9 +320,11 @@ const PostWriter = ({
 						disabled={!unpublished || busy}
 						title={
 							unpublished
-								? scheduled
-									? `${formatPostDate(draft.date)}부터 방문자에게 보입니다`
-									: '방문자에게 보이게 합니다'
+								? post?.status?.secret
+									? '비밀 글이라 게시해도 관리자에게만 보입니다'
+									: scheduled
+										? `${formatPostDate(draft.date)}부터 방문자에게 보입니다`
+										: '방문자에게 보이게 합니다'
 								: '게시하지 않은 변경이 없습니다'
 						}
 						onClick={publish}

@@ -2,6 +2,7 @@ import type React from 'react';
 import Button from '@/shared/ui/button/Button';
 import { daysUntilPurge, formatPostDate, type Post } from '@macfolio/desktop-core/memo';
 import MemoMarkdown from './MemoMarkdown';
+import SecretBadge from './SecretBadge';
 
 /** 폴더 경로를 "개발기 › MacFolio"처럼 */
 const folderLabel = (path: string) => path.split('/').join(' › ');
@@ -37,6 +38,7 @@ const ReaderBody = ({
 		<p className="memo-reader-date">
 			<time dateTime={post.date}>{formatPostDate(post.date)}</time> · {folderLabel(post.category)}
 			{views && <span className="memo-reader-views"> · 조회 {(views[post.slug] ?? 0).toLocaleString()}</span>}
+			{post.status?.secret && <SecretBadge />}
 		</p>
 		{post.deletedAt && (
 			// Finder의 휴지통 안내처럼: 왜 고칠 수 없는지, 어떻게 쓰는지, 그 아래 버튼

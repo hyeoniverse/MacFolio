@@ -33,6 +33,7 @@ import MemoSearch from './components/MemoSearch';
 import FindBar from './components/FindBar';
 import { keepFocus, usePopover } from './writer/usePopover';
 import type { PostDraft } from './postsApi';
+import { useSecretPost } from './useSecretPost';
 import { shareLink } from '@/shared/lib/appLink';
 import { useOpenRequest } from '@/shared/lib/openRequest';
 import ShareIcon from '@/shared/ui/ShareIcon';
@@ -216,6 +217,8 @@ const Memo: React.FC = () => {
 	const togglePin = (post: Post) => edit((prev) => setPinned(prev, post.slug, !post.pinned));
 	/** 잠그면 고치거나 지울 수 없다 (실수로 바꾸지 않게). 다시 눌러 풀면 바로 고칠 수 있다 */
 	const toggleLock = (post: Post) => edit((prev) => setLocked(prev, post.slug, !post.locked));
+	/** 비밀 글로 지정하거나 푼다: 관리자에게만 보이게 (서버에만 있는 글) */
+	const toggleSecret = useSecretPost(upsertAdminPost);
 	const openNoteMenu = (slug: string) =>
 		canEdit
 			? (event: React.MouseEvent) => {
@@ -348,6 +351,7 @@ const Memo: React.FC = () => {
 	const noteActions: NoteActions = {
 		togglePin,
 		toggleLock,
+		toggleSecret: (post) => void toggleSecret(post),
 		remove: (post) => void removePost(post),
 		restore: (post) => void restoreDeleted(post),
 		purge: (post) => void purgeDeleted(post),
@@ -420,10 +424,11 @@ const Memo: React.FC = () => {
 			/>
 		);
 
-	/** 글 공유: 휴대폰은 공유 시트, 그 밖에는 링크 복사 (게시하지 않은 글은 주소가 없어 빼고) */
+	/** 글 공유: 휴대폰은 공유 시트, 그 밖에는 링크 복사 (게시하지 않은 글은 주소가 없어 빼고, 비밀 글은 다른 사람에게 열리지 않아 뺀다) */
 	const shareButton = (className: string) =>
 		selected &&
-		!selected.status?.draftOnly && (
+		!selected.status?.draftOnly &&
+		!selected.status?.secret && (
 			<IconButton
 				className={`memo-share ${className}`}
 				label="링크 공유"

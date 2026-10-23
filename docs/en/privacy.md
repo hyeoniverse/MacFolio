@@ -10,7 +10,7 @@ When you open the site, the browser gathers a few events and sends them to the A
 
 ![The raw IP and User-Agent are used only to compute the HMAC and classify the browser; the DB stores only the daily hash, the masked IP and the browser and OS names](../images/privacy-daily-hash.svg)
 
-- **Visible to anyone:** visits and unique visitors per day, app opens, average time spent, counts per app, post and outbound link, counts per country, device, browser, OS and language, referrer groups (search, social, direct, link), view count per blog post, and "N visitors today" (오늘 방문자 N명) in the Apple menu. All of these are totals that do not identify anyone
+- **Visible to anyone:** visits and unique visitors per day, app opens, average time spent, counts per app, post and outbound link, counts per country, device, browser, OS and language, referrer groups (search, social, direct, link), view count per blog post, and "N visitors today" (오늘 방문자 N명) in the Apple menu. All of these are totals that do not identify anyone. View and per-post counts for posts the admin marked secret are visible only to the admin
 - **Visible only to the admin:** referrer addresses (hosts) and search terms passed on by search engines, utm values (source, medium, campaign and their combinations, term, content; these can reveal where a link was posted), the live visit list (visit flow, masked IP), and search terms from Google Search Console (below)
 
 ### What is collected
