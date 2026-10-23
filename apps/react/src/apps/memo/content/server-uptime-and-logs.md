@@ -72,7 +72,7 @@ jobs:
 
 ## 로그 로테이션
 
-서버의 `compose.yml`에 로그 설정을 한 번 정의하고 세 서비스(db, api, tunnel)가 공유하게 했다. YAML 앵커[^anchor](`&logging`, `*logging`)를 사용해 같은 설정을 세 번 반복하지 않는다.
+서버의 `compose.yml`에 로그 설정을 한 번 정의하고 세 서비스(db, api, tunnel)가 공유하게 했다. YAML 앵커(`&logging`, `*logging`)[^anchor]를 사용해 같은 설정을 세 번 반복하지 않는다.
 
 ```yaml
 x-logging: &logging

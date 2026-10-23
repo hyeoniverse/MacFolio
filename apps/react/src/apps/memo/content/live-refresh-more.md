@@ -107,10 +107,9 @@ ETag는 전송량만 줄인다. 서버는 304를 보낼 때도 DB를 조회하�
 
 ## 관련 글
 
-- 공통 훅 usePolling을 만든 앞 글: /memo/activity-live-refresh
-- 메시지 앱 API를 contracts 스키마로 옮긴 글: /memo/contracts-messages
-- 바탕화면 위젯을 만든 글: /memo/desktop-widgets
-- 날씨 앱: /memo/weather-app
-- 메뉴 막대 서버 상태: /memo/server-status-wifi
-
-#MacFolio #React #폴링
+- [트래픽 분석 5 - 새로 고침 없이 값 갱신하기, 폴링과 SSE 비교](/memo/activity-live-refresh): 공통 훅 usePolling을 만든 앞 글
+- [서버 저장소와 로컬 저장소가 같은 모양을 쓰게 — 메시지 도메인 옮기기](/memo/contracts-messages): 메시지 앱 API를 contracts 스키마로 옮긴 글
+- [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
+- [macOS 날씨 앱 만들기 (Open-Meteo)](/memo/weather-app): 날씨 앱
+- [메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기](/memo/server-status-wifi): 메뉴 막대 서버 상태
+  #MacFolio #React #폴링

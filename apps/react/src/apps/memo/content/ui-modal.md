@@ -66,7 +66,7 @@ summary: 가운데 뜨는 다이얼로그 5개가 오버레이·포커스·Esc·
 ```
 
 - **오버레이와 패널 렌더링**: 패널에 `role`(`dialog`, 응답이 필요한 다이얼로그는 `alertdialog`)·[`aria-modal="true"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-modal)·`aria-label`을 붙인다
-- **scope**: `window`는 오버레이가 `position: absolute`로 가장 가까운 positioned 조상[^2](앱 창)을 덮고, `screen`은 `position: fixed`로 화면 전체를 덮으며 [`createPortal`](https://react.dev/reference/react-dom/createPortal)로 `document.body`에 렌더링한다. 경고창·이름 바꾸기는 `window`, 나머지 셋은 `screen`
+- **scope**: `window`는 오버레이가 `position: absolute`로 가장 가까운 positioned 조상(앱 창)[^2]을 덮고, `screen`은 `position: fixed`로 화면 전체를 덮으며 [`createPortal`](https://react.dev/reference/react-dom/createPortal)로 `document.body`에 렌더링한다. 경고창·이름 바꾸기는 `window`, 나머지 셋은 `screen`
 - **닫기**: `window`의 `keydown`에서 Esc(포커스 위치와 무관), 오버레이 자체의 `pointerdown`(패널 내부 클릭은 제외)
 - **포커스**: `initialFocus` ref가 가리키는 요소로, 없으면 `tabIndex={-1}`인 패널 자신으로. Launchpad도 이제 Esc로 닫힌다
 

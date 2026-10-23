@@ -88,8 +88,8 @@ Dock에 배치하니 새 아이콘만 평면적으로 보였다. 메일, GitHub,
 
 ## 관련 글
 
-- 새싹 농장 게임을 창 안에 넣은 일: [/memo/game-in-iframe](/memo/game-in-iframe)
-- 그날의 작업 기록: [/memo/day-1003](/memo/day-1003)
+- 새싹 농장 게임을 창 안에 넣은 일: [Unity WebGL 게임을 창 안에 넣기](/memo/game-in-iframe)
+- 그날의 작업 기록: [10월 3일 - 시스템 설정과 GitHub, Actions 배포, 그리고 Finder](/memo/day-1003)
 - 이 프로젝트 페이지의 템플릿 구조: [프로젝트 페이지 템플릿을 다듬어 온 길](/memo/site-projects-editing-templates)
 - PR: [#85](https://github.com/hyeoniverse/MacFolio/pull/85)
 

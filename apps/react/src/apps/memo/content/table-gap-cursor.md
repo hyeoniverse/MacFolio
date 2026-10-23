@@ -110,7 +110,7 @@ if (selection instanceof GapCursor) {
 
 ## 표 옆에서 입력한 글자가 사라졌다
 
-표 오른쪽에 커서를 놓고 글자를 입력하면 아무것도 생성되지 않았다. 틈 커서 위치의 입력은 `prosemirror-gapcursor`가 처리한다. 그 코드를 확인하니 **한글 조합 입력**[^2](`insertCompositionText`)일 때만 그 위치에 문단을 생성하고 있었다.
+표 오른쪽에 커서를 놓고 글자를 입력하면 아무것도 생성되지 않았다. 틈 커서 위치의 입력은 `prosemirror-gapcursor`가 처리한다. 그 코드를 확인하니 **한글 조합 입력**(`insertCompositionText`)[^2]일 때만 그 위치에 문단을 생성하고 있었다.
 
 ```js
 function beforeinput(view, event) {

@@ -13,7 +13,7 @@ API를 배포하려면 서버에 SSH로 접속해 `git pull`과 `docker compose 
 
 ## 서버에서 빌드하지 않는다
 
-이미지는 GitHub Actions가 [`docker/build-push-action`](https://github.com/docker/build-push-action)으로 빌드해 GHCR[^ghcr](`ghcr.io/hyeoniverse/macfolio-api`)에 푸시한다. 서버가 amd64라 amd64 이미지만 빌드하고, 레이어 캐시는 Actions 캐시에 저장한다. 필요한 권한은 `GITHUB_TOKEN`의 `packages: write` 하나다.
+이미지는 GitHub Actions가 [`docker/build-push-action`](https://github.com/docker/build-push-action)으로 빌드해 GHCR(`ghcr.io/hyeoniverse/macfolio-api`)[^ghcr]에 푸시한다. 서버가 amd64라 amd64 이미지만 빌드하고, 레이어 캐시는 Actions 캐시에 저장한다. 필요한 권한은 `GITHUB_TOKEN`의 `packages: write` 하나다.
 
 빌드 인자로 커밋 SHA를 넣는다(`APP_VERSION=sha-1a2b3c4`). `/health`가 이 값을 `version`으로 응답하므로, 지금 실행 중인 서버가 어느 커밋인지 외부에서 확인할 수 있다. 배포의 마지막 확인도 이 값으로 한다.
 
