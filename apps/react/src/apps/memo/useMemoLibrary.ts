@@ -54,10 +54,17 @@ export function useMemoLibrary() {
 	// 날짜 묶음(오늘, 어제 …)의 기준. 창을 연 날로 고정한다
 	const today = useMemo(() => new Date(), []);
 	const todayIso = isoDate(today);
-	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다
+	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다.
+	// 저장소 글(따로 받는 청크)이 오기 전에는 서버 글만으로 목록을 그리지 않는다. 저장소 글이 뒤늦게 합쳐지면
+	// 목록 순서와 처음 여는 글이 바뀌어, 그 시각에 누른 항목 자리에 다른 글이 놓인다
 	const posts = useMemo(
-		() => (editing ? mergeAdminPosts(repoPosts, adminPosts, todayIso) : mergeServerPosts(repoPosts, publicPosts)),
-		[editing, repoPosts, adminPosts, publicPosts, todayIso]
+		() =>
+			status === 'loading'
+				? []
+				: editing
+					? mergeAdminPosts(repoPosts, adminPosts, todayIso)
+					: mergeServerPosts(repoPosts, publicPosts),
+		[status, editing, repoPosts, adminPosts, publicPosts, todayIso]
 	);
 
 	// 글마다 조회수와 댓글 수·좋아요 수 (인기글 순위). 메모 창이 보이는 동안 1분마다 다시 묻는다.
