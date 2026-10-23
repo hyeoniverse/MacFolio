@@ -1658,6 +1658,59 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		);
 	});
 
+	test('사진 위젯을 누르면 사진 앱이 위젯에 보이는 사진을 그 앨범 안에서 크게 보기로 연다', async ({ page }) => {
+		await page.addInitScript(() =>
+			localStorage.setItem(
+				'macfolio:mobile:widgets',
+				JSON.stringify([[{ id: 'photos', kind: 'photos', size: 'small', album: 'qru' }], [], []])
+			)
+		);
+		// 위젯은 10초마다 다음 사진으로 넘긴다: 시계를 앞당겨 넘긴 뒤의 사진을 누른다
+		await page.clock.install();
+		await enterHome(page);
+		const widget = page.getByRole('group', { name: '사진 위젯' });
+		const media = widget.locator('img, video').first();
+		const before = await media.getAttribute('src');
+		await page.clock.fastForward(10_000);
+		await expect(media).not.toHaveAttribute('src', before!);
+		const shown = (await media.getAttribute('src'))!;
+
+		await media.tap();
+		const photos = appWindow(page, 'photos');
+		const viewer = photos.getByRole('dialog');
+		await expect(viewer.locator('.photos-phone-stage').locator('img, video')).toHaveAttribute('src', shown);
+		// QRU 앨범(9장) 안의 순번으로 열리고, 사진 띠도 그 앨범의 사진이다
+		await expect(viewer).toHaveAttribute('aria-label', /^사진 \d\/9:/);
+		await expect(viewer.locator('.photos-phone-viewer-title strong')).toHaveText('QRU 큐알유');
+		await expect(viewer.getByRole('list', { name: '사진 띠' }).getByRole('button')).toHaveCount(9);
+		// 돌아가면 그 앨범의 격자 (뒤로 가기는 화면 위의 떠 있는 막대에 있다)
+		await page.getByRole('button', { name: '돌아가기' }).click();
+		await expect(photos.getByRole('heading', { name: 'QRU 큐알유', level: 2 })).toBeVisible();
+	});
+
+	test('편집 중에 사진 위젯을 누르면 사진 앱을 열지 않고, 나중에 사진 앱을 열어도 그 사진이 열리지 않는다', async ({
+		page,
+	}) => {
+		await enterHome(page);
+		await page.getByRole('tab', { name: '3쪽' }).click();
+		const widget = page.getByRole('group', { name: '사진 위젯' });
+		const box = (await widget.boundingBox())!;
+		await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+		await page.mouse.down();
+		await expect(page.locator('.mobile-home')).toHaveClass(/editing/);
+		await page.mouse.up();
+		// 사진의 가운데 (왼쪽 위에는 지우기 단추가 있다)
+		await widget.locator('img, video').first().tap();
+		await expect(appWindow(page, 'photos')).toHaveCount(0);
+		await page.getByRole('button', { name: '완료' }).click();
+		await expect(page.locator('.mobile-home')).not.toHaveClass(/editing/);
+
+		await (await homeApp(page, '사진')).click();
+		const photos = appWindow(page, 'photos');
+		await expect(photos.getByRole('heading', { name: '보관함', level: 2 })).toBeVisible();
+		await expect(photos.getByRole('dialog')).toHaveCount(0);
+	});
+
 	test('1쪽의 GitHub 잔디가 서버의 기여 기록을 그린다', async ({ page }) => {
 		await fakeApi(page);
 		await enterHome(page);
