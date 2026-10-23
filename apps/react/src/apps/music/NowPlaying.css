@@ -47,6 +47,7 @@
 	left: 50%;
 	display: grid;
 	place-items: center;
+	z-index: 1;
 	width: 120px;
 	height: 28px;
 	padding: 0;
@@ -417,15 +418,26 @@
 	background-color: var(--color-on-media-label);
 }
 
-/* 휴대폰: 상태 표시줄은 시트 위에 겹치고, 내용은 그 아래 손잡이 줄부터. 셸의 떠 있는 뒤로 가기는 감춘다(hideBack) */
+/*
+ * 휴대폰: 상태 표시줄은 시트 위에 겹치고, 셸의 떠 있는 뒤로 가기는 감춘다(hideBack).
+ * 손잡이 막대는 iOS 음악처럼 상태 표시줄 바로 아래 6px에 둔다 (iPhone의 iOS 화면: 상태 표시줄 59pt, 막대 66pt).
+ * 누르는 영역(28px)은 막대 아래로 넓힌다. 막대에서 내용까지는 iOS의 비율(화면 높이의 약 2~3%)에 맞춰
+ * 대기열 화면 15px, 표지 화면 21px (표지 화면은 .music-now-top에 6px를 더한다)
+ */
 .container.mobile .music-now-playing {
 	z-index: 5;
-	padding-top: calc(var(--phone-top) + 32px);
+	padding-top: calc(var(--phone-status) + 26px);
 	padding-bottom: calc(var(--space-12) + var(--phone-bottom-inset));
 }
 
 .container.mobile .music-now-grabber {
-	top: calc(var(--phone-top) + 2px);
+	top: var(--phone-status);
+	align-items: start;
+	padding-top: var(--space-6);
+}
+
+.container.mobile .music-now-playing:not(.queue-open) .music-now-top {
+	margin-top: var(--space-6);
 }
 
 /* ••• 메뉴: iOS 지금 재생 중의 메뉴처럼 테마와 상관없이 어두운 반투명 (body에 그리므로 변수를 메뉴에 다시 정한다) */

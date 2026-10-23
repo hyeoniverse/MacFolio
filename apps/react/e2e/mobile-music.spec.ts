@@ -226,6 +226,13 @@ test.describe('음악: 지금 재생 중', () => {
 	test('떠 있는 뒤로 가기는 없고, 손잡이를 누르거나 Esc를 누르면 닫힌다', async ({ page }) => {
 		const { music, sheet } = await openNowPlaying(page);
 		await expect(music.locator('.mobile-navbar-home')).toHaveCount(0);
+		// 손잡이 막대는 iOS처럼 상태 표시줄 바로 아래 (겹치지 않고 10px 안)
+		await page.waitForTimeout(600);
+		const statusBottom = (await page.locator('.mobile-statusbar').boundingBox())!;
+		const bar = (await sheet.locator('.music-now-grabber span').boundingBox())!;
+		const gap = bar.y - (statusBottom.y + statusBottom.height);
+		expect(gap).toBeGreaterThanOrEqual(0);
+		expect(gap).toBeLessThanOrEqual(10);
 		await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).tap();
 		await expect(sheet).toBeHidden();
 		// 시트가 닫히면 셸의 뒤로 가기가 돌아온다
