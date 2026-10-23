@@ -209,7 +209,9 @@
 }
 
 /* 묶음(두 단·표)이 이어지면(유입 경로) 세로 간격도 두 단의 가로 간격과 같게 */
-.activity-body > :is(.activity-columns, .activity-table) + :is(.activity-columns, .activity-locked, .activity-table) {
+.activity-body
+	> :is(.activity-columns, .activity-table)
+	+ :is(.activity-columns, .activity-locked, .activity-table, .activity-live) {
 	margin-top: var(--activity-gap);
 }
 
@@ -324,7 +326,8 @@
 
 .activity-live li > button {
 	display: grid;
-	grid-template-columns: 70px 1.2fr 0.7fr 0.7fr 1fr 1fr 32px;
+	/* 시각 칸: 오늘이 아니면 날짜도 (10/7 12:02:00) */
+	grid-template-columns: 100px 1.2fr 0.7fr 0.7fr 1fr 1fr 32px;
 	gap: var(--activity-row);
 	width: 100%;
 	padding: var(--activity-row);
@@ -436,7 +439,7 @@
 	}
 
 	.activity-live li > button {
-		grid-template-columns: 64px 1fr 1fr 28px;
+		grid-template-columns: 96px 1fr 1fr 28px;
 	}
 
 	.activity-live li > button > span:nth-child(3),

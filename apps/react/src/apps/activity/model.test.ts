@@ -11,6 +11,7 @@ import {
 	periodRange,
 	searchPageLabel,
 	utmLabel,
+	visitsByIp,
 } from './model';
 
 describe('활동 상태 보기의 값 바꾸기', () => {
@@ -114,5 +115,16 @@ describe('Search Console 검색어', () => {
 		expect(memoSlugOf('https://example.com/memo/%ED%95%9C%EA%B8%80')).toBe('한글');
 		expect(memoSlugOf('https://example.com/safari/x')).toBeNull();
 		expect(memoSlugOf('not a url')).toBeNull();
+	});
+});
+
+describe('실시간 IP', () => {
+	it('가린 IP마다 방문 수를 많은 순으로, IP가 지워진 방문은 빈 키', () => {
+		const visit = (ip: string | null) => ({ ip }) as Parameters<typeof visitsByIp>[0][number];
+		expect(visitsByIp([visit('198.51.100.x'), visit('203.0.113.x'), visit(null), visit('203.0.113.x')])).toEqual([
+			{ key: '203.0.113.x', value: 2 },
+			{ key: '198.51.100.x', value: 1 },
+			{ key: '', value: 1 },
+		]);
 	});
 });

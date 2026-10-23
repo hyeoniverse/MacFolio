@@ -1,7 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsRollup } from './analytics-rollup.service.js';
-import { aggregate, kstDay, MAX_RANGE_DAYS, rangeOf, referrerGroup, shiftDay, type StatRow } from './rules.js';
+import {
+	aggregate,
+	IP_RETENTION_DAYS,
+	kstDay,
+	MAX_RANGE_DAYS,
+	rangeOf,
+	referrerGroup,
+	shiftDay,
+	type StatRow,
+} from './rules.js';
 import {
 	ADMIN_ONLY_BREAKDOWNS,
 	APP_NAME,
@@ -19,6 +28,11 @@ export { ADMIN_ONLY_BREAKDOWNS, BREAKDOWNS };
 export type Totals = ContractTotals;
 export type Summary = ContractSummary;
 export type LiveVisit = ContractLiveVisit;
+
+/** 실시간으로 거슬러 보는 최대 기간 (분): 가린 IP를 두는 기간 */
+export const LIVE_MAX_MINUTES = IP_RETENTION_DAYS * 24 * 60;
+/** 실시간에 읽는 이벤트 수 상한 */
+const LIVE_EVENT_LIMIT = 20_000;
 
 /** "오늘 방문자"를 다시 세는 간격 */
 const TODAY_CACHE_MS = 60_000;
@@ -187,14 +201,17 @@ export class AnalyticsStats {
 		});
 	}
 
-	/** 최근 방문 (실시간): 방문마다 나라·기기·들어온 곳과, 연 앱·본 글의 흐름 */
+	/** 최근 방문 (실시간): 방문마다 나라·기기·들어온 곳과, 연 앱·본 글의 흐름. 가린 IP를 두는 기간(7일)까지 거슬러 본다 */
 	async live(minutesInput: unknown, now = new Date()): Promise<LiveVisit[]> {
-		const minutes = Math.min(Math.max(Number(minutesInput) || 30, 1), 24 * 60);
-		const events = await this.prisma.analyticsEvent.findMany({
-			where: { createdAt: { gte: new Date(now.getTime() - minutes * 60_000) } },
-			orderBy: { createdAt: 'asc' },
-			take: 5000,
-		});
+		const minutes = Math.min(Math.max(Number(minutesInput) || 30, 1), LIVE_MAX_MINUTES);
+		// 많으면 최근 것부터 자른다
+		const events = (
+			await this.prisma.analyticsEvent.findMany({
+				where: { createdAt: { gte: new Date(now.getTime() - minutes * 60_000) } },
+				orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+				take: LIVE_EVENT_LIMIT,
+			})
+		).reverse();
 		const visits = new Map<string, LiveVisit>();
 		for (const event of events) {
 			const at = event.createdAt.toISOString();

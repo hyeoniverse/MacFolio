@@ -377,6 +377,40 @@ describe('트래픽 분석 (e2e)', () => {
 		});
 	});
 
+	it('실시간은 가린 IP를 두는 7일까지 거슬러 본다 (기본 30분)', async () => {
+		const now = new Date();
+		const at = (hoursAgo: number) => new Date(now.getTime() - hoursAgo * 3_600_000);
+		await prisma.analyticsEvent.createMany({
+			data: [
+				{
+					type: 'visit',
+					day: kstDay(at(0)),
+					dayHash: 'h',
+					visitId: 'v-now',
+					createdAt: at(0),
+					maskedIp: '203.0.113.x',
+				},
+				{
+					type: 'visit',
+					day: kstDay(at(72)),
+					dayHash: 'h',
+					visitId: 'v-3d',
+					createdAt: at(72),
+					maskedIp: '198.51.100.x',
+				},
+				{ type: 'visit', day: kstDay(at(200)), dayHash: 'h', visitId: 'v-8d', createdAt: at(200), maskedIp: null },
+			],
+		});
+		const live = async (query: string) =>
+			(await request(server()).get(`/analytics/live${query}`).set('Cookie', adminCookie).expect(200)).body.map(
+				(visit: { visitId: string }) => visit.visitId
+			);
+		expect(await live('')).toEqual(['v-now']);
+		expect(await live('?minutes=4380')).toEqual(['v-now', 'v-3d']);
+		// 7일보다 길게 물어도 7일까지
+		expect(await live('?minutes=100000')).toEqual(['v-now', 'v-3d']);
+	});
+
 	it('실시간: 방문마다 나라·기기·들어온 곳·가린 IP와 흐름(앱 열기 → 글 보기 → 링크)', async () => {
 		await send(visit('v-iiiiiiii'), { 'CF-IPCountry': 'JP' }).expect(204);
 		const response = await request(server()).get('/analytics/live').set('Cookie', adminCookie).expect(200);

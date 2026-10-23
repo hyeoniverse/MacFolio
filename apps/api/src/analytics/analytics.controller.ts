@@ -144,7 +144,7 @@ export class AnalyticsController {
 	@Get('live')
 	@UseGuards(AdminGuard)
 	@ApiCookieAuth()
-	@ApiQuery({ name: 'minutes', required: false, description: '최근 몇 분 (기본 30, 최대 1440)' })
+	@ApiQuery({ name: 'minutes', required: false, description: '최근 몇 분 (기본 30, 최대 10080 = 가린 IP를 두는 7일)' })
 	@ApiOkResponse({ description: '최근 방문: 나라·기기·들어온 곳·가린 IP(7일)와 연 앱·본 글의 흐름' })
 	@ApiUnauthorizedResponse({ description: '관리자 로그인이 필요하다' })
 	live(@Query('minutes') minutes: unknown) {
