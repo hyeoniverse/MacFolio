@@ -8,7 +8,7 @@ export interface Sender {
 	ip: string;
 	userAgent: string | undefined;
 	country: string | string[] | undefined;
-	/** 관리자 세션이 있다 (세지 않는다) */
+	/** 관리자 세션이 있거나 관리자가 쓰는 IP다 (세지 않는다) */
 	admin: boolean;
 }
 

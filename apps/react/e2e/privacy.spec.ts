@@ -38,7 +38,7 @@ test.describe('개인정보 보호 및 보안', () => {
 		await settings.getByRole('button', { name: '더 알아보기…' }).click();
 		const editor = appWindow(page, 'textedit');
 		await expect(editor.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
-			'개인정보: 무엇을 모으고 얼마나 두나'
+			'개인정보: 수집 항목과 보관 기간'
 		);
 	});
 

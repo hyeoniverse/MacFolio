@@ -6,6 +6,7 @@ import { AnalyticsRollup } from '../src/analytics/analytics-rollup.service.js';
 import { kstDay, shiftDay } from '../src/analytics/rules.js';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/app.setup.js';
+import { AdminIpService } from '../src/auth/admin-ip.service.js';
 import { GithubClient } from '../src/auth/github.client.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 
@@ -74,6 +75,29 @@ describe('트래픽 분석 (e2e)', () => {
 	beforeEach(async () => {
 		await prisma.analyticsEvent.deleteMany();
 		await prisma.dailyStat.deleteMany();
+		// 시험은 모두 같은 IP(127.0.0.1)에서 보낸다: 관리자 로그인이 적어 둔 IP를 비워, 방문이 세어지게 한다
+		await prisma.adminIp.deleteMany();
+		app.get(AdminIpService).reset();
+	});
+
+	it('관리자가 쓰는 IP에서 온 방문은 로그인하지 않았어도 세지 않는다 (HMAC만 두고, 30일이 지나면 잊는다)', async () => {
+		// 관리자로 인증된 요청이 오면 그 IP를 적는다
+		await request(server()).get('/auth/me').set('Cookie', adminCookie).expect(200);
+		const rows = await prisma.adminIp.findMany();
+		expect(rows).toHaveLength(1);
+		expect(rows[0].ipHash).toMatch(/^[0-9a-f]{64}$/);
+		expect(JSON.stringify(rows)).not.toContain('127.0.0.1');
+
+		// 같은 IP에서 쿠키 없이 보낸 방문은 저장하지 않는다
+		await send(visit('v-admin-ip')).expect(204);
+		expect(await prisma.analyticsEvent.count()).toBe(0);
+
+		// 마지막으로 본 지 30일이 지나면 잊고 다시 센다
+		await prisma.adminIp.updateMany({ data: { lastSeenAt: new Date(Date.now() - 31 * 86_400_000) } });
+		app.get(AdminIpService).reset();
+		await send(visit('v-after-30-days')).expect(204);
+		expect(await prisma.analyticsEvent.count()).toBeGreaterThan(0);
+		expect(await prisma.adminIp.count()).toBe(0);
 	});
 
 	afterAll(async () => {

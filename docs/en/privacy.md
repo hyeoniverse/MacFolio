@@ -40,7 +40,7 @@ utm values are read once from the first page's address and immediately removed f
 
 ### What is not counted
 
-- Browsers logged in as the admin
+- Visits from IPs the admin uses. The IP of each request authenticated as the admin (login, admin APIs) is recorded only as an HMAC, and visits from that IP aren't counted even from a device that isn't logged in (e.g. a phone) (`apps/api/src/auth/admin-ip.service.ts`)
 - Search crawlers, link previews, automated tools (filtered by User-Agent)
 - Browsers with Global Privacy Control (`navigator.globalPrivacyControl`) turned on: the site doesn't send anything (the site's collection code)
 - Local development and UI tests (E2E)
@@ -50,6 +50,7 @@ utm values are read once from the first page's address and immediately removed f
 | Value                                                                                                        | Period                                                           |
 | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
 | Masked IP                                                                                                    | Deleted after 7 days                                             |
+| HMAC of IPs the admin uses                                                                                   | Deleted 30 days after last use                                   |
 | Events (the table above)                                                                                     | Deleted after 90 days                                            |
 | Daily aggregated numbers (visits per day, counts per referrer, search term, utm, app, post, country, device) | Kept indefinitely. They contain nothing that identifies a person |
 | Search Console search terms (totals per date, search term and page; below)                                   | Kept indefinitely. They contain nothing that identifies a person |
