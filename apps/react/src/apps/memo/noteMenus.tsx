@@ -1,6 +1,6 @@
 import type { MenuItem } from '@/shared/ui/menu/Menu';
 import ShareIcon from '@/shared/ui/ShareIcon';
-import type { Arrangement, Post } from '@macfolio/desktop-core/memo';
+import { canBeSecret, type Arrangement, type Post } from '@macfolio/desktop-core/memo';
 import type { View } from './components/MemoToolbar';
 import { sortMenuItems } from './components/sortMenuItems';
 
@@ -8,6 +8,8 @@ import { sortMenuItems } from './components/sortMenuItems';
 export interface NoteActions {
 	togglePin: (post: Post) => void;
 	toggleLock: (post: Post) => void;
+	/** 비밀 글로 지정하거나 푼다 (서버에만 있는 글) */
+	toggleSecret: (post: Post) => void;
 	remove: (post: Post) => void;
 	restore: (post: Post) => void;
 	purge: (post: Post) => void;
@@ -48,6 +50,26 @@ export const pinLockItems = (post: Post, actions: NoteActions): ActionItem[] => 
 	},
 ];
 
+/**
+ * 비밀 글 지정·해제: 관리자에게만 보이게 한다. 서버에만 있는 글만 고를 수 있고,
+ * 저장소 글은 공개 저장소에 원문이 있어 숨길 수 없다는 이유를 보이며 막는다. 잠긴 메모도 바꿀 수 없다
+ */
+export const secretItem = (post: Post, actions: NoteActions): ActionItem => {
+	const secret = Boolean(post.status?.secret);
+	const reason = !canBeSecret(post)
+		? '저장소의 글은 공개 저장소에 있어 비밀로 할 수 없습니다'
+		: post.locked
+			? '잠긴 메모는 바꿀 수 없습니다'
+			: undefined;
+	return {
+		label: secret ? '비밀 글 해제' : '비밀 글로 지정',
+		icon: secret ? 'fa-solid fa-lock-open' : 'fa-solid fa-user-lock',
+		disabled: reason !== undefined,
+		hint: reason,
+		onSelect: () => actions.toggleSecret(post),
+	};
+};
+
 /** 지우기. 잠긴 메모는 지울 수 없다 */
 export const removeItem = (post: Post, actions: NoteActions, label = '메모 삭제'): ActionItem => ({
 	label,
@@ -75,10 +97,16 @@ const revertItems = (post: Post, actions: NoteActions): ActionItem[] =>
 export const noteContextItems = (post: Post, actions: NoteActions): MenuItem[] =>
 	post.deletedAt
 		? [restoreItem(post, actions), 'separator', purgeItem(post, actions)]
-		: [...pinLockItems(post, actions), 'separator', ...revertItems(post, actions), removeItem(post, actions)];
+		: [
+				...pinLockItems(post, actions),
+				secretItem(post, actions),
+				'separator',
+				...revertItems(post, actions),
+				removeItem(post, actions),
+			];
 
 /**
- * 휴대폰 본문의 ••• 메뉴 (iOS 메모처럼): 맨 위에 고정·잠그기, 그 아래 찾기·삭제.
+ * 휴대폰 본문의 ••• 메뉴 (iOS 메모처럼): 맨 위에 고정·잠그기, 비밀 글, 그 아래 찾기·삭제.
  * 최근 삭제된 메모는 되돌려 놓기·즉시 삭제
  */
 export const phoneNoteItems = (
@@ -122,6 +150,7 @@ export const phoneNoteItems = (
 							},
 						]
 					: []),
+				...(canEdit && !newDraft ? [secretItem(post, actions)] : []),
 				{ label: '메모에서 찾기', icon: 'fa-solid fa-magnifying-glass', onSelect: onFind },
 				...(readerView !== null && !newDraft && onToggleReaderView
 					? [
@@ -171,12 +200,13 @@ export const toolMenuItems = ({
 	...(canEdit && selected && !inTrash
 		? [
 				...pinLockItems(selected, actions),
+				secretItem(selected, actions),
 				...revertItems(selected, actions),
 				removeItem(selected, actions),
 				'separator' as const,
 			]
 		: []),
-	...(selected && !inTrash && !selected.status?.draftOnly
+	...(selected && !inTrash && !selected.status?.draftOnly && !selected.status?.secret
 		? [{ label: '링크 공유', icon: <ShareIcon />, onSelect: () => onShare(selected) }, 'separator' as const]
 		: []),
 	...sortMenuItems(arrangement, onArrange),

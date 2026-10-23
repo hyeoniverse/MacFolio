@@ -69,6 +69,20 @@ export async function discardDraft(
 	return result.ok ? { ok: true, post: (result.body as AdminPost | null) ?? null } : result;
 }
 
+/**
+ * 비밀 글로 지정하거나 푼다. 비밀 글은 관리자에게만 보인다 (방문자용 목록·공유 카드·댓글·좋아요·조회수에서 빠진다).
+ * 서버에만 있는 글에만 쓴다: 저장소의 Markdown 글은 공개 저장소에 원문이 있어 숨길 수 없다
+ */
+export async function setPostSecret(
+	apiUrl: string,
+	slug: string,
+	secret: boolean,
+	fetchImpl: typeof fetch = fetch
+): Promise<SaveResult> {
+	const result = await send(fetchImpl, apiUrl, postUrl(slug, '/secret'), 'PUT', { secret });
+	return result.ok ? { ok: true, post: result.body as AdminPost } : result;
+}
+
 export async function fetchRevisions(
 	apiUrl: string,
 	slug: string,

@@ -52,6 +52,17 @@ export const StatusBadge = ({ post }: { post: Post }) =>
 		<span className="memo-status-dot" role="img" aria-label="게시하지 않은 변경" title="게시하지 않은 변경" />
 	) : null);
 
+/** 비밀 글 표시: 관리자에게만 보이는 글 (자물쇠에 사람 모양. 고치지 못하게 잠근 메모의 자물쇠와 구별한다) */
+export const SecretMark = ({ post }: { post: Post }) =>
+	post.status?.secret && (
+		<i
+			className="fa-solid fa-user-lock memo-item-secret"
+			role="img"
+			aria-label="비밀 글"
+			title="비밀 글: 관리자에게만 보입니다"
+		/>
+	);
+
 /** 인기글의 반응: 조회 42 · 댓글 3 · 좋아요 5 (0인 것은 뺀다) */
 const reactionsOf = ({ views, comments, likes }: PostStats) =>
 	[
@@ -100,6 +111,7 @@ export const NoteItem = ({
 				</span>
 			)}
 			{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
+			<SecretMark post={post} />
 			{post.title}
 			<StatusBadge post={post} />
 		</strong>
@@ -157,7 +169,10 @@ export const NoteCard = ({ post, picked, dragging, drag, onContextMenu, onOpen }
 					</span>
 				)}
 			</span>
-			<strong>{post.title}</strong>
+			<strong>
+				<SecretMark post={post} />
+				{post.title}
+			</strong>
 			<time dateTime={post.date}>{formatPostDate(post.date)}</time>
 		</button>
 	</li>

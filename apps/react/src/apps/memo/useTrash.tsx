@@ -62,6 +62,7 @@ export function useTrash({
 			deleted: true,
 			deletedAt: new Date().toISOString(),
 			revisions: current?.revisions ?? 0,
+			...(current?.secret && { secret: true }),
 		});
 	};
 

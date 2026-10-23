@@ -318,6 +318,8 @@ export interface FakePost extends FakeContent {
 	deletedAt?: string | null;
 	published?: FakeContent | null;
 	draft?: FakeContent | null;
+	/** 비밀 글: 관리자에게만 보인다 (방문자 목록 GET /posts에서 빠진다) */
+	secret?: boolean;
 	revisions?: (FakeContent & { id: number; createdAt: string; createdBy: string })[];
 }
 
@@ -1063,7 +1065,7 @@ export async function fakeApi(
 
 		// 글: 누구나 게시한 글을 읽고, 로그인했을 때만 임시 저장·게시·버리기·지우기 (apps/api와 같은 규칙)
 		const postPath = path.match(
-			/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions|restore|permanent|server-copy)(?:\/(\d+))?)?$/
+			/^\/posts(?:\/([\w-]+))?(?:\/(draft|publish|revisions|restore|permanent|server-copy|secret)(?:\/(\d+))?)?$/
 		);
 		if (postPath) {
 			const [, slug, action, revisionId] = postPath;
@@ -1086,13 +1088,14 @@ export async function fakeApi(
 				deleted: post.deleted,
 				deletedAt: post.deletedAt ?? null,
 				revisions: post.revisions?.length ?? 0,
+				secret: post.secret ?? false,
 			});
 			const ok = (json: unknown, status = 200) => route.fulfill({ status, headers: cors(origin), json });
 
 			if (!slug && method === 'GET') {
-				// 방문자: 게시한 글 중 날짜가 된 것, 지운·예약 글은 가리는 표시로
+				// 방문자: 게시한 글 중 날짜가 된 것, 지운·예약 글은 가리는 표시로. 비밀 글은 넣지 않는다 (관리자여도)
 				const visible = state.posts
-					.filter((post) => post.deleted || post.published)
+					.filter((post) => !post.secret && (post.deleted || post.published))
 					.map((post) =>
 						post.deleted || post.published!.date > today
 							? { slug: post.slug, title: '', date: '', category: '', summary: '', body: '', deleted: true }
@@ -1116,6 +1119,18 @@ export async function fakeApi(
 					deletedAt: new Date().toISOString(),
 				});
 				return route.fulfill({ status: 204, headers: cors(origin) });
+			}
+			// 비밀 글 지정·해제: 서버에 있는 글만 (지운 글은 404)
+			if (action === 'secret' && method === 'PUT') {
+				const existing = find(slug!);
+				if (!existing || existing.deleted)
+					return route.fulfill({
+						status: 404,
+						headers: cors(origin),
+						json: { statusCode: 404, message: '글이 없습니다.' },
+					});
+				const { secret } = request.postDataJSON() as { secret: boolean };
+				return ok(adminView(upsert({ ...existing, secret })));
 			}
 			// 저장소 글로 되돌리기: 서버의 글을 통째로 지운다 (저장소 파일이 다시 보인다)
 			if (action === 'server-copy' && method === 'DELETE') {

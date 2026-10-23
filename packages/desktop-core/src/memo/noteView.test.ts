@@ -56,6 +56,8 @@ describe('listPosts / filterFor', () => {
 	it('임시 저장·예약 조건은 관리자에게만', () => {
 		expect(filterFor('draft', false)).toBeNull();
 		expect(filterFor('draft', true)).toBe('draft');
+		expect(filterFor('secret', false)).toBeNull();
+		expect(filterFor('secret', true)).toBe('secret');
 		expect(filterFor('pinned', false)).toBe('pinned');
 	});
 });
