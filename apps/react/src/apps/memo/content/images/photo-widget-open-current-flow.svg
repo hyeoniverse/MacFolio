@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" width="860" height="420" font-family="-apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#4f46e5"/></marker></defs>
+<rect width="860" height="420" fill="#ffffff"/>
+<rect x="24" y="40" width="230" height="96" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="139" y="64" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">사진 위젯 (PhotoWidget)</text>
+<text x="139" y="86" font-size="11" fill="#374151" text-anchor="middle">사진이 바뀔 때마다 onShow</text>
+<text x="139" y="104" font-size="11" fill="#374151" text-anchor="middle">→ Widget의 ref에 보관</text>
+<text x="139" y="122" font-size="10.5" fill="#6b7280" text-anchor="middle">{ album: 사진 앱 앨범 id, src }</text>
+<rect x="315" y="40" width="230" height="96" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="430" y="64" font-size="13" font-weight="600" fill="#1f2937" text-anchor="middle">openRequestStore</text>
+<text x="430" y="86" font-size="11" fill="#374151" text-anchor="middle">{ app: 'photos',</text>
+<text x="430" y="104" font-size="11" fill="#374151" text-anchor="middle">id: '["qru","/imgs/…png"]' }</text>
+<text x="430" y="122" font-size="10.5" fill="#6b7280" text-anchor="middle">JSON 배열로 직렬화</text>
+<rect x="606" y="40" width="230" height="96" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="721" y="64" font-size="13" font-weight="600" fill="#1f2937" text-anchor="middle">창 관리 / 휴대폰 셸</text>
+<text x="721" y="86" font-size="11" fill="#374151" text-anchor="middle">openApp('photos')</text>
+<text x="721" y="104" font-size="11" fill="#374151" text-anchor="middle">+ bringAppToFront</text>
+<line x1="256" y1="74" x2="313" y2="74" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="284" y="66" font-size="10" fill="#6b7280" text-anchor="middle">1. 누름</text>
+<line x1="547" y1="74" x2="604" y2="74" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="575" y="66" font-size="10" fill="#6b7280" text-anchor="middle">2. 열기</text>
+<rect x="315" y="200" width="230" height="110" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="430" y="224" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">useOpenPhoto</text>
+<text x="430" y="246" font-size="11" fill="#374151" text-anchor="middle">요청을 꺼내 보관한다</text>
+<text x="430" y="264" font-size="11" fill="#374151" text-anchor="middle">locatePhoto(albums, 요청)</text>
+<text x="430" y="282" font-size="10.5" fill="#6b7280" text-anchor="middle">못 찾으면 보관함이 바뀔 때 다시 찾는다</text>
+<text x="430" y="298" font-size="10.5" fill="#6b7280" text-anchor="middle">(그림 폴더 앨범은 파일 목록 수신 뒤 생긴다)</text>
+<rect x="606" y="190" width="230" height="56" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="721" y="212" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="middle">Photos (데스크톱)</text>
+<text x="721" y="232" font-size="10.5" fill="#374151" text-anchor="middle">enabled = !mobile</text>
+<rect x="606" y="262" width="230" height="56" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="721" y="284" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="middle">PhotosMobile (휴대폰)</text>
+<text x="721" y="304" font-size="10.5" fill="#374151" text-anchor="middle">마운트된 동안 받는다</text>
+<line x1="721" y1="138" x2="721" y2="188" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="604" y1="236" x2="547" y2="246" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="604" y1="290" x2="547" y2="274" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="575" y="186" font-size="10" fill="#6b7280" text-anchor="middle">3. 마운트·구독</text>
+<rect x="24" y="200" width="230" height="110" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+<text x="139" y="224" font-size="13" font-weight="600" fill="#047857" text-anchor="middle">크게 보기</text>
+<text x="139" y="246" font-size="11" fill="#374151" text-anchor="middle">보는 곳 = 그 사진의 앨범</text>
+<text x="139" y="264" font-size="11" fill="#374151" text-anchor="middle">순번 = 앨범 안의 위치</text>
+<text x="139" y="282" font-size="10.5" fill="#6b7280" text-anchor="middle">← → 와 사진 띠는 같은 앨범을 넘긴다</text>
+<text x="139" y="298" font-size="10.5" fill="#6b7280" text-anchor="middle">닫으면 그 앨범의 격자</text>
+<line x1="313" y1="255" x2="256" y2="255" stroke="#10b981" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="284" y="247" font-size="10" fill="#6b7280" text-anchor="middle">4. 찾음</text>
+<text x="24" y="360" font-size="11" fill="#374151">사진 앱이 이미 열려 있으면 3에서 구독(subscribe)으로 바로 받는다. 처음 열리면 마운트하며 남은 요청을 꺼낸다.</text>
+<text x="24" y="382" font-size="11" fill="#374151">휴대폰 홈 화면 편집 중의 누름은 MobileHome이 캡처 단계에서 막아, 요청이 남지 않는다.</text>
+</svg>

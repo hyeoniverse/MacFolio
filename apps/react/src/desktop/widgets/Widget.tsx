@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useCallback, useRef } from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useMusic } from '@/apps/music/useMusic';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import { requestOpen } from '@/shared/lib/openRequest';
+import { photoTargetId, type PhotoTarget } from '@/apps/photos/photoTarget';
 import { WIDGET_INFO, type WidgetKind, type WidgetOptions, type WidgetSize } from './catalog';
 import CalendarWidget from './CalendarWidget';
 import ClockWidget from './ClockWidget';
@@ -64,6 +65,11 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 		requestOpen('memo', slug);
 		open('memo');
 	};
+	// 사진 위젯이 지금 보이는 사진. 누르면 사진 앱이 그 사진을 크게 보기로 연다 (그리기와 무관해 ref에 보관한다)
+	const shownPhoto = useRef<PhotoTarget | null>(null);
+	const showPhoto = useCallback((target: PhotoTarget | null) => {
+		shownPhoto.current = target;
+	}, []);
 	let body;
 	switch (kind) {
 		case 'weather':
@@ -83,7 +89,7 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 			body = <PostsWidget size={size} mode={options?.posts} openPost={openPost} />;
 			break;
 		case 'photos':
-			body = <PhotoWidget album={options?.album} />;
+			body = <PhotoWidget album={options?.album} onShow={showPhoto} />;
 			break;
 		case 'github':
 			body = <GithubWidget size={size} />;
@@ -106,7 +112,9 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 			aria-label={`${WIDGET_INFO[kind].label} 위젯`}
 			data-widget={kind}
 			onClick={(event) => {
-				if (app && !(event.target as Element).closest('button, a, [role="slider"], input')) open(app);
+				if (!app || (event.target as Element).closest('button, a, [role="slider"], input')) return;
+				if (kind === 'photos' && shownPhoto.current) requestOpen('photos', photoTargetId(shownPhoto.current));
+				open(app);
 			}}
 		>
 			{body}

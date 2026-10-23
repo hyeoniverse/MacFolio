@@ -17,9 +17,14 @@ import { useCanEditMemo } from './useCanEditMemo';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { fetchViews } from '@/shared/analytics/analytics';
+import { usePolling } from '@/shared/hooks/usePolling';
+import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import { fetchPostCounts, type Likes, type PostCounts } from './likes/likesApi';
 // 글 원문 묶음은 메모 앱과 함께 받는다: 메모를 열면 목록이 비어 보이는 순간 없이 바로 채워지게 (첫 화면은 이 묶음을 받지 않는다)
 import '@/apps/memo/repository/contentFiles';
+
+/** 조회수·댓글 수·좋아요 수를 다시 묻는 간격. 서버가 조회수를 1분 동안 같은 값으로 준다 */
+const STATS_POLL_MS = 60_000;
 
 /** 날짜 묶음·예약 공개의 기준이 되는 오늘 (YYYY-MM-DD) */
 const isoDate = (date: Date) =>
@@ -52,18 +57,32 @@ export function useMemoLibrary() {
 		[editing, repoPosts, adminPosts, publicPosts, todayIso]
 	);
 
-	// 글마다 조회수. 앱을 열 때 한 번 묻는다. 서버가 없으면 감춘다 (null)
+	// 글마다 조회수와 댓글 수·좋아요 수 (인기글 순위). 메모 창이 보이는 동안 1분마다 다시 묻는다.
+	// 서버가 없으면 감춘다 (null). 이 화면에서 누르거나 쓰면 응답을 기다리지 않고 바로 고친다
 	const [views, setViews] = useState<Record<string, number> | null>(null);
-	// 글마다 댓글 수·좋아요 수 (인기글 순위). 앱을 열 때 한 번 묻고, 이 화면에서 누르거나 쓰면 바로 고친다
 	const [counts, setCounts] = useState<PostCounts | null>(null);
-	useEffect(() => {
-		let alive = true;
-		void fetchViews('memo').then((next) => alive && setViews(next));
-		if (env.apiUrl) void fetchPostCounts(env.apiUrl).then((next) => alive && setCounts(next));
-		return () => {
-			alive = false;
-		};
-	}, []);
+	/** 이 화면에서 좋아요·댓글 수를 마지막으로 고친 시각. 그보다 먼저 보낸 조회의 응답은 댓글·좋아요 수를 덮지 않는다 */
+	const countsEditedAt = useRef(0);
+	const shown = useAppWindowShown('memo');
+	usePolling(
+		() => {
+			const askedAt = Date.now();
+			return Promise.all([
+				fetchViews('memo').then((next) => {
+					if (next) setViews(next);
+					return next !== null;
+				}),
+				fetchPostCounts(env.apiUrl).then((next) => {
+					if (next && askedAt >= countsEditedAt.current) setCounts(next);
+					return next !== null;
+				}),
+			]).then(([viewed, counted]) => {
+				// 둘 다 읽지 못했으면 실패로 보고 간격을 늘린다
+				if (!viewed && !counted) throw new Error('stats');
+			});
+		},
+		{ intervalMs: STATS_POLL_MS, active: shown && Boolean(env.apiUrl) }
+	);
 	/** 글마다 조회·댓글·좋아요. 서버가 없거나 둘 다 읽지 못하면 null (인기글을 감춘다) */
 	const stats = useMemo(() => {
 		if (!views && !counts) return null;
@@ -74,13 +93,17 @@ export function useMemoLibrary() {
 			Object.assign(entry(slug), { comments, likes });
 		return merged;
 	}, [views, counts]);
-	const setLikes = (slug: string, likes: Likes) =>
+	const setLikes = (slug: string, likes: Likes) => {
+		countsEditedAt.current = Date.now();
 		setCounts((current) => ({
 			...current,
 			[slug]: { comments: current?.[slug]?.comments ?? 0, likes: likes.count },
 		}));
-	const setCommentCount = (slug: string, comments: number) =>
+	};
+	const setCommentCount = (slug: string, comments: number) => {
+		countsEditedAt.current = Date.now();
 		setCounts((current) => ({ ...current, [slug]: { likes: current?.[slug]?.likes ?? 0, comments } }));
+	};
 
 	useEffect(() => {
 		let cancelled = false;

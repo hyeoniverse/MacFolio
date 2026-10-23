@@ -234,6 +234,92 @@ test.describe('바탕화면 위젯', () => {
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'folder:widget01' });
 	});
 
+	/** 그림 폴더에 그림 셋을 올리고, 그 폴더를 보이는 작은 사진 위젯 하나를 왼쪽 위에 둔다 */
+	async function pictureWidget(page: Page) {
+		const api = await fakeApi(page);
+		api.finderLayout = { folders: [], files: {}, aliases: null };
+		await fakeFiles(page, [
+			{ id: 'a', folder: '그림', name: '바다.png', key: 'pictures/sea.png', kind: 'image' },
+			{ id: 'b', folder: '그림', name: '산.png', key: 'pictures/hill.png', kind: 'image' },
+			{ id: 'c', folder: '그림', name: '들.png', key: 'pictures/field.png', kind: 'image' },
+		]);
+		await page.addInitScript(() =>
+			localStorage.setItem(
+				'macfolio:desktop:widgets',
+				JSON.stringify([{ id: 'photos', kind: 'photos', size: 'small', col: 0, row: 0, album: 'pictures' }])
+			)
+		);
+	}
+	const CAPTION_OF: Record<string, string> = {
+		'/files/pictures/sea.png': '바다',
+		'/files/pictures/hill.png': '산',
+		'/files/pictures/field.png': '들',
+	};
+
+	test('사진 위젯을 누르면 사진 앱이 위젯에 보이는 사진을 그 앨범 안에서 크게 보기로 연다. 이미 열려 있어도 그 사진으로 간다', async ({
+		page,
+	}) => {
+		await pictureWidget(page);
+		// 위젯은 10초마다 다음 사진으로 넘긴다: 시계를 앞당겨 넘긴 뒤의 사진을 누른다
+		await page.clock.install();
+		await enterDesktop(page);
+		await closeSafari(page);
+		const widgetImage = widget(page, '사진').locator('img');
+		const advance = async () => {
+			const before = await widgetImage.getAttribute('src');
+			await page.clock.fastForward(10_000);
+			await expect(widgetImage).not.toHaveAttribute('src', before!);
+			return (await widgetImage.getAttribute('src'))!;
+		};
+		const first = await advance();
+
+		await widgetImage.click();
+		const photos = appWindow(page, 'photos');
+		const viewer = photos.getByRole('dialog');
+		const stage = viewer.locator('.photos-viewer-stage img');
+		// 그 사진이 Finder › 그림 앨범(3장) 안의 순번으로 열린다
+		await expect(stage).toHaveAttribute('src', first);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 \\d/3: ${CAPTION_OF[first]}$`));
+		// 좌우로 넘기면 같은 앨범의 다른 사진이고, 세 번 넘기면 처음 사진으로 돌아온다
+		await page.keyboard.press('ArrowRight');
+		await expect(stage).not.toHaveAttribute('src', first);
+		await expect(stage).toHaveAttribute('src', /^\/files\/pictures\/(sea|hill|field)\.png$/);
+		await page.keyboard.press('ArrowRight');
+		await page.keyboard.press('ArrowRight');
+		await expect(stage).toHaveAttribute('src', first);
+		await page.keyboard.press('Escape');
+		await expect(photos.getByRole('heading', { name: '그림', level: 2 })).toBeVisible();
+
+		// 사진 앱이 이미 열려 있고 다른 곳(보관함)을 보고 있어도, 위젯을 누르면 지금 위젯의 사진으로 간다
+		await photos
+			.getByRole('complementary', { name: '사진 보관함' })
+			.getByRole('button', { name: /^보관함/ })
+			.click();
+		await expect(photos.getByRole('heading', { name: '보관함', level: 2 })).toBeVisible();
+		const second = await advance();
+		// 사진 창이 위젯의 오른쪽 아래를 덮으므로 보이는 왼쪽 위를 누른다
+		await widgetImage.click({ position: { x: 16, y: 16 } });
+		await expect(stage).toHaveAttribute('src', second);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 \\d/3: ${CAPTION_OF[second]}$`));
+	});
+
+	test('사진 위젯의 일시 정지·소리 단추는 사진 앱을 열지 않는다. 일시 정지한 사진을 누르면 그 사진이 열린다', async ({
+		page,
+	}) => {
+		await pictureWidget(page);
+		await enterDesktop(page);
+		await closeSafari(page);
+		const photos = widget(page, '사진');
+		await photos.getByRole('button', { name: '일시 정지' }).click();
+		await photos.getByRole('button', { name: '소리 켜기' }).click();
+		await expect(appWindow(page, 'photos')).toHaveCount(0);
+		const src = (await photos.locator('img').getAttribute('src'))!;
+		await photos.locator('img').click();
+		const viewer = appWindow(page, 'photos').getByRole('dialog');
+		await expect(viewer.locator('.photos-viewer-stage img')).toHaveAttribute('src', src);
+		await expect(viewer).toHaveAttribute('aria-label', new RegExp(`^사진 \\d/3: ${CAPTION_OF[src]}$`));
+	});
+
 	test('메모 위젯은 오른쪽 클릭 메뉴에서 최근 글·인기글·랜덤을 고른다', async ({ page }) => {
 		await enterDesktop(page);
 		await closeSafari(page);

@@ -25,6 +25,10 @@ export const albumSources = (albums: readonly Album[]): PhotoSource[] =>
 			.map(({ src, caption, video }) => ({ src, caption, ...(video && { video: true }) })),
 	}));
 
+/** 사진 앱에서 이 곳에 해당하는 앨범의 id: 프로젝트 앨범은 그대로, 그림 폴더는 프로젝트 id와 겹치지 않게 finder:<id> */
+export const libraryAlbumId = (source: Pick<PhotoSource, 'id' | 'group'>) =>
+	source.group === 'folder' ? `finder:${source.id}` : source.id;
+
 const stem = (name: string) => name.replace(/\.[^.]+$/, '');
 
 /**
@@ -57,10 +61,12 @@ export function folderSources(files: DocumentEntry[], layout: FinderLayoutValue)
 	return sources;
 }
 
-/** 고른 곳의 사진 (사진마다 그 곳의 이름과 함께). 고르지 않았거나 없어진 곳이면 모든 앨범 */
+/**
+ * 고른 곳의 사진 (사진마다 그 곳의 이름과, 사진 앱에서 그 곳에 해당하는 앨범 id와 함께). 고르지 않았거나 없어진 곳이면 모든 앨범
+ */
 export function photosOf(sources: PhotoSource[], id: string | undefined) {
 	const chosen = sources.find((source) => source.id === id);
 	return (chosen ? [chosen] : sources.filter((source) => source.group === 'album')).flatMap((source) =>
-		source.photos.map((photo) => ({ ...photo, album: source.name }))
+		source.photos.map((photo) => ({ ...photo, album: source.name, albumId: libraryAlbumId(source) }))
 	);
 }
