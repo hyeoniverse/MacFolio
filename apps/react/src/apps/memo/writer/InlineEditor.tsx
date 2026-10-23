@@ -20,6 +20,7 @@ import { uploadAndInsert } from './attachmentsApi';
 import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
 import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';
+import LinkHover from './LinkHover';
 import { findPlugin } from './findPlugin';
 import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
 import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
@@ -389,6 +390,7 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 		<>
 			<Milkdown />
 			<TableHandles />
+			<LinkHover />
 		</>
 	);
 };

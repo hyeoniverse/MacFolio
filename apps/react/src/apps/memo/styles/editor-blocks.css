@@ -365,3 +365,51 @@
 	color: var(--memo-muted);
 	text-decoration: line-through;
 }
+
+/* 편집 중인 본문의 링크 위에 뜨는 이동 버튼 (LinkHover): 링크의 첫 줄 위(편집기 위쪽에 가까우면 아래)에 */
+.memo-link-hover {
+	position: absolute;
+	z-index: 6;
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	max-width: min(420px, 90%);
+	padding: var(--space-4) var(--space-10) var(--space-4) var(--space-4);
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-10);
+	background-color: var(--color-popover-background);
+	box-shadow: var(--shadow-1);
+	font-size: var(--text-caption);
+	transform: translateY(calc(-100% - 18px));
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+.memo-link-hover.below {
+	transform: translateY(8px);
+}
+
+.memo-link-hover button {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: var(--space-6);
+	padding: var(--space-4) var(--space-8);
+	border: none;
+	border-radius: var(--radius-6);
+	background-color: var(--notes-accent);
+	color: var(--color-white);
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.memo-link-hover button:hover {
+	filter: brightness(1.08);
+}
+
+.memo-link-hover-href {
+	overflow: hidden;
+	color: var(--color-secondary-label);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

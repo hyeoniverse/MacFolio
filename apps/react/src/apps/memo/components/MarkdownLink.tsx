@@ -1,9 +1,6 @@
 import React from 'react';
-import { useAppState } from '@/desktop/useAppState';
-import { bundledDocOf } from '@/apps/finder/repoDocs';
-import { useOpenDocument } from '@/apps/textedit/openDocument';
-import { appLinkOf } from '@/shared/lib/appLink';
-import { requestOpen } from '@/shared/lib/openRequest';
+import { linkTargetOf } from '../linkTarget';
+import { useOpenLink } from '../useOpenLink';
 
 interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 	href?: string;
@@ -51,13 +48,10 @@ function scrollToAnchor(link: HTMLAnchorElement, id: string) {
  * ⌘·Ctrl·Shift를 누르거나 가운데 버튼으로 누르면 브라우저 기본대로 (새 탭 등). 바깥 링크는 새 탭에서 연다
  */
 const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
-	const { openApp } = useAppState();
-	const openDocument = useOpenDocument();
-	const link = appLinkOf(href);
-	const doc = bundledDocOf(href);
+	const openLink = useOpenLink();
+	const target = href ? linkTargetOf(href) : null;
 
-	if (href?.startsWith('#') && href.length > 1) {
-		const id = decodeURIComponent(href.slice(1));
+	if (target?.kind === 'anchor') {
 		return (
 			<a
 				{...rest}
@@ -65,7 +59,7 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 				title={title}
 				onClick={(event) => {
 					event.preventDefault();
-					scrollToAnchor(event.currentTarget, id);
+					scrollToAnchor(event.currentTarget, target.id);
 				}}
 			>
 				{children}
@@ -73,25 +67,7 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 		);
 	}
 
-	if (doc) {
-		return (
-			<a
-				href={href}
-				title={title}
-				target="_blank"
-				rel="noopener noreferrer"
-				onClick={(event) => {
-					if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-					event.preventDefault();
-					openDocument(doc);
-				}}
-			>
-				{children}
-			</a>
-		);
-	}
-
-	if (!link) {
+	if (!target || target.kind === 'external') {
 		return (
 			<a href={href} title={title} target="_blank" rel="noopener noreferrer">
 				{children}
@@ -99,15 +75,16 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 		);
 	}
 
+	// 사이트 안의 글·프로젝트, 저장소 문서
 	return (
 		<a
 			href={href}
 			title={title}
+			{...(target.kind === 'doc' && { target: '_blank', rel: 'noopener noreferrer' })}
 			onClick={(event) => {
 				if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
 				event.preventDefault();
-				openApp(link.app);
-				requestOpen(link.app, link.id);
+				openLink(target);
 			}}
 		>
 			{children}
