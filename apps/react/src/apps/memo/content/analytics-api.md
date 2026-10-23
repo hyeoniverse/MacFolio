@@ -41,7 +41,7 @@ Google Analytics를 붙이면 쉽지만, 방문자 쿠키와 동의 배너가 �
 
 ## 수신: `POST /analytics/events`
 
-사이트는 이벤트를 모아 [`navigator.sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)으로 전송한다. 페이지를 닫는 시각에도 전송되고 응답을 기다리지 않는다. 본문은 `text/plain`(JSON 문자열)이다. `application/json`이면 브라우저가 CORS 사전 요청[^preflight](OPTIONS)을 먼저 보내는데, `text/plain`은 사전 요청이 필요 없다. Nest는 기본적으로 JSON 본문만 파싱하므로, 앱 설정에 `text/plain` 본문 파싱을 추가했다.
+사이트는 이벤트를 모아 [`navigator.sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)으로 전송한다. 페이지를 닫는 시각에도 전송되고 응답을 기다리지 않는다. 본문은 `text/plain`(JSON 문자열)이다. `application/json`이면 브라우저가 CORS 사전 요청(OPTIONS)[^preflight]을 먼저 보내는데, `text/plain`은 사전 요청이 필요 없다. Nest는 기본적으로 JSON 본문만 파싱하므로, 앱 설정에 `text/plain` 본문 파싱을 추가했다.
 
 ```ts
 (app as NestExpressApplication).useBodyParser('text', { type: 'text/plain', limit: '32kb' });

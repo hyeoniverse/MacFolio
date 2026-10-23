@@ -33,7 +33,7 @@ export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" /
 
 ![앱 목록은 PROJECTS에서 생성된다](./images/project-apps-source.svg 'PROJECTS → PROJECT_APPS → Dock·Launchpad·터미널·Safari, 창은 ProjectApp')
 
-앱 이름은 타입으로 고정한 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 런타임에 결정되므로, 프로젝트 id 문자열에 표시를 붙인 브랜드 타입[^brand](`ProjectAppName`)으로 정의했다.
+앱 이름은 타입으로 고정한 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 런타임에 결정되므로, 프로젝트 id 문자열에 표시를 붙인 브랜드 타입(`ProjectAppName`)[^brand]으로 정의했다.
 
 ```ts
 declare const projectApp: unique symbol;

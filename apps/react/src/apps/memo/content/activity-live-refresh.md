@@ -113,11 +113,10 @@ SSE로 바꿔도 값이 더 빨리 바뀌지 않는다. 방문 이벤트는 브�
 
 ## 관련 글
 
-- 활동 상태 보기를 처음 만든 글: /memo/analytics-activity-monitor
-- 방문자에게 요약을 공개하고 1분 캐시를 둔 글: /memo/analytics-public
-- 메뉴 막대의 서버 상태도 탭이 보일 때만 확인한다: /memo/server-status-wifi
-- 숨은 탭에서 동영상 배경화면을 멈추는 같은 방법: /memo/video-wallpaper
-- 조회·댓글·좋아요로 인기글을 매기는 글: /memo/memo-likes-popular
-- 메시지·댓글·위젯으로 넓힌 후속 글: /memo/live-refresh-more
-
-#MacFolio #React #폴링
+- [트래픽 분석 3 - 관리자 화면 '활동 상태 보기'](/memo/analytics-activity-monitor): 활동 상태 보기를 처음 만든 글
+- [트래픽 분석 4 - 방문자에게도 보여 주기, 글 조회수](/memo/analytics-public): 방문자에게 요약을 공개하고 1분 캐시를 둔 글
+- [메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기](/memo/server-status-wifi): 메뉴 막대의 서버 상태도 탭이 보일 때만 확인한다
+- [움직이는 배경화면 - MP4와 GIF를 바탕화면에 적용하기](/memo/video-wallpaper): 숨은 탭에서 동영상 배경화면을 멈추는 같은 방법
+- [블로그에 좋아요와 인기글 폴더 추가하기](/memo/memo-likes-popular): 조회·댓글·좋아요로 인기글을 매기는 글
+- [트래픽 분석 6 - 메시지·댓글·위젯도 보이는 동안만 갱신하기](/memo/live-refresh-more): 메시지·댓글·위젯으로 넓힌 후속 글
+  #MacFolio #React #폴링
