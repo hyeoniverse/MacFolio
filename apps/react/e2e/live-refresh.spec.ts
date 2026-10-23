@@ -44,6 +44,16 @@ async function openMessages(page: Page) {
 	return messages;
 }
 
+/**
+ * 대화 칸을 그 위치로 스크롤한다. 브라우저는 scroll 이벤트를 다음 렌더링 단계에 보내므로,
+ * 바로 다음에 새 답글을 받으면 앱이 아직 이전 위치(맨 아래인지)를 기억하고 있을 수 있다. 이벤트를 바로 보내 순서를 고정한다
+ */
+const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
+	log.evaluate((element, where) => {
+		element.scrollTop = where === 'top' ? 0 : element.scrollHeight;
+		element.dispatchEvent(new Event('scroll'));
+	}, to);
+
 /** 대화 칸의 맨 아래에서 떨어진 거리 (px) */
 const distanceFromBottom = (log: Locator) =>
 	log.evaluate((element) => element.scrollHeight - element.scrollTop - element.clientHeight);
@@ -72,14 +82,14 @@ test.describe('값 갱신: 메시지', () => {
 		await expect.poll(() => distanceFromBottom(log)).toBeLessThan(2);
 
 		// 위로 올려 읽는 중: 새 답글이 와도 그 자리
-		await log.evaluate((element) => (element.scrollTop = 0));
+		await scrollLog(log, 'top');
 		api.messages.push(reply('m900', '읽는 중에 온 답글'));
 		await page.clock.fastForward(16_000);
 		await expect(log).toContainText('읽는 중에 온 답글');
 		expect(await log.evaluate((element) => element.scrollTop)).toBe(0);
 
 		// 맨 아래로 내리면 다음 답글은 따라 내려간다
-		await log.evaluate((element) => (element.scrollTop = element.scrollHeight));
+		await scrollLog(log, 'bottom');
 		api.messages.push(reply('m901', '맨 아래에서 받은 답글'));
 		await page.clock.fastForward(16_000);
 		await expect(log).toContainText('맨 아래에서 받은 답글');
