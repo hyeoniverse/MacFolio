@@ -350,7 +350,7 @@ const PostWriter = ({
 					}
 				}}
 			/>
-			<Suspense fallback={<div className="memo-markdown">{renderMarkdown(draft.body)}</div>}>
+			<Suspense fallback={<div className="prose memo-markdown">{renderMarkdown(draft.body)}</div>}>
 				<InlineEditor
 					key={editorVersion}
 					markdown={draft.body}

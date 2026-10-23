@@ -171,7 +171,7 @@ const Inner = ({ markdown, onChange, onState, onReady }: Props) => {
  * 저장은 Markdown 한 장으로 한다. 관리자에게만 필요해서 처음 쓸 때 따로 불러온다 (React.lazy)
  */
 const ResumeRichEditor = (props: Props) => (
-	<div className="finder-doc textedit-rich">
+	<div className="prose finder-doc textedit-rich">
 		<MilkdownProvider>
 			<Inner {...props} />
 		</MilkdownProvider>

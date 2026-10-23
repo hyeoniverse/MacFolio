@@ -144,7 +144,7 @@ const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc, onOpenProject 
 	);
 
 	return (
-		<article key={path} className="finder-doc motion-swap" aria-label={path}>
+		<article key={path} className="prose finder-doc motion-swap" aria-label={path}>
 			<ReactMarkdown
 				remarkPlugins={[remarkGfm, remarkCjkFriendly]}
 				rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlightCode]}

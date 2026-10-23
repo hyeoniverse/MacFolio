@@ -1,9 +1,10 @@
-/* Markdown 문서 보기 (DocView): 텍스트 편집기 창과 휴대폰 파일 앱이 함께 쓴다 */
+/* Markdown 문서 보기 (DocView): 텍스트 편집기 창과 휴대폰 파일 앱이 함께 쓴다. 블로그와 같은 부분(문단 간격·인용·구분선·목록·코드·접기)은 styles/prose.css (.prose) */
 
 .finder-doc {
 	max-width: 760px;
 	margin: 0 auto;
-	padding: var(--space-24) 32px 48px;
+	/* 아래 패딩 + 1em: 마지막 블록의 아래 여백(예전의 margin-bottom: 1em)을 패딩이 대신한다 */
+	padding: var(--space-24) 32px calc(48px + 1em);
 	font-size: var(--text-footnote);
 	line-height: 1.7;
 	text-align: left;
@@ -23,6 +24,11 @@
 	font-size: 1.8em;
 }
 
+/* 앞에 블록(언어 링크 줄 등)이 있으면 그 사이는 흐름 간격 한 칸. 제목 글자가 1.8배라 나눠서 본문 글자 기준 1em으로 맞춘다 */
+.finder-doc > * + h1 {
+	margin-top: calc(var(--prose-flow-gap) / 1.8);
+}
+
 .finder-doc h2 {
 	padding-bottom: 0.25em;
 	border-bottom: 1px solid var(--color-separator);
@@ -33,33 +39,25 @@
 	font-size: 1.15em;
 }
 
-.finder-doc :is(p, ul, ol, table, pre, blockquote) {
+/*
+ * 문단 사이 간격: 본문 바로 아래 블록은 styles/prose.css의 흐름 간격(위 여백 1em), 제목 다음은 0.6em(제목의 아래 여백과 같다).
+ * 인용·목록·접기 블록 안의 블록은 GitHub처럼 아래 여백 1em. 이력서 편집기의 .ProseMirror 바로 아래는 본문과 같이 흐름 간격
+ */
+.finder-doc {
+	--prose-heading-gap: 0.6em;
+}
+
+.finder-doc :where(:not(.ProseMirror)) > :is(p, ul, ol, table, pre, blockquote) {
 	margin: 0 0 1em;
 }
 
-/* 목록: 앱 전체의 초기화(padding: 0) 때문에 글머리표가 본문 밖으로 나가고 하위 목록이 들여 써지지 않으므로 GitHub처럼 되돌린다 */
-.finder-doc :is(ul, ol) {
-	padding-left: 2em;
-}
-
-.finder-doc ul {
-	list-style: disc;
-}
-
-.finder-doc ol {
-	list-style: decimal;
-}
-
+/* 목록의 글머리표·들여쓰기·항목 간격은 styles/prose.css. 하위 목록은 GitHub처럼 빈 동그라미, 위 여백을 좁힌다 */
 .finder-doc :is(ul, ol) ul {
 	list-style: circle;
 }
 
 .finder-doc :is(ul, ol) :is(ul, ol) {
 	margin: 0.25em 0 0;
-}
-
-.finder-doc li + li {
-	margin-top: 0.25em;
 }
 
 .finder-doc li > p {
@@ -97,20 +95,9 @@
 	vertical-align: middle;
 }
 
-.finder-doc :not(pre) > code {
-	padding: 0.15em 0.4em;
-	border-radius: var(--radius-4);
-	background-color: var(--color-unemphasized-selected-content-background);
-	font-size: 0.88em;
-}
-
+/* 코드 상자·문법 강조 색은 styles/prose.css. 코드 블록 글자는 본문과 같은 크기 */
 .finder-doc pre {
-	padding: var(--space-12) var(--space-14);
-	overflow: auto;
-	border-radius: var(--radius-8);
-	background-color: var(--sidebar-background);
 	font-size: var(--text-footnote);
-	line-height: 1.55;
 }
 
 .finder-doc table {
@@ -138,7 +125,6 @@
 }
 
 .finder-doc-mermaid {
-	margin: 0 0 1em;
 	overflow: auto;
 	text-align: center;
 }
@@ -154,45 +140,10 @@
 	background-color: var(--sidebar-background);
 }
 
-.finder-doc .hljs-keyword,
-.finder-doc .hljs-built_in,
-.finder-doc .hljs-literal {
-	color: var(--hl-keyword);
-}
-
-.finder-doc :is(.hljs-string, .hljs-regexp) {
-	color: var(--hl-string);
-}
-
-.finder-doc :is(.hljs-number, .hljs-attr) {
-	color: var(--hl-number);
-}
-
-.finder-doc :is(.hljs-title, .hljs-title.function_) {
-	color: var(--hl-function);
-}
-
-.finder-doc :is(.hljs-type, .hljs-params) {
-	color: var(--hl-type);
-}
-
-.finder-doc :is(.hljs-comment, .hljs-quote) {
-	color: var(--hl-comment);
-	font-style: italic;
-}
-
-.finder-doc :is(.hljs-tag, .hljs-name, .hljs-selector-tag) {
-	color: var(--hl-tag);
-}
-
-.finder-doc :is(.hljs-attribute, .hljs-property) {
-	color: var(--hl-attr);
-}
-
 /* 좁은 창 (휴대폰 포함) */
 @container (max-width: 600px) {
 	.finder-doc {
-		padding: var(--space-16) var(--space-16) 40px;
+		padding: var(--space-16) var(--space-16) calc(40px + 1em);
 	}
 }
 

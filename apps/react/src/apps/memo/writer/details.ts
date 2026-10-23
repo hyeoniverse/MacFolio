@@ -99,7 +99,12 @@ export const detailsSchema = $nodeSchema('details_block', (ctx) => ({
 	],
 	toDOM: (node) => [
 		'div',
-		{ 'data-details': '', 'data-open': String(node.attrs.open), 'data-id': node.attrs.id, class: 'memo-details' },
+		{
+			'data-details': '',
+			'data-open': String(node.attrs.open),
+			'data-id': node.attrs.id,
+			class: 'memo-details prose-details',
+		},
 		0,
 	],
 	parseMarkdown: {

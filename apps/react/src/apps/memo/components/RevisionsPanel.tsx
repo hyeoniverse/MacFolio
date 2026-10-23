@@ -64,7 +64,7 @@ const RevisionsPanel = ({
 						<time dateTime={preview.content.date}>{formatPostDate(preview.content.date)}</time>
 					</p>
 					<h1>{preview.content.title}</h1>
-					<div className="memo-markdown">{renderMarkdown(preview.content.body)}</div>
+					<div className="prose memo-markdown">{renderMarkdown(preview.content.body)}</div>
 				</div>
 				<Button className="memo-revision-restore" onClick={() => onRestore(preview.content)}>
 					이 버전으로 되돌리기
