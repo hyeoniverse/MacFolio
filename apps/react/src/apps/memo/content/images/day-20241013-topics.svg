@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 436" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2024년 10월 13일 주제별 커밋</title>
+<rect width="760" height="436" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">2024년 10월 13일, 주제별 커밋</text>
+<text x="32" y="64" font-size="12.5" fill="#6b7280">커밋 18개를 주제로 묶은 그림. 점 하나가 커밋 하나, 가로축은 커밋한 시각(한국 시간)</text>
+<path d="M210.0 84 V372" stroke="#eef0f3"/><text x="210.0" y="390" font-size="11" fill="#9ca3af" text-anchor="middle">8시</text>
+<path d="M313.6 84 V372" stroke="#eef0f3"/><text x="313.6" y="390" font-size="11" fill="#9ca3af" text-anchor="middle">10시</text>
+<path d="M417.2 84 V372" stroke="#eef0f3"/><text x="417.2" y="390" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M520.8 84 V372" stroke="#eef0f3"/><text x="520.8" y="390" font-size="11" fill="#9ca3af" text-anchor="middle">14시</text>
+<path d="M624.4 84 V372" stroke="#eef0f3"/><text x="624.4" y="390" font-size="11" fill="#9ca3af" text-anchor="middle">16시</text>
+<path d="M728.0 84 V372" stroke="#eef0f3"/><text x="728.0" y="390" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<rect x="24" y="97" width="712" height="30" rx="8" fill="#6366f1" fill-opacity="0.25"/>
+<text x="36" y="116" font-size="12.5" fill="#1f2937">앱 상태를 AppContext로</text>
+<text x="198" y="116" font-size="11" fill="#6b7280" text-anchor="end">1</text>
+<circle cx="237.6" cy="112" r="6" fill="#6366f1" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="24" y="137" width="712" height="30" rx="8" fill="#3b82f6" fill-opacity="0.25"/>
+<text x="36" y="156" font-size="12.5" fill="#1f2937">창: 크기·애니메이션·맨 앞</text>
+<text x="198" y="156" font-size="11" fill="#6b7280" text-anchor="end">5</text>
+<circle cx="277.3" cy="152" r="6" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="293.7" cy="152" r="6" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="331.7" cy="152" r="6" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="458.6" cy="152" r="6" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="459.5" cy="152" r="6" fill="#3b82f6" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="24" y="177" width="712" height="30" rx="8" fill="#10b981" fill-opacity="0.25"/>
+<text x="36" y="196" font-size="12.5" fill="#1f2937">Dock·상태 막대·공유</text>
+<text x="198" y="196" font-size="11" fill="#6b7280" text-anchor="end">4</text>
+<circle cx="293.7" cy="192" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="389.6" cy="192" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="396.5" cy="192" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="398.2" cy="192" r="6" fill="#10b981" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="24" y="217" width="712" height="30" rx="8" fill="#f59e0b" fill-opacity="0.25"/>
+<text x="36" y="236" font-size="12.5" fill="#1f2937">블로그 앱 (iframe)</text>
+<text x="198" y="236" font-size="11" fill="#6b7280" text-anchor="end">2</text>
+<circle cx="438.8" cy="232" r="6" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="609.7" cy="232" r="6" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="24" y="257" width="712" height="30" rx="8" fill="#64748b" fill-opacity="0.25"/>
+<text x="36" y="276" font-size="12.5" fill="#1f2937">저장소를 client/server로</text>
+<text x="198" y="276" font-size="11" fill="#6b7280" text-anchor="end">2</text>
+<circle cx="559.7" cy="272" r="6" fill="#64748b" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="585.5" cy="272" r="6" fill="#64748b" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="24" y="297" width="712" height="30" rx="8" fill="#ef4444" fill-opacity="0.25"/>
+<text x="36" y="316" font-size="12.5" fill="#1f2937">메일 앱과 메일 경로</text>
+<text x="198" y="316" font-size="11" fill="#6b7280" text-anchor="end">3</text>
+<circle cx="609.7" cy="312" r="6" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="680.5" cy="312" r="6" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="710.7" cy="312" r="6" fill="#ef4444" stroke="#ffffff" stroke-width="1.5"/>
+<rect x="24" y="337" width="712" height="30" rx="8" fill="#ec4899" fill-opacity="0.25"/>
+<text x="36" y="356" font-size="12.5" fill="#1f2937">음악 재생 상태</text>
+<text x="198" y="356" font-size="11" fill="#6b7280" text-anchor="end">2</text>
+<circle cx="243.7" cy="352" r="6" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"/>
+<circle cx="710.7" cy="352" r="6" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"/>
+<text x="32" y="418" font-size="11.5" fill="#6b7280">17:40 커밋은 메일 경로와 MusicContext를 함께 바꿔 두 줄에 모두 표시했다</text>
+</svg>
