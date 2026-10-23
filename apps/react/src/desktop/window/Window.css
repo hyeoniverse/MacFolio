@@ -289,7 +289,8 @@
 
 /* 스크롤 가장자리 (iOS처럼): 내용이 스크롤되어 위로 올라가면(.scrolled, useAppScrolled) 상태 표시줄 뒤를 흐린다.
    맨 위에서는 투명해 앱 첫 줄이 그대로 보인다.
-   흐림은 세 층(4px, 2px, 1px)으로 나눠, 아래로 갈수록 강한 층부터 사라지게 한다 (progressive blur).
+   흐림은 세 층(2px, 1px, 0.5px)으로 나눠, 아래로 갈수록 강한 층부터 사라지게 한다 (progressive blur).
+   층마다 직선이 아니라 끝으로 갈수록 천천히 사라지는(ease-out) 마스크를 써서, 사라지는 구간이 서로 겹치며 풀린다.
    한 층을 마스크로만 지우면 흐림 세기는 그대로이고 비치는 정도만 바뀌어 경계가 띠처럼 보인다.
    층마다 따로 흐린다: 바깥 요소에 backdrop-filter·mask·opacity를 두면 backdrop root가 되어 안쪽 층이 앱 내용을 흐리지 못한다.
    떠 있는 버튼(뒤로 가기 z-index 6, 앱의 버튼 3~5)은 이 층 위에 있어 흐려지지 않는다 */
@@ -311,24 +312,72 @@
 }
 
 .mobile-scroll-edge > span:nth-child(1) {
-	-webkit-backdrop-filter: blur(1px);
-	backdrop-filter: blur(1px);
-	-webkit-mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
-	mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+	-webkit-backdrop-filter: blur(0.5px);
+	backdrop-filter: blur(0.5px);
+	-webkit-mask-image: linear-gradient(
+		#000 0%,
+		#000 55%,
+		rgb(0 0 0 / 0.64) 64%,
+		rgb(0 0 0 / 0.36) 73%,
+		rgb(0 0 0 / 0.16) 82%,
+		rgb(0 0 0 / 0.04) 91%,
+		transparent 100%
+	);
+	mask-image: linear-gradient(
+		#000 0%,
+		#000 55%,
+		rgb(0 0 0 / 0.64) 64%,
+		rgb(0 0 0 / 0.36) 73%,
+		rgb(0 0 0 / 0.16) 82%,
+		rgb(0 0 0 / 0.04) 91%,
+		transparent 100%
+	);
 }
 
 .mobile-scroll-edge > span:nth-child(2) {
-	-webkit-backdrop-filter: blur(2px);
-	backdrop-filter: blur(2px);
-	-webkit-mask-image: linear-gradient(#000 0%, #000 45%, transparent 80%);
-	mask-image: linear-gradient(#000 0%, #000 45%, transparent 80%);
+	-webkit-backdrop-filter: blur(1px);
+	backdrop-filter: blur(1px);
+	-webkit-mask-image: linear-gradient(
+		#000 0%,
+		#000 40%,
+		rgb(0 0 0 / 0.64) 49%,
+		rgb(0 0 0 / 0.36) 58%,
+		rgb(0 0 0 / 0.16) 67%,
+		rgb(0 0 0 / 0.04) 76%,
+		transparent 85%
+	);
+	mask-image: linear-gradient(
+		#000 0%,
+		#000 40%,
+		rgb(0 0 0 / 0.64) 49%,
+		rgb(0 0 0 / 0.36) 58%,
+		rgb(0 0 0 / 0.16) 67%,
+		rgb(0 0 0 / 0.04) 76%,
+		transparent 85%
+	);
 }
 
 .mobile-scroll-edge > span:nth-child(3) {
-	-webkit-backdrop-filter: blur(4px) saturate(130%);
-	backdrop-filter: blur(4px) saturate(130%);
-	-webkit-mask-image: linear-gradient(#000 0%, #000 38%, transparent 62%);
-	mask-image: linear-gradient(#000 0%, #000 38%, transparent 62%);
+	-webkit-backdrop-filter: blur(2px) saturate(120%);
+	backdrop-filter: blur(2px) saturate(120%);
+	-webkit-mask-image: linear-gradient(
+		#000 0%,
+		#000 28%,
+		rgb(0 0 0 / 0.64) 36%,
+		rgb(0 0 0 / 0.36) 44%,
+		rgb(0 0 0 / 0.16) 52%,
+		rgb(0 0 0 / 0.04) 60%,
+		transparent 68%
+	);
+	mask-image: linear-gradient(
+		#000 0%,
+		#000 28%,
+		rgb(0 0 0 / 0.64) 36%,
+		rgb(0 0 0 / 0.36) 44%,
+		rgb(0 0 0 / 0.16) 52%,
+		rgb(0 0 0 / 0.04) 60%,
+		transparent 68%
+	);
 }
 
 .container.mobile.scrolled > .mobile-scroll-edge > span {
