@@ -75,4 +75,11 @@ describe('loadActivity', () => {
 		expect(ok).toHaveBeenCalledWith('http://api/github/activity', expect.anything());
 		expect(activityStore.getState().data?.events).toHaveLength(1);
 	});
+
+	it('읽지 못하면 reject하고(일정이 간격을 늘린다) 보던 값은 그대로 둔다', async () => {
+		const before = activityStore.getState().data;
+		const failing = vi.fn(async () => new Response('', { status: 502 }));
+		await expect(loadActivity('http://api', failing as unknown as typeof fetch)).rejects.toThrow();
+		expect(activityStore.getState().data).toBe(before);
+	});
 });

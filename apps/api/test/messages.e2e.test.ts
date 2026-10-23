@@ -166,4 +166,23 @@ describe('메시지 (e2e)', () => {
 		await prisma.messageThread.delete({ where: { id: created.body.thread.id } });
 		expect(await prisma.guestMessage.count()).toBe(0);
 	});
+
+	it('목록과 말풍선 응답에 ETag가 있어, 바뀌지 않았으면 304로 몸통 없이 답한다 (메시지 앱의 주기 조회)', async () => {
+		const created = await request(server()).post('/messages/threads').send({ body: '본문' });
+		const cookie = visitorCookie(created)!;
+		for (const path of ['/messages/threads', `/messages/threads/${created.body.thread.id}`]) {
+			const first = await request(server()).get(path).set('Cookie', cookie).expect(200);
+			const etag = first.headers.etag as string;
+			expect(etag).toMatch(/^W\/"/);
+			const same = await request(server()).get(path).set('Cookie', cookie).set('If-None-Match', etag).expect(304);
+			expect(same.text ?? '').toBe('');
+
+			// 답글이 생기면 ETag가 바뀌어 200으로 새 몸통을 준다
+			await request(server())
+				.post(`/messages/threads/${created.body.thread.id}`)
+				.send({ body: `답글 ${path}` });
+			const changed = await request(server()).get(path).set('Cookie', cookie).set('If-None-Match', etag).expect(200);
+			expect(changed.headers.etag).not.toBe(etag);
+		}
+	});
 });

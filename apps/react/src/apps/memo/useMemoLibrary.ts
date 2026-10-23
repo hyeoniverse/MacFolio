@@ -18,6 +18,7 @@ import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { fetchViews } from '@/shared/analytics/analytics';
 import { usePolling } from '@/shared/hooks/usePolling';
+import { keepIfSame } from '@/shared/lib/poller';
 import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import { fetchPostCounts, type Likes, type PostCounts } from './likes/likesApi';
 // 글 원문 묶음은 메모 앱과 함께 받는다: 메모를 열면 목록이 비어 보이는 순간 없이 바로 채워지게 (첫 화면은 이 묶음을 받지 않는다)
@@ -25,6 +26,8 @@ import '@/apps/memo/repository/contentFiles';
 
 /** 조회수·댓글 수·좋아요 수를 다시 묻는 간격. 서버가 조회수를 1분 동안 같은 값으로 준다 */
 const STATS_POLL_MS = 60_000;
+/** 서버의 게시 글 목록을 다시 묻는 간격. 글은 하루에 몇 편 수준으로 바뀐다 */
+const POSTS_POLL_MS = 10 * 60_000;
 
 /** 날짜 묶음·예약 공개의 기준이 되는 오늘 (YYYY-MM-DD) */
 const isoDate = (date: Date) =>
@@ -109,18 +112,26 @@ export function useMemoLibrary() {
 		let cancelled = false;
 		getPostRepository()
 			.list()
-			.then(async (list) => {
+			.then((list) => {
 				if (cancelled) return;
 				setRepoPosts(list);
 				setStatus('ready');
-				const server = await fetchServerPosts(env.apiUrl);
-				if (!cancelled && server.length > 0) setPublicPosts(server);
 			})
 			.catch(() => setStatus('error'));
 		return () => {
 			cancelled = true;
 		};
 	}, []);
+
+	// 서버의 게시 글 (관리자가 사이트에서 쓴 글): 메모 창이 보이는 동안 10분마다 다시 묻는다.
+	// 읽지 못하면(빈 목록) 보던 목록을 그대로 둔다
+	usePolling(
+		() =>
+			fetchServerPosts(env.apiUrl).then((server) => {
+				if (server.length > 0) setPublicPosts((current) => keepIfSame(current, server));
+			}),
+		{ intervalMs: POSTS_POLL_MS, active: shown && Boolean(env.apiUrl) }
+	);
 
 	// 관리자로 로그인하면 임시 저장까지 읽는다
 	useEffect(() => {

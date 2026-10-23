@@ -1,5 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import { loadActivity, toWeeks, useActivity } from '@/apps/github/githubActivityApi';
+import { useMemo } from 'react';
+import { activityPolling, toWeeks, useActivity } from '@/apps/github/githubActivityApi';
+import { env } from '@/shared/config/env';
+import { useSharedPolling } from '@/shared/hooks/usePolling';
+import { useHomeScreenShown } from '@/desktop/useAppWindowShown';
 import type { WidgetSize } from './catalog';
 import { streakOf } from './model';
 
@@ -9,11 +12,10 @@ import { streakOf } from './model';
  */
 const GithubWidget = ({ size }: { size: WidgetSize }) => {
 	const activity = useActivity();
+	// 바탕화면·홈 화면이 보이는 동안 10분마다 다시 묻는다 (GitHub 앱 창·다른 기여 위젯과 요청 하나를 나눠 쓴다)
+	const polling = useSharedPolling(activityPolling, useHomeScreenShown() && Boolean(env.apiUrl));
 	// 서버가 없거나 답이 없으면 불러오는 중으로 남지 않게
-	const [tried, setTried] = useState(false);
-	useEffect(() => {
-		if (!activity) void loadActivity().finally(() => setTried(true));
-	}, [activity]);
+	const tried = !env.apiUrl || polling.failures > 0;
 	const contributions = activity?.contributions;
 	const weeks = useMemo(() => (contributions ? toWeeks(contributions.days) : []), [contributions]);
 	const streak = contributions ? streakOf(contributions.days) : 0;

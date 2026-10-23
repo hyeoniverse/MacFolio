@@ -1,13 +1,15 @@
 import { useMemo } from 'react';
 import { loadPlaces, loadUnit } from '@/apps/weather/places';
 import { useForecasts } from '@/apps/weather/useForecasts';
+import { useHomeScreenShown } from '@/desktop/useAppWindowShown';
 import type { WidgetSize } from './catalog';
 
 /** 날씨 앱의 첫 도시 (그 앱에서 고른 순서와 기온 단위를 따른다) */
 const WeatherWidget = ({ size }: { size: WidgetSize }) => {
 	const places = useMemo(() => loadPlaces().slice(0, 1), []);
 	const unit = useMemo(() => loadUnit(), []);
-	const { forecastOf } = useForecasts(places, unit);
+	// 바탕화면·홈 화면이 보이는 동안만 다시 묻는다 (날씨 앱과 같은 도시면 응답을 나눠 쓴다)
+	const { forecastOf } = useForecasts(places, unit, useHomeScreenShown());
 	const place = places[0];
 	const loaded = forecastOf(place);
 

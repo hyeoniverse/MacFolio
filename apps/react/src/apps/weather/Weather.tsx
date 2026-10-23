@@ -17,6 +17,7 @@ import { keyOf, useForecasts } from './useForecasts';
 import { usePlaceSearch } from './usePlaceSearch';
 import PlaceCard from './components/PlaceCard';
 import Detail from './components/Detail';
+import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 
 const openCredit = (event: React.MouseEvent) => {
 	event.preventDefault();
@@ -44,7 +45,8 @@ const Weather = () => {
 	const moreButton = useRef<HTMLButtonElement>(null);
 	const swipe = useRef<{ x: number; y: number } | null>(null);
 	const { attach: attachShell, compact } = useCompact<HTMLDivElement>();
-	const { forecastOf, reload } = useForecasts(places, unit);
+	// 창이 보이는 동안만 다시 묻는다 (닫거나 최소화해도 컴포넌트는 남는다)
+	const { forecastOf, reload } = useForecasts(places, unit, useAppWindowShown('weather'));
 	/** 한글을 조합하는 중인지 (조합 중에는 Open-Meteo에 묻지 않는다) */
 	const [composing, setComposing] = useState(false);
 	const search = usePlaceSearch(query, composing);

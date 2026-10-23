@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>GitHub 기여 위젯 여러 개와 GitHub 앱 창이 일정 하나를 나눠 써서 요청은 10분마다 한 번이다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#4f46e5"/></marker></defs>
+<rect width="900" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">보는 곳이 몇 개든 요청은 하나</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">createSharedPoller: 보이는 화면마다 acquire, 모두 반납하면 멈춘다</text>
+<rect x="32" y="80" width="230" height="50" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="147" y="102" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="middle">GitHub 기여 위젯</text>
+<text x="147" y="119" font-size="10.5" fill="#6b7280" text-anchor="middle">바탕화면</text>
+<line x1="264" y1="105" x2="358" y2="168" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="32" y="146" width="230" height="50" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="147" y="168" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="middle">GitHub 기여 위젯 (작게)</text>
+<text x="147" y="185" font-size="10.5" fill="#6b7280" text-anchor="middle">바탕화면</text>
+<line x1="264" y1="171" x2="358" y2="168" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="32" y="212" width="230" height="50" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="147" y="234" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="middle">GitHub 앱 창</text>
+<text x="147" y="251" font-size="10.5" fill="#6b7280" text-anchor="middle">열려 있고 최소화하지 않음</text>
+<line x1="264" y1="237" x2="358" y2="168" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="360" y="128" width="220" height="80" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="470" y="156" font-size="13" font-weight="600" fill="#4f46e5" text-anchor="middle">activityPolling</text>
+<text x="470" y="176" font-size="11" fill="#374151" text-anchor="middle">보는 곳 3 → 일정 1개</text>
+<text x="470" y="194" font-size="11" fill="#374151" text-anchor="middle">진행 중이면 새로 보내지 않음</text>
+<line x1="582" y1="168" x2="640" y2="168" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="642" y="128" width="226" height="80" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="755" y="156" font-size="12.5" font-weight="600" fill="#1f2937" text-anchor="middle">GET /github/activity</text>
+<text x="755" y="176" font-size="11" fill="#374151" text-anchor="middle">10분마다 1번</text>
+<text x="755" y="194" font-size="11" fill="#374151" text-anchor="middle">응답은 activityStore에 보관</text>
+<text x="32" y="282" font-size="11" fill="#6b7280">탭이 숨거나, 휴대폰에서 앱이 홈 화면을 덮으면 위젯은 반납한다. 보는 곳이 0이 되면 요청이 없다.</text>
+</svg>

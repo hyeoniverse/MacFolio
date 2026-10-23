@@ -2,10 +2,12 @@ import { cssVars } from '@/shared/lib/cssVars';
 import React, { useEffect } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { env } from '@/shared/config/env';
+import { useSharedPolling } from '@/shared/hooks/usePolling';
+import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import { LANGUAGE_COLORS, type RepoCard as Repo } from '@/apps/github/githubProfile';
 import { loadGithub, useGithub } from '@/apps/github/githubApi';
-import { loadActivity, useActivity } from '@/apps/github/githubActivityApi';
+import { activityPolling, useActivity } from '@/apps/github/githubActivityApi';
 import { ActivityHistory, ContributionGraph } from '@/apps/github/GithubContributions';
 import GithubReadme from '@/apps/github/GithubReadme';
 import '@/apps/github/Github.css';
@@ -69,8 +71,9 @@ const Github: React.FC = () => {
 
 	useEffect(() => {
 		void loadGithub();
-		void loadActivity();
 	}, []);
+	// 기여 달력과 활동 기록: 창이 보이는 동안 10분마다 다시 묻는다 (기여 위젯과 같은 일정을 나눠 쓴다)
+	useSharedPolling(activityPolling, useAppWindowShown('github') && Boolean(env.apiUrl));
 
 	return (
 		<AppWindow title="GitHub" appName="github">

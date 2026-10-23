@@ -1,9 +1,12 @@
 import { cssVars } from '@/shared/lib/cssVars';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { env } from '@/shared/config/env';
+import { usePolling } from '@/shared/hooks/usePolling';
+import { keepIfSame } from '@/shared/lib/poller';
+import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import { useProfile } from '@/shared/site/profileStore';
 import ComposeView from './components/ComposeView';
 import CopyAddress from './components/CopyAddress';
@@ -22,6 +25,9 @@ import TabList from '@/shared/ui/tabs/TabList';
 import Sidebar from '@/shared/ui/sidebar/Sidebar';
 import ListRow from '@/shared/ui/list-row/ListRow';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
+
+/** 관리자의 받은 편지함을 다시 묻는 간격. 연락 메일은 하루에 몇 통 수준이라 2분이면 충분하다 */
+const INBOX_POLL_MS = 2 * 60_000;
 
 const fromServer = (mail: ContactMail, replyable: boolean): ListMail => ({
 	id: mail.id,
@@ -115,27 +121,51 @@ const Mail: React.FC = () => {
 	// 넘어간 방향 (처음에는 애니메이션 없음)
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 
-	// 서버의 사서함: 보낸 편지함(누구나, 이 브라우저 것만), 받은 편지함(관리자)
+	// 서버의 보낸 편지함 (누구나, 이 브라우저 것만). 열 때와 보낸 뒤에 읽는다 (이 브라우저가 보내야 바뀐다)
 	useEffect(() => {
 		if (!env.apiUrl) return;
 		let alive = true;
-		const failed = (error: Error) => alive && setLoadError(error.message);
 		void fetchSentMail()
 			.then((mails) => {
 				if (!alive) return;
 				setSent(mails.map((mail) => fromServer(mail, false)));
 				setLoadError(null);
 			})
-			.catch(failed);
-		// 관리자가 아니면 받은 편지함은 환영 메일이라 묻지 않는다 (서버도 401)
-		if (admin)
-			void fetchReceivedMail()
-				.then((mails) => alive && setReceived(mails.map((mail) => fromServer(mail, true))))
-				.catch(failed);
+			.catch((error: Error) => alive && setLoadError(error.message));
 		return () => {
 			alive = false;
 		};
 	}, [admin, refreshes]);
+
+	// 받은 편지함 (관리자): 창이 보이는 동안 2분마다 다시 묻는다. 관리자가 아니면 환영 메일이라 묻지 않는다 (서버도 401)
+	/** 이 화면에서 답장해 메일을 고친 시각. 그보다 먼저 보낸 조회의 응답은 덮지 않는다 */
+	const receivedEditedAt = useRef(0);
+	const shown = useAppWindowShown('mail');
+	usePolling(
+		(isCurrent) => {
+			const askedAt = Date.now();
+			return fetchReceivedMail().then(
+				(mails) => {
+					if (!isCurrent() || askedAt < receivedEditedAt.current) return;
+					setReceived((current) =>
+						keepIfSame(
+							current,
+							mails.map((mail) => fromServer(mail, true))
+						)
+					);
+				},
+				(error: Error) => {
+					if (isCurrent()) setLoadError(error.message);
+					throw error;
+				}
+			);
+		},
+		{
+			intervalMs: INBOX_POLL_MS,
+			active: admin && Boolean(env.apiUrl) && shown,
+			resetKey: String(refreshes),
+		}
+	);
 
 	const inbox = admin ? (received ?? []) : welcome;
 	// 관리자에게 환영 메일은 자기가 방문자에게 보낸 메일이라 보낸 편지함 맨 아래(가장 오래된 것)에 보인다
@@ -189,8 +219,10 @@ const Mail: React.FC = () => {
 		return result;
 	};
 
-	const replied = (mail: ContactMail) =>
+	const replied = (mail: ContactMail) => {
+		receivedEditedAt.current = Date.now();
 		setReceived((current) => current?.map((entry) => (entry.id === mail.id ? fromServer(mail, true) : entry)) ?? null);
+	};
 
 	// 메뉴 막대의 메일 메뉴 (#96)
 	useAppMenus('mail', [
