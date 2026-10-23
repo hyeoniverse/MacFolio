@@ -180,7 +180,7 @@ export class PostsService {
 				create: { slug, ...published, updatedBy: admin },
 				update: { ...published, ...NO_DRAFT, deleted: false, deletedAt: null, updatedBy: admin },
 			});
-			// 처음 게시한 때는 한 번만 적는다
+			// 처음 게시한 시각은 한 번만 적는다
 			await tx.post.updateMany({
 				where: { slug, firstPublishedAt: null },
 				data: { firstPublishedAt: published.publishedAt },

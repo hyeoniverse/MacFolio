@@ -107,7 +107,7 @@ model Post {
   /// Markdown 본문
   body             String?
   publishedAt      DateTime?
-  /// 처음 게시한 때. 같은 날 글의 순서를 정한다 (publishedAt은 게시할 때마다 바뀐다)
+  /// 처음 게시한 시각. 같은 날 글의 순서를 정한다 (publishedAt은 게시할 때마다 바뀐다)
   firstPublishedAt DateTime?
   /// 임시 저장. 모두 null이면 게시한 그대로
   draftTitle       String?

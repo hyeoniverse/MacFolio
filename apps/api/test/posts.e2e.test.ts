@@ -81,7 +81,7 @@ describe('블로그 글 (e2e)', () => {
 		const created = await admin('post', '/posts').send(POST).expect(201);
 		expect(created.body.slug).toMatch(/^2026-09-29-[0-9a-f]{6}$/);
 		expect(created.body).toMatchObject({ published: null, draft: POST, revisions: 0 });
-		// 게시하기 전에는 같은 날 글의 순서를 정할 때가 없다 (가장 최근으로 본다)
+		// 게시하기 전에는 같은 날 글의 순서를 정할 시각이 없다 (가장 최근으로 본다)
 		expect(created.body.createdAt).toBeUndefined();
 		expect((await request(server()).get('/posts').expect(200)).body).toEqual([]);
 
@@ -104,7 +104,7 @@ describe('블로그 글 (e2e)', () => {
 		]);
 	});
 
-	it('같은 날 글의 순서는 처음 게시한 때를 따른다 (임시 저장한 때나 다시 게시한 때가 아니다)', async () => {
+	it('같은 날 글의 순서는 처음 게시한 시각을 따른다 (임시 저장한 시각이나 다시 게시한 시각이 아니다)', async () => {
 		const { slug } = (await admin('post', '/posts').send(POST).expect(201)).body;
 		const first = await admin('post', `/posts/${slug}/publish`).send(POST).expect(200);
 		const again = await admin('post', `/posts/${slug}/publish`)

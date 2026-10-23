@@ -22,8 +22,8 @@ export interface Post {
 	/** 관리자에게만: '최근 삭제된 항목'의 글이면 지운 때 (ISO) */
 	deletedAt?: string;
 	/**
-	 * 올린 때 (ISO, UTC). 같은 날 글의 순서를 정한다 (머리말의 date에는 시각이 없다).
-	 * 저장소 글은 git에 처음 들어온 커밋, 서버 글은 처음 게시한 때. 모르면(아직 커밋하지 않았거나 게시하지 않은 글) 가장 최근으로 본다
+	 * 올린 시각 (ISO, UTC). 같은 날 글의 순서를 정한다 (머리말의 date에는 시각이 없다).
+	 * 저장소 글은 git에 처음 들어온 커밋, 서버 글은 처음 게시한 시각. 모르면(아직 커밋하지 않았거나 게시하지 않은 글) 가장 최근으로 본다
 	 */
 	createdAt?: string;
 }
@@ -107,7 +107,7 @@ export interface ServerPost {
 	summary: string;
 	body: string;
 	deleted: boolean;
-	/** 처음 게시한 때 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
+	/** 처음 게시한 시각 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
 	createdAt?: string;
 }
 
@@ -131,7 +131,7 @@ export function mergeServerPosts(posts: Post[], server: ServerPost[]): Post[] {
 			summary: item.summary || excerpt(item.body),
 			body: item.body,
 			...(original?.pinned && { pinned: true }),
-			// 저장소 글을 서버에서 고쳐도 올린 때는 저장소에 처음 들어온 때
+			// 저장소 글을 서버에서 고쳐도 올린 시각은 저장소에 처음 들어온 시각
 			...((original?.createdAt ?? item.createdAt) && { createdAt: original?.createdAt ?? item.createdAt }),
 		});
 	}
@@ -160,7 +160,7 @@ export interface AdminPost {
 	deletedAt: string | null;
 	/** 남은 버전 수 */
 	revisions: number;
-	/** 처음 게시한 때 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
+	/** 처음 게시한 시각 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
 	createdAt?: string;
 }
 
@@ -241,14 +241,14 @@ export function daysUntilPurge(deletedAt: string, now: Date): number {
 
 const NO_STATUS: PostStatus = { draftOnly: false, changed: false, scheduled: null };
 
-/** 올린 때의 비교 값. 모르면 가장 최근으로 (아직 커밋하지 않은, 지금 쓰고 있는 글) */
+/** 올린 시각의 비교 값. 모르면 가장 최근으로 (아직 커밋하지 않은, 지금 쓰고 있는 글) */
 const createdKey = (post: { createdAt?: string }) => post.createdAt ?? '\uffff';
 
-/** 올린 때로 비교한다: 먼저 올린 글이 앞 (오름차순). 같은 날 글의 순서에 쓴다 */
+/** 올린 시각으로 비교한다: 먼저 올린 글이 앞 (오름차순). 같은 날 글의 순서에 쓴다 */
 export const compareCreated = (a: { createdAt?: string }, b: { createdAt?: string }) =>
 	createdKey(a).localeCompare(createdKey(b));
 
-/** 최신 글이 위로. 같은 날이면 나중에 올린 글이 위로, 올린 때도 같으면 제목 순 */
+/** 최신 글이 위로. 같은 날이면 나중에 올린 글이 위로, 올린 시각도 같으면 제목 순 */
 export function sortPosts(posts: Post[]): Post[] {
 	return [...posts].sort(
 		(a, b) => b.date.localeCompare(a.date) || compareCreated(b, a) || a.title.localeCompare(b.title)
@@ -257,7 +257,7 @@ export function sortPosts(posts: Post[]): Post[] {
 
 /**
  * 날짜 순으로 바로 옆의 글: 이전 글은 더 오래된 글, 다음 글은 더 최근 글 (블로그의 흔한 관례).
- * 같은 날이면 목록과 같은 순서(올린 때, 그다음 제목)를 따른다. 목록을 어떻게 정렬해 보고 있든 날짜로 잇는다.
+ * 같은 날이면 목록과 같은 순서(올린 시각, 그다음 제목)를 따른다. 목록을 어떻게 정렬해 보고 있든 날짜로 잇는다.
  */
 export function adjacentPosts(posts: Post[], slug: PostSlug): { older: Post | null; newer: Post | null } {
 	const ordered = sortPosts(posts);

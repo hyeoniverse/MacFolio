@@ -67,8 +67,8 @@ export function updatedDates(log: string): Record<string, string> {
 }
 
 /**
- * `git log --diff-filter=A --format=%x00%cI --name-only --relative`의 출력 → 글 slug → 올린 때 (처음 더한 커밋, ISO UTC).
- * 같은 날 글의 순서를 정한다 (머리말의 날짜에는 시각이 없다). 기록은 최신 커밋이 먼저라, 지웠다 다시 더한 글은 가장 처음 더한 때
+ * `git log --diff-filter=A --format=%x00%cI --name-only --relative`의 출력 → 글 slug → 올린 시각 (처음 더한 커밋, ISO UTC).
+ * 같은 날 글의 순서를 정한다 (머리말의 날짜에는 시각이 없다). 기록은 최신 커밋이 먼저라, 지웠다 다시 더한 글은 가장 처음 더한 시각
  */
 export function createdTimes(log: string): Record<string, string> {
 	const times: Record<string, string> = {};
@@ -84,7 +84,7 @@ export function createdTimes(log: string): Record<string, string> {
 	return times;
 }
 
-/** 빌드가 넘기는 것: 빌드한 그림 주소, 글 slug → 마지막으로 고친 날, 글 slug → 올린 때 */
+/** 빌드가 넘기는 것: 빌드한 그림 주소, 글 slug → 마지막으로 고친 날, 글 slug → 올린 시각 */
 export interface SeoPostOptions {
 	images?: ContentImages;
 	updated?: Record<string, string>;

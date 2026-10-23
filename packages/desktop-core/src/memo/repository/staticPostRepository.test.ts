@@ -13,7 +13,7 @@ describe('createStaticPostRepository', () => {
 		]);
 	});
 
-	it('같은 날 글은 올린 때(빌드가 git 기록에서 읽은 값)로 나중에 올린 글이 위', async () => {
+	it('같은 날 글은 올린 시각(빌드가 git 기록에서 읽은 값)로 나중에 올린 글이 위', async () => {
 		const repo = createStaticPostRepository(
 			{
 				'../content/a-morning.md': '---\ntitle: 가 아침 글\ndate: 2026-09-28\n---\n본문',

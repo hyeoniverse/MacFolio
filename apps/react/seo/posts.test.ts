@@ -137,8 +137,8 @@ describe('검색엔진용 파일', () => {
 	});
 });
 
-describe('올린 때 (같은 날 글의 순서)', () => {
-	it('git 기록(최신 커밋이 먼저)에서 글마다 처음 더한 때를 UTC로 읽는다. 그림과 하위 폴더는 뺀다', () => {
+describe('올린 시각 (같은 날 글의 순서)', () => {
+	it('git 기록(최신 커밋이 먼저)에서 글마다 처음 더한 시각을 UTC로 읽는다. 그림과 하위 폴더는 뺀다', () => {
 		const log =
 			'\x002026-10-22T15:00:00+09:00\n\nevening.md\nimages/evening-a.png\n' +
 			'\x002026-10-22T09:00:00+09:00\n\nmorning.md\n' +
@@ -161,7 +161,7 @@ describe('올린 때 (같은 날 글의 순서)', () => {
 			'b-evening',
 			'a-morning',
 		]);
-		// 올린 때를 모르면 제목 순
+		// 올린 시각을 모르면 제목 순
 		expect((await seoPosts(files)).map((post) => post.slug)).toEqual(['a-morning', 'b-evening']);
 	});
 });

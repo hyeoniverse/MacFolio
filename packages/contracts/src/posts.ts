@@ -66,7 +66,7 @@ export const ServerPost: z.ZodType<ServerPostShape> = z.object({
 	summary: z.string(),
 	body: z.string(),
 	deleted: z.boolean(),
-	/** 처음 게시한 때 (ISO). 같은 날 글의 순서를 정한다 */
+	/** 처음 게시한 시각 (ISO). 같은 날 글의 순서를 정한다 */
 	createdAt: z.string().optional(),
 });
 export type ServerPost = ServerPostShape;
@@ -83,7 +83,7 @@ export const AdminPost: z.ZodType<AdminPostShape> = z.object({
 	deletedAt: z.string().nullable(),
 	/** 남은 버전 수 */
 	revisions: z.number().int().nonnegative(),
-	/** 처음 게시한 때 (ISO). 같은 날 글의 순서를 정한다. 게시한 적 없으면 없다 */
+	/** 처음 게시한 시각 (ISO). 같은 날 글의 순서를 정한다. 게시한 적 없으면 없다 */
 	createdAt: z.string().optional(),
 });
 export type AdminPost = AdminPostShape;

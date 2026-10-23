@@ -24,7 +24,7 @@ export const ORDER_LABELS: Record<SortKey, Record<SortOrder, string>> = {
 	title: { asc: '가나다 순', desc: '역순' },
 };
 
-/** 정렬한다. 같은 날짜면 올린 때 순(날짜와 같은 방향), 그다음 제목 순. 같은 제목이면 최신 순 */
+/** 정렬한다. 같은 날짜면 올린 시각 순(날짜와 같은 방향), 그다음 제목 순. 같은 제목이면 최신 순 */
 export function sortBy(posts: Post[], { sort, order }: Pick<Arrangement, 'sort' | 'order'>): Post[] {
 	const sign = order === 'asc' ? 1 : -1;
 	return [...posts].sort((a, b) =>

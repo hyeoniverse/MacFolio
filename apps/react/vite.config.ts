@@ -78,7 +78,7 @@ function contentUpdatedDates(contentDir: string): Record<string, string> {
 }
 
 /**
- * 글 파일마다 올린 때 (git에 처음 더한 커밋). 같은 날 글의 순서를 정한다.
+ * 글 파일마다 올린 시각 (git에 처음 더한 커밋). 같은 날 글의 순서를 정한다.
  * 기록을 일부만 받은 저장소(shallow clone)는 처음 더한 커밋이 없으니 쓰지 않는다: 같은 날 글은 제목 순이 된다
  */
 function contentCreatedTimes(contentDir: string): Record<string, string> {
@@ -165,7 +165,7 @@ function recentPostsPlugin(): Plugin {
 	// 'virtual:post-index': 모든 글의 제목·날짜·분류 (메모 위젯의 인기글·랜덤이 그때 불러온다. 첫 화면에는 넣지 않는다)
 	const indexId = 'virtual:post-index';
 	const indexResolved = `\0${indexId}`;
-	// 'virtual:post-created': 글마다 올린 때 (git). 메모 앱이 글 원문 묶음과 함께 불러와 같은 날 글의 순서를 정한다
+	// 'virtual:post-created': 글마다 올린 시각 (git). 메모 앱이 글 원문 묶음과 함께 불러와 같은 날 글의 순서를 정한다
 	const createdId = 'virtual:post-created';
 	const createdResolved = `\0${createdId}`;
 	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));

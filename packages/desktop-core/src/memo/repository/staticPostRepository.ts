@@ -7,7 +7,7 @@ import type { PostRepository } from './types.js';
  * @param files 파일 경로 → 파일 내용. 파일 이름(확장자 제외)이 글의 slug가 된다.
  *   머리말이 잘못된 파일은 빌드를 깨지 않고 목록에서만 빠진다.
  * @param onInvalid 빠진 파일을 알린다 (개발 중 경고 등)
- * @param created slug → 올린 때 (ISO, 빌드가 git 기록에서 읽는다). 같은 날 글의 순서를 정한다
+ * @param created slug → 올린 시각 (ISO, 빌드가 git 기록에서 읽는다). 같은 날 글의 순서를 정한다
  */
 export function createStaticPostRepository(
 	files: Record<string, string>,
