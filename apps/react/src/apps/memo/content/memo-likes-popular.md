@@ -127,6 +127,8 @@ export function popularPosts(posts: Post[], stats: Record<string, Partial<PostSt
 | 검색 필터링      | 결과만 표시                | 순위 번호 유지 (필터링 결과에서 다시 매기지 않음) |
 | 좋아요·댓글 직후 | -                          | 서버 재요청 없이 집계 값을 갱신해 순위에 반영     |
 
+![인기글 폴더와 글 아래 좋아요 버튼](./images/memo-likes-popular-folder.jpg '순위 번호(1~3위 주황)와 조회·댓글·좋아요 집계가 목록에 표시되고, 본문 아래에 좋아요 캡슐 버튼이 있다. 가짜 API(e2e/fakeApi.ts)의 집계 값으로 캡처했다')
+
 ## 시험
 
 <details>
