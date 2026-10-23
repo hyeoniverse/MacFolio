@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 430" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>검색 로봇이 글 주소를 요청하면 Worker가 posts.json, API의 서버 글, 사이트 콘텐츠를 조회해 head와 #root에 글 정보를 넣은 HTML을 응답한다</title>
+<defs><marker id="ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="860" height="430" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="17" font-weight="700" fill="#1f2937">글 주소 요청에 Worker가 글 정보를 넣은 HTML을 응답한다</text>
+<rect x="32" y="96" width="200" height="68" rx="10" fill="#f3f4f6"/>
+<text x="132" y="122" font-size="12.5" font-weight="600" fill="#374151" text-anchor="middle">검색 로봇 · 링크 미리보기</text>
+<text x="132" y="144" font-size="11.5" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">GET /memo/&lt;글&gt;</text>
+<path d="M232 130 H296" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="300" y="64" width="250" height="140" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="425" y="90" font-size="13" font-weight="700" fill="#4f46e5" text-anchor="middle">Cloudflare Worker</text>
+<text x="425" y="108" font-size="11" fill="#6b7280" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">worker/seo.ts</text>
+<text x="318" y="134" font-size="11.5" fill="#374151">1. 주소에 맞는 글·프로젝트 조회</text>
+<text x="318" y="154" font-size="11.5" fill="#374151">2. title · description 교체</text>
+<text x="318" y="174" font-size="11.5" fill="#374151">3. canonical · og · JSON-LD 추가</text>
+<text x="318" y="194" font-size="11.5" fill="#374151">4. #root 안에 본문 삽입</text>
+<path d="M550 134 H612" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#ok)"/>
+<rect x="616" y="64" width="212" height="140" rx="10" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.5"/>
+<text x="722" y="90" font-size="13" font-weight="700" fill="#1f2937" text-anchor="middle">응답 HTML</text>
+<text x="632" y="114" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">&lt;head&gt;</text>
+<text x="644" y="132" font-size="11" fill="#374151">글 제목 · 글 요약</text>
+<text x="644" y="150" font-size="11" fill="#374151">canonical · og:* · JSON-LD</text>
+<text x="632" y="172" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">&lt;div id="root"&gt;</text>
+<text x="644" y="190" font-size="11" fill="#374151">제목 · 날짜 · 본문 (1px로 숨김)</text>
+<rect x="32" y="252" width="240" height="60" rx="10" fill="#f3f4f6"/>
+<text x="152" y="276" font-size="12" font-weight="600" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">dist/seo/posts.json</text>
+<text x="152" y="297" font-size="11" fill="#374151" text-anchor="middle">빌드 시각에 저장소 글로 생성</text>
+<rect x="310" y="252" width="230" height="60" rx="10" fill="#f3f4f6"/>
+<text x="425" y="276" font-size="12" font-weight="600" fill="#374151" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">API GET /posts</text>
+<text x="425" y="297" font-size="11" fill="#374151" text-anchor="middle">서버 글, 1분 동안 캐시</text>
+<rect x="578" y="252" width="250" height="60" rx="10" fill="#f3f4f6"/>
+<text x="703" y="276" font-size="12" font-weight="600" fill="#374151" text-anchor="middle">사이트 콘텐츠</text>
+<text x="703" y="297" font-size="11" fill="#374151" text-anchor="middle">관리자가 수정한 프로필·프로젝트</text>
+<path d="M152 252 L330 208" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M425 252 V208" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<path d="M703 252 L520 208" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#gray)"/>
+<rect x="32" y="340" width="796" height="64" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+<text x="48" y="366" font-size="12" fill="#92400e"><tspan font-weight="700">브라우저</tspan>: 스크립트를 실행하면 React가 #root 안을 앱 화면으로 교체한다. 숨긴 본문은 화면에 표시되지 않는다.</text>
+<text x="48" y="388" font-size="12" fill="#92400e"><tspan font-weight="700">/sitemap.xml</tspan>: Worker가 같은 목록(저장소 글 + 서버 글, 삭제·예약 글 제외)으로 생성한다.</text>
+</svg>
