@@ -45,7 +45,7 @@
 }
 
 /*
- * 구분선·접기 블록·인용의 모양은 styles/prose.css가 문서 보기와 함께 정한다. 메모는 차이만 변수로 바꾼다
+ * 구분선·목록·코드·접기 블록·인용의 모양은 styles/prose.css가 문서 보기와 함께 정한다. 메모는 차이만 변수로 바꾼다
  * (편집기 .ProseMirror도 .memo-markdown이라 읽기 화면과 같은 모양이다)
  */
 .memo-markdown {
@@ -53,6 +53,15 @@
 	--prose-muted: var(--memo-muted);
 	--prose-accent: var(--memo-accent);
 	--prose-quote-line: var(--memo-accent);
+	--prose-list-indent: 1.4em;
+	--prose-list-gap: 0.3em;
+	--prose-code-padding: 0.1em 0.35em;
+	--prose-code-radius: 0.3em;
+	--prose-code-bg: var(--memo-code-bg);
+	--prose-pre-padding: 0.9em 1em;
+	--prose-pre-radius: 0.6em;
+	--prose-pre-bg: var(--memo-code-bg);
+	--prose-pre-line-height: 1.5;
 }
 
 /* 구분선·접기 블록의 위아래 여백: 문단 간격 규칙(> * + *)이 위 여백을 덮지 않게 여기서 다시 정한다 */
@@ -69,23 +78,6 @@
 	outline: 2px solid var(--memo-accent);
 	outline-offset: 4px;
 	border-radius: 1px;
-}
-
-.memo-markdown ul,
-.memo-markdown ol {
-	padding-left: 1.4em;
-}
-
-.memo-markdown ul {
-	list-style: disc;
-}
-
-.memo-markdown ol {
-	list-style: decimal;
-}
-
-.memo-markdown li + li {
-	margin-top: 0.3em;
 }
 
 .memo-markdown a {
@@ -314,27 +306,18 @@
 	}
 }
 
+/* 코드 글꼴: 문서 보기는 브라우저 기본 고정폭 글꼴, 메모는 시스템 고정폭 글꼴. 코드 블록 안의 코드도 글줄 안 코드처럼 작게 */
 .memo-markdown code {
-	padding: 0.1em 0.35em;
-	border-radius: 0.3em;
-	background-color: var(--memo-code-bg);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.memo-markdown pre code {
 	font-size: 0.88em;
 }
 
 .memo-markdown pre {
 	/* Prettier가 코드 블록을 탭으로 들여 쓰므로 탭 너비를 좁힌다 */
 	tab-size: 2;
-	padding: 0.9em 1em;
-	border-radius: 0.6em;
-	background-color: var(--memo-code-bg);
-	overflow-x: auto;
-	line-height: 1.5;
-}
-
-.memo-markdown pre code {
-	padding: 0;
-	background: none;
 }
 
 .memo-markdown table {

@@ -137,17 +137,18 @@
 	opacity: 0.6;
 }
 
-/* 앱 안 버튼의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 버튼마다 클래스로 적은 값이 늘 이긴다 */
+/* 앱 안 버튼·목록의 기본값: 브라우저 기본 글꼴·색 대신 앱을 따른다. reset 층(styles/layers.css)이라 클래스로 적은 값이 늘 이긴다 */
 @layer reset {
 	.memo button {
 		font: inherit;
 		color: inherit;
 		cursor: pointer;
 	}
-}
 
-.memo ul {
-	list-style: none;
+	/* 앱 안 목록(폴더·글·태그)의 글머리표를 없앤다. reset 층이라 본문 글의 글머리표(styles/prose.css, 점수 0)가 이긴다 */
+	.memo ul {
+		list-style: none;
+	}
 }
 
 /*

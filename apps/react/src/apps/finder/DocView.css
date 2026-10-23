@@ -1,4 +1,4 @@
-/* Markdown 문서 보기 (DocView): 텍스트 편집기 창과 휴대폰 파일 앱이 함께 쓴다. 블로그와 같은 부분(인용·구분선·접기·코드 강조 색)은 styles/prose.css */
+/* Markdown 문서 보기 (DocView): 텍스트 편집기 창과 휴대폰 파일 앱이 함께 쓴다. 블로그와 같은 부분(인용·구분선·목록·코드·접기)은 styles/prose.css */
 
 .finder-doc {
 	max-width: 760px;
@@ -37,29 +37,13 @@
 	margin: 0 0 1em;
 }
 
-/* 목록: 앱 전체의 초기화(padding: 0) 때문에 글머리표가 본문 밖으로 나가고 하위 목록이 들여 써지지 않으므로 GitHub처럼 되돌린다 */
-.finder-doc :is(ul, ol) {
-	padding-left: 2em;
-}
-
-.finder-doc ul {
-	list-style: disc;
-}
-
-.finder-doc ol {
-	list-style: decimal;
-}
-
+/* 목록의 글머리표·들여쓰기·항목 간격은 styles/prose.css. 하위 목록은 GitHub처럼 빈 동그라미, 위 여백을 좁힌다 */
 .finder-doc :is(ul, ol) ul {
 	list-style: circle;
 }
 
 .finder-doc :is(ul, ol) :is(ul, ol) {
 	margin: 0.25em 0 0;
-}
-
-.finder-doc li + li {
-	margin-top: 0.25em;
 }
 
 .finder-doc li > p {
@@ -97,20 +81,9 @@
 	vertical-align: middle;
 }
 
-.finder-doc :not(pre) > code {
-	padding: 0.15em 0.4em;
-	border-radius: var(--radius-4);
-	background-color: var(--color-unemphasized-selected-content-background);
-	font-size: 0.88em;
-}
-
+/* 코드 상자·문법 강조 색은 styles/prose.css. 코드 블록 글자는 본문과 같은 크기 */
 .finder-doc pre {
-	padding: var(--space-12) var(--space-14);
-	overflow: auto;
-	border-radius: var(--radius-8);
-	background-color: var(--sidebar-background);
 	font-size: var(--text-footnote);
-	line-height: 1.55;
 }
 
 .finder-doc table {
