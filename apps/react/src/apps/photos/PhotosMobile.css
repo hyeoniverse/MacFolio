@@ -74,6 +74,12 @@
 	list-style: none;
 }
 
+/* 제목 바로 아래의 격자(보관함·앨범): 맨 위로 올려도 첫 줄이 상태 표시줄 밑에 깔리지 않게 그 높이만큼 내린다.
+   상태 표시줄은 누르면 제어 센터를 열어, 그 밑의 사진은 누를 수 없다. 제목은 눌림을 받지 않아(pointer-events: none) 그 아래는 눌린다 */
+.photos-phone-title.overlay + .photos-phone-grid {
+	padding-top: var(--mobile-statusbar-height);
+}
+
 .photos-phone-grid .photos-thumb {
 	position: relative;
 	display: block;
