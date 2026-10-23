@@ -2,7 +2,7 @@
 title: PR을 머지하자 CI가 연달아 실패한 원인 네 가지 — 글꼴 줄 높이, 목록 재정렬, 새 취약점, scroll 이벤트
 date: 2026-10-24
 category: 개발기/MacFolio/인프라
-summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 코드와 무관하게 새로 공개된 body-parser 취약점이었다.
+summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 새로 공개된 body-parser 취약점으로, CI가 차단해 공개 2시간 33분 만에 운영 서버에 반영했다.
 ---
 
 10월 24일 [#368](https://github.com/hyeoniverse/MacFolio/pull/368)을 머지한 뒤 main과 main을 합친 PR의 CI가 연달아 실패했다. 새벽에 두 건(①②)을 고쳐 머지했고, 아침에 남은 두 건(③④)이 드러났다. 실패 원인은 네 가지였고 서로 관계가 없었다. 세 건은 macOS에서 재현되지 않는 E2E 시험이었고, 한 건은 코드를 바꾸지 않았는데 새로 공개된 의존성 취약점 때문에 검사 단계가 막힌 경우였다.
@@ -139,16 +139,36 @@ const posts = useMemo(
 
 ## ③ 코드를 바꾸지 않았는데 실패한 검사: body-parser 취약점
 
-#369를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/dependency-vulnerabilities)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다.
+#369를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/dependency-vulnerabilities)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다. 이번 실패는 이 단계가 의도한 대로 동작한 경우다. 저장소의 코드와 잠금 파일은 바뀌지 않았고, 새로 공개된 권고가 검사 결과를 바꿨다.
 
-| 심각도   | 패키지            | 경로                                                                | 수정 버전 | 내용                                                                                                                      |
-| -------- | ----------------- | ------------------------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------- |
-| high     | body-parser 2.3.0 | `apps/api` › `@nestjs/platform-express` › `express` › `body-parser` | 2.4.0     | [GHSA-27r3-jxmh-p828](https://github.com/advisories/GHSA-27r3-jxmh-p828): 압축된 요청 본문 뒤에 남은 바이트로 서비스 거부 |
-| moderate | fflate 0.7.3      | `packages/og-card` › `satori` › `fflate`                            | 0.7.5     | `unzipSync`가 무한 반복에 빠질 수 있음                                                                                    |
+### 공개에서 운영 반영까지 (한국 시각)
 
-body-parser 2.4.0은 10월 22일에 배포되었고, 권고가 공개된 뒤부터 audit 결과에 나타났다. 저장소의 코드나 잠금 파일은 바뀌지 않았지만, 같은 커밋도 이 시각 이후에 검사하면 실패한다. 그래서 main을 합친 [#366](https://github.com/hyeoniverse/MacFolio/pull/366)·#370도 같은 단계에서 실패했다.
+| 시각        | 내용                                                                                                                       |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| 10/22 20:39 | body-parser 2.4.0 배포 (수정판)                                                                                            |
+| 10/24 05:53 | [GHSA-27r3-jxmh-p828](https://github.com/advisories/GHSA-27r3-jxmh-p828) 공개 (CVE-2026-111181, high, CVSS 7.5)            |
+| 07:27       | #369 머지 뒤 main CI의 `check` 실패. 같은 시각 이후 main을 합친 #366·#370도 같은 단계에서 실패                             |
+| 07:40       | 수정 PR [#371](https://github.com/hyeoniverse/MacFolio/pull/371) 생성                                                      |
+| 07:52       | #371 CI 통과, 머지                                                                                                         |
+| 08:26       | API 이미지 빌드·배포 완료 (#370 머지 실행. #371 머지 실행의 배포는 다음 머지로 취소되어, 다음 실행이 같은 변경을 배포했다) |
 
-두 패키지 모두 직접 설치하지 않은 하위 의존성이라, 상위 패키지의 새 버전을 기다리지 않고 `pnpm-workspace.yaml`의 `overrides`로 올렸다.
+권고가 공개된 뒤 약 1시간 30분 만에 CI가 차단했고, 공개 2시간 33분 뒤 수정한 API가 운영 서버에서 동작했다. 사람이 권고 메일이나 Dependabot 알림을 확인하기 전에, 다음 머지가 검사를 실행하는 시각에 바로 드러났다.
+
+| 심각도   | 패키지            | 경로                                                                | 수정 버전 | 내용                                            |
+| -------- | ----------------- | ------------------------------------------------------------------- | --------- | ----------------------------------------------- |
+| high     | body-parser 2.3.0 | `apps/api` › `@nestjs/platform-express` › `express` › `body-parser` | 2.4.0     | 압축된 요청 본문 뒤에 남은 바이트로 서비스 거부 |
+| moderate | fflate 0.7.3      | `packages/og-card` › `satori` › `fflate`                            | 0.7.5     | `unzipSync`가 무한 반복에 빠질 수 있음          |
+
+### API 서버에 미치는 영향
+
+body-parser는 express가 요청 본문을 해석할 때 쓰는 라이브러리다. MacFolio API는 NestJS 기본 설정으로 JSON·URL 인코딩 파서를 쓰고, `app.setup.ts`에서 분석 이벤트용 `text/plain` 파서를 하나 더 등록한다. 세 파서 모두 `inflate` 옵션의 기본값이 `true`라 `Content-Encoding: gzip`·`deflate` 본문을 풀어서 해석한다. 본문을 받는 경로는 댓글·메시지·좋아요·분석 이벤트처럼 로그인 없이 호출할 수 있는 것도 있으므로, 이 취약점은 운영 서버에서 실제로 도달할 수 있는 경로였다.
+
+<details>
+<summary>왜 express 업데이트를 기다리지 않았나</summary>
+
+body-parser는 직접 설치한 패키지가 아니라 `@nestjs/platform-express` › `express`가 가져오는 하위 의존성이다. express의 의존성 범위(`^2.x`)가 이미 2.4.0을 허용하므로, 잠금 파일만 새 버전을 가리키면 된다. 상위 패키지 배포를 기다리면 그동안 main과 모든 PR의 CI가 막히고 운영 서버는 취약한 버전으로 남는다. 그래서 저장소에서 이미 쓰는 방식대로 `pnpm-workspace.yaml`의 `overrides`로 올렸다. 같은 방식으로 관리하는 항목(prisma의 deepmerge-ts, milkdown의 source-map-js 등)과 함께 이유를 주석으로 남겼다.
+
+</details>
 
 ```yaml
 overrides:
@@ -158,7 +178,9 @@ overrides:
   'fflate@0.7.3': '0.7.5'
 ```
 
-satori는 fflate를 `0.7.3`으로 고정해 두었다. `'fflate@0.7.3'` 선택자는 이 버전만 바꾸고, 다른 패키지가 쓰는 fflate 0.8.3은 그대로 둔다. API 단위 시험 190개와 OG 이미지 시험을 실행해 동작을 확인했다.
+- **fflate:** satori가 `0.7.3`으로 고정해 두었다. `'fflate@0.7.3'` 선택자는 이 버전만 바꾸고, 다른 패키지가 쓰는 fflate 0.8.3은 그대로 둔다. moderate라 CI를 막지는 않았지만 같은 검사 결과에 나와 함께 올렸다.
+- **확인:** `pnpm audit --prod`가 `No known vulnerabilities found`를 출력하는 것을 확인했다. API 단위 시험 190개, OG 이미지 시험, CI의 API E2E(실제 PostgreSQL)가 통과했다.
+- **열린 PR:** 기능 PR(#366·#370)에 섞지 않고 별도 PR로 고친 뒤, 두 PR에 main을 다시 합쳤다.
 
 ## ④ 새 답글이 와도 아래로 따라가지 않은 원인: scroll 이벤트 전달 시각
 
