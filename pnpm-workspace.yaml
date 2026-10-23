@@ -33,3 +33,9 @@ overrides:
   body-parser: '^2.4.0'
   # og-card > satori(0.7.3 고정): unzipSync 무한 반복 (moderate). 같은 0.7 버전의 수정판으로 올린다
   'fflate@0.7.3': '0.7.5'
+  # nestjs > multer(2.4.0 고정): 요청이 끊긴 뒤 비동기 fileFilter가 남아 서비스 거부 (GHSA-q7qp-rjg7-q26m, high)
+  'multer@2.4.0': '2.5.0'
+  # scalar 문서 앱 > undici(7.29.1 고정): EventSource 파서 메모리 무제한, SRI 우회 (moderate)
+  'undici@7.29.1': '7.30.1'
+  # prisma 개발 도구 > ajv > fast-uri: 스킴 위장·호스트 혼동 (moderate, low)
+  fast-uri: '^3.1.9'
