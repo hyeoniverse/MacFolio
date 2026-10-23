@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>전역 클래스 .left가 말풍선에도 적용된 문제</title>
+<defs><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker></defs>
+<rect width="860" height="380" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">전역 클래스 .left가 말풍선에도 적용됐다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">Window.css의 크기 조절 핸들 선택자가 클래스 하나(.left)였다. 메시지 앱의 말풍선도 방향 표시로 같은 클래스를 썼다 (커밋 6b5d0fe38)</text>
+<text x="32" y="92" font-size="13" fill="#b91c1c" font-weight="700">수정 전: .left { left: -5px; width: 10px; … }</text>
+<rect x="32" y="104" width="390" height="56" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="48" y="128" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">핸들 요소 (.resize-handle .left)</text>
+<text x="48" y="146" font-size="11" fill="#6b7280">창 왼쪽 변의 크기 조절 핸들 (의도한 대상)</text>
+<rect x="32" y="172" width="390" height="56" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="48" y="196" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">말풍선 요소 (방향 클래스 .left)</text>
+<text x="48" y="214" font-size="11" fill="#b91c1c">말풍선에도 핸들 규칙(width: 10px 등)이 적용</text>
+<rect x="32" y="244" width="390" height="104" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="48" y="268" font-size="12" fill="#b91c1c" font-weight="700">결과: 말풍선이 한 글자 폭</text>
+<rect x="56" y="284" width="16" height="52" rx="6" fill="#e5e7eb"/>
+<text x="64" y="300" font-size="11" fill="#374151" text-anchor="middle">안</text>
+<text x="64" y="314" font-size="11" fill="#374151" text-anchor="middle">녕</text>
+<text x="64" y="328" font-size="11" fill="#374151" text-anchor="middle">하</text>
+<text x="438" y="92" font-size="13" fill="#15803d" font-weight="700">수정 후: .resize-handle.left { … }</text>
+<rect x="438" y="104" width="390" height="56" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="454" y="128" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">핸들 요소 (.resize-handle .left)</text>
+<text x="454" y="146" font-size="11" fill="#15803d">두 클래스를 모두 가진 요소에만 적용</text>
+<rect x="438" y="172" width="390" height="56" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="454" y="196" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">말풍선 요소 (방향 클래스 .left)</text>
+<text x="454" y="214" font-size="11" fill="#15803d">.resize-handle 클래스가 없으므로 선택되지 않음</text>
+<rect x="438" y="244" width="390" height="104" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="454" y="268" font-size="12" fill="#15803d" font-weight="700">결과: 말풍선이 내용 폭만큼</text>
+<rect x="462" y="290" width="180" height="32" rx="14" fill="#e5e7eb"/>
+<text x="478" y="311" font-size="12" fill="#374151">안녕하세요, 잘 봤어요</text>
+<text x="660" y="311" font-size="11" fill="#6b7280">.top·.right·.bottom 등</text>
+<text x="660" y="327" font-size="11" fill="#6b7280">핸들 클래스 8개 모두 한정</text>
+</svg>

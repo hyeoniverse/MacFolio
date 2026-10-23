@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 390" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
-<title>자동 배포를 서버에 걸며 막힌 여섯 곳과 고친 것. 다섯 곳 가운데 넷은 사람이 스크립트를 서버에 거는 과정에서 나왔다</title>
+<title>자동 배포를 서버에 적용하며 막힌 여섯 곳과 수정 내용. 1~5번 다섯 곳 가운데 넷은 사람이 스크립트를 서버에 적용하는 과정에서 발생했다</title>
 <defs>
 <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
 <marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
@@ -9,11 +9,11 @@
 <marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
 </defs>
 <rect width="860" height="390" rx="16" fill="#ffffff"/>
-<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">서버에 걸며 막힌 여섯 곳</text>
-<text x="32" y="56" font-size="11" fill="#6b7280">로컬 시험은 스크립트를 확인했지만, 거는 과정까지는 확인하지 못했다</text>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">서버에 적용하며 막힌 여섯 곳</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">로컬 시험은 스크립트를 확인했지만, 적용 과정까지는 확인하지 못했다</text>
 <text x="80" y="84" font-size="10.5" fill="#6b7280" font-weight="600">단계</text>
 <text x="250" y="84" font-size="10.5" fill="#6b7280" font-weight="600">막힌 모습</text>
-<text x="520" y="84" font-size="10.5" fill="#6b7280" font-weight="600">고친 것</text>
+<text x="520" y="84" font-size="10.5" fill="#6b7280" font-weight="600">수정</text>
 <rect x="32" y="94" width="796" height="32" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
 <text x="46" y="115" font-size="12" fill="#1f2937" font-weight="700">0</text>
 <text x="70" y="115" font-size="11" fill="#1f2937" font-weight="600">이미지 공개로 바꾸기</text>
@@ -23,7 +23,7 @@
 <text x="46" y="155" font-size="12" fill="#1f2937" font-weight="700">1</text>
 <text x="70" y="155" font-size="11" fill="#1f2937" font-weight="600">첫 배포</text>
 <text x="250" y="155" font-size="10.5" fill="#374151">백업에서 API_TAG 없음으로 멈춤</text>
-<text x="520" y="155" font-size="10.5" fill="#374151">스크립트가 compose에 늘 태그를 넘김 (#107)</text>
+<text x="520" y="155" font-size="10.5" fill="#374151">스크립트가 compose에 항상 태그를 전달 (#107)</text>
 <rect x="32" y="174" width="796" height="32" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
 <text x="46" y="195" font-size="12" fill="#1f2937" font-weight="700">2</text>
 <text x="70" y="195" font-size="11" fill="#1f2937" font-weight="600">명령 붙여 넣기</text>
@@ -31,19 +31,19 @@
 <text x="520" y="195" font-size="10.5" fill="#374151">자리표시를 실제 예 sha-a38ac7e로</text>
 <rect x="32" y="214" width="796" height="32" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
 <text x="46" y="235" font-size="12" fill="#1f2937" font-weight="700">3</text>
-<text x="70" y="235" font-size="11" fill="#1f2937" font-weight="600">열쇠 만들기</text>
-<text x="250" y="235" font-size="10.5" fill="#374151">내 컴퓨터와 서버를 오가다 혼동</text>
+<text x="70" y="235" font-size="11" fill="#1f2937" font-weight="600">키 만들기</text>
+<text x="250" y="235" font-size="10.5" fill="#374151">내 컴퓨터와 서버를 오가며 혼동</text>
 <text x="520" y="235" font-size="10.5" fill="#374151">모든 것을 서버에서 한 번에</text>
 <rect x="32" y="254" width="796" height="32" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
 <text x="46" y="275" font-size="12" fill="#1f2937" font-weight="700">4</text>
 <text x="70" y="275" font-size="11" fill="#1f2937" font-weight="600">Actions에서 배포</text>
 <text x="250" y="275" font-size="10.5" fill="#374151">Permission denied (publickey)</text>
-<text x="520" y="275" font-size="10.5" fill="#374151">늘 옛 배포 열쇠 줄을 지우고 새로 등록</text>
+<text x="520" y="275" font-size="10.5" fill="#374151">항상 옛 배포 키 줄을 삭제하고 새로 등록</text>
 <rect x="32" y="294" width="796" height="32" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
 <text x="46" y="315" font-size="12" fill="#1f2937" font-weight="700">5</text>
 <text x="70" y="315" font-size="11" fill="#1f2937" font-weight="600">Secrets 전 머지</text>
 <text x="250" y="315" font-size="10.5" fill="#374151">이미지만 만들고 배포 건너뜀</text>
-<text x="520" y="315" font-size="10.5" fill="#374151">그 태그로 "API 배포"를 손으로 한 번</text>
+<text x="520" y="315" font-size="10.5" fill="#374151">그 태그로 "API 배포"를 수동으로 한 번 실행</text>
 <rect x="32" y="334" width="796" height="32" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
 <text x="46" y="355" font-size="12" fill="#1f2937" font-weight="700">6</text>
 <text x="70" y="355" font-size="11" fill="#1f2937" font-weight="600">실패한 실행 뒤 머지</text>

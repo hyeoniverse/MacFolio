@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>되돌리기는 이미지만: DB 마이그레이션은 남는다</title>
+<defs><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker></defs>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">되돌리기는 이미지만: DB 마이그레이션은 남는다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">deploy.sh는 컨테이너 이미지 태그만 이전 값으로 바꾼다. 새 버전이 시작하며 적용한 마이그레이션은 DB에 그대로 있다</text>
+<text x="32" y="96" font-size="12" fill="#6b7280" font-weight="700">컨테이너</text>
+<text x="32" y="186" font-size="12" fill="#6b7280" font-weight="700">DB 구조</text>
+<rect x="110" y="74" width="190" height="50" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="205" y="97" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">① 이전 이미지 (sha-A)</text>
+<text x="205" y="114" font-size="11" fill="#374151" text-anchor="middle">healthy</text>
+<rect x="370" y="74" width="190" height="50" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="465" y="97" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">② 새 이미지 (sha-B)</text>
+<text x="465" y="114" font-size="11" fill="#374151" text-anchor="middle">120초 안에 healthy 아님</text>
+<rect x="630" y="74" width="198" height="50" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="729" y="97" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">③ 다시 sha-A</text>
+<text x="729" y="114" font-size="11" fill="#374151" text-anchor="middle">이미지만 되돌림</text>
+<line x1="300" y1="99" x2="366" y2="99" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<line x1="560" y1="99" x2="626" y2="99" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#a-red)"/>
+<text x="593" y="90" font-size="10" fill="#b91c1c" text-anchor="middle">되돌리기</text>
+<rect x="110" y="164" width="190" height="50" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="205" y="187" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">마이그레이션 1~10</text>
+<text x="205" y="204" font-size="11" fill="#6b7280" text-anchor="middle">배포 직전 백업</text>
+<rect x="370" y="164" width="458" height="50" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="599" y="187" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">마이그레이션 1~11 (sha-B가 시작하며 11을 적용)</text>
+<text x="599" y="204" font-size="11" fill="#374151" text-anchor="middle">되돌린 뒤에도 11은 남는다 → sha-A 코드가 11이 적용된 DB에서 동작해야 한다</text>
+<line x1="300" y1="189" x2="366" y2="189" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<text x="32" y="258" font-size="13" fill="#1f2937" font-weight="700">그래서 마이그레이션은 이전 코드와 호환되게 작성한다 (CONTRIBUTING.md)</text>
+<rect x="32" y="272" width="390" height="96" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="48" y="296" font-size="13" fill="#15803d" font-weight="700">열·표 추가</text>
+<text x="48" y="318" font-size="11" fill="#374151">새 열은 nullable 또는 기본값을 지정해 추가한다</text>
+<text x="48" y="338" font-size="11" fill="#374151">이전 코드는 모르는 열을 무시하므로 그대로 동작한다</text>
+<rect x="438" y="272" width="390" height="96" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="454" y="296" font-size="13" fill="#15803d" font-weight="700">이름 변경·삭제는 두 번의 배포로</text>
+<text x="454" y="318" font-size="11" fill="#374151">① 새 열 추가, 코드가 옛 열·새 열 모두 사용</text>
+<text x="454" y="338" font-size="11" fill="#374151">② 다음 배포에서 옛 열 삭제</text>
+<text x="454" y="356" font-size="11" fill="#6b7280">DB까지 되돌리려면 백업을 ops/restore.sh로 복원</text>
+</svg>
