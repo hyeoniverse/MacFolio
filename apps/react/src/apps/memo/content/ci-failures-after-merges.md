@@ -2,17 +2,17 @@
 title: PR을 머지하자 CI가 연달아 실패한 원인 네 가지 — 글꼴 줄 높이, 목록 재정렬, 새 취약점, scroll 이벤트
 date: 2026-10-24
 category: 개발기/MacFolio/인프라
-summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 새로 공개된 body-parser 취약점으로, CI가 차단해 공개 2시간 33분 만에 운영 서버에 반영했다.
+summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 새로 공개된 의존성 취약점으로, 같은 날 body-parser와 multer 두 번 CI가 차단했다.
 ---
 
 10월 24일 [#368](https://github.com/hyeoniverse/MacFolio/pull/368)을 머지한 뒤 main과 main을 합친 PR의 CI가 연달아 실패했다. 새벽에 두 건(①②)을 고쳐 머지했고, 아침에 남은 두 건(③④)이 드러났다. 실패 원인은 네 가지였고 서로 관계가 없었다. 세 건은 macOS에서 재현되지 않는 E2E 시험이었고, 한 건은 코드를 바꾸지 않았는데 새로 공개된 의존성 취약점 때문에 검사 단계가 막힌 경우였다.
 
-| 원인                      | 실패한 곳                           | 수정                                                               |
-| ------------------------- | ----------------------------------- | ------------------------------------------------------------------ |
-| ① 글꼴마다 다른 줄 높이   | `mobile.spec.ts:1874`               | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) CSS       |
-| ② 클릭 사이 목록 재정렬   | `markdown-safety.spec.ts:22` 외 1건 | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) 앱        |
-| ③ body-parser 취약점 공개 | `check` › 의존성 취약점 검사        | [#371](https://github.com/hyeoniverse/MacFolio/pull/371) overrides |
-| ④ scroll 이벤트 전달 시각 | `live-refresh.spec.ts:65`           | [#370](https://github.com/hyeoniverse/MacFolio/pull/370) 시험      |
+| 원인                      | 실패한 곳                           | 수정                                                                                                                        |
+| ------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| ① 글꼴마다 다른 줄 높이   | `mobile.spec.ts:1874`               | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) CSS                                                                |
+| ② 클릭 사이 목록 재정렬   | `markdown-safety.spec.ts:22` 외 1건 | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) 앱                                                                 |
+| ③ 새 취약점 공개          | `check` › 의존성 취약점 검사        | [#371](https://github.com/hyeoniverse/MacFolio/pull/371)·[#374](https://github.com/hyeoniverse/MacFolio/pull/374) overrides |
+| ④ scroll 이벤트 전달 시각 | `live-refresh.spec.ts:65`           | [#370](https://github.com/hyeoniverse/MacFolio/pull/370) 시험                                                               |
 
 ![CI가 연달아 실패한 순서](./images/ci-failures-after-merges-timeline.svg '한국 시각 기준. 머지 한 번마다 다른 원인이 드러났다')
 
@@ -137,7 +137,7 @@ const posts = useMemo(
 
 ![메모 창을 연 직후 고치기 전과 후](./images/ci-failures-after-merges-memo-loading.jpg '시험 안에서 저장소 글 청크 응답을 지연시켜 촬영했다. 왼쪽은 서버 글 1편만 보이다가 230편으로 재정렬되고, 오른쪽은 불러오는 중 안내 뒤 한 번에 나타난다')
 
-## ③ 코드를 바꾸지 않았는데 실패한 검사: body-parser 취약점
+## ③ 코드를 바꾸지 않았는데 실패한 검사: 새로 공개된 의존성 취약점
 
 #369를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/dependency-vulnerabilities)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다. 이번 실패는 이 단계가 의도한 대로 동작한 경우다. 저장소의 코드와 잠금 파일은 바뀌지 않았고, 새로 공개된 권고가 검사 결과를 바꿨다.
 
@@ -182,6 +182,41 @@ overrides:
 - **확인:** `pnpm audit --prod`가 `No known vulnerabilities found`를 출력하는 것을 확인했다. API 단위 시험 190개, OG 이미지 시험, CI의 API E2E(실제 PostgreSQL)가 통과했다.
 - **열린 PR:** 기능 PR(#366·#370)에 섞지 않고 별도 PR로 고친 뒤, 두 PR에 main을 다시 합쳤다.
 
+### 같은 날 두 번째: multer
+
+#371을 머지하고 46분 뒤(08:38), 이 글의 PR([#373](https://github.com/hyeoniverse/MacFolio/pull/373))에 커밋을 올리자 같은 단계가 다시 실패했다. 이번에는 권고 다섯 건이 새로 공개되어 있었고, 그중 multer가 high였다.
+
+| 패키지         | 수정   | 쓰는 곳             | 권고                                                                                              |
+| -------------- | ------ | ------------------- | ------------------------------------------------------------------------------------------------- |
+| multer 2.4.0   | 2.5.0  | API 파일 업로드     | [high](https://github.com/advisories/GHSA-q7qp-rjg7-q26m): 끊긴 요청의 `fileFilter`로 서비스 거부 |
+| undici 7.29.1  | 7.30.1 | API 문서 앱(scalar) | moderate 2건: 메모리 무제한, SRI 우회                                                             |
+| fast-uri 3.1.8 | 3.1.9  | prisma 개발 도구    | moderate·low 3건: 스킴 위장 등                                                                    |
+
+한국 시각으로 맞춰 보면 GitHub 권고 공개와 `pnpm audit` 결과 반영 사이에 시간 차이가 있다.
+
+| 시각  | 내용                                                                  |
+| ----- | --------------------------------------------------------------------- |
+| 07:08 | multer 권고 공개 (GitHub Advisory Database)                           |
+| 08:33 | main(#372 머지)의 `check` 통과: 이 시각까지는 audit 결과에 없었다     |
+| 08:38 | #373의 `check` 실패: 처음으로 audit 결과에 나타났다                   |
+| 08:46 | 수정 PR [#374](https://github.com/hyeoniverse/MacFolio/pull/374) 생성 |
+
+`pnpm audit`는 npm 레지스트리의 취약점 조회 API에 질의하므로, GitHub에 권고가 공개된 시각과 audit 결과에 나타나는 시각이 다르다. 이번에는 07:08에 공개된 권고가 08:33에 끝난 검사에는 없었고 08:38에 끝난 검사에서 처음 나타나, 1시간 25분 이상 차이가 났다. 그래서 같은 커밋도 실행 시각에 따라 통과하거나 실패한다.
+
+multer는 `@nestjs/platform-express`가 `2.4.0`으로 고정해 가져오므로, `fflate`와 같은 방식으로 그 버전만 바꾸는 선택자를 썼다. undici도 scalar가 `7.29.1`로 고정해 같은 방식이고, fast-uri는 `ajv`의 범위(`^3.0.1`) 안이라 범위로 올렸다.
+
+```yaml
+overrides:
+  # nestjs > multer(2.4.0 고정): 요청이 끊긴 뒤 비동기 fileFilter가 남아 서비스 거부 (GHSA-q7qp-rjg7-q26m, high)
+  'multer@2.4.0': '2.5.0'
+  # scalar 문서 앱 > undici(7.29.1 고정): EventSource 파서 메모리 무제한, SRI 우회 (moderate)
+  'undici@7.29.1': '7.30.1'
+  # prisma 개발 도구 > ajv > fast-uri: 스킴 위장·호스트 혼동 (moderate, low)
+  fast-uri: '^3.1.9'
+```
+
+영향 범위는 body-parser와 달랐다. API에서 multer를 쓰는 곳은 관리자 전용 파일 업로드(`POST /files`) 하나다. 이 경로에는 `@UseGuards(AdminGuard)`가 붙어 있고, Nest는 [가드를 인터셉터보다 먼저 실행](https://docs.nestjs.com/faq/request-lifecycle)하므로 관리자 세션이 없는 요청은 `FileInterceptor`(multer)에 도달하지 않는다. `fileFilter`도 지정하지 않아 권고의 조건과 다르다. 도달 가능성은 낮지만, 운영 의존성에 high 취약점이 남으면 모든 CI가 막히고 이후 업로드 경로를 추가할 때 조건이 바뀔 수 있어 같은 날 올렸다.
+
 ## ④ 새 답글이 와도 아래로 따라가지 않은 원인: scroll 이벤트 전달 시각
 
 main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/live-refresh-more)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
@@ -220,7 +255,7 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 - **macOS에서 통과해도 Linux 글꼴로 결과가 달라질 수 있다.** 측정값을 계산에 쓰는 요소(여기서는 아이콘 이름)는 `line-height`를 숫자로 지정해 글꼴 메트릭에 의존하지 않게 한다. 측정 effect는 계산에 쓰는 요소를 모두 `ResizeObserver`로 관찰한다.
 - **재현되지 않으면 추측으로 고치기 전에 아티팩트를 내려받는다.** 이번 네 건 중 세 건은 `trace.zip`의 반환값·요청 순서와 `test-failed-1.png`로 원인을 좁혔다.
 - **재시도를 넣기 전에 같은 패턴의 시험이 몇 곳인지 검색한다.** 여러 곳이 같은 원인에 걸리면 방문자도 겪는 문제일 가능성이 높고, 앱을 고치는 편이 수정 범위가 작다. 반대로 실제 사용자에게는 생기지 않는 순서(④)는 시험을 고친다.
-- **`check` 단계 실패는 먼저 실패한 단계 이름을 확인한다.** 의존성 검사는 코드와 무관하게 외부 권고 공개 시각에 따라 실패한다. 이 경우 기능 PR이 아니라 별도 PR(#371)로 고치고, 열린 PR들은 main을 다시 합친다.
+- **`check` 단계 실패는 먼저 실패한 단계 이름을 확인한다.** 의존성 검사는 코드와 무관하게 외부 권고 공개 시각에 따라 실패한다. 이 경우 기능 PR이 아니라 별도 PR(#371, #374)로 고치고, 열린 PR들은 main을 다시 합친다. 권고는 GitHub 공개 뒤 시간 차이를 두고 audit 결과에 반영되므로, 직전 실행이 통과했어도 다음 실행에서 실패할 수 있다.
 
 <details>
 <summary>실행별 결과 (한국 시각)</summary>
@@ -235,6 +270,9 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 | 07:36 | #366·#370, main 합침      | #366 `check` 실패, #370 `check`와 E2E 1칸(④) 실패  |
 | 07:40 | #371                      | 통과, 07:52 머지                                   |
 | 07:57 | #366·#370, main 다시 합침 | 통과, 08:09 머지                                   |
+| 08:33 | main, #372 머지           | `check` 통과                                       |
+| 08:38 | #373 (이 글)              | 실패: `check` › 의존성 취약점 검사(③, multer)      |
+| 08:46 | #374                      | multer·undici·fast-uri 수정                        |
 
 </details>
 
