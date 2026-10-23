@@ -98,7 +98,7 @@ const expectHeaderMaterial = async (messages: Locator) => {
 	expect(material.topAlpha).toBeGreaterThan(0);
 	expect(material.topAlpha).toBeLessThanOrEqual(0.5);
 	expect(material.bottomAlpha).toBe(0);
-	expect(material).toMatchObject({ blur: '3px', fadingMask: true, solidBackground: false, edgeShadow: false });
+	expect(material).toMatchObject({ blur: '2px', fadingMask: true, solidBackground: false, edgeShadow: false });
 };
 
 for (const colorScheme of ['light', 'dark'] as const) {
