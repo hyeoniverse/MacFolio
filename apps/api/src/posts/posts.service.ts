@@ -45,6 +45,8 @@ const toAdmin = (row: Row): AdminPost => ({
 	deleted: row.deleted,
 	deletedAt: row.deletedAt?.toISOString() ?? null,
 	revisions: row._count.revisions,
+	// 같은 날 글의 순서 (머리말의 날짜에는 시각이 없다). 게시한 적 없으면 없다
+	...(row.firstPublishedAt && { createdAt: row.firstPublishedAt.toISOString() }),
 });
 
 const draftFields = (input: PostInput) => ({
@@ -107,6 +109,8 @@ export class PostsService {
 				summary: row.summary ?? '',
 				body: row.body!,
 				deleted: false,
+				// 같은 날 글의 순서 (머리말의 날짜에는 시각이 없다)
+				...(row.firstPublishedAt && { createdAt: row.firstPublishedAt.toISOString() }),
 			};
 		});
 	}
@@ -175,6 +179,11 @@ export class PostsService {
 				where: { slug },
 				create: { slug, ...published, updatedBy: admin },
 				update: { ...published, ...NO_DRAFT, deleted: false, deletedAt: null, updatedBy: admin },
+			});
+			// 처음 게시한 시각은 한 번만 적는다
+			await tx.post.updateMany({
+				where: { slug, firstPublishedAt: null },
+				data: { firstPublishedAt: published.publishedAt },
 			});
 			await tx.postRevision.create({ data: { postSlug: slug, ...value, createdBy: admin } });
 			// 오래된 버전은 지운다

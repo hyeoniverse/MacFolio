@@ -100,6 +100,15 @@ describe('목록', () => {
 		expect(sortPosts(posts).map((p) => p.slug)).toEqual(['b', 'c', 'a']);
 	});
 
+	it('같은 날은 나중에 올린 글이 위 (제목보다 올린 시각이 먼저)', () => {
+		const withTimes = [
+			{ ...posts[1], createdAt: '2026-09-28T01:00:00.000Z' },
+			{ ...posts[2], createdAt: '2026-09-28T05:00:00.000Z' },
+			posts[0],
+		];
+		expect(sortPosts(withTimes).map((p) => p.slug)).toEqual(['c', 'b', 'a']);
+	});
+
 	it('카테고리와 검색어(제목·본문, 대소문자 무시)로 거른다', () => {
 		expect(filterPosts(posts, '개발기', '').map((p) => p.slug)).toEqual(['b', 'c']);
 		expect(filterPosts(posts, ALL_CATEGORY, 'VITE').map((p) => p.slug)).toEqual(['a']);
@@ -233,6 +242,17 @@ describe('mergeServerPosts', () => {
 		body: '서버 본문',
 		deleted: false,
 		...extra,
+	});
+
+	it('올린 시각: 저장소 글을 서버에서 고쳐도 저장소에 처음 들어온 시각, 서버에만 있는 글은 서버에 만든 시각', () => {
+		const merged = mergeServerPosts(
+			[make('a', '2026-09-29', { createdAt: '2026-09-29T01:00:00.000Z' })],
+			[server('a', { createdAt: '2026-09-29T09:00:00.000Z' }), server('b', { createdAt: '2026-09-29T05:00:00.000Z' })]
+		);
+		expect(merged.map((post) => [post.slug, post.createdAt])).toEqual([
+			['b', '2026-09-29T05:00:00.000Z'],
+			['a', '2026-09-29T01:00:00.000Z'],
+		]);
 	});
 
 	it('같은 주소는 서버 글이 대신하고, 고정 여부는 저장소 글을 따른다. 요약이 없으면 본문 앞부분', () => {

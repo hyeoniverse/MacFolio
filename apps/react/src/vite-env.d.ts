@@ -24,6 +24,12 @@ declare module 'virtual:recent-posts' {
 	export default posts;
 }
 
+/** 글 slug → 올린 시각 (ISO, git에 처음 더한 커밋. vite.config.ts의 recentPostsPlugin). 같은 날 글의 순서를 정한다 */
+declare module 'virtual:post-created' {
+	const created: Record<string, string>;
+	export default created;
+}
+
 /** 저장소의 모든 글, 최신 글이 먼저 (vite.config.ts의 recentPostsPlugin). 메모 위젯의 인기글·랜덤이 그때 불러온다 */
 declare module 'virtual:post-index' {
 	const posts: { slug: string; title: string; date: string; category: string }[];

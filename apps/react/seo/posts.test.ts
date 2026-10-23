@@ -3,7 +3,16 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_PROJECTS } from '../src/shared/profile';
-import { cardImage, markdownHtml, rssXml, seoPosts, sitemapXml, updatedDates } from './posts';
+import {
+	cardImage,
+	createdTimes,
+	markdownHtml,
+	recentPosts,
+	rssXml,
+	seoPosts,
+	sitemapXml,
+	updatedDates,
+} from './posts';
 import { ogCardVersion } from './site';
 
 const post = (title: string, date: string, body: string) =>
@@ -125,5 +134,34 @@ describe('검색엔진용 파일', () => {
 		);
 		for (const name of names) expect(xml).toContain(`/memo/${encodeURIComponent(name.replace(/\.md$/, ''))}</loc>`);
 		for (const project of DEFAULT_PROJECTS) expect(xml).toContain(`/safari/${project.id}</loc>`);
+	});
+});
+
+describe('올린 시각 (같은 날 글의 순서)', () => {
+	it('git 기록(최신 커밋이 먼저)에서 글마다 처음 더한 시각을 UTC로 읽는다. 그림과 하위 폴더는 뺀다', () => {
+		const log =
+			'\x002026-10-22T15:00:00+09:00\n\nevening.md\nimages/evening-a.png\n' +
+			'\x002026-10-22T09:00:00+09:00\n\nmorning.md\n' +
+			'\x002026-01-01T09:00:00+09:00\n\nevening.md\n';
+		expect(createdTimes(log)).toEqual({
+			evening: '2026-01-01T00:00:00.000Z',
+			morning: '2026-10-22T00:00:00.000Z',
+		});
+		expect(createdTimes('')).toEqual({});
+	});
+
+	it('같은 날 글은 나중에 올린 글이 먼저 (메모 목록·위젯·RSS가 같은 순서)', async () => {
+		const files = {
+			'./content/a-morning.md': '---\ntitle: 가 아침\ndate: 2026-10-22\n---\n본문',
+			'./content/b-evening.md': '---\ntitle: 나 저녁\ndate: 2026-10-22\n---\n본문',
+		};
+		const created = { 'a-morning': '2026-10-22T00:00:00.000Z', 'b-evening': '2026-10-22T08:00:00.000Z' };
+		expect((await seoPosts(files, { created })).map((post) => post.slug)).toEqual(['b-evening', 'a-morning']);
+		expect((await recentPosts(files, 5, '2026-10-22', created)).map((post) => post.slug)).toEqual([
+			'b-evening',
+			'a-morning',
+		]);
+		// 올린 시각을 모르면 제목 순
+		expect((await seoPosts(files)).map((post) => post.slug)).toEqual(['a-morning', 'b-evening']);
 	});
 });

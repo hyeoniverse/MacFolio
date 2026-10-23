@@ -81,6 +81,8 @@ describe('블로그 글 (e2e)', () => {
 		const created = await admin('post', '/posts').send(POST).expect(201);
 		expect(created.body.slug).toMatch(/^2026-09-29-[0-9a-f]{6}$/);
 		expect(created.body).toMatchObject({ published: null, draft: POST, revisions: 0 });
+		// 게시하기 전에는 같은 날 글의 순서를 정할 시각이 없다 (가장 최근으로 본다)
+		expect(created.body.createdAt).toBeUndefined();
 		expect((await request(server()).get('/posts').expect(200)).body).toEqual([]);
 
 		// 이어 쓰기는 임시 저장에만
@@ -97,7 +99,20 @@ describe('블로그 글 (e2e)', () => {
 		expect(published.body).toMatchObject({ draft: null, published: { body: '게시한 본문' }, revisions: 1 });
 		expect(published.body.publishedAt).toEqual(expect.any(String));
 		const list = await request(server()).get('/posts').expect(200);
-		expect(list.body).toEqual([{ slug, ...POST, body: '게시한 본문', deleted: false }]);
+		expect(list.body).toEqual([
+			{ slug, ...POST, body: '게시한 본문', deleted: false, createdAt: published.body.publishedAt },
+		]);
+	});
+
+	it('같은 날 글의 순서는 처음 게시한 시각을 따른다 (임시 저장한 시각이나 다시 게시한 시각이 아니다)', async () => {
+		const { slug } = (await admin('post', '/posts').send(POST).expect(201)).body;
+		const first = await admin('post', `/posts/${slug}/publish`).send(POST).expect(200);
+		const again = await admin('post', `/posts/${slug}/publish`)
+			.send({ ...POST, body: '다시 게시' })
+			.expect(200);
+		expect(again.body.publishedAt).not.toBe(first.body.publishedAt);
+		expect(again.body.createdAt).toBe(first.body.publishedAt);
+		expect((await request(server()).get('/posts').expect(200)).body[0].createdAt).toBe(first.body.publishedAt);
 	});
 
 	it('게시한 글을 고쳐도 게시할 때까지 방문자는 게시한 내용을 본다. 버리면 게시한 내용으로 돌아간다', async () => {

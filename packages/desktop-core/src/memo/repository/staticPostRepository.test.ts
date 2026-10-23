@@ -13,6 +13,21 @@ describe('createStaticPostRepository', () => {
 		]);
 	});
 
+	it('같은 날 글은 올린 시각(빌드가 git 기록에서 읽은 값)로 나중에 올린 글이 위', async () => {
+		const repo = createStaticPostRepository(
+			{
+				'../content/a-morning.md': '---\ntitle: 가 아침 글\ndate: 2026-09-28\n---\n본문',
+				'../content/b-evening.md': '---\ntitle: 나 저녁 글\ndate: 2026-09-28\n---\n본문',
+			},
+			undefined,
+			{ 'a-morning': '2026-09-28T00:00:00.000Z', 'b-evening': '2026-09-28T11:00:00.000Z' }
+		);
+		expect((await repo.list()).map((p) => [p.slug, p.createdAt])).toEqual([
+			['b-evening', '2026-09-28T11:00:00.000Z'],
+			['a-morning', '2026-09-28T00:00:00.000Z'],
+		]);
+	});
+
 	it('머리말이 잘못된 파일은 목록에서 빠진다', async () => {
 		const repo = createStaticPostRepository({
 			'a.md': '제목 없는 글',

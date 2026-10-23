@@ -1,6 +1,6 @@
 // 메모 목록의 정렬과 날짜별 그룹화 (macOS 메모의 '정렬 기준', '날짜별로 그룹화').
 // 보기 설정이라 방문자도 바꿀 수 있고, 이 브라우저에 저장한다. React에 의존하지 않는 순수 함수만 둔다.
-import type { Post } from './posts.js';
+import { compareCreated, type Post } from './posts.js';
 
 export type SortKey = 'date' | 'title';
 export type SortOrder = 'desc' | 'asc';
@@ -24,12 +24,12 @@ export const ORDER_LABELS: Record<SortKey, Record<SortOrder, string>> = {
 	title: { asc: '가나다 순', desc: '역순' },
 };
 
-/** 정렬한다. 같은 날짜면 제목 순, 같은 제목이면 최신 순 */
+/** 정렬한다. 같은 날짜면 올린 시각 순(날짜와 같은 방향), 그다음 제목 순. 같은 제목이면 최신 순 */
 export function sortBy(posts: Post[], { sort, order }: Pick<Arrangement, 'sort' | 'order'>): Post[] {
 	const sign = order === 'asc' ? 1 : -1;
 	return [...posts].sort((a, b) =>
 		sort === 'date'
-			? sign * a.date.localeCompare(b.date) || a.title.localeCompare(b.title)
+			? sign * a.date.localeCompare(b.date) || sign * compareCreated(a, b) || a.title.localeCompare(b.title)
 			: sign * a.title.localeCompare(b.title, 'ko') || b.date.localeCompare(a.date)
 	);
 }
