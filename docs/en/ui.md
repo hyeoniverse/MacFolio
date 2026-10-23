@@ -2,14 +2,16 @@
 
 # Shared UI primitives (`apps/react/src/shared/ui`)
 
-This is where the components that several apps use with the same look and behavior live. As the first item of step 4 of the refactoring plan ([#150](https://github.com/hyeoniverse/MacFolio/issues/150)), this doc records the props and call sites of what exists today, and re-measures the candidates for new extraction against the current code. Counts are as of `main` on 2026-10-11.
+This is where the components that several apps use with the same look and behavior live. As the first item of step 4 of the refactoring plan ([#150](https://github.com/hyeoniverse/MacFolio/issues/150), [#210](https://github.com/hyeoniverse/MacFolio/pull/210)), this doc records the props and call sites of what exists today, and re-measures the candidates for new extraction against the current code. Counts are as of `main` on 2026-10-11.
 
 ## Principles
 
 - **Extract when there are three or more call sites with the same look and behavior.** With only one or two, or when they differ, options appear to absorb the differences and the component becomes heavier instead ('What I didn't build' in the [text button post](https://macfolio.hyeoniverse.com/memo/shared-text-button))
-- **Look through variables, meaning through role.** A component's CSS sits in the `components` layer, so the app's CSS always wins. Colors, corners and spacing are set by the app via `--ui-*` variables. Even if the look is the same, components whose meaning differs for a screen reader (two pressed buttons vs. a tab list) are not merged into one component
-- **App variables don't reach windows drawn into body.** Things drawn into body with `createPortal`, like `Menu` and popovers, redefine `--ui-*` on their outer element
+- **Look through variables, meaning through role.** A component's CSS sits in the `components` [cascade layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer), so the app's unlayered CSS always takes precedence. Colors, corners and spacing are set by the app via `--ui-*` variables. Even if the look is the same, components whose meaning differs for a screen reader (two pressed buttons vs. a tab list) are not merged into one component
+- **App variables don't reach windows drawn into body.** Things drawn into body with [`createPortal`](https://react.dev/reference/react-dom/createPortal), like `Menu` and popovers, sit outside the app root in the DOM and don't inherit the app's overrides, so they redefine `--ui-*` on their outer element
 - A component's files are `shared/ui/<kind>/<Name>.tsx` and a `.css` with the same name. Pure computation (positioning, shortcut labels) goes in `.ts` with tests next to it
+
+![--ui-accent defaults to the layer-3 token on :root, the Memo app root redefines it as a yellow accent, and a Menu rendered into body is outside the app root so it uses the default](../images/ui-variables.svg)
 
 ## What exists now
 
@@ -64,7 +66,22 @@ Variables (`Button.css`·`IconButton.css`): `--ui-accent`, `--ui-on-accent`, `--
 
 ## 265 hand-written `<button>`s
 
-There are 265 places in 91 files that write `<button>` directly (before moving 45 to `IconButton` it was 340 places in 99 files, and before moving 30 to `Button` it was 295 places in 95 files). How it's counted: count the lines containing `<button` in `.tsx` files under `apps/react/src` (excluding `*.test.tsx` and the shared components in `shared/ui`, `git grep -c '<button' -- 'apps/react/src/**/*.tsx' ':!*.test.tsx' ':!apps/react/src/shared/ui/**'`). The first measurement of 295 places in 89 files (#210) used the same method; after that, Safari project pages and apps were added and the pre-migration count became 340. Broken down:
+There are 265 places in 91 files that write `<button>` directly.
+
+| When                                                                                       | Files | Places |
+| ------------------------------------------------------------------------------------------ | ----- | ------ |
+| First count ([#210](https://github.com/hyeoniverse/MacFolio/pull/210))                     | 89    | 295    |
+| Before moving to `IconButton` (after Safari project pages and apps were added)             | 99    | 340    |
+| After moving 45 to `IconButton` ([#245](https://github.com/hyeoniverse/MacFolio/pull/245)) | 95    | 295    |
+| After moving 30 to `Button` ([#246](https://github.com/hyeoniverse/MacFolio/pull/246))     | 91    | 265    |
+
+How it's counted: count the lines containing `<button` in `.tsx` files under `apps/react/src` (excluding `*.test.tsx` and the shared components in `shared/ui`).
+
+```bash
+git grep -c '<button' -- 'apps/react/src/**/*.tsx' ':!*.test.tsx' ':!apps/react/src/shared/ui/**'
+```
+
+Broken down:
 
 | Category                                                       | Count | What                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | -------------------------------------------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -74,9 +91,22 @@ There are 265 places in 91 files that write `<button>` directly (before moving 4
 | Moved to `Button` (excluded from the counts in this table)     | 30    | Empty Trash 2, find done·all·replace 3, phone Memo done·move·delete 3, writer publish·discard 2, revert version, unlock, image panel re-pick·search·more 3, Messages cancel, Settings cancel·done·edit 9 (info·GitHub·projects), restore defaults (info), learn more, Weather retry, About This Mac more info, analytics admin login                                                                                                                                       |
 | Specific to that app                                           | 172   | List rows (Mail·Messages·Music tracks·Memo posts·Weather locations), tabs·segmented buttons (Mail mailboxes, Photos view mode, analytics), cards·thumbnails (Photos·wallpaper·Safari tabs), folder rows·calendar cells·formatting text buttons, home screen app icons·Control Center tiles, menu bar titles·Apple logo, table handles                                                                                                                                      |
 
-The roughly 93 movable places are moved in two PRs under the last item of step 4 ("turn per-app buttons·sheets·lists into shared components"). The 45 `IconButton` places went first, then the 30 `Button` places. The 7 Settings cancel·done·edit buttons counted at first grew by the 3 same buttons in the project items, and there were no buttons that couldn't be moved. Weather's sidebar toggle was moved to the existing `SidebarToggle` (its icon changed from Font Awesome `table-columns` to the same sidebar SVG as Memo·Photos). The 15 non-floating round buttons are handled by `variant="circle"`, added to `IconButton`. `circle` only sets the shape (circle, zero padding); size·background·color are set by the app's CSS. Moved buttons keep the app's `className`, and the values the shared CSS adds that the app didn't previously override (min width·height·padding·rounded corners·color) were written back into the app's rules. While running E2E, for each moved button I compared the computed style with the shared classes (`ui-icon-button`·`tool`·`circle`·`float`) removed and with them attached, and confirmed size·color·spacing were the same. The 30 places moved to `Button` used the same method. They keep the app's `className`, and the values the shared CSS adds that the app didn't previously override (`inline-flex`·centering·`gap`, the `fade-in` on appearance, rounded corners, background, font, the dimming when disabled) were reverted with one zero-specificity rule per app (`:where(app class):where(.ui-button)`). The computed styles with and without the shared class (`ui-button`) were identical in both the desktop and phone projects, in the default·hover·disabled states.
+The roughly 93 movable places were moved in two PRs under the last item of step 4 ("turn per-app buttons·sheets·lists into shared components").
 
-Sheets and windows were also re-surveyed under the same item (`aria-modal`·`role="dialog"`·outside press·Esc handling). Of what remained, the only one moved to `Modal` is Memo's image enlarged view (`scope="screen"`, overlay color·layer via `--ui-modal-dim`·`--ui-modal-z`). The computed styles and appearance of the overlay and image were the same as before the move. Clicking the image also closes it, and on close focus returns to the button that opened it. On close, instead of the whole thing fading, it now behaves like `Modal`: the overlay fades and the image shrinks away. What wasn't moved, and why:
+- **45 to `IconButton` ([#245](https://github.com/hyeoniverse/MacFolio/pull/245))**: the 15 non-floating round buttons are handled by `variant="circle"`, added to `IconButton`. `circle` only sets the shape (circle, zero padding); size·background·color are set by the app's CSS. Weather's sidebar toggle was moved to the existing `SidebarToggle` (its icon changed from Font Awesome `table-columns` to the same sidebar SVG as Memo·Photos)
+- **30 to `Button` ([#246](https://github.com/hyeoniverse/MacFolio/pull/246))**: the 7 Settings cancel·done·edit buttons counted at first grew by the 3 same buttons in the project items, and there were no buttons that couldn't be moved
+- **Keeping the look**: moved buttons keep the app's `className`, and the values the shared CSS adds that the app didn't previously override were written back into the app's rules
+  - `IconButton`: min width·height, padding, rounded corners, color
+  - `Button`: `inline-flex`·centering·`gap`, the `fade-in` on appearance, rounded corners, background, font, the dimming when disabled; reverted with one zero-specificity rule per app (`:where(app class):where(.ui-button)`)
+
+<details>
+<summary>How the look was verified</summary>
+
+While running E2E, for each moved button I compared the computed style (`getComputedStyle`) with the shared classes (`ui-icon-button`·`tool`·`circle`·`float`, `ui-button`) removed and attached. For `IconButton`, size·color·spacing were the same; for `Button`, they were identical in both the desktop and phone Playwright projects, in the default·hover·disabled states. The method is described in the post [손으로 쓴 아이콘 버튼 45곳을 IconButton으로](https://macfolio.hyeoniverse.com/memo/icon-button-migrate) (Korean).
+
+</details>
+
+Sheets and windows were also re-surveyed under the same item (`aria-modal`·`role="dialog"`·outside press·Esc handling, [#247](https://github.com/hyeoniverse/MacFolio/pull/247)). Of what remained, the only one moved to `Modal` is Memo's image enlarged view (`scope="screen"`, overlay color·layer via `--ui-modal-dim`·`--ui-modal-z`). The computed styles and appearance of the overlay and image were the same as before the move. Clicking the image also closes it, and on close focus returns to the button that opened it. On close, instead of the whole thing fading, it now behaves like `Modal`: the overlay fades and the image shrinks away. What wasn't moved, and why:
 
 - Settings project image enlarged view (`projects-lightbox`): it receives Esc on its own element and stops propagation. `Modal` listens for Esc on `window`, so after moving it a single Esc would also close the project sheet behind it. The ←·→ navigation and close button are also outside the box
 - Settings project sheet (`projects-sheet`): a sheet that opens sideways inside a desktop window, blocks the background with `inert` and traps focus. Its meaning differs from the phone-only `Sheet`
@@ -101,7 +131,7 @@ The nine candidates listed in the plan were re-measured on `main`.
 | `Toolbar`                                  | `toolbar` in 12 files                                                                                                                                                                                               | Height·padding·gaps between buttons differ per app, and some are merged with the window title bar (Memo·Finder) while others are separate (Mail·Messages) | Deferred. Revisit after step 5 (design tokens) aligns height·padding with variables                                                                                                                                                                                                      |
 | `Sidebar`                                  | `sidebar` in 10 files                                                                                                                                                                                               | Contents (folder tree·mailboxes·conversation list·track list) differ; only width·background color·toggling are shared                                     | Deferred. Toggling is already `SidebarToggle`; width·color via step 5 tokens                                                                                                                                                                                                             |
 
-In short, the second item extracts three: **`Sheet`, `Modal`, `SearchField`**. The other six show no benefit at current counts, so they're deferred and will be re-measured after the step 5 token cleanup.
+In short, the second item extracts three: **`Sheet` ([#220](https://github.com/hyeoniverse/MacFolio/pull/220)), `Modal` ([#212](https://github.com/hyeoniverse/MacFolio/pull/212)), `SearchField`**. The other six show no benefit at current counts, so they're deferred and will be re-measured after the step 5 token cleanup.
 
 ## Desktop·phone pairs
 
@@ -124,7 +154,7 @@ Pairs deliberately kept separate:
 ## Tests and accessible names
 
 - Pure computation (`placement.ts`, `shortcut.ts`, `direction.ts`) has a `*.test.ts` next to it
-- Components' names·roles are checked by `shared/ui/a11y.test.ts`, which renders the components to HTML (`renderToStaticMarkup`). Behavior like pressing·Esc·focus movement is covered by browser E2E (`apps/react/e2e/`). `Menu` is drawn into body (portal), so it's left out of this test and covered by E2E
+- Components' names·roles are checked by `shared/ui/a11y.test.ts`, which renders the components to HTML ([`renderToStaticMarkup`](https://react.dev/reference/react-dom/server/renderToStaticMarkup)). Behavior like pressing·Esc·focus movement is covered by browser E2E (`apps/react/e2e/`). `Menu` is drawn into body (portal), so it's left out of this test and covered by E2E
 
 Naming rules (what the component adds, what the caller must provide):
 
@@ -141,4 +171,16 @@ Naming rules (what the component adds, what the caller must provide):
 | `Menu`          | `role="menu"`·`aria-label`, items are `menuitem` (`menuitemcheckbox` when checked), shortcuts via `aria-keyshortcuts`                | `label`                                                                                                  |
 
 - Decorative icons (Font Awesome `<i>`, drawn SVGs) are `aria-hidden="true"`. Drawn SVGs also get `focusable="false"`
-- Names say the action ('지우기' (Delete), '사이드바 보기' (Show Sidebar)). State isn't put in the name; it's announced with `aria-pressed`·`aria-expanded`·`aria-checked`
+- Names say the action ('지우기' (Delete), '사이드바 보기' (Show Sidebar)). State isn't put in the name; it's announced with [`aria-pressed`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-pressed)·`aria-expanded`·`aria-checked`
+
+## Related posts (Korean)
+
+- [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](https://macfolio.hyeoniverse.com/memo/ui-inventory)
+- [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](https://macfolio.hyeoniverse.com/memo/icon-button-migrate)
+- [손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](https://macfolio.hyeoniverse.com/memo/text-button-migrate)
+- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-modal)
+- [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-sheet)
+- [남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나](https://macfolio.hyeoniverse.com/memo/sheet-modal-migrate)
+- [데스크톱과 휴대폰의 메뉴 모양을 variant로 고르기](https://macfolio.hyeoniverse.com/memo/ui-variant-pairs)
+- [공통 부품의 접근성 이름을 시험으로 — 아이콘만 있는 버튼은 이름 없이 만들 수 없게](https://macfolio.hyeoniverse.com/memo/ui-a11y-names)
+- [메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu](https://macfolio.hyeoniverse.com/memo/shared-menu)
