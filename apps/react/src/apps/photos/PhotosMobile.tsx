@@ -3,6 +3,7 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { countText } from './albums';
 import { usePhotoLibrary } from './usePhotoLibrary';
+import { useOpenPhoto } from './useOpenPhoto';
 import { Thumb, type Shown } from './PhotoParts';
 import { useCaptions } from './captionsApi';
 import { Card, Grid, Shelf } from './PhotoGrid';
@@ -71,6 +72,17 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 		setOpened(next);
 		setViewing(null);
 	};
+	// 사진 위젯을 누르면 보관함 › 그 앨범의 격자 위에 그 사진을 크게 본다 (닫으면 그 앨범, 좌우로 넘기면 같은 앨범의 사진)
+	useOpenPhoto(albums, (target, index) => {
+		savedScroll.current.clear();
+		setTab('library');
+		setSearching(false);
+		setOpened({ kind: 'album', id: target.id });
+		setMotion(null);
+		const list = target.photos.map((photo) => ({ ...photo, album: target }));
+		setViewing({ photos: list, index });
+		setRecent(list[index]);
+	});
 	const switchTab = (next: Tab) => {
 		savedScroll.current.clear();
 		setTab(next);

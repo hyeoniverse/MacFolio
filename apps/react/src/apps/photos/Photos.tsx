@@ -9,6 +9,7 @@ import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import { requestOpen } from '@/shared/lib/openRequest';
 import { countText, isProjectAlbum } from './albums';
 import { usePhotoLibrary } from './usePhotoLibrary';
+import { useOpenPhoto } from './useOpenPhoto';
 import { Thumb, Viewer, type Shown } from './PhotoParts';
 import Menu from '@/shared/ui/menu/Menu';
 import SidebarToggle from '@/shared/ui/button/SidebarToggle';
@@ -72,6 +73,17 @@ const Photos = () => {
 	useLayoutEffect(() => {
 		if (scrollBox.current) scrollBox.current.scrollTop = scrollBox.current.scrollHeight;
 	}, [place, grouped, mobile]);
+
+	// 사진 위젯을 누르면 그 사진을 그 앨범 안에서 크게 본다 (좌우로 넘기면 같은 앨범의 사진). 휴대폰 화면은 PhotosMobile이 받는다
+	useOpenPhoto(
+		albums,
+		(target, index) => {
+			setPlace({ kind: 'album', id: target.id });
+			setViewing(index);
+			if (overlay) setSidebarChoice(null);
+		},
+		!mobile
+	);
 
 	const go = (next: Place) => {
 		setPlace(next);
