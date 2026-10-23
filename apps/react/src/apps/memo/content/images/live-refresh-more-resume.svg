@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>탭만 다시 보이면 간격이 지났을 때만 조회하고, 창을 다시 열면 바로 조회한다</title>
+<rect width="900" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">다시 보일 때: 간격이 지났을 때만 바로 조회한다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">간격 60초인 화면(댓글), 0~120초. 점 하나가 요청 하나, 빨간 점선은 묻지 않은 시각</text>
+<text x="32" y="104" font-size="12" fill="#374151" font-weight="600">탭을 5초 숨김</text>
+<rect x="190.0" y="90" width="167.5" height="20" rx="5" fill="#15803d"/>
+<text x="273.8" y="104" font-size="11" fill="#ffffff" text-anchor="middle">보임</text>
+<rect x="357.5" y="90" width="27.9" height="20" rx="5" fill="#e5e7eb"/>
+<rect x="385.4" y="90" width="474.6" height="20" rx="5" fill="#15803d"/>
+<text x="622.7" y="104" font-size="11" fill="#ffffff" text-anchor="middle">보임</text>
+<line x1="190" y1="130" x2="860" y2="130" stroke="#e5e7eb"/>
+<circle cx="190.0" cy="130" r="6" fill="#4f46e5"/>
+<circle cx="525.0" cy="130" r="6" fill="#4f46e5"/>
+<circle cx="860.0" cy="130" r="6" fill="#4f46e5"/>
+<line x1="385.4" y1="118" x2="385.4" y2="142" stroke="#dc2626" stroke-dasharray="3 3" stroke-width="1.5"/>
+<text x="393.4" y="152" font-size="10.5" fill="#dc2626">35초: 간격 안이라 묻지 않음</text>
+<text x="32" y="189" font-size="12" fill="#374151" font-weight="600">탭을 70초 숨김</text>
+<rect x="190.0" y="175" width="167.5" height="20" rx="5" fill="#15803d"/>
+<text x="273.8" y="189" font-size="11" fill="#ffffff" text-anchor="middle">보임</text>
+<rect x="357.5" y="175" width="390.8" height="20" rx="5" fill="#e5e7eb"/>
+<text x="552.9" y="189" font-size="11" fill="#374151" text-anchor="middle">숨김 (다른 탭)</text>
+<rect x="748.3" y="175" width="111.7" height="20" rx="5" fill="#15803d"/>
+<text x="804.2" y="189" font-size="11" fill="#ffffff" text-anchor="middle">보임</text>
+<line x1="190" y1="215" x2="860" y2="215" stroke="#e5e7eb"/>
+<circle cx="190.0" cy="215" r="6" fill="#4f46e5"/>
+<circle cx="748.3" cy="215" r="6" fill="#4f46e5"/>
+<text x="32" y="274" font-size="12" fill="#374151" font-weight="600">창을 닫고 10초 뒤 다시 엶</text>
+<rect x="190.0" y="260" width="167.5" height="20" rx="5" fill="#4f46e5"/>
+<text x="273.8" y="274" font-size="11" fill="#ffffff" text-anchor="middle">열림</text>
+<rect x="357.5" y="260" width="55.8" height="20" rx="5" fill="#e5e7eb"/>
+<text x="385.4" y="274" font-size="11" fill="#374151" text-anchor="middle">닫힘</text>
+<rect x="413.3" y="260" width="446.7" height="20" rx="5" fill="#4f46e5"/>
+<text x="636.7" y="274" font-size="11" fill="#ffffff" text-anchor="middle">열림</text>
+<line x1="190" y1="300" x2="860" y2="300" stroke="#e5e7eb"/>
+<circle cx="190.0" cy="300" r="6" fill="#4f46e5"/>
+<circle cx="413.3" cy="300" r="6" fill="#4f46e5"/>
+<circle cx="748.3" cy="300" r="6" fill="#4f46e5"/>
+<text x="758.3" y="237" font-size="10.5" fill="#15803d">100초: 60초가 지나 바로 조회</text>
+<text x="423.3" y="322" font-size="10.5" fill="#4f46e5">40초: 사용자가 연 것이라 바로 조회</text>
+<line x1="190" y1="350" x2="860" y2="350" stroke="#9ca3af"/>
+<line x1="190.0" y1="346" x2="190.0" y2="354" stroke="#9ca3af"/>
+<text x="190.0" y="368" font-size="10" fill="#6b7280" text-anchor="middle">0초</text>
+<line x1="301.7" y1="346" x2="301.7" y2="354" stroke="#9ca3af"/>
+<text x="301.7" y="368" font-size="10" fill="#6b7280" text-anchor="middle">20초</text>
+<line x1="413.3" y1="346" x2="413.3" y2="354" stroke="#9ca3af"/>
+<text x="413.3" y="368" font-size="10" fill="#6b7280" text-anchor="middle">40초</text>
+<line x1="525.0" y1="346" x2="525.0" y2="354" stroke="#9ca3af"/>
+<text x="525.0" y="368" font-size="10" fill="#6b7280" text-anchor="middle">60초</text>
+<line x1="636.7" y1="346" x2="636.7" y2="354" stroke="#9ca3af"/>
+<text x="636.7" y="368" font-size="10" fill="#6b7280" text-anchor="middle">80초</text>
+<line x1="748.3" y1="346" x2="748.3" y2="354" stroke="#9ca3af"/>
+<text x="748.3" y="368" font-size="10" fill="#6b7280" text-anchor="middle">100초</text>
+<line x1="860.0" y1="346" x2="860.0" y2="354" stroke="#9ca3af"/>
+<text x="860.0" y="368" font-size="10" fill="#6b7280" text-anchor="middle">120초</text>
+</svg>
