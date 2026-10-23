@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import type { AppName } from '@/apps/manifest';
 import { useMusic } from '@/apps/music/useMusic';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
@@ -9,9 +10,11 @@ import GithubWidget from './GithubWidget';
 import PhotoWidget from './PhotoWidget';
 import PostsWidget from './PostsWidget';
 import ProfileWidget from './ProfileWidget';
-import QuoteWidget from './QuoteWidget';
 import WeatherWidget from './WeatherWidget';
 import './Widgets.css';
+
+// 명언 365개(원문 66KB)는 첫 번들(boot)에 넣지 않고, 명언 위젯을 처음 렌더링할 때 받는다
+const QuoteWidget = lazy(() => import('./QuoteWidget'));
 
 /** 위젯을 누르면 여는 앱 (macOS·iOS처럼 위젯의 빈 곳을 누르면 그 앱이 열린다). 없으면 열지 않는다 */
 const APP_OF: Record<WidgetKind, AppName | null> = {
@@ -89,7 +92,11 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 			body = <ProfileWidget />;
 			break;
 		case 'quote':
-			body = <QuoteWidget size={size} />;
+			body = (
+				<Suspense fallback={null}>
+					<QuoteWidget size={size} />
+				</Suspense>
+			);
 			break;
 	}
 	return (
