@@ -303,8 +303,26 @@
 	list-style: none;
 }
 
+.mobile-widget-sheet li {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+}
+
 .mobile-widget-sheet li[data-size='medium'] {
 	grid-column: span 2;
+}
+
+.mobile-widget-sheet li[data-disabled] .mobile-widget-sheet-preview {
+	opacity: 0.4;
+}
+
+/* 단추가 미리보기까지 칸 전체를 누르게 (미리보기는 단추 밖에 있다, WidgetSheet.tsx) */
+.mobile-widget-sheet button::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
 }
 
 .mobile-widget-sheet button {
@@ -327,6 +345,8 @@
 }
 
 .mobile-widget-sheet-preview {
+	/* 위젯 안의 z-index가 칸을 덮는 더하기 단추(::after)를 덮지 않게 한 층으로 묶는다 */
+	isolation: isolate;
 	display: flex;
 	margin-bottom: var(--space-4);
 }
@@ -463,6 +483,8 @@
 	overflow: hidden;
 	max-width: 100%;
 	font-size: var(--text-caption);
+	/* 줄 높이를 글꼴과 무관하게 고정한다. normal이면 웹 글꼴이 늦게 적용되는 시각에 아이콘 높이가 바뀌어 위젯 줄 높이 계산이 달라진다 */
+	line-height: 1.25;
 	text-overflow: ellipsis;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 	white-space: nowrap;

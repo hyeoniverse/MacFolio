@@ -1589,7 +1589,16 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await expect(home).toHaveClass(/editing/);
 
 		await page.getByRole('button', { name: '위젯 더하기' }).click();
-		await gallery.getByRole('button', { name: '시계 위젯 (작게) 더하기' }).click();
+		// 미리보기 위젯의 단추가 더하기 단추 안에 들어가지 않는다 (단추 안의 단추)
+		expect(await gallery.locator('button button').count()).toBe(0);
+		// 미리보기를 눌러도 더한다 (단추의 ::after가 칸 전체를 덮는다)
+		const clockPreview = gallery
+			.getByRole('listitem')
+			.filter({ has: page.getByRole('button', { name: '시계 위젯 (작게) 더하기' }) })
+			.locator('.mobile-widget-sheet-preview');
+		await clockPreview.scrollIntoViewIfNeeded();
+		const preview = (await clockPreview.boundingBox())!;
+		await page.mouse.click(preview.x + preview.width / 2, preview.y + preview.height / 2);
 		await expect(gallery).toBeHidden();
 		await expect(firstPage.getByRole('group', { name: '시계 위젯' })).toBeVisible();
 

@@ -203,19 +203,27 @@
 .widget-gallery-item {
 	position: relative;
 	display: flex;
+	border-radius: var(--radius-window);
+	transition: transform var(--duration-fast) ease;
+}
+
+/* 미리보기 위에 겹친 더하기 단추: 칸 전체를 덮는다 (WidgetGallery.tsx) */
+.widget-gallery-add {
+	position: absolute;
+	inset: 0;
 	padding: 0;
 	border: none;
-	border-radius: var(--radius-window);
+	border-radius: inherit;
 	background: none;
-	color: inherit;
-	font: inherit;
 	cursor: copy;
-	transition: transform var(--duration-fast) ease;
+	z-index: 1;
 }
 
 .widget-gallery-preview {
 	display: flex;
 	flex: none;
+	/* 위젯 안의 z-index가 위에 겹친 더하기 단추를 덮지 않게 미리보기를 한 층으로 묶는다 */
+	isolation: isolate;
 }
 
 .widget-gallery-preview > .widget {
@@ -223,11 +231,11 @@
 }
 
 .widget-gallery-item:hover,
-.widget-gallery-item:focus-visible {
+.widget-gallery-item:has(> .widget-gallery-add:focus-visible) {
 	transform: translateY(-2px) scale(1.03);
 }
 
-.widget-gallery-item:focus-visible {
+.widget-gallery-add:focus-visible {
 	outline: 3px solid var(--color-control-accent);
 	outline-offset: 3px;
 }
@@ -254,7 +262,7 @@
 }
 
 .widget-gallery-item:hover .widget-gallery-plus,
-.widget-gallery-item:focus-visible .widget-gallery-plus {
+.widget-gallery-item:has(> .widget-gallery-add:focus-visible) .widget-gallery-plus {
 	opacity: 1;
 	transform: scale(1);
 }
