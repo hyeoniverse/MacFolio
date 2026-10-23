@@ -378,7 +378,7 @@
 	border: 1px solid var(--memo-border);
 	border-radius: var(--radius-10);
 	background-color: var(--color-popover-background);
-	box-shadow: var(--shadow-3);
+	box-shadow: var(--shadow-1);
 	font-size: var(--text-caption);
 	transform: translateY(calc(-100% - 18px));
 	animation: fade-in var(--duration-fast) var(--ease-out);
