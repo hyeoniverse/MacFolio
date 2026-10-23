@@ -190,7 +190,7 @@ test.describe('데스크톱', () => {
 		await expect(appName).toHaveText('Finder');
 	});
 
-	test('스크립트를 받는 동안 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
+	test('스크립트를 받는 동안과 로딩 화면을 누르기 전까지 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
 		// 앱 스크립트(빌드한 /assets/*.js)를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다.
 		// <head>의 theme-boot.js는 HTML 읽기를 멈추는 작은 스크립트라 붙잡지 않는다
 		let release = () => {};
@@ -209,8 +209,15 @@ test.describe('데스크톱', () => {
 		expect(body).toEqual({ image: 'none', color: 'rgb(0, 0, 0)' });
 
 		release();
-		await expect(page.locator('.loading-container')).toBeVisible();
-		await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('booting'))).toBe(false);
+		const loading = page.locator('.loading-container');
+		await expect(loading).toBeVisible();
+		// 로딩 화면 밖(휴대폰 도구 막대 뒤 등)이 보여도 배경화면이 비치지 않게, 누르기 전까지 검은색을 유지한다
+		const isBooting = () => page.evaluate(() => document.documentElement.classList.contains('booting'));
+		expect(await isBooting()).toBe(true);
+		// 누르면 진행 막대가 차는 동안 배경화면을 수신해, 로딩 화면이 걷힐 때 바로 보인다
+		await loading.click();
+		await expect.poll(isBooting).toBe(false);
+		await expect(loading).toBeHidden({ timeout: 20_000 });
 	});
 
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {

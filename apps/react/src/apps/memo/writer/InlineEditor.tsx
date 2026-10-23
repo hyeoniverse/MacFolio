@@ -411,7 +411,7 @@ const ImageZoom = () => {
  * 관리자에게만 필요해서 처음 쓸 때 따로 불러온다 (React.lazy).
  */
 const InlineEditor = (props: Props) => (
-	<div className="memo-inline-editor memo-markdown" data-placeholder={props.placeholder}>
+	<div className="memo-inline-editor prose memo-markdown" data-placeholder={props.placeholder}>
 		<MilkdownProvider>
 			<Inner {...props} />
 		</MilkdownProvider>

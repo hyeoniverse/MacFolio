@@ -624,16 +624,16 @@ The measurement method and migration process are in [docs/en/migration-cra-to-vi
 
 ## Performance
 
-I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB of fonts, 2.4MB of raw blog text and all app code in the initial bundle, large images · videos, a loading screen rendered by JS, and a desktop pre-rendered behind the loading screen) in three rounds, and measured again under the same conditions. The re-measurement (Round 4) split the quote widget data that had crept into the initial bundle, bringing the `boot` bundle back from 65KB to 47KB compressed.
+I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB of fonts, 2.4MB of raw blog text and all app code in the initial bundle, large images · videos, a loading screen rendered by JS, and a desktop pre-rendered behind the loading screen) in three rounds, and measured again under the same conditions. The re-measurement (Round 4) split the quote widget data that had crept into the initial bundle, bringing the `boot` bundle back from 65KB to 47KB compressed. Round 5 fixed why phone LCP was sometimes counted again in the 4-second range (React removed the HTML's first render before it was recorded as LCP) and added CI limits on first-visit bundle size (a performance budget). The drop in first-visit transfer in Round 5 comes from deferring the body font and wallpaper until the loading screen is tapped.
 
-**Local** (median of 5 runs, ranges show run-to-run spread)
+**Local** (ranges across alternating runs)
 
-| Item                         | Phone before → Round 3 → Round 4 | Desktop before → Round 3 → Round 4 |
+| Item                         | Phone before → Round 3 → Round 5 | Desktop before → Round 3 → Round 5 |
 | ---------------------------- | -------------------------------- | ---------------------------------- |
-| Lighthouse performance       | 55 → 78\~87 → **78\~97**         | 62 → 98 → **98\~100**              |
-| FCP                          | 14.3s → 3.2s → **2.1\~3.2s**     | 2.5s → 0.7s → **0.7s**             |
-| LCP                          | 25.7s → 3.2s → **2.1\~4.5s**     | 5.8s → 1.1s → **0.7\~1.1s**        |
-| Transfer size on first visit | 4,893KB → 483KB → **485KB**      | 9,050KB → 771KB → **772KB**        |
+| Lighthouse performance       | 55 → 78\~87 → **85\~99**         | 62 → 98 → **100**                  |
+| FCP                          | 14.3s → 3.2s → **1.7\~3.3s**     | 2.5s → 0.7s → **0.5\~0.7s**        |
+| LCP                          | 25.7s → 3.2s → **1.7\~3.4s**     | 5.8s → 1.1s → **0.5\~0.7s**        |
+| Transfer size on first visit | 4,893KB → 483KB → **278KB**      | 9,050KB → 771KB → **278KB**        |
 
 **Production** (median of 5 runs)
 

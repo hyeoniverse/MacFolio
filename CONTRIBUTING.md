@@ -77,6 +77,7 @@ test: 글 순서에 기대지 않게 E2E 고침
 - 커밋하기 전에 `pnpm format:check`, `pnpm lint`, `pnpm cycles`(파일끼리 서로 import하는 순환이 없는지), `pnpm test`를 실행한다. 두 화면이 같은 타입을 사용하면 둘 중 하나가 아니라 `model.ts` 같은 셋째 파일에 정의한다 (서로 import하는 순환을 막기 위해서다)
 - CSS의 색·간격·모서리·그림자·글자 크기·z-index는 [디자인 토큰](#디자인-토큰) 규칙을 따른다
 - API의 컨트롤러나 DTO를 변경하면 `pnpm --filter @macfolio/api openapi`로 `apps/react/src/apps/apidocs/openapi.json`을 다시 생성해 함께 커밋한다. 사이트의 'API 문서' 앱이 이 파일을 렌더링한다. 빠뜨리면 `pnpm test`(`apps/api/src/openapi.test.ts`)가 실패한다
+- CI의 `check`가 빌드 뒤에 첫 방문 번들의 성능 예산(`boot` 번들 55KB, `index.html`이 처음부터 요청하는 번들 합계 265KB, brotli 압축)을 검사한다. 로컬에서는 `pnpm build` 뒤 `pnpm --filter @macfolio/react perf:budget`으로 확인한다. 넘으면 실패 메시지가 크기 상위 파일을 보여 준다. 대응 방법은 [docs/performance.md의 '성능 예산'](docs/performance.md#성능-예산)에 있다
 - README와 `docs/`의 문서는 영어판(`README.en.md`, `docs/en/`)이 따로 있다. 한국어가 원본이고, 한국어 문서를 수정하면 같은 PR에서 영어판도 함께 수정한다. 영어판의 상대 경로는 한 단계 깊다(`../images/`, `../../apps/`)
 
 ### 디자인 토큰

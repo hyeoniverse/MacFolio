@@ -18,7 +18,10 @@
 			 */
 			@layer reset, components;
 
-			/* 로딩 화면이 뜨기 전(스크립트를 받는 동안)에는 배경화면 대신 검은 화면 (LoadingScreen이 booting을 뗀다) */
+			/*
+			 * 로딩 화면을 누르기 전까지(스크립트를 받는 동안 포함) html·body는 배경화면 대신 검은색 (LoadingScreen이 누르는 시각에 booting을 뗀다).
+			 * 휴대폰 도구 막대 뒤, 화면을 끌어 내린 영역처럼 로딩 화면 밖이 보여도 배경화면이 비치지 않는다
+			 */
 			html.booting,
 			html.booting body {
 				background: #000 !important;
@@ -38,6 +41,7 @@
 				position: fixed;
 				inset: 0;
 				z-index: 9999;
+				height: 100dvh;
 				display: flex;
 				flex-direction: column;
 				align-items: center;
@@ -53,6 +57,7 @@
 				filter: drop-shadow(0 0 0.3rem #fff);
 			}
 
+			/* 글꼴은 웹 글꼴을 기다리지 않는 시스템 글꼴. LoadingScreen.css의 .loading-text와 같아야 LCP가 다시 집계되지 않는다 */
 			#boot-splash p {
 				margin: 1rem;
 				color: #fff;

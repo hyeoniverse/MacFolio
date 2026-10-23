@@ -103,6 +103,45 @@ test.describe('Finder', () => {
 		).toHaveText('배포');
 	});
 
+	test('텍스트 편집기 창의 문서도 블로그와 같은 코드 강조 색·접기 블록·구분선 모양 (styles/prose.css)', async ({
+		page,
+	}) => {
+		const finder = await openFinder(page);
+		const files = finder.getByRole('listbox', { name: '문서' });
+		await files.getByRole('option', { name: 'deployment.md', exact: true }).dblclick();
+		const editor = appWindow(page, 'textedit');
+		const doc = editor.getByRole('article', { name: 'docs/deployment.md' });
+		await expect(doc.getByRole('heading', { level: 1 })).toHaveText('배포');
+
+		// 코드 토큰은 본문 색이 아니라 강조 색 (색 변수가 메모·Finder 창에만 있으면 텍스트 편집기 창에서 본문 색이 된다)
+		const color = (locator: Locator) => locator.evaluate((el) => getComputedStyle(el).color);
+		const bodyColor = await color(doc.locator('p').first());
+		const tokenColor = await color(doc.locator('pre .hljs-string').first());
+		expect(tokenColor).not.toBe(bodyColor);
+		expect(tokenColor).toBe(
+			await page.evaluate(() => {
+				const probe = document.createElement('span');
+				probe.style.color = 'var(--color-code-string)';
+				document.body.append(probe);
+				const value = getComputedStyle(probe).color;
+				probe.remove();
+				return value;
+			})
+		);
+
+		// 접기 블록은 테두리 상자, 브라우저 기본 ▶ 표시 대신 › 표시
+		const details = doc.locator('details').first();
+		await expect(details).toHaveCSS('border-top-style', 'solid');
+		await expect(details.locator('summary')).toHaveCSS('list-style-type', 'none');
+		await expect(details.locator('summary')).toHaveCSS('display', 'flex');
+
+		// 구분선(---)은 브라우저 기본 입체 선이 아니라 1px 선
+		await doc.evaluate((el) => el.insertAdjacentHTML('beforeend', '<hr data-testid="hr">'));
+		const hr = doc.getByTestId('hr');
+		await expect(hr).toHaveCSS('height', '1px');
+		await expect(hr).toHaveCSS('border-top-style', 'none');
+	});
+
 	test('문서 없이 텍스트 편집기를 열면 열기 창이 뜨고, Markdown 문서만 연다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'launchpad').click();

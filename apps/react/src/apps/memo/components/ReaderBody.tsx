@@ -70,7 +70,7 @@ const ReaderBody = ({
 			</p>
 		)}
 		<h1>{post.title}</h1>
-		<div className="memo-markdown">
+		<div className="prose memo-markdown">
 			<MemoMarkdown>{post.body}</MemoMarkdown>
 		</div>
 		{footer}

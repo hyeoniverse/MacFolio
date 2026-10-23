@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>휴대폰 위젯 격자의 배치 규칙. 순서 [작게 A, 중간 B, 작게 C]를 CSS 기본 배치(sparse)로 놓으면 첫 줄 오른쪽이 비고 세 줄을 차지한다. dense 배치는 C가 첫 줄의 빈 칸을 채워 두 줄이 되고, 저장하는 순서도 화면 순서 [A, C, B]로 정규화한다</title>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">저장한 순서 [작게 A, 중간 B, 작게 C]를 2열 격자에 배치</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">작은 위젯은 한 칸, 중간 위젯은 한 줄(두 칸)을 차지한다. 한 페이지는 세 줄까지다</text>
+
+<text x="215" y="92" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">수정 전: grid-auto-flow: row (sparse)</text>
+<rect x="95" y="108" width="110" height="70" rx="12" fill="#93c5fd"/>
+<text x="150" y="148" font-size="15" fill="#1e3a8a" font-weight="700" text-anchor="middle">A</text>
+<rect x="215" y="108" width="110" height="70" rx="12" fill="none" stroke="#ef4444" stroke-dasharray="5 4" stroke-width="1.5"/>
+<text x="270" y="148" font-size="11" fill="#b91c1c" text-anchor="middle">빈 칸</text>
+<rect x="95" y="188" width="230" height="70" rx="12" fill="#86efac"/>
+<text x="210" y="228" font-size="15" fill="#14532d" font-weight="700" text-anchor="middle">B</text>
+<rect x="95" y="268" width="110" height="70" rx="12" fill="#fcd34d"/>
+<text x="150" y="308" font-size="15" fill="#78350f" font-weight="700" text-anchor="middle">C</text>
+<text x="215" y="362" font-size="11" fill="#b91c1c" text-anchor="middle">3줄. 줄 수 계산(widgetRows = 2줄)과 화면이 다르다</text>
+
+<line x1="430" y1="90" x2="430" y2="370" stroke="#e5e7eb"/>
+
+<text x="645" y="92" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">수정 후: grid-auto-flow: row dense</text>
+<rect x="525" y="108" width="110" height="70" rx="12" fill="#93c5fd"/>
+<text x="580" y="148" font-size="15" fill="#1e3a8a" font-weight="700" text-anchor="middle">A</text>
+<rect x="645" y="108" width="110" height="70" rx="12" fill="#fcd34d"/>
+<text x="700" y="148" font-size="15" fill="#78350f" font-weight="700" text-anchor="middle">C</text>
+<rect x="525" y="188" width="230" height="70" rx="12" fill="#86efac"/>
+<text x="640" y="228" font-size="15" fill="#14532d" font-weight="700" text-anchor="middle">B</text>
+<rect x="525" y="268" width="230" height="70" rx="12" fill="none" stroke="#d1d5db" stroke-dasharray="5 4"/>
+<text x="640" y="308" font-size="11" fill="#9ca3af" text-anchor="middle">남는 줄</text>
+<text x="645" y="362" font-size="11" fill="#15803d" text-anchor="middle">2줄. 저장 순서는 화면 순서 [A, C, B]로 정규화(normalizeOrder)</text>
+</svg>

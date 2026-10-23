@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>화면 키보드가 올라온 시각의 앱 화면 배치. 수정 전에는 앱 화면이 레이아웃 뷰포트 전체에 고정되어, iOS가 보이는 곳(visualViewport)을 offsetTop만큼 아래로 옮기면 머리가 보이는 곳 밖으로 밀린다. 수정 후에는 앱 화면의 top을 offsetTop, 높이를 visualViewport.height로 맞춰 머리는 보이는 곳 맨 위에 남고 대화 칸만 줄어든다</title>
+<rect width="820" height="470" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">화면 키보드가 올라온 시각 (iPhone 844px, 키보드 336px)</text>
+<text x="32" y="70" font-size="13" fill="#b91c1c" font-weight="700">수정 전: 앱 화면 = 레이아웃 뷰포트</text>
+<rect x="60" y="86" width="200" height="300" rx="10" fill="none" stroke="#9ca3af" stroke-dasharray="6 4"/>
+<text x="268" y="98" font-size="10.5" fill="#6b7280">레이아웃 뷰포트</text>
+<rect x="72" y="94" width="176" height="32" rx="6" fill="#e5e7eb"/><text x="160" y="114" font-size="11" text-anchor="middle" fill="#1f2937">머리 (상태 표시줄·이름)</text>
+<rect x="72" y="132" width="176" height="208" rx="6" fill="#f3f4f6"/><text x="160" y="240" font-size="11" text-anchor="middle" fill="#6b7280">대화</text>
+<rect x="72" y="346" width="176" height="32" rx="6" fill="#d1fae5"/><text x="160" y="366" font-size="11" text-anchor="middle" fill="#1f2937">입력 칸</text>
+<rect x="52" y="206" width="216" height="182" rx="10" fill="none" stroke="#2563eb" stroke-width="3"/>
+<text x="276" y="214" font-size="10.5" fill="#2563eb">보이는 곳 (visualViewport)</text>
+<text x="276" y="230" font-size="10.5" fill="#2563eb">offsetTop만큼 아래로 이동</text>
+<rect x="60" y="390" width="200" height="56" rx="8" fill="#d1d5db"/><text x="160" y="422" font-size="11" text-anchor="middle" fill="#374151">키보드</text>
+<text x="276" y="120" font-size="10.5" fill="#b91c1c">머리가 보이는 곳 밖</text>
+<text x="452" y="70" font-size="13" fill="#047857" font-weight="700">수정 후: 앱 화면 = 보이는 곳</text>
+<rect x="480" y="86" width="200" height="300" rx="10" fill="none" stroke="#9ca3af" stroke-dasharray="6 4"/>
+<rect x="472" y="206" width="216" height="182" rx="10" fill="none" stroke="#2563eb" stroke-width="3"/>
+<rect x="492" y="214" width="176" height="32" rx="6" fill="#e5e7eb"/><text x="580" y="234" font-size="11" text-anchor="middle" fill="#1f2937">머리 (상태 표시줄·이름)</text>
+<rect x="492" y="252" width="176" height="88" rx="6" fill="#f3f4f6"/><text x="580" y="300" font-size="11" text-anchor="middle" fill="#6b7280">대화 (줄어듦, 맨 아래 유지)</text>
+<rect x="492" y="346" width="176" height="32" rx="6" fill="#d1fae5"/><text x="580" y="366" font-size="11" text-anchor="middle" fill="#1f2937">입력 칸</text>
+<rect x="480" y="390" width="200" height="56" rx="8" fill="#d1d5db"/><text x="580" y="422" font-size="11" text-anchor="middle" fill="#374151">키보드</text>
+<text x="696" y="214" font-size="10.5" fill="#047857">top: offsetTop</text>
+<text x="696" y="230" font-size="10.5" fill="#047857">height: visualViewport.height</text>
+<text x="696" y="246" font-size="10.5" fill="#047857">상태 표시줄도 --keyboard-top</text>
+</svg>

@@ -36,16 +36,14 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, onLoadingComplet
 		callbacks.current = { onStart, onLoadingComplete };
 	}, [onStart, onLoadingComplete]);
 
-	// 로딩 화면이 화면을 덮었으니 배경화면을 보여도 된다 (index.html의 booting)
-	useEffect(() => {
-		document.documentElement.classList.remove('booting');
-	}, []);
-
 	useEffect(() => {
 		const startLoading = () => {
 			if (!isInteractedRef.current) {
 				isInteractedRef.current = true;
 				setStarted(true);
+				// 누르면 배경화면을 표시한다 (index.html의 booting). 누르기 전에는 html·body가 검은색이라, 휴대폰 도구 막대 뒤나
+				// 화면을 끌어 내린 영역처럼 로딩 화면 밖이 보여도 같은 검은색이다. 배경화면은 진행 막대가 차는 2.5초 동안 수신한다
+				document.documentElement.classList.remove('booting');
 				callbacks.current.onStart?.();
 				// 배경 음악은 진행 막대가 찬 뒤에 시작한다. iPhone Safari는 탭 처리 중에 처음 play()한 요소만 나중에 재생을
 				// 허용하므로, 지금(탭 처리 안에서) 배경 음악 요소를 허용받아 둔다 (musicAudio.ts)

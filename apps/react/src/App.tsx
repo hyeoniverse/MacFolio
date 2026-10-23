@@ -18,10 +18,13 @@ const App: React.FC = () => {
 	// 누른 뒤 진행 막대가 차는 동안(2.5초) 그리므로 걷히면 바로 보인다
 	const [shellStarted, setShellStarted] = useState(() => !isLoadingAtStart());
 
-	// 처음 그렸으면 스크립트를 받는 동안의 첫 그림(index.html의 #boot-splash)을 지운다. 로딩 화면이 같은 자리에 그대로 이어진다
+	// 스크립트를 받는 동안의 첫 그림(index.html의 #boot-splash)은 로딩 화면을 눌러 시작한 시각(로딩 화면이 없으면 처음)에 삭제한다.
+	// 그 전에는 같은 자리에 렌더링한 로딩 화면(DOM 순서상 위)이 덮고 있다. React가 처음 렌더링하는 시각에 바로 삭제하면, 첫 렌더링이
+	// 화면에 표시되어 LCP로 기록되기 전에 노드가 사라지는 회차가 있었다. 그러면 LCP가 React의 시작 안내로 다시 집계되어
+	// Lighthouse 휴대폰 LCP가 3.3초에서 4.6초로 늘었다 (docs/performance.md). 누른 뒤에는 LCP를 더 기록하지 않는다
 	useEffect(() => {
-		document.getElementById('boot-splash')?.remove();
-	}, []);
+		if (shellStarted) document.getElementById('boot-splash')?.remove();
+	}, [shellStarted]);
 
 	// 로딩 화면이 없으면 로딩 화면 대신 배경화면을 드러낸다 (index.html의 booting)
 	useEffect(() => {

@@ -10,6 +10,7 @@
 		"typecheck": "tsc",
 		"lint": "eslint . --max-warnings 0 && stylelint \"src/**/*.css\"",
 		"test:e2e": "playwright test",
+		"perf:budget": "node scripts/perf/budget.mjs dist",
 		"test": "vitest run"
 	},
 	"dependencies": {

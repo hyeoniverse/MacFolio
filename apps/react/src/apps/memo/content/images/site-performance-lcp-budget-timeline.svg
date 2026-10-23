@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" width="760" height="400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>LCP 후보가 사라지는 순서 (도식). 전: HTML의 시작 안내가 그려진 뒤 LCP로 기록되기 전에 React가 #boot-splash를 삭제해, React의 시작 안내가 LCP가 된다. 후: #boot-splash를 누를 때까지 남겨 HTML의 시작 안내가 LCP로 기록된다</title>
+<rect width="760" height="400" rx="16" fill="#f5f5f7"/>
+<text x="24" y="34" font-size="18" font-weight="700" fill="#1d1d1f">LCP가 React의 시작 안내로 바뀌는 순서 (도식)</text>
+<text x="24" y="56" font-size="12" fill="#3a3a3c">로컬 Lighthouse 휴대폰 측정의 trace 한 회차. 시각은 탐색 시작부터의 실제 경과 시간(ms), simulate 계산 전</text>
+
+<!-- 시간 축 -->
+<g font-size="11" fill="#6e6e73" text-anchor="middle">
+<line x1="120" y1="78" x2="720" y2="78" stroke="#c7c7cc"/>
+<text x="120" y="72">0</text><text x="270" y="72">20</text><text x="420" y="72">40</text><text x="570" y="72">60</text><text x="720" y="72">80ms</text>
+</g>
+
+<!-- 전 -->
+<text x="24" y="118" font-size="14" font-weight="700" fill="#1d1d1f">전</text>
+<text x="24" y="136" font-size="11" fill="#3a3a3c">main</text>
+<rect x="120" y="100" width="600" height="96" rx="8" fill="#ffffff" stroke="#e5e5ea"/>
+<!-- HTML 첫 렌더링 -->
+<line x1="367" y1="100" x2="367" y2="196" stroke="#0a84ff" stroke-width="2"/>
+<text x="372" y="116" font-size="11" fill="#0a84ff">33 HTML 시작 안내 렌더링</text>
+<!-- FCP -->
+<line x1="447" y1="100" x2="447" y2="196" stroke="#8e8e93" stroke-dasharray="3 3"/>
+<text x="452" y="132" font-size="11" fill="#6e6e73">44 FCP</text>
+<!-- React가 삭제 -->
+<line x1="510" y1="100" x2="510" y2="196" stroke="#ff3b30" stroke-width="2"/>
+<text x="545" y="148" font-size="11" fill="#ff3b30">52 React가 #boot-splash 삭제</text>
+<text x="545" y="162" font-size="11" fill="#ff3b30">HTML 안내의 LCP 기록이 사라짐</text>
+<!-- React 렌더링 -->
+<line x1="540" y1="100" x2="540" y2="196" stroke="#ff9f0a" stroke-width="2"/>
+<text x="545" y="180" font-size="11" fill="#c45f00">57 React 시작 안내 = LCP</text>
+<text x="24" y="166" font-size="11" fill="#3a3a3c">LCP 4.6초</text>
+<text x="24" y="182" font-size="11" fill="#3a3a3c">(JS 실행·글꼴 포함)</text>
+
+<!-- 후 -->
+<text x="24" y="238" font-size="14" font-weight="700" fill="#1d1d1f">후</text>
+<text x="24" y="256" font-size="11" fill="#3a3a3c">이 PR</text>
+<rect x="120" y="220" width="600" height="96" rx="8" fill="#ffffff" stroke="#e5e5ea"/>
+<line x1="367" y1="220" x2="367" y2="316" stroke="#0a84ff" stroke-width="2"/>
+<text x="372" y="236" font-size="11" fill="#0a84ff">33 HTML 시작 안내 렌더링</text>
+<line x1="447" y1="220" x2="447" y2="316" stroke="#34c759" stroke-width="2"/>
+<text x="452" y="252" font-size="11" fill="#248a3d">44~57 LCP 기록</text>
+<line x1="540" y1="220" x2="540" y2="316" stroke="#8e8e93" stroke-dasharray="3 3"/>
+<text x="545" y="270" font-size="11" fill="#6e6e73">57 React 로딩 화면이 위를 덮음</text><text x="452" y="268" font-size="11" fill="#248a3d">(HTML 안내)</text>
+<text x="545" y="284" font-size="11" fill="#6e6e73">같은 글꼴·같은 영역이라 후보 아님</text>
+<text x="24" y="286" font-size="11" fill="#3a3a3c">LCP 3.3초 이하</text>
+<text x="24" y="302" font-size="11" fill="#3a3a3c">(HTML·첫 번들 수신)</text>
+
+<text x="24" y="346" font-size="12" fill="#1d1d1f">#boot-splash는 로딩 화면을 누르는 시각에 삭제한다. 사용자가 누르면 LCP 기록이 끝나므로 그 뒤의 삭제는 LCP에 영향이 없다</text>
+<text x="24" y="368" font-size="12" fill="#3a3a3c">trace에서 HTML 안내의 LCP 기록은 렌더링 뒤 9~28ms에 나타났다. 그 전에 노드가 삭제된 회차에는 기록이 없었다</text>
+</svg>
