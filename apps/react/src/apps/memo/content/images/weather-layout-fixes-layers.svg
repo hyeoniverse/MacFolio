@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>날씨 창의 겹침 순서 수정 전후. 수정 전에는 backdrop-filter로 쌓임 맥락을 만든 사이드바 전체를 z-index 4로 올려 신호등 줄(z-index 3)을 덮었다. 수정 후에는 사이드바를 신호등 줄 아래에 두고, 사이드바 버튼만 사이드바 밖에 배치해 z-index 4로 올렸다</title>
+<rect width="820" height="340" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">날씨 창의 겹침 순서 (위에 있을수록 앞)</text>
+<text x="32" y="72" font-size="13" fill="#b91c1c" font-weight="700">수정 전</text>
+<rect x="32" y="86" width="360" height="62" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="48" y="110" font-size="12" fill="#1f2937" font-weight="600">사이드바 · z-index 4 · backdrop-filter</text>
+<text x="48" y="130" font-size="10.5" fill="#374151">└ 사이드바 버튼 (사이드바 안에서만 순서가 의미 있음)</text>
+<rect x="32" y="158" width="360" height="44" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="48" y="185" font-size="12" fill="#1f2937">신호등 줄 · 창 끌기 영역 · z-index 3</text>
+<rect x="32" y="212" width="360" height="44" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="48" y="239" font-size="12" fill="#6b7280">하늘 색 배경과 날씨 칸</text>
+<text x="32" y="286" font-size="11" fill="#b91c1c">어두운 사이드바가 신호등 버튼을 덮는다</text>
+<text x="428" y="72" font-size="13" fill="#047857" font-weight="700">수정 후</text>
+<rect x="428" y="86" width="360" height="44" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="444" y="105" font-size="12" fill="#1f2937" font-weight="600">사이드바 버튼 · z-index 4</text>
+<text x="444" y="121" font-size="10.5" fill="#374151">사이드바 밖, top 13px · left 218px에 배치</text>
+<rect x="428" y="140" width="360" height="44" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="444" y="167" font-size="12" fill="#1f2937">신호등 줄 · 창 끌기 영역 · z-index 3</text>
+<rect x="428" y="194" width="360" height="44" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="444" y="221" font-size="12" fill="#1f2937">사이드바 · backdrop-filter (z-index 지정 없음)</text>
+<rect x="428" y="248" width="360" height="30" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="444" y="268" font-size="12" fill="#6b7280">하늘 색 배경과 날씨 칸</text>
+<text x="428" y="306" font-size="11" fill="#047857">신호등이 보이고, 사이드바 버튼도 클릭된다</text>
+</svg>
