@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>공통 부품의 --ui-* 변수가 기본값, 앱 루트의 재정의, body에 렌더링한 메뉴의 재정의 순서로 결정되는 구조</title>
+  <rect width="640" height="360" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">--ui-accent 값이 정해지는 위치</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+
+  <!-- :root -->
+  <rect x="32" y="68" width="576" height="272" rx="12" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="48" y="92" font-size="13" font-weight="700" fill="#374151">:root (body)</text>
+  <text x="48" y="112" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">--ui-accent: var(--color-control-accent)</text>
+  <text x="48" y="130" font-size="11" fill="#6b7280">3층 토큰 components.css의 기본값 (파란 강조)</text>
+
+  <!-- 메모 앱 -->
+  <rect x="48" y="146" width="300" height="178" rx="12" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="64" y="170" font-size="13" font-weight="700" fill="#b45309">[data-app='memo'] 앱 루트</text>
+  <text x="64" y="190" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">--ui-accent: var(--memo-accent)</text>
+  <text x="64" y="208" font-size="11" fill="#6b7280">memo/styles/theme.css: 노란 강조로 재정의</text>
+  <rect x="64" y="222" width="132" height="44" rx="8" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="130" y="249" font-size="12" text-anchor="middle" fill="#1f2937">Button primary</text>
+  <rect x="204" y="222" width="128" height="44" rx="8" fill="#ffffff" stroke="#fcd34d"/>
+  <text x="268" y="249" font-size="12" text-anchor="middle" fill="#1f2937">IconButton on</text>
+  <text x="64" y="292" font-size="11" fill="#6b7280">앱 안의 부품은 가장 가까운 조상의 값을 상속한다</text>
+  <text x="64" y="310" font-size="11" fill="#6b7280">→ 노란색</text>
+
+  <!-- portal -->
+  <rect x="380" y="146" width="212" height="178" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+  <text x="396" y="170" font-size="13" font-weight="700" fill="#3f46c7">Menu (createPortal → body)</text>
+  <text x="396" y="192" font-size="11" fill="#6b7280">DOM 위치가 앱 루트 밖이라</text>
+  <text x="396" y="208" font-size="11" fill="#6b7280">앱의 재정의를 상속하지 않는다</text>
+  <text x="396" y="232" font-size="11" fill="#6b7280">→ 기본값(파란색)이 적용된다</text>
+  <rect x="396" y="246" width="180" height="62" rx="8" fill="#ffffff" stroke="#c7cbff"/>
+  <text x="486" y="270" font-size="12" text-anchor="middle" fill="#1f2937">메뉴 바깥 요소에</text>
+  <text x="486" y="290" font-size="12" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">--ui-*를 다시 정의</text>
+
+  <path d="M348 168 C362 168 366 168 378 168" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+</svg>

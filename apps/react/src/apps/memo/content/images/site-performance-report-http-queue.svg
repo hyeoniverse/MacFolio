@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" width="760" height="400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="400" rx="16" fill="#f5f5f7"/>
+<text x="24" y="36" font-size="18" font-weight="700" fill="#1d1d1f">번들 33개를 내려받는 순서 (도식)</text>
+<text x="24" y="70" font-size="14" font-weight="700" fill="#1d1d1f">로컬 서버: HTTP/1.1, 동시 연결 6개</text>
+<text x="138" y="99" font-size="12" text-anchor="end" fill="#3a3a3c">연결 1</text>
+<rect x="150" y="86" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="232" y="86" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="314" y="86" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="396" y="86" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="478" y="86" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="560" y="86" width="78" height="16" rx="4" fill="#ff9f0a"/>
+<text x="138" y="121" font-size="12" text-anchor="end" fill="#3a3a3c">연결 2</text>
+<rect x="150" y="108" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="232" y="108" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="314" y="108" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="396" y="108" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="478" y="108" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="560" y="108" width="78" height="16" rx="4" fill="#ff9f0a"/>
+<text x="138" y="143" font-size="12" text-anchor="end" fill="#3a3a3c">연결 3</text>
+<rect x="150" y="130" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="232" y="130" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="314" y="130" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="396" y="130" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="478" y="130" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="560" y="130" width="78" height="16" rx="4" fill="#ff9f0a"/>
+<text x="138" y="165" font-size="12" text-anchor="end" fill="#3a3a3c">연결 4</text>
+<rect x="150" y="152" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="232" y="152" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="314" y="152" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="396" y="152" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="478" y="152" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<text x="138" y="187" font-size="12" text-anchor="end" fill="#3a3a3c">연결 5</text>
+<rect x="150" y="174" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="232" y="174" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="314" y="174" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="396" y="174" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="478" y="174" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<text x="138" y="209" font-size="12" text-anchor="end" fill="#3a3a3c">연결 6</text>
+<rect x="150" y="196" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="232" y="196" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="314" y="196" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="396" y="196" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<rect x="478" y="196" width="78" height="16" rx="4" fill="#c7c7cc"/>
+<text x="650" y="99" font-size="12" fill="#1d1d1f">마지막 번들</text>
+<text x="650" y="115" font-size="12" fill="#1d1d1f">5.1초에 완료</text>
+<text x="150" y="232" font-size="12" fill="#3a3a3c">앞의 요청이 끝나야 다음 요청을 보낸다. 6개씩 차례로 대기열에 쌓인다</text>
+<text x="24" y="272" font-size="14" font-weight="700" fill="#1d1d1f">운영(Cloudflare): HTTP/2, 연결 1개</text>
+<text x="138" y="301" font-size="12" text-anchor="end" fill="#3a3a3c">연결 1</text>
+<rect x="148" y="284" width="168" height="66" rx="6" fill="none" stroke="#34c759" stroke-width="1.5"/>
+<rect x="150" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="150" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="150" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="164" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="164" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="164" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="178" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="178" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="178" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="192" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="192" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="192" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="206" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="206" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="206" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="220" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="220" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="220" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="234" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="234" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="234" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="248" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="248" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="248" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="262" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="262" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="262" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="276" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="276" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="276" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="290" y="288" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="290" y="308" width="11" height="16" rx="3" fill="#34c759"/>
+<rect x="290" y="328" width="11" height="16" rx="3" fill="#34c759"/>
+<text x="330" y="301" font-size="12" fill="#1d1d1f">요청 33개를 한 연결에서 동시에 주고받는다(멀티플렉싱)</text>
+<text x="330" y="321" font-size="12" fill="#3a3a3c">같은 느린 4G 가정에서도 휴대폰 FCP가 더 빠르다</text>
+<text x="330" y="341" font-size="12" fill="#3a3a3c">(1차 배포 후 운영 2.4초, 로컬 simulate 4.0초)</text>
+<text x="24" y="380" font-size="12" fill="#3a3a3c">상자 하나가 번들 하나다. 길이는 실제 수신 시간이 아니라 순서를 나타낸다</text>
+</svg>
