@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>2026-10-23 기준 worker/index.ts가 요청을 처리하는 순서</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+</defs>
+<rect width="860" height="420" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">지금의 worker/index.ts: 분기 순서</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">2026-10-23 기준 · Worker로 오는 요청은 run_worker_first 경로(/, /index.html, /sitemap.xml, /rss.xml)와 정적 자산에 없는 주소뿐</text>
+<!-- step boxes -->
+<rect x="32" y="84" width="300" height="50" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="46" y="104" font-size="12" fill="#4f46e5" font-weight="600">1. /files/ 로 시작?</text>
+<text x="46" y="122" font-size="10.5" fill="#374151">worker/files.ts · #255</text>
+<rect x="32" y="156" width="300" height="50" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="46" y="176" font-size="12" fill="#4f46e5" font-weight="600">2. 앱 주소도 sitemap·rss·index.html도 아님?</text>
+<text x="46" y="194" font-size="10.5" fill="#374151">worker/notFound.ts의 isAppRoute · #103</text>
+<rect x="32" y="228" width="300" height="50" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="46" y="248" font-size="12" fill="#4f46e5" font-weight="600">3. API에서 사이트 콘텐츠·서버 글 수신</text>
+<text x="46" y="266" font-size="10.5" fill="#374151">worker/siteHtml.ts · serverPosts.ts (병렬)</text>
+<rect x="32" y="300" width="300" height="50" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="46" y="320" font-size="12" fill="#4f46e5" font-weight="600">4. /sitemap.xml 또는 /rss.xml?</text>
+<text x="46" y="338" font-size="10.5" fill="#374151">저장소 글 + 서버 글로 생성 · #269 · #303</text>
+<rect x="32" y="364" width="300" height="44" rx="9" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="46" y="384" font-size="12" fill="#4f46e5" font-weight="600">5. index.html에 콘텐츠·SEO 머리 삽입</text>
+<text x="46" y="400" font-size="10.5" fill="#374151">CSP frame-src에 데모 주소 추가 · #187</text>
+<!-- down arrows -->
+<path d="M182 134 V152" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<path d="M182 206 V224" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<path d="M182 278 V296" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<path d="M182 350 V360" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<!-- results -->
+<path d="M332 109 H420" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<text x="376" y="102" font-size="10" fill="#15803d" font-weight="600" text-anchor="middle">예</text>
+<rect x="424" y="84" width="404" height="50" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+<text x="438" y="104" font-size="12" fill="#15803d" font-weight="600">R2 버킷의 문서 파일 (PDF·그림)</text>
+<text x="438" y="122" font-size="10.5" fill="#374151">버킷에 없으면 404</text>
+<path d="M332 181 H420" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#a-red)"/>
+<text x="376" y="174" font-size="10" fill="#b91c1c" font-weight="600" text-anchor="middle">예</text>
+<rect x="424" y="156" width="404" height="50" rx="9" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="438" y="176" font-size="12" fill="#b91c1c" font-weight="600">404 text/plain (이 글에서 추가한 판단)</text>
+<text x="438" y="194" font-size="10.5" fill="#374151">/assets/Memo-old.js · /imgs/nope.png</text>
+<path d="M332 325 H420" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<text x="376" y="318" font-size="10" fill="#15803d" font-weight="600" text-anchor="middle">예</text>
+<rect x="424" y="300" width="404" height="50" rx="9" fill="#ecfdf5" stroke="#86efac"/>
+<text x="438" y="320" font-size="12" fill="#15803d" font-weight="600">XML 응답 · cache-control: max-age=3600</text>
+<text x="438" y="338" font-size="10.5" fill="#374151">빌드한 정적 sitemap 대신 Worker가 생성</text>
+<path d="M332 386 H420" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<rect x="424" y="364" width="404" height="44" rx="9" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="438" y="383" font-size="12" fill="#1f2937" font-weight="600">200 text/html · 없는 글·프로젝트 주소는 404</text>
+<text x="438" y="400" font-size="10.5" fill="#374151">글 목록을 모두 수신하지 못하면 404로 단정하지 않고 200</text>
+</svg>
