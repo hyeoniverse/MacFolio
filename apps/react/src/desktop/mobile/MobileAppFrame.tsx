@@ -181,6 +181,8 @@ const MobileAppFrame: React.FC<Props> = ({
 					<span />
 					<span />
 					<span />
+					<span />
+					<span />
 				</div>
 				{/* 홈으로 가는 버튼을 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
 				{(nav?.onBack || !nav?.hideHome) && (
