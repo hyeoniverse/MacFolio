@@ -147,6 +147,6 @@ z-index가 예상과 다르게 동작하면, 조상 요소 중 쌓임 맥락을 
 - 메모 CSS를 분할하면서 이 주석을 옮긴 작업: [4,600줄 Memo.css를 열다섯 파일로](/memo/memo-css-split)
 - PR: [#33](https://github.com/hyeoniverse/MacFolio/pull/33)
 
-#MacFolio #메모앱 #CSS #트러블슈팅
-
 [^1]: 쌓임 맥락: 자식 요소의 z-index를 서로 비교하는 범위. 맥락 안의 요소는 맥락 밖의 요소와 직접 비교되지 않고, 맥락을 생성한 요소 하나의 순서를 따른다.
+
+#MacFolio #메모앱 #CSS #트러블슈팅

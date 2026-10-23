@@ -133,8 +133,8 @@ simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크
 
 [^lcp]: Largest Contentful Paint. 화면에 보이는 가장 큰 글자 덩어리나 이미지가 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/lcp)
 
-[^fcp]: First Contentful Paint. 글자나 이미지가 처음 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/fcp)
-
 [^simulate]: Lighthouse의 기본 측정 방식. 페이지는 빠른 네트워크로 불러오고, 기록한 요청 순서와 크기로 느린 네트워크에서 걸릴 시간을 계산한다.
+
+[^fcp]: First Contentful Paint. 글자나 이미지가 처음 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/fcp)
 
 #MacFolio #성능 #Lighthouse #코드분할 #회귀

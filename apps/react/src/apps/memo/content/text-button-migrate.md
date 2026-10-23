@@ -119,6 +119,6 @@ summary: 앱마다 직접 작성한 글자 버튼 30곳을 공통 Button으로 �
 - 앱 reset 레이어를 도입한 작업: [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)
 - PR: [#246](https://github.com/hyeoniverse/MacFolio/pull/246)
 
-#MacFolio #React #CSS #리팩터링
-
 [^1]: 캐스케이드 레이어: `@layer`로 CSS 규칙을 묶어 우선순위를 레이어 단위로 정하는 기능. 레이어가 다르면 명시도와 무관하게 나중에 선언된 레이어가 우선하고, 레이어 밖의 규칙은 모든 레이어보다 우선한다.
+
+#MacFolio #React #CSS #리팩터링

@@ -102,7 +102,7 @@ A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 
 
 ![팀의 작업 방식에 따라 보통 고르는 병합 방식](./images/merge-strategies-teams.svg '오픈소스·모노레포는 Squash, 커밋을 쪼개는 팀은 Rebase, SHA·PR 경계에 의존하는 곳은 Merge commit')
 
-- **오픈소스, 큰 모노레포 → Squash.** 기여자의 커밋 습관을 통제할 수 없고, 리뷰 반영 커밋이 많이 쌓인다. PR 하나가 커밋 하나가 되어 되돌리기도 단순하다. 대신 PR 제목과 본문이 곧 커밋 메시지이므로 제목 규칙을 엄격히 둔다.
+- **오픈소스, 큰 모노레포[^monorepo] → Squash.** 기여자의 커밋 습관을 통제할 수 없고, 리뷰 반영 커밋이 많이 쌓인다. PR 하나가 커밋 하나가 되어 되돌리기도 단순하다. 대신 PR 제목과 본문이 곧 커밋 메시지이므로 제목 규칙을 엄격히 둔다.
 - **커밋을 정성껏 쪼개는 팀 → Rebase.** 커밋마다 빌드가 되고 뜻이 있는 팀이라면 직선 기록과 커밋 단위를 둘 다 얻는다. 브랜치에서 `git merge main`을 쓰지 않고 `git rebase main`으로 따라가는 규칙이 같이 필요하다.
 - **배포·태그·문서가 SHA에 묶여 있거나 PR 경계를 기록에 남기고 싶은 곳 → Merge commit.** 배포 이미지 태그를 머지 커밋 SHA로 만들거나, PR 본문과 문서에서 커밋 링크를 쓰거나, 서명된 커밋을 유지해야 하면 SHA가 바뀌지 않는 방식이어야 한다. 충돌을 `git merge main`으로 푸는 팀도 여기에 든다.
 
@@ -129,22 +129,6 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 - Merge commit 방식에서는 브랜치의 커밋이 그대로 main에 남으므로, Squash 방식보다 커밋 하나하나의 메시지 규칙이 더 중요하다
 - 한 저장소 안에서는 한 가지로 통일하고, 저장소 설정에서 나머지 방식을 꺼 두어 실수로 다른 방식을 고르지 않게 한다
 
-[^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
-
-[^first-parent]: 머지 커밋은 부모가 둘인데, 첫째 부모가 병합을 받은 쪽(main)이다. `--first-parent`는 기록을 거슬러 올라갈 때 첫째 부모만 따라가므로 브랜치 안의 커밋은 건너뛰고 main에 직접 쌓인 머지 커밋만 보인다. 출력 예시는 글 앞쪽의 [먼저 알아 둘 용어](#terms)에 있다.
-
-[^diff]: 두 시점 사이에 바뀐 줄의 목록. "무엇이 바뀌었나"만 담고 누가 어떤 순서로 바꿨는지는 담지 않는다. 그래서 diff를 합쳐 만든 커밋 S에는 A·B·C의 메시지와 순서가 남지 않는다.
-
-[^gpg]: 서명은 특정 SHA에 대한 것이라, 내용이 같아도 SHA가 다른 새 커밋에는 옮겨지지 않는다. GitHub는 자기 키로 새 커밋에 서명하므로 "Verified" 표시는 남지만, 서명한 사람이 원래 작성자가 아니라 GitHub가 된다.
-
-[^monorepo]: 여러 프로젝트(앱, 라이브러리, 서버 등)를 저장소 하나에 모아 관리하는 방식. 기여자와 PR 수가 많아 커밋 습관을 맞추기 어렵다.
-
-[^range]: `C'~3`은 "C'에서 세 커밋 앞"이라는 뜻이고, `X..Y`는 "X 다음부터 Y까지"다. 즉 A'·B'·C' 세 커밋을 가리킨다.
-
-[^bisect]: 정상인 커밋과 고장 난 커밋을 하나씩 알려 주면 Git이 그 사이의 가운데 커밋을 체크아웃한다. 정상인지 고장인지 답할 때마다 범위가 반으로 줄어, 커밋 1,000개 사이에서도 열 번(2¹⁰ = 1,024) 정도 답하면 원인 커밋 하나로 좁혀진다.
-
-[^revert-revert]: revert는 변경을 지울 뿐 "브랜치 커밋이 병합되었다"는 기록은 지우지 않는다. 그래서 Git은 다시 병합할 때 예전 커밋들을 이미 들어간 것으로 보고 새로 수정한 커밋만 넣는다. revert를 revert하면 예전 변경이 돌아온 뒤 새 커밋이 그 위에 얹힌다.
-
 ## 관련 글
 
 - [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)
@@ -156,5 +140,21 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 
 - Git: [git-merge](https://git-scm.com/docs/git-merge), [git-rebase](https://git-scm.com/docs/git-rebase), [git-revert](https://git-scm.com/docs/git-revert), [git-bisect](https://git-scm.com/docs/git-bisect), [git-log](https://git-scm.com/docs/git-log)
 - GitHub: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github)
+
+[^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
+
+[^first-parent]: 머지 커밋은 부모가 둘인데, 첫째 부모가 병합을 받은 쪽(main)이다. `--first-parent`는 기록을 거슬러 올라갈 때 첫째 부모만 따라가므로 브랜치 안의 커밋은 건너뛰고 main에 직접 쌓인 머지 커밋만 보인다. 출력 예시는 글 앞쪽의 [먼저 알아 둘 용어](#terms)에 있다.
+
+[^diff]: 두 시점 사이에 바뀐 줄의 목록. "무엇이 바뀌었나"만 담고 누가 어떤 순서로 바꿨는지는 담지 않는다. 그래서 diff를 합쳐 만든 커밋 S에는 A·B·C의 메시지와 순서가 남지 않는다.
+
+[^gpg]: 서명은 특정 SHA에 대한 것이라, 내용이 같아도 SHA가 다른 새 커밋에는 옮겨지지 않는다. GitHub는 자기 키로 새 커밋에 서명하므로 "Verified" 표시는 남지만, 서명한 사람이 원래 작성자가 아니라 GitHub가 된다.
+
+[^range]: `C'~3`은 "C'에서 세 커밋 앞"이라는 뜻이고, `X..Y`는 "X 다음부터 Y까지"다. 즉 A'·B'·C' 세 커밋을 가리킨다.
+
+[^revert-revert]: revert는 변경을 지울 뿐 "브랜치 커밋이 병합되었다"는 기록은 지우지 않는다. 그래서 Git은 다시 병합할 때 예전 커밋들을 이미 들어간 것으로 보고 새로 수정한 커밋만 넣는다. revert를 revert하면 예전 변경이 돌아온 뒤 새 커밋이 그 위에 얹힌다.
+
+[^bisect]: 정상인 커밋과 고장 난 커밋을 하나씩 알려 주면 Git이 그 사이의 가운데 커밋을 체크아웃한다. 정상인지 고장인지 답할 때마다 범위가 반으로 줄어, 커밋 1,000개 사이에서도 열 번(2¹⁰ = 1,024) 정도 답하면 원인 커밋 하나로 좁혀진다.
+
+[^monorepo]: 여러 프로젝트(앱, 라이브러리, 서버 등)를 저장소 하나에 모아 관리하는 방식. 기여자와 PR 수가 많아 커밋 습관을 맞추기 어렵다.
 
 #Git #GitHub

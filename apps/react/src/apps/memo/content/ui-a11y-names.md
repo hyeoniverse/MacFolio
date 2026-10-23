@@ -133,8 +133,8 @@ html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 - 접근성 패턴 참고: [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
 - PR: [#243](https://github.com/hyeoniverse/MacFolio/pull/243)
 
-#MacFolio #접근성 #React #테스트
-
 [^1]: 접근성 트리(accessibility tree): 브라우저가 DOM에서 만들어 스크린 리더 같은 보조 기술에 전달하는 구조. 요소마다 역할·이름·상태가 들어 있다.
 
 [^2]: 포털(portal): React 컴포넌트를 부모 DOM 밖(예: `document.body`)에 렌더링하는 기능. [React 문서: createPortal](https://react.dev/reference/react-dom/createPortal)
+
+#MacFolio #접근성 #React #테스트

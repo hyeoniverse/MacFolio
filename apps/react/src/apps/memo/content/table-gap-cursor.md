@@ -212,8 +212,8 @@ Markdown 표는 머리글 한 행과 본문 한 행 이상이 있어야 한다. 
 - PR: [#55](https://github.com/hyeoniverse/MacFolio/pull/55)
 - ProseMirror 문서: [prosemirror-gapcursor](https://prosemirror.net/docs/ref/#gapcursor)
 
-#MacFolio #메모앱 #편집기
-
 [^1]: 틈 커서: 글자를 입력할 수 없는 두 블록 사이, 또는 문서 처음·끝의 블록 옆에 놓이는 커서. 이 위치에서 글자를 입력하면 새 문단이 생성된다.
 
 [^2]: 조합 입력(IME composition): 한글처럼 여러 키 입력을 조합해 한 글자를 만드는 입력 방식. 조합 중인 글자는 `insertCompositionText` 형식의 `beforeinput` 이벤트로 전달된다.
+
+#MacFolio #메모앱 #편집기
