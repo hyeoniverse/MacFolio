@@ -148,6 +148,8 @@ E2E를 실행하면서 옮긴 버튼마다 공통 클래스(`ui-icon-button`·`t
 | `IconButton` | `tool`(기본)·`float`·`circle`                              | 원래 있던 것                                                                                                                                |
 | `Menu`       | `mac`(기본)·`ios` (`ios`는 `Menu.css`의 `.touch`를 붙인다) | `ios`: 메모 휴대폰(목록·읽기 막대, 폴더 고르기, 폴더 줄 편집 중), Finder 휴대폰, 음악, 사진 휴대폰·크게 보기, Safari 휴대폰. 나머지는 `mac` |
 
+![같은 Menu 부품이 데스크톱 메모의 정렬 메뉴에서는 macOS 모양, 휴대폰 메모의 목록 동작 메뉴에서는 iOS 모양으로 표시된 화면](images/ui-menu-variants.jpg '왼쪽은 데스크톱 메모 앱의 정렬과 그룹화 메뉴, 오른쪽은 휴대폰 메모 앱의 목록 동작 메뉴')
+
 `Menu`의 `className`은 위치 조정용으로 유지하고, 데스크톱·휴대폰 모양은 더 이상 `className="touch"`로 선택하지 않는다.
 
 의도적으로 분리한 쌍:

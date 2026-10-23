@@ -142,6 +142,8 @@ Where the same component needs two looks, `variant` chooses. The default is the 
 | `IconButton` | `tool` (default)·`float`·`circle`                           | Already existed                                                                                                                                                   |
 | `Menu`       | `mac` (default)·`ios` (`ios` adds `.touch` from `Menu.css`) | `ios`: Memo phone (list·reading bar, folder picker, folder rows while editing), Finder phone, Music, Photos phone·enlarged view, Safari phone. The rest use `mac` |
 
+![The same Menu component in macOS style for the desktop Memo sort menu and in iOS style for the phone Memo list-actions menu](../images/ui-menu-variants.jpg 'Left: the Sort and Group menu in the desktop Memo app. Right: the list actions menu in the phone Memo app')
+
 `Menu`'s `className` remains for positioning adjustments; the desktop·phone look is no longer chosen with `className="touch"`.
 
 Pairs deliberately kept separate:
