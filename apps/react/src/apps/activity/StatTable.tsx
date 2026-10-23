@@ -86,8 +86,12 @@ const StatTable = ({
 							</th>
 						</tr>
 					</thead>
-					{/* 정렬을 바꾸면 줄이 서서히 다시 놓인다 */}
-					<tbody key={`${sort.key}-${sort.descending}`} className="motion-swap">
+					{/* 정렬을 바꾸면 줄이 서서히 다시 놓인다. 이름이 버튼인 표는 빼는데, 맥 Safari에서 다시 그린 줄의
+					    버튼 글자가 그려지지 않고 사라진다 */}
+					<tbody
+						key={onSelect ? undefined : `${sort.key}-${sort.descending}`}
+						className={onSelect ? undefined : 'motion-swap'}
+					>
 						{shown.map((row) => {
 							const share = total ? row.value / total : 0;
 							return (

@@ -582,8 +582,15 @@ export async function fakeApi(
 		}
 		if (path === '/analytics/live') {
 			if (!state.signedIn) return route.fulfill(unauthorized);
-			state.analyticsQueries.push(new URL(request.url()).search);
-			return route.fulfill({ status: 200, headers: cors(origin), json: state.analyticsLive });
+			const url = new URL(request.url());
+			state.analyticsQueries.push(url.search);
+			// 첫 방문만 최근 30분 안이다
+			const minutes = Number(url.searchParams.get('minutes') ?? 30);
+			return route.fulfill({
+				status: 200,
+				headers: cors(origin),
+				json: minutes > 30 ? state.analyticsLive : state.analyticsLive.slice(0, 1),
+			});
 		}
 		if (path === '/analytics/views') {
 			const app = new URL(request.url()).searchParams.get('app') ?? '';
@@ -1406,6 +1413,38 @@ function fakeAnalyticsLive() {
 				{ type: 'item', app: 'memo', item: 'cra-to-vite', at: '2026-10-07T03:01:00.000Z' },
 				{ type: 'link', app: null, item: 'github.com/hyeoniverse', at: '2026-10-07T03:02:00.000Z' },
 			],
+		},
+		// 30분보다 앞: 같은 IP의 다른 날 방문과 다른 IP
+		{
+			visitId: 'v-2',
+			startedAt: '2026-10-05T11:00:00.000Z',
+			lastAt: '2026-10-05T11:04:00.000Z',
+			visitor: 'c3d4',
+			country: 'KR',
+			device: 'mobile',
+			browser: 'Safari',
+			os: 'iOS',
+			referrer: null,
+			path: '/memo/post-editor',
+			ip: '203.0.113.x',
+			events: [
+				{ type: 'visit', app: null, item: null, at: '2026-10-05T11:00:00.000Z' },
+				{ type: 'item', app: 'memo', item: 'post-editor', at: '2026-10-05T11:04:00.000Z' },
+			],
+		},
+		{
+			visitId: 'v-3',
+			startedAt: '2026-10-04T08:00:00.000Z',
+			lastAt: '2026-10-04T08:00:00.000Z',
+			visitor: 'e5f6',
+			country: 'US',
+			device: 'desktop',
+			browser: 'Firefox',
+			os: 'Windows',
+			referrer: 'www.google.com',
+			path: '/',
+			ip: '198.51.100.x',
+			events: [{ type: 'visit', app: null, item: null, at: '2026-10-04T08:00:00.000Z' }],
 		},
 	];
 }

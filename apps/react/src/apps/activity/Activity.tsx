@@ -23,7 +23,19 @@ import {
 	type Summary,
 	type Totals,
 } from './activityApi';
-import { change, eventLabel, formatDuration, kstToday, labelOf, PERIODS, periodRange, type Period } from './model';
+import {
+	change,
+	eventLabel,
+	formatDuration,
+	kstToday,
+	labelOf,
+	LIVE_RANGES,
+	PERIODS,
+	periodRange,
+	visitsByIp,
+	type LiveMinutes,
+	type Period,
+} from './model';
 import '@/apps/activity/Activity.css';
 import Button from '@/shared/ui/button/Button';
 import TabList from '@/shared/ui/tabs/TabList';
@@ -40,8 +52,9 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number]['id'];
 
-/** 실시간 목록을 다시 묻는 간격 */
+/** 실시간 목록을 다시 묻는 간격. 30분보다 길게 보면 드물게 */
 const LIVE_POLL_MS = 10_000;
+const LIVE_SLOW_POLL_MS = 60_000;
 
 const time = (iso: string) =>
 	new Date(iso).toLocaleTimeString('ko-KR', {
@@ -50,6 +63,13 @@ const time = (iso: string) =>
 		second: '2-digit',
 		hourCycle: 'h23',
 	});
+
+/** 오늘이 아니면 날짜도 (24시간·7일을 볼 때) */
+const when = (iso: string) => {
+	const date = new Date(iso);
+	if (date.toDateString() === new Date().toDateString()) return time(iso);
+	return `${date.getMonth() + 1}/${date.getDate()} ${time(iso)}`;
+};
 
 /** 개요의 숫자 칸: 값과 앞 기간 대비 변화 */
 const Stat = ({
@@ -119,44 +139,58 @@ const Overview = ({ summary }: { summary: Summary }) => {
 	);
 };
 
-const Live = ({ visits }: { visits: LiveVisit[] | null }) => {
+/** 실시간: 가린 IP마다 방문 수(누르면 그 IP의 방문만)와 방문 목록(누르면 흐름) */
+const Live = ({ visits, range }: { visits: LiveVisit[] | null; range: string }) => {
 	const [open, setOpen] = useState<string | null>(null);
+	const [ip, setIp] = useState<string | null>(null);
 	if (!visits) return <EmptyState className="activity-empty">불러오는 중…</EmptyState>;
-	if (!visits.length) return <EmptyState className="activity-empty">최근 30분 동안 방문이 없습니다</EmptyState>;
+	if (!visits.length) return <EmptyState className="activity-empty">최근 {range} 동안 방문이 없습니다</EmptyState>;
+	const shown = ip === null ? visits : visits.filter((visit) => (visit.ip ?? '') === ip);
 	return (
-		<section className="activity-live">
-			<h3>최근 30분 · {visits.length}개 방문</h3>
-			<ul>
-				{visits.map((visit) => (
-					<li key={visit.visitId} className={open === visit.visitId ? 'open' : undefined}>
-						<button
-							type="button"
-							aria-expanded={open === visit.visitId}
-							onClick={() => setOpen(open === visit.visitId ? null : visit.visitId)}
-						>
-							<span className="when">{time(visit.lastAt)}</span>
-							<span>{visit.country ? labelOf('country', visit.country) : '나라 모름'}</span>
-							<span>{visit.device ? labelOf('device', visit.device) : ''}</span>
-							<span>{visit.browser ?? ''}</span>
-							<span>{visit.referrer ?? '직접 들어옴'}</span>
-							<span className="muted">
-								{visit.ip ?? ''} · #{visit.visitor}
-							</span>
-							<span className="count">{visit.events.length}</span>
-						</button>
-						{open === visit.visitId && (
-							<ol aria-label="방문 흐름">
-								{visit.events.map((event, index) => (
-									<li key={index}>
-										<span className="when">{time(event.at)}</span> {eventLabel(event)}
-									</li>
-								))}
-							</ol>
-						)}
-					</li>
-				))}
-			</ul>
-		</section>
+		<>
+			<StatTable
+				title="IP"
+				rows={visitsByIp(visits)}
+				note="마지막 자리를 가린 IP마다 방문 수. 누르면 그 IP의 방문만 아래에 보입니다. 가린 IP는 7일 동안만 둡니다."
+				onSelect={setIp}
+				selected={ip}
+			/>
+			<section className="activity-live">
+				<h3>
+					{ip === null ? `최근 ${range}` : `${ip || '알 수 없음'}`} · {shown.length}개 방문
+				</h3>
+				<ul>
+					{shown.map((visit) => (
+						<li key={visit.visitId} className={open === visit.visitId ? 'open' : undefined}>
+							<button
+								type="button"
+								aria-expanded={open === visit.visitId}
+								onClick={() => setOpen(open === visit.visitId ? null : visit.visitId)}
+							>
+								<span className="when">{when(visit.lastAt)}</span>
+								<span>{visit.country ? labelOf('country', visit.country) : '나라 모름'}</span>
+								<span>{visit.device ? labelOf('device', visit.device) : ''}</span>
+								<span>{visit.browser ?? ''}</span>
+								<span>{visit.referrer ?? '직접 들어옴'}</span>
+								<span className="muted">
+									{visit.ip ?? ''} · #{visit.visitor}
+								</span>
+								<span className="count">{visit.events.length}</span>
+							</button>
+							{open === visit.visitId && (
+								<ol aria-label="방문 흐름">
+									{visit.events.map((event, index) => (
+										<li key={index}>
+											<span className="when">{when(event.at)}</span> {eventLabel(event)}
+										</li>
+									))}
+								</ol>
+							)}
+						</li>
+					))}
+				</ul>
+			</section>
+		</>
 	);
 };
 
@@ -180,6 +214,8 @@ const Activity = () => {
 	const [period, setPeriod] = useState<Period>('7d');
 	const [summary, setSummary] = useState<Summary | null>(null);
 	const [live, setLive] = useState<LiveVisit[] | null>(null);
+	const [liveMinutes, setLiveMinutes] = useState<LiveMinutes>(30);
+	const liveRange = LIVE_RANGES.find(({ minutes }) => minutes === liveMinutes)!;
 	const [resources, setResources] = useState<ResourceStatus | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [reloads, setReloads] = useState(0);
@@ -246,18 +282,18 @@ const Activity = () => {
 		if (!admin || !env.apiUrl || tab !== 'live') return;
 		let alive = true;
 		const load = () =>
-			fetchLive()
+			fetchLive(liveMinutes)
 				.then((next) => alive && setLive(next))
 				.catch(
 					(caught: unknown) => alive && setError(caught instanceof ActivityError ? caught.message : String(caught))
 				);
 		void load();
-		const timer = window.setInterval(load, LIVE_POLL_MS);
+		const timer = window.setInterval(load, liveMinutes > 30 ? LIVE_SLOW_POLL_MS : LIVE_POLL_MS);
 		return () => {
 			alive = false;
 			window.clearInterval(timer);
 		};
-	}, [admin, tab, reloads]);
+	}, [admin, tab, reloads, liveMinutes]);
 
 	// 서버 탭 (관리자): 서버 자원 사용률과 유휴 회수 위험
 	useEffect(() => {
@@ -297,7 +333,7 @@ const Activity = () => {
 		if (tab === 'search' && !admin)
 			return <AdminOnly what="검색어는 누가 무엇을 찾다 들어왔는지 드러날 수 있어 관리자에게만 보입니다." />;
 		if (error) return <EmptyState className="activity-empty error">{error}</EmptyState>;
-		if (tab === 'live') return <Live visits={live} />;
+		if (tab === 'live') return <Live visits={live} range={liveRange.label} />;
 		if (tab === 'server') return <Server status={resources} />;
 		if (!summary) return <EmptyState className="activity-empty">불러오는 중…</EmptyState>;
 		const { breakdown } = summary;
@@ -366,6 +402,25 @@ const Activity = () => {
 				{env.apiUrl && (
 					<div className="activity-toolbar">
 						<TabList className="activity-tabs" label="보기" items={TABS} value={tab} onChange={setTab} />
+						{tab === 'live' && admin && (
+							<label className="activity-period">
+								기간
+								<select
+									value={liveMinutes}
+									onChange={(event) => {
+										// 앞 기간의 목록을 두지 않고 불러오는 중으로
+										setLive(null);
+										setLiveMinutes(Number(event.target.value) as LiveMinutes);
+									}}
+								>
+									{LIVE_RANGES.map(({ minutes, label }) => (
+										<option key={minutes} value={minutes}>
+											{label}
+										</option>
+									))}
+								</select>
+							</label>
+						)}
 						{tab !== 'live' && tab !== 'server' && (
 							<label className="activity-period">
 								기간

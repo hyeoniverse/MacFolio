@@ -1,7 +1,7 @@
 // '활동 상태 보기'의 순수 계산: 기간, 비교, 표에 보이는 이름. 서버 호출은 activityApi.ts
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
 import { cleanUtm, splitUtmKey, type SearchQueryRow } from '@macfolio/contracts';
-import type { Breakdown, LiveVisit } from './activityApi';
+import type { Breakdown, LiveVisit, Row } from './activityApi';
 
 export const PERIODS = [
 	{ id: 'today', label: '오늘', days: 1 },
@@ -10,6 +10,22 @@ export const PERIODS = [
 	{ id: '90d', label: '90일', days: 90 },
 ] as const;
 export type Period = (typeof PERIODS)[number]['id'];
+
+/** 실시간에서 거슬러 볼 기간 (분). 서버는 가린 IP를 7일 동안만 둔다 */
+export const LIVE_RANGES = [
+	{ minutes: 30, label: '30분' },
+	{ minutes: 3 * 60, label: '3시간' },
+	{ minutes: 24 * 60, label: '24시간' },
+	{ minutes: 7 * 24 * 60, label: '7일' },
+] as const;
+export type LiveMinutes = (typeof LIVE_RANGES)[number]['minutes'];
+
+/** 가린 IP마다 방문 수 (많은 순). IP가 지워진 방문은 빈 키 */
+export function visitsByIp(visits: LiveVisit[]): Row[] {
+	const counts = new Map<string, number>();
+	for (const visit of visits) counts.set(visit.ip ?? '', (counts.get(visit.ip ?? '') ?? 0) + 1);
+	return [...counts].map(([key, value]) => ({ key, value })).sort((a, b) => b.value - a.value);
+}
 
 /** 한국 시간의 오늘 (서버의 날짜와 같은 기준) */
 export const kstToday = (now = new Date()) => new Date(now.getTime() + 9 * 3_600_000).toISOString().slice(0, 10);

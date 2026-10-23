@@ -198,6 +198,36 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		]);
 	});
 
+	test('관리자: 실시간 기간을 7일까지 늘리고, IP를 누르면 그 IP의 방문만 본다', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page);
+		await dockItem(page, 'launchpad').click();
+		await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+		const activity = appWindow(page, 'activity');
+		await activity.getByRole('tab', { name: '실시간' }).click();
+		await expect(activity.getByRole('heading', { name: '최근 30분 · 1개 방문' })).toBeVisible();
+
+		await activity.getByLabel('기간').selectOption('7일');
+		await expect(activity.getByRole('heading', { name: '최근 7일 · 3개 방문' })).toBeVisible();
+		expect(api.analyticsQueries.at(-1)).toBe('?minutes=10080');
+		await expect(activity.getByRole('table', { name: 'IP' }).locator('tbody tr')).toHaveText([
+			/^203\.0\.113\.x2/,
+			/^198\.51\.100\.x1/,
+		]);
+
+		await activity.getByRole('table', { name: 'IP' }).getByRole('button', { name: '203.0.113.x' }).click();
+		await expect(activity.getByRole('heading', { name: '203.0.113.x · 2개 방문' })).toBeVisible();
+		const visit = activity.getByRole('button', { name: /모바일.*Safari/ });
+		await visit.click();
+		await expect(activity.getByRole('list', { name: '방문 흐름' }).getByRole('listitem')).toHaveText([
+			/들어옴$/,
+			/메모 › post-editor 보기$/,
+		]);
+		// 다시 누르면 모두
+		await activity.getByRole('table', { name: 'IP' }).getByRole('button', { name: '203.0.113.x' }).click();
+		await expect(activity.getByRole('heading', { name: '최근 7일 · 3개 방문' })).toBeVisible();
+	});
+
 	test('블로그 글 머리에 조회수 (전체 기간). 서버가 없으면 감춘다', async ({ page }) => {
 		await fakeApi(page);
 		await enterDesktop(page, '/memo/cra-to-vite');
