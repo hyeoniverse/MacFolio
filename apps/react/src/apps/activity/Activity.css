@@ -61,6 +61,27 @@
 	font-weight: 600;
 }
 
+/* 도구 막대 오른쪽: 기간과 갱신 상태 */
+.activity-toolbar-end {
+	display: flex;
+	align-items: center;
+	gap: var(--activity-pad);
+}
+
+.activity-refresh {
+	display: flex;
+	align-items: center;
+	gap: var(--activity-row);
+	color: var(--color-secondary-label);
+	/* 시각이 바뀌어도 폭이 흔들리지 않게 */
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+.activity-updated.failed {
+	color: var(--activity-warning);
+}
+
 .activity-period {
 	display: flex;
 	align-items: center;
@@ -425,8 +446,8 @@
 		white-space: nowrap;
 	}
 
-	/* 기간은 탭 줄 아래 오른쪽 끝 (넓은 창에서도 오른쪽 끝이다) */
-	.activity-period {
+	/* 기간과 갱신 상태는 탭 줄 아래 오른쪽 끝 (넓은 창에서도 오른쪽 끝이다) */
+	.activity-toolbar-end {
 		align-self: flex-end;
 	}
 

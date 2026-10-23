@@ -1,3 +1,4 @@
+import type { Page } from '@playwright/test';
 import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
 import { fakeApi } from './fakeApi';
 
@@ -441,5 +442,137 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await expect(tabs.getByRole('tab', { name: '서버' })).toHaveAttribute('aria-selected', 'true');
 		await page.keyboard.press('Home');
 		await expect(overview).toBeFocused();
+	});
+
+	test.describe('값 갱신 (창이 보이는 동안 1분마다, 새로 고침 버튼)', () => {
+		/** 브라우저 탭을 숨기거나 다시 보인다 (다른 탭으로 옮긴 것처럼) */
+		const setHidden = (page: Page, hidden: boolean) =>
+			page.evaluate((value) => {
+				Object.defineProperty(document, 'visibilityState', {
+					configurable: true,
+					get: () => (value ? 'hidden' : 'visible'),
+				});
+				document.dispatchEvent(new Event('visibilitychange'));
+			}, hidden);
+		/** 이 경로로 보낸 요청 수 */
+		const countRequests = (page: Page, path: string) => {
+			const counter = { count: 0 };
+			page.on('request', (request) => {
+				if (new URL(request.url()).pathname === path) counter.count += 1;
+			});
+			return counter;
+		};
+
+		test('1분이 지나면 바뀐 값이 보이고, 고른 정렬은 그대로다. 탭이 숨으면 묻지 않고 다시 보이면 바로 묻는다', async ({
+			page,
+		}) => {
+			await page.clock.install();
+			const api = await fakeApi(page, { signedIn: true });
+			const views = countRequests(page, '/analytics/views');
+			await enterDesktop(page);
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+			const activity = appWindow(page, 'activity');
+			await activity.getByRole('tab', { name: '앱·글' }).click();
+
+			const blog = activity.getByRole('table', { name: '블로그 글 조회수 (전체 기간)' });
+			await expect(blog.locator('tbody tr')).toHaveText([
+				/^CRA에서 Vite로 옮기기42/,
+				/^Markdown 블로그에 글쓰기 붙이기7/,
+			]);
+			await expect(activity.locator('.activity-updated')).toHaveText(/^\d{2}:\d{2}:\d{2} 갱신$/);
+			// 적은 순으로 정렬해 둔다
+			await blog.getByRole('button', { name: '조회' }).click();
+			await expect(blog.locator('tbody tr')).toHaveText([
+				/^Markdown 블로그에 글쓰기 붙이기7/,
+				/^CRA에서 Vite로 옮기기42/,
+			]);
+
+			// 서버의 값이 바뀌었다: 조회수와 이 기간의 앱 열기
+			api.analyticsViews.memo['post-editor'] = 50;
+			(api.analyticsSummary as { breakdown: { app: { key: string; value: number }[] } }).breakdown.app[0].value = 950;
+			const before = views.count;
+			await page.clock.fastForward(30_000);
+			await expect(blog.locator('tbody tr')).toHaveText([
+				/^Markdown 블로그에 글쓰기 붙이기7/,
+				/^CRA에서 Vite로 옮기기42/,
+			]);
+			await page.clock.fastForward(31_000);
+			// 정렬(적은 순)은 그대로, 값만 바뀐다
+			await expect(blog.locator('tbody tr')).toHaveText([
+				/^CRA에서 Vite로 옮기기42/,
+				/^Markdown 블로그에 글쓰기 붙이기50/,
+			]);
+			await expect(blog.locator('th[aria-sort="ascending"]')).toHaveText('조회');
+			await expect(activity.getByRole('table', { name: '앱' })).toContainText('메모950');
+			expect(views.count).toBe(before + 1);
+
+			// 탭이 숨으면 10분이 지나도 묻지 않는다
+			await setHidden(page, true);
+			await page.clock.fastForward(10 * 60_000);
+			expect(views.count).toBe(before + 1);
+			// 다시 보이면 바로 묻는다
+			api.analyticsViews.memo['post-editor'] = 60;
+			await setHidden(page, false);
+			await expect(blog.locator('tbody tr').last()).toHaveText(/^Markdown 블로그에 글쓰기 붙이기60/);
+			expect(views.count).toBe(before + 2);
+		});
+
+		test('새로 고침 버튼(⌥R)은 바로 다시 묻는다. 실시간에서 펼친 방문은 펼친 채로 남는다', async ({ page }) => {
+			const api = await fakeApi(page, { signedIn: true });
+			await enterDesktop(page);
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+			const activity = appWindow(page, 'activity');
+			await expect(activity.locator('.activity-stats')).toContainText('방문1,284');
+
+			const summary = api.analyticsSummary as { totals: { visits: number } };
+			summary.totals.visits = 1300;
+			await activity.getByRole('button', { name: '새로 고침' }).click();
+			await expect(activity.locator('.activity-stats')).toContainText('방문1,300');
+
+			summary.totals.visits = 1310;
+			await page.keyboard.press('Alt+KeyR');
+			await expect(activity.locator('.activity-stats')).toContainText('방문1,310');
+
+			// 실시간: 방문을 펼친 뒤 새 이벤트가 오면 흐름이 늘고, 펼친 상태는 그대로
+			await activity.getByRole('tab', { name: '실시간' }).click();
+			const visit = activity.getByRole('button', { name: /대한민국 \(KR\).*github\.com.*203\.0\.113\.x/ });
+			await visit.click();
+			const flow = activity.getByRole('list', { name: '방문 흐름' }).getByRole('listitem');
+			await expect(flow).toHaveCount(4);
+			const live = api.analyticsLive[0] as { events: Record<string, unknown>[] };
+			live.events.push({ type: 'app', app: 'music', item: null, at: live.events.at(-1)!.at });
+			await activity.getByRole('button', { name: '새로 고침' }).click();
+			await expect(flow).toHaveCount(5);
+			await expect(visit).toHaveAttribute('aria-expanded', 'true');
+		});
+
+		test('창을 최소화하면 묻지 않는다', async ({ page }) => {
+			await page.clock.install();
+			await fakeApi(page, { signedIn: true });
+			const summaries = countRequests(page, '/analytics/summary');
+			await enterDesktop(page);
+			await dockItem(page, 'launchpad').click();
+			await page.locator('.launchpad-modal').getByRole('button', { name: 'activity', exact: true }).click();
+			const activity = appWindow(page, 'activity');
+			await expect(activity.locator('.activity-updated')).toHaveText(/갱신$/);
+			await activity.getByRole('button', { name: '최소화', exact: true }).click();
+			const before = summaries.count;
+			// 메뉴 막대의 배터리는 10분마다 묻는다: 그보다 짧게 본다
+			await page.clock.fastForward(5 * 60_000);
+			expect(summaries.count).toBe(before);
+		});
+
+		test('메모: 창이 보이는 동안 1분마다 글의 조회수를 다시 묻는다', async ({ page }) => {
+			await page.clock.install();
+			const api = await fakeApi(page);
+			await enterDesktop(page, '/memo/cra-to-vite');
+			const memo = appWindow(page, 'memo');
+			await expect(memo.locator('.memo-reader-date')).toContainText('조회 42');
+			api.analyticsViews.memo['cra-to-vite'] = 43;
+			await page.clock.fastForward(61_000);
+			await expect(memo.locator('.memo-reader-date')).toContainText('조회 43');
+		});
 	});
 });
