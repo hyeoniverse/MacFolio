@@ -41,8 +41,8 @@ const PrivacyPane = () => {
 				<div>
 					<strong>개인정보 보호</strong>
 					<p>
-						이 사이트가 무엇을 모으고 얼마나 두는지, 글을 쓸 때 사람인지 확인할지 정합니다. 방문 분석은 쿠키 없이 하루
-						단위로만 셉니다.{' '}
+						이 사이트가 수집하는 정보와 보관 기간을 확인하고, 글을 작성할 때 사람인지 확인할지 설정합니다. 방문 분석은
+						쿠키 없이 일 단위로만 집계합니다.{' '}
 						<Button
 							className="privacy-more"
 							onClick={() => {
@@ -112,7 +112,7 @@ const PrivacyPane = () => {
 							<strong>방문 분석</strong>
 							<span>
 								{tracking
-									? '쿠키 없이 하루 단위로 셉니다'
+									? '쿠키 없이 일 단위로 집계합니다'
 									: '이 브라우저는 세지 않습니다 (Global Privacy Control, 로컬 주소 또는 서버 없음)'}
 							</span>
 						</span>

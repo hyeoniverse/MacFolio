@@ -95,7 +95,7 @@ test.describe('이 Mac에 관하여', () => {
 		await expect(about).toBeHidden();
 		const editor = appWindow(page, 'textedit');
 		await expect(editor.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
-			'개인정보: 무엇을 모으고 얼마나 두나'
+			'개인정보: 수집 항목과 보관 기간'
 		);
 	});
 

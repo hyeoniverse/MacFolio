@@ -643,7 +643,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [성능 측정](docs/performance.md): Lighthouse 측정 조건과 결과, 느린 원인과 고친 것, 다시 재는 방법
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
-- [개인정보 처리](docs/privacy.md): 무엇을 어떻게 저장하고 언제 지우는지
+- [개인정보 처리](docs/privacy.md): 수집 항목, 저장 방식, 보관 기간
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
 - 개발기: 사이트의 메모 앱 → 개발기 폴더 (`apps/react/src/apps/memo/content/`)
 

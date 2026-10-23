@@ -157,7 +157,7 @@ test.describe('트래픽 분석 수집 (#102)', () => {
 		await menu.getByRole('menuitem', { name: '개인정보 처리 방침' }).click();
 		const editor = appWindow(page, 'textedit');
 		await expect(editor.getByRole('article', { name: 'privacy.md' }).getByRole('heading', { level: 1 })).toHaveText(
-			'개인정보: 무엇을 모으고 얼마나 두나'
+			'개인정보: 수집 항목과 보관 기간'
 		);
 	});
 });
