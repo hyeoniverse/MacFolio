@@ -13,6 +13,7 @@ import {
 } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { AdminGuard } from '../auth/admin.guard.js';
+import { AdminIpService } from '../auth/admin-ip.service.js';
 import { AuthService } from '../auth/auth.service.js';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { AnalyticsRecorder } from './analytics-recorder.service.js';
@@ -31,7 +32,8 @@ export class AnalyticsController {
 		private readonly recorder: AnalyticsRecorder,
 		private readonly stats: AnalyticsStats,
 		private readonly search: SearchKeywordsService,
-		private readonly auth: AuthService
+		private readonly auth: AuthService,
+		private readonly adminIps: AdminIpService
 	) {}
 
 	@Post('events')
@@ -56,16 +58,22 @@ export class AnalyticsController {
 		description:
 			'navigator.sendBeacon이 text/plain(JSON 글자)으로 보낸다 (CORS 사전 요청이 없다). type: visit, app, item, link, leave. 한 번에 30개까지',
 	})
-	@ApiNoContentResponse({ description: '받았다. 로봇과 관리자 세션은 저장하지 않는다' })
+	@ApiNoContentResponse({
+		description:
+			'받았다. 로봇, 관리자 세션, 관리자가 쓰는 IP(최근 30일 안에 관리자로 인증된 IP)에서 온 것은 저장하지 않는다',
+	})
 	@ApiBadRequestResponse({ description: '형식이 틀렸다 (하나라도 틀리면 전부 거절)' })
 	@ApiTooManyRequestsResponse({ description: 'IP마다 1분에 30번까지' })
 	async events(@Body() body: unknown, @Req() request: Request) {
+		const ip = request.ip ?? '';
+		// 관리자 세션이 있거나, 로그인하지 않았어도 관리자가 쓰는 IP면 세지 않는다
 		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
+		if (admin) await this.adminIps.remember(ip);
 		await this.recorder.record(body, {
-			ip: request.ip ?? '',
+			ip,
 			userAgent: request.headers['user-agent'],
 			country: request.headers['cf-ipcountry'],
-			admin: !!admin,
+			admin: !!admin || (await this.adminIps.isAdminIp(ip)),
 		});
 	}
 

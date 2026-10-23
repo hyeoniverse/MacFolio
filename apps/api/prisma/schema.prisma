@@ -25,6 +25,16 @@ model AdminSession {
   @@index([expiresAt])
 }
 
+/// 관리자가 쓰는 IP: 관리자로 인증된 요청의 IP를 HMAC으로만 둔다 (원래 IP는 두지 않는다).
+/// 이 IP에서 온 방문은 로그인하지 않았어도 활동 상태 보기에 세지 않는다. 마지막으로 본 지 30일이 지나면 지운다
+model AdminIp {
+  /// HMAC-SHA256(IP_HASH_SECRET, "admin-ip:" + IP) (hex)
+  ipHash     String   @id
+  lastSeenAt DateTime
+
+  @@index([lastSeenAt])
+}
+
 /// 메모(블로그) 정리 내용: 만든 폴더, 옮긴 글·폴더, 고정. 글은 저장소의 Markdown 파일이고, 이 정리 내용을 겹쳐 보여 준다.
 /// 한 행만 쓴다 (id = 1). 관리자만 바꾼다
 model MemoOrganization {

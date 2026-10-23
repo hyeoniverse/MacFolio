@@ -24,6 +24,7 @@ import {
 import type { CookieOptions, Request, Response } from 'express';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { AdminGuard, CurrentAdmin } from './admin.guard.js';
+import { AdminIpService } from './admin-ip.service.js';
 import { type AdminIdentity, AuthService } from './auth.service.js';
 import { safeEqual, SESSION_COOKIE, SESSION_TTL_MS, STATE_COOKIE, STATE_TTL_MS, randomToken } from './session.js';
 import { RateLimit } from '../common/rate-limit.js';
@@ -49,6 +50,7 @@ export class AdminResponse {
 export class AuthController {
 	constructor(
 		private readonly auth: AuthService,
+		private readonly adminIps: AdminIpService,
 		@Inject(APP_CONFIG) private readonly config: AppConfig
 	) {}
 
@@ -96,6 +98,8 @@ export class AuthController {
 		const session = await this.auth.signIn(code);
 		if (!session) return this.backToFrontend(response, 'denied');
 		response.cookie(SESSION_COOKIE, session.token, this.cookie(SESSION_TTL_MS));
+		// 로그인한 IP는 관리자가 쓰는 IP (그 IP의 방문은 세지 않는다)
+		await this.adminIps.remember(request.ip ?? '');
 		this.backToFrontend(response, 'signed-in');
 	}
 
