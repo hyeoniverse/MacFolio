@@ -7,7 +7,7 @@
 - 1차: [#319](https://github.com/hyeoniverse/MacFolio/pull/319)
 - 2차·3차: [#323](https://github.com/hyeoniverse/MacFolio/pull/323)
 - 재측정과 4차: 2026년 10월 23일 ([#338](https://github.com/hyeoniverse/MacFolio/pull/338)). 3차까지 배포된 운영 사이트를 처음 측정했고, 그 사이 늘어난 첫 번들을 다시 줄였다
-- 5차: 2026년 10월 23일 ([#PRNUM](https://github.com/hyeoniverse/MacFolio/pull/PRNUM)). 휴대폰 LCP가 4초대로 다시 집계되던 원인을 찾아 해결하고, CI에 [성능 예산](#성능-예산)을 추가했다
+- 5차: 2026년 10월 23일 ([#367](https://github.com/hyeoniverse/MacFolio/pull/367)). 휴대폰 LCP가 4초대로 다시 집계되던 원인을 찾아 해결하고, CI에 [성능 예산](#성능-예산)을 추가했다
 
 ## 요약
 
@@ -293,7 +293,7 @@ node scripts/perf/measure.mjs http://localhost:4810 perf.json 5
 
 위 [4차: 재측정에서 찾은 것](#4차-재측정에서-찾은-것) 참고. 명언 위젯을 `React.lazy`로 분리해 `boot` 번들을 압축 65KB에서 47KB로 되돌렸다.
 
-### 5차 (#PRNUM)
+### 5차 (#367)
 
 위 [5차: LCP 재집계 해결과 성능 예산](#5차-lcp-재집계-해결과-성능-예산) 참고.
 

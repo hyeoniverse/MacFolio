@@ -7,7 +7,7 @@ A record of measuring the first-visit performance of the site (macfolio.hyeonive
 - Round 1: [#319](https://github.com/hyeoniverse/MacFolio/pull/319)
 - Rounds 2 and 3: [#323](https://github.com/hyeoniverse/MacFolio/pull/323)
 - Re-measurement and Round 4: October 23, 2026 ([#338](https://github.com/hyeoniverse/MacFolio/pull/338)). The first measurement of production with Rounds 1–3 deployed, and a fix for the initial bundle that had grown again in the meantime
-- Round 5: October 23, 2026 ([#PRNUM](https://github.com/hyeoniverse/MacFolio/pull/PRNUM)). Found and fixed why phone LCP was sometimes counted again in the 4-second range, and added a [performance budget](#performance-budget) to CI
+- Round 5: October 23, 2026 ([#367](https://github.com/hyeoniverse/MacFolio/pull/367)). Found and fixed why phone LCP was sometimes counted again in the 4-second range, and added a [performance budget](#performance-budget) to CI
 
 ## Summary
 
@@ -293,7 +293,7 @@ The desktop renders during the 2.5 seconds the progress bar fills after the tap,
 
 See [Round 4: what the re-measurement found](#round-4-what-the-re-measurement-found) above. Splitting the quote widget with `React.lazy` brought the `boot` bundle back from 65KB to 47KB compressed.
 
-### Round 5 (#PRNUM)
+### Round 5 (#367)
 
 See [Round 5: fixing the LCP recount and a performance budget](#round-5-fixing-the-lcp-recount-and-a-performance-budget) above.
 

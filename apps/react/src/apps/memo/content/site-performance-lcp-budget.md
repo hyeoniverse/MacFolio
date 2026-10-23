@@ -5,7 +5,7 @@ category: 개발기/MacFolio/프론트엔드
 summary: 로컬 휴대폰 LCP가 회차마다 3.3초와 4.6초로 갈리던 원인은 글꼴이 아니라 #boot-splash를 삭제하는 시각이었다. 로딩 화면을 누를 때까지 남겨 4초대 회차를 없앴고, 첫 방문 번들 크기에 CI 상한을 걸었다.
 ---
 
-[성능 재측정](/memo/site-performance-remeasure)에서 풀지 못한 과제가 둘 남았다. 하나는 로컬 Lighthouse 휴대폰 측정의 LCP[^lcp]가 회차마다 3.3초와 4.5초로 갈리는 문제, 다른 하나는 기능을 추가하다 첫 번들이 다시 커지는 회귀를 측정 전에 막는 방법이다. 두 과제를 [#PRNUM](https://github.com/hyeoniverse/MacFolio/pull/PRNUM)에서 함께 처리했다. 같은 PR에서 휴대폰 로딩 화면 아래로 배경화면이 비치던 문제도 고쳤다.
+[성능 재측정](/memo/site-performance-remeasure)에서 풀지 못한 과제가 둘 남았다. 하나는 로컬 Lighthouse 휴대폰 측정의 LCP[^lcp]가 회차마다 3.3초와 4.5초로 갈리는 문제, 다른 하나는 기능을 추가하다 첫 번들이 다시 커지는 회귀를 측정 전에 막는 방법이다. 두 과제를 [#367](https://github.com/hyeoniverse/MacFolio/pull/367)에서 함께 처리했다. 같은 PR에서 휴대폰 로딩 화면 아래로 배경화면이 비치던 문제도 고쳤다.
 
 결론부터 적는다.
 
