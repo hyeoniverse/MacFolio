@@ -23,7 +23,7 @@
 	overflow-y: auto;
 }
 
-/* 사진은 상태 표시줄 뒤까지 깔린다 (앱은 화면 맨 위부터 그린다). 상태 표시줄 글자 색은 밑의 실제 화면(어두운 제목 띠)을 읽어 정한다 */
+/* 상태 표시줄 글자 색은 밑의 실제 화면(상태 표시줄 자리)을 읽어 정한다 */
 
 /* ─── 큰 제목 ─── */
 .photos-phone-title {
@@ -52,7 +52,7 @@
 	position: sticky;
 	top: 0;
 	z-index: 1;
-	margin-bottom: calc(-86px - var(--mobile-statusbar-height));
+	margin-bottom: -86px;
 	padding-bottom: 26px;
 	background: linear-gradient(var(--color-scrim-strong), var(--color-scrim) 60%, transparent);
 	pointer-events: none;
@@ -110,7 +110,7 @@
 }
 
 .photos-phone-group:first-of-type h3 {
-	padding-top: calc(96px + var(--mobile-statusbar-height));
+	padding-top: 96px;
 }
 
 .photos-phone-group h3 button {

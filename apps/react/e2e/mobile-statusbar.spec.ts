@@ -20,58 +20,35 @@ async function openFromHome(page: Page, label: string) {
 }
 
 /**
- * 상태 표시줄과 겹치는 버튼·링크·입력 칸을 찾는다. 스크롤을 모두 맨 위로 올리고,
- * 겹친 곳의 가운데에서 상태 표시줄을 뺀 가장 위의 요소가 그 안에 있는 것만 (다른 것에 덮인 것은 뺀다)
+ * 상태 표시줄과 겹쳐 보이는 앱의 요소. 앱 화면은 상태 표시줄 아래에서 시작하므로 없어야 한다.
+ * 스크롤되는 칸을 모두 맨 위로 올린 때와 중간까지 내린 때를 함께 본다 (내용이 상태 표시줄 밑으로 지나가지 않는지).
+ * 앱 화면 밖으로 잘려 안 보이는 것은 세지 않는다
  */
-const underStatusBar = (page: Page) =>
-	page.evaluate(() => {
-		for (const el of document.querySelectorAll<HTMLElement>('*')) if (el.scrollTop > 0) el.scrollTop = 0;
-		const statusBar = document.querySelector('.mobile-statusbar')!;
-		const bar = statusBar.getBoundingClientRect();
-		const found: { name: string; x: number; y: number }[] = [];
-		const selector = 'button, a[href], input, select, textarea, [role="button"], [role="tab"], [role="link"]';
-		for (const el of document.querySelectorAll<HTMLElement>(`[data-app] :is(${selector})`)) {
-			const rect = el.getBoundingClientRect();
-			if (!rect.width || !rect.height || rect.top >= bar.bottom || rect.bottom <= 0) continue;
-			const style = getComputedStyle(el);
-			if (style.visibility === 'hidden' || style.opacity === '0' || el.matches(':disabled')) continue;
-			const x = rect.left + rect.width / 2;
-			const y = (Math.max(rect.top, 0) + Math.min(rect.bottom, bar.bottom)) / 2;
-			const below = document.elementsFromPoint(x, y).find((hit) => !statusBar.contains(hit));
-			if (!below || !el.contains(below)) continue;
-			found.push({ name: (el.getAttribute('aria-label') || el.textContent || el.tagName).trim().slice(0, 40), x, y });
+const overlappingStatusBar = (page: Page) =>
+	page.evaluate(async () => {
+		const bar = document.querySelector('.mobile-statusbar')!.getBoundingClientRect();
+		const frame = document.querySelector<HTMLElement>('.container.mobile[data-app]')!;
+		const scrollers = [...frame.querySelectorAll<HTMLElement>('*')].filter(
+			(el) => el.scrollHeight > el.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(el).overflowY)
+		);
+		const found = new Set<string>();
+		for (const ratio of [0, 0.5]) {
+			for (const el of scrollers) el.scrollTop = (el.scrollHeight - el.clientHeight) * ratio;
+			await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+			for (const el of frame.querySelectorAll<HTMLElement>('.content *')) {
+				const rect = el.getBoundingClientRect();
+				if (!rect.width || !rect.height || rect.top >= bar.bottom) continue;
+				// 잘려서 보이지 않는 부분은 빼고 본다: 보이는 위쪽 끝을 elementFromPoint로 확인
+				const x = Math.min(Math.max(rect.left + rect.width / 2, 1), innerWidth - 1);
+				const y = Math.max(rect.top, 0) + 1;
+				if (y >= bar.bottom) continue;
+				const hit = document.elementsFromPoint(x, y).find((other) => !other.closest('.mobile-statusbar'));
+				if (hit && el.contains(hit) && frame.contains(hit))
+					found.add(`${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]}`);
+			}
 		}
-		return found;
+		return [...found];
 	});
-
-/**
- * 상태 표시줄 밑의 버튼마다 그 자리를 탭해, 상태 표시줄이 아니라 그 버튼이 눌리는지 본다.
- * 눌린 것은 window의 capture 단계에서 기록하고 멈춰 화면이 바뀌지 않게 한다. 눌리지 않은 버튼의 이름을 돌려준다
- */
-async function unreachableUnderStatusBar(page: Page) {
-	const targets = await underStatusBar(page);
-	await page.evaluate(() => {
-		const hits: string[] = [];
-		const record = (event: MouseEvent) => {
-			const target = event.target as HTMLElement;
-			if (target.closest('.mobile-statusbar')) return;
-			hits.push((target.getAttribute('aria-label') || target.textContent || target.tagName).trim().slice(0, 40));
-			event.stopImmediatePropagation();
-			event.preventDefault();
-		};
-		window.addEventListener('click', record, true);
-		Object.assign(window, { __hits: hits, __stopRecording: () => window.removeEventListener('click', record, true) });
-	});
-	const missed: string[] = [];
-	for (const target of targets) {
-		const before = await page.evaluate(() => (window as unknown as { __hits: string[] }).__hits.length);
-		await page.touchscreen.tap(target.x, target.y);
-		const hits = await page.evaluate(() => (window as unknown as { __hits: string[] }).__hits);
-		if (hits.length === before || hits.at(-1) !== target.name) missed.push(target.name);
-	}
-	await page.evaluate(() => (window as unknown as { __stopRecording: () => void }).__stopRecording());
-	return { count: targets.length, missed };
-}
 
 // 홈 화면의 앱 (프로젝트 소개와 Safari는 바깥 페이지를 품어 뺀다)
 const APPS = [
@@ -92,30 +69,32 @@ const APPS = [
 ];
 
 for (const label of APPS) {
-	test(`상태 표시줄: ${label}의 첫 화면을 맨 위까지 올렸을 때 상태 표시줄 밑의 버튼도 눌린다`, async ({ page }) => {
+	test(`상태 표시줄: ${label}의 화면은 상태 표시줄 아래에서 시작하고, 스크롤해도 그 밑으로 지나가지 않는다`, async ({
+		page,
+	}) => {
 		await fakeApi(page, { signedIn: true });
 		await openFromHome(page, label);
 		await page.waitForTimeout(800);
-		expect((await unreachableUnderStatusBar(page)).missed).toEqual([]);
+		const bar = await page.locator('.mobile-statusbar').boundingBox();
+		const content = await page.locator('.container.mobile[data-app] > .content').boundingBox();
+		expect(content!.y).toBeGreaterThanOrEqual(bar!.y + bar!.height - 0.5);
+		expect(await overlappingStatusBar(page)).toEqual([]);
 	});
 }
 
-test('상태 표시줄: 사진 첫 줄은 상태 표시줄 밑을 눌러도 열리고, 밑이 빈 곳이면 제어 센터가 열린다', async ({
-	page,
-}) => {
+test('상태 표시줄: 사진만 보기에서는 상태 표시줄이 숨고 사진이 화면 맨 위부터 쓴다', async ({ page }) => {
 	await fakeApi(page);
 	await openFromHome(page, '사진');
-	await page.waitForTimeout(800);
-	const targets = await underStatusBar(page);
-	// 사진은 상태 표시줄 뒤까지 깔린다 (첫 줄 위쪽이 상태 표시줄 밑에 있다)
-	expect(targets.length).toBeGreaterThan(0);
-	await page.touchscreen.tap(targets[0].x, targets[0].y);
-	await expect(page.getByRole('dialog', { name: /^사진 1\// })).toBeVisible();
-	await expect(page.getByRole('dialog', { name: '제어 센터' })).toBeHidden();
-
-	await openFromHome(page, '메모');
-	await page.getByRole('button', { name: '제어 센터 열기' }).tap();
-	await expect(page.getByRole('dialog', { name: '제어 센터' })).toBeVisible();
+	// 영상이 아닌 사진을 연다 (영상 위의 탭은 재생에 쓴다). 보관함은 맨 아래(최근)부터 보인다
+	await page.locator('.photos-thumb:not(:has(video))').last().tap();
+	const viewer = page.getByRole('dialog', { name: /^사진 \d+\// });
+	await expect(viewer).toBeVisible();
+	// 사진을 누르면 화면만 보기
+	await viewer.locator('.photos-phone-stage').tap();
+	await expect(page.locator('.mobile-statusbar')).toHaveClass(/hidden/);
+	await expect
+		.poll(async () => (await page.locator('.container.mobile[data-app="photos"] > .content').boundingBox())!.y)
+		.toBe(0);
 });
 
 test('팁 (휴대폰): 위쪽 막대 대신 떠 있는 뒤로 가기로 앞 화면에 돌아간다', async ({ page }) => {
@@ -125,7 +104,7 @@ test('팁 (휴대폰): 위쪽 막대 대신 떠 있는 뒤로 가기로 앞 화�
 	await expect(tips.locator('.tips-bar')).toHaveCount(0);
 	await tips.getByRole('list', { name: '사용 설명서' }).getByRole('button').first().tap();
 	await expect(tips.locator('.tips-home')).toHaveCount(0);
-	expect((await unreachableUnderStatusBar(page)).missed).toEqual([]);
+	expect(await overlappingStatusBar(page)).toEqual([]);
 	await page.locator('.mobile-navbar').getByRole('button', { name: '팁' }).tap();
 	await expect(tips.locator('.tips-home')).toBeVisible();
 	// 첫 화면에서는 홈 화면으로 가는 버튼

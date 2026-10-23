@@ -452,7 +452,7 @@
 
 /* 휴대폰: 제목 막대도 홈으로 가는 버튼도 없다 (iOS의 탭으로 나눈 앱처럼). 탭 줄과 기간 줄은 카드와 같은 좌우 16px에 맞춘다 */
 .container.mobile .activity-toolbar {
-	padding: calc(var(--activity-pad) + var(--phone-status)) var(--activity-gap) var(--activity-pad);
+	padding: var(--activity-pad) var(--activity-gap);
 }
 
 .container.mobile .activity-tabs button {

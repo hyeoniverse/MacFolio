@@ -3,7 +3,6 @@ import { batteryOf, useServerResources } from '@/apps/activity/useServerResource
 import { useVisitTrend, visitBattery } from '@/apps/activity/useVisitTrend';
 import type { StatusBarTone } from '@/desktop/mobile/statusBarTone';
 import ServerSignal from '@/shared/server/ServerSignal';
-import { activate, interactiveUnder } from '@/desktop/mobile/statusBarTap';
 import { useServerStatus } from '@/shared/server/serverStatus';
 
 const formatClock = (date: Date) => `${date.getHours() % 12 || 12}:${String(date.getMinutes()).padStart(2, '0')}`;
@@ -29,7 +28,7 @@ interface Props {
 }
 
 /**
- * iOS 상태 표시줄 (시간, 신호, Wi-Fi, 배터리). 빈 곳을 누르면 제어 센터를 열고, 밑에 앱의 버튼이 있으면 그 버튼을 누른다 (statusBarTap.ts).
+ * iOS 상태 표시줄 (시간, 신호, Wi-Fi, 배터리). 누르면 제어 센터를 연다.
  * 끌어내려 여는 동작은 화면 어디서나 되도록 MobileShell이 듣는다 (useVerticalSwipe).
  */
 const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) => {
@@ -51,16 +50,7 @@ const MobileStatusBar = ({ ref, tone, onApp, hidden = false, onOpen }: Props) =>
 			aria-hidden={hidden || undefined}
 			role="button"
 			aria-label="제어 센터 열기"
-			onClick={(event) => {
-				// 앱 위에 겹쳐 있으므로, 누른 자리 밑에 앱의 버튼·링크·입력 칸이 있으면 그것을 누른다. 빈 곳이면 제어 센터.
-				// 키보드로 누른 것(detail 0)은 자리가 없으니 제어 센터
-				const under =
-					event.detail > 0
-						? interactiveUnder(document.elementsFromPoint(event.clientX, event.clientY), event.currentTarget)
-						: null;
-				if (under) activate(under);
-				else onOpen();
-			}}
+			onClick={onOpen}
 		>
 			<time className="mobile-statusbar-time" dateTime={now.toISOString()}>
 				{formatClock(now)}

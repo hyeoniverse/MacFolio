@@ -324,11 +324,6 @@
 		flex-direction: column;
 	}
 
-	/* 휴대폰 화면: 상태 표시줄이 앱 위에 겹치므로 그만큼 내린다 */
-	.container.mobile .bin-body {
-		padding-top: var(--phone-status);
-	}
-
 	.bin-sidebar {
 		flex-direction: row;
 		align-items: center;

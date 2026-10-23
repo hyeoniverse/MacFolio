@@ -256,8 +256,27 @@
 	border: none;
 	border-radius: 0;
 	box-shadow: none;
-	/* 상태 표시줄은 앱 위에 투명하게 겹친다: 앱은 화면 맨 위부터 그리고, 앱의 첫 줄과 스크롤 내용이 --phone-top으로 그 높이를 비운다 */
 	overflow: hidden;
+}
+
+/* 상태 표시줄 자리 (MobileAppFrame의 .mobile-statusbar-space): 앱 화면은 그 아래에서 시작한다 (iOS의 안전 영역처럼).
+   상태 표시줄은 이 띠 위에만 있고 앱 내용과 겹치지 않아, 앱마다 그 높이를 비울 필요가 없고 그 밑에 버튼이 깔리지도 않는다.
+   띠는 앱 화면 맨 윗줄의 색으로 칠한다 (MobileShell이 읽어 --phone-statusbar-fill에 넣는다, statusBarTone.ts). 읽기 전에는 앱 바탕색.
+   화면만 보기(사진만 보기)에서는 상태 표시줄이 숨으므로 띠를 접고 앱이 화면 맨 위부터 쓴다 */
+.container.mobile > .mobile-statusbar-space {
+	flex: none;
+	height: var(--mobile-statusbar-height);
+	background-color: var(--phone-statusbar-fill, transparent);
+	transition: height var(--duration) var(--ease-out);
+}
+
+.container.mobile.immersive > .mobile-statusbar-space {
+	height: 0;
+}
+
+/* 떠 있는 뒤로 가기도 상태 표시줄 아래에서 */
+.container.mobile:not(.immersive) > .mobile-navbar:not(.bottom) {
+	top: var(--mobile-statusbar-height);
 }
 
 .container.mobile .content {
@@ -349,13 +368,11 @@
 }
 
 /* 큰 제목 (iOS의 Large Title): 떠 있는 뒤로 가기와 같은 줄, 그 오른쪽에 둔다.
-   화면은 위 여백을 --phone-top(상태 표시줄 + 뒤로 가기의 위 여백)만 두고, 제목 줄의 높이를 뒤로 가기(44px)에 맞춘다.
-   상태 표시줄은 겹쳐 그리므로(투명), --phone-top을 스크롤 내용의 위 여백으로 쓰면 내용이 상태 표시줄 밑으로 스크롤된다.
+   화면은 위 여백을 --phone-top(뒤로 가기의 위 여백)만 두고, 제목 줄의 높이를 뒤로 가기(44px)에 맞춘다.
    뒤로 가기는 왼쪽 16~60px, 화면의 옆 여백이 16px이라 제목은 그 안에서 64px 띄운다 (버튼과 20px 사이) */
 .container.mobile[data-app] {
-	/* 상태 표시줄 높이 (앱 위에 겹친다). 첫 줄을 이만큼 내린다 */
-	--phone-status: var(--mobile-statusbar-height);
-	--phone-top: calc(var(--phone-status) + 6px);
+	/* 앱 화면 맨 위에서 첫 줄(떠 있는 뒤로 가기와 큰 제목)까지. 앱 화면은 상태 표시줄 아래에서 시작한다 */
+	--phone-top: 6px;
 	/* 홈 바(떠 있다)의 높이: 아래에 떠 있는 버튼·입력 칸은 이만큼 올려 홈 바와 겹치지 않게 한다 */
 	--phone-bottom-inset: calc(22px + env(safe-area-inset-bottom));
 }
@@ -393,7 +410,7 @@
 	font-size: var(--text-title3);
 }
 
-/* 앱 바탕: 회색 바탕이 상태 표시줄 뒤까지 잇는다.
+/* 앱 바탕: 회색 바탕이 상태 표시줄 자리까지 잇는다.
    흰 바탕인 읽기 화면(메모 본문, 메일 읽기)과 메시지·음악(iOS도 흰 바탕)은 흰색 */
 .container.mobile[data-app] {
 	background-color: var(--phone-page-bg);

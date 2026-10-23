@@ -377,7 +377,7 @@ test.describe('모바일', () => {
 		await expect(memo.getByRole('region', { name: '글 목록' })).toBeVisible();
 	});
 
-	test('상태 표시줄은 앱 위에 투명하게 겹친다: 앱은 화면 맨 위부터 그리고, 첫 줄과 떠 있는 버튼은 그 아래에서', async ({
+	test('앱 화면은 상태 표시줄 아래에서 시작한다: 상태 표시줄 자리는 앱 첫 줄의 색으로 칠하고, 첫 줄과 떠 있는 버튼은 그 아래에서', async ({
 		page,
 	}) => {
 		await enterHome(page);
@@ -386,8 +386,18 @@ test.describe('모바일', () => {
 		const statusBar = page.locator('.mobile-statusbar');
 		const bar = (await statusBar.boundingBox())!;
 		expect(await statusBar.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe('rgba(0, 0, 0, 0)');
-		// 앱 내용은 상태 표시줄 밑(화면 맨 위)부터
-		expect((await memo.locator('.content').boundingBox())!.y).toBe(0);
+		// 앱 내용은 상태 표시줄 아래부터 (그 밑으로 깔리지 않는다)
+		expect((await memo.locator('.content').boundingBox())!.y).toBe(bar.y + bar.height);
+		// 상태 표시줄 자리는 앱 첫 줄(목록 화면의 회색 바탕)과 같은 색
+		const space = memo.locator('.mobile-statusbar-space');
+		await expect
+			.poll(() => space.evaluate((el) => getComputedStyle(el).backgroundColor))
+			.toBe(
+				await memo
+					.locator('.content > *')
+					.first()
+					.evaluate((el) => getComputedStyle(el).backgroundColor)
+			);
 		// 뒤로 가기, 오른쪽 위 버튼, 큰 제목은 상태 표시줄 아래
 		for (const element of [
 			memo.locator('.mobile-navbar-home'),
@@ -438,9 +448,10 @@ test.describe('모바일', () => {
 		const safari = appWindow(page, 'safari');
 		const pageBox = (await safari.locator('.safari-page').boundingBox())!;
 		const { height } = page.viewportSize()!;
-		// 위 도구 막대·탭 막대 없이 페이지가 화면 맨 위부터 끝까지, 상태 표시줄은 그 위에서 약하게 흐린다
-		expect(pageBox.y).toBe(0);
-		expect(pageBox.height).toBe(height);
+		// 위 도구 막대·탭 막대 없이 페이지가 상태 표시줄 아래부터 화면 끝까지
+		const bar = (await page.locator('.mobile-statusbar').boundingBox())!;
+		expect(pageBox.y).toBe(bar.y + bar.height);
+		expect(pageBox.height).toBe(height - bar.y - bar.height);
 		await expect(safari.locator('.safari-toolbar, .safari-tabs')).toHaveCount(0);
 		expect(await page.locator('.mobile-statusbar').evaluate((el) => getComputedStyle(el).backdropFilter)).toContain(
 			'blur'
