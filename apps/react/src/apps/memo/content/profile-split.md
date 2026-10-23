@@ -112,6 +112,6 @@ pnpm cycles        # madge로 순환 import가 없는지
 - [1,861줄짜리 데모 파일을 데모마다 한 파일로](/memo/split-creative-demos)
 - [코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing)
 
-#MacFolio #리팩터링 #TypeScript
-
 [^resolution]: 디렉터리를 가리키는 import는 그 디렉터리의 `index.ts`(또는 `index.js`)로 해석된다. Vite와 TypeScript의 `bundler` 모듈 해석이 이 규칙을 따른다. [TypeScript 문서: Module resolution](https://www.typescriptlang.org/docs/handbook/modules/reference.html#directory-modules-index-file-resolution)
+
+#MacFolio #리팩터링 #TypeScript

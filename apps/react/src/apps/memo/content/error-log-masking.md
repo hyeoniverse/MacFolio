@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: 100KB를 넘는 요청 본문이 413이 아니라 500으로 응답되고 스택 트레이스가 로그에 기록되었다. 전역 예외 필터가 Express 미들웨어의 오류를 식별하게 하고, 모든 로그가 거치는 로거에서 DB 비밀번호·API 키·쿠키·메일 주소를 마스킹했다. 4xx는 로그에 기록하지 않는다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 두 가지, "오류 응답에 내부 정보가 노출되지 않는지 시험 보강"과 "로그에 쿠키·토큰·메일 주소가 남지 않게 마스킹"을 커밋 하나(`231f9596`)로 처리했다. 두 항목 모두 전역 예외 필터와 로거를 수정하는 작업이기 때문이다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 두 가지, "오류 응답에 내부 정보가 노출되지 않는지 시험 보강"과 "로그에 쿠키·토큰·메일 주소가 남지 않게 마스킹"을 PR 하나([#167](https://github.com/hyeoniverse/MacFolio/pull/167))로 처리했다. 두 항목 모두 전역 예외 필터와 로거를 수정하는 작업이기 때문이다.
 
 ## 수정 전 응답 확인
 
@@ -171,6 +171,6 @@ pnpm --filter @macfolio/api test:e2e test/errors.e2e.test.ts
 - [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)
 - [리팩터링 7단계 — 보안](/memo/refactor-step7-security)
 
-#MacFolio #보안 #API #NestJS #로그
-
 [^lookbehind]: `(?<!X)`는 현재 위치 바로 앞에 X가 없을 때만 일치하는 정규식 문법. [MDN: Lookbehind assertion](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Lookbehind_assertion)
+
+#MacFolio #보안 #API #NestJS #로그

@@ -157,10 +157,10 @@ docker compose exec -T db psql -U macfolio -d postgres    -c 'drop database rest
 - [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](/memo/rollback-drill)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 
-#MacFolio #서버 #백업
-
 [^idle]: Oracle Cloud Always Free 인스턴스는 7일 동안 CPU·네트워크·메모리 사용률이 낮으면 유휴 인스턴스로 판단해 회수할 수 있다. [Oracle 문서: Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
 
 [^wal]: Write-Ahead Log. PostgreSQL이 데이터 파일을 변경하기 전에 변경 내용을 먼저 기록하는 로그. 기본 백업과 WAL을 함께 보관하면 특정 시각으로 복원(PITR)할 수 있다. [PostgreSQL 문서: Continuous Archiving](https://www.postgresql.org/docs/current/continuous-archiving.html)
 
 [^r2]: Cloudflare의 S3 호환 객체 저장소. S3 API를 그대로 사용하므로 rclone의 S3 백엔드로 접근한다. [Cloudflare 문서: R2](https://developers.cloudflare.com/r2/)
+
+#MacFolio #서버 #백업

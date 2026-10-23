@@ -135,6 +135,6 @@ CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=… pnpm exec wrangler versions u
 - [PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기](/memo/preview-cors-read-only)
 - [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot)
 
-#MacFolio #배포 #CI #Cloudflare
-
 [^builds]: 저장소를 연결하면 push마다 Cloudflare가 직접 빌드·배포하는 기능. [Cloudflare 문서: Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/)
+
+#MacFolio #배포 #CI #Cloudflare

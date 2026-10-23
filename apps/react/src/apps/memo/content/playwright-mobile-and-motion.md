@@ -157,6 +157,6 @@ Playwright를 업데이트한 뒤 `npx playwright install`을 실행하지 않�
 - [휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style)
 - [블로그 스크린샷을 테스트 코드로 찍기](/memo/screenshots-with-playwright)
 
-#MacFolio #테스트 #Playwright #휴대폰
-
 [^reduced-motion]: 사용자가 OS 설정에서 움직임 줄이기를 켰는지 알려 주는 미디어 쿼리. Playwright의 `reducedMotion` 옵션은 브라우저가 이 값을 `reduce`로 보고하게 한다. [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+
+#MacFolio #테스트 #Playwright #휴대폰

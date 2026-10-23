@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하고 있었다. SameSite=Lax가 이미 차단하고 있었지만 서버에서도 차단하게 했다. 허용 목록을 exact·pattern으로 분류해 pattern에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 "CORS 와일드카드 범위 점검"을 처리한 기록이다(커밋 `7db1f994a`).
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 "CORS 와일드카드 범위 점검"을 처리한 기록이다([#182](https://github.com/hyeoniverse/MacFolio/pull/182)).
 
 ## 문제
 

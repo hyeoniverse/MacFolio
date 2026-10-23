@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: 블로그 글에 이미지를 추가한 PR에서, 변경과 무관한 이미지 드래그 E2E가 실패했다. 이벤트를 하나씩 기록해 확인한 원인은 두 가지였다. 이미지 로드가 끝나기 전에 측정한 좌표, 그리고 마지막 이동 단계에서 발생하지 않은 dragover.
 ---
 
-기존 블로그 글에 스크린샷을 추가하는 PR([#47](https://github.com/hyeoniverse/MacFolio/pull/47))을 올렸다. 변경 파일은 Markdown과 이미지뿐이었는데 CI가 실패했다. 실패한 시험은 153개 중 하나로, 편집기에서 **이미지를 드래그하면 놓을 위치에 표시선(drop indicator)이 나타나는지** 확인하는 시험이었다. `e2e/memo-editor.spec.ts`의 "이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 버튼으로 받고, 끌 때 놓을 자리가 보인다"의 마지막 부분이다.
+기존 블로그 글에 스크린샷을 추가하는 PR([#47](https://github.com/hyeoniverse/MacFolio/pull/47))을 생성했다. 변경 파일은 Markdown과 이미지뿐이었는데 CI가 실패했다. 실패한 시험은 153개 중 하나로, 편집기에서 **이미지를 드래그하면 놓을 위치에 표시선(drop indicator)이 나타나는지** 확인하는 시험이었다. `e2e/memo-editor.spec.ts`의 "이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 버튼으로 받고, 끌 때 놓을 자리가 보인다"의 마지막 부분이다.
 
 ```text
 TypeError: Cannot read properties of null (reading 'height')
@@ -143,8 +143,8 @@ npx playwright show-trace test-results/…/trace.zip          # 이벤트·화�
 - [테스트를 붙이자 보인 버그들](/memo/bugs-found-by-tests)
 - [가끔 실패하는 시험이 찾아 준 버그 - 아직 없는 편집기로 옮긴 초점](/memo/lazy-editor-focus)
 
-#MacFolio #테스트 #Playwright #트러블슈팅
-
 [^flaky]: 코드 변경 없이 실행마다 통과와 실패가 바뀌는 시험. 대부분 타이밍, 레이아웃, 외부 상태 같은 숨은 조건에 의존한다.
 
 [^capture]: DOM 이벤트는 루트에서 대상으로 내려가는 캡처 단계와 대상에서 루트로 올라가는 버블 단계를 거친다. `addEventListener(type, fn, { capture: true })`로 등록하면 하위 요소의 리스너보다 먼저 호출된다. [MDN: addEventListener](https://developer.mozilla.org/ko/docs/Web/API/EventTarget/addEventListener)
+
+#MacFolio #테스트 #Playwright #트러블슈팅

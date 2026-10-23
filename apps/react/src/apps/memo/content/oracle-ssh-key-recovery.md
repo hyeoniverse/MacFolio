@@ -495,7 +495,7 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
   - "인스턴스의 Actions(⋮) 메뉴에서 Terminate를 고른다. 연결된 부트 볼륨을 지우려면 Permanently delete the attached boot volume을 고른다." 기본으로는 부트 볼륨이 남는다.
 - [First boot determination](https://docs.cloud-init.io/en/latest/explanation/first_boot.html) (cloud-init)
   - "캐시에 있는 instance ID와 실행 중에 알아낸 instance ID를 비교한다. 다르면 이 인스턴스의 첫 부팅이고, 같으면 이후 부팅이다."
-  - 첫 부팅이면 "per-instance" 설정을 모두 돌리고, 이후 부팅에서는 "per-boot" 설정만 돌린다.
+  - 첫 부팅이면 "per-instance" 설정을 모두 실행하고, 이후 부팅에서는 "per-boot" 설정만 실행한다.
   - 파일시스템이 새 인스턴스에 붙으면 캐시가 그대로 남을 수 있고, instance ID 비교가 이를 첫 부팅으로 알아채게 한다.
 - [Module reference: SSH](https://docs.cloud-init.io/en/latest/reference/modules.html) (cloud-init)
   - `ssh_deletekeys`: "호스트 SSH 키를 지운다. 기본 호스트 키가 든 이미지의 비밀 호스트 키를 다시 쓰지 않게 한다. 기본값 `true`."
@@ -517,3 +517,5 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
 [^ocid]: Oracle Cloud Identifier. OCI의 모든 리소스에 부여되는 고유 ID로, `ocid1.instance.oc1.…` 형식의 긴 문자열이다. [Oracle 문서: Resource Identifiers](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/identifiers.htm)
 
 [^cloud-init]: 클라우드 VM의 첫 부팅 시각에 호스트 이름, SSH 키, 사용자 등을 메타데이터에 따라 설정하는 초기화 도구. [cloud-init 문서](https://docs.cloud-init.io/en/latest/)
+
+#MacFolio #서버 #SSH #트러블슈팅

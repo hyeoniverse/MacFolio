@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: 프로젝트 앱의 iframe에 제한이 없어, 내장한 사이트의 target="_top" 링크 하나로 MacFolio 전체가 다른 주소로 이동할 수 있었다. sandbox로 최상위 창 이동 권한만 제외하고, 이 설정이 누락되면 실패하는 E2E를 추가했다.
 ---
 
-프로젝트 앱([프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps))은 NewPick, QRU 같은 배포한 사이트를 창 안의 iframe으로 표시한다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목을 점검하다가 이 iframe에 `sandbox` 속성이 없다는 것을 확인했다. 당시 iframe은 프로젝트 앱과 API 문서 앱이 공유하는 `shared/ui/web-frame/WebFrame.tsx`에 있었고, 속성은 `src`·`title`·`allow`·`allowFullScreen`뿐이었다. 이 글은 이를 수정한 커밋 `4e060432`의 기록이다.
+프로젝트 앱([프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps))은 NewPick, QRU 같은 배포한 사이트를 창 안의 iframe으로 표시한다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목을 점검하다가 이 iframe에 `sandbox` 속성이 없다는 것을 확인했다. 당시 iframe은 프로젝트 앱과 API 문서 앱이 공유하는 `shared/ui/web-frame/WebFrame.tsx`에 있었고, 속성은 `src`·`title`·`allow`·`allowFullScreen`뿐이었다. 이 글은 이를 수정한 [#157](https://github.com/hyeoniverse/MacFolio/pull/157)의 기록이다.
 
 ## 허용되어 있던 동작
 
@@ -126,6 +126,6 @@ npx playwright test e2e/project-apps.spec.ts --project=desktop-chromium
 - [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
 - [글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기](/memo/markdown-xss-tests)
 
-#MacFolio #보안 #iframe #sandbox
-
 [^frame-src]: 페이지가 iframe으로 불러올 수 있는 출처를 제한하는 Content-Security-Policy 지시어. [MDN: CSP frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)
+
+#MacFolio #보안 #iframe #sandbox

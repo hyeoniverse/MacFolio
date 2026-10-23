@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: pnpm audit --prod에서 운영 의존성 취약점 6건(high 3)이 검출되었다. 모두 직접 설치하지 않은 하위 패키지였고, 상위 패키지는 이미 최신이었다. pnpm overrides로 하위 패키지만 같은 메이저 안에서 올리고, CI에 high 이상을 차단하는 검사를 추가했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))을 세우며 `pnpm audit --prod`를 실행했고, 취약점 6건이 검출되었다. 이 글은 그 6건을 `overrides`로 수정하고 CI에 검사를 추가한 커밋 `51695f71`의 기록이다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))을 세우며 `pnpm audit --prod`를 실행했고, 취약점 6건이 검출되었다. 이 글은 그 6건을 `overrides`로 수정하고 CI에 검사를 추가한 [#152](https://github.com/hyeoniverse/MacFolio/pull/152)의 기록이다.
 
 ## 배경: 그동안 검출되지 않은 이유
 
@@ -120,7 +120,7 @@ No known vulnerabilities found
 ## 남은 과제와 정리
 
 - `overrides`는 추가한 뒤 관리에서 누락되기 쉽다. 상위 패키지가 수정 버전을 의존하게 된 뒤에도 이 줄이 남아 있으면 이후의 업데이트를 제한할 수 있다. 그래서 줄마다 주석에 원인이 된 상위 패키지를 기록했다. 상위 패키지를 업데이트할 때 그 주석을 보고 삭제 여부를 판단한다.
-- 다음 날 `.github/dependabot.yml`을 추가해 매주 월요일 의존성 업데이트 PR이 생성되게 했다(커밋 `24c1c47c`). CI 검사는 새로 추가되는 취약점을 차단하고, Dependabot은 기존 의존성의 업데이트를 담당한다.
+- 다음 날 `.github/dependabot.yml`을 추가해 매주 월요일 의존성 업데이트 PR이 생성되게 했다([#169](https://github.com/hyeoniverse/MacFolio/pull/169)). CI 검사는 새로 추가되는 취약점을 차단하고, Dependabot은 기존 의존성의 업데이트를 담당한다.
 - `--audit-level=high`는 high 미만을 통과시킨다. 그래서 주기적으로 `pnpm audit --prod`를 등급 옵션 없이 실행해 low 등급까지 확인한다.
 
 하위 의존성 취약점은 상위 패키지의 몫으로 미루기 쉽다. 그러나 상위 패키지가 이미 최신이면 수정이 언제 반영될지 알 수 없다. 직접 수정할 수단(`overrides`)이 있으면 사용하고, 그 이유를 설정 옆 주석으로 남겨야 이후에 안전하게 삭제할 수 있다.
@@ -163,8 +163,8 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 - [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
 - [머지하고 배포까지 15분에서 5분으로: e2e 6칸과 같은 코드 다시 돌리지 않기](/memo/faster-e2e-ci)
 
-#MacFolio #보안 #의존성 #pnpm #CI
-
 [^transitive]: 직접 설치한 패키지가 다시 의존하는 패키지. `package.json`에는 없지만 잠금 파일과 `node_modules`에는 포함된다.
 
 [^caret]: `^4.0.33`은 4.0.33 이상, 5.0.0 미만을 뜻한다. 유의적 버전(SemVer)에서 메이저 번호가 바뀌지 않는 범위다. [유의적 버전 명세](https://semver.org/lang/ko/)
+
+#MacFolio #보안 #의존성 #pnpm #CI

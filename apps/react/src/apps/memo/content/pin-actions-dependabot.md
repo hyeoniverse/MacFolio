@@ -5,7 +5,7 @@ category: 개발기/MacFolio/인프라
 summary: 다른 커밋으로 옮길 수 있는 태그(@v7) 대신 액션 9종을 커밋 SHA로 고정하고, 토큰 권한을 축소하고, 새 버전은 Dependabot이 PR로 제안하게 했다. 이후 열흘 동안 Dependabot PR 10개를 병합했고, 규칙 검사의 예외 조건도 한 번 수정했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에는 보안 항목이 두 가지 있었다. 하나는 "GitHub Actions를 태그 대신 커밋 SHA로 고정하고 `permissions`를 최소로", 다른 하나는 "Dependabot으로 업데이트 수신"이다. 버전을 고정하면 업데이트 작업이 생기고, 그 작업을 Dependabot이 담당하므로 두 항목을 같은 커밋(`24c1c47ce`)에서 처리했다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에는 보안 항목이 두 가지 있었다. 하나는 "GitHub Actions를 태그 대신 커밋 SHA로 고정하고 `permissions`를 최소로", 다른 하나는 "Dependabot으로 업데이트 수신"이다. 버전을 고정하면 업데이트 작업이 생기고, 그 작업을 Dependabot이 담당하므로 두 항목을 같은 커밋(`24c1c47ce`, [#169](https://github.com/hyeoniverse/MacFolio/pull/169))에서 처리했다.
 
 ## 태그는 다른 커밋으로 옮길 수 있다
 
@@ -57,7 +57,7 @@ SHA는 `git ls-remote --tags`로 태그가 가리키는 커밋을 조회해 기�
 
 ## 확인
 
-워크플로 YAML 파일 5개를 파서로 읽어 구조를 검사하고, SHA 9개가 각 태그의 커밋과 같은지 `ls-remote` 결과와 대조했다. 이 커밋의 CI가 고정한 액션으로 실행된 첫 실행이다. Dependabot은 설정 파일이 main에 병합된 뒤 첫 월요일에 실행되며, 저장소의 Insights → Dependency graph → Dependabot에서 즉시 실행할 수도 있다.
+워크플로 YAML 파일 5개를 파서로 읽어 구조를 검사하고, SHA 9개가 각 태그의 커밋과 같은지 `ls-remote` 결과와 대조했다. 이 PR의 CI가 고정한 액션으로 실행된 첫 실행이다. Dependabot은 설정 파일이 main에 병합된 뒤 첫 월요일에 실행되며, 저장소의 Insights → Dependency graph → Dependabot에서 즉시 실행할 수도 있다.
 
 ## 이후 열흘
 

@@ -11,7 +11,7 @@ summary: CRA로 만든 포트폴리오를 Vite로 옮겼다. dev 서버 시작 5
 
 Vite로 바꾼 첫 커밋은 2025년 3월의 "chore: vite로 변경"이다. `react-scripts`를 빼고 `vite`를 넣고, `public/index.html`을 루트로 옮겼다. 그런데 그 커밋에는 `node_modules/` 아래 파일 1,131개와 CRA가 만든 `build/` 폴더가 함께 들어가 있었다. 저장소에 설치 결과와 빌드 결과가 섞였고, diff가 +7,085/−93,827줄로 커져 실제 설정 변경을 diff에서 찾기 어려웠다.
 
-그 뒤로 사이트는 Vite dev 서버에서 오류 없이 실행되었다. 1년 반 뒤 이 포트폴리오를 다시 정비하면서 이슈 [#2](https://github.com/hyeoniverse/MacFolio/issues/2)를 열었고, 점검 결과 오류 메시지 없이 동작이 어긋나 있던 문제 네 가지를 찾았다(아래 "오류 없이 깨져 있던 네 가지"). 이 글은 그 정리 커밋(`901b92f7`)과 측정(이슈 [#3](https://github.com/hyeoniverse/MacFolio/issues/3))을 묶은 기록이다.
+그 뒤로 사이트는 Vite dev 서버에서 오류 없이 실행되었다. 1년 반 뒤 이 포트폴리오를 다시 정비하면서 이슈 [#2](https://github.com/hyeoniverse/MacFolio/issues/2)를 열었고, 점검 결과 오류 메시지 없이 동작이 어긋나 있던 문제 네 가지를 찾았다(아래 "오류 없이 깨져 있던 네 가지"). 이 글은 그 정리 커밋(`901b92f7`)과 측정(이슈 [#3](https://github.com/hyeoniverse/MacFolio/issues/3))을 묶은 기록이며, 두 작업은 [#12](https://github.com/hyeoniverse/MacFolio/pull/12)로 병합되었다.
 
 ## 전환 이유
 
@@ -127,6 +127,6 @@ CRA에서 Vite로 전환할 때 수정하는 곳은 네 군데다.
 - [하위 의존성 취약점 6건을 overrides로 고치기](/memo/dependency-vulnerabilities)
 - [블로그 스크린샷을 테스트 코드로 찍기](/memo/screenshots-with-playwright)
 
-#MacFolio #Vite #성능
-
 [^esm]: 브라우저가 `<script type="module">`과 `import` 문을 직접 해석하는 방식. 번들러가 파일을 하나로 합치지 않아도 브라우저가 모듈 단위로 요청한다. [MDN: JavaScript 모듈](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/Modules)
+
+#MacFolio #Vite #성능

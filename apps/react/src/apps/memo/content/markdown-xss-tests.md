@@ -86,7 +86,7 @@ expect(found).toEqual({ scripts: 0, handlers: 0, badLinks: [] });
 | README에서 `rehypeSanitize` 제거                | 단위 시험 `readmeSafety` |
 | 메모에 `rehype-raw` 추가 + 주소 필터링 비활성화 | E2E `markdown-safety`    |
 
-커밋 하나(`9a10d2e84`)로 시험 파일 2개(43줄·42줄)와 이 글을 추가했다. 앱 코드는 변경하지 않았다.
+커밋 하나(`9a10d2e84`, [#159](https://github.com/hyeoniverse/MacFolio/pull/159))로 시험 파일 2개(43줄·42줄)와 이 글을 추가했다. 앱 코드는 변경하지 않았다.
 
 ## 다층 방어
 

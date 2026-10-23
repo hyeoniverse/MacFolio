@@ -129,8 +129,8 @@ git rev-parse HEAD^{tree}     # PR 브랜치와 머지된 main 커밋에서 같�
 - [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 
-#MacFolio #CI #GitHubActions #Playwright #E2E #배포
-
 [^shard]: 전체 시험을 여러 묶음으로 나눠 서로 다른 머신에서 동시에 실행하는 방식. 각 묶음을 샤드라고 한다. GitHub Actions에서는 matrix 작업 하나가 샤드 하나를 실행한다.
 
 [^tree]: git이 디렉터리 구조와 파일 내용을 저장하는 객체. 커밋 객체는 트리 하나와 부모 커밋, 작성자, 시각을 담으므로 파일이 같아도 커밋 해시는 달라질 수 있다. [Pro Git: Git Objects](https://git-scm.com/book/ko/v2/Git%EC%9D%98-%EB%82%B4%EB%B6%80-Git-%EA%B0%9C%EC%B2%B4)
+
+#MacFolio #CI #GitHubActions #Playwright #E2E #배포

@@ -215,6 +215,6 @@ cd ~/deploy && docker compose up -d && docker compose logs -f api
 - [SSH 키를 잃어버린 Oracle 서버 되살리기 — 임시 VM이 원래 서버 디스크로 부팅됐다](/memo/oracle-ssh-key-recovery)
 - [PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기](/memo/preview-cors-read-only)
 
-#MacFolio #배포 #서버 #Cloudflare
-
 [^heredoc]: `명령 <<구분자`부터 구분자만 있는 줄까지를 그 명령의 표준 입력으로 전달하는 셸 문법. 구분자에 따옴표를 붙이면 본문의 변수·명령 치환이 일어나지 않는다. [Bash 매뉴얼: Here Documents](https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Documents)
+
+#MacFolio #배포 #서버 #Cloudflare
