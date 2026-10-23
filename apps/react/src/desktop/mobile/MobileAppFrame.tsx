@@ -177,7 +177,11 @@ const MobileAppFrame: React.FC<Props> = ({
 				{/* iOS처럼 제목 막대가 없다: 뒤로 가기는 내용 위에 떠 있는 동그란 버튼 하나 (첫 화면은 홈, 안으로 들어가면 앱이 정한 뒤로 가기).
 				    내용은 상태 표시줄 아래부터 화면 끝까지 쓰고, 홈 바도 내용 위에 떠 있다 */}
 				{/* 스크롤 가장자리 효과 (Window.css의 .mobile-scroll-edge) */}
-				<div className="mobile-scroll-edge" aria-hidden="true" />
+				<div className="mobile-scroll-edge" aria-hidden="true">
+					<span />
+					<span />
+					<span />
+				</div>
 				{/* 홈으로 가는 버튼을 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
 				{(nav?.onBack || !nav?.hideHome) && (
 					<div

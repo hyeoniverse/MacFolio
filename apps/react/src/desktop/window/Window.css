@@ -288,8 +288,10 @@
 }
 
 /* 스크롤 가장자리 (iOS처럼): 내용이 스크롤되어 위로 올라가면(.scrolled, useAppScrolled) 상태 표시줄 뒤를 흐린다.
-   상태 표시줄 영역은 흐리고, 떠 있는 버튼 줄의 위쪽 절반에서 서서히 사라져 경계선이 생기지 않는다.
    맨 위에서는 투명해 앱 첫 줄이 그대로 보인다.
+   흐림은 세 층(4px, 2px, 1px)으로 나눠, 아래로 갈수록 강한 층부터 사라지게 한다 (progressive blur).
+   한 층을 마스크로만 지우면 흐림 세기는 그대로이고 비치는 정도만 바뀌어 경계가 띠처럼 보인다.
+   층마다 따로 흐린다: 바깥 요소에 backdrop-filter·mask·opacity를 두면 backdrop root가 되어 안쪽 층이 앱 내용을 흐리지 못한다.
    떠 있는 버튼(뒤로 가기 z-index 6, 앱의 버튼 3~5)은 이 층 위에 있어 흐려지지 않는다 */
 .mobile-scroll-edge {
 	position: absolute;
@@ -297,17 +299,39 @@
 	right: 0;
 	left: 0;
 	z-index: 2;
-	height: calc(var(--phone-top, var(--mobile-statusbar-height)) + 22px);
-	-webkit-backdrop-filter: blur(4px) saturate(130%);
-	backdrop-filter: blur(4px) saturate(130%);
-	-webkit-mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
-	mask-image: linear-gradient(#000 calc(100% - 28px), transparent);
-	opacity: 0;
+	height: calc(var(--phone-top, var(--mobile-statusbar-height)) + 36px);
 	pointer-events: none;
+}
+
+.mobile-scroll-edge > span {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
 	transition: opacity var(--duration) var(--ease-out);
 }
 
-.container.mobile.scrolled > .mobile-scroll-edge {
+.mobile-scroll-edge > span:nth-child(1) {
+	-webkit-backdrop-filter: blur(1px);
+	backdrop-filter: blur(1px);
+	-webkit-mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+	mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+}
+
+.mobile-scroll-edge > span:nth-child(2) {
+	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px);
+	-webkit-mask-image: linear-gradient(#000 0%, #000 45%, transparent 80%);
+	mask-image: linear-gradient(#000 0%, #000 45%, transparent 80%);
+}
+
+.mobile-scroll-edge > span:nth-child(3) {
+	-webkit-backdrop-filter: blur(4px) saturate(130%);
+	backdrop-filter: blur(4px) saturate(130%);
+	-webkit-mask-image: linear-gradient(#000 0%, #000 38%, transparent 62%);
+	mask-image: linear-gradient(#000 0%, #000 38%, transparent 62%);
+}
+
+.container.mobile.scrolled > .mobile-scroll-edge > span {
 	opacity: 1;
 }
 

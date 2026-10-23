@@ -96,7 +96,7 @@ test('스크롤 가장자리: 내용을 스크롤하면 상태 표시줄과 떠 
 	await fakeApi(page);
 	await openFromHome(page, '메모');
 	const memo = appWindow(page, 'memo');
-	const edge = memo.locator('.mobile-scroll-edge');
+	const edge = memo.locator('.mobile-scroll-edge > span').last();
 	await expect(memo.locator('.memo-item').first()).toBeVisible();
 	await expect(edge).toHaveCSS('opacity', '0');
 
@@ -109,7 +109,7 @@ test('스크롤 가장자리: 내용을 스크롤하면 상태 표시줄과 떠 
 	await expect(edge).toHaveCSS('opacity', '1');
 	// 떠 있는 뒤로 가기는 흐림 층 위에 있다
 	expect(Number(await memo.locator('.mobile-navbar').evaluate((el) => getComputedStyle(el).zIndex))).toBeGreaterThan(
-		Number(await edge.evaluate((el) => getComputedStyle(el).zIndex))
+		Number(await memo.locator('.mobile-scroll-edge').evaluate((el) => getComputedStyle(el).zIndex))
 	);
 
 	// 맨 위로 올리면 다시 투명
