@@ -68,7 +68,7 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
  * 화면 전체를 덮는 Modal(scope="screen", body에 그린다): 메모 레이아웃이 컨테이너 쿼리를 쓰면 그 안의 position: fixed가 창 기준이 되기 때문이다.
  * 닫히면 초점을 연 버튼으로 돌려준다.
  */
-const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
+export const Lightbox: React.FC<{ src: string; alt: string; onClose: () => void }> = ({ src, alt, onClose }) => {
 	useEffect(() => {
 		const opener = document.activeElement as HTMLElement | null;
 		return () => opener?.focus({ preventScroll: true });

@@ -1464,3 +1464,40 @@ test.describe('한국어 사이의 굵게', () => {
 		expect(saved).not.toMatch(/&#x/);
 	});
 });
+
+test('편집 중에도 이미지를 크게 본다: 크게 보기 버튼과 두 번 누르기, Esc로 닫기', async ({ page }) => {
+	const api = await fakeApi(page, { signedIn: true });
+	const content = {
+		title: '이미지 시험',
+		date: '2026-10-16',
+		category: '기술 노트/Git',
+		summary: '',
+		body: '앞 문단\n\n![앨범 표지](/imgs/Album_1.webp "앨범 표지 캡션")\n\n뒤 문단',
+	};
+	api.posts = [{ slug: 'image-post', ...content, deleted: false, published: content }];
+	const memo = await openMemo(page, api);
+	await memo.locator('.memo-item', { hasText: '이미지 시험' }).click();
+	const editor = memo.locator('.ProseMirror');
+	const figure = editor.locator('.memo-figure-frame');
+	const lightbox = page.getByRole('dialog', { name: '앨범 표지' });
+
+	// 이미지에 마우스를 올리면 크게 보기·내려받기 버튼
+	await figure.hover();
+	const zoom = figure.getByRole('button', { name: '이미지 크게 보기' });
+	await expect(zoom).toBeVisible();
+	await zoom.click();
+	await expect(lightbox).toBeVisible();
+	await expect(lightbox.locator('img')).toHaveAttribute('src', /Album_1\.webp$/);
+	await page.keyboard.press('Escape');
+	await expect(lightbox).toHaveCount(0);
+
+	// 이미지를 두 번 눌러도 크게 본다
+	await figure.locator('img').dblclick();
+	await expect(lightbox).toBeVisible();
+	await lightbox.locator('img').click();
+	await expect(lightbox).toHaveCount(0);
+
+	// 크게 보기는 글을 바꾸지 않는다
+	await page.waitForTimeout(500);
+	expect(api.postSaves).toBe(0);
+});
