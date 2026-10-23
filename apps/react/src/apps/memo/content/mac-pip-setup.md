@@ -2,12 +2,25 @@
 title: Mac에서 pip 설치하기 — Homebrew Python, venv, pipx, externally-managed-environment
 date: 2026-10-23
 category: 기술 노트/개발 환경
-summary: Apple Silicon Mac에서 Homebrew로 Python과 pip를 설치하고 확인하는 순서를 정리했다. pip3 install이 externally-managed-environment 오류로 실패하는 이유(PEP 668)와 venv·pipx로 해결하는 방법, 시스템 python3(Xcode CLT)와의 차이, 자주 나는 오류를 함께 적었다.
+summary: Apple Silicon Mac에서 Homebrew로 Python과 pip를 설치하고 확인하는 순서를 정리했다. pip3 install이 externally-managed-environment 오류로 실패하는 이유(PEP 668)와 venv·pipx로 해결하는 방법, 시스템 python3(Xcode CLT)와의 차이, 자주 발생하는 오류를 함께 정리했다.
 ---
 
-Apple Silicon Mac 기준이다. Homebrew가 설치되어 있어야 한다([Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup)의 설치 순서 1~2단계).
+## pip란
+
+pip는 Python 패키지 관리자다. [PyPI](https://pypi.org/)(Python Package Index)에 등록된 라이브러리와 도구를 내려받아 설치하고, 업데이트·삭제한다. npm이 Node.js 패키지를 관리하는 것과 같은 역할이다.
+
+| 명령                              | 기능                                  |
+| --------------------------------- | ------------------------------------- |
+| `pip install requests`            | 패키지 설치                           |
+| `pip install -r requirements.txt` | 목록 파일에 기록된 패키지를 일괄 설치 |
+| `pip list`                        | 설치된 패키지 목록                    |
+| `pip uninstall requests`          | 패키지 삭제                           |
+
+pip는 Python에 포함되어 배포된다. Mac에서 pip를 설치한다는 것은 곧 Python을 설치한다는 뜻이고, 개발용 Python은 Homebrew로 설치하는 것이 일반적이다.
 
 ## 설치 순서
+
+Apple Silicon Mac 기준이다. Homebrew가 설치되어 있어야 한다([Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup)의 설치 순서 1~2단계).
 
 ```bash
 # 1. Python 설치 (pip가 포함되어 있다)
@@ -25,7 +38,7 @@ $ python3 -m pip --version
 pip 26.2.2 from /opt/homebrew/lib/python3.15/site-packages/pip (python 3.15)
 ```
 
-pip 출력의 경로가 `/opt/homebrew/...`이면 Homebrew Python의 pip다. 이후 패키지 설치는 아래 둘 중 하나로 한다.
+pip 출력의 경로가 `/opt/homebrew/...`이면 Homebrew Python의 pip다. 이후 패키지 설치는 아래 두 방법 중 하나를 사용한다.
 
 ```bash
 # 프로젝트에서 사용하는 라이브러리: 가상 환경(venv)
@@ -39,7 +52,7 @@ pipx ensurepath
 pipx install black
 ```
 
-Homebrew Python에서는 `pip3 install requests`를 그대로 실행하면 아래 오류가 발생한다. 정상 동작이며, 위의 두 방법이 해결 방법이다.
+Homebrew Python에서는 `pip3 install requests`를 직접 실행하면 아래 오류가 발생한다. 정상 동작이며, 위의 두 방법이 해결 방법이다.
 
 ![Mac의 python3 두 종류와 패키지 설치 위치](./images/mac-pip-setup-pythons.svg '시스템 python3(CLT)는 개발용으로 사용하지 않고, Homebrew python3에는 직접 설치하지 않는다. 라이브러리는 venv, 명령줄 도구는 pipx에 설치한다')
 
@@ -154,13 +167,13 @@ idle  pip  pydoc  python  python-config
 
 `brew info python`의 안내대로 버전 번호 없는 링크는 `libexec/bin`에 있다. 다음 중 하나를 선택한다.
 
-- `python3`, `pip3`(또는 `python3 -m pip`)를 사용한다. 가장 간단하다
+- `python3`, `pip3`(또는 `python3 -m pip`)를 사용한다. 추가 설정이 필요 없다
 - venv를 활성화하면 `python`, `pip`가 사용 가능해진다
 - 항상 필요하면 `~/.zprofile`의 `brew shellenv` 줄 아래에 `export PATH="/opt/homebrew/opt/python@3/libexec/bin:$PATH"`를 추가한다
 
 `pip3` 대신 `python3 -m pip`를 권장하는 이유는 실행하는 Python과 pip가 항상 일치하기 때문이다. `pip3`는 PATH에서 먼저 발견된 것이 실행되므로 `python3`와 다른 Python의 pip일 수 있다.
 
-## 자주 나는 문제
+## 자주 발생하는 문제
 
 | 증상                                    | 원인                                        | 해결                                                                 |
 | --------------------------------------- | ------------------------------------------- | -------------------------------------------------------------------- |

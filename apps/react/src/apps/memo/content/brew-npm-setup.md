@@ -1,16 +1,28 @@
 ---
-title: Mac에서 Homebrew와 npm 설치하기 — 설치 순서, 확인 명령, 자주 나는 문제
+title: Mac에서 Homebrew와 npm 설치하기 — 설치 순서, 확인 명령, 자주 발생하는 문제
 date: 2026-10-20
 category: 기술 노트/개발 환경
-summary: Apple Silicon Mac에 Homebrew와 Node·npm을 설치하는 순서를 명령 단위로 정리했다. 단계마다 확인 명령과 정상 출력, 특정 Node 버전(node@22)과 corepack 설정, 자주 나는 오류와 해결 방법을 적고, 파일 위치와 .npmrc 우선순위는 뒤에 따로 정리했다.
+summary: Apple Silicon Mac에 Homebrew와 Node·npm을 설치하는 순서를 명령 단위로 정리했다. 단계마다 확인 명령과 정상 출력, 특정 Node 버전(node@22)과 corepack 설정, 자주 발생하는 오류와 해결 방법을 정리하고, 파일 위치와 .npmrc 우선순위는 뒤에 별도로 정리했다.
 ---
 
-Apple Silicon Mac 기준이다. 아래 순서대로 실행하면 Homebrew, Node, npm 설치가 끝난다.
+## Homebrew란
+
+Homebrew(`brew`)는 macOS용 패키지 관리자다. 명령 한 줄로 개발 도구를 설치·업데이트·삭제한다. 설치한 프로그램은 `/opt/homebrew` 아래에 모아 관리하므로 macOS 시스템 파일과 섞이지 않고, `brew upgrade` 한 번으로 설치한 도구 전체를 최신 버전으로 업데이트할 수 있다.
+
+| 용어    | 뜻                                                                          |
+| ------- | --------------------------------------------------------------------------- |
+| formula | 명령줄 도구 패키지 (예: `node`, `git`, `python`)                            |
+| cask    | GUI 앱 패키지 (예: `visual-studio-code`). `brew install --cask` 로 설치한다 |
+| bottle  | 미리 빌드된 formula 바이너리. 소스를 컴파일하지 않아 설치가 빠르다          |
+
+Node.js는 JavaScript 실행 환경이고, npm은 Node.js에 포함된 패키지 관리자다. Homebrew로 Node.js를 설치하면 npm도 함께 설치된다.
 
 ## 설치 순서
 
+Apple Silicon Mac 기준이다. 아래 순서대로 실행하면 Homebrew, Node, npm 설치가 완료된다.
+
 ```bash
-# 1. Homebrew 설치 (실행 전 수행할 작업을 출력하고 확인을 받는다)
+# 1. Homebrew 설치 (실행 전 수행할 작업을 출력하고 사용자 확인을 요청한다)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 # 2. PATH 설정: 설치 마지막의 "Next steps"에 출력되는 명령과 같다
@@ -27,7 +39,7 @@ brew install node
 
 새 터미널 창을 열고 확인한다.
 
-| 확인 명령                    | 정상 출력 (이 글 작성 시각 기준) | 다르게 나오면                                      |
+| 확인 명령                    | 정상 출력 (이 글 작성 시각 기준) | 출력이 다른 경우                                   |
 | ---------------------------- | -------------------------------- | -------------------------------------------------- |
 | `brew --version`             | `Homebrew 7.0.10`                | `command not found: brew` → 2단계 누락             |
 | `brew config \| grep PREFIX` | `HOMEBREW_PREFIX: /opt/homebrew` | `/usr/local` → Intel(Rosetta)용으로 설치됨, 재설치 |
@@ -86,7 +98,7 @@ $ corepack --version
 
 `corepack enable` 뒤에는 `package.json`의 `packageManager`(예: `"pnpm@10.34.5"`)에 지정된 버전의 pnpm을 사용한다. Node 22를 PATH에 추가했다면 corepack이 포함되어 있으므로 `corepack enable`만 실행한다. corepack 없이 `npm install`로 대신했을 때 발생하는 문제는 [zsh: command not found: pnpm](/memo/pnpm-command-not-found)에 정리했다.
 
-## 자주 나는 문제
+## 자주 발생하는 문제
 
 | 증상                                  | 원인                                                            | 해결                                                                                   |
 | ------------------------------------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
