@@ -1,0 +1,12 @@
+/*
+ * Markdown 본문의 공통 모양. 블로그(.memo-markdown)와 문서 보기·텍스트 편집기(.finder-doc)가 함께 쓴다.
+ * 위젯·메일·Safari 템플릿처럼 <blockquote>를 부품으로 쓰는 곳에는 걸리지 않게 본문 컨테이너 안으로 한정한다.
+ * :where()로 점수를 0으로 두어, 컨테이너마다 다른 여백·간격 규칙이 늘 이긴다.
+ * 화면마다 다른 값은 변수로 바꾼다: --prose-quote-line (인용 왼쪽 선 색)
+ */
+:where(.memo-markdown, .finder-doc) blockquote {
+	margin: 0;
+	padding-left: 1em;
+	/* 글자색은 정하지 않는다: 본문과 같은 색을 따른다 (보조 글자색은 대비가 낮아 읽기 어렵다) */
+	border-left: 3px solid var(--prose-quote-line, var(--color-separator));
+}

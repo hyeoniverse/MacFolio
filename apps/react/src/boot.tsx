@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './styles/layers.css';
 import './styles/theme.css';
 import './styles/motion.css';
+import './styles/prose.css';
 import './index.css';
 import App from './App';
 import { initSettings } from '@/shared/settings/settingsStore';

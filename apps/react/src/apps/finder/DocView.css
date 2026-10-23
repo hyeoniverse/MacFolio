@@ -97,12 +97,6 @@
 	vertical-align: middle;
 }
 
-.finder-doc blockquote {
-	padding: 0 1em;
-	border-left: 4px solid var(--color-separator);
-	color: var(--color-secondary-label);
-}
-
 .finder-doc :not(pre) > code {
 	padding: 0.15em 0.4em;
 	border-radius: var(--radius-4);

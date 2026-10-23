@@ -385,10 +385,9 @@
 	background: none;
 }
 
-.memo-markdown blockquote {
-	padding-left: 1em;
-	border-left: 3px solid var(--memo-accent);
-	color: var(--memo-muted);
+/* 인용 모양은 styles/prose.css가 문서 보기와 함께 정하고, 메모는 왼쪽 선만 강조색으로 바꾼다 */
+.memo-markdown {
+	--prose-quote-line: var(--memo-accent);
 }
 
 .memo-markdown table {
