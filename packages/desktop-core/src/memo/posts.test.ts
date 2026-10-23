@@ -324,7 +324,8 @@ describe('mergeAdminPosts (관리자 목록)', () => {
 		expect(bySlug.repo).toMatchObject({
 			title: '저장소 글 고치는 중',
 			pinned: true,
-			status: { draftOnly: false, changed: true },
+			// 저장소 글을 서버에서 고쳤으면 저장소 글로 되돌릴 수 있다
+			status: { draftOnly: false, changed: true, overridesRepo: true },
 		});
 		expect(bySlug.new).toMatchObject({ title: '새 글', status: { draftOnly: true, changed: false, scheduled: null } });
 		expect(bySlug.pub).toMatchObject({ title: '게시한 글 고치는 중', status: { draftOnly: false, changed: true } });

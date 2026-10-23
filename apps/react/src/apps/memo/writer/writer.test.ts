@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatIso, monthGrid, parseIso, shiftMonth, toIso } from '@/shared/ui/date/calendar';
-import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown } from './markdownImages';
+import { fromEditorMarkdown, plainTableAlign, toEditorMarkdown, unescapeTags } from './markdownImages';
 import { captionParts } from '@macfolio/desktop-core/memo';
 import { imageFileName } from '../download';
 
@@ -49,6 +49,19 @@ describe('표 정렬 표시', () => {
 
 	it('표가 아닌 줄의 :-는 건드리지 않는다', () => {
 		expect(plainTableAlign('시간 :-) 좋다\n| a :- b |\n')).toBe('시간 :-) 좋다\n| a :- b |\n');
+	});
+});
+
+describe('태그 이스케이프', () => {
+	it('줄 맨 앞의 \\#태그를 #태그로 되돌린다 (목록·인용 기호 뒤도). 뒤에 이어지는 태그는 원래 그대로', () => {
+		expect(unescapeTags('본문\n\n\\#프론트엔드 #CSS #Safari\n')).toBe('본문\n\n#프론트엔드 #CSS #Safari\n');
+		expect(unescapeTags('- \\#할일\n> \\#인용\n1. \\#번호\n')).toBe('- #할일\n> #인용\n1. #번호\n');
+	});
+
+	it('제목이 될 수 있는 \\#(뒤에 공백이나 #)와 코드 블록 안은 건드리지 않는다', () => {
+		expect(unescapeTags('\\# 제목 아님\n\\## 둘\n')).toBe('\\# 제목 아님\n\\## 둘\n');
+		const code = '```sh\n\\#주석\n```\n\\#태그\n';
+		expect(unescapeTags(code)).toBe('```sh\n\\#주석\n```\n#태그\n');
 	});
 });
 

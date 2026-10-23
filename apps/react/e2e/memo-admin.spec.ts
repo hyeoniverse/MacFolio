@@ -236,6 +236,42 @@ test.describe('메모 편집 (관리자)', () => {
 			memo.getByRole('navigation', { name: '카테고리' }).getByRole('button', { name: /^읽을거리/ })
 		).toHaveCount(0);
 	});
+	test('서버에서 고친 저장소 글은 저장소 글로 되돌린다 (묻고, 서버의 글을 지운다)', async ({ page }) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const changed = {
+			title: '서버에서 고친 제목',
+			date: '2026-09-29',
+			category: '개발기/MacFolio/프론트엔드',
+			summary: '',
+			body: '서버에서 고친 본문',
+		};
+		api.posts = [{ slug: 'bugs-found-by-tests', ...changed, deleted: false, published: changed }];
+		const memo = await openMemo(page, api);
+		const item = memo.locator('.memo-item', { hasText: '서버에서 고친 제목' });
+		await expect(item).toBeVisible();
+
+		// 고치지 않은 저장소 글에는 메뉴가 없다
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click({ button: 'right' });
+		await expect(page.getByRole('menuitem', { name: '저장소 글로 되돌리기' })).toHaveCount(0);
+		await page.keyboard.press('Escape');
+
+		await item.click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '저장소 글로 되돌리기' }).click();
+		const alert = memo.getByRole('alertdialog', { name: '저장소의 원래 글로 되돌리겠습니까?' });
+		await expect(alert).toContainText('버전 기록이 모두 지워집니다');
+		// 취소하면 그대로
+		await alert.getByRole('button', { name: '취소' }).click();
+		await expect(item).toBeVisible();
+		expect(api.posts).toHaveLength(1);
+
+		await item.click({ button: 'right' });
+		await page.getByRole('menuitem', { name: '저장소 글로 되돌리기' }).click();
+		await memo.getByRole('alertdialog').getByRole('button', { name: '되돌리기' }).click();
+		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자 보인 버그들' })).toBeVisible();
+		await expect(item).toHaveCount(0);
+		expect(api.posts).toEqual([]);
+	});
+
 	test('편집하면 바로 서버에 저장한다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);

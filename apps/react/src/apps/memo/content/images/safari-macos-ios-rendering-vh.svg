@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>iOS Safari에서 height: 100vh인 화면은 아래쪽 버튼이 주소 막대에 가려지고, 100dvh인 화면은 주소 막대 위에 버튼이 보인다</title>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">100vh는 주소 막대가 접힌 높이 기준이다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">iOS Safari에서 주소 막대가 펴져 있으면 100vh 요소의 아래쪽이 가려진다. 100dvh는 지금 보이는 높이를 따른다 (도식)</text>
+<text x="250" y="88" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">100vh</text>
+<text x="250" y="384" font-size="10.5" fill="#b91c1c" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">height: 100vh;</text>
+<rect x="160" y="100" width="180" height="270" rx="26" fill="#f3f4f6" stroke="#374151" stroke-width="3"/>
+<clipPath id="s160"><rect x="166" y="106" width="168" height="258" rx="21"/></clipPath>
+<g clip-path="url(#s160)">
+<rect x="166" y="106" width="168" height="258" fill="#ffffff"/>
+<text x="178" y="146" font-size="10" fill="#1f2937" font-weight="700" text-anchor="start">화면 높이 = 100vh</text>
+<rect x="178" y="158" width="144" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="178" y="170" width="126" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="178" y="182" width="108" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="178" y="194" width="144" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="178" y="206" width="126" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="178" y="218" width="108" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="178" y="328" width="144" height="26" rx="8" fill="#2563eb"/>
+<text x="250.0" y="345" font-size="10" fill="#ffffff" font-weight="700" text-anchor="middle">시작하기</text>
+<rect x="166" y="320" width="168" height="44" fill="#e5e7eb" opacity="0.96"/>
+<rect x="182" y="326" width="136" height="20" rx="10" fill="#ffffff"/>
+<text x="250.0" y="340" font-size="8.5" fill="#6b7280" font-weight="400" text-anchor="middle">example.com</text>
+<rect x="176" y="326" width="148" height="30" rx="8" fill="none" stroke="#b91c1c" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="250.0" y="312" font-size="9" fill="#b91c1c" font-weight="700" text-anchor="middle">버튼이 주소 막대에 가려진다</text>
+</g>
+<rect x="224.0" y="112" width="52" height="14" rx="7" fill="#111827"/>
+<text x="590" y="88" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">100dvh</text>
+<text x="590" y="384" font-size="10.5" fill="#15803d" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">height: 100dvh;</text>
+<rect x="500" y="100" width="180" height="270" rx="26" fill="#f3f4f6" stroke="#374151" stroke-width="3"/>
+<clipPath id="s500"><rect x="506" y="106" width="168" height="258" rx="21"/></clipPath>
+<g clip-path="url(#s500)">
+<rect x="506" y="106" width="168" height="258" fill="#ffffff"/>
+<text x="518" y="146" font-size="10" fill="#1f2937" font-weight="700" text-anchor="start">화면 높이 = 100dvh</text>
+<rect x="518" y="158" width="144" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="518" y="170" width="126" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="518" y="182" width="108" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="518" y="194" width="144" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="518" y="206" width="126" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="518" y="218" width="108" height="5" rx="2.5" fill="#cbd5e1"/>
+<rect x="518" y="284" width="144" height="26" rx="8" fill="#2563eb"/>
+<text x="590.0" y="301" font-size="10" fill="#ffffff" font-weight="700" text-anchor="middle">시작하기</text>
+<rect x="506" y="320" width="168" height="44" fill="#e5e7eb" opacity="0.96"/>
+<rect x="522" y="326" width="136" height="20" rx="10" fill="#ffffff"/>
+<text x="590.0" y="340" font-size="8.5" fill="#6b7280" font-weight="400" text-anchor="middle">example.com</text>
+</g>
+<rect x="564.0" y="112" width="52" height="14" rx="7" fill="#111827"/>
+</svg>

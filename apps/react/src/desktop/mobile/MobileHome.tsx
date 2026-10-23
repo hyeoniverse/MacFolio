@@ -7,23 +7,24 @@ import WallpaperVideo from '@/desktop/WallpaperVideo';
 import { openSwitcher } from '@/desktop/mobile/switcherStore';
 import { appIconUrl } from '@/shared/config/appIcon';
 import {
-	DEFAULT_MOBILE_WIDGETS,
 	MOBILE_WIDGET_PAGE_COUNT,
 	newWidgetId,
 	pageToAdd,
 	widgetRows,
-	parseMobileWidgets,
 	WIDGET_INFO,
 	type PageWidget,
 	type PostsMode,
 	type WidgetKind,
+	type WidgetOptions,
 	type WidgetSize,
+	withOptions,
 } from '@/desktop/widgets/catalog';
+import { loadMobileWidgets, shareOptions } from '@/desktop/widgets/sharedOptions';
 import Widget from '@/desktop/widgets/Widget';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from '@/desktop/widgets/widgetEditor';
 import WidgetSheet, { AlbumSheet, PostsModeSheet } from '@/desktop/mobile/WidgetSheet';
 import { cssVars } from '@/shared/lib/cssVars';
-import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
+import { STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from '@/desktop/mobile/homePages';
 
 /** 홈 화면 아래 Dock에 둘 앱 */
@@ -62,8 +63,6 @@ const WHEEL_REST_MS = 450;
 /** 이만큼 누르고 있으면 위젯 편집 (iOS의 길게 누르기) */
 const LONG_PRESS_MS = 550;
 
-const loadWidgets = () => parseMobileWidgets(readJson(STORAGE_KEYS.mobileWidgets)) ?? DEFAULT_MOBILE_WIDGETS;
-
 /**
  * 좁은 화면에서 데스크톱(StatusBar·Dock) 대신 보여주는 iOS 홈 화면.
  * 앱을 누르면 화면을 가득 채워 열리고(AppWindow 모바일 모드), 홈 인디케이터로 돌아온다.
@@ -75,7 +74,7 @@ const loadWidgets = () => parseMobileWidgets(readJson(STORAGE_KEYS.mobileWidgets
 const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 	const pagesRef = useRef<HTMLDivElement>(null);
 	const editing = useWidgetEditing();
-	const [widgets, setWidgets] = useState<PageWidget[][]>(loadWidgets);
+	const [widgets, setWidgets] = useState<PageWidget[][]>(loadMobileWidgets);
 	const [gallery, setGallery] = useState(false);
 	// 앨범을 고르는 사진 위젯 (id)
 	const [albumFor, setAlbumFor] = useState<string | null>(null);
@@ -150,12 +149,19 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		writeJson(STORAGE_KEYS.mobileWidgets, next);
 	};
 	const removeWidget = (id: string) => save(widgets.map((list) => list.filter((widget) => widget.id !== id)));
+	/** 고른 값을 적는다. 바탕화면의 같은 위젯도 같이 바뀐다 (sharedOptions.ts) */
+	const choose = (id: string, options: WidgetOptions) => {
+		const kind = widgets.flat().find((widget) => widget.id === id)?.kind;
+		if (!kind) return;
+		save(widgets.map((list) => withOptions(list, id, kind, options)));
+		shareOptions('desktop', id, kind, options);
+	};
 	const chooseAlbum = (id: string, album: string | undefined) => {
-		save(widgets.map((list) => list.map((widget) => (widget.id === id ? { ...widget, album } : widget))));
+		choose(id, { album });
 		setAlbumFor(null);
 	};
 	const choosePosts = (id: string, posts: PostsMode) => {
-		save(widgets.map((list) => list.map((widget) => (widget.id === id ? { ...widget, posts } : widget))));
+		choose(id, { posts });
 		setPostsFor(null);
 	};
 	/** 지금 페이지(자리가 없으면 자리가 있는 첫 페이지) 끝에 더하고 그 페이지로 간다 */

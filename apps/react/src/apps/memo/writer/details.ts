@@ -1,11 +1,12 @@
 // 편집기의 토글 목록(접기 블록): 읽기 화면의 remarkDetails와 같은 `<details>` 표기를 읽고, 고친 뒤 같은 표기로 저장한다.
-// 요약 줄은 글자만 쓰는 칸이고, 그 아래 블록이 접히는 내용이다. 요약 앞의 › 를 누르면 접고 펼친다 (그 상태가 저장된다: <details open>).
+// 요약 줄은 글자만 쓰는 칸이고, 그 아래 블록이 접히는 내용이다. 요약 앞의 › 를 누르면 화면에서만 접고 펼친다 (글은 바꾸지 않아 저장하지 않는다).
+// 저장하는 펼침 여부(<details open>)는 읽어 온 그대로이고, 새로 만든 토글은 펼친 것으로 저장한다.
 import { Fragment, type Node } from '@milkdown/kit/prose/model';
 import { Plugin, TextSelection, type EditorState } from '@milkdown/kit/prose/state';
 import type { EditorView } from '@milkdown/kit/prose/view';
 import { $nodeSchema, $prose, $remark } from '@milkdown/kit/utils';
 import { decodeText, DETAILS_CLOSE, DETAILS_OPEN, detailsOpenHtml } from '../markdownPlugins';
-import { isRevealed, unreveal } from './anchors';
+import { isShownOpen, showOnScreen } from './anchors';
 
 interface MdNode {
 	type: string;
@@ -198,7 +199,8 @@ export function handleDetailsKey(view: EditorView, event: KeyboardEvent): boolea
 	if (event.key !== 'Enter') return false;
 	const { pos, node } = found;
 	const tr = state.tr;
-	if (!node.attrs.open) tr.setNodeMarkup(pos, undefined, { ...node.attrs, open: true });
+	// 접혀 보이면 화면에서 펼친다 (글은 바꾸지 않는다)
+	if (!isShownOpen(state, pos, node)) showOnScreen(tr, state, pos, node, true);
 	// 요약 다음 자리. 첫 블록이 빈 문단이면 거기로, 아니면 맨 위에 새 문단을 넣는다
 	const contentStart = pos + 1 + (node.firstChild?.nodeSize ?? 0);
 	const first = node.maybeChild(1);
@@ -208,31 +210,35 @@ export function handleDetailsKey(view: EditorView, event: KeyboardEvent): boolea
 	return true;
 }
 
-/** 요약 앞의 › 를 누르면 접고 펼친다. 접을 때 커서가 내용 안에 있으면 요약 끝으로 옮긴다 */
+/** › 를 누른 것이면 화면에서만 접고 펼친다: 글은 그대로라 고친 것으로 치지 않는다 (임시 저장하지 않는다) */
+function toggleOnClick(view: EditorView, node: Node, nodePos: number, event: MouseEvent, direct: boolean): boolean {
+	if (!direct || node.type.name !== 'details_summary') return false;
+	const dom = view.nodeDOM(nodePos) as HTMLElement | null;
+	if (!dom || event.clientX - dom.getBoundingClientRect().left > TOGGLE_HIT_PX) return false;
+	const detailsPos = view.state.doc.resolve(nodePos).before();
+	const details = view.state.doc.nodeAt(detailsPos);
+	if (!details) return false;
+	const open = !isShownOpen(view.state, detailsPos, details);
+	const tr = showOnScreen(view.state.tr, view.state, detailsPos, details, open);
+	// 접을 때 커서가 내용 안에 있으면 요약 끝으로
+	if (!open) tr.setSelection(TextSelection.create(tr.doc, nodePos + node.nodeSize - 1));
+	view.dispatch(tr);
+	return true;
+}
+
+/**
+ * 요약 앞의 › 를 누르면 접고 펼친다. 빠르게 다시 누르면 편집기가 두 번 누름으로 받으므로 그것도 한 번 더 누른 것으로 본다
+ * (그러지 않으면 펼치자마자 다시 눌러도 접히지 않는다)
+ */
 export const detailsToggleClick = $prose(
 	() =>
 		new Plugin({
 			props: {
-				handleClickOn: (view, _pos, node, nodePos, event, direct) => {
-					if (!direct || node.type.name !== 'details_summary') return false;
-					const dom = view.nodeDOM(nodePos) as HTMLElement | null;
-					if (!dom || event.clientX - dom.getBoundingClientRect().left > TOGGLE_HIT_PX) return false;
-					const detailsPos = view.state.doc.resolve(nodePos).before();
-					const details = view.state.doc.nodeAt(detailsPos);
-					if (!details) return false;
-					// 링크를 따라가며 화면에서만 펼친 블록은 화면에서만 접는다 (저장한 글은 그대로)
-					if (isRevealed(view.state, detailsPos)) {
-						const tr = unreveal(view.state.tr, view.state, detailsPos);
-						view.dispatch(tr.setSelection(TextSelection.create(tr.doc, nodePos + node.nodeSize - 1)));
-						return true;
-					}
-					const open = !details.attrs.open;
-					const tr = view.state.tr.setNodeMarkup(detailsPos, undefined, { ...details.attrs, open });
-					const summaryEnd = nodePos + node.nodeSize - 1;
-					if (!open) tr.setSelection(TextSelection.create(tr.doc, summaryEnd));
-					view.dispatch(tr);
-					return true;
-				},
+				handleClickOn: (view, _pos, node, nodePos, event, direct) => toggleOnClick(view, node, nodePos, event, direct),
+				handleDoubleClickOn: (view, _pos, node, nodePos, event, direct) =>
+					toggleOnClick(view, node, nodePos, event, direct),
+				handleTripleClickOn: (view, _pos, node, nodePos, event, direct) =>
+					toggleOnClick(view, node, nodePos, event, direct),
 			},
 		})
 );

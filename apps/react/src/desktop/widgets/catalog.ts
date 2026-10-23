@@ -4,7 +4,17 @@
 /** 작게(정사각형) · 중간(가로로 두 칸) */
 export type WidgetSize = 'small' | 'medium';
 
-export const WIDGET_KINDS = ['weather', 'calendar', 'clock', 'music', 'posts', 'photos', 'github', 'profile'] as const;
+export const WIDGET_KINDS = [
+	'weather',
+	'calendar',
+	'clock',
+	'music',
+	'posts',
+	'photos',
+	'github',
+	'profile',
+	'quote',
+] as const;
 export type WidgetKind = (typeof WIDGET_KINDS)[number];
 
 export interface WidgetInfo {
@@ -32,6 +42,11 @@ export const WIDGET_INFO: Record<WidgetKind, WidgetInfo> = {
 	},
 	github: { label: 'GitHub', description: '기여 그래프 (잔디)', sizes: ['medium', 'small'] },
 	profile: { label: '소개', description: '이름과 하는 일', sizes: ['medium'] },
+	quote: {
+		label: '명언',
+		description: '개발·디자인에 관한 짧은 말. 날마다 바뀌고, 누르면 다른 말',
+		sizes: ['medium', 'small'],
+	},
 };
 
 /** 바탕화면에 놓인 위젯 하나. col·row는 위젯 격자의 칸 (layout.ts) */
@@ -182,4 +197,47 @@ export function newWidgetId(kind: WidgetKind, taken: readonly { id: string }[]):
 	let n = 2;
 	while (ids.has(`${kind}-${n}`)) n++;
 	return `${kind}-${n}`;
+}
+
+type WithOptions = { id: string; kind: WidgetKind } & WidgetOptions;
+
+/** 고른 값이 같은지 (없음과 undefined는 같다) */
+const sameOptions = (a: WidgetOptions, b: WidgetOptions) => a.album === b.album && a.posts === b.posts;
+
+/**
+ * 같은 위젯(같은 id·종류)에 고른 값을 적는다. 바탕화면과 휴대폰 홈 화면은 위젯 자리를 따로 저장하지만
+ * 고른 값(사진 위젯의 앨범, 메모 위젯의 글 보기)은 함께 쓴다: 한쪽에서 고르면 다른 쪽의 같은 위젯도 바뀐다.
+ * 바뀐 것이 없으면 같은 배열을 돌려준다
+ */
+export function withOptions<T extends WithOptions>(
+	widgets: T[],
+	id: string,
+	kind: WidgetKind,
+	options: WidgetOptions
+): T[] {
+	let changed = false;
+	const next = widgets.map((widget) => {
+		if (widget.id !== id || widget.kind !== kind) return widget;
+		const merged = { ...widget, ...options };
+		if (sameOptions(widget, merged)) return widget;
+		changed = true;
+		return merged;
+	});
+	return changed ? next : widgets;
+}
+
+/**
+ * 고른 값이 없는 위젯은 다른 화면의 같은 위젯(같은 id·종류)이 고른 값을 쓴다.
+ * 함께 쓰기 전에 한쪽에서만 골라 둔 것도 다른 쪽에 보이게 한다
+ */
+export function fillOptions<T extends WithOptions>(widgets: T[], others: readonly WithOptions[]): T[] {
+	return widgets.map((widget) => {
+		const other = others.find((item) => item.id === widget.id && item.kind === widget.kind);
+		if (!other) return widget;
+		return {
+			...widget,
+			...(widget.album === undefined && other.album !== undefined && { album: other.album }),
+			...(widget.posts === undefined && other.posts !== undefined && { posts: other.posts }),
+		};
+	});
 }

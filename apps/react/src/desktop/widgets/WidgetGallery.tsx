@@ -20,6 +20,7 @@ const KIND_ICONS: Record<WidgetKind, { app: AppName } | { glyph: string }> = {
 	photos: { app: 'photos' },
 	github: { app: 'github' },
 	profile: { glyph: 'fa-regular fa-user' },
+	quote: { glyph: 'fa-solid fa-quote-left' },
 };
 
 const KindIcon = ({ kind }: { kind: WidgetKind }) => {

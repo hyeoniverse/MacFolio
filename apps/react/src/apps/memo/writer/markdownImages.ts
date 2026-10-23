@@ -23,3 +23,25 @@ export function fromEditorMarkdown(markdown: string, images: Record<string, stri
 export function plainTableAlign(markdown: string): string {
 	return markdown.replace(/^\|(?: *:?-+:? *\|)+ *$/gm, (row) => row.replace(/:(-+)(?=[ |])/g, '-$1'));
 }
+
+/**
+ * 편집기가 줄 맨 앞의 태그(#프론트엔드)를 \#로 이스케이프한 것을 되돌린다. Markdown 제목은 # 뒤에 공백이 있어야 하므로
+ * # 바로 뒤에 글자가 오면 이스케이프하지 않아도 제목이 되지 않는다. 그대로 두면 첫 태그를 태그로 읽지 못한다 (desktop-core의 tags.ts).
+ * 목록·인용 기호 뒤의 태그도 같고, 코드 블록 안은 건드리지 않는다
+ */
+export function unescapeTags(markdown: string): string {
+	let fence: string | null = null;
+	return markdown
+		.split('\n')
+		.map((line) => {
+			const marker = /^\s*(```|~~~)/.exec(line)?.[1];
+			if (marker) {
+				if (fence === null) fence = marker;
+				else if (fence === marker) fence = null;
+				return line;
+			}
+			if (fence !== null) return line;
+			return line.replace(/^((?:\s*(?:[-*+]|\d+[.)])\s+|\s*>\s*)*)\\#(?=[\p{L}\p{N}_-])/u, '$1#');
+		})
+		.join('\n');
+}

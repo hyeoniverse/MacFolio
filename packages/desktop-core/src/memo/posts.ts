@@ -36,6 +36,8 @@ export interface PostStatus {
 	changed: boolean;
 	/** 게시했지만 날짜가 아직 안 됐다 (예약): 그 날짜 */
 	scheduled: string | null;
+	/** 서버의 글이 같은 주소의 저장소 글을 가리고 있다 (저장소 글로 되돌릴 수 있다) */
+	overridesRepo?: boolean;
 }
 
 export const ALL_CATEGORY = '모든 글';
@@ -207,6 +209,7 @@ export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: strin
 					draftOnly: !item.published && !fromRepo,
 					changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
 					scheduled: item.published && item.published.date > today ? item.published.date : null,
+					...(fromRepo && { overridesRepo: true }),
 				},
 				fromRepo?.createdAt ?? item.createdAt
 			)
