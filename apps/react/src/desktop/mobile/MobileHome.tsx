@@ -10,7 +10,6 @@ import {
 	MOBILE_WIDGET_PAGE_COUNT,
 	newWidgetId,
 	pageToAdd,
-	widgetRows,
 	WIDGET_INFO,
 	type PageWidget,
 	type PostsMode,
@@ -25,7 +24,14 @@ import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from '@/desktop
 import WidgetSheet, { AlbumSheet, PostsModeSheet } from '@/desktop/mobile/WidgetSheet';
 import { cssVars } from '@/shared/lib/cssVars';
 import { STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
-import { dragOffset, pageAfterSwipe, pageApps, rowsThatFit, widgetRowHeight } from '@/desktop/mobile/homePages';
+import {
+	dragOffset,
+	iconRowsBelow,
+	pageAfterSwipe,
+	pageApps,
+	rowsThatFit,
+	widgetRowHeight,
+} from '@/desktop/mobile/homePages';
 import { useWidgetReorder } from '@/desktop/mobile/useWidgetReorder';
 import { normalizeOrder } from '@/desktop/mobile/widgetOrder';
 
@@ -132,11 +138,11 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			const rowHeight = icon.offsetHeight;
 			// 위쪽 안쪽 여백은 떨리는 위젯이 잘리지 않게 둔 자리라 내용 높이에서 뺀다 (MobileHome.css)
 			const height = pagesEl.clientHeight - parseFloat(getComputedStyle(pagesEl).paddingTop);
-			// 위젯 줄 높이: 위젯 아래에 아이콘 두 줄은 늘 들어가게 (작은 화면에서 위젯이 앱을 밀어내 잘리지 않게)
+			// 위젯 줄 높이: 화면 크기로만 정한다 (위젯을 옮기거나 더해도 크기가 바뀌지 않게. homePages.ts)
 			const area = pagesEl.querySelector<HTMLElement>('.mobile-widgets');
 			if (area?.clientWidth) {
 				const square = (area.clientWidth - WIDGET_GAP) / 2;
-				const row = widgetRowHeight(height, shownWidgets.map(widgetRows), square, rowHeight, {
+				const row = widgetRowHeight(height, square, rowHeight, {
 					widget: WIDGET_GAP,
 					top: GRID_TOP,
 					icon: ROW_GAP,
@@ -147,7 +153,8 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			const widgetHeights = [...pagesEl.querySelectorAll<HTMLElement>('.mobile-widgets')].map((element) =>
 				element.offsetHeight ? element.offsetHeight + GRID_TOP : 0
 			);
-			const leading = widgetHeights.map((used) => rowsThatFit(height - used, rowHeight, ROW_GAP) * columns);
+			// 위젯이 페이지를 다 차지하면 그 페이지의 앱 칸은 0 (아이콘이 잘리지 않게 다음 페이지로)
+			const leading = widgetHeights.map((used) => iconRowsBelow(height - used, rowHeight, ROW_GAP) * columns);
 			const rest = rowsThatFit(height, rowHeight, ROW_GAP) * columns;
 			setSlots((current) =>
 				current.rest === rest && current.leading.join() === leading.join() ? current : { leading, rest }

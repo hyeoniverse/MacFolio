@@ -1862,6 +1862,67 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		await expect(github.getByRole('img', { name: /지난 1년 기여 \d+회/ })).toBeVisible();
 	});
 
+	test('페이지를 넘기거나 위젯을 옆 페이지로 옮겨 세 줄이 되어도 위젯·아이콘 크기는 그대로다', async ({ page }) => {
+		await enterHome(page);
+		/** 지금 페이지의 위젯·아이콘 레이아웃 크기 (편집 중 흔들림 회전이 섞이지 않게 offset 크기) */
+		const sizes = () =>
+			page.evaluate(() => {
+				const current = [...document.querySelectorAll<HTMLElement>('.mobile-page')].find(
+					(item) => !item.hasAttribute('inert')
+				)!;
+				const size = (element: HTMLElement) => ({ width: element.offsetWidth, height: element.offsetHeight });
+				return {
+					small: [...current.querySelectorAll<HTMLElement>('.mobile-widget-slot[data-size="small"]')].map(size),
+					medium: [...current.querySelectorAll<HTMLElement>('.mobile-widget-slot[data-size="medium"]')].map(size),
+					icons: [...current.querySelectorAll<HTMLElement>('.mobile-app img')].map(size),
+				};
+			});
+		type Size = { width: number; height: number };
+		const expectSame = (items: Size[], base: Size) => {
+			for (const item of items) {
+				expect(Math.abs(item.width - base.width)).toBeLessThanOrEqual(0.5);
+				expect(Math.abs(item.height - base.height)).toBeLessThanOrEqual(0.5);
+			}
+		};
+		const first = await sizes();
+		const medium = first.medium[0];
+		const icon = first.icons[0];
+		await page.getByRole('tab', { name: '2쪽' }).click();
+		const second = await sizes();
+		const small = second.small[0];
+		expect(Math.abs(small.height - medium.height)).toBeLessThanOrEqual(0.5);
+
+		// 편집 중 음악 위젯을 2쪽 끝으로 옮긴다: 2쪽이 세 줄이 된다
+		await page.getByRole('tab', { name: '1쪽' }).click();
+		await startEditing(page, '소개 위젯');
+		const from = await centerOf(page, '음악 위젯');
+		const width = page.viewportSize()!.width;
+		await page.mouse.move(from.x, from.y);
+		await page.mouse.down();
+		await page.mouse.move(width - 4, from.y, { steps: 12 });
+		await expect(page.getByRole('tab', { name: '2쪽' })).toHaveAttribute('aria-selected', 'true');
+		const github = (await page.getByRole('group', { name: 'GitHub 위젯' }).boundingBox())!;
+		await page.mouse.move(width / 2, github.y + github.height * 1.5 + 16, { steps: 12 });
+		await page.mouse.up();
+		expect(await widgetLabels(page, 1)).toEqual(['날씨 위젯', '캘린더 위젯', 'GitHub 위젯', '음악 위젯']);
+		await page.getByRole('button', { name: '완료' }).click();
+
+		for (const name of ['2쪽', '1쪽', '3쪽']) {
+			await page.getByRole('tab', { name }).click();
+			const now = await sizes();
+			expectSame(now.small, small);
+			expectSame(now.medium, medium);
+			expectSame(now.icons, icon);
+		}
+		// 세 줄인 2쪽의 아이콘은 잘리지 않는다 (들어가지 않으면 다음 페이지로)
+		await page.getByRole('tab', { name: '2쪽' }).click();
+		const grid = page.locator('.mobile-page').nth(1).locator('.mobile-grid');
+		expect(await grid.evaluate((element) => element.scrollHeight <= element.clientHeight)).toBe(true);
+		// 새로고침해도 같다
+		await reload(page);
+		expectSame((await sizes()).medium, medium);
+	});
+
 	test('위젯이 있어도 위젯 아래에 앱이 두 줄은 들어가고 잘리지 않는다', async ({ page }) => {
 		await enterHome(page);
 		const grid = page.getByRole('navigation', { name: '앱', exact: true });

@@ -1,37 +1,44 @@
+import { MAX_WIDGET_ROWS } from '@/desktop/widgets/catalog';
 // 휴대폰 홈 화면의 페이지 나누기 (iOS처럼): 한 화면에 다 들어가지 않는 앱은 스크롤하지 않고 다음 페이지로 보낸다.
 // 순수 함수만 둔다. 몇 칸이 들어가는지는 화면에서 재서 넘긴다 (MobileHome).
 
 /** 높이 안에 들어가는 아이콘 줄 수 (줄 높이 + 줄 사이). 적어도 한 줄 */
 export function rowsThatFit(height: number, rowHeight: number, rowGap: number): number {
-	if (rowHeight <= 0) return 1;
-	return Math.max(1, Math.floor((height + rowGap) / (rowHeight + rowGap)));
+	return Math.max(1, iconRowsBelow(height, rowHeight, rowGap));
 }
 
-/** 위젯 아래에 늘 남겨 둘 아이콘 줄 수 (위젯이 화면을 다 차지해 앱이 잘리지 않게) */
+/** 위젯 아래 높이에 들어가는 아이콘 줄 수. 위젯이 페이지를 다 차지하면 0 (그 페이지에는 앱을 두지 않는다) */
+export function iconRowsBelow(height: number, rowHeight: number, rowGap: number): number {
+	if (rowHeight <= 0) return 1;
+	return Math.max(0, Math.floor((height + rowGap) / (rowHeight + rowGap)));
+}
+
+/** 위젯이 두 줄 이하인 페이지의 위젯 아래에 늘 남겨 둘 아이콘 줄 수 (위젯이 화면을 다 차지해 앱이 잘리지 않게) */
 export const MIN_ICON_ROWS = 2;
 /** 위젯 한 줄의 가장 낮은 높이 (이보다 줄이면 내용이 들어가지 않는다) */
 export const MIN_WIDGET_ROW = 112;
 
 /**
- * 위젯 한 줄의 높이: 정사각형(작은 위젯의 폭)이 기본이고, 위젯 아래에 아이콘 MIN_ICON_ROWS줄이 들어가도록 줄인다.
- * 위젯 줄 수가 가장 많은 페이지에 맞춰 모든 페이지가 같은 높이를 쓴다. 너무 낮아지면 MIN_WIDGET_ROW에서 멈춘다
+ * 위젯 한 줄의 높이. 화면 크기로만 정하고, 위젯을 옮기거나 더해도 바뀌지 않는다 (iOS처럼 위젯 크기는 고정).
+ * 정사각형(작은 위젯의 폭)이 기본이고, 두 조건에 맞게 줄인다:
+ * - 위젯 두 줄 아래에 아이콘 MIN_ICON_ROWS줄이 들어간다 (처음 구성처럼 두 줄인 페이지)
+ * - 위젯 MAX_WIDGET_ROWS(세 줄)가 페이지에 들어간다 (그 페이지는 아이콘이 줄거나 없다)
+ * 예전에는 위젯 줄 수가 가장 많은 페이지에 맞췄다. 그래서 한 페이지가 세 줄이 되면 모든 페이지의 위젯이 작아졌다.
+ * 너무 낮아지면 MIN_WIDGET_ROW에서 멈춘다
  * @param height 페이지 높이
- * @param widgetRows 페이지마다 위젯 줄 수
  * @param square 작은 위젯의 폭
  * @param gaps 위젯 사이, 위젯과 아이콘 사이, 아이콘 줄 사이
  */
 export function widgetRowHeight(
 	height: number,
-	widgetRows: readonly number[],
 	square: number,
 	iconRow: number,
 	gaps: { widget: number; top: number; icon: number }
 ): number {
-	const rows = Math.max(0, ...widgetRows);
-	if (rows === 0) return square;
 	const icons = MIN_ICON_ROWS * iconRow + (MIN_ICON_ROWS - 1) * gaps.icon;
-	const room = Math.floor((height - gaps.top - icons - (rows - 1) * gaps.widget) / rows);
-	return Math.max(MIN_WIDGET_ROW, Math.min(square, room));
+	const twoRows = Math.floor((height - gaps.top - icons - gaps.widget) / 2);
+	const fullPage = Math.floor((height - (MAX_WIDGET_ROWS - 1) * gaps.widget) / MAX_WIDGET_ROWS);
+	return Math.max(MIN_WIDGET_ROW, Math.min(square, twoRows, fullPage));
 }
 
 /**
@@ -42,7 +49,8 @@ export function pageApps<T>(apps: readonly T[], leadingSlots: readonly number[],
 	const pages: T[][] = [];
 	let start = 0;
 	for (const slots of leadingSlots) {
-		const count = Math.max(1, slots);
+		// 위젯이 페이지를 다 차지하면 앱을 두지 않는다 (0칸)
+		const count = Math.max(0, slots);
 		pages.push(apps.slice(start, start + count));
 		start += count;
 	}
