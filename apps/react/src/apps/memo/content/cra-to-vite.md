@@ -13,7 +13,7 @@ Vite로 바꾼 첫 커밋은 2025년 3월의 "chore: vite로 변경"이다. `rea
 
 그 뒤로 사이트는 Vite dev 서버에서 오류 없이 실행되었다. 1년 반 뒤 이 포트폴리오를 다시 정비하면서 이슈 [#2](https://github.com/hyeoniverse/MacFolio/issues/2)를 열었고, 점검 결과 오류 메시지 없이 동작이 어긋나 있던 문제 네 가지를 찾았다(아래 "오류 없이 깨져 있던 네 가지"). 이 글은 그 정리 커밋(`901b92f7`)과 측정(이슈 [#3](https://github.com/hyeoniverse/MacFolio/issues/3))을 묶은 기록이며, 두 작업은 [#12](https://github.com/hyeoniverse/MacFolio/pull/12)로 병합되었다.
 
-## 전환 이유
+## 왜 옮겼나
 
 - **CRA는 더 이상 관리되지 않는다.** React 팀이 2025년 2월에 CRA를 공식적으로 deprecated했다([React 블로그: Sunsetting Create React App](https://react.dev/blog/2025/02/14/sunsetting-create-react-app)).
 - **dev 서버 시작이 느렸다.** CRA는 webpack으로 앱 전체를 번들링한 뒤에 dev 서버 응답을 시작한다. Vite는 브라우저의 네이티브 ES 모듈[^esm]을 이용해 브라우저가 요청한 파일만 요청 시각에 변환한다.
