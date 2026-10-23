@@ -112,15 +112,9 @@ const WidgetGallery = ({
 						{shown.flatMap((item) =>
 							WIDGET_INFO[item].sizes.map((size) => (
 								<li key={`${item}-${size}`} className={`widget-gallery-cell ${size}`}>
-									<button
-										type="button"
-										className="widget-gallery-item"
-										aria-label={`${WIDGET_INFO[item].label} 위젯 (${SIZE_LABEL[size]}) 더하기`}
-										onClick={(event) => {
-											const rect = event.currentTarget.getBoundingClientRect();
-											onAdd(item, size, { x: rect.left, y: rect.top });
-										}}
-									>
+									{/* 미리보기 위젯에도 단추(재생 등)가 있어 단추 안에 넣을 수 없다(단추 안의 단추).
+									    미리보기는 inert로 두고, 더하기 단추를 그 위에 겹쳐 칸 전체를 누르게 한다 */}
+									<div className="widget-gallery-item">
 										<span className="widget-gallery-preview" style={pixelSize(size)} inert>
 											<Widget kind={item} size={size} open={() => {}} />
 										</span>
@@ -128,7 +122,16 @@ const WidgetGallery = ({
 										<span className="widget-gallery-plus" aria-hidden="true">
 											<i className="fa-solid fa-plus"></i>
 										</span>
-									</button>
+										<button
+											type="button"
+											className="widget-gallery-add"
+											aria-label={`${WIDGET_INFO[item].label} 위젯 (${SIZE_LABEL[size]}) 더하기`}
+											onClick={(event) => {
+												const rect = event.currentTarget.getBoundingClientRect();
+												onAdd(item, size, { x: rect.left, y: rect.top });
+											}}
+										/>
+									</div>
 									<span className="widget-gallery-caption">
 										{WIDGET_INFO[item].label} · {SIZE_LABEL[size]}
 									</span>
