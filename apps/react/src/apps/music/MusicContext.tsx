@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPlayerStore, currentTrackId } from '@macfolio/desktop-core/music';
-import { isMobileViewport } from '@/desktop/layout';
-import { getViewport } from '@/shared/hooks/useViewport';
 import { useAppState } from '@/desktop/useAppState';
 import { ALL_SONGS, findPlaylist, findTrack, TRACK_SECONDS } from './library';
 import { MusicContext } from './useMusic';
+import { musicAudio } from './musicAudio';
 
 export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-	const audioRef = useRef<HTMLAudioElement | null>(null);
+	// 로딩 화면이 탭 처리 중에 미리 재생을 허용받아 둔 요소 (musicAudio.ts)
+	const audioRef = useRef<HTMLAudioElement>(musicAudio());
 	// 무엇을 어떤 순서로 재생할지(재생 목록, 대기열, 셔플, 반복)는 desktop-core의 플레이어 store가 정한다 (#16).
 	// 여기서는 그 결과대로 audio를 틀고 멈추고, 재생 시간·음량을 다룬다
 	const [player] = useState(() =>
@@ -97,6 +97,13 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 		[player]
 	);
 
+	/** 대기열의 곡으로 건너뛰어 처음부터 재생한다 ('다음 재생' 목록에서 누른 곡) */
+	const jumpTo = useCallback(
+		(trackId: string) => {
+			if (player.jumpTo(trackId)) startTrack(true);
+		},
+		[player, startTrack]
+	);
 	const togglePlayPause = useCallback(() => (isPlaying ? pause() : play()), [isPlaying, pause, play]);
 
 	const seekTo = useCallback((time: number) => {
@@ -128,13 +135,34 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 		if (wasRunning.current && !musicRunning) stopAndReset();
 		wasRunning.current = musicRunning;
 	}, [musicRunning, stopAndReset]);
-	const onPlaying = () => keepAlive('music', true);
 
-	// 로딩 화면을 넘기면(사용자가 클릭한 직후라 자동 재생이 된다) 데스크톱에서는 음악을 튼다
+	// audio 요소의 이벤트. 요소는 React 밖(musicAudio.ts)에 있으므로 직접 건다. 처리 함수는 늘 지금의 것을 부른다
+	const handlers = useRef({ onEnded, onPlaying: () => keepAlive('music', true) });
 	useEffect(() => {
-		const start = () => {
-			if (!isMobileViewport(getViewport())) play();
+		handlers.current = { onEnded, onPlaying: () => keepAlive('music', true) };
+	});
+	useEffect(() => {
+		const audio = audioRef.current;
+		const listeners: [keyof HTMLMediaElementEventMap, () => void][] = [
+			['timeupdate', () => setCurrentTime(audio.currentTime)],
+			['durationchange', () => setDuration(audio.duration || 0)],
+			['waiting', () => setIsBuffering(true)],
+			['canplay', () => setIsBuffering(false)],
+			['play', () => setIsPlaying(true)],
+			['playing', () => handlers.current.onPlaying()],
+			['pause', () => setIsPlaying(false)],
+			['ended', () => handlers.current.onEnded()],
+		];
+		for (const [type, listener] of listeners) audio.addEventListener(type, listener);
+		return () => {
+			for (const [type, listener] of listeners) audio.removeEventListener(type, listener);
 		};
+	}, []);
+
+	// 로딩 화면을 넘기면 음악을 튼다. 휴대폰도 같다: 로딩 화면을 누른 시각에 이 요소가 재생을 허용받았다 (musicAudio.ts).
+	// 그래도 막히면(스크립트를 받기 전에 첫 그림을 눌러 제스처가 지난 경우 등) play()가 거절되어 멈춘 상태로 남는다
+	useEffect(() => {
+		const start = () => play();
 		window.addEventListener('startMusic', start);
 		return () => window.removeEventListener('startMusic', start);
 	}, [play]);
@@ -163,22 +191,11 @@ export const MusicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 				cycleRepeat: player.cycleRepeat,
 				setRepeat: player.setRepeat,
 				stopAndReset,
+				jumpTo,
+				moveUpcoming: player.moveUpcoming,
 			}}
 		>
 			{children}
-			<audio
-				ref={audioRef}
-				// 누르기 전에는 받지 않는다 (첫 방문에 곡을 받지 않게). 길이는 그동안 TRACK_SECONDS로 보인다
-				preload="none"
-				onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
-				onDurationChange={(event) => setDuration(event.currentTarget.duration || 0)}
-				onWaiting={() => setIsBuffering(true)}
-				onCanPlay={() => setIsBuffering(false)}
-				onPlay={() => setIsPlaying(true)}
-				onPlaying={onPlaying}
-				onPause={() => setIsPlaying(false)}
-				onEnded={onEnded}
-			/>
 		</MusicContext.Provider>
 	);
 };

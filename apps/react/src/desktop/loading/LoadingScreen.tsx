@@ -5,6 +5,7 @@ import '@/desktop/loading/LoadingScreen.css';
 import AppleLogo from '@/shared/ui/AppleLogo';
 import { env } from '@/shared/config/env';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import { unlockMusicAudio } from '@/apps/music/musicAudio';
 
 declare global {
 	interface Window {
@@ -46,6 +47,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, onLoadingComplet
 				isInteractedRef.current = true;
 				setStarted(true);
 				callbacks.current.onStart?.();
+				// 배경 음악은 진행 막대가 찬 뒤에 시작한다. iPhone Safari는 탭 처리 중에 처음 play()한 요소만 나중에 재생을
+				// 허용하므로, 지금(탭 처리 안에서) 배경 음악 요소를 허용받아 둔다 (musicAudio.ts)
+				unlockMusicAudio();
 				audioRef.current = new Audio(`${mp3Url}/mac-startup.mp3`);
 
 				audioRef.current.play().catch((error) => {
