@@ -49,6 +49,10 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	const scrollBox = useRef<HTMLDivElement>(null);
 	const savedScroll = useRef(new Map<string, number>());
 	const scrollKey = `${opened ? (opened.kind === 'album' ? opened.id : 'videos') : tab}:${grouped}`;
+	// 사진이 제목 밑으로 들어갔는지: 그때만 제목 뒤를 어둡게 하고 글자를 흰색으로 (PhotosMobile.css).
+	// 보는 곳(scrollKey)마다 따로 센다: 다른 앨범으로 가면 그 칸의 스크롤 위치를 다시 읽을 때까지 맨 위로 본다
+	const [scrolledAt, setScrolledAt] = useState<string | null>(null);
+	const scrolled = scrolledAt === scrollKey;
 	useLayoutEffect(() => {
 		const box = scrollBox.current;
 		if (!box || viewing || searching) return;
@@ -237,6 +241,8 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 				key={opened ? (opened.kind === 'album' ? opened.id : 'videos') : tab}
 				className="photos-phone-scroll"
 				data-motion={motion ?? undefined}
+				data-scrolled={scrolled || undefined}
+				onScroll={(event) => setScrolledAt(event.currentTarget.scrollTop > 0 ? scrollKey : null)}
 			>
 				{showGrid ? (
 					<>

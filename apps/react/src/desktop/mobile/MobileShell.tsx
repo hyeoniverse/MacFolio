@@ -8,7 +8,7 @@ import ControlCenter from '@/desktop/mobile/ControlCenter';
 import { closeSwitcher, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
 import { PULL_OPEN_PX } from '@/desktop/mobile/swipe';
 import { useVerticalSwipe } from '@/desktop/mobile/useVerticalSwipe';
-import { CLOCK_SIDE, ICONS_SIDE, useStatusBarFill, useStatusBarTone } from '@/desktop/mobile/statusBarTone';
+import { CLOCK_SIDE, ICONS_SIDE, useStatusBarTone } from '@/desktop/mobile/statusBarTone';
 import { useImmersiveApp } from '@/desktop/mobile/immersiveStore';
 import { useResolvedTheme } from '@/shared/settings/settingsStore';
 import '@/desktop/mobile/MobileShell.css';
@@ -40,8 +40,6 @@ const MobileShell = () => {
 	const toneKey = `${foreground}:${dark}:${onApp}:${controlCenterOpen}:${switcherOpen}`;
 	const clockTone = useStatusBarTone(statusBar, true, fallbackTone, toneKey, CLOCK_SIDE);
 	const iconsTone = useStatusBarTone(statusBar, true, fallbackTone, toneKey, ICONS_SIDE);
-	// 앱 화면은 상태 표시줄 아래에서 시작한다. 상태 표시줄 자리는 앱 화면 맨 윗줄의 색으로 칠한다
-	useStatusBarFill(statusBar, onApp && !hidden ? foreground : null, toneKey);
 
 	// Esc는 위에 열린 것부터 닫는다: 제어 센터, 앱 전환기 (그 아래 앱의 뒤로 가기가 이 Esc를 받지 않게 preventDefault)
 	useEffect(() => {

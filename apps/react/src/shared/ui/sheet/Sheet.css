@@ -20,11 +20,11 @@
 	outline: none;
 }
 
-/* 화면 높이에 가까운 시트: 앱 화면 위에서 8px 띄우고, 위 모서리만 둥글게 */
+/* 화면 높이에 가까운 시트: 상태 표시줄 아래부터, 위 모서리만 둥글게 */
 .ui-sheet.page {
 	display: flex;
 	flex-direction: column;
-	height: calc(100% - 8px);
+	height: calc(100% - var(--phone-status, 0px) - 8px);
 	overflow-x: hidden;
 	overflow-y: auto;
 	border-radius: 34px 34px 0 0;

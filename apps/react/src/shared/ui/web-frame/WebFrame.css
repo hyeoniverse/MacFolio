@@ -61,9 +61,11 @@
 	}
 }
 
-/* 휴대폰: 페이지 뒤 바탕을 사이트의 머리 막대 색으로 칠한다. 다른 사이트의 페이지는 안을 읽을 수 없어,
-   상태 표시줄 자리도 이 바탕을 읽어 같은 색으로 칠한다 (막대가 위까지 이어진 것처럼) */
+/* 휴대폰: 사이트의 머리 막대(메뉴·로그인 등)가 상태 표시줄 밑에 깔리지 않게, 페이지는 상태 표시줄 아래에서 시작한다.
+   그 위(상태 표시줄 뒤)는 머리 막대 색으로 칠해 막대가 위까지 이어진 것처럼 보이게 한다 (Safari처럼) */
 .container.mobile .web-frame {
+	box-sizing: border-box;
+	padding-top: var(--phone-status);
 	background-color: var(--web-bar-color, var(--color-white));
 }
 

@@ -238,15 +238,6 @@ export function sampleTone(
 	return toneFor(points.map((at) => colorAt(document, box.left + box.width * at, y, bar)));
 }
 
-/**
- * 상태 표시줄 바로 아래(앱 화면의 맨 윗줄) 가운데의 바탕색. 앱 화면은 상태 표시줄 아래에서 시작하므로,
- * 상태 표시줄 자리를 이 색으로 칠하면 앱의 첫 줄(머리 막대, 어두운 화면 등)이 위까지 이어진 것처럼 보인다
- */
-export function sampleTopColor(bar: Element): string | null {
-	const box = bar.getBoundingClientRect();
-	return colorAt(document, box.left + box.width / 2, box.bottom + 1, bar);
-}
-
 /** 다시 읽는 간격: 스크롤·크기 바뀜은 바로, 그 밖의 변화(애니메이션, iframe 안 스크롤)는 이만큼마다 */
 const RESAMPLE_MS = 800;
 
@@ -284,36 +275,4 @@ export function useStatusBarTone(
 		};
 	}, [bar, enabled, fallback, key, points, area]);
 	return enabled ? tone : fallback;
-}
-
-/**
- * 맨 앞 앱이 있는 동안 상태 표시줄 자리(앱 화면 위의 띠)를 앱 화면 맨 윗줄의 색으로 칠한다.
- * 읽는 때는 useStatusBarTone과 같다 (스크롤·크기 바뀜은 바로, 그 밖에는 RESAMPLE_MS마다)
- */
-export function useStatusBarFill(bar: React.RefObject<Element | null>, app: string | null, key: string) {
-	useEffect(() => {
-		if (!app) return;
-		const frameOf = () => document.querySelector<HTMLElement>(`.container.mobile[data-app="${app}"]`);
-		let frame = 0;
-		const update = () => {
-			cancelAnimationFrame(frame);
-			frame = requestAnimationFrame(() => {
-				const container = frameOf();
-				if (!bar.current || !container) return;
-				const color = sampleTopColor(bar.current);
-				if (color) container.style.setProperty('--phone-statusbar-fill', color);
-				else container.style.removeProperty('--phone-statusbar-fill');
-			});
-		};
-		update();
-		document.addEventListener('scroll', update, { capture: true, passive: true });
-		window.addEventListener('resize', update);
-		const timer = setInterval(update, RESAMPLE_MS);
-		return () => {
-			cancelAnimationFrame(frame);
-			document.removeEventListener('scroll', update, { capture: true });
-			window.removeEventListener('resize', update);
-			clearInterval(timer);
-		};
-	}, [bar, app, key]);
 }

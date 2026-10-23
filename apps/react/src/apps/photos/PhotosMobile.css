@@ -23,7 +23,7 @@
 	overflow-y: auto;
 }
 
-/* 상태 표시줄 글자 색은 밑의 실제 화면(상태 표시줄 자리)을 읽어 정한다 */
+/* 사진은 상태 표시줄 뒤까지 깔린다 (앱은 화면 맨 위부터 그린다). 상태 표시줄 글자 색은 밑의 실제 화면을 읽어 정한다 */
 
 /* ─── 큰 제목 ─── */
 .photos-phone-title {
@@ -47,19 +47,38 @@
 	font-weight: 600;
 }
 
-/* 보관함: 사진 위에 얹은 제목 (흰 글자, 위쪽만 어둡게) */
+/* 보관함·앨범: 격자 위에 떠 있는 제목 (iOS 사진처럼).
+   맨 위에서는 격자가 제목 아래에서 시작하고(아래 .photos-phone-grid의 위 여백), 제목 뒤는 바탕 그대로다.
+   스크롤해서 사진이 제목과 상태 표시줄 밑으로 들어가면(data-scrolled) 위쪽을 어둡게 하고 글자를 흰색으로 바꾼다 */
 .photos-phone-title.overlay {
 	position: sticky;
 	top: 0;
 	z-index: 1;
-	margin-bottom: -86px;
+	margin-bottom: calc(-86px - var(--mobile-statusbar-height));
 	padding-bottom: 26px;
-	background: linear-gradient(var(--color-scrim-strong), var(--color-scrim) 60%, transparent);
 	pointer-events: none;
+}
+
+.photos-phone-title.overlay::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: linear-gradient(var(--color-scrim-strong), var(--color-scrim) 60%, transparent);
+	opacity: 0;
+	transition: opacity var(--duration) var(--ease-out);
 }
 
 .photos-phone-title.overlay h2,
 .photos-phone-title.overlay p {
+	transition: color var(--duration) var(--ease-out);
+}
+
+.photos-phone-scroll[data-scrolled] .photos-phone-title.overlay::before {
+	opacity: 1;
+}
+
+.photos-phone-scroll[data-scrolled] .photos-phone-title.overlay :is(h2, p) {
 	color: var(--color-white);
 	text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
@@ -72,6 +91,12 @@
 	margin: 0;
 	padding: 0;
 	list-style: none;
+}
+
+/* 제목 바로 아래의 격자(보관함·앨범): 맨 위에서는 제목(상태 표시줄 포함) 아래에서 시작한다 (위 margin-bottom만큼).
+   스크롤하면 사진은 제목과 상태 표시줄 뒤로 지나간다 */
+.photos-phone-title.overlay + .photos-phone-grid {
+	padding-top: calc(86px + var(--mobile-statusbar-height));
 }
 
 .photos-phone-grid .photos-thumb {
@@ -110,7 +135,7 @@
 }
 
 .photos-phone-group:first-of-type h3 {
-	padding-top: 96px;
+	padding-top: calc(96px + var(--mobile-statusbar-height));
 }
 
 .photos-phone-group h3 button {
