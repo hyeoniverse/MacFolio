@@ -220,7 +220,8 @@ const PhotosMobile = ({ onOpenProject }: { onOpenProject: (id: string) => void }
 	return (
 		<div className="photos-phone">
 			{/* 모음에서 들어간 앨범은 뒤로 가기가 '모음', 첫 화면은 홈 */}
-			<MobileNavigation {...(opened ? { backLabel: '모음', onBack: () => open(null) } : {})} />
+			{/* 보관함·앨범은 어두운 제목을 직접 그려(data-scrolled) 스크롤 가장자리 효과를 끈다 */}
+			<MobileNavigation scrollEdge={!showGrid} {...(opened ? { backLabel: '모음', onBack: () => open(null) } : {})} />
 			{/* 보관함의 오른쪽 위: 앨범별·전체 (iOS 사진의 보기 메뉴) */}
 			{tab === 'library' && !opened && (
 				<IconButton

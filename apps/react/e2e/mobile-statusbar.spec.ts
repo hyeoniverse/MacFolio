@@ -90,6 +90,45 @@ test('사진 (휴대폰): 맨 위에서는 격자가 제목 아래에서 시작�
 	expect(await coveredByStatusBar(page)).toEqual([]);
 });
 
+test('스크롤 가장자리: 내용을 스크롤하면 상태 표시줄과 떠 있는 버튼 줄 뒤가 흐려지고, 맨 위에서는 투명하다', async ({
+	page,
+}) => {
+	await fakeApi(page);
+	await openFromHome(page, '메모');
+	const memo = appWindow(page, 'memo');
+	const edge = memo.locator('.mobile-scroll-edge');
+	await expect(memo.locator('.memo-item').first()).toBeVisible();
+	await expect(edge).toHaveCSS('opacity', '0');
+
+	await memo.evaluate((frame) => {
+		for (const el of frame.querySelectorAll<HTMLElement>('*'))
+			if (el.scrollHeight > el.clientHeight + 100 && /(auto|scroll)/.test(getComputedStyle(el).overflowY))
+				el.scrollTop = 200;
+	});
+	await expect(memo).toHaveClass(/scrolled/);
+	await expect(edge).toHaveCSS('opacity', '1');
+	// 떠 있는 뒤로 가기는 흐림 층 위에 있다
+	expect(Number(await memo.locator('.mobile-navbar').evaluate((el) => getComputedStyle(el).zIndex))).toBeGreaterThan(
+		Number(await edge.evaluate((el) => getComputedStyle(el).zIndex))
+	);
+
+	// 맨 위로 올리면 다시 투명
+	await memo.evaluate((frame) => {
+		for (const el of frame.querySelectorAll<HTMLElement>('*')) if (el.scrollTop > 0) el.scrollTop = 0;
+	});
+	await expect(memo).not.toHaveClass(/scrolled/);
+});
+
+test('스크롤 가장자리: 위쪽 머리를 직접 그리는 화면(사진 보관함, 활동 상태 보기)은 끈다', async ({ page }) => {
+	await fakeApi(page, { signedIn: true });
+	await openFromHome(page, '사진');
+	const photos = appWindow(page, 'photos');
+	// 보관함은 처음부터 맨 아래(스크롤한 상태)지만, 어두운 제목을 직접 그려 가장자리 효과는 없다
+	await expect(photos.locator('.photos-phone-scroll')).toHaveAttribute('data-scrolled', 'true');
+	await page.waitForTimeout(1000);
+	await expect(photos).not.toHaveClass(/scrolled/);
+});
+
 test('팁 (휴대폰): 위쪽 막대 대신 떠 있는 뒤로 가기로 앞 화면에 돌아간다', async ({ page }) => {
 	await fakeApi(page);
 	await openFromHome(page, '팁');
