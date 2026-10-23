@@ -68,16 +68,37 @@ interface AnchorsState {
 	 * › 를 누르면 다시 접힌다 (details.ts)
 	 */
 	revealed: number[];
+	/** 화면에서만 접은 접기 블록의 자리 (저장한 글은 펼친 블록). › 로 접고 펴는 것은 글을 바꾸지 않는다 (details.ts) */
+	collapsed: number[];
 }
 
 const key = new PluginKey<AnchorsState>('memoAnchors');
+const EMPTY: AnchorsState = { hit: null, revealed: [], collapsed: [] };
 
-/** 화면에서만 펼친 접기 블록인지 */
-export const isRevealed = (state: EditorState, pos: number) => key.getState(state)?.revealed.includes(pos) ?? false;
+/** 화면에 펼쳐 보이는지: 저장한 글이 펼친 블록이면 화면에서 접지 않았을 때, 접은 블록이면 화면에서 펼쳤을 때 */
+export function isShownOpen(state: EditorState, pos: number, node: Node): boolean {
+	const { revealed, collapsed } = key.getState(state) ?? EMPTY;
+	return node.attrs.open ? !collapsed.includes(pos) : revealed.includes(pos);
+}
 
-/** 화면에서만 펼친 것을 거둔다 (› 로 접을 때) */
-export const unreveal = (tr: Transaction, state: EditorState, pos: number) =>
-	tr.setMeta(key, { revealed: (key.getState(state)?.revealed ?? []).filter((at) => at !== pos) });
+/**
+ * 화면에서만 펼치거나 접는다 (show). 글(<details open>)은 바꾸지 않아서 고친 것으로 치지 않는다:
+ * 펼치거나 접는 것만으로 임시 저장되지 않는다
+ */
+export function showOnScreen(tr: Transaction, state: EditorState, pos: number, node: Node, show: boolean) {
+	const current = key.getState(state) ?? EMPTY;
+	const without = (list: number[]) => list.filter((at) => at !== pos);
+	const next = node.attrs.open
+		? {
+				revealed: without(current.revealed),
+				collapsed: show ? without(current.collapsed) : [...without(current.collapsed), pos],
+			}
+		: {
+				collapsed: without(current.collapsed),
+				revealed: show ? [...without(current.revealed), pos] : without(current.revealed),
+			};
+	return tr.setMeta(key, next);
+}
 
 /** 노드 안의 마지막 글자 자리 (각주 내용 끝에 커서를 둔다) */
 function lastTextPos(node: Node, pos: number) {
@@ -97,14 +118,18 @@ function goTo(view: EditorView, pos: number, caret: number) {
 	const node = state.doc.nodeAt(pos);
 	if (!node) return;
 	const revealed = new Set(key.getState(state)?.revealed ?? []);
+	const collapsed = new Set(key.getState(state)?.collapsed ?? []);
+	// 가는 자리를 감싼 블록을 모두 화면에 펼친다 (저장한 글은 그대로)
+	const show = (block: Node, at: number) => {
+		if (block.type.name !== 'details_block') return;
+		if (block.attrs.open) collapsed.delete(at);
+		else revealed.add(at);
+	};
 	const $pos = state.doc.resolve(pos);
-	for (let depth = $pos.depth; depth > 0; depth--) {
-		if ($pos.node(depth).type.name === 'details_block' && !$pos.node(depth).attrs.open)
-			revealed.add($pos.before(depth));
-	}
-	if (node.type.name === 'details_block' && !node.attrs.open) revealed.add(pos);
+	for (let depth = $pos.depth; depth > 0; depth--) show($pos.node(depth), $pos.before(depth));
+	show(node, pos);
 	const tr = state.tr.setSelection(TextSelection.near(state.doc.resolve(caret)));
-	tr.setMeta(key, { hit: { from: pos, to: pos + node.nodeSize }, revealed: [...revealed] });
+	tr.setMeta(key, { hit: { from: pos, to: pos + node.nodeSize }, revealed: [...revealed], collapsed: [...collapsed] });
 	view.dispatch(tr);
 	view.focus();
 	const dom = view.nodeDOM(pos);
@@ -160,7 +185,7 @@ function backrefWidget(label: string, number: number) {
 	};
 }
 
-function decorationsOf(state: EditorState, { hit, revealed }: AnchorsState) {
+function decorationsOf(state: EditorState, { hit, revealed, collapsed }: AnchorsState) {
 	const numbers = footnoteNumbers(state.doc);
 	const referenced = new Set<string>();
 	state.doc.descendants((node) => {
@@ -193,6 +218,11 @@ function decorationsOf(state: EditorState, { hit, revealed }: AnchorsState) {
 			// data-open을 덮어쓰면 데코레이션을 거둘 때 속성이 지워진다. 따로 class로 표시한다
 			decorations.push(Decoration.node(pos, pos + node.nodeSize, { class: 'memo-details-revealed' }));
 	}
+	for (const pos of collapsed) {
+		const node = state.doc.nodeAt(pos);
+		if (node?.type.name === 'details_block')
+			decorations.push(Decoration.node(pos, pos + node.nodeSize, { class: 'memo-details-collapsed' }));
+	}
 	return DecorationSet.create(state.doc, decorations);
 }
 
@@ -201,7 +231,7 @@ export const anchorsPlugin = $prose(
 		new Plugin<AnchorsState>({
 			key,
 			state: {
-				init: (): AnchorsState => ({ hit: null, revealed: [] }),
+				init: (): AnchorsState => EMPTY,
 				apply: (tr, value, _old, next) => {
 					const meta = tr.getMeta(key) as Partial<AnchorsState> | undefined;
 					const current = meta ? { ...value, ...meta } : value;
@@ -211,15 +241,18 @@ export const anchorsPlugin = $prose(
 						from: tr.mapping.map(current.hit.from),
 						to: tr.mapping.map(current.hit.to, -1),
 					};
-					const revealed = current.revealed
-						.map((pos) => tr.mapping.map(pos))
-						.filter((pos) => next.doc.nodeAt(pos)?.type.name === 'details_block');
-					return { hit: hit && hit.to > hit.from ? hit : null, revealed };
+					const follow = (list: number[]) =>
+						list.map((pos) => tr.mapping.map(pos)).filter((pos) => next.doc.nodeAt(pos)?.type.name === 'details_block');
+					return {
+						hit: hit && hit.to > hit.from ? hit : null,
+						revealed: follow(current.revealed),
+						collapsed: follow(current.collapsed),
+					};
 				},
 			},
 			props: {
 				decorations(state) {
-					return decorationsOf(state, key.getState(state) ?? { hit: null, revealed: [] });
+					return decorationsOf(state, key.getState(state) ?? EMPTY);
 				},
 				handleClickOn(view, _pos, node, _nodePos, event, direct) {
 					if (!direct || node.type.name !== 'footnote_reference' || event.button !== 0) return false;

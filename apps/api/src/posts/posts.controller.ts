@@ -12,6 +12,7 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import {
+	ApiConflictResponse,
 	ApiBadRequestResponse,
 	ApiBody,
 	ApiCookieAuth,
@@ -166,6 +167,21 @@ export class PostsController {
 	@ApiNotFoundResponse({ description: "'최근 삭제된 항목'에 없다" })
 	async purge(@Param('slug') slug: string, @CurrentAdmin() admin: AdminIdentity) {
 		await this.posts.purge(slug, admin.login);
+	}
+
+	@Delete(':slug/server-copy')
+	@HttpCode(204)
+	@UseGuards(AdminGuard)
+	@RateLimit('write')
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiNoContentResponse({
+		description:
+			'저장소 글로 되돌렸다: 서버의 게시 내용·임시 저장·버전을 지워 저장소의 Markdown 파일이 보인다. 저장소에 없는 글이면 글이 사라진다',
+	})
+	@ApiNotFoundResponse({ description: '서버에 없는 글이다' })
+	@ApiConflictResponse({ description: '잠긴 메모다' })
+	async revertToRepository(@Param('slug') slug: string) {
+		await this.posts.revertToRepository(slug);
 	}
 
 	@Delete(':slug')

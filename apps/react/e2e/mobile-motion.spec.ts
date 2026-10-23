@@ -57,15 +57,17 @@ test('모바일: 시트가 올라오는 동안 앱 화면이 스크롤되지 않
 	await music.getByRole('button', { name: /잔잔한 피아노/ }).tap();
 	await music.locator('.music-track', { hasText: 'River Flows in You' }).tap();
 
-	// 올라오는 동안 앱 화면(.music)의 스크롤 위치를 계속 기록한다
-	await music
-		.locator('.music')
-		.first()
-		.evaluate((el) => {
-			const seen: number[] = [];
-			(window as unknown as { __musicScroll: number[] }).__musicScroll = seen;
-			el.addEventListener('scroll', () => seen.push(el.scrollTop));
-		});
+	// 플레이리스트가 옆에서 밀려 들어오는 동안 탭하면 Playwright가 곡을 보이게 하려고 화면을 가로로 스크롤해 둔다.
+	// 그 애니메이션이 끝나며 가로 스크롤이 0으로 돌아오는 것까지 세지 않게, 화면이 멈춘 뒤 기록을 시작한다
+	const screen = music.locator('.music').first();
+	await expect.poll(() => screen.evaluate((el) => [el.scrollLeft, el.scrollWidth - el.clientWidth])).toEqual([0, 0]);
+
+	// 올라오는 동안 앱 화면(.music)의 세로 스크롤 위치를 계속 기록한다
+	await screen.evaluate((el) => {
+		const seen: number[] = [];
+		(window as unknown as { __musicScroll: number[] }).__musicScroll = seen;
+		el.addEventListener('scroll', () => seen.push(el.scrollTop));
+	});
 	await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
 	await expect(music.getByRole('dialog', { name: '지금 재생 중' })).toBeVisible();
 	await page.waitForTimeout(600);

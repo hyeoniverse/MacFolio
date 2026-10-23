@@ -61,6 +61,7 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'GET /posts/:slug/revisions/:id': 'admin',
 	'POST /posts/:slug/restore': 'admin',
 	'DELETE /posts/:slug/permanent': 'admin',
+	'DELETE /posts/:slug/server-copy': 'admin',
 	'DELETE /posts/:slug': 'admin',
 
 	'GET /posts/stats': 'public',
@@ -313,6 +314,7 @@ describe('API 경로 목록과 권한 (e2e)', () => {
 			'DELETE /site/resume/en',
 			'POST /posts/:slug/restore',
 			'DELETE /posts/:slug/permanent',
+			'DELETE /posts/:slug/server-copy',
 			'DELETE /posts/:slug',
 			'DELETE /posts/:slug/draft',
 			'DELETE /comments/:id',

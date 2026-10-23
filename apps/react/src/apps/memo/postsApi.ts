@@ -105,6 +105,16 @@ export async function restorePost(
 	return { ok: true, post: post && 'slug' in post ? post : null };
 }
 
+/** 저장소 글로 되돌린다: 서버의 게시 내용·임시 저장·버전을 지운다 (되돌릴 수 없다) */
+export async function revertToRepository(
+	apiUrl: string,
+	slug: string,
+	fetchImpl: typeof fetch = fetch
+): Promise<boolean> {
+	const result = await send(fetchImpl, apiUrl, postUrl(slug, '/server-copy'), 'DELETE');
+	return result.ok;
+}
+
 /** '최근 삭제된 항목'에서 영구히 지운다 (되돌릴 수 없다) */
 export async function purgePost(apiUrl: string, slug: string, fetchImpl: typeof fetch = fetch): Promise<boolean> {
 	const result = await send(fetchImpl, apiUrl, postUrl(slug, '/permanent'), 'DELETE');

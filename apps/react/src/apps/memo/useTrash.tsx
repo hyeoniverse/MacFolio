@@ -12,14 +12,14 @@ import {
 	type Post,
 	type PostSlug,
 } from '@macfolio/desktop-core/memo';
-import { deletePost, purgePost, restorePost } from './postsApi';
+import { deletePost, purgePost, restorePost, revertToRepository } from './postsApi';
 
 const failed = (title: string) =>
 	notify({ app: 'memo', title, body: '관리자 로그인이 끝났거나 서버에 연결할 수 없습니다.' });
 
 /**
  * 지우기와 '최근 삭제된 항목' (관리자): 묻지 않고 지우고(30일 동안 되살릴 수 있다), 되살리고, 즉시 삭제한다.
- * 즉시 삭제는 되돌릴 수 없어서 메모 창 안의 경고창으로 묻는다 (alert를 메모 창 안에 그린다)
+ * 저장소 글로 되돌리기도 여기 둔다. 즉시 삭제와 되돌리기는 취소할 수 없어서 메모 창 안의 경고창으로 묻는다 (alert를 메모 창 안에 그린다)
  */
 export function useTrash({
 	adminPosts,
@@ -30,6 +30,7 @@ export function useTrash({
 	inTrash,
 	onRestored,
 	onTrashGone,
+	onReverted,
 }: {
 	adminPosts: AdminPost[] | null;
 	upsertAdminPost: (post: AdminPost) => void;
@@ -43,6 +44,8 @@ export function useTrash({
 	onRestored: (slug: PostSlug, folder: string) => void;
 	/** 최근 삭제된 항목이 비어 사라졌을 때 (모든 글로) */
 	onTrashGone: () => void;
+	/** 저장소 글로 되돌렸다 (서버의 글을 목록에서 빼고, 열려 있던 편집기를 저장소 글로 새로 그린다) */
+	onReverted: (slug: PostSlug) => void;
 }) {
 	/** 지우기: 묻지 않고 '최근 삭제된 항목'으로 옮긴다 (30일 동안 되살릴 수 있다, macOS 메모처럼) */
 	const removePost = async (post: Post) => {
@@ -89,11 +92,31 @@ export function useTrash({
 	};
 
 	/** 앱 안 경고창으로 묻는다 (메모 창 한가운데). 확인하면 true */
-	const [purgeAlert, setPurgeAlert] = useState<{ title: string; resolve: (ok: boolean) => void } | null>(null);
+	const [confirm, setConfirm] = useState<{
+		title: string;
+		message: string;
+		confirmLabel: string;
+		resolve: (ok: boolean) => void;
+	} | null>(null);
+	const ask = (title: string, message: string, confirmLabel: string) =>
+		new Promise<boolean>((resolve) => setConfirm({ title, message, confirmLabel, resolve }));
 	const askPurge = (count: number) =>
-		new Promise<boolean>((resolve) =>
-			setPurgeAlert({ title: `${count}개의 메모를 영구적으로 삭제하겠습니까?`, resolve })
+		ask(`${count}개의 메모를 영구적으로 삭제하겠습니까?`, '이 동작은 취소할 수 없습니다.', '삭제');
+
+	/**
+	 * 저장소 글로 되돌린다: 서버에서 고친 내용·임시 저장·버전 기록을 지우면 저장소의 Markdown 글이 다시 보인다.
+	 * 취소할 수 없어서 묻는다
+	 */
+	const revertPost = async (post: Post) => {
+		const ok = await ask(
+			'저장소의 원래 글로 되돌리겠습니까?',
+			'서버에서 고친 내용, 임시 저장, 버전 기록이 모두 지워집니다. 이 동작은 취소할 수 없습니다.',
+			'되돌리기'
 		);
+		if (!ok) return;
+		if (!(await revertToRepository(env.apiUrl, post.slug))) return failed('되돌리지 못함');
+		onReverted(post.slug);
+	};
 
 	/** 최근 삭제된 항목에서 즉시 삭제한다 (되돌릴 수 없어서 묻는다) */
 	const purgeDeleted = async (post: Post) => {
@@ -117,18 +140,18 @@ export function useTrash({
 	};
 
 	const answer = (ok: boolean) => {
-		purgeAlert?.resolve(ok);
-		setPurgeAlert(null);
+		confirm?.resolve(ok);
+		setConfirm(null);
 	};
-	const alert = purgeAlert && (
+	const alert = confirm && (
 		<AlertDialog
-			title={purgeAlert.title}
-			message="이 동작은 취소할 수 없습니다."
-			confirmLabel="삭제"
+			title={confirm.title}
+			message={confirm.message}
+			confirmLabel={confirm.confirmLabel}
 			onConfirm={() => answer(true)}
 			onCancel={() => answer(false)}
 		/>
 	);
 
-	return { removePost, restoreDeleted, purgeDeleted, emptyTrash, alert };
+	return { removePost, restoreDeleted, purgeDeleted, emptyTrash, revertPost, alert };
 }

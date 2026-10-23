@@ -11,6 +11,8 @@ export interface NoteActions {
 	remove: (post: Post) => void;
 	restore: (post: Post) => void;
 	purge: (post: Post) => void;
+	/** 서버에서 고친 저장소 글을 저장소의 원래 글로 되돌린다 */
+	revert: (post: Post) => void;
 }
 
 const LOCKED_HINT = '잠긴 메모는 지울 수 없습니다';
@@ -55,11 +57,25 @@ export const removeItem = (post: Post, actions: NoteActions, label = '메모 삭
 	onSelect: () => actions.remove(post),
 });
 
+/** 저장소 글로 되돌리기: 서버에서 고친 저장소 글만 (저장소에 없는 글은 되돌릴 원래 글이 없다). 잠긴 메모는 고칠 수 없다 */
+const revertItems = (post: Post, actions: NoteActions): ActionItem[] =>
+	post.status?.overridesRepo
+		? [
+				{
+					label: '저장소 글로 되돌리기',
+					icon: 'fa-solid fa-clock-rotate-left',
+					disabled: post.locked,
+					hint: post.locked ? '잠긴 메모는 되돌릴 수 없습니다' : undefined,
+					onSelect: () => actions.revert(post),
+				},
+			]
+		: [];
+
 /** 목록의 우클릭 메뉴 */
 export const noteContextItems = (post: Post, actions: NoteActions): MenuItem[] =>
 	post.deletedAt
 		? [restoreItem(post, actions), 'separator', purgeItem(post, actions)]
-		: [...pinLockItems(post, actions), 'separator', removeItem(post, actions)];
+		: [...pinLockItems(post, actions), 'separator', ...revertItems(post, actions), removeItem(post, actions)];
 
 /**
  * 휴대폰 본문의 ••• 메뉴 (iOS 메모처럼): 맨 위에 고정·잠그기, 그 아래 찾기·삭제.
@@ -116,7 +132,9 @@ export const phoneNoteItems = (
 							},
 						]
 					: []),
-				...(canEdit && !newDraft ? [{ ...removeItem(post, actions, '삭제'), destructive: true }] : []),
+				...(canEdit && !newDraft
+					? [...revertItems(post, actions), { ...removeItem(post, actions, '삭제'), destructive: true }]
+					: []),
 			];
 
 /**
@@ -151,7 +169,12 @@ export const toolMenuItems = ({
 		? [restoreItem(selected, actions), purgeItem(selected, actions), 'separator' as const]
 		: []),
 	...(canEdit && selected && !inTrash
-		? [...pinLockItems(selected, actions), removeItem(selected, actions), 'separator' as const]
+		? [
+				...pinLockItems(selected, actions),
+				...revertItems(selected, actions),
+				removeItem(selected, actions),
+				'separator' as const,
+			]
 		: []),
 	...(selected && !inTrash && !selected.status?.draftOnly
 		? [{ label: '링크 공유', icon: <ShareIcon />, onSelect: () => onShare(selected) }, 'separator' as const]

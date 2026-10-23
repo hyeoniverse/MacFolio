@@ -1467,6 +1467,40 @@
 				]
 			}
 		},
+		"/posts/{slug}/server-copy": {
+			"delete": {
+				"operationId": "PostsController_revertToRepository",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "저장소 글로 되돌렸다: 서버의 게시 내용·임시 저장·버전을 지워 저장소의 Markdown 파일이 보인다. 저장소에 없는 글이면 글이 사라진다"
+					},
+					"404": {
+						"description": "서버에 없는 글이다"
+					},
+					"409": {
+						"description": "잠긴 메모다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
 		"/posts/{slug}": {
 			"delete": {
 				"operationId": "PostsController_remove",

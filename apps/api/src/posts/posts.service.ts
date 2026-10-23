@@ -251,6 +251,22 @@ export class PostsService {
 		]);
 	}
 
+	/**
+	 * 저장소 글로 되돌린다: 서버의 게시 내용·임시 저장·버전을 모두 지우고 행도 지운다. 그러면 저장소의 Markdown 파일이 그대로 보인다.
+	 * 서버는 저장소에 같은 주소의 파일이 있는지 모르므로, 저장소에 없는 글이면 글이 사라진다 (화면은 저장소 글에만 이 메뉴를 보인다).
+	 * 되돌릴 수 없다
+	 */
+	async revertToRepository(slug: string) {
+		this.checkSlug(slug);
+		await this.checkUnlocked(slug);
+		const row = await this.prisma.post.findUnique({ where: { slug } });
+		if (!row) throw new NotFoundException('서버에 없는 글입니다.');
+		await this.prisma.$transaction([
+			this.prisma.postRevision.deleteMany({ where: { postSlug: slug } }),
+			this.prisma.post.delete({ where: { slug } }),
+		]);
+	}
+
 	/** 지운 지 RECENTLY_DELETED_DAYS일이 지난 글은 영구히 지운다 (관리자 목록을 읽을 때 같이 정리한다) */
 	private async purgeExpired(now = new Date()) {
 		const before = new Date(now.getTime() - RECENTLY_DELETED_DAYS * 24 * 60 * 60 * 1000);
