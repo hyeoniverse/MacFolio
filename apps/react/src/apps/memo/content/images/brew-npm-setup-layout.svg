@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
   <rect width="640" height="470" fill="#fff"/>
-  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">Homebrew로 Node를 깔았을 때 파일이 놓이는 곳</text>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">Homebrew로 Node를 설치했을 때의 파일 위치</text>
 
   <!-- 왼쪽: /opt/homebrew -->
   <rect x="20" y="50" width="340" height="400" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
