@@ -422,6 +422,9 @@
 	--phone-top: calc(var(--phone-status) + 6px);
 	/* 홈 바(떠 있다)의 높이: 아래에 떠 있는 버튼·입력 칸은 이만큼 올려 홈 바와 겹치지 않게 한다 */
 	--phone-bottom-inset: calc(22px + env(safe-area-inset-bottom));
+	/* 기기 화면의 모서리 반경 (iPhone 13·14 47.33pt, 15·16 Pro 55pt). 화면을 덮던 것이 끌려 내려가 화면 모서리가
+	   드러날 때 그 곡률로 둥글게 한다 (음악 지금 재생 중을 쓸어내리는 중) */
+	--phone-screen-radius: 47px;
 }
 
 .container.mobile .phone-title {

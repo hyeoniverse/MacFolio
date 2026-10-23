@@ -22,6 +22,9 @@ interface Props {
 	onGoTo: (collectionId: string, from: CollectionOrigin) => void;
 }
 
+/** 쓸어내리기를 시작하고 이만큼(px) 내려오는 동안 모서리가 기기 화면 곡률까지 둥글어진다 */
+const CORNER_RAMP = 40;
+
 const REPEAT_LABEL = { off: '반복 끔', all: '전체 반복', one: '한 곡 반복' } as const;
 
 /**
@@ -116,7 +119,14 @@ const NowPlaying: React.FC<Props> = ({ onClose, onGoTo }) => {
 			className={`music-now-playing ${queueOpen ? 'queue-open' : ''} ${dragging ? 'dragging' : ''}`}
 			style={{
 				...cssVars({ artwork: `url('${track.artwork}')` }),
-				...(swipe.offset ? { transform: `translateY(${swipe.offset}px)` } : {}),
+				// 끌려 내려가는 동안 네 모서리가 기기 화면의 곡률(--phone-screen-radius)로 둥글어진다 (처음 40px 동안 보간).
+				// 놓아서 제자리로 돌아오면 전환(transition)으로 각진 모서리로 돌아간다
+				...(swipe.offset
+					? {
+							transform: `translateY(${swipe.offset}px)`,
+							borderRadius: `calc(var(--phone-screen-radius, 0px) * ${Math.min(1, swipe.offset / CORNER_RAMP)})`,
+						}
+					: {}),
 			}}
 			onClose={onClose}
 		>

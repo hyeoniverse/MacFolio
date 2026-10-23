@@ -283,8 +283,29 @@ test.describe('음악: 지금 재생 중', () => {
 		// 못 미치면: 끄는 동안 따라 내려오고, 놓으면 제자리
 		await slowDrag(80, false);
 		expect((await sheetTop()) - top).toBeCloseTo(80, 0);
+		// 끄는 동안 모서리는 기기 화면의 곡률(--phone-screen-radius)만큼 둥글다
+		const corners = () =>
+			sheet.evaluate((el) => {
+				const style = getComputedStyle(el);
+				return {
+					device: style.getPropertyValue('--phone-screen-radius').trim(),
+					topLeft: style.borderTopLeftRadius,
+					topRight: style.borderTopRightRadius,
+					bottomLeft: style.borderBottomLeftRadius,
+				};
+			});
+		const dragged = await corners();
+		expect(parseFloat(dragged.device)).toBeGreaterThan(0);
+		expect(dragged).toEqual({
+			device: dragged.device,
+			topLeft: dragged.device,
+			topRight: dragged.device,
+			bottomLeft: dragged.device,
+		});
 		await page.mouse.up();
 		await expect.poll(sheetTop).toBeCloseTo(top, 0);
+		// 제자리로 돌아오면 각진 모서리
+		await expect.poll(async () => (await corners()).topLeft).toBe('0px');
 		await expect(sheet).toBeVisible();
 
 		// 짧게(50px) 빠르게 튕기면 닫힌다
