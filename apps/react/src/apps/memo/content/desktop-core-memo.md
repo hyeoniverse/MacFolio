@@ -136,12 +136,12 @@ core 패키지는 `@macfolio/desktop-core`(창 관리)와 `@macfolio/desktop-cor
 
 배운 것: hook 안의 계산은 React와 관계없는 규칙을 React 코드처럼 보이게 한다. 중첩된 삼항 연산자 속의 "관리자에게만" 규칙은 함수 이름이 없어서 시험도 없었다. 함수로 분리해 이름을 붙이자 시험 한 줄로 동작을 고정할 수 있었다. 그리고 `localStorage`처럼 브라우저 API를 쓰는 일을 "읽기"와 "검사"로 나누면, 검사 쪽은 어느 환경에서나 실행되는 순수 함수가 된다.
 
-[^dom]: `tsconfig.json`의 `lib`에 `DOM`이 없으면 `window`, `localStorage` 같은 브라우저 전역 이름의 타입이 없어 `Cannot find name` 오류가 난다. core의 설정은 [창 관리 글](/memo/desktop-core-windows)에서 설명했다.
-
 ## 관련 글
 
 - [창 관리를 React 밖으로](/memo/desktop-core-windows): desktop-core 분리의 첫 단계
 - [음악 플레이어를 둘로 나누기](/memo/desktop-core-music): 세 번째 단계
 - [화면과 서버가 같은 규칙을 쓰기](/memo/desktop-core-shared-rules): 글 검사 규칙을 API와 함께 쓰기
+
+[^dom]: `tsconfig.json`의 `lib`에 `DOM`이 없으면 `window`, `localStorage` 같은 브라우저 전역 이름의 타입이 없어 `Cannot find name` 오류가 난다. core의 설정은 [창 관리 글](/memo/desktop-core-windows)에서 설명했다.
 
 #MacFolio #메모앱 #리팩터링

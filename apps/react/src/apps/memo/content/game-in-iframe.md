@@ -9,11 +9,11 @@ summary: 별도로 배포한 Unity WebGL 게임 새싹 농장을 데스크톱의
 
 세 가지 방법을 비교했다.
 
-| 방법                                           | 장점                                  | 단점                                                                                    |
-| ---------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- |
-| Safari 페이지에서 새 탭 링크                   | 구현할 것이 없다                      | 사이트를 벗어난다                                                                       |
-| WebGL 빌드 파일을 이 저장소에 넣어 직접 실행   | 같은 출처라 iframe 제약이 없다        | 빌드 파일이 저장소와 배포에 포함되고, 게임을 수정할 때마다 두 곳에 배포해야 한다        |
-| **배포한 게임 주소를 iframe으로**              | 게임 저장소와 배포를 그대로 사용한다  | 그 사이트가 iframe 삽입을 허용해야 하고, iframe 안의 이벤트가 바깥 문서로 전달되지 않는다 |
+| 방법                                         | 장점                                 | 단점                                                                                      |
+| -------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Safari 페이지에서 새 탭 링크                 | 구현할 것이 없다                     | 사이트를 벗어난다                                                                         |
+| WebGL 빌드 파일을 이 저장소에 넣어 직접 실행 | 같은 출처라 iframe 제약이 없다       | 빌드 파일이 저장소와 배포에 포함되고, 게임을 수정할 때마다 두 곳에 배포해야 한다          |
+| **배포한 게임 주소를 iframe으로**            | 게임 저장소와 배포를 그대로 사용한다 | 그 사이트가 iframe 삽입을 허용해야 하고, iframe 안의 이벤트가 바깥 문서로 전달되지 않는다 |
 
 세 번째를 선택했다. 아래는 그 단점 두 가지를 해결한 기록이다.
 
@@ -44,7 +44,7 @@ sproutfarm: {
 
 처음에는 키보드로 조작하는 PC 게임이라 `desktopOnly` 속성을 새로 만들어 모바일 홈 화면과 단축어에서 제외했다. 이후 게임에 모바일 모드가 추가되어 이 속성을 제거하고 휴대폰에서도 열 수 있게 했다. 이 속성을 쓰는 앱이 새싹 농장 하나뿐이어서 속성 정의 자체도 삭제했다.
 
-처음 작성한 `apps/sproutfarm/SproutFarm.tsx`는 41줄이었다. `AppWindow` 안에 iframe 하나를 두고, [`allow`](https://developer.mozilla.org/ko/docs/Web/HTML/Element/iframe#allow)`="autoplay; fullscreen; gamepad"`로 자동 재생·전체 화면·게임패드 권한을 부여했다.
+처음 작성한 `apps/sproutfarm/SproutFarm.tsx`는 41줄이었다. `AppWindow` 안에 iframe 하나를 두고, [`allow`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#allow)`="autoplay; fullscreen; gamepad"`로 자동 재생·전체 화면·게임패드 권한을 부여했다.
 
 ## iframe 안을 클릭해도 창이 앞으로 오지 않던 문제
 
@@ -64,17 +64,17 @@ useEffect(() => {
 
 ![iframe 안을 눌렀을 때의 이벤트](./images/game-in-iframe-focus.svg '클릭 이벤트는 바깥 문서로 전달되지 않지만, 바깥 문서의 포커스 상실은 감지할 수 있다')
 
-| 방법                                                  | 문제                                                             |
-| ----------------------------------------------------- | ---------------------------------------------------------------- |
-| iframe 위에 투명 레이어를 덮고 첫 클릭 후 제거        | 첫 클릭이 게임에 전달되지 않아 한 번 더 클릭해야 한다            |
-| 게임이 [`postMessage`](https://developer.mozilla.org/ko/docs/Web/API/Window/postMessage)로 클릭을 알림 | 게임 코드를 수정해야 하고, 다른 사이트에는 적용할 수 없다        |
-| **바깥 `window`의 `blur`**                            | 어느 사이트를 삽입해도 같게 동작한다                             |
+| 방법                                                                                                   | 문제                                                      |
+| ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
+| iframe 위에 투명 레이어를 덮고 첫 클릭 후 제거                                                         | 첫 클릭이 게임에 전달되지 않아 한 번 더 클릭해야 한다     |
+| 게임이 [`postMessage`](https://developer.mozilla.org/ko/docs/Web/API/Window/postMessage)로 클릭을 알림 | 게임 코드를 수정해야 하고, 다른 사이트에는 적용할 수 없다 |
+| **바깥 `window`의 `blur`**                                                                             | 어느 사이트를 삽입해도 같게 동작한다                      |
 
 한계도 있다. 포커스가 iframe 안에 있는 상태에서 다른 창을 클릭했다가 다시 iframe을 클릭하면, 그 사이 바깥 문서가 포커스를 가져갔으므로 `blur`가 다시 발생한다. 반면 iframe 안을 연속으로 두 번 클릭할 때는 포커스가 이미 iframe 안에 있어서 `blur`가 발생하지 않는다. 이 경우에는 창이 이미 맨 앞이라 문제가 없다.
 
 ## 창 끌기는 이미 정상 동작
 
-iframe 위로 마우스가 지나가면 `pointermove`가 iframe 문서로 전달되어, 창을 끄는 도중에 멈추는 문제가 흔하다. 이 데스크톱은 창 끌기를 시작하는 시각에 [`setPointerCapture`](https://developer.mozilla.org/ko/docs/Web/API/Element/setPointerCapture)를 호출하므로, 마우스가 iframe 위를 지나가도 이벤트가 끌기 영역으로 계속 전달된다. 별도 수정이 필요 없었다.
+iframe 위로 마우스가 지나가면 `pointermove`가 iframe 문서로 전달되어, 창을 끄는 도중에 멈추는 문제가 흔하다. 이 데스크톱은 창 끌기를 시작하는 시각에 [`setPointerCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)를 호출하므로, 마우스가 iframe 위를 지나가도 이벤트가 끌기 영역으로 계속 전달된다. 별도 수정이 필요 없었다.
 
 ## 외부 사이트에 의존하지 않는 시험
 
@@ -108,7 +108,7 @@ app: {
 },
 ```
 
-같은 날 API 문서 앱도 iframe으로 표시하게 되면서, iframe 부분은 `shared/ui/web-frame/WebFrame.tsx`로 분리했다. 위의 `blur` 코드도 이 파일로 옮기고 `bringAppToFront(appName)`로 일반화했다. 로딩 중에는 앱 아이콘을 표시하고, 8초(`SLOW_MS`)가 지나도 로딩이 끝나지 않으면 새 탭에서 여는 링크를 표시한다. 사이트가 iframe 삽입을 차단하면 빈 화면만 남기 때문이다. 10월 9일에는 [`sandbox`](https://developer.mozilla.org/ko/docs/Web/HTML/Element/iframe#sandbox) 속성으로 내부 사이트가 최상위 창의 주소를 변경하지 못하게 했다. 자세한 내용은 [iframe sandbox](/memo/iframe-sandbox) 글에 있다.
+같은 날 API 문서 앱도 iframe으로 표시하게 되면서, iframe 부분은 `shared/ui/web-frame/WebFrame.tsx`로 분리했다. 위의 `blur` 코드도 이 파일로 옮기고 `bringAppToFront(appName)`로 일반화했다. 로딩 중에는 앱 아이콘을 표시하고, 8초(`SLOW_MS`)가 지나도 로딩이 끝나지 않으면 새 탭에서 여는 링크를 표시한다. 사이트가 iframe 삽입을 차단하면 빈 화면만 남기 때문이다. 10월 9일에는 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성으로 내부 사이트가 최상위 창의 주소를 변경하지 못하게 했다. 자세한 내용은 [iframe sandbox](/memo/iframe-sandbox) 글에 있다.
 
 ![새싹 농장 앱 코드의 변화 과정](./images/game-in-iframe-history.svg '앱 하나를 위해 작성한 iframe 코드가 프로젝트 앱과 API 문서 앱의 공통 컴포넌트가 되었다')
 

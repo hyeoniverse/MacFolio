@@ -5,7 +5,7 @@ category: 개발기/MacFolio/프론트엔드
 summary: 음악 앱의 MusicContext는 다음 곡을 정하는 일과 audio 요소를 재생·정지하는 일을 한 컴포넌트에서 했다. 앞쪽을 desktop-core의 플레이어 store로 옮기고, 동작마다 'moved'·'stopped'·'restart' 같은 결과를 돌려주게 했다. React는 그 결과를 보고 audio만 다룬다.
 ---
 
-desktop-core 분리([#16](https://github.com/hyeoniverse/MacFolio/issues/16))의 마지막 로직 이동은 음악이다([#141](https://github.com/hyeoniverse/MacFolio/pull/141)). [창 관리](/memo/desktop-core-windows)와 [메모](/memo/desktop-core-memo)는 대부분 순수 함수였고, 브라우저 API를 쓰는 부분만 분리하면 됐다. 음악은 조건이 달랐다. 이 앱의 핵심 기능은 소리 재생이고, 재생은 [`<audio>`](https://developer.mozilla.org/ko/docs/Web/HTML/Element/audio) 요소 없이는 할 수 없다.
+desktop-core 분리([#16](https://github.com/hyeoniverse/MacFolio/issues/16))의 마지막 로직 이동은 음악이다([#141](https://github.com/hyeoniverse/MacFolio/pull/141)). [창 관리](/memo/desktop-core-windows)와 [메모](/memo/desktop-core-memo)는 대부분 순수 함수였고, 브라우저 API를 쓰는 부분만 분리하면 됐다. 음악은 조건이 달랐다. 이 앱의 핵심 기능은 소리 재생이고, 재생은 [`<audio>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio) 요소 없이는 할 수 없다.
 
 ![음악 앱. 왼쪽 재생 목록, 가운데 곡 목록, 아래 재생 막대에 셔플·이전·재생·다음·반복 버튼](./images/desktop-core-music-window.jpg '아래 막대의 다섯 버튼을 이번에 store의 동작으로 옮겼다')
 
@@ -28,7 +28,7 @@ const next = useCallback(() => {
 1. 대기열의 어디로 갈지 (`nextPosition`: 끝에서 반복이 꺼져 있으면 `null`)
 2. 소리를 어떻게 처리할지 (`pause()`, 곡을 처음부터, 재생 중이었으면 이어서 재생)
 
-1은 재생 목록, 셔플, 반복 상태만 있으면 계산할 수 있다. 2는 [`HTMLAudioElement`](https://developer.mozilla.org/ko/docs/Web/API/HTMLAudioElement)가 필요하다. "이전 곡", "곡 재생 종료", "재생 목록에서 곡 선택", "셔플 켜기"도 모두 같은 구조였다. 대기열을 계산하는 순수 함수(`nextPosition`, `buildQueue` 등)는 이미 `library.ts`에 따로 있었지만, 대기열과 셔플·반복 상태는 React의 `useState`에 있었다.
+1은 재생 목록, 셔플, 반복 상태만 있으면 계산할 수 있다. 2는 [`HTMLAudioElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLAudioElement)가 필요하다. "이전 곡", "곡 재생 종료", "재생 목록에서 곡 선택", "셔플 켜기"도 모두 같은 구조였다. 대기열을 계산하는 순수 함수(`nextPosition`, `buildQueue` 등)는 이미 `library.ts`에 따로 있었지만, 대기열과 셔플·반복 상태는 React의 `useState`에 있었다.
 
 ## 고를 수 있던 방법
 
@@ -118,18 +118,18 @@ createPlayerStore({ trackIdsOf: (id) => findPlaylist(id).trackIds, playlistId: A
 - Playwright 354개. 음악 앱의 곡 선택, 셔플·반복, 다음 곡 시험이 수정 없이 통과했다
 - 커밋은 파일 12개, +513/−257이다. 앱의 `library.ts`(94줄)와 그 시험(99줄)에서 대기열 계산이 빠져 core의 `queue.ts`(92줄)·`queue.test.ts`(96줄)로 갔다. `MusicContext.tsx`는 103줄이 바뀌었다
 
-| 위치                               | 전                             | 후                         |
-| ---------------------------------- | ------------------------------ | -------------------------- |
-| 대기열·셔플·반복 상태              | `MusicContext`의 `useState` 셋 | core `playerStore`         |
-| 다음 곡 선택 (`nextPosition` 등)   | 앱 `library.ts`                | core `queue.ts`            |
-| 재생 중·시간·음량                  | React (`audio`에서 읽음)       | 그대로 React               |
-| 곡 목록 `TRACKS` (파일 주소)       | 앱                             | 그대로 앱 (`env.musicUrl`) |
+| 위치                             | 전                             | 후                         |
+| -------------------------------- | ------------------------------ | -------------------------- |
+| 대기열·셔플·반복 상태            | `MusicContext`의 `useState` 셋 | core `playerStore`         |
+| 다음 곡 선택 (`nextPosition` 등) | 앱 `library.ts`                | core `queue.ts`            |
+| 재생 중·시간·음량                | React (`audio`에서 읽음)       | 그대로 React               |
+| 곡 목록 `TRACKS` (파일 주소)     | 앱                             | 그대로 앱 (`env.musicUrl`) |
 
 ## 남은 것과 배운 것
 
 이것으로 [#16](https://github.com/hyeoniverse/MacFolio/issues/16)에서 계획한 창 관리, 메모, 음악 세 가지를 모두 옮겼다. 남은 일은 서버와 함께 쓸 규칙(폴더 정리, 글 검사)의 위치를 정하는 것이었고, 같은 날 [#142](https://github.com/hyeoniverse/MacFolio/pull/142)에서 [화면과 서버가 같은 규칙을 쓰게](/memo/desktop-core-shared-rules) 했다.
 
-메뉴 막대의 작은 플레이어(데스크톱 오른쪽 위의 이전·재생·다음 버튼)도 같은 `MusicContext`를 거치므로 이번 변경이 그대로 적용된다. 휴대폰 잠금 화면 같은 곳에 재생 정보를 표시하는 [Media Session API](https://developer.mozilla.org/ko/docs/Web/API/Media_Session_API)는 아직 연결하지 않았다.
+메뉴 막대의 작은 플레이어(데스크톱 오른쪽 위의 이전·재생·다음 버튼)도 같은 `MusicContext`를 거치므로 이번 변경이 그대로 적용된다. 휴대폰 잠금 화면 같은 곳에 재생 정보를 표시하는 [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API)는 아직 연결하지 않았다.
 
 배운 것: 부수 효과(소리 재생)가 있는 로직을 나눌 때는 "상태"만 넘기기보다 "발생한 일의 종류"를 반환하면 받는 쪽 코드가 분기 하나로 줄어든다. 그리고 코드를 옮길 때는 원래 코드가 암묵적으로 의존하던 동작(같은 위치여도 새 객체)을 먼저 찾아 시험으로 고정해야, 옮기는 과정의 최적화가 동작을 바꾸지 않는다.
 

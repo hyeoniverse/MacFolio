@@ -2,7 +2,7 @@
 title: 창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계
 date: 2026-10-09
 category: 개발기/MacFolio/프론트엔드
-summary: 실행 중인 앱과 맨 앞 창을 정하는 로직이 React Context 안에 useState·useCallback으로 있었다. 이것을 React와 브라우저에 의존하지 않는 packages/desktop-core로 옮기고, React는 useSyncExternalStore로 구독만 한다. core가 react나 window를 쓰면 타입 검사·의존성·lint 세 곳에서 오류가 난다.
+summary: 실행 중인 앱과 맨 앞 창을 정하는 로직이 React Context 안에 있었다. 이것을 React와 브라우저에 의존하지 않는 packages/desktop-core로 옮기고, React는 useSyncExternalStore로 구독만 한다. core가 react나 window를 쓰면 세 곳에서 오류가 난다.
 ---
 
 MacFolio의 창 상태는 `AppStateContext` 하나가 관리했다. 앱마다 실행 여부, 최소화 여부, 쌓임 순서를 `useState`에 보관하고, 열기·닫기·최소화·맨 앞으로 가져오기를 `useCallback` 열 개로 만들어 Context로 전달하는 구조였다. 이 글은 [#139](https://github.com/hyeoniverse/MacFolio/pull/139)의 기록이다.
@@ -13,11 +13,11 @@ MacFolio의 창 상태는 `AppStateContext` 하나가 관리했다. 앱마다 �
 
 ## 고를 수 있던 방법
 
-| 방법                                            | 좋은 점                                | 나쁜 점                                                           |
-| ----------------------------------------------- | -------------------------------------- | ----------------------------------------------------------------- |
+| 방법                                            | 좋은 점                                  | 나쁜 점                                                           |
+| ----------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------------- |
 | Context는 유지하고 reducer 함수만 분리한다      | 변경 범위가 작다. React 관례(useReducer) | 상태가 여전히 React 안에 있다. Vue에서 쓰려면 store를 다시 만든다 |
-| zustand 같은 상태 라이브러리                    | 구독·선택자를 제공한다                 | 라이브러리 하나가 core의 의존성이 된다. Vue 쪽 바인딩도 따로 필요 |
-| **직접 만든 작은 store + useSyncExternalStore** | 의존성 없음. React 18 기본 API로 구독  | 선택자·메모이즈가 없다(상태가 작아서 필요 없었다)                 |
+| zustand 같은 상태 라이브러리                    | 구독·선택자를 제공한다                   | 라이브러리 하나가 core의 의존성이 된다. Vue 쪽 바인딩도 따로 필요 |
+| **직접 만든 작은 store + useSyncExternalStore** | 의존성 없음. React 18 기본 API로 구독    | 선택자·메모이즈가 없다(상태가 작아서 필요 없었다)                 |
 
 store는 이미 `createStore`(getState·setState·subscribe 세 함수)로 설정·로그인 상태에 쓰고 있었다. 같은 형태로 창 store를 만들면 React는 [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)[^usese] 한 줄로 구독하고, 다른 프레임워크도 `subscribe`만 호출하면 된다.
 
@@ -64,10 +64,10 @@ React 쪽에 남긴 것은 브라우저 API를 쓰는 일이다.
 
 "React에 의존하지 않는다"는 규칙은 코드 한 줄로 어길 수 있다. core에 `window.innerWidth`를 한 줄만 써도 그 시각부터 Node에서 실행되지 않는다. 그래서 세 곳에서 검사한다.
 
-| 검사 위치          | 방법                                                                  | 오류가 나는 코드               |
-| ------------------ | --------------------------------------------------------------------- | ------------------------------ |
-| `tsconfig.json`    | `lib: ["ES2022"]`, `types: []`. DOM 타입을 넣지 않는다                | `window`, `sessionStorage`     |
-| `package.json`     | 의존성에 react가 없다. pnpm은 선언하지 않은 패키지를 해석하지 않는다[^pnpm] | `import ... from 'react'`      |
+| 검사 위치          | 방법                                                                                                                           | 오류가 나는 코드                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- |
+| `tsconfig.json`    | `lib: ["ES2022"]`, `types: []`. DOM 타입을 넣지 않는다                                                                         | `window`, `sessionStorage`        |
+| `package.json`     | 의존성에 react가 없다. pnpm은 선언하지 않은 패키지를 해석하지 않는다[^pnpm]                                                    | `import ... from 'react'`         |
 | `eslint.config.js` | [`no-restricted-imports`](https://eslint.org/docs/latest/rules/no-restricted-imports)로 `react*`, `vue*`, `@/*`(React 앱 경로) | 위 두 검사를 통과하는 경로 import |
 
 실제로 `import { useState } from 'react'`와 `window.innerWidth`를 넣어 확인했다. `tsc`는 `Cannot find module 'react'`, `Cannot find name 'window'` 오류로 실패했고, lint도 react import를 오류로 보고했다.

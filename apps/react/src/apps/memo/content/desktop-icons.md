@@ -31,7 +31,7 @@ export function cellToPoint({ col, row }: Cell, viewport: Viewport): Point {
 }
 ```
 
-칸 하나는 가로 96px, 세로 100px이고, 위 34px(메뉴 막대), 오른쪽 12px, 아래 96px(Dock)을 여백으로 둔다. 그래서 1440×900 화면이면 한 열에 7줄이 들어간다(`(900 − 34 − 96) / 100`의 내림). 칸은 오른쪽 끝을 기준으로 계산하므로 창 크기가 바뀌어도 아이콘이 오른쪽 끝에 정렬된다. 끌어 옮긴 위치도 칸 단위로 `localStorage`에 저장한다. 저장한 칸이 화면 밖이거나 다른 아이콘과 겹치면 그 값은 버리고 채우는 순서대로 빈 칸에 배치한다.
+칸 하나는 가로 96px, 세로 100px이고, 위 34px(메뉴 막대), 오른쪽 12px, 아래 96px(Dock)을 여백으로 확보한다. 그래서 1440×900 화면이면 한 열에 7줄이 들어간다(`(900 − 34 − 96) / 100`의 내림). 칸은 오른쪽 끝을 기준으로 계산하므로 창 크기가 바뀌어도 아이콘이 오른쪽 끝에 정렬된다. 끌어 옮긴 위치도 칸 단위로 `localStorage`에 저장한다. 저장한 칸이 화면 밖이거나 다른 아이콘과 겹치면 그 값은 버리고 채우는 순서대로 빈 칸에 배치한다.
 
 ![오른쪽 위에서 세는 칸](./images/desktop-icons-grid.svg '위치는 픽셀이 아니라 (col, row) 칸. 창 폭이 바뀌어도 오른쪽 끝에 정렬된다')
 
@@ -63,21 +63,21 @@ export function nearestFree(want: Cell, taken: ReadonlySet<string>, rows: number
 
 ## 선택 규칙
 
-| 입력                              | 결과                                                       |
-| --------------------------------- | ---------------------------------------------------------- |
-| 클릭                              | 그 아이콘 하나만 선택                                      |
-| ⌘ + 클릭                          | 선택에 추가하거나 선택에서 제외 (토글)                     |
-| ⇧ + 클릭                          | 선택에 추가                                                |
-| 빈 곳에서 끌기                    | 반투명 사각형과 겹친 아이콘을 선택                         |
-| ⌘A / Esc                          | 모두 선택 / 선택 해제                                      |
-| ⌘O, ⌘↓, 더블 클릭                 | 선택한 폴더 열기                                           |
-| 여러 개를 선택한 상태에서 클릭    | 버튼을 뗀 시각에 끌기가 없었으면 그 아이콘만 남긴다        |
+| 입력                           | 결과                                                |
+| ------------------------------ | --------------------------------------------------- |
+| 클릭                           | 그 아이콘 하나만 선택                               |
+| ⌘ + 클릭                       | 선택에 추가하거나 선택에서 제외 (토글)              |
+| ⇧ + 클릭                       | 선택에 추가                                         |
+| 빈 곳에서 끌기                 | 반투명 사각형과 겹친 아이콘을 선택                  |
+| ⌘A / Esc                       | 모두 선택 / 선택 해제                               |
+| ⌘O, ⌘↓, 더블 클릭              | 선택한 폴더 열기                                    |
+| 여러 개를 선택한 상태에서 클릭 | 버튼을 뗀 시각에 끌기가 없었으면 그 아이콘만 남긴다 |
 
 마지막 규칙은 macOS와 같다. 누르는 시각에 바로 선택을 해제하면 선택한 아이콘을 한꺼번에 끌 수 없기 때문이다.
 
 ## 더블 클릭과 포인터 캡처
 
-처음에는 `pointerdown` 시각에 바로 [`setPointerCapture`](https://developer.mozilla.org/ko/docs/Web/API/Element/setPointerCapture)로 포인터를 캡처했다[^capture]. 그러자 더블 클릭해도 폴더가 열리지 않았다. 포인터를 캡처하면 이어지는 `click`·`dblclick`도 캡처한 요소(아이콘 레이어)로 전달되어, 아이콘의 `onDoubleClick`이 호출되지 않는다. 그래서 빈 곳에서 사각형을 그릴 때는 바로 캡처하고, 아이콘은 4px 넘게 움직여 끌기가 시작된 시각에 캡처한다.
+처음에는 `pointerdown` 시각에 바로 [`setPointerCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)로 포인터를 캡처했다[^capture]. 그러자 더블 클릭해도 폴더가 열리지 않았다. 포인터를 캡처하면 이어지는 `click`·`dblclick`도 캡처한 요소(아이콘 레이어)로 전달되어, 아이콘의 `onDoubleClick`이 호출되지 않는다. 그래서 빈 곳에서 사각형을 그릴 때는 바로 캡처하고, 아이콘은 4px 넘게 움직여 끌기가 시작된 시각에 캡처한다.
 
 ![pointerdown 시각에 캡처하면 dblclick이 레이어로 가고, 4px 이동 후 캡처하면 아이콘에 전달된다](./images/desktop-icons-capture.svg '포인터 캡처 시각에 따라 dblclick을 받는 요소가 달라진다')
 
@@ -112,15 +112,15 @@ export function nearestFree(want: Cell, taken: ReadonlySet<string>, rows: number
 
 배운 것: `setPointerCapture`는 끌기 구현을 단순하게 하지만, 캡처한 동안 `click`·`dblclick`까지 캡처한 요소로 보낸다. 클릭과 끌기를 같은 요소에서 처리할 때는 끌기가 시작된 시각에 캡처해야 한다. 그리고 포털로 렌더링한 메뉴의 이벤트는 DOM이 아니라 React 트리를 따라 전파된다([React 문서](https://react.dev/reference/react-dom/createPortal#caveats)). 이벤트를 처리하는 쪽에서 `currentTarget.contains(target)`로 실제 발생 위치를 확인해야 한다.
 
-[^alias]: macOS의 가상본(alias)은 원본 파일이나 폴더를 가리키는 바로가기다. 아이콘 왼쪽 아래에 작은 화살표가 붙는다.
-
-[^capture]: 포인터 캡처는 이후의 포인터 이벤트를 포인터 위치와 관계없이 지정한 요소로 보내는 기능이다. 끌기 중에 포인터가 요소 밖으로 나가도 `pointermove`를 계속 받을 수 있다.
-
 ## 관련 글
 
 - [Finder 앱 - 사이트를 파일처럼 둘러보기](/memo/finder-app): 바탕화면 폴더가 여는 Finder 앱
 - [Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
 - [바탕화면의 포트폴리오만 비어 있었다 — 가상본 버그에서 Finder 트리까지](/memo/finder-home-tree): 바탕화면 가상본과 Finder 트리
 - [앱이 많아지자 Dock이 Launchpad와 겹쳤다](/memo/dock-layout): 아이콘 레이어 위에 있는 Dock
+
+[^alias]: macOS의 가상본(alias)은 원본 파일이나 폴더를 가리키는 바로가기다. 아이콘 왼쪽 아래에 작은 화살표가 붙는다.
+
+[^capture]: 포인터 캡처는 이후의 포인터 이벤트를 포인터 위치와 관계없이 지정한 요소로 보내는 기능이다. 끌기 중에 포인터가 요소 밖으로 나가도 `pointermove`를 계속 받을 수 있다.
 
 #MacFolio #데스크톱 #Finder

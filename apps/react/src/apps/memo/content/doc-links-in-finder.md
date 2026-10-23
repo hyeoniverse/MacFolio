@@ -11,10 +11,10 @@ summary: 블로그 글의 저장소 문서 링크(GitHub의 docs/*.md, README, C
 
 ## 구현
 
-| 방법                                          | 장점                                  | 단점                                                |
-| --------------------------------------------- | ------------------------------------- | --------------------------------------------------- |
-| 글의 링크를 사이트 주소로 바꾸기              | 링크가 짧다                           | GitHub에서 글(저장소의 md)을 볼 때 링크가 동작하지 않는다 |
-| 링크는 GitHub 주소로 두고, 클릭 시각에 가로채기 | 저장소와 사이트 양쪽에서 링크가 동작한다 | 가로챌 주소 규칙이 필요하다                         |
+| 방법                                            | 장점                                     | 단점                                                      |
+| ----------------------------------------------- | ---------------------------------------- | --------------------------------------------------------- |
+| 글의 링크를 사이트 주소로 바꾸기                | 링크가 짧다                              | GitHub에서 글(저장소의 md)을 볼 때 링크가 동작하지 않는다 |
+| 링크는 GitHub 주소로 두고, 클릭 시각에 가로채기 | 저장소와 사이트 양쪽에서 링크가 동작한다 | 가로챌 주소 규칙이 필요하다                               |
 
 두 번째를 선택했다. `repoDocs.ts`에 `bundledDocOf(href)`를 추가했다. 주소가 `…/blob/main/`으로 시작하고, 경로가 Finder 번들에 들어가는 형식(`README.md`, `CONTRIBUTING.md`, `docs/<이름>.md`)이면 그 경로를 반환한다. `#제목`이 붙은 링크는 GitHub에서 연다. Finder 본문에는 제목 앵커가 없기 때문이다.
 
@@ -37,7 +37,11 @@ export function bundledDocOf(href: string | undefined): string | null {
 - 단위 시험(`repoDocs.test.ts`): docs 문서·README는 경로를, `#제목`이 붙은 링크·다른 브랜치·`ops/deploy.sh`·`docs/images/` 아래·외부 주소는 null을 반환한다.
 - E2E(`memo.spec.ts`): 'MacFolio 백엔드 한 장으로 보기' 글의 `docs/backend-design.md` 링크를 누르면 새 탭이 열리지 않고 Finder에 그 문서가 열린다.
 
-![메모 글의 docs/backend-design.md 링크를 눌러 Finder에 문서가 열린 화면](./images/doc-links-in-finder-opened.jpg '링크를 누른 뒤의 화면. 메모 창 위에 Finder가 열리고 문서 › backend-design.md를 표시한다')
+## 이후 변경: 텍스트 편집기에서 열기
+
+10월 21일 Markdown 문서를 여는 텍스트 편집기 앱([#309](https://github.com/hyeoniverse/MacFolio/pull/309))이 추가되면서, 같은 링크는 Finder 대신 텍스트 편집기에서 열린다. 링크 판별(`bundledDocOf`)은 그대로이고, 열기 처리만 `useOpenLink`의 `openDocument`로 바뀌었다. E2E 시험 이름도 "글 안의 저장소 문서 링크(GitHub의 docs/*.md)는 텍스트 편집기에서 그 문서를 연다"로 바뀌었다.
+
+![메모 글의 docs/backend-design.md 링크를 눌러 텍스트 편집기에 문서가 열린 화면](./images/doc-links-in-finder-opened.jpg '현재 동작. 링크를 누르면 새 탭 없이 메모 창 위에 텍스트 편집기가 열리고 backend-design.md를 표시한다')
 
 ## 남은 것
 
@@ -47,5 +51,6 @@ export function bundledDocOf(href: string | undefined): string | null {
 
 - [Finder 앱 - 사이트를 파일처럼 둘러보기](/memo/finder-app): 저장소 문서를 표시하는 Finder 앱
 - [MacFolio 백엔드 한 장으로 보기 - 구성도와 설계 결정](/memo/backend-design): E2E 시험에서 링크를 누르는 글
+- [10월 21일 - 이력서를 Markdown 한 장으로, 텍스트 편집기, 위젯, 처음 온 사람을 위한 둘러보기](/memo/day-1021): 텍스트 편집기 앱을 만든 날의 기록
 
 #MacFolio #프론트엔드 #Finder #메모앱
