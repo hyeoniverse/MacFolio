@@ -2,7 +2,6 @@ import { startTour } from '@/desktop/tour/tourStore';
 import { currentSteps } from '@/desktop/tour/firstVisit';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { APP_MANIFEST } from '@/apps/manifest';
-import { REPO_URL } from '@/apps/finder/repoDocs';
 import { useAppState } from '@/desktop/useAppState';
 import { useRegisteredMenus } from '@/desktop/status-bar/appMenus';
 import { buildMenuBar, findShortcutItem } from '@/desktop/status-bar/menuBar';
@@ -11,14 +10,15 @@ import { sendWindowCommand } from '@/desktop/window/windowCommands';
 import { appAddresses, LINKED_APPS, shareLink, type LinkedApp } from '@/shared/lib/appLink';
 import Menu from '@/shared/ui/menu/Menu';
 import KeyboardShortcuts from '@/desktop/status-bar/KeyboardShortcuts';
-import { openExternal } from '@/shared/analytics/analytics';
+import { requestOpen } from '@/shared/lib/openRequest';
+import { REPORT_ISSUE_REQUEST } from '@/apps/messages/conversations';
 
 /**
  * 메뉴 막대의 파일·편집·보기·이동·윈도우·도움말 (#96). 지금 쓰는 앱(activeApp)이 등록한 메뉴와 공통 메뉴를 합쳐 그린다.
  * macOS처럼 메뉴가 열린 채 다른 제목에 마우스를 올리면 그 메뉴로 넘어가고, ←·→로 옆 메뉴로 간다.
  */
 const MenuBarMenus = () => {
-	const { activeApp } = useAppState();
+	const { activeApp, openApp } = useAppState();
 	const registered = useRegisteredMenus();
 	// 연 메뉴는 자리(번호)가 아니라 제목으로 기억한다. 앱이 메뉴를 등록하며 제목 순서가 바뀌어도 연 메뉴가 그대로다
 	const [open, setOpen] = useState<{ title: string; anchor: { x: number; y: number }; keyboard: boolean } | null>(null);
@@ -46,7 +46,15 @@ const MenuBarMenus = () => {
 		help: [
 			{ label: 'MacFolio 둘러보기', icon: 'fa-regular fa-lightbulb', onSelect: () => startTour(currentSteps()) },
 			{ label: '키보드 단축키…', icon: 'fa-regular fa-keyboard', onSelect: () => setShortcutsOpen(true) },
-			{ label: '문제 알리기…', icon: 'fa-solid fa-bug', onSelect: () => openExternal(`${REPO_URL}/issues/new/choose`) },
+			{
+				label: '문제 알리기…',
+				icon: 'fa-solid fa-bug',
+				// 메시지 앱의 새 피드백 화면을 연다. GitHub 이슈는 그 화면의 링크로 안내한다
+				onSelect: () => {
+					requestOpen('messages', REPORT_ISSUE_REQUEST);
+					openApp('messages');
+				},
+			},
 		],
 	});
 

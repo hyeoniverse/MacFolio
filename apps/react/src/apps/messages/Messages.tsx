@@ -7,6 +7,8 @@ import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
 import { NEW_THREAD, useConversations } from './useConversations';
 import { useElementWidth } from '@/shared/hooks/useElementWidth';
+import { useOpenRequest } from '@/shared/lib/openRequest';
+import { REPORT_ISSUE_REQUEST } from './conversations';
 import '@/apps/messages/Messages.css';
 
 /**
@@ -37,6 +39,13 @@ const Messages: React.FC = () => {
 			setNav('back');
 			action(...args);
 		};
+
+	// 도움말 › 문제 알리기: 새 피드백 화면을 열고 입력 칸에 커서를 둔다 (앱이 처음 열리는 중이면 마운트된 뒤에 받는다)
+	useOpenRequest('messages', (id) => {
+		if (id !== REPORT_ISSUE_REQUEST) return;
+		setNav('forward');
+		conversations.compose();
+	});
 
 	return (
 		<AppWindow title="메시지" appName="messages" chrome="unified">

@@ -15,6 +15,9 @@ export interface MessageInput {
 	turnstileToken?: string;
 }
 
+/** 다른 앱이 메시지 앱에 보내는 열기 요청(shared/lib/openRequest)의 id: 도움말 › 문제 알리기가 새 피드백 화면을 연다 */
+export const REPORT_ISSUE_REQUEST = 'report-issue';
+
 export const LIMITS = {
 	text: { min: 1, max: 500 },
 } as const;

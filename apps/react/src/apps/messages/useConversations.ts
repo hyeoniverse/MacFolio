@@ -88,7 +88,7 @@ export function useConversations() {
 		setChatOpen(true);
 	}, []);
 
-	/** 쓰기 버튼: 새 피드백을 남기는 화면을 연다 */
+	/** 쓰기 버튼(또는 도움말 › 문제 알리기): 새 피드백을 남기는 화면을 열고 입력 칸에 커서를 둔다 */
 	const compose = useCallback(() => {
 		if (selectedId !== NEW_THREAD) setPreviousId(selectedId);
 		select(NEW_THREAD);

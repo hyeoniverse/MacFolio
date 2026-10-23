@@ -5,6 +5,7 @@ import Menu from '@/shared/ui/menu/Menu';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { buildTimeline, displayName, type Message, type Thread } from '../conversations';
+import IssueLink from './IssueLink';
 import type { DeleteResult } from '../repository';
 import IconButton from '@/shared/ui/button/IconButton';
 import Turnstile from '@/shared/ui/turnstile/Turnstile';
@@ -164,7 +165,9 @@ const ChatView: React.FC<Props> = ({
 			) : (
 				<header ref={header} className="messages-chat-header">
 					<span className="messages-name-pill">새 피드백</span>
-					<span className="messages-chat-subtitle">감상, 의견, 피드백을 남겨 주세요. 보내면 목록에 올라가요</span>
+					<span className="messages-chat-subtitle">로그인 없이 남길 수 있어요. 보내면 목록에 올라가요</span>
+					{/* 메시지는 자유롭게 남기는 글이고, 코드와 함께 추적할 버그는 저장소의 이슈로도 받는다 */}
+					<IssueLink className="messages-chat-issue" />
 					<Button className="messages-cancel" onClick={onCancelNew}>
 						취소
 					</Button>
@@ -216,7 +219,7 @@ const ChatView: React.FC<Props> = ({
 
 			<Composer
 				key={focusRequest}
-				placeholder={thread ? '답글' : '감상, 의견, 피드백'}
+				placeholder={thread ? '답글' : '인사나 감상, 의견을 자유롭게 남겨 주세요.'}
 				autoFocus={focusRequest > 0}
 				onSend={async (text) => {
 					if (!human.ready) return { sent: false, error: '사람인지 확인하는 칸이 끝날 때까지 기다려 주세요.' };

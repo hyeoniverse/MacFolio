@@ -278,3 +278,114 @@ test.describe('메시지 (iPad 크기 화면)', () => {
 		});
 	}
 });
+
+/** 메뉴 막대 도움말 › 문제 알리기 */
+async function reportIssue(page: Page) {
+	await page.getByRole('group', { name: '메뉴 막대' }).getByRole('button', { name: '도움말', exact: true }).click();
+	await page.getByRole('menu', { name: '도움말', exact: true }).getByRole('menuitem', { name: '문제 알리기…' }).click();
+}
+
+const NEW_ISSUE_URL = 'https://github.com/hyeoniverse/MacFolio/issues/new/choose';
+
+test.describe('도움말 › 문제 알리기: 메시지 앱의 새 피드백', () => {
+	test('메시지 앱이 새 피드백 화면으로 열리고 입력 칸에 커서가 있다. GitHub 이슈 링크는 새 탭으로 열리고, 메시지를 보낼 수 있다', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		await reportIssue(page);
+		const messages = appWindow(page, 'messages');
+		const chat = messages.getByRole('region', { name: '새 피드백' });
+		await expect(chat).toBeVisible();
+		// 문제만 묻지 않는다: 쓰기 버튼과 같은 안내로 인사·감상·의견을 자유롭게 받는다
+		await expect(chat).toContainText('로그인 없이 남길 수 있어요');
+		await expect(textbox(messages)).toBeFocused();
+		await expect(textbox(messages)).toHaveAttribute('placeholder', '인사나 감상, 의견을 자유롭게 남겨 주세요.');
+		await expect(page.locator('.macos-statusbar .app-name')).toHaveText('메시지');
+
+		const link = chat.getByRole('link', { name: /버그는 GitHub 이슈로/ });
+		await expect(link).toHaveAttribute('href', NEW_ISSUE_URL);
+		await expect(link).toHaveAttribute('target', '_blank');
+		await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+		await expect(link.locator('.fa-arrow-up-right-from-square')).toBeAttached();
+
+		// 키보드를 바로 쓸 수 있다: 입력 칸에 초점이 있으므로 타이핑하고 Enter로 보낸다
+		await page.keyboard.type('안녕하세요, 구경 잘 하고 갑니다');
+		await page.keyboard.press('Enter');
+		await expect(messages.getByRole('region', { name: /의 피드백$/ })).toBeVisible();
+		await expect(transcript(messages)).toContainText('안녕하세요, 구경 잘 하고 갑니다');
+		await expect(items(messages)).toHaveCount(1);
+	});
+
+	test('이미 열어 둔 메시지 앱이 뒤에 있어도 앞으로 오고, 보던 안내 대신 새 피드백 화면을 연다. 쓰기 버튼과 같은 화면', async ({
+		page,
+	}) => {
+		const messages = await openMessages(page);
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
+		await dockItem(page, 'memo').click();
+		await expect(page.locator('.macos-statusbar .app-name')).toHaveText('메모');
+
+		await reportIssue(page);
+		await expect(messages.getByRole('region', { name: '새 피드백' })).toBeVisible();
+		await expect(textbox(messages)).toBeFocused();
+		await expect(page.locator('.macos-statusbar .app-name')).toHaveText('메시지');
+
+		// 취소하면 보던 안내로 돌아가고, 쓰기 버튼으로 다시 열어도 같은 안내와 자리표시자
+		await messages.getByRole('button', { name: '취소' }).click();
+		await expect(messages.getByRole('region', { name: '김정현의 안내' })).toBeVisible();
+		await compose(messages).click();
+		await expect(textbox(messages)).toHaveAttribute('placeholder', '인사나 감상, 의견을 자유롭게 남겨 주세요.');
+		await expect(messages.getByRole('region', { name: '새 피드백' })).toContainText('로그인 없이 남길 수 있어요');
+		await expect(messages.getByRole('link', { name: /버그는 GitHub 이슈로/ }).first()).toBeVisible();
+	});
+
+	test('768px 화면(창이 좁아 목록과 대화를 한 화면씩 보여 준다)에서도 목록이 아니라 새 피드백 화면이 열린다', async ({
+		page,
+	}) => {
+		await page.setViewportSize({ width: 768, height: 1024 });
+		await enterDesktop(page);
+		await reportIssue(page);
+		const messages = appWindow(page, 'messages');
+		const chat = messages.getByRole('region', { name: '새 피드백' });
+		await expect(chat).toBeInViewport();
+		await expect(messages.locator('.messages.chat-open')).toBeAttached();
+		await expect(textbox(messages)).toBeFocused();
+		await expect(chat.getByRole('link', { name: /버그는 GitHub 이슈로/ })).toBeInViewport();
+		await post(messages, '좁은 창에서 남긴 인사');
+	});
+
+	test('빈 목록 안내에도 GitHub 이슈 링크가 있다', async ({ page }) => {
+		const messages = await openMessages(page);
+		const empty = messages.locator('.messages-empty');
+		await expect(empty).toContainText('아직 남겨진 피드백이 없어요.');
+		const link = empty.getByRole('link', { name: /버그는 GitHub 이슈로/ });
+		await expect(link).toHaveAttribute('href', NEW_ISSUE_URL);
+		await expect(link).toHaveAttribute('target', '_blank');
+	});
+
+	test('GitHub 이슈 링크를 누르면 새 탭으로 열고 바깥 링크로 집계한다', async ({ page, context }) => {
+		const api = await fakeApi(page);
+		await page.addInitScript(() => {
+			window.__MACFOLIO_ANALYTICS__ = true;
+		});
+		await context.route('https://github.com/**', (route) => route.fulfill({ status: 200, body: 'github' }));
+		await enterDesktop(page);
+		await reportIssue(page);
+		const messages = appWindow(page, 'messages');
+		const popup = page.waitForEvent('popup');
+		await messages
+			.getByRole('region', { name: '새 피드백' })
+			.getByRole('link', { name: /버그는 GitHub 이슈로/ })
+			.click();
+		const tab = await popup;
+		expect(tab.url()).toBe(NEW_ISSUE_URL);
+		await tab.close();
+
+		await page.evaluate(() => {
+			Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' });
+			document.dispatchEvent(new Event('visibilitychange'));
+		});
+		await expect
+			.poll(() => api.analytics.flatMap((batch) => batch.events))
+			.toContainEqual({ type: 'link', item: 'github.com/hyeoniverse/MacFolio/issues/new/choose' });
+	});
+});
