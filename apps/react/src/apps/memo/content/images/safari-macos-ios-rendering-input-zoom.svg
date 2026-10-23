@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>글자 크기 14px인 입력 칸을 누르면 화면이 확대되어 옆이 잘리고, 16px이면 배율이 그대로다</title>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">16px보다 작은 입력 칸은 누르면 확대된다</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">iOS Safari는 글자 크기가 16px 미만인 입력 칸에 포커스가 가면 페이지를 확대하고, 자동으로 원래 배율로 돌아오지 않는다 (도식)</text>
+<text x="250" y="88" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">font-size: 14px</text>
+<text x="250" y="384" font-size="10.5" fill="#b91c1c" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">input { font-size: 14px; }</text>
+<rect x="160" y="100" width="180" height="270" rx="26" fill="#f3f4f6" stroke="#374151" stroke-width="3"/>
+<clipPath id="s160"><rect x="166" y="106" width="168" height="258" rx="21"/></clipPath>
+<g clip-path="url(#s160)">
+<rect x="166" y="106" width="168" height="258" fill="#ffffff"/>
+<g transform="translate(126,96) scale(1.45)">
+<text x="14" y="50" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">로그인</text>
+<rect x="14" y="62" width="150" height="24" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="22" y="78" font-size="9" fill="#6b7280" font-weight="400" text-anchor="start">이메일 (14px)</text>
+<rect x="14" y="94" width="150" height="24" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+<text x="22" y="110" font-size="9" fill="#6b7280" font-weight="400" text-anchor="start">비밀번호</text>
+</g>
+<text x="250.0" y="344" font-size="9" fill="#b91c1c" font-weight="700" text-anchor="middle">누르면 화면이 확대되고</text>
+<text x="250.0" y="356" font-size="9" fill="#b91c1c" font-weight="700" text-anchor="middle">옆이 잘린다</text>
+</g>
+<rect x="224.0" y="112" width="52" height="14" rx="7" fill="#111827"/>
+<text x="590" y="88" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">font-size: 16px</text>
+<text x="590" y="384" font-size="10.5" fill="#15803d" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">input { font-size: 16px; }</text>
+<rect x="500" y="100" width="180" height="270" rx="26" fill="#f3f4f6" stroke="#374151" stroke-width="3"/>
+<clipPath id="s500"><rect x="506" y="106" width="168" height="258" rx="21"/></clipPath>
+<g clip-path="url(#s500)">
+<rect x="506" y="106" width="168" height="258" fill="#ffffff"/>
+<text x="520" y="156" font-size="12" fill="#1f2937" font-weight="700" text-anchor="start">로그인</text>
+<rect x="520" y="168" width="140" height="26" rx="6" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+<text x="528" y="185" font-size="10.5" fill="#6b7280" font-weight="400" text-anchor="start">이메일 (16px)</text>
+<rect x="520" y="202" width="140" height="26" rx="6" fill="#ffffff" stroke="#9ca3af"/>
+<text x="528" y="219" font-size="10.5" fill="#6b7280" font-weight="400" text-anchor="start">비밀번호</text>
+<text x="590.0" y="350" font-size="9" fill="#15803d" font-weight="700" text-anchor="middle">배율이 그대로다</text>
+</g>
+<rect x="564.0" y="112" width="52" height="14" rx="7" fill="#111827"/>
+</svg>
