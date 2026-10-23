@@ -117,10 +117,12 @@ simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크
 
 전송량은 다섯 회차 모두 485KB로 같다. 차이는 LCP 요소다. 4.5초인 회차는 React가 로딩 화면을 다시 렌더링한 시작 안내가 LCP로 다시 집계된다. HTML의 첫 렌더링과 같은 문구라 원래는 새 LCP 후보가 아니어야 한다. Chrome은 이전 후보보다 **큰** 요소가 렌더링될 때만 LCP를 갱신하므로, 웹 글꼴로 바뀌며 글자 영역이 조금 커지는 것으로 추정한다. 아직 확인하지 못해 다음 과제로 남긴다.
 
+> 후속: 원인은 글꼴이 아니라 `#boot-splash`를 삭제하는 시각이었다. HTML 시작 안내가 LCP 후보로 기록되기 전에 React가 노드를 삭제한 회차에 React의 안내가 LCP가 되었다. [성능 5차](/memo/site-performance-lcp-budget)에서 해결했다.
+
 ## 다음 과제
 
-- **CI 성능 예산:** 이번 회귀는 재측정에서만 발견했다. 첫 방문 전송량과 `boot` 크기에 상한을 설정하고 CI에서 검사하면, 기능을 추가하는 PR에서 바로 드러난다
-- **휴대폰 LCP 편차:** 위의 추정을 확인한다
+- **CI 성능 예산:** 이번 회귀는 재측정에서만 발견했다. 첫 방문 전송량과 `boot` 크기에 상한을 설정하고 CI에서 검사하면, 기능을 추가하는 PR에서 바로 드러난다 ([성능 5차](/memo/site-performance-lcp-budget)에서 추가)
+- **휴대폰 LCP 편차:** 위의 추정을 확인한다 ([성능 5차](/memo/site-performance-lcp-budget)에서 해결)
 - **4차의 운영 측정:** 배포한 뒤 다시 측정해 이 글에 더한다
 
 측정 조건과 다시 측정하는 명령은 저장소의 [`docs/performance.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/performance.md)에 정리했다. 앞선 개선 과정은 [첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)에 있다.
@@ -129,6 +131,7 @@ simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크
 
 - [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](/memo/site-performance-report)
 - [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](/memo/site-performance-diet)
+- [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](/memo/site-performance-lcp-budget): 아래 두 과제를 해결한 후속
 - [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets)
 
 [^lcp]: Largest Contentful Paint. 화면에 보이는 가장 큰 글자 덩어리나 이미지가 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/lcp)

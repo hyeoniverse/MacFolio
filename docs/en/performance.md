@@ -7,6 +7,7 @@ A record of measuring the first-visit performance of the site (macfolio.hyeonive
 - Round 1: [#319](https://github.com/hyeoniverse/MacFolio/pull/319)
 - Rounds 2 and 3: [#323](https://github.com/hyeoniverse/MacFolio/pull/323)
 - Re-measurement and Round 4: October 23, 2026 ([#338](https://github.com/hyeoniverse/MacFolio/pull/338)). The first measurement of production with Rounds 1–3 deployed, and a fix for the initial bundle that had grown again in the meantime
+- Round 5: October 23, 2026 ([#PRNUM](https://github.com/hyeoniverse/MacFolio/pull/PRNUM)). Found and fixed why phone LCP was sometimes counted again in the 4-second range, and added a [performance budget](#performance-budget) to CI
 
 ## Summary
 
@@ -14,27 +15,27 @@ Values measured locally under the same conditions. Median of 5 [Lighthouse](http
 
 **Phone**
 
-| Item                                 | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) |
-| ------------------------------------ | ------- | ------- | ------- | ------- | --------------------- |
-| Lighthouse performance score         | 55      | 68      | 69\~72  | 78\~87  | **78\~97**            |
-| FCP (first contentful paint)[^fcp]   | 14.3s   | 4.0s    | 4.0s    | 3.2s    | **2.1\~3.2s**         |
-| LCP (largest contentful paint)[^lcp] | 25.7s   | 6.2s    | 5.8s    | 3.2s    | **2.1\~4.5s**         |
-| TBT (total blocking time)[^tbt]      | 115ms   | 0ms     | 0ms     | 0ms     | **0ms**               |
-| Transfer size on first visit         | 4,893KB | 1,011KB | 725KB   | 483KB   | **485KB**             |
-| Requests                             | 61      | 74      | 75      | 49      | **49**                |
-| Transfer size through entering       | 4,934KB | 1,053KB | 767KB   | 768KB   | **769KB**             |
+| Item                                 | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) | Round 5       |
+| ------------------------------------ | ------- | ------- | ------- | ------- | --------------------- | ------------- |
+| Lighthouse performance score         | 55      | 68      | 69\~72  | 78\~87  | 78\~97                | **85\~99**    |
+| FCP (first contentful paint)[^fcp]   | 14.3s   | 4.0s    | 4.0s    | 3.2s    | 2.1\~3.2s             | **1.7\~3.3s** |
+| LCP (largest contentful paint)[^lcp] | 25.7s   | 6.2s    | 5.8s    | 3.2s    | 2.1\~4.5s             | **1.7\~3.4s** |
+| TBT (total blocking time)[^tbt]      | 115ms   | 0ms     | 0ms     | 0ms     | 0ms                   | **0ms**       |
+| Transfer size on first visit         | 4,893KB | 1,011KB | 725KB   | 483KB   | 485KB                 | **278KB**     |
+| Requests                             | 61      | 74      | 75      | 49      | 49                    | **51**        |
+| Transfer size through entering       | 4,934KB | 1,053KB | 767KB   | 768KB   | 769KB                 | **772KB**     |
 
 **Desktop**
 
-| Item                           | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) |
-| ------------------------------ | ------- | ------- | ------- | ------- | --------------------- |
-| Lighthouse performance score   | 62      | 90      | 93      | 98      | **98\~100**           |
-| FCP                            | 2.5s    | 0.8s    | 0.8s    | 0.7s    | **0.7s**              |
-| LCP                            | 5.8s    | 1.9s    | 1.7s    | 1.1s    | **0.7\~1.1s**         |
-| TBT                            | 9ms     | 0ms     | 0ms     | 0ms     | **0ms**               |
-| Transfer size on first visit   | 9,050KB | 2,177KB | 1,848KB | 771KB   | **772KB**             |
-| Requests                       | 111     | 101     | 102     | 49      | **49**                |
-| Transfer size through entering | 9,065KB | 2,248KB | 1,895KB | 1,895KB | **1,897KB**           |
+| Item                           | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) | Round 5       |
+| ------------------------------ | ------- | ------- | ------- | ------- | --------------------- | ------------- |
+| Lighthouse performance score   | 62      | 90      | 93      | 98      | 98\~100               | **100**       |
+| FCP                            | 2.5s    | 0.8s    | 0.8s    | 0.7s    | 0.7s                  | **0.5\~0.7s** |
+| LCP                            | 5.8s    | 1.9s    | 1.7s    | 1.1s    | 0.7\~1.1s             | **0.5\~0.7s** |
+| TBT                            | 9ms     | 0ms     | 0ms     | 0ms     | 0ms                   | **0ms**       |
+| Transfer size on first visit   | 9,050KB | 2,177KB | 1,848KB | 771KB   | 772KB                 | **278KB**     |
+| Requests                       | 111     | 101     | 102     | 49      | 49                    | **51**        |
+| Transfer size through entering | 9,065KB | 2,248KB | 1,895KB | 1,895KB | 1,897KB               | **1,900KB**   |
 
 - [CLS](https://web.dev/articles/cls) (layout shift) was already 0 before.
 - Transfer sizes are compressed transfer sizes.
@@ -43,7 +44,9 @@ Values measured locally under the same conditions. Median of 5 [Lighthouse](http
 
 Round 3 didn't remove transfer, it **deferred it until after entering**. The transfer size through entering is the same as Round 2. The desktop (the home screen on phones), which used to be hidden behind the loading screen, is rendered during the 2.5 seconds the progress bar fills after the tap.
 
-The phone score varies widely between runs in both Round 3 and Round 4. In some runs the start prompt is counted again as LCP (4.5s). See [Reading the numbers](#reading-the-numbers) below.
+The phone score varied widely between runs in both Round 3 and Round 4, because in some runs the start prompt rendered by React was counted again as LCP (4.5s). Round 5 found and fixed the cause ([Round 5](#round-5-fixing-the-lcp-recount-and-a-performance-budget)). The remaining spread in Round 5 (1.7\~3.4s) comes from simulate's estimate depending on how many bundles finished before the first render ([Reading the numbers](#reading-the-numbers)).
+
+The drop in first-visit transfer in Round 5 (phone 487 → 278KB, desktop 775 → 278KB) is **deferral until after the tap**. The body font (149KB) and wallpaper (phone 60KB, desktop 348KB) are received during the 2.5 seconds the progress bar fills after the loading screen is tapped. Transfer through entering is the same as Round 4.
 
 ![LCP, FCP and first-visit transfer before and after, phone and desktop](../images/performance-chart.svg)
 
@@ -90,7 +93,84 @@ Transfer on first visit grew again as features were added after Round 3 (phone 4
 
 The quote widget only appears with the desktop after the loading screen is tapped, so there's no need to receive it ahead on the first visit. After the fix, `boot` is 47KB compressed and the first visit transfers 485KB on phone and 772KB on desktop, back to Round 3 levels.
 
-Growth like this doesn't show up unless you measure. So the CI performance budget in [Remaining work](#remaining-work) has moved up in priority.
+Growth like this doesn't show up unless you measure. So Round 5 added a CI [performance budget](#performance-budget).
+
+## Round 5: fixing the LCP recount and a performance budget
+
+### Why phone LCP was sometimes counted again in the 4-second range
+
+In local simulate phone measurements, LCP split between 3.3s and 4.5\~4.7s. In the 4-second runs the LCP element was not the HTML start prompt (`#boot-splash p`) but the one React rendered (`p.loading-text`). Runs were classified using the `largestContentfulPaint::Candidate` and `PaintTimingVisualizer::LayoutObjectPainted` events in the Lighthouse trace.
+
+| Runs               | HTML start prompt    | React removes `#boot-splash` and renders | LCP candidate                       | Simulate LCP |
+| ------------------ | -------------------- | ---------------------------------------- | ----------------------------------- | ------------ |
+| Normal (main, 30)  | rendered at 22\~79ms | **after** the HTML prompt's LCP record   | HTML start prompt (render +9\~28ms) | 2.6\~3.3s    |
+| 4-second (main, 7) | rendered at 29\~55ms | **before** the HTML prompt's LCP record  | only the React start prompt         | 4.4\~4.7s    |
+
+- The HTML start prompt was rendered in both cases. But its LCP candidate appeared 9\~28ms after rendering, and in runs where `App.tsx` removed `#boot-splash` before that, no candidate was recorded for it
+- The React start prompt rendered next then becomes the first LCP candidate. Simulate counts the app scripts executed before that time and the web font (149KB) received in between as needed for LCP, giving 4.5s
+- The earlier guess that the text box grows when the web font swaps in was not the cause. In the 4-second runs the React prompt was the same 3,078px² as the HTML prompt (web font) or smaller (2,754px², fallback font)
+- How often the 4-second runs occurred depended on load on the measuring machine: about half in earlier measurements the same day, 3 of 28 in the alternating runs
+
+| Change                                                                                                   | Effect                                                                                                            |
+| -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Remove `#boot-splash` when the loading screen is **tapped**, not when React first renders (`App.tsx`)    | The HTML prompt's LCP record isn't lost. Tapping ends LCP recording, so removal after that has no effect          |
+| Render the loading screen's start prompt in the same system font as `#boot-splash` (`LoadingScreen.css`) | Same text box, so the React prompt doesn't become a new LCP candidate. The web font isn't received before the tap |
+
+React's loading screen renders at the same position and size as `#boot-splash`, later in DOM order, so it covers it. `e2e/mobile-loading.spec.ts` checks that the two boxes and text boxes match.
+
+| Local phone simulate (28 alternating runs each) | Before (main) | After (Round 5)         |
+| ----------------------------------------------- | ------------- | ----------------------- |
+| LCP of 4s or more                               | 3 runs        | **0 runs**              |
+| LCP range                                       | 2.6\~4.7s     | **1.7\~3.4s**           |
+| LCP median                                      | 3.3s          | 3.3s                    |
+| Score range                                     | 77\~93        | **85\~99**              |
+| LCP element                                     | varies by run | always `#boot-splash p` |
+
+Desktop had the same cause: LCP was 1.2s in 1 of 5 runs (the React prompt). In Round 5 all 5 runs are 0.5\~0.7s.
+
+### The wallpaper showing outside the phone loading screen
+
+On phones (especially iOS Safari), the loading screen didn't cover the whole screen and the home screen background showed at the bottom. It doesn't reproduce with Playwright's (Chromium) phone emulation, so both candidate causes were addressed.
+
+- **Box size:** the loading screen was `width: 100vw; height: 100vh`, while the home screen (`.mobile-home`) is `inset: 0; height: 100dvh`. In iOS Safari `vh` is based on the toolbar-collapsed (largest) viewport and `dvh` on the currently visible area, so the two boxes differ as the toolbar appears and disappears ([MDN: viewport units](https://developer.mozilla.org/en-US/docs/Web/CSS/length#relative_length_units_based_on_viewport))
+- **Background outside the box:** when area outside the box shows, such as behind the toolbar or when the page is pulled down, the html/body background is shown. The `booting` class was removed as soon as the loading screen appeared, so that background was the wallpaper
+
+The loading screen and `#boot-splash` now use the same `inset: 0; height: 100dvh` as the home screen, and html/body stay black (`booting`) until the loading screen is tapped. Even if area outside the box shows, it's the same black as the loading screen. The test (`e2e/mobile-loading.spec.ts`) checks at 390×844, 430×932 and 375×667 that the loading screen covers the whole viewport, that the topmost element at the screen edges and bottom is the loading screen (including while the home screen renders after the tap), and that the html background is black. The real iPhone Safari toolbar behavior is to be checked on a device.
+
+### Performance budget
+
+Round 4's regression (quote widget, +19KB) was only found by re-measuring. To surface growth like that in the PR itself, CI's `check` job runs `apps/react/scripts/perf/budget.mjs` after the build to check the size of the first-visit bundles.
+
+| Item                                                                                                               | Measured (October 23, 2026) | Limit     | Headroom          |
+| ------------------------------------------------------------------------------------------------------------------ | --------------------------- | --------- | ----------------- |
+| `boot` bundle (`assets/boot-*.js`)                                                                                 | 49.4KB                      | **55KB**  | 5.6KB (about 10%) |
+| First-visit bundles total (`<script type="module">`, `modulepreload`, `preload`, `stylesheet` in `index.html`, 41) | 251.6KB                     | **265KB** | 13.4KB (about 5%) |
+
+- Sizes are brotli level 9 (same as the measurement server `serve.mjs`), and KB is 1,024 bytes
+- The limits were chosen so that Round 4's regression (+19KB) fails both items. The total has less headroom because small increases add up across many bundles
+- Fonts and images are not included. From Round 5 they aren't received on the first visit (before the tap)
+
+When a limit is exceeded, the CI log and failure summary (annotation) show which item went over, by how much, and the largest files. Below is an example made to fail by lowering the limits.
+
+```text
+$ BUDGET_BOOT_KB=45 BUDGET_INITIAL_KB=240 pnpm --filter @macfolio/react perf:budget
+boot 번들(assets/boot-wshPrf4V.js)이 49.4KB로, 상한 45.0KB보다 4.4KB 큽니다.
+
+첫 방문 번들(index.html이 처음부터 요청하는 41개)이 251.7KB로, 상한 240.0KB보다 11.7KB 큽니다.
+크기 상위 8개:
+    59.4KB  assets/jsx-runtime-C2l8KVV-.js
+    49.4KB  assets/boot-wshPrf4V.js
+    34.6KB  assets/boot-DhNtOT2g.css
+    28.8KB  assets/preload-helper-qmxL7HwO.js
+    ...
+```
+
+**What to do when it fails**
+
+1. Reproduce locally with `pnpm build` and then `pnpm --filter @macfolio/react perf:budget`
+2. Find the bundle that grew in the list of largest files and check which modules were newly included. Most often, as in Round 4, a component or data not needed for the first screen was imported statically
+3. If it's only needed after the loading screen is tapped, split it with [`React.lazy`](https://react.dev/reference/react/lazy) or `import()`
+4. If the growth is truly needed for the first screen, raise both the table in this document and `BUDGET` in `budget.mjs`, and note the reason and measurements in the PR. The `BUDGET_BOOT_KB` and `BUDGET_INITIAL_KB` environment variables change the limits for local experiments
 
 ## How it was measured
 
@@ -118,10 +198,10 @@ Production was measured by passing the production URL to the same `measure.mjs`.
   - Locally, before the first render (47ms), all 33 bundles listed for [modulepreload](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/modulepreload) (about 400KB) have already been received.
   - Simulate treats "what was received before the first render" as needed for the first render and computes the slow-network time from it. So phone FCP comes out in the 3-second range.
   - With real throttling, the HTML's first render is at 1.2s (table above). So look at both values for phone FCP.
-- **Why phone LCP varies:**
-  - In some runs, the start prompt re-rendered by React is counted again as LCP (4.5s).
-  - It's the same text as the first render, so it shouldn't be a new LCP. The guess is that the text box grows slightly when the web font swaps in, but it hasn't been confirmed.
-  - With real throttling, 4 out of 5 runs are 1.2s.
+- **Why phone LCP varied (up to Round 4):**
+  - In runs where React removed `#boot-splash` too early, no LCP candidate was recorded for the HTML start prompt and React's start prompt became LCP (4.5s). Fixed in Round 5 ([Round 5](#round-5-fixing-the-lcp-recount-and-a-performance-budget)).
+- **Remaining spread in Round 5 (1.7\~3.4s):**
+  - The LCP element is always the HTML start prompt. Simulate counts requests finished before that render as needed for LCP, so the value depends on how many modulepreload bundles arrived locally before the first render.
 - **The local server is HTTP/1.1:**
   - It allows 6 concurrent connections, so the 33 bundles queue up.
   - Production (Cloudflare) is HTTP/2 and receives them together over one connection. This is also why production phone FCP (1.9s) is faster than local simulate (3.2s).
@@ -213,6 +293,18 @@ The desktop renders during the 2.5 seconds the progress bar fills after the tap,
 
 See [Round 4: what the re-measurement found](#round-4-what-the-re-measurement-found) above. Splitting the quote widget with `React.lazy` brought the `boot` bundle back from 65KB to 47KB compressed.
 
+### Round 5 (#PRNUM)
+
+See [Round 5: fixing the LCP recount and a performance budget](#round-5-fixing-the-lcp-recount-and-a-performance-budget) above.
+
+| Change                                                                                                   | Effect                                                                                                           |
+| -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Remove `#boot-splash` when the loading screen is tapped (`App.tsx`)                                      | Phone LCP 4-second runs 3/28 → 0/28                                                                              |
+| Loading screen start prompt in the same system font as `#boot-splash` (`LoadingScreen.css`)              | Web font 149KB deferred until after the tap                                                                      |
+| Keep the black html/body background (`booting`) until the loading screen is tapped (`LoadingScreen.tsx`) | No wallpaper shows outside the phone loading screen. Wallpaper 60KB (desktop 348KB) deferred until after the tap |
+| Loading screen and `#boot-splash` use `inset: 0; height: 100dvh` (`LoadingScreen.css`, `index.html`)     | Same box as the home screen                                                                                      |
+| CI performance budget (`scripts/perf/budget.mjs`, `check` in `ci.yml`)                                   | Fails above `boot` 55KB or first-visit bundles 265KB                                                             |
+
 ### Problems fixed along the way
 
 Switching apps to load when first opened broke 16 E2E tests.
@@ -223,16 +315,17 @@ Switching apps to load when first opened broke 16 E2E tests.
 
 ## Remaining work
 
-- **CI performance budget:** measurements are manual for now. To keep the initial bundle from growing again as features are added, as in Round 4, CI should check upper limits for first-visit transfer size and the `boot` size
-- **Phone LCP variance:** in some runs the start prompt is counted again as LCP when React re-renders the loading screen (4.5s). The cause hasn't been confirmed
+- **Font and wallpaper after entering:** from Round 5 the body font and wallpaper are received after the tap. On a slow network, if the desktop wallpaper (348KB) doesn't arrive within the 2.5 seconds the progress bar fills, a black background may show briefly right after the loading screen lifts. To be checked with real throttling
+- **Device check:** whether the loading screen covers down to below the iPhone Safari toolbar is to be checked on a real device
 - **Phone transfer after entering:** 769KB is unchanged. The 33 initial bundles and the Font Awesome solid font (117KB) remain. Since icon names can be picked in project content (on the server), it's hard to keep only the icons in use
-- **Production measurement of Round 4:** measure the production URL again after deploying
+- **Production measurement of Rounds 4 and 5:** measure the production URL again after deploying
 
 ## Related posts (Korean)
 
 - [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-report)
 - [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
 - [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](https://macfolio.hyeoniverse.com/memo/site-performance-remeasure)
+- [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
 
 [^fcp]: [First Contentful Paint](https://web.dev/articles/fcp): when the first content such as text or an image is rendered.
 
