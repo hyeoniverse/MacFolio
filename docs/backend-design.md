@@ -2,7 +2,7 @@
 
 # 백엔드 설계
 
-MacFolio API 서버(`apps/api`)의 구성과 설계 결정을 정리한 문서입니다. 배포 순서는 [deployment.md](deployment.md)에, 기술을 고른 이유는 [README](../README.md#백엔드)에 있습니다. 같은 내용을 그림 위주로 정리한 글은 [MacFolio 백엔드 한 장으로 보기](https://macfolio.hyeoniverse.com/memo/backend-design)입니다.
+MacFolio API 서버(`apps/api`)의 구성과 설계 결정을 정리한 문서입니다. 배포 순서는 [deployment.md](deployment.md)에, 기술을 고른 이유는 [README](../README.md#기술-스택)에 있습니다. 같은 내용을 그림 위주로 정리한 글은 [MacFolio 백엔드 한 장으로 보기](https://macfolio.hyeoniverse.com/memo/backend-design)입니다.
 
 | 항목        | 값                                                                                                 |
 | ----------- | -------------------------------------------------------------------------------------------------- |
