@@ -10,6 +10,8 @@ import '@/shared/ui/menu/Menu.css';
 export type MenuItem =
 	| {
 			label: string;
+			/** 이름 아래 흐린 둘째 줄 (iOS 메뉴의 '앨범으로 이동 / 앨범 이름'처럼) */
+			detail?: string;
 			/** 아이콘: Font Awesome 클래스나 그린 아이콘(SVG). checked가 있으면 대신 체크 표시 자리를 쓴다 */
 			icon?: string | React.ReactElement;
 			onSelect: () => void;
@@ -214,7 +216,14 @@ const Menu: React.FC<Props> = ({
 									aria-hidden="true"
 								/>
 							))}
-						{item.label}
+						{item.detail ? (
+							<span className="ui-menu-item-text">
+								{item.label}
+								<small className="ui-menu-item-detail">{item.detail}</small>
+							</span>
+						) : (
+							item.label
+						)}
 						{item.shortcut && (
 							<span className="ui-menu-shortcut" aria-hidden="true">
 								{formatShortcut(item.shortcut, mac)}
