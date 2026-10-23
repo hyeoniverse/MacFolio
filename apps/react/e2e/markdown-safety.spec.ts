@@ -25,8 +25,12 @@ test('메모 글의 위험한 링크·HTML은 스크립트가 되지 않는다',
 	await enterDesktop(page);
 	await dockItem(page, 'memo').click();
 	const memo = appWindow(page, 'memo');
-	await memo.locator('.memo-item', { hasText: '위험한 본문' }).click();
 	const body = memo.locator('.memo-markdown');
+	// 저장소 글은 서버 글보다 늦게 도착할 수 있다. 그 시각에 목록 순서가 바뀌면 클릭이 다른 글에 닿으므로, 글이 열릴 때까지 다시 누른다
+	await expect(async () => {
+		await memo.locator('.memo-item', { hasText: '위험한 본문' }).click();
+		await expect(body.getByRole('link', { name: '안전한 링크' })).toBeVisible({ timeout: 1_000 });
+	}).toPass();
 	await expect(body.getByRole('link', { name: '안전한 링크' })).toHaveAttribute('href', 'https://example.com/a');
 
 	const found = await body.evaluate((root) => ({
