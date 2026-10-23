@@ -112,6 +112,11 @@
 	overflow: auto;
 }
 
+/* 휴대폰: 위쪽 막대 대신 떠 있는 뒤로 가기(--phone-top부터 44px). 내용은 그 아래에서 시작해 상태 표시줄과 겹치지 않는다 */
+.container.mobile .tips-scroll {
+	padding-top: calc(var(--phone-top) + 44px);
+}
+
 /* 첫 화면 */
 .tips-home {
 	max-width: 960px;

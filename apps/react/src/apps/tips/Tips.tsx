@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
+import MobileNavigation from '@/desktop/window/MobileNavigation';
 import { useAppState } from '@/desktop/useAppState';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import { appIconUrl } from '@/shared/config/appIcon';
@@ -211,45 +212,52 @@ const Tips = () => {
 	const hits = searchAll(query);
 	const guide = route.kind === 'guide' ? GUIDES.find((each) => each.id === route.id) : undefined;
 	const manual = route.kind === 'manual' ? MANUALS.find((each) => each.app === route.app) : undefined;
-	const title =
-		route.kind === 'home'
-			? '팁'
-			: guide
-				? guide.title
-				: manual
-					? `${appLabel(manual.app)} 사용 설명서`
-					: route.kind === 'manuals'
-						? '사용 설명서'
-						: '화면에서 짚어 보기';
+	const titleOf = (each: Route) => {
+		if (each.kind === 'home') return '팁';
+		if (each.kind === 'guide') return GUIDES.find((entry) => entry.id === each.id)?.title ?? '팁';
+		if (each.kind === 'manual') return `${appLabel(each.app)} 사용 설명서`;
+		return each.kind === 'manuals' ? '사용 설명서' : '화면에서 짚어 보기';
+	};
+	const title = titleOf(route);
 
 	return (
 		<AppWindow title={title} appName="tips" chrome="unified">
 			<div className="tips">
-				<header className="tips-bar">
-					<span className="tips-bar-pill" role="group" aria-label="이동">
-						<button type="button" aria-label="뒤로" disabled={history.at === 0} onClick={() => step(-1)}>
-							<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-						</button>
+				{/* 휴대폰: 위쪽 막대는 상태 표시줄 밑에 깔려 누를 수 없다. iOS처럼 떠 있는 뒤로 가기 하나로 앞 화면에 돌아간다 */}
+				{phone ? (
+					<MobileNavigation
+						{...(route.kind !== 'home' && {
+							backLabel: history.at > 0 ? titleOf(history.routes[history.at - 1]) : '팁',
+							onBack: () => (history.at > 0 ? step(-1) : go({ kind: 'home' })),
+						})}
+					/>
+				) : (
+					<header className="tips-bar">
+						<span className="tips-bar-pill" role="group" aria-label="이동">
+							<button type="button" aria-label="뒤로" disabled={history.at === 0} onClick={() => step(-1)}>
+								<i className="fa-solid fa-chevron-left" aria-hidden="true" />
+							</button>
+							<button
+								type="button"
+								aria-label="앞으로"
+								disabled={history.at === history.routes.length - 1}
+								onClick={() => step(1)}
+							>
+								<i className="fa-solid fa-chevron-right" aria-hidden="true" />
+							</button>
+						</span>
 						<button
 							type="button"
-							aria-label="앞으로"
-							disabled={history.at === history.routes.length - 1}
-							onClick={() => step(1)}
+							className="tips-bar-round"
+							aria-label="홈"
+							disabled={route.kind === 'home'}
+							onClick={() => go({ kind: 'home' })}
 						>
-							<i className="fa-solid fa-chevron-right" aria-hidden="true" />
+							<i className="fa-solid fa-house" aria-hidden="true" />
 						</button>
-					</span>
-					<button
-						type="button"
-						className="tips-bar-round"
-						aria-label="홈"
-						disabled={route.kind === 'home'}
-						onClick={() => go({ kind: 'home' })}
-					>
-						<i className="fa-solid fa-house" aria-hidden="true" />
-					</button>
-					{route.kind !== 'home' && <span className="tips-bar-title">{title}</span>}
-				</header>
+						{route.kind !== 'home' && <span className="tips-bar-title">{title}</span>}
+					</header>
+				)}
 
 				{/* 보는 곳이 바뀌면 맨 위부터 (스크롤을 새로) */}
 				<div key={JSON.stringify(route)} className="tips-scroll">

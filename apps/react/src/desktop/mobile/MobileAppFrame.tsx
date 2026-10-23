@@ -9,6 +9,7 @@ import { closeSwitcher, getSwitcherScroll, openSwitcher, setSwitcherScroll } fro
 import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
 import { appIconUrl } from '@/shared/config/appIcon';
 import { clearImmersiveApp, setImmersiveApp } from '@/desktop/mobile/immersiveStore';
+import { useAppScrolled } from '@/desktop/mobile/useAppScrolled';
 
 /** 카드를 위로 이만큼 밀면 앱을 닫는다 */
 const SWIPE_CLOSE_PX = 120;
@@ -64,6 +65,9 @@ const MobileAppFrame: React.FC<Props> = ({
 	// Esc는 떠 있는 뒤로 가기와 같다 (맨 앞 앱만). 앱 안의 팝오버·대화상자·쓰기 화면이 먼저다:
 	// 그들이 이 Esc를 썼으면(preventDefault) 뒤로 가지 않는다. 듣는 순서와 상관없게 이벤트가 다 돈 뒤에 본다
 	const foreground = !inSwitcher && foregroundApp(apps) === appName;
+
+	// 스크롤 가장자리: 내용이 스크롤되면 상태 표시줄과 떠 있는 버튼 줄 뒤를 흐린다 (화면이 끄지 않았으면)
+	const scrolled = useAppScrolled(foreground ? appName : null) && nav?.scrollEdge !== false;
 
 	// 화면만 보기: 맨 앞에 있는 동안 상태 표시줄도 숨긴다 (MobileShell이 읽는다)
 	const immersive = foreground && !!nav?.immersive;
@@ -165,13 +169,21 @@ const MobileAppFrame: React.FC<Props> = ({
 				ref={frameRef}
 				data-app={appName}
 				aria-label={title}
-				className={`container mobile ${chrome === 'unified' ? 'unified' : ''}`}
+				className={`container mobile ${chrome === 'unified' ? 'unified' : ''} ${scrolled ? 'scrolled' : ''}`}
 				onClick={onClick}
 				// 전환기 안에서는 앱을 누를 수 없고 카드 전체가 버튼이다
 				inert={inSwitcher}
 			>
 				{/* iOS처럼 제목 막대가 없다: 뒤로 가기는 내용 위에 떠 있는 동그란 버튼 하나 (첫 화면은 홈, 안으로 들어가면 앱이 정한 뒤로 가기).
 				    내용은 상태 표시줄 아래부터 화면 끝까지 쓰고, 홈 바도 내용 위에 떠 있다 */}
+				{/* 스크롤 가장자리 효과 (Window.css의 .mobile-scroll-edge) */}
+				<div className="mobile-scroll-edge" aria-hidden="true">
+					<span />
+					<span />
+					<span />
+					<span />
+					<span />
+				</div>
 				{/* 홈으로 가는 버튼을 감춘 앱(hideHome)은 앱이 정한 뒤로 가기가 있을 때만 그린다 */}
 				{(nav?.onBack || !nav?.hideHome) && (
 					<div

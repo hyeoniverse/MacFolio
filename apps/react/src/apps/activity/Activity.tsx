@@ -397,7 +397,8 @@ const Activity = () => {
 	return (
 		<AppWindow title="활동 상태 보기" appName="activity">
 			{/* 휴대폰: iOS의 탭으로 나눈 앱처럼 첫 화면에 홈으로 가는 버튼이 없다 (홈 바로 나간다). 탭 줄이 폭을 다 쓴다 */}
-			<MobileNavigation hideHome />
+			{/* 탭 줄이 위에 고정되어 내용이 그 밑으로 지나가지 않는다: 스크롤 가장자리 효과를 끈다 (탭이 흐려지지 않게) */}
+			<MobileNavigation hideHome scrollEdge={false} />
 			<div className="activity">
 				{env.apiUrl && (
 					<div className="activity-toolbar">

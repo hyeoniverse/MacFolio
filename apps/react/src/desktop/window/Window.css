@@ -287,6 +287,70 @@
 		visibility var(--duration);
 }
 
+/* 스크롤 가장자리 (iOS처럼): 내용이 스크롤되어 위로 올라가면(.scrolled, useAppScrolled) 상태 표시줄 뒤를 흐린다.
+   맨 위에서는 투명해 앱 첫 줄이 그대로 보인다. 아래 끝에서는 흐림이 완전히 없어진다.
+   흐림은 다섯 층(2px → 1.3 → 0.8 → 0.5 → 0.25px)으로 나눈다 (progressive blur). 가장 센 층은 위 40%를 덮고,
+   나머지는 자기 구간에서만 나타났다 사라져 이웃한 두 층만 섞인다. 마스크는 흐림을 약하게 하는 게 아니라
+   흐린 화면과 선명한 화면을 섞는 것이라, 한 번에 섞는 두 층의 흐림 차이가 작아야 잔상(겹친 글자)이 보이지 않는다.
+   색을 바꾸는 필터(saturate)는 쓰지 않는다: 마스크가 끝나는 자리에서 색이 달라져 띠처럼 보인다.
+   층마다 따로 흐린다: 바깥 요소에 backdrop-filter·mask·opacity를 두면 backdrop root가 되어 안쪽 층이 앱 내용을 흐리지 못한다.
+   떠 있는 버튼(뒤로 가기 z-index 6, 앱의 버튼 3~5)은 이 층 위에 있어 흐려지지 않는다 */
+.mobile-scroll-edge {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 2;
+	height: calc(var(--phone-top, var(--mobile-statusbar-height)) + 36px);
+	pointer-events: none;
+}
+
+.mobile-scroll-edge > span {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	transition: opacity var(--duration) var(--ease-out);
+}
+
+.mobile-scroll-edge > span:nth-child(1) {
+	-webkit-backdrop-filter: blur(2px);
+	backdrop-filter: blur(2px);
+	-webkit-mask-image: linear-gradient(#000 0%, #000 40%, transparent 52%);
+	mask-image: linear-gradient(#000 0%, #000 40%, transparent 52%);
+}
+
+.mobile-scroll-edge > span:nth-child(2) {
+	-webkit-backdrop-filter: blur(1.3px);
+	backdrop-filter: blur(1.3px);
+	-webkit-mask-image: linear-gradient(transparent 0%, transparent 40%, #000 52%, transparent 64%);
+	mask-image: linear-gradient(transparent 0%, transparent 40%, #000 52%, transparent 64%);
+}
+
+.mobile-scroll-edge > span:nth-child(3) {
+	-webkit-backdrop-filter: blur(0.8px);
+	backdrop-filter: blur(0.8px);
+	-webkit-mask-image: linear-gradient(transparent 0%, transparent 52%, #000 64%, transparent 76%);
+	mask-image: linear-gradient(transparent 0%, transparent 52%, #000 64%, transparent 76%);
+}
+
+.mobile-scroll-edge > span:nth-child(4) {
+	-webkit-backdrop-filter: blur(0.5px);
+	backdrop-filter: blur(0.5px);
+	-webkit-mask-image: linear-gradient(transparent 0%, transparent 64%, #000 76%, transparent 88%);
+	mask-image: linear-gradient(transparent 0%, transparent 64%, #000 76%, transparent 88%);
+}
+
+.mobile-scroll-edge > span:nth-child(5) {
+	-webkit-backdrop-filter: blur(0.25px);
+	backdrop-filter: blur(0.25px);
+	-webkit-mask-image: linear-gradient(transparent 0%, transparent 76%, #000 88%, transparent 100%);
+	mask-image: linear-gradient(transparent 0%, transparent 76%, #000 88%, transparent 100%);
+}
+
+.container.mobile.scrolled > .mobile-scroll-edge > span {
+	opacity: 1;
+}
+
 .mobile-navbar.hidden {
 	visibility: hidden;
 	opacity: 0;
