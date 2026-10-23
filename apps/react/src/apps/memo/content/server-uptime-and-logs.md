@@ -123,7 +123,7 @@ docker inspect --format '{{.Name}} {{.HostConfig.LogConfig.Config}}' $(docker co
 
 ## 관련 글
 
-- [무료 서버가 회수되기 전에](/memo/resource-monitor): 이후 같은 방향으로 추가한 서버 자원 감시
+- [무료 서버가 회수되기 전에 - 사용률을 재고 위험하면 메일로](/memo/resource-monitor): 이후 같은 방향으로 추가한 서버 자원 감시
 - [되돌리기 훈련](/memo/rollback-drill)
 - [오류 응답은 감추고, 로그는 가리고](/memo/error-log-masking)
 - [서버 하드닝은 문서가 아니라 스크립트로 남긴다](/memo/server-hardening-audit)
