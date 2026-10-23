@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>4000번 포트를 점유한 이전 API 컨테이너</title>
+<defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#374151"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#dc2626"/></marker></defs>
+<rect width="760" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="16" font-weight="700" fill="#1f2937">PUT /site/projects 요청이 도달한 서버</text>
+<rect x="32" y="70" width="170" height="56" rx="10" fill="#f3f4f6" stroke="#9ca3af"/><text x="117" y="94" font-size="13" fill="#111827" text-anchor="middle">편집 화면</text><text x="117" y="112" font-size="11" fill="#6b7280" text-anchor="middle">localhost:5173</text>
+<rect x="300" y="70" width="140" height="56" rx="10" fill="#fef3c7" stroke="#f59e0b"/><text x="370" y="94" font-size="13" fill="#78350f" text-anchor="middle">:4000</text><text x="370" y="112" font-size="11" fill="#92400e" text-anchor="middle">먼저 점유한 프로세스</text>
+<rect x="540" y="60" width="188" height="76" rx="10" fill="#fef2f2" stroke="#fca5a5"/><text x="634" y="84" font-size="13" fill="#991b1b" text-anchor="middle">macfolio-api-1 (Docker)</text><text x="634" y="102" font-size="11" fill="#b91c1c" text-anchor="middle">이전에 빌드한 API 이미지</text><text x="634" y="120" font-size="11" fill="#b91c1c" text-anchor="middle">PUT /site/projects 경로 없음</text>
+<path d="M206 98 H296" stroke="#374151" marker-end="url(#k)"/><text x="251" y="90" font-size="11" fill="#374151" text-anchor="middle">PUT</text>
+<path d="M444 98 H536" stroke="#dc2626" marker-end="url(#r)"/>
+<text x="634" y="158" font-size="11.5" fill="#dc2626" text-anchor="middle">404 Cannot PUT /site/projects</text>
+<rect x="540" y="180" width="188" height="56" rx="10" fill="#f3f4f6" stroke="#d1d5db" stroke-dasharray="5 4"/><text x="634" y="204" font-size="13" fill="#6b7280" text-anchor="middle">pnpm dev:all의 API</text><text x="634" y="222" font-size="11" fill="#9ca3af" text-anchor="middle">EADDRINUSE로 종료됨</text>
+<text x="32" y="270" font-size="12" fill="#374151">해결: docker stop macfolio-api-1 → 개발 서버 재시작. 확인 명령: docker ps, lsof -i :4000</text>
+</svg>
