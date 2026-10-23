@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-	COMPOSE_TEXT,
 	buildTimeline,
 	displayName,
 	formatListTime,
@@ -187,14 +186,5 @@ describe('monogram', () => {
 
 	it('이모지 같은 여러 코드 단위 문자도 한 글자로 센다', () => {
 		expect(monogram('🙂친구')).toBe('🙂');
-	});
-});
-
-describe('COMPOSE_TEXT', () => {
-	it('문제 알리기로 연 새 피드백 화면은 문제를 묻는 자리표시자, 쓰기 버튼은 감상·의견을 묻는다', () => {
-		expect(COMPOSE_TEXT.issue.placeholder).toBe('어떤 문제가 있었나요?');
-		expect(COMPOSE_TEXT.feedback.placeholder).toBe('감상, 의견, 피드백');
-		// 어느 쪽으로 열어도 보내면 같은 목록에 올라간다
-		for (const text of Object.values(COMPOSE_TEXT)) expect(text.subtitle).toMatch(/보내면 목록에 올라가요$/);
 	});
 });

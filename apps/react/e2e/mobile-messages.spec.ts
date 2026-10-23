@@ -75,7 +75,7 @@ test.describe('메시지 (휴대폰 셸의 넓은 화면): 목록과 대화를 �
 		await messages.locator('.messages-phone-bottom').getByRole('button', { name: '새 피드백' }).tap();
 		const link = messages
 			.getByRole('region', { name: '새 피드백' })
-			.getByRole('link', { name: /GitHub 이슈로 남기기/ });
+			.getByRole('link', { name: /버그는 GitHub 이슈로/ });
 		await expect(link).toBeVisible();
 		expect(await isOnTop(link)).toBe(true);
 	});
@@ -94,7 +94,7 @@ test.describe('메시지 (휴대폰): GitHub 이슈 링크', () => {
 		const textbox = messages.getByRole('textbox', { name: '메시지' });
 		await expect(textbox).toBeFocused();
 
-		const link = chat.getByRole('link', { name: /GitHub 이슈로 남기기/ });
+		const link = chat.getByRole('link', { name: /버그는 GitHub 이슈로/ });
 		await expect(link).toBeVisible();
 		await expect(link).toHaveAttribute('href', NEW_ISSUE_URL);
 		await expect(link).toHaveAttribute('target', '_blank');
@@ -106,14 +106,14 @@ test.describe('메시지 (휴대폰): GitHub 이슈 링크', () => {
 		expect(box.y).toBeGreaterThanOrEqual(header.y);
 		expect(box.y + box.height).toBeLessThanOrEqual(header.y + header.height);
 
-		await textbox.fill('휴대폰에서 남긴 문제');
+		await textbox.fill('휴대폰에서 남긴 인사');
 		await textbox.press('Enter');
-		await expect(messages.getByRole('log')).toContainText('휴대폰에서 남긴 문제');
+		await expect(messages.getByRole('log')).toContainText('휴대폰에서 남긴 인사');
 	});
 
 	test('빈 목록 안내 아래에도 GitHub 이슈 링크가 있다', async ({ page }) => {
 		const messages = await openMessages(page);
-		const link = messages.locator('.messages-empty').getByRole('link', { name: /GitHub 이슈로 남기기/ });
+		const link = messages.locator('.messages-empty').getByRole('link', { name: /버그는 GitHub 이슈로/ });
 		await expect(link).toBeVisible();
 		await expect(link).toHaveAttribute('href', NEW_ISSUE_URL);
 		await expect(link).toHaveAttribute('target', '_blank');

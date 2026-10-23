@@ -1,12 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-	sortThreads,
-	validateMessageInput,
-	type ComposeKind,
-	type InputErrors,
-	type Message,
-	type Thread,
-} from './conversations';
+import { sortThreads, validateMessageInput, type InputErrors, type Message, type Thread } from './conversations';
 import { useProfile } from '@/shared/site/profileStore';
 import { env } from '@/shared/config/env';
 import { usePolling } from '@/shared/hooks/usePolling';
@@ -37,8 +30,6 @@ export function useConversations() {
 	const [isChatOpen, setChatOpen] = useState(false);
 	/** 쓰기 버튼을 누를 때마다 입력창에 커서를 둔다 */
 	const [focusRequest, setFocusRequest] = useState(0);
-	/** 새 피드백 화면을 연 경로: 쓰기 버튼이면 feedback, 도움말 › 문제 알리기면 issue (안내 문구가 다르다) */
-	const [composeKind, setComposeKind] = useState<ComposeKind>('feedback');
 	/** 새 피드백을 취소하면 돌아갈 항목 */
 	const [previousId, setPreviousId] = useState<string>(PINNED_THREAD_ID);
 
@@ -98,15 +89,11 @@ export function useConversations() {
 	}, []);
 
 	/** 쓰기 버튼(또는 도움말 › 문제 알리기): 새 피드백을 남기는 화면을 열고 입력 칸에 커서를 둔다 */
-	const compose = useCallback(
-		(kind: ComposeKind = 'feedback') => {
-			if (selectedId !== NEW_THREAD) setPreviousId(selectedId);
-			select(NEW_THREAD);
-			setComposeKind(kind);
-			setFocusRequest((n) => n + 1);
-		},
-		[selectedId, select]
-	);
+	const compose = useCallback(() => {
+		if (selectedId !== NEW_THREAD) setPreviousId(selectedId);
+		select(NEW_THREAD);
+		setFocusRequest((n) => n + 1);
+	}, [selectedId, select]);
 
 	/** 새 피드백을 그만두고 보던 항목으로 돌아간다 */
 	const cancelNewThread = useCallback(() => setSelectedId(previousId), [previousId]);
@@ -164,7 +151,6 @@ export function useConversations() {
 		messages: selectedId === NEW_THREAD ? [] : messages,
 		isChatOpen,
 		focusRequest,
-		composeKind,
 		isComposing: selectedId === NEW_THREAD,
 		myName,
 		select,

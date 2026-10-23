@@ -345,7 +345,7 @@
 	font-size: var(--text-caption2);
 }
 
-/* GitHub 이슈로 남기기: 새 피드백 화면의 안내 아래, 빈 목록 안내 아래에 두는 보조 링크 (새 탭).
+/* 버그는 GitHub 이슈로: 새 피드백 화면의 안내 아래, 빈 목록 안내 아래에 두는 보조 링크 (새 탭).
    글자 링크 색(--color-link)과 바깥 링크 아이콘. position은 스크린 리더용 '(새 탭)'(.visually-hidden)의 기준 */
 .messages-issue-link {
 	position: relative;

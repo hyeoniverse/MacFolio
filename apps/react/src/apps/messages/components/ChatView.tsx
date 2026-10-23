@@ -4,14 +4,7 @@ import Composer from './Composer';
 import Menu from '@/shared/ui/menu/Menu';
 import AlertDialog from '@/shared/ui/dialog/AlertDialog';
 import { useAdmin } from '@/shared/auth/adminStore';
-import {
-	buildTimeline,
-	COMPOSE_TEXT,
-	displayName,
-	type ComposeKind,
-	type Message,
-	type Thread,
-} from '../conversations';
+import { buildTimeline, displayName, type Message, type Thread } from '../conversations';
 import IssueLink from './IssueLink';
 import type { DeleteResult } from '../repository';
 import IconButton from '@/shared/ui/button/IconButton';
@@ -27,8 +20,6 @@ interface Props {
 	/** 이 브라우저의 이름 (예: 🦊 날쌘 여우). 이름·비밀번호는 받지 않는다 */
 	myName: string | null;
 	focusRequest: number;
-	/** 새 피드백 화면을 연 경로 (안내 문구와 자리표시자가 다르다) */
-	composeKind: ComposeKind;
 	/** 좁은 창에서 대화 목록으로 돌아가기 */
 	onBack: () => void;
 	/** 새 피드백을 그만두기 */
@@ -63,7 +54,6 @@ const ChatView: React.FC<Props> = ({
 	messages,
 	myName,
 	focusRequest,
-	composeKind,
 	onBack,
 	onCancelNew,
 	onCompose,
@@ -175,8 +165,8 @@ const ChatView: React.FC<Props> = ({
 			) : (
 				<header ref={header} className="messages-chat-header">
 					<span className="messages-name-pill">새 피드백</span>
-					<span className="messages-chat-subtitle">{COMPOSE_TEXT[composeKind].subtitle}</span>
-					{/* 코드와 함께 추적할 버그는 저장소의 이슈로도 받는다 */}
+					<span className="messages-chat-subtitle">로그인 없이 남길 수 있어요. 보내면 목록에 올라가요</span>
+					{/* 메시지는 자유롭게 남기는 글이고, 코드와 함께 추적할 버그는 저장소의 이슈로도 받는다 */}
 					<IssueLink className="messages-chat-issue" />
 					<Button className="messages-cancel" onClick={onCancelNew}>
 						취소
@@ -229,7 +219,7 @@ const ChatView: React.FC<Props> = ({
 
 			<Composer
 				key={focusRequest}
-				placeholder={thread ? '답글' : COMPOSE_TEXT[composeKind].placeholder}
+				placeholder={thread ? '답글' : '인사나 감상, 의견을 자유롭게 남겨 주세요.'}
 				autoFocus={focusRequest > 0}
 				onSend={async (text) => {
 					if (!human.ready) return { sent: false, error: '사람인지 확인하는 칸이 끝날 때까지 기다려 주세요.' };

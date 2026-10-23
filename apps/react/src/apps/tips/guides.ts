@@ -166,7 +166,7 @@ export const GUIDES: Guide[] = [
 			},
 			{
 				title: '도움말 메뉴',
-				body: '도움말에서 MacFolio 둘러보기를 다시 시작하거나, 키보드 단축키 목록을 열거나, 이상한 점을 발견하면 문제 알리기로 메시지 앱에 바로 알려 줄 수 있어요.',
+				body: '도움말에서 MacFolio 둘러보기를 다시 시작하거나, 키보드 단축키 목록을 열거나, 문제 알리기로 메시지 앱을 열어 이상한 점이나 인사, 의견을 자유롭게 남길 수 있어요.',
 				icon: 'fa-regular fa-circle-question',
 			},
 		],
