@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>말풍선 아이콘의 줄 상자와 잉크 영역 (3배 확대). 수정 전에는 line-height 1로 줄 상자가 40px이고 글리프 잉크는 45px이라 위아래로 2.5px씩 상자 밖으로 나가 iOS Safari에서 위쪽이 클리핑되었다. 수정 후에는 line-height 1.25로 줄 상자가 50px이 되어 잉크가 상자 안에 들어간다</title>
+<rect width="820" height="300" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">말풍선 아이콘(40px)의 줄 상자와 잉크 영역 (3배 확대)</text>
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="8" fill="#ef4444" fill-opacity="0.5"/></pattern></defs>
+<text x="32" y="70" font-size="13" fill="#b91c1c" font-weight="700">수정 전: line-height 1 → 줄 상자 40px</text>
+<rect x="90" y="100" width="200" height="120" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<rect x="140" y="92.5" width="100" height="135" fill="#fff7ed" fill-opacity="0.7" stroke="#f97316" stroke-width="2" stroke-dasharray="6 4"/>
+<rect x="140" y="92.5" width="100" height="7.5" fill="url(#hatch)"/>
+<rect x="140" y="220" width="100" height="7.5" fill="url(#hatch)"/>
+<text x="298" y="112" font-size="11" fill="#2563eb">줄 상자 40px</text>
+<text x="298" y="128" font-size="11" fill="#f97316">잉크 45px</text>
+<text x="298" y="144" font-size="11" fill="#b91c1c">위아래 2.5px가 상자 밖</text>
+<text x="32" y="262" font-size="11" fill="#b91c1c">합성 레이어가 상자 크기로 클리핑되면 위쪽이 잘린다</text>
+<text x="452" y="70" font-size="13" fill="#047857" font-weight="700">수정 후: line-height 1.25 → 줄 상자 50px</text>
+<rect x="510" y="85" width="200" height="150" fill="#eff6ff" stroke="#2563eb" stroke-width="2"/>
+<rect x="560" y="92.5" width="100" height="135" fill="#fff7ed" fill-opacity="0.7" stroke="#f97316" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="718" y="97" font-size="11" fill="#2563eb">줄 상자 50px</text>
+<text x="718" y="113" font-size="11" fill="#f97316">잉크 45px</text>
+<text x="452" y="262" font-size="11" fill="#047857">반쪽 leading 5px 안에 잉크가 들어간다. 늘어난 만큼 바깥 여백을 줄여 위치는 같다</text>
+</svg>
