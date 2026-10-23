@@ -1,0 +1,401 @@
+/*
+ * 지금 재생 중 (NowPlaying.tsx). shared/ui의 Sheet cover 위에 그린다 (덮는 자리·올라오는 움직임은 Sheet.css).
+ * iOS 음악처럼 테마와 상관없이 앨범 표지를 흐리게 깐 어두운 바탕에 흰 글자를 쓴다 (라이트·다크 모두 같다).
+ */
+.music-now-playing {
+	--ui-sheet-bg: #1c1c1e;
+	--ui-tool-color: var(--color-white);
+	--ui-tool-hover: var(--color-on-media-fill-subtle);
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-12);
+	padding: var(--space-24) var(--space-24) var(--space-24);
+	color: var(--color-white);
+	isolation: isolate;
+	transition: transform var(--duration) var(--ease-out);
+}
+
+/* 손잡이를 끄는 동안은 손가락을 바로 따라간다 */
+.music-now-playing.dragging {
+	transition: none;
+}
+
+/* 앨범 표지를 크게 흐리고 채도를 올려 깐 바탕. 아래로 갈수록 어두워져 조작 버튼의 흰 글자가 잘 보인다 */
+.music-now-playing::before,
+.music-now-playing::after {
+	position: absolute;
+	z-index: -1;
+	content: '';
+}
+
+.music-now-playing::before {
+	inset: -80px;
+	background: var(--artwork) center / cover;
+	filter: blur(60px) saturate(1.6) brightness(0.62);
+	transform: scale(1.2);
+}
+
+.music-now-playing::after {
+	inset: 0;
+	background: linear-gradient(to bottom, transparent, var(--color-scrim));
+}
+
+/* 맨 위 손잡이: 누르면 닫고, 아래로 끌어 내려도 닫는다. 보이는 막대보다 넓게 누를 수 있다 */
+.music-now-grabber {
+	position: absolute;
+	top: var(--space-4);
+	left: 50%;
+	display: grid;
+	place-items: center;
+	width: 120px;
+	height: 28px;
+	padding: 0;
+	border: none;
+	background: none;
+	cursor: grab;
+	touch-action: none;
+	transform: translateX(-50%);
+}
+
+.music-now-grabber span {
+	width: 40px;
+	height: 5px;
+	border-radius: var(--radius-4);
+	background-color: var(--color-on-media-fill-strong);
+}
+
+/* ─── 위쪽: 표지·제목 (표지 화면) ↔ 썸네일·제목·셔플·반복·다음 재생 (대기열 화면) ─── */
+.music-now-top {
+	display: grid;
+	flex: 1;
+	grid-template-areas:
+		'art art art'
+		'info info more';
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	grid-template-rows: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-20) var(--space-14);
+	min-height: 0;
+}
+
+.music-now-playing.queue-open .music-now-top {
+	grid-template-areas:
+		'art info more'
+		'modes modes modes'
+		'list list list';
+	grid-template-rows: auto auto minmax(0, 1fr);
+	gap: var(--space-16) var(--space-14);
+}
+
+/* 표지 칸: 남는 높이와 폭 가운데 작은 쪽에 맞춘 정사각형 (컨테이너 쿼리 단위) */
+.music-now-art-box {
+	display: grid;
+	grid-area: art;
+	place-items: center;
+	align-self: stretch;
+	min-height: 0;
+	container-type: size;
+}
+
+.music-now-art {
+	width: min(100cqw, 100cqh);
+	aspect-ratio: 1;
+	object-fit: cover;
+	border-radius: var(--radius-14);
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+	/* 일시 정지하면 표지가 살짝 작아진다 (iOS) */
+	transform: scale(0.86);
+	transition: transform var(--duration-slow) var(--ease-spring);
+	animation: pop-in var(--duration-slow) var(--ease-out);
+}
+
+.music-now-art.playing {
+	transform: scale(1);
+}
+
+.music-now-playing.queue-open .music-now-art-box {
+	width: 64px;
+	height: 64px;
+	container-type: normal;
+}
+
+.music-now-playing.queue-open .music-now-art {
+	width: 100%;
+	border-radius: var(--radius-8);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+	transform: none;
+}
+
+.music-now-info {
+	display: flex;
+	flex-direction: column;
+	grid-area: info;
+	min-width: 0;
+}
+
+.music-now-info strong,
+.music-now-info span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.music-now-info strong {
+	font-size: var(--text-title3);
+	font-weight: 700;
+}
+
+.music-now-info span {
+	color: var(--color-on-media-secondary-label);
+	font-size: var(--text-title3);
+}
+
+.music-now-playing.queue-open .music-now-info strong,
+.music-now-playing.queue-open .music-now-info span {
+	font-size: var(--text-body);
+}
+
+/* 오른쪽의 둥근 반투명 버튼 (iOS의 ••• 자리) */
+.music-now-more {
+	grid-area: more;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	background-color: var(--color-on-media-fill);
+	color: var(--color-white);
+	font-size: var(--text-subhead);
+}
+
+/* 셔플·반복: 폭을 나눠 가진 캡슐 버튼. 켜지면 흰 바탕에 어두운 아이콘 */
+.music-now-modes {
+	display: grid;
+	grid-area: modes;
+	grid-auto-columns: 1fr;
+	grid-auto-flow: column;
+	gap: var(--space-12);
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
+.music-now-mode {
+	position: relative;
+	height: 36px;
+	border-radius: var(--radius-full);
+	background-color: var(--color-on-media-fill-subtle);
+	color: var(--color-on-media-secondary-label);
+	font-size: var(--text-callout);
+}
+
+.music-now-mode.on {
+	background-color: var(--color-on-media-label);
+	color: rgba(0, 0, 0, 0.75);
+}
+
+.music-now-mode .music-repeat-one {
+	position: static;
+	margin-left: var(--space-2);
+	font-size: var(--text-caption2);
+}
+
+/* 다음 재생 목록: 남는 높이 안에서 스크롤하고, 아래 끝은 흐려지며 사라진다 */
+.music-queue {
+	grid-area: list;
+	align-self: stretch;
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+	animation: rise-in var(--duration) var(--ease-out);
+}
+
+.music-queue h3 {
+	margin: 0;
+	font-size: var(--text-body);
+	font-weight: 700;
+}
+
+.music-queue p {
+	margin: 0 0 var(--space-8);
+	color: var(--color-on-media-secondary-label);
+	font-size: var(--text-subhead);
+}
+
+.music-queue ol {
+	margin: 0;
+	padding: 0 0 var(--space-24);
+	list-style: none;
+}
+
+.music-queue li {
+	display: flex;
+	align-items: center;
+	border-radius: var(--radius-8);
+	background-color: transparent;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+/* 끄는 줄은 위로 떠오른다 (startPointerReorder가 .reordering을 붙인다) */
+.music-queue li.reordering {
+	position: relative;
+	z-index: 1;
+	background-color: var(--color-on-media-fill);
+	transition: none;
+}
+
+.music-queue-track {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	gap: var(--space-12);
+	min-width: 0;
+	padding: var(--space-6) 0;
+	border: none;
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.music-queue-track img {
+	flex: none;
+	width: 48px;
+	height: 48px;
+	border-radius: var(--radius-6);
+	object-fit: cover;
+}
+
+.music-queue-track span {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.music-queue-track strong,
+.music-queue-track small {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.music-queue-track strong {
+	font-size: var(--text-body);
+	font-weight: 400;
+}
+
+.music-queue-track small {
+	color: var(--color-on-media-secondary-label);
+	font-size: var(--text-subhead);
+}
+
+/* ≡ 끌기 손잡이 */
+.music-queue-handle {
+	flex: none;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-on-media-secondary-label);
+	font-size: var(--text-title3);
+	cursor: grab;
+	touch-action: none;
+}
+
+.music-queue-handle:disabled {
+	visibility: hidden;
+}
+
+/* ─── 아래쪽: 진행 막대·재생 버튼·음량·대기열 (두 화면 공통) ─── */
+/* iOS처럼 손잡이 없는 두꺼운 막대. 누르거나 끄는 동안 더 두꺼워진다 */
+.music-now-playing .seek-bar,
+.music-now-playing .volume-bar {
+	--seek-height: 7px;
+	color: var(--color-white);
+}
+
+.music-now-playing .seek-bar.dragging,
+.music-now-playing .seek-bar-track:hover,
+.music-now-playing .seek-bar-track:focus-visible {
+	--seek-height: 11px;
+}
+
+.music-now-playing .seek-bar-thumb {
+	display: none;
+}
+
+.music-now-playing .seek-bar-track::before {
+	opacity: 0.3;
+}
+
+.music-now-playing .seek-bar-times {
+	margin-top: var(--space-2);
+	font-size: var(--text-caption);
+	font-weight: 600;
+	opacity: 0.6;
+}
+
+.music-now-playing .volume-bar i {
+	font-size: var(--text-footnote);
+}
+
+.music-now-transport {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	font-size: var(--text-title1);
+}
+
+.music-now-transport .ui-icon-button {
+	padding: var(--space-8) var(--space-12);
+	color: var(--color-white);
+	font-size: inherit;
+}
+
+.music-now-transport .music-now-play {
+	font-size: 46px;
+}
+
+/* 가사·AirPlay·대기열 세 칸의 오른쪽 자리. 이 앱에는 대기열만 있다 */
+.music-now-bottom {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	justify-items: center;
+}
+
+.music-now-queue-toggle {
+	grid-column: 3;
+	border-radius: 50%;
+	width: 44px;
+	height: 44px;
+	color: var(--color-on-media-label);
+	font-size: var(--text-title3);
+}
+
+.music-now-queue-toggle.on {
+	background-color: var(--color-on-media-label);
+	color: rgba(0, 0, 0, 0.75);
+}
+
+/* 휴대폰: 시트는 떠 있는 뒤로 가기(닫기) 아래에 깐다. 그 동그라미 줄만큼 위를 비우고, 손잡이는 그 줄 가운데에 둔다 */
+.container.mobile .music-now-playing {
+	z-index: 5;
+	padding-top: calc(var(--phone-top) + 56px);
+	padding-bottom: calc(var(--space-12) + var(--phone-bottom-inset));
+}
+
+.container.mobile .music-now-grabber {
+	top: calc(var(--phone-top) + 8px);
+}
+
+/* ••• 메뉴: iOS 지금 재생 중의 메뉴처럼 테마와 상관없이 어두운 반투명 (body에 그리므로 변수를 메뉴에 다시 정한다) */
+.ui-menu.music-now-menu {
+	--color-popover-background: rgba(52, 52, 56, 0.78);
+	--color-label: var(--color-on-media-label);
+	--color-secondary-label: var(--color-on-media-secondary-label);
+	--color-separator: var(--color-on-media-separator);
+	--color-unemphasized-selected-content-background: var(--color-on-media-fill-subtle);
+	color-scheme: dark;
+	-webkit-backdrop-filter: blur(30px) saturate(1.8);
+	backdrop-filter: blur(30px) saturate(1.8);
+	transform-origin: top right;
+}

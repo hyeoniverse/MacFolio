@@ -1,16 +1,15 @@
-import { cssVars } from '@/shared/lib/cssVars';
-import Sheet from '@/shared/ui/sheet/Sheet';
 import React, { useRef, useState } from 'react';
 import AppWindow from '@/desktop/window/Window';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Menu from '@/shared/ui/menu/Menu';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
-import { formatTime, formatTotal, type Playlist } from '@macfolio/desktop-core/music';
+import { formatTime, formatTotal, upcoming, type Playlist } from '@macfolio/desktop-core/music';
 import { ALBUMS, ALL_SONGS, ARTISTS, findPlaylist, findTrack, PLAYLISTS } from './library';
 import { useMusic } from './useMusic';
 import { useAppMenus } from '@/desktop/status-bar/appMenus';
 import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';
+import NowPlaying, { type CollectionOrigin } from './NowPlaying';
 import '@/apps/music/Music.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import ListRow from '@/shared/ui/list-row/ListRow';
@@ -76,18 +75,17 @@ const Transport: React.FC<{ large?: boolean }> = ({ large = false }) => {
 
 /** 다음에 재생할 곡 */
 const UpNext: React.FC = () => {
-	const { queue, playlistId, playFrom } = useMusic();
-	const upcoming = [...queue.order.slice(queue.position + 1), ...queue.order.slice(0, queue.position)];
+	const { queue, playlistId, jumpTo } = useMusic();
 	return (
 		<section className="music-up-next" aria-label="다음 재생">
 			<h3>다음 재생</h3>
 			<p>{findPlaylist(playlistId).name}에서 재생 중</p>
 			<ol>
-				{upcoming.map((id) => {
+				{upcoming(queue).map((id) => {
 					const t = findTrack(id);
 					return (
 						<li key={id}>
-							<button type="button" onClick={() => playFrom(playlistId, id)}>
+							<button type="button" onClick={() => jumpTo(id)}>
 								<img src={t.artwork} alt="" />
 								<span>
 									<strong>{t.title}</strong>
@@ -139,37 +137,6 @@ const CollectionItem: React.FC<{
 	</li>
 );
 
-/** 모바일: 화면을 덮는 '지금 재생 중'. 닫기는 시트 위에 떠 있는 뒤로 가기로 한다 */
-const NowPlayingSheet: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-	const { track, isPlaying } = useMusic();
-	return (
-		<Sheet
-			variant="cover"
-			label="지금 재생 중"
-			className="music-now-playing"
-			style={cssVars({ artwork: `url('${track.artwork}')` })}
-			onClose={onClose}
-		>
-			{/* 곡이 바뀌면 표지와 제목이 새로 나타난다 */}
-			{/* 형제끼리 key가 같으면 React가 옛 요소를 지우지 못해 곡이 바뀔 때마다 쌓인다. 그래서 key에 자리 이름을 붙인다 */}
-			<img
-				key={`art-${track.id}`}
-				className={`music-now-art ${isPlaying ? 'playing' : ''}`}
-				src={track.artwork}
-				alt={`${track.album} 앨범 표지`}
-			/>
-			<div key={`info-${track.id}`} className="music-now-info music-track-swap">
-				<strong>{track.title}</strong>
-				<span>{track.artist}</span>
-			</div>
-			<SeekBar showTimes />
-			<Transport large />
-			<VolumeBar />
-			<UpNext />
-		</Sheet>
-	);
-};
-
 /**
  * 음악: 보관함·재생 목록·곡 목록과 재생 막대. macOS 음악 앱처럼 왼쪽에 재생 목록, 가운데에 곡 목록.
  * 좁은 창(모바일)에서는 보관함 → 재생 목록 순서로 한 화면씩 보이고, 아래 미니 플레이어를 누르면 '지금 재생 중'이 열린다.
@@ -217,6 +184,13 @@ const Music: React.FC = () => {
 	const total = formatTotal(tracks.map((t) => durations[t.id]));
 	const listView = view === 'playlists' || view === 'artists' || view === 'albums' ? view : null;
 
+	/** 지금 재생 중의 ••• 메뉴에서 곡의 목록으로 간다. 휴대폰은 돌아갈 곳을 그 목록의 보관함 화면(앨범·아티스트 등)으로 둔다 */
+	const goToCollection = (id: string, from: CollectionOrigin) => {
+		setNowPlayingOpen(false);
+		setSelectedId(id);
+		setOpenedFrom(phone ? from : 'library');
+		setView('playlist');
+	};
 	const openPlaylist = (id: string) => {
 		setSelectedId(id);
 		setOpenedFrom(listView ?? 'library');
@@ -481,7 +455,7 @@ const Music: React.FC = () => {
 						</div>
 					</footer>
 
-					{nowPlayingOpen && <NowPlayingSheet onClose={() => setNowPlayingOpen(false)} />}
+					{nowPlayingOpen && <NowPlaying onClose={() => setNowPlayingOpen(false)} onGoTo={goToCollection} />}
 				</div>
 			</div>
 		</AppWindow>

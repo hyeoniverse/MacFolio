@@ -1128,6 +1128,8 @@ test.describe('모바일', () => {
 		const sheet = music.getByRole('dialog', { name: '지금 재생 중' });
 		await expect(sheet).toBeVisible();
 		await expect(sheet.getByRole('slider', { name: '재생 위치' })).toBeVisible();
+		// 다음 재생 목록은 대기열 버튼으로 연다 (iOS 18)
+		await sheet.getByRole('button', { name: '대기열' }).tap();
 		await expect(sheet.getByRole('region', { name: '다음 재생' })).toBeVisible();
 
 		// 옆으로 밀어도 시트는 가로로 움직이지 않는다 (흐린 표지 배경이 시트 밖까지 그려져 있다)
@@ -1182,7 +1184,8 @@ test.describe('모바일', () => {
 		await page.getByRole('tab', { name: '2쪽' }).click();
 		const widget = page.locator('.mobile-home').getByRole('region', { name: '음악' });
 		await expect(widget).toBeVisible();
-		await expect(widget.getByRole('button', { name: '재생' })).toBeVisible();
+		// 휴대폰도 로딩 화면을 누르면 배경 음악이 재생된다
+		await expect(widget.getByRole('button', { name: '일시 정지' })).toBeVisible();
 
 		await widget.getByRole('slider', { name: '재생 위치' }).tap();
 		await expect(appWindow(page, 'music')).toBeHidden();

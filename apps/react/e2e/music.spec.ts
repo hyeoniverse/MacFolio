@@ -124,6 +124,8 @@ test.describe('음악', () => {
 						if (node instanceof HTMLElement && node.dataset.exiting) win.exitingGhosts! += 1;
 			}).observe(document.body, { childList: true, subtree: true });
 		});
+		// 셔플은 대기열 화면에 있다
+		await sheet.getByRole('button', { name: '대기열' }).click();
 		const shuffle = sheet.getByRole('button', { name: '셔플' });
 		await shuffle.click();
 		await shuffle.click();
