@@ -69,6 +69,11 @@ jobs:
       - name: 빌드
         run: pnpm build
 
+      # 첫 방문 번들 성능 예산: boot 번들과 index.html이 처음부터 요청하는 번들의 brotli 크기가 상한을 넘으면 실패한다.
+      # 상한·근거·넘었을 때의 대응은 docs/performance.md의 '성능 예산' (apps/react/scripts/perf/budget.mjs)
+      - name: 성능 예산
+        run: pnpm --filter @macfolio/react perf:budget
+
       # API e2e 테스트용 PostgreSQL (apps/api/docker-compose.yml과 같은 계정)
       # services 대신 단계로 띄운다. services는 이미지를 못 받으면 검사·시험을 하나도 돌리지 못하고 작업 전체가 멈췄다.
       # 받는 곳도 하나에 기대지 않는다. Docker Hub는 로그인하지 않은 받기를 IP마다 제한하고(10월 10일),

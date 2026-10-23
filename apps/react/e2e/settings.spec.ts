@@ -82,7 +82,9 @@ test.describe('Settings', () => {
 		await settings.getByRole('radio', { name: '다크' }).click();
 		await expect.poll(background).toContain('sonoma-dark.webp');
 
+		// 다시 열면 로딩 화면을 누르기 전까지는 검은 바탕이다 (index.html의 booting). 누르면 고른 배경화면이다
 		await page.reload();
+		await page.locator('.loading-container').click();
 		await expect.poll(background).toContain('sonoma-dark.webp');
 	});
 });
