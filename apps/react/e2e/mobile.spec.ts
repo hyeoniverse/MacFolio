@@ -869,7 +869,7 @@ test.describe('모바일', () => {
 		await expect(first).toHaveAttribute('aria-pressed', 'true');
 		await expect(list.getByRole('status').filter({ hasText: '1개 선택됨' })).toBeVisible();
 		await expect(list.getByRole('button', { name: '이동' })).toBeEnabled();
-		await list.getByRole('button', { name: '완료' }).tap();
+		await list.getByRole('button', { name: '완료', exact: true }).tap();
 		await expect(first).not.toHaveAttribute('aria-pressed');
 
 		// 첨부 파일 보기: 검색 칸에 '첨부 파일' 조건이 붙는다
