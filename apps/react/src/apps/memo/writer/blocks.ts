@@ -7,6 +7,7 @@ import { $nodeSchema, $remark, $view } from '@milkdown/kit/utils';
 import { visit } from 'unist-util-visit';
 import { captionParts } from '@macfolio/desktop-core/memo';
 import { downloadImage } from '../download';
+import { openImageZoom } from './imageZoom';
 
 /** 이 파일에서 쓰는 Markdown 트리(mdast)의 모양 */
 interface MdNode {
@@ -115,8 +116,26 @@ function downloadButton(getNode: () => Node) {
 	return button;
 }
 
+/** 이미지 크게 보기 버튼 (내려받기 버튼 왼쪽). 편집기에서는 이미지를 누르면 이미지가 골라지므로 따로 둔다 */
+function zoomButton(getNode: () => Node) {
+	const button = document.createElement('button');
+	button.type = 'button';
+	button.className = 'memo-overlay-button memo-figure-zoom';
+	button.contentEditable = 'false';
+	button.setAttribute('aria-label', '이미지 크게 보기');
+	button.title = '이미지 크게 보기 (이미지를 두 번 눌러도 된다)';
+	button.innerHTML = '<i class="fa-solid fa-magnifying-glass-plus" aria-hidden="true"></i>';
+	button.addEventListener('mousedown', (event) => event.preventDefault());
+	button.addEventListener('click', () => {
+		const node = getNode();
+		openImageZoom(node.attrs.src, node.attrs.alt);
+	});
+	return button;
+}
+
 /**
- * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 내려받기 버튼.
+ * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 크게 보기·내려받기 버튼.
+ * 편집기에서는 이미지를 누르면 이미지가 골라진다. 크게 보려면 크게 보기 버튼을 누르거나 이미지를 두 번 누른다.
  * 캡션을 누르면 그 자리에서 고친다 (비어 있으면 '캡션 추가'). Enter나 초점을 옮기면 저장, Esc는 취소
  */
 const figureView = (initial: Node, view: EditorView, getPos: () => number | undefined) => {
@@ -128,8 +147,13 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 	const img = document.createElement('img');
 	frame.append(
 		img,
+		zoomButton(() => current),
 		downloadButton(() => current)
 	);
+	img.addEventListener('dblclick', (event) => {
+		event.preventDefault();
+		openImageZoom(current.attrs.src, current.attrs.alt);
+	});
 	const caption = document.createElement('span');
 	caption.className = 'memo-caption';
 	// 긴 캡션도 다 보이게 줄을 바꾸는 입력칸 (캡션은 한 줄이라 Enter는 줄바꿈 대신 저장)
@@ -213,11 +237,11 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 		selectNode: () => dom.classList.add('selected'),
 		deselectNode: () => dom.classList.remove('selected'),
 		ignoreMutation: () => true,
-		// 캡션 입력칸·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
+		// 캡션 입력칸·크게 보기·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
 		stopEvent: (event: Event) => {
 			const target = event.target as Element;
 			return Boolean(
-				target.closest?.('.memo-caption-input, .memo-figure-download') ||
+				target.closest?.('.memo-caption-input, .memo-figure-zoom, .memo-figure-download') ||
 				(event.type === 'click' && target.closest?.('.memo-caption a')) ||
 				(event.type === 'mousedown' && target.closest?.('.memo-caption'))
 			);

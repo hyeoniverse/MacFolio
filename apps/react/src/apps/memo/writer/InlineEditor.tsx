@@ -20,6 +20,8 @@ import { uploadAndInsert } from './attachmentsApi';
 import { gapClick, gapTyping, handleTableKey, tableHandleSelection } from './tableCommands';
 import { tagsInText } from '@macfolio/desktop-core/memo';
 import TableHandles from './TableHandles';
+import { closeImageZoom, useImageZoom } from './imageZoom';
+import { Lightbox } from '../components/MarkdownImage';
 import LinkHover from './LinkHover';
 import { findPlugin } from './findPlugin';
 import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
@@ -390,9 +392,17 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 		<>
 			<Milkdown />
 			<TableHandles />
+			<ImageZoom />
 			<LinkHover />
 		</>
 	);
+};
+
+/** 편집기 안의 이미지 크게 보기 (blocks.ts의 크게 보기 버튼·두 번 누르기): 읽기 화면과 같은 Lightbox */
+const ImageZoom = () => {
+	const image = useImageZoom();
+	useEffect(() => closeImageZoom, []);
+	return image && <Lightbox src={image.src} alt={image.alt} onClose={closeImageZoom} />;
 };
 
 /**
