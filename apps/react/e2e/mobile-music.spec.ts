@@ -223,21 +223,120 @@ test.describe('음악: 지금 재생 중', () => {
 			}
 		});
 
-	test('맨 위 손잡이를 누르거나 아래로 끌어 내리면 닫힌다', async ({ page }) => {
+	test('떠 있는 뒤로 가기는 없고, 손잡이를 누르거나 Esc를 누르면 닫힌다', async ({ page }) => {
 		const { music, sheet } = await openNowPlaying(page);
+		await expect(music.locator('.mobile-navbar-home')).toHaveCount(0);
 		await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).tap();
 		await expect(sheet).toBeHidden();
+		// 시트가 닫히면 셸의 뒤로 가기가 돌아온다
+		await expect(music.locator('.mobile-navbar-home')).toBeVisible();
 
 		await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
 		await expect(sheet).toBeVisible();
-		const grabber = (await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).boundingBox())!;
-		const x = grabber.x + grabber.width / 2;
-		const y = grabber.y + grabber.height / 2;
-		await page.mouse.move(x, y);
+		await page.keyboard.press('Escape');
+		await expect(sheet).toBeHidden();
+		// Esc 한 번은 시트만 닫는다 (앱의 뒤로 가기까지 가지 않는다)
+		await expect(music.getByRole('heading', { name: '지브리', level: 1 })).toBeVisible();
+
+		// 키보드: 손잡이에 초점을 두고 Enter
+		await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
+		await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).focus();
+		await page.keyboard.press('Enter');
+		await expect(sheet).toBeHidden();
+	});
+
+	test('손잡이를 쓸어내리기: 기준(120px)을 넘기면 닫히고, 못 미치면 제자리로 돌아오고, 빠르게 튕기면 짧아도 닫힌다', async ({
+		page,
+	}) => {
+		// 시험은 기본으로 움직임 줄이기를 켜 둔다. 따라 내려오는 움직임을 보려고 끈다
+		await page.emulateMedia({ reducedMotion: 'no-preference' });
+		const { music, sheet } = await openNowPlaying(page);
+		const grabber = sheet.getByRole('button', { name: '지금 재생 중 닫기' });
+		const center = async () => {
+			const box = (await grabber.boundingBox())!;
+			return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+		};
+		/** 천천히 끌다가 멈춘 뒤 놓는다 (속도 0) */
+		const slowDrag = async (distance: number, release = true) => {
+			const { x, y } = await center();
+			await page.mouse.move(x, y);
+			await page.mouse.down();
+			for (let step = 1; step <= 10; step++) {
+				await page.mouse.move(x, y + (distance * step) / 10);
+				await page.waitForTimeout(20);
+			}
+			await page.waitForTimeout(200);
+			if (release) await page.mouse.up();
+		};
+		const sheetTop = async () => (await sheet.boundingBox())!.y;
+		// 올라오는 움직임이 끝난 뒤의 자리
+		await page.waitForTimeout(600);
+		const top = await sheetTop();
+
+		// 못 미치면: 끄는 동안 따라 내려오고, 놓으면 제자리
+		await slowDrag(80, false);
+		expect((await sheetTop()) - top).toBeCloseTo(80, 0);
+		await page.mouse.up();
+		await expect.poll(sheetTop).toBeCloseTo(top, 0);
+		await expect(sheet).toBeVisible();
+
+		// 짧게(50px) 빠르게 튕기면 닫힌다
+		{
+			const { x, y } = await center();
+			await page.mouse.move(x, y);
+			await page.mouse.down();
+			await page.mouse.move(x, y + 25);
+			await page.mouse.move(x, y + 50);
+			await page.mouse.up();
+		}
+		await expect(sheet).toBeHidden();
+
+		// 셸의 '아래로 쓸면 제어 센터'는 열리지 않는다
+		await expect(page.getByRole('dialog', { name: '제어 센터' })).toHaveCount(0);
+
+		// 기준을 넘기면 천천히 끌어도 닫힌다
+		await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
+		await expect(sheet).toBeVisible();
+		await page.waitForTimeout(600);
+		await slowDrag(160);
+		await expect(sheet).toBeHidden();
+
+		// 표지를 쓸어내려도 닫힌다
+		await music.getByRole('button', { name: '지금 재생 중 열기' }).tap();
+		await page.waitForTimeout(600);
+		const art = (await sheet.locator('.music-now-art').boundingBox())!;
+		await page.mouse.move(art.x + art.width / 2, art.y + 20);
 		await page.mouse.down();
-		for (let step = 1; step <= 8; step++) await page.mouse.move(x, y + step * 30);
+		for (let step = 1; step <= 10; step++) await page.mouse.move(art.x + art.width / 2, art.y + 20 + step * 18);
 		await page.mouse.up();
 		await expect(sheet).toBeHidden();
+	});
+
+	test('움직임 줄이기면 끄는 동안 따라 내려오지 않고, 기준을 넘기면 닫히기만 한다', async ({ page }) => {
+		await page.emulateMedia({ reducedMotion: 'reduce' });
+		const { sheet } = await openNowPlaying(page);
+		const box = (await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).boundingBox())!;
+		const x = box.x + box.width / 2;
+		const y = box.y + box.height / 2;
+		const top = (await sheet.boundingBox())!.y;
+		await page.mouse.move(x, y);
+		await page.mouse.down();
+		for (let step = 1; step <= 8; step++) await page.mouse.move(x, y + step * 20);
+		expect((await sheet.boundingBox())!.y).toBeCloseTo(top, 0);
+		await page.mouse.up();
+		await expect(sheet).toBeHidden();
+	});
+
+	test('진행 막대·음량 막대를 아래로 끌어도 시트는 닫히지 않는다', async ({ page }) => {
+		const { sheet } = await openNowPlaying(page);
+		for (const name of ['재생 위치', '음량']) {
+			const box = (await sheet.getByRole('slider', { name }).boundingBox())!;
+			await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+			await page.mouse.down();
+			for (let step = 1; step <= 8; step++) await page.mouse.move(box.x + box.width / 2, box.y + step * 25);
+			await page.mouse.up();
+			await expect(sheet).toBeVisible();
+		}
 	});
 });
 

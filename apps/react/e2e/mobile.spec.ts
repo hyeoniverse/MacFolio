@@ -656,7 +656,7 @@ test.describe('모바일', () => {
 		await expect(music.getByRole('dialog', { name: '지금 재생 중' })).toBeVisible();
 		await expect.poll(color).toBe('rgb(255, 255, 255)');
 
-		await music.locator('.mobile-navbar-home').tap();
+		await music.getByRole('button', { name: '지금 재생 중 닫기' }).tap();
 		await expect.poll(color).toBe('rgb(28, 28, 30)');
 	});
 
@@ -1138,8 +1138,9 @@ test.describe('모바일', () => {
 		await expect.poll(() => sheet.evaluate((el) => el.scrollLeft)).toBe(0);
 		expect(await sheet.evaluate((el) => getComputedStyle(el).overflowX)).toBe('hidden');
 
-		// 닫기는 시트 위에 떠 있는 뒤로 가기 하나
-		await music.locator('.mobile-navbar-home').tap();
+		// 떠 있는 뒤로 가기는 없고, 닫기는 맨 위 손잡이 (쓸어내리기·누르기)
+		await expect(music.locator('.mobile-navbar-home')).toHaveCount(0);
+		await sheet.getByRole('button', { name: '지금 재생 중 닫기' }).tap();
 		await expect(sheet).toBeHidden();
 
 		// 플레이리스트로 돌아오고, 보관함 맨 위에는 지금 재생 중인 목록의 표지

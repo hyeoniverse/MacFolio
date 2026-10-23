@@ -8,6 +8,7 @@ import { cssVars } from '@/shared/lib/cssVars';
 import { prefersReducedMotion } from '@/shared/lib/media';
 import { ALBUMS, ALL_SONGS, ARTISTS, findPlaylist, findTrack } from './library';
 import { useMusic } from './useMusic';
+import { useSwipeToClose } from './useSwipeToClose';
 import SeekBar from './SeekBar';
 import VolumeBar from './VolumeBar';
 import '@/apps/music/NowPlaying.css';
@@ -23,14 +24,11 @@ interface Props {
 
 const REPEAT_LABEL = { off: '반복 끔', all: '전체 반복', one: '한 곡 반복' } as const;
 
-/** 아래로 이만큼(px) 넘게 끌어 내리면 닫는다 */
-const CLOSE_DISTANCE = 120;
-
 /**
  * 휴대폰의 '지금 재생 중' (iOS 18 음악 앱의 구성).
  * 큰 표지 화면과, 대기열 버튼으로 바꾸는 대기열 화면이 있다. 대기열 화면에서는 표지가 제목 옆 썸네일로 줄어들고
  * 셔플·반복 버튼과 '다음 재생' 목록이 나타난다. 진행 막대·재생 버튼·음량은 두 화면에 그대로 있다.
- * 닫기는 셸의 떠 있는 뒤로 가기, 맨 위 손잡이(누르거나 아래로 끌기), Esc
+ * 닫기는 맨 위 손잡이(누르기)와 손잡이·표지·제목을 아래로 쓸어내리기, Esc. 셸의 떠 있는 뒤로 가기는 감춘다(hideBack)
  */
 const NowPlaying: React.FC<Props> = ({ onClose, onGoTo }) => {
 	const music = useMusic();
@@ -41,11 +39,9 @@ const NowPlaying: React.FC<Props> = ({ onClose, onGoTo }) => {
 	const art = useRef<HTMLImageElement>(null);
 	/** 화면을 바꾸기 직전의 표지 자리 (표지가 새 자리로 옮겨 가는 움직임의 출발점) */
 	const artFrom = useRef<DOMRect | null>(null);
-	/** 손잡이를 끌어 내린 거리 */
-	const [dragY, setDragY] = useState<number | null>(null);
-	const dragStart = useRef(0);
-	/** 손잡이를 끌었는지 (끌었으면 놓을 때의 click으로 닫지 않는다) */
-	const dragged = useRef(false);
+	// 손잡이와 표지·제목 머리를 아래로 쓸어내리면 닫힌다 (iOS 시트). 거리·속도 기준은 swipe.ts
+	const swipe = useSwipeToClose(onClose);
+	const dragging = swipe.offset !== null;
 
 	const toggleQueue = () => {
 		artFrom.current = art.current?.getBoundingClientRect() ?? null;
@@ -117,56 +113,41 @@ const NowPlaying: React.FC<Props> = ({ onClose, onGoTo }) => {
 		<Sheet
 			variant="cover"
 			label="지금 재생 중"
-			className={`music-now-playing ${queueOpen ? 'queue-open' : ''} ${dragY !== null ? 'dragging' : ''}`}
+			className={`music-now-playing ${queueOpen ? 'queue-open' : ''} ${dragging ? 'dragging' : ''}`}
 			style={{
 				...cssVars({ artwork: `url('${track.artwork}')` }),
-				...(dragY ? { transform: `translateY(${dragY}px)` } : {}),
+				...(swipe.offset ? { transform: `translateY(${swipe.offset}px)` } : {}),
 			}}
 			onClose={onClose}
 		>
+			{/* 보이는 것은 손잡이 막대. 누르거나(키보드·스크린 리더 포함) 아래로 쓸어내리면 닫힌다 */}
 			<button
 				type="button"
 				className="music-now-grabber"
 				aria-label="지금 재생 중 닫기"
 				onClick={() => {
-					// 끌다가 놓은 것은 pointerup이 처리한다
-					if (!dragged.current) onClose();
+					// 끌다가 놓은 것은 쓸어내리기가 처리한다
+					if (!swipe.dragged.current) onClose();
 				}}
-				onPointerDown={(event) => {
-					event.currentTarget.setPointerCapture(event.pointerId);
-					dragStart.current = event.clientY;
-					dragged.current = false;
-					setDragY(0);
-				}}
-				onPointerMove={(event) => {
-					if (dragY === null) return;
-					const distance = Math.max(0, event.clientY - dragStart.current);
-					if (distance > 6) dragged.current = true;
-					setDragY(distance);
-				}}
-				onPointerUp={() => {
-					// 거의 움직이지 않았으면 누른 것으로 보고 click이 닫는다. 조금 끌었다 놓으면 제자리로 돌아간다
-					const distance = dragY ?? 0;
-					setDragY(null);
-					if (dragged.current && distance > CLOSE_DISTANCE) onClose();
-				}}
-				onPointerCancel={() => setDragY(null)}
+				{...swipe.handlers}
 			>
 				<span aria-hidden="true" />
 			</button>
 
 			<div className="music-now-top">
-				<div className="music-now-art-box">
+				<div className="music-now-art-box" {...swipe.handlers}>
 					<img
 						ref={art}
 						key={`art-${track.id}`}
 						className={`music-now-art ${isPlaying ? 'playing' : ''}`}
 						src={track.artwork}
 						alt={`${track.album} 앨범 표지`}
+						// 그림 끌어 옮기기가 쓸어내리기를 가져가지 않게
+						draggable={false}
 					/>
 				</div>
 				{/* 곡이 바뀌면 제목이 새로 나타난다. 형제끼리 key가 같으면 옛 요소가 남으므로 자리 이름을 붙인다 */}
-				<div key={`info-${track.id}`} className="music-now-info music-track-swap">
+				<div key={`info-${track.id}`} className="music-now-info music-track-swap" {...swipe.handlers}>
 					<strong>{track.title}</strong>
 					<span>{track.artist}</span>
 				</div>

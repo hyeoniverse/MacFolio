@@ -262,10 +262,10 @@ const Music: React.FC = () => {
 
 	return (
 		<AppWindow title="음악" appName="music" chrome="unified">
-			{/* 지금 재생 중 시트가 열려 있으면 떠 있는 뒤로 가기가 시트를 닫는다 */}
+			{/* 지금 재생 중 시트가 열려 있으면 떠 있는 뒤로 가기는 감춘다. 닫기는 시트의 손잡이(쓸어내리기·누르기)와 Esc */}
 			<MobileNavigation
 				{...(nowPlayingOpen
-					? { backLabel: '닫기', onBack: () => setNowPlayingOpen(false) }
+					? { backLabel: '닫기', onBack: () => setNowPlayingOpen(false), hideBack: true }
 					: view === 'playlist'
 						? {
 								backLabel: openedFrom === 'library' ? '보관함' : PHONE_LIST_TITLES[openedFrom],
