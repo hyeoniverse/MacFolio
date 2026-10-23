@@ -254,3 +254,27 @@ test.describe('메시지 서버에 닿지 못할 때', () => {
 		await expect(transcript(messages)).toContainText('안녕하세요, 김정현입니다');
 	});
 });
+
+test.describe('메시지 (iPad 크기 화면)', () => {
+	// 768px 이상은 데스크톱 셸이다. 창이 화면보다 좁게 열리고, 입력 칸은 다른 것에 덮이지 않는다
+	for (const viewport of [
+		{ width: 768, height: 1024 },
+		{ width: 820, height: 1180 },
+		{ width: 1024, height: 1366 },
+		{ width: 1180, height: 820 },
+	]) {
+		test(`${viewport.width}×${viewport.height}: 입력 칸을 눌러 메시지를 보낼 수 있다`, async ({ page }) => {
+			await page.setViewportSize(viewport);
+			const messages = await openMessages(page);
+			const field = textbox(messages);
+			const onTop = await field.evaluate((element) => {
+				const rect = element.getBoundingClientRect();
+				const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
+				return hit === element || element.contains(hit);
+			});
+			expect(onTop).toBe(true);
+			await field.click();
+			await post(messages, '아이패드에서 남겨요');
+		});
+	}
+});

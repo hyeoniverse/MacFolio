@@ -424,6 +424,15 @@
 	--phone-bottom-inset: calc(22px + env(safe-area-inset-bottom));
 }
 
+/* 화면 키보드가 올라와 있는 동안 (MobileNav의 fitKeyboard): 홈 바는 키보드 뒤로 숨고(iOS), 아래 입력 칸은 키보드에 바로 붙는다 */
+.container.mobile.keyboard-open[data-app] {
+	--phone-bottom-inset: 0px;
+}
+
+.container.mobile.keyboard-open .home-indicator {
+	display: none;
+}
+
 .container.mobile .phone-title {
 	display: flex;
 	align-items: center;
