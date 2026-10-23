@@ -4,9 +4,11 @@
 
 This document lists everything MacFolio (macfolio.hyeoniverse.com) keeps on the server about visitors. When the code changes, this document changes with it.
 
-## Traffic analytics (#102)
+## Traffic analytics
 
-When you open the site, the browser gathers a few events and sends them to the API (`POST /analytics/events`). The collected numbers are viewed in the Activity Monitor (활동 상태 보기) app.
+When you open the site, the browser gathers a few events and sends them to the API (`POST /analytics/events`). The collected numbers are viewed in the Activity Monitor (활동 상태 보기) app. It was implemented in [#102](https://github.com/hyeoniverse/MacFolio/issues/102) ([#120](https://github.com/hyeoniverse/MacFolio/pull/120) API, [#121](https://github.com/hyeoniverse/MacFolio/pull/121) collection).
+
+![The raw IP and User-Agent are used only to compute the HMAC and classify the browser; the DB stores only the daily hash, the masked IP and the browser and OS names](../images/privacy-daily-hash.svg)
 
 - **Visible to anyone:** visits and unique visitors per day, app opens, average time spent, counts per app, post and outbound link, counts per country, device, browser, OS and language, referrer groups (search, social, direct, link), view count per blog post, and "N visitors today" (오늘 방문자 N명) in the Apple menu. All of these are totals that do not identify anyone. View and per-post counts for posts the admin marked secret are visible only to the admin
 - **Visible only to the admin:** referrer addresses (hosts) and search terms passed on by search engines, utm values (source, medium, campaign and their combinations, term, content; these can reveal where a link was posted), the live visit list (visit flow, masked IP), and search terms from Google Search Console (below)
@@ -24,7 +26,7 @@ When you open the site, the browser gathers a few events and sends them to the A
 | Device type (screen width), language                                                | Browser                                                       | `desktop`, `ko-KR`                                                                                                              |
 | Country                                                                             | `CF-IPCountry` added by Cloudflare                            | `KR`                                                                                                                            |
 | Browser and OS **type**                                                             | Reduced from the User-Agent by the server                     | `Chrome`, `macOS`                                                                                                               |
-| Daily hash                                                                          | Server: `HMAC(date + IP + User-Agent, secret key)`            | 64 hex characters                                                                                                               |
+| Daily hash[^hmac]                                                                   | Server: `HMAC(date + IP + User-Agent, secret key)`            | 64 hex characters                                                                                                               |
 | IP with the last part masked                                                        | Server                                                        | `203.0.113.x`, `2001:db8:1::`                                                                                                   |
 | Visit id                                                                            | A random value the browser creates each time a page is opened | Groups the events of one visit                                                                                                  |
 
@@ -42,7 +44,7 @@ utm values are read once from the first page's address and immediately removed f
 
 - Visits from IPs the admin uses. The IP of each request authenticated as the admin (login, admin APIs) is recorded only as an HMAC, and visits from that IP aren't counted even from a device that isn't logged in (e.g. a phone) (`apps/api/src/auth/admin-ip.service.ts`)
 - Search crawlers, link previews, automated tools (filtered by User-Agent)
-- Browsers with Global Privacy Control (`navigator.globalPrivacyControl`) turned on: the site doesn't send anything (the site's collection code)
+- Browsers with [Global Privacy Control](https://globalprivacycontrol.org/) (`navigator.globalPrivacyControl`) turned on: the site doesn't send anything (the site's collection code)
 - Local development and UI tests (E2E)
 
 ### How long it is kept
@@ -59,21 +61,21 @@ Every hour the server aggregates past days and deletes values past their period 
 
 ### Google Search Console
 
-Google doesn't pass search terms to the site. So every 6 hours the server fetches impressions, clicks and average position per date, search term and page from Google Search Console and stores them (`apps/api/src/analytics/search-keywords.service.ts`). These are totals Google counted over its search results, so they aren't linked to any single visit or person, and Google leaves out rare search terms that could identify someone. Only the admin sees them.
+Google doesn't pass search terms to the site. So every 6 hours the server fetches impressions, clicks and average position per date, search term and page through the [Search Console API](https://developers.google.com/webmaster-tools) and stores them (`apps/api/src/analytics/search-keywords.service.ts`). These are totals Google counted over its search results, so they aren't linked to any single visit or person, and Google leaves out rare search terms that could identify someone. Only the admin sees them.
 
 ## Guestbook and comments (visitor cookie)
 
-A browser that writes a message or comment for the first time gets a random token cookie (`macfolio_visitor`, 1 year), and that token determines a name (e.g. 🦊 날쌘 여우, "swift fox"). The DB stores only the token's HMAC. To prevent spam, the HMAC of the IP and its first two parts (`211.234`) are stored with it. This cookie and these values aren't used for analytics.
+A browser that writes a message or comment for the first time gets a random token cookie (`macfolio_visitor`, 1 year), and that token determines a name (e.g. 🦊 날쌘 여우, "swift fox"). The DB stores only the token's HMAC. To prevent spam, the HMAC of the IP and its first two parts (e.g. `198.51`) are stored with it. This cookie and these values aren't used for analytics.
 
 ## Contact mail (Mail app)
 
-Mail sent from the Mail (메일) app (name, reply-to address, subject, body) goes through the mail service Resend to the site owner's inbox, and is also stored on the server for **1 year**. The reply-to address becomes that mail's Reply-To.
+Mail sent from the Mail (메일) app (name, reply-to address, subject, body) goes through the mail delivery service [Resend](https://resend.com/docs) to the site owner's inbox, and is also stored on the server for **1 year**. The reply-to address becomes that mail's Reply-To.
 
 - **Who can see it:** it's visible only in the sent mailbox of the browser that sent it (visitor cookie) and in the admin's inbox. The server filters by the visitor cookie's HMAC, so it isn't visible from other browsers. If you delete the cookie, it's no longer visible in that browser either
 - **Replies:** replies the admin writes in the Mail app go by email to the reply-to address, and also appear under that mail in the sender's sent mailbox
 - **Period:** mail and replies older than 1 year are deleted (when mail is sent or when the admin opens the inbox)
 - To count how many mails can be sent per day, the HMAC of the IP is kept only in server memory, and it disappears when the day changes or the server restarts
-- If human verification (Cloudflare Turnstile) is turned on, Cloudflare checks the browser
+- If human verification (Cloudflare Turnstile) is turned on, Cloudflare checks the browser (see [Human verification](#human-verification-cloudflare-turnstile) below)
 
 ## Document files (résumé, portfolio and certificates in Finder)
 
@@ -83,6 +85,18 @@ The résumé, portfolio and certificate files opened in Finder are stored in Clo
 
 Writing mail, comments or messages can require verifying that you're human. The admin decides where it's turned on under **Privacy & Security** (개인정보 보호 및 보안) in System Settings (시스템 설정) (initially only for mail). Anyone can see on the same screen where it's currently on.
 
-- When you write somewhere it's on, Cloudflare's widget checks the browser and issues a single-use token. The server verifies that token with Cloudflare. At this point Cloudflare sees the IP and browser information ([Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/))
+- When you write somewhere it's on, the [Turnstile](https://developers.cloudflare.com/turnstile/) widget checks the browser and issues a single-use token. The server verifies that token with Cloudflare. At this point Cloudflare sees the IP and browser information ([Cloudflare Privacy Policy](https://www.cloudflare.com/privacypolicy/))
 - This site doesn't store the token
 - Posts written by the admin aren't verified
+
+## Related posts (Korean)
+
+- [트래픽 분석 1 - 쿠키 없이 순방문자 세기](https://macfolio.hyeoniverse.com/memo/analytics-api)
+- [트래픽 분석 2 - 사이트에서 모아 보내기](https://macfolio.hyeoniverse.com/memo/analytics-collect)
+- [트래픽 분석 5 - UTM 조합 표와 링크 생성기](https://macfolio.hyeoniverse.com/memo/utm-analytics)
+- [무엇을 검색하고 들어왔나 - 검색어와 Google Search Console](https://macfolio.hyeoniverse.com/memo/search-keywords)
+- [이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름](https://macfolio.hyeoniverse.com/memo/visitor-identity)
+- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](https://macfolio.hyeoniverse.com/memo/contact-mail)
+- [시스템 설정에서 사람 확인을 켜고 끄기](https://macfolio.hyeoniverse.com/memo/privacy-security-settings)
+
+[^hmac]: HMAC (Hash-based Message Authentication Code) is a hash computed with a secret key mixed in. Without the key, nobody can recompute the hash from the same IP and User-Agent to match it. The server uses SHA-256 (`dayHash` in `apps/api/src/analytics/rules.ts`).

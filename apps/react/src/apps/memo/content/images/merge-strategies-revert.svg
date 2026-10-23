@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 600" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="600" rx="16" fill="#fff"/>
+  <text x="320" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">PR 하나를 되돌리는 명령과 새로 생기는 revert 커밋(R)</text>
+  <!-- 1. squash -->
+  <rect x="20" y="50" width="600" height="120" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="32" y="72" font-size="13" font-weight="600" fill="#1f2937">Squash and merge</text>
+  <text x="608" y="72" text-anchor="end" font-size="12" fill="#1f2937" font-family="ui-monospace, Menlo, monospace">git revert S</text>
+  <text x="32" y="90" font-size="11" fill="#374151">PR이 커밋 S 하나이므로 대상도 하나다</text>
+  <line x1="60" y1="130" x2="420" y2="130" stroke="#9ca3af" stroke-width="2"/>
+  <circle cx="80" cy="130" r="7" fill="#9ca3af"/><text x="80" y="152" text-anchor="middle" font-size="11" fill="#374151">M2</text>
+  <circle cx="200" cy="130" r="8" fill="#4f46e5"/><text x="200" y="160" text-anchor="middle" font-size="11" font-weight="600" fill="#4f46e5">S</text>
+  <rect x="186" y="116" width="28" height="28" rx="8" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="340" cy="130" r="8" fill="#16a34a"/><text x="340" y="152" text-anchor="middle" font-size="11" font-weight="600" fill="#16a34a">R (S의 반대)</text>
+  <!-- 2. rebase -->
+  <rect x="20" y="185" width="600" height="120" rx="8" fill="#fff1f2" stroke="#fda4af"/>
+  <text x="32" y="207" font-size="13" font-weight="600" fill="#ef4444">Rebase and merge</text>
+  <text x="608" y="207" text-anchor="end" font-size="12" fill="#1f2937" font-family="ui-monospace, Menlo, monospace">git revert C'~3..C'</text>
+  <text x="32" y="225" font-size="11" fill="#374151">PR 경계가 기록에 없으므로 A'·B'·C' 범위를 직접 지정한다. 커밋마다 R이 하나씩 생긴다</text>
+  <line x1="60" y1="265" x2="560" y2="265" stroke="#9ca3af" stroke-width="2"/>
+  <circle cx="80" cy="265" r="7" fill="#9ca3af"/><text x="80" y="287" text-anchor="middle" font-size="11" fill="#374151">M2</text>
+  <circle cx="150" cy="265" r="7" fill="#ef4444"/><text x="150" y="295" text-anchor="middle" font-size="11" fill="#ef4444">A'</text>
+  <circle cx="200" cy="265" r="7" fill="#ef4444"/><text x="200" y="295" text-anchor="middle" font-size="11" fill="#ef4444">B'</text>
+  <circle cx="250" cy="265" r="7" fill="#ef4444"/><text x="250" y="295" text-anchor="middle" font-size="11" fill="#ef4444">C'</text>
+  <rect x="136" y="251" width="128" height="28" rx="8" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="360" cy="265" r="7" fill="#16a34a"/><text x="360" y="287" text-anchor="middle" font-size="11" fill="#16a34a">R(C')</text>
+  <circle cx="420" cy="265" r="7" fill="#16a34a"/><text x="420" y="287" text-anchor="middle" font-size="11" fill="#16a34a">R(B')</text>
+  <circle cx="480" cy="265" r="7" fill="#16a34a"/><text x="480" y="287" text-anchor="middle" font-size="11" fill="#16a34a">R(A')</text>
+  <!-- 3. merge commit -->
+  <rect x="20" y="320" width="600" height="260" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="32" y="342" font-size="13" font-weight="600" fill="#4f46e5">Create a merge commit</text>
+  <text x="608" y="342" text-anchor="end" font-size="12" fill="#1f2937" font-family="ui-monospace, Menlo, monospace">git revert -m 1 M3</text>
+  <text x="32" y="360" font-size="11" fill="#374151">-m 1: 첫째 부모(M2) 기준으로, 브랜치가 가져온 변경 전체를 반대로 적용한다</text>
+  <line x1="60" y1="420" x2="420" y2="420" stroke="#9ca3af" stroke-width="2"/>
+  <circle cx="80" cy="420" r="7" fill="#9ca3af"/><text x="80" y="442" text-anchor="middle" font-size="11" fill="#374151">M2</text>
+  <path d="M80 420 L110 390" stroke="#4f46e5" stroke-width="2" fill="none"/>
+  <line x1="110" y1="390" x2="230" y2="390" stroke="#4f46e5" stroke-width="2"/>
+  <path d="M230 390 L260 420" stroke="#4f46e5" stroke-width="2" fill="none"/>
+  <circle cx="130" cy="390" r="6" fill="#4f46e5"/><circle cx="170" cy="390" r="6" fill="#4f46e5"/><circle cx="210" cy="390" r="6" fill="#4f46e5"/>
+  <text x="170" y="378" text-anchor="middle" font-size="11" fill="#4f46e5">A·B·C</text>
+  <circle cx="260" cy="420" r="8" fill="#1f2937"/><text x="260" y="450" text-anchor="middle" font-size="11" font-weight="600" fill="#1f2937">M3</text>
+  <rect x="246" y="406" width="28" height="28" rx="8" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="370" cy="420" r="8" fill="#16a34a"/><text x="370" y="442" text-anchor="middle" font-size="11" font-weight="600" fill="#16a34a">R</text>
+  <!-- re-merge trap -->
+  <line x1="40" y1="462" x2="600" y2="462" stroke="#c7d2fe" stroke-width="1"/>
+  <text x="32" y="484" font-size="12" font-weight="600" fill="#1f2937">같은 브랜치를 수정(D)해 다시 병합하는 경우</text>
+  <text x="32" y="504" font-size="11" fill="#374151">A·B·C는 이미 병합된 것으로 기록되어 있어 M4는 D만 가져온다. A·B·C의 변경은 R 때문에 빠진 채로 남는다</text>
+  <text x="32" y="524" font-size="11" fill="#374151">해결: 다시 병합하기 전에 <tspan font-family="ui-monospace, Menlo, monospace" fill="#1f2937">git revert R</tspan>로 R을 되돌려(R') A·B·C의 변경을 복원한다</text>
+  <line x1="60" y1="555" x2="380" y2="555" stroke="#9ca3af" stroke-width="2"/>
+  <circle cx="80" cy="555" r="7" fill="#9ca3af"/><text x="80" y="574" text-anchor="middle" font-size="11" fill="#374151">… R</text>
+  <circle cx="200" cy="555" r="8" fill="#16a34a"/><text x="200" y="574" text-anchor="middle" font-size="11" font-weight="600" fill="#16a34a">R' (R의 반대)</text>
+  <circle cx="340" cy="555" r="8" fill="#1f2937"/><text x="340" y="574" text-anchor="middle" font-size="11" font-weight="600" fill="#1f2937">M4 (D 병합)</text>
+  <text x="400" y="559" font-size="11" fill="#6b7280">→ A·B·C + D가 모두 반영된다</text>
+</svg>

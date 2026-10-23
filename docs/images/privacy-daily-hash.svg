@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>방문 요청의 IP와 User-Agent가 일별 해시, 마스킹된 IP, 브라우저·OS 종류로 바뀌어 저장되고 원문은 저장되지 않는 흐름</title>
+  <rect width="640" height="380" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">분석 이벤트 한 건이 저장되기까지</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+
+  <!-- 요청 -->
+  <rect x="32" y="72" width="168" height="152" rx="12" fill="#f3f4f6"/>
+  <text x="48" y="96" font-size="13" font-weight="700" fill="#1f2937">요청에 담긴 값</text>
+  <g font-size="12" fill="#1f2937">
+    <text x="48" y="122">IP 원문</text>
+    <text x="48" y="146">User-Agent 원문</text>
+    <text x="48" y="170">날짜 (한국 시각)</text>
+    <text x="48" y="194">이벤트 (앱·글·체류 시간)</text>
+  </g>
+  <text x="48" y="214" font-size="11" fill="#6b7280">POST /analytics/events</text>
+
+  <!-- 서버 처리 -->
+  <rect x="236" y="72" width="176" height="236" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+  <text x="252" y="96" font-size="13" font-weight="700" fill="#3f46c7">API 서버 (메모리 안)</text>
+  <g font-size="12">
+    <rect x="252" y="108" width="144" height="54" rx="8" fill="#ffffff" stroke="#c7cbff"/>
+    <text x="324" y="130" text-anchor="middle" font-weight="600" fill="#1f2937">HMAC-SHA256</text>
+    <text x="324" y="150" text-anchor="middle" fill="#6b7280">날짜 + IP + UA, 비밀 키</text>
+    <rect x="252" y="172" width="144" height="54" rx="8" fill="#ffffff" stroke="#c7cbff"/>
+    <text x="324" y="194" text-anchor="middle" font-weight="600" fill="#1f2937">IP 마스킹</text>
+    <text x="324" y="214" text-anchor="middle" fill="#6b7280">마지막 자리 제거</text>
+    <rect x="252" y="236" width="144" height="54" rx="8" fill="#ffffff" stroke="#c7cbff"/>
+    <text x="324" y="258" text-anchor="middle" font-weight="600" fill="#1f2937">UA 분류</text>
+    <text x="324" y="278" text-anchor="middle" fill="#6b7280">브라우저·OS 이름만</text>
+  </g>
+  <line x1="202" y1="148" x2="234" y2="148" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 저장 -->
+  <rect x="448" y="72" width="160" height="236" rx="12" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="464" y="96" font-size="13" font-weight="700" fill="#15803d">DB에 저장</text>
+  <g font-size="12" fill="#1f2937">
+    <text x="464" y="130">일별 해시 (64자)</text>
+    <text x="464" y="148" fill="#6b7280">90일 뒤 삭제</text>
+    <text x="464" y="194">203.0.113.x</text>
+    <text x="464" y="212" fill="#6b7280">7일 뒤 삭제</text>
+    <text x="464" y="258">Chrome · macOS</text>
+    <text x="464" y="276" fill="#6b7280">90일 뒤 삭제</text>
+  </g>
+  <line x1="398" y1="135" x2="446" y2="135" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="398" y1="199" x2="446" y2="199" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="398" y1="263" x2="446" y2="263" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 폐기 -->
+  <rect x="32" y="324" width="576" height="36" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="320" y="347" font-size="12" text-anchor="middle" fill="#b91c1c">IP 원문과 User-Agent 원문은 계산에만 사용하고 저장하지 않는다. 날짜가 바뀌면 같은 브라우저도 다른 해시가 된다</text>
+</svg>
