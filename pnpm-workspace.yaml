@@ -29,3 +29,7 @@ overrides:
   katex: '^0.18.2'
   # scalar 문서 앱: 자원 소비 제한 없음 (low)
   '@ai-sdk/provider-utils': '^4.0.33'
+  # nestjs > express: 압축된 요청 본문 뒤의 남은 바이트로 서비스 거부 (GHSA-27r3-jxmh-p828, high)
+  body-parser: '^2.4.0'
+  # og-card > satori(0.7.3 고정): unzipSync 무한 반복 (moderate). 같은 0.7 버전의 수정판으로 올린다
+  'fflate@0.7.3': '0.7.5'
