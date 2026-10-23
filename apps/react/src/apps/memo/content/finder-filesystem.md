@@ -175,6 +175,6 @@ macOS에서 바탕화면은 사용자 폴더 안의 "데스크탑" 폴더다. Fi
 - [메모 로직을 desktop-core로 - localStorage는 어디에 둘까](/memo/desktop-core-memo): 메모 정리 함수의 위치
 - [바탕화면의 포트폴리오만 비어 있었다 — 가상본 버그에서 Finder 트리까지](/memo/finder-home-tree): 이후 Finder 트리 개편
 
-[^desktop]: 처음에는 포트폴리오에 업로드하고 위치만 바탕화면으로 기록했다. 아래 "macOS와 같은 휴지통" 절의 문제로 `desktop/…` 키를 추가했다.
+[^desktop]: 처음에는 포트폴리오에 업로드하고 위치만 바탕화면으로 기록했다. 본문 "macOS와 같은 휴지통" 절의 문제로 `desktop/…` 키를 추가했다.
 
 #MacFolio #프론트엔드 #Finder #데스크탑 #끌어놓기 #NestJS #Prisma #zod
