@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { env } from '@/shared/config/env';
 import { useAdmin } from '@/shared/auth/adminStore';
 import { avatarUrl } from '@/shared/auth/admin';
 import { githubLogin, useProfile } from '@/shared/site/profileStore';
 import { displayName, LIMITS, monogram, validateMessageInput } from '@/apps/messages/conversations';
 import { fetchVisitorName } from '@/shared/lib/visitor';
+import { usePolling } from '@/shared/hooks/usePolling';
+import { keepIfSame } from '@/shared/lib/poller';
+import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import { createComment, deleteComment, formatCommentTime, listComments, type Comment } from './commentsApi';
 import Button from '@/shared/ui/button/Button';
 import Turnstile from '@/shared/ui/turnstile/Turnstile';
@@ -12,6 +15,9 @@ import { useHumanCheck } from '@/shared/security/security';
 import LikeButton from '../likes/LikeButton';
 import { setCommentLike, toggleLike } from '../likes/likesApi';
 import IconButton from '@/shared/ui/button/IconButton';
+
+/** 글을 보는 동안 댓글을 다시 묻는 간격 */
+const COMMENTS_POLL_MS = 60_000;
 
 /** 프로필 동그라미: 작성자는 GitHub 사진, 방문자는 이름 첫 글자 */
 const CommentAvatar = ({ name, owner }: { name: string; owner: boolean }) => {
@@ -38,6 +44,12 @@ const CommentItem = ({
 	const ownerName = useProfile().name;
 	const [likes, setLikes] = useState({ count: comment.likes, liked: comment.liked });
 	const [liking, setLiking] = useState(false);
+	// 주기 조회로 받은 좋아요 수를 따른다 (누르는 중이면 그 응답이 맞춘다)
+	const [seen, setSeen] = useState({ count: comment.likes, liked: comment.liked });
+	if (seen.count !== comment.likes || seen.liked !== comment.liked) {
+		setSeen({ count: comment.likes, liked: comment.liked });
+		if (!liking) setLikes({ count: comment.likes, liked: comment.liked });
+	}
 	const [asking, setAsking] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const canDelete = isAdmin || comment.mine;
@@ -122,14 +134,31 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 	/** 사람 확인: 관리자가 시스템 설정에서 댓글에 켜면 (관리자에게는 없다) */
 	const human = useHumanCheck('comment');
 
+	// 댓글 목록: 메모 창이 보이는 동안 1분마다 다시 묻는다. 쓰던 댓글(body)은 따로 두므로 그대로 남는다
+	/** 이 화면에서 댓글을 더하거나 지운 시각. 그보다 먼저 보낸 조회의 응답은 목록을 덮지 않는다 */
+	const commentsEditedAt = useRef(0);
+	const shown = useAppWindowShown('memo');
+	usePolling(
+		(isCurrent) => {
+			const askedAt = Date.now();
+			return listComments(env.apiUrl, slug).then((list) => {
+				if (!isCurrent()) return;
+				// 처음부터 읽지 못했을 때만 알린다. 보던 목록이 있으면 그대로 둔다
+				if (list === null) {
+					setComments((current) => current ?? []);
+					if (comments === null) setFailed(true);
+					throw new Error('comments');
+				}
+				setFailed(false);
+				if (askedAt >= commentsEditedAt.current) setComments((current) => keepIfSame(current, list));
+			});
+		},
+		{ intervalMs: COMMENTS_POLL_MS, active: shown && Boolean(env.apiUrl), resetKey: slug }
+	);
+
 	useEffect(() => {
 		if (!env.apiUrl) return;
 		let cancelled = false;
-		listComments(env.apiUrl, slug).then((list) => {
-			if (cancelled) return;
-			setComments(list ?? []);
-			setFailed(list === null);
-		});
 		fetchVisitorName(env.apiUrl).then((visitor) => !cancelled && setName(visitor));
 		return () => {
 			cancelled = true;
@@ -161,6 +190,7 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 		setErrors([]);
 		setBody('');
 		if (!result.comment.isAdmin) setName(result.comment.name);
+		commentsEditedAt.current = Date.now();
 		setComments((list) => [...(list ?? []), result.comment]);
 		onCount?.(slug, (comments?.length ?? 0) + 1);
 	};
@@ -182,6 +212,7 @@ const Comments = ({ slug, onCount }: { slug: string; onCount?: (slug: string, co
 							comment={comment}
 							isAdmin={isAdmin}
 							onDeleted={() => {
+								commentsEditedAt.current = Date.now();
 								setComments((list) => list?.filter((item) => item.id !== comment.id) ?? null);
 								onCount?.(slug, (comments?.length ?? 1) - 1);
 							}}

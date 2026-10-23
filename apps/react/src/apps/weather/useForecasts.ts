@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
+import { usePolling } from '@/shared/hooks/usePolling';
 import { toWeather, type Weather as WeatherData } from './forecast';
 import { type Place } from './places';
 import { fetchForecast, type TemperatureUnit } from './weatherApi';
@@ -38,34 +39,47 @@ function forecastFor(place: Place, unit: TemperatureUnit, force: boolean, now = 
 /** 시험에서 남은 값을 비운다 */
 export const clearForecastCache = () => cache.clear();
 
-/** 장소마다 날씨를 묻고, 15분마다 다시 묻는다. 기온 단위를 바꾸면 새로 묻는다. reload는 남은 값과 상관없이 다시 묻는다 */
-export function useForecasts(places: Place[], unit: TemperatureUnit) {
+/**
+ * 장소마다 날씨를 묻고, active(창이나 위젯이 보인다)이고 탭이 보이는 동안 15분마다 다시 묻는다.
+ * 숨었다 다시 보이면 15분이 지났을 때만 바로 묻는다. 장소·기온 단위가 바뀌면 새로 묻는다.
+ * reload는 남은 값과 상관없이 다시 묻는다
+ */
+export function useForecasts(places: Place[], unit: TemperatureUnit, active = true) {
 	const [forecasts, setForecasts] = useState<Record<string, Loaded>>({});
-	const [round, setRound] = useState({ n: 0, force: false });
-	const reload = useCallback(() => setRound((value) => ({ n: value.n + 1, force: true })), []);
+	/** 다음 조회가 남은 값을 무시하는지 (다시 시도) */
+	const force = useRef(false);
 
-	useEffect(() => {
-		let active = true;
-		for (const place of places) {
-			const key = `${keyOf(place)}|${unit}`;
-			forecastFor(place, unit, round.force).then(
-				(weather) => {
-					if (active) setForecasts((current) => ({ ...current, [key]: { status: 'ready', weather } }));
-				},
-				() => {
-					if (active)
-						setForecasts((current) =>
-							current[key]?.status === 'ready' ? current : { ...current, [key]: { status: 'error' } }
-						);
-				}
-			);
-		}
-		const timer = window.setInterval(() => setRound((value) => ({ n: value.n + 1, force: false })), REFRESH_MS);
-		return () => {
-			active = false;
-			window.clearInterval(timer);
-		};
-	}, [places, unit, round]);
+	const { refresh } = usePolling(
+		(isCurrent) => {
+			const fresh = force.current;
+			force.current = false;
+			return Promise.allSettled(
+				places.map((place) => {
+					const key = `${keyOf(place)}|${unit}`;
+					return forecastFor(place, unit, fresh).then(
+						(weather) => {
+							if (isCurrent()) setForecasts((current) => ({ ...current, [key]: { status: 'ready', weather } }));
+						},
+						(error: unknown) => {
+							if (isCurrent())
+								setForecasts((current) =>
+									current[key]?.status === 'ready' ? current : { ...current, [key]: { status: 'error' } }
+								);
+							throw error;
+						}
+					);
+				})
+			).then((results) => {
+				// 모두 실패했으면 간격을 늘린다
+				if (results.length > 0 && results.every((result) => result.status === 'rejected')) throw new Error('weather');
+			});
+		},
+		{ intervalMs: REFRESH_MS, active, resetKey: `${places.map(keyOf).join(';')}|${unit}` }
+	);
+	const reload = useCallback(() => {
+		force.current = true;
+		refresh();
+	}, [refresh]);
 
 	return { forecastOf: (place: Place) => forecasts[`${keyOf(place)}|${unit}`], reload };
 }

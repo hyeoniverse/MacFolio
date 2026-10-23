@@ -38,6 +38,9 @@ const TimeLabel: React.FC<{ label: string }> = ({ label }) => {
 	);
 };
 
+/** 맨 아래에서 이만큼(px) 안이면 맨 아래를 보고 있다고 본다 (새 말풍선이 오면 따라 내려간다) */
+const STICK_PX = 48;
+
 /** 이름 알약 아래 설명. 주인의 안내 글은 설명 없이 이름만 */
 const subtitleOf = (thread: Thread) => {
 	if (thread.pinned) return null;
@@ -64,13 +67,27 @@ const ChatView: React.FC<Props> = ({
 	const humanCheck = useHumanCheck('message');
 	const human = env.messagesStore === 'local' ? { ...humanCheck, siteKey: null, ready: true } : humanCheck;
 	const canDelete = (message: Message) => !message.fromOwner && (message.mine || isAdmin);
-	const listEnd = useRef<HTMLDivElement>(null);
+	const transcript = useRef<HTMLDivElement>(null);
+	/** 맨 아래를 보고 있는지. 위로 올려 지난 말풍선을 읽는 중이면 false */
+	const atBottom = useRef(true);
 	const timeline = buildTimeline(messages, { now: new Date() });
+	const last = messages.at(-1);
 
-	// 항목을 열거나 새 글이 생기면 맨 아래로
+	const scrollToEnd = () => {
+		const list = transcript.current;
+		if (list) list.scrollTop = list.scrollHeight;
+	};
+
+	// 항목을 열면 맨 아래로
 	useEffect(() => {
-		listEnd.current?.scrollIntoView({ block: 'end' });
-	}, [thread?.id, messages.length]);
+		atBottom.current = true;
+		scrollToEnd();
+	}, [thread?.id]);
+	// 새 말풍선이 오면(내가 보냈거나 주기 조회로 받은 답글): 맨 아래를 보고 있었거나 내가 보낸 것일 때만 따라 내려간다.
+	// 위로 올려 읽는 중이면 스크롤 위치를 그대로 둔다
+	useEffect(() => {
+		if (atBottom.current || last?.mine) scrollToEnd();
+	}, [last?.id, last?.mine]);
 
 	// 새 피드백 화면은 Esc로 그만둔다 (팝업이 열려 있으면 팝업이 먼저 닫힌다)
 	useEffect(() => {
@@ -128,7 +145,16 @@ const ChatView: React.FC<Props> = ({
 				</header>
 			)}
 
-			<div className="messages-transcript" role="log" aria-live="polite">
+			<div
+				ref={transcript}
+				className="messages-transcript"
+				role="log"
+				aria-live="polite"
+				onScroll={(event) => {
+					const list = event.currentTarget;
+					atBottom.current = list.scrollHeight - list.scrollTop - list.clientHeight <= STICK_PX;
+				}}
+			>
 				{timeline.map((item) =>
 					item.type === 'time' ? (
 						<p key={item.key} className="messages-time">
@@ -160,7 +186,6 @@ const ChatView: React.FC<Props> = ({
 						</div>
 					)
 				)}
-				<div ref={listEnd} />
 			</div>
 
 			<Composer

@@ -1,11 +1,12 @@
 // 메뉴 막대의 배터리 자리에 방문자에게 보이는 방문 추이. '활동 상태 보기'의 개요와 같은 GET /analytics/summary를 읽는다.
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { env } from '@/shared/config/env';
+import { usePolling } from '@/shared/hooks/usePolling';
 import { fetchSummary, type Summary } from './activityApi';
 import { change, kstToday, periodRange } from './model';
 import type { Battery } from './useServerResources';
 
-/** 서버는 방문자에게 1분 동안 같은 값을 준다. 메뉴 막대는 10분마다 다시 묻는다 */
+/** 서버는 방문자에게 1분 동안 같은 값을 준다. 메뉴 막대는 탭이 보이는 동안 10분마다 다시 묻는다 */
 const POLL_MS = 10 * 60_000;
 
 export interface VisitTrend {
@@ -43,33 +44,28 @@ export function visitBattery(trend: VisitTrend | null): Battery {
 	return { fill, tone: null, summary: `최근 7일 ${trend.visits.toLocaleString()}회${compared}` };
 }
 
-/** 서버 주소가 있으면 최근 7일 방문을 묻는다. 묻지 못하면 null (배터리는 평소 모양) */
+/** 서버 주소가 있으면 최근 7일 방문을 묻는다. 묻지 못하면 null (배터리는 평소 모양). 탭이 숨으면 묻지 않는다 */
 export function useVisitTrend() {
 	const enabled = Boolean(env.apiUrl);
 	const [trend, setTrend] = useState<VisitTrend | null>(null);
 	const [failed, setFailed] = useState(false);
 
-	useEffect(() => {
-		if (!enabled) return;
-		let alive = true;
-		const ask = () => {
+	usePolling(
+		() => {
 			const { from, to } = periodRange('7d', kstToday());
 			return fetchSummary(from, to).then(
 				(summary) => {
-					if (!alive) return;
 					setTrend(trendOf(summary));
 					setFailed(false);
 				},
-				() => alive && setFailed(true)
+				(caught: unknown) => {
+					setFailed(true);
+					throw caught;
+				}
 			);
-		};
-		void ask();
-		const timer = window.setInterval(() => void ask(), POLL_MS);
-		return () => {
-			alive = false;
-			window.clearInterval(timer);
-		};
-	}, [enabled]);
+		},
+		{ intervalMs: POLL_MS, active: enabled }
+	);
 
 	return { enabled, trend, failed };
 }

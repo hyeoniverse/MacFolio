@@ -3,6 +3,7 @@ import { useSyncExternalStore } from 'react';
 import { env } from '@/shared/config/env';
 import { apiFetch } from '@/shared/api/client';
 import { createStore } from '@macfolio/desktop-core';
+import { createSharedPoller, keepIfSame } from '@/shared/lib/poller';
 
 export interface ContributionDay {
 	/** YYYY-MM-DD */
@@ -132,22 +133,27 @@ export function mergePushes(events: ActivityItem[]): (ActivityItem & { pushes: n
 	return result;
 }
 
-let pending: Promise<void> | null = null;
+/** GitHub 앱 창과 기여 위젯이 다시 묻는 간격. 서버도 GitHub 응답을 캐시하고, 기여는 하루 단위라 자주 바뀌지 않는다 */
+export const ACTIVITY_POLL_MS = 10 * 60_000;
 
-/** 서버 값을 받는다 (앱을 열 때마다. 실패하면 지금 값을 그대로 둔다) */
-export function loadActivity(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetch): Promise<void> {
-	if (!apiUrl) return Promise.resolve();
-	pending ??= (async () => {
-		try {
-			const response = await apiFetch('/github/activity', { apiUrl, fetchImpl });
-			if (!response.ok) return;
-			const data = toActivity(await response.json());
-			if (data) activityStore.setState({ data });
-		} catch {
-			// 서버에 닿지 않으면 달력과 활동을 보여 주지 않는다
-		} finally {
-			pending = null;
-		}
-	})();
-	return pending;
+/**
+ * 서버 값을 받는다. 실패하면 지금 값을 그대로 두고 reject한다 (일정이 간격을 늘린다).
+ * API 주소가 없으면 묻지 않는다
+ */
+export async function loadActivity(apiUrl = env.apiUrl, fetchImpl: typeof fetch = fetch): Promise<void> {
+	if (!apiUrl) return;
+	const response = await apiFetch('/github/activity', { apiUrl, fetchImpl });
+	if (!response.ok) throw new Error(`github activity ${response.status}`);
+	const data = toActivity(await response.json());
+	if (!data) throw new Error('github activity shape');
+	activityStore.setState((state) => {
+		const next = keepIfSame(state.data, data);
+		return next === state.data ? state : { data: next };
+	});
 }
+
+/**
+ * GitHub 앱 창과 기여 위젯(여러 개여도)이 나눠 쓰는 일정. 보이는 곳이 있는 동안 10분마다 묻는다.
+ * 보는 곳은 usePolling.ts의 useSharedPolling으로 등록한다
+ */
+export const activityPolling = createSharedPoller({ intervalMs: ACTIVITY_POLL_MS, run: () => loadActivity() });
