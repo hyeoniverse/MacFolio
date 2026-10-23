@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>원래 서버의 부트 볼륨 A를 떼어 임시 VM에 데이터 볼륨으로 붙이고, authorized_keys에 새 공개 키를 추가한 뒤 원래 서버에 부트 볼륨으로 다시 붙여 시작한다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">부트 볼륨을 옮겨 SSH 키를 복구하는 계획</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">A = 원래 서버 부트 볼륨 · B = 임시 VM 부트 볼륨 · 두 VM은 같은 가용 도메인에 있어야 한다</text>
+<text x="32" y="92" font-size="12" fill="#1f2937" font-weight="600" text-anchor="start">① 시작 상태 (3단계까지)</text>
+<text x="320" y="92" font-size="12" fill="#1f2937" font-weight="600" text-anchor="start">② 볼륨 이동 (4~6단계)</text>
+<text x="608" y="92" font-size="12" fill="#1f2937" font-weight="600" text-anchor="start">③ 복귀 (7단계)</text>
+<rect x="32" y="104" width="220" height="74" rx="9" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+<text x="44" y="123" font-size="12" fill="#b91c1c" font-weight="600">원래 서버 (RUNNING)</text>
+<text x="44" y="140" font-size="10.5" fill="#374151">부트: A</text>
+<text x="44" y="155" font-size="10.5" fill="#374151">SSH 키 분실 → 접속 불가</text>
+<rect x="32" y="196" width="220" height="74" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="44" y="215" font-size="12" fill="#15803d" font-weight="600">임시 VM (RUNNING)</text>
+<text x="44" y="232" font-size="10.5" fill="#374151">부트: B</text>
+<text x="44" y="247" font-size="10.5" fill="#374151">새 공개 키로 생성 → 접속 가능</text>
+<rect x="320" y="104" width="220" height="74" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="332" y="123" font-size="12" fill="#374151" font-weight="600">원래 서버 (STOPPED)</text>
+<text x="332" y="140" font-size="10.5" fill="#374151">부트 볼륨 없음</text>
+<text x="332" y="155" font-size="10.5" fill="#374151">이 동안 시작할 수 없다</text>
+<rect x="320" y="196" width="220" height="110" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="332" y="215" font-size="12" fill="#4f46e5" font-weight="600">임시 VM</text>
+<text x="332" y="232" font-size="10.5" fill="#374151">부트: B</text>
+<text x="332" y="247" font-size="10.5" fill="#374151">데이터 볼륨: A (paravirtualized)</text>
+<text x="332" y="262" font-size="10.5" fill="#374151">A의 /home/ubuntu/.ssh/</text>
+<text x="332" y="277" font-size="10.5" fill="#374151">authorized_keys에 새 공개 키 추가</text>
+<rect x="608" y="104" width="220" height="74" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="620" y="123" font-size="12" fill="#15803d" font-weight="600">원래 서버 (RUNNING)</text>
+<text x="620" y="140" font-size="10.5" fill="#374151">부트: A</text>
+<text x="620" y="155" font-size="10.5" fill="#374151">새 키로 SSH 접속</text>
+<rect x="608" y="196" width="220" height="74" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="620" y="215" font-size="12" fill="#374151" font-weight="600">임시 VM (종료 후 삭제)</text>
+<text x="620" y="232" font-size="10.5" fill="#374151">A 분리 → Terminate</text>
+<text x="620" y="247" font-size="10.5" fill="#374151">B도 함께 삭제</text>
+<path d="M252 150 H316" stroke="#374151" stroke-width="1.8" fill="none" marker-end="url(#a-gray)"/>
+<text x="286" y="135" font-size="10" fill="#b91c1c" font-weight="600" text-anchor="middle">Stop</text>
+<text x="286" y="170" font-size="10" fill="#b91c1c" font-weight="600" text-anchor="middle">A 분리</text>
+<path d="M252 233 H316" stroke="#374151" stroke-width="1.8" fill="none" marker-end="url(#a-gray)"/>
+<path d="M430 178 V192" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#a-amber)"/>
+<text x="438" y="189" font-size="10" fill="#b45309" font-weight="600" text-anchor="start">A 연결</text>
+<path d="M540 250 C576 250 576 141 604 141" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<text x="608" y="290" font-size="10" fill="#15803d" font-weight="600" text-anchor="start">SOFTSTOP → A 분리</text>
+<text x="608" y="305" font-size="10" fill="#15803d" font-weight="600" text-anchor="start">→ 원래 서버에 부트 볼륨으로 연결 → START</text>
+<rect x="32" y="330" width="796" height="50" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="44" y="349" font-size="12" fill="#b45309" font-weight="600">주의</text>
+<text x="44" y="366" font-size="10.5" fill="#374151">A와 B는 같은 Ubuntu 이미지라 루트 파티션 LABEL(cloudimg-rootfs)이 같다. A를 붙인 채 임시 VM을 재부팅하면 A로 부팅될 수 있다</text>
+</svg>
