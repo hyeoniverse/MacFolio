@@ -155,6 +155,8 @@ GSC_CLIENT_EMAIL=…@….iam.gserviceaccount.com
 GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 ```
 
+도메인 속성(`sc-domain:`)은 모든 하위 도메인의 검색어를 담는다. 이후 서버가 이 사이트 주소로 시작하는 페이지만 요청하도록 바꿨다([Google Search Console 연결하기](/memo/search-console-setup#도메인-속성에서-이-사이트-검색어만-받기)).
+
 ## 남은 과제
 
 - **네이버의 검색어 전달 여부:** 주소의 검색어 파라미터 파싱은 시험했지만, 현재 네이버가 전체 주소를 리퍼러로 전달하는지는 배포 후 집계값으로 확인해야 한다. 전달하지 않으면 이 표는 비어 있게 된다

@@ -2,7 +2,7 @@
 title: Google Search Console 연결하기 — 사이트 등록, 사이트맵 제출, 검색어 탭
 date: 2026-10-23
 category: 개발기/MacFolio/인프라
-summary: 블로그 글을 검색에 노출하고 검색어를 활동 상태 보기에서 확인하기까지의 순서. Search Console 속성 추가와 사이트맵 제출, Google Cloud 서비스 계정 생성, Search Console 권한 추가, 서버 api.env 설정을 단계별로 정리하고, URL 접두어 속성을 권장하는 이유를 적었다.
+summary: 블로그 글을 검색에 노출하고 검색어를 활동 상태 보기에서 확인하기까지의 순서. Search Console 속성 추가와 사이트맵 제출, Google Cloud 서비스 계정 생성, Search Console 권한 추가, 서버 api.env 설정을 단계별로 정리하고, 도메인 속성에서 이 사이트 검색어만 거르는 방법을 적었다.
 ---
 
 ## 설치 순서
@@ -23,12 +23,12 @@ summary: 블로그 글을 검색에 노출하고 검색어를 활동 상태 보�
 
 Search Console에서 **속성 추가**를 누르면 두 종류 중 하나를 고른다.
 
-| 속성                  | 입력                                | 소유 확인                                                      | 범위             |
-| --------------------- | ----------------------------------- | -------------------------------------------------------------- | ---------------- |
-| 도메인                | `hyeoniverse.com`                   | DNS에 TXT 레코드 추가                                          | 모든 하위 도메인 |
-| **URL 접두어 (권장)** | `https://macfolio.hyeoniverse.com/` | HTML 태그·파일 등. 같은 계정으로 도메인 속성을 확인했으면 자동 | 이 주소 아래만   |
+| 속성       | 입력                                | 소유 확인                                                      | 범위             |
+| ---------- | ----------------------------------- | -------------------------------------------------------------- | ---------------- |
+| 도메인     | `hyeoniverse.com`                   | DNS에 TXT 레코드 추가                                          | 모든 하위 도메인 |
+| URL 접두어 | `https://macfolio.hyeoniverse.com/` | HTML 태그·파일 등. 같은 계정으로 도메인 속성을 확인했으면 자동 | 이 주소 아래만   |
 
-이 사이트는 **URL 접두어 속성**을 권장한다. 이유는 [검색어 탭에 URL 접두어 속성을 연결하는 이유](#검색어-탭에-url-접두어-속성을-연결하는-이유)에 적었다.
+**어느 속성이든 검색어 탭에 연결할 수 있다.** 도메인 속성은 `www`, `blog` 같은 다른 하위 도메인의 검색어까지 담지만, 서버가 이 사이트 페이지만 요청하므로 섞이지 않는다([도메인 속성에서 이 사이트 검색어만 받기](#도메인-속성에서-이-사이트-검색어만-받기)). 도메인 속성이 이미 있으면 그대로 쓰면 된다.
 
 <details>
 <summary>도메인 속성의 TXT 레코드 추가 (Cloudflare)</summary>
@@ -93,16 +93,42 @@ rm ~/Downloads/<키파일>.json
 
 서버에서 `GSC_SITE_URL`, `GSC_CLIENT_EMAIL`, `GSC_PRIVATE_KEY`를 넣고 `docker compose up -d api`로 다시 시작한 뒤, 사이트에 관리자로 로그인해 **활동 상태 보기 → 검색어 → 지금 가져오기**를 누른다. 처음에는 16개월치를 가져온다.
 
-## 검색어 탭에 URL 접두어 속성을 연결하는 이유
+## 도메인 속성에서 이 사이트 검색어만 받기
 
-서버는 Search Console API의 `searchAnalytics.query`를 속성 단위로 호출하고, 응답을 페이지 주소로 거르지 않는다(`apps/api/src/analytics/search-console.ts`). 그래서 `sc-domain:hyeoniverse.com` 같은 도메인 속성을 연결하면 `www`, `blog` 같은 다른 하위 도메인의 검색어도 MacFolio의 검색어 탭에 함께 표시된다.
+처음 구현에서 서버는 Search Console API의 `searchAnalytics.query`를 속성 단위로 호출하고, 응답을 페이지 주소로 거르지 않았다. 그래서 `sc-domain:hyeoniverse.com` 같은 도메인 속성을 연결하면 `www`, `blog` 같은 다른 하위 도메인의 검색어도 MacFolio의 검색어 탭에 함께 표시되었다.
 
-| 연결한 속성                         | 검색어 탭에 표시되는 범위            |
-| ----------------------------------- | ------------------------------------ |
-| `sc-domain:hyeoniverse.com`         | `hyeoniverse.com`의 모든 하위 도메인 |
-| `https://macfolio.hyeoniverse.com/` | MacFolio 주소만                      |
+두 가지 해결 방법을 비교했다.
 
-도메인 속성이 이미 있으면 그대로 두고, URL 접두어 속성을 하나 더 추가하면 된다. 같은 계정으로 도메인 속성을 확인했다면 하위 주소의 URL 접두어 속성은 별도 확인 없이 추가된다.
+|                     | URL 접두어 속성 추가                              | 도메인 속성 + 서버에서 거르기 (선택)  |
+| ------------------- | ------------------------------------------------- | ------------------------------------- |
+| Search Console 설정 | 속성 추가, 서비스 계정 권한 추가, 사이트맵 재제출 | 변경 없음                             |
+| 지난 자료           | 새 속성이라 보장되지 않음                         | 도메인 속성에 쌓인 자료를 그대로 사용 |
+| 다른 하위 도메인    | Search Console에서 도메인 속성을 따로 열어야 함   | 도메인 속성 하나로 전체 확인          |
+| 코드                | 변경 없음                                         | 요청에 페이지 조건 추가               |
+
+서버가 검색어를 요청할 때 페이지 조건을 붙이도록 바꿨다. Search Console API의 `dimensionFilterGroups`[^filter]에 "페이지 주소가 이 사이트 주소로 시작" 조건을 넣는다.
+
+```json
+{
+	"dimensions": ["date", "query", "page"],
+	"dimensionFilterGroups": [
+		{
+			"filters": [
+				{ "dimension": "page", "operator": "includingRegex", "expression": "^https://macfolio\\.hyeoniverse\\.com/" }
+			]
+		}
+	]
+}
+```
+
+| 연결한 속성                 | 거르는 주소                                           |
+| --------------------------- | ----------------------------------------------------- |
+| 도메인 속성 (`sc-domain:…`) | `FRONTEND_URL`(기본은 `CORS_ORIGINS`의 첫 주소) + `/` |
+| URL 접두어 속성             | 거르지 않음 (이미 이 주소만 담는다)                   |
+| `GSC_PAGE_PREFIX`를 지정    | 그 값 (빈 값이면 거르지 않음)                         |
+
+- **이미 가져 둔 자료:** 거르기 전에 저장한 다른 하위 도메인의 줄은 화면에 보내기 전에 같은 조건(`starts_with`)으로 빼고, 다음 가져오기에서 DB에서도 지운다. 배포 직후부터 이 사이트 검색어만 보인다
+- **성능:** 요청은 서버가 6시간마다 한 번 보내는 백그라운드 작업이라 방문자 화면과 관계없다. Google이 조건에 맞는 줄만 돌려주므로 받는 양은 오히려 줄어든다
 
 ## 관련 글
 
@@ -118,5 +144,7 @@ rm ~/Downloads/<키파일>.json
 - [Google Cloud: 서비스 계정 만들기](https://cloud.google.com/iam/docs/service-accounts-create)
 
 [^service-account]: 사람이 아니라 애플리케이션이 쓰는 Google 계정. 비밀번호 대신 키로 인증하고, 권한은 그 계정을 추가한 서비스(여기서는 Search Console 속성)에서만 받는다.
+
+[^filter]: 검색 결과를 차원(날짜·검색어·페이지·국가·기기) 값으로 거르는 조건. `includingRegex`는 RE2 정규식에 맞는 값만 남긴다([searchAnalytics.query](https://developers.google.com/webmaster-tools/v1/searchanalytics/query)).
 
 #MacFolio #SEO #SearchConsole #인프라

@@ -878,12 +878,13 @@ curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,
 
 [search.google.com/search-console](https://search.google.com/search-console)에서 **속성 추가**를 누른다. 속성은 두 종류다.
 
-| 속성                  | 입력                                | 소유 확인                                                      | 범위                                          | `GSC_SITE_URL`                                     |
-| --------------------- | ----------------------------------- | -------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------- |
-| 도메인                | `hyeoniverse.com`                   | Cloudflare DNS에 TXT 레코드                                    | 모든 하위 도메인(`www`, `blog`, `macfolio` …) | `sc-domain:hyeoniverse.com`                        |
-| **URL 접두어 (권장)** | `https://macfolio.hyeoniverse.com/` | HTML 태그·파일 등. 같은 계정으로 도메인 속성을 확인했으면 자동 | 이 주소 아래만                                | `https://macfolio.hyeoniverse.com/` (끝의 `/`까지) |
+| 속성       | 입력                                | 소유 확인                                                      | 범위                                          | `GSC_SITE_URL`                                     |
+| ---------- | ----------------------------------- | -------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| 도메인     | `hyeoniverse.com`                   | Cloudflare DNS에 TXT 레코드                                    | 모든 하위 도메인(`www`, `blog`, `macfolio` …) | `sc-domain:hyeoniverse.com`                        |
+| URL 접두어 | `https://macfolio.hyeoniverse.com/` | HTML 태그·파일 등. 같은 계정으로 도메인 속성을 확인했으면 자동 | 이 주소 아래만                                | `https://macfolio.hyeoniverse.com/` (끝의 `/`까지) |
 
-- 검색어 탭에는 **URL 접두어 속성을 연결**한다. 서버는 속성 전체의 검색어를 가져오고 페이지 주소로 거르지 않으므로, 도메인 속성을 연결하면 `www`·`blog` 같은 다른 하위 도메인의 검색어가 함께 표시된다
+- **어느 속성이든 연결할 수 있다.** 도메인 속성(`sc-domain:`)이면 서버가 이 사이트 주소(`FRONTEND_URL`, 기본은 `CORS_ORIGINS`의 첫 주소)로 시작하는 페이지의 검색어만 요청한다(Search Console API의 `dimensionFilterGroups`, `includingRegex`). 그래서 `www`·`blog` 같은 다른 하위 도메인의 검색어는 검색어 탭에 섞이지 않는다. 다른 주소로 거르려면 `GSC_PAGE_PREFIX`를 지정한다(빈 값이면 거르지 않는다)
+- 도메인 속성이 이미 있으면 그대로 쓴다. 지난 자료도 그대로 가져올 수 있다
 - 도메인 속성의 TXT 레코드: Cloudflare 대시보드 → 도메인 → **DNS → Records → Add record**에서 Type `TXT`, Name `@`, Content에 화면의 `google-site-verification=…` 값을 넣고, Search Console에서 **확인**을 누른다 (보통 몇 분, 늦으면 1시간)
 - 확인되면 왼쪽 **Sitemaps**에 `https://macfolio.hyeoniverse.com/sitemap.xml`을 제출한다. Worker가 저장소 글·서버 글·프로젝트 주소를 합쳐 생성한다(`robots.txt`에도 있다)
 - 바로 수집되게 하려면 위쪽 **URL 검사**에 글 주소를 넣고 **색인 생성 요청**을 누른다 (하루 요청 수 제한이 있다). 색인된 주소 수는 **페이지** 보고서에서 확인한다
