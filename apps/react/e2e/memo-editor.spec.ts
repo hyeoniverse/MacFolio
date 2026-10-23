@@ -15,7 +15,7 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('고치지 않고 본문을 누르거나 토글을 펼치고 접기만 하면 저장하지 않는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		await memo.locator('.memo-item', { hasText: 'Mac에서 Homebrew와 npm 설정하기' }).click();
+		await memo.locator('.memo-item', { hasText: 'GitHub 병합 방식 세 가지' }).click();
 		const editor = memo.locator('.ProseMirror');
 		await expect(editor).toBeVisible();
 
