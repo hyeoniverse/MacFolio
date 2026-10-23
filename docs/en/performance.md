@@ -4,25 +4,25 @@
 
 A record of measuring the first-visit performance of the site (macfolio.hyeoniverse.com), fixing the bottlenecks, and measuring again under the same conditions.
 
-- Round 1: #319
-- Rounds 2 and 3: #323
-- Re-measurement and Round 4: October 23, 2026. The first measurement of production with Rounds 1–3 deployed, and a fix for the initial bundle that had grown again in the meantime
+- Round 1: [#319](https://github.com/hyeoniverse/MacFolio/pull/319)
+- Rounds 2 and 3: [#323](https://github.com/hyeoniverse/MacFolio/pull/323)
+- Re-measurement and Round 4: October 23, 2026 ([#338](https://github.com/hyeoniverse/MacFolio/pull/338)). The first measurement of production with Rounds 1–3 deployed, and a fix for the initial bundle that had grown again in the meantime
 
 ## Summary
 
-Values measured locally under the same conditions. Median of 5 Lighthouse runs; items that varied widely between runs are given as ranges.
+Values measured locally under the same conditions. Median of 5 [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview) runs; items that varied widely between runs are given as ranges.
 
 **Phone**
 
-| Item                           | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) |
-| ------------------------------ | ------- | ------- | ------- | ------- | --------------------- |
-| Lighthouse performance score   | 55      | 68      | 69~72   | 78~87   | **78~97**             |
-| FCP (first contentful paint)   | 14.3s   | 4.0s    | 4.0s    | 3.2s    | **2.1~3.2s**          |
-| LCP (largest contentful paint) | 25.7s   | 6.2s    | 5.8s    | 3.2s    | **2.1~4.5s**          |
-| TBT (total blocking time)      | 115ms   | 0ms     | 0ms     | 0ms     | **0ms**               |
-| Transfer size on first visit   | 4,893KB | 1,011KB | 725KB   | 483KB   | **485KB**             |
-| Requests                       | 61      | 74      | 75      | 49      | **49**                |
-| Transfer size through entering | 4,934KB | 1,053KB | 767KB   | 768KB   | **769KB**             |
+| Item                                 | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) |
+| ------------------------------------ | ------- | ------- | ------- | ------- | --------------------- |
+| Lighthouse performance score         | 55      | 68      | 69~72   | 78~87   | **78~97**             |
+| FCP (first contentful paint)[^fcp]   | 14.3s   | 4.0s    | 4.0s    | 3.2s    | **2.1~3.2s**          |
+| LCP (largest contentful paint)[^lcp] | 25.7s   | 6.2s    | 5.8s    | 3.2s    | **2.1~4.5s**          |
+| TBT (total blocking time)[^tbt]      | 115ms   | 0ms     | 0ms     | 0ms     | **0ms**               |
+| Transfer size on first visit         | 4,893KB | 1,011KB | 725KB   | 483KB   | **485KB**             |
+| Requests                             | 61      | 74      | 75      | 49      | **49**                |
+| Transfer size through entering       | 4,934KB | 1,053KB | 767KB   | 768KB   | **769KB**             |
 
 **Desktop**
 
@@ -36,7 +36,7 @@ Values measured locally under the same conditions. Median of 5 Lighthouse runs; 
 | Requests                       | 111     | 101     | 102     | 49      | **49**                |
 | Transfer size through entering | 9,065KB | 2,248KB | 1,895KB | 1,895KB | **1,897KB**           |
 
-- CLS was already 0 before.
+- [CLS](https://web.dev/articles/cls) (layout shift) was already 0 before.
 - Transfer sizes are compressed transfer sizes.
 - "Transfer size on first visit" is what Lighthouse counts, up to before the loading screen is tapped.
 - "Transfer size through entering" is what Playwright received until 3 seconds after tapping the loading screen.
@@ -45,7 +45,7 @@ Round 3 didn't remove transfer, it **deferred it until after entering**. The tra
 
 The phone score varies widely between runs in both Round 3 and Round 4. In some runs the start prompt is counted again as LCP (4.5s). See [Reading the numbers](#reading-the-numbers) below.
 
-![Before and after](../images/performance-chart.svg)
+![LCP, FCP and first-visit transfer before and after, phone and desktop](../images/performance-chart.svg)
 
 ![Transfer size on first visit, by resource type](../images/performance-weight.svg)
 
@@ -60,7 +60,7 @@ Values from running the same Lighthouse 5 times each against the production URL 
 | LCP                          | 31.5s        | 7.1s          | **1.9s** (1.8~3.3)          | 5.8s           | 2.1s          | **1.0s** (0.6~1.05)         |
 | Transfer size on first visit | 6,342KB      | 1,239KB       | **602KB**                   | 7,134KB        | 3,229KB       | **889KB**                   |
 
-- "Before" is main before #319 was deployed.
+- "Before" is main before [#319](https://github.com/hyeoniverse/MacFolio/pull/319) was deployed.
 - "After Round 3" is production on October 23, 2026 (with the quote widget; Round 4's initial bundle fix not yet deployed).
 - Production transfers about 100KB more on first visit than local. There are two reasons.
   - Cloudflare serves JS at a lower compression level than the local measurement server (maximum brotli). The same files are 10–15% larger.
@@ -69,7 +69,7 @@ Values from running the same Lighthouse 5 times each against the production URL 
 
 ### Phone with real throttling
 
-Lighthouse's default (simulate) computes a slow network from a fast recording. Measuring with the browser actually slowed down (`--throttling-method=devtools`, same slow 4G and 4x CPU) gives this.
+Lighthouse's default ([simulated throttling](https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md)) computes a slow network from a fast recording. Measuring with the browser actually slowed down (`--throttling-method=devtools`, same slow 4G and 4x CPU) gives this.
 
 | Item                         | Before  | Round 2 | Round 3  | Round 4 (re-measured)      |
 | ---------------------------- | ------- | ------- | -------- | -------------------------- |
@@ -84,9 +84,9 @@ From Round 3 on, LCP equals FCP. The first render (the Apple logo and start prom
 
 Transfer on first visit grew again as features were added after Round 3 (phone 483KB → 505KB, desktop 771KB → 793KB). Opening the builds of the Round 3 merge (`3e0c919ca`) and current main the same way and comparing per-file transfer sizes, the only file that changed was the `boot` bundle (46KB → 65KB compressed).
 
-| Cause                                                                                                      | Size                                 | Fix                                                                                                                      |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| The quote widget's (#330) 365 quotes (`desktop/widgets/quotes.ts`) were included in `boot` with the widget | 66KB source, `boot` +19KB compressed | Split the quote widget with `React.lazy` (`Widget.tsx`). It's received as a separate chunk when the widget first renders |
+| Cause                                                                                                                                                          | Size                                 | Fix                                                                                                                                                                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| The quote widget's ([#330](https://github.com/hyeoniverse/MacFolio/pull/330)) 365 quotes (`desktop/widgets/quotes.ts`) were included in `boot` with the widget | 66KB source, `boot` +19KB compressed | Split the quote widget with [`React.lazy`](https://react.dev/reference/react/lazy) (`Widget.tsx`). It's received as a separate chunk when the widget first renders |
 
 The quote widget only appears with the desktop after the loading screen is tapped, so there's no need to receive it ahead on the first visit. After the fix, `boot` is 47KB compressed and the first visit transfers 485KB on phone and 772KB on desktop, back to Round 3 levels.
 
@@ -105,8 +105,8 @@ Growth like this doesn't show up unless you measure. So the CI performance budge
   - Same approach as the production Cloudflare Worker, but without the Worker's first-screen content injection (SEO) and CSP
 - **Runs:** 5 runs each on the same computer, using the median. One at a time so they don't overlap with builds or other measurements. Measurements that overlapped with other work were discarded and re-run
 - **Builds:**
-  - Before: `52f493bb2` (#311 merged)
-  - Round 1: #319
+  - Before: `52f493bb2` ([#311](https://github.com/hyeoniverse/MacFolio/pull/311) merged)
+  - Round 1: [#319](https://github.com/hyeoniverse/MacFolio/pull/319)
   - Rounds 2 and 3: builds applying Round 2 and then Round 3 on top of main after Round 1
   - Round 4: main on October 23, 2026 (`35ecb8006`) with the quote widget split applied
 
@@ -115,7 +115,7 @@ Production was measured by passing the production URL to the same `measure.mjs`.
 ### Reading the numbers
 
 - **Phone FCP under simulate:**
-  - Locally, before the first render (47ms), all 33 bundles listed for modulepreload (about 400KB) have already been received.
+  - Locally, before the first render (47ms), all 33 bundles listed for [modulepreload](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/rel/modulepreload) (about 400KB) have already been received.
   - Simulate treats "what was received before the first render" as needed for the first render and computes the slow-network time from it. So phone FCP comes out in the 3-second range.
   - With real throttling, the HTML's first render is at 1.2s (table above). So look at both values for phone FCP.
 - **Why phone LCP varies:**
@@ -183,7 +183,7 @@ In addition, the Music app received the first part of 7 MP3s on the first visit 
 | Loading-screen Apple logo as SVG instead of a font glyph, rendered by the HTML before scripts (`#boot-splash` in `index.html`) | Phone FCP 14.3s → 4.0s                                                 |
 | List the `boot` bundle and its dependencies as modulepreload in `index.html` (`bootPreloadPlugin` in `vite.config.ts`)         | Bundles that were received only after `main` ran are received together |
 
-The font puts the 2,350 KS X 1001 precomposed syllables plus Latin, punctuation and jamo in `core` (149KB), and the remaining 8,822 Hangul syllables in `ext` (232KB). Two `@font-face` rules with the same name are defined, and the browser receives `ext` only when a glyph isn't in `core`. The PDF résumé uses the TTF as is.
+The font puts the 2,350 KS X 1001 precomposed syllables plus Latin, punctuation and jamo in `core` (149KB), and the remaining 8,822 Hangul syllables in `ext` (232KB). Two `@font-face` rules with the same name and different [`unicode-range`](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range) values are defined, and the browser downloads `ext` only when the page has a character that isn't in `core`. The PDF résumé uses the TTF as is.
 
 ### Round 2 (#323)
 
@@ -227,3 +227,15 @@ Switching apps to load when first opened broke 16 E2E tests.
 - **Phone LCP variance:** in some runs the start prompt is counted again as LCP when React re-renders the loading screen (4.5s). The cause hasn't been confirmed
 - **Phone transfer after entering:** 769KB is unchanged. The 33 initial bundles and the Font Awesome solid font (117KB) remain. Since icon names can be picked in project content (on the server), it's hard to keep only the icons in use
 - **Production measurement of Round 4:** measure the production URL again after deploying
+
+## Related posts (Korean)
+
+- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-report)
+- [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
+- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](https://macfolio.hyeoniverse.com/memo/site-performance-remeasure)
+
+[^fcp]: [First Contentful Paint](https://web.dev/articles/fcp): when the first content such as text or an image is rendered.
+
+[^lcp]: [Largest Contentful Paint](https://web.dev/articles/lcp): when the largest text block or image in the viewport is rendered.
+
+[^tbt]: [Total Blocking Time](https://web.dev/articles/tbt): the sum of the time beyond 50ms of every main-thread task after FCP; it reflects input delay.
