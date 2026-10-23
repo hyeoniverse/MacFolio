@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>Post 한 행에 보관하는 게시본과 임시 저장, 게시할 때 남는 PostRevision</title>
+  <rect width="640" height="360" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">Post 한 행 = 게시본 + 임시 저장</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#2563eb"/></marker></defs>
+
+  <!-- Post 행 -->
+  <rect x="32" y="96" width="384" height="164" rx="12" fill="#f9fafb" stroke="#d1d5db"/>
+
+  <rect x="48" y="112" width="170" height="132" rx="8" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="133" y="134" font-size="13" font-weight="700" text-anchor="middle" fill="#15803d">게시본 (방문자에게 표시)</text>
+  <g font-size="12" fill="#1f2937" font-family="ui-monospace, Menlo, monospace">
+    <text x="64" y="156">title</text>
+    <text x="64" y="174">date</text>
+    <text x="64" y="192">category</text>
+    <text x="64" y="210">summary</text>
+    <text x="64" y="228">body</text>
+  </g>
+
+  <rect x="230" y="112" width="170" height="132" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="315" y="134" font-size="13" font-weight="700" text-anchor="middle" fill="#b45309">임시 저장</text>
+  <g font-size="12" fill="#1f2937" font-family="ui-monospace, Menlo, monospace">
+    <text x="246" y="156">draftTitle</text>
+    <text x="246" y="174">draftDate</text>
+    <text x="246" y="192">draftCategory</text>
+    <text x="246" y="210">draftSummary</text>
+    <text x="246" y="228">draftBody</text>
+  </g>
+
+  <!-- 게시 -->
+  <path d="M315 110 C315 70 133 70 133 108" fill="none" stroke="#2563eb" stroke-width="1.8" marker-end="url(#b)"/>
+  <text x="224" y="72" font-size="12" font-weight="600" text-anchor="middle" fill="#2563eb">게시: 임시 저장 → 게시본</text>
+
+  <!-- 방문자 -->
+  <rect x="43" y="296" width="180" height="44" rx="8" fill="#f3f4f6"/>
+  <text x="133" y="315" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2937">방문자 GET /posts</text>
+  <text x="133" y="332" font-size="11" text-anchor="middle" fill="#6b7280">게시본만 조회 (예약 글 제외)</text>
+  <line x1="133" y1="294" x2="133" y2="248" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 관리자 편집 -->
+  <rect x="225" y="296" width="180" height="44" rx="8" fill="#f3f4f6"/>
+  <text x="315" y="315" font-size="13" font-weight="600" text-anchor="middle" fill="#1f2937">관리자 편집</text>
+  <text x="315" y="332" font-size="11" text-anchor="middle" fill="#6b7280">PUT /posts/:slug/draft</text>
+  <line x1="315" y1="294" x2="315" y2="248" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- PostRevision -->
+  <rect x="452" y="112" width="156" height="132" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+  <text x="530" y="136" font-size="13" font-weight="700" text-anchor="middle" fill="#3f46c7">PostRevision</text>
+  <g font-size="12" text-anchor="middle" fill="#1f2937">
+    <text x="530" y="162">게시할 때마다 한 행</text>
+    <text x="530" y="182">게시본 전체를 복사</text>
+    <text x="530" y="202">최근 50개 보관</text>
+    <text x="530" y="226" fill="#6b7280">버전 기록·되돌리기</text>
+  </g>
+  <line x1="418" y1="178" x2="450" y2="178" stroke="#2563eb" stroke-width="1.8" marker-end="url(#b)"/>
+
+  <text x="452" y="282" font-size="12" fill="#6b7280">임시 저장 중에는 게시본이</text>
+  <text x="452" y="300" font-size="12" fill="#6b7280">바뀌지 않아 방문자 화면에</text>
+  <text x="452" y="318" font-size="12" fill="#6b7280">수정 중인 내용이 보이지 않는다</text>
+</svg>
