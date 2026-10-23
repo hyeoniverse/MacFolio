@@ -52,6 +52,41 @@ async function emulateWebKitAutoplay(page: Page) {
 	});
 }
 
+/**
+ * 요소 안에 그려진 밝은 픽셀(흰 아이콘, 바탕과 아이콘 밝기의 중간값 초과)의 오른쪽 끝 x (CSS px). 글리프 상자가 아니라 화면에 보이는 그림의 끝을 잰다.
+ * Font Awesome 글리프는 상자(1.25em) 안쪽에 여백을 두고 그려지므로 상자 좌표로는 보이는 끝을 알 수 없다
+ */
+async function inkRight(page: Page, locator: ReturnType<Page['locator']>) {
+	const box = (await locator.boundingBox())!;
+	const png = (await page.screenshot({ clip: box })).toString('base64');
+	const ratio = await page.evaluate(() => devicePixelRatio);
+	const right = await page.evaluate(async (data) => {
+		const image = new Image();
+		image.src = `data:image/png;base64,${data}`;
+		await image.decode();
+		const canvas = document.createElement('canvas');
+		canvas.width = image.width;
+		canvas.height = image.height;
+		const context = canvas.getContext('2d')!;
+		context.drawImage(image, 0, 0);
+		const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+		// 밝기: 바탕(가장 어두운 값)과 아이콘(가장 밝은 값)의 가운데를 넘는 픽셀을 그림으로 본다
+		const light = (at: number) => (pixels[at] + pixels[at + 1] + pixels[at + 2]) / 3;
+		let darkest = 255;
+		let brightest = 0;
+		for (let at = 0; at < pixels.length; at += 4) {
+			darkest = Math.min(darkest, light(at));
+			brightest = Math.max(brightest, light(at));
+		}
+		const threshold = (darkest + brightest) / 2;
+		let max = -1;
+		for (let y = 0; y < canvas.height; y++)
+			for (let x = 0; x < canvas.width; x++) if (light((y * canvas.width + x) * 4) > threshold) max = Math.max(max, x);
+		return max + 1;
+	}, png);
+	return box.x + right / ratio;
+}
+
 /** 배경 음악(body의 audio)이 멈춰 있는지 */
 const audioPaused = (page: Page) => page.evaluate(() => document.querySelector('audio')?.paused ?? true);
 
@@ -150,6 +185,43 @@ test.describe('음악: 지금 재생 중', () => {
 		expect(level).toBeGreaterThan(0.2);
 		expect(level).toBeLessThan(0.31);
 	});
+
+	for (const viewport of [
+		{ width: 390, height: 664 },
+		{ width: 430, height: 740 },
+	])
+		test(`오른쪽 끝 정렬 (${viewport.width}px): 대기열 아이콘·••• 버튼·음량 아이콘·≡ 손잡이가 진행 막대 끝에 맞는다`, async ({
+			page,
+		}) => {
+			await page.setViewportSize(viewport);
+			const { sheet } = await openNowPlaying(page);
+			// 큰 표지가 나타나는 움직임이 끝난 뒤에 잰다
+			await page.waitForTimeout(600);
+			const right = async (selector: string) => {
+				const box = (await sheet.locator(selector).first().boundingBox())!;
+				return box.x + box.width;
+			};
+			for (const queueOpen of [false, true]) {
+				if (queueOpen) {
+					await sheet.getByRole('button', { name: '대기열' }).tap();
+					await page.waitForTimeout(600);
+				}
+				const edge = await right('.seek-bar-track');
+				// ••• 버튼은 반투명 원 전체가 보인다
+				expect(await right('.music-now-more')).toBeCloseTo(edge, 0);
+				expect(Math.abs((await inkRight(page, sheet.locator('.volume-bar i').last())) - edge)).toBeLessThanOrEqual(1);
+				// 대기열 버튼: 켜진 원이 아이콘을 덮으므로 꺼진 상태(흰 아이콘)에서 그림의 끝을 잰다
+				// 다음 재생 목록의 ≡ 손잡이
+				if (queueOpen)
+					expect(
+						Math.abs((await inkRight(page, sheet.locator('.music-queue-handle').first())) - edge)
+					).toBeLessThanOrEqual(1);
+				if (!queueOpen)
+					expect(
+						Math.abs((await inkRight(page, sheet.getByRole('button', { name: '대기열' }))) - edge)
+					).toBeLessThanOrEqual(1);
+			}
+		});
 
 	test('맨 위 손잡이를 누르거나 아래로 끌어 내리면 닫힌다', async ({ page }) => {
 		const { music, sheet } = await openNowPlaying(page);

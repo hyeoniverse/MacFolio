@@ -201,6 +201,8 @@
 	grid-area: list;
 	align-self: stretch;
 	min-height: 0;
+	/* 손잡이 아이콘의 글리프 여백만큼 오른쪽으로 내보낸 부분이 가로 스크롤을 만들지 않게 */
+	overflow-x: hidden;
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
@@ -287,9 +289,14 @@
 	font-size: var(--text-subhead);
 }
 
-/* ≡ 끌기 손잡이 */
+/* ≡ 끌기 손잡이: 누르는 영역은 44px, 아이콘은 오른쪽에 붙이고 보이는 오른쪽 끝을 진행 막대 끝에 맞춘다.
+   fa-bars 그림(0.875em)은 글리프 상자(1.25em) 안에 좌우 0.1875em씩 여백이 있어 그만큼 오른쪽으로 내보낸다 */
 .music-queue-handle {
+	display: grid;
 	flex: none;
+	justify-items: end;
+	align-items: center;
+	margin-right: calc(var(--text-title3) * -0.1875);
 	width: 44px;
 	height: 44px;
 	padding: 0;
@@ -355,25 +362,56 @@
 	font-size: 46px;
 }
 
-/* 가사·AirPlay·대기열 세 칸의 오른쪽 자리. 이 앱에는 대기열만 있다 */
+/*
+ * 아래 줄: iOS의 가사·AirPlay 자리는 이 앱에 없는 기능이라 비우고, 대기열 버튼만 오른쪽 끝에 둔다.
+ * 아이콘의 보이는 오른쪽 끝을 진행 막대·음량 막대·••• 버튼의 오른쪽 끝(내용 오른쪽 여백)에 맞춘다.
+ * 버튼 상자는 아이콘 글리프 상자와 같게 두고, 누르는 영역(44px)과 켜졌을 때의 원은 의사 요소로 그 둘레에 그린다
+ */
 .music-now-bottom {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	justify-items: center;
+	display: flex;
+	justify-content: flex-end;
 }
 
 .music-now-queue-toggle {
-	grid-column: 3;
-	border-radius: 50%;
-	width: 44px;
+	display: grid;
+	place-items: center;
 	height: 44px;
+	/* Font Awesome 6 글리프 상자는 1.25em이고 list-ul의 그림은 좌우로 2/15em씩 안쪽에 있다. 그만큼 오른쪽으로 내보내
+	   그림의 오른쪽 끝을 기준선에 맞춘다 (e2e/mobile-music.spec.ts가 화면 픽셀로 확인) */
+	margin-right: calc(var(--text-title3) * -2 / 15);
 	color: var(--color-on-media-label);
 	font-size: var(--text-title3);
+	isolation: isolate;
+}
+
+/* 누르는 영역: 글리프 상자(1.25em)보다 넓게 44px */
+.music-now-queue-toggle::after {
+	position: absolute;
+	inset: 0 calc((1.25em - 44px) / 2);
+	content: '';
+}
+
+/* 켜졌을 때의 흰 원: 아이콘 가운데에 44px */
+.music-now-queue-toggle::before {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	z-index: -1;
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background-color: transparent;
+	transform: translate(-50%, -50%);
+	transition: background-color var(--duration-fast) var(--ease-out);
+	content: '';
 }
 
 .music-now-queue-toggle.on {
-	background-color: var(--color-on-media-label);
 	color: rgba(0, 0, 0, 0.75);
+}
+
+.music-now-queue-toggle.on::before {
+	background-color: var(--color-on-media-label);
 }
 
 /* 휴대폰: 시트는 떠 있는 뒤로 가기(닫기) 아래에 깐다. 그 동그라미 줄만큼 위를 비우고, 손잡이는 그 줄 가운데에 둔다 */
