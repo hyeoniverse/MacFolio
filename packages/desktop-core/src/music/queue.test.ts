@@ -4,10 +4,12 @@ import {
 	formatTime,
 	formatTotal,
 	groupTracks,
+	moveUpcoming,
 	nextPosition,
 	nextRepeatMode,
 	previousPosition,
 	shuffled,
+	upcoming,
 } from './queue.js';
 
 const ids = ['a', 'b', 'c', 'd'];
@@ -92,5 +94,20 @@ describe('시간 표시', () => {
 	it('전체 길이는 모든 곡의 길이를 알 때만', () => {
 		expect(formatTotal([120, 185])).toBe('5분');
 		expect(formatTotal([120, undefined])).toBeNull();
+	});
+});
+
+describe('다음 재생 목록', () => {
+	it('지금 곡 다음부터, 끝에 닿으면 처음부터 지금 곡 앞까지', () => {
+		expect(upcoming({ order: ids, position: 1 })).toEqual(['c', 'd', 'a']);
+	});
+	it('순서를 바꾸면 지금 곡을 맨 앞에 두고 바뀐 순서로 잇는다', () => {
+		expect(moveUpcoming({ order: ids, position: 1 }, 2, 0)).toEqual({ order: ['b', 'a', 'c', 'd'], position: 0 });
+		expect(moveUpcoming({ order: ids, position: 0 }, 0, 2)).toEqual({ order: ['a', 'c', 'd', 'b'], position: 0 });
+	});
+	it('자리가 같거나 범위를 벗어나면 그대로', () => {
+		const queue = { order: ids, position: 1 };
+		expect(moveUpcoming(queue, 1, 1)).toBe(queue);
+		expect(moveUpcoming(queue, 0, 3)).toBe(queue);
 	});
 });

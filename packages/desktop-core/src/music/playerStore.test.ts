@@ -68,4 +68,22 @@ describe('createPlayerStore', () => {
 		expect(current(player)).toBe('b');
 		expect([...player.getState().queue.order].sort()).toEqual(['a', 'b', 'c']);
 	});
+	it('대기열의 곡으로 건너뛰어도 순서는 그대로', () => {
+		const player = setup();
+		const before = player.getState().queue.order;
+		expect(player.jumpTo('c')).toBe(true);
+		expect(current(player)).toBe('c');
+		expect(player.getState().queue.order).toEqual(before);
+		expect(player.jumpTo('없는 곡')).toBe(false);
+	});
+
+	it('다음 재생 순서를 바꿔도 지금 곡은 그대로이고, 다음 곡이 바뀐 순서를 따른다', () => {
+		const player = setup();
+		player.moveUpcoming(1, 0);
+		expect(current(player)).toBe('a');
+		player.next();
+		expect(current(player)).toBe('c');
+		player.next();
+		expect(current(player)).toBe('b');
+	});
 });
