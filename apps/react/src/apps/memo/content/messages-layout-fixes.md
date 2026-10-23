@@ -81,6 +81,17 @@ export function keyboardViewport(): KeyboardViewport | null {
 
 > 브라우저 시험에서는 화면 키보드가 뜨지 않는다. E2E 시험(`e2e/mobile-messages.spec.ts`)은 `window.visualViewport`를 가짜 객체로 바꿔 높이와 `offsetTop`을 iOS처럼 바꾸고, 이름 알약과 상태 표시줄이 비주얼 뷰포트 맨 위에서 키보드 전과 같은 위치에 있는지 확인한다. 위 캡처도 같은 방식으로 찍고 비주얼 뷰포트 영역만 잘랐다.
 
+### 머리 뒤로 말풍선이 비치게 한다
+
+머리를 화면 위에 고정하고 나니, 머리 영역이 대화와 같은 불투명한 바탕이라 스크롤한 말풍선이 머리 아래에서 잘린 듯 사라졌다. iOS 메시지는 말풍선이 머리 뒤로 흐리게 지나간다.
+
+- **배치**: 휴대폰 화면에서는 머리를 `position: absolute`로 대화 칸 위에 띄우고, 대화 칸(`.messages-transcript`)의 위 여백을 머리 높이만큼 둔다. 머리 높이는 설명 줄 수에 따라 달라서 `ChatView`가 `ResizeObserver`로 측정해 `--chat-header-height` 변수로 넘긴다. 맨 위로 스크롤하면 첫 말풍선은 머리 아래에서 시작한다.
+- **재질**: 단색 반투명 판은 여전히 불투명하게 보였다. 그래서 바탕색을 위쪽만 옅게(알파 0.45) 깔고 아래로 갈수록 0이 되는 세로 그라데이션과 `backdrop-filter: blur(12px)`를 의사 요소(`::before`)에 깔았다. 블러는 `mask-image`로 아래쪽을 지워 그라데이션과 함께 풀리게 했고, 아래 경계에 선이나 그림자는 두지 않았다. 바탕색은 앱의 `--messages-window-bg`라 다크 모드에서는 어두운 그라데이션이 된다.
+- **의사 요소에 두는 이유**: 머리 자체에 `mask-image`를 주면 머리 안의 아바타와 이름 알약까지 함께 지워진다. 또 부모에 `filter`, `mask`, `opacity`, `backdrop-filter`가 있으면 그 부모가 [backdrop root](https://drafts.fxtf.org/filter-effects-2/#BackdropRoot)가 되어 뒤의 말풍선이 비치지 않으므로, 머리와 대화 칸의 공통 부모에는 이런 속성을 두지 않는다.
+- 머리가 직접 재질을 그리므로 대화 화면에서는 휴대폰 셸의 스크롤 가장자리 흐림(`scrollEdge`)을 끈다.
+
+![말풍선이 머리 뒤로 지나가는 상태의 수정 전후 (라이트·다크). 수정 전에는 머리가 불투명해 말풍선이 머리 아래에서 잘리고, 수정 후에는 옅은 그라데이션과 블러 뒤로 흐리게 비친다](./images/messages-layout-fixes-header.jpg '머리 재질 수정 전후')
+
 ## 빈 목록의 말풍선 아이콘이 잘렸다
 
 빈 목록에는 "아직 남겨진 피드백이 없어요." 위에 Font Awesome의 말풍선 아이콘(`fa-comments`, 40px)이 있다. 실제 iPhone Safari에서 이 아이콘의 윗부분이 약간 잘렸다.
