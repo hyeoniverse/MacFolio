@@ -26,6 +26,8 @@ summary: 앱마다 별도로 구현한 시트와 모달을 다시 조사했다. 
 
 본문 이미지를 클릭하면 화면 전체에 어두운 오버레이를 표시하고 가운데에 이미지를 크게 표시한다. 오버레이가 `role="dialog"`였고, Esc 처리와 닫힐 때의 페이드아웃을 직접 구현했다. `Modal`의 `scope="screen"`과 동작이 같다.
 
+![교체 후 메모의 이미지 크게 보기](./images/sheet-modal-migrate-lightbox.jpg 'Modal scope="screen"으로 연 이미지 크게 보기. 화면 전체를 rgba(0, 0, 0, 0.75) 오버레이가 덮고 가운데에 이미지를 표시한다')
+
 직접 구현하던 포털·Esc 처리·퇴장 애니메이션이 `Modal` 하나로 바뀌었다(`apps/react/src/apps/memo/components/MarkdownImage.tsx`).
 
 ```tsx

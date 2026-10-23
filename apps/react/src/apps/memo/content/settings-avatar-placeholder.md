@@ -91,7 +91,7 @@ CSS는 두 레이어를 같은 원 안에 겹친다. 사진은 `position: absolu
 | `.fa-solid { display: inline-block }`        | (0,1,0) | 나중      | 적용           |
 | `.settings-nav-item > .settings-nav-chevron` | (0,2,0) | 무관      | 적용 (수정 후) |
 
-수정할 때는 선택자를 하나 더 붙여 명시도를 높였다. 선언 순서에 의존하면 CSS 파일의 로드 순서가 바뀌는 시각에 다시 깨진다.
+수정할 때는 선택자를 하나 더 붙여 명시도를 높였다. 선언 순서에 의존하면 CSS 파일의 로드 순서가 바뀌는 시각에 다시 잘못 적용된다.
 
 ```css
 /* apps/react/src/apps/settings/Settings.css */
