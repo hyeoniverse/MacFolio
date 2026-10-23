@@ -7,7 +7,7 @@ Create React App(CRA)으로 만든 프로젝트를 Vite로 옮겼다. dev 서버
 ## 왜 옮겼나
 
 - **CRA는 더 이상 관리되지 않는다.** React 팀이 2025년 2월에 CRA를 공식 deprecated했다. 새 React 버전과 도구 체인에 대한 대응을 기대할 수 없다.
-- **개발 중 대기 시간이 길었다.** CRA는 webpack으로 앱 전체를 번들링한 뒤에야 dev 서버를 띄운다. Vite는 브라우저의 네이티브 ES 모듈을 이용해 요청받은 파일만 그때그때 변환한다.
+- **개발 중 대기 시간이 길었다.** CRA는 webpack으로 앱 전체를 번들링한 뒤에야 dev 서버를 실행한다. Vite는 브라우저의 네이티브 ES 모듈을 이용해 요청받은 파일만 그때그때 변환한다.
 - **의존성이 무거웠다.** `react-scripts` 하나가 webpack, Babel, Jest, ESLint 설정을 통째로 끌고 온다.
 
 ## 측정 결과
@@ -32,20 +32,20 @@ Create React App(CRA)으로 만든 프로젝트를 Vite로 옮겼다. dev 서버
   - 두 버전 모두 React 19.0.0이다.
 - **환경:** Apple M4 Pro, 메모리 24 GB, macOS 26.7, Node.js 23.10.0, npm 11.19.1
 - **dev 서버 시작**
-  - 매 회 캐시(`node_modules/.cache`, `node_modules/.vite`)를 지우고 쟀다.
-  - CRA는 `/static/js/bundle.js`가 200을 응답할 때까지를 쟀다. 이때 앱 전체 컴파일이 끝난다.
-  - Vite는 `/`와 `/src/App.tsx`가 200을 응답할 때까지를 쟀다. Vite는 나머지 모듈을 브라우저가 요청할 때 변환하므로, 이 수치는 첫 화면이 완전히 그려지기까지의 시간보다 짧다.
+  - 매 회 캐시(`node_modules/.cache`, `node_modules/.vite`)를 삭제하고 측정했다.
+  - CRA는 `/static/js/bundle.js`가 200을 응답할 때까지를 측정했다. 이때 앱 전체 컴파일이 끝난다.
+  - Vite는 `/`와 `/src/App.tsx`가 200을 응답할 때까지를 측정했다. Vite는 나머지 모듈을 브라우저가 요청할 때 변환하므로, 이 수치는 첫 화면이 완전히 렌더링되기까지의 시간보다 짧다.
 - **프로덕션 빌드**
   - CRA는 `react-scripts build`를 `GENERATE_SOURCEMAP=false`로 실행했다. Vite 기본값에 맞춰 소스맵을 끈 것이다.
-  - CRA 빌드는 타입 체크를 포함하므로, Vite도 `tsc && vite build`로 함께 쟀다.
-- **번들 크기:** 소스맵을 제외한 `.js`, `.css` 파일의 합이다. 두 버전 모두 `gzip -9`로 압축해 쟀다.
+  - CRA 빌드는 타입 체크를 포함하므로, Vite도 `tsc && vite build`로 함께 측정했다.
+- **번들 크기:** 소스맵을 제외한 `.js`, `.css` 파일의 합이다. 두 버전 모두 `gzip -9`로 압축해 측정했다.
 
 ### 해석할 때 주의할 점
 
 - 두 커밋 사이에 도구 전환 외의 코드 변경도 있다(`src/` 39개 파일). 번들 크기 차이는 도구만의 효과가 아니다. 크기는 "비슷하거나 약간 작아졌다" 정도로만 보는 게 맞다.
 - HMR 반영 속도와 Lighthouse 점수는 브라우저가 필요해서 아직 측정하지 않았다.
 
-## 무엇을 바꿨나
+## 변경 사항
 
 | 영역           | CRA                                           | Vite                                                            |
 | -------------- | --------------------------------------------- | --------------------------------------------------------------- |
@@ -66,4 +66,4 @@ Create React App(CRA)으로 만든 프로젝트를 Vite로 옮겼다. dev 서버
 - **React 플러그인 미적용:** `@vitejs/plugin-react`는 설치만 되어 있고 `vite.config.ts`가 없었다. Vite가 esbuild로 JSX를 변환하기 때문에 앱은 동작했지만 Fast Refresh는 동작하지 않았다.
 - **누락된 의존성:** `react-dom`과 `typescript`가 `package.json`에 없었다. 기존 `node_modules`에 남아 있어서 로컬에서는 드러나지 않았다.
 
-`vite-env.d.ts`에 `ImportMetaEnv`를 선언해 자동완성은 되게 했다. 하지만 Vite 기본 타입에 인덱스 시그니처(`[key: string]: any`)가 있어서, 없는 이름을 써도 타입 에러는 나지 않는다. 환경변수를 읽는 곳을 `config/env.ts` 한 곳으로 모으는 작업은 Phase 2(#4)에서 한다.
+`vite-env.d.ts`에 `ImportMetaEnv`를 선언해 자동완성은 되게 했다. 하지만 Vite 기본 타입에 인덱스 시그니처(`[key: string]: any`)가 있어서, 없는 이름을 써도 타입 에러는 나지 않는다. 환경변수를 읽는 곳을 `config/env.ts` 한 곳으로 통합하는 작업은 Phase 2(#4)에서 한다.

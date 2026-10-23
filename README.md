@@ -53,7 +53,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
 
 ## 기능
 
-앱 20여 개가 macOS처럼 창으로 열립니다. 아래는 모두 사이트를 실제로 띄워 찍은 화면입니다.
+앱 20여 개가 macOS처럼 창으로 열립니다. 아래는 모두 사이트를 실제로 실행해 캡처한 화면입니다.
 
 <table>
   <tr>
@@ -84,7 +84,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
     <td valign="top">
       <img src="docs/images/readme-photos.jpg" alt="사진 앱. 보관함과 프로젝트별 앨범">
       <h4>🖼️ 사진</h4>
-      프로젝트 화면 모음을 앨범으로 묶어 비율을 지킨 격자로 보여 줍니다. Finder › 그림에 만든 폴더도 앨범이 되고, 동영상도 같은 보관함에 둡니다.
+      프로젝트 화면 모음을 앨범으로 묶어 비율을 지킨 격자로 보여 줍니다. Finder › 그림에 만든 폴더도 앨범이 되고, 동영상도 같은 보관함에 보관합니다.
     </td>
     <td valign="top">
       <img src="docs/images/readme-terminal.jpg" alt="터미널. neofetch 결과">
@@ -99,9 +99,9 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
       화면 모드(라이트 · 다크 · 자동), 배경화면(관리자가 올린 사진 · 동영상 포함), 사운드, 개인정보, 관리자 계정.
     </td>
     <td valign="top">
-      <img src="docs/images/readme-activity.jpg" alt="활동 상태 보기. 방문 수, 그래프, 많이 연 앱, 들어온 곳">
+      <img src="docs/images/readme-activity.jpg" alt="활동 상태 보기. 방문 수, 그래프, 많이 연 앱, 유입 경로">
       <h4>📈 활동 상태 보기</h4>
-      방문 · 순방문자 · 앱 열기 · 머문 시간, 유입 경로, 검색어(Google Search Console), 지역 · 기기, 실시간, 서버 상태. 쿠키 없이 하루 해시로 셉니다.
+      방문 · 순방문자 · 앱 열기 · 체류 시간, 유입 경로, 검색어(Google Search Console), 지역 · 기기, 실시간, 서버 상태. 쿠키 없이 일별 해시로 집계합니다.
     </td>
   </tr>
   <tr>
@@ -135,7 +135,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
     <td width="50%"><img src="docs/images/readme-widgets.jpg" alt="바탕화면의 메모 위젯 셋(최근 글·인기글·랜덤)과 사진 위젯"></td>
     <td width="50%" valign="top">
       <h4>🧩 위젯</h4>
-      macOS Sonoma처럼 바탕화면에, iOS처럼 홈 화면 페이지마다 위젯을 둡니다. 날씨 · 캘린더 · 시계 · 음악 · 메모 · 사진 · GitHub 잔디 · 소개 8종을 데스크톱과 휴대폰이 같이 씁니다.<br><br>
+      macOS Sonoma처럼 바탕화면에, iOS처럼 홈 화면 페이지마다 위젯을 배치합니다. 날씨 · 캘린더 · 시계 · 음악 · 메모 · 사진 · GitHub 잔디 · 소개 8종을 데스크톱과 휴대폰이 같이 씁니다.<br><br>
       바탕화면은 <b>위젯 편집…</b>으로 갤러리를 열어 더하고 칸 격자에 끌어 놓습니다. 메모 위젯은 최근 글 · 인기글 · 랜덤 중 고르고, 사진 위젯은 앨범이나 그림 폴더의 사진과 영상을 넘깁니다.
     </td>
   </tr>
@@ -157,7 +157,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
   <tr>
     <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/messages-bubbles.jpg" alt="메시지 앱"><h4>💬 메시지</h4>로그인 없이 피드백을 남기고 답글을 답니다. 이름은 방문자 쿠키로 정해지고(🦊 날쌘 여우), 같은 브라우저에서 내 글을 지웁니다.</td>
     <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/comments.jpg" alt="블로그 댓글"><h4>🗨️ 댓글 · 좋아요</h4>방문자 이름으로 쓰고 같은 브라우저에서 지웁니다. 서버에는 방문자 토큰과 IP의 HMAC만 남습니다.</td>
-    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/admin-signed-in.jpg" alt="시스템 설정의 계정 화면"><h4>🔐 관리자 로그인</h4>GitHub OAuth로 내 계정만 들여보냅니다. 비밀번호가 없고, DB에는 세션 토큰의 해시만 둡니다.</td>
+    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/admin-signed-in.jpg" alt="시스템 설정의 계정 화면"><h4>🔐 관리자 로그인</h4>GitHub OAuth로 내 계정만 들여보냅니다. 비밀번호가 없고, DB에는 세션 토큰의 해시만 저장합니다.</td>
   </tr>
 </table>
 
@@ -178,7 +178,7 @@ flowchart TB
     dock --> builtin["기본 앱<br/>Finder · 음악 · Safari · 사진 · 메시지 · 메모<br/>GitHub · 메일 · 공유 · 터미널 · 시스템 설정"]
     dock --> projects["프로젝트 앱 (배포한 사이트를 창 안에서 실행)<br/>HYEONIVERSE · NewPick · QRU · WTD · 새싹 농장"]
     dock --> launchpad["Launchpad<br/>API 문서 · 활동 상태 보기 · 팁 · 날씨 · 미리보기 · 텍스트 편집기 · QuickTime Player"]
-    dock --> bin["휴지통<br/>버린 기능 · 지운 메모 · 서버 파일 · 브라우저 데이터"]
+    dock --> bin["휴지통<br/>버린 기능 · 삭제한 메모 · 서버 파일 · 브라우저 데이터"]
 
     mobile --> home["홈 화면<br/>앱 아이콘 · 위젯 · Dock"]
     mobile --> control["제어 센터<br/>(위에서 아래로 쓸기)"]
@@ -208,12 +208,12 @@ Macintosh HD
 
 **주소**: 앱 화면 중 공유할 만한 것만 주소가 있습니다. 들어오면 로딩 화면 다음에 그 앱이 그 화면으로 열리고, 창을 고르면 주소 막대가 맨 앞 창의 주소로 바뀝니다.
 
-| 주소                  | 화면                      | 검색 로봇이 받는 것                                       |
+| 주소                  | 화면                      | 검색 로봇이 수신하는 내용                                 |
 | --------------------- | ------------------------- | --------------------------------------------------------- |
 | `/`                   | 데스크톱                  | 소개, 모든 글·프로젝트 링크, Person·WebSite 구조화 데이터 |
 | `/memo/<글>`          | 메모 앱에서 그 글         | 글 본문(그림 포함), BlogPosting, 공유 카드                |
 | `/safari/<프로젝트>`  | Safari에서 그 프로젝트    | 프로젝트 소개, CreativeWork                               |
-| `/sitemap.xml`        | 사이트맵                  | 첫 화면·모든 글(고친 날)·모든 프로젝트                    |
+| `/sitemap.xml`        | 사이트맵                  | 첫 화면·모든 글(수정일)·모든 프로젝트                     |
 | `/rss.xml`            | RSS 피드                  | 모든 글의 제목·요약                                       |
 | 없는 글·프로젝트 주소 | 데스크톱 (404, `noindex`) |                                                           |
 
@@ -225,7 +225,7 @@ Macintosh HD
 | ------------------ | -------------------------------------------------------------------------------------------- |
 | 앱 열기            | Dock의 아이콘을 누릅니다. 터미널에서 `open memo`처럼 열 수도 있습니다                        |
 | 창 다루기          | 제목 막대를 끌어 옮기고, 가장자리를 끌어 크기를 바꿉니다. 🔴 닫기 · 🟡 최소화 · 🟢 전체 화면 |
-| 블로그 읽기        | 메모 앱. 왼쪽 폴더로 좁히고, 위의 버튼으로 목록/갤러리를 바꾸고, 검색 칸에서 찾습니다        |
+| 블로그 읽기        | 메모 앱. 왼쪽 폴더로 좁히고, 위의 버튼으로 목록/갤러리를 전환하고, 검색 칸에서 찾습니다      |
 | 링크 공유하기      | 메모의 글, Safari의 프로젝트에서 공유 버튼을 누르면 주소가 복사됩니다 (휴대폰은 공유 시트)   |
 | 피드백 남기기      | 메시지 앱에서 내용만 적습니다. 이름은 자동으로 정해지고, 같은 브라우저에서 지울 수 있습니다  |
 | 저에 대해 알아보기 | 터미널에서 `help`, `whoami`, `neofetch`, `skills`, `projects`, `contact`                     |
@@ -242,7 +242,7 @@ Macintosh HD
 ### 관리자
 
 1. 데스크톱은 **메뉴 막대 왼쪽의 Apple 메뉴 → 관리자 로그인**, 휴대폰은 **암호** 앱에서 GitHub로 로그인합니다. 서버에 잠깐 닿지 못하면 Apple 메뉴의 **다시 확인**으로 바로 다시 묻습니다.
-2. 메모 앱에서 글을 누르면 바로 고칠 수 있습니다. 고치는 동안은 임시 저장만 되고, **게시**해야 방문자에게 보입니다. 미래 날짜로 게시하면 예약됩니다.
+2. 메모 앱에서 글을 누르면 바로 수정할 수 있습니다. 수정하는 동안은 임시 저장만 되고, **게시**해야 방문자에게 보입니다. 미래 날짜로 게시하면 예약됩니다.
 3. 폴더 만들기·이름 바꾸기, 글 옮기기(끌어 놓기), 고정, 댓글 지우기, Finder › 그림에 사진 올리기도 로그인했을 때만 됩니다.
 4. 로그인 상태와 세션은 **시스템 설정 → 계정**에서 봅니다. 세션은 12시간입니다.
 5. 글에서 빼도 서버에 남는 이미지·첨부는 **휴지통 → 서버 파일**에서 봅니다. 쓰는 곳이 없는 파일만 지울 수 있습니다.
@@ -291,9 +291,9 @@ flowchart LR
 
 요청이 지나가는 층, 데이터 모델, 설계 결정 표는 [docs/backend-design.md](docs/backend-design.md)에 정리했습니다.
 
-### 첫 화면이 그려지기까지
+### 첫 화면이 렌더링되기까지
 
-사이트는 자바스크립트로만 그려서, 스크립트를 돌리지 않는 크롤러에게는 빈 화면입니다. 그래서 Worker가 주소마다 제목·설명·구조화 데이터와 숨긴 본문을 `index.html`에 넣어 보냅니다.
+사이트는 자바스크립트로만 렌더링해서, 스크립트를 실행하지 않는 크롤러에게는 빈 화면입니다. 그래서 Worker가 주소마다 제목·설명·구조화 데이터와 숨긴 본문을 `index.html`에 넣어 보냅니다.
 
 ```mermaid
 sequenceDiagram
@@ -305,13 +305,13 @@ sequenceDiagram
     B->>W: GET /memo/merge-strategies
     par 함께 묻는다
         W->>S: index.html · seo/posts.json (빌드한 글)
-        W->>A: GET /site (관리자가 고친 프로필·프로젝트)
+        W->>A: GET /site (관리자가 수정한 프로필·프로젝트)
         W->>A: GET /posts (서버에 쓴 글)
     end
     Note over W: 저장소 글 + 서버 글을 합치고<br/>head(title · og · JSON-LD)와 숨긴 본문을 넣고<br/>CSP를 사이트 콘텐츠에 맞춘다
     W-->>B: HTML (없는 글이면 404 + noindex)
     B->>S: JS · CSS · 글꼴
-    Note over B: React가 root를 통째로 바꿔 데스크톱을 그린다
+    Note over B: React가 root를 통째로 교체해 데스크톱을 렌더링한다
     B->>A: 댓글 · 좋아요 · 관리자 세션 …
 ```
 
@@ -394,21 +394,21 @@ flowchart LR
 - **왜:** 화면이 데스크톱 하나뿐이고 창 끌기, 오디오, 제스처가 모두 브라우저에서 돕니다. 라우팅이나 서버 렌더링이 필요 없어서 Next.js 대신 SPA로 두었습니다. 처음 쓰던 Create React App이 2025년 2월 deprecated되어 Vite로 옮겼고, dev 서버 시작이 5.05초에서 0.58초로 줄었습니다([측정](docs/migration-cra-to-vite.md))
 - **어떻게:**
   - 앱마다 폴더 하나(`src/apps/<앱>`)를 두고, `manifest.ts` 한 곳에서 이름·아이콘·창 크기·모바일 이름을 정합니다. Dock, Launchpad, 터미널의 `open`, 모바일 홈 화면이 모두 이 목록을 읽습니다
-  - 창 위치·앞뒤 순서, 관리자 로그인 상태, 음악 재생은 작은 저장소(`createStore`)에 두고 `useSyncExternalStore`로 구독합니다
-  - 프레임워크와 무관한 로직은 `packages/desktop-core`로 떼어 냅니다(#16). 지금은 저장소, 창 관리(열기·닫기·최소화·앞뒤 순서), 메모 로직(글 읽기·정렬·필터, 태그, 폴더 정리, 찾기, 글 검사), 음악 재생 대기열(셔플·반복, 다음·이전 곡)이 있고, React 쪽은 store를 구독하는 hook과 화면만 둡니다. 이 패키지는 DOM 타입과 React를 불러오지 못하게 막아 두었습니다
+  - 창 위치·앞뒤 순서, 관리자 로그인 상태, 음악 재생은 작은 저장소(`createStore`)에 보관하고 `useSyncExternalStore`로 구독합니다
+  - 프레임워크와 무관한 로직은 `packages/desktop-core`로 떼어 냅니다(#16). 지금은 저장소, 창 관리(열기·닫기·최소화·앞뒤 순서), 메모 로직(글 읽기·정렬·필터, 태그, 폴더 정리, 찾기, 글 검사), 음악 재생 대기열(셔플·반복, 다음·이전 곡)이 있고, React 쪽에는 store를 구독하는 hook과 화면만 남깁니다. 이 패키지는 DOM 타입과 React를 import하지 못하게 막았습니다
   - 메모 정리 내용의 검사, 폴더 경로, 글 길이·날짜 규칙은 서버(`apps/api`)도 `desktop-core`에서 가져다 씁니다. React는 `src`를 바로 읽고, 서버는 빌드한 `dist`를 씁니다(`package.json`의 `exports` 조건)
   - Vite의 `import.meta.glob`으로 블로그 글(Markdown)과 이미지를 빌드할 때 함께 묶습니다. `VITE_API_URL`도 빌드할 때 코드에 들어갑니다
   - 메모 창은 CSS 컨테이너 쿼리로 창 폭에 따라 도구 막대와 목록 배치를 바꿉니다. 화면 폭이 아니라 창 폭이 기준이라 창을 줄여도 맞게 바뀝니다
 
 **Milkdown (편집기)**
 
-- **왜:** 관리자가 글을 **보이는 그대로** 고치고, 저장은 Markdown으로 하고 싶었습니다. Milkdown은 ProseMirror 위에서 Markdown을 그대로 읽고 씁니다. 저장소의 글 파일과 서버에 저장한 글이 같은 형식이라 서로 겹쳐 보여 줄 수 있습니다
+- **왜:** 관리자가 글을 **보이는 그대로** 수정하고, 저장은 Markdown으로 하고 싶었습니다. Milkdown은 ProseMirror 위에서 Markdown을 그대로 읽고 씁니다. 저장소의 글 파일과 서버에 저장한 글이 같은 형식이라 서로 겹쳐 보여 줄 수 있습니다
 - **어떻게:** 가가(서식) 메뉴, 체크리스트·표·이미지 블록, 표 손잡이, ⌘F 찾기·대치를 ProseMirror 플러그인과 명령으로 만들었습니다(`src/apps/memo/writer/`). 편집 화면과 읽기 화면이 같은 CSS를 쓰게 맞춰서, 로그인해도 글 모양이 바뀌지 않습니다
 
 **react-markdown + remark-gfm + lowlight (읽기 화면)**
 
 - **왜:** 방문자에게는 편집기가 필요 없습니다. 가벼운 렌더러로 표·체크리스트(GFM)까지 보여 주고, 코드 문법 강조는 편집기와 같은 lowlight를 써서 두 화면의 색을 똑같이 맞췄습니다
-- **어떻게:** 이미지는 캡션·크게 보기·내려받기 버튼이 있는 컴포넌트로 바꿔 그리고, 글 안에서 찾기는 DOM을 건드리지 않고 CSS Custom Highlight API(`::highlight()`)로 칠합니다
+- **어떻게:** 이미지는 캡션·크게 보기·내려받기 버튼이 있는 컴포넌트로 교체해 렌더링하고, 글 안에서 찾기는 DOM을 건드리지 않고 CSS Custom Highlight API(`::highlight()`)로 칠합니다
 
 </details>
 
@@ -431,10 +431,10 @@ flowchart LR
 
 - **왜:** 스키마 하나에서 타입과 마이그레이션이 함께 나와, 프론트엔드와 같은 TypeScript로 DB를 다룹니다. PostgreSQL은 CHECK 제약으로 규칙을 DB에서도 한 번 더 지킬 수 있어서 골랐습니다
 - **어떻게:**
-  - 글은 **게시한 내용과 임시 저장을 한 행에 두 벌** 두고, 게시할 때마다 버전(`PostRevision`)을 남깁니다. "게시했다면 제목·본문이 있어야 한다" 같은 규칙은 CHECK 제약으로 겁니다(Prisma 스키마로는 못 적어서 마이그레이션 SQL로)
+  - 글은 **게시한 내용과 임시 저장을 한 행에 두 벌** 저장하고, 게시할 때마다 버전(`PostRevision`)을 남깁니다. "게시했다면 제목·본문이 있어야 한다" 같은 규칙은 CHECK 제약으로 겁니다(Prisma 스키마로는 못 적어서 마이그레이션 SQL로)
   - 세션은 토큰 원문 대신 SHA-256 해시만, 방문자 쿠키 토큰과 IP는 HMAC만 저장합니다 (이름·비밀번호를 받던 때의 댓글은 비밀번호의 scrypt 해시)
-  - 올린 이미지·첨부 파일도 DB(`bytea`)에 둡니다. 서버 한 대라 파일 저장소를 따로 두지 않고, 백업 한 번에 글과 파일이 함께 남습니다. 글과 파일은 본문의 `/files/<id>` 문자열로만 이어져 있어서, 글에서 빼도 남는 파일은 쓰는 곳(지금 글·예전 버전·배경화면)을 찾아 관리자가 지웁니다
-  - 서버가 시작할 때 `prisma migrate deploy`로 마이그레이션을 적용합니다 (로컬 `pnpm dev:api`·`dev:all`도 같아서, 브랜치를 받은 뒤 DB가 뒤처져 있어도 저장이 500으로 떨어지지 않습니다)
+  - 업로드한 이미지·첨부 파일도 DB(`bytea`)에 저장합니다. 서버 한 대라 파일 저장소를 따로 두지 않고, 백업 한 번에 글과 파일이 함께 남습니다. 글과 파일은 본문의 `/files/<id>` 문자열로만 이어져 있어서, 글에서 빼도 남는 파일은 쓰는 곳(지금 글·예전 버전·배경화면)을 찾아 관리자가 삭제합니다
+  - 서버가 시작할 때 `prisma migrate deploy`로 마이그레이션을 적용합니다 (로컬 `pnpm dev:api`·`dev:all`도 같아서, 브랜치를 내려받은 뒤 DB가 뒤처져 있어도 저장이 500으로 떨어지지 않습니다)
 
 **GitHub OAuth (관리자 로그인)**
 
@@ -446,7 +446,7 @@ flowchart LR
 <details>
 <summary><b>모노레포: pnpm workspaces + Turborepo</b></summary>
 
-- **왜:** 프론트엔드와 API를 한 저장소에 두고 한 번에 고치고 테스트하려고 모노레포로 묶었습니다. pnpm은 설치가 빠르고 의존성이 엄격하고, Turborepo는 패키지 사이 빌드 순서와 캐시를 맡습니다
+- **왜:** 프론트엔드와 API를 한 저장소에 두고 한 번에 수정하고 테스트하려고 모노레포로 묶었습니다. pnpm은 설치가 빠르고 의존성이 엄격하고, Turborepo는 패키지 사이 빌드 순서와 캐시를 맡습니다
 - **어떻게:** 루트의 `pnpm build`·`pnpm test`·`pnpm lint`가 두 앱과 두 패키지(`desktop-core`, `contracts`)를 함께 돌립니다. `pnpm dev:all`로 프론트엔드와 API를 같이 띄웁니다. `pnpm cycles`(madge)가 순환 import를 막습니다
 
 </details>
@@ -474,11 +474,11 @@ flowchart LR
 **Cloudflare Workers (프론트엔드)**
 
 - **왜:** 화면은 정적 파일이라 서버가 필요 없고, 도메인 DNS가 이미 Cloudflare에 있습니다. main에 머지하면 빌드·배포되고, PR마다 미리보기 주소가 생깁니다
-- **어떻게:** `dist`를 정적 자산으로 올리고, 그 앞에 작은 Worker(`apps/react/worker/`)를 둡니다
-  - 첫 화면과 앱 주소: 관리자가 고친 사이트 콘텐츠를 `index.html`에 넣고, 그 데모 주소까지 허용하는 CSP를 붙입니다
+- **어떻게:** `dist`를 정적 자산으로 올리고, 그 앞에 작은 Worker(`apps/react/worker/`)를 배치합니다
+  - 첫 화면과 앱 주소: 관리자가 수정한 사이트 콘텐츠를 `index.html`에 넣고, 그 데모 주소까지 허용하는 CSP를 붙입니다
   - 검색: 주소마다 제목·설명·Open Graph·구조화 데이터와 숨긴 본문을 넣고, sitemap·RSS를 서버에 쓴 글까지 합쳐 만듭니다. 없는 글 주소는 404입니다
-  - 문서 파일(`/files/<키>`)은 R2 버킷에서 같은 주소로 내줍니다 (Finder가 PDF를 iframe에 띄우도록)
-  - 빌드할 때 저장소 글을 HTML로 그려 두고(`seo/posts.json`), 사진이 없는 글은 제목으로 공유 카드(1200×630 PNG)를 그립니다
+  - 문서 파일(`/files/<키>`)은 R2 버킷에서 같은 주소로 내줍니다 (Finder가 PDF를 iframe에 표시하도록)
+  - 빌드할 때 저장소 글을 HTML로 렌더링하고(`seo/posts.json`), 사진이 없는 글은 제목으로 공유 카드(1200×630 PNG)를 생성합니다
 
 **Oracle Cloud Always Free VM + Docker Compose (API)**
 
@@ -488,7 +488,7 @@ flowchart LR
 **Cloudflare Tunnel (HTTPS)**
 
 - **왜:** nginx + Let's Encrypt를 쓰면 80/443 포트를 열고 인증서를 갱신해야 합니다. 터널은 서버가 Cloudflare로 **나가는** 연결만 만들어서 SSH 말고는 포트를 열지 않고, 서버 IP도 드러나지 않습니다
-- **어떻게:** 프론트엔드(`macfolio.`)와 API(`macfolio-api.`)를 같은 사이트(`hyeoniverse.com`)의 하위 도메인으로 두어, 세션 쿠키가 `SameSite=Lax`로도 함께 갑니다
+- **어떻게:** 프론트엔드(`macfolio.`)와 API(`macfolio-api.`)를 같은 사이트(`hyeoniverse.com`)의 하위 도메인으로 배치해, 세션 쿠키가 `SameSite=Lax`로도 함께 전송됩니다
 
 자세한 순서는 [docs/deployment.md](docs/deployment.md)에 있습니다.
 
@@ -502,7 +502,7 @@ flowchart LR
 - main에 들어온 커밋은 시험을 통과해야 배포됩니다. API가 바뀌었으면 API를 먼저 배포하고(`api-image` → `api-deploy`), 그다음 `deploy`가 Cloudflare Workers에 올립니다. 새 화면이 옛 API에 먼저 닿지 않게 하는 순서입니다
 - 같은 저장소의 PR은 `preview`가 미리보기 주소를 PR 댓글에 남깁니다 (프론트엔드가 바뀐 PR만). 미리보기는 `noindex`라 검색에 나오지 않습니다
 - `sast`(Semgrep), `secrets`(gitleaks), `uptime`(10분마다 헬스 체크)은 따로 돕니다
-- `main`의 Ruleset이 `check`와 `conventions`를 필수 검사로 걸어 두어, 둘 다 통과해야 머지됩니다([설정 방법](CONTRIBUTING.md#저장소-설정))
+- `main`의 Ruleset이 `check`와 `conventions`를 필수 검사로 지정해, 둘 다 통과해야 머지됩니다([설정 방법](CONTRIBUTING.md#저장소-설정))
 
 </details>
 
@@ -541,13 +541,13 @@ pnpm dev          # 프론트엔드만: http://localhost:5173
 
 설정 없이 바로 뜹니다. API가 없으면 로그인과 편집만 꺼지고, 블로그는 저장소의 Markdown으로 보입니다.
 
-메시지 앱은 서버에 저장해서, API가 없으면 "메시지를 열 수 없습니다"를 띄우고 열리지 않습니다. API 없이 메시지 화면을 보려면 이 브라우저에만 저장하게 합니다.
+메시지 앱은 서버에 저장해서, API가 없으면 "메시지를 열 수 없습니다"를 표시하고 열리지 않습니다. API 없이 메시지 화면을 보려면 이 브라우저에만 저장하게 합니다.
 
 ```bash
 echo 'VITE_MESSAGES_STORE=local' >> apps/react/.env.local
 ```
 
-API까지 띄우려면 Docker가 필요합니다.
+API까지 실행하려면 Docker가 필요합니다.
 
 ```bash
 cp apps/api/.env.example apps/api/.env          # GitHub OAuth 값은 개발용 OAuth App으로
@@ -592,7 +592,7 @@ pinned: true # 목록 맨 위에 고정 (선택)
 - `title`과 `date`(YYYY-MM-DD)는 필수입니다. 없거나 형식이 틀리면 목록에서 빠지고, 개발 서버 콘솔에 경고가 나옵니다.
 - `category`는 왼쪽 폴더가 됩니다. `/`로 하위 폴더를 만들 수 있고, 상위 폴더를 고르면 하위 폴더의 글까지 보입니다. 없으면 "기타"로 들어갑니다.
 - 이미지는 `content/images/`에 넣고 글 파일 기준 상대 경로로 씁니다. 갤러리 보기에서는 본문의 첫 이미지가 카드 미리보기가 됩니다.
-- 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 그린 카드입니다(`packages/og-card`). 사이트에서 쓴 글의 카드는 API가 그립니다(`GET /posts/<글>/og.png`). sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
+- 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 생성한 카드입니다(`packages/og-card`). 사이트에서 쓴 글의 카드는 API가 생성합니다(`GET /posts/<글>/og.png`). sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
 
 ## 배포
 
@@ -643,7 +643,7 @@ deprecated된 Create React App에서 Vite로 옮겼습니다.
 - [CRA → Vite 마이그레이션](docs/migration-cra-to-vite.md)
 - [성능 측정](docs/performance.md): Lighthouse 측정 조건과 결과, 느린 원인과 고친 것, 다시 재는 방법
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
-- [개인정보 처리](docs/privacy.md): 무엇을 어떻게 저장하고 언제 지우는지
+- [개인정보 처리](docs/privacy.md): 수집 항목, 저장 방식, 보관 기간
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
 - 개발기: 사이트의 메모 앱 → 개발기 폴더 (`apps/react/src/apps/memo/content/`)
 

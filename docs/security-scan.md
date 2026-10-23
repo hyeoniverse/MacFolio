@@ -45,7 +45,7 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 
 ### Dependency-Check를 돌리지 못한 이유
 
-CLI는 받아서 실행했지만, 처음 실행할 때 NVD 데이터를 받는 단계에서 멈췄다.
+CLI는 내려받아 실행했지만, 처음 실행할 때 NVD 데이터를 내려받는 단계에서 멈췄다.
 
 ```
 [ERROR] Error updating the NVD Data
@@ -69,9 +69,9 @@ exit=13
 
 | 도구                                 | 본 범위                  | 발견 | 실제 취약점 | 오탐 | 영향 없음 |
 | ------------------------------------ | ------------------------ | ---- | ----------- | ---- | --------- |
-| Semgrep 지정 묶음 (112개 규칙)       | 파일 962개               | 0    | 0           | 0    | 0         |
+| Semgrep 지정 규칙 세트 (112개 규칙)  | 파일 962개               | 0    | 0           | 0    | 0         |
 | Semgrep `--config auto` (266개 규칙) | 파일 962개               | 7    | 0           | 4    | 3         |
-| Semgrep 보조 묶음 (58개 규칙)        | 파일 962개               | 0    | 0           | 0    | 0         |
+| Semgrep 보조 규칙 세트 (58개 규칙)   | 파일 962개               | 0    | 0           | 0    | 0         |
 | pnpm audit (전체)                    | 워크스페이스 전체        | 0    | 0           | 0    | 0         |
 | pnpm audit `--prod`                  | 운영 의존성              | 0    | 0           | 0    | 0         |
 | OWASP Dependency-Check               | 실행 실패                | -    | -           | -    | -         |
@@ -93,13 +93,13 @@ exit=13
 | 6   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/templates/repo/repo.ts:206` | WARNING | 영향 없음 | 5와 같은 함수의 다른 줄                                                                                                                                                                                                                                                           | 5와 같음 (`eaccdfd`)                                                                                                                      |
 | 7   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/terminalRepo.ts:55`         | WARNING | 영향 없음 | 프로젝트 페이지 터미널의 `cd`·`cat` 경로를 따라가는 `nodeAt()`. 방문자가 경로를 입력하지만 읽기만 하므로 오염은 없다. 대신 `cd __proto__`가 빈 폴더로 들어가지던 동작 버그가 있었다                                                                                               | `Object.hasOwn`으로 자기 키만 따라가게 고침, 시험 추가 (`9708cd0`). 보완 뒤 `nosemgrep`                                                   |
 
-실제 취약점은 0건이다. 5~7은 코드 모양은 규칙이 말하는 약점이 맞아 고쳤지만, 공격자가 닿는 입력이 없거나(5·6) 쓰기가 없어(7) 판정은 "영향 없음"으로 둔다.
+실제 취약점은 0건이다. 5~7은 코드 모양은 규칙이 말하는 약점이 맞아 수정했지만, 공격자가 닿는 입력이 없거나(5·6) 쓰기가 없어(7) 판정은 "영향 없음"으로 한다.
 
 ### 규칙이 잡지 않은 곳
 
-규칙 결과가 0건이라고 위험한 곳이 없다는 뜻은 아니다. HTML을 직접 넣는 두 곳은 어느 묶음에서도 걸리지 않아 손으로 확인했다.
+규칙 결과가 0건이라고 위험한 곳이 없다는 뜻은 아니다. HTML을 직접 넣는 두 곳은 어느 규칙 세트에서도 검출되지 않아 직접 확인했다.
 
-- `apps/react/src/apps/finder/DocView.tsx:37` `dangerouslySetInnerHTML`: Mermaid가 `securityLevel: 'strict'`로 그린 SVG만 넣고, 그 출처를 #159에서 주석과 시험으로 고정했다. 프론트 CSP(#156)가 인라인 스크립트도 막는다.
+- `apps/react/src/apps/finder/DocView.tsx:37` `dangerouslySetInnerHTML`: Mermaid가 `securityLevel: 'strict'`로 렌더링한 SVG만 넣고, 그 출처를 #159에서 주석과 시험으로 고정했다. 프론트 CSP(#156)가 인라인 스크립트도 막는다.
 - `apps/react/src/apps/memo/writer/blocks.ts:109` `innerHTML`: 코드에 적은 아이콘 태그 상수다.
 
 ### 억제 방식
@@ -133,7 +133,7 @@ const value = (key: string) => Number(meminfo.match(new RegExp(`^${key}:\\s+(\\d
 | `dompurify`                     | MPL-2.0 OR Apache-2.0         | 둘 중 고를 수 있어 Apache-2.0으로 쓴다                                                   |
 | `elkjs` (Mermaid 배치)          | EPL-2.0                       | 약한 copyleft. 고치지 않고 번들에 그대로 넣으므로 소스 공개 의무가 생기지 않는다         |
 | `argparse`                      | Python-2.0                    | 허용형                                                                                   |
-| `@fortawesome/fontawesome-free` | CC-BY-4.0 AND OFL-1.1 AND MIT | 아이콘은 CC-BY(출처 표시), 글꼴은 OFL. 패키지에 든 라이선스 문구를 그대로 둔다           |
+| `@fortawesome/fontawesome-free` | CC-BY-4.0 AND OFL-1.1 AND MIT | 아이콘은 CC-BY(출처 표시), 글꼴은 OFL. 패키지에 포함된 라이선스 문구를 그대로 유지한다   |
 | `khroma`                        | Unknown                       | `package.json`에 `license` 칸이 없어 Unknown으로 나온다. 저장소의 `license` 파일은 MIT다 |
 
 개발 의존성까지 넓히면 `@img/sharp-libvips-linux-x64`(LGPL-3.0-or-later)와 `lightningcss`(MPL-2.0)가 더 있다. 둘 다 빌드 도구(이미지 변환, CSS 처리)라 배포물에 들어가지 않는다.
@@ -143,13 +143,13 @@ const value = (key: string) => Number(meminfo.match(new RegExp(`^${key}:\\s+(\\d
 `.github/workflows/sast.yml`에 `semgrep` 작업을 더했다 (`5297ace`).
 
 - 언제: PR, main push, 월요일 09:20 KST, 손으로 실행. `secrets` 워크플로와 같은 방식이다.
-- 무엇: 위의 지정 묶음 네 개(`p/owasp-top-ten`, `p/typescript`, `p/nodejs`, `p/javascript`). `--config auto`는 저장소 정보를 Semgrep에 보내야 하고(`--metrics=off`와 함께 쓸 수 없다) 규칙 목록이 실행마다 달라질 수 있어 CI에는 쓰지 않는다.
+- 무엇: 위의 지정 규칙 세트 네 개(`p/owasp-top-ten`, `p/typescript`, `p/nodejs`, `p/javascript`). `--config auto`는 저장소 정보를 Semgrep에 보내야 하고(`--metrics=off`와 함께 쓸 수 없다) 규칙 목록이 실행마다 달라질 수 있어 CI에는 쓰지 않는다.
 - 실패 기준: **ERROR만**. 이번에 나온 WARNING·INFO 7건은 모두 값의 출처를 모르는 패턴 규칙이었고, 판정하려면 사람이 코드 경로를 따라가야 했다. 이것까지 막으면 PR마다 `nosemgrep`을 먼저 다는 습관이 생겨 억제가 의미를 잃는다. WARNING 이하는 실행 로그의 경고 주석과 작업 요약에 건수로 남긴다.
 - 고정: 액션은 기존처럼 커밋 SHA로(#169), Semgrep은 `pipx install semgrep==1.181.0`으로 버전을 고정한다.
 - 권한: `contents: read`만. SARIF는 GitHub Code scanning에 올리려면 `security-events: write`와 저장소 설정이 필요해, 아티팩트(`semgrep-sarif`, 14일)로 올린다.
 - 이름: 워크플로 `sast`, 작업 `semgrep`. `ci`의 `check`·`e2e`, `conventions`의 `conventions`, `secrets`의 `secrets`와 겹치지 않는다. 브랜치 조건을 따로 두지 않아 `conventions`의 브랜치 이름 규칙과 부딪히지 않는다.
 
-SCA는 이미 `ci.yml`의 `pnpm audit --prod --audit-level=high`가 맡고 있어 더하지 않는다. osv-scanner는 같은 데이터에서 같은 결과를 냈고, Dependency-Check는 NVD API 키를 Secrets에 넣어야 하고 처음 NVD 데이터 전체를 받아야 해 PR마다 돌리기에 맞지 않는다.
+SCA는 이미 `ci.yml`의 `pnpm audit --prod --audit-level=high`가 맡고 있어 더하지 않는다. osv-scanner는 같은 데이터에서 같은 결과를 냈고, Dependency-Check는 NVD API 키를 Secrets에 넣어야 하고 처음 NVD 데이터 전체를 내려받아야 해 PR마다 돌리기에 맞지 않는다.
 
 ## 다시 돌리기
 
