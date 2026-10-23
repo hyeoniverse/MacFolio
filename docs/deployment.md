@@ -644,7 +644,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 
 - [Connecting to a Linux Instance](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/connect-to-linux-instance.htm): 키를 잃어버리면 인스턴스를 종료하고 새 키로 새로 만들라는 공식 안내
 - [Instance Console Connections](https://docs.oracle.com/en-us/iaas/Content/Compute/References/serialconsole.htm): 콘솔 로그인에는 비밀번호 있는 계정이 필요하다. 유지보수 모드 키 교체는 Oracle Linux 전용
-- [Attaching a Boot Volume](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attachingabootvolume.htm): 떼어 낸 부트 볼륨은 다른 인스턴스에 데이터 볼륨으로 붙일 수 있다 (2~4, 6)
+- [Attaching a Boot Volume](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attachingabootvolume.htm): 떼어 낸 부트 볼륨은 다른 인스턴스에 데이터 볼륨으로 붙일 수 있다 (2\~4, 6)
 - [Attaching a Block Volume to an Instance](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attach-compute-volume-attachment.htm): Paravirtualized는 Attached가 되면 바로 보이고, iSCSI는 안에서 연결 명령을 더 쳐야 한다 (4)
 - [First boot determination](https://docs.cloud-init.io/en/latest/explanation/first_boot.html), [Module reference: SSH](https://docs.cloud-init.io/en/latest/reference/modules.html): instance ID가 바뀌면 첫 부팅으로 보고, SSH 모듈이 호스트 키를 새로 만들고(`ssh_deletekeys`) 메타데이터의 공개 키를 넣는다(`allow_public_ssh_keys`). 둘 다 기본값 `true` (5, 7)
 
@@ -857,7 +857,7 @@ curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,
 - **도메인 속성** (`hyeoniverse.com`, 하위 도메인까지 모두): Cloudflare DNS에 화면의 TXT 레코드를 더해 확인한다. `GSC_SITE_URL=sc-domain:hyeoniverse.com`
 - **URL 접두어 속성** (`https://macfolio.hyeoniverse.com/`만): HTML 태그·파일 등으로 확인한다. `GSC_SITE_URL=https://macfolio.hyeoniverse.com/` (끝의 `/`까지)
 
-새로 추가한 속성은 그날부터 데이터가 수집된다 (2~3일 지연되어 표시된다).
+새로 추가한 속성은 그날부터 데이터가 수집된다 (2\~3일 지연되어 표시된다).
 
 **2. 서비스 계정과 키** — [console.cloud.google.com](https://console.cloud.google.com)
 
@@ -928,7 +928,7 @@ RESOURCE_NETWORK_MBPS=50       # 네트워크 사용률의 기준 (shape의 대�
 - 1분마다 CPU·메모리(VM 전체, 컨테이너 안의 `/proc`으로 읽는다)와 네트워크(API 컨테이너의 송수신량)를 DB에 저장하고, 14일 뒤 삭제한다. compose를 변경할 필요는 없다
 - `free`: 최근 7일 CPU 95퍼센타일·네트워크 평균(A1이면 메모리 평균도)이 모두 20% 미만이면 '회수 위험'. 한 시간마다 확인해 위험하면 메일로 알린다 (3일에 한 번까지)
 - `payg`: 회수 대상이 아니라서 사용률을 남기고 보여 준다. OCI API 키가 있으면 **이번 달 요금과 예산 한도**도 보이고, 예산의 80%·100%를 넘으면 메일로 알린다 (달마다 한 번씩). 예산은 콘솔 → Billing & Cost Management → Budgets에서 만든다
-- 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 확인한다. 활성화 후 1~2분 뒤부터 값이 표시된다
+- 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 확인한다. 활성화 후 1\~2분 뒤부터 값이 표시된다
 - 알림 메일은 연락 메일 설정(`RESEND_API_KEY`·`CONTACT_FROM`·`CONTACT_TO`)을 그대로 쓴다. 셋이 다 있는지는 `curl https://macfolio-api.hyeoniverse.com/contact`의 `"enabled":true`로 확인한다 (비밀 값은 보이지 않는다). 수신 주소를 따로 지정하려면 `RESOURCE_ALERT_TO`를 설정한다
 - 로컬(macOS)에서는 동작하지 않는다. 사용률을 Linux의 `/proc`에서 읽기 때문이다
 
@@ -1069,7 +1069,7 @@ docker compose up -d api
 [#10](https://github.com/hyeoniverse/MacFolio/issues/10)에서 이어서 진행한다.
 
 - 계정을 Pay As You Go로 업그레이드해 유휴 회수 대상에서 제외하고 Budget 알림 설정 ([유휴 회수](#유휴-회수))
-- 실제 사용률을 1~2주 관찰
+- 실제 사용률을 1\~2주 관찰
 - fail2ban 또는 SSH 포트 변경: 키 인증만 허용하므로 무차별 대입은 실패 로그만 남겨 현재는 적용하지 않는다. 로그 양이 문제가 되면 적용한다
 
 ## 관련 글

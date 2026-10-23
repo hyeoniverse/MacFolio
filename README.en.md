@@ -630,9 +630,9 @@ I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB
 
 | Item                         | Phone before → Round 3 → Round 4 | Desktop before → Round 3 → Round 4 |
 | ---------------------------- | -------------------------------- | ---------------------------------- |
-| Lighthouse performance       | 55 → 78~87 → **78~97**           | 62 → 98 → **98~100**               |
-| FCP                          | 14.3s → 3.2s → **2.1~3.2s**      | 2.5s → 0.7s → **0.7s**             |
-| LCP                          | 25.7s → 3.2s → **2.1~4.5s**      | 5.8s → 1.1s → **0.7~1.1s**         |
+| Lighthouse performance       | 55 → 78\~87 → **78\~97**         | 62 → 98 → **98\~100**              |
+| FCP                          | 14.3s → 3.2s → **2.1\~3.2s**     | 2.5s → 0.7s → **0.7s**             |
+| LCP                          | 25.7s → 3.2s → **2.1\~4.5s**     | 5.8s → 1.1s → **0.7\~1.1s**        |
 | Transfer size on first visit | 4,893KB → 483KB → **485KB**      | 9,050KB → 771KB → **772KB**        |
 
 **Production** (median of 5 runs)

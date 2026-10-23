@@ -16,7 +16,7 @@ MacFolio 코드와 의존성을 정적 분석(SAST)[^sast]·구성 요소 분석
 
 | 도구                                                                      | 버전             | 실행 여부                    | 명령                               |
 | ------------------------------------------------------------------------- | ---------------- | ---------------------------- | ---------------------------------- |
-| [Semgrep CE](https://semgrep.dev/docs/)                                   | 1.181.0          | 실행                         | 아래 1~3                           |
+| [Semgrep CE](https://semgrep.dev/docs/)                                   | 1.181.0          | 실행                         | 아래 1\~3                          |
 | [pnpm audit](https://pnpm.io/cli/audit)                                   | pnpm 10.34.5     | 실행                         | `pnpm audit`, `pnpm audit --prod`  |
 | [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/) | 13.0.0 (Java 21) | **실패** (NVD API 키 없음)   | 아래 4                             |
 | [osv-scanner](https://google.github.io/osv-scanner/)                      | 2.7.0            | 실행 (Dependency-Check 대신) | 아래 5                             |
@@ -100,7 +100,7 @@ exit=13
 | 6   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/templates/repo/repo.ts:206` | WARNING | 영향 없음 | 5와 같은 함수의 다른 줄                                                                                                                                                                                                                                                                      | 5와 같음 (`eaccdfd`)                                                                                                                      |
 | 7   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/terminalRepo.ts:55`         | WARNING | 영향 없음 | 프로젝트 페이지 터미널의 `cd`·`cat` 경로를 따라가는 `nodeAt()`. 방문자가 경로를 입력하지만 읽기만 하므로 오염은 없다. 대신 `cd __proto__`가 빈 폴더로 들어가지던 동작 버그가 있었다                                                                                                          | `Object.hasOwn`으로 자기 키만 따라가게 고침, 시험 추가 (`9708cd0`). 보완 뒤 `nosemgrep`                                                   |
 
-실제 취약점은 0건이다. 5~7은 코드 모양은 규칙이 말하는 약점이 맞아 수정했지만, 공격자가 닿는 입력이 없거나(5·6) 쓰기가 없어(7) 판정은 "영향 없음"으로 한다.
+실제 취약점은 0건이다. 5\~7은 코드 모양은 규칙이 말하는 약점이 맞아 수정했지만, 공격자가 닿는 입력이 없거나(5·6) 쓰기가 없어(7) 판정은 "영향 없음"으로 한다.
 
 ### 규칙이 검출하지 않은 곳
 

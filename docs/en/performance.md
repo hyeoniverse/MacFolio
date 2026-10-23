@@ -16,9 +16,9 @@ Values measured locally under the same conditions. Median of 5 [Lighthouse](http
 
 | Item                                 | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) |
 | ------------------------------------ | ------- | ------- | ------- | ------- | --------------------- |
-| Lighthouse performance score         | 55      | 68      | 69~72   | 78~87   | **78~97**             |
-| FCP (first contentful paint)[^fcp]   | 14.3s   | 4.0s    | 4.0s    | 3.2s    | **2.1~3.2s**          |
-| LCP (largest contentful paint)[^lcp] | 25.7s   | 6.2s    | 5.8s    | 3.2s    | **2.1~4.5s**          |
+| Lighthouse performance score         | 55      | 68      | 69\~72  | 78\~87  | **78\~97**            |
+| FCP (first contentful paint)[^fcp]   | 14.3s   | 4.0s    | 4.0s    | 3.2s    | **2.1\~3.2s**         |
+| LCP (largest contentful paint)[^lcp] | 25.7s   | 6.2s    | 5.8s    | 3.2s    | **2.1\~4.5s**         |
 | TBT (total blocking time)[^tbt]      | 115ms   | 0ms     | 0ms     | 0ms     | **0ms**               |
 | Transfer size on first visit         | 4,893KB | 1,011KB | 725KB   | 483KB   | **485KB**             |
 | Requests                             | 61      | 74      | 75      | 49      | **49**                |
@@ -28,9 +28,9 @@ Values measured locally under the same conditions. Median of 5 [Lighthouse](http
 
 | Item                           | Before  | Round 1 | Round 2 | Round 3 | Round 4 (re-measured) |
 | ------------------------------ | ------- | ------- | ------- | ------- | --------------------- |
-| Lighthouse performance score   | 62      | 90      | 93      | 98      | **98~100**            |
+| Lighthouse performance score   | 62      | 90      | 93      | 98      | **98\~100**           |
 | FCP                            | 2.5s    | 0.8s    | 0.8s    | 0.7s    | **0.7s**              |
-| LCP                            | 5.8s    | 1.9s    | 1.7s    | 1.1s    | **0.7~1.1s**          |
+| LCP                            | 5.8s    | 1.9s    | 1.7s    | 1.1s    | **0.7\~1.1s**         |
 | TBT                            | 9ms     | 0ms     | 0ms     | 0ms     | **0ms**               |
 | Transfer size on first visit   | 9,050KB | 2,177KB | 1,848KB | 771KB   | **772KB**             |
 | Requests                       | 111     | 101     | 102     | 49      | **49**                |
@@ -55,9 +55,9 @@ Values from running the same Lighthouse 5 times each against the production URL 
 
 | Item                         | Phone before | After Round 1 | After Round 3 (re-measured) | Desktop before | After Round 1 | After Round 3 (re-measured) |
 | ---------------------------- | ------------ | ------------- | --------------------------- | -------------- | ------------- | --------------------------- |
-| Lighthouse performance       | 53           | 73            | **98** (86~98)              | 60             | 89            | **97** (96~100)             |
-| FCP                          | 15.0s        | 2.4s          | **1.9s** (1.8~3.3)          | 2.9s           | 0.9s          | **1.0s** (0.6~1.05)         |
-| LCP                          | 31.5s        | 7.1s          | **1.9s** (1.8~3.3)          | 5.8s           | 2.1s          | **1.0s** (0.6~1.05)         |
+| Lighthouse performance       | 53           | 73            | **98** (86\~98)             | 60             | 89            | **97** (96\~100)            |
+| FCP                          | 15.0s        | 2.4s          | **1.9s** (1.8\~3.3)         | 2.9s           | 0.9s          | **1.0s** (0.6\~1.05)        |
+| LCP                          | 31.5s        | 7.1s          | **1.9s** (1.8\~3.3)         | 5.8s           | 2.1s          | **1.0s** (0.6\~1.05)        |
 | Transfer size on first visit | 6,342KB      | 1,239KB       | **602KB**                   | 7,134KB        | 3,229KB       | **889KB**                   |
 
 - "Before" is main before [#319](https://github.com/hyeoniverse/MacFolio/pull/319) was deployed.
@@ -71,12 +71,12 @@ Values from running the same Lighthouse 5 times each against the production URL 
 
 Lighthouse's default ([simulated throttling](https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md)) computes a slow network from a fast recording. Measuring with the browser actually slowed down (`--throttling-method=devtools`, same slow 4G and 4x CPU) gives this.
 
-| Item                         | Before  | Round 2 | Round 3  | Round 4 (re-measured)      |
-| ---------------------------- | ------- | ------- | -------- | -------------------------- |
-| Lighthouse performance       | 65      | 78      | 92       | **100** (one of 5 runs 92) |
-| FCP                          | 9.2s    | 1.2s    | 1.2~2.7s | **1.2s**                   |
-| LCP                          | 12.1s   | 6.0s    | 1.2~2.7s | **1.2s**                   |
-| Transfer size on first visit | 5,932KB | 782KB   | 483KB    | **485KB**                  |
+| Item                         | Before  | Round 2 | Round 3   | Round 4 (re-measured)      |
+| ---------------------------- | ------- | ------- | --------- | -------------------------- |
+| Lighthouse performance       | 65      | 78      | 92        | **100** (one of 5 runs 92) |
+| FCP                          | 9.2s    | 1.2s    | 1.2\~2.7s | **1.2s**                   |
+| LCP                          | 12.1s   | 6.0s    | 1.2\~2.7s | **1.2s**                   |
+| Transfer size on first visit | 5,932KB | 782KB   | 483KB     | **485KB**                  |
 
 From Round 3 on, LCP equals FCP. The first render (the Apple logo and start prompt in the HTML) is the largest content.
 
