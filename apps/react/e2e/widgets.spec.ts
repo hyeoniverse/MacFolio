@@ -113,6 +113,31 @@ test.describe('바탕화면 위젯', () => {
 		expect((await saved(page))?.map((item) => item.id)).toEqual(['weather', 'github', 'music', 'posts']);
 	});
 
+	test('위젯 갤러리: 미리보기의 단추가 더하기 단추 안에 들어가지 않고(단추 안의 단추), 미리보기를 눌러도 더한다', async ({
+		page,
+	}) => {
+		await enterDesktop(page);
+		await closeSafari(page);
+		await page.mouse.click(page.viewportSize()!.width - 320, 480, { button: 'right' });
+		await page.getByRole('menuitem', { name: '위젯 편집…' }).click();
+		const gallery = page.getByRole('dialog', { name: '위젯 갤러리' });
+		// 음악 위젯 미리보기에는 이전 곡·재생 단추가 있다
+		await expect(gallery.getByRole('button', { name: '음악 위젯 (중간) 더하기' })).toBeVisible();
+		expect(await gallery.locator('button button').count()).toBe(0);
+		// 미리보기 한가운데(재생 단추 자리)를 누르면 미리보기의 단추가 아니라 더하기 단추가 받는다
+		const add = gallery.getByRole('button', { name: '음악 위젯 (중간) 더하기' });
+		await add.scrollIntoViewIfNeeded();
+		const box = (await add.boundingBox())!;
+		const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
+		expect(
+			await page.evaluate(([px, py]) => document.elementFromPoint(px, py)?.getAttribute('aria-label'), [x, y])
+		).toBe('음악 위젯 (중간) 더하기');
+		const before = await widget(page, '음악').count();
+		await page.mouse.click(x, y);
+		await page.keyboard.press('Escape');
+		await expect(widget(page, '음악')).toHaveCount(before + 1);
+	});
+
 	test('사진 위젯은 오른쪽 클릭 메뉴에서 앨범을 고른다', async ({ page }) => {
 		await enterDesktop(page);
 		await closeSafari(page);

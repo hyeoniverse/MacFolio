@@ -34,16 +34,18 @@ const WidgetSheet = ({ pages, current, onAdd, onClose }: Props) => (
 				WIDGET_INFO[kind].sizes.map((size) => {
 					const full = pageToAdd(pages, current, size) < 0;
 					return (
-						<li key={`${kind}-${size}`} data-size={size}>
+						// 미리보기 위젯의 단추가 더하기 단추 안에 들어가지 않게 미리보기는 단추 밖에 두고,
+						// 단추의 ::after가 칸 전체를 덮어 미리보기를 눌러도 더한다 (MobileHome.css)
+						<li key={`${kind}-${size}`} data-size={size} data-disabled={full || undefined}>
+							<span className="mobile-widget-sheet-preview" inert>
+								<Widget kind={kind} size={size} open={() => {}} />
+							</span>
 							<button
 								type="button"
 								aria-label={`${WIDGET_INFO[kind].label} 위젯 (${SIZE_LABEL[size]}) 더하기`}
 								disabled={full}
 								onClick={() => onAdd(kind, size)}
 							>
-								<span className="mobile-widget-sheet-preview" inert>
-									<Widget kind={kind} size={size} open={() => {}} />
-								</span>
 								<strong>{WIDGET_INFO[kind].label}</strong>
 								<span>{full ? '위젯을 둘 자리가 없습니다' : WIDGET_INFO[kind].description}</span>
 							</button>
