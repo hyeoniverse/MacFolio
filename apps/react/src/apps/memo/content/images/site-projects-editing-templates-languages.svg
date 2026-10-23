@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" width="760" height="420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8e8e93"/></marker></defs>
+<rect width="760" height="420" rx="16" fill="#ffffff"/>
+<text x="24" y="36" font-size="18" font-weight="700" fill="#1d1d1f">저장소 모양의 Languages 막대가 언어 비율을 가져오는 경로</text>
+<rect x="24" y="64" width="190" height="96" rx="12" fill="#e8f0fe" stroke="#a8c7fa"/>
+<text x="119" y="94" font-size="14" font-weight="700" text-anchor="middle" fill="#1d1d1f">방문자 브라우저</text>
+<text x="119" y="118" font-size="12" text-anchor="middle" fill="#3a3a3c">Safari 앱, 저장소 모양</text>
+<text x="119" y="138" font-size="12" text-anchor="middle" fill="#3a3a3c">옆 칸 Languages</text>
+<rect x="284" y="64" width="232" height="300" rx="12" fill="#f2f2f7" stroke="#d1d1d6"/>
+<text x="400" y="90" font-size="14" font-weight="700" text-anchor="middle" fill="#1d1d1f">사이트 API</text>
+<text x="400" y="110" font-size="11" text-anchor="middle" fill="#3a3a3c">GET /github/languages/{owner}/{name}</text>
+<rect x="300" y="124" width="200" height="66" rx="8" fill="#ffffff" stroke="#d1d1d6"/>
+<text x="400" y="145" font-size="12" font-weight="700" text-anchor="middle" fill="#1d1d1f">1. 허용 목록 확인</text>
+<text x="400" y="163" font-size="11" text-anchor="middle" fill="#3a3a3c">코드의 프로젝트 저장소 +</text>
+<text x="400" y="179" font-size="11" text-anchor="middle" fill="#3a3a3c">관리자가 저장한 프로젝트 주소</text>
+<rect x="300" y="202" width="200" height="66" rx="8" fill="#ffffff" stroke="#d1d1d6"/>
+<text x="400" y="223" font-size="12" font-weight="700" text-anchor="middle" fill="#1d1d1f">2. 캐시 확인</text>
+<text x="400" y="241" font-size="11" text-anchor="middle" fill="#3a3a3c">저장소마다 6시간 보관</text>
+<text x="400" y="257" font-size="11" text-anchor="middle" fill="#3a3a3c">없는 저장소 응답은 30분</text>
+<rect x="300" y="280" width="200" height="72" rx="8" fill="#ffffff" stroke="#d1d1d6"/>
+<text x="400" y="300" font-size="12" font-weight="700" text-anchor="middle" fill="#1d1d1f">3. 비율 계산</text>
+<text x="400" y="318" font-size="11" text-anchor="middle" fill="#3a3a3c">소수 첫째 자리, 합계 100</text>
+<text x="400" y="334" font-size="11" text-anchor="middle" fill="#3a3a3c">0.5% 미만·7번째부터 Other</text>
+<rect x="586" y="196" width="150" height="80" rx="12" fill="#e9f7ef" stroke="#a3d9b1"/>
+<text x="661" y="226" font-size="14" font-weight="700" text-anchor="middle" fill="#1d1d1f">GitHub REST API</text>
+<text x="661" y="248" font-size="11" text-anchor="middle" fill="#3a3a3c">/repos/{owner}/{repo}</text>
+<text x="661" y="263" font-size="11" text-anchor="middle" fill="#3a3a3c">/languages</text>
+<line x1="214" y1="100" x2="282" y2="100" stroke="#8e8e93" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="500" y1="235" x2="584" y2="235" stroke="#8e8e93" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="542" y="226" font-size="11" text-anchor="middle" fill="#3a3a3c">캐시 없음</text>
+<line x1="400" y1="190" x2="400" y2="200" stroke="#8e8e93" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="400" y1="268" x2="400" y2="278" stroke="#8e8e93" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="300" y1="157" x2="150" y2="210" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<rect x="40" y="210" width="190" height="44" rx="8" fill="#fdecec" stroke="#f5b5b0"/>
+<text x="135" y="229" font-size="12" font-weight="700" text-anchor="middle" fill="#1d1d1f">목록에 없으면 404</text>
+<text x="135" y="245" font-size="11" text-anchor="middle" fill="#3a3a3c">GitHub에 요청하지 않는다</text>
+<line x1="282" y1="140" x2="216" y2="140" stroke="#8e8e93" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="249" y="134" font-size="10" text-anchor="middle" fill="#3a3a3c">비율</text>
+<text x="249" y="92" font-size="10" text-anchor="middle" fill="#3a3a3c">요청</text>
+<text x="24" y="394" font-size="12" fill="#3a3a3c">GitHub에 연결하지 못하면 마지막으로 받은 값을 응답한다. 응답 전이거나 요청이 실패하면 화면은 주 언어 하나로 렌더링한다</text>
+</svg>
