@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>restore.sh는 DB_NAME이 실제 DB면 확인을 받고 API를 멈춘 뒤 되살리고, 다른 이름이면 새 DB를 만들어 되살린다. 끝나면 trap이 임시 파일을 삭제하고 API를 다시 시작한다</title>
+<defs>
+<marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+<marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+<marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker>
+<marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker>
+<marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker>
+<marker id="a-white" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="860" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">ops/restore.sh의 두 경로</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">DB_NAME이 실제 DB(macfolio)인지에 따라 나뉜다 · 끝나면 성공·실패와 관계없이 trap cleanup 실행</text>
+<rect x="32" y="130" width="150" height="70" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="44" y="149" font-size="12" fill="#374151" font-weight="600">백업 파일</text>
+<text x="44" y="166" font-size="10.5" fill="#374151">로컬 .sql.gz</text>
+<text x="44" y="181" font-size="10.5" fill="#374151">또는 r2: 경로 → rclone copy</text>
+<rect x="212" y="130" width="130" height="70" rx="9" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="277.0" y="149" font-size="12" fill="#4f46e5" font-weight="600" text-anchor="middle">gzip -t</text>
+<text x="277.0" y="166" font-size="10.5" fill="#374151" text-anchor="middle">압축 파일 검사</text>
+<path d="M182 165 H208" stroke="#4f46e5" stroke-width="1.8" fill="none" marker-end="url(#a-blue)"/>
+<rect x="392" y="80" width="220" height="90" rx="9" fill="#fffbeb" stroke="#fcd34d" stroke-width="1"/>
+<text x="404" y="99" font-size="12" fill="#b45309" font-weight="600">DB_NAME = macfolio (실제 DB)</text>
+<text x="404" y="116" font-size="10.5" fill="#374151">1. 확인 입력 (yes 또는 --yes)</text>
+<text x="404" y="131" font-size="10.5" fill="#374151">2. docker compose stop api</text>
+<text x="404" y="146" font-size="10.5" fill="#374151">3. 기존 DB에 덮어쓰기</text>
+<rect x="392" y="200" width="220" height="76" rx="9" fill="#ecfdf5" stroke="#86efac" stroke-width="1"/>
+<text x="404" y="219" font-size="12" fill="#15803d" font-weight="600">DB_NAME = 다른 이름 (시험)</text>
+<text x="404" y="236" font-size="10.5" fill="#374151">1. DROP DATABASE IF EXISTS</text>
+<text x="404" y="251" font-size="10.5" fill="#374151">2. CREATE DATABASE</text>
+<path d="M342 155 C366 155 366 125 388 125" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#a-amber)"/>
+<path d="M342 175 C366 175 366 238 388 238" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<rect x="652" y="130" width="176" height="70" rx="9" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1"/>
+<text x="664" y="149" font-size="12" fill="#4f46e5" font-weight="600">psql 실행</text>
+<text x="664" y="166" font-size="10.5" fill="#374151">--single-transaction</text>
+<text x="664" y="181" font-size="10.5" fill="#374151">ON_ERROR_STOP=1</text>
+<path d="M612 125 C632 125 632 160 648 160" stroke="#b45309" stroke-width="1.8" fill="none" marker-end="url(#a-amber)"/>
+<path d="M612 238 C632 238 632 172 648 172" stroke="#15803d" stroke-width="1.8" fill="none" marker-end="url(#a-green)"/>
+<rect x="392" y="290" width="436" height="28" rx="9" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1"/>
+<text x="404" y="309" font-size="12" fill="#374151" font-weight="600">trap cleanup: 내려받은 임시 파일 삭제 · 멈춘 API면 docker compose start api</text>
+</svg>

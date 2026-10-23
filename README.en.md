@@ -108,7 +108,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td valign="top">
       <img src="docs/images/readme-weather.jpg" alt="Weather app: current temperature in Seoul with hourly and 10-day forecasts">
       <h4>⛅ Weather</h4>
-      Search for a city to see hourly · 10-day forecasts, feels-like temperature, humidity, and wind (Open-Meteo).
+      Search for a city to see hourly · 10-day forecasts, feels-like temperature, humidity, and wind ([Open-Meteo](https://open-meteo.com/)).
     </td>
     <td valign="top">
       <img src="docs/images/readme-apidocs.jpg" alt="API Docs app: list of endpoints">
@@ -255,7 +255,7 @@ Hiding the edit buttons on screen is only a UI hint; the server checks permissio
 
 ### System overview
 
-The frontend is a Worker and static files on Cloudflare; the API is a single free VM on Oracle Cloud. The server opens no inbound ports and receives requests only through Cloudflare Tunnel. Running cost is $0.
+The frontend is a Worker and static files on Cloudflare; the API is a single free VM on Oracle Cloud. The server opens no inbound ports and receives requests only through [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/). Running cost is $0.
 
 ```mermaid
 flowchart LR
@@ -377,14 +377,14 @@ There are also scheduled checks: Semgrep static analysis (`sast`), gitleaks secr
 
 The decision process is in [#8](https://github.com/hyeoniverse/MacFolio/issues/8).
 
-| Area       | What I used                                                                                            |
-| ---------- | ------------------------------------------------------------------------------------------------------ |
-| Frontend   | React 19, TypeScript, Vite, Milkdown (editor), react-markdown + lowlight                               |
-| Backend    | NestJS, Prisma 7, PostgreSQL, Swagger                                                                  |
-| Monorepo   | pnpm workspaces, Turborepo                                                                             |
-| Testing    | Vitest (unit), Playwright (E2E: desktop · iPhone · Android), supertest (API e2e)                       |
-| Deployment | Cloudflare Workers (frontend), Oracle Cloud VM + Docker Compose + Cloudflare Tunnel (API)              |
-| CI         | GitHub Actions: format → lint → circular deps → types → tests → build → API e2e → E2E, security checks |
+| Area       | What I used                                                                                                                                                                                                                                                         |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend   | [React](https://react.dev/) 19, [TypeScript](https://www.typescriptlang.org/), [Vite](https://vite.dev/), [Milkdown](https://milkdown.dev/) (editor), [react-markdown](https://github.com/remarkjs/react-markdown) + [lowlight](https://github.com/wooorm/lowlight) |
+| Backend    | [NestJS](https://docs.nestjs.com/), [Prisma](https://www.prisma.io/docs) 7, [PostgreSQL](https://www.postgresql.org/docs/), Swagger                                                                                                                                 |
+| Monorepo   | [pnpm workspaces](https://pnpm.io/workspaces), [Turborepo](https://turborepo.com/docs)                                                                                                                                                                              |
+| Testing    | [Vitest](https://vitest.dev/) (unit), [Playwright](https://playwright.dev/) (E2E: desktop · iPhone · Android), [supertest](https://github.com/ladjs/supertest) (API e2e)                                                                                            |
+| Deployment | [Cloudflare Workers](https://developers.cloudflare.com/workers/) (frontend), [Oracle Cloud](https://www.oracle.com/cloud/free/) VM + Docker Compose + Cloudflare Tunnel (API)                                                                                       |
+| CI         | [GitHub Actions](https://docs.github.com/en/actions): format → lint → circular deps → types → tests → build → API e2e → E2E, security checks                                                                                                                        |
 
 Expand each item to see **why I chose it and where and how I used it**.
 
@@ -397,7 +397,7 @@ Expand each item to see **why I chose it and where and how I used it**.
 - **How:**
   - Each app gets one folder (`src/apps/<app>`), and names · icons · window sizes · mobile names are defined in one place, `manifest.ts`. The Dock, Launchpad, Terminal's `open`, and the mobile home screen all read this list
   - Window positions · stacking order, admin login state, and music playback live in small stores (`createStore`) subscribed to with `useSyncExternalStore`
-  - Framework-independent logic is split out into `packages/desktop-core` (#16). It currently holds the store, window management (open · close · minimize · stacking order), memo logic (reading · sorting · filtering posts, tags, folder organization, find, post validation), and the music playback queue (shuffle · repeat, next · previous track); the React side keeps only hooks that subscribe to stores and the UI. This package is blocked from importing DOM types and React
+  - Framework-independent logic is split out into `packages/desktop-core` ([#16](https://github.com/hyeoniverse/MacFolio/issues/16)). It currently holds the store, window management (open · close · minimize · stacking order), memo logic (reading · sorting · filtering posts, tags, folder organization, find, post validation), and the music playback queue (shuffle · repeat, next · previous track); the React side keeps only hooks that subscribe to stores and the UI. This package is blocked from importing DOM types and React
   - The server (`apps/api`) also takes memo organization validation, folder paths, and post length · date rules from `desktop-core`. React reads `src` directly, and the server uses the built `dist` (`exports` conditions in `package.json`)
   - Vite's `import.meta.glob` bundles blog posts (Markdown) and images at build time. `VITE_API_URL` is also baked into the code at build time
   - The Memo window uses CSS container queries to change the toolbar and list layout based on window width. Because the reference is the window width, not the screen width, it adapts correctly when the window is shrunk
@@ -449,7 +449,7 @@ The architecture diagram, request flow, data model, and design decision table ar
 <summary><b>Monorepo: pnpm workspaces + Turborepo</b></summary>
 
 - **Why:** I put the frontend and API in one repo as a monorepo so I can change and test them together. pnpm installs fast with strict dependencies, and Turborepo handles build order and caching between packages
-- **How:** the root `pnpm build` · `pnpm test` · `pnpm lint` run the two apps and two packages (`desktop-core`, `contracts`) together. `pnpm dev:all` starts the frontend and API together. `pnpm cycles` (madge) blocks circular imports
+- **How:** the root `pnpm build` · `pnpm test` · `pnpm lint` run the two apps and three packages (`desktop-core`, `contracts`, `og-card`) together. `pnpm dev:all` starts the frontend and API together. `pnpm cycles` ([madge](https://github.com/pahen/madge)) blocks circular imports
 
 </details>
 
@@ -630,9 +630,9 @@ I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB
 
 | Item                         | Phone before → Round 3 → Round 4 | Desktop before → Round 3 → Round 4 |
 | ---------------------------- | -------------------------------- | ---------------------------------- |
-| Lighthouse performance       | 55 → 78~87 → **78~97**           | 62 → 98 → **98~100**               |
-| FCP                          | 14.3s → 3.2s → **2.1~3.2s**      | 2.5s → 0.7s → **0.7s**             |
-| LCP                          | 25.7s → 3.2s → **2.1~4.5s**      | 5.8s → 1.1s → **0.7~1.1s**         |
+| Lighthouse performance       | 55 → 78\~87 → **78\~97**         | 62 → 98 → **98\~100**              |
+| FCP                          | 14.3s → 3.2s → **2.1\~3.2s**     | 2.5s → 0.7s → **0.7s**             |
+| LCP                          | 25.7s → 3.2s → **2.1\~4.5s**     | 5.8s → 1.1s → **0.7\~1.1s**        |
 | Transfer size on first visit | 4,893KB → 483KB → **485KB**      | 9,050KB → 771KB → **772KB**        |
 
 **Production** (median of 5 runs)
@@ -657,7 +657,12 @@ Measurement conditions, bottlenecks, fixes, and how to measure again are in [doc
 - [Security scan](docs/en/security-scan.md): Semgrep · pnpm audit · osv-scanner results with per-item verdicts, licenses, CI criteria
 - [Privacy](docs/en/privacy.md): what is stored, how, and when it's deleted
 - [API](apps/api/README.md): running locally, tests, structure
-- Dev log: the Memo app on the site → the 개발기 (dev log) folder (`apps/react/src/apps/memo/content/`)
+- Dev log: the Memo app on the site → the 개발기 (dev log) folder (`apps/react/src/apps/memo/content/`). Good posts to start with (Korean):
+  - [MacFolio 백엔드 한 장으로 보기](https://macfolio.hyeoniverse.com/memo/backend-design)
+  - [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
+  - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
+  - [첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
+  - [리팩터링 계획을 마치며 — 일곱 단계 전후](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
 
 ## Roadmap
 

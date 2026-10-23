@@ -2,12 +2,12 @@
 
 # Rollback drill (server)
 
-**Deliberately deploy a version whose health check fails to the real server**, and confirm that `ops/deploy.sh` rolls back to the previous version and GitHub Actions reports a failure. This is the procedure for closing the two remaining items in #100.
+**Deliberately deploy a version whose health check fails to the real server**, and confirm that `ops/deploy.sh` rolls back to the previous version and GitHub Actions reports a failure. This is the procedure for closing the two remaining items in [#100](https://github.com/hyeoniverse/MacFolio/issues/100) ([#254](https://github.com/hyeoniverse/MacFolio/pull/254)).
 
 - Deliberately fail once and confirm the rollback (an image whose health check fails)
 - A version whose health check fails goes back to the previous version, and Actions reports a failure
 
-#104 already verified this with a local registry. Here the drill takes the real path end to end: Actions → SSH (deploy-only key) → `ops/deploy.sh` → tunnel.
+[#104](https://github.com/hyeoniverse/MacFolio/pull/104) already verified this with a local registry. Here the drill takes the real path end to end: Actions → SSH (deploy-only key) → `ops/deploy.sh` → tunnel.
 
 ## Approach: don't change the code
 
@@ -17,11 +17,13 @@ I don't merge broken code into main, and I don't keep a drill switch in the repo
 - The deploy-only key can only send a tag, so a switch that passes environment variables to the container would require opening a new path. This approach creates no such path. No new secrets, no new permissions, no new workflow inputs
 - The drill image exists only on the server and is deleted afterward. No switch is left behind that could be turned on by mistake
 
-The drill image changes only the Dockerfile's `HEALTHCHECK` to `false`. The app runs exactly as the current version. The api service in the server's `compose.yml` has no `healthcheck:`, so it uses the image's `HEALTHCHECK`. The container therefore goes `starting` → `unhealthy`, and `ops/deploy.sh` waits for `HEALTH_TIMEOUT` (120 seconds) and then rolls back. (The drill image's `/health` version is also the current tag, so it doesn't match `sha-dead000`. Both conditions fail.)
+The drill image changes only the Dockerfile's [`HEALTHCHECK`](https://docs.docker.com/reference/dockerfile/#healthcheck) to `false`. The app runs exactly as the current version. The api service in the server's `compose.yml` has no `healthcheck:`, so it uses the image's `HEALTHCHECK`. The container therefore goes `starting` → `unhealthy`, and `ops/deploy.sh` waits for `HEALTH_TIMEOUT` (120 seconds) and then rolls back. (The drill image's `/health` version is also the current tag, so it doesn't match `sha-dead000`. Both conditions fail.)
 
 ## Downtime
 
-`ops/deploy.sh` is not blue-green. `docker compose up -d api` **stops the old container and starts the new one**. So the API drops briefly twice during the drill.
+`ops/deploy.sh` is not a blue-green deployment[^blue-green]. `docker compose up -d api` **stops the old container and starts the new one**. So the API drops briefly twice during the drill.
+
+![The order of pre-deploy backup, swap ①, 120-second healthy wait, swap ② and exit, with the two intervals where the API stops responding](../images/rollback-drill-timeline.svg)
 
 | When                                 | How long                                                                                                                  | Why                                                                                                                                   |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -34,7 +36,7 @@ In short, **twice, under a minute in total**. If uptime monitoring (`uptime.yml`
 ## Preparation
 
 - You can get into the server with your usual SSH (your own key), not the deploy-only key
-- You have permission to run Actions on the GitHub repository
+- You have permission to [run the workflow manually](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow) on the GitHub repository
 - No deploy is currently running (no in-progress run in [Actions → Deploy API (API 배포)](https://github.com/hyeoniverse/MacFolio/actions/workflows/deploy-api.yml)). Don't merge API changes into main
 - Write down the current state (step 1 below)
 
@@ -170,6 +172,11 @@ If it still doesn't become healthy, the problem is unrelated to the drill (DB, `
 
 ## Checklist to attach to #100
 
+Record the drill result in [#100](https://github.com/hyeoniverse/MacFolio/issues/100) in the format below.
+
+<details>
+<summary>Checklist source (for copying)</summary>
+
 ```markdown
 ### Server rollback drill (docs/rollback-drill.md) — YYYY-MM-DD
 
@@ -182,6 +189,8 @@ If it still doesn't become healthy, the problem is unrelated to the drill (DB, `
 - [ ] Cleanup: `sha-dead000` image deleted
 ```
 
+</details>
+
 ## Records
 
 ### 2026-10-18 (first server drill, wrapping up #100)
@@ -193,3 +202,11 @@ If it still doesn't become healthy, the problem is unrelated to the drill (DB, `
 - After the drill: `.env`, the container image, and the external `/health` version all `sha-7e7eac0`, `(healthy)`
 - Cleanup: deleted `sha-dead000`; remaining images `sha-0f5d74f`, `sha-7e7eac0`
 - What happened: I also pasted the placeholder line `ssh <평소 쓰는 서버 접속>` (your usual server login) from the connection instructions, which caused `syntax error near unexpected token 'newline'`. The remaining lines ran as normal, so the result was unaffected. As the note in "Preparation" says, don't paste placeholders
+
+## Related posts (Korean)
+
+- [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](https://macfolio.hyeoniverse.com/memo/rollback-drill)
+- [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](https://macfolio.hyeoniverse.com/memo/api-auto-deploy)
+- [자동 배포를 실제 서버에 걸기 - 막힌 곳 다섯](https://macfolio.hyeoniverse.com/memo/api-auto-deploy-setup)
+
+[^blue-green]: A deployment method that runs the new container alongside the old one and switches traffic only after its health check passes. Responses never stop during the switch, but more memory is used while both containers run. This server (E2.1.Micro, 1GB) replaces its single container instead.

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>UTM 주소의 다섯 매개변수. cleanUtm으로 정규화한 뒤 source, medium, campaign은 각각의 지표와 함께 조합 키 utm 하나로 집계하고, term과 content는 조합 키에 넣지 않고 별도 지표로 집계한다. 다섯 지표 모두 DailyStat에 날짜별로 저장한다</title>
+<defs><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker></defs>
+<rect width="800" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" font-weight="700" fill="#1f2937">UTM 매개변수가 집계되는 위치</text>
+<rect x="32" y="56" width="736" height="44" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="48" y="83" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#374151">/?<tspan fill="#4f46e5" font-weight="700">utm_source=LinkedIn</tspan>&amp;<tspan fill="#4f46e5" font-weight="700">utm_medium=post</tspan>&amp;<tspan fill="#4f46e5" font-weight="700">utm_campaign=Resume+2026</tspan>&amp;<tspan fill="#d97706" font-weight="700">utm_term=…</tspan>&amp;<tspan fill="#d97706" font-weight="700">utm_content=…</tspan></text>
+<line x1="400" y1="100" x2="400" y2="124" stroke="#6b7280" stroke-width="1.5" marker-end="url(#g)"/>
+<rect x="110" y="128" width="580" height="48" rx="10" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="400" y="148" font-size="12.5" font-weight="700" fill="#4f46e5" text-anchor="middle">cleanUtm()</text>
+<text x="400" y="166" font-size="11" fill="#374151" text-anchor="middle">앞뒤 공백 제거 · 소문자 · 연속 공백 → -   (LinkedIn → linkedin, Resume 2026 → resume-2026)</text>
+<line x1="320" y1="176" x2="220" y2="204" stroke="#6b7280" stroke-width="1.5" marker-end="url(#g)"/>
+<line x1="480" y1="176" x2="600" y2="204" stroke="#6b7280" stroke-width="1.5" marker-end="url(#g)"/>
+<rect x="32" y="208" width="440" height="116" rx="12" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="50" y="232" font-size="12.5" font-weight="700" fill="#3730a3">source · medium · campaign</text>
+<text x="50" y="254" font-size="11.5" fill="#1f2937">지표 source / medium / campaign: 값별 집계 (medium은 이번에 추가)</text>
+<text x="50" y="276" font-size="11.5" fill="#1f2937">지표 utm: 세 값을 ' / '로 결합한 조합 키</text>
+<text x="50" y="298" font-size="11.5" font-family="ui-monospace, Menlo, monospace" font-weight="600" fill="#3730a3">linkedin / post / resume-2026</text>
+<text x="50" y="316" font-size="10.5" fill="#6b7280">빈 값은 표에 - 로 표시, 세 값이 모두 비면 집계하지 않음</text>
+<rect x="496" y="208" width="272" height="116" rx="12" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="514" y="232" font-size="12.5" font-weight="700" fill="#92400e">term · content</text>
+<text x="514" y="254" font-size="11.5" fill="#1f2937">지표 term / content: 별도 집계</text>
+<text x="514" y="276" font-size="11.5" fill="#1f2937">조합 키에는 포함하지 않음</text>
+<text x="514" y="298" font-size="11.5" fill="#1f2937">(값 종류가 많아 조합 수 증가 방지)</text>
+<text x="514" y="316" font-size="10.5" fill="#6b7280">값이 없으면 표를 렌더링하지 않음</text>
+<text x="32" y="346" font-size="10.5" fill="#6b7280">모든 지표는 DailyStat에 날짜별로 저장하고, 새 표는 관리자 전용(ADMIN_ONLY_BREAKDOWNS)이다.</text>
+</svg>

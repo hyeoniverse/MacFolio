@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { PhotoTarget } from '@/apps/photos/photoTarget';
 import { photosOf } from './photoSources';
 import { usePhotoSources } from './usePhotoSources';
 
@@ -50,7 +51,14 @@ const ControlButton = ({
  * 영상은 소리 없이 저절로 재생하고, 끝나면 다음으로 넘긴다.
  * 오른쪽 아래의 단추 둘은 늘 같은 자리에 있다: 일시 정지(영상은 멈추고, GIF는 지금 장면에서 멈추고, 넘기기도 멈춘다)와 소리
  */
-const PhotoWidget = ({ album }: { album?: string }) => {
+const PhotoWidget = ({
+	album,
+	onShow,
+}: {
+	album?: string;
+	/** 지금 보이는 사진이 바뀔 때마다 알린다 (위젯을 누르면 사진 앱이 그 사진을 크게 보기로 연다). 사진이 없으면 null */
+	onShow?: (target: PhotoTarget | null) => void;
+}) => {
 	const sources = usePhotoSources();
 	const photos = useMemo(() => photosOf(sources, album), [sources, album]);
 	const [index, setIndex] = useState(0);
@@ -63,6 +71,13 @@ const PhotoWidget = ({ album }: { album?: string }) => {
 	const next = () => setIndex((value) => value + 1);
 	const video = photo?.video === true;
 	const gif = !video && photo !== undefined && isGif(photo.src);
+
+	// 지금 보이는 사진: 사진 앱의 앨범 id와 파일 주소
+	const shownAlbum = photo?.albumId;
+	const shownSrc = photo?.src;
+	useEffect(() => {
+		onShow?.(shownAlbum && shownSrc ? { album: shownAlbum, src: shownSrc } : null);
+	}, [onShow, shownAlbum, shownSrc]);
 
 	// 그림은 시간마다 넘기고, 영상은 onEnded가 넘긴다. 일시 정지 중에는 넘기지 않는다
 	useEffect(() => {

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 780 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>파일 저장 위치에 따른 백업 범위</title>
+  <rect width="780" height="330" rx="16" fill="#ffffff"/>
+  <text x="32" y="42" font-size="18" font-weight="700" fill="#1f2937">파일 저장 위치에 따른 백업 범위</text>
+  <text x="32" y="64" font-size="12" fill="#6b7280">서버 한 대, 배포 환경을 옮기면 디스크가 바뀔 수 있는 조건</text>
+  <g font-size="13">
+    <rect x="32" y="86" width="346" height="212" rx="12" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="50" y="114" font-weight="700" fill="#b91c1c">디스크에 저장 (선택하지 않음)</text>
+    <rect x="50" y="130" width="140" height="56" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="64" y="154" fill="#1f2937">PostgreSQL</text>
+    <text x="64" y="174" font-size="11" fill="#6b7280">글 + 파일 주소</text>
+    <rect x="220" y="130" width="140" height="56" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="234" y="154" fill="#1f2937">VM 디스크</text>
+    <text x="234" y="174" font-size="11" fill="#6b7280">이미지 파일</text>
+    <text x="50" y="216" fill="#1f2937">백업: pg_dump + 디스크 복사</text>
+    <text x="50" y="240" font-size="12" fill="#b91c1c">두 백업의 시각이 다르면 주소만 있고</text>
+    <text x="50" y="258" font-size="12" fill="#b91c1c">파일이 없는 글이 생긴다</text>
+    <text x="50" y="282" font-size="12" fill="#6b7280">VM을 옮기면 디스크도 함께 옮겨야 한다</text>
+    <rect x="402" y="86" width="346" height="212" rx="12" fill="#f0fdf4" stroke="#bbf7d0"/>
+    <text x="420" y="114" font-weight="700" fill="#15803d">DB(bytea)에 저장 (선택)</text>
+    <rect x="420" y="130" width="310" height="56" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+    <text x="434" y="154" fill="#1f2937">PostgreSQL</text>
+    <text x="434" y="174" font-size="11" fill="#6b7280">글 + 파일 바이트 (파일당 10MB 제한), 글에는 /files/&lt;id&gt;</text>
+    <text x="420" y="216" fill="#1f2937">백업: pg_dump 한 번</text>
+    <text x="420" y="240" font-size="12" fill="#15803d">글과 이미지가 같은 시각으로 백업된다</text>
+    <text x="420" y="264" font-size="12" fill="#6b7280">대신 DB 크기가 커진다. 사진이 수천 장이</text>
+    <text x="420" y="282" font-size="12" fill="#6b7280">되면 다시 검토한다</text>
+  </g>
+</svg>

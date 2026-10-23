@@ -2,23 +2,25 @@
 
 # 보안 점검 (SAST·SCA)
 
-MacFolio 코드와 의존성을 정적 분석(SAST)·구성 요소 분석(SCA) 도구로 점검하고, 발견 항목마다 판정과 근거를 적는다 (#213). 점검일은 2026-10-18, 기준 커밋은 `aa23e0a`(main)이다.
+MacFolio 코드와 의존성을 정적 분석(SAST)[^sast]·구성 요소 분석(SCA)[^sca] 도구로 점검하고, 발견 항목마다 판정과 근거를 적는다 ([#213](https://github.com/hyeoniverse/MacFolio/issues/213), [#252](https://github.com/hyeoniverse/MacFolio/pull/252)). 점검일은 2026-10-18, 기준 커밋은 `aa23e0a`(main)이다.
 
 판정은 세 가지로 나눈다.
 
-- **실제 취약점**: 공격자가 닿을 수 있는 입력이 위험한 동작까지 이어진다.
+- **실제 취약점**: 공격자가 제어할 수 있는 입력이 위험한 동작까지 이어진다.
 - **오탐**: 규칙이 가리킨 위험이 이 코드에서는 성립하지 않는다 (입력이 상수이거나 이미 검증된다).
-- **영향 없음**: 코드 모양은 규칙이 말하는 약점이 맞지만, 입력을 공격자가 정할 수 없어 피해가 나지 않는다.
+- **영향 없음**: 코드 형태는 규칙이 가리키는 약점이 맞지만, 공격자가 입력을 정할 수 없어 피해가 발생하지 않는다.
+
+![규칙이 가리킨 줄에서 값의 출처를 추적해, 약점이 성립하지 않으면 오탐, 성립하지만 공격자 입력이 이어지지 않으면 영향 없음, 이어지면 실제 취약점으로 판정하는 순서](images/security-scan-verdict.svg)
 
 ## 도구와 버전
 
-| 도구                   | 버전             | 실행 여부                    | 명령                               |
-| ---------------------- | ---------------- | ---------------------------- | ---------------------------------- |
-| Semgrep CE             | 1.181.0          | 실행                         | 아래 1~3                           |
-| pnpm audit             | pnpm 10.34.5     | 실행                         | `pnpm audit`, `pnpm audit --prod`  |
-| OWASP Dependency-Check | 13.0.0 (Java 21) | **실패** (NVD API 키 없음)   | 아래 4                             |
-| osv-scanner            | 2.7.0            | 실행 (Dependency-Check 대신) | 아래 5                             |
-| pnpm licenses          | pnpm 10.34.5     | 실행                         | `pnpm licenses list --prod --json` |
+| 도구                                                                      | 버전             | 실행 여부                    | 명령                               |
+| ------------------------------------------------------------------------- | ---------------- | ---------------------------- | ---------------------------------- |
+| [Semgrep CE](https://semgrep.dev/docs/)                                   | 1.181.0          | 실행                         | 아래 1\~3                          |
+| [pnpm audit](https://pnpm.io/cli/audit)                                   | pnpm 10.34.5     | 실행                         | `pnpm audit`, `pnpm audit --prod`  |
+| [OWASP Dependency-Check](https://owasp.org/www-project-dependency-check/) | 13.0.0 (Java 21) | **실패** (NVD API 키 없음)   | 아래 4                             |
+| [osv-scanner](https://google.github.io/osv-scanner/)                      | 2.7.0            | 실행 (Dependency-Check 대신) | 아래 5                             |
+| [pnpm licenses](https://pnpm.io/cli/licenses)                             | pnpm 10.34.5     | 실행                         | `pnpm licenses list --prod --json` |
 
 ```sh
 # 1. 지정한 규칙 묶음 (112개 규칙)
@@ -43,9 +45,12 @@ dependency-check.sh --project MacFolio --scan pnpm-lock.yaml --scan package.json
 osv-scanner scan source --lockfile pnpm-lock.yaml
 ```
 
-### Dependency-Check를 돌리지 못한 이유
+### Dependency-Check를 실행하지 못한 이유
 
-CLI는 내려받아 실행했지만, 처음 실행할 때 NVD 데이터를 내려받는 단계에서 멈췄다.
+CLI는 내려받아 실행했지만, 처음 실행할 때 NVD 데이터를 내려받는 단계에서 종료 코드 13으로 중단되었다.
+
+<details>
+<summary>오류 출력</summary>
 
 ```
 [ERROR] Error updating the NVD Data
@@ -55,19 +60,21 @@ Caused by: io.github.jeremylong.openvulnerability.client.nvd.NvdApiException: In
 exit=13
 ```
 
-13.0.0은 NVD API 2.0을 쓰고 API 키 없이는 데이터를 받지 않는다. 키를 받으면(`--nvdApiKey`) 같은 명령으로 돌릴 수 있다. 다만 Dependency-Check는 CPE(제품 이름) 맞추기 방식이라 npm 패키지에서는 오탐이 많고, pnpm 잠금 파일은 `pnpm audit` 분석기를 거쳐 읽는다. 그래서 같은 역할을 잠금 파일의 정확한 버전으로 OSV 데이터베이스(GitHub Advisory·npm 포함)와 맞추는 osv-scanner로 대신했다.
+</details>
+
+13.0.0은 NVD API 2.0을 사용하고 API 키 없이는 데이터를 내려받지 않는다. 키를 발급받으면(`--nvdApiKey`) 같은 명령으로 실행할 수 있다. 다만 Dependency-Check는 CPE[^cpe] 이름 대조 방식이라 npm 패키지에서는 오탐이 많고, pnpm 잠금 파일은 `pnpm audit` 분석기를 거쳐 읽는다. 그래서 같은 역할을 잠금 파일의 정확한 버전으로 OSV 데이터베이스(GitHub Advisory·npm 포함)와 맞추는 osv-scanner로 대신했다.
 
 ## 범위와 제외
 
-- 대상: `apps/react`(Cloudflare Worker `apps/react/worker` 포함), `apps/api`, `packages/*`. git이 추적하는 파일만 본다.
-- 제외: `node_modules`, `dist`, `coverage`(빌드·설치 결과), `e2e`, `test`, `*.test.ts(x)`, `*.spec.ts`(시험 코드. 운영 경로에 실리지 않고, 시험용 가짜 값이 규칙에 걸려 잡음이 된다). 제외로 빠진 파일 226개.
+- 대상: `apps/react`(Cloudflare Worker `apps/react/worker` 포함), `apps/api`, `packages/*`. git이 추적하는 파일만 검사한다.
+- 제외: `node_modules`, `dist`, `coverage`(빌드·설치 결과), `e2e`, `test`, `*.test.ts(x)`, `*.spec.ts`(시험 코드. 운영 번들에 포함되지 않고, 시험용 가짜 값이 규칙에 걸려 노이즈가 된다). 제외로 빠진 파일 226개.
 - 1MB가 넘어 Semgrep이 건너뛴 파일 18개는 모두 글꼴(`.ttf`)·음악(`.mp3`)·영상(`.mp4`)이라 코드가 아니다.
 - 구문을 일부 읽지 못한 파일 1개: `apps/react/src/apps/activity/Server.tsx` 81행. JSX 글 안의 `&` 때문에 Semgrep 파서가 그 줄만 건너뛰었다. 화면 문구라 검사 대상 코드가 아니다.
-- 기존 보안 조치(#150 7. 보안)는 이 점검의 판정 근거로 쓴다: 프론트 CSP(`public/_headers`, #156), 프로젝트 iframe `sandbox`(#157), HTML 삽입 출처 고정(#159), 요청 제한 `@RateLimit`(#162), 요청 몸통 zod 검증(`@macfolio/contracts`, #160·#235·#236), 업로드 매직 바이트 확인·메타데이터 제거(#163), 오류 응답·로그 마스킹 `SafeLogger`(#167), CORS 와일드카드 범위(#182).
+- 기존 보안 조치([#150](https://github.com/hyeoniverse/MacFolio/issues/150) 7. 보안)는 이 점검의 판정 근거로 쓴다: 프론트 CSP(`public/_headers`, [#156](https://github.com/hyeoniverse/MacFolio/pull/156)), 프로젝트 iframe `sandbox`([#157](https://github.com/hyeoniverse/MacFolio/pull/157)), HTML 삽입 출처 고정([#159](https://github.com/hyeoniverse/MacFolio/pull/159)), 요청 제한 `@RateLimit`([#162](https://github.com/hyeoniverse/MacFolio/pull/162)), 요청 몸통 zod 검증(`@macfolio/contracts`, [#160](https://github.com/hyeoniverse/MacFolio/pull/160)·[#235](https://github.com/hyeoniverse/MacFolio/pull/235)·[#236](https://github.com/hyeoniverse/MacFolio/pull/236)), 업로드 매직 바이트 확인·메타데이터 제거([#163](https://github.com/hyeoniverse/MacFolio/pull/163)), 오류 응답·로그 마스킹 `SafeLogger`([#167](https://github.com/hyeoniverse/MacFolio/pull/167)), CORS 와일드카드 범위([#182](https://github.com/hyeoniverse/MacFolio/pull/182)).
 
 ## 도구별 요약
 
-| 도구                                 | 본 범위                  | 발견 | 실제 취약점 | 오탐 | 영향 없음 |
+| 도구                                 | 검사 범위                | 발견 | 실제 취약점 | 오탐 | 영향 없음 |
 | ------------------------------------ | ------------------------ | ---- | ----------- | ---- | --------- |
 | Semgrep 지정 규칙 세트 (112개 규칙)  | 파일 962개               | 0    | 0           | 0    | 0         |
 | Semgrep `--config auto` (266개 규칙) | 파일 962개               | 7    | 0           | 4    | 3         |
@@ -77,41 +84,41 @@ exit=13
 | OWASP Dependency-Check               | 실행 실패                | -    | -           | -    | -         |
 | osv-scanner                          | 잠금 파일 패키지 1,268개 | 0    | 0           | 0    | 0         |
 
-`pnpm audit`이 0건인 것은 #152에서 운영 의존성 취약점 6건을 `overrides`로 올리고, #169에서 Dependabot이 매주 올리기 때문이다. 같은 데이터(GitHub Advisory)를 보는 osv-scanner도 0건이라 두 결과가 서로 맞는다.
+`pnpm audit`이 0건인 것은 [#152](https://github.com/hyeoniverse/MacFolio/pull/152)에서 운영 의존성 취약점 6건을 `overrides`로 올리고, [#169](https://github.com/hyeoniverse/MacFolio/pull/169)에서 Dependabot이 매주 올리기 때문이다. 같은 데이터(GitHub Advisory)를 조회하는 osv-scanner도 0건이라 두 결과가 일치한다.
 
 ## 발견 항목
 
 모두 `--config auto`에서만 나왔다. 줄 번호는 점검 당시(`aa23e0a`) 기준이다. 규칙 ID의 앞부분 `javascript.lang.security.audit.`은 줄였다.
 
-| #   | 규칙 ID                     | 위치                                                            | 심각도  | 판정      | 근거                                                                                                                                                                                                                                                                              | 조치                                                                                                                                      |
-| --- | --------------------------- | --------------------------------------------------------------- | ------- | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `detect-non-literal-regexp` | `apps/api/src/common/cors.ts:18`                                | WARNING | 오탐      | 정규식 재료는 요청이 아니라 운영자가 정한 환경 변수 `CORS_ORIGINS`(`config.ts`)다. `escape()`로 메타 문자를 모두 이스케이프한 뒤 `*`만 `[a-z0-9-]+`로 바꾸므로 ReDoS가 될 반복이 없다. 요청의 `Origin`은 `test()`의 입력일 뿐이다 (#182)                                          | `nosemgrep` (`e2fad78`)                                                                                                                   |
-| 2   | `detect-non-literal-regexp` | `apps/api/src/github/activity.ts:53`                            | WARNING | 오탐      | `attribute(tag, name)`의 `name`은 코드에 적은 `for`·`data-date`·`data-level`·`id` 넷뿐이다. 바깥 값(GitHub HTML)은 정규식이 아니라 검사 대상 글로만 들어간다                                                                                                                      | `nosemgrep` (`e2fad78`)                                                                                                                   |
-| 3   | `detect-non-literal-regexp` | `apps/api/src/resources/rules.ts:42`                            | WARNING | 오탐      | `value(key)`의 `key`는 `MemTotal`·`MemAvailable` 상수다. 읽는 글은 서버 자신의 `/proc/meminfo`다                                                                                                                                                                                  | `nosemgrep` (`e2fad78`)                                                                                                                   |
-| 4   | `unsafe-formatstring`       | `apps/react/src/desktop/window/AppErrorBoundary.tsx:29`         | INFO    | 오탐      | `console.error`의 첫 인자에 넣는 `appName`은 `AppName` 유니언 타입(앱 목록 상수)이라 `%s` 같은 서식 문자가 들어갈 수 없다. 결과도 브라우저 콘솔 출력뿐이다                                                                                                                        | `nosemgrep` (`e2fad78`)                                                                                                                   |
-| 5   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/templates/repo/repo.ts:198` | WARNING | 영향 없음 | `structureRepo()`는 폴더 구조 글의 이름을 객체 키로 쓴다. 이름이 `__proto__`면 `Object.prototype`에 값이 쓰이는 것이 실제로 재현된다(시험 추가). 다만 입력은 `shared/profile/projects/*.ts`에 적어 빌드에 넣는 프로젝트 소개(`tech.structure`)뿐이고, API나 방문자가 정할 수 없다 | 방어 보완: `__proto__`·`constructor`·`prototype` 이름과 그 아래를 건너뜀, 시험 추가 (`eaccdfd`). 보완 뒤 규칙은 모양만 보므로 `nosemgrep` |
-| 6   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/templates/repo/repo.ts:206` | WARNING | 영향 없음 | 5와 같은 함수의 다른 줄                                                                                                                                                                                                                                                           | 5와 같음 (`eaccdfd`)                                                                                                                      |
-| 7   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/terminalRepo.ts:55`         | WARNING | 영향 없음 | 프로젝트 페이지 터미널의 `cd`·`cat` 경로를 따라가는 `nodeAt()`. 방문자가 경로를 입력하지만 읽기만 하므로 오염은 없다. 대신 `cd __proto__`가 빈 폴더로 들어가지던 동작 버그가 있었다                                                                                               | `Object.hasOwn`으로 자기 키만 따라가게 고침, 시험 추가 (`9708cd0`). 보완 뒤 `nosemgrep`                                                   |
+| #   | 규칙 ID                     | 위치                                                            | 심각도  | 판정      | 근거                                                                                                                                                                                                                                                                                         | 조치                                                                                                                                      |
+| --- | --------------------------- | --------------------------------------------------------------- | ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `detect-non-literal-regexp` | `apps/api/src/common/cors.ts:18`                                | WARNING | 오탐      | 정규식 재료는 요청이 아니라 운영자가 정한 환경 변수 `CORS_ORIGINS`(`config.ts`)다. `escape()`로 메타 문자를 모두 이스케이프한 뒤 `*`만 `[a-z0-9-]+`로 바꾸므로 ReDoS가 될 반복이 없다. 요청의 `Origin`은 `test()`의 입력일 뿐이다 ([#182](https://github.com/hyeoniverse/MacFolio/pull/182)) | `nosemgrep` (`e2fad78`)                                                                                                                   |
+| 2   | `detect-non-literal-regexp` | `apps/api/src/github/activity.ts:53`                            | WARNING | 오탐      | `attribute(tag, name)`의 `name`은 코드에 적은 `for`·`data-date`·`data-level`·`id` 넷뿐이다. 바깥 값(GitHub HTML)은 정규식이 아니라 검사 대상 글로만 들어간다                                                                                                                                 | `nosemgrep` (`e2fad78`)                                                                                                                   |
+| 3   | `detect-non-literal-regexp` | `apps/api/src/resources/rules.ts:42`                            | WARNING | 오탐      | `value(key)`의 `key`는 `MemTotal`·`MemAvailable` 상수다. 읽는 글은 서버 자신의 `/proc/meminfo`다                                                                                                                                                                                             | `nosemgrep` (`e2fad78`)                                                                                                                   |
+| 4   | `unsafe-formatstring`       | `apps/react/src/desktop/window/AppErrorBoundary.tsx:29`         | INFO    | 오탐      | `console.error`의 첫 인자에 넣는 `appName`은 `AppName` 유니언 타입(앱 목록 상수)이라 `%s` 같은 서식 문자가 들어갈 수 없다. 결과도 브라우저 콘솔 출력뿐이다                                                                                                                                   | `nosemgrep` (`e2fad78`)                                                                                                                   |
+| 5   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/templates/repo/repo.ts:198` | WARNING | 영향 없음 | `structureRepo()`는 폴더 구조 글의 이름을 객체 키로 쓴다. 이름이 `__proto__`면 `Object.prototype`에 값이 쓰이는 것이 실제로 재현된다(시험 추가). 다만 입력은 `shared/profile/projects/*.ts`에 적어 빌드에 넣는 프로젝트 소개(`tech.structure`)뿐이고, API나 방문자가 정할 수 없다            | 방어 보완: `__proto__`·`constructor`·`prototype` 이름과 그 아래를 건너뜀, 시험 추가 (`eaccdfd`). 보완 뒤 규칙은 모양만 보므로 `nosemgrep` |
+| 6   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/templates/repo/repo.ts:206` | WARNING | 영향 없음 | 5와 같은 함수의 다른 줄                                                                                                                                                                                                                                                                      | 5와 같음 (`eaccdfd`)                                                                                                                      |
+| 7   | `prototype-pollution-loop`  | `apps/react/src/apps/safari/project/terminalRepo.ts:55`         | WARNING | 영향 없음 | 프로젝트 페이지 터미널의 `cd`·`cat` 경로를 따라가는 `nodeAt()`. 방문자가 경로를 입력하지만 읽기만 하므로 오염은 없다. 대신 `cd __proto__`가 빈 폴더로 들어가지던 동작 버그가 있었다                                                                                                          | `Object.hasOwn`으로 자기 키만 따라가게 고침, 시험 추가 (`9708cd0`). 보완 뒤 `nosemgrep`                                                   |
 
-실제 취약점은 0건이다. 5~7은 코드 모양은 규칙이 말하는 약점이 맞아 수정했지만, 공격자가 닿는 입력이 없거나(5·6) 쓰기가 없어(7) 판정은 "영향 없음"으로 한다.
+실제 취약점은 0건이다. 5\~7은 코드 모양은 규칙이 말하는 약점이 맞아 수정했지만, 공격자가 닿는 입력이 없거나(5·6) 쓰기가 없어(7) 판정은 "영향 없음"으로 한다.
 
-### 규칙이 잡지 않은 곳
+### 규칙이 검출하지 않은 곳
 
-규칙 결과가 0건이라고 위험한 곳이 없다는 뜻은 아니다. HTML을 직접 넣는 두 곳은 어느 규칙 세트에서도 검출되지 않아 직접 확인했다.
+규칙 결과가 0건이라고 위험한 곳이 없다는 뜻은 아니다. HTML을 직접 삽입하는 두 곳은 어느 규칙 세트에서도 검출되지 않아 코드를 직접 확인했다.
 
-- `apps/react/src/apps/finder/DocView.tsx:37` `dangerouslySetInnerHTML`: Mermaid가 `securityLevel: 'strict'`로 렌더링한 SVG만 넣고, 그 출처를 #159에서 주석과 시험으로 고정했다. 프론트 CSP(#156)가 인라인 스크립트도 막는다.
+- `apps/react/src/apps/finder/DocView.tsx:37` `dangerouslySetInnerHTML`: Mermaid가 `securityLevel: 'strict'`로 렌더링한 SVG만 넣고, 그 출처를 [#159](https://github.com/hyeoniverse/MacFolio/pull/159)에서 주석과 시험으로 고정했다. 프론트 CSP([#156](https://github.com/hyeoniverse/MacFolio/pull/156))가 인라인 스크립트도 막는다.
 - `apps/react/src/apps/memo/writer/blocks.ts:109` `innerHTML`: 코드에 적은 아이콘 태그 상수다.
 
 ### 억제 방식
 
-오탐은 규칙 전체를 끄거나 파일을 `.semgrepignore`에 넣지 않고, 걸린 줄 바로 위에 규칙 ID와 사유를 함께 적는다.
+오탐은 규칙 전체를 끄거나 파일을 `.semgrepignore`에 넣지 않고, 검출된 줄 바로 위에 규칙 ID와 사유를 함께 적는다([Semgrep: Ignore findings](https://semgrep.dev/docs/ignoring-files-folders-code)).
 
 ```ts
 // nosemgrep: javascript.lang.security.audit.detect-non-literal-regexp.detect-non-literal-regexp -- key는 코드에 적은 MemTotal·MemAvailable뿐이다
 const value = (key: string) => Number(meminfo.match(new RegExp(`^${key}:\\s+(\\d+)`, 'm'))?.[1]);
 ```
 
-이렇게 하면 같은 파일에 새로 생기는 다른 위반은 그대로 잡힌다. 억제한 곳은 `grep -rn nosemgrep apps packages`로 모두 찾을 수 있다 (6개 파일 7곳).
+이렇게 하면 같은 파일에 새로 생기는 다른 위반은 그대로 검출된다. 억제한 곳은 `grep -rn nosemgrep apps packages`로 모두 찾을 수 있다 (6개 파일 7곳).
 
 ## 라이선스
 
@@ -142,16 +149,16 @@ const value = (key: string) => Number(meminfo.match(new RegExp(`^${key}:\\s+(\\d
 
 `.github/workflows/sast.yml`에 `semgrep` 작업을 더했다 (`5297ace`).
 
-- 언제: PR, main push, 월요일 09:20 KST, 손으로 실행. `secrets` 워크플로와 같은 방식이다.
-- 무엇: 위의 지정 규칙 세트 네 개(`p/owasp-top-ten`, `p/typescript`, `p/nodejs`, `p/javascript`). `--config auto`는 저장소 정보를 Semgrep에 보내야 하고(`--metrics=off`와 함께 쓸 수 없다) 규칙 목록이 실행마다 달라질 수 있어 CI에는 쓰지 않는다.
-- 실패 기준: **ERROR만**. 이번에 나온 WARNING·INFO 7건은 모두 값의 출처를 모르는 패턴 규칙이었고, 판정하려면 사람이 코드 경로를 따라가야 했다. 이것까지 막으면 PR마다 `nosemgrep`을 먼저 다는 습관이 생겨 억제가 의미를 잃는다. WARNING 이하는 실행 로그의 경고 주석과 작업 요약에 건수로 남긴다.
-- 고정: 액션은 기존처럼 커밋 SHA로(#169), Semgrep은 `pipx install semgrep==1.181.0`으로 버전을 고정한다.
-- 권한: `contents: read`만. SARIF는 GitHub Code scanning에 올리려면 `security-events: write`와 저장소 설정이 필요해, 아티팩트(`semgrep-sarif`, 14일)로 올린다.
-- 이름: 워크플로 `sast`, 작업 `semgrep`. `ci`의 `check`·`e2e`, `conventions`의 `conventions`, `secrets`의 `secrets`와 겹치지 않는다. 브랜치 조건을 따로 두지 않아 `conventions`의 브랜치 이름 규칙과 부딪히지 않는다.
+- 실행 시점: PR, main push, 월요일 09:20 KST, 수동 실행. `secrets` 워크플로와 같은 방식이다.
+- 규칙: 위의 지정 규칙 세트 네 개(`p/owasp-top-ten`, `p/typescript`, `p/nodejs`, `p/javascript`). `--config auto`는 저장소 정보를 Semgrep에 보내야 하고(`--metrics=off`와 함께 쓸 수 없다) 규칙 목록이 실행마다 달라질 수 있어 CI에는 쓰지 않는다.
+- 실패 기준: **ERROR만**. 이번에 나온 WARNING·INFO 7건은 모두 값의 출처를 모르는 패턴 규칙이었고, 판정하려면 사람이 코드 경로를 따라가야 했다. 이것까지 차단하면 PR마다 `nosemgrep`을 먼저 추가하는 관행이 생겨 억제 주석이 의미를 잃는다. WARNING 이하는 실행 로그의 경고 주석과 작업 요약에 건수로 남긴다.
+- 버전 고정: 액션은 기존처럼 커밋 SHA로([#169](https://github.com/hyeoniverse/MacFolio/pull/169)), Semgrep은 `pipx install semgrep==1.181.0`으로 버전을 고정한다.
+- 권한: `contents: read`만. SARIF는 [GitHub Code scanning](https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/uploading-a-sarif-file-to-github)에 업로드하려면 `security-events: write`와 저장소 설정이 필요해, 아티팩트(`semgrep-sarif`, 14일)로 업로드한다.
+- 이름: 워크플로 `sast`, 작업 `semgrep`. `ci`의 `check`·`e2e`, `conventions`의 `conventions`, `secrets`의 `secrets`와 겹치지 않는다. 브랜치 조건을 따로 두지 않아 `conventions`의 브랜치 이름 규칙과 충돌하지 않는다.
 
-SCA는 이미 `ci.yml`의 `pnpm audit --prod --audit-level=high`가 맡고 있어 더하지 않는다. osv-scanner는 같은 데이터에서 같은 결과를 냈고, Dependency-Check는 NVD API 키를 Secrets에 넣어야 하고 처음 NVD 데이터 전체를 내려받아야 해 PR마다 돌리기에 맞지 않는다.
+SCA는 이미 `ci.yml`의 `pnpm audit --prod --audit-level=high`가 담당하므로 추가하지 않는다. osv-scanner는 같은 데이터에서 같은 결과를 냈고, Dependency-Check는 NVD API 키를 Secrets에 저장해야 하고 처음 실행할 때 NVD 데이터 전체를 내려받아야 해 PR마다 실행하기에 적합하지 않다.
 
-## 다시 돌리기
+## 다시 실행하기
 
 ```sh
 pip install semgrep==1.181.0     # 또는 pipx install semgrep==1.181.0
@@ -164,7 +171,7 @@ semgrep scan --config auto $EXCLUDE apps/react apps/api packages
 pnpm audit && pnpm audit --prod
 pnpm licenses list --prod
 
-# osv-scanner: https://github.com/google/osv-scanner/releases 에서 받는다
+# osv-scanner: https://github.com/google/osv-scanner/releases 에서 내려받는다
 osv-scanner scan source --lockfile pnpm-lock.yaml
 
 # Dependency-Check: NVD API 키(https://nvd.nist.gov/developers/request-an-api-key)가 있어야 한다
@@ -172,3 +179,18 @@ dependency-check.sh --project MacFolio --scan pnpm-lock.yaml --nvdApiKey "$NVD_A
 ```
 
 새 발견 항목이 나오면 이 문서의 표에 한 줄을 더하고, 판정과 근거(값이 어디서 오고 무엇이 막는지)를 함께 적는다. 결과 원본(JSON·SARIF)은 저장소에 넣지 않는다.
+
+## 관련 글
+
+- [Semgrep과 SCA 도구로 MacFolio 점검하기 - 7건 중 실제 취약점 0](https://macfolio.hyeoniverse.com/memo/security-scan)
+- [하위 의존성 취약점 6건을 overrides로 고치기](https://macfolio.hyeoniverse.com/memo/dependency-vulnerabilities)
+- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/pin-actions-dependabot)
+- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/secret-scanning)
+- [글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기](https://macfolio.hyeoniverse.com/memo/markdown-xss-tests)
+- [리팩터링 7단계 — 보안](https://macfolio.hyeoniverse.com/memo/refactor-step7-security)
+
+[^sast]: SAST(Static Application Security Testing): 코드를 실행하지 않고 소스 코드의 패턴과 데이터 흐름을 분석해 취약한 코드를 찾는 방식이다.
+
+[^sca]: SCA(Software Composition Analysis): 잠금 파일의 의존성 이름과 버전을 취약점 데이터베이스와 대조하고 라이선스를 확인하는 방식이다.
+
+[^cpe]: CPE(Common Platform Enumeration): NVD가 제품을 식별하는 이름 체계(`cpe:2.3:a:<제조사>:<제품>:<버전>`)다. npm 패키지 이름과 CPE 이름이 정확히 대응하지 않아 다른 제품으로 잘못 대조되는 경우가 생긴다.

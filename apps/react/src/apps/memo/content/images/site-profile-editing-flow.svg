@@ -16,8 +16,8 @@
 <rect x="252" y="70" width="180" height="96" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
 <text x="342.0" y="98.5" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">SiteService</text>
 <text x="342.0" y="114.0" font-size="10.5" fill="#374151" text-anchor="middle">GET /site (누구나)</text>
-<text x="342.0" y="129.5" font-size="10.5" fill="#374151" text-anchor="middle">서비스가 메모리에 들고</text>
-<text x="342.0" y="145.0" font-size="10.5" fill="#374151" text-anchor="middle">저장·삭제 때 비움</text>
+<text x="342.0" y="129.5" font-size="10.5" fill="#374151" text-anchor="middle">서비스 메모리에 캐시</text>
+<text x="342.0" y="145.0" font-size="10.5" fill="#374151" text-anchor="middle">저장·삭제 시 캐시 비움</text>
 <rect x="482" y="70" width="150" height="96" rx="8" fill="#ffffff" stroke="#4f46e5" stroke-width="1.5"/>
 <text x="557.0" y="98.5" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">프로필 저장소</text>
 <text x="557.0" y="114.0" font-size="10.5" fill="#374151" text-anchor="middle">createStore</text>
@@ -39,6 +39,6 @@
 <rect x="252" y="196" width="380" height="70" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
 <text x="442.0" y="219.3" font-size="11.5" fill="#4f46e5" font-weight="600" text-anchor="middle">SiteService.ownerName()</text>
 <text x="442.0" y="234.8" font-size="10.5" fill="#374151" text-anchor="middle">관리자 댓글 이름, 메시지 고정 항목 제목</text>
-<text x="442.0" y="250.3" font-size="10.5" fill="#374151" text-anchor="middle">하드코딩 &#x27;김정현&#x27; 대신 저장한 이름, 없으면 상수</text>
+<text x="442.0" y="250.3" font-size="10.5" fill="#374151" text-anchor="middle">하드코딩한 &#x27;김정현&#x27; 대신 저장한 이름, 없으면 상수</text>
 <text x="32" y="300" font-size="10.5" fill="#6b7280">모듈을 읽을 때 계산하던 상수(OWNER_ADDRESS, PINNED_MESSAGES, INBOX)는 ownerAddress(profile)·pinnedMessages()·inboxOf(profile) 함수로 바꿨다.</text>
 </svg>
