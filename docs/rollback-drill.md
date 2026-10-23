@@ -102,7 +102,7 @@ watch -n 3 docker compose ps api       # 다른 창에서
 
 ### 5. 결과 확인
 
-**Actions**: 실행이 빨간 X로 끝난다 (전체 약 2~4분).
+**Actions**: 실행이 빨간 X로 끝난다 (전체 약 2\~4분).
 
 - **서버에서 배포** 단계가 실패하고, 마지막 줄이 `Error: Process completed with exit code 1.`이다
 - **바깥에서 버전 확인** 단계는 건너뛴다 (회색)
