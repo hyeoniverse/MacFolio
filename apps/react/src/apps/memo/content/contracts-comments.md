@@ -2,22 +2,22 @@
 title: 응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod
 date: 2026-10-11
 category: 개발기/MacFolio/인프라
-summary: 댓글 모양을 서버(CommentView)와 화면(Comment)이 각자 적고 있어서 서버가 필드를 바꿔도 화면은 몰랐다. packages/contracts에 zod 스키마를 두고 서버는 검증에, 화면은 타입에 같이 쓰게 했다. 첫 사례 댓글·좋아요와, 그 뒤 열두 도메인으로 번진 과정.
+summary: 댓글 모양을 서버(CommentView)와 화면(Comment)이 각자 적고 있어서 서버가 필드를 바꿔도 화면은 알 수 없었다. packages/contracts에 zod 스키마를 두고 서버는 검증에, 화면은 타입에 함께 쓰게 했다. 첫 사례인 댓글·좋아요와, 이후 열두 도메인으로 확장된 과정.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계 "타입과 데이터 구조"의 첫 항목. 3단계에서 서버 요청을 [클라이언트 하나](/memo/shared-api-client)로 모았으니, 이제 그 요청과 응답의 **모양**을 한 곳에 둘 차례다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계 "타입과 데이터 구조"의 첫 항목이다. 3단계에서 서버 요청을 [공통 API 클라이언트](/memo/shared-api-client) 하나로 모았으므로, 다음 순서는 그 요청과 응답의 **모양**을 한 곳에 정의하는 것이다.
 
 ## 같은 모양을 두 번 적고 있었다
 
-댓글 하나의 모양은 서버 `comments.service.ts`의 `CommentView`와 화면 `commentsApi.ts`의 `Comment`에 각각 적혀 있었다. 필드 열 개가 글자 그대로 같다. 서버가 `likes` 필드를 더했을 때 화면 쪽을 같이 고쳤는지는 사람이 기억해야 했다. 틀려도 타입 검사는 아무 말이 없다. 두 파일이 서로를 모르기 때문이다.
+댓글 하나의 모양은 서버 `comments.service.ts`의 `CommentView`와 화면 `commentsApi.ts`의 `Comment`에 각각 정의되어 있었다. 필드 열 개가 글자 그대로 같다. 서버에 `likes` 필드를 추가했을 때 화면 쪽도 수정했는지는 사람이 기억해야 했다. 두 파일은 서로를 import하지 않으므로, 둘이 어긋나도 타입 검사는 오류를 내지 않는다.
 
-검증도 마찬가지다. "내용은 1~500자"라는 규칙과 "내용을 입력해주세요."라는 문구는 서버 `rules.ts`의 `if`문 안에만 있다. 화면은 그 규칙을 모른 채 보내고, 400이 오면 서버가 준 문구를 그대로 보여 준다. 그래서 글자 수 안내 같은 것을 화면에서 하려면 `500`을 또 적어야 한다.
+검증도 마찬가지다. "내용은 1~500자"라는 규칙과 "내용을 입력해주세요."라는 문구는 서버 `rules.ts`의 `if`문 안에만 있었다. 화면은 규칙을 모른 채 요청을 보내고, 400 응답이 오면 서버가 보낸 문구를 그대로 표시한다. 화면에서 글자 수를 안내하려면 `500`을 화면 코드에 한 번 더 적어야 한다.
 
-![전과 후](./images/contracts-comments-shape.svg '전: 서버와 화면이 각자, 후: 스키마 하나에서 둘 다')
+![전: 서버 CommentView와 화면 Comment가 각자 정의. 후: contracts의 스키마 하나를 서버는 검증에, 화면은 타입에 사용](./images/contracts-comments-shape.svg '전: 서버와 화면이 각자, 후: 스키마 하나에서 둘 다')
 
 ## contracts 패키지
 
-`packages/contracts`(`@macfolio/contracts`)를 만들고 zod 스키마를 뒀다. 스키마는 값이면서 타입이다.
+`packages/contracts`(`@macfolio/contracts`)를 만들고 [zod](https://zod.dev/) 스키마를 정의했다. zod 스키마는 실행 시에 값을 검사하는 객체이면서, `z.infer`로 TypeScript 타입도 만들어 낸다. 그래서 스키마와 타입에 같은 이름을 붙인다.
 
 ```ts
 // packages/contracts/src/comments.ts
@@ -35,62 +35,85 @@ export const Comment = z.object({ id: z.string(), name: z.string(), ipPrefix: z.
 export type Comment = z.infer<typeof Comment>;
 ```
 
-**서버**는 `parse(CommentInput, body)`로 검사한다. 돌려주는 모양은 서버가 이미 쓰던 `{ value } | { errors: string[] }` 그대로라, 서비스의 `if ('errors' in parsed) throw new BadRequestException(parsed.errors)`는 한 글자도 안 바뀌었다. `rules.ts`의 `parseBody`는 열 줄짜리 `if`문에서 한 줄이 됐다.
+| 사용처 | 가져오는 방법                                               | 쓰는 것                     |
+| ------ | ----------------------------------------------------------- | --------------------------- |
+| 서버   | `import { CommentInput, parse } from '@macfolio/contracts'` | 스키마(값)로 요청 본문 검사 |
+| 화면   | `import type { Comment } from '@macfolio/contracts'`        | 타입만                      |
 
-**화면**은 `import type { Comment } from '@macfolio/contracts'`로 타입만 가져온다. `type`만 가져오므로 번들에 zod가 들어가지 않는다(0바이트). 손으로 적은 `interface Comment`·`Likes`·`PostCounts`는 지웠다.
+**서버**는 `parse(CommentInput, body)`로 검사한다. 반환 모양은 서버가 이미 쓰던 `{ value } | { errors: string[] }` 그대로라, 서비스의 `if ('errors' in parsed) throw new BadRequestException(parsed.errors)`는 수정하지 않았다. `rules.ts`의 `parseBody`는 8줄짜리 `if`문에서 1줄이 됐다.
 
-패키지 구조는 `desktop-core`와 같다. 화면은 `source` 조건으로 `src`를 바로 읽고, 서버는 빌드한 `dist`를 쓴다. Dockerfile은 `desktop-core`와 `contracts`를 함께 빌드한다.
+**화면**은 [`import type`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export)으로 타입만 가져온다. `import type`은 컴파일 후 제거되므로 화면 번들에 zod가 포함되지 않는다(추가 크기 0바이트). 직접 적어 두었던 `interface Comment`·`Likes`·`PostCounts`는 삭제했다.
 
-## 고른 것과 버린 것
+패키지 구조는 `desktop-core`와 같다. `package.json`의 [conditional exports](https://nodejs.org/api/packages.html#conditional-exports)에 `source` 조건을 두어, 화면(Vite)은 `src`를 직접 읽고 서버는 빌드한 `dist`를 읽는다. Dockerfile은 `desktop-core`와 `contracts`를 함께 빌드한다.
+
+## 검토한 방법
 
 | 방법                                | 서버 검증  | 화면 타입 | 문제                                                   |
 | ----------------------------------- | ---------- | --------- | ------------------------------------------------------ |
-| 지금처럼 각자 적기                  | `if`문     | 손으로    | 둘이 어긋나도 아무도 모른다                            |
-| `class-validator` DTO를 화면도 쓰기 | 데코레이터 | 클래스    | 데코레이터와 `reflect-metadata`가 화면 번들에 들어간다 |
-| 타입만 공유 패키지                  | `if`문     | 공유      | 규칙(500자)과 문구는 여전히 서버에만 있다              |
-| zod 스키마 패키지 (고른 방법)       | `parse`    | `z.infer` | 서버는 zod를 런타임으로 쓴다                           |
+| 기존처럼 각자 정의                  | `if`문     | 직접 작성 | 둘이 어긋나도 감지할 수 없다                           |
+| `class-validator` DTO를 화면도 사용 | 데코레이터 | 클래스    | 데코레이터와 `reflect-metadata`가 화면 번들에 들어간다 |
+| 타입만 공유하는 패키지              | `if`문     | 공유      | 규칙(500자)과 문구는 여전히 서버에만 있다              |
+| zod 스키마 패키지 (선택한 방법)     | `parse`    | `z.infer` | 서버가 zod를 런타임 의존성으로 쓴다                    |
 
-- **zod 4**. 스키마에 문구를 한국어로 적을 수 있고(`.min(1, '…')`), 타입이 추론되고, 서버와 화면이 같은 런타임 없이도 쓸 수 있다. NestJS의 `class-validator`는 데코레이터라 화면에서 쓸 수 없어 고르지 않았다.
-- **`requestBody()`**: 몸통이 `null`이나 문자열이면 zod는 "Invalid input: expected object"를 내는데, 사용자가 볼 문구가 아니다. 객체가 아니면 빈 객체로 보고 각 필드의 문구를 내게 한 작은 도우미다. 전에 `parseBody(null)`이 "내용을 입력해주세요."를 돌려주던 동작이 그대로다.
-- **응답 스키마도 둔다**. 지금 화면은 응답을 검증하지 않고 타입만 쓴다. 하지만 스키마가 있으니 나중에 `parse(Comment, json)`으로 서버 응답을 확인하는 것이 한 줄이다.
-- **한 도메인만**. 댓글·좋아요(요청 1, 응답 3)만 옮겼다. 나머지(글, 메시지, 메일, 배경화면, 파일, 분석 …)는 같은 방식으로 도메인마다 한 PR씩 간다. 처음부터 다 옮기면 PR이 커서 읽을 수 없다.
+- **zod 4**. 스키마에 오류 문구를 한국어로 적을 수 있고(`.min(1, '…')`), 타입이 추론되며, 화면은 타입만 가져다 쓸 수 있다. NestJS의 [`class-validator`](https://docs.nestjs.com/techniques/validation)는 클래스 데코레이터 기반이라 화면 번들에 넣기 부적합해 선택하지 않았다.
+- **`requestBody()`**: 요청 본문이 `null`이나 문자열이면 zod는 "Invalid input: expected object"를 반환한다. 사용자에게 보여 줄 문구가 아니다. `requestBody()`는 객체가 아닌 본문을 빈 객체로 간주해 각 필드의 문구를 내게 하는 도우미다. 이전에 `parseBody(null)`이 "내용을 입력해주세요."를 반환하던 동작이 유지된다.
+- **응답 스키마도 정의한다**. 현재 화면은 응답을 검증하지 않고 타입만 쓴다. 스키마가 있으므로 필요해지면 `parse(Comment, json)` 한 줄로 서버 응답을 검증할 수 있다.
+- **한 도메인만 옮긴다**. 이 PR에서는 댓글·좋아요(요청 스키마 1개, 응답 스키마 3개)만 옮겼다. 나머지(글, 메시지, 메일, 배경화면, 파일, 분석 …)는 도메인마다 PR 하나씩 같은 방식으로 진행했다. 처음부터 전부 옮기면 PR이 너무 커서 검토하기 어렵다.
 
-## 숫자
+## 수치
 
 | 항목                    | 전   | 후                              |
 | ----------------------- | ---- | ------------------------------- |
 | 댓글 모양이 적힌 곳     | 2    | 1                               |
 | `parseBody` 줄 수       | 8    | 1                               |
 | 검증 문구가 적힌 곳     | 서버 | contracts (화면도 읽을 수 있다) |
-| 화면 번들에 더해진 크기 |      | 0 B (타입만)                    |
+| 화면 번들에 추가된 크기 | -    | 0 B (타입만)                    |
 
-다음은 같은 방식으로 글(posts)·메시지·메일을 옮기고, 그다음 `shared/profile.ts`를 나눈다.
-
-이 PR([#200](https://github.com/hyeoniverse/MacFolio/pull/200))에서 코드가 바뀐 곳은 서버 셋(`comments.service.ts`, `comments/rules.ts`, `likes.service.ts`)과 화면 둘(`commentsApi.ts`, `likesApi.ts`)이다. 다섯 파일에서 줄은 61줄 줄고 19줄 늘었다. 나머지는 새 패키지(스키마 43줄, 도우미 19줄, 시험 65줄)와 빌드 설정이다.
+이 PR([#200](https://github.com/hyeoniverse/MacFolio/pull/200))에서 코드가 바뀐 파일은 서버 3개(`comments.service.ts`, `comments/rules.ts`, `likes.service.ts`)와 화면 2개(`commentsApi.ts`, `likesApi.ts`)다. 이 다섯 파일에서 61줄이 삭제되고 19줄이 추가되었다. 나머지는 새 패키지(스키마 43줄, 도우미 19줄, 시험 65줄)와 빌드 설정이다.
 
 ## 확인
 
-- `packages/contracts/src/comments.test.ts`(4개): **앞뒤 공백을 다듬고, 모르는 필드(이름·비밀번호)는 버린다**, **비었거나 500자를 넘으면 이유를 알린다**, **사람 확인 토큰은 있으면 그대로**, **서버가 주는 댓글 모양을 받아들이고, 해시 같은 여분 필드는 거른다**
-- `packages/contracts/src/parse.test.ts`(2개): **실패하면 스키마에 적은 문구를 순서대로, 같은 문구는 한 번만**
-- 서버 e2e(`apps/api/test/comments.e2e.test.ts`)는 고치지 않았다. 400 문구가 글자 하나까지 같다는 뜻이다.
+- `packages/contracts/src/comments.test.ts`(시험 4개): **앞뒤 공백을 다듬고, 모르는 필드(이름·비밀번호)는 버린다**, **비었거나 500자를 넘으면 이유를 알린다**, **사람 확인 토큰은 있으면 그대로**, **서버가 주는 댓글 모양을 받아들이고, 해시 같은 여분 필드는 거른다**
+- `packages/contracts/src/parse.test.ts`(시험 2개): **실패하면 스키마에 적은 문구를 순서대로, 같은 문구는 한 번만**
+- 서버 e2e(`apps/api/test/comments.e2e.test.ts`)는 수정하지 않고 통과했다. 400 응답 문구가 이전과 한 글자도 다르지 않다는 뜻이다.
 
-## 그 뒤
+## 이후 진행
 
-같은 날 일곱 PR이 더 이어졌다. 그 뒤로는 새 기능도 처음부터 contracts에 스키마를 두고 시작했다.
+같은 날 PR 일곱 개가 더 이어졌다. 그 뒤로는 새 기능도 처음부터 contracts에 스키마를 정의하고 시작했다.
 
-![contracts에 들어간 순서](./images/contracts-comments-timeline.svg '첫날 여덟 PR, 그 뒤 네 도메인')
+![#200부터 #207까지 첫날 여덟 PR, 이후 #235·#236·#255·#263 네 도메인이 contracts에 추가된 순서](./images/contracts-comments-timeline.svg '첫날 여덟 PR, 그 뒤 네 도메인')
 
-지금 `packages/contracts/src`에는 시험을 뺀 파일이 14개다. `CONTRIBUTING.md`에도 "API 요청·응답의 모양은 contracts의 zod 스키마에 둔다"를 규칙으로 적었다.
+<details>
+<summary>도메인별 PR과 글 (12개)</summary>
+
+| PR                                                       | 스키마 파일     | 도메인                            | 글                                         |
+| -------------------------------------------------------- | --------------- | --------------------------------- | ------------------------------------------ |
+| [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | `comments.ts`   | 댓글·좋아요                       | 이 글                                      |
+| [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | `posts.ts`      | 블로그 글                         | [글 도메인](/memo/contracts-posts)         |
+| [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | `messages.ts`   | 메시지                            | [메시지 도메인](/memo/contracts-messages)  |
+| [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | `contact.ts`    | 연락 메일                         | [연락 메일](/memo/contracts-contact)       |
+| [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | `wallpapers.ts` | 배경화면                          | [배경화면](/memo/contracts-wallpapers)     |
+| [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | `files.ts`      | 올린 파일                         | [파일](/memo/contracts-files)              |
+| [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | `analytics.ts`  | 분석 이벤트                       | [분석](/memo/contracts-analytics)          |
+| [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | `site.ts`       | 사이트 프로필                     | [사이트 프로필](/memo/contracts-site)      |
+| [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | `settings.ts`   | 사진 캡션·사람 확인·GitHub 저장소 | [설정 입력 검사](/memo/settings-schemas)   |
+| [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | `demos.ts`      | 데모 입력                         | [데모 입력 검사](/memo/demo-input-schemas) |
+| [#255](https://github.com/hyeoniverse/MacFolio/pull/255) | `documents.ts`  | 문서 파일 (새 기능)               | [Finder 문서 파일](/memo/finder-files)     |
+| [#263](https://github.com/hyeoniverse/MacFolio/pull/263) | `finder.ts`     | 폴더 구조 (새 기능)               | [Finder 폴더](/memo/finder-filesystem)     |
+
+</details>
+
+현재 `packages/contracts/src`에는 시험을 제외한 파일이 14개(도메인 스키마 12개, `parse.ts`, `index.ts`)다. `CONTRIBUTING.md`에도 "API 요청·응답의 모양은 `packages/contracts`의 zod 스키마에 정의한다"를 규칙으로 적었다.
 
 ## 남은 것, 배운 것
 
-- 화면은 지금도 응답을 실행 시에 검사하지 않는다. `parse(Comment, json)` 한 줄이면 되지만, 그러면 화면 번들에 zod가 들어간다. 서버와 화면이 같은 저장소에서 같이 배포되니 타입만으로 충분하다고 봤다.
-- 첫 PR을 한 도메인으로 작게 자른 것이 나머지 일곱 PR을 하루에 끝낼 수 있게 했다. 첫 PR에서 패키지 구조, Dockerfile, CI, `requestBody()`·`parse()` 도우미가 정해졌고, 뒤의 PR은 스키마만 옮기면 됐다.
-- 스키마가 "값이면서 타입"이라는 점이 핵심이었다. 타입만 공유하면 규칙이 서버에 남고, 규칙만 공유하면 타입이 따로 논다.
+- 화면은 지금도 응답을 실행 시에 검증하지 않는다. `parse(Comment, json)` 한 줄이면 되지만, 그러면 화면 번들에 zod가 포함된다. 서버와 화면이 같은 저장소에서 함께 배포되므로 타입 검사만으로 충분하다고 판단했다.
+- 첫 PR을 한 도메인으로 작게 나눈 덕분에 나머지 일곱 PR을 하루에 마칠 수 있었다. 패키지 구조, Dockerfile, CI, `requestBody()`·`parse()` 도우미가 첫 PR에서 정해졌고, 이후 PR은 스키마만 옮기면 됐다.
+- 핵심은 스키마가 "값이면서 타입"이라는 점이다. 타입만 공유하면 규칙이 서버에 남고, 규칙만 공유하면 타입이 따로 관리된다.
 
 ## 따라 해 보기
 
-계약을 바꿀 때는 `packages/contracts`를 먼저 고치고, 서버와 화면이 둘 다 따라오는지 본다.
+계약을 바꿀 때는 `packages/contracts`를 먼저 수정하고, 서버와 화면이 모두 새 모양을 따르는지 확인한다.
 
 ```bash
 pnpm --filter @macfolio/contracts test          # 스키마 시험
@@ -99,8 +122,14 @@ pnpm typecheck                                  # 화면·서버가 새 모양�
 pnpm --filter @macfolio/api test:e2e test/comments.e2e.test.ts
 ```
 
-필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 같이 깨진다. 이게 이 작업으로 얻은 것이다. 확인한 뒤 되돌린다. 스키마는 [Zod](https://zod.dev/)로 쓰고, HTTP 경계 시험을 돌리려면 먼저 `pnpm --filter @macfolio/api db:up`으로 DB를 띄운다.
+`Comment`의 필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 동시에 실패한다. 계약을 바꾸면 양쪽에서 컴파일 오류로 드러나는 것이 이 작업의 효과다. 확인한 뒤에는 변경을 되돌린다. HTTP 경계 시험(e2e)을 실행하려면 먼저 `pnpm --filter @macfolio/api db:up`으로 로컬 PostgreSQL을 실행한다.
 
-관련 글: [공통 API 클라이언트](/memo/shared-api-client), [분석 계약](/memo/contracts-analytics), [연락 메일 계약](/memo/contracts-contact), [글 계약](/memo/contracts-posts)
+## 관련 글
+
+- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](/memo/shared-api-client)
+- [같은 뜻, 다른 문구 — 연락 메일의 검사 규칙을 하나로](/memo/contracts-contact)
+- [타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기](/memo/contracts-posts)
+- [보내는 쪽과 받는 쪽 — 분석 이벤트의 모양을 하나로](/memo/contracts-analytics)
+- [이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리](/memo/contracts-site)
 
 #MacFolio #리팩터링 #zod #TypeScript
