@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 366" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>포인터 캡처 시각과 dblclick을 받는 요소</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-sky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0369a1"/></marker><marker id="a-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6d28d9"/></marker></defs>
+<rect width="860" height="366" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">포인터 캡처 시각과 dblclick을 받는 요소</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">setPointerCapture를 호출한 요소가 이후 click·dblclick의 대상이 된다</text>
+<text x="220" y="92" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">수정 전: pointerdown 시각에 캡처</text>
+<rect x="40" y="110" width="360" height="230" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="56" y="132" font-size="11" fill="#b91c1c" font-weight="700" text-anchor="start">아이콘 레이어 (캡처한 요소)</text>
+<rect x="120" y="160" width="200" height="60" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="220.0" y="185.5" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">이력서 폴더 아이콘</text>
+<text x="220.0" y="202.5" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">onDoubleClick</text>
+<line x1="220" y1="250" x2="220" y2="222" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<text x="220" y="270" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">pointerdown → setPointerCapture(레이어)</text>
+<path d="M 330 300 C 370 300 370 140 330 132" fill="none" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#a-red)"/>
+<text x="220" y="300" font-size="11" fill="#b91c1c" font-weight="700" text-anchor="middle">dblclick → 레이어로 전달</text>
+<text x="220" y="322" font-size="11" fill="#b91c1c" text-anchor="middle">아이콘의 onDoubleClick 호출 안 됨</text>
+<text x="640" y="92" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">수정 후: 4px 넘게 움직인 시각에 캡처</text>
+<rect x="460" y="110" width="360" height="230" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="476" y="132" font-size="11" fill="#15803d" font-weight="700" text-anchor="start">아이콘 레이어</text>
+<rect x="540" y="160" width="200" height="60" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="640.0" y="185.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">이력서 폴더 아이콘</text>
+<text x="640.0" y="202.5" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">onDoubleClick</text>
+<text x="640" y="252" font-size="11" fill="#374151" text-anchor="middle">이동 4px 이하: 캡처하지 않음</text>
+<text x="640" y="272" font-size="11" fill="#15803d" font-weight="700" text-anchor="middle">dblclick → 아이콘에 전달 → 폴더 열기</text>
+<text x="640" y="302" font-size="11" fill="#374151" text-anchor="middle">이동 4px 초과: 끌기 시작</text>
+<text x="640" y="322" font-size="11" fill="#374151" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">→ 이 시각에 setPointerCapture</text>
+</svg>

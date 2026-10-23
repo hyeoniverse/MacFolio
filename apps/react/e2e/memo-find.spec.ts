@@ -1,7 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
-import { readdirSync, readFileSync } from 'node:fs';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);
@@ -11,24 +10,25 @@ async function openMemo(page: Page) {
 	return memo;
 }
 
-/** 표가 없는 글 (표 조건으로 거르면 빠져야 한다). 글 내용은 바뀔 수 있어, 표 문법이 없는 저장소 글을 실행할 때 고른다 */
-const NO_TABLE = (() => {
-	const dir = 'src/apps/memo/content';
-	for (const file of readdirSync(dir).sort()) {
-		if (!file.endsWith('.md')) continue;
-		const text = readFileSync(`${dir}/${file}`, 'utf8');
-		if (/^\s*\|.*\|\s*$/m.test(text) || /<table/i.test(text)) continue;
-		const title = text.match(/^title: ['"]?(.+?)['"]?$/m)?.[1];
-		if (title) return title;
-	}
-	throw new Error('표가 없는 글이 없다');
-})();
+/** 표가 없는 글 (표 조건으로 거르면 빠져야 한다). 저장소 글은 검토하면서 표가 더해질 수 있어, 가짜 서버 글로 둔다 */
+const NO_TABLE = '표가 없는 시험용 글';
 
 test.describe('검색 칸과 글 안에서 찾기', () => {
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {
+		const api = await fakeApi(page);
+		const content = {
+			title: NO_TABLE,
+			date: '2020-01-01',
+			category: '기술 노트/Git',
+			summary: '',
+			body: '표가 없는 문단',
+		};
+		api.posts = [{ slug: 'no-table-post', ...content, deleted: false, published: content }];
 		const memo = await openMemo(page);
+		// 서버 글이 목록에 들어와 목록이 다시 배치된 뒤에 누른다
+		await expect(memo.locator('.memo-item', { hasText: NO_TABLE })).toHaveCount(1);
 		const search = memo.getByRole('searchbox', { name: '글 검색' });
-		await memo.getByRole('button', { name: '검색 조건' }).first().click();
+		await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
 		const menu = page.getByRole('menu', { name: '검색 조건' });
 		// 방문자에게는 게시 상태 조건이 없다
 		await expect(menu.getByRole('menuitem', { name: '예약된 메모' })).toHaveCount(0);
@@ -44,7 +44,7 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(memo.locator('.memo-item', { hasText: NO_TABLE })).toHaveCount(1);
 
 		// 빈 칸에서 Backspace
-		await memo.getByRole('button', { name: '검색 조건' }).first().click();
+		await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
 		await menu.getByRole('menuitem', { name: '코드가 있는 메모' }).click();
 		await expect(memo.locator('.memo-search-chip:visible')).toHaveText('코드');
 		await search.focus();
@@ -150,7 +150,7 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).click();
 		await expect(memo.locator('.ProseMirror')).toBeVisible();
-		await memo.getByRole('button', { name: '검색 조건' }).first().click();
+		await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
 		await page.getByRole('menu', { name: '검색 조건' }).getByRole('menuitem', { name: '이 메모에서 찾기…' }).click();
 
 		const bar = memo.getByRole('search', { name: '메모에서 찾기' });
