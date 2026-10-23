@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>스택 PR의 머지 대상</title>
+<defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#374151"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#dc2626"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#16a34a"/></marker></defs>
+<rect width="760" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="38" font-size="16" font-weight="700" fill="#1f2937">스택 PR: base가 main이 아닌 PR은 아래 브랜치로 머지된다</text>
+<rect x="32" y="62" width="150" height="40" rx="8" fill="#e0e7ff" stroke="#818cf8"/><text x="107" y="87" font-size="13" fill="#1e1b4b" text-anchor="middle">main</text>
+<rect x="232" y="62" width="150" height="40" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="307" y="80" font-size="12" fill="#111827" text-anchor="middle">#143</text><text x="307" y="95" font-size="10.5" fill="#6b7280" text-anchor="middle">docs/memo-folders</text>
+<rect x="432" y="62" width="150" height="40" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="507" y="80" font-size="12" fill="#111827" text-anchor="middle">#145 휴지통</text><text x="507" y="95" font-size="10.5" fill="#6b7280" text-anchor="middle">base: docs/memo-folders</text>
+<rect x="632" y="62" width="100" height="40" rx="8" fill="#f3f4f6" stroke="#9ca3af"/><text x="682" y="80" font-size="12" fill="#111827" text-anchor="middle">#146 파일</text><text x="682" y="95" font-size="10.5" fill="#6b7280" text-anchor="middle">base: feat/bin-app</text>
+<path d="M228 82 H186" stroke="#16a34a" stroke-width="1.5" marker-end="url(#g)"/>
+<path d="M428 82 H386" stroke="#dc2626" stroke-width="1.5" marker-end="url(#r)"/>
+<path d="M628 82 H586" stroke="#dc2626" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="32" y="138" font-size="12.5" fill="#374151">23:59:30  #143 머지 → main에 반영 (정상)</text>
+<text x="32" y="160" font-size="12.5" fill="#dc2626">00:00:04  #145 머지 → docs/memo-folders 브랜치에 반영. 이 브랜치는 이미 역할이 끝나 main에 다시 들어가지 않는다</text>
+<text x="32" y="182" font-size="12.5" fill="#dc2626">00:00:11  #146 머지 → feat/bin-app 브랜치에 반영. 마찬가지로 main에 도달하지 않는다</text>
+<rect x="32" y="206" width="696" height="92" rx="10" fill="#f0fdf4" stroke="#86efac"/>
+<text x="48" y="230" font-size="13" font-weight="700" fill="#15803d">조치</text>
+<text x="48" y="252" font-size="12.5" fill="#166534">#145·#146의 변경을 main을 base로 한 #147 하나로 다시 올려 머지했다.</text>
+<text x="48" y="274" font-size="12.5" fill="#166534">이후로는 PR을 쌓지 않고 항상 main을 base로 연다. 아래 PR이 머지되면 위 PR의 base를 main으로 바꾼 뒤 머지해야 한다.</text>
+<text x="32" y="318" font-size="11" fill="#9ca3af">시각은 KST. GitHub는 base 브랜치가 머지된 뒤에도 위 PR의 base를 자동으로 main으로 바꾸지 않는 경우가 있다 (base 브랜치를 삭제하지 않은 경우)</text>
+</svg>
