@@ -263,7 +263,12 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 				onPointerCancel={onPointerCancel}
 				onWheel={onWheel}
 				onClickCapture={(event) => {
-					if (!swallowClick.current) return;
+					// 편집 중에는 위젯의 빈 곳을 눌러도 앱을 열지 않는다. 위젯이 앱에 남기는 요청(사진 위젯의 사진, 메모 위젯의 글)도
+					// 남기지 않아, 나중에 그 앱을 열 때 엉뚱한 항목이 열리지 않는다 (위젯 안의 단추는 그대로 눌린다)
+					const target = event.target as Element;
+					const editingTap =
+						editing && target.closest('.widget') && !target.closest('button, a, [role="slider"], input');
+					if (!swallowClick.current && !editingTap) return;
 					swallowClick.current = false;
 					event.stopPropagation();
 					event.preventDefault();

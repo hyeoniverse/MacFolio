@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { EMPTY_FINDER_LAYOUT } from '@macfolio/contracts';
 import type { DocumentEntry } from '@/apps/finder/documents';
-import { albumSources, folderSources, photosOf } from './photoSources';
+import { albumSources, folderSources, libraryAlbumId, photosOf } from './photoSources';
 
 const albums = albumSources([
 	{
@@ -63,9 +63,16 @@ describe('사진 위젯이 보여 줄 곳', () => {
 	it('고른 곳의 사진, 없어진 곳이면 모든 앨범', () => {
 		const sources = [...albums, ...folderSources(files, layout)];
 		expect(photosOf(sources, 'folder:widget01')).toEqual([
-			{ src: '/files/pictures/b.png', caption: '산', album: '위젯' },
+			{ src: '/files/pictures/b.png', caption: '산', album: '위젯', albumId: 'finder:folder:widget01' },
 		]);
 		expect(photosOf(sources, 'folder:gone0000').map((photo) => photo.src)).toEqual(['/imgs/q.png', '/imgs/q.mp4']);
 		expect(photosOf(sources, undefined)).toHaveLength(2);
+	});
+
+	it('사진마다 사진 앱의 앨범 id: 프로젝트 앨범은 그대로, 그림 폴더는 finder:<폴더 id>', () => {
+		const sources = [...albums, ...folderSources(files, layout)];
+		expect(photosOf(sources, undefined)[0].albumId).toBe('qru');
+		expect(photosOf(sources, 'pictures')[0].albumId).toBe('finder:pictures');
+		expect(libraryAlbumId({ id: 'folder:widget01', group: 'folder' })).toBe('finder:folder:widget01');
 	});
 });
