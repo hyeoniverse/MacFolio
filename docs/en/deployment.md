@@ -6,11 +6,11 @@ The frontend goes on Cloudflare Workers and the API on an Oracle Cloud Always Fr
 
 ![Deployment architecture](../../apps/react/src/apps/memo/content/images/deploy-architecture.svg)
 
-| What     | URL                                         | Where                            | Deploy                                                                              |
-| -------- | ------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------- |
-| Frontend | `https://macfolio.hyeoniverse.com`          | Cloudflare Workers static assets | GitHub Actions, on merge to main                                                    |
-| API      | `https://macfolio-api.hyeoniverse.com`      | Oracle VM, docker compose        | On merge to main, GitHub Actions builds the image and ships it to the server (#100) |
-| API docs | `https://macfolio-api.hyeoniverse.com/docs` | Swagger                          |                                                                                     |
+| What     | URL                                         | Where                            | Deploy                                                                                                                                    |
+| -------- | ------------------------------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Frontend | `https://macfolio.hyeoniverse.com`          | Cloudflare Workers static assets | GitHub Actions, on merge to main                                                                                                          |
+| API      | `https://macfolio-api.hyeoniverse.com`      | Oracle VM, docker compose        | On merge to main, GitHub Actions builds the image and ships it to the server ([#100](https://github.com/hyeoniverse/MacFolio/issues/100)) |
+| API docs | `https://macfolio-api.hyeoniverse.com/docs` | Swagger                          |                                                                                                                                           |
 
 The frontend and the API have different hostnames but are the same site (`hyeoniverse.com`), so the `SameSite=Lax` session cookie is sent along. **The API must live on a subdomain of `hyeoniverse.com` over https.** On `*.workers.dev` or a bare IP address, login does not work.
 
@@ -26,12 +26,17 @@ The frontend and the API have different hostnames but are the same site (`hyeoni
 
 ## 1. Frontend (Cloudflare Workers)
 
-The configuration is in `wrangler.jsonc` at the root. It serves `apps/react/dist` as static files without a Worker script and sends unknown paths to `index.html` (SPA).
+The configuration is in `wrangler.jsonc` at the root. Files in `apps/react/dist` are served as [static assets](https://developers.cloudflare.com/workers/static-assets/) without going through the Worker; only the first page (`/`, `/index.html`), `sitemap.xml`·`rss.xml`, and addresses with no matching file go to the Worker (`apps/react/worker/index.ts`).
 
-GitHub Actions (`.github/workflows/ci.yml`) does the build and deploy. Cloudflare's build servers (Workers Builds) are not used. The actions the workflow uses are pinned to commit SHAs rather than tags (`@v7`) (a tag can later point at different code), and Dependabot (`.github/dependabot.yml`) opens PRs for new versions.
+- First page and app addresses (`/memo/<post>`, `/safari/<project>`): inserts site content and the search-engine body into `index.html` and attaches the CSP. Unknown post and project addresses get 404 (`noindex`)
+- `sitemap.xml`·`rss.xml`: generated from repository posts merged with posts written on the server
+- `/files/<key>`: document files from the R2 bucket (see [Document files (R2)](#document-files-r2) below)
+- Missing `/assets/*`: 404 (so requests for old build code files don't get `index.html`, [#103](https://github.com/hyeoniverse/MacFolio/pull/103))
+
+GitHub Actions (`.github/workflows/ci.yml`) does the build and deploy ([#82](https://github.com/hyeoniverse/MacFolio/pull/82)). Cloudflare's build servers (Workers Builds) are not used. The actions the workflow uses are pinned to commit SHAs rather than tags (`@v7`) (a tag can later point at different code), and Dependabot (`.github/dependabot.yml`) opens PRs for new versions.
 
 - **main**: once the tests (`check`) pass, the `deploy` job pushes to the live site with `wrangler deploy`. A commit whose tests fail is not deployed.
-- **PR**: the `preview` job uploads a preview version with `wrangler versions upload --preview-alias <branch>` and posts the URL in a single PR comment (new commits edit the same comment). The live site does not change. Previews only read from the real API: the URL is `*.workers.dev`, so the `SameSite=Lax` session cookie is not sent, the API does not allow cookies for origins matched by `*`, and admin APIs reject such an Origin with 403. To check admin features of a preview, do it locally (`pnpm dev`). The job is skipped for Dependabot PRs and for PRs that don't touch frontend files (`apps/react`, `packages`, the lockfile, etc.). Uploading is free in itself (billing is by request count only) and only the latest 100 versions are kept, but skipping saves CI time and comments.
+- **PR**: the `preview` job uploads a [preview version](https://developers.cloudflare.com/workers/configuration/previews/) with `wrangler versions upload --preview-alias <branch>` and posts the URL in a single PR comment (new commits edit the same comment). The live site does not change. Previews only read from the real API: the URL is `*.workers.dev`, so the `SameSite=Lax` session cookie is not sent, the API does not allow cookies for origins matched by `*`, and admin APIs reject such an Origin with 403. To check admin features of a preview, do it locally (`pnpm dev`). The job is skipped for Dependabot PRs and for PRs that don't touch frontend files (`apps/react`, `packages`, the lockfile, etc.). Uploading is free in itself (billing is by request count only) and only the latest 100 versions are kept, but skipping saves CI time and comments.
 
 ### First time: token and Git connection
 
@@ -55,7 +60,7 @@ Résumé, portfolio and certificate files, plus per-project files (slides etc.; 
 
 **Uploading (admin)**: log in as admin and drag files into Finder's Documents (문서) › Résumé (이력서) · Portfolio (포트폴리오) · Certificates (자격증) folder, or into Documents › Portfolio › <project> folder (or onto that folder's icon). Files in a project folder are uploaded with the folder value `project:<project id>`. Files never pass through the API server.
 
-1. Browser → API `POST /documents/uploads` (folder, name, size): the API checks that the caller is admin and that type and size are valid, then returns a **signed URL** for uploading straight to R2 (5 minutes; only accepted if `Content-Length` equals that size). The key is `resume|portfolio|certificates|desktop|pictures/<random>.<ext>` (`desktop` for the desktop, `pictures` for Home › Pictures), or `projects/<project id>/<random>.<ext>` for project folders
+1. Browser → API `POST /documents/uploads` (folder, name, size): the API checks that the caller is admin and that type and size are valid, then returns a [**signed URL**](https://developers.cloudflare.com/r2/api/s3/presigned-urls/) for uploading straight to R2 (5 minutes; only accepted if `Content-Length` equals that size). The key is `resume|portfolio|certificates|desktop|pictures/<random>.<ext>` (`desktop` for the desktop, `pictures` for Home › Pictures), or `projects/<project id>/<random>.<ext>` for project folders
 2. Browser → R2 `PUT <signed URL>` (progress shows at the bottom of Finder)
 3. Browser → API `POST /documents`: the API does a HEAD on R2 to confirm the file really arrived and the size matches, then adds it to the listing
 
@@ -80,7 +85,7 @@ To rename or delete, select the file and use **File → Rename… / Move to Tras
 
    Without the three values the listing still shows, and only uploading and deleting are blocked with "서버에 파일 저장소(R2)가 설정되지 않았습니다" (file storage (R2) is not configured on the server) (503)
 
-4. **Bucket CORS**: since the browser PUTs straight to R2, add the following under bucket → **Settings → CORS Policy → Add CORS policy** (PUT only, from the site's origin)
+4. **Bucket [CORS](https://developers.cloudflare.com/r2/buckets/cors/)**: since the browser PUTs straight to R2, add the following under bucket → **Settings → CORS Policy → Add CORS policy** (PUT only, from the site's origin)
 
    ```json
    [
@@ -112,13 +117,13 @@ You can also upload to the real R2 from the local dev server. The listing stays 
 
 4. Log in as admin at http://localhost:5173 and drag a file into Finder's Résumé (이력서) folder
 
-The local dev server has no site Worker, so `/files/*` (file downloads) is forwarded to the deployed site (`server.proxy` in `vite.config.ts`). The deployed site reads the same bucket, so files uploaded locally also open in the Preview app. To forward elsewhere, set `FILES_ORIGIN=https://<PR preview URL>` in `apps/react/.env.local` or prefix the command with it (it's passed through to `pnpm dev:all` via `passThroughEnv` in `turbo.json`). Use this when, as in PR #255, the change isn't merged yet and the deployed site doesn't have `/files` yet.
+The local dev server has no site Worker, so `/files/*` (file downloads) is forwarded to the deployed site (`server.proxy` in `vite.config.ts`). The deployed site reads the same bucket, so files uploaded locally also open in the Preview app. To forward elsewhere, set `FILES_ORIGIN=https://<PR preview URL>` in `apps/react/.env.local` or prefix the command with it (it's passed through to `pnpm dev:all` via `passThroughEnv` in `turbo.json`). Use this when, as in PR [#255](https://github.com/hyeoniverse/MacFolio/pull/255), the change isn't merged yet and the deployed site doesn't have `/files` yet.
 
 To just see the UI without keys, use the fake listing the E2E tests use: in the devtools console, set `window.__MACFOLIO_DOCUMENTS__ = [{ folder: '이력서', name: '시험.pdf', key: 'resume/test.pdf', kind: 'pdf' }]` and open Finder (the file itself doesn't exist, so Preview shows "열 수 없습니다" (can't open)). The whole upload flow is tested by `e2e/finder-upload.spec.ts` against a fake API and fake R2 (`pnpm --filter @macfolio/react test:e2e finder-upload`).
 
 The site CSP's `connect-src` includes `https://*.r2.cloudflarestorage.com` (for uploads to signed URLs). R2 rejects requests without a signature.
 
-Cost: well within R2's free tier (10GB storage, 1 million Class A operations/month, 10 million Class B operations/month, free egress). It only reads a handful of documents.
+Cost: well within [R2's free tier](https://developers.cloudflare.com/r2/pricing/) (10GB storage, 1 million Class A operations/month, 10 million Class B operations/month, free egress). It only reads a handful of documents.
 
 CI: deploys (`deploy` and `preview` in `ci.yml`) run `wrangler deploy`·`wrangler versions upload` with `CLOUDFLARE_API_TOKEN`. Uploading a Worker with an R2 binding requires the token to have the **Account → Workers R2 Storage → Edit** permission. The **Edit Cloudflare Workers** template from "First time" above includes it, so a token made from that template needs no change. If the token was made with hand-picked permissions, edit it under Cloudflare dashboard → My Profile → API Tokens and add this permission. CI does not upload files (the admin uploads them from Finder).
 
@@ -140,7 +145,7 @@ done
 
 ## 2. GitHub OAuth App
 
-GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
+GitHub → Settings → Developer settings → OAuth Apps → New OAuth App ([GitHub docs](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app))
 
 | Field                      | Production                                                  | Development                                  |
 | -------------------------- | ----------------------------------------------------------- | -------------------------------------------- |
@@ -204,7 +209,7 @@ sudo usermod -aG docker ubuntu
 exit   # reconnect for the docker group to take effect
 ```
 
-Reconnect and check with `docker run --rm hello-world`.
+Reconnect and check with `docker run --rm hello-world`. The install method is described in the [Docker docs](https://docs.docker.com/engine/install/ubuntu/#install-using-the-convenience-script).
 
 ### Code
 
@@ -226,7 +231,7 @@ The server ends up like this. Secrets live outside the repo (`~/deploy`), so the
 
 ## 5. Cloudflare Tunnel
 
-The server opens an **outbound** connection to Cloudflare, and requests come in over that connection. So there's no need to open 80/443 in the Oracle firewall, and Cloudflare handles the https certificate.
+The server opens an **outbound** connection to Cloudflare, and requests come in over that connection. So there's no need to open 80/443 in the Oracle firewall, and Cloudflare handles the https certificate ([Create a remotely-managed tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)).
 
 Cloudflare Zero Trust → Networks → Tunnels → **Create a tunnel** → Cloudflared → name `macfolio-api`
 
@@ -301,7 +306,7 @@ chmod 600 .env api.env
 | `TRANSLATE_PER_IP_PER_DAY`, `TRANSLATE_TOTAL_PER_DAY` |          | Daily cap on translation. Defaults: 3 per IP, 50 site-wide                                                                                                                                                                                                                                                                                 |
 | `SUMMARY_PER_IP_PER_DAY`, `SUMMARY_TOTAL_PER_DAY`     |          | Daily cap on summaries. Defaults: 3 per IP, 50 site-wide                                                                                                                                                                                                                                                                                   |
 | `COVER_PER_IP_PER_DAY`, `COVER_TOTAL_PER_DAY`         |          | Daily cap on covers. Defaults: 1 per IP, 5 site-wide (the free quota is small)                                                                                                                                                                                                                                                             |
-| `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`        | Mail     | Contact mail for the Mail (메일) app (#25). The server sends only when all three are set. Otherwise the site opens the visitor's mail app. Setup: [Contact mail](#contact-mail-resend-turnstile)                                                                                                                                           |
+| `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`        | Mail     | Contact mail for the Mail (메일) app ([#25](https://github.com/hyeoniverse/MacFolio/issues/25)). The server sends only when all three are set. Otherwise the site opens the visitor's mail app. Setup: [Contact mail](#contact-mail-resend-turnstile)                                                                                      |
 | `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |          | Human verification for mail, comments and messages (Cloudflare Turnstile). If empty, no verification. Where it applies is toggled in System Settings (시스템 설정) → Privacy & Security (개인정보 보호 및 보안)                                                                                                                            |
 | `CONTACT_PER_IP_PER_DAY`, `CONTACT_TOTAL_PER_DAY`     |          | Daily cap on contact mail. Defaults: 5 per IP, 50 site-wide                                                                                                                                                                                                                                                                                |
 
@@ -373,7 +378,7 @@ There are no `ports` at all. Outside requests reach api only through the tunnel,
 
 ## 7. Run and verify
 
-GitHub Actions builds the API image and pushes it to GHCR (`ghcr.io/hyeoniverse/macfolio-api`). The server only pulls. The tag is `sha-` + the 7-character commit (e.g. `sha-a38ac7e`); see recent tags under **Packages → macfolio-api** on the right of the GitHub repository. `sha-a38ac7e` in the commands below is an example, so replace it with that tag (if you paste a placeholder like `<…>` as is, bash reads `<`·`>` as operators and does nothing).
+GitHub Actions builds the API image and pushes it to [GHCR](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) (`ghcr.io/hyeoniverse/macfolio-api`). The server only pulls. The tag is `sha-` + the 7-character commit (e.g. `sha-a38ac7e`); see recent tags under **Packages → macfolio-api** on the right of the GitHub repository. `sha-a38ac7e` in the commands below is an example, so replace it with that tag (if you paste a placeholder like `<…>` as is, bash reads `<`·`>` as operators and does nothing).
 
 ```bash
 cd ~/deploy
@@ -393,7 +398,7 @@ docker compose logs -f api                  # after migrations finish: "Nest app
 
 ### Updates (automatic deploys)
 
-GitHub Actions handles it on its own when a commit that lands on main differs in `apps/api` (or its dependencies, or `ops/deploy.sh`) from the **API running on the server** (the version from `/health`) (#100). Because it compares against the server rather than the previous push, if CI fails on a merge that changed the API and the deploy is skipped, it gets deployed together with the next merge. If the server can't be reached, it's treated as different and deployed.
+GitHub Actions handles it on its own when a commit that lands on main differs in `apps/api` (or its dependencies, or `ops/deploy.sh`) from the **API running on the server** (the version from `/health`) ([#100](https://github.com/hyeoniverse/MacFolio/issues/100), [#104](https://github.com/hyeoniverse/MacFolio/pull/104), [#118](https://github.com/hyeoniverse/MacFolio/pull/118)). Because it compares against the server rather than the previous push, if CI fails on a merge that changed the API and the deploy is skipped, it gets deployed together with the next merge. If the server can't be reached, it's treated as different and deployed.
 
 ```
 check (tests) ─▶ api-image: build image (amd64) → GHCR (sha-<commit>, main)
@@ -442,7 +447,7 @@ If you edit it without restarting, it gets applied with the next automatic deplo
 
 ### Setting up automatic deploys (once)
 
-For each command, check **where** to type it first. If the start of the line is `ubuntu@macfolio-vnic`, it's the server; if it's `…@…MacBook…`, it's my computer. Everything in this setup except step 2 is done on **the server**.
+For each command, check **where** to type it first. If the start of the line is `ubuntu@macfolio-vnic`, it's the server; if it's `…@…MacBook…`, it's my computer. Everything in this setup except steps 3 and 4 (GitHub screens) is done on **the server**.
 
 #### 1. Image and first deploy
 
@@ -476,7 +481,7 @@ echo "===== DEPLOY_SSH_KEY ====="; cat ~/macfolio-deploy
 ```
 
 - The first line deletes only the deploy key line (ending in `github-actions-deploy`). The key you normally log in with is on a different line, so it stays
-- `restrict`: blocks port forwarding, terminals (pty), and so on
+- `restrict`: blocks port forwarding, terminals (pty), and so on ([sshd: AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT))
 - `command=`: when connecting with this key, only `ops/deploy.sh` runs no matter what is sent. The text sent is passed as `SSH_ORIGINAL_COMMAND`, and the script only accepts the shape `sha-[0-9a-f]{7,40}`
 - `DEPLOY_KNOWN_HOSTS`: reads the server's own host key on the server and attaches the public IP. It's the value that pins the server so Actions doesn't connect to an impostor
 
@@ -495,7 +500,7 @@ Repository → Settings → Secrets and variables → Actions → New repository
 
 Once they're in, delete the key files on the server: `rm ~/macfolio-deploy ~/macfolio-deploy.pub`. If you made a new key, **`DEPLOY_SSH_KEY` must also be updated to the new value** (otherwise `Permission denied (publickey)`).
 
-Without `DEPLOY_HOST`, `api-deploy` is skipped (the image is still built). If port 22 is open only to my IP in the Oracle security list, Actions can't get in. Since only key authentication is used, port 22 is left open to everywhere (close it later when moving to Cloudflare Tunnel SSH, #100).
+Without `DEPLOY_HOST`, `api-deploy` is skipped (the image is still built). If port 22 is open only to my IP in the Oracle security list, Actions can't get in. Since only key authentication is used, port 22 is left open to everywhere (close it later when moving to Cloudflare Tunnel SSH, [#100](https://github.com/hyeoniverse/MacFolio/issues/100)).
 
 #### 4. Verify
 
@@ -527,7 +532,7 @@ docker compose logs --tail=100 tunnel
 
 #### Log rotation
 
-By default Docker never deletes container logs, so left long enough they fill the disk. The `x-logging` in the `compose.yml` above keeps at most three 10MB files (30MB) per container. On a server that didn't have this setting, add the `x-logging` block under `name: macfolio` in `compose.yml`, add `logging: *logging` under `restart:` in each of the three services (db, api, tunnel), and recreate.
+By default Docker never deletes container logs, so left long enough they fill the disk. The `x-logging` in the `compose.yml` above keeps at most three 10MB files (30MB) per container ([json-file logging driver](https://docs.docker.com/engine/logging/drivers/json-file/)). On a server that didn't have this setting, add the `x-logging` block under `name: macfolio` in `compose.yml`, add `logging: *logging` under `restart:` in each of the three services (db, api, tunnel), and recreate.
 
 ```bash
 cd ~/deploy
@@ -543,11 +548,11 @@ The GitHub Actions `uptime` workflow (`.github/workflows/uptime.yml`) calls `htt
 - Notifications go to whoever last changed the scheduled run's cron (currently the repository owner). Check that failure notifications are enabled in GitHub **Settings → Notifications → Actions**
 - The history is under the repository's **Actions → uptime**. You can also run it immediately with **Run workflow**
 - Scheduled runs can run a few minutes late depending on GitHub. It's a public repository, so the run time is free
-- If the repository has no activity for 60 days, GitHub stops the scheduled runs. Re-enable it in Actions then
+- If the repository has no activity for 60 days, GitHub disables the scheduled runs. Re-enable it in Actions then ([GitHub docs](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/disabling-and-enabling-a-workflow))
 
 ### Server hardening check
 
-The only thing the server exposes to the outside is SSH (22). The API comes in only through Cloudflare Tunnel (`compose.yml` has no `ports`), and the DB is visible only inside the compose network. So there are four things to keep: **SSH by key only**, **only port 22 open**, **containers as non-root users**, **security updates automatic**. `ops/audit.sh` only reads these four and prints `OK`/`확인` (check) for each item. It changes nothing.
+The only thing the server exposes to the outside is SSH (22). The API comes in only through Cloudflare Tunnel (`compose.yml` has no `ports`), and the DB is visible only inside the compose network. So there are four things to keep: **SSH by key only**, **only port 22 open**, **containers as non-root users**, **security updates automatic**. `ops/audit.sh` only reads these four and prints `OK`/`확인` (check) for each item ([#183](https://github.com/hyeoniverse/MacFolio/pull/183)). It changes nothing.
 
 ```bash
 ~/macfolio/ops/audit.sh      # Exits with 1 if there are items to check
@@ -558,7 +563,7 @@ The only thing the server exposes to the outside is SSH (22). The API comes in o
 | SSH        | `PasswordAuthentication no`, `KbdInteractiveAuthentication no`, `PermitRootLogin prohibit-password`, 0 accounts with a password                      | Write the three lines in `/etc/ssh/sshd_config.d/99-macfolio.conf` and `sudo systemctl reload ssh`. The Oracle Ubuntu image comes this way from the start                                                                                                                                                                                 |
 | Ports      | Only 22 listening externally. No containers publishing host ports. An iptables rule allowing 22 (Oracle default)                                     | Don't put `ports:` in `compose.yml`. 111 (rpcbind) is something the Oracle image turns on for NFS; turn it off with `sudo systemctl disable --now rpcbind.socket rpcbind.service`. In the cloud-side **Security List** (VCN → Subnet → Security List), keep only `22/tcp` in Ingress too (80 and 443 aren't needed because of the tunnel) |
 | Containers | `api → node` (`USER node` in the Dockerfile), `tunnel → nonroot` (cloudflared image default), `db → postgres`. No privileged, no `docker.sock` mount | If you touched the image or compose, revert it. `db` showing as `root` counts as OK, because the postgres image is root only at startup and then drops to postgres                                                                                                                                                                        |
-| Updates    | `unattended-upgrades` enabled, no pending reboot                                                                                                     | `sudo apt install unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. If `/var/run/reboot-required` exists, `sudo reboot` at a quiet time                                                                                                                                                                            |
+| Updates    | `unattended-upgrades` enabled, no pending reboot                                                                                                     | `sudo apt install unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. If `/var/run/reboot-required` exists, `sudo reboot` at a quiet time ([Ubuntu automatic updates](https://ubuntu.com/server/docs/how-to/software/automatic-updates/))                                                                            |
 
 - The deploy SSH key (`macfolio-deploy`) can only run `ops/deploy.sh`, via `restrict,command=` in `authorized_keys` ([Setting up automatic deploys](#setting-up-automatic-deploys-once)). `audit.sh` doesn't look at this key
 - The `ubuntu` account is in the `docker` group, so getting in as that account is equivalent to host root. That makes managing the SSH key the same as managing the key to the whole server. Keep the private key (`~/.ssh/oracle-macfolio.key`) and its passphrase outside the computer too, e.g. in a password manager. Before resetting the computer, back up `~/.ssh` first. If it's lost, see [If you lose the SSH key](#if-you-lose-the-ssh-key)
@@ -638,7 +643,8 @@ The private key can't be downloaded again (Oracle doesn't have a copy either). R
 
    - Terminate the temporary VM with "Permanently delete the attached boot volume" checked (it's the temporary VM's own disk)
 
-Reference docs (Oracle, cloud-init):
+<details>
+<summary>Reference docs (Oracle, cloud-init)</summary>
 
 - [Connecting to a Linux Instance](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/connect-to-linux-instance.htm): the official guidance that if the key is lost, terminate the instance and create a new one with a new key
 - [Instance Console Connections](https://docs.oracle.com/en-us/iaas/Content/Compute/References/serialconsole.htm): console login requires an account with a password. Swapping keys via maintenance mode is Oracle Linux only
@@ -646,9 +652,13 @@ Reference docs (Oracle, cloud-init):
 - [Attaching a Block Volume to an Instance](https://docs.oracle.com/en-us/iaas/Content/Block/Tasks/attach-compute-volume-attachment.htm): paravirtualized volumes are visible as soon as they're Attached; iSCSI needs additional connect commands inside the instance (4)
 - [First boot determination](https://docs.cloud-init.io/en/latest/explanation/first_boot.html), [Module reference: SSH](https://docs.cloud-init.io/en/latest/reference/modules.html): when the instance ID changes it's treated as a first boot, and the SSH module regenerates host keys (`ssh_deletekeys`) and adds the public keys from the metadata (`allow_public_ssh_keys`). Both default to `true` (5, 7)
 
+</details>
+
 ### Backups
 
-Blog posts, drafts, version history and uploaded images live **only in the DB**. `ops/backup.sh` runs daily via cron and keeps copies on the server and off the server (Cloudflare R2).
+Blog posts, drafts, version history and uploaded images live **only in the DB**. `ops/backup.sh` runs daily via cron and keeps copies on the server and off the server (Cloudflare R2) ([#94](https://github.com/hyeoniverse/MacFolio/pull/94), [#98](https://github.com/hyeoniverse/MacFolio/pull/98)).
+
+![cron and ops/deploy.sh run backup.sh, which keeps 7 days on the server in ~/backups and 30 days in R2, with healthchecks.io emailing on failure](../images/deployment-backup.svg)
 
 - Server: 7 days in `~/backups` (`KEEP_LOCAL_DAYS`)
 - Also once right before each automatic deploy (`ops/deploy.sh` calls it with `BACKUP_LOCAL_ONLY=1`. It's kept only on the server and sends no notification. The daily cron uploads off the server)
@@ -684,7 +694,7 @@ Setup only needs to be done once. Secrets like keys go only in the server's `~/d
 
 cron says nothing when it fails. With an alert URL, you get an email when a backup fails, hits the cap, or doesn't run at all.
 
-1. Sign up at https://healthchecks.io and **Add Check**
+1. Sign up at [healthchecks.io](https://healthchecks.io/docs/) and **Add Check**
    - Name: `macfolio-backup`
    - Schedule: Period **1 day**, Grace **1 hour**
 2. Note down the **Ping URL** (`https://hc-ping.com/<uuid>`). Alerts go to the email you signed up with
@@ -723,7 +733,7 @@ EOF
 chmod 600 backup.env
 ```
 
-Replace the `<…>` placeholders with the values noted in steps 2 and 3 (`nano backup.env`). The rclone config is supplied via the `RCLONE_CONFIG_R2_*` environment variables, so there's no separate `rclone config` file. `backup.env` is read by `ops/backup.sh`.
+Replace the `<…>` placeholders with the values noted in steps 2 and 3 (`nano backup.env`). The rclone config is supplied via the `RCLONE_CONFIG_R2_*` environment variables, so there's no separate `rclone config` file ([rclone: Cloudflare R2](https://rclone.org/s3/#cloudflare-r2)). `backup.env` is read by `ops/backup.sh`.
 
 #### 6. Verify the R2 connection
 
@@ -797,17 +807,17 @@ R2 has no setting that stops before billing (the script's `MAX_REMOTE_GB` stops 
 
 ### Contact mail (Resend, Turnstile)
 
-The server sends the mail a visitor writes in the Mail (메일) app (#25). The recipient is always the site owner, and the sender's address goes into Reply-To so I can reply straight from the received mail. Without this configuration the site opens the visitor's mail app as before, so it's fine to deploy before doing the steps below.
+The server sends the mail a visitor writes in the Mail (메일) app ([#25](https://github.com/hyeoniverse/MacFolio/issues/25), [#125](https://github.com/hyeoniverse/MacFolio/pull/125)). The recipient is always the site owner, and the sender's address goes into Reply-To so I can reply straight from the received mail. Without this configuration the site opens the visitor's mail app as before, so it's fine to deploy before doing the steps below.
 
 **1. Resend (sending)** — free plan: 3,000 emails/month, 100/day
 
-1. Sign up at [resend.com](https://resend.com) and add `hyeoniverse.com` under **Domains → Add Domain**
+1. Sign up at [resend.com](https://resend.com) and add `hyeoniverse.com` under **Domains → Add Domain** ([Resend: Domains](https://resend.com/docs/dashboard/domains/introduction))
 2. Add the DNS records shown on screen (MX, TXT) as-is to the `hyeoniverse.com` DNS in Cloudflare. Turn the proxy off (DNS only, grey cloud)
 3. Click **Verify** in Resend; once it's Verified, create a key under **API Keys → Create API Key** (Sending access, domain `hyeoniverse.com`)
 
 **2. Turnstile (human check, optional)** — free
 
-1. Cloudflare dashboard → **Turnstile → Add widget**
+1. Cloudflare dashboard → **Turnstile → Add widget** ([Turnstile get started](https://developers.cloudflare.com/turnstile/get-started/))
 2. Put `macfolio.hyeoniverse.com` in Hostnames. To use it in PR previews too, also add `hyeoniverse.workers.dev`; to use it locally, also add `localhost`
 3. Widget mode is **Managed**. Creating it gives you a site key and a secret key
 
@@ -819,7 +829,7 @@ nano ~/deploy/api.env
 
 ```
 RESEND_API_KEY=<key starting with re_>
-CONTACT_TO=hyeoniverse.dev@gmail.com
+CONTACT_TO=<recipient address>
 CONTACT_FROM=MacFolio <contact@hyeoniverse.com>
 TURNSTILE_SITE_KEY=<site key>
 TURNSTILE_SECRET_KEY=<secret key>
@@ -844,7 +854,7 @@ If `available` is `false`, the server doesn't have both keys (site and secret). 
 
 ### Search terms (Google Search Console)
 
-The **Search terms (검색어)** tab in Activity Monitor (활동 상태 보기) (admin only) pulls Google search queries from Search Console. Google doesn't pass search queries to the site, so this is the only way. The server fetches them with a service account every 6 hours; without configuration, the tab shows how to set it up. So it's fine to deploy before doing the steps below. It costs nothing.
+The **Search terms (검색어)** tab in Activity Monitor (활동 상태 보기) (admin only) pulls Google search queries from Search Console. Google doesn't pass search queries to the site, so this is the only way ([#327](https://github.com/hyeoniverse/MacFolio/pull/327)). The server fetches them with a service account every 6 hours; without configuration, the tab shows how to set it up. So it's fine to deploy before doing the steps below. It costs nothing.
 
 **1. Check that the site is in Search Console**
 
@@ -858,7 +868,7 @@ A newly added property starts collecting data from that day (it shows up 2–3 d
 **2. Service account and key** — [console.cloud.google.com](https://console.cloud.google.com)
 
 1. Pick or create a project (e.g. `macfolio`)
-2. Find **Google Search Console API** under **APIs & Services → Library** and **Enable** it
+2. Find **Google Search Console API** under **APIs & Services → Library** and **Enable** it ([Search Console API](https://developers.google.com/webmaster-tools))
 3. **IAM & Admin → Service Accounts → Create service account** (e.g. `macfolio-search`). Don't grant it any roles (permissions)
 4. The new account → **Keys → Add key → Create new key → JSON**. The downloaded file can't be downloaded again
 
@@ -910,9 +920,9 @@ If you change `IP_HASH_SECRET`, author hashes of old and new comments no longer 
 
 ### Idle reclamation
 
-Oracle may reclaim an Always Free instance whose CPU, network, and memory utilization have all been low for 7 days. **Upgrading the account to Pay As You Go** takes it out of reclamation, and it stays $0 as long as you stay within the Always Free limits. If you upgrade, set a Budget alert (e.g. $1/month). Keep this document and off-server backups so the server can be rebuilt if it does get reclaimed.
+Oracle may reclaim an Always Free instance whose CPU, network, and memory utilization have all been low for 7 days ([Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)). **Upgrading the account to Pay As You Go** takes it out of reclamation, and it stays $0 as long as you stay within the Always Free limits. If you upgrade, set a Budget alert (e.g. $1/month). Keep this document and off-server backups so the server can be rebuilt if it does get reclaimed.
 
-Use **server resource monitoring** to see the risk ahead of time. Put the following in `~/deploy/api.env` **on the production server** and run `docker compose up -d api` from that folder (the local Mac doesn't have this `compose.yml`, so you'd get `no configuration file provided`. The local `apps/api/.env` is for development and doesn't apply to production):
+Use **server resource monitoring** to see the risk ahead of time ([#151](https://github.com/hyeoniverse/MacFolio/pull/151)). Put the following in `~/deploy/api.env` **on the production server** and run `docker compose up -d api` from that folder (the local Mac doesn't have this `compose.yml`, so you'd get `no configuration file provided`. The local `apps/api/.env` is for development and doesn't apply to production):
 
 ```bash
 RESOURCE_MONITOR=free          # off (default) / free (Always Free) / payg (pay as you go)
@@ -941,7 +951,7 @@ docker compose up -d api
 
 #### Viewing pay-as-you-go cost and budget (OCI API key)
 
-With `RESOURCE_MONITOR=payg`, the Server tab shows **this month's cost and the budget limit**, and emails when spending passes 80% and 100% of the budget (once each per month). Calling Oracle's cost and budget APIs requires an OCI API key. Without a key, only utilization is shown, and the Server tab's cost section explains how to add one.
+With `RESOURCE_MONITOR=payg`, the Server tab shows **this month's cost and the budget limit**, and emails when spending passes 80% and 100% of the budget (once each per month). Calling Oracle's cost and budget APIs requires an [OCI API signing key](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm) ([#153](https://github.com/hyeoniverse/MacFolio/pull/153)). Without a key, only utilization is shown, and the Server tab's cost section explains how to add one.
 
 **0. Create a budget** (the basis for the limit and alerts)
 
@@ -1037,7 +1047,7 @@ If `RESOURCE_MONITOR=free` is already there, change that line to `payg` (if the 
 
 | Symptom                                                                                                  | Cause and fix                                                                                                                                                                                                                                                    |
 | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| "관리자 서버가 아직 연결되지 않았습니다" ("The admin server isn't connected yet"), login button disabled | The frontend build has no `VITE_API_URL`. Add it to the Cloudflare **Build** variables and rebuild ([1](#1-frontend-cloudflare-workers))                                                                                                                         |
+| "관리자 서버가 아직 연결되지 않았습니다" ("The admin server isn't connected yet"), login button disabled | The frontend build has no `VITE_API_URL`. Check the value in the `env` at the top of `ci.yml` and merge to main to rebuild ([Setting the API URL](#setting-the-api-url))                                                                                         |
 | Opening Messages shows "메시지를 열 수 없습니다" ("Can't open messages")                                 | The Messages API couldn't be reached. Check `docker compose ps` and `logs api`. To just view the UI without a server, use `VITE_MESSAGES_STORE=local`                                                                                                            |
 | "관리자 서버에 연결할 수 없습니다" ("Can't connect to the admin server")                                 | The API is down or CORS is blocking it. Check `docker compose ps`, `logs api`, and `CORS_ORIGINS`                                                                                                                                                                |
 | Server status says "이 주소에서는 쓸 수 없음" ("Not available at this address")                          | The server is up, but the current site address isn't in `CORS_ORIGINS`. For PR previews, add `https://*-macfolio.hyeoniverse.workers.dev` and run `docker compose up -d api`                                                                                     |
@@ -1066,4 +1076,21 @@ Continued in [#10](https://github.com/hyeoniverse/MacFolio/issues/10).
 
 - Upgrade the account to Pay As You Go to exclude it from idle reclamation, and set a Budget alert ([Idle reclamation](#idle-reclamation))
 - Observe actual utilization for 1–2 weeks
-- fail2ban or changing the SSH port: with key-only login, failures just pile up in the logs, so I'm leaving it for now. If the logs become annoying, I'll do it then
+- fail2ban or changing the SSH port: with key-only login, brute-force attempts only leave failure logs, so it isn't applied for now. It will be if log volume becomes a problem
+
+## Related posts (Korean)
+
+- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
+- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](https://macfolio.hyeoniverse.com/memo/deploy-github-actions)
+- [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](https://macfolio.hyeoniverse.com/memo/api-auto-deploy)
+- [자동 배포를 실제 서버에 걸기 - 막힌 곳 다섯](https://macfolio.hyeoniverse.com/memo/api-auto-deploy-setup)
+- [글이 DB에만 있게 되어서 백업을 붙였다](https://macfolio.hyeoniverse.com/memo/db-backup)
+- [R2에 DB 백업 걸기 - 대시보드부터 cron까지](https://macfolio.hyeoniverse.com/memo/r2-backup-setup)
+- [서버가 죽으면 알려 주기, 로그가 디스크를 채우지 않게](https://macfolio.hyeoniverse.com/memo/server-uptime-and-logs)
+- [서버 하드닝은 문서가 아니라 스크립트로 남긴다](https://macfolio.hyeoniverse.com/memo/server-hardening-audit)
+- [SSH 키를 잃어버린 Oracle 서버 되살리기 — 임시 VM이 원래 서버 디스크로 부팅됐다](https://macfolio.hyeoniverse.com/memo/oracle-ssh-key-recovery)
+- [무료 서버가 회수되기 전에 - 사용률을 재고 위험하면 메일로](https://macfolio.hyeoniverse.com/memo/resource-monitor)
+- [종량제 요금과 예산 한도 - Oracle API 요청 서명을 SDK 없이](https://macfolio.hyeoniverse.com/memo/oci-billing)
+- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](https://macfolio.hyeoniverse.com/memo/contact-mail)
+- [PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기](https://macfolio.hyeoniverse.com/memo/preview-cors-read-only)
+- [없는 코드 파일에 index.html을 주던 문제](https://macfolio.hyeoniverse.com/memo/asset-404)
