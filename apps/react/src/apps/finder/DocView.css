@@ -97,10 +97,10 @@
 	vertical-align: middle;
 }
 
+/* 인용은 본문과 같은 글자색으로 두고 왼쪽 선으로만 구분한다 (보조 글자색은 대비가 낮아 읽기 어렵다). 텍스트 편집기도 이 모양을 쓴다 */
 .finder-doc blockquote {
 	padding: 0 1em;
 	border-left: 4px solid var(--color-separator);
-	color: var(--color-secondary-label);
 }
 
 .finder-doc :not(pre) > code {
