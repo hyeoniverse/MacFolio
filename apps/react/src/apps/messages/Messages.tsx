@@ -6,16 +6,23 @@ import MobileNavigation from '@/desktop/window/MobileNavigation';
 import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
 import { NEW_THREAD, useConversations } from './useConversations';
+import { useElementWidth } from '@/shared/hooks/useElementWidth';
 import '@/apps/messages/Messages.css';
 
 /**
  * 메시지: 감상·의견·피드백을 남기는 공간. 쓰기 버튼으로 남긴 피드백 하나가 목록의 항목 하나가 되고,
  * 누구나 어느 피드백에나 답글을 달 수 있다. 창이 좁으면 목록과 대화를 한 화면씩 보여준다.
  */
+/** 앱 폭이 이 이하이면 목록과 대화를 한 화면씩 보여 준다 (Messages.css의 @container (max-width: 640px)와 같은 값) */
+const COMPACT_MAX_WIDTH = 640;
+
 const Messages: React.FC = () => {
 	const conversations = useConversations();
 	const { quitApp } = useAppState();
 	const { selectedThread, isComposing } = conversations;
+	/** 목록과 대화를 한 화면씩 보는지. 휴대폰 셸이라도 iPad mini 세로(744px)처럼 넓으면 둘을 나란히 보여 준다 */
+	const { attach, width } = useElementWidth<HTMLDivElement>();
+	const compact = width <= COMPACT_MAX_WIDTH;
 	// 좁은 창에서 넘어간 방향 (처음에는 애니메이션 없음)
 	const [nav, setNav] = useState<'forward' | 'back' | undefined>();
 	const forward =
@@ -33,12 +40,14 @@ const Messages: React.FC = () => {
 
 	return (
 		<AppWindow title="메시지" appName="messages" chrome="unified">
-			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나) */}
+			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나). 목록이 옆에 보이면 돌아갈 곳이 없으므로 홈.
+			    키보드가 올라오면 머리는 화면 위에 두고 대화와 입력 칸만 키보드 위로 줄인다 */}
 			<MobileNavigation
-				{...(conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
+				fitKeyboard
+				{...(compact && conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
 			/>
 			{conversations.status !== 'error' && (
-				<div className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`} data-nav={nav}>
+				<div ref={attach} className={`messages ${conversations.isChatOpen ? 'chat-open' : ''}`} data-nav={nav}>
 					<Sidebar
 						threads={conversations.threads}
 						selectedId={conversations.selectedId}

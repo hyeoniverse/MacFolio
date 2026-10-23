@@ -28,6 +28,12 @@ export interface MobileNav {
 	 * 그 머리가 흐려지지 않게 끈다. 기본은 켠다 (내용이 스크롤되면 상태 표시줄과 떠 있는 버튼 줄 뒤를 흐린다)
 	 */
 	scrollEdge?: boolean;
+	/**
+	 * 화면 키보드가 올라오면 앱 화면을 보이는 곳(visualViewport)에 맞춘다 (iOS 메시지처럼).
+	 * 머리와 상태 표시줄은 화면 위에 그대로 남고, 스크롤 내용과 아래 입력 칸만 키보드 위로 줄어든다.
+	 * 아래에 입력 칸을 붙여 둔 화면(대화)이 켠다
+	 */
+	fitKeyboard?: boolean;
 }
 
 /** AppWindow(모바일)가 제공한다. 데스크톱에서는 null */

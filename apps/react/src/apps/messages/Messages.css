@@ -710,16 +710,20 @@
 	flex-direction: column;
 	align-items: center;
 	gap: var(--space-8);
-	margin-top: 56px;
+	margin-top: 51px;
 	padding: 0 var(--space-24);
 	font-size: var(--text-subhead);
 }
 
+/* Font Awesome은 line-height: 1이라 줄 높이가 40px인데, 말풍선 글리프는 위아래로 2.5px씩 더 그려진다(잉크 45px).
+   목록 항목은 rise-in 애니메이션으로 합성 레이어가 되고, iOS Safari는 그 레이어를 상자 크기로 클리핑해 말풍선 윗부분이 잘렸다.
+   줄 높이를 50px(1.25)로 늘려 잉크가 상자 안에 들어가게 하고, 늘어난 위아래 5px만큼 바깥 여백을 줄여 자리는 그대로 둔다 */
 .container.mobile .messages-empty-icon {
 	display: block;
-	margin-bottom: var(--space-6);
+	margin-bottom: 1px;
 	color: var(--messages-meta);
 	font-size: 40px;
+	line-height: 1.25;
 	opacity: 0.6;
 }
 
@@ -734,11 +738,14 @@
 	line-height: 1.4;
 }
 
-.container.mobile .messages.chat-open .messages-phone-bottom {
-	display: none;
+/* 대화 화면에서는 숨긴다. 목록과 대화를 나란히 보는 넓은 화면(아래 @container)에서는 목록 칸 아래에 늘 둔다 */
+@container (max-width: 640px) {
+	.container.mobile .messages.chat-open .messages-phone-bottom {
+		display: none;
+	}
 }
 
-.container.mobile .messages:not(.chat-open) .messages-phone-bottom {
+.container.mobile .messages-phone-bottom {
 	display: flex;
 	align-items: center;
 	gap: var(--space-12);
@@ -747,6 +754,24 @@
 	bottom: 12px;
 	left: 16px;
 	z-index: 5;
+}
+
+/* 모바일 셸이지만 목록과 대화를 나란히 보는 넓은 화면 (iPad mini 세로 744px, 가로로 눕힌 휴대폰):
+   검색 알약과 새 피드백은 목록 칸(300px, 좌우 여백 16px) 안에만 둔다. 화면 폭 가득 두면 오른쪽 대화의 입력 칸을 덮는다 */
+@container (min-width: 641px) {
+	.container.mobile .messages-phone-bottom {
+		right: auto;
+		width: calc(300px - 2 * var(--space-16));
+	}
+}
+
+/* 폭이 좁아져도 새 피드백 버튼은 원 그대로, 검색 알약이 줄어든다 */
+.container.mobile .messages-phone-bottom > .phone-float {
+	flex: none;
+}
+
+.container.mobile .messages-phone-search {
+	min-width: 0;
 }
 
 .container.mobile .messages-phone-search {
@@ -866,7 +891,7 @@
 }
 
 /* 휴대폰: 홈 바가 내용 위에 떠 있어, 아래에 떠 있는 것은 홈 바 높이(--phone-bottom-inset)만큼 올린다 */
-.container.mobile .messages:not(.chat-open) .messages-phone-bottom {
+.container.mobile .messages-phone-bottom {
 	bottom: calc(12px + var(--phone-bottom-inset));
 }
 

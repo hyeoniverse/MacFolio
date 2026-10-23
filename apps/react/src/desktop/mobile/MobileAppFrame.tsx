@@ -10,6 +10,7 @@ import { MobileNavContext, type MobileNav } from '@/desktop/window/mobileNav';
 import { appIconUrl } from '@/shared/config/appIcon';
 import { clearImmersiveApp, setImmersiveApp } from '@/desktop/mobile/immersiveStore';
 import { useAppScrolled } from '@/desktop/mobile/useAppScrolled';
+import { useKeyboardViewport } from '@/shared/hooks/useKeyboardInset';
 
 /** 카드를 위로 이만큼 밀면 앱을 닫는다 */
 const SWIPE_CLOSE_PX = 120;
@@ -71,6 +72,18 @@ const MobileAppFrame: React.FC<Props> = ({
 
 	// 화면만 보기: 맨 앞에 있는 동안 상태 표시줄도 숨긴다 (MobileShell이 읽는다)
 	const immersive = foreground && !!nav?.immersive;
+	// 키보드에 맞추기 (fitKeyboard): iOS는 입력 칸을 키보드 위로 올리려고 보이는 곳을 아래로 옮긴다(offsetTop).
+	// 그대로 두면 화면에 고정한 머리도 함께 화면 밖으로 밀려 올라가므로, 앱 화면을 보이는 곳의 위치·높이에 맞춘다.
+	// 상태 표시줄(MobileShell)도 같은 거리만큼 내려 화면 맨 위에 남긴다 (--keyboard-top)
+	const keyboard = useKeyboardViewport(foreground && !!nav?.fitKeyboard);
+	useEffect(() => {
+		if (!keyboard) return;
+		const root = document.documentElement.style;
+		root.setProperty('--keyboard-top', `${keyboard.top}px`);
+		return () => {
+			root.removeProperty('--keyboard-top');
+		};
+	}, [keyboard]);
 	useEffect(() => {
 		if (!immersive) return;
 		setImmersiveApp(appName);
@@ -169,7 +182,9 @@ const MobileAppFrame: React.FC<Props> = ({
 				ref={frameRef}
 				data-app={appName}
 				aria-label={title}
-				className={`container mobile ${chrome === 'unified' ? 'unified' : ''} ${scrolled ? 'scrolled' : ''}`}
+				className={`container mobile ${chrome === 'unified' ? 'unified' : ''} ${scrolled ? 'scrolled' : ''} ${keyboard ? 'keyboard-open' : ''}`}
+				// 키보드가 올라와 있으면 보이는 곳에 맞춘다 (화면은 position: fixed라 레이아웃 뷰포트 기준이다)
+				style={keyboard ? { top: keyboard.top, bottom: 'auto', height: keyboard.height } : undefined}
 				onClick={onClick}
 				// 전환기 안에서는 앱을 누를 수 없고 카드 전체가 버튼이다
 				inert={inSwitcher}

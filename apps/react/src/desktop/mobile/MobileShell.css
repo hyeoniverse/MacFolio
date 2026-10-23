@@ -9,7 +9,8 @@
 	align-items: center;
 	justify-content: space-between;
 	position: fixed;
-	top: 0;
+	/* 키보드에 맞춘 앱(MobileNav의 fitKeyboard)이 맨 앞이면, iOS가 보이는 곳을 옮긴 거리(--keyboard-top)만큼 내려 화면 맨 위에 남긴다 */
+	top: var(--keyboard-top, 0px);
 	right: 0;
 	left: 0;
 	/* 제어 센터(2000)보다 위 */

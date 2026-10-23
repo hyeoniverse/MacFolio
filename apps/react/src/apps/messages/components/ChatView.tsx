@@ -88,6 +88,16 @@ const ChatView: React.FC<Props> = ({
 	useEffect(() => {
 		if (atBottom.current || last?.mine) scrollToEnd();
 	}, [last?.id, last?.mine]);
+	// 대화 칸이 줄면(휴대폰에서 화면 키보드가 올라와 앱 화면이 보이는 곳에 맞춰질 때) 맨 아래를 보고 있었으면 마지막 말풍선을 입력 칸 위에 둔다
+	useEffect(() => {
+		const list = transcript.current;
+		if (!list) return;
+		const observer = new ResizeObserver(() => {
+			if (atBottom.current) scrollToEnd();
+		});
+		observer.observe(list);
+		return () => observer.disconnect();
+	}, []);
 
 	// 새 피드백 화면은 Esc로 그만둔다 (팝업이 열려 있으면 팝업이 먼저 닫힌다)
 	useEffect(() => {
