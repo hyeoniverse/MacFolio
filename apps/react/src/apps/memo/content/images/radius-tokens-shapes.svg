@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 290" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>여섯 이름이 가리키는 둥글기</title>
+<defs><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker></defs>
+<rect width="860" height="290" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">여섯 이름이 가리키는 둥글기</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">같은 120×64 상자에 값만 바꿔 실제 크기로 렌더링했다. 괄호 안은 이후 세 층 구조에서 바뀐 원시 토큰 이름</text>
+<rect x="32" y="90" width="120" height="64" rx="4" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="92" y="127" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">4px</text>
+<text x="92" y="184" font-size="11" fill="#1f2937" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">--radius-xs</text>
+<text x="92" y="201" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">(--radius-4)</text>
+<text x="92" y="222" font-size="11" fill="#374151" text-anchor="middle">작은 표시 · 코드</text>
+<rect x="166" y="90" width="120" height="64" rx="6" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="226" y="127" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">6px</text>
+<text x="226" y="184" font-size="11" fill="#1f2937" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">--radius-sm</text>
+<text x="226" y="201" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">(--radius-6)</text>
+<text x="226" y="222" font-size="11" fill="#374151" text-anchor="middle">작은 버튼 · 입력 칸</text>
+<rect x="300" y="90" width="120" height="64" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="360" y="127" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">8px</text>
+<text x="360" y="184" font-size="11" fill="#1f2937" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">--radius-md</text>
+<text x="360" y="201" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">(--radius-8)</text>
+<text x="360" y="222" font-size="11" fill="#374151" text-anchor="middle">버튼 · 메뉴</text>
+<rect x="434" y="90" width="120" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="494" y="127" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">10px</text>
+<text x="494" y="184" font-size="11" fill="#1f2937" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">--radius-lg</text>
+<text x="494" y="201" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">(--radius-10)</text>
+<text x="494" y="222" font-size="11" fill="#374151" text-anchor="middle">목록 상자</text>
+<rect x="568" y="90" width="120" height="64" rx="14" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="628" y="127" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">14px</text>
+<text x="628" y="184" font-size="11" fill="#1f2937" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">--radius-xl</text>
+<text x="628" y="201" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">(--radius-14)</text>
+<text x="628" y="222" font-size="11" fill="#374151" text-anchor="middle">카드</text>
+<rect x="702" y="90" width="120" height="64" rx="32" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="762" y="127" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">999px</text>
+<text x="762" y="184" font-size="11" fill="#1f2937" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">--radius-full</text>
+<text x="762" y="201" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">(--radius-full)</text>
+<text x="762" y="222" font-size="11" fill="#374151" text-anchor="middle">알약 · 검색 칸</text>
+<text x="32" y="262" font-size="11" fill="#6b7280" text-anchor="start">원(50%)·모서리마다 다른 값·12·22·18px 같은 앱 고유 값은 이름을 붙이지 않았다</text>
+</svg>

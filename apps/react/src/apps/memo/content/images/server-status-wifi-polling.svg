@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>감시하는 화면 수와 관계없이 타이머는 하나</title>
+<defs><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker></defs>
+<rect width="860" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700" text-anchor="start">감시하는 화면 수와 관계없이 타이머는 하나</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">serverStatus.ts의 useServerStatus() → watch()·unwatch(), checkServer(): /health 요청은 한 번에 하나</text>
+<rect x="32" y="110" width="210" height="56" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="137.0" y="133.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">메뉴 막대 Wi-Fi</text>
+<text x="137.0" y="150.0" font-size="11" fill="#374151" text-anchor="middle">ServerMenu</text>
+<rect x="32" y="196" width="210" height="56" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="137.0" y="219.0" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">휴대폰 상태 표시줄</text>
+<text x="137.0" y="236.0" font-size="11" fill="#374151" text-anchor="middle">MobileStatusBar</text>
+<line x1="242" y1="138" x2="296" y2="176" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<line x1="242" y1="224" x2="296" y2="186" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<text x="270" y="285" font-size="10" fill="#6b7280" font-family="ui-monospace, Menlo, monospace" text-anchor="middle">useServerStatus()</text>
+<rect x="300" y="126" width="210" height="110" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="405.0" y="159.0" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">watchers 집계</text>
+<text x="405.0" y="176.0" font-size="11" fill="#374151" text-anchor="middle">0 → 1: 타이머·이벤트 등록</text>
+<text x="405.0" y="193.0" font-size="11" fill="#374151" text-anchor="middle">1 → 0: 모두 해제</text>
+<text x="405.0" y="210.0" font-size="11" fill="#374151" text-anchor="middle">그 밖: 숫자만 증감</text>
+<line x1="510" y1="181" x2="572" y2="181" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<rect x="576" y="84" width="252" height="194" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="702.0" y="125.0" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">check() 호출 시점</text>
+<text x="702.0" y="142.0" font-size="11" fill="#374151" text-anchor="middle">30초마다 (setInterval)</text>
+<text x="702.0" y="159.0" font-size="11" fill="#374151" text-anchor="middle">탭이 다시 보일 때</text>
+<text x="702.0" y="176.0" font-size="11" fill="#374151" text-anchor="middle">(visibilitychange)</text>
+<text x="702.0" y="193.0" font-size="11" fill="#374151" text-anchor="middle">인터넷이 돌아올 때 (online)</text>
+<text x="702.0" y="210.0" font-size="11" fill="#374151" text-anchor="middle">→ 탭이 보일 때만 checkServer()</text>
+<text x="702.0" y="227.0" font-size="11" fill="#374151" text-anchor="middle">offline이면 요청 없이</text>
+<text x="702.0" y="244.0" font-size="11" fill="#374151" text-anchor="middle">'인터넷 연결 없음'</text>
+<rect x="300" y="306" width="528" height="70" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="564.0" y="327.5" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">checkServer() — 진행 중인 요청은 하나</text>
+<text x="564.0" y="344.5" font-size="11" fill="#374151" text-anchor="middle">진행 중이면 같은 Promise 반환 · 6초 시간 제한(AbortSignal.timeout)</text>
+<text x="564.0" y="361.5" font-size="11" fill="#374151" text-anchor="middle">응답 코드·지연 시간·DB 메시지로 상태 분류 → serverStore</text>
+<line x1="702" y1="278" x2="702" y2="302" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+</svg>
