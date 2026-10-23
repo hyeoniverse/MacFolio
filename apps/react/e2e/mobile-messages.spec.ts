@@ -69,6 +69,75 @@ test.describe('메시지 (휴대폰 셸의 넓은 화면): 목록과 대화를 �
 	});
 });
 
+/**
+ * 대화 머리의 재질: 위쪽은 바탕색이 옅게(알파 0.5 이하) 깔리고 아래쪽은 완전히 투명해지는 그라데이션과 블러(::before).
+ * 아래쪽에 선·그림자 경계가 없는지도 본다
+ */
+const headerMaterial = (messages: Locator) =>
+	messages.locator('.messages-chat-header').evaluate((element) => {
+		const layer = getComputedStyle(element, '::before');
+		/** 그라데이션 색 멈춤마다의 알파 (rgba(…, a), color(srgb … / a), transparent) */
+		const alphas = [
+			...layer.backgroundImage.matchAll(/rgba\([^)]*?,\s*([\d.]+)\)|\/\s*([\d.]+)\)|rgb\([^)]*\)|transparent/g),
+		].map((match) => (match[0] === 'transparent' ? 0 : (match[1] ?? match[2]) ? Number(match[1] ?? match[2]) : 1));
+		const filter = layer.backdropFilter || layer.getPropertyValue('-webkit-backdrop-filter');
+		const mask = layer.maskImage || layer.getPropertyValue('-webkit-mask-image');
+		const header = getComputedStyle(element);
+		return {
+			topAlpha: alphas[0],
+			bottomAlpha: alphas.at(-1),
+			blurred: /blur\(/.test(filter),
+			fadingMask: /gradient/.test(mask),
+			solidBackground: header.backgroundColor !== 'rgba(0, 0, 0, 0)',
+			edgeShadow: header.boxShadow !== 'none',
+		};
+	});
+
+const expectHeaderMaterial = async (messages: Locator) => {
+	const material = await headerMaterial(messages);
+	expect(material.topAlpha).toBeGreaterThan(0);
+	expect(material.topAlpha).toBeLessThanOrEqual(0.5);
+	expect(material.bottomAlpha).toBe(0);
+	expect(material).toMatchObject({ blurred: true, fadingMask: true, solidBackground: false, edgeShadow: false });
+};
+
+for (const colorScheme of ['light', 'dark'] as const) {
+	test.describe(`메시지 (휴대폰, ${colorScheme === 'light' ? '라이트' : '다크'} 모드): 반투명 머리`, () => {
+		test.use({ colorScheme });
+
+		test('대화 머리는 옅은 그라데이션과 블러이고, 말풍선은 처음에 머리 아래에 있다가 스크롤하면 머리 뒤로 지나간다', async ({
+			page,
+		}) => {
+			const messages = await openMessages(page);
+			await messages.getByRole('complementary', { name: '대화 목록' }).getByRole('button').first().tap();
+			const textbox = messages.getByRole('textbox', { name: '메시지' });
+			for (let index = 1; index <= 14; index++) {
+				await textbox.fill(`스크롤 시험 ${index}번째 답글입니다`);
+				await textbox.press('Enter');
+			}
+			await expect(messages.getByRole('log')).toContainText('스크롤 시험 14번째');
+			await expectHeaderMaterial(messages);
+
+			const header = messages.locator('.messages-chat-header');
+			const log = messages.getByRole('log');
+			const first = messages.locator('.messages-bubble').first();
+			// 맨 위: 첫 말풍선이 머리 아래에서 보이고 눌린다
+			await log.evaluate((element) => (element.scrollTop = 0));
+			const headerBox = (await header.boundingBox())!;
+			expect((await first.boundingBox())!.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
+			expect(await isOnTop(first)).toBe(true);
+			// 조금 내리면 첫 말풍선이 머리 뒤로 들어간다 (머리가 위에 그려진다)
+			await log.evaluate((element) => (element.scrollTop = 120));
+			const behind = (await first.boundingBox())!;
+			expect(behind.y).toBeLessThan(headerBox.y + headerBox.height);
+			// 맨 아래: 마지막 말풍선은 입력 칸 위
+			await log.evaluate((element) => (element.scrollTop = element.scrollHeight));
+			const last = (await messages.locator('.messages-bubble').last().boundingBox())!;
+			expect(last.y + last.height).toBeLessThanOrEqual((await messages.locator('.messages-field').boundingBox())!.y);
+		});
+	});
+}
+
 test.describe('메시지 (휴대폰): 화면 키보드', () => {
 	/**
 	 * 화면 키보드를 흉내 낸다. 브라우저 시험에서는 키보드가 뜨지 않아서, iOS Safari처럼 보이는 곳(visualViewport)만 줄이고
@@ -145,6 +214,14 @@ test.describe('메시지 (휴대폰): 화면 키보드', () => {
 			expect(lastBubble.y + lastBubble.height).toBeLessThanOrEqual(fieldBox.y);
 			expect(lastBubble.y).toBeGreaterThanOrEqual(top);
 			expect(await isOnTop(textbox)).toBe(true);
+			// 고정된 머리는 옅은 그라데이션과 블러: 뒤로 지나가는 말풍선이 흐리게 비친다
+			await expectHeaderMaterial(messages);
+			// 맨 위로 올리면 첫 말풍선은 머리 아래에서 보인다
+			await messages.getByRole('log').evaluate((log) => (log.scrollTop = 0));
+			const headerBox = (await messages.locator('.messages-chat-header').boundingBox())!;
+			const firstBubble = (await messages.locator('.messages-bubble').first().boundingBox())!;
+			expect(firstBubble.y).toBeGreaterThanOrEqual(headerBox.y + headerBox.height);
+			expect(await isOnTop(messages.locator('.messages-bubble').first())).toBe(true);
 
 			await setKeyboard(page, 0, 0);
 			await expect(messages).not.toHaveClass(/keyboard-open/);

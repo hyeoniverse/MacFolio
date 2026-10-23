@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Avatar from './Avatar';
 import Composer from './Composer';
 import Menu from '@/shared/ui/menu/Menu';
@@ -88,6 +88,21 @@ const ChatView: React.FC<Props> = ({
 	useEffect(() => {
 		if (atBottom.current || last?.mine) scrollToEnd();
 	}, [last?.id, last?.mine]);
+	// 휴대폰에서는 머리가 대화 위에 떠 있는 반투명 막대라(Messages.css), 대화 칸의 위 여백을 머리 높이(--chat-header-height)만큼 둔다.
+	// 첫 말풍선은 머리 아래에서 시작하고, 스크롤하면 머리 뒤로 흐리게 지나간다. 머리 높이는 설명 줄 수에 따라 달라 직접 잰다
+	const section = useRef<HTMLElement>(null);
+	const header = useRef<HTMLElement>(null);
+	useLayoutEffect(() => {
+		const element = header.current;
+		const target = section.current;
+		if (!element || !target) return;
+		const update = () => target.style.setProperty('--chat-header-height', `${element.offsetHeight}px`);
+		update();
+		const observer = new ResizeObserver(update);
+		observer.observe(element);
+		return () => observer.disconnect();
+		// ChatView는 대화마다 key로 새로 그려지므로 처음 한 번만 건다
+	}, []);
 	// 대화 칸이 줄면(휴대폰에서 화면 키보드가 올라와 앱 화면이 보이는 곳에 맞춰질 때) 맨 아래를 보고 있었으면 마지막 말풍선을 입력 칸 위에 둔다
 	useEffect(() => {
 		const list = transcript.current;
@@ -119,6 +134,7 @@ const ChatView: React.FC<Props> = ({
 
 	return (
 		<section
+			ref={section}
 			// 다른 대화를 고르면 서서히 바뀐다 (좁은 창은 Messages.css의 nav-forward)
 			className="messages-chat motion-swap"
 			aria-label={thread ? (thread.pinned ? `${thread.title}의 안내` : `${thread.title}의 피드백`) : '새 피드백'}
@@ -136,7 +152,7 @@ const ChatView: React.FC<Props> = ({
 			</div>
 
 			{thread ? (
-				<header className="messages-chat-header">
+				<header ref={header} className="messages-chat-header">
 					<Avatar name={thread.title} />
 					<span className="messages-name-pill">
 						{displayName(thread.title, thread.ipPrefix)}
@@ -146,7 +162,7 @@ const ChatView: React.FC<Props> = ({
 					{subtitleOf(thread) && <span className="messages-chat-subtitle">{subtitleOf(thread)}</span>}
 				</header>
 			) : (
-				<header className="messages-chat-header">
+				<header ref={header} className="messages-chat-header">
 					<span className="messages-name-pill">새 피드백</span>
 					<span className="messages-chat-subtitle">감상, 의견, 피드백을 남겨 주세요. 보내면 목록에 올라가요</span>
 					<Button className="messages-cancel" onClick={onCancelNew}>

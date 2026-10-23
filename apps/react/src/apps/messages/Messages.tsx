@@ -44,6 +44,8 @@ const Messages: React.FC = () => {
 			    키보드가 올라오면 머리는 화면 위에 두고 대화와 입력 칸만 키보드 위로 줄인다 */}
 			<MobileNavigation
 				fitKeyboard
+				// 대화 화면은 머리가 직접 반투명 재질을 그리므로 스크롤 가장자리 흐림을 끈다 (두 겹으로 흐려지지 않게)
+				scrollEdge={!(compact && conversations.isChatOpen)}
 				{...(compact && conversations.isChatOpen ? { backLabel: '메시지', onBack: back(conversations.back) } : {})}
 			/>
 			{conversations.status !== 'error' && (

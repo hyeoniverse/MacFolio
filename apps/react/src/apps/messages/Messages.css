@@ -801,6 +801,44 @@
 	padding: calc(var(--phone-status) + var(--space-8)) var(--space-16) var(--space-12);
 }
 
+/* 머리는 iOS 메시지처럼 대화 위에 떠 있다: 스크롤한 말풍선이 그 뒤로 흐리게 비친다.
+   불투명한 판 대신, 위쪽만 바탕색이 옅게 깔리고(알파 0.45) 아래로 갈수록 0이 되는 세로 그라데이션과
+   같은 방향으로 풀리는 블러를 의사 요소(::before)에 깐다. 블러 경계는 마스크로 아래쪽을 지워 선·그림자 없이 사라진다.
+   블러를 머리 자체가 아니라 ::before에 두는 이유: 마스크가 머리 안의 아바타·이름 알약까지 지우지 않게.
+   상태 표시줄 자리까지 덮고, 대화 칸은 위 여백을 머리 높이(--chat-header-height, ChatView가 잰다)만큼 두어
+   첫 말풍선은 머리 아래에서 시작한다. 바탕색은 --messages-window-bg라 다크 모드에서는 어두운 그라데이션이 된다.
+   뒤가 비치려면 머리와 대화 칸이 같은 backdrop root 안에 있어야 한다: 부모(.messages-chat 등)에 filter·mask·opacity·backdrop-filter를 두지 않는다 */
+.container.mobile .messages-chat-header {
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: 0;
+	z-index: 3;
+}
+
+.container.mobile .messages-chat-header::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background-image: linear-gradient(
+		color-mix(in srgb, var(--messages-window-bg) 45%, transparent) 0%,
+		color-mix(in srgb, var(--messages-window-bg) 25%, transparent) 55%,
+		transparent 100%
+	);
+	-webkit-backdrop-filter: blur(12px);
+	backdrop-filter: blur(12px);
+	-webkit-mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+	mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+	pointer-events: none;
+}
+
+.container.mobile .messages-transcript {
+	padding-top: calc(var(--chat-header-height, 0px) + var(--space-4));
+	/* 맨 위로 스크롤하면 첫 말풍선이 머리 아래에 오고, 그 밖의 스크롤 위치 계산도 머리 아래를 기준으로 한다 */
+	scroll-padding-top: var(--chat-header-height, 0px);
+}
+
 /* 새 피드백: 이름 알약을 떠 있는 버튼 줄(상태 표시줄 아래 6~50px) 가운데에 맞추고, 설명은 그 줄 아래로 띄운다 */
 .container.mobile .messages-chat-header:has(.messages-cancel) {
 	padding-top: calc(var(--phone-status) + var(--space-12));
