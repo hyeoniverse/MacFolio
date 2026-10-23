@@ -385,10 +385,10 @@
 	background: none;
 }
 
+/* 인용은 본문과 같은 글자색으로 두고 왼쪽 강조선으로만 구분한다 (보조 글자색은 대비가 낮아 읽기 어렵다) */
 .memo-markdown blockquote {
 	padding-left: 1em;
 	border-left: 3px solid var(--memo-accent);
-	color: var(--memo-muted);
 }
 
 .memo-markdown table {
