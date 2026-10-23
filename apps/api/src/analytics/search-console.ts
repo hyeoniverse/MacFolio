@@ -11,6 +11,11 @@ export interface SearchConsoleCredentials {
 	clientEmail: string;
 	/** 서비스 계정 키(JSON)의 private_key. 환경 변수에는 줄바꿈을 \n으로 적어도 된다 */
 	privateKey: string;
+	/**
+	 * 이 주소로 시작하는 페이지의 검색어만 받는다. 도메인 속성은 모든 하위 도메인(www, blog 등)을 담아서,
+	 * 이 사이트 주소로 거르지 않으면 다른 사이트의 검색어가 섞인다 (config.ts의 searchPagePrefix)
+	 */
+	pagePrefix?: string;
 }
 
 /** 검색어 하나: 그날 이 검색어로 이 페이지가 나온(노출) 수와 눌린(클릭) 수, 평균 순위 */
@@ -34,6 +39,9 @@ const QUERY_MAX = 200;
 const PAGE_MAX = 500;
 
 export class SearchConsoleError extends Error {}
+
+/** 페이지 주소가 prefix로 시작하는지 묻는 RE2 정규식 (Search Console의 includingRegex) */
+export const pagePrefixRegex = (prefix: string) => `^${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`;
 
 /** 접근 토큰을 달라고 보내는 서명한 JWT (RS256, 1시간) */
 export function serviceAccountAssertion(credentials: SearchConsoleCredentials, now: Date): string {
@@ -107,6 +115,15 @@ export async function fetchSearchQueries(
 				endDate: range.to,
 				dimensions: ['date', 'query', 'page'],
 				dataState: 'all',
+				...(credentials.pagePrefix && {
+					dimensionFilterGroups: [
+						{
+							filters: [
+								{ dimension: 'page', operator: 'includingRegex', expression: pagePrefixRegex(credentials.pagePrefix) },
+							],
+						},
+					],
+				}),
 				rowLimit: ROW_LIMIT,
 				startRow,
 			}),

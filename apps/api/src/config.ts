@@ -148,6 +148,20 @@ const HYEONIVERSE_GITHUB_ID = 68999618;
 /** 의존성 주입 토큰 */
 export const APP_CONFIG = Symbol('APP_CONFIG');
 
+/**
+ * Search Console에서 받을 페이지 주소의 앞부분. GSC_PAGE_PREFIX가 있으면 그 값,
+ * 도메인 속성(sc-domain:)이면 이 사이트 주소(FRONTEND_URL), URL 접두어 속성이면 이미 이 사이트만 담으므로 거르지 않는다
+ */
+export function searchPagePrefix(
+	siteUrl: string,
+	explicit: string | undefined,
+	frontendUrl: string
+): string | undefined {
+	if (explicit !== undefined) return explicit.trim() || undefined;
+	if (!siteUrl.startsWith('sc-domain:')) return undefined;
+	return `${frontendUrl.replace(/\/+$/, '')}/`;
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 	const databaseUrl = env.DATABASE_URL;
 	if (!databaseUrl) throw new Error('DATABASE_URL이 없습니다. apps/api/.env.example을 참고하세요.');
@@ -164,6 +178,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 	if (!Number.isInteger(adminGithubId) || adminGithubId <= 0)
 		throw new Error(`ADMIN_GITHUB_ID가 올바르지 않습니다: ${env.ADMIN_GITHUB_ID}`);
 
+	const frontendUrl =
+		env.FRONTEND_URL ?? corsOrigins.find((origin) => !origin.includes('*')) ?? 'http://localhost:5173';
+
 	const ipHashSecret = env.IP_HASH_SECRET || (env.NODE_ENV === 'production' ? '' : 'macfolio-dev-ip-hash-secret');
 	if (!ipHashSecret) throw new Error('IP_HASH_SECRET이 없습니다. 배포에서는 긴 무작위 값을 넣어 주세요.');
 
@@ -172,7 +189,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		port,
 		databaseUrl,
 		corsOrigins,
-		frontendUrl: env.FRONTEND_URL ?? corsOrigins.find((origin) => !origin.includes('*')) ?? 'http://localhost:5173',
+		frontendUrl,
 		apiUrl: (env.API_URL ?? `http://localhost:${port}`).replace(/\/$/, ''),
 		trustProxy: Number(env.TRUST_PROXY ?? 0) || 0,
 		commentRateLimit: Number(env.COMMENT_RATE_LIMIT ?? 5) || 5,
@@ -259,7 +276,12 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
 		},
 		searchConsole:
 			env.GSC_SITE_URL && env.GSC_CLIENT_EMAIL && env.GSC_PRIVATE_KEY
-				? { siteUrl: env.GSC_SITE_URL, clientEmail: env.GSC_CLIENT_EMAIL, privateKey: env.GSC_PRIVATE_KEY }
+				? {
+						siteUrl: env.GSC_SITE_URL,
+						clientEmail: env.GSC_CLIENT_EMAIL,
+						privateKey: env.GSC_PRIVATE_KEY,
+						pagePrefix: searchPagePrefix(env.GSC_SITE_URL, env.GSC_PAGE_PREFIX, frontendUrl),
+					}
 				: undefined,
 		auth: {
 			githubClientId: env.GITHUB_CLIENT_ID || undefined,

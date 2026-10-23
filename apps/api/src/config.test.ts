@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadConfig } from './config.js';
+import { loadConfig, searchPagePrefix } from './config.js';
 
 describe('loadConfig', () => {
 	const DATABASE_URL = 'postgresql://u:p@localhost:5432/db';
@@ -144,4 +144,27 @@ it('R2 키 세 개가 다 있어야 문서 올리기가 켜지고, 버킷 이름
 	expect(
 		loadConfig({ DATABASE_URL, R2_ACCOUNT_ID: 'acc', R2_ACCESS_KEY_ID: 'AK', R2_SECRET_ACCESS_KEY: 'SK' }).documents.r2
 	).toEqual({ accountId: 'acc', accessKeyId: 'AK', secretAccessKey: 'SK', bucket: 'macfolio-files' });
+});
+
+it('Search Console: 도메인 속성은 이 사이트 주소로 시작하는 페이지만 받고, URL 접두어 속성은 거르지 않는다', () => {
+	const site = 'https://macfolio.hyeoniverse.com';
+	expect(searchPagePrefix('sc-domain:hyeoniverse.com', undefined, site)).toBe('https://macfolio.hyeoniverse.com/');
+	expect(searchPagePrefix('sc-domain:hyeoniverse.com', undefined, `${site}/`)).toBe(
+		'https://macfolio.hyeoniverse.com/'
+	);
+	expect(searchPagePrefix('https://macfolio.hyeoniverse.com/', undefined, site)).toBeUndefined();
+	// 직접 적으면 그 값, 빈 값이면 거르지 않는다
+	expect(searchPagePrefix('sc-domain:hyeoniverse.com', 'https://blog.hyeoniverse.com/', site)).toBe(
+		'https://blog.hyeoniverse.com/'
+	);
+	expect(searchPagePrefix('sc-domain:hyeoniverse.com', '', site)).toBeUndefined();
+	expect(
+		loadConfig({
+			DATABASE_URL: 'postgresql://u:p@localhost:5432/db',
+			CORS_ORIGINS: `${site},https://*-macfolio.hyeoniverse.workers.dev`,
+			GSC_SITE_URL: 'sc-domain:hyeoniverse.com',
+			GSC_CLIENT_EMAIL: 'search@project.iam.gserviceaccount.com',
+			GSC_PRIVATE_KEY: 'key',
+		}).searchConsole?.pagePrefix
+	).toBe('https://macfolio.hyeoniverse.com/');
 });

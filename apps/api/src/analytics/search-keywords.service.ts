@@ -65,8 +65,11 @@ export class SearchKeywordsService implements OnModuleInit, OnModuleDestroy {
 		const from = latest ? shiftDay(latest.day < to ? latest.day : to, -REFRESH_DAYS) : shiftDay(to, -BACKFILL_DAYS);
 		try {
 			const rows = await fetchSearchQueries(credentials, { from, to }, now);
+			const prefix = credentials.pagePrefix;
 			await this.prisma.$transaction(async (tx) => {
 				await tx.searchQueryStat.deleteMany({ where: { day: { gte: from, lte: to } } });
+				// 페이지로 거르기 전에(또는 다른 주소로) 가져 둔 줄: 다른 사이트의 검색어라 지운다
+				if (prefix) await tx.searchQueryStat.deleteMany({ where: { NOT: { page: { startsWith: prefix } } } });
 				for (let start = 0; start < rows.length; start += INSERT_CHUNK)
 					await tx.searchQueryStat.createMany({ data: rows.slice(start, start + INSERT_CHUNK), skipDuplicates: true });
 			});
@@ -85,6 +88,8 @@ export class SearchKeywordsService implements OnModuleInit, OnModuleDestroy {
 		if (!range) throw new BadRequestException(`기간은 1~${MAX_RANGE_DAYS}일입니다 (from ≤ to).`);
 		const { from, to } = range;
 		const configured = Boolean(this.config.searchConsole);
+		// 다음 가져오기에서 지우기 전에도 다른 사이트의 줄이 보이지 않게 (도메인 속성으로 이미 가져 둔 자료)
+		const prefix = this.config.searchConsole?.pagePrefix ?? '';
 		const rows = configured
 			? await this.prisma.$queryRaw<
 					{ query: string; page: string; clicks: number; impressions: number; position: number }[]
@@ -94,7 +99,7 @@ export class SearchKeywordsService implements OnModuleInit, OnModuleDestroy {
 						SUM("impressions")::int AS "impressions",
 						COALESCE(SUM("position" * "impressions") / NULLIF(SUM("impressions"), 0), AVG("position"))::float8 AS "position"
 					FROM "SearchQueryStat"
-					WHERE "day" >= ${from} AND "day" <= ${to}
+					WHERE "day" >= ${from} AND "day" <= ${to} AND starts_with("page", ${prefix})
 					GROUP BY "query", "page"
 					ORDER BY "impressions" DESC, "clicks" DESC, "query" ASC
 					LIMIT ${MAX_ROWS}`
