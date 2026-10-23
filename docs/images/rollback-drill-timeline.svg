@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>되돌리기 훈련의 진행 순서와 API 응답이 중단되는 두 구간</title>
+  <rect width="640" height="400" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">되돌리기 훈련: ops/deploy.sh sha-dead000</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+
+  <!-- 단계 상자 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="32" y="72" width="104" height="70" rx="8" fill="#f3f4f6"/>
+    <text x="84" y="96" font-weight="700" fill="#1f2937">배포 직전 백업</text>
+    <text x="84" y="116" fill="#6b7280">~/backups</text>
+    <text x="84" y="132" fill="#6b7280">태그 변경 전</text>
+
+    <rect x="148" y="72" width="104" height="70" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="200" y="96" font-weight="700" fill="#b91c1c">교체 ①</text>
+    <text x="200" y="116" fill="#6b7280">옛 컨테이너 중지</text>
+    <text x="200" y="132" fill="#6b7280">sha-dead000 실행</text>
+
+    <rect x="264" y="72" width="168" height="70" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+    <text x="348" y="96" font-weight="700" fill="#b45309">healthy 대기 (120초)</text>
+    <text x="348" y="116" fill="#6b7280">starting → unhealthy</text>
+    <text x="348" y="132" fill="#6b7280">앱은 정상 응답</text>
+
+    <rect x="444" y="72" width="80" height="70" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+    <text x="484" y="96" font-weight="700" fill="#b91c1c">교체 ②</text>
+    <text x="484" y="116" fill="#6b7280">이전 태그로</text>
+    <text x="484" y="132" fill="#6b7280">되돌림</text>
+
+    <rect x="536" y="72" width="72" height="70" rx="8" fill="#ecfdf5" stroke="#86efac"/>
+    <text x="572" y="96" font-weight="700" fill="#15803d">종료</text>
+    <text x="572" y="116" fill="#6b7280">exit 1</text>
+    <text x="572" y="132" fill="#6b7280">healthy</text>
+  </g>
+
+  <!-- 응답 막대 -->
+  <text x="32" y="178" font-size="13" font-weight="700" fill="#1f2937">API 응답</text>
+  <rect x="32" y="190" width="116" height="20" rx="4" fill="#86efac"/>
+  <rect x="148" y="190" width="104" height="20" rx="4" fill="#fca5a5"/>
+  <rect x="252" y="190" width="192" height="20" rx="4" fill="#86efac"/>
+  <rect x="444" y="190" width="80" height="20" rx="4" fill="#fca5a5"/>
+  <rect x="524" y="190" width="84" height="20" rx="4" fill="#86efac"/>
+  <g font-size="11" text-anchor="middle" fill="#7f1d1d">
+    <text x="200" y="204">중단 (수 초~수십 초)</text>
+    <text x="484" y="204">중단</text>
+  </g>
+
+  <!-- 상태 표시 -->
+  <text x="32" y="246" font-size="13" font-weight="700" fill="#1f2937">.env의 API_TAG</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace">
+    <rect x="32" y="258" width="116" height="26" rx="6" fill="#f3f4f6"/><text x="90" y="276" text-anchor="middle" fill="#1f2937">sha-65ff5e6</text>
+    <rect x="148" y="258" width="296" height="26" rx="6" fill="#fffbeb"/><text x="296" y="276" text-anchor="middle" fill="#b45309">sha-dead000</text>
+    <rect x="444" y="258" width="164" height="26" rx="6" fill="#f3f4f6"/><text x="526" y="276" text-anchor="middle" fill="#1f2937">sha-65ff5e6</text>
+  </g>
+
+  <text x="32" y="320" font-size="13" font-weight="700" fill="#1f2937">GitHub Actions</text>
+  <g font-size="12">
+    <rect x="32" y="332" width="576" height="26" rx="6" fill="#f3f4f6"/>
+    <text x="44" y="350" fill="#1f2937">API 배포 (Run workflow) · 서버에서 배포: exit code 1 → 실행 실패(빨간 X) · 바깥에서 버전 확인: 건너뜀</text>
+  </g>
+  <text x="32" y="384" font-size="11" fill="#6b7280">2026-10-18 첫 훈련: 전체 약 3분, 되돌리기 41초. 막대 길이는 순서만 나타내며 시간 비례가 아니다</text>
+</svg>

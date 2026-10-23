@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>overflow-y: auto만 지정하면 overflow-x도 auto로 계산되어, 사방 40px 크게 그린 ::before 배경 때문에 가로 스크롤이 40px 생긴다. overflow-x: hidden을 지정하면 가로 스크롤이 없다</title>
+<rect width="800" height="330" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">넘치게 그린 배경이 만든 가로 스크롤</text>
+<text x="40" y="66" font-size="12.5" fill="#b91c1c" font-weight="600">수정 전: overflow-y: auto</text>
+<text x="40" y="84" font-size="11" fill="#6b7280">→ overflow-x도 auto로 계산된다</text>
+<rect x="60" y="108" width="300" height="170" rx="6" fill="#fde68a" fill-opacity="0.55" stroke="#d97706" stroke-dasharray="5 4"/>
+<text x="68" y="124" font-size="10.5" fill="#92400e">::before (inset: -40px): 스크롤 가능한 영역에 포함</text>
+<rect x="100" y="140" width="220" height="106" rx="4" fill="#ffffff" fill-opacity="0.85" stroke="#374151" stroke-width="2"/>
+<text x="210" y="180" font-size="12" fill="#1f2937" text-anchor="middle">시트 (보이는 영역)</text>
+<text x="210" y="198" font-size="10.5" fill="#6b7280" text-anchor="middle">제목 · 재생 시간</text>
+<line x1="320" y1="262" x2="360" y2="262" stroke="#ef4444" stroke-width="2"/>
+<line x1="320" y1="256" x2="320" y2="268" stroke="#ef4444" stroke-width="2"/>
+<line x1="360" y1="256" x2="360" y2="268" stroke="#ef4444" stroke-width="2"/>
+<text x="340" y="292" font-size="11" fill="#ef4444" text-anchor="middle">40px 넘침</text>
+<text x="210" y="312" font-size="11.5" fill="#b91c1c" text-anchor="middle">가로로 밀면 scrollLeft = 40, 왼쪽 여백이 사라진다</text>
+<line x1="400" y1="56" x2="400" y2="310" stroke="#e5e7eb"/>
+<text x="440" y="66" font-size="12.5" fill="#4338ca" font-weight="600">수정 후: overflow-x: hidden 추가</text>
+<text x="440" y="84" font-size="11" fill="#6b7280">→ 세로로만 스크롤한다</text>
+<rect x="500" y="140" width="220" height="106" rx="4" fill="#fde68a" fill-opacity="0.55" stroke="#374151" stroke-width="2"/>
+<text x="610" y="180" font-size="12" fill="#1f2937" text-anchor="middle">시트 (보이는 영역)</text>
+<text x="610" y="198" font-size="10.5" fill="#6b7280" text-anchor="middle">제목 · 재생 시간</text>
+<text x="610" y="226" font-size="10.5" fill="#92400e" text-anchor="middle">::before는 시트 경계에서 클리핑</text>
+<text x="610" y="312" font-size="11.5" fill="#4338ca" text-anchor="middle">가로로 밀어도 scrollLeft = 0</text>
+</svg>
