@@ -94,16 +94,16 @@ export const MOBILE_WIDGET_PAGE_COUNT = 3;
 /** 한 페이지에 둘 수 있는 위젯 줄 수 (작은 위젯 둘이 한 줄, 중간 위젯은 혼자 한 줄) */
 export const MAX_WIDGET_ROWS = 3;
 
-/** 휴대폰 홈 화면의 처음 위젯 (iOS처럼 페이지마다 위) */
+/** 휴대폰 홈 화면의 처음 위젯 (iOS처럼 페이지마다 위). 첫 화면에서 바로 재생할 수 있게 음악 위젯을 1쪽에 둔다 */
 export const DEFAULT_MOBILE_WIDGETS: PageWidget[][] = [
 	[
 		{ id: 'profile', kind: 'profile', size: 'medium' },
-		{ id: 'github', kind: 'github', size: 'medium' },
+		{ id: 'music', kind: 'music', size: 'medium' },
 	],
 	[
 		{ id: 'weather', kind: 'weather', size: 'small' },
 		{ id: 'calendar', kind: 'calendar', size: 'small' },
-		{ id: 'music', kind: 'music', size: 'medium' },
+		{ id: 'github', kind: 'github', size: 'medium' },
 	],
 	[
 		{ id: 'posts', kind: 'posts', size: 'medium' },
@@ -111,6 +111,42 @@ export const DEFAULT_MOBILE_WIDGETS: PageWidget[][] = [
 		{ id: 'clock', kind: 'clock', size: 'small' },
 	],
 ];
+
+/**
+ * 예전 처음 위젯 (id·종류·크기 순서). 방문자가 위젯을 옮기거나 빼거나 더하지 않았어도, 사진 위젯의 앨범처럼
+ * 고른 값을 바꾸면 처음 구성이 통째로 저장된다. 저장된 구성이 이 중 하나와 같으면 방문자가 고른 구성이 아니므로
+ * 지금 처음 위젯으로 바꾼다 (upgradeMobileDefault)
+ */
+const PREVIOUS_MOBILE_DEFAULTS: readonly (readonly string[])[] = [
+	// GitHub 잔디를 1쪽에 둔 구성 (92e281ccc ~ 음악 위젯을 1쪽으로 옮기기 전)
+	[
+		'profile:profile:medium github:github:medium',
+		'weather:weather:small calendar:calendar:small music:music:medium',
+		'posts:posts:medium photos:photos:small clock:clock:small',
+	],
+	// 처음 휴대폰 위젯 편집을 만든 구성 (f11e3058d)
+	[
+		'profile:profile:medium music:music:medium',
+		'weather:weather:small calendar:calendar:small posts:posts:medium',
+		'github:github:medium photos:photos:small clock:clock:small',
+	],
+];
+
+const signatureOf = (pages: readonly (readonly PageWidget[])[]) =>
+	pages.map((page) => page.map(({ id, kind, size }) => `${id}:${kind}:${size}`).join(' '));
+
+/** 저장된 구성이 예전 처음 위젯 그대로면 지금 처음 위젯으로 바꾼다. 고른 값(앨범·글 보기)은 같은 id의 위젯에 옮긴다 */
+export function upgradeMobileDefault(pages: PageWidget[][]): PageWidget[][] {
+	const signature = signatureOf(pages).join('|');
+	if (!PREVIOUS_MOBILE_DEFAULTS.some((previous) => previous.join('|') === signature)) return pages;
+	const saved = pages.flat();
+	return DEFAULT_MOBILE_WIDGETS.map((page) =>
+		page.map((widget) => {
+			const { album, posts } = saved.find((item) => item.id === widget.id) ?? {};
+			return { ...widget, ...optionsOf(album, posts) };
+		})
+	);
+}
 
 /** 위젯들이 차지하는 줄 수 (격자는 빈자리를 앞에서부터 채운다: 작은 위젯은 둘씩 한 줄) */
 export function widgetRows(widgets: readonly { size: WidgetSize }[]): number {

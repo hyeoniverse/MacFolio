@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { fillOptions, parseWidgets, withOptions, type PageWidget, type PlacedWidget } from './catalog';
+import {
+	DEFAULT_MOBILE_WIDGETS,
+	fillOptions,
+	parseWidgets,
+	upgradeMobileDefault,
+	withOptions,
+	type PageWidget,
+	type PlacedWidget,
+} from './catalog';
 import { otherQuoteIndex, QUOTES, quoteOf } from './quotes';
 
 const desktop: PlacedWidget[] = [
@@ -75,5 +83,57 @@ describe('명언 위젯', () => {
 		expect(parseWidgets([{ id: 'quote', kind: 'quote', size: 'small', col: 0, row: 0 }])).toEqual([
 			{ id: 'quote', kind: 'quote', size: 'small', col: 0, row: 0 },
 		]);
+	});
+});
+
+describe('휴대폰 처음 위젯', () => {
+	const w = (id: string, size: 'small' | 'medium', extra: Partial<PageWidget> = {}): PageWidget => ({
+		id,
+		kind: id as PageWidget['kind'],
+		size,
+		...extra,
+	});
+	const ids = (pages: PageWidget[][]) => pages.map((page) => page.map((widget) => widget.id));
+
+	it('1쪽에 소개·음악, 2쪽에 날씨·캘린더·GitHub 잔디', () => {
+		expect(ids(DEFAULT_MOBILE_WIDGETS)).toEqual([
+			['profile', 'music'],
+			['weather', 'calendar', 'github'],
+			['posts', 'photos', 'clock'],
+		]);
+	});
+
+	it('예전 처음 구성 그대로 저장되어 있으면 지금 처음 구성으로 바꾸고, 고른 값은 같은 위젯에 옮긴다', () => {
+		const saved = [
+			[w('profile', 'medium'), w('github', 'medium')],
+			[w('weather', 'small'), w('calendar', 'small'), w('music', 'medium')],
+			[w('posts', 'medium', { posts: 'popular' }), w('photos', 'small', { album: 'qru' }), w('clock', 'small')],
+		];
+		const upgraded = upgradeMobileDefault(saved);
+		expect(ids(upgraded)).toEqual(ids(DEFAULT_MOBILE_WIDGETS));
+		expect(upgraded[2][0]).toMatchObject({ posts: 'popular' });
+		expect(upgraded[2][1]).toMatchObject({ album: 'qru' });
+		// 처음 편집을 만든 시각의 구성 (2쪽 메모, 3쪽 GitHub)도 바꾼다
+		const older = [
+			[w('profile', 'medium'), w('music', 'medium')],
+			[w('weather', 'small'), w('calendar', 'small'), w('posts', 'medium')],
+			[w('github', 'medium'), w('photos', 'small'), w('clock', 'small')],
+		];
+		expect(ids(upgradeMobileDefault(older))).toEqual(ids(DEFAULT_MOBILE_WIDGETS));
+	});
+
+	it('방문자가 바꾼 구성(빼거나 더하거나 크기가 다르면)은 그대로 둔다', () => {
+		const removed = [
+			[w('profile', 'medium'), w('github', 'medium')],
+			[w('weather', 'small'), w('music', 'medium')],
+			[],
+		];
+		expect(upgradeMobileDefault(removed)).toBe(removed);
+		const resized = [
+			[w('profile', 'medium'), w('github', 'small')],
+			[w('weather', 'small'), w('calendar', 'small'), w('music', 'medium')],
+			[w('posts', 'medium'), w('photos', 'small'), w('clock', 'small')],
+		];
+		expect(upgradeMobileDefault(resized)).toBe(resized);
 	});
 });

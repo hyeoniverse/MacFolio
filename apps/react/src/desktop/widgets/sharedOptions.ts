@@ -7,17 +7,25 @@ import {
 	fillOptions,
 	parseMobileWidgets,
 	parseWidgets,
+	upgradeMobileDefault,
 	withOptions,
 	type PageWidget,
 	type PlacedWidget,
 	type WidgetKind,
 	type WidgetOptions,
 } from './catalog';
+import { normalizeOrder } from '@/desktop/mobile/widgetOrder';
 
 const readDesktop = (): PlacedWidget[] =>
 	parseWidgets(readJson(STORAGE_KEYS.desktopWidgets)) ?? DEFAULT_DESKTOP_WIDGETS;
-const readMobile = (): PageWidget[][] =>
-	parseMobileWidgets(readJson(STORAGE_KEYS.mobileWidgets)) ?? DEFAULT_MOBILE_WIDGETS;
+/**
+ * 저장된 휴대폰 위젯. 예전 처음 구성 그대로면 지금 처음 구성으로 바꾸고(upgradeMobileDefault),
+ * 페이지마다 보이는 순서로 늘어놓는다(normalizeOrder: 끌어 옮길 때 순서와 화면의 자리가 맞게)
+ */
+const readMobile = (): PageWidget[][] => {
+	const saved = parseMobileWidgets(readJson(STORAGE_KEYS.mobileWidgets));
+	return saved ? upgradeMobileDefault(saved).map(normalizeOrder) : DEFAULT_MOBILE_WIDGETS;
+};
 
 /** 바탕화면 위젯. 고르지 않은 값은 휴대폰의 같은 위젯이 고른 값으로 */
 export const loadDesktopWidgets = (): PlacedWidget[] => fillOptions(readDesktop(), readMobile().flat());

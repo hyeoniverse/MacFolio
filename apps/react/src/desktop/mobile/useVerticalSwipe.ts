@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { canStartSwipe, classifyMove, type SwipeDirection } from '@/desktop/mobile/swipe';
+import { canStartSwipe, classifyMove, ownsGesture, type SwipeDirection } from '@/desktop/mobile/swipe';
 
 interface Options {
 	/** 켜져 있을 때만 듣는다 */
@@ -30,20 +30,24 @@ export function useVerticalSwipe({ enabled, direction, onMove, onEnd, onCancel }
 
 	useEffect(() => {
 		if (!enabled) return;
-		let start: { x: number; y: number } | null = null;
+		let start: { x: number; y: number; target: EventTarget | null } | null = null;
 		let state: 'undecided' | 'swipe' | 'other' = 'undecided';
 		let ignoreClickUntil = 0;
 
 		const distanceTo = (y: number) => Math.max(0, direction === 'down' ? y - start!.y : start!.y - y);
 
 		const begin = (x: number, y: number, target: EventTarget | null) => {
-			start = canStartSwipe(target, direction) ? { x, y } : null;
+			start = canStartSwipe(target, direction) ? { x, y, target } : null;
 			state = 'undecided';
 		};
 		/** 쓸기로 판단했으면 true */
 		const move = (x: number, y: number) => {
 			if (!start || state === 'other') return false;
-			if (state === 'undecided') state = classifyMove(x - start.x, y - start.y, direction);
+			if (state === 'undecided') {
+				state = classifyMove(x - start.x, y - start.y, direction);
+				// 누른 뒤에 스스로 끄는 요소가 되었으면 놓아준다 (홈 화면 위젯을 길게 눌러 편집이 되고 그대로 끄는 경우)
+				if (state === 'swipe' && ownsGesture(start.target)) state = 'other';
+			}
 			if (state !== 'swipe') return false;
 			handlers.current.onMove(distanceTo(y));
 			return true;
