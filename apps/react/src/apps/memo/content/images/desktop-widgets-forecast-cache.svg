@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>날씨 응답 공유: 장소·단위별로 15분 보관</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-sky" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0369a1"/></marker><marker id="a-violet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6d28d9"/></marker></defs>
+<rect width="860" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">날씨 응답 공유: 장소·단위별로 15분 보관</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">useForecasts가 응답을 메모리에 보관하고, 위젯과 날씨 앱이 같은 값을 읽는다</text>
+<rect x="32" y="100" width="190" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="127.0" y="127.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">날씨 위젯</text>
+<text x="127.0" y="144.5" font-size="11" fill="#374151" text-anchor="middle">바탕화면·홈 화면</text>
+<rect x="32" y="210" width="190" height="64" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="127.0" y="237.5" font-size="13" fill="#4f46e5" font-weight="700" text-anchor="middle">날씨 앱</text>
+<text x="127.0" y="254.5" font-size="11" fill="#374151" text-anchor="middle">창을 연 시각</text>
+<rect x="330" y="120" width="220" height="140" rx="10" fill="#fffbeb" stroke="#b45309" stroke-width="1.5"/>
+<text x="440.0" y="169.5" font-size="13" fill="#b45309" font-weight="700" text-anchor="middle">useForecasts 보관소</text>
+<text x="440.0" y="186.5" font-size="11" fill="#374151" text-anchor="middle">키: 장소 + 단위</text>
+<text x="440.0" y="202.5" font-size="11" fill="#374151" text-anchor="middle">예: 서울 · 섭씨</text>
+<text x="440.0" y="218.5" font-size="11" fill="#374151" text-anchor="middle">성공 15분 · 실패 10초</text>
+<rect x="650" y="150" width="180" height="80" rx="10" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="740.0" y="185.5" font-size="13" fill="#374151" font-weight="700" text-anchor="middle">Open-Meteo</text>
+<text x="740.0" y="202.5" font-size="11" fill="#374151" text-anchor="middle">forecast API</text>
+<line x1="222" y1="132" x2="326" y2="160" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<text x="270" y="132" font-size="11" fill="#4f46e5" text-anchor="middle">① 서울 요청</text>
+<line x1="222" y1="242" x2="326" y2="222" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#a-blue)"/>
+<text x="270" y="252" font-size="11" fill="#4f46e5" text-anchor="middle">③ 서울 요청</text>
+<line x1="550" y1="175" x2="646" y2="175" stroke="#374151" stroke-width="1.8" marker-end="url(#a-gray)"/>
+<text x="598" y="165" font-size="11" fill="#374151" text-anchor="middle">② 보관 값 없음</text>
+<line x1="646" y1="205" x2="554" y2="205" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<text x="598" y="222" font-size="11" fill="#15803d" text-anchor="middle">응답 보관</text>
+<text x="440" y="300" font-size="12" fill="#15803d" font-weight="700" text-anchor="middle">③은 보관된 응답을 그대로 반환하므로 Open-Meteo 요청은 1회</text>
+<text x="440" y="320" font-size="11" fill="#6b7280" text-anchor="middle">&#x27;다시 시도&#x27;는 보관 값과 관계없이 새로 요청</text>
+</svg>
