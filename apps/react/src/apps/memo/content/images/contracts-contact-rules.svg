@@ -10,7 +10,7 @@
 <g font-size="10.5" fill="#374151">
 <rect x="56" y="50" width="264" height="58" rx="8" fill="#fff1f2" stroke="#fda4af"/>
 <text x="68" y="68" font-weight="600">react · validateContact</text>
-<text x="68" y="84">trim · 비었나 · 길이 · 이메일 모양 → 칸마다 문구</text>
+<text x="68" y="84">trim · 빈 값 · 길이 · 이메일 모양 → 칸마다 문구</text>
 <text x="68" y="99">"이름은 30자까지 입력할 수 있습니다."</text>
 <rect x="344" y="50" width="264" height="58" rx="8" fill="#fff1f2" stroke="#fda4af"/>
 <text x="356" y="68" font-weight="600">api · parseContact</text>
@@ -40,10 +40,10 @@
 <!-- rule rows -->
 <text x="32" y="250" font-size="12" font-weight="600" fill="#1f2937">칸 하나의 규칙 목록 (name)</text>
 <g font-size="10" fill="#374151">
-<rect x="32" y="260" width="118" height="24" rx="6" fill="#f3f4f6"/><text x="91" y="276" text-anchor="middle">비었나</text>
+<rect x="32" y="260" width="118" height="24" rx="6" fill="#f3f4f6"/><text x="91" y="276" text-anchor="middle">빈 값인가</text>
 <rect x="158" y="260" width="118" height="24" rx="6" fill="#f3f4f6"/><text x="217" y="276" text-anchor="middle">30자 이하인가</text>
 <rect x="284" y="260" width="118" height="24" rx="6" fill="#f3f4f6"/><text x="343" y="276" text-anchor="middle">한 줄인가</text>
-<rect x="410" y="260" width="118" height="24" rx="6" fill="#f3f4f6"/><text x="469" y="276" text-anchor="middle">제어 문자 없나</text>
+<rect x="410" y="260" width="118" height="24" rx="6" fill="#f3f4f6"/><text x="469" y="276" text-anchor="middle">제어 문자가 없는가</text>
 </g>
-<text x="32" y="306" font-size="10.5" fill="#6b7280">순서대로 보다가 처음 어긋난 규칙의 문구만 낸다. 빈 이름에 "30자" 문구가 같이 붙지 않는다</text>
+<text x="32" y="306" font-size="10.5" fill="#6b7280">순서대로 검사해 처음 어긋난 규칙의 문구만 반환한다. 빈 이름에 "30자" 문구가 같이 붙지 않는다</text>
 </svg>

