@@ -86,7 +86,7 @@ const headerMaterial = (messages: Locator) =>
 		return {
 			topAlpha: alphas[0],
 			bottomAlpha: alphas.at(-1),
-			blurred: /blur\(/.test(filter),
+			blur: filter.match(/blur\(([^)]*)\)/)?.[1],
 			fadingMask: /gradient/.test(mask),
 			solidBackground: header.backgroundColor !== 'rgba(0, 0, 0, 0)',
 			edgeShadow: header.boxShadow !== 'none',
@@ -98,7 +98,7 @@ const expectHeaderMaterial = async (messages: Locator) => {
 	expect(material.topAlpha).toBeGreaterThan(0);
 	expect(material.topAlpha).toBeLessThanOrEqual(0.5);
 	expect(material.bottomAlpha).toBe(0);
-	expect(material).toMatchObject({ blurred: true, fadingMask: true, solidBackground: false, edgeShadow: false });
+	expect(material).toMatchObject({ blur: '6px', fadingMask: true, solidBackground: false, edgeShadow: false });
 };
 
 for (const colorScheme of ['light', 'dark'] as const) {

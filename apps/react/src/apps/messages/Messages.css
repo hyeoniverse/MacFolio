@@ -826,8 +826,8 @@
 		color-mix(in srgb, var(--messages-window-bg) 25%, transparent) 55%,
 		transparent 100%
 	);
-	-webkit-backdrop-filter: blur(12px);
-	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(6px);
+	backdrop-filter: blur(6px);
 	-webkit-mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
 	mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
 	pointer-events: none;
