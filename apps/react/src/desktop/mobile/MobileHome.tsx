@@ -164,6 +164,9 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		const observer = new ResizeObserver(measure);
 		observer.observe(pagesEl);
 		for (const element of pagesEl.querySelectorAll('.mobile-widgets')) observer.observe(element);
+		// 아이콘 높이(줄 높이 계산의 기준)가 바뀌어도 다시 잰다
+		const icon = pagesEl.querySelector('.mobile-app');
+		if (icon) observer.observe(icon);
 		return () => observer.disconnect();
 	}, [shownWidgets]);
 
