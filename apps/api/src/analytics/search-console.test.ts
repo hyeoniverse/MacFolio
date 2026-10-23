@@ -1,6 +1,6 @@
 import { createVerify, generateKeyPairSync } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { fetchSearchQueries, SearchConsoleError, serviceAccountAssertion } from './search-console.js';
+import { fetchSearchQueries, pagePrefixRegex, SearchConsoleError, serviceAccountAssertion } from './search-console.js';
 
 const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const credentials = {
@@ -111,5 +111,26 @@ describe('Search Console', () => {
 		await expect(fetchSearchQueries(credentials, { from: '2026-10-14', to: '2026-10-21' }, now, fake)).rejects.toThrow(
 			'Google API가 거절했습니다 (400): invalid_grant Invalid JWT Signature.'
 		);
+	});
+
+	it('pagePrefix가 있으면 그 주소로 시작하는 페이지만 달라고 묻는다 (도메인 속성의 다른 하위 도메인을 뺀다)', async () => {
+		const bodies: Record<string, unknown>[] = [];
+		const fake = (async (url: string, init?: RequestInit) => {
+			if (url.startsWith('https://oauth2.googleapis.com/token')) return Response.json({ access_token: 'token-1' });
+			bodies.push(JSON.parse(String(init?.body)));
+			return Response.json({ rows: [] });
+		}) as typeof fetch;
+		const range = { from: '2026-10-14', to: '2026-10-21' };
+		await fetchSearchQueries({ ...credentials, pagePrefix: 'https://macfolio.example.com/' }, range, now, fake);
+		await fetchSearchQueries(credentials, range, now, fake);
+		expect(bodies[0].dimensionFilterGroups).toEqual([
+			{
+				filters: [{ dimension: 'page', operator: 'includingRegex', expression: '^https://macfolio\\.example\\.com/' }],
+			},
+		]);
+		expect(bodies[1]).not.toHaveProperty('dimensionFilterGroups');
+		// 정규식 기호는 글자 그대로 찾는다
+		expect(new RegExp(pagePrefixRegex('https://a.b/c?d=(1)')).test('https://a.b/c?d=(1)/x')).toBe(true);
+		expect(new RegExp(pagePrefixRegex('https://a.b/')).test('https://aXb/')).toBe(false);
 	});
 });

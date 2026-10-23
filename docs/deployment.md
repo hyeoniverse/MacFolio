@@ -185,6 +185,30 @@ ssh -i ~/.ssh/oracle-macfolio.key ubuntu@<공인 IP>
 
 프롬프트가 `ubuntu@…:~$`면 서버 안이다. 아래 명령은 모두 서버에서 실행한다.
 
+**접속 별칭 (권장)**: 공인 IP를 매번 입력하지 않도록 내 컴퓨터의 `~/.ssh/config`에 등록한다. 이후 문서의 `<서버>`는 `macfolio`로 쓰면 된다 (`ssh macfolio`, `scp 파일 macfolio:~/deploy/`).
+
+```bash
+mkdir -p ~/.ssh && cat >> ~/.ssh/config <<'EOF'
+
+Host macfolio
+  HostName <공인 IP>
+  User ubuntu
+  IdentityFile ~/.ssh/oracle-macfolio.key
+  IdentitiesOnly yes
+EOF
+chmod 600 ~/.ssh/config
+```
+
+**공인 IP 확인**: 기본으로 붙는 공인 IP는 **임시(Ephemeral) IP**라, 서버를 중지했다 시작하거나 부트 볼륨을 다른 VM으로 옮기면([SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때)) 바뀔 수 있다. 기억이나 메모한 값 대신 콘솔(Compute → Instances → 서버 → Networking → Primary VNIC의 **Public IPv4 address**)이나 Cloud Shell에서 확인한다.
+
+```bash
+# Cloud Shell (콘솔 오른쪽 위 >_)
+ID=$(oci search resource structured-search --query-text "query instance resources" --query 'data.items[0].identifier' --raw-output)
+oci compute instance list-vnics --instance-id "$ID" --query 'data[].{public:"public-ip",private:"private-ip",nsg:"nsg-ids"}' --output table
+```
+
+IP가 바뀌지 않게 하려면 VNIC의 IP 화면에서 **예약된 공인 IP(Reserved public IP)**로 바꾼다. Always Free 계정에서도 1개는 무료다. IP가 바뀌었다면 GitHub Secrets의 `DEPLOY_HOST`와 `DEPLOY_KNOWN_HOSTS`도 새 값으로 바꾼다([자동 배포 설정](#자동-배포-설정-한-번) 3).
+
 ## 4. 서버 준비
 
 ### swap (E2.1.Micro)
@@ -850,33 +874,57 @@ curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,
 
 활동 상태 보기의 **검색어** 탭(관리자)은 구글 검색어를 Search Console에서 가져온다. 구글은 검색어를 사이트에 전달하지 않아서 이 방법만 가능하다([#327](https://github.com/hyeoniverse/MacFolio/pull/327)). 서버가 서비스 계정으로 6시간마다 가져오고, 설정이 없으면 탭에 설정 방법이 표시된다. 그래서 아래 설정 전에 배포해도 된다. 비용은 없다.
 
-**1. Search Console에 사이트가 있는지**
+**1. Search Console에 사이트 등록**
 
-[search.google.com/search-console](https://search.google.com/search-console)에서 사이트 속성을 확인한다. 없으면 **속성 추가**:
+[search.google.com/search-console](https://search.google.com/search-console)에서 **속성 추가**를 누른다. 속성은 두 종류다.
 
-- **도메인 속성** (`hyeoniverse.com`, 하위 도메인까지 모두): Cloudflare DNS에 화면의 TXT 레코드를 더해 확인한다. `GSC_SITE_URL=sc-domain:hyeoniverse.com`
-- **URL 접두어 속성** (`https://macfolio.hyeoniverse.com/`만): HTML 태그·파일 등으로 확인한다. `GSC_SITE_URL=https://macfolio.hyeoniverse.com/` (끝의 `/`까지)
+| 속성       | 입력                                | 소유 확인                                                      | 범위                                          | `GSC_SITE_URL`                                     |
+| ---------- | ----------------------------------- | -------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------- |
+| 도메인     | `hyeoniverse.com`                   | Cloudflare DNS에 TXT 레코드                                    | 모든 하위 도메인(`www`, `blog`, `macfolio` …) | `sc-domain:hyeoniverse.com`                        |
+| URL 접두어 | `https://macfolio.hyeoniverse.com/` | HTML 태그·파일 등. 같은 계정으로 도메인 속성을 확인했으면 자동 | 이 주소 아래만                                | `https://macfolio.hyeoniverse.com/` (끝의 `/`까지) |
+
+- **어느 속성이든 연결할 수 있다.** 도메인 속성(`sc-domain:`)이면 서버가 이 사이트 주소(`FRONTEND_URL`, 기본은 `CORS_ORIGINS`의 첫 주소)로 시작하는 페이지의 검색어만 요청한다(Search Console API의 `dimensionFilterGroups`, `includingRegex`). 그래서 `www`·`blog` 같은 다른 하위 도메인의 검색어는 검색어 탭에 섞이지 않는다. 다른 주소로 거르려면 `GSC_PAGE_PREFIX`를 지정한다(빈 값이면 거르지 않는다)
+- 도메인 속성이 이미 있으면 그대로 쓴다. 지난 자료도 그대로 가져올 수 있다
+- 도메인 속성의 TXT 레코드: Cloudflare 대시보드 → 도메인 → **DNS → Records → Add record**에서 Type `TXT`, Name `@`, Content에 화면의 `google-site-verification=…` 값을 넣고, Search Console에서 **확인**을 누른다 (보통 몇 분, 늦으면 1시간)
+- 확인되면 왼쪽 **Sitemaps**에 `https://macfolio.hyeoniverse.com/sitemap.xml`을 제출한다. Worker가 저장소 글·서버 글·프로젝트 주소를 합쳐 생성한다(`robots.txt`에도 있다)
+- 바로 수집되게 하려면 위쪽 **URL 검사**에 글 주소를 넣고 **색인 생성 요청**을 누른다 (하루 요청 수 제한이 있다). 색인된 주소 수는 **페이지** 보고서에서 확인한다
 
 새로 추가한 속성은 그날부터 데이터가 수집된다 (2\~3일 지연되어 표시된다).
 
 **2. 서비스 계정과 키** — [console.cloud.google.com](https://console.cloud.google.com)
 
-1. 프로젝트를 하나 고르거나 만든다 (예: `macfolio`)
+1. 프로젝트를 고른다. 기존 프로젝트를 써도 된다(API와 서비스 계정을 담는 단위이고, Search Console API는 무료라 비용이 섞이지 않는다). 새로 만들 때 **프로젝트 ID는 나중에 바꿀 수 없다**: 전체에서 고유, 6\~30자, 영어 소문자·숫자·하이픈, 소문자로 시작. 이름 칸 아래 ID 옆의 **수정**으로 직접 정한다 (예: `hyeoniverse-macfolio`). ID는 서비스 계정 이메일에만 쓰인다
 2. **APIs & Services → Library**에서 **Google Search Console API**를 찾아 **Enable** ([Search Console API](https://developers.google.com/webmaster-tools))
-3. **IAM & Admin → Service Accounts → Create service account** (예: `macfolio-search`). 역할(권한)은 부여하지 않는다
+3. **IAM & Admin → Service Accounts → Create service account**. 기존 프로젝트를 쓰더라도 MacFolio 전용 계정을 만든다(키를 교체·폐기할 때 다른 서비스에 영향이 없다)
+
+   | 칸               | 예                                                              | 비고                                                                                             |
+   | ---------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+   | 서비스 계정 이름 | `MacFolio Search Console`                                       | 나중에 바꿀 수 있다                                                                              |
+   | 서비스 계정 ID   | `macfolio-search-console`                                       | **바꿀 수 없다**. 이메일이 `macfolio-search-console@<프로젝트ID>.iam.gserviceaccount.com`이 된다 |
+   | 설명             | `MacFolio API가 Search Console 검색어를 읽기 전용으로 가져온다` |                                                                                                  |
+
+   다음 화면의 **프로젝트 액세스 권한(역할)**과 **사용자 액세스 권한**은 비워 두고 **완료**한다. Search Console 권한은 Google Cloud 역할이 아니라 3에서 준다
+
 4. 만든 계정 → **Keys → Add key → Create new key → JSON**. 내려받은 파일은 다시 내려받을 수 없다
 
 **3. Search Console에 서비스 계정 추가**
 
-Search Console → 그 속성 → **설정 → 사용자 및 권한 → 사용자 추가**에서 서비스 계정의 이메일(`…@….iam.gserviceaccount.com`)을 입력하고 권한은 **제한됨**으로 지정한다. 읽기 권한만 필요하다.
+[Search Console](https://search.google.com/search-console)에서 왼쪽 위 속성 선택 → `GSC_SITE_URL`로 쓸 속성 → 왼쪽 아래 **설정** → **사용자 및 권한** → 오른쪽 위 **사용자 추가**에서 서비스 계정의 이메일(`…@….iam.gserviceaccount.com`, Google Cloud의 Service Accounts 목록에서 복사)을 입력하고 권한은 **제한됨**으로 지정한다. 읽기 권한만 필요하다.
+
+- 서비스 계정은 받은편지함이 없어 초대 수락 없이 바로 추가된다
+- **사용자 추가**가 보이지 않으면 그 속성의 소유자 계정으로 로그인하지 않은 것이다
+- 다른 속성에 추가하면 서버가 가져올 때 `403 PERMISSION_DENIED`가 난다
 
 **4. 서버에 넣기**
 
 키가 셸 기록이나 저장소에 남지 않게 파일로 복사한 뒤 필요한 두 값만 추출한다. Mac에서:
 
 ```bash
-scp ~/Downloads/<내려받은키>.json <서버>:~/deploy/gsc.json
+scp ~/Downloads/<내려받은키>.json <서버>:~/deploy/gsc.json   # 별칭을 등록했으면 <서버>는 macfolio
+rm ~/Downloads/<내려받은키>.json
 ```
+
+`<…>`는 괄호까지 실제 값으로 바꾼다(파일 이름은 `ls ~/Downloads/*.json`). `scp`가 `Operation timed out`이면 [문제 해결](#문제-해결)의 SSH 시간 초과를 본다.
 
 서버에서:
 
@@ -1039,30 +1087,31 @@ docker compose up -d api
 
 ## 문제 해결
 
-| 증상                                                                 | 원인과 해결                                                                                                                                                                                                              |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| "관리자 서버가 아직 연결되지 않았습니다", 로그인 버튼이 꺼짐         | 프론트 빌드에 `VITE_API_URL`이 없다. `ci.yml` 맨 위 `env`의 값을 확인하고 main에 머지해 다시 빌드한다 ([API 주소 넣기](#api-주소-넣기))                                                                                  |
-| 메시지를 열면 "메시지를 열 수 없습니다"                              | 메시지 API에 연결하지 못했다. `docker compose ps`, `logs api` 확인. 서버 없이 화면만 볼 때는 `VITE_MESSAGES_STORE=local`                                                                                                 |
-| "관리자 서버에 연결할 수 없습니다"                                   | API가 중단되었거나 CORS가 차단했다. `docker compose ps`, `logs api`, `CORS_ORIGINS` 확인                                                                                                                                 |
-| 서버 상태가 "이 주소에서는 쓸 수 없음"                               | 서버는 실행 중이지만 현재 사이트 주소가 `CORS_ORIGINS`에 없다. PR 미리보기라면 `https://*-macfolio.hyeoniverse.workers.dev`를 추가하고 `docker compose up -d api`                                                        |
-| `/auth/github`가 503                                                 | `GITHUB_CLIENT_ID`/`SECRET`이 비어 있다                                                                                                                                                                                  |
-| GitHub에서 `redirect_uri` 오류                                       | OAuth App 콜백 주소와 `API_URL` + `/auth/github/callback`이 다르다                                                                                                                                                       |
-| 돌아왔는데 "로그인할 수 없음"                                        | 관리자 계정(ID 68999618)이 아닌 GitHub 계정으로 로그인했다                                                                                                                                                               |
-| 돌아왔는데 로그인되지 않은 상태                                      | 쿠키가 저장되지 않았다. https인지, API가 `hyeoniverse.com` 하위 도메인인지 확인                                                                                                                                          |
-| api가 시작 직후 종료됨                                               | `IP_HASH_SECRET` 없음, DB 연결 실패 등. `docker compose logs api`의 첫 에러를 확인한다                                                                                                                                   |
-| 빌드 중 멈추거나 `Killed`                                            | 메모리 부족. swap이 설정되었는지 `free -h`로 확인                                                                                                                                                                        |
-| Actions '서버에서 배포'가 `Permission denied (publickey)` (exit 255) | `DEPLOY_SSH_KEY`가 서버에 등록된 배포 키와 짝이 맞지 않는다. 키를 두 번 생성해 GitHub과 서버에 서로 다른 키가 저장된 경우가 많다. '자동 배포 설정' 2를 다시 하고 `DEPLOY_SSH_KEY`를 새 값으로 변경한다                   |
-| API 변경을 머지했는데 `/health`의 version이 그대로                   | Secrets를 넣기 전에 머지했거나 배포가 실패했다. 다음 머지 시 서버 버전과 비교해 함께 배포된다. 즉시 배포하려면 이미지가 있는 커밋 태그로 Run workflow ('자동 배포 설정'의 마지막)                                        |
-| 명령이 `No such file`·`Could not resolve hostname :`                 | 서버에서 입력할 명령을 내 컴퓨터에서 입력했다. 프롬프트 맨 앞이 `ubuntu@…`인지 확인한다                                                                                                                                  |
-| Actions가 `Host key verification failed`                             | `DEPLOY_KNOWN_HOSTS`가 서버 호스트 키와 다르다. 서버를 새로 만들었거나 부트 볼륨을 다른 VM에서 부팅했으면(cloud-init이 호스트 키를 새로 만든다) 다시 `ssh-keyscan` ([SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때) 7) |
-| Actions가 `Connection timed out`                                     | Oracle 보안 목록에서 22번이 특정 IP에만 개방되어 있다                                                                                                                                                                    |
-| `deploy.sh`가 `pull` 중 `denied`·`unauthorized`                      | GHCR 패키지가 비공개다. Package settings에서 Public으로                                                                                                                                                                  |
-| "배포 실패, 되돌림"                                                  | 새 이미지가 120초 안에 healthy가 되지 않았다. Actions 로그나 `~/deploy/deploy.log`의 api 로그 끝을 확인한다. 서버는 이전 버전으로 되돌려진 상태다                                                                        |
-| `API_TAG가 없다`                                                     | `compose.yml`을 이미지 방식으로 변경한 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                                                                                              |
-| `name:: command not found` 등이 연속 출력                            | YAML을 파일이 아니라 터미널에 붙여 넣었다. `cat > compose.yml <<'EOF'`로 감싼다                                                                                                                                          |
-| `--env-file: no such file or directory`                              | 파일이 그 경로에 없다. 서버의 `~/deploy`에서 실행했는지 확인                                                                                                                                                             |
-| Tunnel이 HEALTHY가 되지 않음                                         | `TUNNEL_TOKEN`이 틀렸거나 tunnel 컨테이너가 실행되지 않았다. `docker compose logs tunnel`                                                                                                                                |
-| 접속 메시지가 `x86_64`인데 A1을 만들려 했음                          | AMD shape로 생성되었다. E2.1.Micro면 무료이므로 그대로 사용하고, 다른 shape면 과금되므로 삭제하고 다시 만든다                                                                                                            |
+| 증상                                                                    | 원인과 해결                                                                                                                                                                                                                                                                                                                                                                    |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| "관리자 서버가 아직 연결되지 않았습니다", 로그인 버튼이 꺼짐            | 프론트 빌드에 `VITE_API_URL`이 없다. `ci.yml` 맨 위 `env`의 값을 확인하고 main에 머지해 다시 빌드한다 ([API 주소 넣기](#api-주소-넣기))                                                                                                                                                                                                                                        |
+| 메시지를 열면 "메시지를 열 수 없습니다"                                 | 메시지 API에 연결하지 못했다. `docker compose ps`, `logs api` 확인. 서버 없이 화면만 볼 때는 `VITE_MESSAGES_STORE=local`                                                                                                                                                                                                                                                       |
+| "관리자 서버에 연결할 수 없습니다"                                      | API가 중단되었거나 CORS가 차단했다. `docker compose ps`, `logs api`, `CORS_ORIGINS` 확인                                                                                                                                                                                                                                                                                       |
+| 서버 상태가 "이 주소에서는 쓸 수 없음"                                  | 서버는 실행 중이지만 현재 사이트 주소가 `CORS_ORIGINS`에 없다. PR 미리보기라면 `https://*-macfolio.hyeoniverse.workers.dev`를 추가하고 `docker compose up -d api`                                                                                                                                                                                                              |
+| `/auth/github`가 503                                                    | `GITHUB_CLIENT_ID`/`SECRET`이 비어 있다                                                                                                                                                                                                                                                                                                                                        |
+| GitHub에서 `redirect_uri` 오류                                          | OAuth App 콜백 주소와 `API_URL` + `/auth/github/callback`이 다르다                                                                                                                                                                                                                                                                                                             |
+| 돌아왔는데 "로그인할 수 없음"                                           | 관리자 계정(ID 68999618)이 아닌 GitHub 계정으로 로그인했다                                                                                                                                                                                                                                                                                                                     |
+| 돌아왔는데 로그인되지 않은 상태                                         | 쿠키가 저장되지 않았다. https인지, API가 `hyeoniverse.com` 하위 도메인인지 확인                                                                                                                                                                                                                                                                                                |
+| api가 시작 직후 종료됨                                                  | `IP_HASH_SECRET` 없음, DB 연결 실패 등. `docker compose logs api`의 첫 에러를 확인한다                                                                                                                                                                                                                                                                                         |
+| 빌드 중 멈추거나 `Killed`                                               | 메모리 부족. swap이 설정되었는지 `free -h`로 확인                                                                                                                                                                                                                                                                                                                              |
+| Actions '서버에서 배포'가 `Permission denied (publickey)` (exit 255)    | `DEPLOY_SSH_KEY`가 서버에 등록된 배포 키와 짝이 맞지 않는다. 키를 두 번 생성해 GitHub과 서버에 서로 다른 키가 저장된 경우가 많다. '자동 배포 설정' 2를 다시 하고 `DEPLOY_SSH_KEY`를 새 값으로 변경한다                                                                                                                                                                         |
+| API 변경을 머지했는데 `/health`의 version이 그대로                      | Secrets를 넣기 전에 머지했거나 배포가 실패했다. 다음 머지 시 서버 버전과 비교해 함께 배포된다. 즉시 배포하려면 이미지가 있는 커밋 태그로 Run workflow ('자동 배포 설정'의 마지막)                                                                                                                                                                                              |
+| 명령이 `No such file`·`Could not resolve hostname :`                    | 서버에서 입력할 명령을 내 컴퓨터에서 입력했다. 프롬프트 맨 앞이 `ubuntu@…`인지 확인한다                                                                                                                                                                                                                                                                                        |
+| Actions가 `Host key verification failed`                                | `DEPLOY_KNOWN_HOSTS`가 서버 호스트 키와 다르다. 서버를 새로 만들었거나 부트 볼륨을 다른 VM에서 부팅했으면(cloud-init이 호스트 키를 새로 만든다) 다시 `ssh-keyscan` ([SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때) 7)                                                                                                                                                       |
+| 내 컴퓨터의 `ssh`·`scp`가 `Operation timed out`인데 Actions 배포는 성공 | 접속하는 IP가 서버의 현재 공인 IP가 아니다. 임시 IP가 바뀌었거나, 다른 VM(예: 키 복구용 임시 VM)의 주소를 기억하고 있다. `~/.ssh/known_hosts`에 접속한 적 있는 주소가 순서대로 남아 있다. 콘솔이나 Cloud Shell에서 현재 IP를 확인한다([3. Oracle VM 만들기](#3-oracle-vm-만들기)의 공인 IP 확인). 네트워크 문제인지는 `nc -zv -w 5 github.com 22`(다른 서버의 22번)로 구분한다 |
+| Actions가 `Connection timed out`                                        | Oracle 보안 목록에서 22번이 특정 IP에만 개방되어 있다                                                                                                                                                                                                                                                                                                                          |
+| `deploy.sh`가 `pull` 중 `denied`·`unauthorized`                         | GHCR 패키지가 비공개다. Package settings에서 Public으로                                                                                                                                                                                                                                                                                                                        |
+| "배포 실패, 되돌림"                                                     | 새 이미지가 120초 안에 healthy가 되지 않았다. Actions 로그나 `~/deploy/deploy.log`의 api 로그 끝을 확인한다. 서버는 이전 버전으로 되돌려진 상태다                                                                                                                                                                                                                              |
+| `API_TAG가 없다`                                                        | `compose.yml`을 이미지 방식으로 변경한 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                                                                                                                                                                                                                                                    |
+| `name:: command not found` 등이 연속 출력                               | YAML을 파일이 아니라 터미널에 붙여 넣었다. `cat > compose.yml <<'EOF'`로 감싼다                                                                                                                                                                                                                                                                                                |
+| `--env-file: no such file or directory`                                 | 파일이 그 경로에 없다. 서버의 `~/deploy`에서 실행했는지 확인                                                                                                                                                                                                                                                                                                                   |
+| Tunnel이 HEALTHY가 되지 않음                                            | `TUNNEL_TOKEN`이 틀렸거나 tunnel 컨테이너가 실행되지 않았다. `docker compose logs tunnel`                                                                                                                                                                                                                                                                                      |
+| 접속 메시지가 `x86_64`인데 A1을 만들려 했음                             | AMD shape로 생성되었다. E2.1.Micro면 무료이므로 그대로 사용하고, 다른 shape면 과금되므로 삭제하고 다시 만든다                                                                                                                                                                                                                                                                  |
 
 ## 남은 일
 

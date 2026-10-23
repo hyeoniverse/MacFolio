@@ -39,6 +39,8 @@ describe('Search Console 검색어 (e2e)', () => {
 			ADMIN_GITHUB_ID: '68999618',
 			AUTH_RATE_LIMIT: '1000',
 			GSC_SITE_URL: 'sc-domain:example.com',
+			// 도메인 속성에서 이 사이트(example.com)의 페이지만 받는다
+			GSC_PAGE_PREFIX: 'https://example.com/',
 			GSC_CLIENT_EMAIL: 'search@project.iam.gserviceaccount.com',
 			GSC_PRIVATE_KEY: (privateKey.export({ type: 'pkcs8', format: 'pem' }) as string).replace(/\n/g, '\\n'),
 		});
@@ -149,5 +151,37 @@ describe('Search Console 검색어 (e2e)', () => {
 		const response = await request(server()).post('/analytics/search/sync').set('Cookie', adminCookie).expect(200);
 		expect(response.body.error).toBe('Google API가 거절했습니다 (403): PERMISSION_DENIED no access');
 		expect(response.body.rows).toHaveLength(1);
+	});
+
+	it('도메인 속성: 이 사이트 페이지만 달라고 묻고, 전에 가져 둔 다른 하위 도메인의 줄은 보이지 않다가 다음 가져오기에서 지운다', async () => {
+		await prisma.searchQueryStat.createMany({
+			data: [
+				{
+					day: yesterday,
+					query: '블로그 글',
+					page: 'https://blog.example.com/a',
+					clicks: 4,
+					impressions: 50,
+					position: 2,
+				},
+				{ day: yesterday, query: 'macfolio', page: 'https://example.com/', clicks: 1, impressions: 3, position: 1 },
+			],
+		});
+		const before = await request(server())
+			.get('/analytics/search')
+			.set('Cookie', adminCookie)
+			.query({ from: yesterday, to: yesterday })
+			.expect(200);
+		expect(before.body.rows.map((row: { query: string }) => row.query)).toEqual(['macfolio']);
+
+		rows = [];
+		await app.get(SearchKeywordsService).sync();
+		expect(asked[0]).toMatchObject({
+			dimensionFilterGroups: [
+				{ filters: [{ dimension: 'page', operator: 'includingRegex', expression: '^https://example\\.com/' }] },
+			],
+		});
+		const stored = await prisma.searchQueryStat.findMany();
+		expect(stored.map(({ page }) => page)).not.toContain('https://blog.example.com/a');
 	});
 });
