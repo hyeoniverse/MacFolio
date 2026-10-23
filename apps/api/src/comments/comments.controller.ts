@@ -36,9 +36,12 @@ export class CommentsController {
 	}
 
 	@Get('posts/:slug/comments')
-	@ApiOkResponse({ description: '댓글 (오래된 것부터). mine: 이 브라우저가 쓴 댓글. 방문자·IP 해시는 담지 않는다' })
+	@ApiOkResponse({
+		description:
+			'댓글 (오래된 것부터). mine: 이 브라우저가 쓴 댓글. 방문자·IP 해시는 담지 않는다. 비밀 글은 관리자가 아니면 빈 목록',
+	})
 	list(@Param('slug') slug: string, @Req() request: Request) {
-		return this.comments.list(slug, this.visitors.peek(request));
+		return this.comments.list(slug, this.visitors.peek(request), () => this.admin(request));
 	}
 
 	@Post('posts/:slug/comments')
@@ -46,6 +49,7 @@ export class CommentsController {
 	@ApiBody({ schema: { example: { body: '잘 봤어요!' } } })
 	@ApiCreatedResponse({ description: '쓴 댓글. 처음 쓰는 브라우저에는 방문자 쿠키를 준다' })
 	@ApiBadRequestResponse({ description: '입력 규칙을 어겼다 (내용 1~500자)' })
+	@ApiNotFoundResponse({ description: '비밀 글이다 (관리자만 쓴다)' })
 	@ApiTooManyRequestsResponse({ description: '짧은 시간에 너무 많이 썼다' })
 	async create(
 		@Param('slug') slug: string,

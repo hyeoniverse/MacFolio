@@ -127,6 +127,9 @@ model Post {
   draftBody        String?
   draftUpdatedAt   DateTime?
   deleted          Boolean        @default(false)
+  /// 비밀 글: 관리자에게만 보인다. 방문자용 목록·공유 카드·댓글·좋아요·조회수·메모 정리 내용에서 빼고, 주소로 열어도 없는 글과 같게 답한다.
+  /// 서버에만 있는 글에 쓴다 (저장소의 Markdown 글은 공개 저장소에 있어 숨길 수 없다)
+  secret           Boolean        @default(false)
   /// 지운 때. 있으면 '최근 삭제된 항목'에 30일 동안 남아 되살릴 수 있다. 없는데 deleted면 영구히 지운 것 (저장소 글을 가리는 표시만 남는다)
   deletedAt        DateTime?
   createdAt        DateTime       @default(now())

@@ -85,8 +85,16 @@ export const AdminPost: z.ZodType<AdminPostShape> = z.object({
 	revisions: z.number().int().nonnegative(),
 	/** 처음 게시한 시각 (ISO). 같은 날 글의 순서를 정한다. 게시한 적 없으면 없다 */
 	createdAt: z.string().optional(),
+	/** 비밀 글: 관리자에게만 보인다 (방문자용 목록·공유 카드·댓글·좋아요·조회수에서 빠진다). 이 값을 주기 전의 API면 없다 */
+	secret: z.boolean().optional(),
 });
 export type AdminPost = AdminPostShape;
+
+/** 비밀 글 지정·해제 요청 몸통 (PUT /posts/:slug/secret) */
+export const PostSecretInput = requestBody({
+	secret: z.boolean({ error: 'secret은 true나 false입니다.' }),
+});
+export type PostSecretInput = z.infer<typeof PostSecretInput>;
 
 /** 글의 예전 버전 목록 한 줄 (게시할 때마다 남는다) */
 export const RevisionSummary = z.object({

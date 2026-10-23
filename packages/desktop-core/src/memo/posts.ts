@@ -38,6 +38,8 @@ export interface PostStatus {
 	scheduled: string | null;
 	/** 서버의 글이 같은 주소의 저장소 글을 가리고 있다 (저장소 글로 되돌릴 수 있다) */
 	overridesRepo?: boolean;
+	/** 비밀 글: 관리자에게만 보인다 (서버에만 있는 글만 지정할 수 있다, canBeSecret) */
+	secret?: boolean;
 }
 
 export const ALL_CATEGORY = '모든 글';
@@ -164,7 +166,16 @@ export interface AdminPost {
 	revisions: number;
 	/** 처음 게시한 시각 (ISO). 같은 날 글의 순서에 쓴다. 게시한 적 없거나 이 값을 주기 전의 API면 없다 */
 	createdAt?: string;
+	/** 비밀 글: 관리자에게만 보인다. 이 값을 주기 전의 API면 없다 */
+	secret?: boolean;
 }
+
+/**
+ * 비밀 글로 지정할 수 있는 글: 서버에만 있는 글 (관리자 목록에서 게시 상태가 있고 저장소 글을 가리지 않는 글).
+ * 저장소의 Markdown 글은 공개 저장소에 원문이 있어 숨길 수 없으므로 지정하지 않는다
+ */
+export const canBeSecret = (post: Post): boolean =>
+	Boolean(post.status && !post.status.overridesRepo && !post.deletedAt);
 
 const toListPost = (
 	slug: PostSlug,
@@ -210,6 +221,7 @@ export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: strin
 					changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
 					scheduled: item.published && item.published.date > today ? item.published.date : null,
 					...(fromRepo && { overridesRepo: true }),
+					...(item.secret && { secret: true }),
 				},
 				fromRepo?.createdAt ?? item.createdAt
 			)
@@ -342,7 +354,8 @@ export function firstImage(body: string): string | null {
 
 /** 폴더(하위 폴더 포함)와 검색어로 거른다. 검색은 제목·본문에서 대소문자 구분 없이 */
 /** 검색 조건 (macOS 메모의 검색 칸 메뉴: 체크리스트가 있는 메모 등) */
-export type PostFilter = 'pinned' | 'checklist' | 'table' | 'image' | 'code' | 'attachment' | 'draft' | 'scheduled';
+export type PostFilter =
+	'pinned' | 'checklist' | 'table' | 'image' | 'code' | 'attachment' | 'draft' | 'scheduled' | 'secret';
 
 export const POST_FILTERS: {
 	id: PostFilter;
@@ -412,6 +425,14 @@ export const POST_FILTERS: {
 		icon: 'fa-regular fa-clock',
 		adminOnly: true,
 		test: (post) => Boolean(post.status?.scheduled),
+	},
+	{
+		id: 'secret',
+		label: '비밀 메모',
+		chip: '비밀',
+		icon: 'fa-solid fa-user-lock',
+		adminOnly: true,
+		test: (post) => Boolean(post.status?.secret),
 	},
 ];
 

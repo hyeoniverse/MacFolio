@@ -133,7 +133,7 @@
 				"parameters": [],
 				"responses": {
 					"200": {
-						"description": "정리 내용과 마지막으로 바꾼 시각",
+						"description": "정리 내용과 마지막으로 바꾼 시각. 관리자가 아니면 옮긴 글·고정·잠금에서 비밀 글을 뺀다",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -217,6 +217,467 @@
 				],
 				"tags": [
 					"memo"
+				]
+			}
+		},
+		"/posts": {
+			"get": {
+				"operationId": "PostsController_list",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "게시한 글 중 날짜가 된 것과, 저장소 글을 가릴 표시(지운 글·예약 글). 비밀 글은 관리자 세션이어도 넣지 않는다 (관리자는 /posts/admin)"
+					}
+				},
+				"tags": [
+					"posts"
+				]
+			},
+			"post": {
+				"operationId": "PostsController_create",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "새 글",
+									"date": "2026-09-29",
+									"category": "개발기/MacFolio",
+									"summary": "목록에 보일 한 줄",
+									"body": "## 제목\n\n본문 (Markdown)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"400": {
+						"description": "입력 규칙을 어겼다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/og.png": {
+			"get": {
+				"operationId": "PostsController_card",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "공유 카드 그림 (1200×630 PNG, 글 제목으로 그린다). 사이트의 og:image가 쓴다. 주소에 붙는 ?v=는 캐시를 바꾸려는 값이라 보지 않는다"
+					},
+					"404": {
+						"description": "방문자에게 보이는 글이 없다 (임시 저장, 지운 글, 예약 글, 비밀 글 포함)"
+					}
+				},
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/admin": {
+			"get": {
+				"operationId": "PostsController_listAdmin",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "모든 글: 게시한 내용, 임시 저장, 버전 수, 비밀 글 여부"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/draft": {
+			"put": {
+				"operationId": "PostsController_saveDraft",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "새 글",
+									"date": "2026-09-29",
+									"category": "개발기/MacFolio",
+									"summary": "목록에 보일 한 줄",
+									"body": "## 제목\n\n본문 (Markdown)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "임시 저장했다 (방문자에게는 아직 보이지 않는다)"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			},
+			"delete": {
+				"operationId": "PostsController_discardDraft",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "임시 저장을 버렸다. 게시한 적 없는 글이면 null (글이 사라진다)"
+					},
+					"404": {
+						"description": "글이 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/publish": {
+			"post": {
+				"operationId": "PostsController_publish",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"title": "새 글",
+									"date": "2026-09-29",
+									"category": "개발기/MacFolio",
+									"summary": "목록에 보일 한 줄",
+									"body": "## 제목\n\n본문 (Markdown)"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "게시했다 (날짜가 미래면 그날부터 보인다). 버전이 하나 늘어난다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/secret": {
+			"put": {
+				"operationId": "PostsController_setSecret",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"secret": true
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "비밀 글로 지정했다(secret: true) 또는 풀었다. 비밀 글은 관리자에게만 보인다: 방문자용 목록·공유 카드·댓글·좋아요·조회수·메모 정리 내용에서 빠진다"
+					},
+					"400": {
+						"description": "secret이 true나 false가 아니다"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					},
+					"404": {
+						"description": "서버에 없는 글이다 ('최근 삭제된 항목'의 글 포함)"
+					},
+					"409": {
+						"description": "잠긴 메모다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/revisions": {
+			"get": {
+				"operationId": "PostsController_revisions",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "게시한 버전들 (최근 것부터)"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/revisions/{id}": {
+			"get": {
+				"operationId": "PostsController_revision",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "id",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "number"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "버전 하나의 내용"
+					},
+					"404": {
+						"description": "버전이 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/restore": {
+			"post": {
+				"operationId": "PostsController_restore",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "되살렸다. 서버에 내용이 없던 저장소 글이면 null (파일이 다시 보인다)"
+					},
+					"404": {
+						"description": "'최근 삭제된 항목'에 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/permanent": {
+			"delete": {
+				"operationId": "PostsController_purge",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "영구히 지웠다 (내용·버전을 지우고, 저장소 글을 가리는 표시만 남긴다)"
+					},
+					"404": {
+						"description": "'최근 삭제된 항목'에 없다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}/server-copy": {
+			"delete": {
+				"operationId": "PostsController_revertToRepository",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "저장소 글로 되돌렸다: 서버의 게시 내용·임시 저장·버전을 지워 저장소의 Markdown 파일이 보인다. 저장소에 없는 글이면 글이 사라진다"
+					},
+					"404": {
+						"description": "서버에 없는 글이다"
+					},
+					"409": {
+						"description": "잠긴 메모다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
+				]
+			}
+		},
+		"/posts/{slug}": {
+			"delete": {
+				"operationId": "PostsController_remove",
+				"parameters": [
+					{
+						"name": "slug",
+						"required": true,
+						"in": "path",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "지웠다 ('최근 삭제된 항목'으로, 30일 동안 되살릴 수 있다)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"posts"
 				]
 			}
 		},
@@ -775,7 +1236,7 @@
 				],
 				"responses": {
 					"200": {
-						"description": "댓글 (오래된 것부터). mine: 이 브라우저가 쓴 댓글. 방문자·IP 해시는 담지 않는다"
+						"description": "댓글 (오래된 것부터). mine: 이 브라우저가 쓴 댓글. 방문자·IP 해시는 담지 않는다. 비밀 글은 관리자가 아니면 빈 목록"
 					}
 				},
 				"tags": [
@@ -812,6 +1273,9 @@
 					},
 					"400": {
 						"description": "입력 규칙을 어겼다 (내용 1~500자)"
+					},
+					"404": {
+						"description": "비밀 글이다 (관리자만 쓴다)"
 					},
 					"429": {
 						"description": "짧은 시간에 너무 많이 썼다"
@@ -857,7 +1321,7 @@
 				"parameters": [],
 				"responses": {
 					"200": {
-						"description": "글마다 댓글 수와 좋아요 수 ({ 주소: { comments, likes } }). 하나라도 있는 글만. 인기글 순위에 쓴다"
+						"description": "글마다 댓글 수와 좋아요 수 ({ 주소: { comments, likes } }). 하나라도 있는 글만. 인기글 순위에 쓴다. 비밀 글은 관리자에게만"
 					}
 				},
 				"tags": [
@@ -907,6 +1371,9 @@
 				"responses": {
 					"200": {
 						"description": "눌렀다. 이미 눌렀으면 그대로. 처음 누르는 브라우저에는 방문자 쿠키를 준다"
+					},
+					"404": {
+						"description": "비밀 글이다 (관리자만 누른다)"
 					},
 					"429": {
 						"description": "짧은 시간에 너무 많이 눌렀다"
@@ -1120,415 +1587,6 @@
 				},
 				"tags": [
 					"messages"
-				]
-			}
-		},
-		"/posts": {
-			"get": {
-				"operationId": "PostsController_list",
-				"parameters": [],
-				"responses": {
-					"200": {
-						"description": "게시한 글 중 날짜가 된 것과, 저장소 글을 가릴 표시(지운 글·예약 글)"
-					}
-				},
-				"tags": [
-					"posts"
-				]
-			},
-			"post": {
-				"operationId": "PostsController_create",
-				"parameters": [],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"example": {
-									"title": "새 글",
-									"date": "2026-09-29",
-									"category": "개발기/MacFolio",
-									"summary": "목록에 보일 한 줄",
-									"body": "## 제목\n\n본문 (Markdown)"
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"400": {
-						"description": "입력 규칙을 어겼다"
-					},
-					"401": {
-						"description": "관리자로 로그인하지 않았다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/og.png": {
-			"get": {
-				"operationId": "PostsController_card",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "공유 카드 그림 (1200×630 PNG, 글 제목으로 그린다). 사이트의 og:image가 쓴다. 주소에 붙는 ?v=는 캐시를 바꾸려는 값이라 보지 않는다"
-					},
-					"404": {
-						"description": "방문자에게 보이는 글이 없다 (임시 저장, 지운 글, 예약 글 포함)"
-					}
-				},
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/admin": {
-			"get": {
-				"operationId": "PostsController_listAdmin",
-				"parameters": [],
-				"responses": {
-					"200": {
-						"description": "모든 글: 게시한 내용, 임시 저장, 버전 수"
-					},
-					"401": {
-						"description": "관리자로 로그인하지 않았다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/draft": {
-			"put": {
-				"operationId": "PostsController_saveDraft",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"example": {
-									"title": "새 글",
-									"date": "2026-09-29",
-									"category": "개발기/MacFolio",
-									"summary": "목록에 보일 한 줄",
-									"body": "## 제목\n\n본문 (Markdown)"
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "임시 저장했다 (방문자에게는 아직 보이지 않는다)"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			},
-			"delete": {
-				"operationId": "PostsController_discardDraft",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "임시 저장을 버렸다. 게시한 적 없는 글이면 null (글이 사라진다)"
-					},
-					"404": {
-						"description": "글이 없다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/publish": {
-			"post": {
-				"operationId": "PostsController_publish",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"requestBody": {
-					"required": true,
-					"content": {
-						"application/json": {
-							"schema": {
-								"example": {
-									"title": "새 글",
-									"date": "2026-09-29",
-									"category": "개발기/MacFolio",
-									"summary": "목록에 보일 한 줄",
-									"body": "## 제목\n\n본문 (Markdown)"
-								}
-							}
-						}
-					}
-				},
-				"responses": {
-					"200": {
-						"description": "게시했다 (날짜가 미래면 그날부터 보인다). 버전이 하나 늘어난다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/revisions": {
-			"get": {
-				"operationId": "PostsController_revisions",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "게시한 버전들 (최근 것부터)"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/revisions/{id}": {
-			"get": {
-				"operationId": "PostsController_revision",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					},
-					{
-						"name": "id",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "number"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "버전 하나의 내용"
-					},
-					"404": {
-						"description": "버전이 없다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/restore": {
-			"post": {
-				"operationId": "PostsController_restore",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"200": {
-						"description": "되살렸다. 서버에 내용이 없던 저장소 글이면 null (파일이 다시 보인다)"
-					},
-					"404": {
-						"description": "'최근 삭제된 항목'에 없다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/permanent": {
-			"delete": {
-				"operationId": "PostsController_purge",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "영구히 지웠다 (내용·버전을 지우고, 저장소 글을 가리는 표시만 남긴다)"
-					},
-					"404": {
-						"description": "'최근 삭제된 항목'에 없다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}/server-copy": {
-			"delete": {
-				"operationId": "PostsController_revertToRepository",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "저장소 글로 되돌렸다: 서버의 게시 내용·임시 저장·버전을 지워 저장소의 Markdown 파일이 보인다. 저장소에 없는 글이면 글이 사라진다"
-					},
-					"404": {
-						"description": "서버에 없는 글이다"
-					},
-					"409": {
-						"description": "잠긴 메모다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
-				]
-			}
-		},
-		"/posts/{slug}": {
-			"delete": {
-				"operationId": "PostsController_remove",
-				"parameters": [
-					{
-						"name": "slug",
-						"required": true,
-						"in": "path",
-						"schema": {
-							"type": "string"
-						}
-					}
-				],
-				"responses": {
-					"204": {
-						"description": "지웠다 ('최근 삭제된 항목'으로, 30일 동안 되살릴 수 있다)"
-					},
-					"401": {
-						"description": "관리자로 로그인하지 않았다"
-					}
-				},
-				"security": [
-					{
-						"macfolio_session": []
-					}
-				],
-				"tags": [
-					"posts"
 				]
 			}
 		},
@@ -2907,7 +2965,7 @@
 				],
 				"responses": {
 					"200": {
-						"description": "일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다. 관리자(scope: admin)에게만 들어온 곳의 호스트·검색어와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다"
+						"description": "일별 방문, 합계(앞의 같은 길이 기간과 비교), 들어온 곳(묶음)·앱·글·나라·기기별 표. 누구나 본다 (글 표에서 비밀 글은 관리자에게만). 관리자(scope: admin)에게만 들어온 곳의 호스트·검색어와 utm 표가 있다. 방문자에게는 1분 동안 같은 값을 준다"
 					},
 					"400": {
 						"description": "기간이 틀렸다 (1~366일), utm이 틀렸다"
@@ -2932,7 +2990,7 @@
 				],
 				"responses": {
 					"200": {
-						"description": "항목마다 전체 기간 조회수 (한 방문에서 같은 글은 한 번). 누구나 본다"
+						"description": "항목마다 전체 기간 조회수 (한 방문에서 같은 글은 한 번). 누구나 본다. 비밀 글은 관리자에게만"
 					},
 					"400": {
 						"description": "app이 틀렸다"

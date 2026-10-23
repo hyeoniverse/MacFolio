@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -8,7 +8,8 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AdminGuard, CurrentAdmin } from '../auth/admin.guard.js';
-import type { AdminIdentity } from '../auth/auth.service.js';
+import { AuthService, type AdminIdentity } from '../auth/auth.service.js';
+import type { Request } from 'express';
 import { SESSION_COOKIE } from '../auth/session.js';
 import { MemoService } from './memo.service.js';
 import { RateLimit } from '../common/rate-limit.js';
@@ -23,19 +24,24 @@ const ORGANIZATION_EXAMPLE = {
 
 /**
  * 메모(블로그) 정리 내용. 누구나 읽고(방문자도 관리자가 정리한 폴더로 본다), 관리자만 바꾼다.
+ * 방문자에게는 비밀 글의 주소를 뺀 정리 내용을 준다.
  */
 @ApiTags('memo')
 @Controller('memo')
 export class MemoController {
-	constructor(private readonly memo: MemoService) {}
+	constructor(
+		private readonly memo: MemoService,
+		private readonly auth: AuthService
+	) {}
 
 	@Get('organization')
 	@ApiOkResponse({
-		description: '정리 내용과 마지막으로 바꾼 시각',
+		description: '정리 내용과 마지막으로 바꾼 시각. 관리자가 아니면 옮긴 글·고정·잠금에서 비밀 글을 뺀다',
 		schema: { example: { ...ORGANIZATION_EXAMPLE, updatedAt: null } },
 	})
-	getOrganization() {
-		return this.memo.getOrganization();
+	async getOrganization(@Req() request: Request) {
+		const admin = await this.auth.findAdmin(request.cookies?.[SESSION_COOKIE]);
+		return admin ? this.memo.getOrganization() : this.memo.getPublicOrganization();
 	}
 
 	@Put('organization')

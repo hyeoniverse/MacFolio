@@ -3,6 +3,7 @@ import { APP_CONFIG, type AppConfig } from '../config.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SecurityService } from '../security/security.service.js';
 import { SiteService } from '../site/site.service.js';
+import { SecretPosts } from '../posts/secret-posts.service.js';
 import { tokenOf } from '../common/turnstile.js';
 import type { AdminIdentity } from '../auth/auth.service.js';
 import type { Visitor } from '../visitors/visitors.service.js';
@@ -57,16 +58,30 @@ export class CommentsService {
 		private readonly prisma: PrismaService,
 		@Inject(APP_CONFIG) private readonly config: AppConfig,
 		private readonly security: SecurityService,
-		private readonly site: SiteService
+		private readonly site: SiteService,
+		private readonly secret: SecretPosts
 	) {}
 
 	private checkSlug(slug: string) {
 		if (!SLUG.test(slug)) throw new BadRequestException('글 주소가 올바르지 않습니다.');
 	}
 
-	/** 글의 댓글 (오래된 것부터) */
-	async list(slug: string, visitor: Visitor | null): Promise<CommentView[]> {
+	/**
+	 * 비밀 글이면 관리자에게만 보인다. 관리자인지는 비밀 글일 때만 묻는다 (세션 확인은 DB를 한 번 더 읽는다)
+	 * @param admin 로그인한 관리자인지 묻는 함수
+	 */
+	private async hiddenFrom(slug: string, admin: () => Promise<AdminIdentity | null>) {
+		return (await this.secret.isSecret(slug)) && !(await admin());
+	}
+
+	/** 글의 댓글 (오래된 것부터). 방문자에게 비밀 글은 댓글이 없는 글과 같게 빈 목록 */
+	async list(
+		slug: string,
+		visitor: Visitor | null,
+		admin: () => Promise<AdminIdentity | null> = async () => null
+	): Promise<CommentView[]> {
 		this.checkSlug(slug);
+		if (await this.hiddenFrom(slug, admin)) return [];
 		const rows = await this.prisma.postComment.findMany({
 			where: { postSlug: slug },
 			orderBy: { createdAt: 'asc' },
@@ -75,7 +90,7 @@ export class CommentsService {
 		return rows.map((row) => toView(row, visitor));
 	}
 
-	/** 댓글을 쓴다. 관리자면 프로필의 이름으로, 아니면 방문자 쿠키로 정한 이름으로 */
+	/** 댓글을 쓴다. 관리자면 프로필의 이름으로, 아니면 방문자 쿠키로 정한 이름으로. 방문자가 비밀 글에 쓰면 404 */
 	async create(
 		slug: string,
 		input: unknown,
@@ -86,6 +101,7 @@ export class CommentsService {
 		this.checkSlug(slug);
 		const parsed = parseBody(input);
 		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		if (await this.hiddenFrom(slug, async () => admin)) throw new NotFoundException('글이 없습니다.');
 		// 사람 확인: 관리자가 시스템 설정에서 켜면 (관리자 댓글은 확인하지 않는다)
 		await this.security.requireHuman('comment', tokenOf(input), ip, admin);
 		const row = await this.prisma.postComment.create({
@@ -104,10 +120,11 @@ export class CommentsService {
 		return toView(row, visitor);
 	}
 
-	/** 댓글을 지운다. 관리자는 무엇이든, 방문자는 같은 브라우저에서 쓴 것만 */
+	/** 댓글을 지운다. 관리자는 무엇이든, 방문자는 같은 브라우저에서 쓴 것만. 방문자에게 비밀 글의 댓글은 없는 댓글이다 */
 	async remove(id: string, visitor: Visitor | null, admin: AdminIdentity | null) {
 		const row = await this.prisma.postComment.findUnique({ where: { id } });
-		if (!row) throw new NotFoundException('댓글이 없습니다.');
+		if (!row || (await this.hiddenFrom(row.postSlug, async () => admin)))
+			throw new NotFoundException('댓글이 없습니다.');
 		if (!admin && (!visitor || row.visitorHash !== visitor.hash))
 			throw new ForbiddenException('이 브라우저에서 쓴 댓글만 지울 수 있습니다.');
 		await this.prisma.postComment.delete({ where: { id } });

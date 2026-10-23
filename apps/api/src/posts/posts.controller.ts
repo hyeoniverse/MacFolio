@@ -44,6 +44,7 @@ const POST_EXAMPLE = {
  * 고치는 동안은 임시 저장에만 쓰고, 게시해야 방문자에게 보인다. 날짜가 미래면 그날부터 보인다 (예약 발행).
  * 게시할 때마다 버전을 남겨 되돌릴 수 있다.
  * 저장소의 Markdown 글은 그대로 두고, 여기 있는 글이 같은 주소의 글을 대신하거나(고친 글) 가린다(지운 글, 예약 글).
+ * 비밀 글은 관리자에게만 보인다: 방문자용 목록과 공유 카드에서 빠지고, 없는 글과 같게 답한다.
  */
 @ApiTags('posts')
 @Controller('posts')
@@ -54,7 +55,10 @@ export class PostsController {
 	) {}
 
 	@Get()
-	@ApiOkResponse({ description: '게시한 글 중 날짜가 된 것과, 저장소 글을 가릴 표시(지운 글·예약 글)' })
+	@ApiOkResponse({
+		description:
+			'게시한 글 중 날짜가 된 것과, 저장소 글을 가릴 표시(지운 글·예약 글). 비밀 글은 관리자 세션이어도 넣지 않는다 (관리자는 /posts/admin)',
+	})
 	list() {
 		return this.posts.listPublic();
 	}
@@ -65,7 +69,7 @@ export class PostsController {
 		description:
 			'공유 카드 그림 (1200×630 PNG, 글 제목으로 그린다). 사이트의 og:image가 쓴다. 주소에 붙는 ?v=는 캐시를 바꾸려는 값이라 보지 않는다',
 	})
-	@ApiNotFoundResponse({ description: '방문자에게 보이는 글이 없다 (임시 저장, 지운 글, 예약 글 포함)' })
+	@ApiNotFoundResponse({ description: '방문자에게 보이는 글이 없다 (임시 저장, 지운 글, 예약 글, 비밀 글 포함)' })
 	async card(@Param('slug') slug: string, @Res() res: Response) {
 		const png = await this.cards.png(slug);
 		res.set({
@@ -82,7 +86,7 @@ export class PostsController {
 	@Get('admin')
 	@UseGuards(AdminGuard)
 	@ApiCookieAuth(SESSION_COOKIE)
-	@ApiOkResponse({ description: '모든 글: 게시한 내용, 임시 저장, 버전 수' })
+	@ApiOkResponse({ description: '모든 글: 게시한 내용, 임시 저장, 버전 수, 비밀 글 여부' })
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	listAdmin() {
 		return this.posts.listAdmin();
@@ -128,6 +132,23 @@ export class PostsController {
 	@ApiOkResponse({ description: '게시했다 (날짜가 미래면 그날부터 보인다). 버전이 하나 늘어난다' })
 	publish(@Param('slug') slug: string, @Body() body: unknown, @CurrentAdmin() admin: AdminIdentity) {
 		return this.posts.publish(slug, body, admin.login);
+	}
+
+	@Put(':slug/secret')
+	@UseGuards(AdminGuard)
+	@RateLimit('write')
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiBody({ schema: { example: { secret: true } } })
+	@ApiOkResponse({
+		description:
+			'비밀 글로 지정했다(secret: true) 또는 풀었다. 비밀 글은 관리자에게만 보인다: 방문자용 목록·공유 카드·댓글·좋아요·조회수·메모 정리 내용에서 빠진다',
+	})
+	@ApiBadRequestResponse({ description: 'secret이 true나 false가 아니다' })
+	@ApiNotFoundResponse({ description: "서버에 없는 글이다 ('최근 삭제된 항목'의 글 포함)" })
+	@ApiConflictResponse({ description: '잠긴 메모다' })
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	setSecret(@Param('slug') slug: string, @Body() body: unknown, @CurrentAdmin() admin: AdminIdentity) {
+		return this.posts.setSecret(slug, body, admin.login);
 	}
 
 	@Get(':slug/revisions')

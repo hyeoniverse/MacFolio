@@ -57,6 +57,7 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'PUT /posts/:slug/draft': 'admin',
 	'DELETE /posts/:slug/draft': 'admin',
 	'POST /posts/:slug/publish': 'admin',
+	'PUT /posts/:slug/secret': 'admin',
 	'GET /posts/:slug/revisions': 'admin',
 	'GET /posts/:slug/revisions/:id': 'admin',
 	'POST /posts/:slug/restore': 'admin',
