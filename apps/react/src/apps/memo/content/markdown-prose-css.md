@@ -5,7 +5,7 @@ category: 개발기/MacFolio/프론트엔드
 summary: 텍스트 편집기 창에서 연 저장소 문서의 코드 블록이 문법 강조 없이 본문 색으로 표시되었다. 강조 색 변수를 메모·Finder 창에만 정의한 것이 원인이었다. 블로그와 문서 보기가 따로 정의하던 코드·목록·구분선·접기 블록 규칙을 styles/prose.css 하나로 옮기고, 화면마다 다른 값은 --prose-* 변수로 분리했다.
 ---
 
-Finder › 문서에서 `deployment.md`를 열면 텍스트 편집기 창이 문서를 렌더링한다. 이 창에서 코드 블록의 문법 강조가 적용되지 않고 모든 토큰이 본문 색(`rgba(0, 0, 0, 0.85)`)으로 표시되었다. 같은 문서를 휴대폰 파일 앱에서 열면 강조 색이 정상으로 표시되었다. 이번 작업은 원인을 고치면서, 블로그와 문서 보기가 각각 정의하던 Markdown 본문 규칙을 `styles/prose.css` 한 파일로 옮겼다.
+Finder › 문서에서 `deployment.md`를 열면 텍스트 편집기 창이 문서를 렌더링한다. 이 창에서 코드 블록의 문법 강조가 적용되지 않고 모든 토큰이 본문 색(`rgba(0, 0, 0, 0.85)`)으로 표시되었다. 같은 문서를 휴대폰 파일 앱에서 열면 강조 색이 정상으로 표시되었다. 이번 작업([#364](https://github.com/hyeoniverse/MacFolio/pull/364))은 원인을 고치면서, 블로그와 문서 보기가 각각 정의하던 Markdown 본문 규칙을 `styles/prose.css` 한 파일로 옮겼다.
 
 ## 증상
 
@@ -152,6 +152,7 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 - [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](/memo/color-tokens): `--color-code-*` 토큰을 만든 작업
 - [메모 편집기 손보기 — 토글 목록·각주, ~ 하나짜리 취소선, 사라지는 빈 폴더](/memo/memo-editor-toggle-footnote): 편집기의 접기 블록(`div.memo-details`)
 - [글 안의 저장소 문서 링크를 Finder에서 열기](/memo/doc-links-in-finder): 텍스트 편집기에서 저장소 문서를 여는 흐름
+- PR: [#364](https://github.com/hyeoniverse/MacFolio/pull/364), 인용을 먼저 옮긴 [#361](https://github.com/hyeoniverse/MacFolio/pull/361)
 
 [^invalid]: 사용자 지정 속성 값을 대입한 결과가 그 속성에 맞지 않거나 변수가 없으면, 선언 전체가 `unset`처럼 처리된다. `color`처럼 상속되는 속성은 부모 값을, 상속되지 않는 속성은 초기값을 쓴다. MDN의 [Invalid custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties#invalid_custom_properties) 절에 정리되어 있다.
 
