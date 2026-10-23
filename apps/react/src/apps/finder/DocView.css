@@ -1,4 +1,4 @@
-/* Markdown 문서 보기 (DocView): 텍스트 편집기 창과 휴대폰 파일 앱이 함께 쓴다 */
+/* Markdown 문서 보기 (DocView): 텍스트 편집기 창과 휴대폰 파일 앱이 함께 쓴다. 블로그와 같은 부분(인용·구분선·접기·코드 강조 색)은 styles/prose.css */
 
 .finder-doc {
 	max-width: 760px;
@@ -152,41 +152,6 @@
 	height: 160px;
 	border-radius: var(--radius-8);
 	background-color: var(--sidebar-background);
-}
-
-.finder-doc .hljs-keyword,
-.finder-doc .hljs-built_in,
-.finder-doc .hljs-literal {
-	color: var(--hl-keyword);
-}
-
-.finder-doc :is(.hljs-string, .hljs-regexp) {
-	color: var(--hl-string);
-}
-
-.finder-doc :is(.hljs-number, .hljs-attr) {
-	color: var(--hl-number);
-}
-
-.finder-doc :is(.hljs-title, .hljs-title.function_) {
-	color: var(--hl-function);
-}
-
-.finder-doc :is(.hljs-type, .hljs-params) {
-	color: var(--hl-type);
-}
-
-.finder-doc :is(.hljs-comment, .hljs-quote) {
-	color: var(--hl-comment);
-	font-style: italic;
-}
-
-.finder-doc :is(.hljs-tag, .hljs-name, .hljs-selector-tag) {
-	color: var(--hl-tag);
-}
-
-.finder-doc :is(.hljs-attribute, .hljs-property) {
-	color: var(--hl-attr);
 }
 
 /* 좁은 창 (휴대폰 포함) */

@@ -4,28 +4,12 @@
 	--finder-selected: var(--color-selected-content-background);
 	--finder-selected-soft: rgba(0, 99, 225, 0.14);
 	--finder-row-alt: rgba(0, 0, 0, 0.03);
-	--hl-keyword: var(--color-code-keyword);
-	--hl-string: var(--color-code-string);
-	--hl-number: var(--color-code-number);
-	--hl-function: var(--color-code-function);
-	--hl-type: var(--color-code-type);
-	--hl-comment: var(--color-code-comment);
-	--hl-tag: var(--color-code-tag);
-	--hl-attr: var(--color-code-number);
 }
 
 :root[data-theme='dark'] [data-app='finder'] {
 	--finder-selected: var(--color-selected-content-background);
 	--finder-selected-soft: rgba(10, 132, 255, 0.24);
 	--finder-row-alt: rgba(255, 255, 255, 0.035);
-	--hl-keyword: var(--color-code-keyword);
-	--hl-string: var(--color-code-string);
-	--hl-number: var(--color-code-number);
-	--hl-function: var(--color-code-function);
-	--hl-type: var(--color-code-type);
-	--hl-comment: var(--color-code-comment);
-	--hl-tag: var(--color-code-tag);
-	--hl-attr: var(--color-code-number);
 }
 
 .finder {
