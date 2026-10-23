@@ -12,7 +12,7 @@
 | API        | `https://macfolio-api.hyeoniverse.com`      | Oracle VM, docker compose    | main에 머지하면 GitHub Actions가 이미지를 만들어 서버에 (#100) |
 | API 문서   | `https://macfolio-api.hyeoniverse.com/docs` | Swagger                      |                                                                |
 
-프론트엔드와 API는 주소가 다르지만 같은 사이트(`hyeoniverse.com`)다. 그래서 `SameSite=Lax` 세션 쿠키가 함께 간다. **API는 반드시 `hyeoniverse.com`의 하위 도메인에 https로 둔다.** `*.workers.dev`나 IP 주소로 두면 로그인이 되지 않는다.
+프론트엔드와 API는 주소가 다르지만 같은 사이트(`hyeoniverse.com`)다. 그래서 `SameSite=Lax` 세션 쿠키가 함께 전송된다. **API는 반드시 `hyeoniverse.com`의 하위 도메인에 https로 배치한다.** `*.workers.dev`나 IP 주소에 두면 로그인이 되지 않는다.
 
 - [1. 프론트엔드 (Cloudflare Workers)](#1-프론트엔드-cloudflare-workers)
 - [2. GitHub OAuth App](#2-github-oauth-app)
@@ -31,7 +31,7 @@
 빌드와 배포는 GitHub Actions(`.github/workflows/ci.yml`)가 한다. Cloudflare의 빌드 서버(Workers Builds)는 쓰지 않는다. 워크플로가 쓰는 액션은 태그(`@v7`)가 아니라 커밋 SHA로 고정하고(태그는 나중에 다른 코드를 가리킬 수 있다), 새 버전은 Dependabot(`.github/dependabot.yml`)이 PR로 올린다.
 
 - **main**: 시험(`check`)이 통과하면 `deploy` 작업이 `wrangler deploy`로 실제 사이트에 올린다. 시험이 실패한 커밋은 배포되지 않는다.
-- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올리고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 고친다). 실제 사이트는 바뀌지 않는다. 미리보기는 실제 API를 읽기만 한다: 주소가 `*.workers.dev`라 `SameSite=Lax` 세션 쿠키가 가지 않고, API도 `*`로 맞은 주소에는 쿠키를 허용하지 않으며 관리자 API는 그런 Origin을 403으로 거절한다. 미리보기에서 관리자 기능을 확인하려면 로컬(`pnpm dev`)에서 한다. Dependabot PR과 프론트엔드 파일(`apps/react`, `packages`, lockfile 등)이 바뀌지 않은 PR에서는 건너뛴다. 올리는 것 자체는 무료(요청 수로만 과금)이고 버전은 최근 100개까지만 남지만, CI 시간과 댓글을 아낀다.
+- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 미리보기 버전을 올리고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 수정한다). 실제 사이트는 변경되지 않는다. 미리보기는 실제 API를 읽기만 한다: 주소가 `*.workers.dev`라 `SameSite=Lax` 세션 쿠키가 전송되지 않고, API도 `*`로 맞은 주소에는 쿠키를 허용하지 않으며 관리자 API는 그런 Origin을 403으로 거절한다. 미리보기에서 관리자 기능을 확인하려면 로컬(`pnpm dev`)에서 한다. Dependabot PR과 프론트엔드 파일(`apps/react`, `packages`, lockfile 등)이 바뀌지 않은 PR에서는 건너뛴다. 올리는 것 자체는 무료(요청 수로만 과금)이고 버전은 최근 100개까지만 남지만, CI 시간과 댓글을 아낀다.
 
 ### 처음 한 번: 토큰과 Git 연결
 
@@ -48,18 +48,18 @@
 
 ### 문서 파일(R2)
 
-이력서·포트폴리오·자격증 파일과 프로젝트마다의 파일(발표 자료 등. PDF, PNG, JPG, WebP, 20MB까지)은 저장소에 넣지 않고 Cloudflare R2 버킷 `macfolio-files`에 둔다. 사이트 Worker(`apps/react/worker/files.ts`)가 같은 주소의 `/files/<키>`로 내주고, Finder에서 열면 미리보기 앱(`apps/react/src/apps/preview`)이 pdf.js로 쪽을 그리거나 그림을 보여 준다(휴대폰은 파일 앱 안에서). 어느 폴더에 무엇이 있는지(목록)는 API의 DB(`Document` 표, `GET /documents`)에 있다.
+이력서·포트폴리오·자격증 파일과 프로젝트마다의 파일(발표 자료 등. PDF, PNG, JPG, WebP, 20MB까지)은 저장소에 넣지 않고 Cloudflare R2 버킷 `macfolio-files`에 저장한다. 사이트 Worker(`apps/react/worker/files.ts`)가 같은 주소의 `/files/<키>`로 내주고, Finder에서 열면 미리보기 앱(`apps/react/src/apps/preview`)이 pdf.js로 페이지를 렌더링하거나 그림을 보여 준다(휴대폰은 파일 앱 안에서). 어느 폴더에 무엇이 있는지(목록)는 API의 DB(`Document` 표, `GET /documents`)에 있다.
 
 - 응답: 확장자에 맞는 `Content-Type`, `ETag`(`If-None-Match`가 맞으면 304), `Cache-Control: public, max-age=300`, `X-Content-Type-Options: nosniff`, `Content-Disposition: inline`(`?download=1`이면 `attachment`), 이 사이트 안의 iframe에만 들어가는 CSP(`frame-ancestors 'self'`)
 - 없는 파일, `..` 같은 경로, pdf·png·jpg·jpeg·webp가 아닌 키는 404. GET·HEAD가 아니면 405. 바인딩이 없는 곳(로컬 `pnpm dev`)도 404
 
 **올리기(관리자)**: 관리자로 로그인하고 Finder의 문서 › 이력서·포트폴리오·자격증 폴더 안, 또는 문서 › 포트폴리오 › <프로젝트> 폴더 안(또는 그 폴더 아이콘 위)에 파일을 끌어다 놓는다. 프로젝트 폴더의 파일은 폴더 값 `project:<프로젝트 id>`로 올라간다. 파일은 API 서버를 거치지 않는다.
 
-1. 브라우저 → API `POST /documents/uploads` (폴더·이름·크기): API가 관리자인지, 종류·크기가 맞는지 보고 R2에 바로 올릴 **서명 주소**(5분, `Content-Length`가 그 크기여야 받는다)를 준다. 키는 `resume|portfolio|certificates|desktop|pictures/<무작위>.<확장자>`(바탕화면은 `desktop`, 홈 › 그림은 `pictures`), 프로젝트 폴더는 `projects/<프로젝트 id>/<무작위>.<확장자>`
+1. 브라우저 → API `POST /documents/uploads` (폴더·이름·크기): API가 관리자인지, 종류·크기가 맞는지 보고 R2에 바로 올릴 **서명 주소**(5분, `Content-Length`가 그 크기여야 수락한다)를 발급한다. 키는 `resume|portfolio|certificates|desktop|pictures/<무작위>.<확장자>`(바탕화면은 `desktop`, 홈 › 그림은 `pictures`), 프로젝트 폴더는 `projects/<프로젝트 id>/<무작위>.<확장자>`
 2. 브라우저 → R2 `PUT <서명 주소>` (진행률이 Finder 아래에 보인다)
 3. 브라우저 → API `POST /documents`: API가 R2에 HEAD로 정말 올라갔는지·크기가 맞는지 확인하고 목록에 더한다
 
-이름 바꾸기와 지우기는 파일을 고르고 메뉴 막대의 **파일 → 이름 변경… / 휴지통으로 이동(⌘⌫)**. 지우면 R2에서도 지운다.
+이름 변경과 삭제는 파일을 선택하고 메뉴 막대의 **파일 → 이름 변경… / 휴지통으로 이동(⌘⌫)**. 삭제하면 R2에서도 삭제한다.
 
 #### 소유자가 할 일
 
@@ -69,7 +69,7 @@
    - Specify bucket(s): **Apply to specific buckets only** → `macfolio-files`
    - TTL: Forever (또는 원하는 기간)
    - 만들면 **Access Key ID**와 **Secret Access Key**가 한 번만 보인다. 계정 ID는 R2 첫 화면 오른쪽(또는 S3 주소 `https://<계정 ID>.r2.cloudflarestorage.com`)에 있다
-3. **서버에 넣기**: 서버의 `~/deploy/api.env`에 네 줄을 더하고 API를 다시 띄운다(`docker compose up -d api`)
+3. **서버에 넣기**: 서버의 `~/deploy/api.env`에 네 줄을 추가하고 API를 다시 실행한다(`docker compose up -d api`)
 
    ```bash
    R2_ACCOUNT_ID=<계정 ID>
@@ -95,11 +95,11 @@
 
    PR 미리보기 주소에서 올려 보려면 `AllowedOrigins`에 그 주소를 더한다. 이 설정이 없으면 Finder가 "저장소에 연결하지 못했습니다. 버킷의 CORS 설정을 확인해 주세요."를 보인다
 
-5. 올리기 전에 **전화번호, 집 주소, 생년월일, 주민등록번호 같은 신분 번호를 지운다**(자격증 사본의 자격증 번호도 가린다)
+5. 올리기 전에 **전화번호, 집 주소, 생년월일, 주민등록번호 같은 신분 번호를 삭제한다**(자격증 사본의 자격증 번호도 마스킹한다)
 
 #### 로컬에서 올려 보기
 
-로컬 개발 서버에서도 실제 R2에 올려 볼 수 있다. 목록은 로컬 DB에만 남으니 배포한 사이트에는 보이지 않는다(R2에 남은 시험 파일은 Finder에서 지우면 R2에서도 지워진다).
+로컬 개발 서버에서도 실제 R2에 올려 볼 수 있다. 목록은 로컬 DB에만 남으니 배포한 사이트에는 보이지 않는다(R2에 남은 시험 파일은 Finder에서 삭제하면 R2에서도 삭제된다).
 
 1. `apps/api/.env`에 위 3의 네 줄(`R2_ACCOUNT_ID` 등)을 넣는다. 배포와 같은 키를 써도 된다
 2. 버킷 CORS의 `AllowedOrigins`에 `http://localhost:5173`을 더한다
@@ -120,15 +120,15 @@
 
 비용: R2 무료 사용량(저장 10GB, Class A 작업 월 100만 회, Class B 작업 월 1,000만 회, 내보내기 무료) 안에서 충분하다. 문서 몇 개를 읽기만 한다.
 
-CI: 배포(`ci.yml`의 `deploy`, `preview`)는 `CLOUDFLARE_API_TOKEN`으로 `wrangler deploy`·`wrangler versions upload`를 한다. R2 바인딩이 있는 Worker를 올리려면 토큰에 **Account → Workers R2 Storage → Edit** 권한이 있어야 한다. 위 "처음 한 번"의 **Edit Cloudflare Workers** 템플릿에는 이 권한이 들어 있으므로 그 템플릿으로 만든 토큰이면 바꿀 것이 없다. 직접 고른 권한으로 만든 토큰이면 Cloudflare 대시보드 → My Profile → API Tokens에서 그 토큰을 고쳐 이 권한을 더한다. 파일을 올리는 일은 CI가 하지 않는다(관리자가 Finder에서 올린다).
+CI: 배포(`ci.yml`의 `deploy`, `preview`)는 `CLOUDFLARE_API_TOKEN`으로 `wrangler deploy`·`wrangler versions upload`를 한다. R2 바인딩이 있는 Worker를 올리려면 토큰에 **Account → Workers R2 Storage → Edit** 권한이 있어야 한다. 위 "처음 한 번"의 **Edit Cloudflare Workers** 템플릿에는 이 권한이 들어 있으므로 그 템플릿으로 만든 토큰이면 변경할 것이 없다. 직접 고른 권한으로 만든 토큰이면 Cloudflare 대시보드 → My Profile → API Tokens에서 그 토큰을 고쳐 이 권한을 더한다. 파일을 올리는 일은 CI가 하지 않는다(관리자가 Finder에서 올린다).
 
 ### API 주소 넣기
 
-`VITE_API_URL`은 **빌드할 때** 코드에 들어간다. 런타임 변수가 아니다. 값은 `ci.yml` 맨 위의 `env`에 있다(`https://macfolio-api.hyeoniverse.com`, 끝에 `/` 없이). 바꾸려면 그 줄을 고쳐 main에 머지한다.
+`VITE_API_URL`은 **빌드할 때** 코드에 들어간다. 런타임 변수가 아니다. 값은 `ci.yml` 맨 위의 `env`에 있다(`https://macfolio-api.hyeoniverse.com`, 끝에 `/` 없이). 변경하려면 그 줄을 수정해 main에 머지한다.
 
 Cloudflare 대시보드의 Variables and Secrets는 Worker가 **실행될 때** 읽는 값이라, 여기에 넣어도 빌드에 들어가지 않는다. 값이 비어 있으면 로그인 버튼이 꺼지고 "관리자 서버가 아직 연결되지 않았습니다"가 뜬다.
 
-`VITE_MESSAGES_STORE`는 배포에 넣지 않는다(비워 둔다). 비어 있으면 메시지 앱이 서버에 저장하고, 서버에 닿지 못하면 "메시지를 열 수 없습니다" 경고창을 띄운 뒤 앱을 끈다. `local`은 서버 없이 화면을 확인하는 개발용 값이라, 배포에 넣으면 방문자마다 자기 브라우저에만 글이 남는다.
+`VITE_MESSAGES_STORE`는 배포에 넣지 않는다(빈 값으로 둔다). 비어 있으면 메시지 앱이 서버에 저장하고, 서버에 닿지 못하면 "메시지를 열 수 없습니다" 경고창을 표시한 뒤 앱을 종료한다. `local`은 서버 없이 화면을 확인하는 개발용 값이라, 배포에 넣으면 방문자마다 자기 브라우저에만 글이 남는다.
 
 반영됐는지는 배포된 JS에서 주소를 찾아 보면 알 수 있다.
 
@@ -147,9 +147,9 @@ GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
 | Homepage URL               | `https://macfolio.hyeoniverse.com`                          | `http://localhost:5173`                      |
 | Authorization callback URL | `https://macfolio-api.hyeoniverse.com/auth/github/callback` | `http://localhost:4000/auth/github/callback` |
 
-OAuth App 하나에는 콜백 주소를 하나만 넣을 수 있어서, 배포용과 개발용을 따로 만든다. 만든 뒤 Client ID와 Client secret을 받아 둔다. secret은 만들 때 한 번만 보인다.
+OAuth App 하나에는 콜백 주소를 하나만 넣을 수 있어서, 배포용과 개발용을 따로 만든다. 만든 뒤 Client ID와 Client secret을 기록한다. secret은 만들 때 한 번만 보인다.
 
-관리자는 계정 이름이 아니라 숫자 ID로 가린다(`ADMIN_GITHUB_ID`, 기본 `68999618` = hyeoniverse). 이름은 바꿀 수 있고, 바꾸면 옛 이름을 다른 사람이 가져갈 수 있기 때문이다.
+관리자는 계정 이름이 아니라 숫자 ID로 식별한다(`ADMIN_GITHUB_ID`, 기본 `68999618` = hyeoniverse). 이름은 변경할 수 있고, 변경하면 옛 이름을 다른 사람이 가져갈 수 있기 때문이다.
 
 ## 3. Oracle VM 만들기
 
@@ -168,9 +168,9 @@ Compute → Instances → Create instance
 - **"Always Free Eligible"** 표시가 있는 shape인지 확인한다. `E4/E5.Flex` 같은 다른 AMD shape는 유료다.
 - A1은 인기 리전에서 `Out of host capacity`가 자주 난다. 지금 서버는 A1 자리가 없어서 **E2.1.Micro**(x86_64, 1GB)로 만들었다. `apps/api/Dockerfile`은 amd64와 arm64 모두 빌드된다.
 - 공인 IP 체크박스가 "You must select a public subnet"으로 막히면, VCN을 먼저 만든다: Networking → Virtual cloud networks → **Start VCN Wizard** → Create VCN with Internet Connectivity. 그 뒤 인스턴스 화면에서 Select existing → `public subnet-…`을 고른다.
-- VNIC name은 비워 둬도 된다.
+- VNIC name은 비워도 된다.
 
-접속은 Mac에서 한다. 키는 레포 밖(`~/.ssh`)에 둔다.
+접속은 Mac에서 한다. 키는 레포 밖(`~/.ssh`)에 보관한다.
 
 ```bash
 mv ~/Downloads/ssh-key-*.key ~/.ssh/oracle-macfolio.key
@@ -184,7 +184,7 @@ ssh -i ~/.ssh/oracle-macfolio.key ubuntu@<공인 IP>
 
 ### swap (E2.1.Micro)
 
-RAM이 1GB라 Docker 빌드(pnpm install, tsc)가 메모리 부족으로 죽는다. 평소에는 GitHub Actions가 빌드하지만, 급할 때 서버에서 빌드할 수 있게 swap을 잡아 둔다.
+RAM이 1GB라 Docker 빌드(pnpm install, tsc)가 메모리 부족으로 죽는다. 평소에는 GitHub Actions가 빌드하지만, 급할 때 서버에서 빌드할 수 있게 swap을 설정한다.
 
 ```bash
 sudo fallocate -l 4G /swapfile
@@ -213,7 +213,7 @@ git clone https://github.com/hyeoniverse/MacFolio.git ~/macfolio
 mkdir -p ~/deploy
 ```
 
-서버 안은 이렇게 된다. 비밀 값은 레포 밖(`~/deploy`)에 둬서 커밋될 일이 없고, `git pull`해도 남는다.
+서버 안은 이렇게 된다. 비밀 값은 레포 밖(`~/deploy`)에 보관해 커밋될 일이 없고, `git pull`해도 남는다.
 
 ```
 /home/ubuntu/
@@ -235,7 +235,7 @@ Cloudflare Zero Trust → Networks → Tunnels → **Create a tunnel** → Cloud
    - Subdomain `macfolio-api`, Domain `hyeoniverse.com`
    - Service: `HTTP`, URL: `api:4000` (compose 안의 서비스 이름)
 
-DNS에 `macfolio-api` 레코드가 이미 있으면 먼저 지워야 추가된다. 토큰은 터널 비밀번호다. `.env`에만 둔다.
+DNS에 `macfolio-api` 레코드가 이미 있으면 먼저 삭제해야 추가된다. 토큰은 터널 비밀번호다. `.env`에만 저장한다.
 
 ## 6. 설정 파일
 
@@ -253,16 +253,16 @@ EOF
 
 ### `api.env` (API 환경 변수)
 
-서버의 API는 이 파일만 읽는다. 내 컴퓨터의 `apps/api/.env`는 로컬 개발용이라 배포와 상관없다. 배포용 값을 내 컴퓨터에 적어 둘 때는 `.env`가 아니라 `apps/api/.env.production`에 둔다(커밋되지 않고, 로컬 API도 읽지 않는다). 로컬 `.env`의 `CORS_ORIGINS`를 배포 값으로 바꾸면 로컬 사이트가 서버에 연결하지 못한다.
+서버의 API는 이 파일만 읽는다. 내 컴퓨터의 `apps/api/.env`는 로컬 개발용이라 배포와 상관없다. 배포용 값을 내 컴퓨터에 보관할 때는 `.env`가 아니라 `apps/api/.env.production`에 저장한다(커밋되지 않고, 로컬 API도 읽지 않는다). 로컬 `.env`의 `CORS_ORIGINS`를 배포 값으로 변경하면 로컬 사이트가 서버에 연결하지 못한다.
 
-서버의 값을 내 컴퓨터로 받아 둘 때는 내 컴퓨터에서 친다 (`>`가 먼저 빈 파일을 만들므로, 실패하면 0바이트 파일이 남는다).
+서버의 값을 내 컴퓨터로 내려받을 때는 내 컴퓨터에서 실행한다 (`>`가 먼저 빈 파일을 만들므로, 실패하면 0바이트 파일이 남는다).
 
 ```bash
 scp -i ~/.ssh/oracle-macfolio.key ubuntu@<공인 IP>:deploy/api.env apps/api/.env.production
 chmod 600 apps/api/.env.production
 ```
 
-이 파일로 로컬 `.env`를 만들 때는 그대로 복사하지 않고 로컬에 맞지 않는 키만 바꾼다: `DATABASE_URL`(배포는 compose가 넣어 `api.env`에 없다)을 더하고, `CORS_ORIGINS`는 `http://localhost:5173`, `API_URL`·`TRUST_PROXY`·`RESOURCE_MONITOR`는 지우고, `GITHUB_CLIENT_*`는 [개발용 OAuth App](#2-github-oauth-app) 값으로 바꾼다. 나머지 키를 그대로 두면 로컬에서도 진짜 메일이 나가고 실제 R2 버킷에 올라간다.
+이 파일로 로컬 `.env`를 만들 때는 그대로 복사하지 않고 로컬에 맞지 않는 키만 변경한다: `DATABASE_URL`(배포는 compose가 넣어 `api.env`에 없다)을 추가하고, `CORS_ORIGINS`는 `http://localhost:5173`, `API_URL`·`TRUST_PROXY`·`RESOURCE_MONITOR`는 삭제하고, `GITHUB_CLIENT_*`는 [개발용 OAuth App](#2-github-oauth-app) 값으로 변경한다. 나머지 키를 그대로 유지하면 로컬에서도 진짜 메일이 나가고 실제 R2 버킷에 올라간다.
 
 ```bash
 cat > api.env <<EOF
@@ -284,13 +284,13 @@ chmod 600 .env api.env
 | `GITHUB_CLIENT_ID`                                    | 로그인 | 비우면 로그인만 503, 나머지 API는 동작한다                                                                                                                                                                                                                             |
 | `GITHUB_CLIENT_SECRET`                                | 로그인 |                                                                                                                                                                                                                                                                        |
 | `IP_HASH_SECRET`                                      | ✓      | 댓글 작성자 IP를 HMAC하는 키. production에서 없으면 서버가 뜨지 않는다                                                                                                                                                                                                 |
-| `TRUST_PROXY`                                         |        | 앞에 둔 프록시 수. Tunnel만 거치면 `1`. `X-Forwarded-For`에서 실제 IP를 읽어 요청 제한에 쓴다                                                                                                                                                                          |
+| `TRUST_PROXY`                                         |        | 앞단의 프록시 수. Tunnel만 거치면 `1`. `X-Forwarded-For`에서 실제 IP를 읽어 요청 제한에 쓴다                                                                                                                                                                           |
 | `FRONTEND_URL`                                        |        | 로그인 후 돌아갈 주소 (기본: `CORS_ORIGINS`의 첫 주소)                                                                                                                                                                                                                 |
 | `ADMIN_GITHUB_ID`                                     |        | 관리자 GitHub 숫자 ID (기본 68999618)                                                                                                                                                                                                                                  |
 | `UNSPLASH_ACCESS_KEY`, `PEXELS_API_KEY`               |        | 편집기의 사진 찾기. 없으면 그 서비스만 꺼진다                                                                                                                                                                                                                          |
-| `GITHUB_TOKEN`                                        |        | GitHub 앱의 프로필·저장소를 받을 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 받는다                                                                                                                                                                                |
+| `GITHUB_TOKEN`                                        |        | GitHub 앱의 프로필·저장소를 조회할 토큰. 없으면 시간당 60번 제한이라 30분마다 새로 조회한다                                                                                                                                                                            |
 | `FISH_AUDIO_API_KEY`, `GOOGLE_TTS_API_KEY`            |        | Safari HYEONIVERSE 페이지의 음성 만들기 (Fish → Google → Edge). 없으면 그 공급자만 건너뛴다 (Edge는 키 없이 된다)                                                                                                                                                      |
-| `SPEECH_PER_IP_PER_DAY`, `SPEECH_TOTAL_PER_DAY`       |        | 음성 만들기 하루 상한. 기본 IP마다 3번, 사이트 전체 50번 (서버 메모리로 센다)                                                                                                                                                                                          |
+| `SPEECH_PER_IP_PER_DAY`, `SPEECH_TOTAL_PER_DAY`       |        | 음성 만들기 하루 상한. 기본 IP마다 3번, 사이트 전체 50번 (서버 메모리에서 집계한다)                                                                                                                                                                                    |
 | `DEEPL_API_KEY`, `GOOGLE_TRANSLATE_API_KEY`           |        | 번역 데모 (DeepL → Google). HYEONIVERSE와 같은 키. 없으면 그 공급자만 건너뛴다                                                                                                                                                                                         |
 | `GROQ_API_KEY`                                        |        | AI 요약 데모의 기본 공급자 (Groq, OpenAI 호환 API). 없거나 실패하면 Gemini로 넘어간다                                                                                                                                                                                  |
 | `GROQ_MODEL`                                          |        | Groq 모델 (기본 `openai/gpt-oss-120b`). Groq는 모델을 자주 내리므로, 요약이 Gemini로만 만들어지면 내려갔는지 본다                                                                                                                                                      |
@@ -305,7 +305,7 @@ chmod 600 .env api.env
 | `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`          |        | 메일·댓글·메시지의 사람 확인 (Cloudflare Turnstile). 비우면 확인하지 않는다. 어디에 걸지는 시스템 설정의 개인정보 보호 및 보안에서 켜고 끈다                                                                                                                           |
 | `CONTACT_PER_IP_PER_DAY`, `CONTACT_TOTAL_PER_DAY`     |        | 연락 메일 하루 상한. 기본 IP마다 5통, 사이트 전체 50통                                                                                                                                                                                                                 |
 
-데모 상한은 데모마다 따로, 서버 메모리로 센다 (다시 띄우면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 두 공급자를 이어 시도해도 Cloudflare Tunnel의 100초 안에 끝나게 각각 45초에서 끊는다.
+데모 상한은 데모마다 따로, 서버 메모리에서 집계한다 (다시 시작하면 처음부터). 공급자가 모두 실패하면 쓴 횟수를 돌려준다. 커버는 두 공급자를 이어 시도해도 Cloudflare Tunnel의 100초 안에 끝나게 각각 45초에서 끊는다.
 
 `NODE_ENV=production`은 Dockerfile에 들어 있다. 그래서 쿠키에 `Secure`가 붙고, http로는 로그인이 되지 않는다. 전체 목록은 `apps/api/.env.example`에 있다.
 
@@ -371,7 +371,7 @@ docker compose config --quiet && echo OK
 
 ## 7. 실행과 확인
 
-API 이미지는 GitHub Actions가 만들어 GHCR(`ghcr.io/hyeoniverse/macfolio-api`)에 올려 둔다. 서버는 받기만 한다. 태그는 `sha-` + 커밋 7자리(예: `sha-a38ac7e`)이고, GitHub 저장소 오른쪽의 **Packages → macfolio-api**에서 최근 태그를 본다. 아래 명령의 `sha-a38ac7e`는 예시이니 그 태그로 바꾼다 (`<…>` 같은 자리표시를 그대로 붙여 넣으면 bash가 `<`·`>`를 기호로 읽어 아무것도 하지 않는다).
+API 이미지는 GitHub Actions가 만들어 GHCR(`ghcr.io/hyeoniverse/macfolio-api`)에 올린다. 서버는 내려받기만 한다. 태그는 `sha-` + 커밋 7자리(예: `sha-a38ac7e`)이고, GitHub 저장소 오른쪽의 **Packages → macfolio-api**에서 최근 태그를 본다. 아래 명령의 `sha-a38ac7e`는 예시이니 그 태그로 바꿔 넣는다 (`<…>` 같은 자리표시를 그대로 붙여 넣으면 bash가 `<`·`>`를 기호로 읽어 아무것도 하지 않는다).
 
 ```bash
 cd ~/deploy
@@ -391,7 +391,7 @@ docker compose logs -f api                  # 마이그레이션이 끝나고 "N
 
 ### 업데이트 (자동 배포)
 
-main에 들어온 커밋이 **서버에 떠 있는 API**(`/health`의 version)와 비교해 `apps/api`(또는 의존성, `ops/deploy.sh`)가 다르면 GitHub Actions가 알아서 한다 (#100). 직전 push가 아니라 서버와 비교하므로, API를 바꾼 머지의 CI가 실패해 배포가 빠져도 다음 머지 때 함께 배포된다. 서버에 닿지 않으면 다르다고 보고 배포한다.
+main에 들어온 커밋이 **서버에서 실행 중인 API**(`/health`의 version)와 비교해 `apps/api`(또는 의존성, `ops/deploy.sh`)가 다르면 GitHub Actions가 알아서 한다 (#100). 직전 push가 아니라 서버와 비교하므로, API를 변경한 머지의 CI가 실패해 배포가 빠져도 다음 머지 때 함께 배포된다. 서버에 닿지 않으면 다르다고 보고 배포한다.
 
 ```
 check(시험) ─▶ api-image: 이미지 빌드(amd64) → GHCR (sha-<커밋>, main)
@@ -419,15 +419,15 @@ docker build -f apps/api/Dockerfile --build-arg APP_VERSION=$tag -t ghcr.io/hyeo
 ~/macfolio/ops/deploy.sh $tag   # 서버에 그 태그의 이미지가 있으면 받지 않고 그대로 쓴다
 ```
 
-**환경 변수는 자동으로 바뀌지 않는다.** 자동 배포는 이미지(코드)만 바꾼다. 비밀 값은 서버에만 둔다 (GitHub와 서버 두 곳에 두지 않고, 배포 전용 키에 파일 쓰기 권한을 주지 않으려고).
+**환경 변수는 자동으로 변경되지 않는다.** 자동 배포는 이미지(코드)만 교체한다. 비밀 값은 서버에만 보관한다 (GitHub와 서버 두 곳에 두지 않고, 배포 전용 키에 파일 쓰기 권한을 주지 않으려고).
 
-| 무엇                                            | 어디에                            | 바꾸면                                          |
-| ----------------------------------------------- | --------------------------------- | ----------------------------------------------- |
-| API 환경 변수 (OAuth, `CORS_ORIGINS`, AI 키 등) | 서버 `~/deploy/api.env`           | 아래 명령으로 직접 반영                         |
-| DB 비밀번호, 터널 토큰                          | 서버 `~/deploy/.env`              | 직접 반영. `API_TAG`는 `ops/deploy.sh`가 바꾼다 |
-| 백업 설정                                       | 서버 `~/deploy/backup.env`        | 다음 백업부터                                   |
-| 프론트엔드 `VITE_API_URL`                       | 저장소 `.github/workflows/ci.yml` | 머지하면 (빌드할 때 들어간다)                   |
-| `apps/api/.env`                                 | 내 컴퓨터                         | 로컬 개발용. 서버로 가지 않는다                 |
+| 무엇                                            | 어디에                            | 바꾸면                                            |
+| ----------------------------------------------- | --------------------------------- | ------------------------------------------------- |
+| API 환경 변수 (OAuth, `CORS_ORIGINS`, AI 키 등) | 서버 `~/deploy/api.env`           | 아래 명령으로 직접 반영                           |
+| DB 비밀번호, 터널 토큰                          | 서버 `~/deploy/.env`              | 직접 반영. `API_TAG`는 `ops/deploy.sh`가 변경한다 |
+| 백업 설정                                       | 서버 `~/deploy/backup.env`        | 다음 백업부터                                     |
+| 프론트엔드 `VITE_API_URL`                       | 저장소 `.github/workflows/ci.yml` | 머지하면 (빌드할 때 들어간다)                     |
+| `apps/api/.env`                                 | 내 컴퓨터                         | 로컬 개발용. 서버로 가지 않는다                   |
 
 ```bash
 cd ~/deploy
@@ -436,7 +436,7 @@ docker compose up -d api     # 바뀐 설정을 보고 컨테이너만 새로 �
 docker compose ps api        # healthy인지
 ```
 
-고쳐 두고 띄우지 않으면 다음 자동 배포 때 함께 반영된다. 언제가 될지 모르니 바로 띄운다.
+수정하고 재시작하지 않으면 다음 자동 배포 시점에 함께 반영된다. 시점을 알 수 없으니 바로 재시작한다.
 
 ### 자동 배포 설정 (한 번)
 
@@ -444,7 +444,7 @@ docker compose ps api        # healthy인지
 
 #### 1. 이미지와 첫 배포
 
-main에 API 변경이 머지되면 `api-image`가 이미지를 GHCR에 올린다. 이 저장소처럼 공개 저장소에 연결된 패키지는 처음부터 공개라 서버에서 로그인 없이 받는다. 로그인 없이 받히는지는 이렇게 본다 (200이면 공개).
+main에 API 변경이 머지되면 `api-image`가 이미지를 GHCR에 올린다. 이 저장소처럼 공개 저장소에 연결된 패키지는 처음부터 공개라 서버에서 로그인 없이 내려받는다. 로그인 없이 내려받을 수 있는지는 이렇게 확인한다 (200이면 공개).
 
 ```bash
 tok=$(curl -s "https://ghcr.io/token?scope=repository:hyeoniverse/macfolio-api:pull" | sed -E 's/.*"token":"([^"]+)".*/\1/')
@@ -454,13 +454,13 @@ curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $tok" \
 
 401·403이면 GitHub 프로필 → **Packages → macfolio-api → Package settings → Change visibility → Public**.
 
-그다음 서버 `compose.yml`의 api를 `image:`로 바꾸고 첫 배포를 손으로 한 번 한다 (6·7단계). 이때부터 `.env`에 `API_TAG`가 생긴다.
+그다음 서버 `compose.yml`의 api를 `image:`로 변경하고 첫 배포를 수동으로 한 번 실행한다 (6·7단계). 이때부터 `.env`에 `API_TAG`가 생긴다.
 
 #### 2. 배포 전용 열쇠 (서버에서 한 번에)
 
-GitHub Actions가 서버에 들어올 열쇠를 하나 만들되, 그 열쇠로는 **배포 스크립트 하나만** 돌게 묶는다. 열쇠는 서버에서 만들어 GitHub에 넣고 서버에서는 지운다 (내 컴퓨터와 서버 사이에 옮길 것이 없다).
+GitHub Actions가 서버에 들어올 열쇠를 하나 만들되, 그 열쇠로는 **배포 스크립트 하나만** 돌게 묶는다. 열쇠는 서버에서 만들어 GitHub에 넣고 서버에서는 삭제한다 (내 컴퓨터와 서버 사이에 옮길 것이 없다).
 
-서버에서 아래를 통째로 붙여 넣는다. 고칠 곳은 없다. 여러 번 해도 된다: 늘 예전 배포 열쇠를 지우고 새로 만든다.
+서버에서 아래를 통째로 붙여 넣는다. 수정할 곳은 없다. 여러 번 실행해도 된다: 늘 예전 배포 열쇠를 삭제하고 새로 만든다.
 
 ```bash
 sed -i '/github-actions-deploy/d' ~/.ssh/authorized_keys
@@ -473,9 +473,9 @@ echo "===== DEPLOY_KNOWN_HOSTS ====="; ssh-keyscan -t ed25519 localhost 2>/dev/n
 echo "===== DEPLOY_SSH_KEY ====="; cat ~/macfolio-deploy
 ```
 
-- 첫 줄은 배포 열쇠 줄(끝이 `github-actions-deploy`)만 지운다. 평소 접속하는 열쇠는 다른 줄이라 남는다
+- 첫 줄은 배포 열쇠 줄(끝이 `github-actions-deploy`)만 삭제한다. 평소 접속하는 열쇠는 다른 줄이라 남는다
 - `restrict`: 포트 포워딩, 터미널(pty) 등을 모두 막는다
-- `command=`: 이 열쇠로 접속하면 무엇을 보내든 `ops/deploy.sh`만 돈다. 보낸 글자는 `SSH_ORIGINAL_COMMAND`로 넘어가고, 스크립트가 `sha-[0-9a-f]{7,40}` 모양만 받는다
+- `command=`: 이 열쇠로 접속하면 무엇을 보내든 `ops/deploy.sh`만 돈다. 보낸 글자는 `SSH_ORIGINAL_COMMAND`로 넘어가고, 스크립트가 `sha-[0-9a-f]{7,40}` 형식만 허용한다
 - `DEPLOY_KNOWN_HOSTS`: 서버 자기 호스트 키를 서버에서 읽어 공인 IP를 붙인다. Actions가 가짜 서버에 붙지 않게 고정하는 값이다
 
 `등록된 배포 열쇠 수: 1`이 나와야 한다.
@@ -491,9 +491,9 @@ echo "===== DEPLOY_SSH_KEY ====="; cat ~/macfolio-deploy
 | `DEPLOY_SSH_KEY`     | 2의 `DEPLOY_SSH_KEY` 아래 전체 (`-----BEGIN`부터 `-----END … -----`까지) |
 | `DEPLOY_USER`        | (선택) 기본 `ubuntu`                                                     |
 
-넣었으면 서버의 열쇠 파일을 지운다: `rm ~/macfolio-deploy ~/macfolio-deploy.pub`. 열쇠를 새로 만들었으면 **`DEPLOY_SSH_KEY`도 새 값으로** 바꿔야 한다 (아니면 `Permission denied (publickey)`).
+넣었으면 서버의 열쇠 파일을 삭제한다: `rm ~/macfolio-deploy ~/macfolio-deploy.pub`. 열쇠를 새로 만들었으면 **`DEPLOY_SSH_KEY`도 새 값으로** 변경해야 한다 (아니면 `Permission denied (publickey)`).
 
-`DEPLOY_HOST`가 없으면 `api-deploy`는 건너뛴다(이미지는 만든다). Oracle 보안 목록에서 22번이 내 IP에만 열려 있으면 Actions가 들어오지 못한다. 열쇠 인증만 쓰므로 22번은 모든 곳에 열어 둔다 (나중에 Cloudflare Tunnel SSH로 옮기면 닫는다, #100).
+`DEPLOY_HOST`가 없으면 `api-deploy`는 건너뛴다(이미지는 만든다). Oracle 보안 목록에서 22번이 내 IP에만 열려 있으면 Actions가 들어오지 못한다. 열쇠 인증만 쓰므로 22번은 모든 곳에 개방한다 (나중에 Cloudflare Tunnel SSH로 옮기면 닫는다, #100).
 
 #### 4. 확인
 
@@ -507,7 +507,7 @@ echo "===== DEPLOY_SSH_KEY ====="; cat ~/macfolio-deploy
 바깥에서 버전 확인: 확인: {"status":"ok","database":"up","version":"sha-a38ac7e"}
 ```
 
-열쇠는 GitHub(Secrets)과 서버에만 있으므로 연결 확인은 Actions로 한다. 열쇠가 배포 명령 하나만 도는지(`ls` 같은 다른 명령은 "태그 모양이 아니다")는 스크립트가 태그 모양만 받는 것으로 막는다 (로컬에서 시험함).
+열쇠는 GitHub(Secrets)과 서버에만 있으므로 연결 확인은 Actions로 한다. 열쇠가 배포 명령 하나만 도는지(`ls` 같은 다른 명령은 "태그 모양이 아니다")는 스크립트가 태그 형식만 허용하는 것으로 막는다 (로컬에서 시험함).
 
 #### Secrets를 넣기 전에 머지한 API 변경
 
@@ -534,9 +534,9 @@ docker inspect --format '{{.Name}} {{.HostConfig.LogConfig.Config}}' $(docker co
 
 #### 업타임 감시
 
-GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분마다 바깥에서 `https://macfolio-api.hyeoniverse.com/health`(서버와 DB)와 사이트를 불러 본다. 배포 중 잠깐 끊긴 것으로 알리지 않게 30초 간격으로 세 번 더 시도하고, 그래도 안 되면 실행이 실패하고 GitHub이 메일로 알린다.
+GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분마다 바깥에서 `https://macfolio-api.hyeoniverse.com/health`(서버와 DB)와 사이트를 호출해 확인한다. 배포 중 잠깐 끊긴 것으로 알리지 않게 30초 간격으로 세 번 더 시도하고, 그래도 안 되면 실행이 실패하고 GitHub이 메일로 알린다.
 
-- 알림은 예약 실행의 cron을 마지막으로 바꾼 사람(지금은 저장소 주인)에게 간다. GitHub **Settings → Notifications → Actions**에서 실패 알림이 켜져 있는지 확인한다
+- 알림은 예약 실행의 cron을 마지막으로 변경한 사람(지금은 저장소 주인)에게 간다. GitHub **Settings → Notifications → Actions**에서 실패 알림이 켜져 있는지 확인한다
 - 기록은 저장소의 **Actions → uptime**에서 본다. **Run workflow**로 바로 한 번 돌릴 수도 있다
 - 예약 실행은 GitHub 사정으로 몇 분씩 늦게 돌 수 있다. 공개 저장소라 실행 시간은 무료다
 - 저장소에 60일 동안 활동이 없으면 GitHub이 예약 실행을 멈춘다. 그때는 Actions에서 다시 켠다
@@ -557,18 +557,18 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 | 업데이트 | `unattended-upgrades` 켜짐, 재부팅 대기 없음                                                                                                     | `sudo apt install unattended-upgrades && sudo dpkg-reconfigure -plow unattended-upgrades`. `/var/run/reboot-required`가 있으면 한가한 때 `sudo reboot`                                                                                                                                           |
 
 - 배포용 SSH 키(`macfolio-deploy`)는 `authorized_keys`의 `restrict,command=`로 `ops/deploy.sh`만 돌릴 수 있다 ([자동 배포 설정](#자동-배포-설정-한-번)). `audit.sh`는 이 키를 보지 않는다
-- `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 비밀 키(`~/.ssh/oracle-macfolio.key`)와 그 암호는 비밀번호 관리자처럼 컴퓨터 밖에도 둔다. 컴퓨터를 초기화하기 전에는 `~/.ssh`부터 백업한다. 잃어버리면 [SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때)
-- 점검은 분기마다 한 번, 그리고 서버 설정을 손댄 뒤에 돌린다
+- `ubuntu` 계정이 `docker` 그룹이라 그 계정으로 들어오면 호스트 root와 같다. 그래서 SSH 키 관리가 곧 서버 전체의 열쇠 관리다. 비밀 키(`~/.ssh/oracle-macfolio.key`)와 그 암호는 비밀번호 관리자처럼 컴퓨터 밖에도 보관한다. 컴퓨터를 초기화하기 전에는 `~/.ssh`부터 백업한다. 잃어버리면 [SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때)
+- 점검은 분기마다 한 번, 그리고 서버 설정을 변경한 뒤에 실행한다
 
 #### 처음 한 번 (스크립트를 넣은 뒤)
 
-1. 서버에서 코드를 받고 돌린다: `cd ~/macfolio && git pull && ops/audit.sh`. `확인`이 나오면 위 표대로 손보고 다시 돌려 `모두 OK`를 본다
-2. 스크립트가 보지 못하는 클라우드 쪽 방화벽을 콘솔에서 본다: Oracle Cloud → Networking → Virtual cloud networks → VCN → Subnets → public subnet → **Security Lists** → Default Security List → **Ingress Rules**. `0.0.0.0/0`에서 열린 TCP 포트가 **22** 하나면 된다 (ICMP 규칙 둘은 Oracle 기본이라 그대로 둔다). 80·443이 있으면 지운다 (터널이라 필요 없다)
+1. 서버에서 코드를 내려받고 실행한다: `cd ~/macfolio && git pull && ops/audit.sh`. `확인`이 나오면 위 표대로 손보고 다시 돌려 `모두 OK`를 본다
+2. 스크립트가 보지 못하는 클라우드 쪽 방화벽을 콘솔에서 본다: Oracle Cloud → Networking → Virtual cloud networks → VCN → Subnets → public subnet → **Security Lists** → Default Security List → **Ingress Rules**. `0.0.0.0/0`에서 열린 TCP 포트가 **22** 하나면 된다 (ICMP 규칙 둘은 Oracle 기본이라 그대로 유지한다). 80·443이 있으면 삭제한다 (터널이라 필요 없다)
 3. 결과를 어디에도 올리지 않는다. 출력에 계정 이름과 듣는 주소가 들어 있다
 
 ### SSH 키를 잃어버렸을 때
 
-비밀 키는 다시 받을 수 없다 (Oracle도 사본이 없다). 새 키를 만들어 서버의 `authorized_keys`에 넣는 것이 복구다. **시리얼 콘솔(Console connection)로는 안 된다**: 로그인 화면이 OS 비밀번호를 묻는데, 이 서버는 비밀번호 있는 계정이 없다(위 하드닝 표). Oracle 문서의 유지보수 모드로 키를 바꾸는 절차는 Oracle Linux 이미지에만 해당한다. Oracle의 공식 답은 "인스턴스를 지우고 새 키로 새로 만든다"인데, 서버를 다시 세우지 않으려면 아래처럼 한다. 배포 키(`DEPLOY_SSH_KEY`)도 `deploy.sh`만 돌아서 대신할 수 없다. 부트 볼륨을 다른 VM에 붙여 고친다. 그동안 API가 멈춘다 (2026-10-20에 실제로 한 순서, [개발기](https://macfolio.hyeoniverse.com/memo/oracle-ssh-key-recovery)).
+비밀 키는 다시 내려받을 수 없다 (Oracle도 사본이 없다). 새 키를 만들어 서버의 `authorized_keys`에 넣는 것이 복구다. **시리얼 콘솔(Console connection)로는 안 된다**: 로그인 화면이 OS 비밀번호를 묻는데, 이 서버는 비밀번호 있는 계정이 없다(위 하드닝 표). Oracle 문서의 유지보수 모드로 키를 교체하는 절차는 Oracle Linux 이미지에만 해당한다. Oracle의 공식 답은 "인스턴스를 삭제하고 새 키로 새로 만든다"인데, 서버를 다시 세우지 않으려면 아래처럼 한다. 배포 키(`DEPLOY_SSH_KEY`)도 `deploy.sh`만 돌아서 대신할 수 없다. 부트 볼륨을 다른 VM에 붙여 고친다. 그동안 API가 멈춘다 (2026-10-20에 실제로 한 순서, [개발기](https://macfolio.hyeoniverse.com/memo/oracle-ssh-key-recovery)).
 
 1. **새 키** (내 컴퓨터): `ssh-keygen -t ed25519 -f ~/.ssh/oracle-macfolio.key -C macfolio-admin`. 암호(passphrase)를 넣었다면 그것도 함께 보관한다
 2. **임시 VM**: 원래 서버와 같은 가용 도메인에 Ubuntu, `VM.Standard.E2.1.Micro`(무료 2대 중 하나)로 만든다. SSH keys는 **Paste public keys**에 `~/.ssh/oracle-macfolio.key.pub` 내용을 넣는다. 원래 서버를 끄기 전에 만들어 두고 접속까지 확인하면 멈추는 시간이 준다
@@ -618,13 +618,13 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
    `/health`가 530(터널 끊김) → 502(API 준비 중) → 200으로 돌아온다. 2026-10-20에는 켠 뒤 2분쯤 걸렸다
 
 7. **뒤처리**
-   - 호스트 키가 바뀌었으면(내 컴퓨터에서 `REMOTE HOST IDENTIFICATION HAS CHANGED`) **`DEPLOY_KNOWN_HOSTS`를 새 값으로** 바꾼다. 안 바꾸면 다음 API 배포가 `Host key verification failed`로 실패한다. 원래 서버로 되돌려도 cloud-init은 원래 instance-id를 이미 처리했으므로 다시 바꾸지 않는다
+   - 호스트 키가 바뀌었으면(내 컴퓨터에서 `REMOTE HOST IDENTIFICATION HAS CHANGED`) **`DEPLOY_KNOWN_HOSTS`를 새 값으로** 변경한다. 변경하지 않으면 다음 API 배포가 `Host key verification failed`로 실패한다. 원래 서버로 되돌려도 cloud-init은 원래 instance-id를 이미 처리했으므로 다시 변경하지 않는다
 
      ```bash
      gh secret set DEPLOY_KNOWN_HOSTS --body "$(ssh-keyscan -t ed25519 <공인 IP> 2>/dev/null | grep -v '^#')"
      ```
 
-   - 잃어버린 옛 키 줄을 지운다 (서버에서). 배포 키(`restrict,command=…`)와 새 키는 남긴다. 지운 뒤 창을 닫기 전에 새 탭에서 다시 들어가지는지 본다
+   - 잃어버린 옛 키 줄을 삭제한다 (서버에서). 배포 키(`restrict,command=…`)와 새 키는 남긴다. 삭제한 뒤 창을 닫기 전에 새 탭에서 다시 들어가지는지 본다
 
      ```bash
      cut -c1-60 ~/.ssh/authorized_keys                 # 어느 줄인지 먼저 본다
@@ -647,7 +647,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
 블로그 글·임시 저장·버전 기록·올린 이미지가 **모두 DB에만** 있다. `ops/backup.sh`를 cron으로 매일 돌려 서버와 서버 밖(Cloudflare R2)에 남긴다.
 
 - 서버: `~/backups`에 7일 (`KEEP_LOCAL_DAYS`)
-- 자동 배포 직전에도 한 번 (`ops/deploy.sh`가 `BACKUP_LOCAL_ONLY=1`로 부른다. 서버에만 남기고 알리지 않는다. 서버 밖으로는 매일 cron이 올린다)
+- 자동 배포 직전에도 한 번 (`ops/deploy.sh`가 `BACKUP_LOCAL_ONLY=1`로 호출한다. 서버에만 남기고 알리지 않는다. 서버 밖으로는 매일 cron이 올린다)
 - 서버 밖: R2 버킷에 30일 (`KEEP_REMOTE_DAYS`)
 - 서버 밖 저장소 상한: 8GB (`MAX_REMOTE_GB`). 오늘 백업을 더하면 넘을 때는 올리지 않고 실패로 알린다 (서버에는 남는다). R2는 매달 10GB까지 무료이고, 넘으면 청구되기 전에 멈추는 설정이 없어서 스크립트가 먼저 멈춘다. 알림이 오면 `KEEP_REMOTE_DAYS`를 줄이거나 상한을 올린다 (넘은 만큼 1GB당 월 $0.015)
 - 압축이 온전한지, 덤프가 끝까지 쓰였는지 검사한 뒤에만 남긴다. 실패하면 1로 끝나고 알림 주소(`BACKUP_PING_URL`)에 알린다
@@ -670,7 +670,7 @@ GitHub Actions의 `uptime` 워크플로(`.github/workflows/uptime.yml`)가 10분
    - 권한: **Object Read & Write**
    - 버킷: **Apply to specific buckets only** → `macfolio-backups` (키가 새어도 이 버킷만)
    - TTL: Forever
-2. 만들면 나오는 값 셋을 잠깐 적어 둔다. **비밀 키는 이 화면에서만 보인다**
+2. 생성 시 표시되는 값 세 개를 기록한다. **비밀 키는 이 화면에서만 보인다**
    - Access Key ID
    - Secret Access Key
    - S3 엔드포인트: `https://<계정 ID>.r2.cloudflarestorage.com`
@@ -683,7 +683,7 @@ cron은 실패해도 아무 말이 없다. 알림 주소를 넣으면 백업이 
 1. https://healthchecks.io 에 가입하고 **Add Check**
    - 이름: `macfolio-backup`
    - Schedule: Period **1 day**, Grace **1 hour**
-2. **Ping URL**(`https://hc-ping.com/<uuid>`)을 적어 둔다. 알림은 가입한 메일로 간다
+2. **Ping URL**(`https://hc-ping.com/<uuid>`)을 기록한다. 알림은 가입한 메일로 발송된다
 
 #### 4. 서버: 코드와 rclone
 
@@ -719,7 +719,7 @@ EOF
 chmod 600 backup.env
 ```
 
-`<…>`는 2·3에서 적은 값으로 바꾼다 (`nano backup.env`). rclone 설정은 `RCLONE_CONFIG_R2_*` 환경 변수로 넣어서 `rclone config` 파일이 따로 없다. `backup.env`는 `ops/backup.sh`가 읽는다.
+`<…>`는 2·3에서 기록한 값으로 바꿔 넣는다 (`nano backup.env`). rclone 설정은 `RCLONE_CONFIG_R2_*` 환경 변수로 넣어서 `rclone config` 파일이 따로 없다. `backup.env`는 `ops/backup.sh`가 읽는다.
 
 #### 6. R2 연결 확인
 
@@ -791,7 +791,7 @@ R2에는 청구 전에 멈추는 설정이 없다 (스크립트의 `MAX_REMOTE_G
 
 ### 연락 메일 (Resend, Turnstile)
 
-메일 앱에서 방문자가 쓴 메일을 서버가 보낸다 (#25). 받는 사람은 늘 사이트 주인이고, 보낸 사람의 주소는 Reply-To에 들어가서 받은 메일에서 바로 답장한다. 설정이 없으면 사이트는 예전처럼 방문자의 메일 앱을 연다. 그래서 아래를 하기 전에 배포해도 된다.
+메일 앱에서 방문자가 쓴 메일을 서버가 보낸다 (#25). 받는 사람은 늘 사이트 주인이고, 보낸 사람의 주소는 Reply-To에 들어가서 수신한 메일에서 바로 답장한다. 설정이 없으면 사이트는 예전처럼 방문자의 메일 앱을 연다. 그래서 아래를 하기 전에 배포해도 된다.
 
 **1. Resend (보내기)** — 무료 요금제: 월 3,000통, 하루 100통
 
@@ -805,7 +805,7 @@ R2에는 청구 전에 멈추는 설정이 없다 (스크립트의 `MAX_REMOTE_G
 2. Hostnames에 `macfolio.hyeoniverse.com`을 넣는다. PR 미리보기에서도 쓰려면 `hyeoniverse.workers.dev`도, 로컬에서 쓰려면 `localhost`도 넣는다
 3. Widget mode는 **Managed**. 만들면 사이트 키와 비밀 키가 나온다
 
-**3. 서버의 `~/deploy/api.env`에 넣고 다시 띄우기**
+**3. 서버의 `~/deploy/api.env`에 넣고 재시작하기**
 
 ```bash
 nano ~/deploy/api.env
@@ -834,7 +834,7 @@ curl -s https://macfolio-api.hyeoniverse.com/contact; echo   # {"enabled":true,"
 curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,"comment":false,"message":false,"available":true,…}
 ```
 
-`available`이 `false`면 서버에 키(사이트·비밀)가 둘 다 있지 않은 것이다. 이때는 켜 두어도 확인하지 않는다.
+`available`이 `false`면 서버에 키(사이트·비밀)가 둘 다 있지 않은 것이다. 이때는 켜져 있어도 확인하지 않는다.
 
 ### 검색어 (Google Search Console)
 
@@ -842,7 +842,7 @@ curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,
 
 **1. Search Console에 사이트가 있는지**
 
-[search.google.com/search-console](https://search.google.com/search-console)에서 사이트 속성을 확인해 둔다. 없으면 **속성 추가**:
+[search.google.com/search-console](https://search.google.com/search-console)에서 사이트 속성을 확인한다. 없으면 **속성 추가**:
 
 - **도메인 속성** (`hyeoniverse.com`, 하위 도메인까지 모두): Cloudflare DNS에 화면의 TXT 레코드를 더해 확인한다. `GSC_SITE_URL=sc-domain:hyeoniverse.com`
 - **URL 접두어 속성** (`https://macfolio.hyeoniverse.com/`만): HTML 태그·파일 등으로 확인한다. `GSC_SITE_URL=https://macfolio.hyeoniverse.com/` (끝의 `/`까지)
@@ -854,7 +854,7 @@ curl -s https://macfolio-api.hyeoniverse.com/security; echo   # {"contact":true,
 1. 프로젝트를 하나 고르거나 만든다 (예: `macfolio`)
 2. **APIs & Services → Library**에서 **Google Search Console API**를 찾아 **Enable**
 3. **IAM & Admin → Service Accounts → Create service account** (예: `macfolio-search`). 역할(권한)은 주지 않는다
-4. 만든 계정 → **Keys → Add key → Create new key → JSON**. 내려받은 파일은 다시 받을 수 없다
+4. 만든 계정 → **Keys → Add key → Create new key → JSON**. 내려받은 파일은 다시 내려받을 수 없다
 
 **3. Search Console에 서비스 계정 더하기**
 
@@ -882,7 +882,7 @@ docker compose up -d api
 
 **5. 확인**
 
-사이트에서 관리자로 로그인 → **활동 상태 보기 → 검색어** 탭에서 **지금 가져오기**를 누른다. 처음에는 16개월치를 받는다 (서버도 뜬 뒤 1분이면 스스로 가져온다). "N월 N일까지의 자료"가 보이면 끝이다.
+사이트에서 관리자로 로그인 → **활동 상태 보기 → 검색어** 탭에서 **지금 가져오기**를 누른다. 처음에는 16개월치를 가져온다 (서버도 시작 후 1분이면 자동으로 가져온다). "N월 N일까지의 자료"가 보이면 끝이다.
 
 **6. 안 될 때** (탭의 상태 줄 아래에 Google이 돌려준 이유가 그대로 보인다)
 
@@ -900,11 +900,11 @@ docker compose up -d api
 - **Tunnel 토큰**: Tunnels → `macfolio-api` → 토큰 교체 → `.env` 수정
 - 적용: `docker compose up -d` (바뀐 컨테이너만 다시 뜬다)
 
-`IP_HASH_SECRET`을 바꾸면 이전 댓글과 새 댓글의 작성자 해시가 이어지지 않는다. 드러난 게 아니면 두는 편이 낫다.
+`IP_HASH_SECRET`을 변경하면 이전 댓글과 새 댓글의 작성자 해시가 이어지지 않는다. 유출된 것이 아니면 유지하는 편이 낫다.
 
 ### 유휴 회수
 
-Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Always Free 인스턴스를 회수할 수 있다. 계정을 **Pay As You Go로 업그레이드**하면 회수 대상에서 빠지고, Always Free 한도 안에서는 그대로 0원이다. 업그레이드했다면 Budget 알림(예: 월 $1)을 걸어 둔다. 회수돼도 다시 만들 수 있게 이 문서와 서버 밖 백업을 유지한다.
+Oracle은 7일 동안 CPU·네트워크·메모리 사용률이 모두 낮은 Always Free 인스턴스를 회수할 수 있다. 계정을 **Pay As You Go로 업그레이드**하면 회수 대상에서 빠지고, Always Free 한도 안에서는 그대로 0원이다. 업그레이드했다면 Budget 알림(예: 월 $1)을 설정한다. 회수돼도 다시 만들 수 있게 이 문서와 서버 밖 백업을 유지한다.
 
 **서버 자원 감시**로 위험을 미리 본다. **운영 서버**에서 `~/deploy/api.env`에 넣고 그 폴더에서 `docker compose up -d api` (로컬 Mac에는 이 `compose.yml`이 없어서 `no configuration file provided`가 난다. 로컬의 `apps/api/.env`는 개발용이라 운영에 적용되지 않는다):
 
@@ -915,11 +915,11 @@ RESOURCE_NETWORK_MBPS=50       # 네트워크 사용률의 기준 (shape의 대�
 # RESOURCE_ALERT_TO=           # 알림 받을 주소 (없으면 CONTACT_TO). 보내는 데는 RESEND_API_KEY·CONTACT_FROM
 ```
 
-- 1분마다 CPU·메모리(VM 전체, 컨테이너 안의 `/proc`으로 읽는다)와 네트워크(API 컨테이너가 주고받은 양)를 DB에 남기고, 14일 뒤 지운다. compose를 바꿀 필요는 없다
+- 1분마다 CPU·메모리(VM 전체, 컨테이너 안의 `/proc`으로 읽는다)와 네트워크(API 컨테이너의 송수신량)를 DB에 저장하고, 14일 뒤 삭제한다. compose를 변경할 필요는 없다
 - `free`: 최근 7일 CPU 95퍼센타일·네트워크 평균(A1이면 메모리 평균도)이 모두 20% 미만이면 '회수 위험'. 한 시간마다 확인해 위험하면 메일로 알린다 (3일에 한 번까지)
 - `payg`: 회수 대상이 아니라서 사용률을 남기고 보여 준다. OCI API 키가 있으면 **이번 달 요금과 예산 한도**도 보이고, 예산의 80%·100%를 넘으면 메일로 알린다 (달마다 한 번씩). 예산은 콘솔 → Billing & Cost Management → Budgets에서 만든다
 - 사이트의 **활동 상태 보기 → 서버** 탭(관리자만)에서 본다. 켜고 1~2분 뒤부터 값이 보인다
-- 알림 메일은 연락 메일 설정(`RESEND_API_KEY`·`CONTACT_FROM`·`CONTACT_TO`)을 그대로 쓴다. 셋이 다 있는지는 `curl https://macfolio-api.hyeoniverse.com/contact`의 `"enabled":true`로 확인한다 (비밀 값은 보이지 않는다). 받는 주소를 따로 두려면 `RESOURCE_ALERT_TO`
+- 알림 메일은 연락 메일 설정(`RESEND_API_KEY`·`CONTACT_FROM`·`CONTACT_TO`)을 그대로 쓴다. 셋이 다 있는지는 `curl https://macfolio-api.hyeoniverse.com/contact`의 `"enabled":true`로 확인한다 (비밀 값은 보이지 않는다). 수신 주소를 따로 지정하려면 `RESOURCE_ALERT_TO`
 - 로컬(macOS)에서는 동작하지 않는다. 사용률을 Linux의 `/proc`에서 읽기 때문이다
 
 순서:
@@ -931,7 +931,7 @@ echo 'RESOURCE_MONITOR=free' >> api.env
 docker compose up -d api
 ```
 
-- 네트워크는 Oracle이 재는 VM 전체 값이 아니라 API 컨테이너가 주고받은 양이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 받기 등은 따로 세지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
+- 네트워크는 Oracle이 측정하는 VM 전체 값이 아니라 API 컨테이너의 송수신량이다 (tunnel이 Cloudflare와 주고받는 양, 이미지 다운로드 등은 집계하지 않는다). 방문 트래픽은 모두 tunnel을 거쳐 API로 오므로 흐름은 비슷하다
 
 #### 종량제 요금·예산 보기 (OCI API 키)
 
@@ -941,7 +941,7 @@ docker compose up -d api
 
 1. 콘솔 왼쪽 위 메뉴 → **Billing & Cost Management → Budgets → Create Budget**
 2. 이름(예: `월 1달러`), 대상은 **루트 compartment**(테넌시), 금액 `1`(USD), 기간 **Monthly**
-3. 알림 규칙(Alert Rule)은 비워도 된다. 이 서버가 80%·100%에서 메일을 보낸다. Oracle 자체 메일도 받고 싶으면 여기서 더한다
+3. 알림 규칙(Alert Rule)은 비워도 된다. 이 서버가 80%·100%에서 메일을 보낸다. Oracle 자체 메일도 받으려면 여기서 추가한다
 
 예산은 늘 루트 compartment에 만들어진다. 예산이 없어도 이번 달 요금은 보이지만, 한도 막대와 경고 메일은 없다.
 
@@ -978,7 +978,7 @@ docker compose up -d api
 
 **3. 서버에 넣기**
 
-개인 키가 셸 기록이나 저장소에 남지 않게 파일로 옮겨서 한 줄로 바꾼다. Mac에서:
+개인 키가 셸 기록이나 저장소에 남지 않게 파일로 옮겨서 한 줄로 변환한다. Mac에서:
 
 ```bash
 scp ~/Downloads/<내려받은키>.pem <서버>:~/deploy/oci.pem
@@ -1003,7 +1003,7 @@ chmod 600 api.env
 docker compose up -d api
 ```
 
-이미 `RESOURCE_MONITOR=free`가 있으면 그 줄을 `payg`로 바꾼다 (같은 키가 두 번 있으면 뒤의 것이 쓰인다).
+이미 `RESOURCE_MONITOR=free`가 있으면 그 줄을 `payg`로 변경한다 (같은 키가 두 번 있으면 뒤의 것이 쓰인다).
 
 **4. 확인**
 
@@ -1023,9 +1023,9 @@ docker compose up -d api
 
 **키 관리**
 
-- 키는 서버의 `~/deploy/api.env`에만 둔다. 저장소, 로컬 `apps/api/.env`, 채팅에 붙이지 않는다
-- 바꿀 때: 콘솔에서 새 키를 더하고 → `api.env`의 네 값(키·지문)을 바꾸고 `docker compose up -d api` → 확인한 뒤 옛 키를 지운다
-- 키가 새면 콘솔의 API keys에서 그 키를 바로 지운다 (그 순간부터 쓸 수 없다)
+- 키는 서버의 `~/deploy/api.env`에만 저장한다. 저장소, 로컬 `apps/api/.env`, 채팅에 붙이지 않는다
+- 교체할 때: 콘솔에서 새 키를 추가하고 → `api.env`의 네 값(키·지문)을 변경하고 `docker compose up -d api` → 확인한 뒤 옛 키를 삭제한다
+- 키가 유출되면 콘솔의 API keys에서 그 키를 바로 삭제한다 (그 순간부터 쓸 수 없다)
 
 ## 문제 해결
 
@@ -1041,18 +1041,18 @@ docker compose up -d api
 | 돌아왔는데 로그인이 안 된 상태                                       | 쿠키가 저장되지 않았다. https인지, API가 `hyeoniverse.com` 하위 도메인인지 확인                                                                                                                                          |
 | api가 시작하자마자 꺼짐                                              | `IP_HASH_SECRET` 없음, DB 연결 실패 등. `docker compose logs api`의 첫 에러를 본다                                                                                                                                       |
 | 빌드 중 멈추거나 `Killed`                                            | 메모리 부족. swap을 잡았는지 `free -h`로 확인                                                                                                                                                                            |
-| Actions '서버에서 배포'가 `Permission denied (publickey)` (exit 255) | `DEPLOY_SSH_KEY`가 서버에 등록된 배포 열쇠와 짝이 아니다. 열쇠를 두 번 만들어 GitHub과 서버에 다른 열쇠가 들어간 경우가 많다. '자동 배포 설정' 2를 다시 하고 `DEPLOY_SSH_KEY`를 새 값으로 바꾼다                         |
+| Actions '서버에서 배포'가 `Permission denied (publickey)` (exit 255) | `DEPLOY_SSH_KEY`가 서버에 등록된 배포 열쇠와 짝이 아니다. 열쇠를 두 번 만들어 GitHub과 서버에 다른 열쇠가 들어간 경우가 많다. '자동 배포 설정' 2를 다시 하고 `DEPLOY_SSH_KEY`를 새 값으로 변경한다                       |
 | API 변경을 머지했는데 `/health`의 version이 그대로                   | Secrets를 넣기 전에 머지했거나 배포가 실패했다. 다음 머지 때 서버와 비교해 함께 배포된다. 바로 올리려면 이미지가 있는 커밋 태그로 Run workflow ('자동 배포 설정'의 마지막)                                               |
 | 명령이 `No such file`·`Could not resolve hostname :`                 | 서버에서 칠 명령을 내 컴퓨터에서 쳤다. 줄 맨 앞이 `ubuntu@…`인지 본다                                                                                                                                                    |
 | Actions가 `Host key verification failed`                             | `DEPLOY_KNOWN_HOSTS`가 서버 호스트 키와 다르다. 서버를 새로 만들었거나 부트 볼륨을 다른 VM에서 부팅했으면(cloud-init이 호스트 키를 새로 만든다) 다시 `ssh-keyscan` ([SSH 키를 잃어버렸을 때](#ssh-키를-잃어버렸을-때) 7) |
 | Actions가 `Connection timed out`                                     | Oracle 보안 목록에서 22번이 특정 IP에만 열려 있다                                                                                                                                                                        |
 | `deploy.sh`가 `pull` 중 `denied`·`unauthorized`                      | GHCR 패키지가 비공개다. Package settings에서 Public으로                                                                                                                                                                  |
 | "배포 실패, 되돌림"                                                  | 새 이미지가 120초 안에 healthy가 되지 않았다. Actions 로그나 `~/deploy/deploy.log`의 api 로그 끝을 본다. 서버는 이전 버전으로 돌아가 있다                                                                                |
-| `API_TAG가 없다`                                                     | `compose.yml`을 이미지로 바꾼 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                                                                                                       |
+| `API_TAG가 없다`                                                     | `compose.yml`을 이미지 방식으로 변경한 뒤 아직 배포하지 않았다. `~/macfolio/ops/deploy.sh sha-a38ac7e`(태그는 Packages에서)                                                                                              |
 | `name:: command not found` 등이 줄줄이                               | YAML을 파일이 아니라 터미널에 붙여 넣었다. `cat > compose.yml <<'EOF'`로 감싼다                                                                                                                                          |
 | `--env-file: no such file or directory`                              | 파일이 그 경로에 없다. 서버의 `~/deploy`에서 실행했는지 확인                                                                                                                                                             |
 | Tunnel이 HEALTHY가 안 됨                                             | `TUNNEL_TOKEN`이 틀렸거나 tunnel 컨테이너가 안 떴다. `docker compose logs tunnel`                                                                                                                                        |
-| 접속 메시지가 `x86_64`인데 A1을 만들려 했음                          | AMD shape로 만들어졌다. E2.1.Micro면 무료이니 그대로 쓰고, 다른 shape면 과금되니 지우고 다시 만든다                                                                                                                      |
+| 접속 메시지가 `x86_64`인데 A1을 만들려 했음                          | AMD shape로 만들어졌다. E2.1.Micro면 무료이니 그대로 쓰고, 다른 shape면 과금되니 삭제하고 다시 만든다                                                                                                                    |
 
 ## 남은 일
 
