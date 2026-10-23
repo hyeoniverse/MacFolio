@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 22일 작업 흐름</title>
+<rect width="760" height="380" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 22일</text>
+<text x="133" y="42" font-size="12.5" fill="#6b7280">커밋한 시각 기준 (main에 들어간 커밋 57개, 머지 커밋 제외)</text>
+<rect x="32.0" y="56" width="12" height="12" rx="2" fill="#bbf7d0"/><text x="49.0" y="66" font-size="11" fill="#6b7280">성능</text>
+<rect x="86.0" y="56" width="12" height="12" rx="2" fill="#fde68a"/><text x="103.0" y="66" font-size="11" fill="#6b7280">위젯</text>
+<rect x="140.0" y="56" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="157.0" y="66" font-size="11" fill="#6b7280">검색어·분석</text>
+<rect x="240.0" y="56" width="12" height="12" rx="2" fill="#fbcfe8"/><text x="257.0" y="66" font-size="11" fill="#6b7280">앱 수정</text>
+<rect x="317.0" y="56" width="12" height="12" rx="2" fill="#e5e7eb"/><text x="334.0" y="66" font-size="11" fill="#6b7280">문서·글</text>
+<path d="M48.0 84 V266" stroke="#eef0f3"/><text x="48.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 84 V266" stroke="#eef0f3"/><text x="133.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 84 V266" stroke="#eef0f3"/><text x="218.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 84 V266" stroke="#eef0f3"/><text x="303.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 84 V266" stroke="#eef0f3"/><text x="388.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 84 V266" stroke="#eef0f3"/><text x="473.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 84 V266" stroke="#eef0f3"/><text x="558.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 84 V266" stroke="#eef0f3"/><text x="643.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 84 V266" stroke="#eef0f3"/><text x="728.0" y="284" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<path d="M48 266 H728" stroke="#d1d5db"/>
+<rect x="49.0" y="257.1" width="22.3" height="8.9" fill="#fde68a"/>
+<rect x="49.0" y="248.1" width="22.3" height="8.9" fill="#fbcfe8"/>
+<rect x="49.0" y="239.2" width="22.3" height="8.9" fill="#e5e7eb"/>
+<text x="60.2" y="235.2" font-size="10" fill="#6b7280" text-anchor="middle">3</text>
+<rect x="275.7" y="257.1" width="22.3" height="8.9" fill="#e5e7eb"/>
+<text x="286.8" y="253.1" font-size="10" fill="#6b7280" text-anchor="middle">1</text>
+<rect x="304.0" y="194.4" width="22.3" height="71.6" fill="#bbf7d0"/>
+<rect x="304.0" y="149.7" width="22.3" height="44.8" fill="#fde68a"/>
+<rect x="304.0" y="140.7" width="22.3" height="8.9" fill="#fbcfe8"/>
+<text x="315.2" y="136.7" font-size="10" fill="#6b7280" text-anchor="middle">14</text>
+<rect x="332.3" y="257.1" width="22.3" height="8.9" fill="#fde68a"/>
+<rect x="332.3" y="239.2" width="22.3" height="17.9" fill="#c7d2fe"/>
+<rect x="332.3" y="230.2" width="22.3" height="8.9" fill="#fbcfe8"/>
+<text x="343.5" y="226.2" font-size="10" fill="#6b7280" text-anchor="middle">4</text>
+<rect x="360.7" y="203.4" width="22.3" height="62.6" fill="#bbf7d0"/>
+<rect x="360.7" y="194.4" width="22.3" height="8.9" fill="#e5e7eb"/>
+<text x="371.8" y="190.4" font-size="10" fill="#6b7280" text-anchor="middle">8</text>
+<rect x="389.0" y="230.2" width="22.3" height="35.8" fill="#bbf7d0"/>
+<rect x="389.0" y="194.4" width="22.3" height="35.8" fill="#fbcfe8"/>
+<text x="400.2" y="190.4" font-size="10" fill="#6b7280" text-anchor="middle">8</text>
+<rect x="417.3" y="248.1" width="22.3" height="17.9" fill="#fbcfe8"/>
+<text x="428.5" y="244.1" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+<rect x="445.7" y="230.2" width="22.3" height="35.8" fill="#c7d2fe"/>
+<rect x="445.7" y="221.3" width="22.3" height="8.9" fill="#fbcfe8"/>
+<text x="456.8" y="217.3" font-size="10" fill="#6b7280" text-anchor="middle">5</text>
+<rect x="474.0" y="257.1" width="22.3" height="8.9" fill="#e5e7eb"/>
+<text x="485.2" y="253.1" font-size="10" fill="#6b7280" text-anchor="middle">1</text>
+<rect x="502.3" y="257.1" width="22.3" height="8.9" fill="#e5e7eb"/>
+<text x="513.5" y="253.1" font-size="10" fill="#6b7280" text-anchor="middle">1</text>
+<rect x="615.7" y="248.1" width="22.3" height="17.9" fill="#fde68a"/>
+<text x="626.8" y="244.1" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+<rect x="644.0" y="248.1" width="22.3" height="17.9" fill="#fde68a"/>
+<text x="655.2" y="244.1" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+<rect x="672.3" y="248.1" width="22.3" height="17.9" fill="#fde68a"/>
+<rect x="672.3" y="239.2" width="22.3" height="8.9" fill="#fbcfe8"/>
+<rect x="672.3" y="230.2" width="22.3" height="8.9" fill="#e5e7eb"/>
+<text x="683.5" y="226.2" font-size="10" fill="#6b7280" text-anchor="middle">4</text>
+<rect x="700.7" y="248.1" width="22.3" height="17.9" fill="#e5e7eb"/>
+<text x="711.8" y="244.1" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+<circle cx="40" cy="306" r="3" fill="#9ca3af"/><text x="50" y="310" font-size="12" fill="#374151">오전: 성능 1·2·3차, 사진·메모 위젯, Safari의 분석 이벤트 취소</text>
+<circle cx="40" cy="328" r="3" fill="#9ca3af"/><text x="50" y="332" font-size="12" fill="#374151">오후: 최소화 뒤 메모 모양, 바탕화면 보기, 검색어 탭, 영어 문서</text>
+<circle cx="40" cy="350" r="3" fill="#9ca3af"/><text x="50" y="354" font-size="12" fill="#374151">밤: 명언 위젯, 아이폰 음악 위젯 꼭짓점, Safari 글, 같은 날 글 순서</text>
+</svg>

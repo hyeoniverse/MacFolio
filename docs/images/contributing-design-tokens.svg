@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 384" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>디자인 토큰 세 층: 원시값, 의미, 컴포넌트. 앱 CSS는 2·3층만 참조한다</title>
+  <rect width="640" height="384" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">디자인 토큰 세 층 (apps/react/src/styles/tokens/)</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+
+  <!-- 1층 -->
+  <rect x="32" y="300" width="400" height="64" rx="12" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="48" y="324" font-size="13" font-weight="700" fill="#374151">1층 원시값 · primitives.css</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">
+    <text x="48" y="348">--palette-blue-light: #007aff   --radius-8   --space-*</text>
+  </g>
+
+  <!-- 2층 -->
+  <rect x="32" y="196" width="400" height="80" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+  <text x="48" y="220" font-size="13" font-weight="700" fill="#3f46c7">2층 의미 · semantic.css</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">
+    <text x="48" y="244">--color-control-accent: var(--palette-blue-light)</text>
+    <text x="48" y="264" fill="#6b7280">다크 모드 값은 이 층에서 --palette-blue-dark로 교체</text>
+  </g>
+
+  <!-- 3층 -->
+  <rect x="32" y="92" width="400" height="80" rx="12" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="48" y="116" font-size="13" font-weight="700" fill="#15803d">3층 컴포넌트 · components.css</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1f2937">
+    <text x="48" y="140">--ui-accent: var(--color-control-accent)</text>
+    <text x="48" y="160">--dock-background: var(--color-material-dock)</text>
+  </g>
+
+  <line x1="232" y1="298" x2="232" y2="278" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="232" y1="194" x2="232" y2="174" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 앱 CSS -->
+  <rect x="464" y="92" width="144" height="184" rx="12" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="536" y="116" font-size="13" font-weight="700" text-anchor="middle" fill="#b45309">앱·부품 CSS</text>
+  <g font-size="12" text-anchor="middle" fill="#1f2937">
+    <text x="536" y="144">2·3층 이름만 사용</text>
+    <text x="536" y="166">숫자 대신 이름</text>
+    <text x="536" y="196" fill="#b91c1c">--palette-* 직접 사용</text>
+    <text x="536" y="214" fill="#b91c1c">hex·rgb 직접 사용</text>
+    <text x="536" y="240" fill="#6b7280">위반은 Stylelint가</text>
+    <text x="536" y="258" fill="#6b7280">pnpm lint에서 차단</text>
+  </g>
+  <line x1="462" y1="132" x2="436" y2="132" stroke="#15803d" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="462" y1="236" x2="436" y2="236" stroke="#15803d" stroke-width="1.5" marker-end="url(#a)"/>
+  <path d="M536 278 L536 332 L436 332" fill="none" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="548" y="320" font-size="12" font-weight="700" fill="#b91c1c">✕</text>
+
+  <text x="32" y="78" font-size="12" fill="#6b7280">아래 층의 값을 위 층이 var()로 참조한다. 앱은 위 두 층만 참조한다</text>
+</svg>

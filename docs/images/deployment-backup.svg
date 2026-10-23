@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 372" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <title>ops/backup.sh가 cron과 배포 직전에 실행되어 서버와 R2에 백업을 보관하고 healthchecks.io에 결과를 알리는 흐름</title>
+  <rect width="640" height="372" rx="16" fill="#ffffff"/>
+  <text x="32" y="44" font-size="18" font-weight="700" fill="#1f2937">DB 백업 흐름 (ops/backup.sh)</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#6b7280"/></marker></defs>
+
+  <!-- 실행 계기 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="32" y="72" width="152" height="52" rx="8" fill="#f3f4f6"/>
+    <text x="108" y="94" font-weight="700" fill="#1f2937">cron 매일</text>
+    <text x="108" y="112" fill="#6b7280">03:30 UTC (12:30 KST)</text>
+    <rect x="32" y="140" width="152" height="52" rx="8" fill="#f3f4f6"/>
+    <text x="108" y="162" font-weight="700" fill="#1f2937">ops/deploy.sh</text>
+    <text x="108" y="180" fill="#6b7280">배포 직전 · 서버에만</text>
+  </g>
+
+  <!-- backup.sh -->
+  <rect x="220" y="72" width="184" height="120" rx="12" fill="#eef0ff" stroke="#c7cbff"/>
+  <text x="312" y="96" font-size="13" font-weight="700" text-anchor="middle" fill="#3f46c7">backup.sh</text>
+  <g font-size="12" text-anchor="middle" fill="#1f2937">
+    <text x="312" y="120">pg_dump → gzip</text>
+    <text x="312" y="140">압축·덤프 끝 검사</text>
+    <text x="312" y="160">R2 사용량이 상한(8GB)</text>
+    <text x="312" y="178">을 넘으면 업로드 중단</text>
+  </g>
+  <line x1="186" y1="98" x2="218" y2="110" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="186" y1="166" x2="218" y2="156" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 보관 위치 -->
+  <rect x="440" y="72" width="168" height="52" rx="8" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="524" y="94" font-size="12" font-weight="700" text-anchor="middle" fill="#15803d">서버 ~/backups</text>
+  <text x="524" y="112" font-size="12" text-anchor="middle" fill="#6b7280">7일 (KEEP_LOCAL_DAYS)</text>
+  <rect x="440" y="140" width="168" height="52" rx="8" fill="#fff7ed" stroke="#fdba74"/>
+  <text x="524" y="162" font-size="12" font-weight="700" text-anchor="middle" fill="#c2410c">R2 macfolio-backups</text>
+  <text x="524" y="180" font-size="12" text-anchor="middle" fill="#6b7280">30일 (KEEP_REMOTE_DAYS)</text>
+  <line x1="406" y1="104" x2="438" y2="98" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="406" y1="160" x2="438" y2="166" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 알림 -->
+  <rect x="220" y="232" width="184" height="52" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="312" y="254" font-size="12" font-weight="700" text-anchor="middle" fill="#b91c1c">healthchecks.io</text>
+  <text x="312" y="272" font-size="12" text-anchor="middle" fill="#6b7280">실패·상한 초과·미실행 → 메일</text>
+  <line x1="312" y1="194" x2="312" y2="230" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="320" y="216" font-size="11" fill="#6b7280">BACKUP_PING_URL</text>
+
+  <!-- 복원 -->
+  <rect x="440" y="232" width="168" height="52" rx="8" fill="#f3f4f6"/>
+  <text x="524" y="254" font-size="12" font-weight="700" text-anchor="middle" fill="#1f2937">ops/restore.sh</text>
+  <text x="524" y="272" font-size="12" text-anchor="middle" fill="#6b7280">로컬 파일 또는 r2: 경로</text>
+  <line x1="524" y1="194" x2="524" y2="230" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+
+  <text x="32" y="320" font-size="12" fill="#6b7280">설정 값(R2 키, 알림 주소, 상한, 보관 일수)은 서버의 ~/deploy/backup.env에만 저장한다</text>
+  <text x="32" y="342" font-size="12" fill="#6b7280">한 달에 한 번 restoretest DB로 복원해 Post 행 수를 운영 DB와 비교한다 (9단계)</text>
+</svg>

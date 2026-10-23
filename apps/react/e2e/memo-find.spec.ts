@@ -1,6 +1,7 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
+import { readdirSync, readFileSync } from 'node:fs';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);
@@ -10,8 +11,18 @@ async function openMemo(page: Page) {
 	return memo;
 }
 
-/** 표가 없는 글 (표 조건으로 거르면 빠져야 한다) */
-const NO_TABLE = '배포 직후 메모가 안 열리던 까닭';
+/** 표가 없는 글 (표 조건으로 거르면 빠져야 한다). 글 내용은 바뀔 수 있어, 표 문법이 없는 저장소 글을 실행할 때 고른다 */
+const NO_TABLE = (() => {
+	const dir = 'src/apps/memo/content';
+	for (const file of readdirSync(dir).sort()) {
+		if (!file.endsWith('.md')) continue;
+		const text = readFileSync(`${dir}/${file}`, 'utf8');
+		if (/^\s*\|.*\|\s*$/m.test(text) || /<table/i.test(text)) continue;
+		const title = text.match(/^title: ['"]?(.+?)['"]?$/m)?.[1];
+		if (title) return title;
+	}
+	throw new Error('표가 없는 글이 없다');
+})();
 
 test.describe('검색 칸과 글 안에서 찾기', () => {
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {
