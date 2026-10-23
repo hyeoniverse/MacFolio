@@ -15,6 +15,18 @@ export interface MessageInput {
 	turnstileToken?: string;
 }
 
+/** 새 피드백 화면의 종류: 쓰기 버튼으로 연 화면(feedback), 도움말 › 문제 알리기로 연 화면(issue) */
+export type ComposeKind = 'feedback' | 'issue';
+
+/** 다른 앱이 메시지 앱에 보내는 열기 요청(shared/lib/openRequest)의 id: 새 피드백 화면을 문제 알리기 문구로 연다 */
+export const REPORT_ISSUE_REQUEST = 'report-issue';
+
+/** 새 피드백 화면의 안내 한 줄과 입력 칸의 자리표시자 */
+export const COMPOSE_TEXT: Record<ComposeKind, { subtitle: string; placeholder: string }> = {
+	feedback: { subtitle: '감상, 의견, 피드백을 남겨 주세요. 보내면 목록에 올라가요', placeholder: '감상, 의견, 피드백' },
+	issue: { subtitle: '어떤 문제가 있었는지 적어 주세요. 보내면 목록에 올라가요', placeholder: '어떤 문제가 있었나요?' },
+};
+
 export const LIMITS = {
 	text: { min: 1, max: 500 },
 } as const;

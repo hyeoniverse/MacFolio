@@ -2,6 +2,8 @@
 // 저장소 문서가 바뀌면 다음 배포에서 사이트의 문서도 함께 바뀐다.
 
 export const REPO_URL = 'https://github.com/hyeoniverse/MacFolio';
+/** 새 이슈 템플릿(버그·기능 제안)을 고르는 화면 (.github/ISSUE_TEMPLATE) */
+export const NEW_ISSUE_URL = `${REPO_URL}/issues/new/choose`;
 const RAW_URL = 'https://raw.githubusercontent.com/hyeoniverse/MacFolio/main';
 
 /** 저장소 안 경로로 바꾼다: '../../../../../docs/a.md' → 'docs/a.md' */

@@ -166,7 +166,7 @@ export const GUIDES: Guide[] = [
 			},
 			{
 				title: '도움말 메뉴',
-				body: '도움말에서 MacFolio 둘러보기를 다시 시작하거나, 키보드 단축키 목록을 열거나, 이상한 점을 발견하면 문제 알리기로 바로 알려 줄 수 있어요.',
+				body: '도움말에서 MacFolio 둘러보기를 다시 시작하거나, 키보드 단축키 목록을 열거나, 이상한 점을 발견하면 문제 알리기로 메시지 앱에 바로 알려 줄 수 있어요.',
 				icon: 'fa-regular fa-circle-question',
 			},
 		],
@@ -231,7 +231,7 @@ export const GUIDES: Guide[] = [
 			},
 			{
 				title: 'GitHub에서도',
-				body: 'GitHub 앱에서 제 프로필과 저장소를 볼 수 있어요. 사이트의 버그는 도움말 › 문제 알리기로 GitHub 이슈를 남겨 주시면 고쳐 둘게요.',
+				body: 'GitHub 앱에서 제 프로필과 저장소를 볼 수 있어요. 사이트의 버그는 도움말 › 문제 알리기로 메시지에 남기거나, 그 화면의 링크로 GitHub 이슈를 남겨 주시면 고쳐 둘게요.',
 				icon: 'fa-brands fa-github',
 			},
 		],

@@ -67,6 +67,58 @@ test.describe('메시지 (휴대폰 셸의 넓은 화면): 목록과 대화를 �
 		await textbox.press('Enter');
 		await expect(messages.locator('.messages-thread')).toHaveCount(1);
 	});
+
+	test('새 피드백 화면의 GitHub 이슈 링크는 머리 안에서 눌린다 (떠 있는 버튼·대화 칸에 덮이지 않는다)', async ({
+		page,
+	}) => {
+		const messages = await openMessages(page);
+		await messages.locator('.messages-phone-bottom').getByRole('button', { name: '새 피드백' }).tap();
+		const link = messages
+			.getByRole('region', { name: '새 피드백' })
+			.getByRole('link', { name: /GitHub 이슈로 남기기/ });
+		await expect(link).toBeVisible();
+		expect(await isOnTop(link)).toBe(true);
+	});
+});
+
+const NEW_ISSUE_URL = 'https://github.com/hyeoniverse/MacFolio/issues/new/choose';
+
+test.describe('메시지 (휴대폰): GitHub 이슈 링크', () => {
+	test('새 피드백 화면: 안내 아래 GitHub 이슈 링크(새 탭)가 머리 안에서 눌리고, 입력 칸에서 바로 보낼 수 있다', async ({
+		page,
+	}) => {
+		const messages = await openMessages(page);
+		await messages.locator('.messages-phone-bottom').getByRole('button', { name: '새 피드백' }).tap();
+		const chat = messages.getByRole('region', { name: '새 피드백' });
+		await expect(chat).toBeVisible();
+		const textbox = messages.getByRole('textbox', { name: '메시지' });
+		await expect(textbox).toBeFocused();
+
+		const link = chat.getByRole('link', { name: /GitHub 이슈로 남기기/ });
+		await expect(link).toBeVisible();
+		await expect(link).toHaveAttribute('href', NEW_ISSUE_URL);
+		await expect(link).toHaveAttribute('target', '_blank');
+		await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+		expect(await isOnTop(link)).toBe(true);
+		// 머리(상태 표시줄 아래 떠 있는 줄) 안, 화면 안에 있다
+		const box = (await link.boundingBox())!;
+		const header = (await chat.locator('.messages-chat-header').boundingBox())!;
+		expect(box.y).toBeGreaterThanOrEqual(header.y);
+		expect(box.y + box.height).toBeLessThanOrEqual(header.y + header.height);
+
+		await textbox.fill('휴대폰에서 남긴 문제');
+		await textbox.press('Enter');
+		await expect(messages.getByRole('log')).toContainText('휴대폰에서 남긴 문제');
+	});
+
+	test('빈 목록 안내 아래에도 GitHub 이슈 링크가 있다', async ({ page }) => {
+		const messages = await openMessages(page);
+		const link = messages.locator('.messages-empty').getByRole('link', { name: /GitHub 이슈로 남기기/ });
+		await expect(link).toBeVisible();
+		await expect(link).toHaveAttribute('href', NEW_ISSUE_URL);
+		await expect(link).toHaveAttribute('target', '_blank');
+		expect(await isOnTop(link)).toBe(true);
+	});
 });
 
 /**

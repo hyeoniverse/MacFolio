@@ -345,6 +345,44 @@
 	font-size: var(--text-caption2);
 }
 
+/* GitHub 이슈로 남기기: 새 피드백 화면의 안내 아래, 빈 목록 안내 아래에 두는 보조 링크 (새 탭).
+   글자 링크 색(--color-link)과 바깥 링크 아이콘. position은 스크린 리더용 '(새 탭)'(.visually-hidden)의 기준 */
+.messages-issue-link {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-4);
+	color: var(--color-link);
+	font-size: var(--text-caption2);
+	text-decoration: none;
+}
+
+.messages-issue-link i {
+	font-size: 0.8em;
+}
+
+.messages-issue-link:hover {
+	text-decoration: underline;
+}
+
+.messages-issue-link:focus-visible {
+	border-radius: var(--radius-4);
+	outline: 2px solid var(--color-link);
+	outline-offset: 2px;
+}
+
+/* 머리 줄 위로 떠 있는 버튼들과 같은 층에 두어 누를 수 있게 한다 */
+.messages-chat-issue {
+	z-index: 4;
+}
+
+/* 빈 목록 안내 아래 한 줄 (넓은 창의 안내는 글자 한 줄이라 링크를 다음 줄 가운데에 둔다) */
+.messages-empty-issue {
+	display: flex;
+	width: fit-content;
+	margin: var(--space-8) auto 0;
+}
+
 .messages-transcript {
 	flex: 1;
 	padding: var(--space-4) var(--space-20) var(--space-12);
@@ -861,6 +899,11 @@
 .container.mobile .messages-chat-subtitle {
 	line-height: 1.4;
 	text-align: center;
+}
+
+/* 휴대폰은 안내 한 줄과 같은 크기 */
+.container.mobile .messages-issue-link {
+	font-size: var(--text-footnote);
 }
 
 /* 새 피드백의 취소: 떠 있는 뒤로 가기와 같은 줄, 같은 높이의 알약 */

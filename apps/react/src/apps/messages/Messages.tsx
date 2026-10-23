@@ -7,6 +7,10 @@ import Sidebar from './components/Sidebar';
 import ChatView from './components/ChatView';
 import { NEW_THREAD, useConversations } from './useConversations';
 import { useElementWidth } from '@/shared/hooks/useElementWidth';
+import { useOpenRequest } from '@/shared/lib/openRequest';
+import { REPORT_ISSUE_REQUEST } from './conversations';
+import { NEW_ISSUE_URL } from '@/apps/finder/repoDocs';
+import { openExternal } from '@/shared/analytics/analytics';
 import '@/apps/messages/Messages.css';
 
 /**
@@ -38,6 +42,13 @@ const Messages: React.FC = () => {
 			action(...args);
 		};
 
+	// 도움말 › 문제 알리기: 새 피드백 화면을 열고 입력 칸에 커서를 둔다 (앱이 처음 열리는 중이면 마운트된 뒤에 받는다)
+	useOpenRequest('messages', (id) => {
+		if (id !== REPORT_ISSUE_REQUEST) return;
+		setNav('forward');
+		conversations.compose('issue');
+	});
+
 	return (
 		<AppWindow title="메시지" appName="messages" chrome="unified">
 			{/* 모바일 제목 막대의 뒤로 가기 (iOS처럼 화면마다 하나). 목록이 옆에 보이면 돌아갈 곳이 없으므로 홈.
@@ -54,7 +65,7 @@ const Messages: React.FC = () => {
 						threads={conversations.threads}
 						selectedId={conversations.selectedId}
 						onSelect={forward(conversations.select)}
-						onCompose={forward(conversations.compose)}
+						onCompose={forward(() => conversations.compose())}
 						loading={conversations.status === 'loading'}
 					/>
 					{(isComposing || selectedThread) && (
@@ -64,17 +75,32 @@ const Messages: React.FC = () => {
 							messages={conversations.messages}
 							myName={conversations.myName}
 							focusRequest={conversations.focusRequest}
+							composeKind={conversations.composeKind}
 							onBack={back(conversations.back)}
 							onCancelNew={back(conversations.cancelNewThread)}
-							onCompose={forward(conversations.compose)}
+							onCompose={forward(() => conversations.compose())}
 							onSend={conversations.send}
 							onRemove={conversations.remove}
 						/>
 					)}
 				</div>
 			)}
-			{/* 서버에 닿지 못하면 불러오지도 남기지도 못하므로 앱을 열지 않는다. 확인하면 앱을 끈다 (휴대폰은 홈으로) */}
-			{conversations.status === 'error' && (
+			{/* 서버에 닿지 못하면 불러오지도 남기지도 못하므로 앱을 열지 않는다. 확인하면 앱을 끈다 (휴대폰은 홈으로).
+			    문제 알리기로 열었으면 막다른 길이 되지 않게 GitHub 이슈(새 탭)를 대신 권한다 */}
+			{conversations.status === 'error' && conversations.composeKind === 'issue' && (
+				<AlertDialog
+					title="메시지를 열 수 없습니다"
+					message="지금 서버에 연결할 수 없습니다. 문제는 GitHub 이슈로 남겨 주세요."
+					confirmLabel="이슈 남기기"
+					cancelLabel="닫기"
+					onConfirm={() => {
+						openExternal(NEW_ISSUE_URL);
+						quitApp('messages');
+					}}
+					onCancel={() => quitApp('messages')}
+				/>
+			)}
+			{conversations.status === 'error' && conversations.composeKind !== 'issue' && (
 				<AlertDialog
 					title="메시지를 열 수 없습니다"
 					message="지금 서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요."

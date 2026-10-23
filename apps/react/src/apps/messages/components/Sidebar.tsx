@@ -7,6 +7,7 @@ import SearchField from '@/shared/ui/search-field/SearchField';
 import SidebarPanel from '@/shared/ui/sidebar/Sidebar';
 import ListRow from '@/shared/ui/list-row/ListRow';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
+import IssueLink from './IssueLink';
 
 interface Props {
 	threads: Thread[];
@@ -111,6 +112,7 @@ const Sidebar: React.FC<Props> = ({ threads, selectedId, onSelect, onCompose, lo
 							<span className="messages-empty-hint">
 								{query ? '맞춤법을 확인하거나 새로운 검색을 시도하십시오.' : '첫 번째 피드백을 남겨 주세요.'}
 							</span>
+							{!query && <IssueLink className="messages-empty-issue" />}
 						</EmptyState>
 					)}
 				</ul>
