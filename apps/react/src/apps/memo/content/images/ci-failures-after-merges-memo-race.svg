@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 428" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="428" fill="#fff"/>
+<text x="380.0" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">메모 목록이 그려지는 순서</text>
+<text x="380.0" y="44" font-size="11" fill="#6b7280" text-anchor="middle">서버 글은 GET /posts 한 번으로 먼저 오고, 저장소 글은 contentFiles-*.js(약 2MB)를 받은 뒤 합쳐진다</text>
+<text x="30" y="74" font-size="13" fill="#b91c1c" text-anchor="start" font-weight="600">고치기 전</text>
+<text x="30" y="105" font-size="11" fill="#374151" text-anchor="start" font-weight="600">서버 글</text>
+<rect x="150" y="86" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="152" y="90" width="66.8" height="20" rx="4" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="158" y="104" font-size="10.5" fill="#1e3a8a" text-anchor="start">GET /posts</text>
+<text x="30" y="141" font-size="11" fill="#374151" text-anchor="start" font-weight="600">저장소 글 청크</text>
+<rect x="150" y="122" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="152" y="126" width="338.2" height="20" rx="4" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="158" y="140" font-size="10.5" fill="#1e3a8a" text-anchor="start">contentFiles-*.js 수신</text>
+<text x="30" y="177" font-size="11" fill="#374151" text-anchor="start" font-weight="600">목록</text>
+<rect x="150" y="158" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="228.7" y="162" width="261.5" height="20" rx="4" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="234.7" y="176" font-size="10.5" fill="#78350f" text-anchor="start">서버 글 1편 (위험한 본문이 1번째)</text>
+<rect x="500.09999999999997" y="162" width="237.9" height="20" rx="4" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="506.09999999999997" y="176" font-size="10.5" fill="#991b1b" text-anchor="start">230편으로 재정렬</text>
+<text x="30" y="213" font-size="11" fill="#374151" text-anchor="start" font-weight="600">시험</text>
+<rect x="150" y="194" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="317.20000000000005" y="198" width="167.09999999999997" height="20" rx="4" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="323.20000000000005" y="212" font-size="10.5" fill="#78350f" text-anchor="start">항목 위치 계산</text>
+<line x1="504.0" y1="192" x2="504.0" y2="224" stroke="#dc2626" stroke-width="2"/>
+<text x="510.0" y="212" font-size="10.5" fill="#dc2626" text-anchor="start" font-weight="600">클릭 → 다른 글</text>
+<text x="30" y="252" font-size="13" fill="#047857" text-anchor="start" font-weight="600">고친 뒤</text>
+<text x="30" y="283" font-size="11" fill="#374151" text-anchor="start" font-weight="600">서버 글</text>
+<rect x="150" y="264" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="152" y="268" width="66.8" height="20" rx="4" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="158" y="282" font-size="10.5" fill="#1e3a8a" text-anchor="start">GET /posts</text>
+<text x="30" y="319" font-size="11" fill="#374151" text-anchor="start" font-weight="600">저장소 글 청크</text>
+<rect x="150" y="300" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="152" y="304" width="338.2" height="20" rx="4" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="158" y="318" font-size="10.5" fill="#1e3a8a" text-anchor="start">contentFiles-*.js 수신</text>
+<text x="30" y="355" font-size="11" fill="#374151" text-anchor="start" font-weight="600">목록</text>
+<rect x="150" y="336" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="152" y="340" width="338.2" height="20" rx="4" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="158" y="354" font-size="10.5" fill="#78350f" text-anchor="start">status = 'loading': 목록 비움</text>
+<rect x="500.09999999999997" y="340" width="237.9" height="20" rx="4" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="506.09999999999997" y="354" font-size="10.5" fill="#065f46" text-anchor="start">230편을 한 번에 표시</text>
+<text x="30" y="391" font-size="11" fill="#374151" text-anchor="start" font-weight="600">시험</text>
+<rect x="150" y="372" width="590" height="28" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+<rect x="152" y="376" width="338.2" height="20" rx="4" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="158" y="390" font-size="10.5" fill="#78350f" text-anchor="start">항목을 기다림</text>
+<rect x="500.09999999999997" y="376" width="108.10000000000004" height="20" rx="4" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="506.09999999999997" y="390" font-size="10.5" fill="#065f46" text-anchor="start">위치 계산</text>
+<line x1="622.0" y1="370" x2="622.0" y2="402" stroke="#dc2626" stroke-width="2"/>
+<text x="628.0" y="390" font-size="10.5" fill="#dc2626" text-anchor="start" font-weight="600">클릭 → 위험한 본문</text>
+<text x="150" y="416" font-size="10.5" fill="#9ca3af" text-anchor="start">시간 →</text>
+</svg>
