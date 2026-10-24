@@ -253,7 +253,8 @@ function bootPreloadPlugin(): Plugin {
 					})),
 					...[...css].filter(fresh).map((file) => ({
 						tag: 'link',
-						attrs: { rel: 'preload', as: 'style', href: `/${file}` },
+						// Vite가 나중에 붙이는 <link rel="stylesheet">는 crossOrigin=''(CORS)로 요청한다. 모드가 같아야 미리 받은 응답을 쓴다
+						attrs: { rel: 'preload', as: 'style', crossorigin: true, href: `/${file}` },
 						injectTo: 'head' as const,
 					})),
 				];

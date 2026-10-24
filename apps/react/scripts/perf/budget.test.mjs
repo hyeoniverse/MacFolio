@@ -8,7 +8,7 @@ const HTML = `<!doctype html><html><head>
 <link rel="modulepreload" crossorigin href="/assets/vendor-b.js">
 <link rel="modulepreload" crossorigin href="/assets/boot-c.js">
 <link rel="modulepreload" crossorigin href="/assets/main-a.js">
-<link rel="preload" as="style" href="/assets/boot-d.css">
+<link rel="preload" as="style" crossorigin href="/assets/boot-d.css">
 <link rel="stylesheet" href="https://fonts.example.com/x.css">
 <link rel="icon" href="/favicon.ico">
 <link rel="manifest" href="/manifest.json">
