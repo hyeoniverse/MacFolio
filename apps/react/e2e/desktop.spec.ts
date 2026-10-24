@@ -12,6 +12,27 @@ test.describe('데스크톱', () => {
 		await expect(loading).toBeHidden({ timeout: 20_000 });
 	});
 
+	test('미리 받은 첫 화면 CSS를 다시 요청하지 않는다 (preload와 stylesheet의 CORS 모드가 같다)', async ({ page }) => {
+		const css: string[] = [];
+		page.on('request', (request) => {
+			if (new URL(request.url()).pathname.endsWith('.css')) css.push(new URL(request.url()).pathname);
+		});
+		await page.goto('/');
+		const preloaded = await page
+			.locator('link[rel="preload"][as="style"]')
+			.evaluateAll((links) =>
+				links.map((link) => [new URL((link as HTMLLinkElement).href).pathname, link.getAttribute('crossorigin')])
+			);
+		expect(preloaded.length).toBeGreaterThan(0);
+		// Vite가 붙이는 <link rel="stylesheet">는 crossOrigin=''로 요청한다. preload도 같아야 응답을 재사용한다
+		for (const [, crossorigin] of preloaded) expect(crossorigin).toBe('');
+		await page.locator('.loading-container').click();
+		await expect(page.locator('.dock')).toBeVisible();
+		for (const [path] of preloaded) {
+			await expect.poll(() => css.filter((item) => item === path).length).toBe(1);
+		}
+	});
+
 	test('스크립트를 받는 동안 첫 그림을 눌러도, 로딩 화면이 뜨자마자 시작한다 (두 번 누르지 않는다)', async ({
 		page,
 	}) => {
