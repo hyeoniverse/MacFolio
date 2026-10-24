@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 412" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="412" fill="#fff"/>
+<text x="380.0" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">위젯 줄 높이는 첫 앱 아이콘의 높이로 계산한다</text>
+<text x="380.0" y="44" font-size="11" fill="#6b7280" text-anchor="middle">아이콘 높이 = 이미지 60px + 간격 6px + 이름 줄 높이 (line-height: normal이면 글꼴의 ascent + descent)</text>
+<rect x="40" y="62" width="150" height="170" rx="10" fill="#fff" stroke="#9ca3af"/>
+<rect x="70" y="76" width="90" height="90" rx="20" fill="#3b82f6" stroke="#2563eb"/>
+<text x="115" y="126" font-size="11" fill="#fff" text-anchor="middle">img 60px</text>
+<rect x="70" y="166" width="90" height="10" fill="#e5e7eb"/>
+<text x="170" y="175" font-size="9" fill="#6b7280" text-anchor="start">6px</text>
+<rect x="70" y="176" width="90" height="26" rx="4" fill="#fde68a" stroke="#f59e0b"/>
+<text x="115" y="193" font-size="11" fill="#78350f" text-anchor="middle">이름 span</text>
+<text x="115" y="222" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">iconRow</text>
+<rect x="214" y="62" width="506" height="72" rx="8" fill="#f3f4f6" stroke="#e5e7eb"/>
+<text x="226" y="84" font-size="11.5" fill="#111827" text-anchor="start">twoRows = floor((페이지 높이 − 24 − (2 × iconRow + 22) − 16) / 2)</text>
+<text x="226" y="104" font-size="11.5" fill="#111827" text-anchor="start">row = max(112, min(정사각형, twoRows, fullPage))</text>
+<text x="226" y="124" font-size="11" fill="#991b1b" text-anchor="start" font-weight="600">→ iconRow가 2px 커지면 위젯 줄 높이(row)는 2px 작아진다</text>
+<text x="214" y="158" font-size="11" fill="#374151" text-anchor="start">macOS: font-family 첫 항목 -apple-system이 바로 적용 → 이름 줄 15px로 일정</text>
+<text x="214" y="178" font-size="11" fill="#374151" text-anchor="start">Linux CI: -apple-system이 없어 웹 글꼴 MacSystemFont(swap)를 기다리는 동안</text>
+<text x="214" y="194" font-size="11" fill="#374151" text-anchor="start">다른 한글 글꼴로 그림 → 적용 뒤 이름 줄 높이가 바뀜</text>
+<text x="214" y="218" font-size="11" fill="#374151" text-anchor="start">CI 측정값 115px → 117px로 역산하면, 처음 그린 이름 줄이 2px 높았다</text>
+<rect x="40" y="252" width="162.5" height="74" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="52" y="272" font-size="12" fill="#374151" text-anchor="start" font-weight="600">① 첫 측정</text>
+<text x="52" y="292" font-size="11" fill="#374151" text-anchor="start">대체 글꼴 상태</text>
+<text x="52" y="310" font-size="11" fill="#374151" text-anchor="start">row 115px</text>
+<rect x="212.5" y="252" width="162.5" height="74" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="224.5" y="272" font-size="12" fill="#991b1b" text-anchor="start" font-weight="600">② 웹 글꼴 적용</text>
+<text x="224.5" y="292" font-size="11" fill="#374151" text-anchor="start">iconRow 2px 감소</text>
+<text x="224.5" y="310" font-size="11" fill="#374151" text-anchor="start">ResizeObserver 미관찰</text>
+<rect x="385.0" y="252" width="162.5" height="74" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="397.0" y="272" font-size="12" fill="#374151" text-anchor="start" font-weight="600">③ 위젯 이동</text>
+<text x="397.0" y="292" font-size="11" fill="#374151" text-anchor="start">useLayoutEffect 재실행</text>
+<text x="397.0" y="310" font-size="11" fill="#374151" text-anchor="start">row 117px</text>
+<rect x="557.5" y="252" width="162.5" height="74" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="569.5" y="272" font-size="12" fill="#991b1b" text-anchor="start" font-weight="600">④ 시험 실패</text>
+<text x="569.5" y="292" font-size="11" fill="#374151" text-anchor="start">115px과 2px 차이</text>
+<text x="569.5" y="310" font-size="11" fill="#374151" text-anchor="start">허용 오차 0.5px</text>
+<rect x="40" y="342" width="335.0" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="52" y="364" font-size="12" fill="#065f46" text-anchor="start" font-weight="600">수정 1: 이름 span에 line-height: 1.25</text>
+<text x="52" y="384" font-size="11" fill="#374151" text-anchor="start">12px × 1.25 = 15px, 글꼴과 무관</text>
+<rect x="385.0" y="342" width="335.0" height="56" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="397.0" y="364" font-size="12" fill="#065f46" text-anchor="start" font-weight="600">수정 2: ResizeObserver가 첫 아이콘도 관찰</text>
+<text x="397.0" y="384" font-size="11" fill="#374151" text-anchor="start">아이콘 높이가 바뀌면 줄 높이를 다시 계산</text>
+</svg>
