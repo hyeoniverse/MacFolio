@@ -721,4 +721,10 @@ VM 만들기부터 OAuth App, 터널, 환경 변수, 문제 해결까지 [docs/d
 
 아키텍처 결정과 앞으로의 계획은 [#8](https://github.com/hyeoniverse/MacFolio/issues/8)에서 관리합니다.
 
+### 라이선스
+
+- 소스 코드: [MIT](LICENSE)
+- 블로그 글·이미지·이력서·프로필, 그리고 글꼴·음악·배경화면 같은 제3자 자산에는 MIT가 적용되지 않습니다. 범위는 [LICENSE-CONTENT.md](LICENSE-CONTENT.md)에 있습니다.
+- 보안 취약점은 공개 이슈 대신 [SECURITY.md](SECURITY.md)의 비공개 제보 경로로 알려 주세요.
+
 <p align="right"><a href="#macfolio">↑ 탭 목록으로</a></p>

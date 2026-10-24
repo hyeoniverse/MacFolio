@@ -725,4 +725,10 @@ Everything from creating the VM to the OAuth App, tunnel, environment variables,
 
 Architecture decisions and future plans are tracked in [#8](https://github.com/hyeoniverse/MacFolio/issues/8).
 
+### License
+
+- Source code: [MIT](LICENSE)
+- Blog posts, images, the résumé and profile, and third-party assets such as fonts, music and wallpapers are not covered by the MIT License. See [LICENSE-CONTENT.md](LICENSE-CONTENT.md) for the scope.
+- Report security vulnerabilities privately as described in [SECURITY.md](SECURITY.md), not in public issues.
+
 <p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
