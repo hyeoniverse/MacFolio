@@ -35,15 +35,20 @@ Open it on a phone and it becomes an iOS home screen.
     <td align="center" width="25%"><h3>1</h3>developer</td>
     <td align="center" width="25%"><h3>$0</h3>running cost</td>
     <td align="center" width="25%"><h3>0</h3>open ports</td>
-    <td align="center" width="25%"><h3>200+</h3>dev log posts</td>
+    <td align="center" width="25%"><h3>230+</h3>dev log posts</td>
   </tr>
 </table>
 
-[Demo](#demo) · [Features](#features) · [Information architecture](#information-architecture) · [Usage](#usage) · [Architecture](#architecture) · [Tech stack](#tech-stack) · [Running locally](#running-locally) · [Performance](#performance) · [Docs](#docs)
+| [🖥️ Overview](#overview) | [🧭 Usage](#usage) | [🏗️ Architecture](#architecture) | [⚡ Performance](#performance) | [🛠️ Development](#development) | [📚 Docs](#docs) |
+| :----------------------: | :----------------: | :------------------------------: | :----------------------------: | :----------------------------: | :--------------: |
 
 </div>
 
-## Demo
+## Overview
+
+[Demo](#demo) · [Features](#features)
+
+### Demo
 
 <div align="center">
   <img src="docs/images/readme-demo.webp" alt="Opening the Memo app from the Dock, picking and reading a post, dragging the window, then opening the Music app" width="100%">
@@ -51,7 +56,7 @@ Open it on a phone and it becomes an iOS home screen.
   <sub>Open Memo from the Dock → read a post → drag the window → open Music (the deployed site as-is)</sub>
 </div>
 
-## Features
+### Features
 
 About 20 apps open as windows, just like on macOS. Every screenshot below was taken from the actual running site.
 
@@ -60,7 +65,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td width="50%" valign="top">
       <img src="docs/images/readme-memo.jpg" alt="Memo app: folders on the left, post list in the middle, post body on the right">
       <h4>📝 Memo = blog</h4>
-      Folders (categories) · list/gallery view · search and find & replace. Each post shows its view count, and the 10 <b>popular posts</b> picked by views, comments, and likes are collected separately. When logged in as admin, the post itself becomes the editor, with drafts · publishing · version history · scheduled publishing.
+      Folders (categories) · #tags in the body · list/gallery view · search and find & replace. Each post shows its view count, and the 10 <b>popular posts</b> picked by views, comments, and likes are collected separately. When logged in as admin, the post itself becomes the editor, with drafts · publishing · version history · scheduled publishing · secret posts (shown only to the admin) · locking · Recently Deleted (kept for 30 days).
     </td>
     <td width="50%" valign="top">
       <img src="docs/images/readme-finder.jpg" alt="Finder: the Public, Pictures, Downloads, Desktop, Movies, Documents, Blog, and Music folders in the hyeoniverse home folder">
@@ -77,7 +82,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td valign="top">
       <img src="docs/images/readme-music.jpg" alt="Music app: playlist and the song now playing">
       <h4>🎵 Music</h4>
-      Playlists · shuffle · repeat · queue. Playback can also be controlled from the menu bar and the phone widget.
+      Playlists · shuffle · repeat · queue. Playback can also be controlled from the menu bar and widgets. On a phone, Now Playing follows the iOS 18 Music layout (swipe down to close, queue view, ••• menu), and tapping the loading screen grants playback so background music starts right away even in iOS Safari.
     </td>
   </tr>
   <tr>
@@ -101,7 +106,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td valign="top">
       <img src="docs/images/readme-activity.jpg" alt="Activity Monitor: visit counts, graph, most-opened apps, referrers">
       <h4>📈 Activity Monitor</h4>
-      Visits · unique visitors · app opens · time on site, referrers, search terms (Google Search Console), region · device, real time, server status. Counted with a daily hash, no cookies.
+      Visits · unique visitors · app opens · time on site, referrers, search terms (Google Search Console), region · device, real time, server status. Counted with a daily hash, no cookies, and refreshed periodically only while the window is visible.
     </td>
   </tr>
   <tr>
@@ -135,8 +140,8 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td width="50%"><img src="docs/images/readme-widgets.jpg" alt="Three Memo widgets on the desktop (recent, popular, random) and a Photos widget"></td>
     <td width="50%" valign="top">
       <h4>🧩 Widgets</h4>
-      Widgets go on the desktop like macOS Sonoma, and on each home screen page like iOS. Eight kinds — weather · calendar · clock · music · memo · photos · GitHub contribution graph · about — are shared by desktop and phone.<br><br>
-      On the desktop, open the gallery with <b>Edit Widgets…</b> to add them and drag them onto the cell grid. The Memo widget shows recent, popular, or random posts, and the Photos widget cycles through photos and videos from an album or the Pictures folder.
+      Widgets go on the desktop like macOS Sonoma, and on each home screen page like iOS. Nine kinds — weather · calendar · clock · music · memo · photos · GitHub contribution graph · about · quote — are shared by desktop and phone.<br><br>
+      On the desktop, open the gallery with <b>Edit Widgets…</b> to add them and drag them onto the cell grid. The Memo widget shows recent, popular, or random posts, and the Photos widget cycles through photos and videos from an album or the Pictures folder and opens the current one full size when tapped. On a phone, long-press the home screen to drag widgets into a new order or onto the next page.
     </td>
   </tr>
 </table>
@@ -147,7 +152,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td width="25%"><img src="docs/images/readme-mobile-memo.jpg" alt="A blog post opened on a phone"></td>
     <td width="50%" valign="top">
       <h4>📱 Phone</h4>
-      At a screen width of 767px or less it becomes an iOS home screen. Widgets on every page (long-press to remove and add), a swipeable paged home screen, swipe up from the bottom to go home, swipe down from the top for Control Center.<br><br>
+      At a screen width of 767px or less it becomes an iOS home screen. Widgets on every page (long-press to remove, add, and drag to move), a swipeable paged home screen, swipe up from the bottom to go home, swipe down from the top for Control Center.<br><br>
       Finder becomes <b>Files</b>, Terminal becomes <b>Shortcuts</b>, and admin login becomes the <b>Passwords</b> app. The share button opens the share sheet.
     </td>
   </tr>
@@ -155,13 +160,49 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
 
 <table>
   <tr>
-    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/messages-bubbles.jpg" alt="Messages app"><h4>💬 Messages</h4>Leave feedback and replies without logging in. Your name is set by a visitor cookie (🦊 날쌘 여우, "swift fox"), and you can delete your own messages from the same browser.</td>
+    <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/messages-bubbles.jpg" alt="Messages app"><h4>💬 Messages</h4>Leave feedback and replies without logging in. Your name is set by a visitor cookie (🦊 날쌘 여우, "swift fox"), and you can delete your own messages from the same browser. Help (도움말) › Report a Problem (문제 알리기…) in the menu bar opens this screen too, with a link to GitHub issues for bugs.</td>
     <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/comments.jpg" alt="Blog comments"><h4>🗨️ Comments · likes</h4>Written under your visitor name and deletable from the same browser. The server keeps only HMACs of the visitor token and IP.</td>
     <td width="33%" valign="top"><img src="apps/react/src/apps/memo/content/images/admin-signed-in.jpg" alt="The account screen in System Settings"><h4>🔐 Admin login</h4>GitHub OAuth lets in only my account. There is no password, and the DB holds only hashes of session tokens.</td>
   </tr>
 </table>
 
-## Information architecture
+<p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
+
+## Usage
+
+[Visitors](#visitors) · [Admin](#admin) · [Information architecture](#information-architecture)
+
+### Visitors
+
+| What you want          | How                                                                                                                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Open an app            | Click its icon in the Dock. You can also open it from Terminal, e.g. `open memo`                                                                                                |
+| Handle windows         | Drag the title bar to move, drag the edges to resize. 🔴 close · 🟡 minimize · 🟢 full screen                                                                                   |
+| Read the blog          | Memo app. Narrow down with the folders on the left, switch list/gallery with the buttons on top, and search in the search field                                                 |
+| Share a link           | Press the share button on a post in Memo or a project in Safari to copy the address (share sheet on phones)                                                                     |
+| Leave feedback         | Just type your message in the Messages app or Help (도움말) › Report a Problem (문제 알리기…). Your name is assigned automatically, and you can delete it from the same browser |
+| Learn about me         | In Terminal: `help`, `whoami`, `neofetch`, `skills`, `projects`, `contact`                                                                                                      |
+| First look around      | Follow the tour shown on your first visit, or see tips by topic in the Tips app in Launchpad                                                                                    |
+| See the résumé         | The Résumé folder on the desktop or `resume` in Terminal. Read it in TextEdit and download it as a PDF                                                                          |
+| Place widgets          | Right-click the desktop → Edit Widgets… (위젯 편집…); on a phone, long-press the home screen                                                                                    |
+| Change the look        | System Settings → Appearance (light · dark), Wallpaper                                                                                                                          |
+| Clear data left behind | Trash at the right end of the Dock → see and empty the settings · search terms this site stored in your browser                                                                 |
+
+Every post and project has an address. Arriving at `/memo/<post>` (e.g. `/memo/cra-to-vite`) or `/safari/<project>` (e.g. `/safari/sproutfarm`) opens that app on that screen after the loading screen. When you select a post or tab, the browser's address bar also changes to the frontmost window's address.
+
+On a phone, tap icons on the home screen and swipe up the bottom bar to return home. Swiping down from the top opens Control Center. Terminal becomes **Shortcuts** (단축어), where you tap a command to run it.
+
+### Admin
+
+1. On desktop, log in with GitHub via **Apple menu on the left of the menu bar → Admin login (관리자 로그인)**; on a phone, via the **Passwords (암호)** app. If the server is briefly unreachable, **Check again (다시 확인)** in the Apple menu asks again right away.
+2. Clicking a post in the Memo app lets you edit it directly. While editing, only drafts are saved; it is visible to visitors only after you **Publish (게시)**. Publishing with a future date schedules it.
+3. Creating · renaming folders, moving posts (drag and drop), pinning, marking posts secret, locking, restoring from Recently Deleted, deleting comments, and uploading photos to Finder › Pictures also work only when logged in.
+4. Login status and sessions are shown in **System Settings → Account (계정)**. Sessions last 12 hours.
+5. Images · attachments that remain on the server after being removed from posts are shown in **Trash → Server files (서버 파일)**. Only files that nothing uses can be deleted.
+
+Hiding the edit buttons on screen is only a UI hint; the server checks permissions on every request.
+
+### Information architecture
 
 The site draws one desktop at a single address (`/`). At a screen width of 767px or less, the same apps are shown as an iOS home screen. App names · icons · Dock positions are defined in one place, `src/apps/manifest.ts`, and the Dock · Launchpad · Terminal `open` · phone home screen all read this list.
 
@@ -191,6 +232,9 @@ flowchart TB
     safari --> safariUrl[/"/safari/&lt;project&gt;"/]
 ```
 
+<details>
+<summary><b>Finder's file tree</b></summary>
+
 **Finder's file tree**: as on macOS, there is a user folder under the disk, and you browse the site's documents · posts · photos · music like files.
 
 ```text
@@ -208,6 +252,11 @@ Macintosh HD
 
 (Folder names are the Korean UI labels: 응용 프로그램 = Applications, 사용자 = Users, 데스크탑 = Desktop, 문서 = Documents, 블로그 = Blog, 그림 = Pictures, 음악 = Music, 공용 · 다운로드 · 동영상 = Public · Downloads · Movies.)
 
+</details>
+
+<details>
+<summary><b>Screens by address and what search bots receive</b></summary>
+
 **Addresses**: only app screens worth sharing get an address. Arriving at one shows the loading screen and then opens that app on that screen; selecting a window changes the address bar to the frontmost window's address.
 
 | Address                            | Screen                    | What search bots get                                                   |
@@ -219,39 +268,13 @@ Macintosh HD
 | `/rss.xml`                         | RSS feed                  | Titles · summaries of all posts                                        |
 | Nonexistent post · project address | Desktop (404, `noindex`)  |                                                                        |
 
-## Usage
+</details>
 
-### Visitors
-
-| What you want          | How                                                                                                                             |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Open an app            | Click its icon in the Dock. You can also open it from Terminal, e.g. `open memo`                                                |
-| Handle windows         | Drag the title bar to move, drag the edges to resize. 🔴 close · 🟡 minimize · 🟢 full screen                                   |
-| Read the blog          | Memo app. Narrow down with the folders on the left, switch list/gallery with the buttons on top, and search in the search field |
-| Share a link           | Press the share button on a post in Memo or a project in Safari to copy the address (share sheet on phones)                     |
-| Leave feedback         | Just type your message in the Messages app. Your name is assigned automatically, and you can delete it from the same browser    |
-| Learn about me         | In Terminal: `help`, `whoami`, `neofetch`, `skills`, `projects`, `contact`                                                      |
-| First look around      | Follow the tour shown on your first visit, or see tips by topic in the Tips app in Launchpad                                    |
-| See the résumé         | The Résumé folder on the desktop or `resume` in Terminal. Read it in TextEdit and download it as a PDF                          |
-| Place widgets          | Right-click the desktop → Edit Widgets… (위젯 편집…); on a phone, long-press the home screen                                    |
-| Change the look        | System Settings → Appearance (light · dark), Wallpaper                                                                          |
-| Clear data left behind | Trash at the right end of the Dock → see and empty the settings · search terms this site stored in your browser                 |
-
-Every post and project has an address. Arriving at `/memo/<post>` (e.g. `/memo/cra-to-vite`) or `/safari/<project>` (e.g. `/safari/sproutfarm`) opens that app on that screen after the loading screen. When you select a post or tab, the browser's address bar also changes to the frontmost window's address.
-
-On a phone, tap icons on the home screen and swipe up the bottom bar to return home. Swiping down from the top opens Control Center. Terminal becomes **Shortcuts** (단축어), where you tap a command to run it.
-
-### Admin
-
-1. On desktop, log in with GitHub via **Apple menu on the left of the menu bar → Admin login (관리자 로그인)**; on a phone, via the **Passwords (암호)** app. If the server is briefly unreachable, **Check again (다시 확인)** in the Apple menu asks again right away.
-2. Clicking a post in the Memo app lets you edit it directly. While editing, only drafts are saved; it is visible to visitors only after you **Publish (게시)**. Publishing with a future date schedules it.
-3. Creating · renaming folders, moving posts (drag and drop), pinning, deleting comments, and uploading photos to Finder › Pictures also work only when logged in.
-4. Login status and sessions are shown in **System Settings → Account (계정)**. Sessions last 12 hours.
-5. Images · attachments that remain on the server after being removed from posts are shown in **Trash → Server files (서버 파일)**. Only files that nothing uses can be deleted.
-
-Hiding the edit buttons on screen is only a UI hint; the server checks permissions on every request.
+<p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
 
 ## Architecture
+
+[System overview](#system-overview) · [How the first screen gets rendered](#how-the-first-screen-gets-rendered) · [Packages](#packages) · [CI/CD](#cicd) · [Tech stack](#tech-stack) · [Structure](#structure)
 
 ### System overview
 
@@ -350,7 +373,7 @@ flowchart LR
 
     subgraph check["check"]
         direction TB
-        c1["audit · format · lint · circular deps"] --> c2["types · unit tests · build"] --> c3["API e2e<br/>(real PostgreSQL)"]
+        c1["audit · format · lint · circular deps"] --> c2["types · unit tests · build · performance budget"] --> c3["API e2e<br/>(real PostgreSQL)"]
     end
     e2e["Browser E2E<br/>Playwright, 6 shards in parallel<br/>desktop · iPhone · Android"]
 
@@ -369,7 +392,7 @@ flowchart LR
 
 There are also scheduled checks: Semgrep static analysis (`sast`), gitleaks secret scanning (`secrets`), and a site · API health check every 10 minutes (`uptime`).
 
-## Tech stack
+### Tech stack
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=react,ts,vite,nestjs,prisma,postgres,pnpm,cloudflare,docker,githubactions&perline=10" alt="React, TypeScript, Vite, NestJS, Prisma, PostgreSQL, pnpm, Cloudflare, Docker, GitHub Actions">
@@ -384,7 +407,7 @@ The decision process is in [#8](https://github.com/hyeoniverse/MacFolio/issues/8
 | Monorepo   | [pnpm workspaces](https://pnpm.io/workspaces), [Turborepo](https://turborepo.com/docs)                                                                                                                                                                              |
 | Testing    | [Vitest](https://vitest.dev/) (unit), [Playwright](https://playwright.dev/) (E2E: desktop · iPhone · Android), [supertest](https://github.com/ladjs/supertest) (API e2e)                                                                                            |
 | Deployment | [Cloudflare Workers](https://developers.cloudflare.com/workers/) (frontend), [Oracle Cloud](https://www.oracle.com/cloud/free/) VM + Docker Compose + Cloudflare Tunnel (API)                                                                                       |
-| CI         | [GitHub Actions](https://docs.github.com/en/actions): format → lint → circular deps → types → tests → build → API e2e → E2E, security checks                                                                                                                        |
+| CI         | [GitHub Actions](https://docs.github.com/en/actions): format → lint → circular deps → types → tests → build → performance budget → API e2e → E2E, security checks                                                                                                   |
 
 Expand each item to see **why I chose it and where and how I used it**.
 
@@ -499,7 +522,9 @@ The detailed steps are in [docs/en/deployment.md](docs/en/deployment.md).
 <details>
 <summary><b>CI: GitHub Actions</b></summary>
 
-- On every PR and push to main, a single `check` job runs dependency vulnerabilities → format → lint → circular deps → type check → unit tests → build → API e2e (PostgreSQL service container), while browser E2E runs at the same time split into 6 shards. On failure, the Playwright report is uploaded. On main, E2E isn't rerun if the code is the same as what already passed in the PR
+- On every PR and push to main, a single `check` job runs dependency vulnerabilities → format → lint → circular deps → type check → unit tests → build → performance budget → API e2e (PostgreSQL service container), while browser E2E runs at the same time split into 6 shards. On failure, the Playwright report is uploaded. On main, E2E isn't rerun if the code is the same as what already passed in the PR
+- The dependency vulnerability check can fail without any code change when a new advisory is published. Transitive dependencies are pinned to fixed versions with `overrides` in `pnpm-workspace.yaml`, in a PR separate from feature work ([#371](https://github.com/hyeoniverse/MacFolio/pull/371), [#374](https://github.com/hyeoniverse/MacFolio/pull/374), [write-up (Korean)](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges))
+- Performance budget: `check` fails if the brotli size of the built `boot` bundle or the first-visit bundle exceeds its limit (`apps/react/scripts/perf/budget.mjs`, [docs/en/performance.md](docs/en/performance.md))
 - `conventions`: checks that the branch name, PR title, and commit messages follow the [contribution rules](CONTRIBUTING.md)
 - Commits on main are deployed only after passing tests. If the API changed, the API is deployed first (`api-image` → `api-deploy`), then `deploy` uploads to Cloudflare Workers. This order keeps the new UI from hitting the old API first
 - For PRs from the same repo, `preview` posts a preview URL as a PR comment (only for PRs that change the frontend). Previews are `noindex`, so they don't show up in search
@@ -508,7 +533,10 @@ The detailed steps are in [docs/en/deployment.md](docs/en/deployment.md).
 
 </details>
 
-## Structure
+### Structure
+
+<details>
+<summary><b>Folder structure</b></summary>
 
 ```
 apps/
@@ -531,7 +559,58 @@ docs/                     Backend design, deployment, UI components, security sc
 wrangler.jsonc            Cloudflare Workers config
 ```
 
-## Running locally
+</details>
+
+<p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
+
+## Performance
+
+I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB of fonts, 2.4MB of raw blog text and all app code in the initial bundle, large images · videos, a loading screen rendered by JS, and a desktop pre-rendered behind the loading screen) in three rounds, and measured again under the same conditions. The re-measurement (Round 4) split the quote widget data that had crept into the initial bundle, bringing the `boot` bundle back from 65KB to 47KB compressed. Round 5 fixed why phone LCP was sometimes counted again in the 4-second range (React removed the HTML's first render before it was recorded as LCP) and added CI limits on first-visit bundle size (a performance budget). The drop in first-visit transfer in Round 5 comes from deferring the body font and wallpaper until the loading screen is tapped.
+
+**Local** (ranges across alternating runs)
+
+| Item                         | Phone before → Round 3 → Round 5 | Desktop before → Round 3 → Round 5 |
+| ---------------------------- | -------------------------------- | ---------------------------------- |
+| Lighthouse performance       | 55 → 78\~87 → **85\~99**         | 62 → 98 → **100**                  |
+| FCP                          | 14.3s → 3.2s → **1.7\~3.3s**     | 2.5s → 0.7s → **0.5\~0.7s**        |
+| LCP                          | 25.7s → 3.2s → **1.7\~3.4s**     | 5.8s → 1.1s → **0.5\~0.7s**        |
+| Transfer size on first visit | 4,893KB → 483KB → **278KB**      | 9,050KB → 771KB → **278KB**        |
+
+**Production** (median of 5 runs)
+
+| Item                         | Phone before → after Round 1 → after Round 3 | Desktop before → after Round 1 → after Round 3 |
+| ---------------------------- | -------------------------------------------- | ---------------------------------------------- |
+| Lighthouse performance       | 53 → 73 → **98**                             | 60 → 89 → **97**                               |
+| LCP                          | 31.5s → 7.1s → **1.9s**                      | 5.8s → 2.1s → **1.0s**                         |
+| Transfer size on first visit | 6,342KB → 1,239KB → **602KB**                | 7,134KB → 3,229KB → **889KB**                  |
+
+Measurement conditions, bottlenecks, fixes, and how to measure again are in [docs/en/performance.md](docs/en/performance.md); the re-measurement is written up in [the re-measurement post](apps/react/src/apps/memo/content/site-performance-remeasure.md) (Korean).
+
+### CRA → Vite migration
+
+<details>
+<summary><b>Before/after measurements</b></summary>
+
+Moved from the deprecated Create React App to Vite.
+
+| Item               | CRA      | Vite     |
+| ------------------ | -------- | -------- |
+| Dev server startup | 5.05s    | 0.58s    |
+| Production build   | 6.33s    | 1.88s    |
+| JS bundle (gzip)   | 138.2 KB | 127.7 KB |
+| Installed packages | 1,438    | 171      |
+
+The measurement method and migration process are in [docs/en/migration-cra-to-vite.md](docs/en/migration-cra-to-vite.md).
+
+</details>
+
+<p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
+
+## Development
+
+[Running locally](#running-locally) · [Writing blog posts](#writing-blog-posts) · [Deployment](#deployment)
+
+### Running locally
 
 Requires Node 22 and pnpm (versions pinned in `.node-version` and `package.json`).
 
@@ -558,6 +637,9 @@ pnpm --filter @macfolio/api db:up                # PostgreSQL
 pnpm dev:all                                     # Frontend 5173 + API 4000 (docs: /docs)
 ```
 
+<details>
+<summary><b>Command reference</b></summary>
+
 | Command                                  | Description                      |
 | ---------------------------------------- | -------------------------------- |
 | `pnpm dev`                               | Frontend dev server              |
@@ -570,12 +652,17 @@ pnpm dev:all                                     # Frontend 5173 + API 4000 (doc
 | `pnpm --filter @macfolio/api test:e2e`   | API e2e (requires DB)            |
 | `pnpm --filter @macfolio/react test:e2e` | Browser E2E (after `pnpm build`) |
 
-## Writing blog posts
+</details>
+
+### Writing blog posts
 
 There are two ways.
 
 - **On the site:** log in as admin and write directly in the Memo app. Posts are saved on the server (DB), and if you edit a repo post, the server post is shown in its place at the same address.
 - **In the repo:** add a Markdown file to `apps/react/src/apps/memo/content/`. The file name becomes the post's address (e.g. `my-first-post.md`). Merging to main deploys it.
+
+<details>
+<summary><b>Front matter example and rules</b></summary>
 
 ```md
 ---
@@ -598,7 +685,9 @@ pinned: true # Pin to the top of the list (optional)
 - Put images in `content/images/` and reference them with a path relative to the post file. In gallery view, the first image in the body becomes the card preview.
 - On build, posts go into the search HTML · sitemap · RSS. The image used when a link is shared is the first photo in the body (JPG · PNG · WebP · GIF), or a card drawn from the title if there's no photo (`packages/og-card`). Cards for posts written on the site are drawn by the API (`GET /posts/<post>/og.png`). The sitemap's `lastmod` is the date of the file's last commit.
 
-## Deployment
+</details>
+
+### Deployment
 
 | What      | Where                                                        | How                                                                                                    |
 | --------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
@@ -609,41 +698,7 @@ pinned: true # Pin to the top of the list (optional)
 
 Everything from creating the VM to the OAuth App, tunnel, environment variables, and troubleshooting is in [docs/en/deployment.md](docs/en/deployment.md).
 
-## CRA → Vite migration
-
-Moved from the deprecated Create React App to Vite.
-
-| Item               | CRA      | Vite     |
-| ------------------ | -------- | -------- |
-| Dev server startup | 5.05s    | 0.58s    |
-| Production build   | 6.33s    | 1.88s    |
-| JS bundle (gzip)   | 138.2 KB | 127.7 KB |
-| Installed packages | 1,438    | 171      |
-
-The measurement method and migration process are in [docs/en/migration-cra-to-vite.md](docs/en/migration-cra-to-vite.md).
-
-## Performance
-
-I measured first-visit performance with Lighthouse, fixed the bottlenecks (3.8MB of fonts, 2.4MB of raw blog text and all app code in the initial bundle, large images · videos, a loading screen rendered by JS, and a desktop pre-rendered behind the loading screen) in three rounds, and measured again under the same conditions. The re-measurement (Round 4) split the quote widget data that had crept into the initial bundle, bringing the `boot` bundle back from 65KB to 47KB compressed. Round 5 fixed why phone LCP was sometimes counted again in the 4-second range (React removed the HTML's first render before it was recorded as LCP) and added CI limits on first-visit bundle size (a performance budget). The drop in first-visit transfer in Round 5 comes from deferring the body font and wallpaper until the loading screen is tapped.
-
-**Local** (ranges across alternating runs)
-
-| Item                         | Phone before → Round 3 → Round 5 | Desktop before → Round 3 → Round 5 |
-| ---------------------------- | -------------------------------- | ---------------------------------- |
-| Lighthouse performance       | 55 → 78\~87 → **85\~99**         | 62 → 98 → **100**                  |
-| FCP                          | 14.3s → 3.2s → **1.7\~3.3s**     | 2.5s → 0.7s → **0.5\~0.7s**        |
-| LCP                          | 25.7s → 3.2s → **1.7\~3.4s**     | 5.8s → 1.1s → **0.5\~0.7s**        |
-| Transfer size on first visit | 4,893KB → 483KB → **278KB**      | 9,050KB → 771KB → **278KB**        |
-
-**Production** (median of 5 runs)
-
-| Item                         | Phone before → after Round 1 → after Round 3 | Desktop before → after Round 1 → after Round 3 |
-| ---------------------------- | -------------------------------------------- | ---------------------------------------------- |
-| Lighthouse performance       | 53 → 73 → **98**                             | 60 → 89 → **97**                               |
-| LCP                          | 31.5s → 7.1s → **1.9s**                      | 5.8s → 2.1s → **1.0s**                         |
-| Transfer size on first visit | 6,342KB → 1,239KB → **602KB**                | 7,134KB → 3,229KB → **889KB**                  |
-
-Measurement conditions, bottlenecks, fixes, and how to measure again are in [docs/en/performance.md](docs/en/performance.md); the re-measurement is written up in [the re-measurement post](apps/react/src/apps/memo/content/site-performance-remeasure.md) (Korean).
+<p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
 
 ## Docs
 
@@ -662,8 +717,12 @@ Measurement conditions, bottlenecks, fixes, and how to measure again are in [doc
   - [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
   - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
   - [첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
+  - [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
+  - [PR을 머지하자 CI가 연달아 실패한 원인 네 가지](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges)
   - [리팩터링 계획을 마치며 — 일곱 단계 전후](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
 
-## Roadmap
+### Roadmap
 
 Architecture decisions and future plans are tracked in [#8](https://github.com/hyeoniverse/MacFolio/issues/8).
+
+<p align="right"><a href="#macfolio">↑ Back to tabs</a></p>
