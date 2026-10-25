@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="470" viewBox="0 0 880 470" font-family="-apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif">
+<rect width="880" height="470" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#111827">사진 위젯의 앨범은 어디에 저장되나</text>
+<!-- before -->
+<text x="24" y="66" font-size="14" font-weight="700" fill="#b91c1c">고치기 전: 브라우저마다 따로</text>
+<rect x="24" y="80" width="250" height="78" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="40" y="104" font-size="13" font-weight="600" fill="#111827">노트북 브라우저</text>
+<text x="40" y="126" font-size="12" fill="#374151">localStorage › 위젯 자리</text>
+<text x="40" y="145" font-size="12" fill="#047857">album: 그림 폴더 → 폴더 사진</text>
+<rect x="300" y="80" width="250" height="78" rx="10" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="316" y="104" font-size="13" font-weight="600" fill="#111827">아이폰 Safari</text>
+<text x="316" y="126" font-size="12" fill="#374151">localStorage › 비어 있음</text>
+<text x="316" y="145" font-size="12" fill="#b91c1c">album 없음 → 모든 앨범</text>
+<text x="576" y="114" font-size="12" fill="#4b5563">같은 기기의 데스크톱·모바일 UI는</text>
+<text x="576" y="132" font-size="12" fill="#4b5563">같은 저장소를 읽어 둘 다 적용된다</text>
+<!-- after -->
+<text x="24" y="200" font-size="14" font-weight="700" fill="#047857">고친 뒤: 관리자가 고른 값을 서버에 두고 첫 HTML에 싣는다</text>
+<rect x="24" y="214" width="190" height="70" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="38" y="238" font-size="13" font-weight="600" fill="#111827">관리자가 앨범 고름</text>
+<text x="38" y="258" font-size="12" fill="#374151">PUT /site/widgets</text>
+<text x="38" y="275" font-size="12" fill="#374151">{ photoAlbum }</text>
+<line x1="214" y1="249" x2="250" y2="249" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="252" y="214" width="190" height="70" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="266" y="238" font-size="13" font-weight="600" fill="#111827">API · PostgreSQL</text>
+<text x="266" y="258" font-size="12" fill="#374151">SiteContent.widgets</text>
+<text x="266" y="275" font-size="12" fill="#374151">(JSONB, 비워 둘 수 있음)</text>
+<line x1="442" y1="249" x2="478" y2="249" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="480" y="214" width="190" height="70" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="494" y="238" font-size="13" font-weight="600" fill="#111827">Cloudflare Worker</text>
+<text x="494" y="258" font-size="12" fill="#374151">GET /site 결과를</text>
+<text x="494" y="275" font-size="12" fill="#374151">index.html에 JSON으로</text>
+<line x1="670" y1="249" x2="706" y2="249" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="708" y="214" width="150" height="70" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="722" y="238" font-size="13" font-weight="600" fill="#111827">모든 브라우저</text>
+<text x="722" y="258" font-size="12" fill="#374151">시작 전에 읽음</text>
+<text x="722" y="275" font-size="12" fill="#374151">(아이폰 포함)</text>
+<!-- priority -->
+<text x="24" y="330" font-size="14" font-weight="700" fill="#111827">위젯이 보일 앨범을 정하는 순서 (effectiveAlbum)</text>
+<rect x="24" y="344" width="250" height="90" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="40" y="368" font-size="13" font-weight="600" fill="#111827">① 이 브라우저에서 고른 값</text>
+<text x="40" y="390" font-size="12" fill="#374151">localStorage의 album</text>
+<text x="40" y="408" font-size="12" fill="#374151">'모든 앨범'도 고른 값(all)으로</text>
+<text x="40" y="425" font-size="12" fill="#374151">저장해 기본값보다 우선</text>
+<line x1="274" y1="389" x2="306" y2="389" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="278" y="380" font-size="11" fill="#6b7280">없으면</text>
+<rect x="308" y="344" width="250" height="90" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="324" y="368" font-size="13" font-weight="600" fill="#111827">② 사이트 기본값</text>
+<text x="324" y="390" font-size="12" fill="#374151">GET /site의 widgets.photoAlbum</text>
+<text x="324" y="408" font-size="12" fill="#374151">관리자가 마지막으로 고른 앨범</text>
+<line x1="558" y1="389" x2="590" y2="389" stroke="#6b7280" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="562" y="380" font-size="11" fill="#6b7280">없으면</text>
+<rect x="592" y="344" width="266" height="90" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="608" y="368" font-size="13" font-weight="600" fill="#111827">③ 모든 앨범</text>
+<text x="608" y="390" font-size="12" fill="#374151">서버가 없거나 닿지 않을 때,</text>
+<text x="608" y="408" font-size="12" fill="#374151">가리킨 폴더가 지워졌을 때도</text>
+<text x="608" y="425" font-size="12" fill="#374151">(photosOf가 모든 앨범으로 대체)</text>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6b7280"/></marker></defs>
+</svg>
