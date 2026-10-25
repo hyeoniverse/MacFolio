@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4f46e5"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker>
+  </defs>
+  <rect width="760" height="420" fill="#fff"/>
+  <text x="380" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">MacFolio의 창 상태가 흐르는 길 (Dock에서 메모를 연 경우)</text>
+
+  <rect x="20" y="50" width="250" height="300" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+  <text x="145" y="74" font-size="12" fill="#374151" text-anchor="middle" font-weight="600">apps/react (View)</text>
+  <rect x="45" y="95" width="200" height="56" rx="8" fill="#fff" stroke="#d1d5db"/>
+  <text x="145" y="118" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">① Dock 아이콘 클릭</text>
+  <text x="145" y="137" font-size="10.5" fill="#6b7280" text-anchor="middle">openApp('memo') = store.open</text>
+  <rect x="45" y="255" width="200" height="72" rx="8" fill="#fff" stroke="#d1d5db"/>
+  <text x="145" y="278" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">④ 다시 렌더링</text>
+  <text x="145" y="297" font-size="10.5" fill="#6b7280" text-anchor="middle">useSyncExternalStore(</text>
+  <text x="145" y="313" font-size="10.5" fill="#6b7280" text-anchor="middle">store.subscribe, store.getState)</text>
+
+  <rect x="310" y="50" width="430" height="300" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="525" y="74" font-size="12" fill="#3730a3" text-anchor="middle" font-weight="600">packages/desktop-core (Store) — react·vue·@/* import 금지 (ESLint)</text>
+  <rect x="335" y="95" width="180" height="56" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="425" y="118" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">windowStore.open</text>
+  <text x="425" y="137" font-size="10.5" fill="#6b7280" text-anchor="middle">맨 앞으로 · isRunning: true</text>
+  <rect x="540" y="95" width="180" height="56" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="630" y="118" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">② setState(fn)</text>
+  <text x="630" y="137" font-size="10.5" fill="#6b7280" text-anchor="middle">새 객체 반환 (원래 상태는 그대로)</text>
+  <rect x="540" y="185" width="180" height="56" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="630" y="208" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">Object.is(next, state)?</text>
+  <text x="630" y="227" font-size="10.5" fill="#6b7280" text-anchor="middle">같으면 여기서 끝 (알림 없음)</text>
+  <rect x="540" y="271" width="180" height="56" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="630" y="294" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">③ listeners 호출</text>
+  <text x="630" y="313" font-size="10.5" fill="#6b7280" text-anchor="middle">subscribe로 등록한 함수 전부</text>
+  <line x1="245" y1="123" x2="333" y2="123" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <line x1="515" y1="123" x2="538" y2="123" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <line x1="630" y1="151" x2="630" y2="183" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <line x1="630" y1="241" x2="630" y2="269" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <text x="640" y="260" font-size="10" fill="#3730a3">바뀌었다</text>
+  <line x1="538" y1="299" x2="247" y2="299" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <rect x="335" y="185" width="180" height="56" rx="8" fill="#fff" stroke="#d1d5db" stroke-dasharray="4 3"/>
+  <text x="425" y="208" font-size="11" fill="#6b7280" text-anchor="middle">Action 객체 · Dispatcher 없음</text>
+  <text x="425" y="227" font-size="10.5" fill="#9ca3af" text-anchor="middle">메서드 이름이 곧 동작의 종류</text>
+
+  <text x="380" y="378" font-size="11.5" fill="#374151" text-anchor="middle">core는 View를 모른다: React 코드를 import할 수 없으니 상태는 store → 구독자 한 방향으로만 나간다.</text>
+  <text x="380" y="398" font-size="11.5" fill="#374151" text-anchor="middle">View가 상태를 바꾸는 길은 store 메서드 호출 하나뿐이다.</text>
+</svg>
