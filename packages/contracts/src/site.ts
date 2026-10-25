@@ -154,7 +154,51 @@ export function readResume(stored: unknown): ResumeInput | null {
 	return 'value' in parsed ? parsed.value : null;
 }
 
-/** GET /site, PUT·DELETE /site/profile·/site/projects·/site/resume·/site/resume/en의 응답 */
+/** 위젯 기본값의 한도. 앨범 id 길이는 화면이 위젯 자리를 저장할 때의 한도(desktop/widgets/catalog.ts)와 같다 */
+export const WIDGET_DEFAULT_LIMITS = { album: 100 } as const;
+
+/**
+ * PUT /site/widgets 몸통: 관리자가 고른 위젯 값을 모든 방문자·기기의 기본값으로 쓴다.
+ * - photoAlbum: 사진 위젯의 앨범(사진 앱의 앨범 id 또는 Finder 그림 폴더 id). null이나 빈 값이면 기본값 없음(모든 앨범).
+ *   방문자가 자기 브라우저에서 앨범을 고르면 그 브라우저에서는 그 값이 우선한다
+ */
+export const WidgetDefaultsInput = z.object(
+	{
+		photoAlbum: z
+			.unknown()
+			.optional()
+			.transform((raw, ctx) => {
+				if (raw === undefined || raw === null) return null;
+				if (typeof raw !== 'string') {
+					ctx.addIssue({ code: 'custom', message: '사진 위젯의 앨범은 글자여야 합니다.' });
+					return null;
+				}
+				const value = raw.trim();
+				if (value.length > WIDGET_DEFAULT_LIMITS.album)
+					ctx.addIssue({
+						code: 'custom',
+						message: `사진 위젯의 앨범은 ${WIDGET_DEFAULT_LIMITS.album}자까지입니다.`,
+					});
+				else if (hasControl(value))
+					ctx.addIssue({ code: 'custom', message: '사진 위젯의 앨범에 쓸 수 없는 글자가 있습니다.' });
+				return value || null;
+			}),
+	},
+	{ error: '위젯 기본값을 보내 주세요.' }
+);
+export type WidgetDefaults = { photoAlbum: string | null };
+
+/** 요청 본문을 검사해 위젯 기본값으로 바꾼다 */
+export const parseWidgetDefaults = (input: unknown) => parse(WidgetDefaultsInput, input);
+
+/** 저장해 둔 위젯 기본값(DB)을 읽을 때: 규칙에 맞으면 그 값, 아니면 null (기본값 없음) */
+export function readWidgetDefaults(stored: unknown): WidgetDefaults | null {
+	if (stored === null || stored === undefined) return null;
+	const parsed = parseWidgetDefaults(stored);
+	return 'value' in parsed ? parsed.value : null;
+}
+
+/** GET /site, PUT·DELETE /site/profile·/site/projects·/site/resume·/site/resume/en, PUT /site/widgets의 응답 */
 export const SiteView = z.object({
 	/** 관리자가 저장한 프로필 (없으면 null: 화면이 코드의 기본값을 쓴다) */
 	profile: ProfileInput.nullable(),
@@ -164,6 +208,8 @@ export const SiteView = z.object({
 	resume: ResumeInput.nullable().optional(),
 	/** 관리자가 저장한 영문 이력서 Markdown (PUT /site/resume/en). 없으면 null: 코드의 기본 영문 이력서 */
 	resumeEn: ResumeInput.nullable().optional(),
+	/** 관리자가 고른 위젯 기본값 (PUT /site/widgets). 없으면 null: 위젯은 코드의 기본값 (예전 서버는 이 필드가 없다) */
+	widgets: WidgetDefaultsInput.nullable().optional(),
 	/** ISO 8601. 저장한 적이 없으면 null */
 	updatedAt: z.string().nullable(),
 });

@@ -1,7 +1,15 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { APP_CONFIG, type AppConfig } from '../config.js';
 import { Prisma } from '../generated/prisma/client.js';
-import { parseProfile, parseResume, readProfile, readResume, type SiteView } from '@macfolio/contracts';
+import {
+	parseProfile,
+	parseResume,
+	parseWidgetDefaults,
+	readProfile,
+	readResume,
+	readWidgetDefaults,
+	type SiteView,
+} from '@macfolio/contracts';
 import { parseProjects, readProjects } from '@macfolio/desktop-core/site';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { OWNER_NAME } from '../comments/rules.js';
@@ -39,6 +47,7 @@ export class SiteService {
 			projects: readProjects(row?.projects, this.parseOptions),
 			resume: readResume(row?.resume),
 			resumeEn: readResume(row?.resumeEn),
+			widgets: readWidgetDefaults(row?.widgets),
 			updatedAt: row?.updatedAt.toISOString() ?? null,
 		}));
 		this.cache.catch(() => (this.cache = null));
@@ -121,6 +130,20 @@ export class SiteService {
 			where: { id: ROW_ID },
 			create: { id: ROW_ID, ...data, updatedBy: admin },
 			update: { ...data, updatedBy: admin },
+		});
+		this.cache = null;
+		return this.view();
+	}
+
+	/** 위젯 기본값을 통째로 바꾼다 (사진 위젯의 앨범). 모든 칸이 비면 기본값 없음. 규칙을 어기면 400 */
+	async saveWidgets(input: unknown, admin: string): Promise<SiteView> {
+		const parsed = parseWidgetDefaults(input);
+		if ('errors' in parsed) throw new BadRequestException(parsed.errors);
+		const widgets = parsed.value.photoAlbum === null ? Prisma.DbNull : (parsed.value as Prisma.InputJsonValue);
+		await this.prisma.siteContent.upsert({
+			where: { id: ROW_ID },
+			create: { id: ROW_ID, widgets, updatedBy: admin },
+			update: { widgets, updatedBy: admin },
 		});
 		this.cache = null;
 		return this.view();

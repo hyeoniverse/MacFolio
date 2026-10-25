@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { parseProfile, parseResume, readProfile, readResume, RESUME_LIMITS, SiteView } from './site.js';
+import {
+	parseProfile,
+	parseResume,
+	parseWidgetDefaults,
+	readProfile,
+	readResume,
+	readWidgetDefaults,
+	RESUME_LIMITS,
+	SiteView,
+} from './site.js';
 import { parse } from './parse.js';
 
 const valid = {
@@ -115,5 +124,38 @@ describe('ResumeInput', () => {
 		expect(parse(SiteView, { profile: null, projects: null, updatedAt: null })).toEqual({
 			value: { profile: null, projects: null, updatedAt: null },
 		});
+	});
+});
+
+describe('WidgetDefaultsInput', () => {
+	it('사진 위젯의 앨범: 다듬고, 비었거나 null이면 기본값 없음(null)', () => {
+		expect(parseWidgetDefaults({ photoAlbum: ' folder:widget01 ' })).toEqual({
+			value: { photoAlbum: 'folder:widget01' },
+		});
+		expect(parseWidgetDefaults({ photoAlbum: '' })).toEqual({ value: { photoAlbum: null } });
+		expect(parseWidgetDefaults({ photoAlbum: null })).toEqual({ value: { photoAlbum: null } });
+		expect(parseWidgetDefaults({})).toEqual({ value: { photoAlbum: null } });
+	});
+
+	it('너무 길거나, 글자가 아니거나, 제어 문자가 있으면 이유를 돌려준다', () => {
+		expect(parseWidgetDefaults({ photoAlbum: 'a'.repeat(101) })).toEqual({
+			errors: ['사진 위젯의 앨범은 100자까지입니다.'],
+		});
+		expect(parseWidgetDefaults({ photoAlbum: 3 })).toEqual({ errors: ['사진 위젯의 앨범은 글자여야 합니다.'] });
+		expect(parseWidgetDefaults({ photoAlbum: 'a\u0007' })).toEqual({
+			errors: ['사진 위젯의 앨범에 쓸 수 없는 글자가 있습니다.'],
+		});
+		expect(parseWidgetDefaults(null)).toEqual({ errors: ['위젯 기본값을 보내 주세요.'] });
+	});
+
+	it('저장해 둔 값 읽기 (틀렸으면 null), 응답에 실린다 (예전 응답에는 없어도 된다)', () => {
+		expect(readWidgetDefaults({ photoAlbum: 'qru' })).toEqual({ photoAlbum: 'qru' });
+		expect(readWidgetDefaults({ photoAlbum: 3 })).toBeNull();
+		expect(readWidgetDefaults(null)).toBeNull();
+		expect(parse(SiteView, { profile: null, projects: null, widgets: { photoAlbum: 'qru' }, updatedAt: null })).toEqual(
+			{
+				value: { profile: null, projects: null, widgets: { photoAlbum: 'qru' }, updatedAt: null },
+			}
+		);
 	});
 });

@@ -74,7 +74,7 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 	it('처음에는 저장한 프로필이 없다 (화면은 코드의 기본값). 관리자가 쓴 글은 기본 이름', async () => {
 		await request(server)
 			.get('/site')
-			.expect(200, { profile: null, projects: null, resume: null, resumeEn: null, updatedAt: null });
+			.expect(200, { profile: null, projects: null, resume: null, resumeEn: null, widgets: null, updatedAt: null });
 		const comment = await request(server)
 			.post('/posts/cra-to-vite/comments')
 			.set('Cookie', adminCookie)
@@ -212,5 +212,39 @@ describe('사이트 콘텐츠: 프로필 (e2e)', () => {
 		await request(server).delete('/site/projects').expect(401);
 		const reset = await request(server).delete('/site/projects').set('Cookie', adminCookie).expect(200);
 		expect(reset.body.projects).toBeNull();
+	});
+
+	it('위젯 기본값: 관리자만 사진 위젯의 앨범을 저장하고 누구나 읽는다. 틀리면 이유를, null이면 기본값 없음으로', async () => {
+		await request(server).put('/site/widgets').send({ photoAlbum: 'folder:widget01' }).expect(401);
+		const bad = await request(server)
+			.put('/site/widgets')
+			.set('Cookie', adminCookie)
+			.send({ photoAlbum: 'a'.repeat(101) })
+			.expect(400);
+		expect(bad.body.message).toEqual(['사진 위젯의 앨범은 100자까지입니다.']);
+
+		const saved = await request(server)
+			.put('/site/widgets')
+			.set('Cookie', adminCookie)
+			.send({ photoAlbum: ' folder:widget01 ' })
+			.expect(200);
+		expect(saved.body.widgets).toEqual({ photoAlbum: 'folder:widget01' });
+		expect((await request(server).get('/site').expect(200)).body.widgets).toEqual({ photoAlbum: 'folder:widget01' });
+		// 다른 칸(프로필)과 따로 저장한다
+		expect(saved.body.profile).toBeNull();
+		// 모르는 필드는 받지 않는다 (전역 ValidationPipe와 같은 규칙: 스키마에 없는 필드는 버린다)
+		const extra = await request(server)
+			.put('/site/widgets')
+			.set('Cookie', adminCookie)
+			.send({ photoAlbum: 'qru', other: 1 })
+			.expect(200);
+		expect(extra.body.widgets).toEqual({ photoAlbum: 'qru' });
+
+		const cleared = await request(server)
+			.put('/site/widgets')
+			.set('Cookie', adminCookie)
+			.send({ photoAlbum: null })
+			.expect(200);
+		expect(cleared.body.widgets).toBeNull();
 	});
 });

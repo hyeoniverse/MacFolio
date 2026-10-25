@@ -44,6 +44,8 @@ const PROJECTS_EXAMPLE = {
 const RESUME_EXAMPLE = {
 	markdown: '# 김정현\n\n> 화면에서 서버까지, 끝까지 만들고 운영하는 개발자\n\n## 강점\n- **끝까지 운영** — …',
 };
+const WIDGETS_EXAMPLE = { photoAlbum: 'folder:widget01' };
+
 const RESUME_EN_EXAMPLE = {
 	markdown: '# Jeonghyeon Kim\n\n> I build and run products end to end\n\n## Strengths\n- **Ships and operates** — …',
 };
@@ -59,13 +61,14 @@ export class SiteController {
 
 	@Get()
 	@ApiOkResponse({
-		description: '관리자가 저장한 프로필·프로젝트·이력서 (없으면 null)와 마지막으로 바꾼 시각',
+		description: '관리자가 저장한 프로필·프로젝트·이력서·위젯 기본값 (없으면 null)과 마지막으로 바꾼 시각',
 		schema: {
 			example: {
 				profile: PROFILE_EXAMPLE,
 				projects: PROJECTS_EXAMPLE,
 				resume: RESUME_EXAMPLE,
 				resumeEn: null,
+				widgets: WIDGETS_EXAMPLE,
 				updatedAt: null,
 			},
 		},
@@ -165,5 +168,22 @@ export class SiteController {
 	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
 	resetResumeEn(@CurrentAdmin() admin: AdminIdentity) {
 		return this.site.resetResume(admin.login, 'en');
+	}
+
+	@Put('widgets')
+	@UseGuards(AdminGuard)
+	@RateLimit('write')
+	@ApiCookieAuth(SESSION_COOKIE)
+	@ApiBody({ schema: { example: WIDGETS_EXAMPLE } })
+	@ApiOkResponse({
+		description:
+			'저장한 뒤의 사이트 콘텐츠 (widgets). 방문자가 자기 브라우저에서 고르지 않은 위젯은 이 값을 쓴다. photoAlbum이 null이면 기본값 없음',
+	})
+	@ApiBadRequestResponse({
+		description: '규칙을 어겼다 (글자가 아님, 100자 넘음, 쓸 수 없는 글자). message에 이유를 담는다',
+	})
+	@ApiUnauthorizedResponse({ description: '관리자로 로그인하지 않았다' })
+	saveWidgets(@Body() body: unknown, @CurrentAdmin() admin: AdminIdentity) {
+		return this.site.saveWidgets(body, admin.login);
 	}
 }
