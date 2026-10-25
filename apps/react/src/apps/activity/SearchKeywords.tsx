@@ -1,6 +1,10 @@
 // '활동 상태 보기' 검색어 탭 (관리자): Google Search Console의 검색어·페이지와, 검색엔진이 넘겨준 방문의 검색어
 import { useEffect, useState } from 'react';
 import Button from '@/shared/ui/button/Button';
+import IconButton from '@/shared/ui/button/IconButton';
+import { useAppState } from '@/desktop/useAppState';
+import { parseAppPath, type AppLink } from '@/shared/lib/appLink';
+import { requestOpen } from '@/shared/lib/openRequest';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
 import StatTable from './StatTable';
 import { ActivityError, fetchSearch, syncSearch, type Row, type SearchKeywords } from './activityApi';
@@ -16,7 +20,8 @@ const COLUMNS: { key: Exclude<SortKey, 'name'>; label: string; hint: string }[] 
 
 /**
  * 검색어·페이지 표: 클릭·노출·평균 순위. 머리를 눌러 정렬한다 (순위는 작은 것부터).
- * onSelect가 있으면 이름을 눌러 줄 하나를 고른다 (다시 누르면 푼다)
+ * onSelect가 있으면 이름을 눌러 줄 하나를 고른다 (다시 누르면 푼다).
+ * onOpen이 줄의 열기 동작을 주면 이름 옆에 여는 버튼을 둔다
  */
 const SearchTable = ({
 	title,
@@ -26,6 +31,7 @@ const SearchTable = ({
 	empty,
 	onSelect,
 	selected,
+	onOpen,
 }: {
 	title: string;
 	rows: SearchStat[];
@@ -34,6 +40,7 @@ const SearchTable = ({
 	empty: string;
 	onSelect?: (key: string | null) => void;
 	selected?: string | null;
+	onOpen?: (key: string) => (() => void) | null;
 }) => {
 	const [sort, setSort] = useState<{ key: SortKey; descending: boolean }>({ key: 'impressions', descending: true });
 	const named = rows.map((row) => ({ ...row, name: labelFor(row.key) }));
@@ -82,26 +89,39 @@ const SearchTable = ({
 						</tr>
 					</thead>
 					<tbody key={`${sort.key}-${sort.descending}`} className="motion-swap">
-						{sorted.map((row) => (
-							<tr key={row.key} className={selected === row.key ? 'selected' : undefined}>
-								<td className="name" title={row.name}>
-									{onSelect ? (
-										<button
-											type="button"
-											aria-pressed={selected === row.key}
-											onClick={() => onSelect(selected === row.key ? null : row.key)}
-										>
-											{row.name}
-										</button>
-									) : (
-										row.name
-									)}
-								</td>
-								<td className="value">{row.clicks.toLocaleString()}</td>
-								<td className="value">{row.impressions.toLocaleString()}</td>
-								<td className="value">{row.position.toFixed(1)}</td>
-							</tr>
-						))}
+						{sorted.map((row) => {
+							const open = onOpen?.(row.key);
+							return (
+								<tr key={row.key} className={selected === row.key ? 'selected' : undefined}>
+									<td className="name" title={row.name}>
+										<span className="search-name">
+											{onSelect ? (
+												<button
+													type="button"
+													aria-pressed={selected === row.key}
+													onClick={() => onSelect(selected === row.key ? null : row.key)}
+												>
+													{row.name}
+												</button>
+											) : (
+												row.name
+											)}
+											{open && (
+												<IconButton
+													className="search-open"
+													icon="fa-solid fa-arrow-up-right-from-square"
+													label={`${row.name} 열기`}
+													onClick={open}
+												/>
+											)}
+										</span>
+									</td>
+									<td className="value">{row.clicks.toLocaleString()}</td>
+									<td className="value">{row.impressions.toLocaleString()}</td>
+									<td className="value">{row.position.toFixed(1)}</td>
+								</tr>
+							);
+						})}
 					</tbody>
 				</table>
 			)}
@@ -172,6 +192,24 @@ const SearchKeywordsPanel = ({
 			.finally(() => setSyncing(false));
 	};
 
+	// 이 사이트의 글·프로젝트 페이지는 사이트 안의 그 앱에서 연다 (글 본문의 링크와 같은 길, openRequest).
+	// Search Console의 주소는 배포 주소라, 지금 연 주소(개발 서버 등)와 출처가 달라도 경로로 판단한다
+	const { openApp } = useAppState();
+	const openPage = (url: string) => {
+		let link: AppLink | null;
+		try {
+			link = parseAppPath(new URL(url).pathname);
+		} catch {
+			return null;
+		}
+		if (!link) return null;
+		const { app, id } = link;
+		return () => {
+			openApp(app);
+			requestOpen(app, id);
+		};
+	};
+
 	const pageName = (url: string) => {
 		const slug = memoSlugOf(url);
 		return slug ? `메모 › ${postTitle(slug)}` : searchPageLabel(url);
@@ -220,10 +258,11 @@ const SearchKeywordsPanel = ({
 						title="페이지"
 						rows={groupSearchRows(data?.rows ?? [], 'page')}
 						labelFor={pageName}
-						note="이름을 누르면 검색어 표에 그 페이지로 들어온 검색어만 보입니다."
+						note="이름을 누르면 검색어 표에 그 페이지로 들어온 검색어만 보입니다. 글·프로젝트는 ↗로 엽니다."
 						empty={data ? '이 기간에는 없습니다' : '불러오는 중…'}
 						onSelect={setPage}
 						selected={page}
+						onOpen={openPage}
 					/>
 				</div>
 			)}
