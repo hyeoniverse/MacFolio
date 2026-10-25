@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import { test, expect, enterDesktop, dockItem, appWindow, memoFolder } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi, type FakeApiState } from './fakeApi';
 
@@ -1138,7 +1138,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await trash.click();
 		await memo
 			.locator('.memo-item', { hasText: 'CRA에서 Vite로' })
-			.dragTo(folders.getByRole('button', { name: /^회고/ }));
+			.dragTo(memoFolder(folders, '개발기/MacFolio/회고'));
 		await expect(trash).toHaveCount(0);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('회고');
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveClass(/active/);
