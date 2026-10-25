@@ -883,7 +883,9 @@ test.describe('모바일', () => {
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		await folders.getByRole('button', { name: '폴더 편집', exact: true }).tap();
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toBeDisabled();
-		await memoFolderRow(folders, '개발기/MacFolio/회고').getByRole('button', { name: '폴더 동작 (회고)', exact: true }).tap();
+		await memoFolderRow(folders, '개발기/MacFolio/회고')
+			.getByRole('button', { name: '폴더 동작 (회고)', exact: true })
+			.tap();
 		const folderMenu = page.getByRole('menu', { name: '회고 폴더 메뉴' });
 		await expect(folderMenu.getByRole('menuitem')).toHaveText(['폴더 추가', '이 폴더 이동', '이름 변경', '삭제']);
 		await folderMenu.getByRole('menuitem', { name: '이 폴더 이동' }).tap();
@@ -1004,7 +1006,9 @@ test.describe('모바일', () => {
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
 		// 끌기: '회고'를 맨 위로
 		const handle = memoFolderRow(folders, '개발기/MacFolio/회고').getByRole('button', { name: '순서 바꾸기 (회고)' });
-		const target = memoFolderRow(folders, '개발기/MacFolio/백엔드').getByRole('button', { name: '순서 바꾸기 (백엔드)' });
+		const target = memoFolderRow(folders, '개발기/MacFolio/백엔드').getByRole('button', {
+			name: '순서 바꾸기 (백엔드)',
+		});
 		const from = (await handle.boundingBox())!;
 		const to = (await target.boundingBox())!;
 		await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
@@ -1015,7 +1019,9 @@ test.describe('모바일', () => {
 		await expect.poll(() => api.organization.order).toEqual(paths(['회고', '백엔드', '인프라', '프론트엔드']));
 
 		// 키보드: ↓로 한 칸 내린다
-		await memoFolderRow(folders, '개발기/MacFolio/회고').getByRole('button', { name: '순서 바꾸기 (회고)' }).press('ArrowDown');
+		await memoFolderRow(folders, '개발기/MacFolio/회고')
+			.getByRole('button', { name: '순서 바꾸기 (회고)' })
+			.press('ArrowDown');
 		await expect(topNames()).toHaveText(['백엔드', '회고', '인프라', '프론트엔드']);
 	});
 

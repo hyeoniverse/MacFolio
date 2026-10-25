@@ -1136,9 +1136,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 지운 글을 '회고' 폴더에 놓으면 되살아나 그 폴더에 들어간다
 		await trash.click();
-		await memo
-			.locator('.memo-item', { hasText: 'CRA에서 Vite로' })
-			.dragTo(memoFolder(folders, '개발기/MacFolio/회고'));
+		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).dragTo(memoFolder(folders, '개발기/MacFolio/회고'));
 		await expect(trash).toHaveCount(0);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('회고');
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveClass(/active/);
