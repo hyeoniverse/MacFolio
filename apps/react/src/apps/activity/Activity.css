@@ -738,8 +738,27 @@
 	width: 15%;
 }
 
+/* 검색어 탭 페이지 표: 이름 뒤의 여는 버튼 (글은 메모, 프로젝트는 Safari에서 연다). 긴 이름은 버튼 앞에서 줄인다 */
+.search-name {
+	display: flex;
+	align-items: center;
+	gap: var(--space-4);
+	min-width: 0;
+}
+
+.search-name > button:not(.search-open) {
+	min-width: 0;
+}
+
+.activity-table td.name .search-open {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	font-size: 0.75em;
+}
+
 /* 고를 수 있는 줄(조합 표): 이름이 버튼 */
-.activity-table td.name button {
+.activity-table td.name button:not(.search-open) {
 	max-width: 100%;
 	overflow: hidden;
 	padding: 0;
