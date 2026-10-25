@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>마감 주의 로그인 코드</title>
+<defs><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker><marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#374151"/></marker><marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker><marker id="a-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b91c1c"/></marker><marker id="a-amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#b45309"/></marker><marker id="a-line" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+<rect width="900" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" text-anchor="start" font-weight="700">마감 주의 로그인 코드</text>
+<text x="32" y="56" font-size="11" fill="#6b7280" text-anchor="start">v1 프론트 커밋 기준. 같은 문제를 하루에 여러 번 고쳤고, 일부는 v2에서야 원인이 드러났다</text>
+<circle cx="60" cy="98" r="7" fill="#b45309"/>
+<text x="78" y="102" font-size="12" fill="#374151" text-anchor="start" font-weight="700">2/1</text>
+<text x="118" y="102" font-size="11" fill="#6b7280" text-anchor="start">02:58</text>
+<text x="170" y="102" font-size="12.5" fill="#1f2937" text-anchor="start" font-weight="600">초기 데이터를 SSR로</text>
+<text x="440" y="102" font-size="11" fill="#6b7280" text-anchor="start">/api 프록시와 getApiUrl을 만들고 같은 커밋에서 주석 처리</text>
+<circle cx="60" cy="140" r="7" fill="#b91c1c"/>
+<text x="78" y="144" font-size="12" fill="#374151" text-anchor="start" font-weight="700">2/3</text>
+<text x="118" y="144" font-size="11" fill="#6b7280" text-anchor="start">07:48</text>
+<text x="170" y="144" font-size="12.5" fill="#1f2937" text-anchor="start" font-weight="600">루트 layout force-dynamic</text>
+<text x="440" y="144" font-size="11" fill="#6b7280" text-anchor="start">모든 페이지가 요청마다 렌더링</text>
+<circle cx="60" cy="182" r="7" fill="#b91c1c"/>
+<text x="78" y="186" font-size="12" fill="#374151" text-anchor="start" font-weight="700">2/3</text>
+<text x="118" y="186" font-size="11" fill="#6b7280" text-anchor="start">09:44</text>
+<text x="170" y="186" font-size="12.5" fill="#1f2937" text-anchor="start" font-weight="600">fetchWithAuth → fetch로 이름 변경</text>
+<text x="440" y="186" font-size="11" fill="#6b7280" text-anchor="start">14분 뒤 이름만 되돌림. 호출처는 일반 fetch로 남아 갱신 없음</text>
+<circle cx="60" cy="224" r="7" fill="#374151"/>
+<text x="78" y="228" font-size="12" fill="#374151" text-anchor="start" font-weight="700">2/3</text>
+<text x="118" y="228" font-size="11" fill="#6b7280" text-anchor="start">10:24</text>
+<text x="170" y="228" font-size="12.5" fill="#1f2937" text-anchor="start" font-weight="600">로그인 팝업 무한 루프 개선</text>
+<text x="440" y="228" font-size="11" fill="#6b7280" text-anchor="start">팝업 차단·타임아웃 처리 추가</text>
+<circle cx="60" cy="266" r="7" fill="#b91c1c"/>
+<text x="78" y="270" font-size="12" fill="#374151" text-anchor="start" font-weight="700">2/3</text>
+<text x="118" y="270" font-size="11" fill="#6b7280" text-anchor="start">19:15</text>
+<text x="170" y="270" font-size="12.5" fill="#1f2937" text-anchor="start" font-weight="600">서버 쪽 refresh 재시도</text>
+<text x="440" y="270" font-size="11" fill="#6b7280" text-anchor="start">응답의 access_token을 읽음 (백엔드는 accessToken)</text>
+<circle cx="60" cy="308" r="7" fill="#4f46e5"/>
+<text x="78" y="312" font-size="12" fill="#374151" text-anchor="start" font-weight="700">2/6</text>
+<text x="118" y="312" font-size="11" fill="#6b7280" text-anchor="start">02:11</text>
+<text x="170" y="312" font-size="12.5" fill="#1f2937" text-anchor="start" font-weight="600">로그인 팝업 → 리다이렉트</text>
+<text x="440" y="312" font-size="11" fill="#6b7280" text-anchor="start">발표 당일 새벽 핫픽스</text>
+<line x1="60" y1="98" x2="60" y2="308" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="3 3"/>
+<circle cx="60" cy="342" r="6" fill="#b91c1c"/>
+<text x="72" y="346" font-size="11" fill="#374151" text-anchor="start">v2에서 원인이 된 것</text>
+<circle cx="230" cy="342" r="6" fill="#b45309"/>
+<text x="242" y="346" font-size="11" fill="#374151" text-anchor="start">쓰이지 않고 남은 것</text>
+<circle cx="400" cy="342" r="6" fill="#374151"/>
+<text x="412" y="346" font-size="11" fill="#374151" text-anchor="start">사흘 뒤 다른 방식으로 대체</text>
+<circle cx="620" cy="342" r="6" fill="#4f46e5"/>
+<text x="632" y="346" font-size="11" fill="#374151" text-anchor="start">v2까지 이어진 것</text>
+</svg>
