@@ -1,15 +1,16 @@
-// 사이트 콘텐츠 (서버의 GET /site): 관리자가 시스템 설정에서 고친 프로필과 프로젝트.
+// 사이트 콘텐츠 (서버의 GET /site): 관리자가 시스템 설정에서 고친 프로필과 프로젝트, 위젯에서 고른 위젯 기본값.
 // 앱 목록(apps/manifest.ts), Safari 탭, 사진 앨범 같은 여러 모듈이 프로젝트 목록을 읽을 때 한 번 계산해 두므로,
 // 그 모듈을 불러오기 **전에** 서버의 내용을 합친다 (main.tsx가 이것을 기다린 뒤에 앱을 불러온다).
 // 배포한 사이트는 Worker가 HTML에 내용을 넣어 주므로(apps/react/worker) 기다리지 않는다. 로컬·시험은 API에 묻는다
 import { useSyncExternalStore } from 'react';
 import { readProjects, mergeProjects, type SiteProjects } from '@macfolio/desktop-core/site';
-import { readProfile, readResume, type SiteView } from '@macfolio/contracts';
+import { readProfile, readResume, readWidgetDefaults, type SiteView } from '@macfolio/contracts';
 import { api, reasonsFrom } from '@/shared/api/client';
 import { env } from '@/shared/config/env';
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { setSiteProfile } from './profileStore';
 import { setSiteResume } from './resumeStore';
+import { setSiteWidgetDefaults } from './widgetDefaultsStore';
 import { completeProject } from './publicImages';
 
 /** 올린 그림(/files/<id>)은 API 주소라, 로컬의 http 주소도 받는다 (서버와 같은 규칙) */
@@ -64,6 +65,7 @@ export function applySiteContent(body: unknown) {
 	setSiteProfile(readProfile(content.profile));
 	setSiteResume(readResume(content.resume));
 	setSiteResume(readResume(content.resumeEn), 'en');
+	setSiteWidgetDefaults(readWidgetDefaults(content.widgets));
 	savedProjects = readProjects(content.projects, PARSE_OPTIONS);
 	fillProjects(savedProjects);
 }

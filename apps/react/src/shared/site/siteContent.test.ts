@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { CODE_PROJECT_REPOS, githubRepoOf, parseProjects } from '@macfolio/desktop-core/site';
 import { DEFAULT_PROJECTS, PROJECTS } from '@/shared/profile';
 import { getProfile } from './profileStore';
+import { getSiteWidgetDefaults } from './widgetDefaultsStore';
 import { applySiteContent, getSavedProjects } from './siteContent';
 
 afterEach(() => applySiteContent({}));
@@ -45,5 +46,17 @@ describe('applySiteContent', () => {
 		expect(PROJECTS.map((project) => project.id)).toEqual(DEFAULT_PROJECTS.map((project) => project.id));
 		expect(getProfile().name).toBe('김정현');
 		expect(getSavedProjects()).toBeNull();
+	});
+});
+
+describe('위젯 기본값 (GET /site의 widgets)', () => {
+	it('관리자가 고른 사진 위젯 앨범을 쓰고, 없거나 규칙에 맞지 않으면 기본값 없음', () => {
+		applySiteContent({ widgets: { photoAlbum: 'folder:widget01' } });
+		expect(getSiteWidgetDefaults()).toEqual({ photoAlbum: 'folder:widget01' });
+		applySiteContent({ widgets: { photoAlbum: 3 } });
+		expect(getSiteWidgetDefaults()).toEqual({ photoAlbum: null });
+		// 예전 서버(widgets 칸이 없음)
+		applySiteContent({ profile: null });
+		expect(getSiteWidgetDefaults()).toEqual({ photoAlbum: null });
 	});
 });

@@ -56,8 +56,25 @@ export type PostsMode = (typeof POSTS_MODES)[number];
 export const POSTS_MODE_LABEL: Record<PostsMode, string> = { recent: '최근 글', popular: '인기글', random: '랜덤' };
 
 /**
+ * 사진 위젯에서 '모든 앨범'을 직접 고른 값. 고르지 않은 것(undefined: 사이트 기본값을 따른다)과 구별한다.
+ * 앨범 id가 아니므로 사진 목록(photoSources.ts의 photosOf)은 모든 앨범을 보인다
+ */
+export const ALL_ALBUMS = 'all';
+
+/**
+ * 사진 위젯이 보일 앨범: 이 브라우저에서 고른 값 → 관리자가 정한 사이트 기본값(GET /site의 widgets) → 모든 앨범(undefined).
+ * 위젯 자리와 고른 값은 브라우저마다 따로 저장되므로, 고르지 않은 브라우저(다른 기기, 처음 온 방문자)는 사이트 기본값을 쓴다
+ */
+export const effectiveAlbum = (local: string | undefined, siteDefault: string | null): string | undefined =>
+	local ?? siteDefault ?? undefined;
+
+/** 고른 앨범을 사이트 기본값으로 저장할 값 ('모든 앨범'은 기본값 없음) */
+export const siteAlbumOf = (album: string | undefined): string | null =>
+	album === undefined || album === ALL_ALBUMS ? null : album;
+
+/**
  * 위젯마다 고르는 값.
- * - album: 사진 위젯의 앨범(사진 앱의 앨범 id 또는 그림 폴더). 없으면 모든 앨범
+ * - album: 사진 위젯의 앨범(사진 앱의 앨범 id 또는 그림 폴더, '모든 앨범'은 ALL_ALBUMS). 없으면 사이트 기본값, 그것도 없으면 모든 앨범
  * - posts: 메모 위젯이 보일 글. 없으면 최근 글
  */
 export interface WidgetOptions {

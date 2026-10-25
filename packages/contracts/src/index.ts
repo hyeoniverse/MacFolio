@@ -90,12 +90,17 @@ export {
 export {
 	parseProfile,
 	parseResume,
+	parseWidgetDefaults,
 	ProfileInput,
 	readProfile,
 	readResume,
+	readWidgetDefaults,
 	RESUME_LIMITS,
 	ResumeInput,
 	SiteView,
+	WIDGET_DEFAULT_LIMITS,
+	type WidgetDefaults,
+	WidgetDefaultsInput,
 } from './site.js';
 export {
 	CAPTION_MAX,

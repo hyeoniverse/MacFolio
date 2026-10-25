@@ -74,29 +74,29 @@ flowchart LR
 
 기본 규칙은 읽기는 누구나, 쓰기는 관리자만입니다. 쓰기 경로에는 모두 요청 제한(`@RateLimit`, IP·경로마다 1분 횟수)을 적용하고, 방문자가 작성하는 곳(댓글, 좋아요, 메시지, 메일)은 방문자 쿠키로 작성자를 식별합니다. 경로 목록과 권한·제한은 `test/routes.e2e.test.ts`의 표가 고정합니다([#160](https://github.com/hyeoniverse/MacFolio/pull/160), [#162](https://github.com/hyeoniverse/MacFolio/pull/162)). 새 경로를 추가하고 표를 수정하지 않으면 시험이 실패합니다.
 
-| 모듈                                 | 경로                                                                              | 권한                                                 |
-| ------------------------------------ | --------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| auth                                 | `GET /auth/github`, `/auth/github/callback`, `/auth/me`, `POST /auth/logout`      | 로그인은 요청 제한, `me`는 관리자                    |
-| posts                                | `GET /posts`, `/posts/:slug/og.png` / 임시 저장·게시·버전·되살리기·삭제·비밀 글   | 읽기는 누구나, 나머지는 관리자                       |
-| likes                                | `GET /posts/stats`, `/posts/:slug/likes`, `PUT·DELETE /posts/:slug/like` 등       | 조회는 누구나, 좋아요는 방문자                       |
-| comments                             | `GET·POST /posts/:slug/comments`, `DELETE /comments/:id`                          | 방문자 (요청 제한, 자기 댓글만 삭제)                 |
-| messages                             | `GET·POST /messages/threads`, `DELETE /messages/:id`                              | 방문자 (요청 제한, 자기 글만 삭제)                   |
-| visitors                             | `GET /visitor`                                                                    | 방문자 쿠키를 발급하고 이름을 응답                   |
-| contact                              | `GET·POST /contact`, `/contact/mine`, `/contact/inbox`, `POST /contact/:id/reply` | 보내기·내 메일은 방문자, 받은 편지함·답장은 관리자   |
-| memo                                 | `GET·PUT /memo/organization`                                                      | 읽기는 누구나, 수정은 관리자                         |
-| finder                               | `GET·PUT /finder/layout`                                                          | 읽기는 누구나, 수정은 관리자                         |
-| files                                | `GET·POST /files`, `GET·DELETE /files/:id`                                        | 내려받기(`GET /files/:id`)는 누구나, 나머지는 관리자 |
-| documents                            | `GET /documents`, `POST /documents/uploads` 등                                    | 목록은 누구나, 업로드·수정·삭제는 관리자 (R2)        |
-| wallpapers                           | `GET·POST·PATCH·DELETE /wallpapers`                                               | 읽기는 누구나, 나머지는 관리자                       |
-| photos                               | `GET·PUT /photos/captions`                                                        | 읽기는 누구나, 수정은 관리자                         |
-| images                               | `GET /images/search` 등                                                           | 관리자 (Unsplash·Pexels 검색)                        |
-| github                               | `GET /github/profile`, `/github/activity`, 후보·조회·`PUT /github/showcase`       | 프로필·활동은 누구나, 나머지는 관리자                |
-| site                                 | `GET /site`, `PUT·DELETE /site/profile`·`/projects`·`/resume`                     | 읽기는 누구나, 수정은 관리자                         |
-| analytics                            | `POST /analytics/events`, `GET /analytics/summary` 등                             | 수집·합계는 누구나, 실시간·검색어는 관리자           |
-| resources                            | `GET /resources`                                                                  | 관리자 (서버 사용률, 유휴 회수 위험, 요금)           |
-| security                             | `GET·PUT /security`                                                               | 읽기는 누구나, 사람 확인 적용 위치 수정은 관리자     |
-| summary · translate · speech · cover | `GET·POST /summary` 등                                                            | 누구나 (프로젝트 데모, IP·사이트 전체 하루 상한)     |
-| health                               | `GET /health`                                                                     | 누구나                                               |
+| 모듈                                 | 경로                                                                               | 권한                                                 |
+| ------------------------------------ | ---------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| auth                                 | `GET /auth/github`, `/auth/github/callback`, `/auth/me`, `POST /auth/logout`       | 로그인은 요청 제한, `me`는 관리자                    |
+| posts                                | `GET /posts`, `/posts/:slug/og.png` / 임시 저장·게시·버전·되살리기·삭제·비밀 글    | 읽기는 누구나, 나머지는 관리자                       |
+| likes                                | `GET /posts/stats`, `/posts/:slug/likes`, `PUT·DELETE /posts/:slug/like` 등        | 조회는 누구나, 좋아요는 방문자                       |
+| comments                             | `GET·POST /posts/:slug/comments`, `DELETE /comments/:id`                           | 방문자 (요청 제한, 자기 댓글만 삭제)                 |
+| messages                             | `GET·POST /messages/threads`, `DELETE /messages/:id`                               | 방문자 (요청 제한, 자기 글만 삭제)                   |
+| visitors                             | `GET /visitor`                                                                     | 방문자 쿠키를 발급하고 이름을 응답                   |
+| contact                              | `GET·POST /contact`, `/contact/mine`, `/contact/inbox`, `POST /contact/:id/reply`  | 보내기·내 메일은 방문자, 받은 편지함·답장은 관리자   |
+| memo                                 | `GET·PUT /memo/organization`                                                       | 읽기는 누구나, 수정은 관리자                         |
+| finder                               | `GET·PUT /finder/layout`                                                           | 읽기는 누구나, 수정은 관리자                         |
+| files                                | `GET·POST /files`, `GET·DELETE /files/:id`                                         | 내려받기(`GET /files/:id`)는 누구나, 나머지는 관리자 |
+| documents                            | `GET /documents`, `POST /documents/uploads` 등                                     | 목록은 누구나, 업로드·수정·삭제는 관리자 (R2)        |
+| wallpapers                           | `GET·POST·PATCH·DELETE /wallpapers`                                                | 읽기는 누구나, 나머지는 관리자                       |
+| photos                               | `GET·PUT /photos/captions`                                                         | 읽기는 누구나, 수정은 관리자                         |
+| images                               | `GET /images/search` 등                                                            | 관리자 (Unsplash·Pexels 검색)                        |
+| github                               | `GET /github/profile`, `/github/activity`, 후보·조회·`PUT /github/showcase`        | 프로필·활동은 누구나, 나머지는 관리자                |
+| site                                 | `GET /site`, `PUT·DELETE /site/profile`·`/projects`·`/resume`, `PUT /site/widgets` | 읽기는 누구나, 수정은 관리자                         |
+| analytics                            | `POST /analytics/events`, `GET /analytics/summary` 등                              | 수집·합계는 누구나, 실시간·검색어는 관리자           |
+| resources                            | `GET /resources`                                                                   | 관리자 (서버 사용률, 유휴 회수 위험, 요금)           |
+| security                             | `GET·PUT /security`                                                                | 읽기는 누구나, 사람 확인 적용 위치 수정은 관리자     |
+| summary · translate · speech · cover | `GET·POST /summary` 등                                                             | 누구나 (프로젝트 데모, IP·사이트 전체 하루 상한)     |
+| health                               | `GET /health`                                                                      | 누구나                                               |
 
 API 문서는 [Swagger](https://docs.nestjs.com/openapi/introduction)로 컨트롤러에서 자동 생성합니다: <https://macfolio-api.hyeoniverse.com/docs>
 

@@ -1813,6 +1813,18 @@ test.describe('휴대폰 홈 화면 위젯', () => {
 		);
 	});
 
+	test('처음 온 휴대폰 브라우저도 관리자가 고른 사진 위젯 앨범(사이트 기본값)을 보인다', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.siteWidgets = { photoAlbum: 'sproutfarm' };
+		await enterHome(page);
+		await page.getByRole('tab', { name: '3쪽' }).click();
+		await expect(page.getByRole('group', { name: '사진 위젯' }).locator('figcaption')).toHaveText(
+			'SproutFarm 새싹 농장'
+		);
+		// 이 브라우저에는 고른 값이 없다 (위젯 자리를 저장하지 않았다)
+		expect(await page.evaluate(() => localStorage.getItem('macfolio:mobile:widgets'))).toBeNull();
+	});
+
 	test('사진 위젯을 누르면 사진 앱이 위젯에 보이는 사진을 그 앨범 안에서 크게 보기로 연다', async ({ page }) => {
 		await page.addInitScript(() =>
 			localStorage.setItem(

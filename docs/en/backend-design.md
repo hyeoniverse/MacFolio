@@ -91,7 +91,7 @@ The default is: anyone can read, only the admin can write. Every write route has
 | photos                               | `GET·PUT /photos/captions`                                                              | Reading is anyone, changing is admin                                   |
 | images                               | `GET /images/search` etc.                                                               | Admin (Unsplash and Pexels search)                                     |
 | github                               | `GET /github/profile`, `/github/activity`, candidates, lookup, `PUT /github/showcase`   | Profile and activity are anyone, the rest is admin                     |
-| site                                 | `GET /site`, `PUT·DELETE /site/profile`·`/projects`·`/resume`                           | Reading is anyone, changing is admin                                   |
+| site                                 | `GET /site`, `PUT·DELETE /site/profile`·`/projects`·`/resume`, `PUT /site/widgets`      | Reading is anyone, changing is admin                                   |
 | analytics                            | `POST /analytics/events`, `GET /analytics/summary` etc.                                 | Collection and totals are anyone, live view and search terms are admin |
 | resources                            | `GET /resources`                                                                        | Admin (server usage, idle-reclaim risk, billing)                       |
 | security                             | `GET·PUT /security`                                                                     | Reading is anyone, changing where human verification applies is admin  |
