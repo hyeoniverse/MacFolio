@@ -26,6 +26,10 @@ export interface FakeApiState {
 	/** 관리자가 저장한 이력서 Markdown ({ markdown }). null이면 화면이 기본 이력서를 쓴다 */
 	siteResume: { markdown: string } | null;
 	siteResumeEn: { markdown: string } | null;
+	/** 관리자가 고른 위젯 기본값 (GET /site의 widgets, PUT /site/widgets). 없으면 null */
+	siteWidgets: { photoAlbum: string | null } | null;
+	/** PUT /site/widgets로 받은 몸통 (보낸 순서대로) */
+	siteWidgetSaves: unknown[];
 	/** 관리자가 고친 사진 캡션 { 사진 주소: 캡션 } (GET·PUT /photos/captions) */
 	photoCaptions: Record<string, string>;
 	/** /health가 돌려줄 상태. blocked는 서버는 응답하지만 이 주소를 CORS로 허용하지 않는 경우 (PR 미리보기) */
@@ -369,6 +373,8 @@ export async function fakeApi(
 		siteProjects: null,
 		siteResume: null,
 		siteResumeEn: null,
+		siteWidgets: null,
+		siteWidgetSaves: [],
 		health: 'ok',
 		organization: { folders: [], posts: {}, moves: [], pins: {}, ...organization },
 		finderLayout: { folders: [], files: {}, aliases: null, trash: {} },
@@ -449,6 +455,16 @@ export async function fakeApi(
 			},
 		},
 	};
+	/** GET /site와 저장 응답의 몸통 */
+	const siteView = () => ({
+		profile: state.siteProfile,
+		projects: state.siteProjects,
+		resume: state.siteResume,
+		resumeEn: state.siteResumeEn,
+		widgets: state.siteWidgets,
+		updatedAt: null,
+	});
+
 	let nextId = 1;
 	const cors = (origin: string) => ({
 		'Access-Control-Allow-Origin': origin,
@@ -651,14 +667,16 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: {
-					profile: state.siteProfile,
-					projects: state.siteProjects,
-					resume: state.siteResume,
-					resumeEn: state.siteResumeEn,
-					updatedAt: null,
-				},
+				json: siteView(),
 			});
+		}
+		if (path === '/site/widgets') {
+			if (!state.signedIn) return route.fulfill(unauthorized);
+			// 검사는 서버(contracts의 parseWidgetDefaults)가 한다. 화면은 앨범 id나 null만 보낸다
+			const body = request.postDataJSON() as { photoAlbum: string | null };
+			state.siteWidgetSaves.push(body);
+			state.siteWidgets = body.photoAlbum ? { photoAlbum: body.photoAlbum } : null;
+			return route.fulfill({ status: 200, headers: cors(origin), json: siteView() });
 		}
 		if (path === '/site/projects') {
 			if (!state.signedIn) return route.fulfill(unauthorized);
@@ -667,13 +685,7 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: {
-					profile: state.siteProfile,
-					projects: state.siteProjects,
-					resume: state.siteResume,
-					resumeEn: state.siteResumeEn,
-					updatedAt: null,
-				},
+				json: siteView(),
 			});
 		}
 		if (path === '/site/resume' || path === '/site/resume/en') {
@@ -685,13 +697,7 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: {
-					profile: state.siteProfile,
-					projects: state.siteProjects,
-					resume: state.siteResume,
-					resumeEn: state.siteResumeEn,
-					updatedAt: null,
-				},
+				json: siteView(),
 			});
 		}
 		if (path === '/site/profile') {
@@ -701,13 +707,7 @@ export async function fakeApi(
 			return route.fulfill({
 				status: 200,
 				headers: cors(origin),
-				json: {
-					profile: state.siteProfile,
-					projects: state.siteProjects,
-					resume: state.siteResume,
-					resumeEn: state.siteResumeEn,
-					updatedAt: null,
-				},
+				json: siteView(),
 			});
 		}
 		if (path === '/memo/organization') {

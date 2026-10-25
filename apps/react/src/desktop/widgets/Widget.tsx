@@ -4,7 +4,8 @@ import { useMusic } from '@/apps/music/useMusic';
 import MusicWidget from '@/desktop/mobile/MusicWidget';
 import { requestOpen } from '@/shared/lib/openRequest';
 import { photoTargetId, type PhotoTarget } from '@/apps/photos/photoTarget';
-import { WIDGET_INFO, type WidgetKind, type WidgetOptions, type WidgetSize } from './catalog';
+import { effectiveAlbum, WIDGET_INFO, type WidgetKind, type WidgetOptions, type WidgetSize } from './catalog';
+import { useSiteWidgetDefaults } from '@/shared/site/widgetDefaultsStore';
 import CalendarWidget from './CalendarWidget';
 import ClockWidget from './ClockWidget';
 import GithubWidget from './GithubWidget';
@@ -61,6 +62,8 @@ interface Props {
  */
 const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 	const app = APP_OF[kind];
+	// 이 브라우저에서 고르지 않았으면 관리자가 정한 사이트 기본값
+	const { photoAlbum: siteAlbum } = useSiteWidgetDefaults();
 	const openPost = (slug: string) => {
 		requestOpen('memo', slug);
 		open('memo');
@@ -89,7 +92,7 @@ const Widget = ({ kind, size, options, open, className = '' }: Props) => {
 			body = <PostsWidget size={size} mode={options?.posts} openPost={openPost} />;
 			break;
 		case 'photos':
-			body = <PhotoWidget album={options?.album} onShow={showPhoto} />;
+			body = <PhotoWidget album={effectiveAlbum(options?.album, siteAlbum)} onShow={showPhoto} />;
 			break;
 		case 'github':
 			body = <GithubWidget size={size} />;

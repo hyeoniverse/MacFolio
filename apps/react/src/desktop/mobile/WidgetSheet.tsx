@@ -1,5 +1,6 @@
 import Sheet from '@/shared/ui/sheet/Sheet';
 import {
+	ALL_ALBUMS,
 	pageToAdd,
 	POSTS_MODE_LABEL,
 	POSTS_MODES,
@@ -93,14 +94,16 @@ export const AlbumSheet = ({
 	onChoose,
 	onClose,
 }: {
+	/** 체크할 앨범 (이 브라우저에서 고른 값, 없으면 사이트 기본값) */
 	album: string | undefined;
-	onChoose: (album: string | undefined) => void;
+	/** '모든 앨범'은 ALL_ALBUMS (고르지 않은 것과 구별해 사이트 기본값보다 우선하게) */
+	onChoose: (album: string) => void;
 	onClose: () => void;
 }) => {
 	const sources = usePhotoSources();
 	const all = !sources.some((item) => item.id === album);
-	const groups: [string, { id: string | undefined; name: string }[]][] = [
-		['앨범', [{ id: undefined, name: '모든 앨범' }, ...sources.filter((source) => source.group === 'album')]],
+	const groups: [string, { id: string; name: string }[]][] = [
+		['앨범', [{ id: ALL_ALBUMS, name: '모든 앨범' }, ...sources.filter((source) => source.group === 'album')]],
 		['그림 폴더', sources.filter((source) => source.group === 'folder')],
 	];
 	return (
@@ -112,9 +115,9 @@ export const AlbumSheet = ({
 						<h2>{heading}</h2>
 						<ul role="radiogroup" aria-label={heading}>
 							{options.map((option) => {
-								const checked = option.id === undefined ? all : option.id === album;
+								const checked = option.id === ALL_ALBUMS ? all : option.id === album;
 								return (
-									<li key={option.id ?? 'all'}>
+									<li key={option.id}>
 										<button type="button" role="radio" aria-checked={checked} onClick={() => onChoose(option.id)}>
 											{option.name}
 											{checked && <i className="fa-solid fa-check" aria-hidden="true"></i>}

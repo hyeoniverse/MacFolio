@@ -7,6 +7,7 @@ import { prefersReducedMotion } from '@/shared/lib/media';
 import { STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import Menu, { type MenuItem } from '@/shared/ui/menu/Menu';
 import {
+	ALL_ALBUMS,
 	newWidgetId,
 	POSTS_MODE_LABEL,
 	POSTS_MODES,
@@ -24,6 +25,7 @@ import { cellToPoint, dropAt, firstFree, pixelSize, resize, visibleLayout, type 
 import Widget from './Widget';
 import WidgetGallery from './WidgetGallery';
 import { usePhotoSources } from './usePhotoSources';
+import { useSiteAlbum } from './useSiteAlbum';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from './widgetEditor';
 import './DesktopWidgets.css';
 
@@ -124,8 +126,12 @@ const DesktopWidgets: React.FC = () => {
 		save(withOptions(widgets, id, kind, options));
 		shareOptions('mobile', id, kind, options);
 	};
-	/** 사진 위젯의 앨범 (undefined면 모든 앨범) */
-	const chooseAlbum = (id: string, album: string | undefined) => choose(id, { album });
+	/** 사진 위젯의 앨범 ('모든 앨범'은 ALL_ALBUMS). 관리자가 고르면 사이트 기본값으로도 저장한다 (useSiteAlbum) */
+	const siteAlbum = useSiteAlbum();
+	const chooseAlbum = (id: string, album: string) => {
+		choose(id, { album });
+		siteAlbum.share(album);
+	};
 	/** 메모 위젯이 보일 글 */
 	const choosePosts = (id: string, posts: PostsMode) => choose(id, { posts });
 	const changeSize = (id: string, size: WidgetSize) =>
@@ -244,14 +250,14 @@ const DesktopWidgets: React.FC = () => {
 							{ heading: '앨범' },
 							{
 								label: '모든 앨범',
-								checked: !photoSources.some((source) => source.id === target.album),
-								onSelect: () => chooseAlbum(target.id, undefined),
+								checked: !photoSources.some((source) => source.id === siteAlbum.shown(target.album)),
+								onSelect: () => chooseAlbum(target.id, ALL_ALBUMS),
 							},
 							...photoSources
 								.filter((source) => source.group === 'album')
 								.map((source) => ({
 									label: source.name,
-									checked: target.album === source.id,
+									checked: siteAlbum.shown(target.album) === source.id,
 									onSelect: () => chooseAlbum(target.id, source.id),
 								})),
 							// Finder › 그림에 만든 폴더 (관리자가 올린 그림)
@@ -262,7 +268,7 @@ const DesktopWidgets: React.FC = () => {
 								.filter((source) => source.group === 'folder')
 								.map((source) => ({
 									label: source.name,
-									checked: target.album === source.id,
+									checked: siteAlbum.shown(target.album) === source.id,
 									onSelect: () => chooseAlbum(target.id, source.id),
 								})),
 						] satisfies MenuItem[])
