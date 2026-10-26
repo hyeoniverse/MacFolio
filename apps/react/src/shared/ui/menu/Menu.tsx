@@ -218,7 +218,7 @@ const Menu: React.FC<Props> = ({
 							))}
 						{item.detail ? (
 							<span className="ui-menu-item-text">
-								{item.label}
+								<span className="ui-menu-item-label">{item.label}</span>
 								<small className="ui-menu-item-detail">{item.detail}</small>
 							</span>
 						) : (

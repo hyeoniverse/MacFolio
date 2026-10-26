@@ -88,6 +88,7 @@ const StepButton: React.FC<{
 			{menu && (
 				<Menu
 					label={`${label} 기록`}
+					className="memo-history-menu"
 					anchor={menu.anchor}
 					onClose={close}
 					trigger={button}
