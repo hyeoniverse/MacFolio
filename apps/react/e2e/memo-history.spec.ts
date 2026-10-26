@@ -89,4 +89,26 @@ test.describe('메모 뒤로·앞으로', () => {
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toHaveClass(/active/);
 		await expect(memo.getByRole('button', { name: '앞으로', exact: true })).toBeEnabled();
 	});
+
+	test('새로 고쳐도 기록이 남고(같은 탭), 새 탭은 따로 시작한다', async ({ page, context }) => {
+		const memo = await openMemo(page);
+		const first = await openNth(memo, 1);
+		const second = await openNth(memo, 2);
+		// 주소 막대가 지금 글을 가리키므로, 같은 주소로 다시 열면 그 글이 열린다
+		await expect(page).toHaveURL(/\/memo\/[^/]+$/);
+		await enterDesktop(page, new URL(page.url()).pathname);
+		const reopened = appWindow(page, 'memo');
+		await expect.poll(() => readerTitle(reopened)).toBe(second);
+		const back = reopened.getByRole('button', { name: '뒤로', exact: true });
+		await expect(back).toBeEnabled();
+		await back.click();
+		await expect.poll(() => readerTitle(reopened)).toBe(first);
+		await expect(reopened.getByRole('button', { name: '앞으로', exact: true })).toBeEnabled();
+
+		// 다른 탭: sessionStorage가 따로라 기록이 비어 있다
+		const other = await context.newPage();
+		const otherMemo = await openMemo(other);
+		await expect(otherMemo.getByRole('button', { name: '뒤로', exact: true })).toBeDisabled();
+		await other.close();
+	});
 });

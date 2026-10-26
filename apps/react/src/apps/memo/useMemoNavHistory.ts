@@ -1,8 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { folderLabelOf, folderName, TAG_VIEW, type Post, type TagSelection } from '@macfolio/desktop-core/memo';
 import {
-	EMPTY_NAV_HISTORY,
+	ALL_CATEGORY,
+	folderLabelOf,
+	folderName,
+	TAG_VIEW,
+	type Post,
+	type TagSelection,
+} from '@macfolio/desktop-core/memo';
+import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
+import {
+	parseNavHistory,
+	pruneNavHistory,
 	sameEntry,
+	serializeNavHistory,
 	stepList,
 	stepTarget,
 	visit,
@@ -32,6 +42,8 @@ export function useMemoNavHistory({
 	tagSelection,
 	slug,
 	posts,
+	folders,
+	ready,
 	open,
 }: {
 	category: string;
@@ -40,24 +52,52 @@ export function useMemoNavHistory({
 	slug: string | null;
 	/** 지금 있는 글, 정리 내용을 적용한 것 (제목·폴더를 찾고, 지운 글을 거른다) */
 	posts: Post[];
+	/** 지금 있는 폴더 경로 (없어진 폴더의 칸을 거른다) */
+	folders: readonly string[];
+	/** 글을 다 불러왔는지. 불러오기 전에는 기록을 쌓거나 거르지 않는다 (처음 화면의 빈 칸이 저장한 앞쪽 칸을 지우지 않게) */
+	ready: boolean;
 	/** 기록의 한 칸을 연다 */
 	open: (entry: { category: string; tagSelection: TagSelection | null; slug: string | null }) => void;
 }) {
-	const [history, setHistory] = useState<NavHistory>(EMPTY_NAV_HISTORY);
+	// 새로 고쳐도 남게 이 탭의 sessionStorage에서 읽는다 (탭마다 따로, 탭을 닫으면 사라진다: 브라우저 기록과 같은 범위)
+	const [history, setHistory] = useState<NavHistory>(() =>
+		parseNavHistory(readJson(STORAGE_KEYS.memoHistory, 'session'))
+	);
 	/** 뒤로·앞으로로 연 동안에는 기록을 쌓지 않는다 (지금 칸만 옮긴다) */
 	const stepping = useRef(false);
 	const tags = category === TAG_VIEW ? JSON.stringify(tagSelection) : '';
 
+	const bySlug = useMemo(() => new Map(posts.map((post) => [post.slug as string, post])), [posts]);
+	const folderSet = useMemo(() => new Set(folders), [folders]);
+	/** 지금 갈 수 있는 칸: 있는 글(지운 글·볼 수 없는 비밀 글은 목록에 없다), 있는 폴더나 보기 */
+	const usable = useCallback(
+		(entry: NavEntry) =>
+			entry.slug !== null
+				? bySlug.has(entry.slug)
+				: entry.category === ALL_CATEGORY || entry.category.startsWith('\u0000') || folderSet.has(entry.category),
+		[bySlug, folderSet]
+	);
+
+	// 글을 다 불러온 시각에 한 번: 저장해 둔 기록에서 갈 수 없게 된 칸을 빼고 지금 칸을 맞춘다 (아래 쌓기보다 먼저)
+	const pruned = useRef(false);
 	useEffect(() => {
+		if (!ready || pruned.current) return;
+		pruned.current = true;
+		setHistory((current) => pruneNavHistory(current, usable));
+	}, [ready, usable]);
+
+	useEffect(() => {
+		if (!ready) return;
 		if (stepping.current) {
 			stepping.current = false;
 			return;
 		}
 		setHistory((current) => visit(current, { category, tags, slug }));
-	}, [category, tags, slug]);
+	}, [ready, category, tags, slug]);
 
-	const bySlug = useMemo(() => new Map(posts.map((post) => [post.slug as string, post])), [posts]);
-	const usable = useCallback((entry: NavEntry) => entry.slug === null || bySlug.has(entry.slug), [bySlug]);
+	useEffect(() => {
+		writeJson(STORAGE_KEYS.memoHistory, serializeNavHistory(history), 'session');
+	}, [history]);
 
 	const go = useCallback(
 		(index: number) => {

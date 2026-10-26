@@ -108,6 +108,23 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		keys: [STORAGE_KEYS.appsBeforeLeaving],
 		afterClear: '돌아왔을 때 창이 처음 상태로 열립니다',
 	},
+	{
+		id: 'memo-history',
+		name: '메모의 뒤로·앞으로 기록',
+		description: '메모에서 연 폴더와 본 글의 순서. 새로 고쳐도 ‹ ›로 돌아갈 수 있게 남긴다 (이 탭을 닫으면 사라진다)',
+		storage: 'session',
+		keys: [STORAGE_KEYS.memoHistory],
+		afterClear: '메모의 뒤로·앞으로 기록이 비워집니다',
+		fillsTrash: false,
+		summarize: (raw) => {
+			try {
+				const entries = (JSON.parse(raw) as { entries?: unknown }).entries;
+				return Array.isArray(entries) ? `${entries.length}칸` : null;
+			} catch {
+				return null;
+			}
+		},
+	},
 ];
 
 export interface StoredItem {
