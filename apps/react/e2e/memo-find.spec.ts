@@ -76,6 +76,33 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
 	});
 
+	test('최근 검색: 입력을 마친 검색어가 ⌄ 메뉴에 남고, 고르면 다시 찾는다. 다시 열어도 남는다', async ({ page }) => {
+		let memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		await search.fill('flux');
+		await search.press('Enter');
+		await search.fill('react');
+		await search.blur();
+		await search.fill('');
+		const openMenu = async () => {
+			await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
+			return page.getByRole('menu', { name: '검색 조건' });
+		};
+		let menu = await openMenu();
+		await expect(menu.getByRole('menuitem')).toContainText(['react', 'flux']);
+		await menu.getByRole('menuitem', { name: 'flux', exact: true }).click();
+		await expect(search).toHaveValue('flux');
+
+		await page.reload();
+		memo = await openMemo(page);
+		menu = await openMenu();
+		await expect(menu.getByRole('menuitem', { name: 'flux', exact: true })).toBeVisible();
+		await menu.getByRole('menuitem', { name: '최근 검색 지우기' }).click();
+		menu = await openMenu();
+		await expect(menu.getByRole('menuitem', { name: '없음' })).toBeDisabled();
+		await expect(menu.getByRole('menuitem', { name: '최근 검색 지우기' })).toBeDisabled();
+	});
+
 	test('한글 음차로 영문 용어를 찾고, 음차의 오타는 가까운 표기로 고친다 (리액트 → React)', async ({ page }) => {
 		const memo = await openMemo(page);
 		const search = memo.getByRole('searchbox', { name: '글 검색' });

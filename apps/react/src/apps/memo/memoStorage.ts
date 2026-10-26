@@ -1,4 +1,4 @@
-// 메모 앱이 이 브라우저에 남기는 것: 보기 설정, 최근 검색어. 값 검사는 desktop-core가 하고 여기서는 읽고 쓰기만 한다
+// 메모 앱이 이 브라우저에 남기는 것: 보기 설정, 최근 검색어(본문 찾기·목록 검색). 값 검사는 desktop-core가 하고 여기서는 읽고 쓰기만 한다
 import { addRecentFind, parseArrangement, parseRecentFinds, type Arrangement } from '@macfolio/desktop-core/memo';
 import { readJson, readString, removeKey, STORAGE_KEYS, writeJson, writeString } from '@/shared/lib/storage';
 
@@ -13,6 +13,17 @@ export const saveRecentFinds = (list: string[]) => writeJson(STORAGE_KEYS.memoRe
 export function rememberFind(recent: string[], query: string): string[] {
 	const next = addRecentFind(recent, query);
 	if (next !== recent) saveRecentFinds(next);
+	return next;
+}
+
+export const loadRecentSearches = (): string[] => parseRecentFinds(readJson(STORAGE_KEYS.memoRecentSearches));
+export const saveRecentSearches = (list: string[]) => writeJson(STORAGE_KEYS.memoRecentSearches, list);
+
+/** 목록 검색 칸의 최근 검색어에 더하고 저장한다 (본문 찾기와 같은 규칙: 같은 말은 맨 앞으로, 다섯 개까지) */
+export function rememberSearch(query: string): string[] {
+	const recent = loadRecentSearches();
+	const next = addRecentFind(recent, query);
+	if (next !== recent) saveRecentSearches(next);
 	return next;
 }
 
