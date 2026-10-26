@@ -1,6 +1,6 @@
 import Modal from '@/shared/ui/dialog/Modal';
 import React, { useEffect, useState } from 'react';
-import { captionParts, resolveImageSrc } from '@macfolio/desktop-core/memo';
+import { captionParts, imageLayoutOf, resolveImageSrc } from '@macfolio/desktop-core/memo';
 import { CONTENT_IMAGES } from '../contentImages';
 import { downloadImage } from '../download';
 
@@ -14,10 +14,12 @@ interface Props {
  * 본문 이미지. 글 파일 기준 상대 경로를 빌드된 주소로 바꾸고, 본문 폭에 맞춰 보여준다.
  * `![설명](경로 "캡션")`의 캡션은 이미지 아래에 보여주고(캡션 안의 [글자](주소)는 링크), 클릭하면 크게 본다.
  * react-markdown은 이미지를 <p> 안에 넣으므로 <figure> 대신 <span>으로 감싼다.
+ * 주소 끝의 배치 표기(`#right`, `#float-left` 등, desktop-core의 imageLayout.ts)는 data-layout으로 그린다 (markdown.css).
  */
 const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 	const [zoomed, setZoomed] = useState(false);
 	const resolved = resolveImageSrc(src, CONTENT_IMAGES);
+	const layout = src ? imageLayoutOf(src).layout : 'center';
 
 	if (!resolved) {
 		if (import.meta.env.DEV) console.warn(`[memo] 이미지를 찾을 수 없습니다: ${src}`);
@@ -25,7 +27,7 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 	}
 
 	return (
-		<span className="memo-figure">
+		<span className="memo-figure" data-layout={layout === 'center' ? undefined : layout}>
 			<span className="memo-figure-frame">
 				<button
 					type="button"

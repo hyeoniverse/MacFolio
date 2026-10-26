@@ -3,16 +3,18 @@
 
 /** 본문의 이미지 경로를 편집기에서 보일 주소로. images: content 기준 경로(images/a.jpg) → 빌드된 주소 */
 export function toEditorMarkdown(markdown: string, images: Record<string, string>): string {
-	return markdown.replace(/(!\[[^\]]*\]\()(\.\/)?(images\/[^)\s]+)/g, (match, head: string, _dot, path: string) =>
-		images[path] ? `${head}${images[path]}` : match
+	// 끝의 배치 표기(#float-right 등)는 빌드된 주소 뒤에 그대로 붙인다 (desktop-core의 imageLayout.ts)
+	return markdown.replace(
+		/(!\[[^\]]*\]\()(\.\/)?(images\/[^)\s#]+)(#[^)\s]*)?/g,
+		(match, head: string, _dot, path: string, hash = '') => (images[path] ? `${head}${images[path]}${hash}` : match)
 	);
 }
 
 /** 편집기가 내놓은 Markdown의 이미지 주소를 원래 상대 경로로 되돌린다 */
 export function fromEditorMarkdown(markdown: string, images: Record<string, string>): string {
 	const back = new Map(Object.entries(images).map(([path, url]) => [url, `./${path}`]));
-	return markdown.replace(/(!\[[^\]]*\]\()([^)\s]+)/g, (match, head: string, url: string) =>
-		back.has(url) ? `${head}${back.get(url)}` : match
+	return markdown.replace(/(!\[[^\]]*\]\()([^)\s#]+)(#[^)\s]*)?/g, (match, head: string, url: string, hash = '') =>
+		back.has(url) ? `${head}${back.get(url)}${hash}` : match
 	);
 }
 
