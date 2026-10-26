@@ -1,7 +1,7 @@
 ---
 title: PR을 머지하자 CI가 연달아 실패한 원인 네 가지 — 글꼴 줄 높이, 목록 재정렬, 새 취약점, scroll 이벤트
 date: 2026-10-24
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/테스트·CI
 summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 새로 공개된 의존성 취약점으로, 같은 날 body-parser와 multer 두 번 CI가 차단했다.
 ---
 

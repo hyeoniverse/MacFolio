@@ -1,7 +1,7 @@
 ---
 title: 프로젝트 앱의 iframe에 sandbox 걸기
 date: 2026-10-09
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/보안
 summary: 프로젝트 앱의 iframe에 제한이 없어, 내장한 사이트의 target="_top" 링크 하나로 MacFolio 전체가 다른 주소로 이동할 수 있었다. sandbox로 최상위 창 이동 권한만 제외하고, 이 설정이 누락되면 실패하는 E2E를 추가했다.
 ---
 

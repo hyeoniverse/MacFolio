@@ -666,7 +666,7 @@ pnpm dev:all                                     # 프론트엔드 5173 + API 40
 ---
 title: 글 제목
 date: 2026-09-28
-category: 개발기/MacFolio
+category: 개발 기록/MacFolio/기능
 summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
 pinned: true # 목록 맨 위에 고정 (선택)
 ---

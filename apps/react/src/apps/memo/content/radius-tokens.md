@@ -1,7 +1,7 @@
 ---
 title: 모서리 둥글기에 이름 붙이기 — 576곳 중 239곳을 여섯 이름으로
 date: 2026-10-16
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/디자인 시스템
 summary: 576곳에 마흔 가지 넘는 값으로 작성된 border-radius 가운데 자주 쓰는 여섯 값에 --radius-xs~--radius-full 이름을 붙이고 239곳을 교체했다. 값이 같아 화면은 바뀌지 않는다. 사흘 뒤 다시 집계하니 같은 값의 숫자가 115곳 새로 생겨 있었다.
 ---
 
