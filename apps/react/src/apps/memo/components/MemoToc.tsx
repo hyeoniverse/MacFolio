@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type RefObject } from 'react';
+import { useEffect, useId, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import IconButton from '@/shared/ui/button/IconButton';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
 import { prefersReducedMotion } from '@/shared/lib/media';
@@ -66,6 +66,8 @@ const MemoToc = ({
 	const panel = useTocDisclosure({ remember: false });
 	const [active, setActive] = useState(-1);
 	const [floating, setFloating] = useState(false);
+	// 목차 창을 연 동안 본문 스크롤 칸의 높이 (창이 칸 아래로 넘치거나 글자 크기 버튼에 가리지 않게 높이를 제한한다)
+	const [room, setRoom] = useState<number | null>(null);
 	const nav = useRef<HTMLElement>(null);
 	const floatBox = useRef<HTMLDivElement>(null);
 	const listId = useId();
@@ -104,6 +106,16 @@ const MemoToc = ({
 		};
 	}, [bodyRef, headings, visible, revision, entries]);
 
+	useEffect(() => {
+		const scroller = bodyRef.current?.closest<HTMLElement>('.memo-scroll');
+		if (!panel.open || !scroller) return;
+		const observer = new ResizeObserver(() => setRoom(scroller.clientHeight));
+		observer.observe(scroller);
+		// 지금 읽는 절이 창 안에 보이게
+		floatBox.current?.querySelector('[aria-current="location"]')?.scrollIntoView({ block: 'nearest' });
+		return () => observer.disconnect();
+	}, [panel.open, bodyRef]);
+
 	const jump = (index: number) => {
 		const heading = headings.current[index];
 		if (!heading) return;
@@ -139,7 +151,13 @@ const MemoToc = ({
 						onClick={panel.toggle}
 					/>
 					{panel.open && (
-						<div id={panelId} className="memo-toc-panel" role="group" aria-label="목차 바로가기">
+						<div
+							id={panelId}
+							className="memo-toc-panel"
+							role="group"
+							aria-label="목차 바로가기"
+							style={room ? ({ '--memo-toc-room': `${room}px` } as CSSProperties) : undefined}
+						>
 							<p className="memo-toc-heading">목차</p>
 							<TocList entries={entries} active={active} onJump={jump} />
 						</div>

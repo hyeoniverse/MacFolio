@@ -49,6 +49,12 @@ test.describe('메모 목차', () => {
 		await expect(panel).toBeHidden();
 		await float.click();
 		await expect(panel.locator('button[aria-current="location"]')).toHaveText(target);
+		// 창은 본문 칸 안, 오른쪽 아래 글자 크기 버튼 위에서 끝난다 (가려지지 않는다)
+		const sizeControl = memo.locator('.memo-text-size');
+		if (await sizeControl.isVisible()) {
+			const panelBox = await box(panel);
+			expect(panelBox.y + panelBox.height).toBeLessThanOrEqual((await box(sizeControl)).y);
+		}
 		// Esc로 닫는다
 		await page.keyboard.press('Escape');
 		await expect(panel).toBeHidden();
