@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import { test, expect, enterDesktop, dockItem, appWindow, memoFolder } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
 
@@ -86,7 +86,7 @@ test.describe('메모 (블로그)', () => {
 		const total = await items.count();
 
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		await folders.getByRole('button', { name: /^인프라/ }).click();
+		await memoFolder(folders, '개발기/MacFolio/인프라').click();
 		await expect(items).not.toHaveCount(0);
 
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('Fast Refresh');
@@ -167,7 +167,7 @@ test.describe('메모 (블로그)', () => {
 	test('하위 폴더를 접고 펼치고, 상위 폴더를 고르면 하위 폴더의 글도 보인다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		const child = folders.getByRole('button', { name: /^프론트엔드/ });
+		const child = memoFolder(folders, '개발기/MacFolio/프론트엔드');
 		await expect(child).toBeVisible();
 
 		await folders.getByRole('button', { name: /^MacFolio/ }).click();
@@ -292,10 +292,10 @@ test.describe('메모 (블로그)', () => {
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 
 		await expect(memo.getByRole('button', { name: '새로운 폴더' })).toHaveCount(0);
-		await folders.getByRole('button', { name: /^프론트엔드/ }).hover();
+		await memoFolder(folders, '개발기/MacFolio/프론트엔드').hover();
 		await expect(folders.getByRole('button', { name: /폴더 동작/ })).toHaveCount(0);
 		await expect(memo.getByRole('button', { name: /메모 고정/ })).toHaveCount(0);
-		await expect(folders.getByRole('button', { name: /^프론트엔드/ })).toHaveAttribute('draggable', 'false');
+		await expect(memoFolder(folders, '개발기/MacFolio/프론트엔드')).toHaveAttribute('draggable', 'false');
 
 		await memo.locator('.memo-item').first().click({ button: 'right' });
 		await expect(page.getByRole('menu')).toHaveCount(0);

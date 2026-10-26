@@ -1,10 +1,19 @@
-import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
+import { test, expect, enterDesktop, dockItem, appWindow, memoFolder, memoFolderRow } from './fixtures';
 import type { Locator, Page } from '@playwright/test';
 import { fakeApi, type FakeApiState } from './fakeApi';
 
 /** 폴더 줄의 글 수 (예: '보관8' → 8) */
 async function countOf(folder: Locator) {
 	return Number((await folder.textContent())?.match(/(\d+)\s*$/)?.[1] ?? NaN);
+}
+
+/**
+ * 개발기 › MacFolio 말고 다른 하위 폴더 묶음(다른 프로젝트 개발기, 기술 노트)을 접는다.
+ * 글이 늘어 폴더 목록이 길어지면 끌어 놓는 사이 목록이 스크롤되어 엉뚱한 폴더에 놓인다
+ */
+async function collapseOtherFolders(folders: Locator) {
+	const open = folders.getByRole('button', { name: /^하위 폴더 접기 \((?!MacFolio\)|개발기\)).+\)$/ });
+	while ((await open.count()) > 0) await open.first().click();
 }
 
 /** 관리자로 로그인한 채 메모를 연다 (가짜 API). 정리 내용은 가짜 서버에 저장된다 */
@@ -73,7 +82,7 @@ test.describe('메모 편집 (관리자)', () => {
 		const memo = await openMemo(page, api);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		// '회고' 폴더의 글 수. 아래에서 먼저 옮기는 CRA 글은 다른 폴더(인프라)에 있다
-		const total = await countOf(folders.getByRole('button', { name: /^회고/ }));
+		const total = await countOf(memoFolder(folders, '개발기/MacFolio/회고'));
 		await memo.getByRole('button', { name: '새로운 폴더' }).click();
 		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
 		await memo.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
@@ -87,8 +96,10 @@ test.describe('메모 편집 (관리자)', () => {
 		await folders.getByRole('button', { name: /^보관/ }).click();
 		await expect(memo.locator('.memo-item')).toHaveText([/CRA에서 Vite로 옮기기/]);
 
-		// 폴더 '회고'를 '보관' 안으로: 안의 글도 따라온다
-		await folders.getByRole('button', { name: /^회고/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
+		// 폴더 '회고'를 '보관' 안으로: 안의 글도 따라온다.
+		// 끄는 사이 폴더 목록이 스크롤되면 다른 폴더를 놓으므로, 끄는 두 폴더 사이의 다른 하위 폴더는 접어 한 화면에 둔다
+		await collapseOtherFolders(folders);
+		await memoFolder(folders, '개발기/MacFolio/회고').dragTo(folders.getByRole('button', { name: /^보관/ }));
 		await expect.poll(() => countOf(folders.getByRole('button', { name: /^보관/ }))).toBe(total + 1);
 
 		// 서버에 저장되어 새로고침해도 정리한 대로
@@ -130,10 +141,10 @@ test.describe('메모 편집 (관리자)', () => {
 		const newFolder = memo.getByRole('button', { name: '새로운 폴더', exact: true });
 
 		// 개발기(1단) / MacFolio(2단) / 회고(3단): 3단 폴더를 고르면 그 안에는 만들 수 없다
-		await folders.getByRole('button', { name: /^회고/ }).click();
-		await expect(folders.getByRole('button', { name: /^회고/ })).toHaveAttribute('aria-current', 'true');
+		await memoFolder(folders, '개발기/MacFolio/회고').click();
+		await expect(memoFolder(folders, '개발기/MacFolio/회고')).toHaveAttribute('aria-current', 'true');
 		await expect(newFolder).toBeDisabled();
-		await folders.getByRole('button', { name: '폴더 동작 (회고)' }).click();
+		await memoFolderRow(folders, '개발기/MacFolio/회고').getByRole('button', { name: '폴더 동작 (회고)' }).click();
 		await expect(page.getByRole('menuitem', { name: '새로운 폴더' })).toBeDisabled();
 		await page.keyboard.press('Escape');
 
@@ -142,6 +153,9 @@ test.describe('메모 편집 (관리자)', () => {
 		await newFolder.click();
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
+		// 끄는 사이 목록이 스크롤되지 않게 하위 폴더를 접어 둔다
+		await folders.getByRole('button', { name: '하위 폴더 접기 (개발기)' }).click();
+		await collapseOtherFolders(folders);
 		await folders.getByRole('button', { name: /^개발기/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
 		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('0');
 		await expect(folders.getByRole('button', { name: /^개발기/ })).toBeVisible();

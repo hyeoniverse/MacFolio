@@ -1,4 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect, type Locator, type Page } from '@playwright/test';
 
 /** 페이지에서 처리되지 않은 에러가 나면 테스트를 실패시킨다. */
 export const test = base.extend<{ pageErrors: Error[]; noApi: void; cspViolations: string[] }>({
@@ -92,6 +92,16 @@ export async function desktopPoint(page: Page) {
 }
 
 export const appWindow = (page: Page, name: string) => page.locator(`[data-app="${name}"]`);
+
+/**
+ * 메모 폴더 줄 하나를 경로로 찾는다 (예: '개발기/MacFolio/회고'). 프로젝트 개발기마다 '회고'·'프론트엔드' 같은
+ * 같은 이름의 하위 폴더가 있어 이름만으로는 여럿이 잡힌다. 하위 폴더 줄은 포함하지 않는다 (FolderRow의 data-folder-path)
+ */
+export const memoFolderRow = (scope: Locator, path: string) =>
+	scope.locator(`li[data-folder-path="${path}"] > .memo-folder-row`);
+
+/** 메모 폴더 줄의 이름 버튼 (누르면 그 폴더를 고른다. 이름과 글 수가 들어 있다) */
+export const memoFolder = (scope: Locator, path: string) => memoFolderRow(scope, path).locator('button.memo-folder');
 
 export async function zIndexOf(page: Page, name: string) {
 	return appWindow(page, name).evaluate((el) => Number(getComputedStyle(el).zIndex));
