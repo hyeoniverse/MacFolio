@@ -364,27 +364,64 @@ export function similarPosts<T extends SearchablePost>(posts: T[], query: string
 		return { length: [...jamo].length, allowed, needles };
 	});
 	if (terms.length === 0 || terms.some((term) => term.length < MIN_SIMILAR_LENGTH)) return [];
-	return posts
-		.map((post, order) => {
-			const index = searchIndexOf(post);
-			const fields = [index.title, index.slug, index.tags, index.compact.title ?? '']
-				.filter(Boolean)
-				.map((field) => toJamo(field));
-			let distance = 0;
-			for (const term of terms) {
-				let best = Infinity;
-				for (const needle of term.needles) {
-					for (const field of fields) best = Math.min(best, needle.cost + editDistance(needle.jamo, field, true));
+	return (
+		posts
+			.map((post, order) => {
+				const index = searchIndexOf(post);
+				const fields = [
+					{ text: index.title, weight: SEARCH_WEIGHTS.title },
+					{ text: index.compact.title ?? '', weight: SEARCH_WEIGHTS.title },
+					{ text: index.slug, weight: SEARCH_WEIGHTS.slug },
+					{ text: index.tags, weight: SEARCH_WEIGHTS.tags },
+				]
+					.filter((field) => field.text)
+					.map((field) => ({ jamo: toJamo(field.text), weight: field.weight }));
+				let distance = 0;
+				let weight = 0;
+				for (const term of terms) {
+					// 비용이 가장 적은 칸, 같으면 무거운 칸 (제목 > 주소 > 태그)
+					let best = { distance: Infinity, weight: 0 };
+					for (const needle of term.needles) {
+						for (const field of fields) {
+							const cost = needle.cost + editDistance(needle.jamo, field.jamo, true);
+							if (
+								cost < best.distance - 1e-9 ||
+								(Math.abs(cost - best.distance) < 1e-9 && field.weight > best.weight)
+							) {
+								best = { distance: cost, weight: field.weight };
+							}
+						}
+					}
+					if (best.distance > term.allowed) return null;
+					distance += best.distance;
+					weight += best.weight;
 				}
-				if (best > term.allowed) return null;
-				distance += best;
-			}
-			return { post, order, distance };
-		})
-		.filter((item): item is { post: T; order: number; distance: number } => item !== null)
-		.sort((a, b) => a.distance - b.distance || a.order - b.order)
-		.slice(0, limit)
-		.map((item) => item.post);
+				return { post, order, distance, weight };
+			})
+			.filter((item): item is { post: T; order: number; distance: number; weight: number } => item !== null)
+			// 비용이 같으면 제목에서 찾은 글이 먼저 (검색 순서와 같은 칸 무게)
+			.sort((a, b) => a.distance - b.distance || b.weight - a.weight || a.order - b.order)
+			.slice(0, limit)
+			.map((item) => item.post)
+	);
+}
+
+/** 검색 결과가 없거나 적을 때 보이는 것: 고친 검색어와, 비슷한 글 */
+export interface SearchHelp<T> {
+	suggestion: string | null;
+	posts: T[];
+}
+
+/**
+ * 결과가 없을 때 보일 고친 검색어와 비슷한 글. 고친 검색어가 있으면 비슷한 글은 그 검색어로 찾은 순서 그대로 앞의 limit편
+ * (리엑트 → 리액트로 찾았을 때 맨 앞에 오는 제목에 React가 있는 글). 없으면 철자가 비슷한 글(similarPosts)
+ */
+export function searchHelp<T extends SearchablePost>(posts: T[], query: string, limit = 5): SearchHelp<T> {
+	const suggestion = suggestQuery(posts, query);
+	return {
+		suggestion,
+		posts: suggestion ? rankPosts(posts, suggestion).slice(0, limit) : similarPosts(posts, query, limit),
+	};
 }
 
 /** 다른 표기 모두의 자모 (철자가 비슷한 표기를 찾을 때 쓴다) */
@@ -444,6 +481,8 @@ export function suggestQuery(posts: SearchablePost[], query: string): string | n
 		if (posts.some((post) => termScore(searchIndexOf(post), term) >= SEARCH_WEIGHTS.tags * ALIAS_WEIGHT)) {
 			return term.text;
 		}
+		// 초성으로 적은 낱말은 오타가 아니다
+		if (term.initials) return term.text;
 		const jamo = toJamo(term.text);
 		if ([...jamo].length < MIN_SIMILAR_LENGTH) return term.text;
 		const allowed = similarLimit([...jamo].length);

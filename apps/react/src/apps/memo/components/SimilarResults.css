@@ -58,3 +58,9 @@
 	background-color: var(--memo-border);
 	content: '';
 }
+
+/* 결과가 본문에서만 걸렸을 때 목록 맨 위의 고친 검색어 (결과 목록 머리 줄처럼 왼쪽에) */
+.memo-search-did-you-mean {
+	padding-top: var(--space-8);
+	padding-bottom: var(--space-4);
+}

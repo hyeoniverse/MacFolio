@@ -59,8 +59,11 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(memo.locator('.memo-empty')).toHaveText('검색 결과가 없습니다.');
 		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
 		await expect(similar.getByText(/혹시 dispatcher를 찾으셨나요\?/)).toBeVisible();
-		// 고른 글이 없으니 본문 칸은 안내만
-		await expect(memo.getByText('선택한 메모 없음')).toBeVisible();
+		// 본문 칸 가운데에도 결과가 없다는 안내와 고친 검색어
+		const reader = memo.getByRole('region', { name: '검색 결과 없음' });
+		await expect(reader).toContainText('‘dispetcher’에 맞는 메모가 없습니다.');
+		await expect(reader.getByRole('button', { name: 'dispatcher', exact: true })).toBeVisible();
+		await expect(memo.getByText('선택한 메모 없음')).toHaveCount(0);
 		await expect(similar.getByRole('listitem').first()).toContainText('Flux 패턴');
 
 		await similar.getByRole('button', { name: 'dispatcher', exact: true }).click();
@@ -80,7 +83,16 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(memo.locator('.memo-item').first()).toContainText('React');
 		// 글에 없는 오타 (이 기능을 설명한 글에는 적지 않았다)
 		await search.fill('리엑트');
+		// 비슷한 글은 고친 검색어로 찾은 순서: 제목에 React가 있는 글이 먼저. 본문 칸에서 첫 글을 열 수 있다
+		const reader = memo.getByRole('region', { name: '검색 결과 없음' });
+		await expect(reader).toContainText('비슷한 글 5편이 목록에 있습니다.');
+		await reader.getByRole('button', { name: '첫 글 열기' }).click();
+		await expect(search).toHaveValue('');
+		await expect(memo.getByRole('article', { name: /React/ })).toBeVisible();
+
+		await search.fill('리엑트');
 		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
+		await expect(similar.getByRole('listitem').first()).toContainText('React');
 		await similar.getByRole('button', { name: '리액트', exact: true }).click();
 		await expect(search).toHaveValue('리액트');
 		await expect(memo.locator('.memo-item').first()).toContainText('React');

@@ -8,6 +8,25 @@ const objectParticle = (word: string) => {
 	return code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0 ? '을' : '를';
 };
 
+/** 고친 검색어 한 줄: "혹시 ○○를 찾으셨나요?" (○○는 포인트색 글자 링크, 누르면 그 검색어로 찾는다) */
+export const SuggestLine = ({
+	suggestion,
+	className = '',
+	onSuggest,
+}: {
+	suggestion: string;
+	className?: string;
+	onSuggest: (query: string) => void;
+}) => (
+	<p className={`memo-search-suggest ${className}`.trim()}>
+		혹시{' '}
+		<button type="button" onClick={() => onSuggest(suggestion)}>
+			{suggestion}
+		</button>
+		{objectParticle(suggestion)} 찾으셨나요?
+	</p>
+);
+
 /**
  * 검색 결과가 없을 때 목록 칸: 맨 위 안내 줄, 고친 검색어 ("혹시 ○○를 찾으셨나요?", 누르면 그 검색어로),
  * 제목·주소·태그의 철자가 비슷한 글 (desktop-core의 search.ts). 비슷한 글은 일반 목록과 같은 행으로 그린다
@@ -27,15 +46,7 @@ const SimilarResults = ({
 }) => (
 	<section className="memo-search-empty" aria-label="비슷한 검색 결과">
 		<p className="memo-empty memo-search-empty-title">검색 결과가 없습니다.</p>
-		{suggestion && (
-			<p className="memo-search-suggest">
-				혹시{' '}
-				<button type="button" onClick={() => onSuggest(suggestion)}>
-					{suggestion}
-				</button>
-				{objectParticle(suggestion)} 찾으셨나요?
-			</p>
-		)}
+		{suggestion && <SuggestLine suggestion={suggestion} onSuggest={onSuggest} />}
 		{posts.length > 0 && (
 			<>
 				<h3 className="memo-section-title">비슷한 글</h3>

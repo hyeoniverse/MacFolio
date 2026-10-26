@@ -62,7 +62,8 @@ import { useMemoAppMenus } from './useMemoAppMenus';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
-import SimilarResults from './components/SimilarResults';
+import SimilarResults, { SuggestLine } from './components/SimilarResults';
+import SearchEmptyReader from './components/SearchEmptyReader';
 
 /** 본문 문자열을 메모 본문 모양으로 (편집기의 미리 보기, 버전 기록) */
 const renderMarkdown = (body: string) => <MemoMarkdown>{body}</MemoMarkdown>;
@@ -125,6 +126,8 @@ const Memo: React.FC = () => {
 		categoryName,
 		visible,
 		similar,
+		didYouMean,
+		searchQuery,
 		pinnedPosts,
 		otherPosts,
 		selected,
@@ -443,6 +446,16 @@ const Memo: React.FC = () => {
 	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모. 읽기 화면으로 보는 중이면 아니다) */
 	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked && !readerView));
 
+	/** 비슷한 글 열기: 검색어를 지우고 그 글을 연다 */
+	const openSimilar = (post: Post) => {
+		setQuery('');
+		setSelectedSlug(post.slug);
+		setPane('reader');
+	};
+	/** 결과가 본문에서만 걸렸을 때 목록 맨 위의 고친 검색어 */
+	const didYouMeanLine = status === 'ready' && didYouMean && (
+		<SuggestLine suggestion={didYouMean} className="memo-search-did-you-mean" onSuggest={setQuery} />
+	);
 	/** 목록 위의 메모 개수 */
 	const countLabel = inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`;
 	const empty = (
@@ -458,11 +471,7 @@ const Memo: React.FC = () => {
 					posts={similar.posts}
 					today={today}
 					onSuggest={setQuery}
-					onOpen={(post) => {
-						setQuery('');
-						setSelectedSlug(post.slug);
-						setPane('reader');
-					}}
+					onOpen={openSimilar}
 				/>
 			)}
 		</>
@@ -641,6 +650,7 @@ const Memo: React.FC = () => {
 							)}
 							{/* 휴대폰에서 갤러리로 보면 목록 칸에 카드로 (넓은 창의 갤러리 칸은 한 칸씩 볼 때 숨는다) */}
 							{/* 폴더·태그·정렬을 바꾸면 목록이 서서히 바뀐다 (감싸는 요소 없이 key로 새로 그린다: 휴대폰 CSS의 인접 선택자가 그대로 맞는다) */}
+							{didYouMeanLine}
 							<React.Fragment
 								key={`${category}|${JSON.stringify(tagSelection)}|${JSON.stringify(arrangement)}|${view}`}
 							>
@@ -689,6 +699,7 @@ const Memo: React.FC = () => {
 								{search}
 							</Toolbar>
 							<div className="memo-scroll">
+								{didYouMeanLine}
 								{sections(true, '고정된 메모', 'memo-cards')}
 								{empty}
 							</div>
@@ -815,7 +826,16 @@ const Memo: React.FC = () => {
 								</div>
 							)}
 							{/* 고른 글이 없을 때 (검색 결과가 없거나 빈 폴더): macOS 메모처럼 본문 칸 가운데에 짧은 안내 */}
-							{status === 'ready' && !selected && newDraft === null && (
+							{status === 'ready' && !selected && newDraft === null && similar && !compact && (
+								<SearchEmptyReader
+									query={searchQuery}
+									suggestion={similar.suggestion}
+									posts={similar.posts}
+									onSuggest={setQuery}
+									onOpen={openSimilar}
+								/>
+							)}
+							{status === 'ready' && !selected && newDraft === null && !(similar && !compact) && (
 								<EmptyState className="memo-reader-empty">선택한 메모 없음</EmptyState>
 							)}
 						</div>

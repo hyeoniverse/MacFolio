@@ -19,7 +19,7 @@ import {
 	RECENTLY_DELETED,
 	recentlyDeletedPosts,
 	selectPost,
-	similarPosts,
+	searchHelp,
 	suggestQuery,
 	TAG_VIEW,
 	type TagSelection,
@@ -115,13 +115,20 @@ export function useNoteView({
 			}),
 		[inTrash, trash, inCategory, searchQuery, filter, editing, arrangement, inPopular]
 	);
-	/** 검색 결과가 없을 때: 고친 검색어와 철자가 비슷한 글 (지금 보기의 글에서) */
+	/** 검색 결과가 없을 때: 고친 검색어와 비슷한 글 (지금 보기의 글에서) */
 	const similar = useMemo(() => {
 		if (visible.length > 0 || !searchQuery.trim() || inTrash) return null;
-		const posts = similarPosts(inCategory, searchQuery);
-		const suggestion = suggestQuery(inCategory, searchQuery);
-		return posts.length > 0 || suggestion ? { posts, suggestion } : null;
+		const help = searchHelp(inCategory, searchQuery);
+		return help.posts.length > 0 || help.suggestion ? help : null;
 	}, [visible.length, searchQuery, inTrash, inCategory]);
+	/**
+	 * 결과가 있어도 제목·주소·태그에는 없고 본문에서만 걸린 낱말이면 고친 검색어를 목록 위에 보인다
+	 * (오타가 어느 글 본문에 그대로 적혀 있을 때: dokcer → docker)
+	 */
+	const didYouMean = useMemo(
+		() => (visible.length > 0 && searchQuery.trim() && !inTrash ? suggestQuery(inCategory, searchQuery) : null),
+		[visible.length, searchQuery, inTrash, inCategory]
+	);
 	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, inPopular);
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
@@ -160,6 +167,8 @@ export function useNoteView({
 		categoryName,
 		visible,
 		similar,
+		didYouMean,
+		searchQuery,
 		pinnedPosts,
 		otherPosts,
 		selected,

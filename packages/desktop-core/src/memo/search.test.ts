@@ -4,6 +4,7 @@ import {
 	normalizeSearchText,
 	parseQuery,
 	rankPosts,
+	searchHelp,
 	searchIndexOf,
 	similarPosts,
 	suggestQuery,
@@ -139,6 +140,27 @@ describe('결과가 없을 때', () => {
 		expect(rankPosts(all, '리엑트')).toEqual([]);
 		expect(suggestQuery(all, '리엑트')).toBe('리액트');
 		expect(similarPosts(all, '리엑트')).toEqual([flux]);
+	});
+
+	it('비슷한 글은 비용이 같으면 제목에서 찾은 글이 먼저, 고친 검색어가 있으면 그 검색어로 찾은 순서 (리엑트 → 제목에 React)', () => {
+		const tagOnly = post('a-tag-only', '목차와 이미지 배치', '#React');
+		const titled = post('z-react-hooks', 'React 훅 정리', '');
+		const list = [tagOnly, ...all, titled];
+		expect(similarPosts(list, '리엑트')[0]).toBe(titled);
+		const help = searchHelp(list, '리엑트');
+		expect(help.suggestion).toBe('리액트');
+		expect(help.posts[0].title).toContain('React');
+		expect(help.posts).toEqual(rankPosts(list, '리액트').slice(0, 5));
+	});
+
+	it('오타가 어느 글 본문에 그대로 있어도 제목·주소·태그에는 없으면 고친 검색어를 준다 (dokcer → docker)', () => {
+		const mention = post('typo-note', '오타 고치기', '예: dokcer → docker');
+		expect(rankPosts([...all, mention], 'dokcer')).toEqual([mention]);
+		expect(suggestQuery([...all, mention], 'dokcer')).toBe('docker');
+	});
+
+	it('초성으로 적은 낱말은 고치지 않는다', () => {
+		expect(suggestQuery(all, 'ㅍㄹㅌ')).toBeNull();
 	});
 
 	it('이웃한 두 글자를 맞바꾼 오타는 한 번 고친 것으로 본다 (dokcer → docker, fulx → flux)', () => {
