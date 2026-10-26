@@ -30,7 +30,7 @@ export function githubRepoOf(url: string | null | undefined): { owner: string; n
 export const CODE_PROJECT_REPOS: readonly string[] = [
 	'hyeoniverse/web-portfolio-hyeoniverse',
 	'hyeoniverse/MacFolio',
-	'Devcourse-NewPick/front',
+	'hyeoniverse/newpick',
 	'hyeoniverse/QRU',
 	'Devcourse-WhatToDo/todo-front',
 	'hyeoniverse/SproutFarm',
