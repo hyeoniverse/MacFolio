@@ -1,7 +1,7 @@
 ---
 title: 누를 때마다 딸깍 - Web Audio로 클릭 소리 내기
 date: 2026-10-01
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/기능
 summary: 화면 어디를 클릭하든 누르는 시각과 떼는 시각에 딸깍 소리가 재생되게 했다. pointerdown·pointerup을 window 한 곳에서 수신하고, <audio> 대신 Web Audio로 미리 디코딩해 재생하고, 로딩 화면 클릭을 오디오 초기화에 사용했다. 가짜 AudioContext로 재생 횟수를 집계하는 시험까지 정리했다.
 ---
 

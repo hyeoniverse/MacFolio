@@ -146,7 +146,10 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 헬스 체�
 ### 어떻게 쓰나
 
 - **기술 글**은 구현과 트러블슈팅을 쓴다. 한 일을 늘어놓는 일지가 되지 않게 한다
-- 하루나 한 주를 돌아보는 글은 `개발기/MacFolio/회고` 폴더에 쓴다
+- 하루나 한 주를 돌아보는 글은 `개발 기록/MacFolio/회고` 폴더에 쓴다
+- 폴더는 아래 중에서 고른다 (3단계까지, 기준은 글 [블로그 폴더를 분야별로](https://macfolio.hyeoniverse.com/memo/blog-categories))
+  - `개발 기록/MacFolio/`: 기능 · 디자인 시스템 · 설계 · 서버 · 분석 · 성능 · 테스트·CI · 보안 · 배포·운영 · 회고
+  - `기술 노트/`: 프론트엔드(React · 브라우저 · CSS) · 백엔드(Node.js·NestJS · 데이터베이스 · API 설계) · 인프라·DevOps(Docker · CI·CD · 클라우드) · 보안(인증·인가 · 웹 취약점 · 공급망 · 데이터 보호) · 테스트(단위 테스트 · E2E) · 개발 도구(Git · 패키지 관리 · 터미널·셸 · 에디터)
 - 로그, 코드, 수치는 실제로 실행해 얻은 것만 쓴다
 - 머리말(frontmatter)에 `title`, `date`(YYYY-MM-DD), `category`(폴더, 최대 3단계), `summary`를 쓴다
 
@@ -154,7 +157,7 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 헬스 체�
 ---
 title: 글 한 편 추가했더니 E2E가 깨졌다
 date: 2026-10-01
-category: 개발기/MacFolio
+category: 개발 기록/MacFolio/테스트·CI
 summary: 목록과 검색에 보이는 한두 문장 요약
 ---
 ```

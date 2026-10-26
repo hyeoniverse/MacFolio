@@ -1,7 +1,7 @@
 ---
 title: Google Search Console 연결하기 — 사이트 등록, 사이트맵 제출, 검색어 탭
 date: 2026-10-23
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/분석
 summary: 블로그 글을 검색에 노출하고 검색어를 활동 상태 보기에서 확인하기까지의 순서. Search Console 속성 추가와 사이트맵 제출, Google Cloud 서비스 계정 생성, Search Console 권한 추가, 서버 api.env 설정을 단계별로 정리하고, 도메인 속성에서 이 사이트 검색어만 거르는 방법을 적었다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: 손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고
 date: 2026-10-17
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱마다 직접 작성한 아이콘 버튼 45곳을 공통 IconButton으로 옮기고 원형 버튼용 variant="circle"을 추가했다. E2E 실행 중에 공통 클래스를 제거한 상태와 적용한 상태의 계산된 스타일을 비교해, 화면 변화가 없음을 확인했다.
 ---
 

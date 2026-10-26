@@ -1,7 +1,7 @@
 ---
 title: Mac에서 Homebrew와 npm 설치하기 — 설치 순서, 확인 명령, 자주 발생하는 문제
 date: 2026-10-20
-category: 기술 노트/개발 환경
+category: 기술 노트/개발 도구/패키지 관리
 summary: Apple Silicon Mac에 Homebrew와 Node·npm을 설치하는 순서를 명령 단위로 정리했다. 단계마다 확인 명령과 정상 출력, 특정 Node 버전(node@22)과 corepack 설정, 자주 발생하는 오류와 해결 방법을 정리하고, 파일 위치와 .npmrc 우선순위는 뒤에 별도로 정리했다.
 ---
 

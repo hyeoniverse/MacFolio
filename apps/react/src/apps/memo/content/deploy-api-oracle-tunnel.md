@@ -1,7 +1,7 @@
 ---
 title: API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel
 date: 2026-09-30
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/배포·운영
 summary: 로컬에서 동작하던 관리자 로그인을 배포 환경으로 옮겼다. 인바운드 포트를 열지 않는 Cloudflare Tunnel, 메모리 1GB 무료 VM에서의 빌드, 그리고 /docs는 열리는데 로그인 버튼이 비활성이던 원인(빌드 시각에 코드에 삽입되는 VITE_API_URL)을 정리했다.
 ---
 

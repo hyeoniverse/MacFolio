@@ -1,7 +1,7 @@
 ---
 title: Playwright로 모바일과 애니메이션까지 테스트하기
 date: 2026-09-29
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/테스트·CI
 summary: 휴대폰 화면과 창 애니메이션을 추가하자 E2E 결과가 불안정해졌다. iPhone도 Chromium으로 에뮬레이션하는 프로젝트 3개, 664px 뷰포트, 기본 움직임 줄이기와 1ms 전환의 문제, 병렬 실행 시 로딩 지연을 정리했다.
 ---
 
