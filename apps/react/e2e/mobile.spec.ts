@@ -993,30 +993,32 @@ test.describe('모바일', () => {
 		const memo = appWindow(page, 'memo');
 		await memo.locator('.mobile-navbar-home').tap();
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		// 개발기 › MacFolio 아래 같은 층의 네 폴더
+		// 개발기 › MacFolio 아래 같은 층의 다섯 폴더
 		const topNames = () =>
 			folders.locator(
 				'li[data-folder-path="개발기/MacFolio"] > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name'
 			);
 		const paths = (names: string[]) => names.map((name) => `개발기/MacFolio/${name}`);
-		await expect(topNames()).toHaveText(['백엔드', '인프라', '프론트엔드', '회고']);
+		await expect(topNames()).toHaveText(['백엔드', '설계', '인프라', '프론트엔드', '회고']);
 
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
 		// 끌기: '회고'를 맨 위로
 		const handle = folders.getByRole('button', { name: '순서 바꾸기 (회고)' });
 		const target = folders.getByRole('button', { name: '순서 바꾸기 (백엔드)' });
+		// 폴더가 다섯이라 '회고'가 아래의 떠 있는 검색 막대에 가릴 수 있다. 화면 가운데로 스크롤한 뒤 끈다
+		await handle.evaluate((element) => element.scrollIntoView({ block: 'center' }));
 		const from = (await handle.boundingBox())!;
 		const to = (await target.boundingBox())!;
 		await page.mouse.move(from.x + from.width / 2, from.y + from.height / 2);
 		await page.mouse.down();
 		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
 		await page.mouse.up();
-		await expect(topNames()).toHaveText(['회고', '백엔드', '인프라', '프론트엔드']);
-		await expect.poll(() => api.organization.order).toEqual(paths(['회고', '백엔드', '인프라', '프론트엔드']));
+		await expect(topNames()).toHaveText(['회고', '백엔드', '설계', '인프라', '프론트엔드']);
+		await expect.poll(() => api.organization.order).toEqual(paths(['회고', '백엔드', '설계', '인프라', '프론트엔드']));
 
 		// 키보드: ↓로 한 칸 내린다
 		await folders.getByRole('button', { name: '순서 바꾸기 (회고)' }).press('ArrowDown');
-		await expect(topNames()).toHaveText(['백엔드', '회고', '인프라', '프론트엔드']);
+		await expect(topNames()).toHaveText(['백엔드', '회고', '설계', '인프라', '프론트엔드']);
 	});
 
 	test('메일은 iOS 메일처럼: 메일상자 → 사서함 → 메일로 한 화면씩, 넘어갈 때 옆으로 밀려 들어온다', async ({

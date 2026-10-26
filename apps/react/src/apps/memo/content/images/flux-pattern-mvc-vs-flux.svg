@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4f46e5"/></marker>
+  </defs>
+  <rect width="760" height="400" fill="#fff"/>
+  <text x="380" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">양방향 바인딩과 Flux의 단방향 흐름</text>
+
+  <rect x="20" y="50" width="340" height="320" rx="10" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="190" y="76" font-size="13" fill="#991b1b" text-anchor="middle" font-weight="600">MVC + 양방향 바인딩</text>
+  <rect x="50" y="110" width="100" height="44" rx="8" fill="#fff" stroke="#d1d5db"/>
+  <text x="100" y="137" font-size="12" fill="#374151" text-anchor="middle">Model A</text>
+  <rect x="50" y="240" width="100" height="44" rx="8" fill="#fff" stroke="#d1d5db"/>
+  <text x="100" y="267" font-size="12" fill="#374151" text-anchor="middle">Model B</text>
+  <rect x="230" y="110" width="100" height="44" rx="8" fill="#fff" stroke="#d1d5db"/>
+  <text x="280" y="137" font-size="12" fill="#374151" text-anchor="middle">View A</text>
+  <rect x="230" y="240" width="100" height="44" rx="8" fill="#fff" stroke="#d1d5db"/>
+  <text x="280" y="267" font-size="12" fill="#374151" text-anchor="middle">View B</text>
+  <line x1="152" y1="126" x2="228" y2="126" stroke="#dc2626" stroke-width="1.5" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <line x1="152" y1="256" x2="228" y2="256" stroke="#dc2626" stroke-width="1.5" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <line x1="100" y1="156" x2="100" y2="238" stroke="#dc2626" stroke-width="1.5" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <line x1="150" y1="150" x2="232" y2="244" stroke="#dc2626" stroke-width="1.5" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <line x1="232" y1="150" x2="150" y2="244" stroke="#dc2626" stroke-width="1.5" marker-start="url(#ar)" marker-end="url(#ar)"/>
+  <text x="190" y="318" font-size="11.5" fill="#7f1d1d" text-anchor="middle">모델 하나를 바꾸면 다른 모델·뷰가 연쇄로 갱신된다</text>
+  <text x="190" y="336" font-size="11.5" fill="#7f1d1d" text-anchor="middle">(cascading updates). 사용자 동작 하나가 무엇을</text>
+  <text x="190" y="354" font-size="11.5" fill="#7f1d1d" text-anchor="middle">바꾸는지 예측하기 어렵다</text>
+
+  <rect x="380" y="50" width="360" height="320" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="560" y="76" font-size="13" fill="#3730a3" text-anchor="middle" font-weight="600">Flux: 한 방향으로만</text>
+  <rect x="392" y="140" width="72" height="48" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="428" y="161" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">Action</text>
+  <text x="428" y="177" font-size="10" fill="#6b7280" text-anchor="middle">{ type, … }</text>
+  <rect x="478" y="140" width="80" height="48" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="518" y="161" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">Dispatcher</text>
+  <text x="518" y="177" font-size="10" fill="#6b7280" text-anchor="middle">콜백 등록부</text>
+  <rect x="572" y="140" width="68" height="48" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="606" y="161" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">Store</text>
+  <text x="606" y="177" font-size="10" fill="#6b7280" text-anchor="middle">상태·로직</text>
+  <rect x="654" y="140" width="72" height="48" rx="8" fill="#fff" stroke="#a5b4fc"/>
+  <text x="690" y="161" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">View</text>
+  <text x="690" y="177" font-size="10" fill="#6b7280" text-anchor="middle">React 컴포넌트</text>
+  <line x1="464" y1="164" x2="476" y2="164" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <line x1="558" y1="164" x2="570" y2="164" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <line x1="640" y1="164" x2="652" y2="164" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+  <path d="M690,188 L690,240 L428,240 L428,190" fill="none" stroke="#4f46e5" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ab)"/>
+  <text x="559" y="258" font-size="11" fill="#3730a3" text-anchor="middle">사용자 입력 → action creator가 새 Action을 만든다</text>
+  <path d="M518,140 C518,108 606,108 606,138" fill="none" stroke="#9ca3af" stroke-width="1.2" marker-end="url(#ag)"/>
+  <text x="562" y="104" font-size="10.5" fill="#6b7280" text-anchor="middle">모든 Store 콜백에 전달 · waitFor로 순서 지정</text>
+  <text x="560" y="308" font-size="11.5" fill="#312e81" text-anchor="middle">상태를 바꾸는 길은 Dispatcher를 거치는 Action 하나뿐.</text>
+  <text x="560" y="326" font-size="11.5" fill="#312e81" text-anchor="middle">View는 Store를 직접 수정하지 않고, Store가 바뀌었다는</text>
+  <text x="560" y="344" font-size="11.5" fill="#312e81" text-anchor="middle">알림을 받아 다시 그린다</text>
+</svg>
