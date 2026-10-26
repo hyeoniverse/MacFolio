@@ -1,4 +1,5 @@
 // 메모 검색: 검색어를 낱말로 나눠 모든 낱말이 들어 있는 글을 찾고(AND), 어느 칸에서 찾았는지로 순서를 매긴다.
+// 한글로 적은 기술 용어(리액트)는 글에 쓴 영문(React)으로도 찾는다.
 // 결과가 없으면 제목·주소·태그와 철자가 비슷한 글과 고친 검색어를 추천한다.
 // React와 DOM에 의존하지 않는 순수 함수만 둔다. 글마다 검색용 글자는 한 번만 만들어 둔다 (WeakMap, 글이 바뀌면 새 객체다).
 import { tagsOf } from './tags.js';
@@ -124,12 +125,98 @@ export function searchIndexOf(post: SearchablePost): Index {
 	return index;
 }
 
+// ── 같은 용어의 다른 표기 ───────────────────────────────────────────────
+/**
+ * 같은 것을 가리키는 표기 묶음. 글은 기술 용어를 영문(React, GitHub)으로 쓰고, 검색은 한글 음차(리액트, 깃허브)로 하는 일이 많다.
+ * 저장소 글의 제목·태그에 나오는 용어 위주로 둔다. 띄어쓰기는 무시한다 (비주얼 스튜디오 코드 = 비주얼스튜디오코드)
+ */
+const ALIAS_GROUPS: string[][] = [
+	['react', '리액트'],
+	['typescript', '타입스크립트'],
+	['javascript', '자바스크립트'],
+	['github', '깃허브', '깃헙'],
+	['github actions', '깃허브 액션', '깃허브 액션스'],
+	['git', '깃'],
+	['docker', '도커'],
+	['flux', '플럭스'],
+	['redux', '리덕스'],
+	['next.js', 'nextjs', '넥스트'],
+	['vue', '뷰js'],
+	['node', 'nodejs', '노드'],
+	['prettier', '프리티어'],
+	['eslint', '이에스린트'],
+	['lint', '린트'],
+	['vite', '비트', '바이트'],
+	['playwright', '플레이라이트'],
+	['vitest', '바이테스트', '비테스트'],
+	['vs code', 'vscode', 'vs코드', '브이에스코드', '비주얼 스튜디오 코드'],
+	['kubernetes', '쿠버네티스'],
+	['cloudflare', '클라우드플레어'],
+	['oracle', '오라클'],
+	['nestjs', '네스트', '네스트js'],
+	['prisma', '프리즈마', '프리스마'],
+	['postgres', 'postgresql', '포스트그레스', '포스트그레스큐엘'],
+	['zod', '조드'],
+	['macos', '맥os', '맥오에스'],
+	['safari', '사파리'],
+	['finder', '파인더'],
+	['homebrew', '홈브루'],
+	['lighthouse', '라이트하우스'],
+	['webpack', '웹팩'],
+	['firebase', '파이어베이스'],
+	['python', '파이썬'],
+	['express', '익스프레스'],
+	['markdown', '마크다운'],
+	['unity', '유니티'],
+	['pnpm', '피엔피엠'],
+	['css', '씨에스에스'],
+	['확장', '확장 프로그램', '익스텐션', 'extension'],
+];
+/** 띄어쓰기를 뺀 표기 → 같은 묶음의 다른 표기 (검색용 글자로 다듬은 것) */
+const ALIASES = new Map<string, string[]>();
+for (const group of ALIAS_GROUPS) {
+	const spellings = group.map(normalizeSearchText);
+	for (const spelling of spellings) {
+		ALIASES.set(
+			spelling.replaceAll(' ', ''),
+			spellings.filter((other) => other !== spelling)
+		);
+	}
+}
+/** 다른 표기로 찾은 칸은 무게를 조금 덜 준다 (원래 표기로 찾은 글이 앞에 온다) */
+const ALIAS_WEIGHT = 0.9;
+/** 입력 중인 표기(타입스크립)도 받는 최소 길이. 짧으면 너무 많은 표기의 앞부분이 된다 */
+const MIN_ALIAS_PREFIX = 3;
+
+/** 낱말과 같은 것을 가리키는 다른 표기. 낱말이 표기의 앞부분이면(입력 중) 그 표기와 같은 묶음도 */
+function aliasesOf(term: string): string[] {
+	const key = term.replaceAll(' ', '');
+	const exact = ALIASES.get(key);
+	if (exact) return exact;
+	if ([...key].length < MIN_ALIAS_PREFIX) return [];
+	const found = new Set<string>();
+	for (const [spelling, others] of ALIASES) {
+		if (spelling.length > key.length && spelling.startsWith(key)) {
+			found.add(spelling);
+			for (const other of others) found.add(other);
+		}
+	}
+	return [...found];
+}
+
 // ── 검색어 ─────────────────────────────────────────────────────────────
+interface QueryTerm {
+	text: string;
+	/** 마지막 글자를 입력 중으로 볼 때만 있다 (없으면 그대로 포함되는지만 본다) */
+	pattern: RegExp | null;
+	initials: boolean;
+}
+
 export interface ParsedQuery {
 	/** 다듬은 검색어 전체 (낱말 사이 공백 하나) */
 	text: string;
-	/** pattern은 마지막 글자를 입력 중으로 볼 때만 있다 (없으면 그대로 포함되는지만 본다) */
-	terms: { text: string; pattern: RegExp | null; initials: boolean }[];
+	/** aliases는 같은 것을 가리키는 다른 표기 (리액트 → react) */
+	terms: (QueryTerm & { aliases: QueryTerm[] })[];
 }
 
 /** 검색어를 낱말로. 글 주소 전체(`/memo/<글>`, 사이트 주소 포함)를 붙여 넣으면 글 주소만 쓴다 */
@@ -151,13 +238,14 @@ export function parseQuery(query: string): ParsedQuery {
 				text: term,
 				pattern: pattern === escapeRegExp(term) ? null : new RegExp(pattern),
 				initials: isInitialsTerm(term),
+				aliases: aliasesOf(term).map((alias) => ({ text: alias, pattern: null, initials: false })),
 			};
 		});
 	return { text, terms };
 }
 
-/** 낱말 하나가 걸린 칸 중 가장 무거운 칸의 무게. 어디에도 없으면 0 */
-function termScore(index: Index, term: ParsedQuery['terms'][number]): number {
+/** 표기 하나가 걸린 칸 중 가장 무거운 칸의 무게. 어디에도 없으면 0 */
+function fieldScore(index: Index, term: QueryTerm): number {
 	let best = 0;
 	for (const field of FIELDS) {
 		if (SEARCH_WEIGHTS[field] <= best) continue;
@@ -171,6 +259,13 @@ function termScore(index: Index, term: ParsedQuery['terms'][number]): number {
 						(compact.includes(term.text.replaceAll(' ', '')) || (term.pattern !== null && term.pattern.test(compact))));
 		if (hit) best = SEARCH_WEIGHTS[field];
 	}
+	return best;
+}
+
+/** 낱말 하나의 점수: 원래 표기와 다른 표기(무게를 조금 덜어서) 중 높은 쪽 */
+function termScore(index: Index, term: ParsedQuery['terms'][number]): number {
+	let best = fieldScore(index, term);
+	for (const alias of term.aliases) best = Math.max(best, fieldScore(index, alias) * ALIAS_WEIGHT);
 	return best;
 }
 
@@ -214,11 +309,15 @@ export function rankPosts<T extends SearchablePost>(posts: T[], query: string): 
  */
 const SUBSTITUTE = 0.9;
 
-/** 글 a를 b로 바꾸는 데 드는 편집 비용 (넣기·빼기 1, 바꾸기 0.9) */
-function editDistance(a: string, b: string): number {
+/**
+ * 글 a를 b로 바꾸는 데 드는 편집 비용 (넣기·빼기 1, 바꾸기 0.9, 이웃한 두 글자 맞바꾸기 1: dokcer → docker).
+ * partial이면 b 안의 어느 부분과 가장 가까운지 잰다 (b의 앞뒤를 잘라 내는 데는 비용이 없다)
+ */
+function editDistance(a: string, b: string, partial = false): number {
 	const x = [...a];
 	const y = [...b];
-	let previous = Array.from({ length: y.length + 1 }, (_, i) => i);
+	let before: number[] = [];
+	let previous = Array.from({ length: y.length + 1 }, (_, j) => (partial ? 0 : j));
 	for (let i = 1; i <= x.length; i++) {
 		const current = [i];
 		for (let j = 1; j <= y.length; j++) {
@@ -227,29 +326,14 @@ function editDistance(a: string, b: string): number {
 				current[j - 1] + 1,
 				previous[j - 1] + (x[i - 1] === y[j - 1] ? 0 : SUBSTITUTE)
 			);
+			if (i > 1 && j > 1 && x[i - 1] === y[j - 2] && x[i - 2] === y[j - 1] && x[i - 1] !== y[j - 1]) {
+				current[j] = Math.min(current[j], before[j - 2] + 1);
+			}
 		}
+		before = previous;
 		previous = current;
 	}
-	return previous[y.length];
-}
-
-/** 글 text 안의 어느 부분과 needle이 가장 가까운지 (부분 문자열 편집 거리: 앞뒤를 잘라 내는 데는 비용이 없다) */
-function substringDistance(needle: string, text: string): number {
-	const x = [...needle];
-	const y = [...text];
-	let previous = new Array<number>(y.length + 1).fill(0);
-	for (let i = 1; i <= x.length; i++) {
-		const current = [i];
-		for (let j = 1; j <= y.length; j++) {
-			current[j] = Math.min(
-				previous[j] + 1,
-				current[j - 1] + 1,
-				previous[j - 1] + (x[i - 1] === y[j - 1] ? 0 : SUBSTITUTE)
-			);
-		}
-		previous = current;
-	}
-	return Math.min(...previous);
+	return partial ? Math.min(...previous) : previous[y.length];
 }
 
 /**
@@ -266,8 +350,20 @@ const MIN_SIMILAR_LENGTH = 3;
  * 본문은 보지 않는다 (긴 본문에서는 아무 검색어나 비슷한 부분이 있다)
  */
 export function similarPosts<T extends SearchablePost>(posts: T[], query: string, limit = 5): T[] {
-	const terms = parseQuery(query).terms.map((term) => toJamo(term.text));
-	if (terms.length === 0 || terms.some((term) => [...term].length < MIN_SIMILAR_LENGTH)) return [];
+	const terms = parseQuery(query).terms.map((term) => {
+		const jamo = toJamo(term.text);
+		const allowed = similarLimit([...jamo].length);
+		// 낱말과 그 다른 표기, 철자가 비슷한 표기(리엑트 → 리액트)의 다른 표기(react)까지. 비용은 표기까지 고친 비용부터
+		const needles = [
+			{ jamo, cost: 0 },
+			...term.aliases.map((alias) => ({ jamo: toJamo(alias.text), cost: 0 })),
+			...nearSpellings(jamo, allowed).flatMap(({ others, cost }) =>
+				others.map((other) => ({ jamo: toJamo(other), cost }))
+			),
+		];
+		return { length: [...jamo].length, allowed, needles };
+	});
+	if (terms.length === 0 || terms.some((term) => term.length < MIN_SIMILAR_LENGTH)) return [];
 	return posts
 		.map((post, order) => {
 			const index = searchIndexOf(post);
@@ -276,8 +372,11 @@ export function similarPosts<T extends SearchablePost>(posts: T[], query: string
 				.map((field) => toJamo(field));
 			let distance = 0;
 			for (const term of terms) {
-				const best = Math.min(...fields.map((field) => substringDistance(term, field)));
-				if (best > similarLimit([...term].length)) return null;
+				let best = Infinity;
+				for (const needle of term.needles) {
+					for (const field of fields) best = Math.min(best, needle.cost + editDistance(needle.jamo, field, true));
+				}
+				if (best > term.allowed) return null;
 				distance += best;
 			}
 			return { post, order, distance };
@@ -288,16 +387,47 @@ export function similarPosts<T extends SearchablePost>(posts: T[], query: string
 		.map((item) => item.post);
 }
 
-/** 제목·주소·태그에 나오는 낱말 (두 글자 이상). 고친 검색어 후보 */
-function vocabulary(posts: SearchablePost[]): string[] {
+/** 다른 표기 모두의 자모 (철자가 비슷한 표기를 찾을 때 쓴다) */
+let aliasSpellings: { jamo: string; others: string[] }[] | null = null;
+
+/** allowed 비용 안에서 철자가 비슷한 표기의 다른 표기와 그 비용 (리엑트 → 리액트 → react, 0.9) */
+function nearSpellings(jamo: string, allowed: number): { others: string[]; cost: number }[] {
+	aliasSpellings ??= [...ALIASES].map(([spelling, others]) => ({ jamo: toJamo(spelling), others }));
+	return aliasSpellings
+		.map(({ jamo: spelling, others }) => ({ others, cost: editDistance(jamo, spelling) }))
+		.filter(({ cost }) => cost > 0 && cost <= allowed);
+}
+
+/** 붙여 쓴 검색어(확장프로그램)도 고칠 수 있게, 제목의 이웃한 낱말을 이은 것도 후보로 둔다 (낱말 3개까지) */
+const MAX_JOINED_WORDS = 3;
+const vocabularies = new WeakMap<SearchablePost[], { word: string; jamo: string }[]>();
+
+/**
+ * 고친 검색어 후보: 제목·주소·태그에 나오는 낱말(두 글자 이상), 제목의 이웃한 낱말을 이은 것, 다른 표기 사전의 표기.
+ * 자모는 띄어쓰기를 빼고 잰다. 같은 글 목록에는 한 번만 만든다
+ */
+function vocabulary(posts: SearchablePost[]): { word: string; jamo: string }[] {
+	let list = vocabularies.get(posts);
+	if (list) return list;
 	const words = new Set<string>();
+	const split = (text: string) => text.split(/[^\p{L}\p{N}.]+/u).filter(Boolean);
 	for (const post of posts) {
 		const index = searchIndexOf(post);
-		for (const word of `${index.title} ${index.slug} ${index.tags}`.split(/[^\p{L}\p{N}.]+/u)) {
+		for (const word of split(`${index.title} ${index.slug} ${index.tags}`)) {
 			if ([...word].length >= 2) words.add(word);
 		}
+		const titleWords = split(index.title);
+		for (let start = 0; start < titleWords.length; start++) {
+			for (let size = 2; size <= MAX_JOINED_WORDS && start + size <= titleWords.length; size++) {
+				words.add(titleWords.slice(start, start + size).join(' '));
+			}
+		}
 	}
-	return [...words];
+	// 사전의 표기는 띄어쓰기 없이 (확장프로그램). 띄우면 낱말마다 따로 찾아 사전의 묶음으로 넓혀지지 않는다
+	for (const spelling of ALIASES.keys()) words.add(spelling);
+	list = [...words].map((word) => ({ word, jamo: toJamo(word.replaceAll(' ', '')) }));
+	vocabularies.set(posts, list);
+	return list;
 }
 
 /**
@@ -307,11 +437,13 @@ function vocabulary(posts: SearchablePost[]): string[] {
 export function suggestQuery(posts: SearchablePost[], query: string): string | null {
 	const parsed = parseQuery(query);
 	if (parsed.terms.length === 0) return null;
-	const words = vocabulary(posts).map((word) => ({ word, jamo: toJamo(word) }));
+	const words = vocabulary(posts);
 	let changed = false;
 	const fixed = parsed.terms.map((term) => {
-		// 제목·주소·태그 어딘가에 그대로 있는 낱말은 고치지 않는다 (본문에만 있는 낱말은 오타일 수 있어 후보를 찾는다)
-		if (posts.some((post) => termScore(searchIndexOf(post), term) >= SEARCH_WEIGHTS.tags)) return term.text;
+		// 제목·주소·태그 어딘가에 있는 낱말은 고치지 않는다 (다른 표기로 있어도. 본문에만 있는 낱말은 오타일 수 있어 후보를 찾는다)
+		if (posts.some((post) => termScore(searchIndexOf(post), term) >= SEARCH_WEIGHTS.tags * ALIAS_WEIGHT)) {
+			return term.text;
+		}
 		const jamo = toJamo(term.text);
 		if ([...jamo].length < MIN_SIMILAR_LENGTH) return term.text;
 		const allowed = similarLimit([...jamo].length);
@@ -320,7 +452,7 @@ export function suggestQuery(posts: SearchablePost[], query: string): string | n
 			const distance = editDistance(jamo, candidate.jamo);
 			if (distance <= allowed && (!best || distance < best.distance)) best = { word: candidate.word, distance };
 		}
-		if (!best) return term.text;
+		if (!best || best.word === term.text) return term.text;
 		changed = true;
 		return best.word;
 	});

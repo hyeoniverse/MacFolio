@@ -73,6 +73,19 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
 	});
 
+	test('한글 음차로 영문 용어를 찾고, 음차의 오타는 가까운 표기로 고친다 (리액트 → React)', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		await search.fill('리액트');
+		await expect(memo.locator('.memo-item').first()).toContainText('React');
+		// 글에 없는 오타 (이 기능을 설명한 글에는 적지 않았다)
+		await search.fill('리엑트');
+		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
+		await similar.getByRole('button', { name: '리액트', exact: true }).click();
+		await expect(search).toHaveValue('리액트');
+		await expect(memo.locator('.memo-item').first()).toContainText('React');
+	});
+
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {
 		const api = await fakeApi(page);
 		const content = {

@@ -87,6 +87,32 @@ describe('순서', () => {
 	});
 });
 
+describe('같은 용어의 다른 표기', () => {
+	const docker = post('docker-deploy', 'Docker로 배포하기', '이미지를 만든다. #Docker');
+	const vscode = post('vscode-extensions', 'VS Code 확장 추천', '설정을 공유한다.');
+	const typescript = post('ts-types', '응답 타입 한 번만 적기', '#TypeScript #zod');
+	const all = [...posts, docker, vscode, typescript];
+
+	it('한글 음차로 영문 용어를 찾는다 (리액트 → React, 깃허브·깃헙 → GitHub)', () => {
+		expect(rankPosts(all, '리액트')).toEqual([flux]);
+		expect(rankPosts(all, '플럭스')).toEqual([flux]);
+		expect(rankPosts(all, '깃허브')[0]).toBe(merge);
+		expect(rankPosts(all, '깃헙')[0]).toBe(merge);
+		expect(rankPosts(all, '도커')).toEqual([docker]);
+		expect(rankPosts(all, '브이에스코드')).toEqual([vscode]);
+	});
+
+	it('입력 중인 표기도 받는다 (타입스크립 → typescript)', () => {
+		expect(rankPosts(all, '타입스크립')).toEqual([typescript]);
+	});
+
+	it('원래 표기로 찾은 글이 다른 표기로 찾은 글보다 앞', () => {
+		const korean = post('react-korean', '리액트 입문', '');
+		const english = post('react-english', 'React 입문', '');
+		expect(rankPosts([english, korean], '리액트')).toEqual([korean, english]);
+	});
+});
+
 describe('결과가 없을 때', () => {
 	it('제목·주소·태그와 자모 단위로 비슷한 글', () => {
 		expect(similarPosts(posts, '프런트엔드')).toEqual([frontend]); // '론'을 '런'으로
@@ -103,6 +129,30 @@ describe('결과가 없을 때', () => {
 		expect(suggestQuery(posts, 'flux patern')).toBe('flux pattern');
 		expect(suggestQuery(posts, 'flux')).toBeNull();
 		expect(suggestQuery(posts, 'qwertyuiop')).toBeNull();
+	});
+
+	const docker = post('docker-deploy', 'Docker로 배포하기', '이미지를 만든다. #Docker');
+	const vscode = post('vscode-extensions', 'VS Code 확장 추천', '설정을 공유한다.');
+	const all = [...posts, docker, vscode];
+
+	it('한글 음차의 오타는 가까운 표기로 고치고, 그 표기의 영문으로 비슷한 글을 찾는다 (리엑트 → 리액트 → React)', () => {
+		expect(rankPosts(all, '리엑트')).toEqual([]);
+		expect(suggestQuery(all, '리엑트')).toBe('리액트');
+		expect(similarPosts(all, '리엑트')).toEqual([flux]);
+	});
+
+	it('이웃한 두 글자를 맞바꾼 오타는 한 번 고친 것으로 본다 (dokcer → docker, fulx → flux)', () => {
+		expect(suggestQuery(all, 'dokcer')).toBe('docker');
+		expect(similarPosts(all, 'dokcer')).toEqual([docker]);
+		expect(suggestQuery(all, 'fulx')).toBe('flux');
+		expect(similarPosts(all, 'fulx')).toEqual([flux]);
+	});
+
+	it('붙여 쓴 검색어의 오타는 이웃한 낱말을 이은 것과 비교한다 (프론트엔드셩능 → 프론트엔드 성능, 확장프로그렘 → 확장프로그램)', () => {
+		expect(rankPosts(all, '프론트엔드셩능')).toEqual([]);
+		expect(suggestQuery(all, '프론트엔드셩능')).toBe('프론트엔드 성능');
+		expect(suggestQuery(all, '확장프로그렘')).toBe('확장프로그램');
+		expect(rankPosts(all, '확장프로그램')).toEqual([vscode]);
 	});
 });
 
@@ -125,6 +175,9 @@ describe('성능', () => {
 			'프론트엔드 성',
 			'프론트엔드 성능',
 			'merge s',
+			'리액',
+			'리액트',
+			'타입스크립',
 			'없는말',
 		];
 		for (const query of typed) rankPosts(many, query); // 검색용 글자를 만든다
