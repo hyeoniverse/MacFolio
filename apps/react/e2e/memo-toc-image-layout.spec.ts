@@ -163,14 +163,27 @@ test.describe('메모 목차: 움직임', () => {
 		const collapse = toc.locator('.memo-toc-collapse');
 		const height = () => collapse.evaluate((el) => el.getBoundingClientRect().height);
 		expect(await height()).toBe(0);
-		await toggle.click();
-		// 늘어나는 중간: 0보다 크고 끝 높이보다 작다
-		await page.waitForTimeout(90);
-		const middle = await height();
+		// 늘어나는 중간: 시각에 기대지 않도록(느린 CI에서는 90ms 뒤에 이미 끝나 있다) 높이 전환을 멈추고 중간 시각으로 옮겨 잰다
+		const transition = await collapse.evaluate((el) => {
+			el.parentElement!.querySelector<HTMLButtonElement>('.memo-toc-toggle')!.click();
+			return new Promise<{ duration: number; middle: number; full: number }>((resolve) =>
+				requestAnimationFrame(() => {
+					const rows = el
+						.getAnimations()
+						.find((anim) => (anim as CSSTransition).transitionProperty === 'grid-template-rows')!;
+					const duration = Number(rows.effect!.getTiming().duration);
+					rows.pause();
+					rows.currentTime = duration / 2;
+					const middle = el.getBoundingClientRect().height;
+					rows.finish();
+					resolve({ duration, middle, full: el.getBoundingClientRect().height });
+				})
+			);
+		});
+		expect(transition.duration).toBeGreaterThan(0);
+		expect(transition.middle).toBeGreaterThan(0);
+		expect(transition.middle).toBeLessThan(transition.full);
 		await page.waitForTimeout(500);
-		const full = await height();
-		expect(middle).toBeGreaterThan(0);
-		expect(middle).toBeLessThan(full);
 		expect(await toc.locator('.memo-toc-chevron').evaluate((el) => getComputedStyle(el).transform)).toBe('none');
 		await toggle.click();
 		await page.waitForTimeout(500);
