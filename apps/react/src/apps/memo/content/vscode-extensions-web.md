@@ -10,6 +10,8 @@ VS Code 확장은 많이 설치할수록 편해지는 것이 아니라, **프로
 - 확장 이름·게시자·ID·기능은 2026년 10월 26일 [Visual Studio Marketplace](https://marketplace.visualstudio.com/vscode)의 각 확장 페이지와 [VS Code 공식 문서](https://code.visualstudio.com/docs)에서 확인했다. 설치 수처럼 바뀌는 수치는 적지 않는다.
 - 확장 ID(`게시자.이름`)는 Extensions 보기(⇧⌘X) 검색 칸에 그대로 넣으면 정확히 그 확장이 나온다. 이름이 비슷한 다른 확장과 구분할 때 쓴다.
 
+- 글 안의 화면은 2026년 10월 26일 VS Code 1.143.1의 웹 버전(`code serve-web`)으로 MacFolio 저장소를 열어 직접 촬영하고 필요한 부분만 잘랐다. 확장은 빈 확장 폴더에 새로 설치한 Marketplace 최신 버전이고, 시험용 파일(`zzDemo.ts`, `zzDemo.css`, `zz-health.http`)은 촬영용으로만 만들었다.
+
 ![목적별 확장 묶음](./images/vscode-extensions-map.svg '도식. 위 줄은 저장소 설정 파일과 바로 연결되는 확장, 아래 줄은 작업 환경을 넓히는 확장')
 
 ## ① 코드 품질
@@ -28,6 +30,10 @@ VS Code 확장은 많이 설치할수록 편해지는 것이 아니라, **프로
 - **Prettier:** 기본적으로 프로젝트 의존성에 설치된 Prettier를 쓰고, 처음 불러올 때 사용자 확인을 받는다. MacFolio의 `.prettierrc`(탭, 작은따옴표, 줄 길이 120)가 그대로 적용된다.
 - **Stylelint:** VS Code 내장 CSS 검사(`css.validate`)를 끄지 않으면 같은 오류가 두 번 표시된다고 확장 페이지가 안내한다.
 - **Code Spell Checker:** 다른 언어 사전은 별도 확장으로 제공한다. 확장 페이지의 사전 목록에 한국어 사전은 없다. 프로젝트 고유 단어는 `cspell.json`에 추가해 팀이 공유한다.
+
+![ESLint·Error Lens·Code Spell Checker가 함께 표시한 TypeScript 파일](./images/vscode-extensions-eslint-errorlens.jpg 'zzDemo.ts. 3번 줄은 ESLint의 no-unused-vars 오류(빨간 물결줄)를 Error Lens가 줄 끝에 문장으로 보여 준다. 4·5번 줄의 lable은 Code Spell Checker가 철자 오류로 표시한 것이다.')
+
+![Stylelint가 저장소 규칙으로 잡은 z-index](./images/vscode-extensions-stylelint.jpg 'zzDemo.css. z-index: 999를 MacFolio의 stylelint.config.mjs 규칙(declaration-property-value-allowed-list)이 거절하고, 규칙에 적어 둔 한국어 메시지를 Error Lens가 그 줄에 표시한다')
 
 저장할 때 포맷과 자동 수정을 한 번에 실행하는 설정은 다음과 같다. 키와 값은 각 확장 페이지의 안내를 따랐다.
 
@@ -55,6 +61,8 @@ Prettier 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처
 | [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) `ms-playwright.playwright` | E2E 시험 실행·디버그, 로케이터 고르기, 동작 녹화, trace 보기 |
 | [Vitest](https://marketplace.visualstudio.com/items?itemName=vitest.explorer) `vitest.explorer`                                       | 단위 시험 실행·디버그, 커버리지, 파일이 바뀌면 다시 실행     |
 
+![Testing 보기에 나열된 Playwright·Vitest 시험](./images/vscode-extensions-testing.jpg 'Testing 보기. Playwright 확장은 apps/react/playwright.config.ts의 프로젝트별 항목을, Vitest 확장은 apps/api의 e2e 프로젝트 시험 파일([e2e] 표시)을 나열한다. 아래 Playwright 판의 TOOLS에 Pick locator·Record new가 있다')
+
 두 확장 모두 VS Code의 Testing 보기(테스트 탐색기)에 시험을 나열하고, 시험 이름 옆의 ▶로 하나만 실행한다. 실패한 시험에 중단점을 걸고 디버그할 수 있어 `console.log`를 넣었다 빼는 일이 줄어든다.
 
 - **Playwright:** `playwright.config.ts`의 projects를 읽어 어느 브라우저로 실행할지 고르게 한다. MacFolio는 desktop-chromium·mobile-iphone·mobile-android 세 프로젝트가 있어, 휴대폰 시험만 골라 실행할 수 있다. Playwright 1.38 이상이 필요하다.
@@ -72,6 +80,10 @@ Prettier 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처
 - **REST Client:** 요청을 텍스트 파일로 저장하므로 저장소에 커밋해 팀이 같은 요청을 쓴다. 환경 변수(`rest-client.environmentVariables`), 파일 변수(`@name = value`), 앞 요청의 응답 값을 다음 요청에 쓰는 요청 변수를 지원한다. 로그인한 세션 쿠키가 필요한 관리자 API를 시험할 때, 로그인 요청의 응답을 다음 요청에 넘길 수 있다.
 - **Prisma:** 모델 이름을 바꾸면 쓰는 곳을 모두 고치고, 필요하면 `@map`·`@@map`을 붙인다. MacFolio의 `apps/api/prisma/schema.prisma`를 편집할 때 오타가 저장 전에 드러난다.
 - **Container Tools:** 예전에 Docker 확장(`ms-azuretools.vscode-docker`)이 하던 언어 서비스·컨테이너 관리·디버깅 기능을 이 확장이 넘겨받았다. Docker 확장을 설치했다면 확장 팩으로 함께 설치되었을 수 있다. 확장 페이지는 고급 편집 지원으로 Docker DX(`docker.docker`)를 함께 권한다.
+
+![REST Client로 보낸 요청과 응답](./images/vscode-extensions-rest-client.jpg 'zz-health.http. 요청 줄 위의 Send Request를 누르면 오른쪽 창에 응답 헤더가 열린다. 배포된 MacFolio API의 /health 응답으로, CSP·HSTS 같은 보안 헤더를 한눈에 확인할 수 있다.')
+
+![Prisma 확장으로 연 schema.prisma](./images/vscode-extensions-prisma.jpg 'apps/api/prisma/schema.prisma. Prisma 확장이 model·datasource 같은 키워드를 구분해 칠하고, /// 문서 주석을 함께 보여 준다. 블록 위의 회색 글자는 GitLens의 CodeLens(마지막 수정 시각·작성자)다')
 
 ## ④ 언어·프레임워크
 
@@ -95,6 +107,10 @@ TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문�
 
 - **GitLens:** 줄별 blame, hover, 파일·줄 기록은 무료(Community)다. Commit Graph와 Worktrees 등은 Pro 요금제 기능이며, Commit Graph는 공개 저장소에서 무료 GitKraken 계정으로 쓸 수 있다고 확장 페이지가 안내한다.
 - **Git Graph:** 병합 커밋(merge commit)으로 PR을 합치는 저장소에서는 브랜치가 갈라지고 합쳐지는 모양을 그래프로 봐야 기록을 읽기 쉽다. 병합 방식의 차이는 [GitHub 병합 방식 세 가지](/memo/merge-strategies)에 정리했다.
+
+![GitLens가 줄 끝에 표시한 blame](./images/vscode-extensions-gitlens.jpg 'useMemoLibrary.ts 60번 줄. 커서가 있는 줄 끝에 마지막으로 고친 시각(2 weeks ago)과 그 커밋 메시지가 흐리게 표시된다')
+
+![Git Graph로 본 MacFolio 브랜치 기록](./images/vscode-extensions-git-graph.jpg 'Git Graph. 색마다 한 브랜치이고, PR마다 갈라졌다 병합 커밋(Merge pull request …)으로 main에 합쳐지는 모양이 보인다. 맨 위 Uncommitted Changes는 촬영용 파일이다')
 
 ## ⑥ 원격·협업
 
