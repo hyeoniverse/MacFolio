@@ -165,7 +165,20 @@ test.describe('메뉴 막대의 메뉴 (#96)', () => {
 	}) => {
 		await enterDesktop(page, '/memo/cra-to-vite');
 		const memo = appWindow(page, 'memo');
-		await expect(bar(page).getByRole('button')).toHaveText(['메모', '파일', '편집', '보기', '윈도우', '도움말']);
+		await expect(bar(page).getByRole('button')).toHaveText([
+			'메모',
+			'파일',
+			'편집',
+			'보기',
+			'이동',
+			'윈도우',
+			'도움말',
+		]);
+		// 이동: 뒤로·앞으로 (막 연 메모에는 지난 칸이 없다)
+		const go = await openMenu(page, '이동');
+		await expect(go.getByRole('menuitem', { name: /^뒤로/ })).toBeDisabled();
+		await expect(go.getByRole('menuitem', { name: /^앞으로/ })).toBeDisabled();
+		await page.keyboard.press('Escape');
 		await expect((await openMenu(page, '파일')).getByRole('menuitem', { name: '새로운 메모' })).toHaveCount(0);
 		await page.keyboard.press('Escape');
 
