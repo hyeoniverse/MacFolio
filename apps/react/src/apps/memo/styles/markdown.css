@@ -463,6 +463,15 @@
 	zoom: var(--memo-text-scale, 1);
 }
 
+/*
+ * 편집 화면의 글자 크기: 읽기 화면처럼 판 전체를 zoom하지 않고 날짜·제목·목차(떠 있는 목차 버튼·창 포함)·본문(.ProseMirror)만 키운다.
+ * 편집기의 떠 있는 도구(표 손잡이·서식 막대·링크 판)는 .ProseMirror 밖에서 화면 좌표로 자리를 잡으므로,
+ * 그 조상까지 zoom하면 좌표가 배율만큼 한 번 더 곱해져 어긋난다
+ */
+.memo-writer-scale :is(.memo-writer-meta, .memo-writer-title, .memo-toc, .memo-toc-float, .ProseMirror) {
+	zoom: var(--memo-text-scale, 1);
+}
+
 /* 글자 크기 알약: 본문 칸 오른쪽 아래에 떠 있다 (본문을 넘겨도 그 자리) */
 .memo-reader {
 	position: relative;

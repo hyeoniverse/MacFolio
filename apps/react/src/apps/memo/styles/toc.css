@@ -1,71 +1,174 @@
-/* 메모 앱: 글의 목차 (components/MemoToc.tsx). 제목 아래 접을 수 있는 목차와, 스크롤하면 오른쪽 위에 뜨는 목차 버튼 */
+/*
+ * 메모 앱: 글의 목차 (components/MemoToc.tsx). Apple 개발자 문서의 'On This Page'처럼 가벼운 목록:
+ * 상자·배경 없이 '목차' 제목과 접기 화살표, 얇은 왼쪽 세로선에 붙인 항목.
+ * 지금 읽는 절은 강조색 글자와 세로선 위의 굵은 막대로 표시한다. 떠 있는 목차 창도 같은 목록이고 바탕만 메뉴 재질이다.
+ * 목차 글자는 본문보다 약간만 옅다: 제목·화살표·## · ### 항목 모두 본문 글자색(--memo-body)에서 보조 글자색 쪽으로 한 단계 옮긴 색·기본 굵기이고
+ * ('목차' 제목만 굵게), 단계는 들여쓰기로만 나눈다.
+ * 마우스를 올리면 메모 강조색(노랑) 글자, 지금 읽는 절은 강조색 글자에 세로선 위의 막대를 더해 둘을 구분한다.
+ * 노랑 글자는 사용자가 고른 그대로 쓴다: 다크 바탕에서는 9.6:1이지만 흰 바탕에서는 1.75:1로 WCAG AA에 못 미친다 (막대·글자 위치로도 구분된다)
+ */
+
+.memo-toc,
+.memo-toc-panel {
+	/* 목차 글자: 본문 글자색 85%와 보조 글자색 15% (본문과 거의 같고 약간만 옅다) */
+	--memo-toc-text: color-mix(in srgb, var(--memo-body) 85%, var(--memo-muted));
+	/* 왼쪽 세로선: 구분선(--memo-border)보다 진한 불투명 회색. 기본 글자색 30%를 바탕에 섞는다 */
+	--memo-toc-line: color-mix(in srgb, var(--memo-text) 30%, var(--memo-bg));
+}
 
 .memo-toc {
 	margin: 0 0 1.5rem;
-	padding: var(--space-8) var(--space-12);
-	border: 1px solid var(--memo-border);
-	border-radius: var(--radius-10);
-	background: var(--memo-sidebar-bg);
-	font-size: var(--text-footnote);
+	font-size: var(--text-subhead);
 }
 
+/* '목차' 제목: 항목과 같은 색의 굵은 글자. 제목 아래 목차에서는 누르면 펼치고 접는 단추 */
+.memo-toc-heading {
+	margin: 0;
+	color: var(--memo-toc-text);
+	font-size: var(--text-subhead);
+	font-weight: 600;
+}
+
+/* 접고 펼치는 단추는 '목차' 줄의 폭 전체다 (글자·화살표 옆 빈 곳을 눌러도 된다). 바탕이 글자 왼쪽으로 조금 나가 글자는 목록과 줄이 맞는다 */
 .memo .memo-toc-toggle {
 	display: flex;
 	align-items: center;
-	gap: var(--space-6);
-	width: 100%;
-	padding: var(--space-2) 0;
+	gap: var(--space-4);
+	width: calc(100% + var(--space-6));
+	margin-left: calc(var(--space-6) * -1);
+	padding: var(--space-4) var(--space-6);
 	border: none;
+	border-radius: var(--radius-6);
 	background: none;
-	color: var(--memo-muted);
-	font: inherit;
+	color: var(--memo-toc-text);
+	font-family: inherit;
+	font-size: var(--text-subhead);
 	font-weight: 600;
-	text-align: left;
 	cursor: pointer;
 }
 
-.memo-toc-toggle i {
+/* 휴대폰: 줄 높이를 손가락 터치 영역(44px) 이상으로 */
+.memo .memo-toc[data-compact] .memo-toc-toggle {
+	min-height: 44px;
+	padding-block: var(--space-12);
+}
+
+/* 줄에 마우스를 올리면 옅은 바탕 (손가락으로 탭한 뒤 :hover가 남는 휴대폰에서는 쓰지 않는다) */
+@media (hover: hover) {
+	.memo .memo-toc-toggle:hover {
+		background: var(--memo-hover);
+	}
+}
+
+.memo .memo-toc-toggle:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 2px;
+}
+
+/* 접기 화살표: 펼치면 ⌄, 접으면 › */
+.memo-toc-chevron {
 	font-size: 0.8em;
 	transition: transform var(--duration-fast) var(--ease-out);
 }
 
-.memo-toc-toggle[aria-expanded='true'] i {
-	transform: rotate(90deg);
+.memo-toc-toggle[aria-expanded='false'] .memo-toc-chevron {
+	transform: rotate(-90deg);
 }
 
-.memo-toc ol {
-	margin: var(--space-4) 0 var(--space-2);
+/*
+ * 접고 펼치기: 높이는 grid-template-rows 0fr ↔ 1fr로 바꿔 내용 높이를 재지 않고도 부드럽게 늘고 줄인다 (메모 목록의 새 항목과 같은 방식).
+ * 목록은 서서히 나타난다. 접힌 뒤에는 visibility: hidden으로 감춰 Tab으로 들어가지 않게 한다 (줄어드는 동안은 보이고, 끝나면 감춘다)
+ */
+.memo-toc-collapse {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows var(--duration) var(--ease-out);
+}
+
+.memo-toc-collapse[data-open='true'] {
+	grid-template-rows: 1fr;
+}
+
+.memo-toc-collapse-inner {
+	min-height: 0;
+	/* 지금 읽는 절의 막대가 세로선 왼쪽으로 2px 나가므로 잘리지 않게 */
+	padding-left: var(--space-2);
+	overflow: hidden;
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s linear var(--duration);
+}
+
+.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner {
+	visibility: visible;
+	opacity: 1;
+	transition:
+		opacity var(--duration) var(--ease-out),
+		visibility 0s;
+}
+
+/* 목록: 왼쪽 세로선 하나에 항목을 붙인다 */
+.memo-toc-list {
+	margin: var(--space-6) 0 0;
 	padding: 0;
+	border-left: 1px solid var(--memo-toc-line);
 	list-style: none;
 }
 
-.memo-toc li[data-level='3'] {
-	padding-left: 1.2em;
-}
-
-.memo .memo-toc li button {
+.memo .memo-toc-list button {
 	display: block;
+	position: relative;
 	width: 100%;
-	padding: var(--space-2) var(--space-6);
+	padding: var(--space-4) 0 var(--space-4) var(--space-12);
 	border: none;
-	border-radius: var(--radius-6);
 	background: none;
-	color: var(--memo-body);
+	color: var(--memo-toc-text);
 	font: inherit;
-	line-height: 1.5;
+	font-size: var(--text-subhead);
+	line-height: 1.4;
 	text-align: left;
 	cursor: pointer;
 }
 
-.memo .memo-toc li button:hover {
-	background: var(--memo-hover);
+/* ### 제목: 색은 같고 한 단계 들여 쓴다 */
+.memo .memo-toc-list li[data-level='3'] button {
+	padding-left: var(--space-24);
 }
 
-/* 지금 읽는 절 */
-.memo .memo-toc li button[aria-current='location'] {
-	color: var(--memo-text);
-	font-weight: 600;
-	box-shadow: inset 2px 0 0 var(--memo-accent);
+/* 마우스 올림: 메모 강조색 글자 */
+@media (hover: hover) {
+	.memo .memo-toc-list button:hover {
+		color: var(--memo-accent);
+	}
+}
+
+.memo .memo-toc-list button:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: -2px;
+}
+
+/* 지금 읽는 절: 강조색 글자와, 세로선 위에 겹친 굵은 막대 (마우스 올림은 글자색만 바뀐다) */
+.memo .memo-toc-list button[aria-current='location'] {
+	color: var(--memo-accent);
+}
+
+.memo .memo-toc-list button[aria-current='location']::before {
+	position: absolute;
+	top: var(--space-4);
+	bottom: var(--space-4);
+	left: -2px;
+	width: 3px;
+	border-radius: var(--radius-4);
+	background: var(--memo-accent);
+	content: '';
+}
+
+/* 휴대폰: 같은 글자에 줄 높이를 손가락 터치 영역(44px) 이상으로 */
+.memo .memo-toc[data-compact] .memo-toc-list button {
+	min-height: 44px;
+	padding-block: var(--space-12);
 }
 
 /* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다 */
@@ -83,7 +186,39 @@
 	height: 32px;
 	border: 1px solid var(--memo-border);
 	border-radius: 50%;
-	background: var(--memo-bg);
-	box-shadow: var(--shadow-popover);
+	background: var(--memo-panel-bg);
+	box-shadow: var(--memo-panel-shadow);
+	backdrop-filter: blur(16px) saturate(180%);
 	animation: fade-in var(--duration-fast) var(--ease-out);
+}
+
+/* 목차 창: 메뉴 재질의 바탕 위에 같은 목록 */
+.memo-toc-panel {
+	position: absolute;
+	top: calc(32px + var(--space-6));
+	right: 0;
+	width: min(20rem, 70vw);
+	max-height: 60vh;
+	overflow-y: auto;
+	padding: var(--space-10) var(--space-14) var(--space-10) var(--space-12);
+	border-radius: var(--radius-10);
+	background: var(--memo-panel-bg);
+	box-shadow: var(--memo-panel-shadow), var(--shadow-menu);
+	font-size: var(--text-subhead);
+	backdrop-filter: blur(16px) saturate(180%);
+	animation: pop-in var(--duration-fast) var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-toc-chevron,
+	.memo-toc-collapse,
+	.memo-toc-collapse-inner,
+	.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner {
+		transition: none;
+	}
+
+	.memo-toc-panel,
+	.memo .memo-toc-float-button {
+		animation: none;
+	}
 }
