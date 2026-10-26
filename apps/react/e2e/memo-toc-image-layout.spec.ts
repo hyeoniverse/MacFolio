@@ -6,7 +6,7 @@ import { LAYOUT_POST_TITLE, layoutPost } from './memoLayoutPost';
 const box = async (locator: Locator) => (await locator.boundingBox())!;
 
 test.describe('메모 목차', () => {
-	test('제목 아래 목차는 접힌 채 시작해 마우스를 올리면 본문을 밀지 않고 떠서 열리고, 누르면 그 제목으로 가며 지금 읽는 절을 표시한다', async ({
+	test('제목 아래 목차는 접힌 채 시작하고, 마우스를 올려도 열리지 않으며 누르면 펼친다. 항목을 누르면 그 제목으로 가고 지금 읽는 절을 표시한다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: false });
@@ -21,54 +21,43 @@ test.describe('메모 목차', () => {
 		const headings = await body.locator(':scope > h2, :scope > h3').allTextContents();
 		// 접기 블록 안의 제목은 목차에 넣지 않는다 (펼치지 않으면 갈 수 없다)
 		expect(headings.length).toBeGreaterThanOrEqual(3);
-		const before = (await body.boundingBox())!.y;
 
-		// 마우스를 올리면 떠서 열린다. 본문은 그대로
+		// 마우스를 올리기만 해서는 열지 않는다
 		await toggle.hover();
-		await expect(list).toBeVisible();
-		await expect(toc).toHaveAttribute('data-state', 'peek');
-		await expect(toc.locator('li button')).toHaveText(headings.map((text) => text.trim()));
-		expect((await body.boundingBox())!.y).toBe(before);
-		// 벗어나면 닫힌다
-		await page.mouse.move(5, 5);
+		await page.waitForTimeout(400);
 		await expect(list).toBeHidden();
+		await toggle.click();
+		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+		await expect(toc.locator('li button')).toHaveText(headings.map((text) => text.trim()));
 
-		// 다시 올려 항목을 누르면 그 제목으로 가고 목록은 닫힌다
-		await toggle.hover();
 		const target = headings[3].trim();
 		await toc.getByRole('button', { name: target, exact: true }).click();
 		const heading = body.locator(':scope > :is(h2, h3)', { hasText: target }).first();
 		await expect(heading).toBeInViewport();
 		await expect(heading).toBeFocused();
 		await expect(page).toHaveURL(/\/memo\/merge-strategies$/);
-		await page.mouse.move(5, 5);
-		await expect(list).toBeHidden();
 
-		// 목차가 화면 위로 지나가면 떠 있는 버튼. 마우스를 올리면 목차 창이 열리고 지금 읽는 절을 표시한다
+		// 목차가 화면 위로 지나가면 떠 있는 버튼. 올려도 열리지 않고, 누르면 창이 열려 지금 읽는 절을 표시한다
 		const float = memo.getByRole('button', { name: '목차 보기' });
 		await expect(float).toBeVisible();
-		await float.hover();
 		const panel = memo.getByRole('group', { name: '목차 바로가기' });
-		await expect(panel.locator('button[aria-current="location"]')).toHaveText(target);
-		await page.mouse.move(5, 5);
-		await expect(panel).toBeHidden();
-		// 누르면 열린 채 고정되고, 마우스가 벗어나도 남는다. Esc로 닫는다
-		await float.click();
-		await expect(float).toHaveAttribute('aria-pressed', 'true');
-		await page.mouse.move(5, 5);
+		await float.hover();
 		await page.waitForTimeout(400);
-		await expect(panel).toBeVisible();
-		await float.focus();
+		await expect(panel).toBeHidden();
+		await float.click();
+		await expect(panel.locator('button[aria-current="location"]')).toHaveText(target);
+		// Esc로 닫는다
 		await page.keyboard.press('Escape');
 		await expect(panel).toBeHidden();
-		await expect(float).toHaveAttribute('aria-pressed', 'false');
+		// 다시 열어 항목을 고르면 창은 닫힌다
+		await float.click();
+		await panel.locator('li button').first().click();
+		await expect(panel).toBeHidden();
 		// 제목 아래 목차에서도 같은 절
-		await expect(toc.locator('li button[aria-current="location"]')).toHaveText(target);
+		await expect(toc.locator('li button[aria-current="location"]')).toHaveText(headings[0].trim());
 	});
 
-	test('목차를 누르면 펼친 채 고정되고 다음 방문에도 기억한다. 키보드는 Enter로 고정하고 Esc로 접는다', async ({
-		page,
-	}) => {
+	test('펼친 목차는 다음 방문에도 펼친 채 열린다. 키보드는 Enter로 펼치고 접고, Esc로 접는다', async ({ page }) => {
 		await fakeApi(page, { signedIn: false });
 		await enterDesktop(page, '/memo/merge-strategies');
 		const memo = appWindow(page, 'memo');
@@ -79,12 +68,8 @@ test.describe('메모 목차', () => {
 		const closedTop = (await body.boundingBox())!.y;
 
 		await toggle.click();
-		await expect(toggle).toHaveAttribute('aria-pressed', 'true');
-		await page.mouse.move(5, 5);
-		await page.waitForTimeout(400);
 		await expect(list).toBeVisible();
-		await expect(toc).toHaveAttribute('data-state', 'pinned');
-		// 고정한 목록은 본문 안에 펼쳐 본문을 아래로 민다
+		// 펼친 목록은 본문 안에 놓여 본문을 아래로 민다
 		expect((await body.boundingBox())!.y).toBeGreaterThan(closedTop);
 
 		await page.reload();
@@ -95,11 +80,9 @@ test.describe('메모 목차', () => {
 		await again.focus();
 		await page.keyboard.press('Escape');
 		await expect(again).toHaveAttribute('aria-expanded', 'false');
-		await expect(again).toHaveAttribute('aria-pressed', 'false');
 		await page.keyboard.press('Enter');
-		await expect(again).toHaveAttribute('aria-pressed', 'true');
+		await expect(again).toHaveAttribute('aria-expanded', 'true');
 		await page.keyboard.press('Enter');
-		await expect(again).toHaveAttribute('aria-pressed', 'false');
 		await expect(again).toHaveAttribute('aria-expanded', 'false');
 	});
 
@@ -165,6 +148,34 @@ test.describe('메모 목차', () => {
 		const memo = appWindow(page, 'memo');
 		await expect(memo.locator('.memo-reader-body h1')).toHaveText('짧은 글');
 		await expect(memo.getByRole('navigation', { name: '목차' })).toHaveCount(0);
+	});
+});
+
+test.describe('메모 목차: 움직임', () => {
+	test.use({ reducedMotion: 'no-preference' });
+
+	test('펼치고 접을 때 높이가 부드럽게 늘고 줄며, 접기 화살표가 돈다', async ({ page }) => {
+		await fakeApi(page, { signedIn: false });
+		await enterDesktop(page, '/memo/merge-strategies');
+		const memo = appWindow(page, 'memo');
+		const toc = memo.getByRole('navigation', { name: '목차' });
+		const toggle = toc.getByRole('button', { name: '목차', exact: true });
+		const collapse = toc.locator('.memo-toc-collapse');
+		const height = () => collapse.evaluate((el) => el.getBoundingClientRect().height);
+		expect(await height()).toBe(0);
+		await toggle.click();
+		// 늘어나는 중간: 0보다 크고 끝 높이보다 작다
+		await page.waitForTimeout(90);
+		const middle = await height();
+		await page.waitForTimeout(500);
+		const full = await height();
+		expect(middle).toBeGreaterThan(0);
+		expect(middle).toBeLessThan(full);
+		expect(await toc.locator('.memo-toc-chevron').evaluate((el) => getComputedStyle(el).transform)).toBe('none');
+		await toggle.click();
+		await page.waitForTimeout(500);
+		expect(await height()).toBe(0);
+		await expect(toc.locator('.memo-toc-list')).toBeHidden();
 	});
 });
 
