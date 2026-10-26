@@ -11,6 +11,7 @@ VS Code 확장은 많이 설치할수록 편해지는 것이 아니라, **프로
 - 확장 ID(`게시자.이름`)는 Extensions 보기(⇧⌘X) 검색 칸에 그대로 넣으면 정확히 그 확장이 나온다. 이름이 비슷한 다른 확장과 구분할 때 쓴다.
 
 - 글 안의 화면은 2026년 10월 26일 VS Code 1.143.1의 웹 버전(`code serve-web`)으로 MacFolio 저장소를 열어 직접 촬영하고 필요한 부분만 잘랐다. 확장은 빈 확장 폴더에 새로 설치한 Marketplace 최신 버전이고, 시험용 파일(`zzDemo.ts`, `zzDemo.css`, `zz-health.http`)은 촬영용으로만 만들었다.
+- 각 절 끝의 접기 블록에는 확장마다 VS Code 확장 보기(⇧⌘X)의 상세 화면을 넣었다. 2026년 10월 27일 같은 웹 버전에서 확장을 ID로 검색해 연 화면이고, 설치 수·별점은 그 시각의 값이다.
 
 ![목적별 확장 묶음](./images/vscode-extensions-map.svg '도식. 위 줄은 저장소 설정 파일과 바로 연결되는 확장, 아래 줄은 작업 환경을 넓히는 확장')
 
@@ -54,6 +55,21 @@ VS Code 확장은 많이 설치할수록 편해지는 것이 아니라, **프로
 
 Prettier 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처럼 합쳐 쓰면 동작하지 않으니 언어마다 블록을 따로 두라고 안내한다.
 
+<details>
+<summary>확장 보기의 상세 화면 5장</summary>
+
+![ESLint 확장의 상세 화면](./images/vscode-extensions-web-eslint.jpg 'VS Code 확장 보기의 ESLint 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Prettier - Code formatter 확장의 상세 화면](./images/vscode-extensions-web-prettier.jpg 'VS Code 확장 보기의 Prettier - Code formatter 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Stylelint 확장의 상세 화면](./images/vscode-extensions-web-stylelint-detail.jpg 'VS Code 확장 보기의 Stylelint 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Error Lens 확장의 상세 화면](./images/vscode-extensions-web-errorlens.jpg 'VS Code 확장 보기의 Error Lens 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Code Spell Checker 확장의 상세 화면](./images/vscode-extensions-web-code-spell-checker.jpg 'VS Code 확장 보기의 Code Spell Checker 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
+
 ## ② 테스트
 
 | 확장 (ID)                                                                                                                             | 하는 일                                                      |
@@ -68,6 +84,15 @@ Prettier 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처
 - **Playwright:** `playwright.config.ts`의 projects를 읽어 어느 브라우저로 실행할지 고르게 한다. MacFolio는 desktop-chromium·mobile-iphone·mobile-android 세 프로젝트가 있어, 휴대폰 시험만 골라 실행할 수 있다. Playwright 1.38 이상이 필요하다.
 - **로케이터 고르기(Pick locator):** 브라우저에서 요소 위에 마우스를 올리면 `getByRole` 같은 로케이터를 만들어 준다. 접근성 이름으로 요소를 찾는 시험을 쓸 때 이름을 추측하지 않아도 된다.
 - **Vitest:** Vitest 1.4 이상이 필요하다. `vitest.config.ts`의 projects를 그대로 쓰므로, MacFolio API처럼 단위(unit)와 E2E(e2e) 프로젝트를 나눈 설정도 탐색기에 따로 보인다.
+
+<details>
+<summary>확장 보기의 상세 화면 2장</summary>
+
+![Playwright Test for VSCode 확장의 상세 화면](./images/vscode-extensions-web-playwright.jpg 'VS Code 확장 보기의 Playwright Test for VSCode 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Vitest 확장의 상세 화면](./images/vscode-extensions-web-vitest.jpg 'VS Code 확장 보기의 Vitest 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
 
 ## ③ API·데이터
 
@@ -85,6 +110,17 @@ Prettier 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처
 
 ![Prisma 확장으로 연 schema.prisma](./images/vscode-extensions-prisma.jpg 'apps/api/prisma/schema.prisma. Prisma 확장이 model·datasource 같은 키워드를 구분해 칠하고, /// 문서 주석을 함께 보여 준다. 블록 위의 회색 글자는 GitLens의 CodeLens(마지막 수정 시각·작성자)다')
 
+<details>
+<summary>확장 보기의 상세 화면 3장</summary>
+
+![REST Client 확장의 상세 화면](./images/vscode-extensions-web-rest-client-detail.jpg 'VS Code 확장 보기의 REST Client 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Prisma 확장의 상세 화면](./images/vscode-extensions-web-prisma-detail.jpg 'VS Code 확장 보기의 Prisma 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Container Tools 확장의 상세 화면](./images/vscode-extensions-web-container-tools.jpg 'VS Code 확장 보기의 Container Tools 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
+
 ## ④ 언어·프레임워크
 
 TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문서](https://code.visualstudio.com/docs/languages/typescript)에 따르면 언어 지원은 포함되어 있지만 컴파일러(`tsc`)는 포함되어 있지 않다. 그래서 TypeScript를 위해 따로 설치할 확장은 없고, 쓰는 프레임워크가 있을 때만 아래 확장을 더한다.
@@ -97,6 +133,15 @@ TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문�
 - **TypeScript 버전 맞추기:** 편집기는 기본적으로 VS Code에 들어 있는 TypeScript로 오류를 계산한다. 프로젝트의 TypeScript와 버전이 다르면 편집기와 `tsc`의 결과가 어긋날 수 있다. 명령 팔레트의 **TypeScript: Select TypeScript Version**으로 작업 공간 버전을 고르면 같은 버전을 쓴다([공식 문서](https://code.visualstudio.com/docs/typescript/typescript-compiling)).
 - **Tailwind CSS:** 작업 공간에 `tailwindcss` 패키지가 설치되어 있어야 동작한다. v4는 `@import "tailwindcss"`가 있는 CSS 파일을, v3 이하는 `tailwind.config.*` 파일을 찾아 활성화된다.
 - **Vue:** 예전 Vue 확장인 Vetur의 Marketplace 페이지는 새 공식 편집기 지원으로 Volar를 안내한다. Volar가 지금의 Vue (Official)이고, ID에 `volar`가 남아 있다.
+
+<details>
+<summary>확장 보기의 상세 화면 2장 (Tailwind CSS IntelliSense, Vue (Official))</summary>
+
+![Tailwind CSS IntelliSense 확장의 상세 화면](./images/vscode-extensions-web-tailwindcss.jpg 'VS Code 확장 보기의 Tailwind CSS IntelliSense 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Vue (Official) 확장의 상세 화면](./images/vscode-extensions-web-vue.jpg 'VS Code 확장 보기의 Vue (Official) 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
 
 ## ⑤ Git
 
@@ -112,6 +157,15 @@ TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문�
 
 ![Git Graph로 본 MacFolio 브랜치 기록](./images/vscode-extensions-git-graph.jpg 'Git Graph. 색마다 한 브랜치이고, PR마다 갈라졌다 병합 커밋(Merge pull request …)으로 main에 합쳐지는 모양이 보인다. 맨 위 Uncommitted Changes는 촬영용 파일이다')
 
+<details>
+<summary>확장 보기의 상세 화면 2장</summary>
+
+![GitLens — Git supercharged 확장의 상세 화면](./images/vscode-extensions-web-gitlens-detail.jpg 'VS Code 확장 보기의 GitLens — Git supercharged 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Git Graph 확장의 상세 화면](./images/vscode-extensions-web-git-graph-detail.jpg 'VS Code 확장 보기의 Git Graph 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
+
 ## ⑥ 원격·협업
 
 | 확장 (ID)                                                                                                                                     | 하는 일                                                   |
@@ -122,6 +176,17 @@ TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문�
 
 - **Dev Containers:** Node 버전, 데이터베이스 같은 개발 환경을 `devcontainer.json`으로 저장소에 적어 두면, 팀원이 같은 환경에서 바로 시작한다. Docker 데몬은 원격 Docker 호스트를 쓰면 로컬에서 실행하지 않아도 된다.
 - **Remote - SSH:** 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 서버 IP 대신 별칭으로 접속하는 SSH 설정은 [SSH가 시간 초과되던 이유](/memo/ssh-timeout-public-ip)에 정리했다.
+
+<details>
+<summary>확장 보기의 상세 화면 3장</summary>
+
+![Dev Containers 확장의 상세 화면](./images/vscode-extensions-web-dev-containers.jpg 'VS Code 확장 보기의 Dev Containers 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Remote - SSH 확장의 상세 화면](./images/vscode-extensions-web-remote-ssh.jpg 'VS Code 확장 보기의 Remote - SSH 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다. 웹 버전에서 촬영해 "데스크톱 VS Code에서만 실행된다"는 안내가 함께 보인다')
+
+![Live Share 확장의 상세 화면](./images/vscode-extensions-web-live-share.jpg 'VS Code 확장 보기의 Live Share 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
 
 ## ⑦ 편의
 
@@ -136,6 +201,21 @@ TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문�
 - **EditorConfig:** Prettier를 쓰지 않는 파일(셸 스크립트 등)이나 다른 편집기를 쓰는 팀원에게도 같은 들여쓰기를 적용할 때 쓴다. [Prettier도 `.editorconfig`를 읽고](https://prettier.io/docs/configuration), `.prettierrc`의 값이 있으면 그 값이 우선하므로 둘을 함께 둘 수 있다.
 - **Path Intellisense:** `tsconfig.json`의 `baseUrl`과 `paths`(예: `"@/*": ["src/*"]`)를 읽어 별칭 경로도 완성한다. TypeScript 내장 경로 완성과 겹치면 확장 페이지 안내대로 `typescript.suggest.paths`를 끈다.
 - **Markdown 두 확장:** README, 문서, 블로그 글을 Markdown으로 쓰는 저장소에서 유용하다. markdownlint 규칙은 `.markdownlint.json` 등으로 저장소에 둔다.
+
+<details>
+<summary>확장 보기의 상세 화면 5장</summary>
+
+![EditorConfig 확장의 상세 화면](./images/vscode-extensions-web-editorconfig.jpg 'VS Code 확장 보기의 EditorConfig 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Path Intellisense 확장의 상세 화면](./images/vscode-extensions-web-path-intellisense.jpg 'VS Code 확장 보기의 Path Intellisense 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Markdown All in One 확장의 상세 화면](./images/vscode-extensions-web-markdown-all-in-one.jpg 'VS Code 확장 보기의 Markdown All in One 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![markdownlint 확장의 상세 화면](./images/vscode-extensions-web-markdownlint.jpg 'VS Code 확장 보기의 markdownlint 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+![Material Icon Theme 확장의 상세 화면](./images/vscode-extensions-web-material-icon-theme.jpg 'VS Code 확장 보기의 Material Icon Theme 상세 화면(2026년 10월 27일 촬영). 이름·게시자·설치 수·별점·설명, DETAILS 탭 앞부분, 오른쪽 Installation 표(Identifier·Version·Size). 설치 수와 별점은 촬영 시각 기준이다.')
+
+</details>
 
 AI 코딩 보조 확장도 여러 종류가 있다. 회사 코드에 쓸 때는 기능보다 먼저 코드가 어디로 전송되고 학습에 쓰이는지, 조직 정책이 허용하는지를 확인한다.
 
