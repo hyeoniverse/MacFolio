@@ -90,6 +90,48 @@ test.describe('메모 뒤로·앞으로', () => {
 		await expect(memo.getByRole('button', { name: '앞으로', exact: true })).toBeEnabled();
 	});
 
+	test('누른 채 목록 위로 옮기면 그 항목이 강조되고, 손을 떼면 그 칸으로 간다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const first = await openNth(memo, 0);
+		await openNth(memo, 1);
+		const back = memo.getByRole('button', { name: '뒤로', exact: true });
+		const box = (await back.boundingBox())!;
+		await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+		await page.mouse.down();
+		const menu = page.getByRole('menu', { name: '뒤로 기록' });
+		await expect(menu).toBeVisible();
+		const item = menu.getByRole('menuitem').last();
+		await expect(item).toContainText(first);
+		const target = (await item.boundingBox())!;
+		await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 6 });
+		await expect(item).toHaveClass(/is-tracked/);
+		const background = await item.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(background).not.toBe('rgba(0, 0, 0, 0)');
+		await page.mouse.up();
+		await expect(menu).toBeHidden();
+		await expect.poll(() => readerTitle(memo)).toBe(first);
+	});
+
+	test('기록 목록은 바깥(메뉴 막대 포함)을 누르거나, 브라우저 창이 포커스를 잃으면 닫힌다', async ({ page }) => {
+		const memo = await openMemo(page);
+		await openNth(memo, 0);
+		await openNth(memo, 1);
+		const back = memo.getByRole('button', { name: '뒤로', exact: true });
+		const menu = page.getByRole('menu', { name: '뒤로 기록' });
+
+		// 사이트의 메뉴 막대를 누르면 닫힌다
+		await back.click({ button: 'right' });
+		await expect(menu).toBeVisible();
+		await page.locator('.macos-statusbar').click({ position: { x: 800, y: 10 } });
+		await expect(menu).toBeHidden();
+
+		// 브라우저의 탭·주소 막대처럼 페이지 밖을 누르면 창이 포커스를 잃는다 (blur)
+		await back.click({ button: 'right' });
+		await expect(menu).toBeVisible();
+		await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+		await expect(menu).toBeHidden();
+	});
+
 	test('새로 고쳐도 기록이 남고(같은 탭), 새 탭은 따로 시작한다', async ({ page, context }) => {
 		const memo = await openMemo(page);
 		const first = await openNth(memo, 1);

@@ -53,6 +53,7 @@
 }
 
 .ui-menu-item:hover:not(:disabled),
+.ui-menu-item.is-tracked:not(:disabled),
 .ui-menu-item:focus-visible {
 	outline: none;
 	background-color: var(--color-control-accent);
@@ -61,6 +62,7 @@
 
 /* 강조 바탕에서는 흐린 둘째 줄도 강조 글자색으로 (흐린 회색은 강조색 위에서 읽기 어렵다. macOS 메뉴와 같다) */
 .ui-menu-item:hover:not(:disabled) .ui-menu-item-detail,
+.ui-menu-item.is-tracked:not(:disabled) .ui-menu-item-detail,
 .ui-menu-item:focus-visible .ui-menu-item-detail {
 	color: inherit;
 }

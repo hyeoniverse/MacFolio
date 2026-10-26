@@ -26,6 +26,8 @@ const StepButton: React.FC<{
 	const pressedAt = useRef<number | null>(null);
 	/** 이번 누르기로 목록을 열었는지 (손을 뗄 때 오는 click을 한 칸 이동으로 보지 않는다) */
 	const opened = useRef(false);
+	/** 버튼을 누르고 있는지. 누른 채 목록 위로 옮기면 그 항목을 강조하고, 떼면 고른다 (macOS 메뉴의 누른 채 끌어 고르기) */
+	const pressing = useRef(false);
 
 	const stopTimer = () => {
 		if (timer.current) clearTimeout(timer.current);
@@ -33,6 +35,38 @@ const StepButton: React.FC<{
 	};
 	useEffect(() => stopTimer, []);
 	const close = useCallback(() => setMenu(null), []);
+
+	// 누른 채로 목록이 열리면 버튼이 포인터를 잡고 있어(터치는 암묵적 캡처) 목록 항목에 :hover가 걸리지 않는다.
+	// 그래서 문서에서 포인터 위치의 항목을 직접 찾아 강조(is-tracked)하고, 손을 떼면 그 항목을 고른다
+	useEffect(() => {
+		if (!menu) return;
+		let tracked: HTMLElement | null = null;
+		const itemAt = (x: number, y: number) =>
+			document.elementFromPoint(x, y)?.closest<HTMLElement>('.memo-history-menu .ui-menu-item:not(:disabled)') ?? null;
+		const mark = (item: HTMLElement | null) => {
+			if (tracked === item) return;
+			tracked?.classList.remove('is-tracked');
+			tracked = item;
+			tracked?.classList.add('is-tracked');
+		};
+		const onMove = (event: PointerEvent) => {
+			if (pressing.current) mark(itemAt(event.clientX, event.clientY));
+		};
+		const onUp = (event: PointerEvent) => {
+			if (!pressing.current) return;
+			pressing.current = false;
+			const item = itemAt(event.clientX, event.clientY);
+			mark(null);
+			item?.click();
+		};
+		document.addEventListener('pointermove', onMove, true);
+		document.addEventListener('pointerup', onUp, true);
+		return () => {
+			document.removeEventListener('pointermove', onMove, true);
+			document.removeEventListener('pointerup', onUp, true);
+			mark(null);
+		};
+	}, [menu]);
 	const openList = () => {
 		stopTimer();
 		pressedAt.current = null;
@@ -58,6 +92,7 @@ const StepButton: React.FC<{
 					event.stopPropagation();
 					if (event.button !== 0) return;
 					opened.current = false;
+					pressing.current = true;
 					pressedAt.current = event.clientY;
 					timer.current = setTimeout(openList, LONG_PRESS_MS);
 				}}
@@ -70,6 +105,7 @@ const StepButton: React.FC<{
 				}}
 				onPointerCancel={() => {
 					stopTimer();
+					pressing.current = false;
 					pressedAt.current = null;
 				}}
 				onContextMenu={(event) => {
