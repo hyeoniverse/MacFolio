@@ -351,10 +351,38 @@ AI 코딩 보조 확장도 여러 종류가 있다. 회사 코드에 쓸 때는 
 - **Extension Bisect:** 명령 팔레트의 **Help: Start Extension Bisect**는 켜진 확장의 절반을 끄고 문제가 남는지 묻는 과정을 되풀이해 원인 확장을 찾는다. 확장이 N개면 약 log₂N + 1번 확인으로 끝난다. [공식 블로그](https://code.visualstudio.com/blogs/2021/02/16/extension-bisect)의 예에서는 확장 24개를 4~5번 만에 좁혔다.
 - **프로필:** [프로필](https://code.visualstudio.com/docs/configure/profiles)은 확장·설정·단축키를 묶은 이름 붙은 묶음이다. 프로필을 고르면 그 폴더나 작업 공간에 연결되어, 다음에 열 때 자동으로 그 프로필이 켜진다. 웹 프로젝트용, 문서 작성용처럼 나눠 두면 프로젝트마다 필요한 확장만 켜진다.
 
-<details>
-<summary>이 글에서 다룬 확장 ID 전체 (복사용)</summary>
+## 한 번에 설치하기
 
-```text
+확장을 하나씩 검색해 설치하지 않고 목록으로 한 번에 설치하는 방법은 세 가지다. 32개를 모두 설치하면 시작이 느려지고 기능이 겹칠 수 있으므로, 필요한 묶음만 골라 목록을 줄이는 편이 낫다.
+
+| 방법                      | 쓰는 곳                | 특징                                                        |
+| ------------------------- | ---------------------- | ----------------------------------------------------------- |
+| 터미널 명령               | 내 컴퓨터에 바로 설치  | 목록을 붙여 넣으면 끝난다                                   |
+| `.vscode/extensions.json` | 팀 저장소              | 폴더를 연 팀원에게 설치를 제안한다                          |
+| 프로필 내보내기·가져오기  | 다른 컴퓨터, 다른 사람 | 확장과 설정을 파일 하나로 옮기고, 기존 설정과 섞이지 않는다 |
+
+### 1. 터미널 명령
+
+`code --install-extension <ID>`는 한 번에 여러 번 쓸 수 있고, 그만큼의 확장을 한 번에 설치한다([공식 문서](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_command-line-extension-management)). macOS에서는 VS Code의 명령 팔레트(⇧⌘P)에서 **Shell Command: Install 'code' command in PATH**를 한 번 실행해야 터미널에서 `code` 명령을 찾는다.
+
+아래 블록을 터미널에 그대로 붙여 넣으면 목록의 확장을 차례로 설치한다. `xargs -n 1`이 줄마다 `code --install-extension <ID>`를 한 번씩 실행한다. 먼저 저장소 설정과 연결되는 ①·② 묶음의 핵심 6개다.
+
+```bash
+xargs -n 1 code --install-extension <<'EOF'
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+stylelint.vscode-stylelint
+usernamehw.errorlens
+ms-playwright.playwright
+vitest.explorer
+EOF
+```
+
+<details>
+<summary>이 글에서 다룬 32개 전체를 설치하는 명령</summary>
+
+```bash
+xargs -n 1 code --install-extension <<'EOF'
 dbaeumer.vscode-eslint
 esbenp.prettier-vscode
 stylelint.vscode-stylelint
@@ -387,11 +415,20 @@ oderwat.indent-rainbow
 Gruntfuggly.todo-tree
 aaron-bond.better-comments
 wix.vscode-import-cost
+EOF
 ```
 
-터미널에서 `code --install-extension <ID>`로 하나씩 설치할 수 있다.
-
 </details>
+
+설치된 확장은 `code --list-extensions`로 확인한다.
+
+### 2. extensions.json으로 팀원에게 권하기
+
+앞 절의 `.vscode/extensions.json`을 저장소에 두면, VS Code가 그 폴더를 처음 연 사람에게 권장 확장 설치를 제안한다. 명령 팔레트의 **Extensions: Show Recommended Extensions**를 실행하면 권장 목록을 다시 열어 설치할 수 있다([공식 문서](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace#_workspace-recommended-extensions)).
+
+### 3. 프로필로 옮기기
+
+확장을 설치해 둔 VS Code에서 프로필 편집기의 **Export...**로 프로필을 내보내면, 확장과 설정이 `.code-profile` 파일 하나(또는 비공개 GitHub gist 주소)로 저장된다. 다른 컴퓨터에서는 **New Profile** 옆 메뉴의 **Import Profile...**에 그 파일이나 주소를 넣으면 같은 확장 묶음이 새 프로필로 만들어진다([공식 문서](https://code.visualstudio.com/docs/configure/profiles)). 기존 프로필과 따로 있으므로, 써 보고 맞지 않으면 프로필만 지우면 된다.
 
 ## 참고
 
