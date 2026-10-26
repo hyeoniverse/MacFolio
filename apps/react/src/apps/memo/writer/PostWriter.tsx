@@ -13,6 +13,8 @@ import { env } from '@/shared/config/env';
 import DatePicker from '@/shared/ui/date/DatePicker';
 import Button from '@/shared/ui/button/Button';
 import SecretBadge from '../components/SecretBadge';
+import MemoToc from '../components/MemoToc';
+import { useTocHeadings } from '../useTocHeadings';
 
 // 편집기(Milkdown)는 관리자에게만 필요해서 처음 쓸 때 불러온다
 const InlineEditor = lazy(() => import('./InlineEditor'));
@@ -53,6 +55,8 @@ interface Props {
 	onDraftChange?: (draft: PostDraft) => void;
 	/** 폴더를 바꿨다: 떠난 폴더가 비어도 목록에 남긴다 */
 	onLeaveFolder?: () => void;
+	/** 한 칸씩 보는 좁은 화면 (목차의 떠 있는 버튼을 쓰지 않는다) */
+	compact?: boolean;
 	ref?: React.Ref<PostWriterHandle>;
 }
 
@@ -123,6 +127,7 @@ const PostWriter = ({
 	renderMarkdown,
 	onDraftChange,
 	onLeaveFolder,
+	compact = false,
 	ref,
 }: Props) => {
 	const [draft, setDraft] = useState<PostDraft>(() =>
@@ -144,6 +149,9 @@ const PostWriter = ({
 	const queue = useRef<Promise<void>>(Promise.resolve());
 	const onSavedRef = useRef(onSaved);
 	const titleRef = useRef<HTMLTextAreaElement>(null);
+	/** 편집기를 감싼 칸: 목차가 편집기의 제목을 읽는다 */
+	const bodyRef = useRef<HTMLDivElement>(null);
+	const toc = useTocHeadings(bodyRef, post?.slug ?? '', true);
 
 	useEffect(() => {
 		latest.current = draft;
@@ -350,19 +358,22 @@ const PostWriter = ({
 					}
 				}}
 			/>
-			<Suspense fallback={<div className="prose memo-markdown">{renderMarkdown(draft.body)}</div>}>
-				<InlineEditor
-					key={editorVersion}
-					markdown={draft.body}
-					onChange={(body) => change({ body })}
-					placeholder="본문을 쓰세요"
-					onReady={() => {
-						if (!bodyFocusPending.current) return;
-						bodyFocusPending.current = false;
-						focusBody();
-					}}
-				/>
-			</Suspense>
+			<MemoToc toc={toc} bodyRef={bodyRef} revision={draft.body} compact={compact} editor />
+			<div ref={bodyRef} className="memo-writer-body">
+				<Suspense fallback={<div className="prose memo-markdown">{renderMarkdown(draft.body)}</div>}>
+					<InlineEditor
+						key={editorVersion}
+						markdown={draft.body}
+						onChange={(body) => change({ body })}
+						placeholder="본문을 쓰세요"
+						onReady={() => {
+							if (!bodyFocusPending.current) return;
+							bodyFocusPending.current = false;
+							focusBody();
+						}}
+					/>
+				</Suspense>
+			</div>
 		</div>
 	);
 };

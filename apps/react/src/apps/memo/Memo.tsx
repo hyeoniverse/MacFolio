@@ -757,7 +757,12 @@ const Memo: React.FC = () => {
 							</div>
 							{writing && (
 								// 관리자: 따로 편집 버튼 없이 바로 고친다 (macOS 메모처럼)
-								<div key={draft.writerKey(selected?.slug ?? '')} className="memo-reader-body">
+								// 글자 크기는 편집기에도 같은 배율로 (markdown.css의 .memo-writer-scale: 본문·제목·목차만 키운다)
+								<div
+									key={draft.writerKey(selected?.slug ?? '')}
+									className="memo-reader-body memo-writer-scale"
+									style={cssVars({ 'memo-text-scale': textScale })}
+								>
 									<PostWriter
 										ref={writerRef}
 										post={newDraft !== null ? null : selected}
@@ -778,6 +783,7 @@ const Memo: React.FC = () => {
 										defaultFolder={newFolder}
 										onSaved={draft.onSaved}
 										renderMarkdown={renderMarkdown}
+										compact={compact}
 									/>
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
@@ -800,7 +806,7 @@ const Memo: React.FC = () => {
 								</div>
 							)}
 						</div>
-						{selected && !writing && <TextSizeControl scale={textScale} onChange={setTextScale} />}
+						{(selected || newDraft !== null) && <TextSizeControl scale={textScale} onChange={setTextScale} />}
 					</article>
 
 					{revisionsOpen && editing && selected && (
