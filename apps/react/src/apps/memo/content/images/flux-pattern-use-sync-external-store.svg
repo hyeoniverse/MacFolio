@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 500" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0369a1"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#059669"/></marker>
+  </defs>
+  <rect width="760" height="500" fill="#fff"/>
+  <text x="380" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">useSyncExternalStore의 구독 순서</text>
+  <text x="380" y="48" font-size="11.5" fill="#6b7280" text-anchor="middle">const value = useSyncExternalStore(subscribe, getSnapshot)</text>
+
+  <g font-size="12" font-weight="600" text-anchor="middle">
+    <rect x="60" y="64" width="150" height="34" rx="7" fill="#f0f9ff" stroke="#7dd3fc"/><text x="135" y="86" fill="#0c4a6e">컴포넌트</text>
+    <rect x="305" y="64" width="150" height="34" rx="7" fill="#f0f9ff" stroke="#7dd3fc"/><text x="380" y="86" fill="#0c4a6e">React</text>
+    <rect x="550" y="64" width="150" height="34" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/><text x="625" y="86" fill="#065f46">외부 store</text>
+  </g>
+  <g stroke="#d1d5db" stroke-dasharray="4 4"><line x1="135" y1="98" x2="135" y2="350"/><line x1="380" y1="98" x2="380" y2="350"/><line x1="625" y1="98" x2="625" y2="350"/></g>
+
+  <g font-size="11" fill="#1f2937">
+    <line x1="380" y1="126" x2="621" y2="126" stroke="#0369a1" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="502" y="119" text-anchor="middle">① 렌더링 중 getSnapshot() → v1</text>
+    <line x1="380" y1="160" x2="621" y2="160" stroke="#0369a1" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="502" y="153" text-anchor="middle">② subscribe(callback) 등록</text>
+    <rect x="555" y="176" width="140" height="28" rx="6" fill="#fff" stroke="#6ee7b7"/>
+    <text x="625" y="194" text-anchor="middle" fill="#065f46">③ setState → 상태 변경</text>
+    <line x1="625" y1="226" x2="384" y2="226" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ag)"/>
+    <text x="502" y="219" text-anchor="middle" fill="#065f46">④ callback() 호출</text>
+    <line x1="380" y1="258" x2="621" y2="258" stroke="#0369a1" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="502" y="251" text-anchor="middle">⑤ getSnapshot() 다시 → v2</text>
+    <rect x="300" y="272" width="160" height="44" rx="6" fill="#fff" stroke="#7dd3fc"/>
+    <text x="380" y="290" text-anchor="middle" fill="#0c4a6e">⑥ Object.is(v1, v2)</text>
+    <text x="380" y="306" text-anchor="middle" fill="#0c4a6e">다르면 다시 렌더링</text>
+    <line x1="376" y1="334" x2="139" y2="334" stroke="#0369a1" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="258" y="327" text-anchor="middle">⑦ 새 value로 렌더링</text>
+  </g>
+
+  <rect x="20" y="362" width="350" height="124" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+  <text x="34" y="384" font-size="12" fill="#92400e" font-weight="600">getSnapshot 규칙</text>
+  <g font-size="11" fill="#78350f">
+    <text x="34" y="406">store가 바뀌지 않았으면 같은 값을 돌려줘야 한다.</text>
+    <text x="34" y="424">매번 새 객체를 만들면 ⑥이 항상 '다름'이 되어</text>
+    <text x="34" y="442">다시 렌더링이 끝나지 않는다(무한 루프 오류).</text>
+    <text x="34" y="464">→ 바뀌었을 때만 새 스냅숏, 아니면 지난 스냅숏을 캐시</text>
+  </g>
+  <rect x="390" y="362" width="350" height="124" rx="8" fill="#f0f9ff" stroke="#7dd3fc"/>
+  <text x="404" y="384" font-size="12" fill="#0c4a6e" font-weight="600">Transition 중 store가 바뀌면</text>
+  <g font-size="11" fill="#0c4a6e">
+    <text x="404" y="406">React는 DOM에 반영하기 직전 getSnapshot을 한 번 더</text>
+    <text x="404" y="424">부른다. 처음 값과 다르면 그 업데이트를 처음부터,</text>
+    <text x="404" y="442">이번에는 blocking으로 다시 한다.</text>
+    <text x="404" y="464">→ 화면의 모든 컴포넌트가 같은 버전의 store를 보인다</text>
+  </g>
+</svg>

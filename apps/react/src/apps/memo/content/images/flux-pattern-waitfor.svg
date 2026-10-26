@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4b5563"/></marker>
+  </defs>
+  <rect width="760" height="420" fill="#fff"/>
+  <text x="380" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">waitFor로 Store 사이의 갱신 순서 정하기</text>
+  <text x="380" y="48" font-size="11.5" fill="#6b7280" text-anchor="middle">Flux Dispatcher 문서의 예: 나라를 바꾸면 도시가 그 나라의 기본 도시로, 항공권 가격이 그 도시의 가격으로 바뀐다</text>
+  <text x="380" y="68" font-size="11.5" fill="#374151" text-anchor="middle">Action: { type: 'country-update', country: 프랑스 }  (이전 상태: 한국 · 서울)</text>
+
+  <rect x="20" y="84" width="720" height="140" rx="10" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="36" y="106" font-size="13" fill="#991b1b" font-weight="600">순서를 정하지 않으면</text>
+  <g font-size="11.5" text-anchor="middle">
+    <rect x="40" y="122" width="200" height="56" rx="8" fill="#fff" stroke="#fca5a5"/>
+    <text x="140" y="144" fill="#1f2937" font-weight="600">FlightPriceStore</text>
+    <text x="140" y="164" fill="#991b1b">아직 서울 → 서울 가격</text>
+    <rect x="280" y="122" width="200" height="56" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="380" y="144" fill="#1f2937" font-weight="600">CountryStore</text>
+    <text x="380" y="164" fill="#374151">한국 → 프랑스</text>
+    <rect x="520" y="122" width="200" height="56" rx="8" fill="#fff" stroke="#e5e7eb"/>
+    <text x="620" y="144" fill="#1f2937" font-weight="600">CityStore</text>
+    <text x="620" y="164" fill="#374151">서울 → 파리</text>
+    <line x1="242" y1="150" x2="276" y2="150" stroke="#4b5563" stroke-width="1.5" marker-end="url(#ab)"/>
+    <line x1="482" y1="150" x2="516" y2="150" stroke="#4b5563" stroke-width="1.5" marker-end="url(#ab)"/>
+  </g>
+  <text x="380" y="206" font-size="11.5" fill="#7f1d1d" text-anchor="middle">가격 Store가 도시 Store보다 먼저 실행되면, 화면에는 파리가 보이는데 가격은 서울 기준으로 남는다</text>
+
+  <rect x="20" y="240" width="720" height="166" rx="10" fill="#ecfdf5" stroke="#a7f3d0"/>
+  <text x="36" y="262" font-size="13" fill="#065f46" font-weight="600">waitFor로 순서를 정하면</text>
+  <g font-size="11.5" text-anchor="middle">
+    <rect x="40" y="278" width="200" height="56" rx="8" fill="#fff" stroke="#6ee7b7"/>
+    <text x="140" y="300" fill="#1f2937" font-weight="600">① CountryStore</text>
+    <text x="140" y="320" fill="#374151">한국 → 프랑스</text>
+    <rect x="280" y="278" width="200" height="56" rx="8" fill="#fff" stroke="#6ee7b7"/>
+    <text x="380" y="300" fill="#1f2937" font-weight="600">② CityStore</text>
+    <text x="380" y="320" fill="#374151">waitFor([Country]) 뒤 파리</text>
+    <rect x="520" y="278" width="200" height="56" rx="8" fill="#fff" stroke="#6ee7b7"/>
+    <text x="620" y="300" fill="#1f2937" font-weight="600">③ FlightPriceStore</text>
+    <text x="620" y="320" fill="#374151">waitFor([City]) 뒤 파리 가격</text>
+    <line x1="242" y1="306" x2="276" y2="306" stroke="#4b5563" stroke-width="1.5" marker-end="url(#ab)"/>
+    <line x1="482" y1="306" x2="516" y2="306" stroke="#4b5563" stroke-width="1.5" marker-end="url(#ab)"/>
+  </g>
+  <text x="380" y="362" font-size="11.5" fill="#065f46" text-anchor="middle">콜백 안에서 waitFor(토큰 목록)를 부르면, Dispatcher가 그 Store들의 콜백을 먼저 끝낸 뒤 이어서 실행한다</text>
+  <text x="380" y="382" font-size="11.5" fill="#065f46" text-anchor="middle">의존 관계는 각 Store 코드 안에 적혀 있다. Store가 늘수록 이 관계를 사람이 관리해야 한다</text>
+</svg>
