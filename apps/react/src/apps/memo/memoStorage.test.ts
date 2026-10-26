@@ -3,9 +3,11 @@ import { DEFAULT_ARRANGEMENT, type Arrangement } from '@macfolio/desktop-core/me
 import {
 	loadArrangement,
 	loadRecentFinds,
+	loadRecentSearches,
 	loadPaneWidth,
 	PANE_WIDTHS,
 	rememberFind,
+	rememberSearch,
 	saveArrangement,
 	savePaneWidth,
 } from './memoStorage';
@@ -37,6 +39,15 @@ describe('memoStorage', () => {
 	it('최근 검색어를 저장하고 다시 읽는다', () => {
 		rememberFind(rememberFind([], 'a'), 'b');
 		expect(loadRecentFinds()).toEqual(['b', 'a']);
+	});
+
+	it('목록 검색어는 본문 찾기와 따로 저장한다', () => {
+		rememberSearch('react');
+		rememberSearch('  flux ');
+		rememberSearch('react');
+		rememberSearch('');
+		expect(loadRecentSearches()).toEqual(['react', 'flux']);
+		expect(loadRecentFinds()).toEqual([]);
 	});
 
 	it('칸 너비: 저장한 값을 읽고, 없거나 잘못되면 기본값, 범위 밖이면 범위 안으로', () => {

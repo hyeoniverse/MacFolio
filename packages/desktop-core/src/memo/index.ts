@@ -8,6 +8,7 @@ export * from './postRules.js';
 export * from './popular.js';
 export * from './posts.js';
 export * from './rules.js';
+export * from './search.js';
 export * from './tagFilter.js';
 export * from './tags.js';
 export { createStaticPostRepository } from './repository/staticPostRepository.js';

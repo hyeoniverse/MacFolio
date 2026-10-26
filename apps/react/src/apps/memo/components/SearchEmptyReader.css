@@ -1,0 +1,20 @@
+/* 검색 결과가 없을 때 본문 칸 가운데 (SearchEmptyReader.tsx). '선택한 메모 없음'과 같은 자리·색, 줄마다 가운데 */
+.memo-search-reader {
+	flex-direction: column;
+	gap: var(--space-4);
+	text-align: center;
+}
+
+.memo-search-reader p {
+	margin: 0;
+}
+
+.memo-search-reader .memo-search-reader-title {
+	color: var(--memo-text);
+	font-size: var(--text-subhead);
+	font-weight: 600;
+}
+
+.memo-search-reader .memo-search-suggest {
+	padding: 0;
+}

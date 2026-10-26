@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
 	adjacentPosts,
 	type AdminPost,
@@ -19,6 +19,8 @@ import {
 	RECENTLY_DELETED,
 	recentlyDeletedPosts,
 	selectPost,
+	searchHelp,
+	suggestQuery,
 	TAG_VIEW,
 	type TagSelection,
 	tagSelectionTitle,
@@ -97,11 +99,39 @@ export function useNoteView({
 	);
 	/** 목록 위 제목: 폴더 이름, 또는 #태그 / N개의 태그 / 모든 태그 */
 	const categoryName = inTags ? tagSelectionTitle(tagSelection) : folderName(category);
+	// 목록은 검색어를 한 박자 늦게 따른다: 입력 칸은 바로 바뀌고, 글 거르기·다시 그리기는 React가 입력이 멈춘 틈에 한다
+	const searchQuery = useDeferredValue(query);
 	const visible = useMemo(
-		() => listPosts({ inView: inCategory, trash, inTrash, query, filter, editing, arrangement, ranked: inPopular }),
-		[inTrash, trash, inCategory, query, filter, editing, arrangement, inPopular]
+		() =>
+			listPosts({
+				inView: inCategory,
+				trash,
+				inTrash,
+				query: searchQuery,
+				filter,
+				editing,
+				arrangement,
+				ranked: inPopular,
+			}),
+		[inTrash, trash, inCategory, searchQuery, filter, editing, arrangement, inPopular]
 	);
-	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, inPopular);
+	/** 검색 결과가 없을 때: 고친 검색어와 비슷한 글 (지금 보기의 글에서) */
+	const similar = useMemo(() => {
+		if (visible.length > 0 || !searchQuery.trim() || inTrash) return null;
+		const help = searchHelp(inCategory, searchQuery);
+		return help.posts.length > 0 || help.suggestion ? help : null;
+	}, [visible.length, searchQuery, inTrash, inCategory]);
+	/**
+	 * 결과가 있어도 제목·주소·태그에는 없고 본문에서만 걸린 낱말이면 고친 검색어를 목록 위에 보인다
+	 * (오타가 어느 글 본문에 그대로 적혀 있을 때: dokcer → docker)
+	 */
+	const didYouMean = useMemo(
+		() => (visible.length > 0 && searchQuery.trim() && !inTrash ? suggestQuery(inCategory, searchQuery) : null),
+		[visible.length, searchQuery, inTrash, inCategory]
+	);
+	// 인기글·검색 결과는 순위대로 한 줄로 늘어놓는다 (날짜 묶음·고정 칸으로 나누면 순위가 흩어지고 같은 묶음 제목이 여러 번 생긴다)
+	const ranked = inPopular || searchQuery.trim() !== '';
+	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, ranked);
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
 		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
@@ -138,6 +168,10 @@ export function useNoteView({
 		popular,
 		categoryName,
 		visible,
+		similar,
+		didYouMean,
+		searchQuery,
+		ranked,
 		pinnedPosts,
 		otherPosts,
 		selected,

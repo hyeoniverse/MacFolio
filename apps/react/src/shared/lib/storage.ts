@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
 	settings: 'macfolio:settings',
 	memoArrangement: 'macfolio:memo:arrangement',
 	memoRecentFinds: 'macfolio:memo:recent-finds',
+	memoRecentSearches: 'macfolio:memo:recent-searches',
 	memoSidebarWidth: 'macfolio:memo:sidebar-width',
 	memoListWidth: 'macfolio:memo:list-width',
 	memoTextScale: 'macfolio:memo:text-scale',

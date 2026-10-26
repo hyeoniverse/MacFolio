@@ -60,6 +60,15 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		summarize: (raw) => countOf(raw, '검색어'),
 	},
 	{
+		id: 'memo-searches',
+		name: '메모 목록 검색어',
+		description: '메모 목록 검색 칸에서 쓴 검색어 다섯 개까지',
+		storage: 'local',
+		keys: [STORAGE_KEYS.memoRecentSearches],
+		afterClear: '검색 칸 ⌄ 메뉴의 최근 검색이 비워집니다',
+		summarize: (raw) => countOf(raw, '검색어'),
+	},
+	{
 		id: 'weather-places',
 		name: '날씨 장소',
 		description: '날씨 앱에 더한 도시 목록과 기온 단위(섭씨·화씨)',

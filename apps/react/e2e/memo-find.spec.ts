@@ -14,6 +14,152 @@ async function openMemo(page: Page) {
 const NO_TABLE = '표가 없는 시험용 글';
 
 test.describe('검색 칸과 글 안에서 찾기', () => {
+	test('검색 칸에 글 주소(slug)를 적어도 찾는다: 하이픈 대신 공백, 주소 전체를 붙여 넣기', async ({ page }) => {
+		const api = await fakeApi(page);
+		const content = {
+			title: '주소로만 찾는 시험용 글',
+			date: '2020-01-01',
+			category: '기술 노트/Git',
+			summary: '',
+			body: '제목과 본문에는 없는 낱말',
+		};
+		api.posts = [{ slug: 'zz-slug-only-word', ...content, deleted: false, published: content }];
+		const memo = await openMemo(page);
+		const item = memo.locator('.memo-item', { hasText: content.title });
+		await expect(item).toHaveCount(1);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		// 하이픈으로 이으면 이어진 한 덩어리로 찾는다 (글 주소처럼 적은 것)
+		for (const query of ['slug-only', 'slug_only-word', 'https://macfolio.hyeoniverse.com/memo/zz-slug-only-word']) {
+			await search.fill(query);
+			await expect(memo.locator('.memo-item')).toHaveCount(1);
+			await expect(item).toHaveCount(1);
+		}
+		// 공백으로 나누면 낱말마다 어디에든 있으면 된다 (본문에 세 낱말이 다 있는 다른 글도 걸린다). 주소에서 찾은 글이 맨 앞
+		await search.fill('SLUG ONLY word');
+		await expect(memo.locator('.memo-item').first()).toContainText(content.title);
+		await search.fill('slug-only-other');
+		await expect(memo.locator('.memo-empty')).toHaveText('검색 결과가 없습니다.');
+	});
+
+	test('여러 낱말은 모두 들어 있는 글만, 제목에서 찾은 글이 앞. 띄어쓰기가 달라도 찾는다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		await search.fill('merge strategies');
+		// 주소(merge-strategies)와 제목이 모두 맞는 글이 맨 앞
+		await expect(memo.locator('.memo-item').first()).toContainText('GitHub 병합 방식 세 가지');
+		await search.fill('병합방식');
+		await expect(memo.locator('.memo-item').first()).toContainText('GitHub 병합 방식 세 가지');
+	});
+
+	test('결과가 없으면 고친 검색어와 비슷한 글을 보이고, 누르면 그 검색어로 찾거나 글을 연다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		// 글에 없는 오타 (이 기능을 설명한 글에는 예로 다른 오타를 적었다)
+		await search.fill('dispetcher');
+		await expect(memo.locator('.memo-empty')).toHaveText('검색 결과가 없습니다.');
+		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
+		await expect(similar.getByText(/혹시 dispatcher를 찾으셨나요\?/)).toBeVisible();
+		// 본문 칸 가운데에도 결과가 없다는 안내와 고친 검색어
+		const reader = memo.getByRole('region', { name: '검색 결과 없음' });
+		await expect(reader).toContainText('‘dispetcher’에 맞는 메모가 없습니다.');
+		await expect(reader.getByRole('button', { name: 'dispatcher', exact: true })).toBeVisible();
+		await expect(memo.getByText('선택한 메모 없음')).toHaveCount(0);
+		await expect(similar.getByRole('listitem').first()).toContainText('Flux 패턴');
+
+		await similar.getByRole('button', { name: 'dispatcher', exact: true }).click();
+		await expect(search).toHaveValue('dispatcher');
+		await expect(memo.locator('.memo-item', { hasText: 'Flux 패턴' }).first()).toBeVisible();
+
+		await search.fill('dispetcher');
+		await similar.getByRole('button', { name: /Flux 패턴/ }).click();
+		await expect(search).toHaveValue('');
+		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
+	});
+
+	test('최근 검색: 입력을 마친 검색어가 ⌄ 메뉴에 남고, 고르면 다시 찾는다. 다시 열어도 남는다', async ({ page }) => {
+		let memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		await search.fill('flux');
+		await search.press('Enter');
+		await search.fill('react');
+		await search.blur();
+		await search.fill('');
+		// 빈 칸에 초점이 가면 칸 아래에 최근 검색이 펼쳐진다. ↓·Enter로 고르고, 글자를 치면 닫힌다
+		await search.blur();
+		await search.focus();
+		const recentList = memo.getByRole('listbox', { name: '최근 검색' });
+		await expect(recentList.getByRole('option')).toHaveText(['react', 'flux']);
+		await search.press('ArrowDown');
+		await search.press('ArrowDown');
+		await search.press('Enter');
+		await expect(search).toHaveValue('flux');
+		await expect(recentList).toBeHidden();
+		await search.fill('');
+		await expect(recentList.getByRole('option').first()).toHaveText('flux');
+		await recentList.getByRole('option', { name: 'react' }).click();
+		await expect(search).toHaveValue('react');
+		await search.fill('');
+		await search.blur();
+		const openMenu = async () => {
+			await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
+			return page.getByRole('menu', { name: '검색 조건' });
+		};
+		let menu = await openMenu();
+		await expect(menu.getByRole('menuitem')).toContainText(['react', 'flux']);
+		await menu.getByRole('menuitem', { name: 'flux', exact: true }).click();
+		await expect(search).toHaveValue('flux');
+
+		await page.reload();
+		memo = await openMemo(page);
+		menu = await openMenu();
+		await expect(menu.getByRole('menuitem', { name: 'flux', exact: true })).toBeVisible();
+		await menu.getByRole('menuitem', { name: '최근 검색 지우기' }).click();
+		menu = await openMenu();
+		await expect(menu.getByRole('menuitem', { name: '없음' })).toBeDisabled();
+		await expect(menu.getByRole('menuitem', { name: '최근 검색 지우기' })).toBeDisabled();
+	});
+
+	test('최근 검색 목록은 본문 위에 떠 있는 목차 버튼보다 위에 그린다', async ({ page }) => {
+		await page.addInitScript(() => localStorage.setItem('macfolio:memo:recent-searches', JSON.stringify(['flux'])));
+		await enterDesktop(page, '/memo/vscode-extensions-web');
+		const memo = appWindow(page, 'memo');
+		// 목차가 화면 위로 지나가게 스크롤하면 오른쪽 위에 목차 버튼이 뜬다
+		await memo.locator('.memo-reader .memo-scroll').evaluate((el) => el.scrollBy(0, 3000));
+		const float = memo.getByRole('button', { name: '목차 보기' });
+		await expect(float).toBeVisible();
+		await memo.getByRole('searchbox', { name: '글 검색' }).click();
+		const recent = memo.locator('.memo-search-recent');
+		await expect(recent).toBeVisible();
+		const button = (await float.boundingBox())!;
+		const onTop = await page.evaluate(
+			({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest('.memo-search-recent')),
+			{ x: button.x + button.width / 2, y: button.y + button.height / 2 }
+		);
+		expect(onTop).toBe(true);
+	});
+
+	test('한글 음차로 영문 용어를 찾고, 음차의 오타는 가까운 표기로 고친다 (리액트 → React)', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		await search.fill('리액트');
+		await expect(memo.locator('.memo-item').first()).toContainText('React');
+		// 글에 없는 오타 (이 기능을 설명한 글에는 적지 않았다)
+		await search.fill('리엑트');
+		// 비슷한 글은 고친 검색어로 찾은 순서: 제목에 React가 있는 글이 먼저. 본문 칸에서 첫 글을 열 수 있다
+		const reader = memo.getByRole('region', { name: '검색 결과 없음' });
+		await expect(reader).toContainText('비슷한 글 5편이 목록에 있습니다.');
+		await reader.getByRole('button', { name: '첫 글 열기' }).click();
+		await expect(search).toHaveValue('');
+		await expect(memo.getByRole('article', { name: /React/ })).toBeVisible();
+
+		await search.fill('리엑트');
+		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
+		await expect(similar.getByRole('listitem').first()).toContainText('React');
+		await similar.getByRole('button', { name: '리액트', exact: true }).click();
+		await expect(search).toHaveValue('리액트');
+		await expect(memo.locator('.memo-item').first()).toContainText('React');
+	});
+
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {
 		const api = await fakeApi(page);
 		const content = {
