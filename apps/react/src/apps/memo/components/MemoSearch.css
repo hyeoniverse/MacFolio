@@ -1,0 +1,91 @@
+/*
+ * 검색 칸 아래의 최근 검색 목록 (빈 칸에 초점이 있는 동안). macOS 메뉴(shared/ui/menu)와 같은 바탕·그림자·강조색.
+ * 휴대폰은 검색 알약이 화면 아래에 있어 위로 펼친다
+ */
+.memo-search-recent {
+	position: absolute;
+	top: calc(100% + var(--space-8));
+	left: 0;
+	z-index: var(--z-menu);
+	box-sizing: border-box;
+	width: max(100%, 220px);
+	padding: var(--space-4);
+	border-radius: var(--radius-14);
+	background-color: var(--color-popover-background);
+	box-shadow: var(--shadow-menu);
+	color: var(--color-label);
+	font-size: var(--text-footnote);
+	text-align: left;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top left;
+}
+
+.memo-search-recent-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--space-4) var(--space-8) var(--space-2);
+	color: var(--color-secondary-label);
+	font-size: var(--text-caption);
+	font-weight: 600;
+}
+
+.memo-search-recent-head button {
+	padding: 0;
+	border: none;
+	background: none;
+	color: var(--color-control-accent);
+	font: inherit;
+	font-weight: 400;
+	cursor: pointer;
+}
+
+.memo-search-recent ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.memo-search-recent li {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	padding: var(--space-4) var(--space-8);
+	border-radius: var(--radius-6);
+	cursor: pointer;
+}
+
+.memo-search-recent li span {
+	overflow: hidden;
+	min-width: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-search-recent li i {
+	width: 14px;
+	font-size: var(--text-caption);
+	text-align: center;
+	opacity: 0.6;
+}
+
+.memo-search-recent li.active {
+	background-color: var(--color-control-accent);
+	color: var(--color-alternate-selected-control-text);
+}
+
+.memo-search-recent li.active i {
+	opacity: 0.9;
+}
+
+/* 휴대폰: 알약 위로, 글자는 본문 크기 */
+.container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom .memo-search-recent {
+	top: auto;
+	bottom: calc(100% + var(--space-12));
+	font-size: var(--text-body);
+	transform-origin: bottom left;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-list-bottom .memo-search-recent li {
+	padding: var(--space-8) var(--space-12);
+}

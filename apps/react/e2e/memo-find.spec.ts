@@ -84,6 +84,22 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await search.fill('react');
 		await search.blur();
 		await search.fill('');
+		// 빈 칸에 초점이 가면 칸 아래에 최근 검색이 펼쳐진다. ↓·Enter로 고르고, 글자를 치면 닫힌다
+		await search.blur();
+		await search.focus();
+		const recentList = memo.getByRole('listbox', { name: '최근 검색' });
+		await expect(recentList.getByRole('option')).toHaveText(['react', 'flux']);
+		await search.press('ArrowDown');
+		await search.press('ArrowDown');
+		await search.press('Enter');
+		await expect(search).toHaveValue('flux');
+		await expect(recentList).toBeHidden();
+		await search.fill('');
+		await expect(recentList.getByRole('option').first()).toHaveText('flux');
+		await recentList.getByRole('option', { name: 'react' }).click();
+		await expect(search).toHaveValue('react');
+		await search.fill('');
+		await search.blur();
 		const openMenu = async () => {
 			await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
 			return page.getByRole('menu', { name: '검색 조건' });
