@@ -29,9 +29,20 @@ Rights to the files below belong to their respective owners. Neither the MIT Lic
 
 | 경로                                                                                                             | 내용                                                                                                            |
 | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `apps/react/public/fonts/` (`AppleSDGothicNeo*.ttf`, `*.woff2`)                                                  | Apple SD Gothic Neo 글꼴                                                                                        |
 | `apps/react/public/musics/` (`1.mp3`\~`7.mp3`)                                                                   | 음악 앱의 곡: Joe Hisaishi, Youmi Kimura, Yiruma, dai, Kaoru Wada의 곡 (`apps/react/src/apps/music/library.ts`) |
 | `apps/react/public/imgs/Album_*.png`, `Album_*.webp`                                                             | 위 곡의 앨범 아트                                                                                               |
 | `apps/react/public/imgs/wallpapers/`                                                                             | macOS·iOS 배경화면 (Big Sur, Sequoia, Sonoma, Tahoe, iOS 18 등)                                                 |
 | `apps/react/public/sounds/`                                                                                      | Mac 시동음(`mac-startup.mp3`)과 클릭 효과음                                                                     |
 | `apps/react/public/imgs/`의 앱 아이콘 PNG·WebP (`finder`, `safari`, `photos`, `messages`, `github`, `notion` 등) | macOS 앱 아이콘과 외부 서비스의 로고·상표                                                                       |
+
+## 오픈 라이선스 글꼴 (Open-licensed fonts)
+
+사이트 글꼴은 모두 [SIL Open Font License 1.1](https://openfontlicense.org)로 배포되는 글꼴이다. 이 조건에 따라 웹 글꼴로 함께 배포하며, 각 글꼴의 저작권과 라이선스 전문은 원본에 있다. 이 저장소의 MIT 라이선스나 작성자 콘텐츠 조건은 적용되지 않는다.
+
+All site fonts are distributed under the SIL Open Font License 1.1. Neither the MIT License nor the author's content terms apply to them.
+
+| 글꼴                   | 쓰는 곳                                             | 파일                                                                                               | 저작권·라이선스                                                              |
+| ---------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Pretendard (가변·정적) | 본문 전체, PDF 이력서, 공유 카드                    | npm `pretendard` (빌드가 `assets/`에 내보냄), `apps/react/public/fonts/Pretendard-*.otf`, `*.woff` | © 2021 Kil Hyung-jin, OFL 1.1 (`apps/react/public/fonts/Pretendard-OFL.txt`) |
+| JetBrains Mono (가변)  | 코드·고정폭                                         | npm `@fontsource-variable/jetbrains-mono`                                                          | OFL 1.1 (패키지의 `LICENSE`)                                                 |
+| Noto Serif KR (가변)   | 따옴표 등 serif 기호, Safari 프로젝트 페이지의 명조 | npm `@fontsource-variable/noto-serif-kr`                                                           | OFL 1.1 (패키지의 `LICENSE`)                                                 |

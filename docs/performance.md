@@ -305,6 +305,17 @@ node scripts/perf/measure.mjs http://localhost:4810 perf.json 5
 | 로딩 화면·`#boot-splash`를 `inset: 0; height: 100dvh`로 (`LoadingScreen.css`, `index.html`) | 홈 화면과 같은 상자                                                                            |
 | CI 성능 예산 (`scripts/perf/budget.mjs`, `ci.yml`의 `check`)                                | `boot` 55KB, 첫 방문 번들 265KB를 넘으면 실패                                                  |
 
+### 글꼴 교체 (오픈 라이선스)
+
+OS마다 글꼴이 달랐고, 그 밖의 기기에 배포하던 Apple SD Gothic Neo는 웹 배포 허락이 없는 글꼴이라 SIL OFL 글꼴로 바꿨다. 본문은 Pretendard Variable을 `scripts/subset-font.py`로 core(KS X 1001 2,350자 포함, 456KB)와 ext 8조각으로 나눴고, 고정폭은 JetBrains Mono, 명조는 Noto Serif KR이다 (`src/styles/fonts.css`). 같은 화면을 보여 주는 대가로 글꼴 전송량이 늘었다.
+
+| 화면 (글꼴 파일, 아이콘 글꼴 포함) | 고치기 전 Chromium | 고치기 전 WebKit | 고친 뒤                   |
+| ---------------------------------- | ------------------ | ---------------- | ------------------------- |
+| 데스크톱 첫 화면                   | 397KB              | 248KB            | 1,187KB (명조 443KB 포함) |
+| 휴대폰 홈 (iPhone 15)              | -                  | 136KB            | 591KB                     |
+
+첫 방문 번들 예산은 256.4KB → 259.7KB(상한 265KB). 자세한 내용은 블로그 글 `open-fonts`.
+
 ### 함께 수정한 문제
 
 앱을 처음 실행할 때 로드하도록 바꾸자 E2E 16개가 실패했다.

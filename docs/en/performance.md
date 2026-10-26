@@ -305,6 +305,17 @@ See [Round 5: fixing the LCP recount and a performance budget](#round-5-fixing-t
 | Loading screen and `#boot-splash` use `inset: 0; height: 100dvh` (`LoadingScreen.css`, `index.html`)     | Same box as the home screen                                                                                      |
 | CI performance budget (`scripts/perf/budget.mjs`, `check` in `ci.yml`)                                   | Fails above `boot` 55KB or first-visit bundles 265KB                                                             |
 
+### Font replacement (open licenses)
+
+Fonts differed by OS, and the Apple SD Gothic Neo files served to non-Apple devices had no permission for web distribution, so the site now uses SIL OFL fonts. Body text is Pretendard Variable split by `scripts/subset-font.py` into a core file (including the 2,350 KS X 1001 syllables, 456KB) and 8 ext pieces; monospace is JetBrains Mono and serif is Noto Serif KR (`src/styles/fonts.css`). Showing the same screen everywhere costs more font transfer.
+
+| Screen (font files, icon font included) | Before, Chromium | Before, WebKit | After                          |
+| --------------------------------------- | ---------------- | -------------- | ------------------------------ |
+| Desktop first screen                    | 397KB            | 248KB          | 1,187KB (443KB serif included) |
+| Phone home (iPhone 15)                  | -                | 136KB          | 591KB                          |
+
+The first-visit bundle budget went from 256.4KB to 259.7KB (limit 265KB). Details in the blog post `open-fonts`.
+
 ### Problems fixed along the way
 
 Switching apps to load when first opened broke 16 E2E tests.
