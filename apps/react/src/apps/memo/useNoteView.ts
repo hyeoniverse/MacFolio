@@ -129,7 +129,9 @@ export function useNoteView({
 		() => (visible.length > 0 && searchQuery.trim() && !inTrash ? suggestQuery(inCategory, searchQuery) : null),
 		[visible.length, searchQuery, inTrash, inCategory]
 	);
-	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, inPopular);
+	// 인기글·검색 결과는 순위대로 한 줄로 늘어놓는다 (날짜 묶음·고정 칸으로 나누면 순위가 흩어지고 같은 묶음 제목이 여러 번 생긴다)
+	const ranked = inPopular || searchQuery.trim() !== '';
+	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, ranked);
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
 		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
@@ -169,6 +171,7 @@ export function useNoteView({
 		similar,
 		didYouMean,
 		searchQuery,
+		ranked,
 		pinnedPosts,
 		otherPosts,
 		selected,

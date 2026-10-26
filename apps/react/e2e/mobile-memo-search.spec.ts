@@ -30,4 +30,19 @@ test.describe('휴대폰 메모 검색', () => {
 		await similar.getByRole('button', { name: /Flux 패턴/ }).tap();
 		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
 	});
+
+	test('검색 결과는 날짜 묶음 없이 순위대로, 결과가 없어지면 목록에 이전 글이 남지 않는다', async ({ page }) => {
+		const memo = await openMemoList(page);
+		const list = memo.locator('.memo-list .memo-scroll > .memo-items');
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		// 맞는 정도 순서는 날짜 순서와 다르다: 날짜 묶음으로 나누면 같은 묶음 제목이 여러 번 생겨 React key가 겹친다
+		await search.fill('리액트');
+		await expect(list.locator('.memo-item').first()).toContainText('React');
+		await expect(memo.locator('.memo-list .memo-section-title')).toHaveCount(0);
+		await search.fill('');
+		await search.fill('리엑트');
+		await expect(memo.getByRole('region', { name: '비슷한 검색 결과' })).toBeVisible();
+		await expect(memo.locator('.memo-list .memo-scroll > .memo-items')).toHaveCount(0);
+		await expect(memo.locator('.memo-phone-title p')).toHaveText('0개의 메모');
+	});
 });

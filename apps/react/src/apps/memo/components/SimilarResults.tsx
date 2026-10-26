@@ -52,17 +52,16 @@ const SimilarResults = ({
 				<h3 className="memo-section-title">비슷한 글</h3>
 				<ul className="memo-items" aria-label="비슷한 글">
 					{posts.map((post) => (
-						<li key={post.slug}>
-							<NoteItem
-								post={post}
-								picked={null}
-								dragging={false}
-								drag={{}}
-								active={false}
-								today={today}
-								onOpen={() => onOpen(post)}
-							/>
-						</li>
+						<NoteItem
+							key={post.slug}
+							post={post}
+							picked={null}
+							dragging={false}
+							drag={{}}
+							active={false}
+							today={today}
+							onOpen={() => onOpen(post)}
+						/>
 					))}
 				</ul>
 			</>

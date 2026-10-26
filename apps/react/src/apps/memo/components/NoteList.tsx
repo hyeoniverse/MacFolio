@@ -229,7 +229,7 @@ export const NoteSections = ({
 	posts: Post[];
 	pinned: Post[];
 	others: Post[];
-	/** 묶지 않고 그대로 (최근 삭제된 항목) */
+	/** 묶지 않고 그대로 (최근 삭제된 항목, 순위대로 보는 인기글·검색 결과) */
 	flat: boolean;
 	arrangement: Arrangement;
 	today: Date;
@@ -237,7 +237,8 @@ export const NoteSections = ({
 	className: string;
 	render: (post: Post) => React.ReactNode;
 }) => {
-	if (flat) return <ul className={className}>{posts.map(render)}</ul>;
+	// 순위대로 볼 때 결과가 없으면 빈 목록 칸(휴대폰에서는 흰 카드)을 그리지 않는다
+	if (flat) return posts.length > 0 ? <ul className={className}>{posts.map(render)}</ul> : null;
 	const groups = groupPosts(others, arrangement, today);
 	const grouped = groups.some((group) => group.title !== null);
 	return (

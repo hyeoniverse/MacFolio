@@ -128,6 +128,7 @@ const Memo: React.FC = () => {
 		similar,
 		didYouMean,
 		searchQuery,
+		ranked,
 		pinnedPosts,
 		otherPosts,
 		selected,
@@ -239,7 +240,7 @@ const Memo: React.FC = () => {
 			posts={visible}
 			pinned={pinnedPosts}
 			others={otherPosts}
-			flat={inTrash || inPopular}
+			flat={inTrash || ranked}
 			arrangement={arrangement}
 			today={today}
 			pinnedTitle={pinnedTitle}
