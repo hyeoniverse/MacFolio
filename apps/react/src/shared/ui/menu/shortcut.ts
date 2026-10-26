@@ -11,6 +11,11 @@ export interface Shortcut {
 	alt?: boolean;
 	/** ⇧ */
 	shift?: boolean;
+	/**
+	 * 글자를 쓰는 칸에서도 듣는지. 지정하지 않으면 ⌘(Ctrl)가 있는 단축키만 듣는다.
+	 * 편집기가 같은 키를 쓰는 단축키(⌘[는 편집기의 목록 내어쓰기)는 false로 둔다
+	 */
+	whileTyping?: boolean;
 }
 
 /** 이 키보드가 맥인지 (⌘·⌥ 기호로 보이고, ⌘는 metaKey) */
@@ -64,7 +69,7 @@ export function matchesShortcut(event: KeyEventLike, shortcut: Shortcut, mac: bo
 }
 
 /** 글자를 쓰는 칸에서는 ⌘(Ctrl) 없는 단축키를 듣지 않는다 (맥에서 ⌥는 특수 문자 입력에 쓴다) */
-export const usableWhileTyping = (shortcut: Shortcut) => !!shortcut.mod;
+export const usableWhileTyping = (shortcut: Shortcut) => shortcut.whileTyping ?? !!shortcut.mod;
 
 /** 글자를 쓰는 칸인지 (입력 칸, 글 편집기) */
 export const isTypingTarget = (target: EventTarget | null) =>

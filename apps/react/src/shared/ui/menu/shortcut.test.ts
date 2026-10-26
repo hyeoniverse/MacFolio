@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ariaShortcut, formatShortcut, matchesShortcut, type Shortcut } from './shortcut';
+import { ariaShortcut, formatShortcut, matchesShortcut, usableWhileTyping, type Shortcut } from './shortcut';
 
 const press = (code: string, keys: { meta?: boolean; ctrl?: boolean; alt?: boolean; shift?: boolean } = {}) => ({
 	code,
@@ -36,5 +36,13 @@ describe('단축키', () => {
 		expect(matchesShortcut(press('KeyF', { ctrl: true }), find, true)).toBe(false);
 		expect(matchesShortcut(press('KeyF', { ctrl: true }), find, false)).toBe(true);
 		expect(matchesShortcut(press('BracketLeft', { alt: true, shift: true }), prevTab, true)).toBe(true);
+	});
+});
+
+describe('usableWhileTyping', () => {
+	it('⌘ 단축키는 쓰는 칸에서도 듣고, whileTyping: false면 듣지 않는다', () => {
+		expect(usableWhileTyping({ code: 'KeyF', mod: true })).toBe(true);
+		expect(usableWhileTyping({ code: 'KeyN', alt: true })).toBe(false);
+		expect(usableWhileTyping({ code: 'BracketLeft', mod: true, whileTyping: false })).toBe(false);
 	});
 });

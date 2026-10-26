@@ -19,6 +19,7 @@ export function useMemoAppMenus({
 	inTrash,
 	arrangement,
 	onArrange,
+	history,
 }: {
 	canEdit: boolean;
 	onNewNote: () => void;
@@ -32,6 +33,8 @@ export function useMemoAppMenus({
 	inTrash: boolean;
 	arrangement: Arrangement;
 	onArrange: (next: Arrangement) => void;
+	/** 뒤로·앞으로 (useMemoNavHistory) */
+	history: { canBack: boolean; canForward: boolean; goBack: () => void; goForward: () => void };
 }) {
 	useAppMenus('memo', [
 		{
@@ -79,6 +82,26 @@ export function useMemoAppMenus({
 				'separator',
 				{ label: '사이드바', checked: sidebarOpen, onSelect: onToggleSidebar },
 				...(inTrash ? [] : (['separator', ...sortMenuItems(arrangement, onArrange)] as MenuItem[])),
+			],
+		},
+		{
+			title: '이동',
+			items: [
+				{
+					label: '뒤로',
+					icon: 'fa-solid fa-chevron-left',
+					disabled: !history.canBack,
+					// Finder·Safari와 같은 ⌘[ ⌘]. 편집기에서는 목록 내어쓰기·들여쓰기에 쓰므로 듣지 않는다
+					shortcut: { code: 'BracketLeft', mod: true, whileTyping: false },
+					onSelect: history.goBack,
+				},
+				{
+					label: '앞으로',
+					icon: 'fa-solid fa-chevron-right',
+					disabled: !history.canForward,
+					shortcut: { code: 'BracketRight', mod: true, whileTyping: false },
+					onSelect: history.goForward,
+				},
 			],
 		},
 	]);

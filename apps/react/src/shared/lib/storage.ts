@@ -28,6 +28,8 @@ export const STORAGE_KEYS = {
 	messagesVisitor: 'macfolio:messages:visitor',
 	/** 탭을 닫으면 사라진다 (sessionStorage) */
 	appsBeforeLeaving: 'macfolio:apps-before-leaving',
+	/** 메모의 뒤로·앞으로 기록. 탭을 닫으면 사라진다 (sessionStorage, apps/memo/navHistory.ts) */
+	memoHistory: 'macfolio:memo:history',
 	window: (appName: string) => `macfolio:window:${appName}`,
 } as const;
 

@@ -53,10 +53,18 @@
 }
 
 .ui-menu-item:hover:not(:disabled),
+.ui-menu-item.is-tracked:not(:disabled),
 .ui-menu-item:focus-visible {
 	outline: none;
 	background-color: var(--color-control-accent);
 	color: var(--color-alternate-selected-control-text);
+}
+
+/* 강조 바탕에서는 흐린 둘째 줄도 강조 글자색으로 (흐린 회색은 강조색 위에서 읽기 어렵다. macOS 메뉴와 같다) */
+.ui-menu-item:hover:not(:disabled) .ui-menu-item-detail,
+.ui-menu-item.is-tracked:not(:disabled) .ui-menu-item-detail,
+.ui-menu-item:focus-visible .ui-menu-item-detail {
+	color: inherit;
 }
 
 .ui-menu-item:disabled {
@@ -183,4 +191,9 @@
 	opacity: 0.55;
 	font-variant-numeric: tabular-nums;
 	letter-spacing: 0.04em;
+}
+
+/* 휴대폰(touch) 메뉴의 누름 바탕은 옅은 회색이라 둘째 줄은 원래의 흐린 색을 둔다 */
+.ui-menu.touch .ui-menu-item:hover:not(:disabled) .ui-menu-item-detail {
+	color: var(--color-secondary-label);
 }

@@ -352,3 +352,27 @@
 	color: var(--memo-muted);
 	font-size: var(--text-caption2);
 }
+
+/* 뒤로·앞으로 (Finder·Safari의 ‹ ›): 두 버튼을 붙여 한 묶음으로. 길게 눌러도 글자 선택·iPad 길게 누르기 메뉴가 뜨지 않게 */
+.memo-history {
+	display: flex;
+	flex: none;
+	gap: var(--space-2);
+}
+
+.memo-history-step {
+	-webkit-touch-callout: none;
+	user-select: none;
+}
+
+/* 기록 목록 메뉴: 긴 글 제목에 메뉴가 화면을 가로지르지 않게 폭을 제한하고, 제목·폴더 줄은 한 줄로 줄인다 */
+.memo-history-menu {
+	max-width: min(320px, calc(100vw - var(--space-24)));
+}
+
+.memo-history-menu .ui-menu-item-label,
+.memo-history-menu .ui-menu-item-detail {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

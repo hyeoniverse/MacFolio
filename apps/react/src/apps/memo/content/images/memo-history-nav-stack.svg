@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="760" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#111827">메모의 이동 기록 (칸 = 연 폴더와 본 글)</text>
+  <text x="24" y="56" font-size="12.5" fill="#6b7280">굵은 테두리가 지금 칸. ‹는 왼쪽, ›는 오른쪽 칸으로 간다</text>
+
+  <g font-size="13">
+    <text x="24" y="104" font-weight="600" fill="#374151">① 글 셋을 연 뒤</text>
+    <rect x="200" y="82" width="120" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="260" y="105" text-anchor="middle" fill="#111827">모든 글 › A</text>
+    <rect x="336" y="82" width="120" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="396" y="105" text-anchor="middle" fill="#111827">모든 글 › B</text>
+    <rect x="472" y="82" width="120" height="36" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+    <text x="532" y="105" text-anchor="middle" fill="#111827">회고 › C</text>
+    <text x="610" y="105" fill="#6b7280">‹ 가능, › 불가</text>
+
+    <text x="24" y="174" font-weight="600" fill="#374151">② ‹를 두 번 (또는 ‹ 길게 눌러 A)</text>
+    <rect x="200" y="152" width="120" height="36" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+    <text x="260" y="175" text-anchor="middle" fill="#111827">모든 글 › A</text>
+    <rect x="336" y="152" width="120" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="396" y="175" text-anchor="middle" fill="#111827">모든 글 › B</text>
+    <rect x="472" y="152" width="120" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="532" y="175" text-anchor="middle" fill="#111827">회고 › C</text>
+    <text x="610" y="175" fill="#6b7280">› 가능 (B, C)</text>
+
+    <text x="24" y="244" font-weight="600" fill="#374151">③ 여기서 새 글 D를 열면</text>
+    <rect x="200" y="222" width="120" height="36" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="260" y="245" text-anchor="middle" fill="#111827">모든 글 › A</text>
+    <rect x="336" y="222" width="120" height="36" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+    <text x="396" y="245" text-anchor="middle" fill="#111827">모든 글 › D</text>
+    <rect x="472" y="222" width="120" height="36" rx="8" fill="none" stroke="#d1d5db" stroke-dasharray="5 4"/>
+    <text x="532" y="245" text-anchor="middle" fill="#9ca3af">B, C 버림</text>
+    <text x="610" y="245" fill="#6b7280">Safari와 같다</text>
+  </g>
+
+  <g font-size="12.5" fill="#374151">
+    <text x="24" y="298">• 칸은 최대 50개, 넘으면 오래된 칸부터 버린다. 이 탭의 sessionStorage에 두어 새로 고쳐도 남는다</text>
+    <text x="24" y="320">• 지운 글처럼 지금 없는 글의 칸은 ‹ ›와 길게 누르기 목록에서 건너뛴다</text>
+    <text x="24" y="342">• 브라우저 기록(뒤로 가기)에는 쌓지 않는다: 한 탭에 여러 앱 창이 떠 있어 어느 창의 기록인지 정할 수 없다</text>
+  </g>
+</svg>
