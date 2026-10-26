@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>목차의 세 상태(접힘·잠깐 열림·고정)와 데스크톱·휴대폰에서 상태가 바뀌는 동작</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4b5563"/></marker></defs>
+<rect width="860" height="400" fill="#fff"/>
+<text x="430" y="30" font-size="15" font-weight="600" fill="#1f2937" text-anchor="middle">목차의 세 상태와 바뀌는 동작 (useTocDisclosure)</text>
+<g font-size="13">
+<rect x="40" y="150" width="180" height="90" rx="12" fill="#f3f4f6" stroke="#9ca3af"/>
+<text x="130" y="188" text-anchor="middle" font-weight="600" fill="#111827">접힘 (closed)</text>
+<text x="130" y="210" text-anchor="middle" fill="#4b5563" font-size="12">› 목차 11 한 줄만</text>
+<rect x="340" y="60" width="180" height="90" rx="12" fill="#fef3c7" stroke="#d97706"/>
+<text x="430" y="98" text-anchor="middle" font-weight="600" fill="#111827">잠깐 열림 (peek)</text>
+<text x="430" y="120" text-anchor="middle" fill="#4b5563" font-size="12">본문 위에 떠 있는 목록</text>
+<text x="430" y="137" text-anchor="middle" fill="#4b5563" font-size="12">본문을 밀지 않는다</text>
+<rect x="640" y="150" width="180" height="90" rx="12" fill="#dbeafe" stroke="#2563eb"/>
+<text x="730" y="188" text-anchor="middle" font-weight="600" fill="#111827">고정 (pinned)</text>
+<text x="730" y="210" text-anchor="middle" fill="#4b5563" font-size="12">판 안에 펼침 · 다음 방문에도</text>
+<path d="M200 150 L340 110" stroke="#4b5563" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="210" y="112" fill="#b45309" font-size="12">마우스 올림 (120ms) · 탭</text>
+<path d="M340 135 L215 170" stroke="#4b5563" stroke-width="1.5" fill="none" marker-end="url(#a)" stroke-dasharray="5 4"/>
+<text x="232" y="172" fill="#4b5563" font-size="12">벗어남 (250ms) · 바깥 탭 · 항목 고름 · Esc</text>
+<path d="M520 110 L650 150" stroke="#4b5563" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="560" y="112" fill="#1d4ed8" font-size="12">클릭 · 길게 누름</text>
+<path d="M220 205 L640 205" stroke="#4b5563" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="430" y="198" text-anchor="middle" fill="#1d4ed8" font-size="12">클릭 · Enter·Space · 길게 누름 (500ms)</text>
+<path d="M640 225 L220 225" stroke="#4b5563" stroke-width="1.5" fill="none" marker-end="url(#a)" stroke-dasharray="5 4"/>
+<text x="430" y="243" text-anchor="middle" fill="#4b5563" font-size="12">다시 클릭 · Enter·Space · 탭 · Esc</text>
+</g>
+<g font-size="12.5" fill="#374151">
+<rect x="40" y="280" width="780" height="100" rx="10" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="60" y="306" font-weight="600" fill="#111827">어떤 입력인지는 pointerdown의 pointerType으로 가른다 (click 이벤트에는 마우스·손가락 구분이 없다)</text>
+<text x="60" y="330">· mouse: 올리면 잠깐 열림, 누르면 고정을 켜고 끈다 · touch·pen: 탭은 잠깐 열고 닫기, 500ms 누르면 고정 (손을 뗄 때 오는 click은 무시)</text>
+<text x="60" y="352">· 키보드(click의 detail = 0): Enter·Space가 고정을 켜고 끈다 · Esc는 어느 상태든 접는다</text>
+<text x="60" y="372">· 떠 있는 목차 버튼(≡)도 같은 규칙. 그 창의 고정은 기억하지 않는다</text>
+</g>
+</svg>
