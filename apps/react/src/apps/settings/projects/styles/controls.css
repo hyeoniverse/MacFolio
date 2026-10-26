@@ -43,11 +43,7 @@ textarea.projects-input {
 .projects-input.mono {
 	height: 24px;
 	color: var(--color-secondary-label);
-	font:
-		11.5px ui-monospace,
-		SFMono-Regular,
-		Menlo,
-		monospace;
+	font: 11.5px var(--font-mono);
 }
 
 .projects-input.mono:focus {

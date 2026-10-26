@@ -294,7 +294,7 @@
 
 /* 코드 글꼴: 문서 보기는 브라우저 기본 고정폭 글꼴, 메모는 시스템 고정폭 글꼴. 코드 블록 안의 코드도 글줄 안 코드처럼 작게 */
 .memo-markdown code {
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-family: var(--font-mono);
 }
 
 .memo-markdown pre code {

@@ -45,7 +45,7 @@
 	height: 100%;
 	background-color: var(--safari-bg);
 	color: var(--safari-text);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	text-align: left;
 	container-type: inline-size;
 }

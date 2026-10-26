@@ -8,7 +8,7 @@
 	background-color: var(--color-popover-background);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-label);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: var(--text-caption);
 	animation: pop-in var(--duration-fast) var(--ease-out);
 	transform-origin: top left;

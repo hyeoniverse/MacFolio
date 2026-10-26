@@ -8,8 +8,9 @@ const FAMILY = 'Resume Sans';
 Font.register({
 	family: FAMILY,
 	fonts: [
-		{ src: '/fonts/AppleSDGothicNeoR.ttf', fontWeight: 400 },
-		{ src: '/fonts/AppleSDGothicNeoB.ttf', fontWeight: 700 },
+		// 사이트와 같은 Pretendard. 브라우저의 react-pdf(fontkit)는 woff를 풀 때 Node의 Buffer가 필요해 OTF를 쓴다
+		{ src: '/fonts/Pretendard-Regular.otf', fontWeight: 400 },
+		{ src: '/fonts/Pretendard-Bold.otf', fontWeight: 700 },
 	],
 });
 // 한글은 낱말 중간에서 줄을 나누지 않는다 (react-pdf의 기본 하이픈 나누기를 끈다)

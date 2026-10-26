@@ -64,7 +64,7 @@
 	padding: var(--space-8);
 	background-color: var(--messages-window-bg);
 	color: var(--messages-text);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: var(--text-footnote);
 	text-align: left;
 }

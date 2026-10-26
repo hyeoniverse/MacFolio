@@ -166,7 +166,7 @@ const PageSvg: React.FC<{ variant: 'doc' | 'post' }> = ({ variant }) => (
 					fontSize="7"
 					fontWeight="700"
 					fill="#ffffff"
-					fontFamily="system-ui, sans-serif"
+					style={{ fontFamily: 'var(--font-sans)' }}
 				>
 					MD
 				</text>
@@ -196,7 +196,7 @@ const PdfSvg = () => (
 			fontSize="8"
 			fontWeight="700"
 			fill="#ffffff"
-			fontFamily="system-ui, sans-serif"
+			style={{ fontFamily: 'var(--font-sans)' }}
 		>
 			PDF
 		</text>
@@ -221,7 +221,7 @@ const FileSvg: React.FC<{ ext: string }> = ({ ext }) => (
 			fontSize={ext.length > 3 ? 6.5 : 8}
 			fontWeight="700"
 			fill="#ffffff"
-			fontFamily="system-ui, sans-serif"
+			style={{ fontFamily: 'var(--font-sans)' }}
 		>
 			{ext}
 		</text>

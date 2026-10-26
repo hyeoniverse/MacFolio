@@ -18,7 +18,7 @@
 	--bt-width: 1088px;
 	--bt-pad: 40px;
 	/* 한글은 고정폭 글꼴에 없어 시스템 글꼴로 이어진다 (고정폭 대체 글꼴의 넓은 한글을 피한다) */
-	--bt-mono: ui-monospace, 'SF Mono', Menlo, -apple-system, MacSystemFont, sans-serif;
+	--bt-mono: var(--font-mono);
 	--reveal-from: translateY(14px);
 	background-color: var(--bt-bg);
 	color: var(--bt-ink);

@@ -1,7 +1,6 @@
 /* magazine 템플릿 (잡지의 사례 연구 기사): 따뜻한 종이, 검은 잉크, 붉은 잉크 하나. 명조 제목과 고딕 본문, 1px 선과 겹줄,
    사진은 옅은 판 위에 크게. 그림자·빛 번짐 없이 타이포와 여백, 선으로 짠다.
-   명조는 Noto Serif KR이 기기에 있으면 그것을, 없으면 나눔명조·애플명조를 쓴다 (CSP가 바깥 글꼴을 막아 내려받지 않는다).
-   라틴 글자와 숫자는 Iowan Old Style(맥)·Georgia의 올드스타일 숫자로 */
+   명조는 사이트가 함께 내보내는 Noto Serif KR(--font-serif, ProjectPage.css가 불러온다)이라 기기와 관계없이 같다 */
 .tpl-magazine {
 	--lk-accent: #b23a2b;
 	--lk-accent-2: #d98a7e;
@@ -16,8 +15,8 @@
 	--mg-line-soft: rgba(26, 24, 20, 0.08);
 	--mg-plate: #efebe1;
 	--mg-tint: #f3f0e8;
-	--mg-serif: 'Iowan Old Style', 'Charter', 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', Georgia, serif;
-	--mg-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+	--mg-serif: var(--font-serif);
+	--mg-mono: var(--font-mono);
 	--mg-measure: 680px;
 	--mg-wide: 1120px;
 	--mg-gutter: 56px;

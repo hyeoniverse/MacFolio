@@ -15,7 +15,7 @@
 	--kn-text: #f5f5f7;
 	--kn-muted: #a1a1a6;
 	--kn-dim: #6e6e73;
-	--kn-mono: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, monospace;
+	--kn-mono: var(--font-mono);
 	--kn-wide: 1180px;
 	--kn-gutter: clamp(20px, 5cqi, 72px);
 	--kn-scene: clamp(104px, 13cqi, 184px);

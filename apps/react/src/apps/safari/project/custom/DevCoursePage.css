@@ -5,7 +5,7 @@
 	--tm-text: #e6edf3;
 	--tm-muted: #9da7b3;
 	--tm-out: #d4dbe3;
-	--tm-sans: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+	--tm-sans: var(--font-sans);
 	--tm-green: #3fb950;
 	--tm-blue: #79c0ff;
 	--tm-string: #a5d6ff;

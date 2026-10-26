@@ -30,7 +30,7 @@
 	overflow-y: auto;
 	background-color: var(--terminal-bg);
 	color: var(--terminal-text);
-	font-family: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, 'D2Coding', monospace;
+	font-family: var(--font-mono);
 	font-size: var(--terminal-font-size);
 	line-height: var(--terminal-line-height);
 	text-align: left;

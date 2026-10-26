@@ -1,6 +1,7 @@
 // 앱 시작: main.tsx가 사이트 콘텐츠(프로필·프로젝트)를 합친 뒤에 이 파일을 불러온다
 import ReactDOM from 'react-dom/client';
 import './styles/layers.css';
+import './styles/fonts.css';
 import './styles/theme.css';
 import './styles/motion.css';
 import './styles/prose.css';

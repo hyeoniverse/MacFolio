@@ -770,7 +770,7 @@
 
 .widget-quote-mark {
 	height: 0.55em;
-	font-family: Georgia, 'Times New Roman', serif;
+	font-family: var(--font-serif);
 	font-size: 44px;
 	font-weight: 700;
 	line-height: 1;
