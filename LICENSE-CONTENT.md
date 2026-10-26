@@ -27,13 +27,14 @@ All rights reserved. Do not copy, modify, redistribute or republish without prio
 
 Rights to the files below belong to their respective owners. Neither the MIT License nor the author's content terms apply to them.
 
-| 경로                                                                                                             | 내용                                                                                                            |
-| ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `apps/react/public/musics/` (`1.mp3`\~`7.mp3`)                                                                   | 음악 앱의 곡: Joe Hisaishi, Youmi Kimura, Yiruma, dai, Kaoru Wada의 곡 (`apps/react/src/apps/music/library.ts`) |
-| `apps/react/public/imgs/Album_*.png`, `Album_*.webp`                                                             | 위 곡의 앨범 아트                                                                                               |
-| `apps/react/public/imgs/wallpapers/`                                                                             | macOS·iOS 배경화면 (Big Sur, Sequoia, Sonoma, Tahoe, iOS 18 등)                                                 |
-| `apps/react/public/sounds/`                                                                                      | Mac 시동음(`mac-startup.mp3`)과 클릭 효과음                                                                     |
-| `apps/react/public/imgs/`의 앱 아이콘 PNG·WebP (`finder`, `safari`, `photos`, `messages`, `github`, `notion` 등) | macOS 앱 아이콘과 외부 서비스의 로고·상표                                                                       |
+| 경로                                                                                                             | 내용                                                                                                                                       |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `apps/react/public/musics/` (`1.mp3`\~`7.mp3`)                                                                   | 음악 앱의 곡: Joe Hisaishi, Youmi Kimura, Yiruma, dai, Kaoru Wada의 곡 (`apps/react/src/apps/music/library.ts`)                            |
+| `apps/react/public/imgs/Album_*.png`, `Album_*.webp`                                                             | 위 곡의 앨범 아트                                                                                                                          |
+| `apps/react/public/imgs/wallpapers/`                                                                             | macOS·iOS 배경화면 (Big Sur, Sequoia, Sonoma, Tahoe, iOS 18 등)                                                                            |
+| `apps/react/public/sounds/`                                                                                      | Mac 시동음(`mac-startup.mp3`)과 클릭 효과음                                                                                                |
+| `apps/react/public/imgs/`의 앱 아이콘 PNG·WebP (`finder`, `safari`, `photos`, `messages`, `github`, `notion` 등) | macOS 앱 아이콘과 외부 서비스의 로고·상표                                                                                                  |
+| `apps/react/src/apps/memo/content/images/vscode-extensions-web-*.jpg`                                            | VS Code 확장 보기의 상세 화면 캡처. 화면 속 확장 아이콘·이름·설명·README 내용은 각 확장 게시자의 것이고, VS Code 화면은 Microsoft의 것이다 |
 
 ## 오픈 라이선스 글꼴 (Open-licensed fonts)
 
