@@ -12,16 +12,18 @@ const ACTIVE_OFFSET = 96;
 /** 목차 항목들 (제목 아래 목차와 떠 있는 목차 창이 같이 쓴다) */
 const TocList = ({
 	id,
+	hidden,
 	entries,
 	active,
 	onJump,
 }: {
 	id?: string;
+	hidden?: boolean;
 	entries: TocEntry[];
 	active: number;
 	onJump: (index: number) => void;
 }) => (
-	<ol id={id} className="memo-toc-list">
+	<ol id={id} hidden={hidden} className="memo-toc-list">
 		{entries.map((entry, index) => (
 			<li key={index} data-level={entry.level}>
 				<button type="button" aria-current={index === active ? 'location' : undefined} onClick={() => onJump(index)}>
@@ -34,10 +36,10 @@ const TocList = ({
 
 /**
  * 글의 목차. 본문의 ## · ### 제목으로 만든다. 제목이 TOC_MIN_HEADINGS개 미만이면 그리지 않는다.
- * - 제목 아래의 목차: 접힌 채 시작한다. 마우스를 올리면 목록이 본문 위에 떠서 열리고(본문을 밀지 않는다),
- *   클릭하면 본문 안에 펼친 채 고정한다. 휴대폰은 탭하면 떠서 열리고, 길게 누르면 고정한다 (useTocDisclosure)
- * - 스크롤해 목차가 화면 위로 지나가면 오른쪽 위에 목차 버튼을 띄운다 (넓은 화면). 같은 규칙으로 목차 창을 연다
- * - 지금 읽는 절은 두 곳 모두 표시한다
+ * Apple 개발자 문서의 'On This Page'처럼 상자 없이 작은 글자 목록과 왼쪽 세로선으로 그린다 (styles/toc.css).
+ * - 제목 아래의 목차: 접힌 채 시작한다. 누르면(클릭·탭·Enter·Space) 펼치고 다시 누르면 접는다. 펼쳐 두면 기억한다 (useTocDisclosure)
+ * - 스크롤해 목차가 화면 위로 지나가면 오른쪽 위에 목차 버튼을 띄운다 (넓은 화면). 누르면 같은 목록을 메뉴 재질의 창으로 연다
+ * - 지금 읽는 절은 두 곳 모두 강조색 글자와 세로선 위의 굵은 막대로 표시한다
  * 항목을 누르면 본문의 그 제목으로 스크롤한다. 주소의 #는 바꾸지 않는다 (글 주소가 /memo/<글>이라서, 각주 이동과 같은 원칙).
  * 편집 화면(editor)에서는 제목 앞에 커서를 둔다 (제목에 tabindex를 붙이면 편집기 문서가 바뀌므로 초점 대신 커서)
  */
@@ -71,9 +73,8 @@ const MemoToc = ({
 
 	const visible = showsToc(entries);
 
-	// 잠깐 연 목록은 바깥을 누르면 닫는다 (휴대폰의 탭). 고정한 목록은 그대로 둔다
-	useDismiss(inline.peek && !inline.pinned, inline.close, [nav]);
-	useDismiss(panel.peek && !panel.pinned, panel.close, [floatBox]);
+	// 목차 창은 바깥을 누르면 닫는다
+	useDismiss(panel.open, panel.close, [floatBox]);
 
 	// 지금 읽는 절과, 제목 아래 목차가 화면 위로 지나갔는지 (떠 있는 버튼)
 	useEffect(() => {
@@ -117,39 +118,29 @@ const MemoToc = ({
 			heading.setAttribute('tabindex', '-1');
 			heading.focus({ preventScroll: true });
 		}
-		// 잠깐 연 목록은 고르면 닫는다
-		if (!inline.pinned) inline.close();
-		if (!panel.pinned) panel.close();
+		// 목차 창은 고르면 닫는다 (제목 아래 목차는 펼친 그대로)
+		panel.close();
 	};
 
 	if (!visible) return null;
 	const showFloat = floating && !compact;
-	const pinHint = compact ? '탭하면 열고, 길게 누르면 펼친 채 고정합니다' : '클릭하면 펼친 채 고정합니다';
 
 	return (
 		<>
 			{showFloat && (
-				<div
-					ref={floatBox}
-					className="memo-toc-float"
-					onKeyDown={panel.onKeyDown}
-					onPointerEnter={panel.hoverProps.onPointerEnter}
-					onPointerLeave={panel.hoverProps.onPointerLeave}
-				>
+				<div ref={floatBox} className="memo-toc-float" onKeyDown={panel.onKeyDown}>
 					<IconButton
 						className="memo-toc-float-button"
-						icon={panel.pinned ? 'fa-solid fa-thumbtack' : 'fa-solid fa-list-ul'}
+						icon="fa-solid fa-list-ul"
 						label="목차 보기"
-						title={`목차 · ${pinHint}`}
 						aria-expanded={panel.open}
 						aria-controls={panelId}
-						aria-pressed={panel.pinned}
-						on={panel.pinned}
-						{...panel.toggleProps}
+						on={panel.open}
+						onClick={panel.toggle}
 					/>
 					{panel.open && (
 						<div id={panelId} className="memo-toc-panel" role="group" aria-label="목차 바로가기">
-							<p className="memo-toc-panel-title">목차</p>
+							<p className="memo-toc-heading">목차</p>
 							<TocList entries={entries} active={active} onJump={jump} />
 						</div>
 					)}
@@ -159,29 +150,24 @@ const MemoToc = ({
 				ref={nav}
 				className="memo-toc"
 				aria-label="목차"
-				data-state={inline.pinned ? 'pinned' : inline.peek ? 'peek' : 'closed'}
 				data-compact={compact || undefined}
 				onKeyDown={inline.onKeyDown}
-				{...inline.hoverProps}
 			>
 				<button
 					type="button"
-					className="memo-toc-toggle"
+					className="memo-toc-toggle memo-toc-heading"
 					aria-expanded={inline.open}
 					aria-controls={listId}
-					aria-pressed={inline.pinned}
-					title={pinHint}
-					{...inline.toggleProps}
+					onClick={inline.toggle}
 				>
-					<i className="fa-solid fa-chevron-right memo-toc-chevron" aria-hidden="true" />
-					<span className="memo-toc-label">목차</span>
-					<span className="memo-toc-count" aria-hidden="true">
-						{entries.length}
-					</span>
-					{inline.pinned && <i className="fa-solid fa-thumbtack memo-toc-pin" aria-hidden="true" />}
+					목차
+					<i className="fa-solid fa-chevron-down memo-toc-chevron" aria-hidden="true" />
 				</button>
-				<div className="memo-toc-body" hidden={!inline.open}>
-					<TocList id={listId} entries={entries} active={active} onJump={jump} />
+				{/* 접고 펼칠 때 높이가 grid-template-rows 0fr ↔ 1fr로 늘고 줄며 목록이 서서히 나타난다 (styles/toc.css) */}
+				<div className="memo-toc-collapse" data-open={inline.open}>
+					<div className="memo-toc-collapse-inner">
+						<TocList id={listId} entries={entries} active={active} onJump={jump} />
+					</div>
 				</div>
 			</nav>
 		</>

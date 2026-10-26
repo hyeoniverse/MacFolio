@@ -11,8 +11,8 @@ export const STORAGE_KEYS = {
 	memoSidebarWidth: 'macfolio:memo:sidebar-width',
 	memoListWidth: 'macfolio:memo:list-width',
 	memoTextScale: 'macfolio:memo:text-scale',
-	/** 메모 글의 목차를 펼친 채 고정했는지 (apps/memo/useTocDisclosure) */
-	memoTocPinned: 'macfolio:memo:toc-pinned',
+	/** 메모 글의 목차를 펼쳐 두었는지 (apps/memo/useTocDisclosure) */
+	memoTocOpen: 'macfolio:memo:toc-open',
 	weatherPlaces: 'macfolio:weather:places',
 	weatherUnit: 'macfolio:weather:unit',
 	/** 바탕화면 아이콘의 칸 (desktop/icons) */
