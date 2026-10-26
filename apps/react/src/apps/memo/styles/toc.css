@@ -172,12 +172,13 @@
 }
 
 /* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다.
-   글자 크기 버튼(.memo-text-size, z-index 10)보다 위 (좁은 창에서 목차 창이 그 자리까지 내려와도 가리지 않게) */
+   글자 크기 버튼(.memo-text-size, z-index 8)보다 위 (좁은 창에서 목차 창이 그 자리까지 내려와도 가리지 않게).
+   최근 검색 목록이 열린 검색 칸(10)보다는 아래 */
 .memo-toc-float {
 	display: flex;
 	position: sticky;
 	top: var(--space-8);
-	z-index: 11;
+	z-index: 9;
 	justify-content: flex-end;
 	height: 0;
 }
