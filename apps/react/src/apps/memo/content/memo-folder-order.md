@@ -94,7 +94,6 @@ export function reorderFolders(organization: Organization, siblings: string[]): 
 ## 관련 글
 
 - [메모 폴더 정리 API](/memo/memo-organization-api)
-- [메모 폴더를 다시 정리하기](/memo/memo-folders-reorg)
 - [GitHub 앱을 진짜 GitHub로 (저장소 고르기)](/memo/github-live-profile)
 - [휴대폰 메모](/memo/memo-mobile)
 
