@@ -1,7 +1,7 @@
 ---
 title: 첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정
 date: 2026-10-22
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/성능
 summary: 성능 측정에서 찾은 병목을 하나씩 개선했다. 항목마다 문제, 근거, 수정한 코드의 전후, 효과, 시행착오를 정리했다. 글꼴 subset, 동적 import, modulepreload, WebP, HTML 첫 렌더링, 탭한 뒤에 렌더링하는 홈 화면까지.
 ---
 

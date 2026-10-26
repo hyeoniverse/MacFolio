@@ -1,7 +1,7 @@
 ---
 title: 데스크톱과 휴대폰의 메뉴 모양을 variant로 고르기
 date: 2026-10-18
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/디자인 시스템
 summary: 같은 부품이 macOS와 iOS 모양을 선택하는 곳을 모두 찾았다. variant가 적합한 곳은 Menu 하나라 className="touch"를 variant="ios"로 바꿨고(9파일), Sheet·Modal 등은 이유를 기록하고 별도 부품으로 유지했다.
 ---
 

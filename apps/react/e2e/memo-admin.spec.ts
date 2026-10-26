@@ -31,7 +31,7 @@ test.describe('메모 편집 (관리자)', () => {
 
 		await memo.getByRole('button', { name: '새로운 폴더' }).click();
 		const input = memo.getByRole('textbox', { name: '새로운 폴더 이름' });
-		await input.fill('개발기');
+		await input.fill('개발 기록');
 		await input.press('Enter');
 		await expect(memo.getByRole('alert')).toHaveText('이미 있는 폴더예요.');
 
@@ -129,7 +129,7 @@ test.describe('메모 편집 (관리자)', () => {
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		const newFolder = memo.getByRole('button', { name: '새로운 폴더', exact: true });
 
-		// 개발기(1단) / MacFolio(2단) / 회고(3단): 3단 폴더를 고르면 그 안에는 만들 수 없다
+		// 개발 기록(1단) / MacFolio(2단) / 회고(3단): 3단 폴더를 고르면 그 안에는 만들 수 없다
 		await folders.getByRole('button', { name: /^회고/ }).click();
 		await expect(folders.getByRole('button', { name: /^회고/ })).toHaveAttribute('aria-current', 'true');
 		await expect(newFolder).toBeDisabled();
@@ -137,14 +137,17 @@ test.describe('메모 편집 (관리자)', () => {
 		await expect(page.getByRole('menuitem', { name: '새로운 폴더' })).toBeDisabled();
 		await page.keyboard.press('Escape');
 
-		// 3단 높이인 개발기를 다른 폴더 안으로는 옮길 수 없다
+		// 3단 높이인 개발 기록을 다른 폴더 안으로는 옮길 수 없다
 		await folders.getByRole('button', { name: /^모든 글/ }).click();
 		await newFolder.click();
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).press('Enter');
-		await folders.getByRole('button', { name: /^개발기/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
+		// 폴더가 많아 목록이 길다. 두 맨 위 폴더의 하위를 접어 끄는 두 폴더가 한 화면에 들어오게 한다
+		await folders.getByRole('button', { name: '하위 폴더 접기 (개발 기록)' }).click();
+		await folders.getByRole('button', { name: '하위 폴더 접기 (기술 노트)' }).click();
+		await folders.getByRole('button', { name: /^개발 기록/ }).dragTo(folders.getByRole('button', { name: /^보관/ }));
 		await expect(folders.getByRole('button', { name: /^보관/ })).toContainText('0');
-		await expect(folders.getByRole('button', { name: /^개발기/ })).toBeVisible();
+		await expect(folders.getByRole('button', { name: /^개발 기록/ })).toBeVisible();
 	});
 
 	test('메모를 고정하면 맨 위 고정됨 묶음에 들어가고, 풀 수 있다', async ({ page }) => {
@@ -241,7 +244,7 @@ test.describe('메모 편집 (관리자)', () => {
 		const changed = {
 			title: '서버에서 고친 제목',
 			date: '2026-09-29',
-			category: '개발기/MacFolio/프론트엔드',
+			category: '개발 기록/MacFolio/테스트·CI',
 			summary: '',
 			body: '서버에서 고친 본문',
 		};

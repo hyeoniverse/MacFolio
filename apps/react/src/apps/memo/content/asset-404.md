@@ -1,7 +1,7 @@
 ---
 title: 없는 코드 파일에 index.html을 주던 문제
 date: 2026-10-05
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/배포·운영
 summary: 사이트는 없는 주소에 항상 index.html을 200으로, 그것도 1년 캐시 헤더와 함께 응답했다. 배포로 삭제된 옛 코드 파일 요청도 마찬가지였다. 없는 주소만 처리하는 11줄짜리 Worker 함수로 앱 주소는 첫 화면, 파일 주소는 404로 분리했다.
 ---
 

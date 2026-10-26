@@ -1,7 +1,7 @@
 ---
 title: 서버 하드닝은 문서가 아니라 스크립트로 남긴다
 date: 2026-10-10
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/보안
 summary: "SSH는 키로만, 열린 포트는 22뿐, 컨테이너는 root가 아닌 사용자로, 보안 업데이트는 자동으로." 이 네 가지를 문서에 적는 대신 ops/audit.sh가 서버 상태를 읽어 OK/확인을 출력하게 했다. 첫 실행에서 스크립트 쪽 오류 두 가지(루프백 DNS, distroless 사용자)를 수정했다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: MacFolio의 store 설계 - Flux·Redux에서 따른 것과 뺀 것
 date: 2026-10-26
-category: 개발기/MacFolio/설계
+category: 개발 기록/MacFolio/설계
 summary: MacFolio는 창·로그인·알림 상태를 desktop-core의 createStore로 만들고 React는 useSyncExternalStore로 구독한다. Flux·Redux에서 단방향 흐름과 불변 갱신은 따르고 Action·Dispatcher·단일 store는 뺀 이유, ESLint가 흐름을 강제하는 구조를 정리했다.
 ---
 

@@ -8,6 +8,7 @@
 @import './styles/editor-blocks.css';
 @import './styles/comments.css';
 @import './styles/markdown.css';
+@import './styles/toc.css';
 @import './styles/gallery.css';
 @import './styles/compact.css';
 @import './styles/phone-note.css';

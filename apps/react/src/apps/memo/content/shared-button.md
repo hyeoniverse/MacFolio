@@ -1,7 +1,7 @@
 ---
 title: '!important 66개 지우기와 공통 아이콘 버튼'
 date: 2026-10-01
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱 기본값을 CSS 레이어로 내린 덕분에 남은 !important 66개를 모두 삭제했다. 화면 58장과 계산된 스타일 약 1,200건을 비교해 차이 세 건을 찾아 수정했고, 앱마다 별도로 있던 아이콘 버튼 4종을 IconButton 하나로 통합했다.
 ---
 

@@ -15,6 +15,13 @@ describe('이미지 경로', () => {
 		expect(fromEditorMarkdown(shown, images)).toBe(source);
 	});
 
+	it('배치 표기(#float-right 등)는 주소를 바꿔도 끝에 그대로 남는다', () => {
+		const source = "![설명](./images/a.jpg#float-right '캡션')";
+		const shown = toEditorMarkdown(source, images);
+		expect(shown).toBe("![설명](/assets/a-123.jpg#float-right '캡션')");
+		expect(fromEditorMarkdown(shown, images)).toBe(source);
+	});
+
 	it('모르는 경로는 그대로', () => {
 		expect(toEditorMarkdown('![x](./images/none.jpg)', images)).toBe('![x](./images/none.jpg)');
 	});

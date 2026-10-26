@@ -2,6 +2,7 @@
 export * from './arrange.js';
 export * from './caption.js';
 export * from './find.js';
+export * from './imageLayout.js';
 export * from './organize.js';
 export * from './postRules.js';
 export * from './popular.js';

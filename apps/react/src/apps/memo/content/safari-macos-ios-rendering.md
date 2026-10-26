@@ -1,7 +1,7 @@
 ---
 title: macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점
 date: 2026-10-22
-category: 기술 노트/브라우저
+category: 기술 노트/프론트엔드/브라우저
 summary: macOS Safari에서 정상으로 보인 화면이 iOS Safari에서는 다르게 렌더링될 수 있다. 렌더링 엔진과 운영체제의 관계, macOS와 iOS WebKit의 합성 방식 차이, Chrome·Safari·Firefox의 차이, 기기 에뮬레이션 테스트가 놓치는 부분을 정리하고, 자주 생기는 문제를 도식과 코드로 비교했다.
 ---
 

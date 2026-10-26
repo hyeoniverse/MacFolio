@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 470" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4f46e5"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#059669"/></marker>
+  </defs>
+  <rect width="760" height="470" fill="#fff"/>
+  <text x="380" y="28" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">Flux 한 사이클: 할 일 하나를 추가할 때</text>
+  <text x="380" y="48" font-size="11.5" fill="#6b7280" text-anchor="middle">시퀀스 다이어그램. 세로선은 각 구성 요소, 위에서 아래로 시간 순서</text>
+
+  <g font-size="12" font-weight="600" text-anchor="middle">
+    <rect x="40" y="64" width="110" height="34" rx="7" fill="#eef2ff" stroke="#a5b4fc"/><text x="95" y="86" fill="#312e81">View</text>
+    <rect x="180" y="64" width="120" height="34" rx="7" fill="#eef2ff" stroke="#a5b4fc"/><text x="240" y="86" fill="#312e81">action creator</text>
+    <rect x="330" y="64" width="110" height="34" rx="7" fill="#eef2ff" stroke="#a5b4fc"/><text x="385" y="86" fill="#312e81">Dispatcher</text>
+    <rect x="470" y="64" width="110" height="34" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/><text x="525" y="86" fill="#065f46">TodoStore</text>
+    <rect x="610" y="64" width="110" height="34" rx="7" fill="#ecfdf5" stroke="#6ee7b7"/><text x="665" y="86" fill="#065f46">CountStore</text>
+  </g>
+  <g stroke="#d1d5db" stroke-dasharray="4 4">
+    <line x1="95" y1="98" x2="95" y2="420"/><line x1="240" y1="98" x2="240" y2="420"/><line x1="385" y1="98" x2="385" y2="420"/><line x1="525" y1="98" x2="525" y2="420"/><line x1="665" y1="98" x2="665" y2="420"/>
+  </g>
+
+  <g font-size="11" fill="#1f2937">
+    <line x1="95" y1="128" x2="236" y2="128" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="165" y="121" text-anchor="middle">① 입력 → create(text)</text>
+
+    <line x1="240" y1="166" x2="381" y2="166" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="312" y="142" text-anchor="middle">② dispatch(</text>
+    <text x="312" y="157" text-anchor="middle" fill="#4b5563">{ type: 'todo/create' })</text>
+
+    <line x1="385" y1="204" x2="521" y2="204" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="455" y="197" text-anchor="middle">③ 등록된 콜백 호출</text>
+    <line x1="385" y1="236" x2="661" y2="236" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ab)"/>
+    <text x="525" y="229" text-anchor="middle">③ 같은 Action을 모든 Store 콜백에</text>
+
+    <rect x="470" y="252" width="110" height="28" rx="6" fill="#fff" stroke="#6ee7b7"/>
+    <text x="525" y="270" text-anchor="middle" fill="#065f46">④ todos에 추가</text>
+    <rect x="610" y="252" width="110" height="28" rx="6" fill="#fff" stroke="#6ee7b7"/>
+    <text x="665" y="270" text-anchor="middle" fill="#065f46">④ 개수 +1</text>
+
+    <line x1="525" y1="306" x2="99" y2="306" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ag)"/>
+    <text x="310" y="299" text-anchor="middle" fill="#065f46">⑤ change 이벤트</text>
+    <line x1="665" y1="336" x2="99" y2="336" stroke="#059669" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ag)"/>
+    <text x="380" y="329" text-anchor="middle" fill="#065f46">⑤ change 이벤트</text>
+
+    <rect x="30" y="352" width="130" height="44" rx="6" fill="#fff" stroke="#a5b4fc"/>
+    <text x="95" y="370" text-anchor="middle" fill="#312e81">⑥ Store에서 상태를</text>
+    <text x="95" y="386" text-anchor="middle" fill="#312e81">다시 읽고 렌더링</text>
+  </g>
+
+  <rect x="20" y="428" width="720" height="32" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+  <text x="380" y="449" font-size="11.5" fill="#374151" text-anchor="middle">파란 실선은 상태를 바꾸는 요청(Action), 초록 점선은 바뀌었다는 알림. View에서 Store로 직접 가는 선은 없다</text>
+</svg>

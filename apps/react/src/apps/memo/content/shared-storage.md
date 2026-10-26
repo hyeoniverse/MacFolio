@@ -1,7 +1,7 @@
 ---
 title: try/catch 열두 개를 하나로 — 브라우저 저장소 모듈
 date: 2026-10-10
-category: 개발기/MacFolio/인프라
+category: 개발 기록/MacFolio/설계
 summary: 브라우저 저장소를 사용하는 파일 7개가 각각 키 문자열, JSON.parse, try/catch(12개)를 포함하고 있었다. storage.ts에 키 목록과 readJson·writeJson을 정의하고 예외를 그곳에서 처리해, 호출하는 쪽에는 형태 검사만 남았다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기
 date: 2026-10-18
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/기능
 summary: Finder 문서 아래에 이력서·포트폴리오·자격증 폴더를 만들고, PDF와 그림은 macOS처럼 별도 창의 미리보기 앱에서 연다. 파일은 저장소가 아니라 Cloudflare R2에 보관하고 사이트 Worker가 같은 출처(/files/)로 제공한다. 관리자는 끌어다 놓아 R2에 바로 업로드한다.
 ---
 

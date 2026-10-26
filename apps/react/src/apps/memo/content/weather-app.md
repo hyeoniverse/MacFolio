@@ -1,7 +1,7 @@
 ---
 title: macOS 날씨 앱 만들기 (Open-Meteo)
 date: 2026-10-10
-category: 개발기/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/기능
 summary: macOS·iOS 날씨 앱 모양의 날씨 앱을 추가했다. 데이터는 키 없이 쓰는 Open-Meteo에서 브라우저가 직접 조회하고, 한국어 이름을 찾지 못하고 응답에 1~10초 걸리는 지오코딩 대신 내장 도시 211곳을 먼저 검색한다.
 ---
 

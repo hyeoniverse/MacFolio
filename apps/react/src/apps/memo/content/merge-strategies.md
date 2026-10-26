@@ -1,7 +1,7 @@
 ---
 title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
 date: 2026-10-12
-category: 기술 노트/Git
+category: 기술 노트/개발 도구/Git
 summary: GitHub의 세 병합 방식이 main의 커밋 그래프·SHA·머지 커밋·되돌리기를 어떻게 바꾸는지 도식으로 정리하고, 어느 방식을 고를지 정하는 질문 세 개와 팀 유형별 선택, 저장소 설정으로 한 가지에 고정하는 법을 적었다.
 ---
 

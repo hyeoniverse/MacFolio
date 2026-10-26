@@ -356,6 +356,73 @@
 	font-size: var(--text-caption);
 }
 
+/*
+ * 이미지 배치: 주소 끝의 #left·#right·#float-left·#float-right (desktop-core의 imageLayout.ts, 읽기·편집 화면 같은 모양).
+ * 정렬은 본문 폭보다 좁은 이미지에서만 보인다 (넓은 이미지는 본문 폭에 맞춘다).
+ * 띄우기는 본문의 40% 폭으로 왼쪽·오른쪽에 두고, 이어지는 문단이 옆으로 흐른다
+ */
+/* 정렬한 그림은 틀을 그림 폭으로 줄여, 그림 위의 버튼(내려받기 등)이 그림 모서리에 붙게 한다 */
+.memo-figure[data-layout='left'] {
+	text-align: left;
+}
+
+.memo-figure[data-layout='right'] {
+	text-align: right;
+}
+
+.memo-figure:is([data-layout='left'], [data-layout='right']) .memo-figure-frame {
+	width: fit-content;
+	max-width: 100%;
+}
+
+.memo-figure[data-layout='right'] .memo-figure-frame {
+	margin-left: auto;
+}
+
+.memo-figure[data-layout^='float-'] {
+	width: 40%;
+	margin-top: 0.3em;
+	margin-bottom: 0.8em;
+}
+
+.memo-figure[data-layout='float-left'] {
+	float: left;
+	margin-right: 1.4em;
+	text-align: left;
+}
+
+.memo-figure[data-layout='float-right'] {
+	float: right;
+	margin-left: 1.4em;
+	text-align: left;
+}
+
+/* 띄운 이미지 옆으로는 문단만 흐른다. 제목·표·코드·접기·구분선과 띄우지 않은 이미지는 그 아래에서 시작한다 */
+:is(.memo-markdown, .memo-inline-editor .ProseMirror)
+	> :is(h1, h2, h3, h4, h5, h6, hr, pre, table, details, .memo-code, .memo-details),
+:is(.memo-markdown, .memo-inline-editor .ProseMirror) .memo-figure:not([data-layout^='float-']) {
+	clear: both;
+}
+
+/* 목록·인용은 띄운 이미지 옆에서 그 남은 폭 안에 그린다 (글머리 기호가 이미지에 겹치지 않게) */
+:is(.memo-markdown, .memo-inline-editor .ProseMirror) > :is(ul, ol, blockquote) {
+	display: flow-root;
+}
+
+/* 글이 짧아도 띄운 이미지가 글 아래(이전·다음 글, 댓글)로 넘치지 않게 */
+:is(.memo-markdown, .memo-inline-editor .ProseMirror)::after {
+	content: '';
+	display: block;
+	clear: both;
+}
+
+/* 좁은 화면(휴대폰·좁은 창)에서는 띄우지 않고 본문 폭으로 */
+:where(.memo-shell[data-compact]) .memo-figure[data-layout^='float-'] {
+	float: none;
+	width: auto;
+	margin: 1.2em 0;
+}
+
 .memo-image-missing {
 	display: block;
 	padding: 1em;

@@ -1,7 +1,7 @@
 ---
 title: 이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리
 date: 2026-10-11
-category: 개발기/MacFolio/설계
+category: 개발 기록/MacFolio/설계
 summary: 사이트 프로필은 처음부터 화면과 서버가 parseProfile 하나를 사용했지만, "검증·응답 스키마는 contracts, 타입·순수 규칙은 desktop-core"라는 배치 규칙에 맞춰 옮겼다. if문 58줄을 zod로 옮기며 오류 문구 열한 개와 순서를 시험으로 고정했고, 여덟 도메인을 모두 contracts로 옮겼다.
 ---
 

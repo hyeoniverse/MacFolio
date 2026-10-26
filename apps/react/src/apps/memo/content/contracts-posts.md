@@ -1,7 +1,7 @@
 ---
 title: 타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기
 date: 2026-10-11
-category: 개발기/MacFolio/설계
+category: 개발 기록/MacFolio/설계
 summary: 블로그 글(posts)의 요청·응답을 contracts로 옮겼다. 글 타입은 이미 desktop-core에 있어서 스키마를 그 타입에 맞춰 선언(ZodType<PostContent>)하고, 어긋나면 tsc가 막게 했다. 서버의 if문 스물한 줄을 스키마 하나로 대체했고 400 응답의 이유 순서도 유지했다.
 ---
 

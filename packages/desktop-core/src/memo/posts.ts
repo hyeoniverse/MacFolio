@@ -1,6 +1,7 @@
 // 블로그 글 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 글은 Markdown 파일이고, 맨 위 머리말(---로 감싼 key: value)에 제목·날짜·카테고리를 적는다.
 import type { FolderPath, PostSlug } from './rules.js';
+import { imageLayoutOf } from './imageLayout.js';
 
 export interface Post {
 	/** 파일 이름에서 온 주소용 이름 (예: cra-to-vite) */
@@ -457,10 +458,13 @@ export function formatPostDate(date: string): string {
  * 본문 이미지 주소를 실제 주소로 바꾼다.
  * - `./images/a.png`, `images/a.png`처럼 글 파일 기준 상대 경로 → 빌드된 파일 주소 (없으면 null)
  * - `/imgs/a.png`(public 폴더), `https://...`, `data:` → 그대로
+ * - 끝의 배치 표기(`#float-right` 등, imageLayout.ts)는 떼고 바꾼다
  * @param images content 폴더 기준 경로(`images/a.png`) → 빌드된 주소
  */
 export function resolveImageSrc(src: string | undefined, images: Record<string, string>): string | null {
 	if (!src) return null;
+	// 배치(#float-right 등)는 주소가 아니다 (imageLayout.ts)
+	src = imageLayoutOf(src).src;
 	if (/^(https?:|data:|\/)/.test(src)) return src;
 	const normalized = src.replace(/^\.\//, '');
 	return images[normalized] ?? null;
