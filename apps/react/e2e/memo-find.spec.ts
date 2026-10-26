@@ -119,6 +119,25 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(menu.getByRole('menuitem', { name: '최근 검색 지우기' })).toBeDisabled();
 	});
 
+	test('최근 검색 목록은 본문 위에 떠 있는 목차 버튼보다 위에 그린다', async ({ page }) => {
+		await page.addInitScript(() => localStorage.setItem('macfolio:memo:recent-searches', JSON.stringify(['flux'])));
+		await enterDesktop(page, '/memo/vscode-extensions-web');
+		const memo = appWindow(page, 'memo');
+		// 목차가 화면 위로 지나가게 스크롤하면 오른쪽 위에 목차 버튼이 뜬다
+		await memo.locator('.memo-reader .memo-scroll').evaluate((el) => el.scrollBy(0, 3000));
+		const float = memo.getByRole('button', { name: '목차 보기' });
+		await expect(float).toBeVisible();
+		await memo.getByRole('searchbox', { name: '글 검색' }).click();
+		const recent = memo.locator('.memo-search-recent');
+		await expect(recent).toBeVisible();
+		const button = (await float.boundingBox())!;
+		const onTop = await page.evaluate(
+			({ x, y }) => Boolean(document.elementFromPoint(x, y)?.closest('.memo-search-recent')),
+			{ x: button.x + button.width / 2, y: button.y + button.height / 2 }
+		);
+		expect(onTop).toBe(true);
+	});
+
 	test('한글 음차로 영문 용어를 찾고, 음차의 오타는 가까운 표기로 고친다 (리액트 → React)', async ({ page }) => {
 		const memo = await openMemo(page);
 		const search = memo.getByRole('searchbox', { name: '글 검색' });

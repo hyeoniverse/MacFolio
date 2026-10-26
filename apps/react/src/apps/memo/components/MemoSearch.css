@@ -2,9 +2,15 @@
  * 검색 칸 아래의 최근 검색 목록 (빈 칸에 초점이 있는 동안). macOS 메뉴(shared/ui/menu)와 같은 바탕·그림자·강조색.
  * 휴대폰은 검색 알약이 화면 아래에 있어 위로 펼친다
  */
+/* 목록이 열린 동안 검색 칸을 본문 위에 떠 있는 것(목차 버튼 z-index 11, 글자 크기 버튼 10)보다 위로 올린다.
+   검색 칸이 z-index를 가진 겹침 단위라서 목록 자체의 z-index만으로는 그 밖으로 나가지 못한다 */
+.memo-search:has(> .memo-search-recent) {
+	z-index: 20;
+}
+
 .memo-search-recent {
 	position: absolute;
-	top: calc(100% + var(--space-8));
+	top: calc(100% + var(--space-6));
 	left: 0;
 	z-index: var(--z-menu);
 	box-sizing: border-box;
@@ -24,7 +30,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: var(--space-4) var(--space-8) var(--space-2);
+	padding: var(--space-4) var(--space-8);
 	color: var(--color-secondary-label);
 	font-size: var(--text-caption);
 	font-weight: 600;
@@ -50,7 +56,8 @@
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	padding: var(--space-4) var(--space-8);
+	min-height: 26px;
+	padding: var(--space-2) var(--space-8);
 	border-radius: var(--radius-6);
 	cursor: pointer;
 }
