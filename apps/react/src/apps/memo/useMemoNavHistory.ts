@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { folderName, TAG_VIEW, type Post, type TagSelection } from '@macfolio/desktop-core/memo';
+import { folderLabelOf, folderName, TAG_VIEW, type Post, type TagSelection } from '@macfolio/desktop-core/memo';
 import {
 	EMPTY_NAV_HISTORY,
 	sameEntry,
@@ -9,6 +9,9 @@ import {
 	type NavEntry,
 	type NavHistory,
 } from './navHistory';
+
+/** 폴더 경로를 사이드바처럼 "개발 기록 › MacFolio › 기능"으로. 모든 글·태그·인기글 같은 보기는 그 이름으로 */
+const pathLabel = (path: string) => (path.startsWith('\u0000') ? folderName(path) : folderLabelOf(path));
 
 /** 기록 목록의 한 줄 (메뉴 항목) */
 export interface NavStep {
@@ -35,7 +38,7 @@ export function useMemoNavHistory({
 	tagSelection: TagSelection;
 	/** 지금 본문에 연 글 */
 	slug: string | null;
-	/** 지금 있는 글 (제목을 찾고, 지운 글을 거른다) */
+	/** 지금 있는 글, 정리 내용을 적용한 것 (제목·폴더를 찾고, 지운 글을 거른다) */
 	posts: Post[];
 	/** 기록의 한 칸을 연다 */
 	open: (entry: { category: string; tagSelection: TagSelection | null; slug: string | null }) => void;
@@ -77,10 +80,10 @@ export function useMemoNavHistory({
 	const steps = (direction: -1 | 1): NavStep[] =>
 		stepList(history, direction, usable).map(({ index, entry }) => {
 			const post = entry.slug ? bySlug.get(entry.slug) : undefined;
-			const where = entry.category === TAG_VIEW ? '태그' : folderName(entry.category);
+			// 글은 그 글이 들어 있는 폴더(정리 내용으로 옮겼으면 옮긴 폴더), 글 없는 칸은 그때 연 폴더·보기를 사이드바처럼 적는다
 			return post
-				? { index, label: post.title, detail: where, post: true }
-				: { index, label: where, detail: '', post: false };
+				? { index, label: post.title, detail: pathLabel(post.category), post: true }
+				: { index, label: folderName(entry.category), detail: pathLabel(entry.category), post: false };
 		});
 
 	return {

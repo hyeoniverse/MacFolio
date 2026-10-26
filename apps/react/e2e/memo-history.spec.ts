@@ -54,6 +54,9 @@ test.describe('메모 뒤로·앞으로', () => {
 	test('폴더를 옮긴 것도 기록되고, 길게 누르면 지난 칸 목록에서 골라 간다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const first = await openNth(memo, 0);
+		// 본문 머리의 폴더 (날짜 · 개발 기록 › MacFolio › …): 목록의 둘째 줄도 이 폴더여야 한다 ('모든 글'이 아니라)
+		const firstFolder = ((await memo.locator('.memo-reader-date').first().textContent()) ?? '').split(' · ')[1].trim();
+		expect(firstFolder).toContain(' › ');
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		await folders.locator('li[data-folder-path="개발 기록/MacFolio/회고"] > .memo-folder-row .memo-folder').click();
 		const retro = await openNth(memo, 1);
@@ -71,6 +74,16 @@ test.describe('메모 뒤로·앞으로', () => {
 		// 가까운 칸부터: 회고 폴더의 첫 글, 모든 글에서 본 첫 글
 		const items = menu.getByRole('menuitem');
 		await expect(items.last()).toContainText(first);
+		await expect(items.last().locator('.ui-menu-item-detail')).toHaveText(firstFolder);
+		await expect(menu.locator('.ui-menu-item-detail', { hasText: /^모든 글$/ })).toHaveCount(0);
+
+		// 올려 강조하면 둘째 줄도 강조 글자색 (흐린 회색이 파란 바탕에 묻히지 않게)
+		await items.last().hover();
+		const colors = await items.last().evaluate((item) => ({
+			label: getComputedStyle(item).color,
+			detail: getComputedStyle(item.querySelector('.ui-menu-item-detail')!).color,
+		}));
+		expect(colors.detail).toBe(colors.label);
 		await items.last().click();
 		await expect.poll(() => readerTitle(memo)).toBe(first);
 		await expect(folders.getByRole('button', { name: /^모든 글/ })).toHaveClass(/active/);

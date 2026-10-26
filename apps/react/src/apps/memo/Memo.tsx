@@ -465,7 +465,7 @@ const Memo: React.FC = () => {
 		category,
 		tagSelection,
 		slug: selected?.slug ?? null,
-		posts,
+		posts: organized,
 		open: ({ category: target, tagSelection: tagsAt, slug }) => {
 			setTagSelection((current) => tagsAt ?? { ...EMPTY_TAG_SELECTION, match: current.match });
 			setCategory(target);
