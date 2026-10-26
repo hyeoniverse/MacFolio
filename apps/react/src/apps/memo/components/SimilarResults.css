@@ -42,3 +42,19 @@
 .memo-search-empty .memo-section-title {
 	margin-top: var(--space-16);
 }
+
+/* 고친 검색어와 비슷한 글 사이 구분선: 목록 행 사이 구분선과 같은 색, 글자와 같은 좌우 여백 */
+.memo-search-suggest:has(+ .memo-section-title) {
+	position: relative;
+	padding-bottom: var(--space-16);
+}
+
+.memo-search-suggest:has(+ .memo-section-title)::after {
+	position: absolute;
+	right: var(--space-20);
+	bottom: 0;
+	left: var(--space-20);
+	height: 1px;
+	background-color: var(--memo-border);
+	content: '';
+}
