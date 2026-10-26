@@ -12,6 +12,8 @@ import '@/apps/safari/Safari.css';
 import IconButton from '@/shared/ui/button/IconButton';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import SafariMobile from '@/apps/safari/SafariMobile';
+import { loadSerifKorean } from '@/apps/safari/serifFont';
+import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
@@ -97,6 +99,21 @@ const Safari: React.FC = () => {
 	};
 	useEffect(() => setAppAddress('safari', chosen && active ? active.id : null), [chosen, active]);
 	useEffect(() => () => setAppAddress('safari', null), []);
+
+	// 한글 명조는 Safari를 실제로 볼 때 받는다 (serifFont.ts). 바탕화면은 Safari 창이 처음부터 열려 있으므로,
+	// 창 안을 누르거나 스크롤·키 입력, 탭을 고름(주소로 들어온 경우 포함), 닫았던 창을 다시 엶 중 하나가 있을 때.
+	// 휴대폰은 앱을 열어야 이 화면이 그려진다
+	const [engaged, setEngaged] = useState(false);
+	const engage = engaged ? undefined : () => setEngaged(true);
+	const shown = useAppWindowShown('safari');
+	const wasShown = useRef(shown);
+	useEffect(() => {
+		if (shown && !wasShown.current) setEngaged(true);
+		wasShown.current = shown;
+	}, [shown]);
+	useEffect(() => {
+		if (mobile || chosen || engaged) loadSerifKorean();
+	}, [mobile, chosen, engaged]);
 
 	const go = (offset: number) => choose(tabs[index + offset]);
 
@@ -218,7 +235,7 @@ const Safari: React.FC = () => {
 					/>
 				</div>
 			) : (
-				<div className="safari">
+				<div className="safari" onPointerDownCapture={engage} onWheelCapture={engage} onKeyDownCapture={engage}>
 					{/* 도구 막대: 신호등 버튼 자리, 이전·다음 탭, 주소창, 새 탭에서 열기, 새 탭 */}
 					<Toolbar className="safari-toolbar">
 						<span className="safari-lights-space" aria-hidden="true" />
