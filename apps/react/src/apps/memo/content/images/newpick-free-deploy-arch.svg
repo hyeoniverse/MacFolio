@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>뉴픽 배포 구성: 인바운드 포트 없이 Tunnel로만</title>
+<defs><marker id="a-line" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker><marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#4f46e5"/></marker></defs>
+<rect width="900" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="36" font-size="17" fill="#1f2937" font-weight="700">배포 구성: 인바운드 포트 없이 Tunnel로만</text>
+<text x="32" y="56" font-size="11" fill="#6b7280">AI 요약(Claude API) 사용량 말고는 모두 무료. 서버는 Cloudflare로 나가는 연결만 만든다</text>
+<rect x="32" y="96" width="120" height="52" rx="8" fill="#f3f4f6" stroke="#374151" stroke-width="1.5"/>
+<text x="92" y="127" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">브라우저</text>
+<line x1="152" y1="122" x2="190" y2="122" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a-line)"/>
+<rect x="196" y="88" width="200" height="68" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="296" y="112" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">Vercel (Next.js 웹)</text>
+<text x="296" y="129" font-size="10.5" fill="#6b7280" text-anchor="middle">newpick.hyeoniverse.com</text>
+<text x="296" y="144" font-size="10.5" fill="#6b7280" text-anchor="middle">/api/* 를 API_URL로 프록시</text>
+<line x1="396" y1="122" x2="434" y2="122" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a-line)"/>
+<rect x="440" y="88" width="200" height="68" rx="8" fill="#fff7ed" stroke="#b45309" stroke-width="1.5"/>
+<text x="540" y="112" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">Cloudflare Tunnel</text>
+<text x="540" y="129" font-size="10.5" fill="#6b7280" text-anchor="middle">newpick-api.hyeoniverse.com</text>
+<text x="540" y="144" font-size="10.5" fill="#6b7280" text-anchor="middle">HTTPS · 인증서는 Cloudflare</text>
+<line x1="540" y1="156" x2="540" y2="206" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a-line)"/>
+<rect x="300" y="192" width="568" height="184" rx="12" fill="#f9fafb" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="316" y="214" font-size="11.5" fill="#374151" font-weight="700">Oracle Always Free VM · E2.1.Micro 1GB · Ubuntu 24.04 · docker compose (ports 없음)</text>
+<rect x="440" y="226" width="200" height="40" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+<text x="540" y="251" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">tunnel (cloudflared)</text>
+<line x1="540" y1="266" x2="540" y2="282" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a-line)"/>
+<rect x="440" y="288" width="200" height="40" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+<text x="540" y="306" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">api (NestJS :3001)</text>
+<text x="540" y="321" font-size="10.5" fill="#6b7280" text-anchor="middle">cron 08:00 크롤링 · 08:30 요약</text>
+<rect x="316" y="288" width="108" height="40" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+<text x="370" y="306" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">MySQL 8</text>
+<text x="370" y="321" font-size="10.5" fill="#6b7280" text-anchor="middle">buffer pool 64M</text>
+<line x1="440" y1="308" x2="430" y2="308" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a-line)"/>
+<rect x="656" y="288" width="108" height="40" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+<text x="710" y="306" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">MongoDB 7</text>
+<text x="710" y="321" font-size="10.5" fill="#6b7280" text-anchor="middle">캐시 0.25GB</text>
+<line x1="640" y1="308" x2="650" y2="308" stroke="#9ca3af" stroke-width="1.6" marker-end="url(#a-line)"/>
+<rect x="316" y="340" width="448" height="26" rx="6" fill="#ffffff" stroke="#d1d5db" stroke-width="1"/>
+<text x="540" y="357" font-size="10.5" fill="#6b7280" text-anchor="middle">swap 4GB · 매일 04:00 KST MySQL 백업(7일) · 배포 직전 백업</text>
+<rect x="32" y="226" width="240" height="140" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="152" y="250" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="600">GitHub Actions (main 머지)</text>
+<text x="48" y="276" font-size="10.5" fill="#374151">1. 서버 /health 버전과 비교해 api 변경?</text>
+<text x="48" y="296" font-size="10.5" fill="#374151">2. 이미지 빌드 → ghcr.io push</text>
+<text x="48" y="316" font-size="10.5" fill="#374151">3. 배포 전용 키로 ssh (태그만 보냄)</text>
+<text x="48" y="336" font-size="10.5" fill="#374151">4. 서버가 백업 → 교체 → 버전 확인</text>
+<text x="48" y="356" font-size="10.5" fill="#6b7280">   안 뜨면 이전 태그로 되돌림</text>
+<line x1="272" y1="308" x2="304" y2="308" stroke="#4f46e5" stroke-width="1.6" marker-end="url(#a-blue)"/>
+</svg>
