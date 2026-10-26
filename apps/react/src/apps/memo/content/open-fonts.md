@@ -5,7 +5,7 @@ category: 개발기/MacFolio/프론트엔드
 summary: 같은 화면이 macOS와 Windows·Android·Linux에서 다른 글꼴로 보였다. 원인은 -apple-system을 맨 앞에 둔 글꼴 지정과 Regular 한 굵기의 웹 글꼴이었고, 그 웹 글꼴은 웹 배포 허락이 없는 Apple 글꼴이었다. 오픈 라이선스 글꼴로 바꾸고 전송량을 측정했다.
 ---
 
-같은 사이트를 macOS에서 볼 때와 Windows·Android·Linux에서 볼 때 글꼴이 달랐다. 영문과 숫자의 모양, 굵은 글씨, 코드 블록의 고정폭 글꼴이 모두 기기에 따라 바뀌었다. 이 글은 원인, 라이선스 문제, 새 글꼴을 고른 근거, 바꾼 뒤 전송량을 정리한다.
+같은 사이트를 macOS에서 볼 때와 Windows·Android·Linux에서 볼 때 글꼴이 달랐다. 영문과 숫자의 모양, 굵은 글씨, 코드 블록의 고정폭 글꼴이 모두 기기에 따라 바뀌었다. 이 글은 원인, 라이선스 문제, 새 글꼴을 고른 근거, 바꾼 뒤 전송량을 정리한다([#384](https://github.com/hyeoniverse/MacFolio/pull/384)).
 
 ![고치기 전: macOS와 Linux](./images/open-fonts-before-os.jpg '고치기 전. 같은 빌드를 macOS Chromium과 Linux Chromium(CI와 같은 Playwright Docker 이미지)에서 열었다. 영문·숫자·고정폭·굵은 글씨가 다르다')
 
