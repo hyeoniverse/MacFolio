@@ -449,13 +449,14 @@ const Memo: React.FC = () => {
 		<>
 			{status === 'loading' && <EmptyState className="memo-empty">불러오는 중…</EmptyState>}
 			{status === 'error' && <EmptyState className="memo-empty">글을 불러오지 못했습니다.</EmptyState>}
-			{status === 'ready' && visible.length === 0 && (
+			{status === 'ready' && visible.length === 0 && !similar && (
 				<EmptyState className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</EmptyState>
 			)}
 			{status === 'ready' && similar && (
 				<SimilarResults
 					suggestion={similar.suggestion}
 					posts={similar.posts}
+					today={today}
 					onSuggest={setQuery}
 					onOpen={(post) => {
 						setQuery('');
@@ -812,6 +813,10 @@ const Memo: React.FC = () => {
 										onUnlock={() => toggleLock(selected)}
 									/>
 								</div>
+							)}
+							{/* 고른 글이 없을 때 (검색 결과가 없거나 빈 폴더): macOS 메모처럼 본문 칸 가운데에 짧은 안내 */}
+							{status === 'ready' && !selected && newDraft === null && (
+								<EmptyState className="memo-reader-empty">선택한 메모 없음</EmptyState>
 							)}
 						</div>
 						{selected && !writing && <TextSizeControl scale={textScale} onChange={setTextScale} />}

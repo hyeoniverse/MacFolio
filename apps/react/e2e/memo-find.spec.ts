@@ -58,7 +58,9 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await search.fill('dispetcher');
 		await expect(memo.locator('.memo-empty')).toHaveText('검색 결과가 없습니다.');
 		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
-		await expect(similar.getByText('혹시 이 검색어인가요?')).toBeVisible();
+		await expect(similar.getByText(/혹시 dispatcher를 찾으셨나요\?/)).toBeVisible();
+		// 고른 글이 없으니 본문 칸은 안내만
+		await expect(memo.getByText('선택한 메모 없음')).toBeVisible();
 		await expect(similar.getByRole('listitem').first()).toContainText('Flux 패턴');
 
 		await similar.getByRole('button', { name: 'dispatcher', exact: true }).click();

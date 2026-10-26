@@ -626,3 +626,14 @@ button.memo-admin-chip {
 	max-width: 100%;
 	border-radius: 0.6em;
 }
+
+/* 고른 글이 없을 때 본문 칸 안내 (Memo.tsx). 칸 가운데에 흐린 글자 */
+.memo-reader-empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	margin: 0;
+	color: var(--memo-muted);
+	font-size: var(--text-footnote);
+}

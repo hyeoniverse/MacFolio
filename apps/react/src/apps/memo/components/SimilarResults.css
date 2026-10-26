@@ -1,61 +1,44 @@
-/* 검색 결과가 없을 때 '혹시 이 검색어인가요?'와 비슷한 글 목록. 빈 상태 문구(.memo-empty) 바로 아래 */
-.memo-similar {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-8);
-	padding: 0 var(--space-12) var(--space-16);
+/* 검색 결과가 없을 때 목록 칸 (SimilarResults.tsx). 안내 줄은 목록 머리처럼 왼쪽에, 비슷한 글은 일반 목록 행 그대로 */
+.memo-search-empty {
+	padding-top: var(--space-8);
 }
 
-.memo-similar-suggest {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--space-6);
-	align-items: center;
-	justify-content: center;
+/* .memo-empty는 가운데 정렬의 빈 상태 문구. 검색 결과가 없을 때는 목록 머리 줄처럼 왼쪽에 둔다 */
+.memo-search-empty .memo-search-empty-title {
 	margin: 0;
+	padding: var(--space-4) var(--space-20) 0;
+	font-size: var(--text-footnote);
+	text-align: left;
+}
+
+.memo-search-suggest {
+	margin: var(--space-2) 0 0;
+	padding: 0 var(--space-20);
 	color: var(--memo-muted);
 	font-size: var(--text-footnote);
 }
 
-.memo-similar-title {
-	margin: var(--space-4) var(--space-4) 0;
-	color: var(--memo-muted);
-	font-size: var(--text-caption);
-	font-weight: 600;
-}
-
-.memo-similar-list {
-	margin: 0;
+/* 고친 검색어: 메모 포인트색 글자 링크 (macOS 메모·Spotlight의 '…을 찾으셨나요?'처럼) */
+.memo-search-suggest button {
 	padding: 0;
-	list-style: none;
-}
-
-.memo-similar-list button {
-	display: flex;
-	flex-direction: column;
-	gap: var(--space-2);
-	width: 100%;
-	padding: var(--space-8) var(--space-10);
 	border: none;
-	border-radius: var(--radius-8);
 	background: none;
-	color: var(--memo-text);
+	color: var(--memo-accent);
 	font: inherit;
-	text-align: left;
+	font-weight: 600;
 	cursor: pointer;
 }
 
-.memo-similar-list button:hover,
-.memo-similar-list button:focus-visible {
-	background: var(--memo-hover);
+.memo-search-suggest button:hover {
+	text-decoration: underline;
 }
 
-.memo-similar-list strong {
-	font-size: var(--text-footnote);
-	font-weight: 600;
+.memo-search-suggest button:focus-visible {
+	border-radius: var(--radius-4);
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 2px;
 }
 
-.memo-similar-list span {
-	color: var(--memo-muted);
-	font-size: var(--text-caption2);
+.memo-search-empty .memo-section-title {
+	margin-top: var(--space-16);
 }

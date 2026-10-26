@@ -39,7 +39,7 @@ test.describe('메모 편집 (관리자)', () => {
 		await input.press('Enter');
 		const folder = folders.getByRole('button', { name: /^읽을거리/ });
 		await expect(folder).toHaveAttribute('aria-current', 'true');
-		await expect(memo.getByText('메모 없음')).toBeVisible();
+		await expect(memo.getByText('메모 없음', { exact: true })).toBeVisible();
 
 		// 서버에 저장되어 새로고침해도 남는다
 		await expect.poll(() => api.organization.folders).toEqual(['읽을거리']);
