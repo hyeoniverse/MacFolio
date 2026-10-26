@@ -1,7 +1,8 @@
 import { useEffect, useRef, type RefObject } from 'react';
 
 /**
- * 떠 있는 창을 닫는 때: 바깥을 누르거나 Esc를 누르면 onDismiss.
+ * 떠 있는 창을 닫는 때: 바깥을 누르거나 Esc를 누르거나, 브라우저 창이 포커스를 잃으면(브라우저의 탭·주소 막대나 다른 앱을 누름) onDismiss.
+ * 페이지 밖을 누르면 pointerdown이 오지 않으므로 window의 blur로 받는다 (macOS 메뉴도 앱이 비활성화되면 닫힌다).
  * inside: 눌러도 닫지 않을 요소들 (창 자신, 창을 여는 버튼). 여는 버튼을 넣어 두면 버튼을 다시 눌렀을 때
  * "바깥 누름으로 닫혔다가 버튼 click으로 다시 열리는" 일이 없다.
  * keepOpenInside: 이 선택자 안을 눌러도 닫지 않는다 (예: 표 손잡이 메뉴는 표의 다른 칸을 눌러도 열어 둔다).
@@ -33,11 +34,14 @@ export function useDismiss(
 			event.preventDefault();
 			latest.current.onDismiss();
 		};
+		const onBlur = () => latest.current.onDismiss();
 		document.addEventListener('pointerdown', onPointerDown);
 		document.addEventListener('keydown', onKeyDown);
+		window.addEventListener('blur', onBlur);
 		return () => {
 			document.removeEventListener('pointerdown', onPointerDown);
 			document.removeEventListener('keydown', onKeyDown);
+			window.removeEventListener('blur', onBlur);
 		};
 	}, [open]);
 }
