@@ -437,6 +437,21 @@ export const POST_FILTERS: {
 	},
 ];
 
+/**
+ * 검색어가 글 주소(slug)에 들어 있는지. 대소문자는 가리지 않고, 낱말 사이의 공백·밑줄은 하이픈과 같게 본다
+ * ("merge strategies" → merge-strategies). 글 주소 전체(`/memo/<글>`, 사이트 주소 포함)를 붙여 넣어도 찾는다
+ */
+export function slugMatches(slug: string, query: string): boolean {
+	const q = query
+		.trim()
+		.toLowerCase()
+		.replace(/^.*\/memo\//, '')
+		.replace(/[?#].*$/, '')
+		.replace(/\/+$/, '')
+		.replace(/[\s_]+/g, '-');
+	return q.length > 0 && slug.toLowerCase().includes(q);
+}
+
 export function filterPosts(posts: Post[], category: string, query: string, filter: PostFilter | null = null): Post[] {
 	const q = query.trim().toLowerCase();
 	const condition = POST_FILTERS.find((item) => item.id === filter);
@@ -444,7 +459,7 @@ export function filterPosts(posts: Post[], category: string, query: string, filt
 		(post) =>
 			inFolder(post, category) &&
 			(!condition || condition.test(post)) &&
-			(!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q))
+			(!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q) || slugMatches(post.slug, q))
 	);
 }
 

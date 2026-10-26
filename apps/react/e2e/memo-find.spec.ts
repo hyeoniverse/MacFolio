@@ -14,6 +14,29 @@ async function openMemo(page: Page) {
 const NO_TABLE = '표가 없는 시험용 글';
 
 test.describe('검색 칸과 글 안에서 찾기', () => {
+	test('검색 칸에 글 주소(slug)를 적어도 찾는다: 하이픈 대신 공백, 주소 전체를 붙여 넣기', async ({ page }) => {
+		const api = await fakeApi(page);
+		const content = {
+			title: '주소로만 찾는 시험용 글',
+			date: '2020-01-01',
+			category: '기술 노트/Git',
+			summary: '',
+			body: '제목과 본문에는 없는 낱말',
+		};
+		api.posts = [{ slug: 'zz-slug-only-word', ...content, deleted: false, published: content }];
+		const memo = await openMemo(page);
+		const item = memo.locator('.memo-item', { hasText: content.title });
+		await expect(item).toHaveCount(1);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		for (const query of ['slug-only', 'SLUG ONLY word', 'https://macfolio.hyeoniverse.com/memo/zz-slug-only-word']) {
+			await search.fill(query);
+			await expect(memo.locator('.memo-item')).toHaveCount(1);
+			await expect(item).toHaveCount(1);
+		}
+		await search.fill('slug-only-other');
+		await expect(memo.getByText('검색 결과가 없습니다.')).toBeVisible();
+	});
+
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {
 		const api = await fakeApi(page);
 		const content = {

@@ -10,6 +10,7 @@ import {
 	ALL_CATEGORY,
 	excerpt,
 	filterPosts,
+	slugMatches,
 	formatPostDate,
 	parseFrontmatter,
 	resolveImageSrc,
@@ -114,6 +115,28 @@ describe('목록', () => {
 		expect(filterPosts(posts, '개발기', '').map((p) => p.slug)).toEqual(['b', 'c']);
 		expect(filterPosts(posts, ALL_CATEGORY, 'VITE').map((p) => p.slug)).toEqual(['a']);
 		expect(filterPosts(posts, '회고', 'react')).toEqual([]);
+	});
+
+	it('글 주소(slug)로도 거른다: 공백·밑줄은 하이픈으로, 주소 전체를 붙여 넣어도', () => {
+		const withSlug = [{ ...posts[0], slug: 'merge-strategies' as PostSlug, title: '병합', body: '본문' }];
+		for (const query of [
+			'merge-strategies',
+			'MERGE strategies',
+			'merge_strat',
+			'strategies',
+			'/memo/merge-strategies',
+			'https://example.com/memo/merge-strategies?x=1#top',
+		]) {
+			expect(filterPosts(withSlug, ALL_CATEGORY, query).length, query).toBe(1);
+		}
+		expect(filterPosts(withSlug, ALL_CATEGORY, 'rebase')).toEqual([]);
+	});
+});
+
+describe('slugMatches', () => {
+	it('빈 검색어는 맞지 않는다 (주소만 붙인 경우도)', () => {
+		expect(slugMatches('merge-strategies', '   ')).toBe(false);
+		expect(slugMatches('merge-strategies', '/memo/')).toBe(false);
 	});
 });
 
