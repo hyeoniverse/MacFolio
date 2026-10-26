@@ -481,7 +481,8 @@
 	position: absolute;
 	right: 16px;
 	bottom: 16px;
-	z-index: 10;
+	/* 떠 있는 목차 버튼·창(9)보다 아래 */
+	z-index: 8;
 	display: flex;
 	padding: var(--space-2);
 	border-radius: var(--radius-full);

@@ -17,7 +17,7 @@
 }
 
 .memo-toc {
-	margin: 0 0 1.5rem;
+	margin: 0 0 var(--space-24);
 	font-size: var(--text-subhead);
 }
 
@@ -111,7 +111,7 @@
 
 /* 목록: 왼쪽 세로선 하나에 항목을 붙인다 */
 .memo-toc-list {
-	margin: var(--space-6) 0 0;
+	margin: var(--space-4) 0 0;
 	padding: 0;
 	border-left: 1px solid var(--memo-toc-line);
 	list-style: none;
@@ -171,12 +171,14 @@
 	padding-block: var(--space-12);
 }
 
-/* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다 */
+/* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다.
+   글자 크기 버튼(.memo-text-size, z-index 8)보다 위 (좁은 창에서 목차 창이 그 자리까지 내려와도 가리지 않게).
+   최근 검색 목록이 열린 검색 칸(10)보다는 아래 */
 .memo-toc-float {
 	display: flex;
 	position: sticky;
 	top: var(--space-8);
-	z-index: 5;
+	z-index: 9;
 	justify-content: flex-end;
 	height: 0;
 }
@@ -192,21 +194,46 @@
 	animation: fade-in var(--duration-fast) var(--ease-out);
 }
 
-/* 목차 창: 메뉴 재질의 바탕 위에 같은 목록 */
+/*
+ * 목차 창: 메뉴 재질의 바탕 위에 같은 목록을 메뉴 크기(footnote 글자, 메뉴와 같은 모서리)로.
+ * 높이는 본문 스크롤 칸(--memo-toc-room, MemoToc가 잰다) 안에서 글자 크기 버튼 위까지:
+ * 칸 높이 - 창 위치(위 여백 8 + 버튼 32 + 간격 8) - 글자 크기 버튼 자리(아래 여백 16 + 높이 32 + 간격 12)
+ */
 .memo-toc-panel {
 	position: absolute;
-	top: calc(32px + var(--space-6));
+	top: calc(32px + var(--space-8));
 	right: 0;
-	width: min(20rem, 70vw);
-	max-height: 60vh;
+	box-sizing: border-box;
+	width: min(18rem, 70vw);
+	max-height: max(160px, min(60vh, calc(var(--memo-toc-room, 100vh) - 108px)));
 	overflow-y: auto;
-	padding: var(--space-10) var(--space-14) var(--space-10) var(--space-12);
-	border-radius: var(--radius-10);
+	overscroll-behavior: contain;
+	padding: var(--space-8) var(--space-12) var(--space-10);
+	border-radius: var(--radius-14);
 	background: var(--memo-panel-bg);
 	box-shadow: var(--memo-panel-shadow), var(--shadow-menu);
-	font-size: var(--text-subhead);
+	font-size: var(--text-footnote);
 	backdrop-filter: blur(16px) saturate(180%);
 	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top right;
+}
+
+.memo-toc-panel .memo-toc-heading {
+	padding: var(--space-2) 0;
+	font-size: var(--text-footnote);
+}
+
+.memo .memo-toc-panel .memo-toc-list button {
+	padding-block: var(--space-4);
+	font-size: var(--text-footnote);
+}
+
+.memo .memo-toc-panel .memo-toc-list li[data-level='2'] button {
+	padding-left: var(--space-10);
+}
+
+.memo .memo-toc-panel .memo-toc-list li[data-level='3'] button {
+	padding-left: var(--space-20);
 }
 
 @media (prefers-reduced-motion: reduce) {
