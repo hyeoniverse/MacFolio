@@ -99,7 +99,7 @@ summary: 블로그 글 84개의 열 개 폴더는 앱·화면·계층·글 종�
 
 ## 10월 26일: 설계 폴더 추가
 
-이후 코드 구조를 다루는 글(desktop-core 분리, `@macfolio/contracts`, 브랜드 타입, 순환 의존 제거 등)이 프론트엔드·인프라·백엔드에 나뉘어 쌓였다. 10월 26일 이 22편을 `개발기/MacFolio/설계`로 옮겼다. 기준은 이 글과 같다(앱 이름이 아니라 작업의 종류로). 옮긴 글과 기준은 [블로그에 설계 폴더 추가](/memo/blog-design-folder)에 정리했다.
+이후 코드 구조를 다루는 글(desktop-core 분리, `@macfolio/contracts`, 브랜드 타입, 순환 의존 제거 등)이 프론트엔드·인프라·백엔드에 나뉘어 쌓였다. 10월 26일 이 22편을 `개발기/MacFolio/설계`로 옮겼다. 기준은 이 글과 같다(앱 이름이 아니라 작업의 종류로). 기준은 [블로그 폴더를 분야별로](/memo/blog-categories)의 설계 폴더 절에 정리했다.
 
 ## 10월 26일: 분야별 폴더로 다시 나눔
 
@@ -111,7 +111,6 @@ summary: 블로그 글 84개의 열 개 폴더는 앱·화면·계층·글 종�
 - [메모 폴더 정리 API](/memo/memo-organization-api)
 - [메모 규칙을 desktop-core로](/memo/desktop-core-memo)
 - [메모 태그](/memo/memo-tags)
-- [블로그에 설계 폴더 추가](/memo/blog-design-folder): 코드 구조 글 22편을 설계 폴더로 옮긴 기준
 - [블로그 폴더를 분야별로](/memo/blog-categories): 개발 기록 열 폴더와 기술 노트 3단 구조
 
 #MacFolio #메모앱 #블로그
