@@ -1,6 +1,6 @@
 /* magazine 템플릿 (잡지의 사례 연구 기사): 따뜻한 종이, 검은 잉크, 붉은 잉크 하나. 명조 제목과 고딕 본문, 1px 선과 겹줄,
    사진은 옅은 판 위에 크게. 그림자·빛 번짐 없이 타이포와 여백, 선으로 짠다.
-   명조는 사이트가 함께 내보내는 Noto Serif KR(--font-serif, ProjectPage.css가 불러온다)이라 기기와 관계없이 같다 */
+   명조는 사이트가 함께 내보내는 Noto Serif KR(--font-serif, Safari를 실제로 볼 때 serifFont.ts가 불러온다)이라 기기와 관계없이 같다 */
 .tpl-magazine {
 	--lk-accent: #b23a2b;
 	--lk-accent-2: #d98a7e;
