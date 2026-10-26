@@ -24,6 +24,9 @@ test.describe('휴대폰 메모: 목차와 이미지 배치', () => {
 		await expect(list).toBeHidden();
 		await toggle.tap();
 		await expect(list).toBeVisible();
+		// 손가락으로 누르기 쉽게 목차 줄과 항목은 높이 44px 이상이다
+		for (const row of [toggle, ...(await toc.locator('li button').all())])
+			expect((await row.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 
 		const item = toc.locator('li button').nth(2);
 		const name = (await item.textContent())!.trim();

@@ -29,6 +29,9 @@ test.describe('메모 목차', () => {
 		await toggle.click();
 		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 		await expect(toc.locator('li button')).toHaveText(headings.map((text) => text.trim()));
+		// 항목 글자는 본문 문단과 같은 크기다 (색만 약간 옅다)
+		const fontSize = (locator: Locator) => locator.evaluate((el) => getComputedStyle(el).fontSize);
+		expect(await fontSize(toc.locator('li button').first())).toBe(await fontSize(body.locator(':scope > p').first()));
 
 		const target = headings[3].trim();
 		await toc.getByRole('button', { name: target, exact: true }).click();
@@ -55,6 +58,12 @@ test.describe('메모 목차', () => {
 		await expect(panel).toBeHidden();
 		// 제목 아래 목차에서도 같은 절
 		await expect(toc.locator('li button[aria-current="location"]')).toHaveText(headings[0].trim());
+
+		// 글자 크기 버튼(가 가)의 배율이 목차에도 걸린다
+		const item = toc.locator('li button').first();
+		const before = (await item.boundingBox())!.height;
+		await memo.getByRole('button', { name: '글자 크게' }).click();
+		await expect.poll(async () => (await item.boundingBox())!.height).toBeGreaterThan(before * 1.1);
 	});
 
 	test('펼친 목차는 다음 방문에도 펼친 채 열린다. 키보드는 Enter로 펼치고 접고, Esc로 접는다', async ({ page }) => {
@@ -147,6 +156,7 @@ test.describe('메모 목차', () => {
 		// 글자 크기: 편집기 본문도 같은 배율로 키운다
 		await memo.getByRole('button', { name: '글자 크게' }).click();
 		expect(await editor.evaluate((el) => getComputedStyle(el).zoom)).toBe('1.15');
+		expect(await toc.evaluate((el) => getComputedStyle(el).zoom)).toBe('1.15');
 		const paragraph = editor.locator(':scope > p').first();
 		await paragraph.scrollIntoViewIfNeeded();
 		const rect = (await paragraph.boundingBox())!;
