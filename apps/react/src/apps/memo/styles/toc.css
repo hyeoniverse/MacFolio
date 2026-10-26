@@ -1,0 +1,89 @@
+/* 메모 앱: 글의 목차 (components/MemoToc.tsx). 제목 아래 접을 수 있는 목차와, 스크롤하면 오른쪽 위에 뜨는 목차 버튼 */
+
+.memo-toc {
+	margin: 0 0 1.5rem;
+	padding: var(--space-8) var(--space-12);
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-10);
+	background: var(--memo-sidebar-bg);
+	font-size: var(--text-footnote);
+}
+
+.memo .memo-toc-toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--space-6);
+	width: 100%;
+	padding: var(--space-2) 0;
+	border: none;
+	background: none;
+	color: var(--memo-muted);
+	font: inherit;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+}
+
+.memo-toc-toggle i {
+	font-size: 0.8em;
+	transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.memo-toc-toggle[aria-expanded='true'] i {
+	transform: rotate(90deg);
+}
+
+.memo-toc ol {
+	margin: var(--space-4) 0 var(--space-2);
+	padding: 0;
+	list-style: none;
+}
+
+.memo-toc li[data-level='3'] {
+	padding-left: 1.2em;
+}
+
+.memo .memo-toc li button {
+	display: block;
+	width: 100%;
+	padding: var(--space-2) var(--space-6);
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--memo-body);
+	font: inherit;
+	line-height: 1.5;
+	text-align: left;
+	cursor: pointer;
+}
+
+.memo .memo-toc li button:hover {
+	background: var(--memo-hover);
+}
+
+/* 지금 읽는 절 */
+.memo .memo-toc li button[aria-current='location'] {
+	color: var(--memo-text);
+	font-weight: 600;
+	box-shadow: inset 2px 0 0 var(--memo-accent);
+}
+
+/* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다 */
+.memo-toc-float {
+	display: flex;
+	position: sticky;
+	top: var(--space-8);
+	z-index: 5;
+	justify-content: flex-end;
+	height: 0;
+}
+
+.memo .memo-toc-float-button {
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--memo-border);
+	border-radius: 50%;
+	background: var(--memo-bg);
+	box-shadow: var(--shadow-popover);
+	animation: fade-in var(--duration-fast) var(--ease-out);
+}

@@ -792,6 +792,7 @@ const Memo: React.FC = () => {
 										views={views}
 										editing={editing && Boolean(selected.locked)}
 										footer={!inTrash && postFooter(selected)}
+										compact={compact}
 										onRestore={() => void restoreDeleted(selected)}
 										onPurge={() => void purgeDeleted(selected)}
 										onUnlock={() => toggleLock(selected)}
