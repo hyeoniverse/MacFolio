@@ -13,7 +13,7 @@ summary: desktop-core 분리, contracts 스키마, 브랜드 타입, 순환 의�
 | [응답 타입을 두 번 적지 않기](/memo/contracts-comments)           | 인프라     | 화면·서버 공유 스키마 |
 | [화면과 서버가 같은 규칙을 쓰기](/memo/desktop-core-shared-rules) | 백엔드     | 화면·서버 공유 규칙   |
 
-세 글 모두 "어떤 코드를 어느 패키지·파일에 두고, 무엇을 공유하는가"를 다룬다. 그런데 독자가 이 주제를 찾으려면 세 폴더를 모두 열어야 했다. 10월 26일 MacFolio의 store 설계 글([#379](https://github.com/hyeoniverse/MacFolio/pull/379))을 쓰면서 프론트엔드 폴더에 맞지 않는다는 지적을 받았고, 이 계기로 `개발기/MacFolio/설계` 폴더를 만들었다.
+세 글 모두 "어떤 코드를 어느 패키지·파일에 두고, 무엇을 공유하는가"를 다룬다. 그런데 독자가 이 주제를 찾으려면 세 폴더를 모두 열어야 했다. 10월 26일 [MacFolio의 store 설계](/memo/macfolio-store-design) 글([#379](https://github.com/hyeoniverse/MacFolio/pull/379))을 쓰면서 프론트엔드 폴더에 맞지 않는다는 지적을 받았고, 이 계기로 `개발기/MacFolio/설계` 폴더를 만들었다.
 
 ![설계 폴더를 추가하기 전과 후의 메모 사이드바](./images/blog-design-folder-sidebar.jpg '가짜 API로 촬영한 메모 사이드바. 옮긴 뒤 백엔드 29→26, 인프라 55→42, 프론트엔드 109→103이 되고 설계 22가 생겼다')
 
@@ -74,5 +74,6 @@ summary: desktop-core 분리, contracts 스키마, 브랜드 타입, 순환 의�
 
 - [블로그 폴더 재분류 - 앱 이름이 아니라 작업의 종류로](/memo/memo-folders-reorg): 백엔드·인프라·프론트엔드·회고로 나눈 첫 기준
 - [글은 Markdown에 두고 정리만 서버에](/memo/memo-organization-api): 서버 정리 내용이 저장소 폴더보다 우선하는 구조
+- [MacFolio의 store 설계 - Flux·Redux에서 따른 것과 뺀 것](/memo/macfolio-store-design): 이 폴더를 만든 계기가 된 글. 설계 폴더의 23번째 글
 
 #MacFolio #블로그 #메모앱
