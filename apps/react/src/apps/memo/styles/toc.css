@@ -2,22 +2,23 @@
  * 메모 앱: 글의 목차 (components/MemoToc.tsx). Apple 개발자 문서의 'On This Page'처럼 가벼운 목록:
  * 상자·배경 없이 '목차' 제목과 접기 화살표, 얇은 왼쪽 세로선에 붙인 항목.
  * 지금 읽는 절은 강조색 글자와 세로선 위의 굵은 막대로 표시한다. 떠 있는 목차 창도 같은 목록이고 바탕만 메뉴 재질이다.
- * 제목·화살표·## · ### 항목은 모두 메모 본문 글자색(--memo-body: 기본 글자색과 보조 글자색 사이)이고, 단계는 들여쓰기로만 나눈다.
- * 흐린 보조 글자색은 쓰지 않는다. 마우스를 올리면 기본 글자색(--memo-text)으로 진해진다.
+ * 목차 글자는 본문보다 진하거나 굵지 않다: 제목·화살표·## · ### 항목 모두 본문 문단과 같은 메모 본문 글자색(--memo-body)·기본 굵기이고
+ * ('목차' 제목만 굵게), 단계는 들여쓰기로만 나눈다. 흐린 보조 글자색은 쓰지 않는다.
+ * 마우스를 올리면 메모 강조색 글자, 지금 읽는 절은 강조색 글자에 세로선 위의 막대를 더해 둘을 구분한다.
  * 글자 대비는 라이트·다크, 본문·목차 창 바탕 모두 WCAG AA(4.5:1) 이상이다
  */
 
 .memo-toc,
 .memo-toc-panel {
-	/* 지금 읽는 절의 글자색. 메모 노랑은 흰 바탕에서 1.75:1이라, 라이트에서는 기본 글자색과 섞어 5.9:1로 진하게 한다 */
-	--memo-toc-current: color-mix(in srgb, var(--memo-accent) 40%, var(--memo-text));
+	/* 강조색 글자(마우스 올림·지금 읽는 절). 메모 노랑은 흰 바탕에서 1.75:1이라, 라이트에서는 기본 글자색과 섞어 5.9:1로 진하게 한다 */
+	--memo-toc-accent: color-mix(in srgb, var(--memo-accent) 40%, var(--memo-text));
 	/* 왼쪽 세로선: 구분선(--memo-border)보다 진한 불투명 회색. 기본 글자색 30%를 바탕에 섞는다 */
 	--memo-toc-line: color-mix(in srgb, var(--memo-text) 30%, var(--memo-bg));
 }
 
 :root[data-theme='dark'] :is(.memo-toc, .memo-toc-panel) {
 	/* 다크 바탕에서는 노랑 그대로 9.5:1 */
-	--memo-toc-current: var(--memo-accent);
+	--memo-toc-accent: var(--memo-accent);
 }
 
 .memo-toc {
@@ -53,7 +54,7 @@
 }
 
 .memo .memo-toc-toggle:hover {
-	color: var(--memo-text);
+	color: var(--memo-toc-accent);
 }
 
 .memo .memo-toc-toggle:focus-visible {
@@ -133,9 +134,9 @@
 	padding-left: var(--space-24);
 }
 
-/* 마우스 올림: 기본 글자색으로 진해진다 */
+/* 마우스 올림: 메모 강조색 글자 */
 .memo .memo-toc-list button:hover {
-	color: var(--memo-text);
+	color: var(--memo-toc-accent);
 }
 
 .memo .memo-toc-list button:focus-visible {
@@ -143,10 +144,9 @@
 	outline-offset: -2px;
 }
 
-/* 지금 읽는 절: 강조색 글자와, 세로선 위에 겹친 굵은 막대 */
+/* 지금 읽는 절: 강조색 글자와, 세로선 위에 겹친 굵은 막대 (마우스 올림은 글자색만 바뀐다) */
 .memo .memo-toc-list button[aria-current='location'] {
-	color: var(--memo-toc-current);
-	font-weight: 600;
+	color: var(--memo-toc-accent);
 }
 
 .memo .memo-toc-list button[aria-current='location']::before {
