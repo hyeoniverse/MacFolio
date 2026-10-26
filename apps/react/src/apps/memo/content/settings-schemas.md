@@ -1,7 +1,7 @@
 ---
 title: 손으로 쓴 입력 검사 세 개를 공유 스키마로 — 서버와 화면이 같은 규칙을 쓰게
 date: 2026-10-16
-category: 개발기/MacFolio/백엔드
+category: 개발기/MacFolio/설계
 summary: 사진 캡션·사람 확인 설정·GitHub 앱 저장소는 서버가 if 문으로 요청 본문을 검사했고, 화면은 같은 상한(200자, 6개)과 정규식을 별도로 정의했다. 세 규칙을 @macfolio/contracts의 zod 스키마로 옮겨 한 곳에서 정의했다. 거절 문구는 그대로다.
 ---
 

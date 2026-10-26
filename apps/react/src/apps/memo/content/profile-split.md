@@ -1,7 +1,7 @@
 ---
 title: 1,629줄 한 파일을 폴더로 — 프로젝트마다 한 파일, 경로는 그대로
 date: 2026-10-11
-category: 개발기/MacFolio/인프라
+category: 개발기/MacFolio/설계
 summary: 프로필·기술·타입·프로젝트 7개가 담긴 1,629줄짜리 shared/profile.ts를 profile/ 폴더로 분리하고 프로젝트마다 파일 하나를 배치했다. index.ts가 재내보내기(re-export)하므로 외부 27곳의 import는 그대로였고, 내용은 한 글자도 변경하지 않았다.
 ---
 
