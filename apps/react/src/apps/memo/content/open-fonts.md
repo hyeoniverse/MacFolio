@@ -85,6 +85,8 @@ summary: 같은 화면이 macOS와 Windows·Android·Linux에서 다른 글꼴�
 - **core:** 영문·숫자·라틴-1, 문장 부호, 화살표, 한글 자모, KS X 1001 완성형 2,350자. 가변 글꼴이라 굵기 전체를 포함해 456KB
 - **ext-0\~7:** 나머지 한글 8,822자를 코드 순서로 8등분(각 170\~210KB). 저장소의 글과 화면 문구 전체에서 KS X 1001 밖 글자는 '긂·똠·햏' 세 글자, 글 2편뿐이었다
 
+![글꼴을 고르는 순서](./images/open-fonts-stack.svg '도식. 고치기 전과 고친 뒤의 글꼴 지정, core와 ext 조각')
+
 <details>
 <summary>core가 ext보다 먼저 쓰이는 이유</summary>
 
