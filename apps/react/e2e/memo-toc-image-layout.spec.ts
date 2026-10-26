@@ -84,6 +84,31 @@ test.describe('메모 목차', () => {
 		await expect(again).toHaveAttribute('aria-expanded', 'true');
 		await page.keyboard.press('Enter');
 		await expect(again).toHaveAttribute('aria-expanded', 'false');
+		await page.keyboard.press('Space');
+		await expect(again).toHaveAttribute('aria-expanded', 'true');
+		await page.keyboard.press('Space');
+		await expect(again).toHaveAttribute('aria-expanded', 'false');
+	});
+
+	test('목차 줄의 폭 전체가 단추다: 글자·화살표 옆의 빈 곳을 눌러도 펼치고 접는다', async ({ page }) => {
+		await fakeApi(page, { signedIn: false });
+		await enterDesktop(page, '/memo/merge-strategies');
+		const memo = appWindow(page, 'memo');
+		const toc = memo.getByRole('navigation', { name: '목차' });
+		const toggle = toc.getByRole('button', { name: '목차', exact: true });
+		const row = (await toggle.boundingBox())!;
+		const nav = (await toc.boundingBox())!;
+		// 단추는 목차 칸의 오른쪽 끝까지 닿는다
+		expect(row.x + row.width).toBeCloseTo(nav.x + nav.width, 0);
+		expect(await toggle.evaluate((el) => getComputedStyle(el).cursor)).toBe('pointer');
+		// 줄의 오른쪽 끝 가까운 빈 곳을 누른다
+		const blank = { x: row.x + row.width - 12, y: row.y + row.height / 2 };
+		await page.mouse.click(blank.x, blank.y);
+		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+		await expect(toc.locator('.memo-toc-list')).toBeVisible();
+		await page.mouse.click(blank.x, blank.y);
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+		await expect(toc.locator('.memo-toc-list')).toBeHidden();
 	});
 
 	test('편집 화면에도 목차와 글자 크기 버튼이 있다. 목차를 누르면 그 제목에 커서를 두고, 키운 글자에서도 누른 자리에 입력된다', async ({
