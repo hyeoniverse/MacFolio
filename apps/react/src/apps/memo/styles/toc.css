@@ -1,19 +1,33 @@
 /*
  * 메모 앱: 글의 목차 (components/MemoToc.tsx). Apple 개발자 문서의 'On This Page'처럼 가벼운 목록:
- * 상자·배경 없이 작은 회색 '목차' 제목과 접기 화살표, 얇은 왼쪽 세로선, 작은 보조 글자색 항목.
- * 지금 읽는 절은 강조색 글자와 세로선 위의 굵은 막대로 표시한다. 떠 있는 목차 창도 같은 목록이고 바탕만 메뉴 재질이다
+ * 상자·배경 없이 '목차' 제목과 접기 화살표, 얇은 왼쪽 세로선에 붙인 항목.
+ * 지금 읽는 절은 강조색 글자와 세로선 위의 굵은 막대로 표시한다. 떠 있는 목차 창도 같은 목록이고 바탕만 메뉴 재질이다.
+ * 글자색은 라이트·다크, 본문·목차 창 바탕 모두에서 WCAG AA(4.5:1) 이상이다: ## 항목·제목은 본문색, ### 항목은 보조 글자색
  */
+
+.memo-toc,
+.memo-toc-panel {
+	/* 지금 읽는 절의 글자색. 메모 노랑은 흰 바탕에서 1.75:1이라, 라이트에서는 기본 글자색과 섞어 5.9:1로 진하게 한다 */
+	--memo-toc-current: color-mix(in srgb, var(--memo-accent) 40%, var(--memo-text));
+	/* 왼쪽 세로선: 구분선보다 한 단계 진한 회색 */
+	--memo-toc-line: color-mix(in srgb, var(--memo-muted) 45%, transparent);
+}
+
+:root[data-theme='dark'] :is(.memo-toc, .memo-toc-panel) {
+	/* 다크 바탕에서는 노랑 그대로 9.5:1 */
+	--memo-toc-current: var(--memo-accent);
+}
 
 .memo-toc {
 	margin: 0 0 1.5rem;
 	font-size: var(--text-footnote);
 }
 
-/* '목차' 제목: 작은 회색 글자. 제목 아래 목차에서는 누르면 펼치고 접는 단추 */
+/* '목차' 제목: 본문색의 굵은 글자. 제목 아래 목차에서는 누르면 펼치고 접는 단추 */
 .memo-toc-heading {
 	margin: 0;
-	color: var(--memo-muted);
-	font-size: var(--text-caption);
+	color: var(--memo-body);
+	font-size: var(--text-footnote);
 	font-weight: 600;
 }
 
@@ -25,15 +39,15 @@
 	border: none;
 	border-radius: var(--radius-4);
 	background: none;
-	color: var(--memo-muted);
+	color: var(--memo-body);
 	font-family: inherit;
-	font-size: var(--text-caption);
+	font-size: var(--text-footnote);
 	font-weight: 600;
 	cursor: pointer;
 }
 
 .memo .memo-toc[data-compact] .memo-toc-toggle {
-	font-size: var(--text-footnote);
+	font-size: var(--text-subhead);
 }
 
 .memo .memo-toc-toggle:hover {
@@ -93,7 +107,7 @@
 .memo-toc-list {
 	margin: var(--space-6) 0 0;
 	padding: 0;
-	border-left: 1px solid var(--memo-border);
+	border-left: 1px solid var(--memo-toc-line);
 	list-style: none;
 }
 
@@ -104,20 +118,21 @@
 	padding: var(--space-2) 0 var(--space-2) var(--space-12);
 	border: none;
 	background: none;
-	color: var(--memo-muted);
+	color: var(--memo-body);
 	font: inherit;
-	font-size: var(--text-caption);
+	font-size: var(--text-footnote);
 	line-height: 1.45;
 	text-align: left;
 	cursor: pointer;
 }
 
-/* ### 제목: 한 단계 들여 쓴다 */
+/* ### 제목: 한 단계 들여 쓰고 한 단계 옅은 보조 글자색 */
 .memo .memo-toc-list li[data-level='3'] button {
 	padding-left: var(--space-24);
+	color: var(--memo-muted);
 }
 
-.memo .memo-toc-list button:hover {
+.memo .memo-toc-list li button:hover {
 	color: var(--memo-text);
 }
 
@@ -127,8 +142,8 @@
 }
 
 /* 지금 읽는 절: 강조색 글자와, 세로선 위에 겹친 굵은 막대 */
-.memo .memo-toc-list button[aria-current='location'] {
-	color: var(--memo-accent);
+.memo .memo-toc-list li button[aria-current='location'] {
+	color: var(--memo-toc-current);
 	font-weight: 600;
 }
 
@@ -146,7 +161,7 @@
 /* 휴대폰: 같은 모양에 손가락으로 고르기 쉽게 줄만 높인다 */
 .memo .memo-toc[data-compact] .memo-toc-list button {
 	padding-block: var(--space-8);
-	font-size: var(--text-footnote);
+	font-size: var(--text-subhead);
 }
 
 /* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다 */
