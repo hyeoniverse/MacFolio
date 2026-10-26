@@ -6,35 +6,149 @@ import { LAYOUT_POST_TITLE, layoutPost } from './memoLayoutPost';
 const box = async (locator: Locator) => (await locator.boundingBox())!;
 
 test.describe('메모 목차', () => {
-	test('제목 아래 목차에 ## · ### 제목이 나오고, 누르면 그 제목으로 가며 지금 읽는 절을 표시한다', async ({ page }) => {
+	test('제목 아래 목차는 접힌 채 시작해 마우스를 올리면 본문을 밀지 않고 떠서 열리고, 누르면 그 제목으로 가며 지금 읽는 절을 표시한다', async ({
+		page,
+	}) => {
 		await fakeApi(page, { signedIn: false });
 		await enterDesktop(page, '/memo/merge-strategies');
 		const memo = appWindow(page, 'memo');
 		const toc = memo.getByRole('navigation', { name: '목차' });
-		await expect(toc.getByRole('button', { name: '목차', exact: true })).toHaveAttribute('aria-expanded', 'true');
+		const toggle = toc.getByRole('button', { name: '목차', exact: true });
+		const list = toc.locator('.memo-toc-list');
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+		await expect(list).toBeHidden();
 		const body = memo.locator('.memo-reader-body .memo-markdown');
 		const headings = await body.locator(':scope > h2, :scope > h3').allTextContents();
-		await expect(toc.locator('li button')).toHaveText(headings.map((text) => text.trim()));
 		// 접기 블록 안의 제목은 목차에 넣지 않는다 (펼치지 않으면 갈 수 없다)
 		expect(headings.length).toBeGreaterThanOrEqual(3);
+		const before = (await body.boundingBox())!.y;
 
+		// 마우스를 올리면 떠서 열린다. 본문은 그대로
+		await toggle.hover();
+		await expect(list).toBeVisible();
+		await expect(toc).toHaveAttribute('data-state', 'peek');
+		await expect(toc.locator('li button')).toHaveText(headings.map((text) => text.trim()));
+		expect((await body.boundingBox())!.y).toBe(before);
+		// 벗어나면 닫힌다
+		await page.mouse.move(5, 5);
+		await expect(list).toBeHidden();
+
+		// 다시 올려 항목을 누르면 그 제목으로 가고 목록은 닫힌다
+		await toggle.hover();
 		const target = headings[3].trim();
 		await toc.getByRole('button', { name: target, exact: true }).click();
 		const heading = body.locator(':scope > :is(h2, h3)', { hasText: target }).first();
 		await expect(heading).toBeInViewport();
 		await expect(heading).toBeFocused();
 		await expect(page).toHaveURL(/\/memo\/merge-strategies$/);
+		await page.mouse.move(5, 5);
+		await expect(list).toBeHidden();
 
-		// 목차가 화면 위로 지나가면 떠 있는 버튼으로 연다. 지금 읽는 절에 체크
+		// 목차가 화면 위로 지나가면 떠 있는 버튼. 마우스를 올리면 목차 창이 열리고 지금 읽는 절을 표시한다
 		const float = memo.getByRole('button', { name: '목차 보기' });
 		await expect(float).toBeVisible();
+		await float.hover();
+		const panel = memo.getByRole('group', { name: '목차 바로가기' });
+		await expect(panel.locator('button[aria-current="location"]')).toHaveText(target);
+		await page.mouse.move(5, 5);
+		await expect(panel).toBeHidden();
+		// 누르면 열린 채 고정되고, 마우스가 벗어나도 남는다. Esc로 닫는다
 		await float.click();
-		const menu = page.getByRole('menu', { name: '목차' });
-		await expect(menu.getByRole('menuitemcheckbox', { checked: true })).toHaveText(target);
+		await expect(float).toHaveAttribute('aria-pressed', 'true');
+		await page.mouse.move(5, 5);
+		await page.waitForTimeout(400);
+		await expect(panel).toBeVisible();
+		await float.focus();
 		await page.keyboard.press('Escape');
-		await expect(menu).toBeHidden();
+		await expect(panel).toBeHidden();
+		await expect(float).toHaveAttribute('aria-pressed', 'false');
 		// 제목 아래 목차에서도 같은 절
 		await expect(toc.locator('li button[aria-current="location"]')).toHaveText(target);
+	});
+
+	test('목차를 누르면 펼친 채 고정되고 다음 방문에도 기억한다. 키보드는 Enter로 고정하고 Esc로 접는다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: false });
+		await enterDesktop(page, '/memo/merge-strategies');
+		const memo = appWindow(page, 'memo');
+		const toc = memo.getByRole('navigation', { name: '목차' });
+		const toggle = toc.getByRole('button', { name: '목차', exact: true });
+		const list = toc.locator('.memo-toc-list');
+		const body = memo.locator('.memo-reader-body .memo-markdown');
+		const closedTop = (await body.boundingBox())!.y;
+
+		await toggle.click();
+		await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+		await page.mouse.move(5, 5);
+		await page.waitForTimeout(400);
+		await expect(list).toBeVisible();
+		await expect(toc).toHaveAttribute('data-state', 'pinned');
+		// 고정한 목록은 본문 안에 펼쳐 본문을 아래로 민다
+		expect((await body.boundingBox())!.y).toBeGreaterThan(closedTop);
+
+		await page.reload();
+		await page.locator('.loading-container').click();
+		await expect(memo.getByRole('navigation', { name: '목차' }).locator('.memo-toc-list')).toBeVisible();
+
+		const again = memo.getByRole('navigation', { name: '목차' }).getByRole('button', { name: '목차', exact: true });
+		await again.focus();
+		await page.keyboard.press('Escape');
+		await expect(again).toHaveAttribute('aria-expanded', 'false');
+		await expect(again).toHaveAttribute('aria-pressed', 'false');
+		await page.keyboard.press('Enter');
+		await expect(again).toHaveAttribute('aria-pressed', 'true');
+		await page.keyboard.press('Enter');
+		await expect(again).toHaveAttribute('aria-pressed', 'false');
+		await expect(again).toHaveAttribute('aria-expanded', 'false');
+	});
+
+	test('편집 화면에도 목차와 글자 크기 버튼이 있다. 목차를 누르면 그 제목에 커서를 두고, 키운 글자에서도 누른 자리에 입력된다', async ({
+		page,
+	}) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page, '/memo/merge-strategies');
+		const memo = appWindow(page, 'memo');
+		const editor = memo.locator('.ProseMirror');
+		await expect(editor).toBeVisible();
+		const toc = memo.getByRole('navigation', { name: '목차' });
+		const toggle = toc.getByRole('button', { name: '목차', exact: true });
+		await toggle.click();
+		const headings = await editor.locator(':scope > h2, :scope > h3').allTextContents();
+		await expect(toc.locator('li button')).toHaveText(headings.map((text) => text.trim()));
+
+		const target = headings[4].trim();
+		await toc.getByRole('button', { name: target, exact: true }).click();
+		const heading = editor.locator(':scope > :is(h2, h3)', { hasText: target }).first();
+		await expect(heading).toBeInViewport();
+		await expect(editor).toBeFocused();
+		expect(await heading.evaluate((el) => el.contains(document.getSelection()?.anchorNode ?? null))).toBe(true);
+
+		// 커서는 제목 맨 앞이다
+		await page.keyboard.type('★');
+		await expect(heading).toHaveText(new RegExp(`^★${target}`));
+		// 제목을 더하면 목차도 바뀐다
+		const last = editor.locator(':scope > p').last();
+		await last.scrollIntoViewIfNeeded();
+		await last.click();
+		await page.keyboard.press('End');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('## 새로 쓴 절');
+		await expect(toc.getByRole('button', { name: '새로 쓴 절', exact: true })).toBeVisible();
+
+		// 글자 크기: 편집기 본문도 같은 배율로 키운다
+		await memo.getByRole('button', { name: '글자 크게' }).click();
+		expect(await editor.evaluate((el) => getComputedStyle(el).zoom)).toBe('1.15');
+		const paragraph = editor.locator(':scope > p').first();
+		await paragraph.scrollIntoViewIfNeeded();
+		const rect = (await paragraph.boundingBox())!;
+		// 첫 줄의 왼쪽 끝 가까이를 누르고 쓴다: 확대한 편집기에서도 누른 자리(첫 단어 안)에 입력된다.
+		// zoom이 좌표에 두 번 곱해지면 커서가 오른쪽·아래로 밀려 다른 줄에 선다
+		await page.mouse.click(rect.x + 40, rect.y + 12);
+		await page.keyboard.type('★');
+		const at = (await paragraph.textContent())!.indexOf('★');
+		expect(at).toBeGreaterThan(0);
+		expect(at).toBeLessThan(10);
 	});
 
 	test('제목이 셋 미만인 글에는 목차가 없다', async ({ page }) => {
