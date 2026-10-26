@@ -121,7 +121,7 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 ## 여는 방식과 편집 화면
 
-처음 목차는 넓은 화면에서 펼친 채 시작했다. 제목이 32개인 글은 본문보다 목차가 먼저 한 화면을 차지했다. 또 관리자로 로그인해 글을 열면 편집 화면이라 목차와 글자 크기 버튼이 없었다. 두 가지를 바꿨다([#393](https://github.com/hyeoniverse/MacFolio/pull/393)).
+처음 목차는 넓은 화면에서 펼친 채 시작했다. 제목이 32개인 글은 본문보다 목차가 먼저 한 화면을 차지했다. 또 관리자로 로그인해 글을 열면 편집 화면이라 목차와 글자 크기 버튼이 없었다. 두 가지를 바꿨다([#394](https://github.com/hyeoniverse/MacFolio/pull/394)).
 
 ### 접힌 채 시작하고, 올리면 떠서 열고, 누르면 고정
 
