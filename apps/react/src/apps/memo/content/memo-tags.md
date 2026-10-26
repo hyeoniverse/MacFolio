@@ -147,6 +147,5 @@ export function matchesTags(postTags: string[], selection: TagSelection): boolea
 - [최근 삭제된 항목](/memo/memo-recently-deleted)
 - [메모 칸 너비 조절](/memo/memo-pane-resize)
 - [메모 다듬기](/memo/notes-polish)
-- [블로그 폴더 재분류](/memo/memo-folders-reorg)
 
 #MacFolio #메모앱
