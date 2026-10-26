@@ -59,6 +59,8 @@ import PhoneReaderBars from './components/PhoneReaderBars';
 import PhoneFoldersBar from './components/PhoneFoldersBar';
 import { useTrash } from './useTrash';
 import { useMemoAppMenus } from './useMemoAppMenus';
+import { useMemoNavHistory } from './useMemoNavHistory';
+import HistoryNav from './components/HistoryNav';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
@@ -458,7 +460,37 @@ const Memo: React.FC = () => {
 		category === ALL_CATEGORY || inTags || inPopular || inTrash ? (folderPaths.at(-1) ?? '기타') : category;
 	const openFind = selected ? () => setFindSlug(selected.slug) : null;
 
+	// 뒤로·앞으로: 연 폴더와 본 글의 기록 (Finder·Safari처럼). 기록의 칸을 열 때는 검색어·조건을 비워 그 글이 목록에 보이게 한다
+	const history = useMemoNavHistory({
+		category,
+		tagSelection,
+		slug: selected?.slug ?? null,
+		posts,
+		open: ({ category: target, tagSelection: tagsAt, slug }) => {
+			setTagSelection((current) => tagsAt ?? { ...EMPTY_TAG_SELECTION, match: current.match });
+			setCategory(target);
+			setQuery('');
+			setFilter(null);
+			setGalleryNoteOpen(false);
+			setPicked(null);
+			if (slug) setSelectedSlug(postSlug(slug));
+			setPane(slug ? 'reader' : 'list');
+		},
+	});
+	const historyNav = !phone && (
+		<HistoryNav
+			canBack={history.canBack}
+			canForward={history.canForward}
+			onBack={history.goBack}
+			onForward={history.goForward}
+			backSteps={history.backSteps}
+			forwardSteps={history.forwardSteps}
+			onGo={history.go}
+		/>
+	);
+
 	useMemoAppMenus({
+		history,
 		canEdit,
 		onNewNote: startNewDraft,
 		onFind: openFind,
@@ -583,6 +615,7 @@ const Memo: React.FC = () => {
 					<section className="memo-list" aria-label="글 목록">
 						<Toolbar className="memo-toolbar">
 							<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
+							{historyNav}
 							<div className="memo-toolbar-heading">
 								<h2>{categoryName}</h2>
 								<p>{countLabel}</p>
@@ -665,6 +698,7 @@ const Memo: React.FC = () => {
 						<section className="memo-gallery" aria-label="갤러리">
 							<Toolbar className="memo-toolbar">
 								<ToolbarLead sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
+								{historyNav}
 								<div className="memo-toolbar-heading">
 									<h2>{categoryName}</h2>
 									<p>{countLabel}</p>

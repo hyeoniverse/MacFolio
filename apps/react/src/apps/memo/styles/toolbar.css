@@ -352,3 +352,15 @@
 	color: var(--memo-muted);
 	font-size: var(--text-caption2);
 }
+
+/* 뒤로·앞으로 (Finder·Safari의 ‹ ›): 두 버튼을 붙여 한 묶음으로. 길게 눌러도 글자 선택·iPad 길게 누르기 메뉴가 뜨지 않게 */
+.memo-history {
+	display: flex;
+	flex: none;
+	gap: var(--space-2);
+}
+
+.memo-history-step {
+	-webkit-touch-callout: none;
+	user-select: none;
+}
