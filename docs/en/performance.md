@@ -148,7 +148,7 @@ Round 4's regression (quote widget, +19KB) was only found by re-measuring. To su
 
 - Sizes are brotli level 9 (same as the measurement server `serve.mjs`), and KB is 1,024 bytes
 - The limits were chosen so that Round 4's regression (+19KB) fails both items. The total has less headroom because small increases add up across many bundles
-- Fonts and images are not included. From Round 5 they aren't received on the first visit (before the tap)
+- Fonts and images are not included. From Round 5 they aren't received on the first visit (before the tap). Fonts fetched by the first screen after the tap are checked separately by the 'First-screen font budget' below
 
 When a limit is exceeded, the CI log and failure summary (annotation) show which item went over, by how much, and the largest files. Below is an example made to fail by lowering the limits.
 
@@ -171,6 +171,19 @@ boot 번들(assets/boot-wshPrf4V.js)이 49.4KB로, 상한 45.0KB보다 4.4KB 큽
 2. Find the bundle that grew in the list of largest files and check which modules were newly included. Most often, as in Round 4, a component or data not needed for the first screen was imported statically
 3. If it's only needed after the loading screen is tapped, split it with [`React.lazy`](https://react.dev/reference/react/lazy) or `import()`
 4. If the growth is truly needed for the first screen, raise both the table in this document and `BUDGET` in `budget.mjs`, and note the reason and measurements in the PR. The `BUDGET_BOOT_KB` and `BUDGET_INITIAL_KB` environment variables change the limits for local experiments
+
+#### First-screen font budget
+
+Fonts are fetched according to the characters drawn on screen, so their size cannot be known from the build output (`dist`) alone. The E2E job opens the first screen in a real browser and checks the total response size of the font files it received (`apps/react/e2e/fontBudget.ts`, `perf-fonts.spec.ts`, `mobile-perf-fonts.spec.ts`). The Font Awesome icon fonts are included.
+
+| Screen                                            | Measured (October 26, 2026) | Limit     |
+| ------------------------------------------------- | --------------------------- | --------- |
+| Desktop first screen (desktop-chromium)           | 568KB (6 files)             | **600KB** |
+| Phone home screen (mobile-iphone, mobile-android) | 382KB (3 files)             | **410KB** |
+
+- The limits add about 30KB to the measured values. One small piece fits; the Korean serif pieces (about 440KB) or the Pretendard `ksx` piece (253KB) returning to the first screen fail the test
+- The desktop test also checks that no Korean serif piece is loaded on the first screen, and that clicking the Safari window loads it
+- On failure the message lists each font file's size. To raise a limit, change `FONT_BUDGET` in `fontBudget.ts` and this table together
 
 ## How it was measured
 
@@ -307,12 +320,14 @@ See [Round 5: fixing the LCP recount and a performance budget](#round-5-fixing-t
 
 ### Font replacement (open licenses)
 
-Fonts differed by OS, and the Apple SD Gothic Neo files served to non-Apple devices had no permission for web distribution, so the site now uses SIL OFL fonts. Body text is Pretendard Variable split by `scripts/subset-font.py` into a core file (including the 2,350 KS X 1001 syllables, 456KB) and 8 ext pieces; monospace is JetBrains Mono and serif is Noto Serif KR (`src/styles/fonts.css`). Showing the same screen everywhere costs more font transfer.
+Fonts differed by OS, and the Apple SD Gothic Neo files served to non-Apple devices had no permission for web distribution, so the site now uses SIL OFL fonts. Body text is Pretendard Variable split by `scripts/subset-font.py`: core (Latin, punctuation and the 1,093 KS X 1001 syllables used by this site's posts and UI text, 246KB), ksx (the other 1,257 KS X 1001 syllables, 253KB) and 8 ext pieces (all other Hangul). Monospace is JetBrains Mono and serif is Noto Serif KR; the Korean serif pieces load only when the Safari window is actually viewed (`apps/safari/serifFont.ts`, `src/styles/fonts.css`). Showing the same screen everywhere costs more font transfer.
 
-| Screen (font files, icon font included) | Before, Chromium | Before, WebKit | After                          |
-| --------------------------------------- | ---------------- | -------------- | ------------------------------ |
-| Desktop first screen                    | 397KB            | 248KB          | 1,187KB (443KB serif included) |
-| Phone home (iPhone 15)                  | -                | 136KB          | 591KB                          |
+| Screen (font files, icon font included) | Before, Chromium | Before, WebKit | After |
+| --------------------------------------- | ---------------- | -------------- | ----- |
+| Desktop first screen                    | 397KB            | 248KB          | 568KB |
+| Phone home (iPhone 15)                  | -                | 136KB          | 382KB |
+
+Right after the replacement the desktop first screen received 1,187KB (443KB of Korean serif and a 456KB core included) and the phone home 591KB. Deferring the Korean serif until the Safari window is viewed (→ 777KB) and narrowing core to the characters this site uses (→ 568KB) gave the values above.
 
 The first-visit bundle budget went from 256.4KB to 259.7KB (limit 265KB). Details in the blog post `open-fonts`.
 
