@@ -40,7 +40,7 @@
 	overflow: hidden;
 	background-color: var(--music-bg);
 	color: var(--music-text);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: var(--text-footnote);
 	text-align: left;
 }

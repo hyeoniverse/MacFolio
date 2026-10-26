@@ -1150,7 +1150,7 @@
 
 .cd-site-hero p {
 	margin: 4px 0 10px;
-	font-family: Georgia, 'Times New Roman', serif;
+	font-family: var(--font-serif);
 	font-size: clamp(17px, 2.6cqi, 24px);
 	font-weight: 700;
 	line-height: 1.2;
@@ -1297,7 +1297,7 @@
 
 .cd-themes-five dd {
 	margin: 0;
-	font-family: ui-monospace, monospace;
+	font-family: var(--font-mono);
 }
 
 .cd-contrast {
@@ -1317,7 +1317,7 @@
 
 .cd-contrast small {
 	color: var(--cr-muted);
-	font-family: ui-monospace, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption2);
 }
 

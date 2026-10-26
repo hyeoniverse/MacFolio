@@ -35,6 +35,10 @@ updates:
       # Node 타입은 실행하는 Node(.node-version)와 같은 큰 버전으로 둔다
       - dependency-name: '@types/node'
         update-types: [version-update:semver-major]
+      # 2.3.3(mdast-util-to-markdown-cjk-friendly 1.0.1)은 Milkdown 편집기가 글을 Markdown으로 쓸 때 TypeError를 낸다 (#383).
+      # 2.3.2에 고정하고, 다음 버전이 나오면 편집기 E2E로 확인한 뒤 이 줄을 지운다
+      - dependency-name: remark-cjk-friendly
+        versions: ['2.3.3']
 
   - package-ecosystem: github-actions
     directory: /

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { test, expect, enterDesktop, appWindow } from './fixtures';
-import { fakeApi } from './fakeApi';
+import { FAKE_API, fakeApi } from './fakeApi';
 import { fakeWeather } from './fakeWeather';
 import { fakeFiles } from './fakeFiles';
 
@@ -160,6 +160,74 @@ test.describe('바탕화면 위젯', () => {
 		expect(soundBox.x).toBeGreaterThan(widgetBox.x + widgetBox.width / 2);
 		expect(soundBox.y).toBeGreaterThan(widgetBox.y + widgetBox.height / 2);
 		expect((await saved(page))?.find((item) => item.kind === 'photos')).toMatchObject({ album: 'sproutfarm' });
+	});
+
+	/** 사진 위젯 둘: 앨범을 고르지 않은 것(사이트 기본값을 따른다)과 이 브라우저에서 QRU를 고른 것 */
+	async function twoPhotoWidgets(page: Page) {
+		await page.addInitScript(() =>
+			localStorage.setItem(
+				'macfolio:desktop:widgets',
+				JSON.stringify([
+					{ id: 'photos', kind: 'photos', size: 'small', col: 0, row: 0 },
+					{ id: 'photos-2', kind: 'photos', size: 'small', col: 1, row: 0, album: 'qru' },
+				])
+			)
+		);
+	}
+	const photoWidgets = (page: Page) => page.locator('.desktop-widgets').getByRole('group', { name: '사진 위젯' });
+
+	test('관리자가 고른 사진 위젯 앨범은 사이트 기본값: 이 브라우저에서 고르지 않은 위젯에 보이고, 방문자가 고른 값이 우선한다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page);
+		api.siteWidgets = { photoAlbum: 'sproutfarm' };
+		await twoPhotoWidgets(page);
+		await enterDesktop(page);
+		await closeSafari(page);
+		const [plain, chosen] = [photoWidgets(page).nth(0), photoWidgets(page).nth(1)];
+		await expect(plain.locator('figcaption')).toHaveText('SproutFarm 새싹 농장');
+		await expect(chosen.locator('figcaption')).toHaveText('QRU 큐알유');
+
+		// 메뉴도 사이트 기본값에 체크한다. 방문자가 '모든 앨범'을 고르면 이 브라우저에만 저장하고 서버에는 보내지 않는다
+		await plain.click({ button: 'right' });
+		await expect(page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' })).toHaveAttribute(
+			'aria-checked',
+			'true'
+		);
+		await page.getByRole('menuitemcheckbox', { name: '모든 앨범' }).click();
+		expect((await saved(page))?.find((item) => item.id === 'photos')).toMatchObject({ album: 'all' });
+		await plain.click({ button: 'right' });
+		await expect(page.getByRole('menuitemcheckbox', { name: '모든 앨범' })).toHaveAttribute('aria-checked', 'true');
+		await page.keyboard.press('Escape');
+		expect(api.siteWidgetSaves).toEqual([]);
+	});
+
+	test('관리자가 사진 위젯의 앨범을 고르면 사이트 기본값으로도 저장한다 (모든 앨범은 기본값 없음)', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await twoPhotoWidgets(page);
+		await enterDesktop(page);
+		await closeSafari(page);
+		const plain = photoWidgets(page).nth(0);
+		await plain.click({ button: 'right' });
+		await page.getByRole('menuitemcheckbox', { name: 'SproutFarm 새싹 농장' }).click();
+		await expect.poll(() => api.siteWidgetSaves).toEqual([{ photoAlbum: 'sproutfarm' }]);
+		expect(api.siteWidgets).toEqual({ photoAlbum: 'sproutfarm' });
+		await plain.click({ button: 'right' });
+		await page.getByRole('menuitemcheckbox', { name: '모든 앨범' }).click();
+		await expect.poll(() => api.siteWidgetSaves).toEqual([{ photoAlbum: 'sproutfarm' }, { photoAlbum: null }]);
+	});
+
+	test('사이트 콘텐츠를 받지 못하면 사이트 기본값 없이 모든 앨범', async ({ page }) => {
+		const api = await fakeApi(page);
+		api.siteWidgets = { photoAlbum: 'sproutfarm' };
+		await page.route(`${FAKE_API}/site`, (route) => route.fulfill({ status: 500, body: '' }));
+		await twoPhotoWidgets(page);
+		await enterDesktop(page);
+		await closeSafari(page);
+		await photoWidgets(page).nth(0).click({ button: 'right' });
+		await expect(page.getByRole('menuitemcheckbox', { name: '모든 앨범' })).toHaveAttribute('aria-checked', 'true');
 	});
 
 	test('사진 위젯에서 고른 앨범은 휴대폰 홈 화면의 같은 사진 위젯에도 보인다 (위젯 자리는 따로 저장해도)', async ({

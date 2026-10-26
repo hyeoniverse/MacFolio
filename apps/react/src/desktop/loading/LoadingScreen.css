@@ -43,7 +43,7 @@
 	margin: 1rem;
 	color: var(--color-white);
 	/*
-	 * index.html의 #boot-splash p와 같은 글꼴. 웹 글꼴(MacSystemFont)로 렌더링하면 글자 영역이 HTML의 시작 안내와 달라져,
+	 * index.html의 #boot-splash p와 같은 글꼴. 웹 글꼴(Pretendard)로 렌더링하면 글자 영역이 HTML의 시작 안내와 달라져,
 	 * 더 큰 회차에는 LCP가 이 문구로 다시 집계된다. 같은 글꼴이면 영역이 같아 새 LCP 후보가 되지 않는다 (docs/performance.md)
 	 */
 	font:

@@ -790,7 +790,7 @@
 				"parameters": [],
 				"responses": {
 					"200": {
-						"description": "관리자가 저장한 프로필·프로젝트·이력서 (없으면 null)와 마지막으로 바꾼 시각",
+						"description": "관리자가 저장한 프로필·프로젝트·이력서·위젯 기본값 (없으면 null)과 마지막으로 바꾼 시각",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -850,6 +850,9 @@
 											"markdown": "# 김정현\n\n> 화면에서 서버까지, 끝까지 만들고 운영하는 개발자\n\n## 강점\n- **끝까지 운영** — …"
 										},
 										"resumeEn": null,
+										"widgets": {
+											"photoAlbum": "folder:widget01"
+										},
 										"updatedAt": null
 									}
 								}
@@ -1120,6 +1123,43 @@
 				"responses": {
 					"200": {
 						"description": "저장한 영문 이력서를 지웠다 (코드의 기본 영문 이력서로 돌아간다)"
+					},
+					"401": {
+						"description": "관리자로 로그인하지 않았다"
+					}
+				},
+				"security": [
+					{
+						"macfolio_session": []
+					}
+				],
+				"tags": [
+					"site"
+				]
+			}
+		},
+		"/site/widgets": {
+			"put": {
+				"operationId": "SiteController_saveWidgets",
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"example": {
+									"photoAlbum": "folder:widget01"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "저장한 뒤의 사이트 콘텐츠 (widgets). 방문자가 자기 브라우저에서 고르지 않은 위젯은 이 값을 쓴다. photoAlbum이 null이면 기본값 없음"
+					},
+					"400": {
+						"description": "규칙을 어겼다 (글자가 아님, 100자 넘음, 쓸 수 없는 글자). message에 이유를 담는다"
 					},
 					"401": {
 						"description": "관리자로 로그인하지 않았다"

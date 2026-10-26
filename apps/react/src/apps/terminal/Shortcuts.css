@@ -4,7 +4,7 @@
 	padding: var(--space-8) var(--space-16) 32px;
 	background-color: var(--sidebar-background);
 	color: var(--color-label);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	text-align: left;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .shortcut-tile-command {
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption2);
 	opacity: 0.8;
 }
@@ -90,7 +90,7 @@
 	margin: 0 var(--space-16) var(--space-8);
 	overflow-x: auto;
 	color: var(--color-link);
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption2);
 	line-height: 1.25;
 }
@@ -98,7 +98,7 @@
 .shortcut-command {
 	margin: 0 var(--space-4) var(--space-16);
 	color: var(--color-secondary-label);
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption);
 }
 

@@ -352,7 +352,7 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await activity.getByRole('tab', { name: '서버' }).click();
 		await expect(activity.getByText('서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다.')).toBeVisible();
 	});
-	test('관리자: 검색어 탭에서 Search Console의 검색어·페이지를 보고, 페이지를 골라 그 검색어만 보고, 지금 가져온다', async ({
+	test('관리자: 검색어 탭에서 Search Console의 검색어·페이지를 보고, 페이지를 골라 그 검색어만 보고, 글 페이지를 열고, 지금 가져온다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -379,10 +379,23 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		// 블로그 글 페이지는 글 제목으로. 누르면 그 페이지의 검색어만
 		const pages = activity.getByRole('table', { name: '페이지' });
 		await expect(pages).toContainText('macfolio.hyeoniverse.com');
-		await pages.getByRole('button', { name: '메모 › CRA에서 Vite로 옮기기' }).click();
+		await pages.getByRole('button', { name: '메모 › CRA에서 Vite로 옮기기', exact: true }).click();
 		const filtered = activity.getByRole('table', { name: '검색어 · 메모 › CRA에서 Vite로 옮기기' });
 		// 고른 정렬(순위)은 그대로
 		await expect(filtered.locator('tbody tr')).toHaveText([/^macfolio2603\.5$/, /^cra vite 마이그레이션91505\.1$/]);
+
+		// 글 페이지는 ↗로 메모 앱에서 그 글을 연다. 첫 화면처럼 앱 항목이 아닌 페이지에는 여는 버튼이 없다
+		await expect(pages.getByRole('button', { name: /열기$/ })).toHaveCount(2);
+		await expect(
+			pages.getByRole('row', { name: /^macfolio\.hyeoniverse\.com/ }).getByRole('button', { name: /열기$/ })
+		).toHaveCount(0);
+		await pages.getByRole('button', { name: '메모 › CRA에서 Vite로 옮기기 열기' }).click();
+		const memo = appWindow(page, 'memo');
+		// 관리자라 편집기로 열린다. 주소 막대가 맨 앞 창(메모)의 그 글을 가리킨다
+		await expect(memo).toBeVisible();
+		await expect(page).toHaveURL(/\/memo\/cra-to-vite$/);
+		// 여는 버튼은 고르기와 따로다: 고른 페이지는 그대로
+		await expect(filtered).toBeVisible();
 
 		// 검색엔진이 넘겨준 방문의 검색어
 		await expect(activity.getByRole('table', { name: '검색엔진이 넘겨준 검색어' })).toContainText('김정현 포트폴리오2');

@@ -19,6 +19,7 @@ import {
 	withOptions,
 } from '@/desktop/widgets/catalog';
 import { loadMobileWidgets, shareOptions } from '@/desktop/widgets/sharedOptions';
+import { useSiteAlbum } from '@/desktop/widgets/useSiteAlbum';
 import Widget from '@/desktop/widgets/Widget';
 import { closeWidgetEditor, openWidgetEditor, useWidgetEditing } from '@/desktop/widgets/widgetEditor';
 import WidgetSheet, { AlbumSheet, PostsModeSheet } from '@/desktop/mobile/WidgetSheet';
@@ -182,8 +183,11 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 		save(widgets.map((list) => withOptions(list, id, kind, options)));
 		shareOptions('desktop', id, kind, options);
 	};
-	const chooseAlbum = (id: string, album: string | undefined) => {
+	/** 사진 위젯의 앨범. 관리자가 고르면 사이트 기본값으로도 저장한다 (useSiteAlbum) */
+	const siteAlbum = useSiteAlbum();
+	const chooseAlbum = (id: string, album: string) => {
 		choose(id, { album });
+		siteAlbum.share(album);
 		setAlbumFor(null);
 	};
 	const choosePosts = (id: string, posts: PostsMode) => {
@@ -484,7 +488,7 @@ const MobileHome = ({ launch }: { launch: (app: AppName) => void }) => {
 			{gallery && <WidgetSheet pages={widgets} current={current} onAdd={addWidget} onClose={() => setGallery(false)} />}
 			{albumFor && (
 				<AlbumSheet
-					album={widgets.flat().find((widget) => widget.id === albumFor)?.album}
+					album={siteAlbum.shown(widgets.flat().find((widget) => widget.id === albumFor)?.album)}
 					onChoose={(album) => chooseAlbum(albumFor, album)}
 					onClose={() => setAlbumFor(null)}
 				/>

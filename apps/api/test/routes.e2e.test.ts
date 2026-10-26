@@ -153,6 +153,7 @@ const ACCESS: Record<string, 'admin' | 'visitor' | 'public'> = {
 	'DELETE /site/resume': 'admin',
 	'PUT /site/resume/en': 'admin',
 	'DELETE /site/resume/en': 'admin',
+	'PUT /site/widgets': 'admin',
 };
 
 /** 어떤 경로든 타입이 틀린 몸통. 각 경로의 검사기가 거절해야 한다 */
@@ -170,6 +171,7 @@ const JUNK_BODY = {
 	texts: 1,
 	email: 1,
 	subject: 1,
+	photoAlbum: 1,
 };
 
 /**

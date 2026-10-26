@@ -46,7 +46,7 @@ const ApiReference = () => {
 				withDefaultFonts: false,
 				agent: { disabled: true },
 				mcp: { disabled: true },
-				customCss: `.scalar-app { --scalar-font: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif; }`,
+				customCss: `.scalar-app { --scalar-font: var(--font-sans); --scalar-font-code: var(--font-mono); }`,
 			}}
 		/>
 	);

@@ -211,11 +211,7 @@ textarea.projects-input.mono {
 	border: none;
 	background: none;
 	color: var(--color-label);
-	font:
-		12px/1.55 ui-monospace,
-		SFMono-Regular,
-		Menlo,
-		monospace;
+	font: 12px/1.55 var(--font-mono);
 	resize: vertical;
 	outline: none;
 }

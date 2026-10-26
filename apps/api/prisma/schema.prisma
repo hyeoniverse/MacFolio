@@ -399,6 +399,8 @@ model SiteContent {
   resume    Json?
   /// 영문 이력서 Markdown ({ markdown }). 모양은 resume과 같다
   resumeEn  Json?
+  /// 관리자가 고른 위젯 기본값 ({ photoAlbum }). 방문자가 자기 브라우저에서 고르지 않은 위젯에 쓴다. 모양은 @macfolio/contracts의 WidgetDefaults
+  widgets   Json?
   updatedAt DateTime @updatedAt
   updatedBy String?
 }

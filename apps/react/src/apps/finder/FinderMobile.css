@@ -4,7 +4,7 @@
 	height: 100%;
 	background-color: var(--phone-page-bg);
 	color: var(--color-label);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	text-align: left;
 }
 

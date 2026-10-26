@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+	ALL_ALBUMS,
 	DEFAULT_MOBILE_WIDGETS,
+	effectiveAlbum,
 	fillOptions,
 	parseWidgets,
+	siteAlbumOf,
 	upgradeMobileDefault,
 	withOptions,
 	type PageWidget,
@@ -135,5 +138,28 @@ describe('휴대폰 처음 위젯', () => {
 			[w('posts', 'medium'), w('photos', 'small'), w('clock', 'small')],
 		];
 		expect(upgradeMobileDefault(resized)).toBe(resized);
+	});
+});
+
+describe('사진 위젯의 앨범: 이 브라우저에서 고른 값 → 사이트 기본값 → 모든 앨범', () => {
+	it('이 브라우저에서 고른 값이 사이트 기본값보다 우선한다 (모든 앨범을 직접 고른 것도)', () => {
+		expect(effectiveAlbum('qru', 'folder:widget01')).toBe('qru');
+		expect(effectiveAlbum(ALL_ALBUMS, 'folder:widget01')).toBe(ALL_ALBUMS);
+	});
+
+	it('고르지 않았으면 사이트 기본값, 그것도 없으면 모든 앨범(undefined)', () => {
+		expect(effectiveAlbum(undefined, 'folder:widget01')).toBe('folder:widget01');
+		expect(effectiveAlbum(undefined, null)).toBeUndefined();
+	});
+
+	it('사이트 기본값으로 저장할 값: 모든 앨범은 기본값 없음(null)', () => {
+		expect(siteAlbumOf('folder:widget01')).toBe('folder:widget01');
+		expect(siteAlbumOf(ALL_ALBUMS)).toBeNull();
+		expect(siteAlbumOf(undefined)).toBeNull();
+	});
+
+	it("'모든 앨범'(ALL_ALBUMS)도 저장한 위젯 자리에서 그대로 읽힌다", () => {
+		const saved = [{ id: 'w1', kind: 'photos', size: 'small', col: 0, row: 0, album: ALL_ALBUMS }];
+		expect(parseWidgets(saved)?.[0].album).toBe(ALL_ALBUMS);
 	});
 });
