@@ -2,6 +2,7 @@
 // 글은 Markdown 파일이고, 맨 위 머리말(---로 감싼 key: value)에 제목·날짜·카테고리를 적는다.
 import type { FolderPath, PostSlug } from './rules.js';
 import { imageLayoutOf } from './imageLayout.js';
+import { matchesQuery, normalizeSearchText, parseQuery } from './search.js';
 
 export interface Post {
 	/** 파일 이름에서 온 주소용 이름 (예: cra-to-vite) */
@@ -442,28 +443,22 @@ export const POST_FILTERS: {
  * ("merge strategies" → merge-strategies). 글 주소 전체(`/memo/<글>`, 사이트 주소 포함)를 붙여 넣어도 찾는다
  */
 export function slugMatches(slug: string, query: string): boolean {
-	const q = query
-		.trim()
-		.toLowerCase()
-		.replace(/^.*\/memo\//, '')
-		.replace(/[?#].*$/, '')
-		.replace(/\/+$/, '')
-		.replace(/[\s_]+/g, '-');
-	return q.length > 0 && slug.toLowerCase().includes(q);
+	const text = parseQuery(query).text;
+	return text.length > 0 && normalizeSearchText(slug).includes(text);
 }
 
+/**
+ * 폴더·검색 조건·검색어로 거른다 (순서는 그대로). 검색어는 낱말마다 제목·주소·태그·요약·본문 중 어디에든 있어야 한다 (search.ts).
+ * 검색어에 맞는 순서로 늘어놓는 일은 rankPosts가 한다
+ */
 export function filterPosts(posts: Post[], category: string, query: string, filter: PostFilter | null = null): Post[] {
-	const q = query.trim().toLowerCase();
+	const parsed = parseQuery(query);
 	const condition = POST_FILTERS.find((item) => item.id === filter);
 	return posts.filter(
-		(post) =>
-			inFolder(post, category) &&
-			(!condition || condition.test(post)) &&
-			(!q || post.title.toLowerCase().includes(q) || post.body.toLowerCase().includes(q) || slugMatches(post.slug, q))
+		(post) => inFolder(post, category) && (!condition || condition.test(post)) && matchesQuery(post, parsed)
 	);
 }
 
-/** "2026. 9. 28." */
 export function formatPostDate(date: string): string {
 	const [year, month, day] = date.split('-').map(Number);
 	return `${year}. ${month}. ${day}.`;

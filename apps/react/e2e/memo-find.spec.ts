@@ -28,13 +28,47 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		const item = memo.locator('.memo-item', { hasText: content.title });
 		await expect(item).toHaveCount(1);
 		const search = memo.getByRole('searchbox', { name: '글 검색' });
-		for (const query of ['slug-only', 'SLUG ONLY word', 'https://macfolio.hyeoniverse.com/memo/zz-slug-only-word']) {
+		// 하이픈으로 이으면 이어진 한 덩어리로 찾는다 (글 주소처럼 적은 것)
+		for (const query of ['slug-only', 'slug_only-word', 'https://macfolio.hyeoniverse.com/memo/zz-slug-only-word']) {
 			await search.fill(query);
 			await expect(memo.locator('.memo-item')).toHaveCount(1);
 			await expect(item).toHaveCount(1);
 		}
+		// 공백으로 나누면 낱말마다 어디에든 있으면 된다 (본문에 세 낱말이 다 있는 다른 글도 걸린다). 주소에서 찾은 글이 맨 앞
+		await search.fill('SLUG ONLY word');
+		await expect(memo.locator('.memo-item').first()).toContainText(content.title);
 		await search.fill('slug-only-other');
-		await expect(memo.getByText('검색 결과가 없습니다.')).toBeVisible();
+		await expect(memo.locator('.memo-empty')).toHaveText('검색 결과가 없습니다.');
+	});
+
+	test('여러 낱말은 모두 들어 있는 글만, 제목에서 찾은 글이 앞. 띄어쓰기가 달라도 찾는다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		await search.fill('merge strategies');
+		// 주소(merge-strategies)와 제목이 모두 맞는 글이 맨 앞
+		await expect(memo.locator('.memo-item').first()).toContainText('GitHub 병합 방식 세 가지');
+		await search.fill('병합방식');
+		await expect(memo.locator('.memo-item').first()).toContainText('GitHub 병합 방식 세 가지');
+	});
+
+	test('결과가 없으면 고친 검색어와 비슷한 글을 보이고, 누르면 그 검색어로 찾거나 글을 연다', async ({ page }) => {
+		const memo = await openMemo(page);
+		const search = memo.getByRole('searchbox', { name: '글 검색' });
+		// 글에 없는 오타 (이 기능을 설명한 글에는 예로 다른 오타를 적었다)
+		await search.fill('dispetcher');
+		await expect(memo.locator('.memo-empty')).toHaveText('검색 결과가 없습니다.');
+		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
+		await expect(similar.getByText('혹시 이 검색어인가요?')).toBeVisible();
+		await expect(similar.getByRole('listitem').first()).toContainText('Flux 패턴');
+
+		await similar.getByRole('button', { name: 'dispatcher', exact: true }).click();
+		await expect(search).toHaveValue('dispatcher');
+		await expect(memo.locator('.memo-item', { hasText: 'Flux 패턴' }).first()).toBeVisible();
+
+		await search.fill('dispetcher');
+		await similar.getByRole('button', { name: /Flux 패턴/ }).click();
+		await expect(search).toHaveValue('');
+		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
 	});
 
 	test('검색 조건: ⌄ 메뉴에서 고르면 칸에 붙고 목록을 거른다. ×나 Backspace로 뗀다', async ({ page }) => {

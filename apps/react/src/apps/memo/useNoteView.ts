@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
 	adjacentPosts,
 	type AdminPost,
@@ -19,6 +19,8 @@ import {
 	RECENTLY_DELETED,
 	recentlyDeletedPosts,
 	selectPost,
+	similarPosts,
+	suggestQuery,
 	TAG_VIEW,
 	type TagSelection,
 	tagSelectionTitle,
@@ -97,10 +99,29 @@ export function useNoteView({
 	);
 	/** 목록 위 제목: 폴더 이름, 또는 #태그 / N개의 태그 / 모든 태그 */
 	const categoryName = inTags ? tagSelectionTitle(tagSelection) : folderName(category);
+	// 목록은 검색어를 한 박자 늦게 따른다: 입력 칸은 바로 바뀌고, 글 거르기·다시 그리기는 React가 입력이 멈춘 틈에 한다
+	const searchQuery = useDeferredValue(query);
 	const visible = useMemo(
-		() => listPosts({ inView: inCategory, trash, inTrash, query, filter, editing, arrangement, ranked: inPopular }),
-		[inTrash, trash, inCategory, query, filter, editing, arrangement, inPopular]
+		() =>
+			listPosts({
+				inView: inCategory,
+				trash,
+				inTrash,
+				query: searchQuery,
+				filter,
+				editing,
+				arrangement,
+				ranked: inPopular,
+			}),
+		[inTrash, trash, inCategory, searchQuery, filter, editing, arrangement, inPopular]
 	);
+	/** 검색 결과가 없을 때: 고친 검색어와 철자가 비슷한 글 (지금 보기의 글에서) */
+	const similar = useMemo(() => {
+		if (visible.length > 0 || !searchQuery.trim() || inTrash) return null;
+		const posts = similarPosts(inCategory, searchQuery);
+		const suggestion = suggestQuery(inCategory, searchQuery);
+		return posts.length > 0 || suggestion ? { posts, suggestion } : null;
+	}, [visible.length, searchQuery, inTrash, inCategory]);
 	const { pinned: pinnedPosts, others: otherPosts, selected } = selectPost(visible, selectedSlug, inPopular);
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
@@ -138,6 +159,7 @@ export function useNoteView({
 		popular,
 		categoryName,
 		visible,
+		similar,
 		pinnedPosts,
 		otherPosts,
 		selected,

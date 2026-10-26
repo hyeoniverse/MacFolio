@@ -16,6 +16,7 @@ import { popularPosts, type PostStats } from './popular.js';
 import { splitPinned } from './organize.js';
 import { matchesTags, type TagSelection } from './tagFilter.js';
 import { tagsOf } from './tags.js';
+import { rankPosts } from './search.js';
 
 /** 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다) */
 export function folderPaths(folders: FolderNode[]): FolderPath[] {
@@ -42,7 +43,7 @@ export const filterFor = (filter: PostFilter | null, editing: boolean): PostFilt
 /**
  * 목록에 보일 글. 최근 삭제된 항목은 지운 순서 그대로 검색어로만 거르고,
  * 순위가 있는 보기(인기글)는 순위 그대로 검색어·검색 조건으로만 거르고,
- * 나머지는 검색어·검색 조건으로 거른 뒤 보기 설정대로 정렬한다
+ * 나머지는 검색 조건으로 거른 뒤 보기 설정대로 정렬하고, 검색어가 있으면 맞는 정도 순서로 다시 늘어놓는다
  */
 export function listPosts({
 	inView,
@@ -66,7 +67,9 @@ export function listPosts({
 }): Post[] {
 	if (inTrash) return filterPosts(trash, ALL_CATEGORY, query);
 	if (ranked) return filterPosts(inView, ALL_CATEGORY, query, filterFor(filter, editing));
-	return sortBy(filterPosts(inView, ALL_CATEGORY, query, filterFor(filter, editing)), arrangement);
+	// 검색어가 있으면 맞는 정도 순서로 (같으면 보기 설정의 순서). rankPosts가 맞지 않는 글도 뺀다
+	const sorted = sortBy(filterPosts(inView, ALL_CATEGORY, '', filterFor(filter, editing)), arrangement);
+	return query.trim() ? rankPosts(sorted, query) : sorted;
 }
 
 /** 고른 글. 목록에 없으면(폴더·검색으로 걸러지면) 목록 맨 위의 글(고정된 글 먼저). 순위대로 볼 때는 고정을 따로 두지 않는다 */

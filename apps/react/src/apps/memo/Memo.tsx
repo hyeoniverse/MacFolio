@@ -62,6 +62,7 @@ import { useMemoAppMenus } from './useMemoAppMenus';
 import { noteContextItems, phoneNoteItems, toolMenuItems, type NoteActions } from './noteMenus';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
+import SimilarResults from './components/SimilarResults';
 
 /** 본문 문자열을 메모 본문 모양으로 (편집기의 미리 보기, 버전 기록) */
 const renderMarkdown = (body: string) => <MemoMarkdown>{body}</MemoMarkdown>;
@@ -123,6 +124,7 @@ const Memo: React.FC = () => {
 		popular,
 		categoryName,
 		visible,
+		similar,
 		pinnedPosts,
 		otherPosts,
 		selected,
@@ -449,6 +451,18 @@ const Memo: React.FC = () => {
 			{status === 'error' && <EmptyState className="memo-empty">글을 불러오지 못했습니다.</EmptyState>}
 			{status === 'ready' && visible.length === 0 && (
 				<EmptyState className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</EmptyState>
+			)}
+			{status === 'ready' && similar && (
+				<SimilarResults
+					suggestion={similar.suggestion}
+					posts={similar.posts}
+					onSuggest={setQuery}
+					onOpen={(post) => {
+						setQuery('');
+						setSelectedSlug(post.slug);
+						setPane('reader');
+					}}
+				/>
 			)}
 		</>
 	);
