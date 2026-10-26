@@ -5,7 +5,7 @@ import type { Node } from '@milkdown/kit/prose/model';
 import type { EditorView, ViewMutationRecord } from '@milkdown/kit/prose/view';
 import { $nodeSchema, $remark, $view } from '@milkdown/kit/utils';
 import { visit } from 'unist-util-visit';
-import { captionParts } from '@macfolio/desktop-core/memo';
+import { captionParts, imageLayoutOf, withImageLayout, type ImageLayout } from '@macfolio/desktop-core/memo';
 import { downloadImage } from '../download';
 import { openImageZoom } from './imageZoom';
 
@@ -116,6 +116,54 @@ function downloadButton(getNode: () => Node) {
 	return button;
 }
 
+/** 배치 버튼의 이름과 그림 (네모는 이미지, 줄은 글). 그림은 고정된 SVG라 innerHTML로 넣는다 */
+const LAYOUT_BUTTONS: { layout: ImageLayout; label: string; icon: string }[] = [
+	{ layout: 'left', label: '왼쪽 정렬', icon: '<rect x="1" y="3" width="8" height="10" rx="1"/>' },
+	{ layout: 'center', label: '가운데 정렬', icon: '<rect x="4" y="3" width="8" height="10" rx="1"/>' },
+	{ layout: 'right', label: '오른쪽 정렬', icon: '<rect x="7" y="3" width="8" height="10" rx="1"/>' },
+	{
+		layout: 'float-left',
+		label: '왼쪽에 띄우고 글 감싸기',
+		icon: '<rect x="1" y="3" width="6" height="7" rx="1"/><path d="M9 4h6M9 7h6M9 10h6M1 13h14"/>',
+	},
+	{
+		layout: 'float-right',
+		label: '오른쪽에 띄우고 글 감싸기',
+		icon: '<rect x="9" y="3" width="6" height="7" rx="1"/><path d="M1 4h6M1 7h6M1 10h6M1 13h14"/>',
+	},
+];
+
+/**
+ * 이미지 배치 버튼 다섯 개 (그림 왼쪽 아래). 이미지를 고르거나 올리면 보인다.
+ * 누르면 이미지 주소 끝의 배치 표기를 바꾼다 (desktop-core의 imageLayout.ts): 저장하면 `![설명](주소#float-right)`
+ */
+function layoutBar(getNode: () => Node, setLayout: (layout: ImageLayout) => void) {
+	const bar = document.createElement('span');
+	bar.className = 'memo-figure-layout';
+	bar.contentEditable = 'false';
+	bar.setAttribute('role', 'group');
+	bar.setAttribute('aria-label', '이미지 배치');
+	const buttons = LAYOUT_BUTTONS.map(({ layout, label, icon }) => {
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.className = 'memo-overlay-button';
+		button.dataset.layout = layout;
+		button.setAttribute('aria-label', label);
+		button.title = label;
+		button.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true">${icon}</svg>`;
+		button.addEventListener('mousedown', (event) => event.preventDefault());
+		button.addEventListener('click', () => setLayout(layout));
+		bar.append(button);
+		return button;
+	});
+	/** 지금 배치를 눌린 버튼으로 */
+	const sync = () => {
+		const current = imageLayoutOf(getNode().attrs.src).layout;
+		for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.layout === current));
+	};
+	return { bar, sync };
+}
+
 /** 이미지 크게 보기 버튼 (내려받기 버튼 왼쪽). 편집기에서는 이미지를 누르면 이미지가 골라지므로 따로 둔다 */
 function zoomButton(getNode: () => Node) {
 	const button = document.createElement('button');
@@ -145,8 +193,18 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 	const frame = document.createElement('span');
 	frame.className = 'memo-figure-frame';
 	const img = document.createElement('img');
+	const layout = layoutBar(
+		() => current,
+		(next) => {
+			const pos = getPos();
+			const src = withImageLayout(current.attrs.src, next);
+			if (pos !== undefined && src !== current.attrs.src)
+				view.dispatch(view.state.tr.setNodeMarkup(pos, undefined, { ...current.attrs, src }));
+		}
+	);
 	frame.append(
 		img,
+		layout.bar,
 		zoomButton(() => current),
 		downloadButton(() => current)
 	);
@@ -176,6 +234,10 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 	const render = (node: Node) => {
 		img.src = node.attrs.src;
 		img.alt = node.attrs.alt;
+		const { layout: placed } = imageLayoutOf(node.attrs.src);
+		if (placed === 'center') delete dom.dataset.layout;
+		else dom.dataset.layout = placed;
+		layout.sync();
 		renderCaption(caption, node.attrs.title);
 		caption.hidden = false;
 		caption.classList.toggle('empty', !node.attrs.title);
@@ -237,11 +299,11 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 		selectNode: () => dom.classList.add('selected'),
 		deselectNode: () => dom.classList.remove('selected'),
 		ignoreMutation: () => true,
-		// 캡션 입력칸·크게 보기·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
+		// 캡션 입력칸·배치·크게 보기·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
 		stopEvent: (event: Event) => {
 			const target = event.target as Element;
 			return Boolean(
-				target.closest?.('.memo-caption-input, .memo-figure-zoom, .memo-figure-download') ||
+				target.closest?.('.memo-caption-input, .memo-figure-zoom, .memo-figure-download, .memo-figure-layout') ||
 				(event.type === 'click' && target.closest?.('.memo-caption a')) ||
 				(event.type === 'mousedown' && target.closest?.('.memo-caption'))
 			);
