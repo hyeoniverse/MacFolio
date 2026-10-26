@@ -30,7 +30,7 @@
 	--dv-pad: 56px;
 	--dv-width: 1180px;
 	/* 한글은 고정폭 글꼴에 없어 시스템 글꼴로 이어진다 */
-	--dv-mono: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Consolas, -apple-system, MacSystemFont, sans-serif;
+	--dv-mono: var(--font-mono);
 	--reveal-from: translateY(10px);
 	background-color: var(--dv-bg);
 	color: var(--dv-ink);
@@ -323,7 +323,7 @@
 	padding-left: var(--space-20);
 	white-space: normal;
 	color: var(--dv-body);
-	font-family: -apple-system, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: 13px;
 }
 
@@ -499,7 +499,7 @@
 	top: calc(100% + 6px);
 	right: 0;
 	color: var(--dv-muted);
-	font-family: -apple-system, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: 12px;
 	white-space: nowrap;
 }
@@ -742,7 +742,7 @@
 	margin-left: auto;
 	padding-left: var(--space-16);
 	color: var(--dv-muted);
-	font-family: -apple-system, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: 12.5px;
 	text-overflow: ellipsis;
 }
@@ -1139,7 +1139,7 @@
 }
 
 .dv-step-line h3 {
-	font-family: -apple-system, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: 15px;
 	letter-spacing: -0.01em;
 }
@@ -1649,7 +1649,7 @@
 
 .dv-owners-meta dd {
 	color: var(--dv-body);
-	font-family: -apple-system, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: 14px;
 }
 
@@ -1794,7 +1794,7 @@
 	align-items: center;
 	gap: var(--space-10);
 	color: var(--dv-body);
-	font-family: -apple-system, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	font-size: 13px;
 }
 

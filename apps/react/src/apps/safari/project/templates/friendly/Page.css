@@ -1729,7 +1729,7 @@
 	margin: 0;
 	padding: 20px 22px 24px;
 	overflow-x: auto;
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: 13px;
 	line-height: 1.75;
 }

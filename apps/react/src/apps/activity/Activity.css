@@ -837,7 +837,7 @@
 	padding: var(--activity-row);
 	border-radius: var(--radius-6);
 	background: var(--color-text-background);
-	font-family: var(--font-mono, ui-monospace, monospace);
+	font-family: var(--font-mono);
 	font-size: var(--text-caption);
 	overflow-wrap: anywhere;
 }

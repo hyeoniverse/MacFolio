@@ -574,7 +574,7 @@
 
 .qc-doc code {
 	color: var(--sp-accent);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-body);
 	font-weight: 800;
 }
@@ -614,7 +614,7 @@
 	border-radius: var(--radius-10);
 	background-color: color-mix(in srgb, var(--qc-cell) 70%, var(--qc-surface));
 	box-shadow: inset 2px -2px 4px rgba(0, 0, 0, 0.08);
-	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-footnote);
 	opacity: 0;
 	scale: 0.7;

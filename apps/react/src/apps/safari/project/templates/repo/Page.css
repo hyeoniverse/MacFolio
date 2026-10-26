@@ -35,7 +35,7 @@
 	--rp-term-blue: #79c0ff;
 	--rp-term-red: #ff7b72;
 	--rp-term-yellow: #e3b341;
-	--rp-mono: ui-monospace, 'SF Mono', 'SFMono-Regular', Menlo, Consolas, -apple-system, BlinkMacSystemFont, sans-serif;
+	--rp-mono: var(--font-mono);
 	--rp-width: 1280px;
 	--rp-pad: 32px;
 	--reveal-from: translateY(14px);
@@ -2325,7 +2325,7 @@ span.rp-crumb:hover {
 .rp-t-list,
 .rp-t-pairs dd,
 .rp-t-log li > span:last-child {
-	font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+	font-family: var(--font-sans);
 }
 
 .rp-t-out {
@@ -2457,7 +2457,7 @@ span.rp-crumb:hover {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--space-6) var(--space-16);
-	font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+	font-family: var(--font-sans);
 }
 
 .tpl-repo .rp-t-links a,

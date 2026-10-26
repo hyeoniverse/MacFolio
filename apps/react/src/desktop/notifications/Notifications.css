@@ -36,7 +36,7 @@
 		0 0 0 0.5px rgba(0, 0, 0, 0.12),
 		0 10px 30px rgba(0, 0, 0, 0.18);
 	color: var(--color-label);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	text-align: left;
 	pointer-events: auto;
 	animation: notification-in-mac var(--duration-slow) var(--ease-spring);

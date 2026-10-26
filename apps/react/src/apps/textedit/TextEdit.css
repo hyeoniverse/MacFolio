@@ -214,7 +214,7 @@
 }
 
 .textedit-tool-italic {
-	font-family: Georgia, serif;
+	font-family: var(--font-serif);
 	font-style: italic;
 }
 
@@ -223,7 +223,7 @@
 }
 
 .textedit-tool-code {
-	font-family: ui-monospace, Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption2);
 }
 
@@ -359,7 +359,7 @@
 	outline: none;
 	background: var(--color-text-background);
 	color: var(--color-label);
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption);
 	line-height: 1.6;
 	resize: none;

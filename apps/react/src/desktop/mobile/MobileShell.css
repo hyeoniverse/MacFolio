@@ -18,7 +18,7 @@
 	height: var(--mobile-statusbar-height);
 	padding: env(safe-area-inset-top) 26px 0 34px;
 	color: var(--color-white);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	cursor: pointer;
 	touch-action: none;
 	-webkit-user-select: none;
@@ -245,7 +245,7 @@
 	background-color: rgba(0, 0, 0, calc(0.5 * var(--cc-progress)));
 	backdrop-filter: blur(calc(28px * var(--cc-progress))) saturate(calc(100% + 60% * var(--cc-progress)));
 	color: var(--color-white);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	touch-action: none;
 	transition:
 		background-color 0.25s ease,

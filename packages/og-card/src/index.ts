@@ -19,7 +19,7 @@ export interface OgPost {
 export const OG_WIDTH = 1200;
 export const OG_HEIGHT = 630;
 
-/** 카드에 쓰는 글꼴: apps/react/public/fonts의 Apple SD Gothic Neo (사이트 화면과 같다) */
+/** 카드에 쓰는 글꼴: apps/react/public/fonts의 Pretendard (사이트 화면과 같은 글꼴, SIL OFL). satori는 woff2를 읽지 못해 woff를 쓴다 */
 export interface OgFonts {
 	regular: Buffer;
 	bold: Buffer;
@@ -34,8 +34,8 @@ export interface OgAssets {
 /** 사이트의 public 폴더(apps/react/public)에서 글꼴과 아이콘을 읽는다 */
 export async function loadOgAssets(publicDir: string): Promise<OgAssets> {
 	const [regular, bold, icon] = await Promise.all([
-		readFile(join(publicDir, 'fonts/AppleSDGothicNeoM.ttf')),
-		readFile(join(publicDir, 'fonts/AppleSDGothicNeoB.ttf')),
+		readFile(join(publicDir, 'fonts/Pretendard-Medium.woff')),
+		readFile(join(publicDir, 'fonts/Pretendard-Bold.woff')),
 		readFile(join(publicDir, 'imgs/memo.png')),
 	]);
 	return { fonts: { regular, bold }, icon: `data:image/png;base64,${icon.toString('base64')}` };
@@ -126,8 +126,8 @@ const fontListOf = (fonts: OgFonts) => {
 	let list = fontLists.get(fonts);
 	if (!list) {
 		list = [
-			{ name: 'Apple SD Gothic Neo', data: fonts.regular, weight: 400, style: 'normal' },
-			{ name: 'Apple SD Gothic Neo', data: fonts.bold, weight: 700, style: 'normal' },
+			{ name: 'Pretendard', data: fonts.regular, weight: 400, style: 'normal' },
+			{ name: 'Pretendard', data: fonts.bold, weight: 700, style: 'normal' },
 		];
 		fontLists.set(fonts, list);
 	}

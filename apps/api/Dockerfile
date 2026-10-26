@@ -33,7 +33,7 @@ COPY --from=build /repo/apps/api/dist ./dist
 COPY --from=build /repo/apps/api/prisma ./prisma
 COPY --from=build /repo/apps/api/prisma.config.ts ./
 # 공유 카드(GET /posts/<글>/og.png)의 글꼴과 아이콘. 사이트의 public 폴더에서 이것만 가져온다 (Dockerfile.dockerignore)
-COPY apps/react/public/fonts/AppleSDGothicNeoM.ttf apps/react/public/fonts/AppleSDGothicNeoB.ttf ./og-assets/fonts/
+COPY apps/react/public/fonts/Pretendard-Medium.woff apps/react/public/fonts/Pretendard-Bold.woff ./og-assets/fonts/
 COPY apps/react/public/imgs/memo.png ./og-assets/imgs/
 ENV OG_ASSETS_DIR=/app/og-assets
 USER node

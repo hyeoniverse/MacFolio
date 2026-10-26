@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="860" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#111827">글자 하나를 그릴 글꼴을 고르는 순서</text>
+<text x="24" y="56" font-size="12.5" fill="#6b7280">도식. --font-sans = 'Pretendard Variable', -apple-system, … / 같은 이름의 @font-face는 나중에 적은 것부터 찾는다 (CSS Fonts 4)</text>
+<g font-size="13">
+<rect x="24" y="80" width="250" height="140" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="40" y="106" font-weight="700" fill="#111827">고치기 전</text>
+<text x="40" y="132" fill="#374151">1. -apple-system</text>
+<text x="56" y="152" fill="#6b7280" font-size="12">Apple 기기: SF Pro + Apple SD Gothic Neo</text>
+<text x="40" y="176" fill="#374151">2. MacSystemFont (웹 글꼴)</text>
+<text x="56" y="196" fill="#6b7280" font-size="12">그 밖의 기기: Regular 한 굵기</text>
+<text x="56" y="212" fill="#b91c1c" font-size="12">굵은 글씨는 브라우저가 합성</text>
+<rect x="300" y="80" width="536" height="296" rx="10" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="316" y="106" font-weight="700" fill="#111827">고친 뒤: 모든 기기에서 'Pretendard Variable' 먼저 (굵기 45~920 가변)</text>
+<rect x="316" y="122" width="504" height="64" rx="8" fill="#fff" stroke="#a7f3d0"/>
+<text x="330" y="146" font-weight="700" fill="#065f46">① core 456KB (마지막에 정의 → 가장 먼저 찾음)</text>
+<text x="330" y="168" fill="#374151" font-size="12">영문·숫자·문장 부호·자모 + KS X 1001 완성형 2,350자. 대부분의 화면은 이것 하나만 받는다</text>
+<rect x="316" y="196" width="504" height="64" rx="8" fill="#fff" stroke="#a7f3d0"/>
+<text x="330" y="220" font-weight="700" fill="#065f46">② ext-0 ~ ext-7 (각 170~210KB)</text>
+<text x="330" y="242" fill="#374151" font-size="12">core에 없는 한글 8,822자를 코드 순서로 8등분. 똠·햏 같은 글자가 있을 때 그 조각만</text>
+<rect x="316" y="270" width="504" height="44" rx="8" fill="#fff" stroke="#d1d5db"/>
+<text x="330" y="297" fill="#374151" font-size="12.5">③ 받기 전·받지 못했을 때만 -apple-system, system-ui, Malgun Gothic … (font-display: swap)</text>
+<text x="316" y="340" fill="#374151" font-size="12.5">고정폭: 'JetBrains Mono Variable'(라틴 39KB) → 한글은 'Pretendard Variable'</text>
+<text x="316" y="362" fill="#374151" font-size="12.5">serif: 'Noto Serif KR Variable' (라틴 조각은 늘, 한글 조각은 Safari 프로젝트 페이지에서만)</text>
+</g>
+</svg>

@@ -1,5 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import ApiReference from '@/apps/apidocs/page/ApiReference';
+// 사이트와 같은 글꼴 (Scalar의 --scalar-font가 --font-sans를 쓴다)
+import '@/styles/fonts.css';
 
 // api-docs.html의 시작점. 'API 문서' 앱이 iframe으로 띄운다.
 // Scalar는 목차를 누를 때마다 pushState로 방문 기록을 쌓는다. iframe의 기록도 사이트의 뒤로 가기에 섞이므로,

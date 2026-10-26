@@ -1,0 +1,114 @@
+/*
+ * 사이트 글꼴. OS·브라우저와 관계없이 같은 글꼴로 그린다 (Apple 기기의 시스템 글꼴 -apple-system에 먼저 기대지 않는다).
+ * 모두 SIL Open Font License 1.1이라 웹 글꼴로 배포할 수 있다 (LICENSE-CONTENT.md). 파일은 Vite가 해시를 붙여 내보낸다.
+ * - 본문: Pretendard Variable. 굵기 45~920이 한 파일에 있는 가변 글꼴을 scripts/subset-font.py로 나눴다:
+ *   core(영문·문장 부호·자모·KS X 1001 완성형 2,350자, 456KB)와 나머지 한글 ext-0~7(각 170~210KB).
+ *   브라우저는 화면에 그 범위의 글자가 있을 때만 받는다. 같은 이름의 글꼴은 나중에 적은 것부터 찾고(CSS Fonts 4),
+ *   그 글꼴에 글자가 없을 때만 앞의 것을 찾는다: 한글은 core에서 먼저 찾고, 드문 글자(똠·햏 등)일 때만 그 글자가 든 ext 하나를 받는다
+ * - 고정폭: JetBrains Mono Variable (라틴). 한글은 다음 글꼴인 Pretendard로 그린다
+ * - serif: Noto Serif KR Variable. 라틴 조각만 여기서 정의한다 (따옴표·기울임 버튼 같은 기호용).
+ *   한글 serif가 필요한 Safari 프로젝트 페이지는 그 화면의 CSS가 전체를 불러온다 (ProjectPage.css)
+ * 글꼴을 받는 동안은 대체 글꼴로 먼저 그린다 (font-display: swap)
+ */
+@import '@fontsource-variable/jetbrains-mono/wght.css';
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-0.woff2') format('woff2-variations');
+	unicode-range: U+AC02-B1C1;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-1.woff2') format('woff2-variations');
+	unicode-range: U+B1C2-B70F;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-2.woff2') format('woff2-variations');
+	unicode-range: U+B710-BC98;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-3.woff2') format('woff2-variations');
+	unicode-range: U+BC9B-C1ED;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-4.woff2') format('woff2-variations');
+	unicode-range: U+C1EE-C7B3;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-5.woff2') format('woff2-variations');
+	unicode-range: U+C7B5-CCFB;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-6.woff2') format('woff2-variations');
+	unicode-range: U+CCFC-D236;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-ext-7.woff2') format('woff2-variations');
+	unicode-range: U+D237-D7A3;
+}
+
+@font-face {
+	font-family: 'Pretendard Variable';
+	font-style: normal;
+	font-weight: 45 920;
+	font-display: swap;
+	src: url('./fonts/PretendardVariable-core.woff2') format('woff2-variations');
+	unicode-range: U+0020-00FF, U+2000-206F, U+20A9, U+2190-21FF, U+3000-303F, U+3131-318E, U+AC00-D7A3;
+}
+
+@font-face {
+	font-family: 'Noto Serif KR Variable';
+	font-style: normal;
+	font-weight: 200 900;
+	font-display: swap;
+	src: url('@fontsource-variable/noto-serif-kr/files/noto-serif-kr-latin-wght-normal.woff2') format('woff2-variations');
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+		U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+	/* 대체 글꼴: 웹 글꼴을 받기 전이나 받지 못했을 때 */
+	--font-sans:
+		'Pretendard Variable', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic',
+		sans-serif;
+	--font-mono: 'JetBrains Mono Variable', 'Pretendard Variable', ui-monospace, Menlo, Consolas, monospace;
+	--font-serif: 'Noto Serif KR Variable', Georgia, 'Times New Roman', serif;
+}

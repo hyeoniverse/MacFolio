@@ -201,11 +201,7 @@ button.projects-thumb:focus-visible {
 	display: grid;
 	place-items: center;
 	color: var(--color-system-gray);
-	font:
-		600 20px ui-monospace,
-		SFMono-Regular,
-		Menlo,
-		monospace;
+	font: 600 20px var(--font-mono);
 }
 
 .projects-look:hover .projects-look-thumb {

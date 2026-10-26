@@ -41,7 +41,7 @@
 	background-color: var(--color-popover-background);
 	box-shadow: var(--shadow-menu);
 	color: var(--color-label);
-	font-family: -apple-system, BlinkMacSystemFont, MacSystemFont, sans-serif;
+	font-family: var(--font-sans);
 	animation: pop-in var(--duration-fast) var(--ease-out);
 	transform-origin: top center;
 }
@@ -93,7 +93,7 @@
 }
 
 .memo-format-marks .mark-emphasis {
-	font-family: Georgia, serif;
+	font-family: var(--font-serif);
 	font-style: italic;
 }
 
@@ -102,7 +102,7 @@
 }
 
 .memo-format-marks .mark-code {
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption);
 }
 
@@ -144,7 +144,7 @@
 }
 
 .memo-format-styles .style-mono {
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption);
 }
 
@@ -366,7 +366,7 @@
 }
 
 .memo-image-note code {
-	font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+	font-family: var(--font-mono);
 	font-size: var(--text-caption2);
 }
 

@@ -1,4 +1,7 @@
 /* Safari 탭 안의 프로젝트 소개: 공통 값과 Apple 제품 페이지 모양(product). 다른 모양은 project/ 아래 파일마다 */
+/* 신문·잡지 모양의 한글 serif (Noto Serif KR, 조각마다 unicode-range). Safari를 열 때만 받는 묶음에 들어간다 */
+@import '@fontsource-variable/noto-serif-kr/wght.css';
+
 .sp {
 	--sp-bg: var(--color-white);
 	--sp-hero-bg: var(--sp-bg);
@@ -11,8 +14,8 @@
 	--sp-line: #d2d2d7;
 	--sp-accent: var(--color-link);
 	--sp-grad: linear-gradient(90deg, #0071e3, #a24bf5);
-	--sp-serif: 'Nanum Myeongjo', 'AppleMyungjo', 'Noto Serif KR', serif;
-	--sp-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+	--sp-serif: var(--font-serif);
+	--sp-mono: var(--font-mono);
 	min-height: 100%;
 	background-color: var(--sp-bg);
 	color: var(--sp-text);
