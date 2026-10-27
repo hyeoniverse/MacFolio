@@ -15,8 +15,10 @@ const ProjectApp: React.FC<ProjectAppProps> = ({ id }) => {
 	const project = PROJECT_APPS.find((item) => item.id === id);
 	if (!project?.demo) return null;
 
+	// 게임(play)이 아닌 사이트는 브라우저처럼 도구 막대를 둔다
+	const browser = !project.app.play;
 	return (
-		<AppWindow title={project.name} appName={id as AppName}>
+		<AppWindow title={project.name} appName={id as AppName} chrome={browser ? 'unified' : 'titlebar'}>
 			<WebFrame
 				src={project.demo}
 				title={project.name}
@@ -25,6 +27,7 @@ const ProjectApp: React.FC<ProjectAppProps> = ({ id }) => {
 				tone={project.app.tone ?? 'light'}
 				barColor={project.app.barColor}
 				allow="autoplay; fullscreen; gamepad; clipboard-write"
+				browser={browser}
 			/>
 		</AppWindow>
 	);

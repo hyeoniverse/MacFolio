@@ -87,4 +87,61 @@ test.describe('프로젝트 앱', () => {
 		expect(new URL(page.url()).hostname).toBe('localhost');
 		await expect(appWindow(page, 'newpick')).toBeVisible();
 	});
+
+	test('브라우저형 프로젝트 앱은 도구 막대의 뒤로·앞으로·새로 고침으로 안의 페이지를 옮긴다', async ({ page }) => {
+		const pages: Record<string, string> = {
+			'/': '<h1>첫 페이지</h1><a href="/second">둘째로</a>',
+			'/second': '<h1>둘째 페이지</h1><a href="/third">셋째로</a>',
+			'/third': '<h1>셋째 페이지</h1>',
+		};
+		await page.route('https://newpick.hyeoniverse.com/**', (route) =>
+			route.fulfill({
+				contentType: 'text/html; charset=utf-8',
+				body: pages[new URL(route.request().url()).pathname] ?? '<h1>없음</h1>',
+			})
+		);
+		await enterDesktop(page);
+		await dockItem(page, 'newpick').click();
+		const app = appWindow(page, 'newpick');
+		const site = page.frameLocator('iframe[title="NewPick 뉴픽"]');
+		const back = app.getByRole('button', { name: '뒤로', exact: true });
+		const forward = app.getByRole('button', { name: '앞으로', exact: true });
+		await expect(site.getByRole('heading')).toHaveText('첫 페이지');
+		// 주소창은 배포 주소를 보여 주고, 누르면 새 탭에서 연다
+		await expect(app.locator('.web-frame-address')).toHaveText('newpick.hyeoniverse.com');
+		await expect(app.locator('.web-frame-address')).toHaveAttribute('target', '_blank');
+		await expect(back).toBeDisabled();
+		await expect(forward).toBeDisabled();
+
+		await site.getByRole('link', { name: '둘째로' }).click();
+		await expect(site.getByRole('heading')).toHaveText('둘째 페이지');
+		await site.getByRole('link', { name: '셋째로' }).click();
+		await expect(site.getByRole('heading')).toHaveText('셋째 페이지');
+		await expect(back).toBeEnabled();
+
+		await back.click();
+		await expect(site.getByRole('heading')).toHaveText('둘째 페이지');
+		await expect(forward).toBeEnabled();
+		await back.click();
+		await expect(site.getByRole('heading')).toHaveText('첫 페이지');
+		await expect(back).toBeDisabled();
+		await forward.click();
+		await expect(site.getByRole('heading')).toHaveText('둘째 페이지');
+
+		// 새로 고침은 처음 주소를 다시 불러온다. 바깥 사이트의 주소는 그대로다
+		await app.getByRole('button', { name: '새로 고침' }).click();
+		await expect(site.getByRole('heading')).toHaveText('첫 페이지');
+		expect(new URL(page.url()).hostname).toBe('localhost');
+	});
+
+	test('게임 앱에는 도구 막대가 없다', async ({ page }) => {
+		await page.route('https://sprout-farm-beta.vercel.app/**', (route) =>
+			route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<h1>게임</h1>' })
+		);
+		await enterDesktop(page);
+		await dockItem(page, 'sproutfarm').click();
+		const app = appWindow(page, 'sproutfarm');
+		await expect(app.locator('iframe')).toBeVisible();
+		await expect(app.locator('.web-frame-toolbar')).toHaveCount(0);
+	});
 });
