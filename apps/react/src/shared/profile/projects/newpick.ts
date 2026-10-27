@@ -145,7 +145,7 @@ export const NEWPICK: Project = {
 	stack: ['Next.js', 'TypeScript', 'Zustand', 'React Query', 'styled-components', 'OpenAI API'],
 	language: 'TypeScript',
 	url: 'https://github.com/hyeoniverse/newpick',
-	demo: 'https://newpick-hyeoniverse.vercel.app',
+	demo: 'https://newpick.hyeoniverse.com',
 	icon: projectImage('newpick', 'icon.svg'),
 	app: {
 		label: 'NewPick',
