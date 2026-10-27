@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 26일 작업 흐름</title>
+<rect width="760" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="42" font-size="19" font-weight="700" fill="#1f2937">10월 26일</text>
+<text x="133" y="42" font-size="12.5" fill="#6b7280">커밋한 시각 기준 (main에 들어간 커밋 22개, 머지·PR 그림 커밋 제외)</text>
+<rect x="32.0" y="56" width="12" height="12" rx="2" fill="#bbf7d0"/><text x="49.0" y="66" font-size="11" fill="#6b7280">글꼴</text>
+<rect x="87.0" y="56" width="12" height="12" rx="2" fill="#fde68a"/><text x="104.0" y="66" font-size="11" fill="#6b7280">블로그 폴더</text>
+<rect x="181.5" y="56" width="12" height="12" rx="2" fill="#fbcfe8"/><text x="198.5" y="66" font-size="11" fill="#6b7280">Flux·store 글</text>
+<rect x="290.0" y="56" width="12" height="12" rx="2" fill="#fed7aa"/><text x="307.0" y="66" font-size="11" fill="#6b7280">의존성</text>
+<rect x="354.0" y="56" width="12" height="12" rx="2" fill="#c7d2fe"/><text x="371.0" y="66" font-size="11" fill="#6b7280">VS Code 확장 글 (27일 회고에 적음)</text>
+<path d="M48.0 84 V286" stroke="#eef0f3"/><text x="48.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">0시</text>
+<path d="M133.0 84 V286" stroke="#eef0f3"/><text x="133.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">3시</text>
+<path d="M218.0 84 V286" stroke="#eef0f3"/><text x="218.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">6시</text>
+<path d="M303.0 84 V286" stroke="#eef0f3"/><text x="303.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">9시</text>
+<path d="M388.0 84 V286" stroke="#eef0f3"/><text x="388.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">12시</text>
+<path d="M473.0 84 V286" stroke="#eef0f3"/><text x="473.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">15시</text>
+<path d="M558.0 84 V286" stroke="#eef0f3"/><text x="558.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">18시</text>
+<path d="M643.0 84 V286" stroke="#eef0f3"/><text x="643.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">21시</text>
+<path d="M728.0 84 V286" stroke="#eef0f3"/><text x="728.0" y="304" font-size="11" fill="#9ca3af" text-anchor="middle">24시</text>
+<path d="M48 286 H728" stroke="#d1d5db"/>
+<rect x="304.0" y="246.0" width="22.3" height="40.0" fill="#fed7aa"/>
+<text x="315.2" y="242.0" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+<rect x="530.7" y="266.0" width="22.3" height="20.0" fill="#fed7aa"/>
+<rect x="530.7" y="146.0" width="22.3" height="120.0" fill="#bbf7d0"/>
+<text x="541.8" y="142.0" font-size="10" fill="#6b7280" text-anchor="middle">7</text>
+<rect x="559.0" y="266.0" width="22.3" height="20.0" fill="#fbcfe8"/>
+<text x="570.2" y="262.0" font-size="10" fill="#6b7280" text-anchor="middle">1</text>
+<rect x="587.3" y="226.0" width="22.3" height="60.0" fill="#bbf7d0"/>
+<text x="598.5" y="222.0" font-size="10" fill="#6b7280" text-anchor="middle">3</text>
+<rect x="615.7" y="246.0" width="22.3" height="40.0" fill="#fde68a"/>
+<text x="626.8" y="242.0" font-size="10" fill="#6b7280" text-anchor="middle">2</text>
+<rect x="644.0" y="266.0" width="22.3" height="20.0" fill="#fde68a"/>
+<text x="655.2" y="262.0" font-size="10" fill="#6b7280" text-anchor="middle">1</text>
+<rect x="700.7" y="226.0" width="22.3" height="60.0" fill="#fde68a"/>
+<rect x="700.7" y="206.0" width="22.3" height="20.0" fill="#fbcfe8"/>
+<rect x="700.7" y="166.0" width="22.3" height="40.0" fill="#c7d2fe"/>
+<text x="711.8" y="162.0" font-size="10" fill="#6b7280" text-anchor="middle">6</text>
+<circle cx="40" cy="324" r="3" fill="#9ca3af"/><text x="50" y="328" font-size="12" fill="#374151">오전: Dependabot 의존성 PR 2개 (#382, #383)</text>
+<circle cx="40" cy="346" r="3" fill="#9ca3af"/><text x="50" y="350" font-size="12" fill="#374151">오후: remark-cjk-friendly 2.3.2 고정, 오픈 라이선스 글꼴로 교체(#384), Flux 글을 두 편으로 분리</text>
+<circle cx="40" cy="368" r="3" fill="#9ca3af"/><text x="50" y="372" font-size="12" fill="#374151">밤: 글꼴 전송량 줄이기·예산(#385), 설계 폴더(#386), 블로그 폴더 재구성(#389), Flux 도식(#390)</text>
+</svg>

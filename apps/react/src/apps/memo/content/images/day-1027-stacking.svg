@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>최근 검색 목록과 목차 버튼의 쌓임 순서</title>
+<rect width="760" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="40" font-size="17" font-weight="700" fill="#1f2937">최근 검색 목록과 목차 버튼의 쌓임 순서</text>
+<text x="32" y="60" font-size="12" fill="#6b7280">z-index가 있는 .memo-search는 쌓임 맥락을 만든다. 그 안의 목록은 메모 창 안에서 검색 칸의 z-index로 비교된다</text>
+
+<!-- 전 -->
+<g>
+<text x="32" y="94" font-size="14" font-weight="700" fill="#b91c1c">전</text>
+<rect x="32" y="104" width="336" height="150" rx="10" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="44" y="124" font-size="11" fill="#9ca3af">메모 창 (공통 쌓임 맥락)</text>
+<rect x="176" y="116" width="180" height="26" rx="13" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="190" y="133" font-size="11" fill="#6b7280">검색 칸</text>
+<rect x="176" y="148" width="150" height="92" rx="10" fill="#ffffff" stroke="#d1d5db"/>
+<text x="188" y="166" font-size="11" font-weight="600" fill="#6b7280">최근 검색</text>
+<text x="188" y="186" font-size="11" fill="#374151">merge-strategies</text>
+<text x="188" y="206" font-size="11" fill="#374151">리액트</text>
+<text x="188" y="226" font-size="11" fill="#374151">vscode</text>
+<circle cx="306" cy="200" r="18" fill="#ffffff" stroke="#9ca3af"/>
+<path d="M298 194 H314 M298 200 H314 M298 206 H314" stroke="#374151" stroke-width="2"/>
+<text x="44" y="150" font-size="11" fill="#374151">.memo-search</text>
+<text x="44" y="166" font-size="11" font-weight="700" fill="#be185d">z-index 4</text>
+<text x="44" y="194" font-size="11" fill="#374151">목차 버튼</text>
+<text x="44" y="210" font-size="11" font-weight="700" fill="#4338ca">z-index 11</text>
+<text x="32" y="280" font-size="12" fill="#374151">메모 창 안의 비교: 검색 칸 4 &lt; 목차 버튼 11</text>
+<text x="32" y="298" font-size="12" fill="#374151">목록 자체의 z-index(--z-menu)는 검색 칸 밖으로 나가지 못한다</text>
+<text x="32" y="316" font-size="12" fill="#b91c1c">→ 목차 버튼이 목록 위에 그려진다</text>
+</g>
+
+<!-- 후 -->
+<g>
+<text x="400" y="94" font-size="14" font-weight="700" fill="#15803d">후</text>
+<rect x="400" y="104" width="336" height="150" rx="10" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="412" y="124" font-size="11" fill="#9ca3af">메모 창 (공통 쌓임 맥락)</text>
+<rect x="544" y="116" width="180" height="26" rx="13" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="558" y="133" font-size="11" fill="#6b7280">검색 칸</text>
+<circle cx="674" cy="200" r="18" fill="#ffffff" stroke="#9ca3af"/>
+<path d="M666 194 H682 M666 200 H682 M666 206 H682" stroke="#374151" stroke-width="2"/>
+<rect x="544" y="148" width="150" height="92" rx="10" fill="#ffffff" stroke="#d1d5db"/>
+<text x="556" y="166" font-size="11" font-weight="600" fill="#6b7280">최근 검색</text>
+<text x="556" y="186" font-size="11" fill="#374151">merge-strategies</text>
+<text x="556" y="206" font-size="11" fill="#374151">리액트</text>
+<text x="556" y="226" font-size="11" fill="#374151">vscode</text>
+<text x="412" y="150" font-size="11" fill="#374151">목록이 열린 검색 칸</text>
+<text x="412" y="166" font-size="11" font-weight="700" fill="#be185d">z-index 10</text>
+<text x="412" y="194" font-size="11" fill="#374151">목차 버튼·창</text>
+<text x="412" y="210" font-size="11" font-weight="700" fill="#4338ca">z-index 9</text>
+<text x="412" y="234" font-size="11" fill="#374151">글자 크기 버튼 8</text>
+<text x="400" y="280" font-size="12" fill="#374151">.memo-search:has(&gt; .memo-search-recent) { z-index: 10 }</text>
+<text x="400" y="298" font-size="12" fill="#374151">stylelint의 부품 안 허용 범위 -1~10 안에서 순서를 다시 배정</text>
+<text x="400" y="316" font-size="12" fill="#15803d">→ 목록이 목차 버튼 위에 그려진다</text>
+</g>
+<text x="32" y="344" font-size="11" fill="#9ca3af">도식. 목차 버튼 11은 #396 작업 중의 값이고, 검색 칸에 처음 준 20은 stylelint가 거절했다</text>
+</svg>
