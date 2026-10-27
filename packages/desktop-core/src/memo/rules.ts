@@ -3,8 +3,8 @@
 // 서버는 빌드한 dist를 쓴다 (package.json의 exports)
 
 export const FOLDER_NAME_MAX = 30;
-/** 폴더는 3단까지 (예: 개발기/MacFolio/초안) */
-export const MAX_FOLDER_DEPTH = 3;
+/** 폴더는 4단까지 (예: 개발 기록/MacFolio/프론트엔드/앱) */
+export const MAX_FOLDER_DEPTH = 4;
 
 declare const postSlugBrand: unique symbol;
 declare const folderPathBrand: unique symbol;

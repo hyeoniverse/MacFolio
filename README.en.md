@@ -226,7 +226,7 @@ flowchart TB
     home --> renamed["Renamed apps<br/>Finder → Files · Terminal → Shortcuts<br/>Admin login → Passwords"]
     home -. "desktop only" .-> desktoponly["Trash · Preview · TextEdit · QuickTime Player"]
 
-    builtin --> memo["Memo = blog<br/>Folders (categories, up to 3 levels) › posts"]
+    builtin --> memo["Memo = blog<br/>Folders (categories, up to 4 levels) › posts"]
     builtin --> safari["Safari<br/>Project pages"]
     memo --> memoUrl[/"/memo/&lt;post&gt;"/]
     safari --> safariUrl[/"/safari/&lt;project&gt;"/]

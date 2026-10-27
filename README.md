@@ -226,7 +226,7 @@ flowchart TB
     home --> renamed["이름이 바뀌는 앱<br/>Finder → 파일 · 터미널 → 단축어<br/>관리자 로그인 → 암호"]
     home -. "데스크톱에만" .-> desktoponly["휴지통 · 미리보기 · 텍스트 편집기 · QuickTime Player"]
 
-    builtin --> memo["메모 = 블로그<br/>폴더(분류, 3단계까지) › 글"]
+    builtin --> memo["메모 = 블로그<br/>폴더(분류, 4단계까지) › 글"]
     builtin --> safari["Safari<br/>프로젝트 페이지"]
     memo --> memoUrl[/"/memo/&lt;글&gt;"/]
     safari --> safariUrl[/"/safari/&lt;프로젝트&gt;"/]
