@@ -1,7 +1,7 @@
 ---
 title: MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계
 date: 2026-10-12
-category: 개발 기록/MacFolio/배포·품질/테스트·CI
+category: 개발 기록/MacFolio/품질
 summary: MacFolio는 PR을 Create a merge commit으로 병합한다. main 기록 1,940커밋을 집계해 선택 기준 세 가지에 적용하고, Rebase and merge가 섞인 PR 53개의 기록, CONTRIBUTING·conventions 검사·Ruleset으로 적용한 내용과 아직 켜지 않은 저장소 설정을 정리했다.
 ---
 
