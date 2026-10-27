@@ -124,20 +124,20 @@ test.describe('메모 편집 (관리자)', () => {
 		await expect(folders.getByRole('button', { name: /^초안/ })).toBeHidden();
 	});
 
-	test('폴더는 4단까지만 만들고 옮길 수 있다', async ({ page }) => {
+	test('폴더는 3단까지만 만들고 옮길 수 있다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		const newFolder = memo.getByRole('button', { name: '새로운 폴더', exact: true });
 
-		// 개발 기록(1단) / MacFolio(2단) / 백엔드(3단) / 분석(4단): 4단 폴더를 고르면 그 안에는 만들 수 없다
-		await folders.getByRole('button', { name: /^분석/ }).click();
-		await expect(folders.getByRole('button', { name: /^분석/ })).toHaveAttribute('aria-current', 'true');
+		// 개발 기록(1단) / MacFolio(2단) / 회고(3단): 3단 폴더를 고르면 그 안에는 만들 수 없다
+		await folders.getByRole('button', { name: /^회고/ }).click();
+		await expect(folders.getByRole('button', { name: /^회고/ })).toHaveAttribute('aria-current', 'true');
 		await expect(newFolder).toBeDisabled();
-		await folders.getByRole('button', { name: '폴더 동작 (분석)' }).click();
+		await folders.getByRole('button', { name: '폴더 동작 (회고)' }).click();
 		await expect(page.getByRole('menuitem', { name: '새로운 폴더' })).toBeDisabled();
 		await page.keyboard.press('Escape');
 
-		// 4단 높이인 개발 기록을 다른 폴더 안으로는 옮길 수 없다
+		// 3단 높이인 개발 기록을 다른 폴더 안으로는 옮길 수 없다
 		await folders.getByRole('button', { name: /^모든 글/ }).click();
 		await newFolder.click();
 		await folders.getByRole('textbox', { name: '새로운 폴더 이름' }).fill('보관');
@@ -244,7 +244,7 @@ test.describe('메모 편집 (관리자)', () => {
 		const changed = {
 			title: '서버에서 고친 제목',
 			date: '2026-09-29',
-			category: '개발 기록/MacFolio/테스트·CI',
+			category: '개발 기록/MacFolio/품질',
 			summary: '',
 			body: '서버에서 고친 본문',
 		};

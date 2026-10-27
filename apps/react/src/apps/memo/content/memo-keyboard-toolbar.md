@@ -1,7 +1,7 @@
 ---
 title: 휴대폰 키보드 위에 서식 막대 표시하기 — visualViewport로 키보드 높이 측정
 date: 2026-10-16
-category: 개발 기록/MacFolio/프론트엔드/앱
+category: 개발 기록/MacFolio/프론트엔드
 summary: 휴대폰에서 메모를 쓰다 키보드가 올라오면 서식 알약이 키보드 뒤에 가려졌다. iOS Safari는 키보드가 올라와도 레이아웃 뷰포트를 줄이지 않는다. visualViewport로 가려진 높이를 측정해 서식 막대를 키보드 바로 위에 표시하고, iOS 메모의 문단 도구도 추가했다.
 ---
 

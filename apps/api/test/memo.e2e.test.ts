@@ -99,13 +99,13 @@ describe('메모 정리 내용 (e2e)', () => {
 		expect(row?.updatedBy).toBe('hyeoniverse');
 	});
 
-	it('규칙을 어기면 관리자라도 400 (서버에서도 4단 제한)', async () => {
+	it('규칙을 어기면 관리자라도 400 (서버에서도 3단 제한)', async () => {
 		const response = await request(app.getHttpServer())
 			.put('/memo/organization')
 			.set('Cookie', adminCookie)
-			.send({ ...ORGANIZATION, folders: ['a/b/c/d/e'] })
+			.send({ ...ORGANIZATION, folders: ['a/b/c/d'] })
 			.expect(400);
-		expect(response.body.message).toEqual(['폴더는 4단까지입니다: a/b/c/d/e']);
+		expect(response.body.message).toEqual(['폴더는 3단까지입니다: a/b/c/d']);
 		expect(await prisma.memoOrganization.count()).toBe(0);
 	});
 });

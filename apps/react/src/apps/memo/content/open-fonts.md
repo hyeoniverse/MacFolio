@@ -1,7 +1,7 @@
 ---
 title: OS마다 다르던 글꼴을 하나로 — Apple 글꼴 배포를 멈추고 Pretendard·JetBrains Mono·Noto Serif KR로
 date: 2026-10-26
-category: 개발 기록/MacFolio/프론트엔드/디자인 시스템
+category: 개발 기록/MacFolio/디자인 시스템
 summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -apple-system을 앞에 둔 글꼴 지정과 웹 배포 허락이 없는 Apple 웹 글꼴(Regular 하나)이었다. 오픈 라이선스 글꼴로 바꾸고, 첫 화면 글꼴을 1,187KB에서 568KB로 줄여 CI 예산을 걸었다.
 ---
 

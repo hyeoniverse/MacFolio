@@ -1,7 +1,7 @@
 ---
 title: 메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu
 date: 2026-10-01
-category: 개발 기록/MacFolio/프론트엔드/디자인 시스템
+category: 개발 기록/MacFolio/디자인 시스템
 summary: 컨텍스트 메뉴, Apple 메뉴, 서식 창, 달력 등 다섯 곳이 "바깥 클릭 시 닫기"와 "화면 안 위치 보정"을 각각 구현하고 있었다. placement·useDismiss·Menu 세 모듈로 분리해 전환하고, 스크린샷 40장 비교로 바뀐 메뉴 네 개를 확인했다.
 ---
 

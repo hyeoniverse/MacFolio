@@ -1,7 +1,7 @@
 ---
 title: PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기
 date: 2026-10-10
-category: 개발 기록/MacFolio/배포·품질/보안
+category: 개발 기록/MacFolio/품질
 summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하고 있었다. SameSite=Lax가 이미 차단하고 있었지만 서버에서도 차단하게 했다. 허용 목록을 exact·pattern으로 분류해 pattern에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다.
 ---
 

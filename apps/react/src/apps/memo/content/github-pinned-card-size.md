@@ -1,7 +1,7 @@
 ---
 title: 들쭉날쭉하던 고정 저장소 카드
 date: 2026-10-03
-category: 개발 기록/MacFolio/프론트엔드/앱
+category: 개발 기록/MacFolio/프론트엔드
 summary: GitHub 앱의 Pinned 카드가 설명 길이에 따라 줄마다 높이가 달랐고, 설명 없는 카드는 언어 줄이 위쪽에 배치됐다. grid-auto-rows: 1fr, 세 줄 말줄임, margin-top: auto 세 가지 CSS로 모든 카드를 같은 크기로 맞추고 E2E로 높이를 측정한다.
 ---
 
