@@ -69,7 +69,7 @@ describe('GitHub 앱 (e2e)', () => {
 		expect(response.body.profile).toMatchObject({ login: 'hyeoniverse', followers: 7, following: 9 });
 		expect(response.body.readme).toContain('# 안녕하세요');
 		expect(response.body.repos.map((repo: { fullName: string }) => repo.fullName)).toEqual([
-			'Devcourse-NewPick/front',
+			'hyeoniverse/newpick',
 			'Devcourse-WhatToDo/todo-front',
 			'hyeoniverse/QRU',
 			'hyeoniverse/SproutFarm',
@@ -91,6 +91,7 @@ describe('GitHub 앱 (e2e)', () => {
 			'hyeoniverse/DevCourse-FullStack',
 			'hyeoniverse/QRU',
 			'hyeoniverse/SproutFarm',
+			'hyeoniverse/newpick',
 			'Devcourse-NewPick/front',
 		]);
 	});

@@ -56,7 +56,12 @@ export function fakeGithubApi() {
 		/** true면 GitHub에 닿지 못한다 */
 		down: false,
 		readme: '# 안녕하세요\n\n![통계](./profile/stats-light.svg)' as string | null,
-		own: [repo('hyeoniverse/QRU'), repo('hyeoniverse/SproutFarm'), repo('hyeoniverse/secret', { private: true })],
+		own: [
+			repo('hyeoniverse/QRU'),
+			repo('hyeoniverse/SproutFarm'),
+			repo('hyeoniverse/newpick'),
+			repo('hyeoniverse/secret', { private: true }),
+		],
 		orgs: { 'Devcourse-NewPick': [repo('Devcourse-NewPick/front')] } as Record<string, ReturnType<typeof repo>[]>,
 		/** 목록에는 없지만 따로 찾으면 있는 저장소 (직접 입력) */
 		others: [repo('someone/Library'), repo('Devcourse-WhatToDo/todo-front'), repo('hyeoniverse/DevCourse-FullStack')],

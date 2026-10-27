@@ -67,7 +67,7 @@ test.describe('GitHub 앱', () => {
 		await expect(github.getByRole('region', { name: 'Pinned' }).locator('.gh-repo-name')).toHaveText([
 			'web-portfolio-hyeoniverse',
 			'MacFolio',
-			'Devcourse-NewPick/front',
+			'newpick',
 			'QRU',
 			'Devcourse-WhatToDo/todo-front',
 			'SproutFarm',

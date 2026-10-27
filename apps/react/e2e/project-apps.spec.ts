@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test';
 async function fakeSites(page: Page) {
 	for (const [host, text] of [
 		['https://www.hyeoniverse.com', 'HYEONIVERSE 첫 화면'],
-		['https://newpick-tan.vercel.app', 'NewPick 첫 화면'],
+		['https://newpick.hyeoniverse.com', 'NewPick 첫 화면'],
 		['https://what-to-do-chi.vercel.app', 'WTD 첫 화면'],
 		['https://qryou-app.web.app', 'QRU 첫 화면'],
 	]) {
@@ -24,7 +24,7 @@ test.describe('프로젝트 앱', () => {
 
 		await dockItem(page, 'newpick').click();
 		const app = appWindow(page, 'newpick');
-		await expect(app.locator('iframe[title="NewPick 뉴픽"]')).toHaveAttribute('src', 'https://newpick-tan.vercel.app');
+		await expect(app.locator('iframe[title="NewPick 뉴픽"]')).toHaveAttribute('src', 'https://newpick.hyeoniverse.com');
 		await expect(page.frameLocator('iframe[title="NewPick 뉴픽"]').getByRole('heading')).toHaveText('NewPick 첫 화면');
 		// 불러온 뒤에는 불러오는 중 화면이 사라진다
 		await expect(app.getByRole('status')).toHaveCount(0);
@@ -71,7 +71,7 @@ test.describe('프로젝트 앱', () => {
 
 	test('안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다', async ({ page }) => {
 		// 브라우저는 클릭 없이 맨 위 창을 옮기는 것은 이미 막는다. sandbox는 클릭으로 옮기는 것(target="_top")까지 막는다
-		await page.route('https://newpick-tan.vercel.app/**', (route) =>
+		await page.route('https://newpick.hyeoniverse.com/**', (route) =>
 			route.fulfill({
 				contentType: 'text/html; charset=utf-8',
 				body: '<h1>NewPick 첫 화면</h1><a href="https://evil.example/" target="_top">바깥으로</a>',

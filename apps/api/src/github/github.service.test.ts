@@ -29,8 +29,8 @@ describe('GithubService', () => {
 		expect(result.profile).toMatchObject({ login: 'hyeoniverse', followers: 7, following: 9, publicRepos: 21 });
 		expect(result.readme).toContain('# 안녕하세요');
 		expect(result.readmeBaseUrl).toBe('https://raw.githubusercontent.com/hyeoniverse/hyeoniverse/HEAD/');
-		// 계정·README·내 저장소 3번 + 목록에 없는 저장소(조직 2개, DevCourse-FullStack) 3번
-		expect(state.calls).toBe(6);
+		// 계정·README·내 저장소 3번 + 목록에 없는 저장소(조직 저장소 todo-front, DevCourse-FullStack) 2번
+		expect(state.calls).toBe(5);
 	});
 
 	it('받은 값을 토큰이 없으면 30분 동안 들고 있고, 그 뒤에 새로 받는다', async () => {

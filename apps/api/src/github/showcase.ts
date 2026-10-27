@@ -7,7 +7,7 @@ export { isFullName, MAX_SHOWCASE, sameRepo };
 
 /** 아직 고른 적이 없을 때 (이 기능 전에 GitHub 앱에 적어 두었던 Pinned) */
 export const DEFAULT_SHOWCASE = [
-	'Devcourse-NewPick/front',
+	'hyeoniverse/newpick',
 	'Devcourse-WhatToDo/todo-front',
 	'hyeoniverse/QRU',
 	'hyeoniverse/SproutFarm',
