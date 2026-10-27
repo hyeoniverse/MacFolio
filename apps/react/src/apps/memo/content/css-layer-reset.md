@@ -1,7 +1,7 @@
 ---
 title: '!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기'
 date: 2026-10-01
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/프론트엔드/디자인 시스템
 summary: 앱마다 정의한 `.app button { color: inherit }`가 버튼 클래스보다 우선 적용되어, 버튼마다 지정한 색·글꼴을 !important로 덮어써 왔다. 이 기본값을 @layer reset으로 옮기고 화면 58장을 전후로 캡처해 픽셀 단위로 비교했다. 변경된 화면은 네 곳이었다.
 ---
 

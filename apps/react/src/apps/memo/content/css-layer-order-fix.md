@@ -1,7 +1,7 @@
 ---
 title: 공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다
 date: 2026-10-12
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/프론트엔드/디자인 시스템
 summary: 공통 Button의 안쪽 여백이 0으로 계산되고 있었다. 빌드 결과에서 공통 컴포넌트 CSS 파일이 main CSS보다 먼저 로드되어 components 층이 reset 층보다 먼저 정의됐고, reset의 * { padding: 0 }이 우선 적용됐다. 층 순서 선언을 index.html 인라인 스타일로 옮겨 모든 CSS보다 먼저 선언했다.
 ---
 

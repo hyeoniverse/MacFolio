@@ -1,7 +1,7 @@
 ---
 title: 무엇을 검색하고 들어왔나 - 검색어와 Google Search Console
 date: 2026-10-22
-category: 개발 기록/MacFolio/분석
+category: 개발 기록/MacFolio/백엔드/분석
 summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 검색엔진이 리퍼러에 검색어를 포함할 때만 방문의 검색어를 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져오게 했다. 서비스 계정 JWT는 SDK 없이 직접 서명했다.
 ---
 

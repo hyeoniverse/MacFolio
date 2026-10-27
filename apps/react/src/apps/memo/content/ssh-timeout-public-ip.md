@@ -1,7 +1,7 @@
 ---
 title: SSH가 시간 초과되던 이유 — 기억한 IP가 삭제한 임시 VM의 주소였다
 date: 2026-10-23
-category: 개발 기록/MacFolio/배포·운영
+category: 개발 기록/MacFolio/배포·품질/배포·운영
 summary: 서버에 scp로 키를 옮기려는데 Operation timed out이 났다. 보안 목록은 열려 있었고 GitHub Actions 배포는 성공했다. 네트워크, 통신사 경로, 서버 설정을 차례로 배제하자 원인은 접속 주소였다. SSH 키를 복구하면서 만든 임시 VM의 IP를 서버 주소로 기억하고 있었다. 확인 명령과 재발 방지 설정을 정리했다.
 ---
 

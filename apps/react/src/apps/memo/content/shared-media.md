@@ -1,7 +1,7 @@
 ---
 title: matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈
 date: 2026-10-10
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/프론트엔드/구조
 summary: 움직임 줄이기·어두운 모드·모바일 화면 여부를 파일 20개가 matchMedia와 innerWidth로 직접 조회했다. 표기는 네 가지, 모바일 기준은 두 가지였다. media.ts와 getViewport()로 25곳을 이전하고, 가로 방향 휴대폰이 통계에서 데스크톱으로 집계되던 문제도 수정했다.
 ---
 

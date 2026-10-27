@@ -1,7 +1,7 @@
 ---
 title: 정적 사이트에 관리자 로그인 붙이기
 date: 2026-09-29
-category: 개발 기록/MacFolio/서버
+category: 개발 기록/MacFolio/백엔드/API
 summary: GitHub OAuth로 내 계정만 관리자로 인증한다. 비밀번호 없이 GitHub 숫자 ID로 확인하고, DB에는 세션 토큰 대신 해시만 저장한다. state 쿠키, DB 세션과 JWT 비교, AdminGuard, GitHub 없이 실행하는 시험까지 정리했다.
 ---
 

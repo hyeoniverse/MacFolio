@@ -1,7 +1,7 @@
 ---
 title: Mac에서 pip 설치하기 — Homebrew Python, venv, pipx, externally-managed-environment
 date: 2026-10-23
-category: 기술 노트/개발 도구/패키지 관리
+category: 기술 노트/개발 환경
 summary: Apple Silicon Mac에서 Homebrew로 Python과 pip를 설치하고 확인하는 순서를 정리했다. pip3 install이 externally-managed-environment 오류로 실패하는 이유(PEP 668)와 venv·pipx로 해결하는 방법, 시스템 python3(Xcode CLT)와의 차이, 자주 발생하는 오류를 함께 정리했다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: 블로그 스크린샷을 테스트 코드로 찍기
 date: 2026-10-01
-category: 개발 기록/MacFolio/테스트·CI
+category: 개발 기록/MacFolio/배포·품질/테스트·CI
 summary: README와 블로그 글에 넣을 스크린샷을 수동 캡처 대신 Playwright로 생성했다. E2E의 가짜 API로 화면 상태를 구성하고, 잘린 메뉴·깨진 아바타·화면 밖 표시·지연 로딩 문제를 하나씩 해결했다. 검토한 방법과 캡처한 7장의 크기를 정리한다.
 ---
 

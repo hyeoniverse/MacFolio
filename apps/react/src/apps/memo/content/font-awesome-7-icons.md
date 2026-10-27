@@ -1,7 +1,7 @@
 ---
 title: 구조도 아이콘이 깨진 까닭 - Font Awesome 7의 글꼴 이름
 date: 2026-10-19
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/프론트엔드/디자인 시스템
 summary: Font Awesome을 7로 업그레이드한 뒤 HYEONIVERSE 구조도의 아이콘이 깨졌다. 7은 5·4의 글꼴 이름은 호환용으로 유지했지만 6의 이름은 제거했고, SVG 텍스트로 렌더링하는 아이콘 다섯 곳이 6의 이름을 직접 지정하고 있었다.
 ---
 

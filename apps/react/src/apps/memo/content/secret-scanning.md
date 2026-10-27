@@ -1,7 +1,7 @@
 ---
 title: 커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기
 date: 2026-10-10
-category: 개발 기록/MacFolio/보안
+category: 개발 기록/MacFolio/배포·품질/보안
 summary: 저장소 기록 전체를 gitleaks로 검사한 결과 검출된 항목은 Oracle 문서의 시험용 개인 키 4건뿐이었다. 기본 규칙이 검출하지 못하는 Resend·Groq 키와 DB 비밀번호 규칙을 추가하고, PR·main·매주 월요일마다 기록 전체를 다시 검사하는 CI 작업을 만들었다.
 ---
 

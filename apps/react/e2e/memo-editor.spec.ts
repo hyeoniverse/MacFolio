@@ -1429,7 +1429,7 @@ test.describe('빈 폴더', () => {
 		await page.getByRole('menuitem', { name: '메모 삭제' }).click();
 		await expect(memo.locator('.memo-item', { hasText: 'GitHub 병합 방식' })).toHaveCount(0);
 		await expect(folders.getByRole('button', { name: /^Git/ })).toBeVisible();
-		await expect.poll(() => api.organization.folders).toContain('기술 노트/개발 도구/Git');
+		await expect.poll(() => api.organization.folders).toContain('기술 노트/Git');
 	});
 });
 
