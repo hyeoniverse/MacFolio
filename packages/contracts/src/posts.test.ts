@@ -18,11 +18,11 @@ describe('postInput', () => {
 	});
 
 	it('이유를 칸 순서대로 모두 모은다', () => {
-		expect(parse(postInput(TODAY), { title: '', date: '2026-02-30', category: 'a/b/c/d/e', body: ' ' })).toEqual({
+		expect(parse(postInput(TODAY), { title: '', date: '2026-02-30', category: 'a/b/c/d', body: ' ' })).toEqual({
 			errors: [
 				'제목을 입력해주세요.',
 				'날짜가 올바르지 않습니다.',
-				'폴더는 4단까지입니다: a/b/c/d/e',
+				'폴더는 3단까지입니다: a/b/c/d',
 				'본문을 입력해주세요.',
 			],
 		});

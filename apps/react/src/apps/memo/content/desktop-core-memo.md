@@ -1,7 +1,7 @@
 ---
 title: 메모 로직을 desktop-core로 - localStorage는 어디에 둘까
 date: 2026-10-09
-category: 개발 기록/MacFolio/프론트엔드/구조
+category: 개발 기록/MacFolio/설계
 summary: 메모 앱의 글 읽기·정렬, 태그, 폴더 정리, 찾기, 글 검사를 packages/desktop-core로 옮겼다. localStorage를 직접 읽던 세 파일은 값 검사는 core, 브라우저 읽기·쓰기는 앱으로 나눴고, 목록에 표시할 글을 정하던 hook 안의 계산도 core의 noteView로 분리했다.
 ---
 

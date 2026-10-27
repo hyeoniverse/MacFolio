@@ -1,7 +1,7 @@
 ---
 title: API 자동 배포 - 이미지는 Actions에서 빌드, 서버는 컨테이너 교체만
 date: 2026-10-05
-category: 개발 기록/MacFolio/배포·품질/배포·운영
+category: 개발 기록/MacFolio/배포·운영
 summary: main에 머지하면 Actions가 API 이미지를 GHCR에 푸시하고, 명령 하나만 실행할 수 있는 SSH 키로 서버의 deploy.sh를 호출한다. 서버는 백업 → 교체 → 헬스 체크를 거치고, 실패하면 이전 버전으로 되돌린다. 제외한 방법, 151줄 스크립트의 분기, 로컬 레지스트리 시험 7가지를 적었다.
 ---
 
