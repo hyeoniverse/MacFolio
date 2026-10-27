@@ -206,7 +206,7 @@ summary: 목록과 검색에 보이는 한두 문장 요약
 ### 머지
 
 - CI(`check`, `conventions`, `secrets`)가 통과해야 머지한다. `main`의 Ruleset이 세 검사를 필수로 지정해, 통과하기 전에는 Merge 버튼이 막힌다. `secrets`는 [gitleaks](https://github.com/gitleaks/gitleaks)로 API 키·토큰·개인 키 형식의 문자열이 커밋에 포함되었는지 전체 기록을 검사한다 (예외는 `.gitleaks.toml`)
-- **Merge commit**으로 머지한다. 브랜치의 커밋이 그대로 main에 남는다 ([병합 방식 비교 글](https://macfolio.hyeoniverse.com/memo/merge-strategies), [GitHub 문서](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github))
+- **Merge commit**으로 머지한다. 브랜치의 커밋이 그대로 main에 남는다 ([병합 방식 비교 글](https://macfolio.hyeoniverse.com/memo/merge-strategies), [이 저장소가 Merge commit을 고른 근거](https://macfolio.hyeoniverse.com/memo/macfolio-merge-strategy), [GitHub 문서](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github))
 - 머지한 브랜치는 삭제한다 (PR 페이지의 Delete branch)
 - 아직 작업이 남았으면 draft로 열고, 완료되면 Ready for review로 변경한다
 
@@ -247,6 +247,7 @@ Settings → General → Pull Requests의 **Automatically delete head branches**
 
 - [커밋 규칙을 문서 대신 CI로 지키기](https://macfolio.hyeoniverse.com/memo/commit-conventions-ci)
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](https://macfolio.hyeoniverse.com/memo/merge-strategies)
+- [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](https://macfolio.hyeoniverse.com/memo/macfolio-merge-strategy)
 - [폴더 대신 이름으로 — 앱 안의 파일 규칙](https://macfolio.hyeoniverse.com/memo/app-file-naming)
 - [서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게](https://macfolio.hyeoniverse.com/memo/break-import-cycles)
 - [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](https://macfolio.hyeoniverse.com/memo/shared-api-client)

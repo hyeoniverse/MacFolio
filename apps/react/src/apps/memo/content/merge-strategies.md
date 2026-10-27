@@ -2,7 +2,7 @@
 title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
 date: 2026-10-12
 category: 기술 노트/Git
-summary: GitHub의 세 병합 방식이 main의 커밋 그래프·SHA·머지 커밋·되돌리기를 어떻게 바꾸는지 도식으로 정리하고, 어느 방식을 고를지 정하는 질문 세 개와 팀 유형별 선택, 저장소 설정으로 한 가지에 고정하는 법을 적었다.
+summary: GitHub의 세 병합 방식이 main의 커밋 그래프·SHA·커미터·서명과 되돌리기·bisect·blame을 어떻게 바꾸는지 도식과 표로 정리하고, 고르는 질문 세 개, 팀 유형별 선택, 저장소 설정으로 한 방식에 고정하는 절차를 적었다.
 ---
 
 GitHub PR 페이지의 Merge 버튼을 누르면 세 가지 방식 가운데 하나를 선택한다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것이 맞는지는 저장소마다 다르다. 이 글에서는 무엇이 달라서 답이 갈리는지, 그리고 어떤 질문으로 고르면 되는지 정리한다.
@@ -18,7 +18,7 @@ GitHub PR 페이지의 Merge 버튼을 누르면 세 가지 방식 가운데 하
 | 부모 커밋                | 어떤 커밋 바로 앞의 커밋. 일반 커밋은 부모가 하나다.                                                                                                                                                                                      |
 | 머지 커밋                | 부모가 둘인 커밋. 두 갈래의 기록을 하나로 합친 지점을 표시한다. 첫째 부모는 병합을 받은 쪽(main), 둘째 부모는 들어온 쪽(브랜치)이다.                                                                                                      |
 | diff                     | 두 시점 사이에 바뀐 줄의 목록. "무엇이 바뀌었나"만 담고, 커밋 기록은 담지 않는다.                                                                                                                                                         |
-| 작성자·커미터            | 작성자(author)는 변경을 처음 만든 사람, 커미터(committer)는 그 변경을 지금 형태의 커밋으로 만든 사람이다. GitHub가 커밋을 다시 만들면 커미터가 GitHub로 바뀐다.                                                                           |
+| 작성자·커미터            | 작성자(author)는 변경을 처음 만든 사람, 커미터(committer)는 그 변경을 지금 형태의 커밋으로 만든 사람이다. GitHub가 커밋을 다시 만들면 커미터와 커밋 시각이 바뀐다.                                                                        |
 | GPG 서명                 | 커밋을 만든 사람이 본인임을 암호 키로 증명하는 서명. 서명은 특정 SHA에 걸리므로 커밋을 다시 만들면 사라진다. GitHub에서 "Verified" 표시로 보인다.                                                                                         |
 | fast-forward, `--no-ff`  | main이 그사이 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다. 이것이 fast-forward다. `git merge --no-ff`는 이 경우에도 머지 커밋을 꼭 만들라는 옵션이다.                                                         |
 | `git log --first-parent` | 기록을 볼 때 머지 커밋의 첫째 부모만 따라가는 옵션. 브랜치 안의 커밋은 건너뛰고 main에 직접 쌓인 커밋(머지 커밋)만 보여 주므로, PR 하나가 한 줄로 보인다.                                                                                 |
@@ -61,8 +61,8 @@ a1b2c3d Merge pull request #12
 | 머지 커밋          | 있음 (부모 둘: M2, C)  | 없음              | 없음                          |
 | 기록 모양          | 갈라졌다 합쳐짐        | 직선              | 직선                          |
 | PR 경계            | 머지 커밋이 표시       | 커밋 하나가 곧 PR | 기록에 없음 (PR 페이지에서만) |
-| 커미터(committer)  | 브랜치 커밋은 원래대로 | GitHub            | GitHub                        |
-| GPG 서명           | 유지                   | 사라짐            | 사라짐                        |
+| 커미터(committer)  | 브랜치 커밋은 원래대로 | GitHub            | 병합 버튼을 누른 사용자       |
+| GPG 서명           | 유지                   | GitHub 서명으로   | 없음 (서명되지 않음)          |
 
 ### Create a merge commit
 
@@ -74,7 +74,7 @@ A·B·C의 diff[^diff]를 합쳐 커밋 S 하나를 만들어 main 끝에 붙인
 
 ### Rebase and merge
 
-A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 단위는 남고 기록은 직선이지만, 다시 만든 커밋이라 SHA가 모두 바뀐다. 커밋을 만든 주체가 GitHub로 바뀌므로 커미터가 GitHub가 되고, 원래 SHA에 걸려 있던 GPG 서명은 사라진다.[^gpg] 브랜치 안에 머지 커밋(main을 합친 것)이 있으면 그 머지 커밋은 기록에서 제거되고, 충돌을 해결했던 내용이 앞뒤의 다른 커밋에 섞여 들어간다. 로컬에서 `git rebase`를 실행할 때와 달리 충돌이 발생하면 GitHub에서는 병합할 수 없고, 브랜치에서 먼저 충돌을 해결해야 한다.
+A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 단위는 남고 기록은 직선이지만, 다시 만든 커밋이라 SHA가 모두 바뀐다. 커미터는 병합 버튼을 누른 사용자, 커밋 시각은 병합 시각으로 바뀌고, 원래 SHA에 걸려 있던 GPG 서명은 사라진다.[^gpg] 브랜치 안에 머지 커밋(main을 합친 것)이 있으면 그 머지 커밋은 기록에서 제거되고, 충돌을 해결했던 내용이 앞뒤의 다른 커밋에 섞여 들어간다. 로컬에서 `git rebase`를 실행할 때와 달리 충돌이 발생하면 GitHub에서는 병합할 수 없고, 브랜치에서 먼저 충돌을 해결해야 한다.
 
 ## 어느 것을 쓸지 정하는 질문 세 개
 
@@ -98,6 +98,27 @@ A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 
 
 `git bisect`[^bisect]로 찾을 때는 반대로 커밋이 잘게 남은 쪽이 유리하다. 찾아낸 커밋의 diff가 작을수록 원인이 되는 줄을 찾는 범위도 좁다. Rebase가 가장 좋고, Merge commit은 `git bisect start --first-parent`로 먼저 어느 PR인지 찾고, 그 PR 안의 커밋으로 다시 좁힐 수 있다. Squash는 PR 하나가 커밋 하나라서 "이 PR이 원인"까지만 좁혀지고, PR의 diff가 크면 그 안에서는 직접 찾아야 한다.
 
+## 줄 단위 이력과 PR 찾기
+
+[`git blame`](https://git-scm.com/docs/git-blame)은 파일의 각 줄을 마지막으로 바꾼 커밋을 출력한다. 같은 줄이라도 병합 방식에 따라 blame이 가리키는 커밋과, 그 커밋에서 PR 번호까지 가는 경로가 다르다.
+
+|                              | Create a merge commit                  | Squash and merge               | Rebase and merge                           |
+| ---------------------------- | -------------------------------------- | ------------------------------ | ------------------------------------------ |
+| blame이 가리키는 커밋        | 원래 커밋 A·B·C 중 하나                | S (PR 전체)                    | A'·B'·C' 중 하나                           |
+| 커밋 메시지                  | 브랜치에서 적은 그대로                 | PR 제목 + ` (#N)`              | 브랜치에서 적은 그대로                     |
+| 커밋 → PR 번호               | 그 커밋을 포함한 첫 머지 커밋의 메시지 | 메시지 끝의 `(#N)`             | 메시지에 없음. GitHub 커밋 페이지에서 확인 |
+| PR 페이지의 SHA와 main의 SHA | 같다                                   | 다르다 (PR 커밋은 main에 없음) | 다르다                                     |
+
+Merge commit 방식에서 커밋 하나가 어느 PR로 들어왔는지는 그 커밋을 포함한 첫 머지 커밋으로 조회한다.
+
+```bash
+# 커밋 A를 main에 넣은 머지 커밋: A에서 main까지 이어지는 머지 커밋 중 가장 오래된 것
+git log --merges --ancestry-path --oneline A..main | tail -1
+# a1b2c3d Merge pull request #12 from owner/feature
+```
+
+Squash는 메시지만 조회하면 PR 번호가 나오고, 반대로 PR 안에서 어느 단계에 그 줄이 바뀌었는지는 main 기록으로 알 수 없다. Rebase는 커밋 단위가 남지만 메시지에 PR 번호가 없고 SHA도 PR 페이지와 달라, 커밋에서 PR로 가려면 GitHub 커밋 페이지의 PR 링크를 조회해야 한다.
+
 ## 팀 유형별로 보면
 
 ![팀의 작업 방식에 따라 보통 고르는 병합 방식](./images/merge-strategies-teams.svg '오픈소스·모노레포는 Squash, 커밋을 쪼개는 팀은 Rebase, SHA·PR 경계에 의존하는 곳은 Merge commit')
@@ -119,7 +140,36 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 3. "Automatically delete head branches"를 켠다.
 4. 확인: 아무 PR을 열면 Merge 버튼 옆 ▾에 고른 방식 하나만 보인다. 되돌리려면 같은 칸을 다시 체크한다.
 
-공식 문서: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches).
+같은 설정을 [GitHub CLI](https://cli.github.com/manual/gh_repo_edit)로 변경하고 조회할 수도 있다. 아래는 Create a merge commit 하나만 남기는 예다.
+
+```bash
+gh repo edit owner/repo --enable-merge-commit --enable-squash-merge=false --enable-rebase-merge=false --delete-branch-on-merge
+gh api repos/owner/repo --jq '{allow_merge_commit, allow_squash_merge, allow_rebase_merge, delete_branch_on_merge}'
+# {"allow_merge_commit":true,"allow_rebase_merge":false,"allow_squash_merge":false,"delete_branch_on_merge":true}
+```
+
+<details>
+<summary>머지 커밋·Squash 커밋의 기본 메시지 설정</summary>
+
+같은 화면에서 방식마다 기본 커밋 메시지도 정한다. Merge 버튼을 누른 시각에 이 값으로 메시지 칸이 채워지고, 병합하는 사람이 고칠 수 있다. 괄호 안은 [REST API](https://docs.github.com/en/rest/repos/repos#update-a-repository)의 필드 값이다.
+
+| 방식                  | 설정 항목                                        | 제목                                                             | 본문                                 |
+| --------------------- | ------------------------------------------------ | ---------------------------------------------------------------- | ------------------------------------ |
+| Create a merge commit | Default message (기본값)                         | `Merge pull request #N from owner/branch` (`MERGE_MESSAGE`)      | PR 제목 (`PR_TITLE`)                 |
+|                       | Default to pull request title                    | PR 제목 (`PR_TITLE`)                                             | 없음 (`BLANK`)                       |
+|                       | Default to pull request title and description    | PR 제목 (`PR_TITLE`)                                             | PR 본문 (`PR_BODY`)                  |
+| Squash and merge      | Default message (기본값)                         | 커밋이 하나면 그 메시지, 여럿이면 PR 제목 (`COMMIT_OR_PR_TITLE`) | 커밋 메시지 목록 (`COMMIT_MESSAGES`) |
+|                       | Default to pull request title                    | PR 제목 (`PR_TITLE`)                                             | 없음 (`BLANK`)                       |
+|                       | Default to pull request title and commit details | PR 제목 (`PR_TITLE`)                                             | 커밋 메시지 목록 (`COMMIT_MESSAGES`) |
+|                       | Default to pull request title and description    | PR 제목 (`PR_TITLE`)                                             | PR 본문 (`PR_BODY`)                  |
+
+Squash를 쓰는 저장소는 PR 제목이 곧 main의 커밋 제목이 되므로 "Default to pull request title"을 고르는 경우가 많다. Rebase and merge는 브랜치 커밋의 메시지를 그대로 쓰므로 이 설정이 없다.
+
+</details>
+
+브랜치 규칙으로 방식을 제한할 수도 있다. Ruleset이나 브랜치 보호 규칙에서 **Require linear history**를 켜면 그 브랜치에는 머지 커밋이 들어갈 수 없어, Merge 버튼에서 Create a merge commit을 고를 수 없다. Squash나 Rebase 하나로 정한 저장소라면 이 규칙이 실수로 생기는 머지 커밋까지 막는다.
+
+공식 문서: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Configuring commit merging](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/configuring-commit-merging-for-pull-requests), [Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches), [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 
 ## 정리
 
@@ -131,15 +181,12 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 
 ## 관련 글
 
-- [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot)
-- [메모 편집기 손보기 — 토글 목록·각주, ~ 하나짜리 취소선, 사라지는 빈 폴더](/memo/memo-editor-toggle-footnote): 이 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
-- 이 글을 쓴 날의 작업 기록: [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
+- [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](/memo/macfolio-merge-strategy): 이 글의 기준을 한 저장소의 main 기록에 적용한 사례
 
 ## 참고 문서
 
-- Git: [git-merge](https://git-scm.com/docs/git-merge), [git-rebase](https://git-scm.com/docs/git-rebase), [git-revert](https://git-scm.com/docs/git-revert), [git-bisect](https://git-scm.com/docs/git-bisect), [git-log](https://git-scm.com/docs/git-log)
-- GitHub: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github)
+- Git: [git-merge](https://git-scm.com/docs/git-merge), [git-rebase](https://git-scm.com/docs/git-rebase), [git-revert](https://git-scm.com/docs/git-revert), [git-bisect](https://git-scm.com/docs/git-bisect), [git-log](https://git-scm.com/docs/git-log), [git-blame](https://git-scm.com/docs/git-blame), [Pro Git: Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
+- GitHub: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request), [Reverting a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/reverting-a-pull-request), [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 
 [^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
 
@@ -147,7 +194,7 @@ GitHub 저장소 설정(Settings → General → Pull Requests)에서 세 방식
 
 [^diff]: 두 시점 사이에 바뀐 줄의 목록. "무엇이 바뀌었나"만 담고 누가 어떤 순서로 바꿨는지는 담지 않는다. 그래서 diff를 합쳐 만든 커밋 S에는 A·B·C의 메시지와 순서가 남지 않는다.
 
-[^gpg]: 서명은 특정 SHA에 대한 것이라, 내용이 같아도 SHA가 다른 새 커밋에는 옮겨지지 않는다. GitHub는 자기 키로 새 커밋에 서명하므로 "Verified" 표시는 남지만, 서명한 사람이 원래 작성자가 아니라 GitHub가 된다.
+[^gpg]: 서명은 특정 SHA에 대한 것이라, 내용이 같아도 SHA가 다른 새 커밋에는 옮겨지지 않는다. Squash and merge와 머지 커밋은 GitHub가 자기 키로 서명해 "Verified"가 표시되지만, 서명한 주체는 원래 작성자가 아니라 GitHub다. Rebase and merge로 다시 만든 커밋에는 GitHub도 서명하지 않으므로, 서명을 필수로 요구하는 브랜치(Require signed commits)에서는 Rebase and merge를 사용할 수 없다.
 
 [^range]: `C'~3`은 "C'에서 세 커밋 앞"이라는 뜻이고, `X..Y`는 "X 다음부터 Y까지"다. 즉 A'·B'·C' 세 커밋을 가리킨다.
 

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 320" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="680" height="320" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6b7280"/></marker></defs>
+  <text x="340" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">MacFolio에서 머지 커밋과 브랜치 커밋 SHA에 의존하는 것</text>
+  <!-- center -->
+  <rect x="250" y="128" width="180" height="64" rx="10" fill="#1f2937"/>
+  <text x="340" y="153" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">Merge pull request #N</text>
+  <text x="340" y="173" text-anchor="middle" font-size="11" fill="#d1d5db">main의 first-parent 커밋 297개</text>
+  <!-- 1 -->
+  <rect x="16" y="56" width="210" height="72" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="121" y="78" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">API 이미지 태그·/health</text>
+  <text x="121" y="97" text-anchor="middle" font-size="11" fill="#374151">sha- + main 커밋 7자리</text>
+  <text x="121" y="114" text-anchor="middle" font-size="11" fill="#374151">태그 하나 = PR 하나</text>
+  <path d="M226 110 L246 140" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <!-- 2 -->
+  <rect x="16" y="196" width="210" height="72" rx="8" fill="#eef2ff" stroke="#a5b4fc"/>
+  <text x="121" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#4f46e5">PR 단위 기록</text>
+  <text x="121" y="237" text-anchor="middle" font-size="11" fill="#374151">git log --first-parent</text>
+  <text x="121" y="254" text-anchor="middle" font-size="11" fill="#374151">1,940줄 → 528줄</text>
+  <path d="M226 214 L246 184" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <!-- 3 -->
+  <rect x="454" y="56" width="210" height="72" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="559" y="78" text-anchor="middle" font-size="12" font-weight="600" fill="#047857">글 속 커밋 SHA</text>
+  <text x="559" y="97" text-anchor="middle" font-size="11" fill="#374151">글에 적힌 16진수 89개 중</text>
+  <text x="559" y="114" text-anchor="middle" font-size="11" fill="#374151">82개가 main의 커밋</text>
+  <path d="M454 110 L434 140" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <!-- 4 -->
+  <rect x="454" y="196" width="210" height="72" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+  <text x="559" y="218" text-anchor="middle" font-size="12" font-weight="600" fill="#047857">브랜치 안 머지 커밋</text>
+  <text x="559" y="237" text-anchor="middle" font-size="11" fill="#374151">main을 브랜치에 합친 커밋 65개</text>
+  <text x="559" y="254" text-anchor="middle" font-size="11" fill="#374151">Rebase and merge는 제거</text>
+  <path d="M454 214 L434 184" stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="340" y="300" text-anchor="middle" font-size="11" fill="#6b7280">왼쪽(파랑)은 머지 커밋이 PR 경계를 표시해야 성립하고, 오른쪽(초록)은 브랜치 커밋 SHA가 유지되어야 성립한다</text>
+</svg>
