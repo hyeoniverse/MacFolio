@@ -1,7 +1,7 @@
 ---
 title: 화면과 서버가 같은 규칙을 쓰기 - 소스는 Vite가, 빌드 결과는 Node가
 date: 2026-10-09
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/프론트엔드/구조
 summary: 폴더 3단·이름 30자·제목 100자 같은 규칙이 화면 코드와 서버 코드에 각각 정의되어 있었다. desktop-core 한 곳으로 옮겨 둘이 함께 사용하게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽도록 package.json exports 조건으로 분리했다.
 ---
 

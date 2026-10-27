@@ -67,12 +67,12 @@ export function splitPinned(posts: Post[]): { pinned: Post[]; others: Post[] } {
 /** 폴더의 단 (맨 위 폴더가 1단, '' = 0) */
 export const folderDepth = (path: string) => (path ? path.split('/').length : 0);
 
-/** parent 안에 새 폴더를 만들 수 있는지 (3단까지) */
+/** parent 안에 새 폴더를 만들 수 있는지 (4단까지) */
 export const canAddFolder = (parent: string) => folderDepth(parent) < MAX_FOLDER_DEPTH;
 
 /**
  * 폴더를 parent 아래로 옮길 수 있는지.
- * 자기 자신이나 자기 아래로는 못 옮기고, 이미 그 자리면 의미가 없고, 옮긴 뒤 하위 폴더까지 3단을 넘으면 안 된다.
+ * 자기 자신이나 자기 아래로는 못 옮기고, 이미 그 자리면 의미가 없고, 옮긴 뒤 하위 폴더까지 4단을 넘으면 안 된다.
  * @param allFolders 지금 있는 모든 폴더 경로 (옮길 폴더의 하위 폴더 깊이를 잰다)
  */
 export function canMoveFolder(from: string, parent: string, allFolders: string[] = []): boolean {

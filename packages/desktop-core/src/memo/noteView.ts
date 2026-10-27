@@ -18,7 +18,7 @@ import { matchesTags, type TagSelection } from './tagFilter.js';
 import { tagsOf } from './tags.js';
 import { rankPosts } from './search.js';
 
-/** 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 3단을 넘지 않는지 잰다) */
+/** 모든 폴더 경로 (폴더를 옮길 때 하위 폴더까지 4단을 넘지 않는지 잰다) */
 export function folderPaths(folders: FolderNode[]): FolderPath[] {
 	return folders.flatMap((node) => [node.path, ...folderPaths(node.children)]);
 }

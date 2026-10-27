@@ -1,7 +1,7 @@
 ---
 title: 트래픽 분석 2 - 사이트에서 모아 보내기
 date: 2026-10-07
-category: 개발 기록/MacFolio/분석
+category: 개발 기록/MacFolio/백엔드/분석
 summary: 사이트에서 페이지 열기, 앱 열기, 글 조회, 외부 링크 클릭, 체류 시간을 수집해 5초마다 sendBeacon으로 전송한다. 여러 곳의 window.open을 openExternal 하나로 통합하고, 로컬 주소와 Global Privacy Control에서는 수집을 끈다. 전송 방법 비교와 시험을 정리했다.
 ---
 

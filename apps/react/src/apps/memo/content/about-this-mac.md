@@ -1,7 +1,7 @@
 ---
 title: Apple 메뉴의 '이 Mac에 관하여'에 프로필 넣기
 date: 2026-10-10
-category: 개발 기록/MacFolio/기능
+category: 개발 기록/MacFolio/프론트엔드/데스크톱
 summary: Apple 메뉴 맨 위의 '이 Mac에 관하여'를 macOS Sequoia와 같은 작은 창으로 만들고, Mac 사양 대신 만든 사람의 프로필을 넣었다. 앱이 아닌 시스템 창으로 둔 이유, 다른 앱을 여는 요청 저장소, 끌기·초점 처리와 E2E 시험을 정리했다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: 앱이 많아지자 Dock이 Launchpad와 겹쳤다
 date: 2026-10-05
-category: 개발 기록/MacFolio/기능
+category: 개발 기록/MacFolio/프론트엔드/데스크톱
 summary: Dock의 Launchpad·휴지통은 절대 위치로 고정되어 있었고 앱 칸 수는 근사식으로 계산했다. 실행 중인 앱 아이콘이 끝에 추가되면 Launchpad 아래로 겹쳤다. Dock을 내용 폭만큼 넓어지는 한 줄 flex로 바꾸고, 칸 수는 CSS와 같은 치수로 계산하는 함수 하나로 통합했다.
 ---
 

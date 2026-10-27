@@ -1,7 +1,7 @@
 ---
 title: AI 요약 데모의 기본 공급자를 Groq로
 date: 2026-10-05
-category: 개발 기록/MacFolio/서버
+category: 개발 기록/MacFolio/백엔드/API
 summary: HYEONIVERSE 페이지의 AI 요약 데모는 Gemini 하나로만 요약해서, 키가 없거나 한도를 초과하면 동작하지 않았다. 번역 데모의 tryInOrder를 재사용해 Groq를 먼저 호출하고 실패하면 Gemini로 전환하게 했으며, 실제로 요약을 생성한 공급자 이름을 화면에 표시한다.
 ---
 

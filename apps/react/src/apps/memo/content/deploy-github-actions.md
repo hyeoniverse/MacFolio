@@ -1,7 +1,7 @@
 ---
 title: 프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만
 date: 2026-10-03
-category: 개발 기록/MacFolio/배포·운영
+category: 개발 기록/MacFolio/배포·품질/배포·운영
 summary: Cloudflare 빌드 서버가 빌드 환경을 초기화하지 못하고 시간 초과로 실패하는 일이 이어졌다. 빌드와 배포를 GitHub Actions로 옮겨, 시험을 통과한 main 커밋만 wrangler deploy로 배포하고 PR에는 브랜치 이름 기반 미리보기 주소를 댓글로 남긴다.
 ---
 

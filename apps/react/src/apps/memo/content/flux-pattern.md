@@ -1,7 +1,7 @@
 ---
 title: Flux 패턴 — Action·Dispatcher·Store·View의 단방향 흐름과 그 뒤의 Redux, 외부 store
 date: 2026-10-25
-category: 기술 노트/프론트엔드/React
+category: 기술 노트/프론트엔드
 summary: Flux는 상태 변경을 Action → Dispatcher → Store → View 한 방향으로만 흐르게 하는 구조다. 양방향 바인딩의 연쇄 갱신 문제, 네 구성 요소와 waitFor, Redux가 바꾼 점, useSyncExternalStore로 구독하는 외부 store를 공식 자료 기준으로 정리했다.
 ---
 

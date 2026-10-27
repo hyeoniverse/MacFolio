@@ -1,7 +1,7 @@
 ---
 title: 'zsh: command not found: pnpm — pnpm 설치 방법과 Node 25에서 corepack이 제외된 이유'
 date: 2026-10-20
-category: 기술 노트/개발 도구/패키지 관리
+category: 기술 노트/개발 환경
 summary: Node 25부터 corepack이 Node에 포함되지 않아, corepack enable로 pnpm을 사용하던 저장소에서 pnpm을 찾지 못한다. pnpm 설치 명령과 확인 방법, 전역 pnpm과 저장소의 pnpm 버전이 다른 이유, npm install로 대신 설치했을 때 남는 파일의 정리 순서를 정리했다.
 ---
 

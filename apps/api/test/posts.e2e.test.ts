@@ -329,9 +329,9 @@ describe('블로그 글 (e2e)', () => {
 
 	it('규칙을 어기면 관리자라도 400 (임시 저장도 같은 규칙)', async () => {
 		const response = await admin('post', '/posts')
-			.send({ ...POST, title: '', category: 'a/b/c/d' })
+			.send({ ...POST, title: '', category: 'a/b/c/d/e' })
 			.expect(400);
-		expect(response.body.message).toEqual(['제목을 입력해주세요.', '폴더는 3단까지입니다: a/b/c/d']);
+		expect(response.body.message).toEqual(['제목을 입력해주세요.', '폴더는 4단까지입니다: a/b/c/d/e']);
 		await admin('put', '/posts/x/draft')
 			.send({ ...POST, body: '' })
 			.expect(400);

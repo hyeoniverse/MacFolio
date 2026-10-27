@@ -1,7 +1,7 @@
 ---
 title: 사이트에 CSP와 보안 헤더 붙이기
 date: 2026-10-09
-category: 개발 기록/MacFolio/보안
+category: 개발 기록/MacFolio/배포·품질/보안
 summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더가 하나도 없었다. CSP 출처 목록을 직접 작성하지 않고 빌드 환경 변수와 PROJECTS에서 생성하고, E2E가 같은 CSP로 실행되어 차단된 요청이 있으면 실패하게 했다. 이후 출처가 네 차례 추가된 기록도 정리한다.
 ---
 

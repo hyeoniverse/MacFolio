@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { EMPTY_ORGANIZATION, folderPathError, parseOrganization } from './rules.js';
 
 describe('folderPathError', () => {
-	it('3단까지, 이름은 1~30자, 앞뒤 공백 없이', () => {
+	it('4단까지, 이름은 1~30자, 앞뒤 공백 없이', () => {
 		expect(folderPathError('개발기/MacFolio/초안')).toBeNull();
-		expect(folderPathError('a/b/c/d')).toMatch(/3단/);
+		expect(folderPathError('a/b/c/d/e')).toMatch(/4단/);
 		expect(folderPathError('개발기//초안')).toMatch(/비었/);
 		expect(folderPathError(' 개발기')).toMatch(/공백/);
 		expect(folderPathError('가'.repeat(31))).toMatch(/30자/);
@@ -37,14 +37,14 @@ describe('parseOrganization', () => {
 
 	it('규칙을 어기면 이유를 모두 모은다', () => {
 		const result = parseOrganization({
-			folders: ['a/b/c/d', 'a/b/c/d'],
+			folders: ['a/b/c/d/e', 'a/b/c/d/e'],
 			posts: { '../etc': '읽을거리' },
 			moves: [{ from: 'x' }],
 			pins: { 'cra-to-vite': 'yes' },
 		});
 		expect('errors' in result && result.errors).toEqual([
-			'폴더는 3단까지입니다: a/b/c/d',
-			'폴더는 3단까지입니다: a/b/c/d',
+			'폴더는 4단까지입니다: a/b/c/d/e',
+			'폴더는 4단까지입니다: a/b/c/d/e',
 			'같은 폴더가 두 번 있습니다',
 			'글 주소가 올바르지 않습니다: ../etc',
 			'폴더 경로는 문자열이어야 합니다',
@@ -69,8 +69,8 @@ describe('parseOrganization', () => {
 		expect(parseOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', '개발기/MacFolio'] })).toEqual({
 			value: { ...EMPTY_ORGANIZATION, order: ['회고', '개발기/MacFolio'] },
 		});
-		expect(parseOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', '회고', 'a/b/c/d'] })).toEqual({
-			errors: ['폴더는 3단까지입니다: a/b/c/d', '폴더 순서에 같은 폴더가 두 번 있습니다'],
+		expect(parseOrganization({ ...EMPTY_ORGANIZATION, order: ['회고', '회고', 'a/b/c/d/e'] })).toEqual({
+			errors: ['폴더는 4단까지입니다: a/b/c/d/e', '폴더 순서에 같은 폴더가 두 번 있습니다'],
 		});
 	});
 

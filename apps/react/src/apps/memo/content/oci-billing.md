@@ -1,7 +1,7 @@
 ---
 title: 종량제 요금과 예산 한도 - Oracle API 요청 서명을 SDK 없이
 date: 2026-10-10
-category: 개발 기록/MacFolio/배포·운영
+category: 개발 기록/MacFolio/배포·품질/배포·운영
 summary: 종량제 Oracle 계정의 이번 달 요금과 예산을 서버 탭에 표시하고 80%·100%에서 메일로 알리게 했다. 요청 서명은 SDK 없이 node:crypto로 직접 생성하고, 실제 키 없이 Oracle 문서의 시험 값과 문자 단위로 비교해 검증했다.
 ---
 
