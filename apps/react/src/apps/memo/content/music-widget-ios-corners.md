@@ -1,7 +1,7 @@
 ---
 title: iOS Safari에서만 음악 위젯 모서리가 각지는 문제 — 블러 레이어와 border-radius 클리핑
 date: 2026-10-22
-category: 개발 기록/MacFolio/프론트엔드/데스크톱
+category: 개발 기록/MacFolio/프론트엔드
 summary: 홈 화면의 음악 위젯만 iOS Safari에서 모서리가 각지게 그려졌다. 배경 블러에 쓴 filter가 별도 합성 레이어를 만들면서 부모의 border-radius 클리핑이 적용되지 않은 것이 원인이었다. clip-path로 같은 모양을 한 번 더 잘라 해결했다.
 ---
 

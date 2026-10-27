@@ -999,15 +999,13 @@ test.describe('모바일', () => {
 				'li[data-folder-path="개발 기록/MacFolio"] > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name'
 			);
 		const paths = (names: string[]) => names.map((name) => `개발 기록/MacFolio/${name}`);
-		const NAMES = ['배포·품질', '백엔드', '프론트엔드', '회고'];
+		const NAMES = ['디자인 시스템', '배포·운영', '백엔드', '설계', '품질', '프론트엔드', '회고'];
 		await expect(topNames()).toHaveText(NAMES);
-		// 하위 폴더가 있는 세 폴더를 접어 네 줄이 한 화면에 들어오게 한다
-		for (const name of NAMES.slice(0, 3)) await folders.getByRole('button', { name: `하위 폴더 접기 (${name})` }).tap();
 
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
-		// 끌기: 네 번째 '회고'를 맨 위로 (두 손잡이가 한 화면에 들어오게 가운데로 스크롤한 뒤 끈다)
-		const handle = folders.getByRole('button', { name: '순서 바꾸기 (회고)' });
-		const target = folders.getByRole('button', { name: '순서 바꾸기 (배포·품질)' });
+		// 끌기: 세 번째 '백엔드'를 맨 위로 (두 손잡이가 한 화면에 들어오게 가운데로 스크롤한 뒤 끈다)
+		const handle = folders.getByRole('button', { name: '순서 바꾸기 (백엔드)' });
+		const target = folders.getByRole('button', { name: '순서 바꾸기 (디자인 시스템)' });
 		await target.evaluate((element) => element.scrollIntoView({ block: 'center' }));
 		const from = (await handle.boundingBox())!;
 		const to = (await target.boundingBox())!;
@@ -1015,13 +1013,13 @@ test.describe('모바일', () => {
 		await page.mouse.down();
 		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
 		await page.mouse.up();
-		const moved = ['회고', ...NAMES.slice(0, 3)];
+		const moved = ['백엔드', '디자인 시스템', '배포·운영', ...NAMES.slice(3)];
 		await expect(topNames()).toHaveText(moved);
 		await expect.poll(() => api.organization.order).toEqual(paths(moved));
 
 		// 키보드: ↓로 한 칸 내린다
-		await folders.getByRole('button', { name: '순서 바꾸기 (회고)' }).press('ArrowDown');
-		await expect(topNames()).toHaveText(['배포·품질', '회고', ...NAMES.slice(1, 3)]);
+		await folders.getByRole('button', { name: '순서 바꾸기 (백엔드)' }).press('ArrowDown');
+		await expect(topNames()).toHaveText(['디자인 시스템', '백엔드', '배포·운영', ...NAMES.slice(3)]);
 	});
 
 	test('메일은 iOS 메일처럼: 메일상자 → 사서함 → 메일로 한 화면씩, 넘어갈 때 옆으로 밀려 들어온다', async ({

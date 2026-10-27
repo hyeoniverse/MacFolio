@@ -1,7 +1,7 @@
 ---
 title: 글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기
 date: 2026-10-09
-category: 개발 기록/MacFolio/배포·품질/보안
+category: 개발 기록/MacFolio/품질
 summary: 메모 글과 GitHub README는 Markdown과 HTML을 렌더링한다. 위험한 링크와 스크립트를 차단하는 설정은 이미 있었지만 이를 검증하는 시험이 없었다. 공격 문자열로 단위 시험과 E2E를 추가하고, 차단 설정을 제거하면 시험이 실패하는 것까지 확인했다.
 ---
 
