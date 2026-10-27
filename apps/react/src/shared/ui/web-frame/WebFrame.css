@@ -11,6 +11,11 @@
 	background-color: var(--color-black);
 }
 
+.web-frame-view {
+	position: relative;
+	height: 100%;
+}
+
 .web-frame iframe {
 	display: block;
 	width: 100%;
@@ -71,4 +76,77 @@
 
 .container.mobile .web-frame.dark {
 	background-color: var(--web-bar-color, var(--color-black));
+}
+
+/* ─── 브라우저형 (browser): 위에 도구 막대, 그 아래 페이지 (Safari의 도구 막대와 같은 모양) ─── */
+.web-frame.browser {
+	--web-frame-toolbar-bg: #f6f6f6;
+	--web-frame-address-bg: rgba(0, 0, 0, 0.06);
+	--web-frame-border: rgba(0, 0, 0, 0.1);
+	--ui-tool-color: var(--color-secondary-label);
+	--ui-tool-hover: var(--web-frame-address-bg);
+	display: flex;
+	flex-direction: column;
+}
+
+:root[data-theme='dark'] .web-frame.browser {
+	--web-frame-toolbar-bg: #2c2c2e;
+	--web-frame-address-bg: rgba(255, 255, 255, 0.1);
+	--web-frame-border: rgba(255, 255, 255, 0.12);
+}
+
+.web-frame.browser .web-frame-view {
+	flex: 1;
+	min-height: 0;
+}
+
+.web-frame-toolbar {
+	gap: var(--space-6);
+	padding: 0 var(--space-12);
+	border-bottom: 1px solid var(--web-frame-border);
+	background-color: var(--web-frame-toolbar-bg);
+	color: var(--color-label);
+}
+
+/* 신호등 버튼 자리. 창이 좁아져도 줄어들지 않는다 */
+.web-frame-lights-space {
+	flex: none;
+	width: 64px;
+}
+
+.web-frame-toolbar .ui-icon-button {
+	font-size: var(--text-footnote);
+}
+
+.web-frame-address {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-6);
+	min-width: 0;
+	max-width: 520px;
+	height: 32px;
+	margin: 0 auto;
+	padding: 0 var(--space-12);
+	border-radius: var(--radius-full);
+	background-color: var(--web-frame-address-bg);
+	color: inherit;
+	font-size: var(--text-footnote);
+	text-decoration: none;
+}
+
+.web-frame-address span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.web-frame-address i {
+	color: var(--color-secondary-label);
+	font-size: 10px;
+}
+
+.web-frame-address:hover {
+	box-shadow: inset 0 0 0 1px var(--web-frame-border);
 }

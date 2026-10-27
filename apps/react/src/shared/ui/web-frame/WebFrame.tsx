@@ -6,6 +6,11 @@ import type { AppName } from '@/apps/manifest';
 import '@/shared/ui/web-frame/WebFrame.css';
 import { openExternal } from '@/shared/analytics/analytics';
 import MobileNavigation from '@/desktop/window/MobileNavigation';
+import { useIsMobile } from '@/shared/hooks/useIsMobile';
+import Toolbar from '@/shared/ui/toolbar/Toolbar';
+import IconButton from '@/shared/ui/button/IconButton';
+import { canGoBack, canGoForward } from '@/shared/ui/web-frame/frameHistory';
+import { useFrameHistory } from '@/shared/ui/web-frame/useFrameHistory';
 
 /**
  * 안에 띄운 페이지에 주는 권한 (iframe sandbox). 바깥 사이트가 이 사이트를 다른 주소로 바꾸지 못하게
@@ -39,6 +44,11 @@ interface WebFrameProps {
 	 */
 	barColor?: string;
 	allow?: string;
+	/**
+	 * 브라우저처럼 위에 도구 막대(뒤로·앞으로·새로 고침·주소)를 둔다 (데스크톱). 창은 chrome="unified"로 열어
+	 * 신호등 버튼이 막대 위에 오게 한다. 게임처럼 페이지만 보여 줄 앱은 끈다
+	 */
+	browser?: boolean;
 }
 
 /**
@@ -64,13 +74,28 @@ function readTopColor(frame: HTMLIFrameElement): string | null {
 	}
 }
 
+/** 주소창에 보일 주소: https://와 끝의 /를 뺀다 */
+const displayAddress = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
 /**
  * 다른 페이지를 창 안에 그대로 띄우는 틀 (iframe): 프로젝트 앱(배포한 사이트), API 문서 앱(api-docs.html).
  * 불러오는 동안은 아이콘을 보여 주고, 오래 걸리면 새 탭에서 여는 링크를 띄운다
  * (사이트가 다른 곳에 들어가는 것을 막아 두었으면 iframe에는 빈 화면만 남기 때문이다).
  */
-const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = 'light', barColor, allow }) => {
+const WebFrame: React.FC<WebFrameProps> = ({
+	src,
+	title,
+	appName,
+	icon,
+	tone = 'light',
+	barColor,
+	allow,
+	browser = false,
+}) => {
 	const frame = useRef<HTMLIFrameElement>(null);
+	const mobile = useIsMobile();
+	const toolbar = browser && !mobile;
+	const history = useFrameHistory(frame);
 	const { bringAppToFront } = useAppState();
 	const [loaded, setLoaded] = useState(false);
 	const [slow, setSlow] = useState(false);
@@ -121,8 +146,16 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 	const reload = () => {
 		setLoaded(false);
 		setSlow(false);
-		// 다른 주소의 페이지는 안에서 새로 고칠 수 없어서 주소를 다시 넣는다
-		if (frame.current) frame.current.src = src;
+		// 다른 주소의 페이지는 안에서 새로 고칠 수 없어서 처음 주소를 다시 넣는다.
+		// src를 바꾸면 방문 기록이 하나 쌓이므로, 지금 기록을 바꾸는 location.replace를 먼저 쓴다
+		history.expectLoad();
+		const current = frame.current;
+		if (!current) return;
+		try {
+			current.contentWindow!.location.replace(src);
+		} catch {
+			current.src = src;
+		}
 	};
 	useAppMenus(appName, [
 		{
@@ -135,7 +168,30 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 				},
 			],
 		},
-		{ title: '보기', items: [{ label: '새로 고침', shortcut: { code: 'KeyR', alt: true }, onSelect: reload }] },
+		{
+			title: '보기',
+			items: [
+				...(browser
+					? [
+							{
+								label: '뒤로',
+								icon: 'fa-solid fa-chevron-left',
+								disabled: !canGoBack(history.state),
+								shortcut: { code: 'BracketLeft', alt: true },
+								onSelect: () => history.go(-1),
+							},
+							{
+								label: '앞으로',
+								icon: 'fa-solid fa-chevron-right',
+								disabled: !canGoForward(history.state),
+								shortcut: { code: 'BracketRight', alt: true },
+								onSelect: () => history.go(1),
+							},
+						]
+					: []),
+				{ label: '새로 고침', shortcut: { code: 'KeyR', alt: true }, onSelect: reload },
+			],
+		},
 	]);
 
 	useEffect(() => {
@@ -145,32 +201,61 @@ const WebFrame: React.FC<WebFrameProps> = ({ src, title, appName, icon, tone = '
 	}, [loaded]);
 
 	return (
-		<div className={`web-frame ${tone}`} style={topColor ? cssVars({ 'web-bar-color': topColor }) : undefined}>
+		<div
+			className={`web-frame ${tone}${toolbar ? ' browser' : ''}`}
+			style={topColor ? cssVars({ 'web-bar-color': topColor }) : undefined}
+		>
 			{/* 휴대폰: 페이지가 화면을 다 쓰고, 뒤로 가기는 왼쪽 아래에 떠 있다 (페이지의 왼쪽 위 메뉴를 가리지 않게) */}
 			<MobileNavigation placement="bottom" hideHome />
-			<iframe
-				ref={frame}
-				src={src}
-				title={title}
-				allow={allow}
-				sandbox={FRAME_SANDBOX}
-				allowFullScreen
-				onLoad={() => {
-					setLoaded(true);
-					watchSameSite();
-				}}
-			/>
-			{!loaded && (
-				<div className="web-frame-loading" role="status">
-					{icon && <img src={icon} alt="" />}
-					<span>{title} 불러오는 중…</span>
-					{slow && (
-						<a href={src} target="_blank" rel="noopener noreferrer">
-							열리지 않으면 새 탭에서 열기
-						</a>
-					)}
-				</div>
+			{/* 도구 막대: 신호등 버튼 자리, 뒤로·앞으로·새로 고침, 주소창(누르면 새 탭에서 연다) */}
+			{toolbar && (
+				<Toolbar className="web-frame-toolbar">
+					<span className="web-frame-lights-space" aria-hidden="true" />
+					<IconButton
+						label="뒤로"
+						disabled={!canGoBack(history.state)}
+						onClick={() => history.go(-1)}
+						icon="fa-solid fa-chevron-left"
+					/>
+					<IconButton
+						label="앞으로"
+						disabled={!canGoForward(history.state)}
+						onClick={() => history.go(1)}
+						icon="fa-solid fa-chevron-right"
+					/>
+					<a className="web-frame-address" href={src} target="_blank" rel="noopener noreferrer" title="새 탭에서 열기">
+						<i className="fa-solid fa-lock" aria-hidden="true" />
+						<span>{displayAddress(src)}</span>
+					</a>
+					<IconButton label="새로 고침" onClick={reload} icon="fa-solid fa-rotate-right" />
+				</Toolbar>
 			)}
+			<div className="web-frame-view">
+				<iframe
+					ref={frame}
+					src={src}
+					title={title}
+					allow={allow}
+					sandbox={FRAME_SANDBOX}
+					allowFullScreen
+					onLoad={() => {
+						setLoaded(true);
+						history.onLoad();
+						watchSameSite();
+					}}
+				/>
+				{!loaded && (
+					<div className="web-frame-loading" role="status">
+						{icon && <img src={icon} alt="" />}
+						<span>{title} 불러오는 중…</span>
+						{slow && (
+							<a href={src} target="_blank" rel="noopener noreferrer">
+								열리지 않으면 새 탭에서 열기
+							</a>
+						)}
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };
