@@ -69,7 +69,7 @@ export const parentOf = (roots: FinderItem[], id: string): FolderItem | null =>
 /** 블로그 폴더 id(blog/개발기/MacFolio)의 메모 경로(개발기/MacFolio). 블로그 맨 위는 '' */
 export const blogPath = (id: string) => (id === 'blog' ? '' : id.slice('blog/'.length));
 
-/** 블로그의 모든 폴더 경로 (메모의 4단 검사용) */
+/** 블로그의 모든 폴더 경로 (메모의 3단 검사용) */
 function blogFolderPaths(roots: FinderItem[]): string[] {
 	const blog = find(roots, 'blog');
 	const paths: string[] = [];
@@ -121,7 +121,7 @@ export function untitledName(siblings: FinderItem[], base = '이름 없는 폴�
 export const newFolderId = (random: () => number = Math.random) =>
 	`folder:${Array.from({ length: 10 }, () => '0123456789abcdefghijklmnopqrstuvwxyz'[Math.floor(random() * 36)]).join('')}`;
 
-/** 이 폴더 안에 새 폴더를 만들 수 있는지 (블로그는 메모의 4단 규칙) */
+/** 이 폴더 안에 새 폴더를 만들 수 있는지 (블로그는 메모의 3단 규칙) */
 export function canCreateIn(folder: FinderItem | null | undefined): boolean {
 	const side = containerKind(folder);
 	if (side === 'blog') return canAddFolder(blogPath(folder!.id));

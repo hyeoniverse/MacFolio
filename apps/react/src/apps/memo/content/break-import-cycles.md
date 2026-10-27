@@ -1,7 +1,7 @@
 ---
 title: 서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게
 date: 2026-10-10
-category: 개발 기록/MacFolio/프론트엔드/구조
+category: 개발 기록/MacFolio/설계
 summary: madge로 측정하니 순환 의존이 둘 있었다. 메일의 두 화면이 서로를, 앱 목록(registry)과 Finder가 서로를 import했다. 공통 타입은 셋째 파일로, 앱 이름 목록은 manifest로 옮겨 끊고, pnpm cycles를 CI에 넣었다. 도구 비교와 현재 검사 파일 수를 더했다.
 ---
 
