@@ -1321,7 +1321,7 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 		await expect(memo.locator('.ProseMirror')).toHaveCount(0);
 		await expect(memo.getByRole('button', { name: '서식', exact: true })).toHaveCount(0);
 		const reader = memo.locator('.memo-reader-body .memo-markdown').first();
-		await expect(reader.locator('details.memo-details > summary')).toHaveText('먼저 알아 둘 용어');
+		await expect(reader.locator('details.memo-details > summary').first()).toHaveText('먼저 알아 둘 용어');
 		await expect(reader.locator('a[data-footnote-ref]').first()).toBeVisible();
 		const back = memo.getByRole('button', { name: '읽기 화면으로 보는 중, 편집 화면으로 돌아가기' });
 		await expect(back).toHaveAttribute('aria-pressed', 'true');

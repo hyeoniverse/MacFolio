@@ -137,7 +137,8 @@ typescript-eslint가 7을 지원하면 `typescript` 별칭을 7로 바꾸고 `@t
 
 ## 관련 글
 
-- [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 같은 날 의존성 PR을 병합한 방식
+- [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](/memo/macfolio-merge-strategy): 같은 날 의존성 PR을 병합한 방식과, 브랜치에 main을 합친 머지 커밋을 유지하는 이유
+- [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 세 방식의 차이와 고르는 기준
 - [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012): 그날의 작업 기록
 
 PR: [#215](https://github.com/hyeoniverse/MacFolio/pull/215)

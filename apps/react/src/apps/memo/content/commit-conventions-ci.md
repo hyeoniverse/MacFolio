@@ -163,6 +163,7 @@ git push --force-with-lease
 
 - [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot)
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies)
+- [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](/memo/macfolio-merge-strategy): 브랜치 커밋이 main에 그대로 남아 커밋마다 메시지를 검사하는 이유
 - [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
 - [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](/memo/secret-scanning)
 
