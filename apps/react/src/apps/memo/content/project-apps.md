@@ -1,7 +1,7 @@
 ---
 title: 프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기
 date: 2026-10-03
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/기능 구현
 summary: 새싹 농장만 창 안에서 실행할 수 있던 것을 HYEONIVERSE·NewPick·WTD·QRU까지 확장했다. 다섯 앱이 ProjectApp 컴포넌트 하나를 공유하고, 앱 목록은 PROJECTS의 app 필드에서 생성하며, Dock에 고정하되 창이 좁으면 프로젝트 앱부터 Launchpad로 넘긴다.
 ---
 

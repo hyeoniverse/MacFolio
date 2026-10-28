@@ -1,7 +1,7 @@
 ---
 title: Finder에서 고른 배경화면이 새로고침하면 사라지던 문제와 QuickTime 열기 창
 date: 2026-10-19
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/기능 구현
 summary: Finder의 '데스크탑 사진 설정'으로 선택한 배경화면이 서버 목록 검사에서 삭제된 항목으로 판정되어 새로고침마다 기본값으로 돌아가던 문제를 id 접두어 상수 하나로 수정했다. MP4도 배경화면으로 설정할 수 있고, QuickTime은 미리보기와 같은 열기 창을 쓴다.
 ---
 

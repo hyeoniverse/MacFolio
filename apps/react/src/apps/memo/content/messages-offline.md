@@ -1,7 +1,7 @@
 ---
 title: 서버가 없으면 메시지 앱을 열지 않기 - 저장소를 .env로 고르기
 date: 2026-10-02
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/API·데이터
 summary: 서버에 연결하지 못하면 메시지 앱이 빈 목록과 "Failed to fetch"를 표시했다. 첫 불러오기가 실패하면 경고창을 표시하고 앱을 종료하며, 사용 중 연결이 끊기면 전송 실패만 알린다. 서버 없이 확인할 때는 VITE_MESSAGES_STORE=local로 저장소를 선택한다.
 ---
 

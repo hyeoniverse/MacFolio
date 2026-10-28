@@ -1,7 +1,7 @@
 ---
 title: 화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기
 date: 2026-10-11
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/API·데이터
 summary: 서버 files/rules.ts에 섞여 있던 규칙을 "화면도 알아야 하는가"를 기준으로 나눴다. 10MB 한도·주소 형식·이미지 형식·응답 타입은 contracts로 옮기고, 매직 바이트·EXIF·파일 이름 정리는 서버에 남겼다. 같은 값이 두 번 정의되던 세 곳을 한 곳으로 통합했다.
 ---
 

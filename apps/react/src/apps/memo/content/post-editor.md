@@ -1,7 +1,7 @@
 ---
 title: Markdown 블로그에 글쓰기 붙이기
 date: 2026-09-29
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/API·데이터
 summary: 저장소의 Markdown 글은 그대로 두고 관리자가 작성하거나 수정한 글만 서버에 저장해 겹쳐 표시한다. 편집 버튼 없이 Milkdown으로 보이는 그대로 수정하고 입력이 0.8초 멈추면 저장하며, 편집 화면과 읽기 화면의 문단 위치를 측정해 일치시켰다.
 ---
 

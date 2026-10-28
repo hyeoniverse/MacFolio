@@ -1,7 +1,7 @@
 ---
 title: 자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기
 date: 2026-10-20
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/UI·인터랙션
 summary: 사이트가 자바스크립트로만 렌더링되어 검색엔진에는 빈 페이지로 보였다. Worker가 주소마다 제목·설명·Open Graph·구조화 데이터와 글·프로젝트 본문을 HTML에 넣고, 서버에 작성한 글까지 합친 sitemap.xml을 생성하게 했다.
 ---
 

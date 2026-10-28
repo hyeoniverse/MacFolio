@@ -1,7 +1,7 @@
 ---
 title: GitHub 앱에 잔디와 활동 기록 더하기
 date: 2026-10-03
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/기능 구현
 summary: GitHub 앱에 기여 달력(잔디)과 최근 활동을 추가했다. 달력은 토큰 없이 조회하기 위해 github.com의 HTML 조각을 서버에서 파싱하고, 활동은 공개 이벤트를 화면용 형식으로 변환한다. 둘 다 서버 캐시를 거치고, 한쪽만 실패하면 그쪽만 이전 값을 쓴다.
 ---
 
