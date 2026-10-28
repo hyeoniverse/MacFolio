@@ -1,7 +1,7 @@
 ---
 title: 문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입
 date: 2026-10-11
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/아키텍처
 summary: 글 주소와 폴더 경로가 어디서나 string이라 주소창 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. PostSlug·FolderPath 브랜드 타입을 두고 외부 문자열은 다섯 검사 지점을 통과해야 그 타입이 되게 했다. 다른 방법과의 비교, 브랜드를 붙이지 않은 값, 비용을 정리했다.
 ---
 

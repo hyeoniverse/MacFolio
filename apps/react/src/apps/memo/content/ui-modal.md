@@ -1,7 +1,7 @@
 ---
 title: 모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출
 date: 2026-10-11
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/스타일·컴포넌트
 summary: 가운데 뜨는 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메이션을 각자 구현하고 있었다. 77줄짜리 Modal로 추출해 다섯 곳에는 콘텐츠만 남겼고, 덮는 범위는 scope로, 색·z-index는 CSS 변수로 지정한다.
 ---
 

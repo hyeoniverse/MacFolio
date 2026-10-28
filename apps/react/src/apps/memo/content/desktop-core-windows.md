@@ -1,7 +1,7 @@
 ---
 title: 창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계
 date: 2026-10-09
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/아키텍처
 summary: 실행 중인 앱과 맨 앞 창을 정하는 로직이 React Context 안에 있었다. 이것을 React와 브라우저에 의존하지 않는 packages/desktop-core로 옮기고, React는 useSyncExternalStore로 구독만 한다. core가 react나 window를 쓰면 세 곳에서 오류가 난다.
 ---
 
