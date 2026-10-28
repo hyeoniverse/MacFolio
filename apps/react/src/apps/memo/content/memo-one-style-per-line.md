@@ -93,7 +93,7 @@ PR의 변경 규모는 8개 파일, 177줄 추가, 8줄 삭제다. 편집기 코
 ## 관련 글
 
 - [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote)
-- [표 다듬기](/memo/table-polish)
+- [표 다듬기](/memo/table-gap-cursor)
 - [한국어 굵게가 풀리던 문제](/memo/cjk-emphasis)
 
 [^content-expr]: ProseMirror 스키마에서 노드가 담을 수 있는 자식의 종류와 순서를 정규식과 비슷한 문법으로 적은 것. `paragraph block*`은 "문단 하나 다음에 블록 0개 이상"이라는 뜻이다. [ProseMirror Guide: Content Expressions](https://prosemirror.net/docs/guide/#schema.content_expressions)

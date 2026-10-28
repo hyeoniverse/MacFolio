@@ -121,6 +121,5 @@ useEffect(() => {
 
 - [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal): 이 effect를 처음 만든 글. 남은 과제에 이 문제를 적어 두었다
 - [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 같은 문제를 ref 보관으로 해결한 컴포넌트
-- [계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기](/memo/sheet-modal-migrate): `Modal`의 호출부를 늘린 작업
 
 #MacFolio #공통컴포넌트 #React #ESLint #트러블슈팅

@@ -185,10 +185,8 @@ E2E를 실행하면서 옮긴 버튼마다 공통 클래스(`ui-icon-button`·`t
 
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](https://macfolio.hyeoniverse.com/memo/ui-inventory)
 - [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](https://macfolio.hyeoniverse.com/memo/icon-button-migrate)
-- [손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](https://macfolio.hyeoniverse.com/memo/text-button-migrate)
 - [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-modal)
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-sheet)
-- [남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나](https://macfolio.hyeoniverse.com/memo/sheet-modal-migrate)
 - [데스크톱과 휴대폰의 메뉴 모양을 variant로 고르기](https://macfolio.hyeoniverse.com/memo/ui-variant-pairs)
 - [공통 부품의 접근성 이름을 시험으로 — 아이콘만 있는 버튼은 이름 없이 만들 수 없게](https://macfolio.hyeoniverse.com/memo/ui-a11y-names)
 - [메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu](https://macfolio.hyeoniverse.com/memo/shared-menu)

@@ -117,7 +117,7 @@ const events = (
 
 ### 갱신 간격
 
-실시간 탭은 [트래픽 분석 5 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅](/memo/activity-live-refresh)의 `usePolling`으로 갱신한다. 7일치 이벤트를 10초마다 다시 조회하지 않도록 기간에 따라 간격을 나눴다.
+실시간 탭은 [트래픽 분석 6 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh)의 `usePolling`으로 갱신한다. 7일치 이벤트를 10초마다 다시 조회하지 않도록 기간에 따라 간격을 나눴다.
 
 ```ts
 intervalMs: liveMinutes > 30 ? LIVE_SLOW_POLL_MS : LIVE_POLL_MS, // 60초 : 10초
@@ -189,8 +189,7 @@ resetKey: String(liveMinutes),
 - [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
 - [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor): 실시간 탭과 StatTable을 만든 글
 - [트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
-- [트래픽 분석 5 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅](/memo/activity-live-refresh): 실시간 탭의 usePolling
-- [트래픽 분석 6 - 참조 수를 집계하는 공유 폴러로 같은 폴링 요청 하나로 묶기](/memo/live-refresh-more): 앞 글
+- [트래픽 분석 6 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh): 실시간 탭의 usePolling
 - [no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): Safari 렌더링 차이 정리
 

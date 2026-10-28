@@ -30,7 +30,7 @@ summary: 리팩터링 4단계 회고. 후보 아홉 개를 다시 집계해 세 
 
 사용 현황 집계는 [#210](https://github.com/hyeoniverse/MacFolio/pull/210)에서 했다. `docs/ui.md`에 컴포넌트 15개의 props와 사용처를 기록하고, `<button>`을 직접 사용하는 295곳을 "공통 버튼으로 교체 가능 / 앱 고유 / Safari 데모"로 분류했다. 교체 가능한 곳은 93곳이었다.
 
-4단계 첫 PR은 목록 문서였는데, 제목이 "shared/ui 부품 목록과 새로 뽑을 후보 아홉의 지금 수"라 작업 내용이 드러나지 않아 수정했다. 문서에서 일부 후보를 "보류. 수가 많아도 모양·뜻이 다르다"로 분류한 것도 다시 검토했다. 모양을 통일하면 해결되지 않는지, 그리고 버튼이 공통 컴포넌트의 기본인데 왜 목록에 없는지 검토하며 버튼 295곳을 다시 집계했다([공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)). Modal PR의 처음 제목은 "가운데 뜨는 창 다섯의 겉을 Modal 하나로"였다. "겉"이 가리키는 대상이 불분명해서 오버레이·포커스·Esc 같은 정확한 용어로 다시 작성했다.
+4단계 첫 PR인 목록 문서에서 일부 후보를 "보류. 수가 많아도 모양·뜻이 다르다"로 분류한 것을 다시 검토했다. 모양을 통일하면 해결되지 않는지, 그리고 버튼이 공통 컴포넌트의 기본인데 왜 목록에 없는지 검토하며 버튼 295곳을 다시 집계했다([공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)).
 
 ## 변경 목록
 
@@ -42,10 +42,9 @@ summary: 리팩터링 4단계 회고. 후보 아홉 개를 다시 집계해 세 
 | CSS 레이어 순서 고정        | [#221](https://github.com/hyeoniverse/MacFolio/pull/221) | [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix) |
 | `SearchField`               | [#223](https://github.com/hyeoniverse/MacFolio/pull/223) | —                                                                                                     |
 | 접근성 이름 시험            | [#243](https://github.com/hyeoniverse/MacFolio/pull/243) | [IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기](/memo/ui-a11y-names)       |
-| '단추'를 '버튼'으로         | [#244](https://github.com/hyeoniverse/MacFolio/pull/244) | —                                                                                                     |
 | 아이콘 버튼 45곳            | [#245](https://github.com/hyeoniverse/MacFolio/pull/245) | [IconButton으로](/memo/icon-button-migrate)                                                           |
-| 텍스트 버튼 30곳            | [#246](https://github.com/hyeoniverse/MacFolio/pull/246) | [Button으로](/memo/text-button-migrate)                                                               |
-| 시트·모달 재조사            | [#247](https://github.com/hyeoniverse/MacFolio/pull/247) | [Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate)                                                   |
+| 텍스트 버튼 30곳            | [#246](https://github.com/hyeoniverse/MacFolio/pull/246) | [Button으로](/memo/icon-button-migrate)                                                               |
+| 시트·모달 재조사            | [#247](https://github.com/hyeoniverse/MacFolio/pull/247) | [Modal로 옮긴 것은 하나](/memo/ui-modal)                                                              |
 | 데스크톱·휴대폰 짝          | [#250](https://github.com/hyeoniverse/MacFolio/pull/250) | [메뉴 모양을 variant로 고르기](/memo/ui-variant-pairs)                                                |
 
 ## 구현
@@ -103,12 +102,11 @@ export const menuVariantClass = (variant: MenuVariant): string | undefined => (v
 
 ## 전후
 
-|                    | 전            | 후                                                                          |
-| ------------------ | ------------- | --------------------------------------------------------------------------- |
-| 직접 쓴 `<button>` | 295곳         | 265곳 (집계 기준을 정해 재집계: Safari 데모 91, 앱 고유 172, 의도적 유지 2) |
-| 시트·모달          | 앱마다 구현   | `Sheet`·`Modal`                                                             |
-| 접근성 이름        | 규칙 없음     | 시험 10개, 아이콘만 있는 `IconButton`은 `label` 없이 타입 오류              |
-| '단추'             | 255파일 949곳 | 모두 '버튼'                                                                 |
+|                    | 전          | 후                                                                          |
+| ------------------ | ----------- | --------------------------------------------------------------------------- |
+| 직접 쓴 `<button>` | 295곳       | 265곳 (집계 기준을 정해 재집계: Safari 데모 91, 앱 고유 172, 의도적 유지 2) |
+| 시트·모달          | 앱마다 구현 | `Sheet`·`Modal`                                                             |
+| 접근성 이름        | 규칙 없음   | 시험 10개, 아이콘만 있는 `IconButton`은 `label` 없이 타입 오류              |
 
 ![직접 쓴 button 265곳의 구성 막대](./images/refactor-step4-components-buttons.svg '남은 버튼은 대부분 일부러 다르게 그린 Safari 데모와 앱 고유의 버튼이다')
 
@@ -116,7 +114,6 @@ export const menuVariantClass = (variant: MenuVariant): string | undefined => (v
 
 - 접근성 이름: `shared/ui/a11y.test.ts`가 버튼·대화상자·시트·검색 칸·날짜 선택기의 이름과 역할을 검사한다. `IconButton`에 `label`을 누락하면 `tsc`가 먼저 차단한다.
 - 모양: 아이콘 버튼 45곳과 텍스트 버튼 30곳 모두 계산된 스타일 비교에서 최종 차이가 없었다. 비교 중 차이가 난 값은 공통 CSS가 추가하는 값이었고, 앱마다 명시도[^specificity]가 0인 규칙([`:where()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:where)) 하나로 원래 값을 복원했다.
-- '단추'를 '버튼'으로(#244): 병합 커밋에서 751줄이 바뀌었다. 텍스트만 바꾼 PR이라 추가한 줄과 삭제한 줄이 같다.
 
 ## 의도적으로 남긴 것
 
@@ -137,8 +134,6 @@ export const menuVariantClass = (variant: MenuVariant): string | undefined => (v
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)
 - [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal)
 - [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate)
-- [명시도 0인 :where() 규칙으로 개별 글자 버튼을 공통 Button으로 옮기기](/memo/text-button-migrate)
-- [계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기](/memo/sheet-modal-migrate)
 - [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
 
 [^specificity]: 명시도(specificity)는 여러 CSS 규칙이 같은 속성을 지정할 때 어느 규칙을 적용할지 정하는 점수다. `:where()` 안의 선택자는 명시도가 0이라, 다른 어떤 규칙에도 덮어쓰일 수 있다. [MDN Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) 참고.

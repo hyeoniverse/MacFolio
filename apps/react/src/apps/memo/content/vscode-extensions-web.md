@@ -232,7 +232,7 @@ VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 �
 
 ![Remote - SSH 상세 화면](./images/vscode-extensions-web-remote-ssh.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다 웹 버전에서 촬영해 "데스크톱 VS Code에서만 실행된다"는 안내가 함께 보인다')
 
-SSH로 원격 서버의 폴더를 열고 편집한다. 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 서버 IP 대신 별칭으로 접속하는 SSH 설정은 [SSH Operation timed out의 원인이 된 삭제한 임시 VM의 공인 IP](/memo/ssh-timeout-public-ip)에 정리했다.
+SSH로 원격 서버의 폴더를 열고 편집한다. 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 서버 IP 대신 별칭으로 접속하는 SSH 설정은 [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)에 정리했다.
 
 ### Live Share
 

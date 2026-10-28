@@ -219,8 +219,8 @@ registry.set('memo-find-current', new Highlight(...(current >= 0 ? [ranges[curre
 
 - [그리드 칸을 차지하지 않는 절대 위치 리사이즈 핸들로 칸 너비 조절하기](/memo/memo-pane-resize)
 - [메모 태그](/memo/memo-tags)
-- [선택자 명시도 계산으로 찾은 버튼 글자색 충돌의 원인](/memo/memo-button-specificity)
-- [표 다듬기](/memo/table-polish)
+- [선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [표 다듬기](/memo/table-gap-cursor)
 - [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
 
 [^fixed-container]: `container-type: size` 또는 `inline-size`는 요소에 레이아웃 격리(layout containment)를 적용하고, 레이아웃 격리가 적용된 요소는 `position: fixed` 자손의 포함 블록(containing block)이 된다. 그래서 고정 위치 요소가 뷰포트가 아니라 그 컨테이너를 기준으로 배치된다. [MDN: Containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block)

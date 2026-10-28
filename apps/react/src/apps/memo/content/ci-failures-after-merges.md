@@ -221,7 +221,7 @@ overrides:
 
 ## ④ 새 답글이 와도 아래로 따라가지 않은 원인: scroll 이벤트 전달 시각
 
-main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/live-refresh-more)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
+main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/activity-live-refresh)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
 
 ![새 답글을 따라 내려가지 않은 화면](./images/ci-failures-after-merges-live-refresh.jpg '맨 아래에서 받은 답글이 입력 칸 위에서 잘려 있다')
 

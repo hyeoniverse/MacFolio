@@ -128,10 +128,10 @@ test.describe('메모 (블로그)', () => {
 	});
 
 	test('본문의 바깥 링크는 새 탭으로, 다른 글 링크는 메모 앱 안에서 그 글로', async ({ page }) => {
-		await enterDesktop(page, '/memo/r2-backup-setup');
+		await enterDesktop(page, '/memo/db-backup');
 		const memo = appWindow(page, 'memo');
 		const article = memo.getByRole('article');
-		await expect(article.getByRole('heading', { level: 1 })).toHaveText(/R2에 DB 백업 걸기/);
+		await expect(article.getByRole('heading', { level: 1 })).toHaveText('pg_dump와 R2로 하는 DB 백업과 복원 시험');
 
 		// 바깥 링크는 새 탭
 		const outside = article.getByRole('link', { name: 'healthchecks.io' }).first();
@@ -139,15 +139,15 @@ test.describe('메모 (블로그)', () => {
 		await expect(outside).toHaveAttribute('rel', /noopener/);
 
 		// 다른 글 링크: 새 탭 없이 같은 메모 앱에서 그 글이 열리고, 주소 막대도 그 글로
-		const inside = article.getByRole('link', { name: '백업 스크립트' });
-		await expect(inside).toHaveAttribute('href', '/memo/db-backup');
+		const inside = article.getByRole('link', { name: '되돌리기 훈련', exact: true });
+		await expect(inside).toHaveAttribute('href', '/memo/rollback-drill');
 		await expect(inside).not.toHaveAttribute('target', '_blank');
 		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
 		await inside.click();
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(
-			'pg_dump와 R2로 하는 DB 백업과 복원 시험'
+			'HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기'
 		);
-		await expect(page).toHaveURL(/\/memo\/db-backup$/);
+		await expect(page).toHaveURL(/\/memo\/rollback-drill$/);
 		expect(await popup).toBeNull();
 	});
 

@@ -127,7 +127,7 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 2. 삭제 전에 파일 이름으로 글을 검색해 참조 여부를 한 번 더 확인한다
 3. 삭제 후 관련 글을 열어 이미지가 깨지지 않았는지 확인한다
 
-삭제한 서버 파일은 복구할 수 없으므로, 삭제 전에 [R2 백업](/memo/r2-backup-setup)의 최근 실행 시각을 확인한다. 응답 모양은 [packages/contracts/src/files.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/files.ts), 시험은 [apps/api/test/files.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/files.e2e.test.ts).
+삭제한 서버 파일은 복구할 수 없으므로, 삭제 전에 [R2 백업](/memo/db-backup)의 최근 실행 시각을 확인한다. 응답 모양은 [packages/contracts/src/files.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/files.ts), 시험은 [apps/api/test/files.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/files.e2e.test.ts).
 
 참고 문서: [Prisma 문서](https://www.prisma.io/docs), [PostgreSQL 이진 데이터 타입(bytea)](https://www.postgresql.org/docs/current/datatype-binary.html), [MDN HTTP 409 Conflict](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409).
 
@@ -143,7 +143,7 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 - [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
-- [rclone과 UTC cron으로 R2에 DB 백업 걸기](/memo/r2-backup-setup)
+- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
 - [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
 
 [^bytea]: PostgreSQL의 이진 데이터 열 타입. 이 사이트는 별도 객체 저장소 없이 업로드 파일을 DB에 직접 저장한다.

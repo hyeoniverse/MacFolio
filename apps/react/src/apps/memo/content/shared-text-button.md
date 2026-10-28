@@ -125,7 +125,7 @@ summary: 여섯 곳에 각각 정의된 취소·보내기·삭제 버튼을 공�
 
 ![10월 1일과 10월 11일의 판단 비교](./images/shared-text-button-revisit.svg '같은 기준, 다른 수')
 
-`SearchField`는 `type="search"`가 여섯 곳으로 늘었고, 메모를 제외한 다섯 곳이 같은 모양이라 컴포넌트로 추출했다([#223](https://github.com/hyeoniverse/MacFolio/pull/223)). 나머지는 여전히 보류다. 이 글에서 만든 `Button`은 글을 쓴 시각에 앱 쪽 25개 파일이 사용했다. 직접 작성한 텍스트 버튼 30곳도 이후 이 컴포넌트로 교체했다([명시도 0인 :where() 규칙으로 개별 글자 버튼을 공통 Button으로 옮기기](/memo/text-button-migrate)).
+`SearchField`는 `type="search"`가 여섯 곳으로 늘었고, 메모를 제외한 다섯 곳이 같은 모양이라 컴포넌트로 추출했다([#223](https://github.com/hyeoniverse/MacFolio/pull/223)). 나머지는 여전히 보류다. 이 글에서 만든 `Button`은 글을 쓴 시각에 앱 쪽 25개 파일이 사용했다. 직접 작성한 텍스트 버튼 30곳도 이후 이 컴포넌트로 교체했다([계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)).
 
 ## 남은 것·배운 것
 
@@ -139,6 +139,6 @@ summary: 여섯 곳에 각각 정의된 취소·보내기·삭제 버튼을 공�
 - [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
 - [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)
-- [명시도 0인 :where() 규칙으로 개별 글자 버튼을 공통 Button으로 옮기기](/memo/text-button-migrate)
+- [계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
 
 #MacFolio #공통컴포넌트

@@ -174,7 +174,6 @@ docker compose up -d api
 ## 관련 글
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [자동 배포를 실제 서버에 걸기 - 막힌 곳 다섯](/memo/api-auto-deploy-setup)
 - [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
 - [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
 - [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)

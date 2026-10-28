@@ -123,7 +123,7 @@ variant={props.editing ? 'ios' : 'mac'}
 ## 관련 글
 
 - [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate): 버튼 모양을 variant로 선택하는 방식
-- [계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기](/memo/sheet-modal-migrate): 휴대폰 시트와 데스크톱 모달을 분리한 이유
+- [모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기](/memo/ui-modal): 휴대폰 시트와 데스크톱 모달을 분리한 이유
 - [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
 - [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 4단계 정리
 - PR: [#250](https://github.com/hyeoniverse/MacFolio/pull/250)
