@@ -1,5 +1,5 @@
 ---
-title: 휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출
+title: 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기
 date: 2026-10-12
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 휴대폰 시트 3곳(메일 쓰기·메일 동작·음악 지금 재생 중)의 오버레이·애니메이션·닫기·role을 Sheet로 추출하고 모양은 variant 세 개로 나눴다. 닫기 타이머를 제거했고, 전환 중 발견한 343px 스크롤 튐과 가로 40px 스크롤도 수정했다.
@@ -135,9 +135,9 @@ useEffect(() => {
 
 ## 관련 글
 
-- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal): 데스크톱 가운데 창을 Modal로 추출한 일
-- [shared/ui 부품과 직접 작성한 버튼 295곳 집계로 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
-- [계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사](/memo/sheet-modal-migrate): 앱마다 직접 만든 시트·모달을 옮긴 일
+- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal): 데스크톱 가운데 창을 Modal로 추출한 일
+- [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
+- [계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기](/memo/sheet-modal-migrate): 앱마다 직접 만든 시트·모달을 옮긴 일
 - PR: [#220](https://github.com/hyeoniverse/MacFolio/pull/220)
 
 [^1]: CSS 명세상 `overflow-x`와 `overflow-y` 중 하나가 `visible`이 아닌 값이면, 다른 축의 `visible`은 `auto`로 계산된다. [MDN: overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow)

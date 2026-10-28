@@ -193,7 +193,7 @@ iPhone Safari는 `playsinline` 속성이 없는 `<video>`를 재생하면 전체
 <video src="loop.mp4" autoplay muted loop playsinline></video>
 ```
 
-React의 `muted` prop은 HTML 속성으로 반영되지 않는 경우가 있어서 자동 재생이 차단될 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다. MacFolio의 배경화면 동영상(`apps/react/src/desktop/WallpaperVideo.tsx`)도 `element.muted = true`를 직접 지정한다([video 요소와 브라우저에서 만든 포스터로 MP4·GIF를 배경화면에 적용하기](/memo/video-wallpaper)).
+React의 `muted` prop은 HTML 속성으로 반영되지 않는 경우가 있어서 자동 재생이 차단될 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다. MacFolio의 배경화면 동영상(`apps/react/src/desktop/WallpaperVideo.tsx`)도 `element.muted = true`를 직접 지정한다([video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)).
 
 ### 서드 파티 쿠키와 교차 출처 요청
 
@@ -233,8 +233,8 @@ Safari의 ITP는 서드 파티 쿠키와 저장소를 다른 브라우저보다 
 
 - [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
 - [휴대폰 키보드 위에 서식 막대 띄우기 — visualViewport로 키보드 높이 재기](/memo/memo-keyboard-toolbar)
-- [video 요소와 브라우저에서 만든 포스터로 MP4·GIF를 배경화면에 적용하기](/memo/video-wallpaper)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
+- [video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 [^itp]: Intelligent Tracking Prevention. 사이트를 넘나드는 추적을 막기 위해 서드 파티 쿠키 차단, 스크립트로 저장한 데이터의 보관 기간 제한 등을 적용하는 Safari의 기능이다.
 

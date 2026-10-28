@@ -1,11 +1,11 @@
 ---
-title: 메뉴 막대의 배터리로 서버 자원과 방문 추이 보기
+title: Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리
 date: 2026-10-10
 category: 개발 기록/MacFolio/프론트엔드
 summary: 장식이던 메뉴 막대의 배터리 아이콘에 데이터를 연결했다. 관리자에게는 Always Free 서버의 유휴 회수 위험도를, 방문자에게는 최근 7일 방문 수의 직전 7일 대비 증감률을 표시한다. 충전량 계산, 직접 작성한 SVG, 특정 탭으로 앱 열기, 시험을 정리했다.
 ---
 
-메뉴 막대의 Wi-Fi 위치에는 이미 서버(API) 가동 여부가 표시된다([/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi)). 그 옆 배터리는 3/4이 채워진 고정 이미지였다. 서버 자원 감시 기능을 구현한 뒤([Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)) 이 배터리 아이콘에 데이터를 연결했다. 관리자에게는 서버 자원을, 방문자에게는 방문 추이를 표시한다. 사용률을 확인하려고 매번 '활동 상태 보기'를 여는 대신, 메뉴 막대만 보고 위험 여부를 판단할 수 있게 하는 것이 목적이었다.
+메뉴 막대의 Wi-Fi 위치에는 이미 서버(API) 가동 여부가 표시된다([/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)). 그 옆 배터리는 3/4이 채워진 고정 이미지였다. 서버 자원 감시 기능을 구현한 뒤([Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)) 이 배터리 아이콘에 데이터를 연결했다. 관리자에게는 서버 자원을, 방문자에게는 방문 추이를 표시한다. 사용률을 확인하려고 매번 '활동 상태 보기'를 여는 대신, 메뉴 막대만 보고 위험 여부를 판단할 수 있게 하는 것이 목적이었다.
 
 같은 날 커밋 세 개로 구현했다(서버 자원 배터리, macOS 형태 SVG, 방문자용 방문 추이). 모두 PR [#162](https://github.com/hyeoniverse/MacFolio/pull/162)로 병합됐다. 메뉴는 `src/desktop/status-bar/BatteryMenu.tsx`(132줄), 값 계산은 `src/apps/activity/useServerResources.ts`(88줄)와 `useVisitTrend.ts`(75줄), 그림은 `src/shared/server/ServerBattery.tsx`다.
 
@@ -91,7 +91,7 @@ macOS 배터리 메뉴처럼 짧은 항목으로 구성했다.
 
 ## 앱을 특정 탭으로 열기
 
-'활동 상태 보기'는 열 때마다 개요 탭으로 시작한다. 메뉴에서 서버 탭으로 바로 이동하려면 앱에 "이 탭으로 열어 달라"는 요청을 전달해야 했다. 주소로 앱 항목을 여는 방법(`/memo/<글>`)은 메모와 Safari에만 있고, 탭 하나를 선택하는 데 주소까지 변경할 필요는 없어서 작은 요청 저장소(`requestedTab`)를 추가했다. 메뉴가 탭 이름을 기록하고 앱을 열면, 앱이 그 값을 읽어 해당 탭으로 전환하고 값을 초기화한다. 앱이 이미 열려 있어도 저장소를 구독하고 있으므로 같은 방식으로 전환된다. '이 Mac에 관하여' 창이 시스템 설정을 여는 방식과 같다([Apple 메뉴의 '이 Mac에 관하여'를 앱이 아닌 시스템 창으로 구현하기](/memo/about-this-mac)).
+'활동 상태 보기'는 열 때마다 개요 탭으로 시작한다. 메뉴에서 서버 탭으로 바로 이동하려면 앱에 "이 탭으로 열어 달라"는 요청을 전달해야 했다. 주소로 앱 항목을 여는 방법(`/memo/<글>`)은 메모와 Safari에만 있고, 탭 하나를 선택하는 데 주소까지 변경할 필요는 없어서 작은 요청 저장소(`requestedTab`)를 추가했다. 메뉴가 탭 이름을 기록하고 앱을 열면, 앱이 그 값을 읽어 해당 탭으로 전환하고 값을 초기화한다. 앱이 이미 열려 있어도 저장소를 구독하고 있으므로 같은 방식으로 전환된다. '이 Mac에 관하여' 창이 시스템 설정을 여는 방식과 같다([앱 목록에 등록하지 않고 데스크톱이 직접 렌더링하는 시스템 창](/memo/about-this-mac)).
 
 ## 휴대폰
 
@@ -114,8 +114,8 @@ macOS 배터리 메뉴처럼 짧은 항목으로 구성했다.
 ## 관련 글
 
 - [Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)
-- [/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi)
-- [라이브러리 없는 SVG 그래프와 컨테이너 쿼리로 만든 '활동 상태 보기' 앱 (트래픽 분석 3)](/memo/analytics-activity-monitor)
-- [node:crypto로 SDK 없이 Oracle API 요청 서명을 만들어 요금과 예산 조회하기](/memo/oci-billing)
+- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)
+- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
 
 #MacFolio #프론트엔드 #메뉴막대 #서버 #방문분석

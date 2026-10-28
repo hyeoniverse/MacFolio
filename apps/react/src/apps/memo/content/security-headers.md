@@ -1,5 +1,5 @@
 ---
-title: 사이트에 CSP와 보안 헤더 붙이기
+title: CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
 summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더가 하나도 없었다. CSP 출처 목록을 직접 작성하지 않고 빌드 환경 변수와 PROJECTS에서 생성하고, E2E가 같은 CSP로 실행되어 차단된 요청이 있으면 실패하게 했다. 이후 출처가 네 차례 추가된 기록도 정리한다.
@@ -93,7 +93,7 @@ const directives: Record<string, string[]> = {
 
 그리고 Vite 플러그인이 빌드 시각에 `dist/_headers` 끝에 모든 경로(`/*`) 블록으로 추가한다. 주소는 출처(`https://host`)만 남기고, `http(s)`가 아닌 값은 제외한다. `_headers` 파일 형식은 [Cloudflare Workers 정적 자산 헤더 문서](https://developers.cloudflare.com/workers/static-assets/headers/)를 따른다.
 
-`/memo/<글>` 같은 앱 주소는 파일이 아니라 Worker가 `index.html`을 대신 응답한다([Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404)). 이 응답에도 헤더가 붙는지 `wrangler dev`로 확인했다. Worker가 정적 자산 바인딩에서 수신한 응답의 헤더를 그대로 전달하므로 같은 헤더가 붙는다.
+`/memo/<글>` 같은 앱 주소는 파일이 아니라 Worker가 `index.html`을 대신 응답한다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)). 이 응답에도 헤더가 붙는지 `wrangler dev`로 확인했다. Worker가 정적 자산 바인딩에서 수신한 응답의 헤더를 그대로 전달하므로 같은 헤더가 붙는다.
 
 ![PROJECTS와 API 주소에서 CSP를 만들어 빌드와 E2E 서버에 같이 붙이는 흐름](./images/security-headers-build.svg '배포와 E2E가 같은 CSP를 쓰니, 빠뜨린 출처는 시험에서 먼저 드러난다')
 
@@ -184,9 +184,9 @@ curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|s
 
 ## 관련 글
 
-- [iframe sandbox에서 allow-top-navigation을 빼 내장 사이트의 최상위 창 이동 막기](/memo/iframe-sandbox)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
-- [Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404)
+- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
 - [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 PR: [#156](https://github.com/hyeoniverse/MacFolio/pull/156)

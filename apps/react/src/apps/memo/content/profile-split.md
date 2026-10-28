@@ -1,5 +1,5 @@
 ---
-title: index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기
+title: index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기
 date: 2026-10-11
 category: 개발 기록/MacFolio/설계
 summary: 프로필·기술·타입·프로젝트 7개가 담긴 1,629줄짜리 shared/profile.ts를 profile/ 폴더로 분리하고 프로젝트마다 파일 하나를 배치했다. index.ts가 재내보내기(re-export)하므로 외부 27곳의 import는 그대로였고, 내용은 한 글자도 변경하지 않았다.
@@ -80,7 +80,7 @@ Vitest 336개는 이 커밋 시각 기준 단위 시험 수다. 커밋 하나(`8
 ![현재 파일별 줄 수](./images/profile-split-sizes.svg '가장 큰 파일은 여전히 hyeoniverse.ts다')
 
 - `types.ts`는 174줄에서 14줄이 되었다. 프로젝트 타입과 검사 로직을 서버와 공유하려고 `packages/desktop-core/src/site`로 옮기고, 이 파일은 재내보내기만 한다. 경로가 하나로 모여 있었으므로 이 이동도 외부 import 수정 없이 진행했다.
-- 이후 프로젝트는 시스템 설정에서 수정·저장할 수 있게 되었다([서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가](/memo/site-projects-editing)). 저장하면 `PROJECTS`를 다시 채워 Safari·Finder에 즉시 반영한다.
+- 이후 프로젝트는 시스템 설정에서 수정·저장할 수 있게 되었다([코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)). 저장하면 `PROJECTS`를 다시 채워 Safari·Finder에 즉시 반영한다.
 - `'@/shared/profile'`을 가져오는 파일은 현재 48개로 늘었다. 경로는 여전히 하나다.
 
 ## 남은 과제와 정리
@@ -100,17 +100,17 @@ pnpm test
 pnpm cycles        # madge로 순환 import가 없는지
 ```
 
-`pnpm cycles`는 루트 [package.json](https://github.com/hyeoniverse/MacFolio/blob/main/package.json)의 스크립트다([madge로 찾은 순환 import를 셋째 파일과 manifest로 끊고 pnpm cycles로 CI에서 막기](/memo/break-import-cycles) 참고). 기존 파일 위치에 `index.ts`를 두고 재내보내기만 했으므로 외부 import는 수정할 필요가 없다. 되돌릴 때도 폴더를 삭제하고 한 파일로 합치면 된다.
+`pnpm cycles`는 루트 [package.json](https://github.com/hyeoniverse/MacFolio/blob/main/package.json)의 스크립트다([madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles) 참고). 기존 파일 위치에 `index.ts`를 두고 재내보내기만 했으므로 외부 import는 수정할 필요가 없다. 되돌릴 때도 폴더를 삭제하고 한 파일로 합치면 된다.
 
 참고 문서: [madge](https://github.com/pahen/madge), [TypeScript 모듈 해석](https://www.typescriptlang.org/docs/handbook/modules/reference.html).
 
 ## 관련 글
 
-- [if문 검증 parseProfile을 zod 스키마로 옮겨 contracts에 두기 (리팩터링 1단계 마무리)](/memo/contracts-site)
-- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [PROJECTS 한 곳에서 읽는 프로젝트 목록과 프로젝트마다 다른 Safari 페이지 레이아웃](/memo/projects-one-list)
-- [데모별 모듈과 공유 모듈로 1,861줄 HYEONIVERSE 데모 파일 분리하기](/memo/split-creative-demos)
-- [서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가](/memo/site-projects-editing)
+- [리팩터링 1단계 마무리 - parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [PROJECTS 단일 원본으로 GitHub 스냅샷과 프로젝트 목록 합치기](/memo/projects-one-list)
+- [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos)
+- [코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)
 
 [^resolution]: 디렉터리를 가리키는 import는 그 디렉터리의 `index.ts`(또는 `index.js`)로 해석된다. Vite와 TypeScript의 `bundler` 모듈 해석이 이 규칙을 따른다. [TypeScript 문서: Module resolution](https://www.typescriptlang.org/docs/handbook/modules/reference.html#directory-modules-index-file-resolution)
 

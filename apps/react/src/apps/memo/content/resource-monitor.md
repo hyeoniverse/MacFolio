@@ -25,7 +25,7 @@ API 서버는 Oracle Cloud의 Always Free 인스턴스(E2.1.Micro, 1GB)에서 �
 | node-exporter + Prometheus 도입                | 그래프와 알림 기능이 이미 갖춰져 있다        | RAM 1GB 서버에 컨테이너가 2개 추가되고, 조회 화면이 사이트 밖에 생긴다                  |
 | API 컨테이너 안에서 `/proc`를 직접 읽기 (선택) | 새 키·새 컨테이너가 없다. 사이트 안에서 조회 | Oracle 측정값과 같다는 보장이 없다. 그래서 위험을 일찍 알리는 방향으로 계산한다         |
 
-Oracle API는 이후 종량제 요금과 예산을 표시하는 기능에서 도입했다. 요청 서명을 직접 구현한 과정은 [node:crypto로 SDK 없이 Oracle API 요청 서명을 만들어 요금과 예산 조회하기](/memo/oci-billing)에 정리했다. 사용률 측정에는 `/proc`로 충분했다.
+Oracle API는 이후 종량제 요금과 예산을 표시하는 기능에서 도입했다. 요청 서명을 직접 구현한 과정은 [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)에 정리했다. 사용률 측정에는 `/proc`로 충분했다.
 
 ## 측정 항목
 
@@ -122,7 +122,7 @@ RESOURCE_MONITOR=payg   # 종량제: 측정하고 표시만 한다
 
 '활동 상태 보기'에 관리자 전용 **서버** 탭을 추가했다. 요금제와 shape, 회수 위험, 알림 메일 상태, 기준별 현재 값, 최근 7일 CPU·메모리·네트워크 그래프를 표시한다. 그래프에는 회수 기준(20%)을 점선으로 표시해, 선이 그 아래에 머물러 있으면 위험 상태임을 바로 알 수 있게 했다.
 
-메뉴 막대의 배터리 아이콘도 이 값을 사용한다. 관리자에게는 회수 기준에서 멀수록 배터리가 차오르고, 클릭하면 사용률·위험 단계와 서버 탭 바로가기가 표시된다([메뉴 막대의 배터리로 서버 자원과 방문 추이 보기](/memo/battery-server-resources)).
+메뉴 막대의 배터리 아이콘도 이 값을 사용한다. 관리자에게는 회수 기준에서 멀수록 배터리가 차오르고, 클릭하면 사용률·위험 단계와 서버 탭 바로가기가 표시된다([Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)).
 
 ## 그래프를 그리다 찾은 버그
 
@@ -194,9 +194,9 @@ cd ~/deploy && docker compose up -d api
 
 ## 관련 글
 
-- [GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)
-- [node:crypto로 SDK 없이 Oracle API 요청 서명을 만들어 요금과 예산 조회하기](/memo/oci-billing)
-- [메뉴 막대의 배터리로 서버 자원과 방문 추이 보기](/memo/battery-server-resources)
+- [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
+- [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
+- [Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
 
 [^proc]: Linux 커널이 프로세스·CPU·메모리·네트워크 상태를 파일 형태로 노출하는 가상 파일 시스템. 읽을 때마다 커널이 현재 값을 생성한다.
 

@@ -169,9 +169,9 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 
 ## 이후 이 주소를 사용한 기능
 
-- **방문 분석**: 앱마다 "현재 표시 중인 항목"을 알리는 `appAddresses` 저장소를 분석 모듈이 그대로 구독해, 어느 글을 조회했는지(`item` 이벤트)를 별도 구현 없이 집계했다([sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)).
-- **존재하지 않는 파일과 앱 주소 구분**: 나흘 뒤, 위의 `single-page-application` 설정이 존재하지 않는 코드 파일 요청에도 `index.html`을 응답한다는 것을 발견했다. 존재하지 않는 주소만 처리하는 작은 Worker를 두어 앱 주소는 첫 화면, 확장자가 있는 주소는 404로 구분했다([Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404)). 앱 주소를 "마지막 경로 조각에 점이 없는 주소"로 정의할 수 있었던 것은, 글 주소와 프로젝트 id에 점을 사용하지 않았기 때문이다.
-- **글마다 다른 공유 미리 보기**: 이 글을 작성한 시각에는 카카오톡이나 Slack에 링크를 붙이면 표시되는 **미리 보기(제목·설명·이미지)**가 사이트 전체에 대해 하나였다. 미리 보기는 링크를 수신한 서버가 HTML의 `<meta property="og:…">`를 읽어 생성하는데, 모든 경로에 같은 `index.html`이 응답되고 글은 JavaScript가 실행된 뒤에야 결정되기 때문이다. 이후 Worker가 주소마다 글의 제목·요약·Open Graph 태그를 HTML에 삽입하도록 구현했다([Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable), [#269](https://github.com/hyeoniverse/MacFolio/pull/269)).
+- **방문 분석**: 앱마다 "현재 표시 중인 항목"을 알리는 `appAddresses` 저장소를 분석 모듈이 그대로 구독해, 어느 글을 조회했는지(`item` 이벤트)를 별도 구현 없이 집계했다([트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)).
+- **존재하지 않는 파일과 앱 주소 구분**: 나흘 뒤, 위의 `single-page-application` 설정이 존재하지 않는 코드 파일 요청에도 `index.html`을 응답한다는 것을 발견했다. 존재하지 않는 주소만 처리하는 작은 Worker를 두어 앱 주소는 첫 화면, 확장자가 있는 주소는 404로 구분했다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)). 앱 주소를 "마지막 경로 조각에 점이 없는 주소"로 정의할 수 있었던 것은, 글 주소와 프로젝트 id에 점을 사용하지 않았기 때문이다.
+- **글마다 다른 공유 미리 보기**: 이 글을 작성한 시각에는 카카오톡이나 Slack에 링크를 붙이면 표시되는 **미리 보기(제목·설명·이미지)**가 사이트 전체에 대해 하나였다. 미리 보기는 링크를 수신한 서버가 HTML의 `<meta property="og:…">`를 읽어 생성하는데, 모든 경로에 같은 `index.html`이 응답되고 글은 JavaScript가 실행된 뒤에야 결정되기 때문이다. 이후 Worker가 주소마다 글의 제목·요약·Open Graph 태그를 HTML에 삽입하도록 구현했다([Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable), [#269](https://github.com/hyeoniverse/MacFolio/pull/269)).
 
 ## 정리
 
@@ -179,10 +179,10 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 
 ## 관련 글
 
-- [Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404)
-- [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)
-- [사이트 데이터를 폴더로 구성한 Finder 앱과 다른 앱에 보내는 열기 요청 store](/memo/finder-app)
-- [코드에서 생성한 openapi.json을 Scalar로 렌더링하는 API 문서 앱](/memo/api-docs-app)
-- [Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable)
+- [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
+- [Vite 두 번째 진입점과 iframe으로 Scalar API 문서 격리하기](/memo/api-docs-app)
+- [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable)
 
 #MacFolio #데스크톱 #공유링크

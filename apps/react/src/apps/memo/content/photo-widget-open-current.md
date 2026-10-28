@@ -1,5 +1,5 @@
 ---
-title: openRequest로 사진 위젯이 표시 중인 사진을 사진 앱에서 크게 보기로 열기
+title: openRequest로 위젯이 표시 중인 사진을 사진 앱 크게 보기로 넘기기
 date: 2026-10-23
 category: 개발 기록/MacFolio/프론트엔드
 summary: 사진 위젯을 누르면 사진 앱이 보관함으로 열렸다. 이제 위젯에 표시 중인 사진이 그 앨범 안에서 크게 보기로 열린다. 위젯의 앨범 id와 사진 앱의 앨범 id 맞추기, 비동기로 생기는 앨범을 기다리는 요청, 한 앱 안 두 화면의 요청 수신, 홈 화면 편집 중에 남던 요청까지 적었다.
@@ -103,6 +103,6 @@ open(app);
 
 ## 관련 글
 
-- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets): 위젯 공통 부품, 사진 위젯의 앨범 선택과 그림 폴더
-- [사이트 데이터를 폴더로 구성한 Finder 앱과 다른 앱에 보내는 열기 요청 store](/memo/finder-app): `requestOpen`·`useOpenRequest` 구조
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 위젯 공통 부품, 사진 위젯의 앨범 선택과 그림 폴더
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): `requestOpen`·`useOpenRequest` 구조
 - [사진 앱](/memo/photos-app): 프로젝트 앨범과 크게 보기

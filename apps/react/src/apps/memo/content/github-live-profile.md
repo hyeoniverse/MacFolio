@@ -1,5 +1,5 @@
 ---
-title: GitHub API 응답 서버 캐시와 rehype-sanitize로 그리는 GitHub 앱 프로필·README
+title: API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기
 date: 2026-10-02
 category: 개발 기록/MacFolio/프론트엔드
 summary: 코드에 직접 입력하던 GitHub 앱의 프로필·README·고정 저장소를, API 서버가 GitHub에서 조회해 30분(토큰이 있으면 10분) 캐시한 뒤 응답하게 했다. README는 sanitize 후 렌더링하고 배지는 Contact 버튼으로 바꾸며, 표시할 저장소는 시스템 설정에서 선택한다.
@@ -125,9 +125,9 @@ CREATE TABLE "GithubShowcase" (
 
 ## 관련 글
 
-- [github.com HTML 파싱과 공개 이벤트로 GitHub 앱에 잔디와 활동 기록 더하기](/memo/github-activity)
-- [grid-auto-rows 1fr와 line-clamp, margin-top auto로 고정 저장소 카드 높이 맞추기](/memo/github-pinned-card-size)
+- [토큰 없이 github.com HTML 조각을 서버에서 파싱하는 기여 달력](/memo/github-activity)
+- [grid-auto-rows 1fr와 line-clamp, margin-top auto로 카드 높이 맞추기](/memo/github-pinned-card-size)
 - [폴더 순서를 손잡이로 바꾸기 - 저장은 경로 목록 하나로](/memo/memo-folder-order): ≡ 손잡이 UI
-- [GitHub OAuth와 해시로 저장하는 DB 세션으로 단일 관리자 로그인 구현하기](/memo/admin-login-github-oauth): `ADMIN_GITHUB_ID`를 쓰는 관리자 인증
+- [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth): `ADMIN_GITHUB_ID`를 쓰는 관리자 인증
 
 #MacFolio #GitHub #시스템설정

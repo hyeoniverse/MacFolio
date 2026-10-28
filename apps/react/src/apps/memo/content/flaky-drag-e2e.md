@@ -112,7 +112,7 @@ await page.mouse.move(target.x + 41, target.y + 3);
 
 ## CI 시간 초과로 인한 취소
 
-같은 수정을 다른 PR에 적용했다. 이번엔 실패가 아니라 **취소(cancelled)**가 떴다. CI 상태가 실패가 아니라 취소로 표시되었다는 뜻이다. 원인은 시험이 아니라 실행 시간이었다. CI 제한 시간이 15분인데 실행마다 13~15분이 걸렸다. 그중 Playwright용 시스템 패키지(글꼴, 그래픽 라이브러리) 설치에만 약 4분이 걸려, 러너가 느린 날에는 제한을 넘었다. 제한 시간을 25분으로 늘리고, 그 값의 근거를 설정 파일 주석에 기록했다([#48](https://github.com/hyeoniverse/MacFolio/pull/48)에 포함). 이후 시험이 510개로 늘자 25분에도 도달하기 시작해, 화면 E2E를 별도 작업으로 분리하고 샤드로 나눠 병렬 실행했다. 그 과정은 [Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci)에 있다.
+같은 수정을 다른 PR에 적용했다. 이번엔 실패가 아니라 **취소(cancelled)**가 떴다. CI 상태가 실패가 아니라 취소로 표시되었다는 뜻이다. 원인은 시험이 아니라 실행 시간이었다. CI 제한 시간이 15분인데 실행마다 13~15분이 걸렸다. 그중 Playwright용 시스템 패키지(글꼴, 그래픽 라이브러리) 설치에만 약 4분이 걸려, 러너가 느린 날에는 제한을 넘었다. 제한 시간을 25분으로 늘리고, 그 값의 근거를 설정 파일 주석에 기록했다([#48](https://github.com/hyeoniverse/MacFolio/pull/48)에 포함). 이후 시험이 510개로 늘자 25분에도 도달하기 시작해, 화면 E2E를 별도 작업으로 분리하고 샤드로 나눠 병렬 실행했다. 그 과정은 [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)에 있다.
 
 ## 정리
 
@@ -137,9 +137,9 @@ npx playwright show-trace test-results/…/trace.zip          # 이벤트·화�
 
 ## 관련 글
 
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [Playwright와 E2E 가짜 API로 블로그 스크린샷 찍기](/memo/screenshots-with-playwright)
-- [Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
 - [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
 - [가끔 실패하는 시험이 찾아 준 버그 - 아직 없는 편집기로 옮긴 초점](/memo/lazy-editor-focus)
 

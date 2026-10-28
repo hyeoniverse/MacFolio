@@ -1,5 +1,5 @@
 ---
-title: 본문 ## 제목으로 만드는 목차와 URL fragment #float-right로 이미지 띄우기
+title: React 커밋의 ref 연결 순서를 고려해 본문 h2로 목차 만들기
 date: 2026-10-27
 category: 개발 기록/MacFolio/프론트엔드
 summary: 긴 글을 훑어볼 수 있게 제목 아래 목차와 스크롤하면 뜨는 목차 버튼을 더했다. 이미지는 주소 끝의 #left·#right·#float-left·#float-right로 정렬하고 글을 옆으로 흐르게 한다. 표기를 고른 이유, 목차가 비어 있던 ref 순서 문제, 휴대폰 처리를 적었다.
@@ -28,7 +28,7 @@ summary: 긴 글을 훑어볼 수 있게 제목 아래 목차와 스크롤하면
 | 제목 아래 목차    | 늘 (휴대폰은 접힌 채 시작)                        | 왼쪽 노란 막대와 굵은 글자 (`aria-current="location"`) |
 | 떠 있는 목차 버튼 | 제목 아래 목차가 화면 위로 지나간 뒤, 넓은 화면만 | 메뉴 항목의 체크 표시                                  |
 
-- **본문 폭을 바꾸지 않는다:** 넓은 창에서 본문 옆에 목차 칸을 따로 두는 방법도 있었다. 하지만 그러면 본문 폭이 좁아져 편집 화면과 줄이 다르게 나뉜다. 편집 화면과 읽기 화면의 블록이 같은 자리에 놓이는지 확인하는 시험([Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기](/memo/memo-editor-toggle-footnote))이 있을 만큼 두 화면을 맞춰 왔기 때문에, 본문 폭은 그대로 두었다. 떠 있는 버튼은 높이 0인 줄에 `position: sticky`로 붙여 본문을 밀지 않는다.
+- **본문 폭을 바꾸지 않는다:** 넓은 창에서 본문 옆에 목차 칸을 따로 두는 방법도 있었다. 하지만 그러면 본문 폭이 좁아져 편집 화면과 줄이 다르게 나뉜다. 편집 화면과 읽기 화면의 블록이 같은 자리에 놓이는지 확인하는 시험([Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote))이 있을 만큼 두 화면을 맞춰 왔기 때문에, 본문 폭은 그대로 두었다. 떠 있는 버튼은 높이 0인 줄에 `position: sticky`로 붙여 본문을 밀지 않는다.
 - **휴대폰:** 휴대폰 읽기 화면은 오른쪽 위에 공유·••• 버튼이 떠 있다. 목차 버튼이 그 위에 겹치므로 휴대폰에서는 떠 있는 버튼을 쓰지 않고, 제목 아래 목차를 접은 채 시작한다.
 - **기준 3개:** 제목이 두 개 이하인 글은 한 화면 안에서 훑어볼 수 있어 목차가 본문보다 길어 보인다. 저장소 글은 모두 4개 이상이라, 이 기준은 관리자가 사이트에서 쓴 짧은 글에 쓰인다. 글마다 목차를 끄는 머리말 옵션은 아직 필요한 글이 없어 만들지 않았다.
 - **접기 블록 안의 제목은 뺀다:** 본문의 맨 위 단계 제목(`:scope > h2, :scope > h3`)만 읽는다. 접힌 블록 안의 제목으로 스크롤하면 보이지 않는 곳으로 가기 때문이다.
@@ -101,7 +101,7 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 | 목록·인용                                  | `display: flow-root`. 띄운 이미지 옆의 남은 폭 안에 그려 글머리 기호가 이미지에 겹치지 않는다                                                                                                     |
 | 본문 끝                                    | `::after`에서 `clear: both`. 짧은 글에서 띄운 이미지가 글 아래(좋아요·댓글)로 넘치지 않는다                                                                                                       |
 
-규칙은 읽기 화면(`.memo-markdown`)과 편집 화면(`.memo-inline-editor .ProseMirror`)에 함께 건다. 두 화면이 같은 자리에 같은 모양으로 놓여야 한다는 원칙([Markdown 본문 규칙을 styles/prose.css와 --prose-* 변수로 합치기](/memo/markdown-prose-css))을 따랐다.
+규칙은 읽기 화면(`.memo-markdown`)과 편집 화면(`.memo-inline-editor .ProseMirror`)에 함께 건다. 두 화면이 같은 자리에 같은 모양으로 놓여야 한다는 원칙([Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기](/memo/markdown-prose-css))을 따랐다.
 
 ![휴대폰에서 목차와 띄운 이미지](./images/memo-toc-image-layout-phone.jpg '휴대폰(390px). 목차는 접힌 채 시작하고, 띄운 이미지는 띄우지 않고 본문 폭으로 보인다')
 
@@ -216,9 +216,9 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 ## 관련 글
 
-- [Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기](/memo/memo-editor-toggle-footnote): 편집·읽기 화면이 같은 자리에 블록을 놓는지 확인하는 시험
-- [Markdown 본문 규칙을 styles/prose.css와 --prose-* 변수로 합치기](/memo/markdown-prose-css): 읽기·편집 화면이 함께 쓰는 본문 스타일
-- [iOS 메모처럼 플로팅 버튼과 가로 스크롤 표로 바꾼 휴대폰 메모 화면](/memo/memo-mobile): 한 칸 보기(`data-compact`) 규칙
+- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 편집·읽기 화면이 같은 자리에 블록을 놓는지 확인하는 시험
+- [Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기](/memo/markdown-prose-css): 읽기·편집 화면이 함께 쓰는 본문 스타일
+- [컴포넌트는 공유하고 휴대폰에서만 플로팅 막대를 쓰는 iOS 메모 화면](/memo/memo-mobile): 한 칸 보기(`data-compact`) 규칙
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): 주소의 #를 바꾸지 않는 이유
 
 #MacFolio #메모앱 #React #CSS

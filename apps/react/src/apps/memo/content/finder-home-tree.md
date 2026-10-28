@@ -1,5 +1,5 @@
 ---
-title: 가상본을 별도 종류로 분리하고 Macintosh HD 아래 한 트리로 묶은 Finder 파일 시스템
+title: 가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리
 date: 2026-10-20
 category: 개발 기록/MacFolio/프론트엔드
 summary: 미리보기 열기 창에서 바탕화면의 포트폴리오를 열면 비어 있었다. 한 줄로 수정할 수 있었지만, 근본 원인은 가상본을 빈 폴더로 표현한 구조였다. 가상본을 별도 종류로 분리하고, 서로 독립된 최상위 위치들을 macOS처럼 Macintosh HD 아래 한 트리로 통합한 과정을 정리했다.
@@ -162,6 +162,6 @@ macOS의 기본 폴더는 앞면에 음각 문양이 있다. 다운로드는 화
 
 ## 관련 글
 
-- [서버 /finder/layout에 저장하는 Finder 파일 시스템과 메모 폴더 동기화](/memo/finder-filesystem): 가상본과 FinderLayout을 처음 도입한 작업
-- [Cloudflare R2와 같은 출처 Worker로 Finder의 PDF·그림을 미리보기 앱에서 열기](/memo/finder-files): 버그가 발생한 미리보기 열기 창
-- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets): 이후 홈 › 그림 폴더를 업로드 가능하게 바꾼 작업
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 가상본과 FinderLayout을 처음 도입한 작업
+- [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files): 버그가 발생한 미리보기 열기 창
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 이후 홈 › 그림 폴더를 업로드 가능하게 바꾼 작업

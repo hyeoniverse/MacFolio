@@ -1,11 +1,11 @@
 ---
-title: UTM 출처·매체·캠페인 조합 표와 링크 생성기 (트래픽 분석 5)
+title: 트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석
 date: 2026-10-18
 category: 개발 기록/MacFolio/백엔드
 summary: 어느 곳에 게시한 링크로 방문했는지 확인하려고 UTM 집계를 보강했다. 매체 표, 출처·매체·캠페인 조합 표와 일별 추이, term·content 열, 링크 생성기를 추가했고, 조합 키 구분자를 두 번 수정해 ' / '로 정했다.
 ---
 
-이력서, LinkedIn, 커뮤니티 글, 메일에 사이트 링크를 게시한다. 어느 곳에 게시한 링크로 방문했는지 확인하고 싶었다. [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)부터 사이트는 첫 주소의 `utm_source`·`utm_medium`·`utm_campaign`을 읽어 전송했지만, 분석 앱에는 캠페인 표와 출처 표 두 개뿐이었다. 남은 문제는 세 가지였다.
+이력서, LinkedIn, 커뮤니티 글, 메일에 사이트 링크를 게시한다. 어느 곳에 게시한 링크로 방문했는지 확인하고 싶었다. [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)부터 사이트는 첫 주소의 `utm_source`·`utm_medium`·`utm_campaign`을 읽어 전송했지만, 분석 앱에는 캠페인 표와 출처 표 두 개뿐이었다. 남은 문제는 세 가지였다.
 
 1. 매체(`medium`)는 저장만 하고 집계하지 않았다.
 2. 출처·매체·캠페인 세 값을 조합해서 조회할 수 없었다.
@@ -86,7 +86,7 @@ export const utmKey = (source?: string | null, medium?: string | null, campaign?
 2. 사이트의 `utmOf()`가 첫 주소를 읽을 때
 3. 서버의 `EventInput` 스키마가 이벤트를 수신할 때
 
-생성기에 `LinkedIn`을 입력하든, 주소에 `utm_source=LinkedIn`을 직접 붙이든 표에는 `linkedin` 한 행으로 집계된다. 이벤트 스키마 전체는 [contracts의 zod 스키마로 분석 이벤트의 전송 형식·서버 검증·조회 응답 통합하기](/memo/contracts-analytics)에서 다룬다.
+생성기에 `LinkedIn`을 입력하든, 주소에 `utm_source=LinkedIn`을 직접 붙이든 표에는 `linkedin` 한 행으로 집계된다. 이벤트 스키마 전체는 [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)에서 다룬다.
 
 ![링크 생성기와 사이트가 cleanUtm으로 값을 다듬고, 서버가 같은 함수로 받아 DailyStat에 조합 키로 저장한다](./images/utm-analytics-flow.svg '보내는 쪽과 받는 쪽이 같은 cleanUtm을 쓴다')
 
@@ -170,11 +170,11 @@ if (kept.length === parts.length) return null;
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API (트래픽 분석 1)](/memo/analytics-api)
-- [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)
-- [라이브러리 없는 SVG 그래프와 컨테이너 쿼리로 만든 '활동 상태 보기' 앱 (트래픽 분석 3)](/memo/analytics-activity-monitor)
-- [서버가 세션을 확인해 방문자와 관리자에게 범위를 나누는 분석 요약 응답 (트래픽 분석 4)](/memo/analytics-public)
-- [contracts의 zod 스키마로 분석 이벤트의 전송 형식·서버 검증·조회 응답 통합하기](/memo/contracts-analytics)
+- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
+- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
 
 PR: [#253](https://github.com/hyeoniverse/MacFolio/pull/253) · 이슈: [#211](https://github.com/hyeoniverse/MacFolio/issues/211)
 

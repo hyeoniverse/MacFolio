@@ -159,10 +159,10 @@ PR 하나에서 70개 파일, 1,656줄을 추가하고 1,576줄을 삭제했다.
 
 ## 관련 글
 
-- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기 (리팩터링 5단계)](/memo/refactor-step5-styles)
-- [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers)
-- [border-radius 239곳을 --radius-xs~full 여섯 디자인 토큰으로 바꾸기](/memo/radius-tokens)
-- [반복된 hex 288곳을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
-- [Apple HIG 글자 스타일 이름으로 font-size 645곳을 여덟 디자인 토큰으로 바꾸기](/memo/font-size-tokens)
+- [리팩터링 5단계 - CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
+- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
 
 #MacFolio #CSS #리팩터링

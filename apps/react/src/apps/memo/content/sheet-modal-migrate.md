@@ -1,5 +1,5 @@
 ---
-title: 계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사
+title: 계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기
 date: 2026-10-18
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱마다 별도로 구현한 시트와 모달을 다시 조사했다. 공통 Modal과 의미가 같은 것은 메모의 이미지 크게 보기 하나라 계산된 스타일과 화면이 같은 것을 확인하고 교체했고, Esc 처리·구조가 다른 나머지는 유지했다.
@@ -131,9 +131,9 @@ E2E를 실행하며 이미지 크게 보기를 연 상태에서 오버레이와 
 
 ## 관련 글
 
-- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal)
-- [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
-- [명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기](/memo/text-button-migrate)
-- [아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체하기 (리팩터링 4단계)](/memo/refactor-step4-components)
+- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal)
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
+- [명시도 0인 :where() 규칙으로 개별 글자 버튼을 공통 Button으로 옮기기](/memo/text-button-migrate)
+- [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components)
 
 #MacFolio #React #CSS #리팩터링

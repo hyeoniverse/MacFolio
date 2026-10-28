@@ -1,5 +1,5 @@
 ---
-title: node:crypto로 SDK 없이 Oracle API 요청 서명을 만들어 요금과 예산 조회하기
+title: node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/배포·운영
 summary: 종량제 Oracle 계정의 이번 달 요금과 예산을 서버 탭에 표시하고 80%·100%에서 메일로 알리게 했다. 요청 서명은 SDK 없이 node:crypto로 직접 생성하고, 실제 키 없이 Oracle 문서의 시험 값과 문자 단위로 비교해 검증했다.
@@ -186,7 +186,7 @@ docker compose logs --tail 50 api            # 서명 오류가 없는지
 ## 관련 글
 
 - [무료 서버가 회수되기 전에 - 사용률을 측정하고 위험하면 메일로](/memo/resource-monitor)
-- [메뉴 막대의 배터리로 서버 자원과 방문 추이 보기](/memo/battery-server-resources)
+- [Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 
 [^httpsig]: Oracle API는 IETF 초안 "HTTP Signatures"(draft-cavage-http-signatures)의 방식을 사용한다. 지정한 헤더 값을 정해진 순서로 이어 붙인 문자열에 개인 키로 서명하고, 서버는 등록된 공개 키로 같은 문자열을 재구성해 검증한다. 본문이나 헤더가 전송 중에 바뀌면 검증에 실패한다.

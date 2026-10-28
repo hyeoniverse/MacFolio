@@ -1,5 +1,5 @@
 ---
-title: 올린 파일 규칙을 contracts 공유 규칙과 서버 전용 검사로 나누기
+title: 화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
 summary: 서버 files/rules.ts에 섞여 있던 규칙을 "화면도 알아야 하는가"를 기준으로 나눴다. 10MB 한도·주소 형식·이미지 형식·응답 타입은 contracts로 옮기고, 매직 바이트·EXIF·파일 이름 정리는 서버에 남겼다. 같은 값이 두 번 정의되던 세 곳을 한 곳으로 통합했다.
@@ -172,11 +172,11 @@ pnpm --filter @macfolio/api test -- src/files/rules.test.ts
 ## 관련 글
 
 - [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [배경화면 이름 한도와 정리 함수를 contracts로 옮겨 세 곳의 정의 통합하기](/memo/contracts-wallpapers)
+- [DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기](/memo/contracts-wallpapers)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
 - [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
 - [참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기](/memo/server-files-cleanup)
-- [if문 검증 parseProfile을 zod 스키마로 옮겨 contracts에 두기 (리팩터링 1단계 마무리)](/memo/contracts-site)
+- [리팩터링 1단계 마무리 - parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
 
 [^magic]: 파일 형식마다 정해진 파일 앞부분의 고정 바이트열(매직 넘버, 파일 시그니처). 확장자나 브라우저가 보낸 MIME 타입과 달리 파일 내용 자체에서 읽으므로 이름을 바꿔도 달라지지 않는다.
 

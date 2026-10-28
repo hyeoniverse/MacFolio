@@ -5,7 +5,7 @@ category: 개발 기록/MacFolio/백엔드
 summary: API가 helmet 기본값으로 모든 응답에 CORP same-origin을 붙이고 있었다. 사이트와 API는 출처가 달라 Safari가 no-cors 요청인 sendBeacon의 응답을 취소했다. CORS와 CORP의 차이를 정리하고, 분석 이벤트 경로 하나만 cross-origin으로 지정했다.
 ---
 
-맥 Safari에서 사이트를 열어 두면 개발자 도구 콘솔에 같은 에러가 5초마다 세 줄씩 추가됐다. 5초는 분석 이벤트 전송 주기(`FLUSH_MS = 5000`)와 같다([sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)).
+맥 Safari에서 사이트를 열어 두면 개발자 도구 콘솔에 같은 에러가 5초마다 세 줄씩 추가됐다. 5초는 분석 이벤트 전송 주기(`FLUSH_MS = 5000`)와 같다([트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)).
 
 ```text
 [Error] Cancelled load to https://macfolio-api.hyeoniverse.com/analytics/events because it violates the resource's Cross-Origin-Resource-Policy response header.
@@ -25,7 +25,7 @@ app.use(helmet());
 
 helmet 기본값에는 [`Cross-Origin-Resource-Policy: same-origin`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Resource-Policy)이 포함되어, **모든 응답**에 이 헤더가 붙는다. 사이트(`macfolio.hyeoniverse.com`)와 API(`macfolio-api.hyeoniverse.com`)는 등록 가능한 도메인이 같아 같은 사이트(same-site)이지만, 호스트가 달라 다른 출처(cross-origin)다. `same-origin`은 출처가 정확히 같아야 하므로 사이트가 받은 API 응답은 이 조건을 만족하지 못한다.
 
-분석 이벤트는 [`navigator.sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)으로 문자열 본문을 전송한다. 본문 형식이 `text/plain`이면 Beacon 스펙[^beacon]은 요청 모드를 `no-cors`로 정한다. CORS 사전 요청(preflight)을 피하려고 고른 형식이다([contracts의 zod 스키마로 분석 이벤트의 전송 형식·서버 검증·조회 응답 통합하기](/memo/contracts-analytics)). Fetch 스펙은 `no-cors` 요청의 응답에 CORP 검사를 적용한다[^fetch]. 그래서 Safari는 응답 헤더의 `same-origin`과 요청 출처를 비교해 응답을 취소했다.
+분석 이벤트는 [`navigator.sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)으로 문자열 본문을 전송한다. 본문 형식이 `text/plain`이면 Beacon 스펙[^beacon]은 요청 모드를 `no-cors`로 정한다. CORS 사전 요청(preflight)을 피하려고 고른 형식이다([zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)). Fetch 스펙은 `no-cors` 요청의 응답에 CORP 검사를 적용한다[^fetch]. 그래서 Safari는 응답 헤더의 `same-origin`과 요청 출처를 비교해 응답을 취소했다.
 
 ![전: Safari가 sendBeacon으로 API에 POST를 보내고, 204 응답의 CORP same-origin 때문에 응답을 취소한다. 후: 같은 요청에 CORP cross-origin이 붙어 응답을 받는다](./images/analytics-beacon-corp-flow.svg 'sendBeacon 응답과 CORP 전후 (도식)')
 
@@ -139,11 +139,11 @@ cross-origin-resource-policy: same-origin
 
 ## 관련 글
 
-- [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect): 5초마다 sendBeacon으로 이벤트를 전송하는 코드
-- [contracts의 zod 스키마로 분석 이벤트의 전송 형식·서버 검증·조회 응답 통합하기](/memo/contracts-analytics): text/plain 본문으로 CORS 사전 요청을 피하는 이유
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect): 5초마다 sendBeacon으로 이벤트를 전송하는 코드
+- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics): text/plain 본문으로 CORS 사전 요청을 피하는 이유
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): Safari에서만 생기는 차이를 정리한 글
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only): 사이트와 미리보기 주소의 CORS·쿠키 규칙
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers): 사이트 응답의 보안 헤더
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers): 사이트 응답의 보안 헤더
 - [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor): 업로드 파일 응답에 CORP cross-origin을 지정한 글
 
 [^beacon]: [Beacon 스펙](https://w3c.github.io/beacon/#sec-processing-model)의 처리 모델. 본문의 Content-Type이 CORS 안전 목록(`text/plain`, `application/x-www-form-urlencoded`, `multipart/form-data`)에 있으면 요청 모드를 `no-cors`로, 아니면 `cors`로 정한다.

@@ -11,7 +11,7 @@ summary: 공통 부품이 스크린 리더에 어떤 이름과 역할로 읽히�
 
 MacFolio는 아이콘 버튼이 많은 사이트다. macOS와 iOS의 화면을 재현하므로 도구 막대, 창 제목 표시줄, 휴대폰 하단 막대가 대부분 글자 없는 아이콘 버튼으로 구성된다. 이 버튼들이 스크린 리더에서 어떤 이름으로 읽히는지는 E2E 시험이 간접적으로 검사해 왔다. Playwright 시험은 [`getByRole('button', { name: '사이드바 가리기' })`](https://playwright.dev/docs/locators#locate-by-role)처럼 이름으로 버튼을 찾으므로, 이름이 없으면 시험이 버튼을 찾지 못하고 실패한다.
 
-하지만 이 검사는 시험이 클릭하는 버튼에만 적용된다. [아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체하기 (리팩터링 4단계)](/memo/refactor-step4-components)에서 공통 부품(`shared/ui`)을 늘리고 앱마다 직접 작성한 버튼을 옮기기 시작하면서, 부품 자체가 이름을 올바르게 출력하는지 별도로 검사하기로 했다.
+하지만 이 검사는 시험이 클릭하는 버튼에만 적용된다. [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components)에서 공통 부품(`shared/ui`)을 늘리고 앱마다 직접 작성한 버튼을 옮기기 시작하면서, 부품 자체가 이름을 올바르게 출력하는지 별도로 검사하기로 했다.
 
 ## 변경 전 상태
 
@@ -119,7 +119,7 @@ html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 
 ## 남은 것·배운 것
 
-바로 다음 작업은 앱마다 직접 작성한 아이콘 버튼을 `IconButton`으로 옮기는 작업([계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기](/memo/icon-button-migrate))이었다. 옮긴 곳은 모두 이 타입 규칙을 거쳤다. 2026년 10월 23일 기준 `apps/react/src`의 `.tsx` 파일에서 `<IconButton`을 포함한 줄은 99개다.
+바로 다음 작업은 앱마다 직접 작성한 아이콘 버튼을 `IconButton`으로 옮기는 작업([계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate))이었다. 옮긴 곳은 모두 이 타입 규칙을 거쳤다. 2026년 10월 23일 기준 `apps/react/src`의 `.tsx` 파일에서 `<IconButton`을 포함한 줄은 99개다.
 
 - 접근성 규칙은 문서로만 기록하면 지켜지지 않는다. 가능한 규칙은 타입으로, 그다음은 빠른 시험으로 강제한다.
 - 시험 도구를 선택할 때는 검사 범위를 먼저 정한다. 이번 범위는 "HTML에 이 속성이 있다"였고, 그래서 가장 가벼운 도구로 충분했다.
@@ -127,9 +127,9 @@ html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 
 ## 관련 글
 
-- 앱마다 직접 작성한 아이콘 버튼을 IconButton으로 옮긴 작업: [계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기](/memo/icon-button-migrate)
-- 공통 부품 목록을 작성한 작업: [shared/ui 부품과 직접 작성한 버튼 295곳 집계로 공통 컴포넌트 후보 줄이기](/memo/ui-inventory)
-- 리팩터링 4단계 정리: [아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체하기 (리팩터링 4단계)](/memo/refactor-step4-components)
+- 앱마다 직접 작성한 아이콘 버튼을 IconButton으로 옮긴 작업: [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate)
+- 공통 부품 목록을 작성한 작업: [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory)
+- 리팩터링 4단계 정리: [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components)
 - 접근성 패턴 참고: [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
 - PR: [#243](https://github.com/hyeoniverse/MacFolio/pull/243)
 

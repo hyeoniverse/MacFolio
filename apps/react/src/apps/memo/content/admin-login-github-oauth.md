@@ -1,11 +1,11 @@
 ---
-title: GitHub OAuth와 해시로 저장하는 DB 세션으로 단일 관리자 로그인 구현하기
+title: GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기
 date: 2026-09-29
 category: 개발 기록/MacFolio/백엔드
 summary: GitHub OAuth로 내 계정만 관리자로 인증한다. 비밀번호 없이 GitHub 숫자 ID로 확인하고, DB에는 세션 토큰 대신 해시만 저장한다. state 쿠키, DB 세션과 JWT 비교, AdminGuard, GitHub 없이 실행하는 시험까지 정리했다.
 ---
 
-[정적 사이트에서 메모 편집을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo) 글에서, 정적 사이트는 브라우저 코드만으로 관리자를 식별할 수 없다고 적었다. 브라우저에 내려간 코드는 누구나 열어 수정할 수 있으므로, "관리자에게만 편집 버튼을 표시한다"는 조건문은 어떤 요청도 차단하지 못한다. 메모, 사진, 배경 화면, 프로필을 사이트 안에서 수정하려면 서버가 요청마다 "이 사람이 관리자인가"를 판단해야 했다.
+[정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo) 글에서, 정적 사이트는 브라우저 코드만으로 관리자를 식별할 수 없다고 적었다. 브라우저에 내려간 코드는 누구나 열어 수정할 수 있으므로, "관리자에게만 편집 버튼을 표시한다"는 조건문은 어떤 요청도 차단하지 못한다. 메모, 사진, 배경 화면, 프로필을 사이트 안에서 수정하려면 서버가 요청마다 "이 사람이 관리자인가"를 판단해야 했다.
 
 그래서 API 서버(NestJS + Prisma + PostgreSQL)를 만들고 관리자 로그인부터 붙였다([백엔드 설계](/memo/backend-design)). 첫 구현은 [#38](https://github.com/hyeoniverse/MacFolio/pull/38)이다. 같은 PR 안에서 관리자 확인 기준을 계정 이름에서 숫자 ID로 바꾸고, 로그인 경로에 요청 제한을 걸었다. 코드는 `apps/api/src/auth/` 아래 여섯 파일(시험 제외 360줄)이다. 주요 다섯 파일은 다음과 같다.
 
@@ -197,7 +197,7 @@ pnpm --filter @macfolio/api test:e2e test/auth.e2e.test.ts
 
 ## 관련 글
 
-- [정적 사이트에서 메모 편집을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo)
+- [정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo)
 - [백엔드 설계](/memo/backend-design)
 - [모든 쓰기 경로에 요청 제한](/memo/rate-limit-all-writes)
 - [미리보기 주소는 읽기만](/memo/preview-cors-read-only)

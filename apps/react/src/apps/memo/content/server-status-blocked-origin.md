@@ -1,11 +1,11 @@
 ---
-title: CORS 차단과 서버 중지를 no-cors 요청으로 구분하는 서버 상태 표시
+title: no-cors 요청으로 CORS 차단과 서버 중지 구분하기
 date: 2026-10-07
 category: 개발 기록/MacFolio/배포·운영
 summary: PR 미리보기 주소에서 메뉴 막대의 서버 상태가 항상 "서버에 연결할 수 없음"이었다. 서버는 정상이었고 그 주소를 CORS로 허용하지 않은 것이 원인이었다. 서버는 허용 주소에 *를 쓸 수 있게 하고, 화면은 no-cors 요청을 한 번 더 보내 차단과 중지를 구분했다.
 ---
 
-메뉴 막대의 Wi-Fi 위치에는 서버 상태 표시가 있다([/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi)). 배포한 사이트에서는 "정상"인데, PR마다 생성되는 미리보기 주소(`https://<브랜치>-macfolio.hyeoniverse.workers.dev`)에서 열면 항상 다음과 같이 표시됐다.
+메뉴 막대의 Wi-Fi 위치에는 서버 상태 표시가 있다([/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)). 배포한 사이트에서는 "정상"인데, PR마다 생성되는 미리보기 주소(`https://<브랜치>-macfolio.hyeoniverse.workers.dev`)에서 열면 항상 다음과 같이 표시됐다.
 
 ```text
 MacFolio API · 서버에 연결할 수 없음
@@ -180,10 +180,10 @@ curl -s -o /dev/null -w '%{http_code}\n' -H "Origin: <사이트 주소>" \
 
 ## 관련 글
 
-- [/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi)
+- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
-- [fetch 33곳을 client.ts의 api()·apiFetch()로 통합한 공통 API 클라이언트](/memo/shared-api-client)
-- [Semgrep·pnpm audit·osv-scanner로 MacFolio의 코드와 의존성 취약점 점검하기](/memo/security-scan)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
 
 [^cors]: Cross-Origin Resource Sharing. 브라우저가 다른 출처(origin)로 보낸 요청의 응답을 페이지에 넘겨도 되는지, 서버의 `Access-Control-Allow-Origin` 응답 헤더로 판단하는 규칙.
 

@@ -1,5 +1,5 @@
 ---
-title: 같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완한 빈 휴지통 아이콘
+title: 같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/프론트엔드
 summary: 휴지통이 비었는데도 Dock에는 종이가 가득 담긴 휴지통 아이콘이 표시됐다. 기존 아이콘에서 빈 휴지통 아이콘을 제작하고, 같은 탭의 localStorage 변경을 감지하는 방법을 정해 Dock에 반영하고, 휴지통 창은 Finder처럼 가운데를 비웠다.
@@ -7,7 +7,7 @@ summary: 휴지통이 비었는데도 Dock에는 종이가 가득 담긴 휴지�
 
 휴지통의 '내 브라우저 데이터'를 비우면 "이 사이트가 이 브라우저에 남긴 것이 없습니다"라는 한 줄만 표시됐다. 그런데 Dock의 휴지통 아이콘은 계속 종이가 가득 담긴 휴지통이었다. macOS는 비어 있으면 빈 휴지통, 항목이 있으면 종이가 담긴 휴지통 아이콘을 표시한다. 처음 접속한 방문자에게도 항상 종이가 담긴 휴지통이 표시되어, 모든 방문자에게 "저장된 데이터가 있다"는 잘못된 상태를 보여 주고 있었다.
 
-수정은 PR [#184](https://github.com/hyeoniverse/MacFolio/pull/184)의 커밋 하나다([localStorage·sessionStorage에 저장한 사이트 데이터를 표시하고 삭제하는 휴지통 앱](/memo/bin-app)를 구현한 다음 날).
+수정은 PR [#184](https://github.com/hyeoniverse/MacFolio/pull/184)의 커밋 하나다([사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)를 구현한 다음 날).
 
 ## 빈 휴지통 아이콘
 
@@ -86,8 +86,8 @@ export function refreshBin() {
 
 ## 관련 글
 
-- [localStorage·sessionStorage에 저장한 사이트 데이터를 표시하고 삭제하는 휴지통 앱](/memo/bin-app)
-- [사이트 데이터를 폴더로 구성한 Finder 앱과 다른 앱에 보내는 열기 요청 store](/memo/finder-app)
-- [flex 한 줄과 칸 수 계산 함수로 Launchpad와 겹치지 않는 Dock 배치](/memo/dock-layout)
+- [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
+- [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout)
 
 #MacFolio #프론트엔드 #휴지통 #macOS

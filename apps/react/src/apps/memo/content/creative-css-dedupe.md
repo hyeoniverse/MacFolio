@@ -1,5 +1,5 @@
 ---
-title: getComputedStyle 비교로 동일성을 확인하며 두 CSS 파일의 중복 규칙 103개 지우기
+title: getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기
 date: 2026-10-16
 category: 개발 기록/MacFolio/디자인 시스템
 summary: Safari HYEONIVERSE 페이지 CSS에 공통 부품 CSS와 동일한 규칙 103개가 복사되어 있었다. 복사본을 삭제해 파일이 1,444줄 → 735줄(gzip 8.1KB → 5.1KB)로 줄었고, 요소 3,720개의 계산된 스타일이 전후로 같은지 기기·테마별로 비교했다.
@@ -92,8 +92,8 @@ import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project
 
 ## 관련 글
 
-- [CSS @layer reset으로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
-- [CSS @layer 순서를 index.html 인라인 스타일에서 모든 CSS보다 먼저 선언하기](/memo/css-layer-order-fix)
-- [반복된 hex 288곳을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
+- [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
 
 #MacFolio #CSS #리팩터링

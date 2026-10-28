@@ -1,5 +1,5 @@
 ---
-title: 서비스 계정과 사이트맵으로 Google Search Console 검색어를 서버에 연결하기
+title: Google 서비스 계정으로 Search Console 검색어를 서버에서 가져오기
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: 블로그 글을 검색에 노출하고 검색어를 활동 상태 보기에서 확인하기까지의 순서. Search Console 속성 추가와 사이트맵 제출, Google Cloud 서비스 계정 생성, Search Console 권한 추가, 서버 api.env 설정을 단계별로 정리하고, 도메인 속성에서 이 사이트 검색어만 거르는 방법을 적었다.
@@ -133,7 +133,7 @@ rm ~/Downloads/<키파일>.json
 ## 관련 글
 
 - [리퍼러 검색어와 Search Console API로 유입 검색어 수집하기](/memo/search-keywords): 검색어 탭과 서버의 Search Console API 호출을 만든 글
-- [Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable): Worker가 본문과 sitemap.xml을 생성하는 구조
+- [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable): Worker가 본문과 sitemap.xml을 생성하는 구조
 - [SSH Operation timed out의 원인이 된 삭제한 임시 VM의 공인 IP](/memo/ssh-timeout-public-ip): 5단계에서 서버에 접속하지 못한 원인
 
 ## 참고한 공식 문서

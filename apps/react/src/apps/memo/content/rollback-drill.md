@@ -175,8 +175,8 @@ docker compose up -d api
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 - [자동 배포를 실제 서버에 걸기 - 막힌 곳 다섯](/memo/api-auto-deploy-setup)
-- [GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)
-- [SSH·방화벽·컨테이너 사용자를 점검하는 audit.sh로 남기는 서버 하드닝](/memo/server-hardening-audit)
+- [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
+- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
 - [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
 
 [^forced-command]: `authorized_keys`의 키 앞에 `command="…"`를 지정하면, 그 키로 접속할 때 클라이언트가 요청한 명령 대신 지정한 명령만 실행된다. 요청한 명령은 `SSH_ORIGINAL_COMMAND` 환경 변수로 전달된다. [OpenSSH 매뉴얼: sshd(8) AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)

@@ -1,5 +1,5 @@
 ---
-title: openRequest를 메시지 앱으로 넓혀 문제 알리기를 GitHub 이슈 대신 피드백 화면으로 열기
+title: openRequest를 메시지 앱으로 넓혀 문제 알리기를 피드백 화면으로 연결하기
 date: 2026-10-24
 category: 개발 기록/MacFolio/프론트엔드
 summary: 도움말의 '문제 알리기'가 GitHub 새 이슈 페이지 대신 메시지 앱의 새 피드백 화면을 연다. 메시지 앱은 인사, 감상, 의견을 자유롭게 남기는 방명록이고, 버그는 보조 링크로 GitHub 이슈를 안내한다. 앱 사이 요청(openRequest)을 메시지 앱으로 넓힌 방법과 바깥 링크 집계를 적었다.
@@ -57,17 +57,17 @@ useOpenRequest('messages', (id) => {
 링크 컴포넌트 `components/IssueLink.tsx`(문구 '버그는 GitHub 이슈로') 하나를 새 피드백 머리와 빈 목록 안내 두 곳에서 쓴다. 주소는 메뉴가 쓰던 `${REPO_URL}/issues/new/choose`를 `repoDocs.ts`의 `NEW_ISSUE_URL` 상수로 옮긴 것이다. 저장소의 이슈 템플릿(버그, 기능 제안)을 고르는 화면이다. 링크 문구에 '버그는'을 붙여, 메시지는 자유로운 글이고 이슈는 버그 제보용 보조 경로라는 구분을 드러낸다.
 
 - `target="_blank"`, `rel="noopener noreferrer"`: 사이트의 다른 바깥 링크와 같다
-- 바깥 링크 아이콘 `fa-arrow-up-right-from-square`와 스크린 리더용 `(새 탭)`(`.visually-hidden`). 숨은 텍스트가 엉뚱한 컨테이닝 블록을 기준으로 배치되지 않도록 링크에 `position: relative`를 둔다([앱별 최소 창 크기와 컨테이닝 블록으로 시스템 설정의 이중 스크롤 없애기](/memo/settings-double-scroll))
+- 바깥 링크 아이콘 `fa-arrow-up-right-from-square`와 스크린 리더용 `(새 탭)`(`.visually-hidden`). 숨은 텍스트가 엉뚱한 컨테이닝 블록을 기준으로 배치되지 않도록 링크에 `position: relative`를 둔다([최소 창 크기와 컨테이닝 블록으로 중첩 스크롤의 이중 스크롤 없애기](/memo/settings-double-scroll))
 - 색은 `--color-link` 토큰이라 라이트·다크 값이 따로 적용된다
-- 휴대폰의 새 피드백 머리는 대화 위에 떠 있는 반투명 막대다([visualViewport와 컨테이너 쿼리 기준을 맞춘 메시지 앱 휴대폰 레이아웃 수정](/memo/messages-layout-fixes)). 머리 높이는 `ResizeObserver`로 측정하므로 링크 한 줄이 늘어도 첫 말풍선이 머리에 가려지지 않는다
+- 휴대폰의 새 피드백 머리는 대화 위에 떠 있는 반투명 막대다([visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/messages-layout-fixes)). 머리 높이는 `ResizeObserver`로 측정하므로 링크 한 줄이 늘어도 첫 말풍선이 머리에 가려지지 않는다
 
 ### 바깥 링크 집계
 
-`analytics.ts`는 문서에 클릭 리스너 하나를 캡처 단계로 등록해 모든 `<a href>` 클릭을 바깥 링크로 집계한다([sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)). 링크를 `<a>`로 만들었으므로 별도 호출이 필요 없다. 집계 항목은 `github.com/hyeoniverse/MacFolio/issues/new/choose`이고, E2E 시험이 가짜 API에 도착한 이벤트로 확인한다.
+`analytics.ts`는 문서에 클릭 리스너 하나를 캡처 단계로 등록해 모든 `<a href>` 클릭을 바깥 링크로 집계한다([트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)). 링크를 `<a>`로 만들었으므로 별도 호출이 필요 없다. 집계 항목은 `github.com/hyeoniverse/MacFolio/issues/new/choose`이고, E2E 시험이 가짜 API에 도착한 이벤트로 확인한다.
 
 ## 서버에 닿지 못할 때
 
-메시지 앱은 첫 불러오기가 실패하면 경고창을 표시하고 앱을 종료한다([서버 연결에 실패하면 메시지 앱을 닫는 경고창과 VITE_MESSAGES_STORE로 저장소 고르기](/memo/messages-offline)). 문제 알리기로 열었을 때도 같은 경고창이다. 로컬 저장소 모드(`VITE_MESSAGES_STORE=local`)에서는 메시지가 브라우저 저장소에 저장되므로, API 서버가 없어도 문제 알리기가 새 피드백 화면을 그대로 연다.
+메시지 앱은 첫 불러오기가 실패하면 경고창을 표시하고 앱을 종료한다([첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)). 문제 알리기로 열었을 때도 같은 경고창이다. 로컬 저장소 모드(`VITE_MESSAGES_STORE=local`)에서는 메시지가 브라우저 저장소에 저장되므로, API 서버가 없어도 문제 알리기가 새 피드백 화면을 그대로 연다.
 
 ## 시험
 
@@ -76,8 +76,8 @@ useOpenRequest('messages', (id) => {
 
 ## 관련 글
 
-- [사이트 데이터를 폴더로 구성한 Finder 앱과 다른 앱에 보내는 열기 요청 store](/memo/finder-app): `requestOpen`·`useOpenRequest` 구조
-- [openRequest로 사진 위젯이 표시 중인 사진을 사진 앱에서 크게 보기로 열기](/memo/photo-widget-open-current): 같은 요청을 사진 앱으로 넓힌 사례
-- [앱이 등록하고 메뉴 막대가 공통 메뉴와 병합하는 파일·보기·윈도우 메뉴 구조](/memo/menubar-menus): 도움말 메뉴와 앱별 메뉴
-- [서버 연결에 실패하면 메시지 앱을 닫는 경고창과 VITE_MESSAGES_STORE로 저장소 고르기](/memo/messages-offline): 첫 불러오기 실패 경고창
-- [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect): 바깥 링크 집계
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): `requestOpen`·`useOpenRequest` 구조
+- [openRequest로 위젯이 표시 중인 사진을 사진 앱 크게 보기로 넘기기](/memo/photo-widget-open-current): 같은 요청을 사진 앱으로 넓힌 사례
+- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 도움말 메뉴와 앱별 메뉴
+- [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline): 첫 불러오기 실패 경고창
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect): 바깥 링크 집계

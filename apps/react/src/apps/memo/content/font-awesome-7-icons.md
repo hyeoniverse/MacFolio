@@ -98,8 +98,8 @@ font-family: 'Font Awesome 7 Free';
 ## 관련 글
 
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): Font Awesome 7 업그레이드를 연 Dependabot 설정
-- [데모별 모듈과 공유 모듈로 1,861줄 HYEONIVERSE 데모 파일 분리하기](/memo/split-creative-demos): HYEONIVERSE 페이지의 데모 분리
-- [getComputedStyle 비교로 동일성을 확인하며 두 CSS 파일의 중복 규칙 103개 지우기](/memo/creative-css-dedupe): 같은 페이지의 CSS 정리
+- [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos): HYEONIVERSE 페이지의 데모 분리
+- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe): 같은 페이지의 CSS 정리
 
 [^pua]: 유니코드의 U+E000~U+F8FF 구간으로, 표준 문자가 배정되지 않아 글꼴마다 임의의 기호를 넣는다. Font Awesome도 이 구간에 아이콘을 배치하므로, 해당 글꼴이 없으면 다른 글꼴로 대체할 문자가 없다.
 

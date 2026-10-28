@@ -1,5 +1,5 @@
 ---
-title: Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기
+title: git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기
 date: 2026-10-19
 category: 개발 기록/MacFolio/품질
 summary: 화면 E2E를 3개에서 6개 샤드로 나눠 PR 시험 시간을 약 절반으로 줄이고, PR에서 이미 통과한 코드와 트리가 같은 main 커밋은 e2e를 다시 실행하지 않고 바로 배포하게 했다. 제외하거나 줄인 시험은 없다.
@@ -125,7 +125,7 @@ git rev-parse HEAD^{tree}     # PR 브랜치와 머지된 main 커밋에서 같�
 ## 관련 글
 
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 - [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 

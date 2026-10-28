@@ -140,11 +140,11 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 
 ## 관련 글
 
-- [localStorage·sessionStorage에 저장한 사이트 데이터를 표시하고 삭제하는 휴지통 앱](/memo/bin-app)
-- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions)
+- [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
+- [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
 - [rclone과 UTC cron으로 R2에 DB 백업 걸기](/memo/r2-backup-setup)
-- [올린 파일 규칙을 contracts 공유 규칙과 서버 전용 검사로 나누기](/memo/contracts-files)
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
 
 [^bytea]: PostgreSQL의 이진 데이터 열 타입. 이 사이트는 별도 객체 저장소 없이 업로드 파일을 DB에 직접 저장한다.
 

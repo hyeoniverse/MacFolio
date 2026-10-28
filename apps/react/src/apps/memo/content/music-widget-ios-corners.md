@@ -79,9 +79,9 @@ Playwright의 Chromium과 WebKit(아이폰 화면 크기)에서 수정 후에도
 ## 관련 글
 
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering)
-- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets)
-- [셸 공통 CSS 변수로 휴대폰 앱의 바탕·카드·제목 막대를 iOS 스타일로 맞추기](/memo/mobile-apps-ios-style)
-- [isRunning 정의·형제 React key·매 렌더링 ref 함수가 일으킨 음악 앱 버그 세 가지](/memo/music-player-fixes)
-- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄·홈 인디케이터 색 정하기](/memo/mobile-bars-contrast)
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes)
+- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)
 
 #MacFolio #TIL #프론트엔드 #CSS #Safari #iOS

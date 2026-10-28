@@ -1,5 +1,5 @@
 ---
-title: 모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출
+title: 오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 가운데 뜨는 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메이션을 각자 구현하고 있었다. 77줄짜리 Modal로 추출해 다섯 곳에는 콘텐츠만 남겼고, 덮는 범위는 scope로, 색·z-index는 CSS 변수로 지정한다.
@@ -132,11 +132,11 @@ onPointerDown={(event) => {
 
 ## 관련 글
 
-- [shared/ui 부품과 직접 작성한 버튼 295곳 집계로 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
-- [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet): 다음 부품
-- [eslint-disable이 가린 useEffect 의존성과 exhaustive-deps](/memo/modal-focus-eslint-disable): 남은 과제에 적은 `onClose` 의존 문제를 effect 분리로 수정한 일
-- [계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사](/memo/sheet-modal-migrate): 앱마다 직접 만든 모달을 옮긴 일
-- [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
+- [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 다음 부품
+- [eslint-disable 주석이 가린 useEffect의 onClose 의존성](/memo/modal-focus-eslint-disable): 남은 과제에 적은 `onClose` 의존 문제를 effect 분리로 수정한 일
+- [계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기](/memo/sheet-modal-migrate): 앱마다 직접 만든 모달을 옮긴 일
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
 - PR: [#212](https://github.com/hyeoniverse/MacFolio/pull/212)
 
 [^1]: 최상위 층(top layer)은 문서의 z-index와 무관하게 모든 요소 위에 그려지는 별도 층이다. [MDN: Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)

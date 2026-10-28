@@ -1,5 +1,5 @@
 ---
-title: CSS 그리드 경계 위에 절대 위치로 둔 리사이즈 핸들로 메모 칸 너비 조절하기
+title: 그리드 칸을 차지하지 않는 절대 위치 리사이즈 핸들로 칸 너비 조절하기
 date: 2026-10-12
 category: 개발 기록/MacFolio/프론트엔드
 summary: 고정 너비였던 메모 앱의 사이드바·글 목록 경계에 리사이즈 핸들을 배치해 드래그·키보드·더블클릭으로 너비를 바꾸게 했다. 핸들은 절대 위치라 그리드 칸을 차지하지 않고, 본문 최소 360px을 확보하며, 너비는 브라우저에 저장한다.
@@ -158,9 +158,9 @@ export function savePaneWidth(pane: ResizablePane, width: number) {
 ## 관련 글
 
 - [메모 앱 태그](/memo/memo-tags)
-- [deletedAt 열과 CHECK 제약으로 삭제한 메모를 30일 동안 복구하는 최근 삭제된 항목](/memo/memo-recently-deleted)
+- [deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제](/memo/memo-recently-deleted)
 - [메모 다듬기](/memo/notes-polish)
-- [pointer 이벤트와 translateY로 구현한 폴더 순서 드래그 핸들과 경로 목록 저장](/memo/memo-folder-order)
+- [pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order)
 - [메모 편집기 손보기 — 토글 목록·각주 (220~440px 취소선 문제)](/memo/memo-editor-toggle-footnote)
 
 #MacFolio #메모앱 #CSS #React

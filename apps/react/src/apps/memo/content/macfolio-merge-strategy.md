@@ -1,5 +1,5 @@
 ---
-title: main 기록 1,940커밋 집계로 정한 MacFolio의 Merge commit 전략
+title: main 커밋 기록 집계로 Merge commit 병합 전략 정하기
 date: 2026-10-12
 category: 개발 기록/MacFolio/품질
 summary: MacFolio는 PR을 Create a merge commit으로 병합한다. main 기록 1,940커밋을 집계해 선택 기준 세 가지에 적용하고, Rebase and merge가 섞인 PR 53개의 기록, CONTRIBUTING·conventions 검사·Ruleset으로 적용한 내용과 아직 켜지 않은 저장소 설정을 정리했다.
@@ -147,7 +147,7 @@ gh repo edit hyeoniverse/MacFolio --enable-squash-merge=false --enable-rebase-me
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 브랜치 커밋마다 메시지 형식을 검사하는 conventions 워크플로와 Ruleset
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): 머지 커밋으로 병합되는 Dependabot PR
-- [Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
+- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
 - 병합 방식 글을 처음 작성한 날의 기록: [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
 
 #MacFolio #Git #GitHub

@@ -1,13 +1,13 @@
 ---
-title: 상태 기준으로 AnalyticsService를 저장·집계·조회 서비스 셋으로 나누기
+title: 상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기
 date: 2026-10-16
 category: 개발 기록/MacFolio/백엔드
 summary: 341줄짜리 AnalyticsService가 이벤트 저장, 지난 날짜 집계·삭제, 요약·조회수 조회를 모두 담당했다. 상태를 기준으로 저장·집계·조회 세 서비스로 나누고, 경로·응답은 그대로 둔 채 e2e는 한 줄만 수정해 통과시켰다.
 ---
 
-트래픽 분석(이슈 [#102](https://github.com/hyeoniverse/MacFolio/issues/102))은 사이트가 전송한 이벤트를 저장하고, 하루가 지나면 날짜별 통계로 집계하고, '활동 상태 보기' 앱과 블로그 조회수에 지표를 응답한다([쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API (트래픽 분석 1)](/memo/analytics-api)). 이 세 가지 역할을 `AnalyticsService` 클래스 하나가 담당했다.
+트래픽 분석(이슈 [#102](https://github.com/hyeoniverse/MacFolio/issues/102))은 사이트가 전송한 이벤트를 저장하고, 하루가 지나면 날짜별 통계로 집계하고, '활동 상태 보기' 앱과 블로그 조회수에 지표를 응답한다([트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)). 이 세 가지 역할을 `AnalyticsService` 클래스 하나가 담당했다.
 
-처음 구현할 당시에는 한 파일이 편했다. 그런데 공개 요약, 글 조회수, 1분 캐시가 차례로 추가되면서 파일이 341줄이 됐다. 요약 하나를 수정하려고 파일을 열어도 요청 제한과 타이머 코드를 함께 읽어야 했다. 이후 UTM 같은 표도 추가될 예정이었으므로([UTM 출처·매체·캠페인 조합 표와 링크 생성기 (트래픽 분석 5)](/memo/utm-analytics)), 기능을 추가하기 전에 먼저 나눴다. 작업은 [#233](https://github.com/hyeoniverse/MacFolio/pull/233)의 커밋 하나(`8a35ac38b`)다.
+처음 구현할 당시에는 한 파일이 편했다. 그런데 공개 요약, 글 조회수, 1분 캐시가 차례로 추가되면서 파일이 341줄이 됐다. 요약 하나를 수정하려고 파일을 열어도 요청 제한과 타이머 코드를 함께 읽어야 했다. 이후 UTM 같은 표도 추가될 예정이었으므로([트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)), 기능을 추가하기 전에 먼저 나눴다. 작업은 [#233](https://github.com/hyeoniverse/MacFolio/pull/233)의 커밋 하나(`8a35ac38b`)다.
 
 ## 한 클래스가 하던 일
 
@@ -129,7 +129,7 @@ NestJS에서 서비스 여러 개를 한 모듈의 `providers`로 등록하는 �
 
 - [트래픽 분석 1 - API](/memo/analytics-api)
 - [트래픽 분석 4 - 공개](/memo/analytics-public)
-- [UTM 출처·매체·캠페인 조합 표와 링크 생성기 (트래픽 분석 5)](/memo/utm-analytics)
+- [트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
 - [백엔드 설계](/memo/backend-design)
 - [리팩터링 6 - 서버](/memo/refactor-step6-server)
 

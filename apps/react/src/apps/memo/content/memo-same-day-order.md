@@ -1,5 +1,5 @@
 ---
-title: git 첫 커밋 시각과 Vite 가상 모듈로 같은 날 글의 순서 정하기
+title: git 첫 커밋 시각을 Vite 가상 모듈로 넣어 같은 날 글 정렬하기
 date: 2026-10-23
 category: 개발 기록/MacFolio/설계
 summary: 머리말 date에는 시각이 없어 같은 날 글이 제목 순으로 정렬됐다. 저장소 글은 빌드 시각에 git에서 첫 커밋 시각을 읽고, 서버 글은 처음 게시한 시각을 새 열에 한 번만 기록해 목록·위젯·RSS를 같은 순서로 맞췄다.
@@ -168,10 +168,10 @@ expect(again.body.createdAt).toBe(first.body.publishedAt);
 
 ## 관련 글
 
-- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions): 같은 행에 게시본과 임시본을 보관하고 게시마다 버전을 남기는 구조
-- [Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable): 빌드 시각에 글 목록과 사이트맵을 만드는 `seo/posts.ts`
-- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets): 최근 글 위젯
-- [ZodType<PostContent>로 desktop-core 타입과 contracts 스키마를 맞춘 글 도메인](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
-- [pointer 이벤트와 translateY로 구현한 폴더 순서 드래그 핸들과 경로 목록 저장](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
+- [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions): 같은 행에 게시본과 임시본을 보관하고 게시마다 버전을 남기는 구조
+- [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable): 빌드 시각에 글 목록과 사이트맵을 만드는 `seo/posts.ts`
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 최근 글 위젯
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
+- [pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
 
 #MacFolio #메모앱 #git #Prisma #PostgreSQL

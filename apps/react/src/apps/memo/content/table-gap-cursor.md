@@ -207,7 +207,7 @@ Markdown 표는 머리글 한 행과 본문 한 행 이상이 있어야 한다. 
 
 ## 관련 글
 
-- 이어서 표를 다듬은 작업: [메모 편집기 표의 범위 선택 테두리와 여백 클릭 커서, Backspace 한 번 삭제](/memo/table-polish)
+- 이어서 표를 다듬은 작업: [편집기 바깥 여백 클릭을 ProseMirror 표 옆 틈 커서로 연결하기](/memo/table-polish)
 - 같은 날의 작업 기록: [10월 1일 - 규칙과 공통 컴포넌트, 그리고 자정의 최근 삭제된 항목](/memo/day-1001)
 - PR: [#55](https://github.com/hyeoniverse/MacFolio/pull/55)
 - ProseMirror 문서: [prosemirror-gapcursor](https://prosemirror.net/docs/ref/#gapcursor)

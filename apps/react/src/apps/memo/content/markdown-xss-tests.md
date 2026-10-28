@@ -116,9 +116,9 @@ npx playwright test e2e/markdown-safety.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
-- [GitHub API 응답 서버 캐시와 rehype-sanitize로 그리는 GitHub 앱 프로필·README](/memo/github-live-profile)
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [iframe sandbox에서 allow-top-navigation을 빼 내장 사이트의 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 
 #MacFolio #보안 #XSS #Markdown #테스트

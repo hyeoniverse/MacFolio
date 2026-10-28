@@ -1,5 +1,5 @@
 ---
-title: scrypt 비밀번호 해시와 IP HMAC으로 저장하는 가입 없는 블로그 댓글
+title: scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글
 date: 2026-09-29
 category: 개발 기록/MacFolio/백엔드
 summary: 가입 없이 이름·비밀번호로 작성하는 블로그 댓글을 추가하며 비밀번호는 scrypt 해시로, IP는 앞 두 자리와 HMAC으로만 저장했다. 응답 필드를 select로 제한하고 검사 규칙을 화면·서버가 공유하게 했다. 사흘 뒤 방문자 쿠키 방식으로 바뀐 과정도 정리한다.
@@ -97,7 +97,7 @@ ThrottlerModule.forRootAsync({
 
 ## 사흘 뒤: 이름과 비밀번호 제거
 
-10월 2일, 메시지 앱을 서버 저장 방식으로 바꾸면서 댓글도 같은 방식으로 변경했다([PR #69](https://github.com/hyeoniverse/MacFolio/pull/69)). 이름과 비밀번호를 입력받지 않고, 처음 작성한 브라우저에 방문자 쿠키를 발급해 그 쿠키로 이름을 정하고 본인 댓글을 삭제한다([httpOnly 방문자 쿠키의 HMAC 해시로 이름·비밀번호 없는 메시지와 댓글 만들기](/memo/visitor-identity)).
+10월 2일, 메시지 앱을 서버 저장 방식으로 바꾸면서 댓글도 같은 방식으로 변경했다([PR #69](https://github.com/hyeoniverse/MacFolio/pull/69)). 이름과 비밀번호를 입력받지 않고, 처음 작성한 브라우저에 방문자 쿠키를 발급해 그 쿠키로 이름을 정하고 본인 댓글을 삭제한다([httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)).
 
 |                | 이 글 (9월 29일)  | 현재                                                 |
 | -------------- | ----------------- | ---------------------------------------------------- |
@@ -112,7 +112,7 @@ ThrottlerModule.forRootAsync({
 
 - 비밀번호 방식은 사흘 만에 바뀌었지만, "서버가 보관하는 정보를 최소화한다"는 결정 덕분에 전환 시각에 삭제할 개인 정보가 거의 없었다. 원문 IP나 평문 비밀번호를 저장했다면 마이그레이션으로 삭제해야 했다.
 - 응답 필드를 `select`로 제한하고 시험이 필드 목록을 정확히 비교하게 한 것이 비용이 가장 낮은 안전장치였다. 필드가 추가되면 시험이 먼저 실패한다.
-- 요청 제한은 이후 모든 쓰기 경로로 확대했다([@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)).
+- 요청 제한은 이후 모든 쓰기 경로로 확대했다([@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)).
 
 ## 직접 확인하는 방법
 
@@ -128,9 +128,9 @@ cd apps/react && npx playwright test e2e/memo-comments.spec.ts
 
 ## 관련 글
 
-- [httpOnly 방문자 쿠키의 HMAC 해시로 이름·비밀번호 없는 메시지와 댓글 만들기](/memo/visitor-identity)
-- [@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [서버 연결에 실패하면 메시지 앱을 닫는 경고창과 VITE_MESSAGES_STORE로 저장소 고르기](/memo/messages-offline)
+- [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
 - [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
 
 [^salt]: 해시 계산 전에 비밀번호에 덧붙이는 무작위 값(여기서는 16바이트). 같은 비밀번호도 salt가 다르면 해시 값이 달라지므로, 미리 계산한 해시 표(레인보우 테이블)로 여러 계정을 한꺼번에 대조할 수 없다.

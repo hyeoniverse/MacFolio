@@ -149,7 +149,7 @@ return { httpOnly: true, sameSite: 'lax', secure: this.config.auth.secureCookies
 
 - GitHub Actions에서 이미지를 빌드해 레지스트리에 업로드하고, 서버는 내려받아 실행만 한다 → [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 - `pg_dump`를 매일 실행해 서버 밖에 보관한다 → [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
-- `/health`를 외부에서 감시한다 → [GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)
+- `/health`를 외부에서 감시한다 → [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
 
 swap 4GB는 현재도 유지한다. 평소에는 GitHub Actions가 빌드하지만, 긴급 상황에서 서버가 직접 빌드할 수 있게 하기 위해서다.
 
@@ -211,8 +211,8 @@ cd ~/deploy && docker compose up -d && docker compose logs -f api
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 - [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
-- [GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)
-- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)
+- [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
+- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 SSH 키 복구](/memo/oracle-ssh-key-recovery)
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
 
 [^heredoc]: `명령 <<구분자`부터 구분자만 있는 줄까지를 그 명령의 표준 입력으로 전달하는 셸 문법. 구분자에 따옴표를 붙이면 본문의 변수·명령 치환이 일어나지 않는다. [Bash 매뉴얼: Here Documents](https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Documents)

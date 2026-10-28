@@ -109,10 +109,10 @@ $ awk '{print NR": "$1" "$2}' ~/.ssh/known_hosts
 
 ## 관련 글
 
-- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery): 임시 VM의 주소를 서버 주소로 기억하게 된 작업
+- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 SSH 키 복구](/memo/oracle-ssh-key-recovery): 임시 VM의 주소를 서버 주소로 기억하게 된 작업
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel): API가 IP와 상관없이 동작하는 이유
-- [GitHub Actions 자동 배포를 GHCR 이미지와 SSH 키로 실제 서버에 적용하기](/memo/api-auto-deploy-setup): `DEPLOY_HOST`·`DEPLOY_KNOWN_HOSTS`를 설정한 글
-- [서비스 계정과 사이트맵으로 Google Search Console 검색어를 서버에 연결하기](/memo/search-console-setup): 이 문제를 만난 작업
+- [GHCR 이미지와 SSH 배포 키로 GitHub Actions 자동 배포 적용하기](/memo/api-auto-deploy-setup): `DEPLOY_HOST`·`DEPLOY_KNOWN_HOSTS`를 설정한 글
+- [Google 서비스 계정으로 Search Console 검색어를 서버에서 가져오기](/memo/search-console-setup): 이 문제를 만난 작업
 
 ## 참고한 공식 문서
 

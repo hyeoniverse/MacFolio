@@ -1,5 +1,5 @@
 ---
-title: sessionStorage에 보관하는 메모 앱의 뒤로·앞으로 기록과 ⌘[ ⌘] 단축키
+title: 브라우저 history 대신 sessionStorage에 쌓는 앱 내부 뒤로·앞으로 기록
 date: 2026-10-27
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더했다. 연 폴더와 본 글을 기록에 쌓고, 길게 누르거나 누른 채 아래로 끌면 지난 칸 목록이 열린다. 브라우저 기록에는 쌓지 않은 이유와 지운 글을 건너뛰는 규칙을 정리했다.
@@ -79,6 +79,6 @@ summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더�
 ## 관련 글
 
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): 주소 막대가 맨 앞 창의 글을 따라가는 방식
-- [앱이 등록하고 메뉴 막대가 공통 메뉴와 병합하는 파일·보기·윈도우 메뉴 구조](/memo/menubar-menus): 메뉴 막대 단축키가 동작하는 구조
+- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 메뉴 막대 단축키가 동작하는 구조
 
 #MacFolio #메모앱 #React

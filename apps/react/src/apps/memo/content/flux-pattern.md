@@ -146,6 +146,6 @@ Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-sh
 ## 관련 글
 
 - [createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design): 이 구조를 창 관리 store에 적용한 개발기
-- [useState·Context에 있던 창 관리 규칙을 프레임워크와 무관한 desktop-core 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
 
 #TIL #React #상태관리 #아키텍처

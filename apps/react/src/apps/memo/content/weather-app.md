@@ -1,5 +1,5 @@
 ---
-title: Open-Meteo와 내장 도시 211곳 검색으로 만든 macOS 날씨 앱
+title: Open-Meteo 지오코딩 지연을 내장 도시 목록 우선 검색으로 줄이기
 date: 2026-10-10
 category: 개발 기록/MacFolio/프론트엔드
 summary: macOS·iOS 날씨 앱 모양의 날씨 앱을 추가했다. 데이터는 키 없이 쓰는 Open-Meteo에서 브라우저가 직접 조회하고, 한국어 이름을 찾지 못하고 응답에 1~10초 걸리는 지오코딩 대신 내장 도시 211곳을 먼저 검색한다.
@@ -159,11 +159,11 @@ export const samePlace = (a: Place, b: Place) =>
 - 내장 도시 좌표는 수동으로 입력한 값이다. 국내 시·군은 모두 넣었지만 해외는 주요 도시뿐이라, 그 밖의 장소는 응답이 느린 Open-Meteo 검색에 의존한다.
 - 외부 API의 응답 시간은 개선할 수 없다. 대신 내장 데이터로 즉시 결과를 표시하고 외부 응답은 도착하는 대로 추가하면, 대부분의 검색에서 대기 시간이 사라진다.
 - 실제 기기(iOS Safari)의 터치 입력은 시험 브라우저의 마우스 입력과 다르다. 손가락이 세로로 조금만 흔들려도 `pointercancel`이 발생한다. 시험도 이 터치 동작을 재현해야 한다.
-- 창 폭 641~767px에서 레이아웃이 어긋난 문제는 이후 별도로 수정했다([z-index·data-compact·grid-column으로 날씨 앱 레이아웃 기준 하나로 맞추기](/memo/weather-layout-fixes)).
+- 창 폭 641~767px에서 레이아웃이 어긋난 문제는 이후 별도로 수정했다([useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes)).
 
 ## 관련 글
 
-- 날씨 앱의 레이아웃 문제 세 가지를 수정한 일: [z-index·data-compact·grid-column으로 날씨 앱 레이아웃 기준 하나로 맞추기](/memo/weather-layout-fixes)
+- 날씨 앱의 레이아웃 문제 세 가지를 수정한 일: [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes)
 - 휴대폰 앱을 iOS 모양으로 맞춘 일: [휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style)
 - 쌓임 맥락 때문에 버튼이 클릭되지 않던 일: [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)
 - Weather.tsx 분리 PR: [#300](https://github.com/hyeoniverse/MacFolio/pull/300)

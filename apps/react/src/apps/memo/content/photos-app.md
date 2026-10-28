@@ -1,5 +1,5 @@
 ---
-title: 프로젝트 정보에서 앨범을 생성하는 macOS·iOS 방식의 사진 앱
+title: 별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범
 date: 2026-10-07
 category: 개발 기록/MacFolio/프론트엔드
 summary: Dock에 아이콘만 있던 사진 앱을 구현했다. 사진 목록을 별도로 관리하지 않고 프로젝트 정보에서 앨범을 생성하며, macOS·iOS 사진처럼 격자·크게 보기·모음·검색·캡션 수정을 갖췄다. 쌓임 맥락에 갇혀 클릭되지 않던 버튼도 수정했다.
@@ -112,7 +112,7 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 
 검색 화면은 큰 제목 아래에 최근 항목 카드(최근 확인한 사진, 비디오)와 앨범 이름 추천을 배치하고, 하단에 검색 칸과 지우기(×) 버튼을 둔다. 검색 대상은 사진 설명과 앨범 이름이다.
 
-보관함 맨 위 사진 위에는 어두운 그라데이션 띠가 있다. 상태 표시줄 글자 색은 아래 요소의 배경을 읽어 결정하는데, 처음에는 배경색만 읽어 이 띠를 인식하지 못하고 검은 글자를 사용했다. 이제 배경색이 없으면 그라데이션의 첫 색도 읽어, 이 띠 위에서는 흰 글자를 사용한다. 자세한 판정 방식은 [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄·홈 인디케이터 색 정하기](/memo/mobile-bars-contrast)에 정리했다.
+보관함 맨 위 사진 위에는 어두운 그라데이션 띠가 있다. 상태 표시줄 글자 색은 아래 요소의 배경을 읽어 결정하는데, 처음에는 배경색만 읽어 이 띠를 인식하지 못하고 검은 글자를 사용했다. 이제 배경색이 없으면 그라데이션의 첫 색도 읽어, 이 띠 위에서는 흰 글자를 사용한다. 자세한 판정 방식은 [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)에 정리했다.
 
 ### 정보 패널과 화면 전환 애니메이션
 
@@ -172,11 +172,11 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 
 ## 관련 글
 
-- [셸 공통 CSS 변수로 휴대폰 앱의 바탕·카드·제목 막대를 iOS 스타일로 맞추기](/memo/mobile-apps-ios-style)
-- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄·홈 인디케이터 색 정하기](/memo/mobile-bars-contrast)
-- [import를 계산하는 분리 스크립트로 폴더 사이드바와 휴대폰 사진 앱 나누기](/memo/split-sidebar-photos)
-- [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)
+- [import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/split-sidebar-photos)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
 
 [^lazy]: `loading="lazy"`는 이미지가 뷰포트 근처에 올 때까지 요청을 미루고, `decoding="async"`는 이미지 디코딩이 다른 렌더링 작업을 막지 않게 한다. [MDN `<img>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img) 참고.
 

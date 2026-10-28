@@ -159,9 +159,9 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 ## 관련 글
 
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
-- [Semgrep·pnpm audit·osv-scanner로 MacFolio의 코드와 의존성 취약점 점검하기](/memo/security-scan)
+- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci)
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
 
 [^transitive]: 직접 설치한 패키지가 다시 의존하는 패키지. `package.json`에는 없지만 잠금 파일과 `node_modules`에는 포함된다.
 

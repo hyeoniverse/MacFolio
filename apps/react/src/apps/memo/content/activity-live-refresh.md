@@ -1,5 +1,5 @@
 ---
-title: visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅 (트래픽 분석 5)
+title: 트래픽 분석 5 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: '활동 상태 보기'와 메모의 조회수는 앱을 연 시각의 값에 머물러 있었다. 브라우저 탭이 보이고 앱 창이 열려 있는 동안만 1분마다 다시 조회하는 공통 훅(usePolling)을 만들고, 도구 막대에 마지막 갱신 시각과 새로 고침 버튼(⌥R)을 달았다. SSE·WebSocket과 비용을 비교한 표도 함께 남긴다.
@@ -113,11 +113,11 @@ SSE로 바꿔도 값이 더 빨리 바뀌지 않는다. 방문 이벤트는 브�
 
 ## 관련 글
 
-- [라이브러리 없는 SVG 그래프와 컨테이너 쿼리로 만든 '활동 상태 보기' 앱 (트래픽 분석 3)](/memo/analytics-activity-monitor): 활동 상태 보기를 처음 만든 글
-- [서버가 세션을 확인해 방문자와 관리자에게 범위를 나누는 분석 요약 응답 (트래픽 분석 4)](/memo/analytics-public): 방문자에게 요약을 공개하고 1분 캐시를 둔 글
-- [/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi): 메뉴 막대의 서버 상태도 탭이 보일 때만 확인한다
-- [video 요소와 브라우저에서 만든 포스터로 MP4·GIF를 배경화면에 적용하기](/memo/video-wallpaper): 숨은 탭에서 동영상 배경화면을 멈추는 같은 방법
-- [조회·댓글·좋아요 점수로 화면에서 순위를 계산하는 좋아요와 인기글 폴더](/memo/memo-likes-popular): 조회·댓글·좋아요로 인기글을 매기는 글
-- [usePolling을 메시지·댓글·위젯으로 넓히고 같은 요청을 하나로 묶기 (트래픽 분석 6)](/memo/live-refresh-more): 메시지·댓글·위젯으로 넓힌 후속 글
+- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor): 활동 상태 보기를 처음 만든 글
+- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public): 방문자에게 요약을 공개하고 1분 캐시를 둔 글
+- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi): 메뉴 막대의 서버 상태도 탭이 보일 때만 확인한다
+- [video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper): 숨은 탭에서 동영상 배경화면을 멈추는 같은 방법
+- [방문자 쿠키 HMAC으로 중복을 막는 로그인 없는 좋아요](/memo/memo-likes-popular): 조회·댓글·좋아요로 인기글을 매기는 글
+- [트래픽 분석 6 - 참조 수를 집계하는 공유 폴러로 같은 폴링 요청 하나로 묶기](/memo/live-refresh-more): 메시지·댓글·위젯으로 넓힌 후속 글
 
 #MacFolio #React #폴링

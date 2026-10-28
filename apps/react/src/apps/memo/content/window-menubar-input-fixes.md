@@ -1,5 +1,5 @@
 ---
-title: 캡처 단계 이벤트와 pointer capture로 고친 창·메뉴 막대 입력 버그
+title: 캡처 단계 이벤트와 pointer capture로 맞춘 화면과 입력 처리 영역
 date: 2026-10-22
 category: 개발 기록/MacFolio/프론트엔드
 summary: 최대화한 창은 크기 조절 커서만 표시되고 끌리지 않았고, Dock을 누르는 동안 메뉴 막대 앱 이름이 Finder로 깜빡였고, 음량 창은 맨 위를 눌러도 91%였다. 셋 다 화면에 보이는 것과 입력을 처리하는 조건·영역이 달랐던 곳이다.
@@ -67,7 +67,7 @@ Safari를 사용하는 중에 Dock의 메모를 누르면 메뉴 막대 앱 이�
 
 ### 원인
 
-메뉴 막대의 앱 이름은 "창 밖을 눌렀으면 Finder, 아니면 맨 앞 창의 앱"이다. 창 밖을 눌렀는지는 화면 전체를 덮는 바탕화면 레이어(`DesktopSurface`)가 `pointerdown` **캡처 단계**에서 `focusDesktop()`을 호출해 기록한다. 이 구조는 [foregroundApp으로 메뉴 막대의 앱 이름을 맨 앞 창에 맞추기](/memo/menu-bar-app-name)에 자세히 정리했다.
+메뉴 막대의 앱 이름은 "창 밖을 눌렀으면 Finder, 아니면 맨 앞 창의 앱"이다. 창 밖을 눌렀는지는 화면 전체를 덮는 바탕화면 레이어(`DesktopSurface`)가 `pointerdown` **캡처 단계**에서 `focusDesktop()`을 호출해 기록한다. 이 구조는 [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name)에 자세히 정리했다.
 
 메뉴 막대와 메뉴는 예외 목록으로 이 처리를 건너뛰는데, Dock은 목록에 없었다. 반면 Dock은 앱을 `click`에서 연다.
 
@@ -193,8 +193,8 @@ range는 삭제하지 않았다. 방향키 조작과 화면 읽기 프로그램�
 
 ## 관련 글
 
-- [foregroundApp으로 메뉴 막대의 앱 이름을 맨 앞 창에 맞추기](/memo/menu-bar-app-name): 바탕화면 레이어의 캡처 핸들러와 예외 목록 전체
-- [useState·Context에 있던 창 관리 규칙을 프레임워크와 무관한 desktop-core 패키지로 옮기기](/memo/desktop-core-windows): 창 순서와 최소화 상태를 관리하는 창 store
-- [/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi): 음량 창을 메뉴 막대 항목(`VolumeMenu`)으로 바꾼 일
+- [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name): 바탕화면 레이어의 캡처 핸들러와 예외 목록 전체
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): 창 순서와 최소화 상태를 관리하는 창 store
+- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi): 음량 창을 메뉴 막대 항목(`VolumeMenu`)으로 바꾼 일
 
 #MacFolio #데스크톱 #PointerEvents #트러블슈팅

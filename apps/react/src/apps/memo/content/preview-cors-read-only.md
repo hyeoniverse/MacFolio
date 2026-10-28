@@ -134,10 +134,10 @@ curl -s -o /dev/null -w '%{http_code}\n' -H 'Origin: https://feat-x-macfolio.hye
 
 ## 관련 글
 
-- [@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
+- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 
 #MacFolio #보안 #CORS #NestJS

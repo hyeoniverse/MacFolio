@@ -442,7 +442,7 @@ EOF
 ## 관련 글
 
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 편집기 검사와 같은 규칙을 CI에서도 확인하는 방법
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion): Playwright 확장으로 실행하는 시험의 구성
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion): Playwright 확장으로 실행하는 시험의 구성
 - [npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기](/memo/typescript-7-side-by-side): 편집기·컴파일러·린트가 서로 다른 TypeScript 버전을 쓰는 경우
 - [Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup): 확장이 쓰는 Node·패키지 도구 설치
 

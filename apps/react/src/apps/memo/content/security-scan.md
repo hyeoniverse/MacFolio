@@ -1,5 +1,5 @@
 ---
-title: Semgrep·pnpm audit·osv-scanner로 MacFolio의 코드와 의존성 취약점 점검하기
+title: Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기
 date: 2026-10-18
 category: 개발 기록/MacFolio/품질
 summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다. Semgrep이 7건을 냈고 오탐 4, 영향 없음 3, 실제 취약점은 0이었다. 영향 없음 3건은 수정했고, 라이선스를 집계했고, ERROR만 차단하는 CI 작업을 추가했다.
@@ -192,10 +192,10 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 
 ## 관련 글
 
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
+- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 - [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
 - [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 
 PR: [#252](https://github.com/hyeoniverse/MacFolio/pull/252)
 

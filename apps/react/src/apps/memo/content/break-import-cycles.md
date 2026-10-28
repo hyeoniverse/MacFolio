@@ -1,5 +1,5 @@
 ---
-title: madge로 찾은 순환 import를 셋째 파일과 manifest로 끊고 pnpm cycles로 CI에서 막기
+title: madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
 summary: madge로 측정하니 순환 의존이 둘 있었다. 메일의 두 화면이 서로를, 앱 목록(registry)과 Finder가 서로를 import했다. 공통 타입은 셋째 파일로, 앱 이름 목록은 manifest로 옮겨 끊고, pnpm cycles를 CI에 넣었다. 도구 비교와 현재 검사 파일 수를 더했다.
@@ -136,10 +136,10 @@ CI의 `check` 작업에도 같은 명령이 있어서([.github/workflows/ci.yml]
 
 ## 관련 글
 
-- [madge 순환 의존 검사와 큰 파일 분할, 파일 이름 규칙 (리팩터링 2단계)](/memo/refactor-step2-structure)
+- [리팩터링 2단계 - 순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
 - [폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)
 - [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [Resend API와 Turnstile로 메일 앱에서 서버가 직접 메일 발송하기](/memo/contact-mail)
-- [사이트 데이터를 폴더로 구성한 Finder 앱과 다른 앱에 보내는 열기 요청 store](/memo/finder-app)
+- [Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
 
 #MacFolio #리팩터링 #madge #순환의존

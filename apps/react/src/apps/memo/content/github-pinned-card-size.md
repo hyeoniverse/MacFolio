@@ -1,5 +1,5 @@
 ---
-title: grid-auto-rows 1fr와 line-clamp, margin-top auto로 고정 저장소 카드 높이 맞추기
+title: grid-auto-rows 1fr와 line-clamp, margin-top auto로 카드 높이 맞추기
 date: 2026-10-03
 category: 개발 기록/MacFolio/프론트엔드
 summary: GitHub 앱의 Pinned 카드가 설명 길이에 따라 줄마다 높이가 달랐고, 설명 없는 카드는 언어 줄이 위쪽에 배치됐다. grid-auto-rows: 1fr, 세 줄 말줄임, margin-top: auto 세 가지 CSS로 모든 카드를 같은 크기로 맞추고 E2E로 높이를 측정한다.
@@ -113,8 +113,8 @@ expect(new Set(boxes.map((box) => box.metaGap)).size).toBe(1);
 
 ## 관련 글
 
-- [GitHub API 응답 서버 캐시와 rehype-sanitize로 그리는 GitHub 앱 프로필·README](/memo/github-live-profile)
-- [github.com HTML 파싱과 공개 이벤트로 GitHub 앱에 잔디와 활동 기록 더하기](/memo/github-activity)
+- [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
+- [토큰 없이 github.com HTML 조각을 서버에서 파싱하는 기여 달력](/memo/github-activity)
 - [시간이 바뀔 때 움찔하던 메뉴 막대](/memo/menubar-clock-width): 같은 시기의 레이아웃 고정 수정
 
 #MacFolio #GitHub #CSS

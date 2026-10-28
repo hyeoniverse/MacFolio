@@ -1,5 +1,5 @@
 ---
-title: deletedAt 열과 CHECK 제약으로 삭제한 메모를 30일 동안 복구하는 최근 삭제된 항목
+title: deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제
 date: 2026-10-01
 category: 개발 기록/MacFolio/프론트엔드
 summary: 삭제한 메모를 복구할 방법이 없어 macOS 메모처럼 '최근 삭제된 항목'을 추가했다. Post에 deletedAt 열과 CHECK 제약을 추가하고, 복구·영구 삭제·30일 정리 API와 드래그 앤 드롭을 구현했다. 저장소 Markdown 글을 숨기는 표시가 핵심이었다.
@@ -190,7 +190,7 @@ E2E에서는 Playwright의 [`locator.dragTo`](https://playwright.dev/docs/api/cl
 ## 관련 글
 
 - [메모 앱 태그](/memo/memo-tags)
-- [CSS 그리드 경계 위에 절대 위치로 둔 리사이즈 핸들로 메모 칸 너비 조절하기](/memo/memo-pane-resize)
+- [그리드 칸을 차지하지 않는 절대 위치 리사이즈 핸들로 칸 너비 조절하기](/memo/memo-pane-resize)
 - [메모 다듬기](/memo/notes-polish)
 - [메모 잠그기](/memo/memo-lock)
 - [휴지통 앱](/memo/bin-app)

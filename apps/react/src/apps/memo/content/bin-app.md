@@ -1,5 +1,5 @@
 ---
-title: localStorage·sessionStorage에 저장한 사이트 데이터를 표시하고 삭제하는 휴지통 앱
+title: 사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기
 date: 2026-10-09
 category: 개발 기록/MacFolio/프론트엔드
 summary: 클릭해도 동작이 없던 Dock의 휴지통을 앱으로 구현했다. 폐기한 기능을 전시하는 화면으로 만들었다가 하루 만에 제거하고, 이 사이트가 브라우저에 저장한 데이터를 표시하고 삭제하는 화면으로 바꿨다. 새 저장 키의 누락을 검출하는 시험과 이후 변경 사항까지 정리했다.
@@ -75,7 +75,7 @@ it('코드가 쓰는 macfolio: 저장 키를 모두 다룬다 (새 키를 쓰면
 });
 ```
 
-목록은 코드 안의 배열(`src/apps/bin/siteStorage.ts`의 `BROWSER_DATA`)이다. 새 키를 사용하면서 이 배열에 추가하지 않으면, 휴지통이 그 데이터를 인식하지 못한 채 "남긴 것이 없습니다"를 표시한다. 그래서 단위 시험이 소스 전체에서 `localStorage`·`sessionStorage`를 사용하는 파일의 `macfolio:` 키를 수집해, 모두 목록에 있는지 확인한다([storage.ts의 readJson·writeJson으로 브라우저 저장소 try/catch 열두 개 통합하기](/memo/shared-storage) 이후에는 키가 `STORAGE_KEYS` 한 곳에 모였다).
+목록은 코드 안의 배열(`src/apps/bin/siteStorage.ts`의 `BROWSER_DATA`)이다. 새 키를 사용하면서 이 배열에 추가하지 않으면, 휴지통이 그 데이터를 인식하지 못한 채 "남긴 것이 없습니다"를 표시한다. 그래서 단위 시험이 소스 전체에서 `localStorage`·`sessionStorage`를 사용하는 파일의 `macfolio:` 키를 수집해, 모두 목록에 있는지 확인한다([readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage) 이후에는 키가 `STORAGE_KEYS` 한 곳에 모였다).
 
 방문자 이름 쿠키(`macfolio_visitor`)는 다르게 처리한다. 서버가 설정하는 [httpOnly 쿠키](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#security)라 사이트의 JavaScript가 읽거나 삭제할 수 없다. 그래서 쿠키의 용도와 브라우저 설정에서 삭제하는 방법만 안내한다. 쿠키 존재 여부를 확인하려고 서버의 `GET /visitor`를 호출하지도 않는다. 그 요청이 쿠키가 없는 방문자에게 새 쿠키를 발급하기 때문이다.
 
@@ -102,7 +102,7 @@ iOS에는 휴지통 앱이 없다. 그래서 앱 정보에 `desktopOnly`를 지�
 
 - 목록은 4개에서 7개로 늘었다. 날씨 장소, 바탕화면 아이콘 위치, 이 브라우저에 저장한 메시지가 추가됐다. 새 키를 사용하는 기능은 위의 시험 때문에 목록에 추가하지 않으면 CI를 통과할 수 없다.
 - 10월 18일에는 Finder에서 "휴지통으로 이동"한 항목(생성한 폴더, 업로드한 파일)도 표시하게 했다. 오른쪽 클릭으로 복원하거나 영구 삭제한다(`TrashedItems.tsx`).
-- Dock의 휴지통 아이콘은 비었을 때와 찼을 때 이미지가 다르다([같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완한 빈 휴지통 아이콘](/memo/bin-empty-state)).
+- Dock의 휴지통 아이콘은 비었을 때와 찼을 때 이미지가 다르다([같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완하기](/memo/bin-empty-state)).
 
 ## 남은 과제와 정리
 
@@ -112,10 +112,10 @@ iOS에는 휴지통 앱이 없다. 그래서 앱 정보에 `desktopOnly`를 지�
 
 ## 관련 글
 
-- [같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완한 빈 휴지통 아이콘](/memo/bin-empty-state)
+- [같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완하기](/memo/bin-empty-state)
 - [참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기](/memo/server-files-cleanup)
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
 - [CRA에서 Vite로 옮기기](/memo/cra-to-vite)
-- [storage.ts의 readJson·writeJson으로 브라우저 저장소 try/catch 열두 개 통합하기](/memo/shared-storage)
+- [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)
 
 #MacFolio #데스크톱 #개인정보

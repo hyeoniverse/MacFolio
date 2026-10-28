@@ -1,5 +1,5 @@
 ---
-title: z-index·data-compact·grid-column으로 날씨 앱 레이아웃 기준 하나로 맞추기
+title: useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준
 date: 2026-10-16
 category: 개발 기록/MacFolio/프론트엔드
 summary: 날씨 앱에서 신호등이 사이드바에 가려졌고, 641~767px 휴대폰 화면에 넓은 창 모양이 렌더링되었고, 장소가 하나면 목록 버튼이 밀려났다. 셋 다 두 규칙이 서로 다른 기준을 쓰던 곳이라 기준을 하나로 통일하고 E2E 시험 3개로 검증했다.
@@ -109,10 +109,10 @@ iOS 모양의 하단 막대는 3열 그리드다(`grid-template-columns: 48px 1f
 
 ## 관련 글
 
-- 날씨 앱을 처음 만든 일: [Open-Meteo와 내장 도시 211곳 검색으로 만든 macOS 날씨 앱](/memo/weather-app)
+- 날씨 앱을 처음 만든 일: [Open-Meteo 지오코딩 지연을 내장 도시 목록 우선 검색으로 줄이기](/memo/weather-app)
 - 쌓임 맥락 때문에 버튼이 클릭되지 않던 일: [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)
-- 화면 전체의 z-index 정리: [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers)
-- 좁은 창에서 제목이 잘리던 일: [컨테이너 쿼리 좁은 창에서 신호등 버튼과 겹치지 않게 음악·Safari 상단 여백 맞추기](/memo/narrow-window-title)
+- 화면 전체의 z-index 정리: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- 좁은 창에서 제목이 잘리던 일: [컨테이너 쿼리 좁은 창에서 flex: none으로 신호등 버튼 영역 확보하기](/memo/narrow-window-title)
 - 최소화했다 다시 열면 `useCompact`가 폭을 측정하지 못하던 일: [callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기](/memo/memo-restore-compact)
 - PR: [#226](https://github.com/hyeoniverse/MacFolio/pull/226)
 

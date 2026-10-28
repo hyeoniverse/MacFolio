@@ -142,11 +142,11 @@ CI에서만 '오전'이 'AM'이 된 경우처럼, 로컬과 CI의 결과가 다�
 
 ## 관련 글
 
-- [Playwright와 E2E 가짜 API로 블로그 스크린샷 찍기](/memo/screenshots-with-playwright)
-- [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers)
-- [useState·Context에 있던 창 관리 규칙을 프레임워크와 무관한 desktop-core 패키지로 옮기기](/memo/desktop-core-windows)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)
 - [음악 앱 버그 세 가지 - 꺼진 앱, 쌓이는 표지, 끝없이 내려가는 시트](/memo/music-player-fixes)
-- [Reflect.getMetadata로 읽은 API 경로 64개를 표 하나로 고정하는 시험](/memo/api-route-table-test)
+- [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
 
 [^e2e]: End-to-End 시험. 실제 브라우저로 사이트를 열고 사용자처럼 클릭·입력해 결과 화면을 확인한다. 이 저장소는 [Playwright](https://playwright.dev/)를 쓴다.
 

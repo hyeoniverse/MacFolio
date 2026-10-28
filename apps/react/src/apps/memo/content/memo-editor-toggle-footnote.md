@@ -1,5 +1,5 @@
 ---
-title: Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기
+title: Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기
 date: 2026-10-15
 category: 개발 기록/MacFolio/프론트엔드
 summary: 편집기 서식 메뉴에 토글 목록과 각주를 추가하고, <details> 표기를 토글로 읽어 같은 표기로 저장한다. 220~440px가 취소선이 되던 문제, 마지막 글이 이동하면 폴더가 사라지던 문제, 긴 요약 때문에 게시가 실패하던 문제도 수정했다.
@@ -72,7 +72,7 @@ export function keepFolder(organization: Organization, path: string): Organizati
 
 ![폴더 목록의 두 출처](./images/memo-editor-toggle-footnote-folders.svg '글의 폴더에서만 생긴 폴더는 마지막 글이 이동하면 사라졌다. 이동 시 만든 폴더로 보관한다')
 
-토글과 각주가 필요해진 시점은 10월 12일 [병합 방식 글](/memo/merge-strategies)을 수정할 때였다. first-parent, bisect 같은 용어에 부연 설명을 붙이니 본문이 길어져서 설명을 각주로 분리하려 했고, 글 앞의 "먼저 알아 둘 용어"는 ▸ 토글로 접으려 했다. 저장소 Markdown에서는 사용할 수 있었지만 메모 편집기에는 두 기능 모두 없었다. 접기 토글을 추가한 뒤에는 그 모서리 반경이 다른 요소와 같은지도 확인했다([border-radius 239곳을 --radius-xs~full 여섯 디자인 토큰으로 바꾸기](/memo/radius-tokens)).
+토글과 각주가 필요해진 시점은 10월 12일 [병합 방식 글](/memo/merge-strategies)을 수정할 때였다. first-parent, bisect 같은 용어에 부연 설명을 붙이니 본문이 길어져서 설명을 각주로 분리하려 했고, 글 앞의 "먼저 알아 둘 용어"는 ▸ 토글로 접으려 했다. 저장소 Markdown에서는 사용할 수 있었지만 메모 편집기에는 두 기능 모두 없었다. 접기 토글을 추가한 뒤에는 그 모서리 반경이 다른 요소와 같은지도 확인했다([자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)).
 
 ## 편집기에 토글 목록과 각주
 
@@ -162,9 +162,9 @@ runner: (state, node) => {
 
 - [메모 앱이 읽는 접기 블록과 각주 (GitHub 병합 방식 글)](/memo/merge-strategies)
 - [메모 폴더 정리 API](/memo/memo-organization-api)
-- [macOS 메모 방식의 한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기](/memo/memo-one-style-per-line)
-- [remark-stringify 이스케이프와 ProseMirror 플러그인 상태로 문서 상태와 화면 상태 나누기](/memo/memo-editor-tags-toggle-revert): › 로 접은 상태를 저장하던 방식을 화면 상태로 바꾼 후속 수정
-- [CSS 그리드 경계 위에 절대 위치로 둔 리사이즈 핸들로 메모 칸 너비 조절하기](/memo/memo-pane-resize)
-- [border-radius 239곳을 --radius-xs~full 여섯 디자인 토큰으로 바꾸기](/memo/radius-tokens)
+- [한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기](/memo/memo-one-style-per-line)
+- [토글 펼침 여부를 문서 대신 ProseMirror 플러그인 상태에 두기](/memo/memo-editor-tags-toggle-revert): › 로 접은 상태를 저장하던 방식을 화면 상태로 바꾼 후속 수정
+- [그리드 칸을 차지하지 않는 절대 위치 리사이즈 핸들로 칸 너비 조절하기](/memo/memo-pane-resize)
+- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
 
 #MacFolio #메모앱 #트러블슈팅 #프론트엔드

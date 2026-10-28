@@ -1,5 +1,5 @@
 ---
-title: Resend API와 Turnstile로 메일 앱에서 서버가 직접 메일 발송하기
+title: Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
 summary: mailto 링크로 동작하던 메일 앱의 보내기를 서버가 Resend API로 직접 발송하도록 바꿨다. 방문자 주소는 Reply-To에 넣고, 스팸은 Turnstile과 하루 상한으로 차단하며, 설정이 없으면 기존처럼 메일 앱을 연다. 발송 방식 비교, 요청 처리 순서, 시험, 이후 변경 사항을 정리한다.
@@ -102,7 +102,7 @@ Resend API 키, 받는 주소, 보내는 주소 세 값이 모두 있어야 서�
 | 날짜      | 변경                    | 내용                                                                                                                                                                                                                                                                                    |
 | --------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 10월 7일  | 보낸 메일 저장          | 발송한 브라우저의 '보낸 편지함'에 방문자 쿠키 기준으로 필터링해 표시하고, 관리자는 받은 편지함에서 조회·답장한다. 보관 기간은 1년이다([메일 앱의 편지함](/memo/mail-mailboxes)). e2e에 "보낸 메일은 보낸 브라우저의 보낸 편지함에만 보인다", "받은 편지함과 답장은 관리자만"이 추가됐다 |
-| 10월 10일 | 사람 확인 켜고 끄기     | 관리자가 시스템 설정에서 메일·댓글·메시지별로 Turnstile을 켜고 끈다. 꺼져 있으면 `GET /contact`의 사이트 키는 `null`이다([Turnstile 사람 확인을 requireHuman 하나로 묶고 시스템 설정에서 켜고 끄기](/memo/privacy-security-settings))                                                   |
+| 10월 10일 | 사람 확인 켜고 끄기     | 관리자가 시스템 설정에서 메일·댓글·메시지별로 Turnstile을 켜고 끈다. 꺼져 있으면 `GET /contact`의 사이트 키는 `null`이다([Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings))                                                     |
 | 10월 10일 | 입력 규칙을 contracts로 | 이름·주소·제목·내용 규칙과 실패 문구를 `packages/contracts`의 스키마로 옮겨 화면과 서버가 같은 정의를 사용한다([연락 메일 계약](/memo/contracts-contact))                                                                                                                               |
 
 ## 남은 과제와 배운 점
@@ -143,10 +143,10 @@ pnpm --filter @macfolio/api test:e2e test/contact.e2e.test.ts
 
 ## 관련 글
 
-- [방문자 쿠키 HMAC으로 필터링하는 보낸 편지함과 관리자 받은 편지함](/memo/mail-mailboxes)
-- [zod superRefine으로 첫 실패 문구 하나만 반환해 화면과 서버의 연락 메일 검사 맞추기](/memo/contracts-contact)
-- [Turnstile 사람 확인을 requireHuman 하나로 묶고 시스템 설정에서 켜고 끄기](/memo/privacy-security-settings)
-- [Apple 메뉴의 '이 Mac에 관하여'를 앱이 아닌 시스템 창으로 구현하기](/memo/about-this-mac)
+- [방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
+- [zod superRefine으로 첫 실패 문구만 반환하는 화면·서버 공통 검사](/memo/contracts-contact)
+- [Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings)
+- [앱 목록에 등록하지 않고 데스크톱이 직접 렌더링하는 시스템 창](/memo/about-this-mac)
 
 [^reply-to]: `Reply-To`는 받은 사람이 답장할 때 사용할 주소를 지정하는 메일 헤더다([RFC 5322 3.6.2](https://www.rfc-editor.org/rfc/rfc5322#section-3.6.2)). `From`과 달리 발신 도메인 인증(SPF·DKIM)과 관계가 없다.
 

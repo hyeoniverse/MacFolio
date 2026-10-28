@@ -1,5 +1,5 @@
 ---
-title: tabular-nums와 그리드 셀 겹치기로 메뉴 막대 시계 칸 너비 고정하기
+title: tabular-nums와 그리드 셀 겹치기로 가변 폭 텍스트의 칸 너비 고정하기
 date: 2026-10-03
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메뉴 막대 오른쪽 끝의 시계 글자 너비가 바뀔 때마다 그 왼쪽의 재생·Wi-Fi·배터리 아이콘이 이동했다. tabular-nums와, 숨긴 가장 넓은 시각 문자열을 같은 그리드 셀에 겹쳐 배치하는 방법으로 시계 칸 너비를 고정했다.
@@ -114,8 +114,8 @@ expect((await wifi.boundingBox())!.x).toBe(before.x);
 
 ## 관련 글
 
-- [foregroundApp으로 메뉴 막대의 앱 이름을 맨 앞 창에 맞추기](/memo/menu-bar-app-name)
-- [앱이 등록하고 메뉴 막대가 공통 메뉴와 병합하는 파일·보기·윈도우 메뉴 구조](/memo/menubar-menus)
-- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄·홈 인디케이터 색 정하기](/memo/mobile-bars-contrast)
+- [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name)
+- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
+- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)
 
 #MacFolio #데스크톱 #메뉴막대 #CSS

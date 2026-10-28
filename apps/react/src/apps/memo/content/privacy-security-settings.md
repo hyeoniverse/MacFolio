@@ -1,5 +1,5 @@
 ---
-title: Turnstile 사람 확인을 requireHuman 하나로 묶고 시스템 설정에서 켜고 끄기
+title: Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기
 date: 2026-10-10
 category: 개발 기록/MacFolio/백엔드
 summary: 메일에만 있던 Cloudflare Turnstile 사람 확인을 댓글·메시지에도 걸 수 있게 하고, macOS '개인정보 보호 및 보안' 모양 화면에서 관리자가 곳마다 켜고 끄게 했다. 설정은 서버 DB의 한 행짜리 테이블에 저장하고, 확인은 requireHuman 함수 하나로 통합했다.
@@ -125,7 +125,7 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 - 서버에 Turnstile 키가 없으면 켜 두어도 확인하지 않는다. 쓰기는 차단되지 않지만 사람 확인도 없는 상태이므로, 관리자는 화면의 "켜도 확인하지 않는다" 안내를 확인해야 한다.
 - 설정은 메모리에 캐시하고 관리자가 바꿀 때만 다시 조회한다. API 서버가 한 대이기 때문에 가능한 방식이다. 서버가 여러 대가 되면 변경을 처리하지 않은 서버의 캐시는 갱신되지 않는다.
 - 시험용 가짜 스크립트도 실제 위젯과 같은 순서(토큰 전달 → 완료 표시)로 동작해야 시험 결과를 신뢰할 수 있다. 순서가 다르면 앱이 정상적으로 차단해도 시험이 실패한다.
-- 쓰기를 제한하는 장치는 사람 확인 외에 요청 제한이 있고, 두 장치를 함께 적용한다([@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)).
+- 쓰기를 제한하는 장치는 사람 확인 외에 요청 제한이 있고, 두 장치를 함께 적용한다([@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)).
 
 ## 적용 방법
 
@@ -139,9 +139,9 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 
 ## 관련 글
 
-- [@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [scrypt 비밀번호 해시와 IP HMAC으로 저장하는 가입 없는 블로그 댓글](/memo/post-comments)
-- [서버 연결에 실패하면 메시지 앱을 닫는 경고창과 VITE_MESSAGES_STORE로 저장소 고르기](/memo/messages-offline)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
+- [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
 
 [^turnstile]: Cloudflare가 제공하는 CAPTCHA 대체 서비스. 방문자 브라우저에서 위젯이 토큰을 발급하고, 서버가 그 토큰을 Cloudflare에 보내 사람인지 검증한다.
 

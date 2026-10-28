@@ -166,10 +166,10 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API (트래픽 분석 1)](/memo/analytics-api)
-- [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)
-- [node:crypto로 SDK 없이 Oracle API 요청 서명을 만들어 요금과 예산 조회하기](/memo/oci-billing)
-- [라이브러리 없는 SVG 그래프와 컨테이너 쿼리로 만든 '활동 상태 보기' 앱 (트래픽 분석 3)](/memo/analytics-activity-monitor)
+- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
+- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
 
 [^referrer]: 현재 페이지로 이동하기 직전 페이지의 주소. 브라우저가 `Referer` 요청 헤더와 `document.referrer`로 제공한다([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer)).
 

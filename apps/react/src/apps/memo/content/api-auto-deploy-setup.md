@@ -1,11 +1,11 @@
 ---
-title: GitHub Actions 자동 배포를 GHCR 이미지와 SSH 키로 실제 서버에 적용하기
+title: GHCR 이미지와 SSH 배포 키로 GitHub Actions 자동 배포 적용하기
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
 summary: 로컬에서 모두 시험한 자동 배포를 실제 서버에 적용하면서 다섯 번 막혔다. 첫 배포의 백업, 자리표시, 명령 실행 위치 혼동, 두 번 만든 SSH 키, Secrets보다 먼저 한 머지. 실패한 실행이 배포를 누락시킨 일과, 비교 대상을 서버 버전으로 바꾼 것까지 적었다.
 ---
 
-[GHCR 이미지와 command= 제한 SSH 키로 API 자동 배포하고 실패 시 이전 이미지로 되돌리기](/memo/api-auto-deploy)는 로컬 레지스트리로 성공·실패·되돌리기까지 시험한 뒤 머지했다. 남은 작업은 실제 서버에 적용하는 세 가지였다.
+[command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)는 로컬 레지스트리로 성공·실패·되돌리기까지 시험한 뒤 머지했다. 남은 작업은 실제 서버에 적용하는 세 가지였다.
 
 1. 서버 `compose.yml`의 api 서비스를 `build:`에서 `image:`로 바꾼다.
 2. 첫 배포를 실행한다.
@@ -29,7 +29,7 @@ error while interpolating services.api.image: required variable API_TAG is missi
 백업 실패: pg_dump
 ```
 
-첫 배포에는 `.env`에 `API_TAG`가 없는데, 서버 `compose.yml`의 `${API_TAG:?…}` 때문에 배포 직전 백업(`docker compose exec db pg_dump`)까지 거부됐다. 원인과 수정 방법은 [GHCR 이미지와 command= 제한 SSH 키로 API 자동 배포하고 실패 시 이전 이미지로 되돌리기](/memo/api-auto-deploy)의 '서버에서 처음 실행하자 백업에서 멈췄다'에 적었다([#107](https://github.com/hyeoniverse/MacFolio/pull/107)). 수정이 배포되기 전에는 환경 변수로 태그를 직접 넘겨 `API_TAG=sha-a38ac7e ops/deploy.sh sha-a38ac7e`로 첫 배포를 마쳤다.
+첫 배포에는 `.env`에 `API_TAG`가 없는데, 서버 `compose.yml`의 `${API_TAG:?…}` 때문에 배포 직전 백업(`docker compose exec db pg_dump`)까지 거부됐다. 원인과 수정 방법은 [command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)의 '서버에서 처음 실행하자 백업에서 멈췄다'에 적었다([#107](https://github.com/hyeoniverse/MacFolio/pull/107)). 수정이 배포되기 전에는 환경 변수로 태그를 직접 넘겨 `API_TAG=sha-a38ac7e ops/deploy.sh sha-a38ac7e`로 첫 배포를 마쳤다.
 
 ## 2. `<태그>`를 그대로 붙여 넣었다
 
@@ -182,7 +182,7 @@ SSH 키의 `command=`·`restrict` 옵션은 [OpenSSH authorized_keys 설명](htt
 
 ## 관련 글
 
-- [GHCR 이미지와 command= 제한 SSH 키로 API 자동 배포하고 실패 시 이전 이미지로 되돌리기](/memo/api-auto-deploy)
+- [command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
 - [HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)

@@ -167,9 +167,9 @@ exiftool 받은.jpg | grep -iE 'gps|model|orientation'     # Orientation만 남�
 ## 관련 글
 
 - [참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기](/memo/server-files-cleanup)
-- [올린 파일 규칙을 contracts 공유 규칙과 서버 전용 검사로 나누기](/memo/contracts-files)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
-- [Semgrep·pnpm audit·osv-scanner로 MacFolio의 코드와 의존성 취약점 점검하기](/memo/security-scan)
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
 
 PR: [#163](https://github.com/hyeoniverse/MacFolio/pull/163)
 

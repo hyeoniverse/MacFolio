@@ -1,5 +1,5 @@
 ---
-title: 서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가
+title: 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
 summary: 관리자가 시스템 설정에서 프로젝트와 프로젝트 앱을 수정하고, 순서를 바꾸고, 숨기고, 추가한다. 서버에는 코드 기본값에 덮어쓸 값만 저장하고, 앱 목록을 계산하기 전에 합치며, 새 데모 주소는 Worker가 CSP에 추가한다.
@@ -7,7 +7,7 @@ summary: 관리자가 시스템 설정에서 프로젝트와 프로젝트 앱을
 
 프로필에 이어 프로젝트도 코드 밖에서 관리하게 했다([PR #187](https://github.com/hyeoniverse/MacFolio/pull/187)). 프로젝트는 Safari 탭, Finder의 프로젝트 폴더, 터미널 `projects`, 사진 앨범, 그리고 데모를 창 안의 iframe으로 표시하는 **프로젝트 앱**(Dock·Launchpad)이 함께 쓰는 목록이다. 이제 관리자가 **시스템 설정 › 프로젝트**에서 순서를 바꾸고, 숨기고, 수정하고, 새 프로젝트를 추가한다. 방문자에게는 이 항목이 보이지 않는다.
 
-이 글은 그 기능을 주제별로 정리한다. 데이터를 어떻게 저장하고 합치는지, 앱 모듈을 불러오기 전에 서버 값을 어떻게 합치는지, 편집 화면이 어떻게 생겼는지, 무엇을 검사하는지 차례로 적는다. 프로젝트 페이지의 모양(템플릿)을 다듬어 온 이야기는 길어서 [공통 내용 모델 위의 Safari 프로젝트 페이지 템플릿 9개로 다시 설계하기](/memo/site-projects-editing-templates)로 나눴다.
+이 글은 그 기능을 주제별로 정리한다. 데이터를 어떻게 저장하고 합치는지, 앱 모듈을 불러오기 전에 서버 값을 어떻게 합치는지, 편집 화면이 어떻게 생겼는지, 무엇을 검사하는지 차례로 적는다. 프로젝트 페이지의 모양(템플릿)을 다듬어 온 이야기는 길어서 [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)로 나눴다.
 
 ## 데이터 모델: 서버에는 덮어쓸 값만
 
@@ -92,7 +92,7 @@ void loadSiteContent().finally(() => import('./boot'));
 - 화면은 이 태그가 있으면 바로 사용하고, 없으면(로컬·E2E) API에 요청해 2.5초까지 기다린다. 그래도 실패하면 코드의 기본값으로 시작한다.
 - Worker는 수신한 값을 1분 동안 캐시하고(실패 결과는 10초), API가 1.5초 안에 응답하지 않으면 콘텐츠 없이 HTML을 응답한다.
 
-첫 화면은 원래 Worker를 거치지 않는 정적 파일이었다. [`run_worker_first`](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/)에 `["/", "/index.html"]`을 지정해 첫 화면만 Worker를 먼저 거치게 했다(이후 `/sitemap.xml`, `/rss.xml`이 추가되었다). 그림·코드 같은 나머지 파일은 그대로 Worker를 거치지 않는다([Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404) 참고).
+첫 화면은 원래 Worker를 거치지 않는 정적 파일이었다. [`run_worker_first`](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/)에 `["/", "/index.html"]`을 지정해 첫 화면만 Worker를 먼저 거치게 했다(이후 `/sitemap.xml`, `/rss.xml`이 추가되었다). 그림·코드 같은 나머지 파일은 그대로 Worker를 거치지 않는다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404) 참고).
 
 ### 새 데모 주소와 CSP
 
@@ -262,11 +262,11 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 ## 관련 글
 
 - [코드를 고치지 않고 프로필 바꾸기](/memo/site-profile-editing): 같은 방식의 앞선 작업
-- [공통 내용 모델 위의 Safari 프로젝트 페이지 템플릿 9개로 다시 설계하기](/memo/site-projects-editing-templates): 이 편집 화면이 고르는 페이지 모양 이야기
-- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps): 데모를 창 안에 표시하는 앱
-- [미리보기 슬라이드쇼와 프로젝트 발표 자료](/memo/project-slides)
-- [Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404): 이 글의 Worker가 시작된 작업
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers): `frame-src`를 처음 만든 작업
+- [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates): 이 편집 화면이 고르는 페이지 모양 이야기
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps): 데모를 창 안에 표시하는 앱
+- [pdf.js와 Fullscreen API로 구현한 PDF 슬라이드쇼](/memo/project-slides)
+- [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404): 이 글의 Worker가 시작된 작업
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers): `frame-src`를 처음 만든 작업
 - PR: [#187](https://github.com/hyeoniverse/MacFolio/pull/187), [#239](https://github.com/hyeoniverse/MacFolio/pull/239)
 
 [^upsert]: 행이 있으면 갱신(update)하고 없으면 생성(insert)하는 연산. 행 하나만 쓰는 설정 테이블에서 "처음 저장"과 "다시 저장"을 한 요청으로 처리한다.

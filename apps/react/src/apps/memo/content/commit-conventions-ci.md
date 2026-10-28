@@ -163,7 +163,7 @@ git push --force-with-lease
 
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies)
-- [main 기록 1,940커밋 집계로 정한 MacFolio의 Merge commit 전략](/memo/macfolio-merge-strategy): 브랜치 커밋이 main에 그대로 남아 커밋마다 메시지를 검사하는 이유
+- [main 커밋 기록 집계로 Merge commit 병합 전략 정하기](/memo/macfolio-merge-strategy): 브랜치 커밋이 main에 그대로 남아 커밋마다 메시지를 검사하는 이유
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
 - [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
 

@@ -94,7 +94,7 @@ Cloudflare 관련 값은 API 토큰(Workers 편집 권한)과 계정 ID만 GitHu
 
 ## 이후 변경 사항
 
-현재 `ci.yml`의 `deploy`는 `needs: [check, e2e-reuse, e2e, api-image, api-deploy]`다. 화면 E2E를 별도 작업으로 분리해 여러 샤드로 병렬 실행하고([Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci)), API 서버도 같은 워크플로에서 이미지를 빌드해 배포하면서([GHCR 이미지와 command= 제한 SSH 키로 API 자동 배포하고 실패 시 이전 이미지로 되돌리기](/memo/api-auto-deploy)) 선행 작업이 늘었다. 순서는 API 배포가 먼저, 프론트엔드 배포가 나중이다. 새 화면이 아직 배포되지 않은 API를 호출하는 상황을 막기 위해서다.
+현재 `ci.yml`의 `deploy`는 `needs: [check, e2e-reuse, e2e, api-image, api-deploy]`다. 화면 E2E를 별도 작업으로 분리해 여러 샤드로 병렬 실행하고([git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)), API 서버도 같은 워크플로에서 이미지를 빌드해 배포하면서([command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)) 선행 작업이 늘었다. 순서는 API 배포가 먼저, 프론트엔드 배포가 나중이다. 새 화면이 아직 배포되지 않은 API를 호출하는 상황을 막기 위해서다.
 
 ![지금 main에 push했을 때 작업이 기다리는 순서](./images/deploy-github-actions-needs.svg 'deploy는 시험과 API 배포가 모두 끝나야 실행된다')
 
@@ -131,7 +131,7 @@ CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=… pnpm exec wrangler versions u
 - [CRA에서 Vite로 옮기기](/memo/cra-to-vite)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci)
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
 

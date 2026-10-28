@@ -1,5 +1,5 @@
 ---
-title: AnalyticsService 분리와 요청 본문 검사의 공유 스키마 이전 (리팩터링 6단계)
+title: 리팩터링 6단계 - 책임별 서비스 분리와 공유 zod 스키마로 정리한 서버 코드
 date: 2026-10-18
 category: 개발 기록/MacFolio/백엔드
 summary: 리팩터링 6단계를 정리한다. 341줄 AnalyticsService를 저장·집계·조회 세 서비스로 분리하고, 관리자 설정 세 요청 본문과 데모 네 요청 본문의 수작업 검사를 1단계의 공유 스키마로 옮겼다. 경로·응답·거절 문구는 유지하고 API e2e 124개로 확인했다.
@@ -19,7 +19,7 @@ summary: 리팩터링 6단계를 정리한다. 341줄 AnalyticsService를 저장
 
 `summary`를 수정하려고 파일을 열면 요청 제한 맵과 타이머 코드까지 함께 읽어야 했다. 시험도 같았다. 집계만 시험하려 해도 요청 제한과 캐시가 포함된 클래스 전체를 생성해야 했다.
 
-입력 검사는 1단계([zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기 (리팩터링 1단계)](/memo/refactor-step1-types))에서 여덟 도메인을 `packages/contracts`[^contracts]로 옮겼지만, 관리자 설정(사진 캡션, 사람 확인, GitHub 앱 저장소)과 AI 데모(커버, 번역, 요약, 음성)는 서버의 if문으로 남아 있었다. 화면 코드에는 같은 상한(200자, 6개, 80자)이 별도 상수로 중복돼 있었다. 음성 데모의 검사 함수는 다음과 같았다.
+입력 검사는 1단계([리팩터링 1단계 - zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types))에서 여덟 도메인을 `packages/contracts`[^contracts]로 옮겼지만, 관리자 설정(사진 캡션, 사람 확인, GitHub 앱 저장소)과 AI 데모(커버, 번역, 요약, 음성)는 서버의 if문으로 남아 있었다. 화면 코드에는 같은 상한(200자, 6개, 80자)이 별도 상수로 중복돼 있었다. 음성 데모의 검사 함수는 다음과 같았다.
 
 ```ts
 // apps/api/src/speech/rules.ts (#236 전)
@@ -39,11 +39,11 @@ export function parseSpeechRequest(body: unknown): SpeechRequest {
 
 ## 변경 내용
 
-| 항목                | PR                                                       | 글                                                                                                    |
-| ------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| 분석 서비스 분리    | [#233](https://github.com/hyeoniverse/MacFolio/pull/233) | [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스 셋으로 나누기](/memo/analytics-service-split) |
-| 관리자 설정 세 본문 | [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | [if 문으로 쓴 입력 검사 세 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas)              |
-| 데모 네 본문        | [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | [AI 데모 입력 검사 네 개를 contracts의 zod 스키마로 화면과 서버가 공유하기](/memo/demo-input-schemas) |
+| 항목                | PR                                                       | 글                                                                                               |
+| ------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 분석 서비스 분리    | [#233](https://github.com/hyeoniverse/MacFolio/pull/233) | [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split) |
+| 관리자 설정 세 본문 | [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)                 |
+| 데모 네 본문        | [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | [AI 데모 입력 검사를 contracts zod 스키마로 화면과 서버가 공유하기](/memo/demo-input-schemas)    |
 
 ## 검토한 방법
 
@@ -154,10 +154,10 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 관련 글
 
-- [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스 셋으로 나누기](/memo/analytics-service-split)
-- [if 문으로 쓴 입력 검사 세 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas)
-- [AI 데모 입력 검사 네 개를 contracts의 zod 스키마로 화면과 서버가 공유하기](/memo/demo-input-schemas)
-- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기 (리팩터링 1단계)](/memo/refactor-step1-types)
+- [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)
+- [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)
+- [AI 데모 입력 검사를 contracts zod 스키마로 화면과 서버가 공유하기](/memo/demo-input-schemas)
+- [리팩터링 1단계 - zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
 
 [^module]: NestJS에서 컨트롤러와 서비스(프로바이더)를 묶는 단위. `@Module()`의 `providers`에 등록한 클래스는 생성자 주입으로 서로를 받는다.
 

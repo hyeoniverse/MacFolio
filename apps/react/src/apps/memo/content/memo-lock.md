@@ -1,5 +1,5 @@
 ---
-title: 메모 잠그기를 정리 내용의 locks와 서버의 409 응답으로 구현하기
+title: 정리 내용 JSON의 locks와 서버 409 응답으로 구현한 글 잠금
 date: 2026-10-01
 category: 개발 기록/MacFolio/프론트엔드
 summary: 관리자는 메모를 열면 바로 편집 상태가 된다. 완성한 글을 읽다가 실수로 수정하지 않도록 macOS 메모처럼 잠금을 추가했다. 암호 없이 메뉴로 잠그고, 고정과 같은 정리 내용 JSON에 저장하며, 서버도 409로 한 번 더 차단한다.
@@ -91,7 +91,7 @@ PR의 변경 규모는 17개 파일, 238줄 추가, 16줄 삭제다.
 ## 관련 글
 
 - [메모 폴더 정리 API](/memo/memo-organization-api)
-- [deletedAt 열과 CHECK 제약으로 삭제한 메모를 30일 동안 복구하는 최근 삭제된 항목](/memo/memo-recently-deleted)
+- [deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제](/memo/memo-recently-deleted)
 - [관리자 글쓰기](/memo/post-editor)
 - [초안과 버전 기록](/memo/drafts-and-versions)
 

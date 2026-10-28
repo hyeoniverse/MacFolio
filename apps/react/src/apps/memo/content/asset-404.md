@@ -1,5 +1,5 @@
 ---
-title: Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기
+title: not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
 summary: 사이트는 없는 주소에 항상 index.html을 200으로, 그것도 1년 캐시 헤더와 함께 응답했다. 배포로 삭제된 옛 코드 파일 요청도 마찬가지였다. 없는 주소만 처리하는 11줄짜리 Worker 함수로 앱 주소는 첫 화면, 파일 주소는 404로 분리했다.
@@ -25,7 +25,7 @@ GET /assets/Memo-doesnotexist.js  →  200 text/html
 2. 정적 자산에 파일이 없으므로 SPA 설정이 `index.html`을 `200 text/html`로, `_headers`의 1년 캐시 헤더와 함께 응답한다
 3. 브라우저는 MIME 형식이 맞지 않아 스크립트 실행을 거부한다
 
-옛 파일 자리에 `index.html`이 오면 브라우저는 MIME 형식이 맞지 않아 스크립트 실행을 거부한다. 운영 사이트에 옛 파일 요청을 재현하자 Chrome과 Safari(WebKit) 모두 앱 창 대신 '새 버전이 있습니다 — 새로고침해 주세요' 경고창이 표시되었다. 이 경우를 감지하는 처리([React.lazy 코드 로드 실패를 구분해 배포 직후 새로고침을 안내하는 OS 경고창](/memo/app-error-alert))가 이미 있어 앱이 완전히 멈추지는 않았지만, 응답 헤더에 더 큰 문제가 있었다.
+옛 파일 자리에 `index.html`이 오면 브라우저는 MIME 형식이 맞지 않아 스크립트 실행을 거부한다. 운영 사이트에 옛 파일 요청을 재현하자 Chrome과 Safari(WebKit) 모두 앱 창 대신 '새 버전이 있습니다 — 새로고침해 주세요' 경고창이 표시되었다. 이 경우를 감지하는 처리([삭제된 옛 코드 파일을 요청하는 React.lazy 로드 실패 구분하기](/memo/app-error-alert))가 이미 있어 앱이 완전히 멈추지는 않았지만, 응답 헤더에 더 큰 문제가 있었다.
 
 ```text
 GET /assets/Memo-doesnotexist.js
@@ -121,11 +121,11 @@ Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`로 �
 
 ## 관련 글
 
-- [React.lazy 코드 로드 실패를 구분해 배포 직후 새로고침을 안내하는 OS 경고창](/memo/app-error-alert): 이 문제가 화면에 드러난 경로
+- [삭제된 옛 코드 파일을 요청하는 React.lazy 로드 실패 구분하기](/memo/app-error-alert): 이 문제가 화면에 드러난 경로
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): Worker가 `index.html`로 보내는 앱 주소
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable): 이후 Worker에 추가된 SEO 처리
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable): 이후 Worker에 추가된 SEO 처리
 
 [^hash]: Vite는 빌드 결과 파일 이름에 내용으로 계산한 해시를 붙인다(`Memo-DJMDZtL5.js`). 내용이 같으면 이름도 같고, 내용이 바뀌면 이름이 바뀐다. 그래서 이름이 같은 파일은 오래 캐시해도 안전하다.
 

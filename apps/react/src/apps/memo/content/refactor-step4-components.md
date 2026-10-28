@@ -1,5 +1,5 @@
 ---
-title: 아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체하기 (리팩터링 4단계)
+title: 리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체
 date: 2026-10-18
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 리팩터링 4단계 회고. 후보 아홉 개를 다시 집계해 세 개만 컴포넌트로 만들고, 아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체했다. 스타일 동일 여부는 계산된 스타일로, 접근성 이름 여부는 타입과 시험으로 확인했다.
@@ -34,19 +34,19 @@ summary: 리팩터링 4단계 회고. 후보 아홉 개를 다시 집계해 세 
 
 ## 변경 목록
 
-| 항목                        | PR                                                       | 글                                                                                                     |
-| --------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 컴포넌트 목록과 후보 재집계 | [#210](https://github.com/hyeoniverse/MacFolio/pull/210) | [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)                                |
-| `Modal`                     | [#212](https://github.com/hyeoniverse/MacFolio/pull/212) | [모달 다이얼로그 5개를 Modal로](/memo/ui-modal)                                                        |
-| `Sheet`                     | [#220](https://github.com/hyeoniverse/MacFolio/pull/220) | [휴대폰 시트 3곳을 Sheet로](/memo/ui-sheet)                                                            |
-| CSS 레이어 순서 고정        | [#221](https://github.com/hyeoniverse/MacFolio/pull/221) | [CSS @layer 순서를 index.html 인라인 스타일에서 모든 CSS보다 먼저 선언하기](/memo/css-layer-order-fix) |
-| `SearchField`               | [#223](https://github.com/hyeoniverse/MacFolio/pull/223) | —                                                                                                      |
-| 접근성 이름 시험            | [#243](https://github.com/hyeoniverse/MacFolio/pull/243) | [IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기](/memo/ui-a11y-names)        |
-| '단추'를 '버튼'으로         | [#244](https://github.com/hyeoniverse/MacFolio/pull/244) | —                                                                                                      |
-| 아이콘 버튼 45곳            | [#245](https://github.com/hyeoniverse/MacFolio/pull/245) | [IconButton으로](/memo/icon-button-migrate)                                                            |
-| 텍스트 버튼 30곳            | [#246](https://github.com/hyeoniverse/MacFolio/pull/246) | [Button으로](/memo/text-button-migrate)                                                                |
-| 시트·모달 재조사            | [#247](https://github.com/hyeoniverse/MacFolio/pull/247) | [Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate)                                                    |
-| 데스크톱·휴대폰 짝          | [#250](https://github.com/hyeoniverse/MacFolio/pull/250) | [메뉴 모양을 variant로 고르기](/memo/ui-variant-pairs)                                                 |
+| 항목                        | PR                                                       | 글                                                                                                    |
+| --------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 컴포넌트 목록과 후보 재집계 | [#210](https://github.com/hyeoniverse/MacFolio/pull/210) | [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)                               |
+| `Modal`                     | [#212](https://github.com/hyeoniverse/MacFolio/pull/212) | [모달 다이얼로그 5개를 Modal로](/memo/ui-modal)                                                       |
+| `Sheet`                     | [#220](https://github.com/hyeoniverse/MacFolio/pull/220) | [휴대폰 시트 3곳을 Sheet로](/memo/ui-sheet)                                                           |
+| CSS 레이어 순서 고정        | [#221](https://github.com/hyeoniverse/MacFolio/pull/221) | [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix) |
+| `SearchField`               | [#223](https://github.com/hyeoniverse/MacFolio/pull/223) | —                                                                                                     |
+| 접근성 이름 시험            | [#243](https://github.com/hyeoniverse/MacFolio/pull/243) | [IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기](/memo/ui-a11y-names)       |
+| '단추'를 '버튼'으로         | [#244](https://github.com/hyeoniverse/MacFolio/pull/244) | —                                                                                                     |
+| 아이콘 버튼 45곳            | [#245](https://github.com/hyeoniverse/MacFolio/pull/245) | [IconButton으로](/memo/icon-button-migrate)                                                           |
+| 텍스트 버튼 30곳            | [#246](https://github.com/hyeoniverse/MacFolio/pull/246) | [Button으로](/memo/text-button-migrate)                                                               |
+| 시트·모달 재조사            | [#247](https://github.com/hyeoniverse/MacFolio/pull/247) | [Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate)                                                   |
+| 데스크톱·휴대폰 짝          | [#250](https://github.com/hyeoniverse/MacFolio/pull/250) | [메뉴 모양을 variant로 고르기](/memo/ui-variant-pairs)                                                |
 
 ## 구현
 
@@ -135,11 +135,11 @@ export const menuVariantClass = (variant: MenuVariant): string | undefined => (v
 ## 관련 글
 
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)
-- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal)
-- [계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기](/memo/icon-button-migrate)
-- [명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기](/memo/text-button-migrate)
-- [계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사](/memo/sheet-modal-migrate)
-- [CSS @layer 순서를 index.html 인라인 스타일에서 모든 CSS보다 먼저 선언하기](/memo/css-layer-order-fix)
+- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal)
+- [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate)
+- [명시도 0인 :where() 규칙으로 개별 글자 버튼을 공통 Button으로 옮기기](/memo/text-button-migrate)
+- [계산된 스타일 비교로 공통 Modal로 바꿀 수 있는 모달 가려내기](/memo/sheet-modal-migrate)
+- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
 
 [^specificity]: 명시도(specificity)는 여러 CSS 규칙이 같은 속성을 지정할 때 어느 규칙을 적용할지 정하는 점수다. `:where()` 안의 선택자는 명시도가 0이라, 다른 어떤 규칙에도 덮어쓰일 수 있다. [MDN Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) 참고.
 

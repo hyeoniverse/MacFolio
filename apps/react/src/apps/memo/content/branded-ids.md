@@ -120,11 +120,11 @@ pnpm --filter @macfolio/desktop-core test   # postSlug()·folderPath() 검사 �
 
 ## 관련 글
 
-- [index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기](/memo/profile-split)
-- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기 (리팩터링 1단계)](/memo/refactor-step1-types)
+- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [리팩터링 1단계 - zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)
-- [Markdown 글 위에 서버의 정리 JSON을 겹치는 메모 폴더 구조와 순차 저장](/memo/memo-organization-api)
-- [서버 /finder/layout에 저장하는 Finder 파일 시스템과 메모 폴더 동기화](/memo/finder-filesystem)
+- [Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)
 
 [^guard]: 반환 타입이 `value is PostSlug`인 함수. `true`를 반환한 분기 안에서 TypeScript가 값을 `PostSlug`로 좁혀 준다. [TypeScript 핸드북: Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
 

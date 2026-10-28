@@ -1,5 +1,5 @@
 ---
-title: remark-stringify 이스케이프와 ProseMirror 플러그인 상태로 문서 상태와 화면 상태 나누기
+title: 토글 펼침 여부를 문서 대신 ProseMirror 플러그인 상태에 두기
 date: 2026-10-23
 category: 개발 기록/MacFolio/프론트엔드
 summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, 토글을 펼치기만 해도 임시 저장되고, 서버 글이 같은 slug의 저장소 글을 가려 되돌릴 수 없었다. 저장 직전 unescapeTags, 화면 상태로 옮긴 펼침 여부, DELETE /posts/:slug/server-copy로 수정했다.
@@ -161,9 +161,9 @@ DB 마이그레이션은 없다. API는 경로 하나만 추가하므로 API와 
 
 ## 관련 글
 
-- [Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기](/memo/memo-editor-toggle-footnote): 토글 노드와 `revealed` 플러그인 상태를 처음 만든 글. 그 시점에는 › 로 접은 상태도 저장했다
+- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 토글 노드와 `revealed` 플러그인 상태를 처음 만든 글. 그 시점에는 › 로 접은 상태도 저장했다
 - [메모 태그](/memo/memo-tags): 본문의 `#태그`를 인식하는 규칙. 이 글의 첫 태그 문제는 그 규칙이 `\#`를 태그로 보지 않아서 드러났다
-- [macOS 메모 방식의 한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기](/memo/memo-one-style-per-line): 같은 편집기의 줄 서식 변환 수정
-- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions): 되돌리기가 삭제하는 `Post`·`PostRevision`의 구조
+- [한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기](/memo/memo-one-style-per-line): 같은 편집기의 줄 서식 변환 수정
+- [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions): 되돌리기가 삭제하는 `Post`·`PostRevision`의 구조
 
 #MacFolio #메모앱 #프론트엔드 #트러블슈팅 #ProseMirror

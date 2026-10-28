@@ -147,10 +147,10 @@ gitleaks git --redact --verbose --exit-code 1 .
 ## 관련 글
 
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
-- [Semgrep·pnpm audit·osv-scanner로 MacFolio의 코드와 의존성 취약점 점검하기](/memo/security-scan)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
-- [http-errors를 식별하는 전역 예외 필터와 비밀 값을 가리는 ConsoleLogger](/memo/error-log-masking)
-- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)
+- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
+- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
+- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 SSH 키 복구](/memo/oracle-ssh-key-recovery)
 
 [^entropy]: 섀넌 엔트로피. 문자열에 나타나는 각 문자의 빈도로 계산하는 무작위성 지표로, 같은 문자가 반복될수록 낮아진다. gitleaks는 규칙의 `entropy` 값보다 낮은 일치 항목을 검출에서 제외한다. [gitleaks README](https://github.com/gitleaks/gitleaks#configuration)
 
