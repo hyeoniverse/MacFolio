@@ -283,7 +283,7 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 
 - [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e): 레이아웃이 측정 뒤에 바뀌어 흔들린 다른 E2E 사례
 - [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities): 이번에 실패한 의존성 취약점 검사를 추가한 기록
-- [성능 최적화: 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로 (1~3차)](/memo/site-performance-diet): 저장소 글 원문을 별도 청크로 분리하고 웹 글꼴을 `swap`으로 바꾼 작업
+- [성능 최적화 2: 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 저장소 글 원문을 별도 청크로 분리하고 웹 글꼴을 `swap`으로 바꾼 작업
 - [Pointer Events와 FLIP으로 휴대폰 홈 화면 위젯을 2열 격자에서 끌어 옮기기](/memo/mobile-widget-reorder): 실패한 위젯 크기 시험을 추가한 작업
 - [Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci): E2E를 6칸으로 나눈 CI 구성
 

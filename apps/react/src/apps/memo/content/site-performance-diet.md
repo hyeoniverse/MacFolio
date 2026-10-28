@@ -1,11 +1,11 @@
 ---
-title: 성능 최적화: 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로 (1~3차)
+title: 성능 최적화 2: 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로
 date: 2026-10-22
 category: 개발 기록/MacFolio/품질
 summary: 성능 측정에서 찾은 병목을 하나씩 개선했다. 항목마다 문제, 근거, 수정한 코드의 전후, 효과, 시행착오를 정리했다. 글꼴 subset, 동적 import, modulepreload, WebP, HTML 첫 렌더링, 탭한 뒤에 렌더링하는 홈 화면까지.
 ---
 
-[성능 최적화: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)에서 원인을 찾았다. 3.8MB 글꼴, 첫 번들에 들어 있던 블로그 원문과 모든 앱의 코드, 큰 이미지와 영상, JS가 렌더링하던 로딩 화면이다. 이 글은 그것들을 하나씩 개선한 기록이다. 1차는 [#319](https://github.com/hyeoniverse/MacFolio/pull/319), 2·3차는 [#323](https://github.com/hyeoniverse/MacFolio/pull/323)으로 병합했다. 항목마다 **문제 → 탐지 방법 → 개선 방법(코드 전후) → 효과 → 시행착오** 순서로 정리했고, 효과가 큰 항목부터 배치했다.
+[성능 최적화 1: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)에서 원인을 찾았다. 3.8MB 글꼴, 첫 번들에 들어 있던 블로그 원문과 모든 앱의 코드, 큰 이미지와 영상, JS가 렌더링하던 로딩 화면이다. 이 글은 그것들을 하나씩 개선한 기록이다. 1차는 [#319](https://github.com/hyeoniverse/MacFolio/pull/319), 2·3차는 [#323](https://github.com/hyeoniverse/MacFolio/pull/323)으로 병합했다. 항목마다 **문제 → 탐지 방법 → 개선 방법(코드 전후) → 효과 → 시행착오** 순서로 정리했고, 효과가 큰 항목부터 배치했다.
 
 | 지표                                                           | 의미                                                          |
 | -------------------------------------------------------------- | ------------------------------------------------------------- |
@@ -480,11 +480,11 @@ useEffect(() => {
 | LCP             | 25.7초 → 6.2초 → 5.8초 → **3.2초**    | 5.8초 → 1.9초 → 1.7초 → **1.1초**       |
 | 첫 방문 전송량  | 4,893KB → 1,011KB → 725KB → **483KB** | 9,050KB → 2,177KB → 1,848KB → **771KB** |
 
-3차의 전송량은 로딩 화면을 탭하기 전까지다. 운영 사이트에서도 1차를 배포한 뒤 휴대폰이 53점에서 73점(LCP 31.5초 → 7.1초), 데스크톱이 60점에서 89점(LCP 5.8초 → 2.1초)이 되었다. 휴대폰을 브라우저 스로틀링으로 실제로 느리게 하면 3차는 92점, FCP·LCP 1.2~2.7초였다. 수치 해석 방법은 [성능 최적화: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)에 정리했다.
+3차의 전송량은 로딩 화면을 탭하기 전까지다. 운영 사이트에서도 1차를 배포한 뒤 휴대폰이 53점에서 73점(LCP 31.5초 → 7.1초), 데스크톱이 60점에서 89점(LCP 5.8초 → 2.1초)이 되었다. 휴대폰을 브라우저 스로틀링으로 실제로 느리게 하면 3차는 92점, FCP·LCP 1.2~2.7초였다. 수치 해석 방법은 [성능 최적화 1: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)에 정리했다.
 
 휴대폰 점수는 5회 중 87이 세 번, 78이 두 번이었다. 78일 때는 React가 다시 렌더링한 시작 안내가 LCP로 집계되었는데, 간헐적으로만 발생하는 원인은 아직 확인하지 못했다. 탭한 뒤에 수신하는 리소스 중 큰 것은 Font Awesome solid 글꼴(117KB)이다. 사용하는 글리프만 남기면 줄일 수 있지만, 프로젝트 내용(서버)에서 아이콘 이름을 선택할 수 있어 빌드 시각에 사용할 글리프를 모두 알 수 없다.
 
-재측정 결과는 [성능 최적화: Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기 (4차)](/memo/site-performance-remeasure)([#338](https://github.com/hyeoniverse/MacFolio/pull/338))에 정리했다.
+재측정 결과는 [성능 최적화 3: Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기](/memo/site-performance-remeasure)([#338](https://github.com/hyeoniverse/MacFolio/pull/338))에 정리했다.
 
 ## 시험
 
@@ -494,8 +494,8 @@ useEffect(() => {
 
 ## 관련 글
 
-- [성능 최적화: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)
-- [성능 최적화: Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기 (4차)](/memo/site-performance-remeasure)
+- [성능 최적화 1: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)
+- [성능 최적화 3: Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기](/memo/site-performance-remeasure)
 - [상태 표시줄과 홈 인디케이터를 어떤 배경에서도 보이게 — 그림을 읽고, 대비로 고르고, 양쪽을 따로](/memo/mobile-bars-contrast)
 
 #MacFolio #성능 #웹폰트 #코드분할 #Vite #WebP
