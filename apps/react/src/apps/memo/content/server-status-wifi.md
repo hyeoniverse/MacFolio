@@ -1,5 +1,5 @@
 ---
-title: 메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기
+title: /health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기
 date: 2026-10-05
 category: 개발 기록/MacFolio/프론트엔드
 summary: 장식이던 메뉴 막대의 Wi-Fi 아이콘을 이 사이트 API 서버의 상태 표시로 바꿨다. /health를 30초마다 호출해 응답 시간과 DB 상태를 막대 수로 표시한다. 메뉴가 화면 끝에서 잘리던 문제와 음량 창 위치가 어긋나던 문제도 함께 수정했다.
@@ -132,16 +132,16 @@ Wi-Fi 위치의 아이콘을 바꾸자 음량 창이 음량 아이콘에서 벗�
 
 ## 남은 것과 배운 것
 
-- **현재 브라우저 기준의 상태다.** 방문자의 네트워크가 느리면 서버가 정상이어도 '응답 느림'으로 표시된다. 서버 중단 알림은 별도의 업타임 모니터링이 담당한다([서버가 죽으면 알려 주기](/memo/server-uptime-and-logs)).
-- **PR 미리보기에서는 항상 "연결할 수 없음"이었다.** 서버가 미리보기 주소를 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)로 허용하지 않았기 때문이다. 이후 글에서 '이 주소에서는 쓸 수 없음' 상태로 구분했다([서버는 켜져 있는데 "서버에 연결할 수 없음"](/memo/server-status-blocked-origin)).
+- **현재 브라우저 기준의 상태다.** 방문자의 네트워크가 느리면 서버가 정상이어도 '응답 느림'으로 표시된다. 서버 중단 알림은 별도의 업타임 모니터링이 담당한다([GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)).
+- **PR 미리보기에서는 항상 "연결할 수 없음"이었다.** 서버가 미리보기 주소를 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)로 허용하지 않았기 때문이다. 이후 글에서 '이 주소에서는 쓸 수 없음' 상태로 구분했다([CORS 차단과 서버 중지를 no-cors 요청으로 구분하는 서버 상태 표시](/memo/server-status-blocked-origin)).
 - **고정 위치는 인접 요소가 바뀌면 어긋난다.** 음량 창의 `right: 8.5rem`처럼 인접 요소의 폭에 의존하는 숫자는, 인접 요소가 바뀌는 시각에 버그가 된다. 팝오버는 기준 요소를 측정해 배치하는 공통 함수 하나로 통합하는 편이 낫다.
 - **대소문자만 다른 파일 이름은 만들지 않는다.** CI(Linux)에서는 통과하고 macOS에서만 실패한다.
 
 ## 관련 글
 
 - [메뉴 막대의 배터리로 서버 자원과 방문 추이 보기](/memo/battery-server-resources)
-- [서버는 켜져 있는데 "서버에 연결할 수 없음"](/memo/server-status-blocked-origin)
-- [서버가 죽으면 알려 주기, 로그가 디스크를 채우지 않게](/memo/server-uptime-and-logs)
-- [메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu](/memo/shared-menu)
+- [CORS 차단과 서버 중지를 no-cors 요청으로 구분하는 서버 상태 표시](/memo/server-status-blocked-origin)
+- [GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)
+- [placement·useDismiss·Menu 세 모듈로 메뉴 다섯 벌을 하나로 합치기](/memo/shared-menu)
 
 #MacFolio #데스크톱 #메뉴막대 #서버

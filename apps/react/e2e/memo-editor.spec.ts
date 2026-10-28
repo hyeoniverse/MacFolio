@@ -44,7 +44,7 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('끝에 태그 줄이 있는 글을 고쳐 저장해도 첫 태그가 \\#로 깨지지 않는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		await memo.locator('.memo-item', { hasText: '테스트를 붙이자 보인 버그들' }).click();
+		await memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' }).click();
 		const editor = memo.locator('.ProseMirror');
 		await expect(editor).toBeVisible();
 		await editor.locator('> p').first().click();
@@ -1028,9 +1028,11 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(memo.getByRole('button', { name: '서식', exact: true }).first()).toBeVisible();
 		await memo.getByRole('button', { name: '메모 삭제', exact: true }).first().click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
-		await memo.locator('.memo-item', { hasText: '테스트를 붙이자 보인 버그들' }).click({ button: 'right' });
+		await memo
+			.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' })
+			.click({ button: 'right' });
 		await page.getByRole('menuitem', { name: '메모 삭제' }).click();
-		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveCount(0);
+		await expect(memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개' })).toHaveCount(0);
 		expect(api.posts.map((post) => [post.slug, post.deleted, Boolean(post.deletedAt)])).toEqual([
 			['cra-to-vite', true, true],
 			['bugs-found-by-tests', true, true],
@@ -1042,7 +1044,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await trash.click();
 		const items = memo.locator('.memo-item');
 		await expect(items).toHaveCount(2);
-		await expect(items.first()).toContainText('테스트를 붙이자 보인 버그들');
+		await expect(items.first()).toContainText('리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그');
 		await expect(items.first()).toContainText('30일 남음');
 		// 고칠 수 없는 읽기 화면: 안내 상자에 남은 날과 되돌려 놓기·즉시 삭제, 도구 막대의 휴지통은 즉시 삭제
 		await items.first().click();
@@ -1055,7 +1057,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 되돌려 놓으면 모든 글로 돌아가 그 글을 연다
 		await note.getByRole('button', { name: '되돌려 놓기' }).click();
-		await expect(memo.locator('.memo-item', { hasText: '테스트를 붙이자' })).toHaveClass(/active/);
+		await expect(memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개' })).toHaveClass(/active/);
 		await expect(trash).toContainText('1');
 
 		// 최근 삭제된 항목에서 새 메모를 쓰면 모든 글로 나가서 쓴다 (새 메모가 들어갈 폴더가 아니다)
@@ -1087,7 +1089,7 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('최근 삭제된 항목의 ••• 메뉴로 휴지통을 비운다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		for (const title of ['CRA에서 Vite로 옮기기', '테스트를 붙이자 보인 버그들']) {
+		for (const title of ['CRA에서 Vite로 옮기기', '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그']) {
 			await memo.locator('.memo-item', { hasText: title }).click({ button: 'right' });
 			await page.getByRole('menuitem', { name: '메모 삭제' }).click();
 		}
@@ -1434,7 +1436,7 @@ test.describe('빈 폴더', () => {
 });
 
 test.describe('한국어 사이의 굵게', () => {
-	const post = '글 한 편 추가했더니';
+	const post = '이미지 로드 전 좌표와 누락된 dragover';
 
 	test('문장부호로 끝난 굵게 뒤에 조사가 붙어도 읽기 화면에서 굵게 보인다', async ({ page }) => {
 		const api = await fakeApi(page);

@@ -1,5 +1,5 @@
 ---
-title: Finder에서 고른 배경화면이 새로고침하면 사라지던 문제와 QuickTime 열기 창
+title: id 접두어 분리로 새로고침 뒤에도 유지되는 Finder 배경화면과 QuickTime Player 열기 창
 date: 2026-10-19
 category: 개발 기록/MacFolio/프론트엔드
 summary: Finder의 '데스크탑 사진 설정'으로 선택한 배경화면이 서버 목록 검사에서 삭제된 항목으로 판정되어 새로고침마다 기본값으로 돌아가던 문제를 id 접두어 상수 하나로 수정했다. MP4도 배경화면으로 설정할 수 있고, QuickTime은 미리보기와 같은 열기 창을 쓴다.
@@ -131,10 +131,10 @@ const outbox = admin ? [...(sent ?? []), ...welcome] : (sent ?? []);
 
 ## 관련 글
 
-- [관리자가 배경화면을 더하기 - 브라우저에서 줄여 올리고 모두에게](/memo/custom-wallpapers)
+- [createImageBitmap과 canvas toBlob으로 브라우저에서 축소해 올리는 관리자 배경화면](/memo/custom-wallpapers)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
-- [Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기](/memo/finder-files)
-- [메일 앱의 보낸 편지함과 관리자 받은 편지함](/memo/mail-mailboxes)
-- [Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기](/memo/finder-filesystem): '데스크탑 사진 설정' 메뉴를 추가한 작업
+- [Cloudflare R2와 같은 출처 Worker로 Finder의 PDF·그림을 미리보기 앱에서 열기](/memo/finder-files)
+- [방문자 쿠키 HMAC으로 필터링하는 보낸 편지함과 관리자 받은 편지함](/memo/mail-mailboxes)
+- [서버 /finder/layout에 저장하는 Finder 파일 시스템과 메모 폴더 동기화](/memo/finder-filesystem): '데스크탑 사진 설정' 메뉴를 추가한 작업
 
 #MacFolio #프론트엔드 #Finder #배경화면 #QuickTime

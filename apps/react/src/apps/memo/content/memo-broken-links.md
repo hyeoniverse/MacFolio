@@ -130,10 +130,10 @@ it.each(Object.entries(files))('%s의 글 링크는 누를 수 있고 있는 글
 
 ## 관련 글
 
-- [굵게가 한국어 뒤에서 깨지는 이유](/memo/cjk-emphasis): 같은 원문이 Markdown 규칙 때문에 의도와 다르게 해석된 다른 사례
-- [메모 편집기 손보기 — 토글 목록·각주, ~ 하나짜리 취소선, 사라지는 빈 폴더](/memo/memo-editor-toggle-footnote): 편집기의 각주 넣기
-- [글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기](/memo/markdown-xss-tests): 글 내용을 시험으로 검사하는 다른 사례
-- [트래픽 분석 5 - 새로 고침 없이 값 갱신하기, 폴링과 SSE 비교](/memo/activity-live-refresh): 관련 글 절을 고친 글
+- [remark-cjk-friendly로 한국어 조사 앞에서 깨지는 CommonMark 굵게 바로잡기](/memo/cjk-emphasis): 같은 원문이 Markdown 규칙 때문에 의도와 다르게 해석된 다른 사례
+- [Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기](/memo/memo-editor-toggle-footnote): 편집기의 각주 넣기
+- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests): 글 내용을 시험으로 검사하는 다른 사례
+- [visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅 (트래픽 분석 5)](/memo/activity-live-refresh): 관련 글 절을 고친 글
 
 [^autolink]: GFM의 확장 자동 링크는 `www.`·`http://`·`https://`로 시작하는 글자와 이메일 주소만 링크로 바꾼다. [GFM 명세: Autolinks (extension)](https://github.github.com/gfm/#autolinks-extension-)
 

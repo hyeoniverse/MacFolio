@@ -1,5 +1,5 @@
 ---
-title: 메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu
+title: placement·useDismiss·Menu 세 모듈로 메뉴 다섯 벌을 하나로 합치기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 컨텍스트 메뉴, Apple 메뉴, 서식 창, 달력 등 다섯 곳이 "바깥 클릭 시 닫기"와 "화면 안 위치 보정"을 각각 구현하고 있었다. placement·useDismiss·Menu 세 모듈로 분리해 전환하고, 스크린샷 40장 비교로 바뀐 메뉴 네 개를 확인했다.
@@ -144,9 +144,9 @@ E2E도 수정했다. 메시지와 팝업 시험이 메뉴를 메시지 창 안�
 
 ## 관련 글
 
-- [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)
-- [!important 66개 지우기와 공통 아이콘 버튼](/memo/shared-button)
-- [메뉴 막대의 파일·보기·윈도우가 실제로 열린다](/memo/menubar-menus)
+- [CSS @layer reset으로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [CSS 레이어 위에서 !important 66개를 삭제하고 IconButton 하나로 통합하기](/memo/shared-button)
+- [앱이 등록하고 메뉴 막대가 공통 메뉴와 병합하는 파일·보기·윈도우 메뉴 구조](/memo/menubar-menus)
 - [데스크톱과 휴대폰의 메뉴 모양을 variant로 고르기](/memo/ui-variant-pairs)
 
 #MacFolio #공통컴포넌트

@@ -1,5 +1,5 @@
 ---
-title: 누를 때마다 딸깍 - Web Audio로 클릭 소리 내기
+title: pointerdown·pointerup과 Web Audio로 미리 디코딩한 클릭 소리 재생하기
 date: 2026-10-01
 category: 개발 기록/MacFolio/프론트엔드
 summary: 화면 어디를 클릭하든 누르는 시각과 떼는 시각에 딸깍 소리가 재생되게 했다. pointerdown·pointerup을 window 한 곳에서 수신하고, <audio> 대신 Web Audio로 미리 디코딩해 재생하고, 로딩 화면 클릭을 오디오 초기화에 사용했다. 가짜 AudioContext로 재생 횟수를 집계하는 시험까지 정리했다.
@@ -142,6 +142,6 @@ await page.addInitScript(() => {
 
 - [CRA에서 Vite로 옮기기](/memo/cra-to-vite)
 - [음악 앱 버그 세 가지 - 꺼진 앱, 쌓이는 표지, 끝없이 내려가는 시트](/memo/music-player-fixes)
-- [휴지통 앱 - 비울 수 있는 것만 담기까지](/memo/bin-app)
+- [localStorage·sessionStorage에 저장한 사이트 데이터를 표시하고 삭제하는 휴지통 앱](/memo/bin-app)
 
 #MacFolio #데스크톱 #WebAudio

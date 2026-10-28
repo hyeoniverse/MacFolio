@@ -1,5 +1,5 @@
 ---
-title: 음악 앱 버그 세 가지 - 꺼진 앱, 누적되는 표지, 반복되는 시트 애니메이션
+title: isRunning 정의·형제 React key·매 렌더링 ref 함수가 일으킨 음악 앱 버그 세 가지
 date: 2026-10-18
 category: 개발 기록/MacFolio/프론트엔드
 summary: 배경 음악이 재생되는데 Dock의 음악은 꺼진 상태였고, 셔플을 누르면 표지가 누적됐고, 지금 재생 중 시트의 닫힘 애니메이션이 반복됐다. 창과 실행이 섞인 isRunning, 형제 요소의 같은 React key, 렌더링마다 새로 만든 ref 함수가 원인이었다.
@@ -120,8 +120,8 @@ ref 콜백이 정리 함수를 반환하는 기능은 [React 19에서 추가됐�
 ## 관련 글
 
 - [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [휴대폰 앱들을 메모처럼](/memo/mobile-apps-ios-style)
-- [메뉴 막대의 앱 이름이 맨 앞 창을 따른다](/memo/menu-bar-app-name)
-- [iOS Safari에서만 음악 위젯 모서리가 각지는 문제](/memo/music-widget-ios-corners)
+- [셸 공통 CSS 변수로 휴대폰 앱의 바탕·카드·제목 막대를 iOS 스타일로 맞추기](/memo/mobile-apps-ios-style)
+- [foregroundApp으로 메뉴 막대의 앱 이름을 맨 앞 창에 맞추기](/memo/menu-bar-app-name)
+- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
 
 #MacFolio #프론트엔드 #음악 #React #상태설계

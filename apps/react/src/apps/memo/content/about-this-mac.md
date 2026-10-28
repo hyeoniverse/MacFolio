@@ -1,5 +1,5 @@
 ---
-title: Apple 메뉴의 '이 Mac에 관하여'에 프로필 넣기
+title: Apple 메뉴의 '이 Mac에 관하여'를 앱이 아닌 시스템 창으로 구현하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/프론트엔드
 summary: Apple 메뉴 맨 위의 '이 Mac에 관하여'를 macOS Sequoia와 같은 작은 창으로 만들고, Mac 사양 대신 만든 사람의 프로필을 넣었다. 앱이 아닌 시스템 창으로 둔 이유, 다른 앱을 여는 요청 저장소, 끌기·초점 처리와 E2E 시험을 정리했다.
@@ -108,9 +108,9 @@ useEffect(() => {
 - 기술: 프론트엔드·백엔드·인터랙션 전부
 - 이 사이트(MacFolio): 만든 기술, 저장소
 
-**이메일.** `mailto:`로 기기의 메일 앱을 여는 대신, 이 사이트의 **메일 앱**에서 '새로운 메시지'를 바로 연다(`ProfileLink.tsx`, [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](/memo/contact-mail)). 받는 사람이 항상 사이트 주인으로 고정된 작성 화면이라, 방문자는 사이트를 벗어나지 않고 메일을 보낸다. 휴대폰에서는 아래에서 올라오는 작성 시트가 열린다. `href`에는 계속 `mailto:`를 지정해, 새 탭으로 열기나 주소 복사 같은 브라우저 기능은 그대로 사용할 수 있다. 처음에는 이메일을 검은색 글자로 표시했는데, 클릭할 수 있는 요소로 인식하기 어려웠다. 그래서 GitHub 링크처럼 파란색 글자와 ↗ 표시를 추가했다.
+**이메일.** `mailto:`로 기기의 메일 앱을 여는 대신, 이 사이트의 **메일 앱**에서 '새로운 메시지'를 바로 연다(`ProfileLink.tsx`, [Resend API와 Turnstile로 메일 앱에서 서버가 직접 메일 발송하기](/memo/contact-mail)). 받는 사람이 항상 사이트 주인으로 고정된 작성 화면이라, 방문자는 사이트를 벗어나지 않고 메일을 보낸다. 휴대폰에서는 아래에서 올라오는 작성 시트가 열린다. `href`에는 계속 `mailto:`를 지정해, 새 탭으로 열기나 주소 복사 같은 브라우저 기능은 그대로 사용할 수 있다. 처음에는 이메일을 검은색 글자로 표시했는데, 클릭할 수 있는 요소로 인식하기 어려웠다. 그래서 GitHub 링크처럼 파란색 글자와 ↗ 표시를 추가했다.
 
-**GitHub.** 외부 링크라 새 탭으로 연다. `openExternal`로 열어 이탈 링크 클릭으로 집계한다([트래픽 분석 2 - 사이트에서 모아 보내기](/memo/analytics-collect)).
+**GitHub.** 외부 링크라 새 탭으로 연다. `openExternal`로 열어 이탈 링크 클릭으로 집계한다([sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)).
 
 **개인정보 처리 방침.** macOS의 이 창에는 저작권 줄 바로 위에 **규제 인증서** 링크가 있다. 이 사이트에서 그 위치에 해당하는 문서는 개인정보 처리 방침이다(방문 분석, 방문자 쿠키, 메일 처리를 설명한다). 같은 위치에 같은 형태의 링크를 배치하고, Apple 메뉴의 '개인정보 처리 방침'처럼 Finder에서 `docs/privacy.md`를 연다.
 
@@ -137,9 +137,9 @@ useEffect(() => {
 
 ## 관련 글
 
-- [메뉴 막대의 파일·보기·윈도우가 실제로 열린다](/memo/menubar-menus)
-- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](/memo/contact-mail)
+- [앱이 등록하고 메뉴 막대가 공통 메뉴와 병합하는 파일·보기·윈도우 메뉴 구조](/memo/menubar-menus)
+- [Resend API와 Turnstile로 메일 앱에서 서버가 직접 메일 발송하기](/memo/contact-mail)
 - [코드를 고치지 않고 프로필 바꾸기](/memo/site-profile-editing)
-- [시스템 설정에서 사람 확인을 켜고 끄기](/memo/privacy-security-settings)
+- [Turnstile 사람 확인을 requireHuman 하나로 묶고 시스템 설정에서 켜고 끄기](/memo/privacy-security-settings)
 
 #MacFolio #프론트엔드 #메뉴막대 #macOS

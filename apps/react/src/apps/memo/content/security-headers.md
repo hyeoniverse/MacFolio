@@ -13,7 +13,7 @@ summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더�
 - 글이나 README의 Markdown 처리에 결함이 생긴 경우, 삽입된 스크립트가 임의의 서버로 요청을 보내는 것
 - 외부 링크를 누르는 시각에 `/memo/<글 주소>` 같은 전체 경로가 `Referer` 헤더로 전달되는 것
 
-Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([글과 README가 스크립트가 되지 않는다는 것을 시험으로](/memo/markdown-xss-tests)). CSP는 그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층이다.
+Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)). CSP는 그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층이다.
 
 <details>
 <summary>용어 정리</summary>
@@ -93,7 +93,7 @@ const directives: Record<string, string[]> = {
 
 그리고 Vite 플러그인이 빌드 시각에 `dist/_headers` 끝에 모든 경로(`/*`) 블록으로 추가한다. 주소는 출처(`https://host`)만 남기고, `http(s)`가 아닌 값은 제외한다. `_headers` 파일 형식은 [Cloudflare Workers 정적 자산 헤더 문서](https://developers.cloudflare.com/workers/static-assets/headers/)를 따른다.
 
-`/memo/<글>` 같은 앱 주소는 파일이 아니라 Worker가 `index.html`을 대신 응답한다([없는 코드 파일에 index.html을 주던 문제](/memo/asset-404)). 이 응답에도 헤더가 붙는지 `wrangler dev`로 확인했다. Worker가 정적 자산 바인딩에서 수신한 응답의 헤더를 그대로 전달하므로 같은 헤더가 붙는다.
+`/memo/<글>` 같은 앱 주소는 파일이 아니라 Worker가 `index.html`을 대신 응답한다([Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404)). 이 응답에도 헤더가 붙는지 `wrangler dev`로 확인했다. Worker가 정적 자산 바인딩에서 수신한 응답의 헤더를 그대로 전달하므로 같은 헤더가 붙는다.
 
 ![PROJECTS와 API 주소에서 CSP를 만들어 빌드와 E2E 서버에 같이 붙이는 흐름](./images/security-headers-build.svg '배포와 E2E가 같은 CSP를 쓰니, 빠뜨린 출처는 시험에서 먼저 드러난다')
 
@@ -184,10 +184,10 @@ curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|s
 
 ## 관련 글
 
-- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
-- [리팩터링 7단계 — 보안](/memo/refactor-step7-security)
-- [없는 코드 파일에 index.html을 주던 문제](/memo/asset-404)
-- [글과 README가 스크립트가 되지 않는다는 것을 시험으로](/memo/markdown-xss-tests)
+- [iframe sandbox에서 allow-top-navigation을 빼 내장 사이트의 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
+- [Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기](/memo/asset-404)
+- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 PR: [#156](https://github.com/hyeoniverse/MacFolio/pull/156)
 

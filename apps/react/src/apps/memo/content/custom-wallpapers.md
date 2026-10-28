@@ -1,5 +1,5 @@
 ---
-title: 관리자가 배경화면을 더하기 - 브라우저에서 줄여 올리고 모두에게
+title: createImageBitmap과 canvas toBlob으로 브라우저에서 축소해 올리는 관리자 배경화면
 date: 2026-10-02
 category: 개발 기록/MacFolio/프론트엔드
 summary: 배경화면은 macOS 6장, iOS 6장이 코드에 포함되어 있었다. 관리자가 '사진 추가…' 칸으로 사진을 업로드하면 브라우저가 2560px·640px JPEG로 축소해 전송하고, 모든 방문자의 목록에 추가된다. 화면 종류마다 해당 기본 배경화면만 표시되고, 추가한 배경화면은 양쪽에 표시된다.
@@ -53,7 +53,7 @@ summary: 배경화면은 macOS 6장, iOS 6장이 코드에 포함되어 있었�
 | `PATCH /wallpapers/:id`  | 관리자 | 이름 변경 (아래 '삭제와 이름 변경' 참고)       |
 | `DELETE /wallpapers/:id` | 관리자 | 삭제. 이미지 두 장도 한 트랜잭션에서 함께 삭제 |
 
-이미지는 MIME 형식 이름을 신뢰하지 않고 파일 앞부분의 바이트(매직 바이트)로 PNG·JPEG·GIF·WebP 여부를 확인한다. 파일 API와 같은 규칙이다. 이름 길이는 DB의 CHECK 제약으로도 제한한다. 업로드한 이미지의 EXIF는 이후 서버에서 제거하도록 바뀌었다([올린 사진의 EXIF를 지우되 방향은 남기기](/memo/upload-strip-exif)).
+이미지는 MIME 형식 이름을 신뢰하지 않고 파일 앞부분의 바이트(매직 바이트)로 PNG·JPEG·GIF·WebP 여부를 확인한다. 파일 API와 같은 규칙이다. 이름 길이는 DB의 CHECK 제약으로도 제한한다. 업로드한 이미지의 EXIF는 이후 서버에서 제거하도록 바뀌었다([JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)).
 
 테이블을 별도로 둔 이유는 "어떤 업로드 파일이 배경화면인가"를 식별해야 하기 때문이다. `Upload`만 있으면 글에 넣은 이미지와 배경화면을 구분할 수 없다. 삭제 시 이미지 두 장을 함께 삭제하는 처리, 휴지통에서 "배경화면으로 사용 중인 파일은 삭제하지 않는다"고 표시하는 처리 모두 이 테이블을 기준으로 한다. 마이그레이션 파일(`20261002150000_wallpapers/migration.sql`)은 22줄이다.
 
@@ -172,9 +172,9 @@ PR 안의 커밋 다섯 개가 구현 순서와 같다.
 
 ## 관련 글
 
-- [숫자 40이 세 곳에 — 배경화면 도메인 옮기기](/memo/contracts-wallpapers)
-- [화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기](/memo/contracts-files)
-- [올린 사진의 EXIF를 지우되 방향은 남기기](/memo/upload-strip-exif)
+- [배경화면 이름 한도와 정리 함수를 contracts로 옮겨 세 곳의 정의 통합하기](/memo/contracts-wallpapers)
+- [올린 파일 규칙을 contracts 공유 규칙과 서버 전용 검사로 나누기](/memo/contracts-files)
+- [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
 
 #MacFolio #시스템설정 #배경화면

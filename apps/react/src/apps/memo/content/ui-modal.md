@@ -132,11 +132,11 @@ onPointerDown={(event) => {
 
 ## 관련 글
 
-- [공통 부품 목록을 먼저 작성하고, 후보 아홉 개를 다시 집계했다](/memo/ui-inventory): 추출할 부품을 결정한 목록
+- [shared/ui 부품과 직접 작성한 버튼 295곳 집계로 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet): 다음 부품
 - [eslint-disable이 가린 useEffect 의존성과 exhaustive-deps](/memo/modal-focus-eslint-disable): 남은 과제에 적은 `onClose` 의존 문제를 effect 분리로 수정한 일
-- [남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate): 앱마다 직접 만든 모달을 옮긴 일
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
+- [계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사](/memo/sheet-modal-migrate): 앱마다 직접 만든 모달을 옮긴 일
+- [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
 - PR: [#212](https://github.com/hyeoniverse/MacFolio/pull/212)
 
 [^1]: 최상위 층(top layer)은 문서의 z-index와 무관하게 모든 요소 위에 그려지는 별도 층이다. [MDN: Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)

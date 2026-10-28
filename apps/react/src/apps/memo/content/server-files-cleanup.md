@@ -1,5 +1,5 @@
 ---
-title: 글에서 지운 이미지는 서버에 남는다 - 쓰는 곳이 없는 파일 찾기
+title: 참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기
 date: 2026-10-09
 category: 개발 기록/MacFolio/백엔드
 summary: 메모 글에 넣은 이미지는 서버 DB에 별도로 저장되어, 글에서 빼거나 글을 삭제해도 남는다. 파일마다 참조 위치(현재 글, 이전 버전, 배경화면)를 알려 주는 API를 만들고, 휴지통에서 참조가 없는 파일만 골라 삭제하게 했다. 참조 중인 파일은 서버가 409로 거절한다.
@@ -140,11 +140,11 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 
 ## 관련 글
 
-- [휴지통 앱 - 비울 수 있는 것만 담기까지](/memo/bin-app)
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)
-- [올린 사진의 EXIF를 지우되 방향은 남기기](/memo/upload-strip-exif)
-- [R2에 DB 백업 걸기 - 대시보드부터 cron까지](/memo/r2-backup-setup)
-- [화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기](/memo/contracts-files)
+- [localStorage·sessionStorage에 저장한 사이트 데이터를 표시하고 삭제하는 휴지통 앱](/memo/bin-app)
+- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions)
+- [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
+- [rclone과 UTC cron으로 R2에 DB 백업 걸기](/memo/r2-backup-setup)
+- [올린 파일 규칙을 contracts 공유 규칙과 서버 전용 검사로 나누기](/memo/contracts-files)
 
 [^bytea]: PostgreSQL의 이진 데이터 열 타입. 이 사이트는 별도 객체 저장소 없이 업로드 파일을 DB에 직접 저장한다.
 

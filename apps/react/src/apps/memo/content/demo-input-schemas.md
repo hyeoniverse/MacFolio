@@ -1,5 +1,5 @@
 ---
-title: 데모 입력 검사 네 개도 공유 스키마로 — 화면과 서버가 같은 상한을 쓰게
+title: AI 데모 입력 검사 네 개를 contracts의 zod 스키마로 화면과 서버가 공유하기
 date: 2026-10-16
 category: 개발 기록/MacFolio/백엔드
 summary: AI 커버·번역·요약·음성 데모는 서버가 입력 글을 함수로 검사했고, 화면은 같은 상한(60·200·800·80자)을 별도 상수로 정의했다. 네 규칙을 contracts의 zod 스키마로 옮겨 서버와 화면이 같은 값을 사용하게 했다. 거절 문구와 검사 순서는 그대로 유지했다.
@@ -164,11 +164,11 @@ pnpm typecheck
 
 ## 관련 글
 
-- [손으로 쓴 입력 검사 세 개를 공유 스키마로 — 서버와 화면이 같은 규칙을 쓰게](/memo/settings-schemas)
-- [숫자 40이 세 곳에 — 배경화면 도메인 옮기기](/memo/contracts-wallpapers)
-- [타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기](/memo/contracts-posts)
-- [이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리](/memo/contracts-site)
-- [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [if 문으로 쓴 입력 검사 세 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas)
+- [배경화면 이름 한도와 정리 함수를 contracts로 옮겨 세 곳의 정의 통합하기](/memo/contracts-wallpapers)
+- [ZodType<PostContent>로 desktop-core 타입과 contracts 스키마를 맞춘 글 도메인](/memo/contracts-posts)
+- [if문 검증 parseProfile을 zod 스키마로 옮겨 contracts에 두기 (리팩터링 1단계 마무리)](/memo/contracts-site)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)
 
 [^utf16]: JavaScript 문자열은 UTF-16으로 저장된다. 한글 음절처럼 기본 다국어 평면(BMP)에 있는 문자는 코드 단위 1개, 이모지처럼 BMP 밖의 문자는 코드 단위 2개(서로게이트 쌍)를 차지한다. 스프레드 연산자(`[...text]`)는 코드 포인트 단위로 문자열을 나눈다.
 

@@ -1,5 +1,5 @@
 ---
-title: 표 양옆에 커서 두기 - 보이지 않던 틈 커서
+title: ProseMirror gap cursor를 표 양옆의 세로 커서로 보이게 하기
 date: 2026-10-01
 category: 개발 기록/MacFolio/프론트엔드
 summary: 편집기의 표 옆에 커서를 놓을 수 없었다. 틈 커서는 이미 있었지만 CSS를 불러오지 않아 표시되지 않았고, 그 위치에서 입력한 글자는 사라졌다. 표 양옆 세로 커서, 끌어 선택한 칸 구분, 빈 행·열 삭제를 구현한 기록.
@@ -207,7 +207,7 @@ Markdown 표는 머리글 한 행과 본문 한 행 이상이 있어야 한다. 
 
 ## 관련 글
 
-- 이어서 표를 다듬은 작업: [표 다듬기 - 끌어 고른 범위, 여백 누르기, 한 번에 지우기](/memo/table-polish)
+- 이어서 표를 다듬은 작업: [메모 편집기 표의 범위 선택 테두리와 여백 클릭 커서, Backspace 한 번 삭제](/memo/table-polish)
 - 같은 날의 작업 기록: [10월 1일 - 규칙과 공통 컴포넌트, 그리고 자정의 최근 삭제된 항목](/memo/day-1001)
 - PR: [#55](https://github.com/hyeoniverse/MacFolio/pull/55)
 - ProseMirror 문서: [prosemirror-gapcursor](https://prosemirror.net/docs/ref/#gapcursor)

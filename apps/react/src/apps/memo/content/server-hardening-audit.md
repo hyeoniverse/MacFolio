@@ -1,5 +1,5 @@
 ---
-title: 서버 하드닝은 문서가 아니라 스크립트로 남긴다
+title: SSH·방화벽·컨테이너 사용자를 점검하는 audit.sh로 남기는 서버 하드닝
 date: 2026-10-10
 category: 개발 기록/MacFolio/품질
 summary: "SSH는 키로만, 열린 포트는 22뿐, 컨테이너는 root가 아닌 사용자로, 보안 업데이트는 자동으로." 이 네 가지를 문서에 적는 대신 ops/audit.sh가 서버 상태를 읽어 OK/확인을 출력하게 했다. 첫 실행에서 스크립트 쪽 오류 두 가지(루프백 DNS, distroless 사용자)를 수정했다.
@@ -132,9 +132,9 @@ ops/audit.sh             # 확인 항목이 있으면 1로 끝난다
 
 ## 관련 글
 
-- [리팩터링 7단계 — 보안](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기 (리팩터링 7단계)](/memo/refactor-step7-security)
 - [되돌리기 훈련](/memo/rollback-drill)
-- [서버가 죽으면 알려 주기, 로그가 디스크를 채우지 않게](/memo/server-uptime-and-logs)
+- [GitHub Actions 예약 실행 업타임 감시와 Docker 로그 로테이션](/memo/server-uptime-and-logs)
 
 PR: [#183](https://github.com/hyeoniverse/MacFolio/pull/183), [#186](https://github.com/hyeoniverse/MacFolio/pull/186)
 

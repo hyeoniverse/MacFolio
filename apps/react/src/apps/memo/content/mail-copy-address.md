@@ -1,5 +1,5 @@
 ---
-title: 메일 앱에서 주소를 누르면 복사하기
+title: navigator.clipboard로 메일 앱의 주소를 복사하고 드래그 영역 위로 z-index 올리기
 date: 2026-10-10
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메일 앱에서 사이트 주인의 주소를 누르면 이름 없이 이메일 주소만 복사되게 했다. 처음 만든 툴팁은 사이트의 다른 복사 기능과 같은 알림으로 바꿨고, 제목 막대 없는 창의 드래그 영역에 가려 클릭되지 않던 버튼은 z-index를 올렸다.
@@ -76,9 +76,9 @@ async function copyEmail() {
 
 ## 관련 글
 
-- [메일 앱의 보낸 편지함과 관리자 받은 편지함](/memo/mail-mailboxes)
-- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](/memo/contact-mail)
-- [앱 안의 화면에 주소 붙이기 - 글과 프로젝트 공유 링크](/memo/app-links): 같은 알림 방식의 링크 복사
-- [좁은 창에서 신호등 버튼 아래로 - 음악과 Safari](/memo/narrow-window-title): 같은 제목 막대 영역 문제
+- [방문자 쿠키 HMAC으로 필터링하는 보낸 편지함과 관리자 받은 편지함](/memo/mail-mailboxes)
+- [Resend API와 Turnstile로 메일 앱에서 서버가 직접 메일 발송하기](/memo/contact-mail)
+- [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): 같은 알림 방식의 링크 복사
+- [컨테이너 쿼리 좁은 창에서 신호등 버튼과 겹치지 않게 음악·Safari 상단 여백 맞추기](/memo/narrow-window-title): 같은 제목 막대 영역 문제
 
 #MacFolio #프론트엔드 #메일 #macOS

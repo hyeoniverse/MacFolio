@@ -1,5 +1,5 @@
 ---
-title: 휴대폰 음악의 지금 재생 중을 iOS 18 구성으로 — 대기열 화면, ••• 메뉴, 탭 한 번으로 허용받는 배경 음악
+title: WebKit 재생 규칙과 iOS 18 구성으로 다시 만든 휴대폰 음악의 지금 재생 중
 date: 2026-10-23
 category: 개발 기록/MacFolio/프론트엔드
 summary: 휴대폰 음악 앱의 지금 재생 중을 iOS 18 음악 앱의 구성(쓸어내려 닫는 손잡이, 큰 표지와 ••• 버튼, 대기열 화면, 어두운 메뉴)으로 다시 만들었다. 함께 휴대폰에서 배경 음악이 재생되지 않던 원인(요소마다 사용자 제스처를 요구하는 WebKit의 재생 규칙)을 로딩 화면의 탭 처리 안에서 audio 요소를 허용받는 방식으로 해결했다.
@@ -26,7 +26,7 @@ iOS 화면의 요소를 하나씩 이 앱의 기능과 대응시켰다. 이 앱�
 | ••• 메뉴: 추가·즐겨찾기·공유, 이동 등 | 없음                                 | 플레이리스트·앨범·아티스트로 이동 (보관함의 그 목록 화면을 연다)                                   |
 | 앨범 색 배경                          | 표지를 `blur(40px) brightness(0.55)` | `blur(60px) saturate(1.6)`에 아래로 어두워지는 스크림                                              |
 
-공유는 넣지 않았다. 메모 글(`/memo/<글>`)과 Safari 프로젝트(`/safari/<프로젝트>`)에는 앱 주소가 있지만 음악에는 없어서, 공유할 주소가 사이트 첫 화면뿐이다. 곡 주소를 만들려면 Cloudflare Worker의 404 판정과 검색 엔진용 HTML까지 함께 바꿔야 하므로 별도 작업으로 남겼다([앱 안의 화면에 주소 붙이기](/memo/app-links)).
+공유는 넣지 않았다. 메모 글(`/memo/<글>`)과 Safari 프로젝트(`/safari/<프로젝트>`)에는 앱 주소가 있지만 음악에는 없어서, 공유할 주소가 사이트 첫 화면뿐이다. 곡 주소를 만들려면 Cloudflare Worker의 404 판정과 검색 엔진용 HTML까지 함께 바꿔야 하므로 별도 작업으로 남겼다([History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)).
 
 <details>
 <summary>이전 화면의 '다음 재생' 목록이 보이지 않던 문제</summary>
@@ -81,7 +81,7 @@ Font Awesome 6의 글리프 상자는 1.25em이고, 그림은 그 안에서 좌�
 
 ## 다음 재생 목록의 순서 바꾸기
 
-대기열은 `packages/desktop-core`의 플레이어 store가 관리한다([음악 플레이어를 둘로 나누기](/memo/desktop-core-music)). 여기에 두 동작을 추가했다.
+대기열은 `packages/desktop-core`의 플레이어 store가 관리한다([desktop-core 플레이어 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music)). 여기에 두 동작을 추가했다.
 
 - `jumpTo(trackId)`: 목록의 곡을 누르면 대기열 순서는 그대로 두고 그 위치로 건너뛴다. 이전에는 `playFrom`으로 대기열을 처음부터 다시 만들었다
 - `moveUpcoming(from, to)`: '다음 재생' 목록(지금 곡 다음부터, 끝에 닿으면 처음부터 지금 곡 앞까지)에서 한 곡을 옮긴다. 결과 대기열은 지금 곡을 맨 앞(position 0)에 두고 바뀐 순서로 잇는다
@@ -99,7 +99,7 @@ Font Awesome 6의 글리프 상자는 1.25em이고, 그림은 그 안에서 좌�
 | 로딩 화면 탭 (제스처 중) | 시작음 재생, 배경 음악 요소는 아직 없음 | 시작음 재생, 배경 음악 요소에 `play()` 후 바로 `pause()` |
 | 약 2.5초 뒤 `startMusic` | 휴대폰은 조건문으로 건너뜀              | `play()` 호출. 이미 허용된 요소라 재생된다               |
 
-탭 처리 안에서 허용받으려면 그 시각에 배경 음악 요소가 있어야 한다. 그런데 바탕화면(휴대폰은 홈 화면)은 첫 방문 성능을 위해 로딩 화면을 누른 뒤에 렌더링하고([첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)), 음악 상태(`MusicProvider`)와 `<audio>`도 그 안에 있었다. 그래서 audio 요소를 React 밖의 모듈(`apps/music/musicAudio.ts`)에서 하나만 만들고, 로딩 화면과 `MusicProvider`가 같은 요소를 쓰게 했다. 이벤트 처리기는 JSX 속성 대신 `addEventListener`로 연결한다.
+탭 처리 안에서 허용받으려면 그 시각에 배경 음악 요소가 있어야 한다. 그런데 바탕화면(휴대폰은 홈 화면)은 첫 방문 성능을 위해 로딩 화면을 누른 뒤에 렌더링하고([글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)), 음악 상태(`MusicProvider`)와 `<audio>`도 그 안에 있었다. 그래서 audio 요소를 React 밖의 모듈(`apps/music/musicAudio.ts`)에서 하나만 만들고, 로딩 화면과 `MusicProvider`가 같은 요소를 쓰게 했다. 이벤트 처리기는 JSX 속성 대신 `addEventListener`로 연결한다.
 
 ```ts
 /** 탭·클릭 처리 중에 동기적으로 부른다 (await·setTimeout 뒤면 제스처가 지나 허용되지 않는다) */
@@ -147,11 +147,11 @@ HTMLMediaElement.prototype.play = function () {
 
 ## 관련 글
 
-- [음악 앱 버그 세 가지 - 꺼진 앱, 누적되는 표지, 반복되는 시트 애니메이션](/memo/music-player-fixes): 이전 지금 재생 중 시트와 배경 음악의 실행 상태
-- [음악 플레이어를 둘로 나누기 - 무엇을 재생할지와 어떻게 재생할지](/memo/desktop-core-music): 이 글의 대기열 동작을 추가한 플레이어 store
-- [휴대폰 앱들을 메모처럼 - 공통 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style): 휴대폰 음악 보관함의 이전 구성
-- [iOS Safari에서만 음악 위젯 모서리가 각지는 문제 — 블러 레이어와 border-radius 클리핑](/memo/music-widget-ios-corners): 같은 표지 블러 배경의 Safari 문제
-- [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
+- [isRunning 정의·형제 React key·매 렌더링 ref 함수가 일으킨 음악 앱 버그 세 가지](/memo/music-player-fixes): 이전 지금 재생 중 시트와 배경 음악의 실행 상태
+- [desktop-core 플레이어 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 이 글의 대기열 동작을 추가한 플레이어 store
+- [셸 공통 CSS 변수로 휴대폰 앱의 바탕·카드·제목 막대를 iOS 스타일로 맞추기](/memo/mobile-apps-ios-style): 휴대폰 음악 보관함의 이전 구성
+- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 같은 표지 블러 배경의 Safari 문제
+- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
 
 [^webkit]: WebKit 블로그 [New `<video>` Policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/), MDN [자동 재생 가이드](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)
 

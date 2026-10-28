@@ -60,7 +60,7 @@ createHmac('sha256', this.config.ipHashSecret).update(`admin-ip:${ip}`).digest('
 - **HMAC만 저장한다.** IPv4 주소는 약 43억 개라, 키 없는 SHA-256 해시는 모든 주소를 대입해 원문을 복원할 수 있다. 서버만 아는 `IP_HASH_SECRET`을 키로 쓰는 HMAC은 키 없이는 대입이 불가능하다. API e2e 시험이 `AdminIp`에 64자 16진수만 있고 IP 원문은 없는지 확인한다.
 - **용도별 접두어.** 댓글·메시지의 요청 제한용 IP 해시와 같은 키를 쓰지만 `admin-ip:` 접두어를 붙인다. 같은 IP라도 표마다 해시 값이 달라 두 표를 IP로 연결할 수 없다.
 - **보관 기간은 마지막 관리자 요청 후 30일.** 관리자가 쓰던 IP가 바뀌거나 그 IP를 다른 사람이 받게 되어도 30일 뒤에는 다시 집계된다.
-- **방문 기록 쪽은 그대로다.** `AnalyticsEvent`에는 마지막 자리를 마스킹한 IP(`203.0.113.x`)만 7일 보관하고, 7일이 지나면 `null`로 바꾼다([트래픽 분석 1](/memo/analytics-api)).
+- **방문 기록 쪽은 그대로다.** `AnalyticsEvent`에는 마지막 자리를 마스킹한 IP(`203.0.113.x`)만 7일 보관하고, 7일이 지나면 `null`로 바꾼다([쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API (트래픽 분석 1)](/memo/analytics-api)).
 
 규칙은 [개인정보 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)의 '집계에서 제외하는 방문'과 '보관 기간'에도 추가했다.
 
@@ -117,7 +117,7 @@ const events = (
 
 ### 갱신 간격
 
-실시간 탭은 [트래픽 분석 5](/memo/activity-live-refresh)의 `usePolling`으로 갱신한다. 7일치 이벤트를 10초마다 다시 조회하지 않도록 기간에 따라 간격을 나눴다.
+실시간 탭은 [visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅 (트래픽 분석 5)](/memo/activity-live-refresh)의 `usePolling`으로 갱신한다. 7일치 이벤트를 10초마다 다시 조회하지 않도록 기간에 따라 간격을 나눴다.
 
 ```ts
 intervalMs: liveMinutes > 30 ? LIVE_SLOW_POLL_MS : LIVE_POLL_MS, // 60초 : 10초
@@ -186,11 +186,11 @@ resetKey: String(liveMinutes),
 
 ## 관련 글
 
-- [트래픽 분석 1 - 쿠키 없이 순방문자 세기](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
-- [트래픽 분석 3 - 관리자 화면 '활동 상태 보기'](/memo/analytics-activity-monitor): 실시간 탭과 StatTable을 만든 글
-- [트래픽 분석 5 - UTM 조합 표와 링크 생성기](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
-- [트래픽 분석 5 - 새로 고침 없이 값 갱신하기, 폴링과 SSE 비교](/memo/activity-live-refresh): 실시간 탭의 usePolling
-- [트래픽 분석 6 - 메시지·댓글·위젯도 보이는 동안만 갱신하기](/memo/live-refresh-more): 앞 글
+- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API (트래픽 분석 1)](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
+- [라이브러리 없는 SVG 그래프와 컨테이너 쿼리로 만든 '활동 상태 보기' 앱 (트래픽 분석 3)](/memo/analytics-activity-monitor): 실시간 탭과 StatTable을 만든 글
+- [UTM 출처·매체·캠페인 조합 표와 링크 생성기 (트래픽 분석 5)](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
+- [visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅 (트래픽 분석 5)](/memo/activity-live-refresh): 실시간 탭의 usePolling
+- [usePolling을 메시지·댓글·위젯으로 넓히고 같은 요청을 하나로 묶기 (트래픽 분석 6)](/memo/live-refresh-more): 앞 글
 - [no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): Safari 렌더링 차이 정리
 

@@ -1,5 +1,5 @@
 ---
-title: 머지하고 배포까지 15분에서 5분으로: e2e 6칸과 같은 코드 다시 돌리지 않기
+title: Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기
 date: 2026-10-19
 category: 개발 기록/MacFolio/품질
 summary: 화면 E2E를 3개에서 6개 샤드로 나눠 PR 시험 시간을 약 절반으로 줄이고, PR에서 이미 통과한 코드와 트리가 같은 main 커밋은 e2e를 다시 실행하지 않고 바로 배포하게 했다. 제외하거나 줄인 시험은 없다.
@@ -124,9 +124,9 @@ git rev-parse HEAD^{tree}     # PR 브랜치와 머지된 main 커밋에서 같�
 
 ## 관련 글
 
-- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
 - [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e)
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 
 [^shard]: 전체 시험을 여러 묶음으로 나눠 서로 다른 머신에서 동시에 실행하는 방식. 각 묶음을 샤드라고 한다. GitHub Actions에서는 matrix 작업 하나가 샤드 하나를 실행한다.

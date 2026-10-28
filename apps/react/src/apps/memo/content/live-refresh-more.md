@@ -1,5 +1,5 @@
 ---
-title: 트래픽 분석 6 - 메시지·댓글·위젯도 보이는 동안만 갱신하기
+title: usePolling을 메시지·댓글·위젯으로 넓히고 같은 요청을 하나로 묶기 (트래픽 분석 6)
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: 앞 글의 usePolling을 메시지, 메모 댓글, 메일 받은 편지함, 바탕화면·홈 화면 위젯으로 넓혔다. 숨은 탭에서도 돌던 setInterval 세 곳(메뉴 막대 두 곳, 날씨)을 옮기고, 탭만 다시 보일 때는 간격이 지났을 때만 바로 조회하도록 규칙을 바꿨다. 위젯이 여러 개여도 요청은 하나로 묶는다.
@@ -107,10 +107,10 @@ ETag는 전송량만 줄인다. 서버는 304를 보낼 때도 DB를 조회하�
 
 ## 관련 글
 
-- [트래픽 분석 5 - 새로 고침 없이 값 갱신하기, 폴링과 SSE 비교](/memo/activity-live-refresh): 공통 훅 usePolling을 만든 앞 글
-- [서버 저장소와 로컬 저장소가 같은 모양을 쓰게 — 메시지 도메인 옮기기](/memo/contracts-messages): 메시지 앱 API를 contracts 스키마로 옮긴 글
-- [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
-- [macOS 날씨 앱 만들기 (Open-Meteo)](/memo/weather-app): 날씨 앱
-- [메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기](/memo/server-status-wifi): 메뉴 막대 서버 상태
+- [visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅 (트래픽 분석 5)](/memo/activity-live-refresh): 공통 훅 usePolling을 만든 앞 글
+- [contracts의 zod 스키마로 메시지 앱의 서버 저장소와 로컬 저장소 타입 통합하기](/memo/contracts-messages): 메시지 앱 API를 contracts 스키마로 옮긴 글
+- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
+- [Open-Meteo와 내장 도시 211곳 검색으로 만든 macOS 날씨 앱](/memo/weather-app): 날씨 앱
+- [/health 응답 시간으로 메뉴 막대의 Wi-Fi 자리에 서버 상태 표시하기](/memo/server-status-wifi): 메뉴 막대 서버 상태
 - [HMAC으로 IP 원문 없이 관리자 방문 식별하기 (트래픽 분석 7)](/memo/analytics-admin-ip): 다음 글
   #MacFolio #React #폴링

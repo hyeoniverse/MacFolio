@@ -168,10 +168,10 @@ expect(again.body.createdAt).toBe(first.body.publishedAt);
 
 ## 관련 글
 
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions): 같은 행에 게시본과 임시본을 보관하고 게시마다 버전을 남기는 구조
-- [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](/memo/seo-crawlable): 빌드 시각에 글 목록과 사이트맵을 만드는 `seo/posts.ts`
-- [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets): 최근 글 위젯
-- [타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
-- [폴더 순서를 드래그 핸들로 바꾸기 - 저장은 경로 목록 하나로](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
+- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions): 같은 행에 게시본과 임시본을 보관하고 게시마다 버전을 남기는 구조
+- [Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable): 빌드 시각에 글 목록과 사이트맵을 만드는 `seo/posts.ts`
+- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets): 최근 글 위젯
+- [ZodType<PostContent>로 desktop-core 타입과 contracts 스키마를 맞춘 글 도메인](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
+- [pointer 이벤트와 translateY로 구현한 폴더 순서 드래그 핸들과 경로 목록 저장](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
 
 #MacFolio #메모앱 #git #Prisma #PostgreSQL

@@ -106,9 +106,9 @@ export function firstProjectPdf(entries: DocumentEntry[], projectId: string): Do
 
 ## 관련 글
 
-- [Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기](/memo/finder-files)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [사진 앱 - 프로젝트 화면을 앨범으로](/memo/photos-app)
+- [Cloudflare R2와 같은 출처 Worker로 Finder의 PDF·그림을 미리보기 앱에서 열기](/memo/finder-files)
+- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
+- [프로젝트 정보에서 앨범을 생성하는 macOS·iOS 방식의 사진 앱](/memo/photos-app)
 
 [^capture]: DOM 이벤트는 캡처 단계(바깥 → 대상)와 버블링 단계(대상 → 바깥)를 거친다. `addEventListener`의 세 번째 인수를 `true`로 지정하면 캡처 단계에서 수신하므로, 다른 요소의 리스너보다 먼저 처리하고 전파를 멈출 수 있다. [MDN addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) 참고.
 

@@ -1,5 +1,5 @@
 ---
-title: 메뉴 막대의 앱 이름이 맨 앞 창을 따른다
+title: foregroundApp으로 메뉴 막대의 앱 이름을 맨 앞 창에 맞추기
 date: 2026-10-05
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메뉴 막대에 고정 문자열로 있던 'Finder'를 맨 앞 창의 앱 이름으로 바꿨다. 창 순서와 '활성 앱'을 분리해 바탕화면을 누르면 Finder가 되게 하고, 메뉴 막대·Dock을 누를 때의 예외와 깜빡임도 수정했다.
@@ -149,8 +149,8 @@ Dock에서 앱을 누를 때 항상 그 앱을 앞으로 가져오던 동작도 
 ## 관련 글
 
 - [메뉴 막대의 메뉴](/memo/menubar-menus)
-- [시계 글자가 바뀔 때마다 흔들리던 메뉴 막대](/memo/menubar-clock-width)
-- [앱이 많아지자 Dock이 Launchpad와 겹쳤다](/memo/dock-layout)
+- [tabular-nums와 그리드 셀 겹치기로 메뉴 막대 시계 칸 너비 고정하기](/memo/menubar-clock-width)
+- [flex 한 줄과 칸 수 계산 함수로 Launchpad와 겹치지 않는 Dock 배치](/memo/dock-layout)
 - [캡처 단계 이벤트와 pointer capture로 고친 창·메뉴 막대 입력 버그](/memo/window-menubar-input-fixes): Dock을 누르는 동안의 깜빡임을 포함한 포인터 입력 결함
 
 [^capture]: DOM 이벤트는 캡처 단계(문서 루트 → 대상), 대상 단계, 버블링 단계(대상 → 문서 루트) 순서로 전파된다. React의 `onPointerDownCapture`처럼 `Capture`로 끝나는 속성은 캡처 단계의 핸들러다. [MDN: addEventListener의 capture 옵션](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture)

@@ -1,5 +1,5 @@
 ---
-title: 손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고
+title: 명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기
 date: 2026-10-18
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱마다 직접 작성한 글자 버튼 30곳을 공통 Button으로 옮겼다. 공통 CSS가 추가하는 값은 명시도 0인 :where() 규칙으로 되돌렸고, E2E 중 클래스를 제거·복원하며 비교한 계산된 스타일 64가지가 모두 같은 것을 확인했다.
@@ -113,10 +113,10 @@ summary: 앱마다 직접 작성한 글자 버튼 30곳을 공통 Button으로 �
 
 ## 관련 글
 
-- 아이콘 버튼 45곳을 옮긴 작업: [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](/memo/icon-button-migrate)
-- 글자 버튼 공통 컴포넌트를 처음 만든 작업: [글자 버튼 하나로 합치기, 그리고 만들지 않은 컴포넌트](/memo/shared-text-button)
-- 옮길 버튼을 집계한 목록: [공통 부품 목록을 먼저 작성하고, 후보 아홉 개를 다시 집계했다](/memo/ui-inventory)
-- 앱 reset 레이어를 도입한 작업: [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)
+- 아이콘 버튼 45곳을 옮긴 작업: [계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기](/memo/icon-button-migrate)
+- 글자 버튼 공통 컴포넌트를 처음 만든 작업: [계산된 스타일과 스크린샷 비교로 글자 버튼을 공통 Button 하나로 합치기](/memo/shared-text-button)
+- 옮길 버튼을 집계한 목록: [shared/ui 부품과 직접 작성한 버튼 295곳 집계로 공통 컴포넌트 후보 줄이기](/memo/ui-inventory)
+- 앱 reset 레이어를 도입한 작업: [CSS @layer reset으로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
 - PR: [#246](https://github.com/hyeoniverse/MacFolio/pull/246)
 
 [^1]: 캐스케이드 레이어: `@layer`로 CSS 규칙을 묶어 우선순위를 레이어 단위로 정하는 기능. 레이어가 다르면 명시도와 무관하게 나중에 선언된 레이어가 우선하고, 레이어 밖의 규칙은 모든 레이어보다 우선한다.

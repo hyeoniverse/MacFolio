@@ -1,5 +1,5 @@
 ---
-title: 숫자 40이 세 곳에 — 배경화면 도메인 옮기기
+title: 배경화면 이름 한도와 정리 함수를 contracts로 옮겨 세 곳의 정의 통합하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
 summary: 배경화면 이름 한도 40자가 DB CHECK 제약, 서버 rules.ts, 화면 WallpaperGroup.tsx에 각각 정의되어 있었다. 이름 정리 함수·한도·이름 변경 요청 본문·목록 타입을 contracts로 옮겼다. 업로드는 multipart라 스키마 없이 같은 이름 정리 함수만 거친다.
@@ -151,11 +151,11 @@ cd apps/react && npx playwright test e2e/wallpapers.spec.ts --project=desktop-ch
 
 ## 관련 글
 
-- [관리자가 배경화면을 더하기 - 브라우저에서 줄여 올리고 모두에게](/memo/custom-wallpapers)
+- [createImageBitmap과 canvas toBlob으로 브라우저에서 축소해 올리는 관리자 배경화면](/memo/custom-wallpapers)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
-- [화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기](/memo/contracts-files)
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](/memo/contracts-comments)
-- [이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리](/memo/contracts-site)
+- [올린 파일 규칙을 contracts 공유 규칙과 서버 전용 검사로 나누기](/memo/contracts-files)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [if문 검증 parseProfile을 zod 스키마로 옮겨 contracts에 두기 (리팩터링 1단계 마무리)](/memo/contracts-site)
 
 [^surrogate]: U+FFFF를 넘는 문자(대부분의 이모지)를 UTF-16으로 표현할 때 사용하는 16비트 값 두 개의 쌍. 하나만 남으면 유효한 문자가 아니어서 깨진 문자(�)로 표시된다.
 

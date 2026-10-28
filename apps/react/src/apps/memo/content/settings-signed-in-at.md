@@ -1,5 +1,5 @@
 ---
-title: 언제 로그인했고 언제 끝나는지 - 시스템 설정의 계정
+title: /auth/me의 세션 로그인·만료 시각을 시스템 설정 계정 화면에 표시하기
 date: 2026-10-02
 category: 개발 기록/MacFolio/프론트엔드
 summary: 관리자 세션은 12시간 유지되는데, 계정 화면에서는 로그인 시각과 만료 시각을 확인할 수 없었다. 서버가 /auth/me로 두 시각을 반환하고, 화면은 로그인 시각과 만료 시각을 표시한다. 만료 시각이 지나면 화면도 즉시 로그아웃 상태로 전환된다.
@@ -106,14 +106,14 @@ if (left !== null && left < 2 ** 31 - 1) expiryTimer = setTimeout(() => void ref
 ## 남은 것과 배운 것
 
 - **세션 연장 기능은 없다.** 12시간이 지나면 다시 GitHub로 로그인한다. 남은 시간을 표시하는 것까지가 이번 범위다.
-- **401 응답으로도 로그아웃된다.** 이후 공통 API 클라이언트가 추가되면서, 서버가 세션을 삭제했거나 쿠키가 사라져 401을 받은 경우에도 같은 함수(`refreshAdmin`)를 호출해 화면을 전환한다([fetch 33곳을 client.ts 하나로](/memo/shared-api-client)). 만료 타이머와 401, 두 경로가 같은 결과로 이어진다.
+- **401 응답으로도 로그아웃된다.** 이후 공통 API 클라이언트가 추가되면서, 서버가 세션을 삭제했거나 쿠키가 사라져 401을 받은 경우에도 같은 함수(`refreshAdmin`)를 호출해 화면을 전환한다([fetch 33곳을 client.ts의 api()·apiFetch()로 통합한 공통 API 클라이언트](/memo/shared-api-client)). 만료 타이머와 401, 두 경로가 같은 결과로 이어진다.
 - **기존 필드를 먼저 확인한다.** `createdAt`과 `expiresAt`은 처음부터 테이블에 있었다. 새 필드를 추가하지 않고 조회만 했다.
 
 ## 관련 글
 
-- [프로필 사진이 늦게 올 때 비어 보이지 않게 - 시스템 설정의 계정](/memo/settings-avatar-placeholder)
-- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](/memo/shared-api-client)
-- [정적 사이트에 관리자 로그인 붙이기](/memo/admin-login-github-oauth)
+- [img 로드 전까지 대체 아이콘을 깔아 둔 시스템 설정 계정의 프로필 사진](/memo/settings-avatar-placeholder)
+- [fetch 33곳을 client.ts의 api()·apiFetch()로 통합한 공통 API 클라이언트](/memo/shared-api-client)
+- [GitHub OAuth와 해시로 저장하는 DB 세션으로 단일 관리자 로그인 구현하기](/memo/admin-login-github-oauth)
 
 [^icu]: ICU(International Components for Unicode)는 날짜·숫자·언어별 형식을 제공하는 라이브러리다. 브라우저와 Node.js의 `Intl` API가 내부적으로 사용하며, 포함된 ICU 데이터 버전에 따라 같은 로케일의 출력이 달라질 수 있다.
 

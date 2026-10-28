@@ -1,5 +1,5 @@
 ---
-title: 프로젝트 목록은 한 곳에 - MacFolio와 HYEONIVERSE를 프로젝트로 더하며
+title: PROJECTS 한 곳에서 읽는 프로젝트 목록과 프로젝트마다 다른 Safari 페이지 레이아웃
 date: 2026-10-03
 category: 개발 기록/MacFolio/프론트엔드
 summary: MacFolio를 프로젝트로 추가하려다 GitHub 앱 스냅샷에만 별도로 작성된 목록을 발견했다. 스냅샷도 PROJECTS를 읽게 하고 순서를 시험으로 고정했다. Safari 프로젝트 페이지는 프로젝트마다 레이아웃을 따로 설계하고, 저장소 근거로 장을 채웠다.
@@ -40,7 +40,7 @@ GitHub 앱의 고정 저장소에 MacFolio를 추가했더니, Safari 탭과 Fin
 
 Safari의 프로젝트 페이지는 프로젝트마다 디자인(look)이 다르다. 새로 추가한 두 프로젝트에도 각각 디자인을 지정했다.
 
-- **MacFolio**: macOS를 재현한 사이트이므로, 별도 장식이 없는 Apple 제품 페이지 디자인(`product`)을 사용한다. 아이콘은 사이트 로고(`logo512.png`)를 그대로 쓰고 배경만 새로 만들었다. 노을색 세로 그라데이션 위에 로고 형태를 흰색으로 채우고, 아래에 그림자를 배치했다. 처음에는 사과 모양을 직접 그리고 그 안에 창까지 넣어 봤지만, 사이트가 이미 사용하는 로고보다 완성도가 낮았다. 지금 보고 있는 화면이 곧 데모이므로 "데모 보기" 버튼은 두지 않고, 주소창에는 저장소 주소를 표시한다. 서버 구성은 [MacFolio 백엔드 한 장으로 보기](/memo/backend-design)에 정리했다.
+- **MacFolio**: macOS를 재현한 사이트이므로, 별도 장식이 없는 Apple 제품 페이지 디자인(`product`)을 사용한다. 아이콘은 사이트 로고(`logo512.png`)를 그대로 쓰고 배경만 새로 만들었다. 노을색 세로 그라데이션 위에 로고 형태를 흰색으로 채우고, 아래에 그림자를 배치했다. 처음에는 사과 모양을 직접 그리고 그 안에 창까지 넣어 봤지만, 사이트가 이미 사용하는 로고보다 완성도가 낮았다. 지금 보고 있는 화면이 곧 데모이므로 "데모 보기" 버튼은 두지 않고, 주소창에는 저장소 주소를 표시한다. 서버 구성은 [요청 계층과 설계 결정을 담은 MacFolio 백엔드 구성도](/memo/backend-design)에 정리했다.
 - **HYEONIVERSE**: Next.js와 Supabase로 구현한 포트폴리오 사이트다. 원본 사이트처럼 큰 세리프 제목과 마젠타(#d40063)를 쓰는 디자인(`creative`)을 새로 만들었다. 다크 모드에서는 원본 사이트의 어두운 배경색을 사용한다.
 
 ## 탭이 일곱 개가 되자
@@ -414,10 +414,10 @@ GitHub 앱의 고정 저장소, Finder, 터미널의 `project` 번호도 같은 
 
 ## 관련 글
 
-- [1,629줄 한 파일을 폴더로](/memo/profile-split)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [사진 앱 - 프로젝트 화면을 앨범으로](/memo/photos-app)
-- [MacFolio 백엔드 한 장으로 보기](/memo/backend-design)
-- [프로젝트 페이지 템플릿을 다듬어 온 길](/memo/site-projects-editing-templates)
+- [index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기](/memo/profile-split)
+- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
+- [프로젝트 정보에서 앨범을 생성하는 macOS·iOS 방식의 사진 앱](/memo/photos-app)
+- [요청 계층과 설계 결정을 담은 MacFolio 백엔드 구성도](/memo/backend-design)
+- [공통 내용 모델 위의 Safari 프로젝트 페이지 템플릿 9개로 다시 설계하기](/memo/site-projects-editing-templates)
 
 #MacFolio #Safari #프로젝트

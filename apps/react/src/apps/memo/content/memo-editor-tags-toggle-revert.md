@@ -161,9 +161,9 @@ DB 마이그레이션은 없다. API는 경로 하나만 추가하므로 API와 
 
 ## 관련 글
 
-- [메모 편집기 손보기 — 토글 목록·각주](/memo/memo-editor-toggle-footnote): 토글 노드와 `revealed` 플러그인 상태를 처음 만든 글. 그 시점에는 › 로 접은 상태도 저장했다
+- [Milkdown 편집기의 토글 목록·각주와 remark-gfm singleTilde 취소선 끄기](/memo/memo-editor-toggle-footnote): 토글 노드와 `revealed` 플러그인 상태를 처음 만든 글. 그 시점에는 › 로 접은 상태도 저장했다
 - [메모 태그](/memo/memo-tags): 본문의 `#태그`를 인식하는 규칙. 이 글의 첫 태그 문제는 그 규칙이 `\#`를 태그로 보지 않아서 드러났다
-- [한 줄에 서식 하나](/memo/memo-one-style-per-line): 같은 편집기의 줄 서식 변환 수정
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions): 되돌리기가 삭제하는 `Post`·`PostRevision`의 구조
+- [macOS 메모 방식의 한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기](/memo/memo-one-style-per-line): 같은 편집기의 줄 서식 변환 수정
+- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions): 되돌리기가 삭제하는 `Post`·`PostRevision`의 구조
 
 #MacFolio #메모앱 #프론트엔드 #트러블슈팅 #ProseMirror

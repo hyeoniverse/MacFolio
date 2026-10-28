@@ -1,5 +1,5 @@
 ---
-title: 메모 비밀 글 - 관리자에게만 보이는 글을 서버에서 필터링하기
+title: git grep으로 찾은 공개 API에서 비밀 글을 서버 필터링하기
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: 서버에 쓴 글을 관리자에게만 보이게 하는 비밀 글을 더했다. 글 주소를 받는 공개 API를 git grep으로 모두 찾아 서버에서 필터링하고, 방문자에게는 없는 글과 같은 응답을 보낸다. 저장소의 Markdown 글은 공개 저장소에 원문이 있어 대상에서 제외했다.
@@ -149,9 +149,9 @@ ALTER TABLE "Post" ADD COLUMN "secret" BOOLEAN NOT NULL DEFAULT false;
 ## 관련 글
 
 - [메모 잠그기 - 실수로 고치지 않게](/memo/memo-lock)
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)
+- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions)
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
 - [블로그에 좋아요와 인기글 폴더 붙이기](/memo/memo-likes-popular)
-- [API 경로 64개를 표 하나로 고정하기](/memo/api-route-table-test)
+- [Reflect.getMetadata로 읽은 API 경로 64개를 표 하나로 고정하는 시험](/memo/api-route-table-test)
 
 #MacFolio #메모앱 #보안

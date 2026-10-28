@@ -1,5 +1,5 @@
 ---
-title: Unity WebGL 게임을 창 안에 넣기
+title: iframe에 넣은 Unity WebGL 게임 창을 window blur 이벤트로 맨 앞으로 가져오기
 date: 2026-09-29
 category: 개발 기록/MacFolio/프론트엔드
 summary: 별도로 배포한 Unity WebGL 게임 새싹 농장을 데스크톱의 앱으로 추가했다. iframe 삽입을 차단하는 헤더 확인, iframe 안을 클릭해도 창이 앞으로 오지 않던 문제와 blur 이벤트로 해결한 방법, 외부 사이트에 의존하지 않는 E2E, 그 코드가 프로젝트 앱 공통 컴포넌트가 된 과정.
@@ -121,9 +121,9 @@ app: {
 ## 관련 글
 
 - PR: [#33](https://github.com/hyeoniverse/MacFolio/pull/33) (새싹 농장 앱), [#87](https://github.com/hyeoniverse/MacFolio/pull/87) (프로젝트 앱)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
-- [새싹 농장 아이콘 - 32픽셀 캐릭터로 다시 그린 풀밭](/memo/sproutfarm-icon)
+- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
+- [iframe sandbox에서 allow-top-navigation을 빼 내장 사이트의 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [최근접 이웃 정수 배율로 32픽셀 캐릭터를 다시 그린 새싹 농장 아이콘](/memo/sproutfarm-icon)
 - [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
 
 #MacFolio #Safari #새싹농장 #iframe

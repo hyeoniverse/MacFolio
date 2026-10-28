@@ -1,5 +1,5 @@
 ---
-title: 화면 어디서나 쓸어서 제어 센터 열기
+title: 캡처 단계 이벤트와 Touch Events로 화면 어디서나 제어 센터를 여는 스와이프
 date: 2026-09-29
 category: 개발 기록/MacFolio/프론트엔드
 summary: 상태 표시줄 44px 영역에서만 열리던 휴대폰 제어 센터를 화면 어디서든 스와이프로 열고 닫게 했다. 문서 전체에서 캡처 단계로 이벤트를 수신하고, 스크롤할 내용이 남은 영역에서는 스크롤을 우선하고, 손가락 입력은 Touch Events로 받아 패널이 손가락을 따라 움직이게 했다.
@@ -190,6 +190,6 @@ E2E `apps/react/e2e/mobile.spec.ts`에 4개를 추가했다.
 
 - [휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style)
 - [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [사진 앱 - 프로젝트 화면을 앨범으로](/memo/photos-app)
+- [프로젝트 정보에서 앨범을 생성하는 macOS·iOS 방식의 사진 앱](/memo/photos-app)
 
 #MacFolio #휴대폰 #제스처

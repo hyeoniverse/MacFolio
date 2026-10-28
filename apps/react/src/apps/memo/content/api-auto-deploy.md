@@ -1,5 +1,5 @@
 ---
-title: API 자동 배포 - 이미지는 Actions에서 빌드, 서버는 컨테이너 교체만
+title: GHCR 이미지와 command= 제한 SSH 키로 API 자동 배포하고 실패 시 이전 이미지로 되돌리기
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
 summary: main에 머지하면 Actions가 API 이미지를 GHCR에 푸시하고, 명령 하나만 실행할 수 있는 SSH 키로 서버의 deploy.sh를 호출한다. 서버는 백업 → 교체 → 헬스 체크를 거치고, 실패하면 이전 버전으로 되돌린다. 제외한 방법, 151줄 스크립트의 분기, 로컬 레지스트리 시험 7가지를 적었다.
@@ -129,7 +129,7 @@ CI 워크플로(`ci.yml`)는 같은 브랜치에 새 커밋이 오면 이전 실
 
 DB까지 되돌려야 하는 경우에는 배포 직전 백업(`~/backups`)을 `ops/restore.sh`로 복원한다([DB 백업](/memo/db-backup)).
 
-서버와 GitHub Secrets 설정 순서는 `docs/deployment.md`의 '자동 배포 설정'에 적었다. 그 설정을 실제 서버에 적용하며 막힌 곳은 [자동 배포를 실제 서버에 적용하기](/memo/api-auto-deploy-setup)에 따로 정리했다.
+서버와 GitHub Secrets 설정 순서는 `docs/deployment.md`의 '자동 배포 설정'에 적었다. 그 설정을 실제 서버에 적용하며 막힌 곳은 [GitHub Actions 자동 배포를 GHCR 이미지와 SSH 키로 실제 서버에 적용하기](/memo/api-auto-deploy-setup)에 따로 정리했다.
 
 ## 남은 것, 배운 것
 
@@ -152,7 +152,7 @@ DB까지 되돌려야 하는 경우에는 배포 직전 백업(`~/backups`)을 `
 
 ## 따라 하기
 
-처음 한 번 하는 설정은 [자동 배포를 실제 서버에 적용하기](/memo/api-auto-deploy-setup)와 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '자동 배포 설정'에 있다. 그 뒤에는 이렇게 쓴다.
+처음 한 번 하는 설정은 [GitHub Actions 자동 배포를 GHCR 이미지와 SSH 키로 실제 서버에 적용하기](/memo/api-auto-deploy-setup)와 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '자동 배포 설정'에 있다. 그 뒤에는 이렇게 쓴다.
 
 ```bash
 # 평소: API를 바꾼 PR을 main에 머지하면 끝. 진행 상황은 Actions의 ci 실행에서 확인한다
@@ -171,11 +171,11 @@ tail -20 ~/deploy/deploy.log     # 배포 기록
 
 ## 관련 글
 
-- [자동 배포를 실제 서버에 적용하기 - 막힌 곳 다섯](/memo/api-auto-deploy-setup)
-- [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](/memo/rollback-drill)
-- [글이 DB에만 있게 되어서 백업을 붙였다](/memo/db-backup)
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
-- [머지하고 배포까지 15분에서 5분으로](/memo/faster-e2e-ci)
+- [GitHub Actions 자동 배포를 GHCR 이미지와 SSH 키로 실제 서버에 적용하기](/memo/api-auto-deploy-setup)
+- [HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
+- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [Playwright 샤드 6개와 git 트리 비교로 머지에서 배포까지 15분을 5분으로 줄이기](/memo/faster-e2e-ci)
 
 [^ghcr]: GitHub Container Registry. GitHub 패키지 중 컨테이너 이미지를 저장하는 레지스트리로, 주소는 `ghcr.io/<소유자>/<이미지>`다.
 

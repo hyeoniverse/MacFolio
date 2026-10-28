@@ -1,5 +1,5 @@
 ---
-title: 손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고
+title: 계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기
 date: 2026-10-17
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱마다 직접 작성한 아이콘 버튼 45곳을 공통 IconButton으로 옮기고 원형 버튼용 variant="circle"을 추가했다. E2E 실행 중에 공통 클래스를 제거한 상태와 적용한 상태의 계산된 스타일을 비교해, 화면 변화가 없음을 확인했다.
@@ -113,9 +113,9 @@ summary: 앱마다 직접 작성한 아이콘 버튼 45곳을 공통 IconButton�
 
 ## 관련 글
 
-- [손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](/memo/text-button-migrate): 바로 다음 작업([#246](https://github.com/hyeoniverse/MacFolio/pull/246))
-- [공통 부품의 접근성 이름을 시험으로 — 아이콘만 있는 버튼은 이름 없이 만들 수 없게](/memo/ui-a11y-names): 직전 작업([#243](https://github.com/hyeoniverse/MacFolio/pull/243))
-- ['!important 66개 지우기와 공통 아이콘 버튼'](/memo/shared-button): `IconButton`을 처음 만든 작업([#60](https://github.com/hyeoniverse/MacFolio/pull/60))
+- [명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기](/memo/text-button-migrate): 바로 다음 작업([#246](https://github.com/hyeoniverse/MacFolio/pull/246))
+- [IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기](/memo/ui-a11y-names): 직전 작업([#243](https://github.com/hyeoniverse/MacFolio/pull/243))
+- [CSS 레이어 위에서 !important 66개를 삭제하고 IconButton 하나로 통합하기](/memo/shared-button): `IconButton`을 처음 만든 작업([#60](https://github.com/hyeoniverse/MacFolio/pull/60))
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)
 
 [^layer]: 캐스케이드 레이어 밖의 스타일은 어느 레이어 안의 스타일보다 우선한다. 명시도와 관계없이 적용되므로, 공통 컴포넌트 스타일을 레이어에 두면 앱 CSS가 항상 덮어쓸 수 있다.

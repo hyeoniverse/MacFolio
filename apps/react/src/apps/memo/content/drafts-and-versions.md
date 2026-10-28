@@ -1,5 +1,5 @@
 ---
-title: 바로 고치는 블로그에 임시 저장과 버전 기록 붙이기
+title: 임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약
 date: 2026-09-30
 category: 개발 기록/MacFolio/백엔드
 summary: 메모 앱처럼 글을 바로 편집하면 저장하는 즉시 방문자에게 공개되고 이전 내용으로 복원할 수 없다. 편집 중에는 임시 저장만 하고, 게시할 때마다 버전을 기록하고(글마다 50개), 미래 날짜로 게시하면 예약 발행되게 했다. NULL을 통과시키는 CHECK 제약도 수정했다.
@@ -138,7 +138,7 @@ API e2e `apps/api/test/posts.e2e.test.ts`가 실제 PostgreSQL로 이 흐름을 
 
 - 예약 발행은 "다음 요청부터 표시" 방식이라, 정해진 시각에 알림을 보내거나 RSS를 갱신하는 작업은 할 수 없다. 현재 그런 기능이 없으므로 스케줄러를 두지 않았다.
 - 버전 비교(두 버전의 diff 표시) 기능은 없다. 선택한 버전 전체를 미리 보기로 표시할 뿐이다.
-- 이후 [최근 삭제된 항목](/memo/memo-recently-deleted)과 [잠금](/memo/memo-lock)이 추가되면서 `deletedAt` 열과 잠금 검사(409)가 같은 테이블에 추가됐다.
+- 이후 [deletedAt 열과 CHECK 제약으로 삭제한 메모를 30일 동안 복구하는 최근 삭제된 항목](/memo/memo-recently-deleted)과 [잠금](/memo/memo-lock)이 추가되면서 `deletedAt` 열과 잠금 검사(409)가 같은 테이블에 추가됐다.
 
 배운 점: SQL의 CHECK는 "참이어야 통과"가 아니라 "거짓이 아니면 통과"다. NULL이 들어올 수 있는 열은 `IS NOT NULL`을 먼저 검사해야 한다. 이 오류는 "규칙에 맞지 않는 행을 넣으면 거절되는가"를 확인하는 시험으로 발견했다. 규칙에 맞는 행만 삽입하는 시험이었다면 발견하지 못했을 것이다.
 
@@ -159,11 +159,11 @@ pnpm dev:all
 
 ## 관련 글
 
-- [정적 사이트에 관리자 로그인 붙이기](/memo/admin-login-github-oauth)
-- [타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기](/memo/contracts-posts)
+- [GitHub OAuth와 해시로 저장하는 DB 세션으로 단일 관리자 로그인 구현하기](/memo/admin-login-github-oauth)
+- [ZodType<PostContent>로 desktop-core 타입과 contracts 스키마를 맞춘 글 도메인](/memo/contracts-posts)
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
-- [글이 DB에만 있게 되어서 백업을 붙였다](/memo/db-backup)
-- [MacFolio 백엔드 한 장으로 보기 - 구성도와 설계 결정](/memo/backend-design)
+- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+- [요청 계층과 설계 결정을 담은 MacFolio 백엔드 구성도](/memo/backend-design)
 
 [^check-null]: PostgreSQL 문서: "a check constraint is satisfied if the check expression evaluates to true or the null value" ([5.5.1. Check Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)).
 

@@ -1,11 +1,11 @@
 ---
-title: 표 다듬기 - 끌어 고른 범위, 여백 누르기, 한 번에 지우기
+title: 메모 편집기 표의 범위 선택 테두리와 여백 클릭 커서, Backspace 한 번 삭제
 date: 2026-10-01
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메모 편집기의 표에서 발견한 문제 네 가지를 수정했다. 끌어 선택한 칸에 macOS 메모처럼 테두리를 렌더링하고, 편집기 밖 여백을 클릭해도 표 옆에 커서가 놓이고, Backspace 한 번에 표가 삭제되고, 게시 버튼 위쪽이 잘리지 않도록 했다.
 ---
 
-[표 양옆에 커서 두기](/memo/table-gap-cursor) 작업 이후 표를 편집하면서 발견한 문제를 정리했다.
+[ProseMirror gap cursor를 표 양옆의 세로 커서로 보이게 하기](/memo/table-gap-cursor) 작업 이후 표를 편집하면서 발견한 문제를 정리했다.
 
 ## 배경
 
@@ -154,7 +154,7 @@ memo-scroll top 153.0  overflow-y: auto
 
 ## 관련 글
 
-- 표 양옆 커서를 처음 구현한 작업: [표 양옆에 커서 두기 - 보이지 않던 틈 커서](/memo/table-gap-cursor)
+- 표 양옆 커서를 처음 구현한 작업: [ProseMirror gap cursor를 표 양옆의 세로 커서로 보이게 하기](/memo/table-gap-cursor)
 - 같은 날의 작업 기록: [10월 1일 - 규칙과 공통 컴포넌트, 그리고 자정의 최근 삭제된 항목](/memo/day-1001)
 - PR: [#62](https://github.com/hyeoniverse/MacFolio/pull/62)
 

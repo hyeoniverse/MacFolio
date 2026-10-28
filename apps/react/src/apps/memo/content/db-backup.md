@@ -1,5 +1,5 @@
 ---
-title: 글이 DB에만 있게 되어서 백업을 붙였다
+title: pg_dump와 R2로 하는 DB 백업과 복원 시험
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
 summary: 블로그 글·임시 저장·버전·업로드한 이미지가 모두 1GB 무료 서버의 DB에만 저장되었다. 매일 pg_dump로 덤프해 파일이 끝까지 기록되었는지 검사하고, 서버에 7일·R2에 30일 보관하며, R2 무료 한도에 닿기 전에 업로드를 중단하게 했다. 복원도 스크립트로 시험했다.
@@ -109,7 +109,7 @@ R2 키는 저장소 밖의 `~/deploy/backup.env`에만 저장한다. rclone 설�
 
 백업에서 가장 위험한 상태는 실패를 아무도 인지하지 못하는 상태다. cron은 실패를 알리지 않고, 중간에 끊긴 덤프도 파일로는 남는다. 그래서 덤프 완료 검사와 실패 알림 요청이 스크립트의 절반을 차지한다.
 
-서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업' 절에, 단계별 이유는 [R2에 DB 백업 걸기 - 대시보드부터 cron까지](/memo/r2-backup-setup)에 정리했다. 서버를 처음 구축한 과정은 [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)에 있다.
+서버에 적용하는 순서(R2 버킷과 키, rclone, cron)는 `docs/deployment.md`의 '백업' 절에, 단계별 이유는 [rclone과 UTC cron으로 R2에 DB 백업 걸기](/memo/r2-backup-setup)에 정리했다. 서버를 처음 구축한 과정은 [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)에 있다.
 
 ## 자동화 이전의 수동 백업 실패 사례
 
@@ -152,9 +152,9 @@ docker compose exec -T db psql -U macfolio -d postgres    -c 'drop database rest
 
 ## 관련 글
 
-- [R2에 DB 백업 걸기 - 대시보드부터 cron까지](/memo/r2-backup-setup)
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
-- [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](/memo/rollback-drill)
+- [rclone과 UTC cron으로 R2에 DB 백업 걸기](/memo/r2-backup-setup)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 
 [^idle]: Oracle Cloud Always Free 인스턴스는 7일 동안 CPU·네트워크·메모리 사용률이 낮으면 유휴 인스턴스로 판단해 회수할 수 있다. [Oracle 문서: Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)

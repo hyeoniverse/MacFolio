@@ -1,5 +1,5 @@
 ---
-title: AI 요약 데모의 기본 공급자를 Groq로
+title: tryInOrder로 Groq를 먼저 호출하고 Gemini로 전환하는 AI 요약 데모
 date: 2026-10-05
 category: 개발 기록/MacFolio/백엔드
 summary: HYEONIVERSE 페이지의 AI 요약 데모는 Gemini 하나로만 요약해서, 키가 없거나 한도를 초과하면 동작하지 않았다. 번역 데모의 tryInOrder를 재사용해 Groq를 먼저 호출하고 실패하면 Gemini로 전환하게 했으며, 실제로 요약을 생성한 공급자 이름을 화면에 표시한다.
@@ -138,8 +138,8 @@ cd apps/react && npx playwright test e2e/safari.spec.ts --project=desktop-chromi
 ## 관련 글
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [데모 입력 검사 네 개도 공유 스키마로 — 화면과 서버가 같은 상한을 쓰게](/memo/demo-input-schemas)
-- [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [AI 데모 입력 검사 네 개를 contracts의 zod 스키마로 화면과 서버가 공유하기](/memo/demo-input-schemas)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 쓰기 경로 33개에 요청 제한 걸기](/memo/rate-limit-all-writes)
 
 [^prompt-injection]: 프롬프트 인젝션은 모델에 전달되는 입력 안에 지시문을 넣어, 개발자가 작성한 지시 대신 그 지시를 따르게 만드는 공격이다([OWASP: Prompt Injection](https://owasp.org/www-community/attacks/PromptInjection)).
 

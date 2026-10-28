@@ -1,5 +1,5 @@
 ---
-title: 문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입
+title: PostSlug·FolderPath 브랜드 타입과 검사 지점으로 글 주소 문자열 구분하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/설계
 summary: 글 주소와 폴더 경로가 어디서나 string이라 주소창 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. PostSlug·FolderPath 브랜드 타입을 두고 외부 문자열은 다섯 검사 지점을 통과해야 그 타입이 되게 했다. 다른 방법과의 비교, 브랜드를 붙이지 않은 값, 비용을 정리했다.
@@ -120,11 +120,11 @@ pnpm --filter @macfolio/desktop-core test   # postSlug()·folderPath() 검사 �
 
 ## 관련 글
 
-- [1,629줄 한 파일을 폴더로 — 프로젝트마다 한 파일, 경로는 그대로](/memo/profile-split)
-- [리팩터링 1단계 — 타입과 데이터 구조](/memo/refactor-step1-types)
-- [앱 안의 화면에 주소 붙이기 - 글과 프로젝트 공유 링크](/memo/app-links)
-- [글은 Markdown에 두고 정리만 서버에](/memo/memo-organization-api)
-- [Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기](/memo/finder-filesystem)
+- [index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기](/memo/profile-split)
+- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기 (리팩터링 1단계)](/memo/refactor-step1-types)
+- [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)
+- [Markdown 글 위에 서버의 정리 JSON을 겹치는 메모 폴더 구조와 순차 저장](/memo/memo-organization-api)
+- [서버 /finder/layout에 저장하는 Finder 파일 시스템과 메모 폴더 동기화](/memo/finder-filesystem)
 
 [^guard]: 반환 타입이 `value is PostSlug`인 함수. `true`를 반환한 분기 안에서 TypeScript가 값을 `PostSlug`로 좁혀 준다. [TypeScript 핸드북: Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
 

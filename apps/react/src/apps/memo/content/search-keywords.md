@@ -1,5 +1,5 @@
 ---
-title: 무엇을 검색하고 들어왔나 - 검색어와 Google Search Console
+title: 리퍼러 검색어와 Search Console API로 유입 검색어 수집하기
 date: 2026-10-22
 category: 개발 기록/MacFolio/백엔드
 summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 검색엔진이 리퍼러에 검색어를 포함할 때만 방문의 검색어를 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져오게 했다. 서비스 계정 JWT는 SDK 없이 직접 서명했다.
@@ -166,10 +166,10 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 ## 관련 글
 
-- [트래픽 분석 1 - 쿠키 없이 순방문자 세기](/memo/analytics-api)
-- [트래픽 분석 2 - 사이트에서 모아 보내기](/memo/analytics-collect)
-- [종량제 요금과 예산 한도 - Oracle API 요청 서명을 SDK 없이](/memo/oci-billing)
-- [트래픽 분석 3 - 관리자 화면 '활동 상태 보기'](/memo/analytics-activity-monitor)
+- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API (트래픽 분석 1)](/memo/analytics-api)
+- [sendBeacon 일괄 전송과 Global Privacy Control을 따르는 방문 이벤트 수집 (트래픽 분석 2)](/memo/analytics-collect)
+- [node:crypto로 SDK 없이 Oracle API 요청 서명을 만들어 요금과 예산 조회하기](/memo/oci-billing)
+- [라이브러리 없는 SVG 그래프와 컨테이너 쿼리로 만든 '활동 상태 보기' 앱 (트래픽 분석 3)](/memo/analytics-activity-monitor)
 
 [^referrer]: 현재 페이지로 이동하기 직전 페이지의 주소. 브라우저가 `Referer` 요청 헤더와 `document.referrer`로 제공한다([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer)).
 

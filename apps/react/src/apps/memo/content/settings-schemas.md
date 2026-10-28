@@ -1,5 +1,5 @@
 ---
-title: 손으로 쓴 입력 검사 세 개를 공유 스키마로 — 서버와 화면이 같은 규칙을 쓰게
+title: if 문으로 쓴 입력 검사 세 개를 contracts의 zod 스키마로 옮기기
 date: 2026-10-16
 category: 개발 기록/MacFolio/백엔드
 summary: 사진 캡션·사람 확인 설정·GitHub 앱 저장소는 서버가 if 문으로 요청 본문을 검사했고, 화면은 같은 상한(200자, 6개)과 정규식을 별도로 정의했다. 세 규칙을 @macfolio/contracts의 zod 스키마로 옮겨 한 곳에서 정의했다. 거절 문구는 그대로다.
@@ -153,10 +153,10 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 관련 글
 
-- [리팩터링 6단계 — 서버](/memo/refactor-step6-server)
-- [데모 입력 검사 네 개도 공유 스키마로 — 화면과 서버가 같은 상한을 쓰게](/memo/demo-input-schemas)
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](/memo/contracts-comments)
-- [시스템 설정에서 사람 확인을 켜고 끄기](/memo/privacy-security-settings)
+- [AnalyticsService 분리와 요청 본문 검사의 공유 스키마 이전 (리팩터링 6단계)](/memo/refactor-step6-server)
+- [AI 데모 입력 검사 네 개를 contracts의 zod 스키마로 화면과 서버가 공유하기](/memo/demo-input-schemas)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [Turnstile 사람 확인을 requireHuman 하나로 묶고 시스템 설정에서 켜고 끄기](/memo/privacy-security-settings)
 
 PR: [#235](https://github.com/hyeoniverse/MacFolio/pull/235) · 리팩터링 계획: [#150](https://github.com/hyeoniverse/MacFolio/issues/150)
 

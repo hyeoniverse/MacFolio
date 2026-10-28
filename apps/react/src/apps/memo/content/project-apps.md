@@ -1,5 +1,5 @@
 ---
-title: 프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기
+title: ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기
 date: 2026-10-03
 category: 개발 기록/MacFolio/프론트엔드
 summary: 새싹 농장만 창 안에서 실행할 수 있던 것을 HYEONIVERSE·NewPick·WTD·QRU까지 확장했다. 다섯 앱이 ProjectApp 컴포넌트 하나를 공유하고, 앱 목록은 PROJECTS의 app 필드에서 생성하며, Dock에 고정하되 창이 좁으면 프로젝트 앱부터 Launchpad로 넘긴다.
@@ -100,9 +100,9 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 
 ## 이후 변경
 
-- 엿새 뒤 iframe에 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성을 적용했다(`4e0604324`). 내부 사이트의 `target="_top"` 링크가 이 사이트 자체를 다른 주소로 이동시킬 수 있었기 때문이다. `allow-scripts`·`allow-same-origin`은 허용하고 `allow-top-navigation`은 허용하지 않는다. 시험 "안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다"가 가짜 페이지의 링크를 클릭한 뒤 주소가 유지되는지 확인한다. 자세한 내용은 [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)에 정리했다.
+- 엿새 뒤 iframe에 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성을 적용했다(`4e0604324`). 내부 사이트의 `target="_top"` 링크가 이 사이트 자체를 다른 주소로 이동시킬 수 있었기 때문이다. `allow-scripts`·`allow-same-origin`은 허용하고 `allow-top-navigation`은 허용하지 않는다. 시험 "안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다"가 가짜 페이지의 링크를 클릭한 뒤 주소가 유지되는지 확인한다. 자세한 내용은 [iframe sandbox에서 allow-top-navigation을 빼 내장 사이트의 최상위 창 이동 막기](/memo/iframe-sandbox)에 정리했다.
 - `ProjectApp`의 iframe 부분은 API 문서 앱과 공유하는 `shared/ui/web-frame/WebFrame.tsx`로 옮겼다.
-- 프로젝트와 프로젝트 앱은 이후 시스템 설정에서 코드 수정 없이 추가·수정할 수 있게 되었다([코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing)). 서버에는 덮어쓸 값만 저장하고, 새 앱의 주소는 CSP에도 추가한다.
+- 프로젝트와 프로젝트 앱은 이후 시스템 설정에서 코드 수정 없이 추가·수정할 수 있게 되었다([서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가](/memo/site-projects-editing)). 서버에는 덮어쓸 값만 저장하고, 새 앱의 주소는 CSP에도 추가한다.
 
 ## 남은 것·배운 것
 
@@ -112,11 +112,11 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 
 ## 관련 글
 
-- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
-- [앱이 많아지자 Dock이 Launchpad와 겹쳤다](/memo/dock-layout)
-- [사진 앱 - 프로젝트 화면을 앨범으로](/memo/photos-app)
-- [1,629줄 한 파일을 폴더로](/memo/profile-split)
-- [프로젝트 목록은 한 곳에 - MacFolio와 HYEONIVERSE를 프로젝트로 더하며](/memo/projects-one-list)
+- [iframe sandbox에서 allow-top-navigation을 빼 내장 사이트의 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [flex 한 줄과 칸 수 계산 함수로 Launchpad와 겹치지 않는 Dock 배치](/memo/dock-layout)
+- [프로젝트 정보에서 앨범을 생성하는 macOS·iOS 방식의 사진 앱](/memo/photos-app)
+- [index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기](/memo/profile-split)
+- [PROJECTS 한 곳에서 읽는 프로젝트 목록과 프로젝트마다 다른 Safari 페이지 레이아웃](/memo/projects-one-list)
 
 [^brand]: 브랜드 타입(branded type)은 `string` 같은 기본 타입에 실행 시점에는 존재하지 않는 표시 속성을 교차 타입으로 붙여, 검사 함수를 거친 값만 그 타입으로 인정하게 하는 TypeScript 기법이다. 이 저장소의 `PostSlug`·`FolderPath`도 같은 방식이다.
 

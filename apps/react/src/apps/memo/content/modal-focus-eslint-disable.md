@@ -121,6 +121,6 @@ useEffect(() => {
 
 - [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal): 이 effect를 처음 만든 글. 남은 과제에 이 문제를 적어 두었다
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet): 같은 문제를 ref 보관으로 해결한 컴포넌트
-- [남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate): `Modal`의 호출부를 늘린 작업
+- [계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사](/memo/sheet-modal-migrate): `Modal`의 호출부를 늘린 작업
 
 #MacFolio #공통컴포넌트 #React #ESLint #트러블슈팅

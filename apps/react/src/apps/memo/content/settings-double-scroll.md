@@ -1,5 +1,5 @@
 ---
-title: 시스템 설정의 스크롤이 두 번 되던 것
+title: 앱별 최소 창 크기와 컨테이닝 블록으로 시스템 설정의 이중 스크롤 없애기
 date: 2026-10-11
 category: 개발 기록/MacFolio/프론트엔드
 summary: 시스템 설정에서 패널 끝까지 스크롤한 뒤 한 번 더 스크롤하면 창 전체가 다시 스크롤됐다. 원인은 두 가지였다. 좁은 창의 상단 탭이 패널 높이를 줄였고, 숨은 텍스트가 창을 기준으로 배치되어 영역을 늘렸다. 창에 최소 크기를 지정하고 패널을 컨테이닝 블록으로 바꿨다.
@@ -150,9 +150,9 @@ position: relative;
 ## 관련 글
 
 - [메모 칸 너비 조절 — 그리드 칸을 차지하지 않는 손잡이 두 개](/memo/memo-pane-resize)
-- [시스템 설정에서 사람 확인을 켜고 끄기](/memo/privacy-security-settings)
-- [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e)
-- [프로필 사진이 늦게 올 때 비어 보이지 않게 - 시스템 설정의 계정](/memo/settings-avatar-placeholder)
+- [Turnstile 사람 확인을 requireHuman 하나로 묶고 시스템 설정에서 켜고 끄기](/memo/privacy-security-settings)
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
+- [img 로드 전까지 대체 아이콘을 깔아 둔 시스템 설정 계정의 프로필 사진](/memo/settings-avatar-placeholder)
 
 [^hidden]: 화면에는 보이지 않지만 스크린 리더는 읽는 텍스트다. 보통 `position: absolute`, 1px 크기, `clip`으로 시각적으로만 숨긴다. `display: none`과 달리 접근성 트리에 남는다.
 

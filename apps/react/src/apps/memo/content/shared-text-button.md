@@ -1,5 +1,5 @@
 ---
-title: 글자 버튼 하나로 합치기, 그리고 만들지 않은 컴포넌트
+title: 계산된 스타일과 스크린샷 비교로 글자 버튼을 공통 Button 하나로 합치기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 여섯 곳에 각각 정의된 취소·보내기·삭제 버튼을 공통 Button 하나로 통합하고, 계산된 스타일과 스크린샷 58장으로 모양이 유지되는 것을 확인했다. 다른 후보 다섯 개는 사용처가 적거나 의미가 달라 만들지 않았다.
@@ -125,7 +125,7 @@ summary: 여섯 곳에 각각 정의된 취소·보내기·삭제 버튼을 공�
 
 ![10월 1일과 10월 11일의 판단 비교](./images/shared-text-button-revisit.svg '같은 기준, 다른 수')
 
-`SearchField`는 `type="search"`가 여섯 곳으로 늘었고, 메모를 제외한 다섯 곳이 같은 모양이라 컴포넌트로 추출했다([#223](https://github.com/hyeoniverse/MacFolio/pull/223)). 나머지는 여전히 보류다. 이 글에서 만든 `Button`은 글을 쓴 시각에 앱 쪽 25개 파일이 사용했다. 직접 작성한 텍스트 버튼 30곳도 이후 이 컴포넌트로 교체했다([손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](/memo/text-button-migrate)).
+`SearchField`는 `type="search"`가 여섯 곳으로 늘었고, 메모를 제외한 다섯 곳이 같은 모양이라 컴포넌트로 추출했다([#223](https://github.com/hyeoniverse/MacFolio/pull/223)). 나머지는 여전히 보류다. 이 글에서 만든 `Button`은 글을 쓴 시각에 앱 쪽 25개 파일이 사용했다. 직접 작성한 텍스트 버튼 30곳도 이후 이 컴포넌트로 교체했다([명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기](/memo/text-button-migrate)).
 
 ## 남은 것·배운 것
 
@@ -136,9 +136,9 @@ summary: 여섯 곳에 각각 정의된 취소·보내기·삭제 버튼을 공�
 
 ## 관련 글
 
-- [!important 66개 지우기와 공통 아이콘 버튼](/memo/shared-button)
-- [메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu](/memo/shared-menu)
+- [CSS 레이어 위에서 !important 66개를 삭제하고 IconButton 하나로 통합하기](/memo/shared-button)
+- [placement·useDismiss·Menu 세 모듈로 메뉴 다섯 벌을 하나로 합치기](/memo/shared-menu)
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory)
-- [손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](/memo/text-button-migrate)
+- [명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기](/memo/text-button-migrate)
 
 #MacFolio #공통컴포넌트

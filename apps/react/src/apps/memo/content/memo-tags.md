@@ -1,5 +1,5 @@
 ---
-title: 메모 태그 - 본문의 #태그를 태그로 인식하기
+title: 본문에서 추출하는 #태그와 포함·제외·미선택 세 상태 필터
 date: 2026-10-01
 category: 개발 기록/MacFolio/프론트엔드
 summary: macOS 메모처럼 본문의 #태그를 태그로 인식하게 했다. 별도로 저장하지 않고 본문에서 추출하며, 코드 속 색(#fff)과 이슈 번호(#14, #115의)를 제외하는 규칙, 포함·제외·미선택 세 상태 필터를 구현했다.
@@ -144,8 +144,8 @@ export function matchesTags(postTags: string[], selection: TagSelection): boolea
 
 ## 관련 글
 
-- [최근 삭제된 항목](/memo/memo-recently-deleted)
-- [메모 칸 너비 조절](/memo/memo-pane-resize)
+- [deletedAt 열과 CHECK 제약으로 삭제한 메모를 30일 동안 복구하는 최근 삭제된 항목](/memo/memo-recently-deleted)
+- [CSS 그리드 경계 위에 절대 위치로 둔 리사이즈 핸들로 메모 칸 너비 조절하기](/memo/memo-pane-resize)
 - [메모 다듬기](/memo/notes-polish)
 
 #MacFolio #메모앱

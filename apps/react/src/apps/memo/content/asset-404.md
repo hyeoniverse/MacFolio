@@ -1,5 +1,5 @@
 ---
-title: 없는 코드 파일에 index.html을 주던 문제
+title: Workers 정적 자산의 not_found_handling과 Worker로 없는 코드 파일에 404 응답하기
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
 summary: 사이트는 없는 주소에 항상 index.html을 200으로, 그것도 1년 캐시 헤더와 함께 응답했다. 배포로 삭제된 옛 코드 파일 요청도 마찬가지였다. 없는 주소만 처리하는 11줄짜리 Worker 함수로 앱 주소는 첫 화면, 파일 주소는 404로 분리했다.
@@ -25,7 +25,7 @@ GET /assets/Memo-doesnotexist.js  →  200 text/html
 2. 정적 자산에 파일이 없으므로 SPA 설정이 `index.html`을 `200 text/html`로, `_headers`의 1년 캐시 헤더와 함께 응답한다
 3. 브라우저는 MIME 형식이 맞지 않아 스크립트 실행을 거부한다
 
-옛 파일 자리에 `index.html`이 오면 브라우저는 MIME 형식이 맞지 않아 스크립트 실행을 거부한다. 운영 사이트에 옛 파일 요청을 재현하자 Chrome과 Safari(WebKit) 모두 앱 창 대신 '새 버전이 있습니다 — 새로고침해 주세요' 경고창이 표시되었다. 이 경우를 감지하는 처리([배포 직후 메모가 안 열리던 까닭](/memo/app-error-alert))가 이미 있어 앱이 완전히 멈추지는 않았지만, 응답 헤더에 더 큰 문제가 있었다.
+옛 파일 자리에 `index.html`이 오면 브라우저는 MIME 형식이 맞지 않아 스크립트 실행을 거부한다. 운영 사이트에 옛 파일 요청을 재현하자 Chrome과 Safari(WebKit) 모두 앱 창 대신 '새 버전이 있습니다 — 새로고침해 주세요' 경고창이 표시되었다. 이 경우를 감지하는 처리([React.lazy 코드 로드 실패를 구분해 배포 직후 새로고침을 안내하는 OS 경고창](/memo/app-error-alert))가 이미 있어 앱이 완전히 멈추지는 않았지만, 응답 헤더에 더 큰 문제가 있었다.
 
 ```text
 GET /assets/Memo-doesnotexist.js
@@ -117,15 +117,15 @@ curl -sI https://macfolio.hyeoniverse.com/assets/does-not-exist.js | grep -iE '^
 curl -sI https://macfolio.hyeoniverse.com/memo/asset-404 | head -1   # 화면 주소는 200 (SPA)
 ```
 
-Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`로 실행한다. 설정은 루트의 [wrangler.jsonc](https://github.com/hyeoniverse/MacFolio/blob/main/wrangler.jsonc)에 있고, `not_found_handling`과 Worker를 먼저 호출하는 범위(`run_worker_first`)는 [Workers 정적 자산 라우팅 문서](https://developers.cloudflare.com/workers/static-assets/routing/)에 설명되어 있다. 배포는 [프론트엔드 배포를 GitHub Actions로](/memo/deploy-github-actions)의 `wrangler deploy`가 수행한다. 되돌리려면 이 Worker를 제거하고 다시 배포한다. 그러면 예전처럼 모든 없는 주소에 `index.html`이 응답된다.
+Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`로 실행한다. 설정은 루트의 [wrangler.jsonc](https://github.com/hyeoniverse/MacFolio/blob/main/wrangler.jsonc)에 있고, `not_found_handling`과 Worker를 먼저 호출하는 범위(`run_worker_first`)는 [Workers 정적 자산 라우팅 문서](https://developers.cloudflare.com/workers/static-assets/routing/)에 설명되어 있다. 배포는 [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)의 `wrangler deploy`가 수행한다. 되돌리려면 이 Worker를 제거하고 다시 배포한다. 그러면 예전처럼 모든 없는 주소에 `index.html`이 응답된다.
 
 ## 관련 글
 
-- [배포 직후 메모가 안 열리던 까닭 - 옛 코드 파일과 OS 경고창](/memo/app-error-alert): 이 문제가 화면에 드러난 경로
-- [앱 안의 화면에 주소 붙이기 - 글과 프로젝트 공유 링크](/memo/app-links): Worker가 `index.html`로 보내는 앱 주소
+- [React.lazy 코드 로드 실패를 구분해 배포 직후 새로고침을 안내하는 OS 경고창](/memo/app-error-alert): 이 문제가 화면에 드러난 경로
+- [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): Worker가 `index.html`로 보내는 앱 주소
 - [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](/memo/seo-crawlable): 이후 Worker에 추가된 SEO 처리
+- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
+- [Cloudflare Worker가 주소마다 메타데이터와 본문을 HTML에 넣는 SPA 검색엔진 대응](/memo/seo-crawlable): 이후 Worker에 추가된 SEO 처리
 
 [^hash]: Vite는 빌드 결과 파일 이름에 내용으로 계산한 해시를 붙인다(`Memo-DJMDZtL5.js`). 내용이 같으면 이름도 같고, 내용이 바뀌면 이름이 바뀐다. 그래서 이름이 같은 파일은 오래 캐시해도 안전하다.
 

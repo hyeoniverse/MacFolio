@@ -1,5 +1,5 @@
 ---
-title: SSH가 시간 초과되던 이유 — 기억한 IP가 삭제한 임시 VM의 주소였다
+title: SSH Operation timed out의 원인이 된 삭제한 임시 VM의 공인 IP
 date: 2026-10-23
 category: 개발 기록/MacFolio/배포·운영
 summary: 서버에 scp로 키를 옮기려는데 Operation timed out이 났다. 보안 목록은 열려 있었고 GitHub Actions 배포는 성공했다. 네트워크, 통신사 경로, 서버 설정을 차례로 배제하자 원인은 접속 주소였다. SSH 키를 복구하면서 만든 임시 VM의 IP를 서버 주소로 기억하고 있었다. 확인 명령과 재발 방지 설정을 정리했다.
@@ -109,10 +109,10 @@ $ awk '{print NR": "$1" "$2}' ~/.ssh/known_hosts
 
 ## 관련 글
 
-- [SSH 키를 잃어버린 Oracle 서버 되살리기 — 임시 VM이 원래 서버 디스크로 부팅됐다](/memo/oracle-ssh-key-recovery): 임시 VM의 주소를 서버 주소로 기억하게 된 작업
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel): API가 IP와 상관없이 동작하는 이유
-- [자동 배포를 실제 서버에 적용하기 - 막힌 곳 다섯](/memo/api-auto-deploy-setup): `DEPLOY_HOST`·`DEPLOY_KNOWN_HOSTS`를 설정한 글
-- [Google Search Console 연결하기 — 사이트 등록, 사이트맵 제출, 검색어 탭](/memo/search-console-setup): 이 문제를 만난 작업
+- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery): 임시 VM의 주소를 서버 주소로 기억하게 된 작업
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel): API가 IP와 상관없이 동작하는 이유
+- [GitHub Actions 자동 배포를 GHCR 이미지와 SSH 키로 실제 서버에 적용하기](/memo/api-auto-deploy-setup): `DEPLOY_HOST`·`DEPLOY_KNOWN_HOSTS`를 설정한 글
+- [서비스 계정과 사이트맵으로 Google Search Console 검색어를 서버에 연결하기](/memo/search-console-setup): 이 문제를 만난 작업
 
 ## 참고한 공식 문서
 

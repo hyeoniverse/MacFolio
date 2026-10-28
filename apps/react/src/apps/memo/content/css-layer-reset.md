@@ -1,5 +1,5 @@
 ---
-title: '!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기'
+title: CSS @layer reset으로 명시도와 무관하게 앱 기본값의 우선순위 낮추기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱마다 정의한 `.app button { color: inherit }`가 버튼 클래스보다 우선 적용되어, 버튼마다 지정한 색·글꼴을 !important로 덮어써 왔다. 이 기본값을 @layer reset으로 옮기고 화면 58장을 전후로 캡처해 픽셀 단위로 비교했다. 변경된 화면은 네 곳이었다.
@@ -82,7 +82,7 @@ import './styles/motion.css';
 import './index.css';
 ```
 
-이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다](/memo/css-layer-order-fix)).
+이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS @layer 순서를 index.html 인라인 스타일에서 모든 CSS보다 먼저 선언하기](/memo/css-layer-order-fix)).
 
 ## 변경 범위를 사전에 알 수 없다
 
@@ -168,7 +168,7 @@ for (let i = 0; i < a.length; i += 4) {
 
 ![!important가 든 줄: 이 커밋 전 74, 공통 IconButton PR 뒤 4, 지금 23](./images/css-layer-reset-important-count.svg '줄 단위로 센 !important. 지금 남은 것은 대부분 Safari 프로젝트 페이지와 움직임 줄이기 규칙')
 
-다음 PR([#60](https://github.com/hyeoniverse/MacFolio/pull/60), [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](/memo/icon-button-migrate))에서 4줄까지 줄었다. 현재는 23줄이다.
+다음 PR([#60](https://github.com/hyeoniverse/MacFolio/pull/60), [계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기](/memo/icon-button-migrate))에서 4줄까지 줄었다. 현재는 23줄이다.
 
 | 위치                     | 줄 수 | 용도                                                      |
 | ------------------------ | ----- | --------------------------------------------------------- |
@@ -187,8 +187,8 @@ for (let i = 0; i < a.length; i += 4) {
 ## 관련 글
 
 - [게시 버튼 글자가 흐렸던 이유 - 선택자 우선순위에 진 색](/memo/memo-button-specificity)
-- [!important 66개 지우기와 공통 아이콘 버튼](/memo/shared-button)
-- [손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](/memo/text-button-migrate)
-- [공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다](/memo/css-layer-order-fix)
+- [CSS 레이어 위에서 !important 66개를 삭제하고 IconButton 하나로 통합하기](/memo/shared-button)
+- [명시도 0인 :where() 규칙으로 글자 버튼 30곳을 Button으로 옮기기](/memo/text-button-migrate)
+- [CSS @layer 순서를 index.html 인라인 스타일에서 모든 CSS보다 먼저 선언하기](/memo/css-layer-order-fix)
 
 #MacFolio #CSS #공통컴포넌트

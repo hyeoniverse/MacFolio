@@ -1,5 +1,5 @@
 ---
-title: 서버 저장소와 로컬 저장소가 같은 모양을 쓰게 — 메시지 도메인 옮기기
+title: contracts의 zod 스키마로 메시지 앱의 서버 저장소와 로컬 저장소 타입 통합하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
 summary: 메시지 앱의 Thread·Message 타입과 고정 항목 id 'owner'가 서버와 화면에 각각 정의되어 있었다. contracts로 옮기는 과정에서 화면의 mine?: boolean과 서버의 mine: boolean이 다른 것을 발견했고, 서버의 요청 검증은 MessageInput = CommentInput 한 줄로 정의했다.
@@ -161,11 +161,11 @@ cd apps/react && npx playwright test e2e/messages.spec.ts --project=desktop-chro
 
 ## 관련 글
 
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](/memo/contracts-comments)
-- [타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기](/memo/contracts-posts)
-- [서버가 없으면 메시지 앱을 열지 않기 - 저장소를 .env로 고르기](/memo/messages-offline)
-- [이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름](/memo/visitor-identity)
-- [리팩터링 1단계 — 타입과 데이터 구조](/memo/refactor-step1-types)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [ZodType<PostContent>로 desktop-core 타입과 contracts 스키마를 맞춘 글 도메인](/memo/contracts-posts)
+- [서버 연결에 실패하면 메시지 앱을 닫는 경고창과 VITE_MESSAGES_STORE로 저장소 고르기](/memo/messages-offline)
+- [httpOnly 방문자 쿠키의 HMAC 해시로 이름·비밀번호 없는 메시지와 댓글 만들기](/memo/visitor-identity)
+- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기 (리팩터링 1단계)](/memo/refactor-step1-types)
 
 [^opaque]: 의미를 해석하지 않고 같은지 비교하는 용도로만 쓰는 값. 화면은 `authorId`가 무엇에서 계산되었는지 알 필요가 없다.
 

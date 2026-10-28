@@ -1,5 +1,5 @@
 ---
-title: 사라질 때도 움직이게 - 복사본으로 하는 퇴장 애니메이션
+title: 제거 직전 DOM 복제본으로 구현한 퇴장 애니메이션 hook useExitMotion
 date: 2026-10-08
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 메뉴·경고창·팝업은 닫힐 때 애니메이션 없이 즉시 사라졌다. 여는 쪽 코드를 수정하지 않고, React가 요소를 제거하기 직전 ref 정리 함수에서 DOM을 복제해 그 복제본에 퇴장 애니메이션을 적용했다. 내용이 교체되는 영역, 동작별 애니메이션, 버튼 색 전환도 공통 규칙으로 맞췄다.
@@ -180,7 +180,7 @@ E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.c
 
 - [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal)
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
-- [메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu](/memo/shared-menu)
+- [placement·useDismiss·Menu 세 모듈로 메뉴 다섯 벌을 하나로 합치기](/memo/shared-menu)
 - [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
 
 #MacFolio #공통컴포넌트 #애니메이션

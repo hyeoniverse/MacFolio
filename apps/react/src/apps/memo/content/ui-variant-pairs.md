@@ -122,10 +122,10 @@ variant={props.editing ? 'ios' : 'mac'}
 
 ## 관련 글
 
-- [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](/memo/icon-button-migrate): 버튼 모양을 variant로 선택하는 방식
-- [남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate): 휴대폰 시트와 데스크톱 모달을 분리한 이유
+- [계산된 스타일 비교로 아이콘 버튼 45곳을 IconButton으로 옮기기](/memo/icon-button-migrate): 버튼 모양을 variant로 선택하는 방식
+- [계산된 스타일 비교로 공통 Modal 교체 대상을 고른 시트·모달 조사](/memo/sheet-modal-migrate): 휴대폰 시트와 데스크톱 모달을 분리한 이유
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
-- [리팩터링 4단계 — 공통 컴포넌트 설계](/memo/refactor-step4-components): 4단계 정리
+- [아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체하기 (리팩터링 4단계)](/memo/refactor-step4-components): 4단계 정리
 - PR: [#250](https://github.com/hyeoniverse/MacFolio/pull/250)
 
 #MacFolio #React #리팩터링

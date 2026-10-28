@@ -1,5 +1,5 @@
 ---
-title: 새싹 농장 아이콘 - 32픽셀 캐릭터로 다시 그린 풀밭
+title: 최근접 이웃 정수 배율로 32픽셀 캐릭터를 다시 그린 새싹 농장 아이콘
 date: 2026-10-03
 category: 개발 기록/MacFolio/프론트엔드
 summary: 게임 화면을 축소한 새싹 농장 아이콘은 Dock에서 캐릭터가 점으로 보였다. 32칸 캐릭터를 48칸 풀밭 아래 끝에 배치하고 정수 배율(10배)로 480px 아이콘을 새로 그렸고, 예전 그림은 프로젝트 페이지로 옮겼다.
@@ -88,9 +88,9 @@ Dock에 배치하니 새 아이콘만 평면적으로 보였다. 메일, GitHub,
 
 ## 관련 글
 
-- 새싹 농장 게임을 창 안에 넣은 일: [Unity WebGL 게임을 창 안에 넣기](/memo/game-in-iframe)
+- 새싹 농장 게임을 창 안에 넣은 일: [iframe에 넣은 Unity WebGL 게임 창을 window blur 이벤트로 맨 앞으로 가져오기](/memo/game-in-iframe)
 - 그날의 작업 기록: [10월 3일 - 시스템 설정과 GitHub, Actions 배포, 그리고 Finder](/memo/day-1003)
-- 이 프로젝트 페이지의 템플릿 구조: [프로젝트 페이지 템플릿을 다듬어 온 길](/memo/site-projects-editing-templates)
+- 이 프로젝트 페이지의 템플릿 구조: [공통 내용 모델 위의 Safari 프로젝트 페이지 템플릿 9개로 다시 설계하기](/memo/site-projects-editing-templates)
 - PR: [#85](https://github.com/hyeoniverse/MacFolio/pull/85)
 
 [^nearest]: 확대한 각 픽셀에 원본에서 가장 가까운 픽셀의 색을 그대로 복사하는 보간 방식. 브라우저에서는 CSS [`image-rendering: pixelated`](https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering)가 같은 효과를 낸다.

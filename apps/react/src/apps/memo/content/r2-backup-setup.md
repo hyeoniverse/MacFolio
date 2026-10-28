@@ -1,5 +1,5 @@
 ---
-title: R2에 DB 백업 걸기 - 대시보드부터 cron까지
+title: rclone과 UTC cron으로 R2에 DB 백업 걸기
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
 summary: DB 백업 스크립트를 실제 서버에 적용하는 순서를 이유와 함께 정리했다. R2 Standard 비공개 버킷, 버킷 하나로 범위를 제한한 키, healthchecks 알림, rclone 1.59, 연결 확인, UTC cron, 8GB 상한, 다른 DB로의 복원 시험까지.
@@ -168,9 +168,9 @@ DB는 컨테이너 안에 있으므로 `docker compose exec`로 컨테이너의 
 
 ## 관련 글
 
-- [글이 DB에만 있게 되어서 백업을 붙였다](/memo/db-backup)
+- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](/memo/rollback-drill)
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
+- [HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 
 #MacFolio #서버 #백업 #Cloudflare

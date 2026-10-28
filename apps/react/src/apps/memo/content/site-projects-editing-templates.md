@@ -1,11 +1,11 @@
 ---
-title: 프로젝트 페이지 템플릿을 다듬어 온 길
+title: 공통 내용 모델 위의 Safari 프로젝트 페이지 템플릿 9개로 다시 설계하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/프론트엔드
 summary: 관리자가 새 프로젝트에 고르는 Safari 페이지 템플릿을 7개에서 12·13개로 늘렸다가, 공통 내용 모델 위의 9개로 다시 설계했다. 폐기한 시도와 이유, 저장소 모양, RPG 대화창의 기록을 정리한다.
 ---
 
-[코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing)에서 관리자가 시스템 설정에서 프로젝트를 수정하도록 했다. 그 편집 화면의 소개 탭에는 **페이지 모양**을 고르는 칸이 있다. 이 글은 그 모양(템플릿)의 변경 과정을 정리한다. 같은 PR([#187](https://github.com/hyeoniverse/MacFolio/pull/187)) 안에서 구조를 여러 번 다시 설계했기 때문에, 무엇을 폐기했고 왜 폐기했는지를 함께 기록한다.
+[서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가](/memo/site-projects-editing)에서 관리자가 시스템 설정에서 프로젝트를 수정하도록 했다. 그 편집 화면의 소개 탭에는 **페이지 모양**을 고르는 칸이 있다. 이 글은 그 모양(템플릿)의 변경 과정을 정리한다. 같은 PR([#187](https://github.com/hyeoniverse/MacFolio/pull/187)) 안에서 구조를 여러 번 다시 설계했기 때문에, 무엇을 폐기했고 왜 폐기했는지를 함께 기록한다.
 
 ![템플릿 수가 7, 8, 12, 13개로 늘었다가 공통 내용 모델 위에서 4개, 다시 9개가 된 흐름](./images/site-projects-editing-templates-history.svg '템플릿 수의 변화. 마지막 세 단계가 지금 구조다')
 
@@ -273,9 +273,9 @@ RPG 대화창(`dialogue`)은 이 PR에서 제외했다. 마을, 대화, 픽셀 �
 
 ## 관련 글
 
-- [코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing): 이 템플릿을 고르는 편집 화면
+- [서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가](/memo/site-projects-editing): 이 템플릿을 고르는 편집 화면
 - [미리보기 슬라이드쇼와 프로젝트 발표 자료](/memo/project-slides)
-- [프로젝트를 앱으로](/memo/project-apps)
+- [ProjectApp 컴포넌트 하나와 PROJECTS 목록으로 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
 - PR: [#187](https://github.com/hyeoniverse/MacFolio/pull/187)
 
 #MacFolio #프론트엔드 #디자인 #템플릿 #픽셀아트

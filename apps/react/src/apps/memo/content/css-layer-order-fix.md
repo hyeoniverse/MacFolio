@@ -1,5 +1,5 @@
 ---
-title: 공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다
+title: CSS @layer 순서를 index.html 인라인 스타일에서 모든 CSS보다 먼저 선언하기
 date: 2026-10-12
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 공통 Button의 안쪽 여백이 0으로 계산되고 있었다. 빌드 결과에서 공통 컴포넌트 CSS 파일이 main CSS보다 먼저 로드되어 components 층이 reset 층보다 먼저 정의됐고, reset의 * { padding: 0 }이 우선 적용됐다. 층 순서 선언을 index.html 인라인 스타일로 옮겨 모든 CSS보다 먼저 선언했다.
@@ -13,7 +13,7 @@ summary: 공통 Button의 안쪽 여백이 0으로 계산되고 있었다. 빌�
 
 버튼의 계산된 스타일을 확인하니 `padding`이 `0px`이었다. 이 버튼은 공통 컴포넌트 `Button`이고, 여백은 `.ui-button { padding: 5px 14px }`로 지정되어 있었다. 이 값보다 우선 적용된 규칙은 `index.css`의 `* { padding: 0 }`이었다.
 
-두 규칙 모두 CSS 층([cascade layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)) 안에 있다. [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)에서 정한 순서는 다음과 같다.
+두 규칙 모두 CSS 층([cascade layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)) 안에 있다. [CSS @layer reset으로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)에서 정한 순서는 다음과 같다.
 
 ```css
 /* styles/layers.css: main.tsx가 가장 먼저 불러온다 */
@@ -130,8 +130,8 @@ CSS 층 순서는 "선언 위치"가 아니라 "문서에서 처음 등장한 �
 
 ## 관련 글
 
-- [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)
-- [두 CSS 파일에 똑같이 적힌 규칙 103개 지우기 — 계산된 스타일로 같은지 확인](/memo/creative-css-dedupe)
-- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](/memo/contact-mail)
+- [CSS @layer reset으로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [getComputedStyle 비교로 동일성을 확인하며 두 CSS 파일의 중복 규칙 103개 지우기](/memo/creative-css-dedupe)
+- [Resend API와 Turnstile로 메일 앱에서 서버가 직접 메일 발송하기](/memo/contact-mail)
 
 #MacFolio #CSS #메일 #트러블슈팅

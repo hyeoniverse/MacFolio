@@ -13,7 +13,7 @@ summary: 메모 창을 최소화했다가 Dock에서 다시 열면 898px 창에�
 
 ## 폭을 재는 구조
 
-메모는 칸(`.memo-shell`)의 폭을 [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)로 측정해, 700px(`COMPACT_WIDTH`) 이하이면 `data-compact` 속성을 붙이고 한 칸씩 보여 준다. 컨테이너 질의 대신 JS로 판단하는 이유는 [날씨 앱의 세 가지 어긋남](/memo/weather-layout-fixes)에 정리했다. 수정 전 훅은 다음과 같았다.
+메모는 칸(`.memo-shell`)의 폭을 [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)로 측정해, 700px(`COMPACT_WIDTH`) 이하이면 `data-compact` 속성을 붙이고 한 칸씩 보여 준다. 컨테이너 질의 대신 JS로 판단하는 이유는 [z-index·data-compact·grid-column으로 날씨 앱 레이아웃 기준 하나로 맞추기](/memo/weather-layout-fixes)에 정리했다. 수정 전 훅은 다음과 같았다.
 
 ```ts
 export function useShellSize(ref: React.RefObject<HTMLElement | null>) {
@@ -108,7 +108,7 @@ export function useElementWidth<T extends HTMLElement>() {
 | 날씨 | `useCompact(shell)`, `ref={shell}`         | `useCompact()`가 `attach` 반환, `ref={attachShell}`         |
 | 사진 | 파일 안의 `useWidth(shell)`, `ref={shell}` | `useElementWidth()`, `useWidth` 삭제                        |
 
-이후 메시지 앱도 나란히 보기 판단에 이 훅을 사용한다([메시지 앱의 세 가지 어긋남](/memo/messages-layout-fixes)).
+이후 메시지 앱도 나란히 보기 판단에 이 훅을 사용한다([visualViewport와 컨테이너 쿼리 기준을 맞춘 메시지 앱 휴대폰 레이아웃 수정](/memo/messages-layout-fixes)).
 
 ## 확인
 
@@ -123,7 +123,7 @@ export function useElementWidth<T extends HTMLElement>() {
 
 ## 관련 글
 
-- [날씨 앱의 세 가지 어긋남 — 가려진 신호등, 휴대폰 안의 넓은 창, 밀려난 목록 버튼](/memo/weather-layout-fixes): 날씨 앱이 `useCompact`와 `data-compact`를 쓰게 된 경위
-- [창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계](/memo/desktop-core-windows): 최소화 상태(`isMinimized`)를 관리하는 창 store
+- [z-index·data-compact·grid-column으로 날씨 앱 레이아웃 기준 하나로 맞추기](/memo/weather-layout-fixes): 날씨 앱이 `useCompact`와 `data-compact`를 쓰게 된 경위
+- [useState·Context에 있던 창 관리 규칙을 프레임워크와 무관한 desktop-core 패키지로 옮기기](/memo/desktop-core-windows): 최소화 상태(`isMinimized`)를 관리하는 창 store
 
 #MacFolio #React #ResizeObserver #트러블슈팅

@@ -123,9 +123,9 @@ CRA에서 Vite로 전환할 때 수정하는 곳은 네 군데다.
 
 ## 관련 글
 
-- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
-- [하위 의존성 취약점 6건을 overrides로 고치기](/memo/dependency-vulnerabilities)
-- [블로그 스크린샷을 테스트 코드로 찍기](/memo/screenshots-with-playwright)
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 찍기](/memo/screenshots-with-playwright)
 
 [^esm]: 브라우저가 `<script type="module">`과 `import` 문을 직접 해석하는 방식. 번들러가 파일을 하나로 합치지 않아도 브라우저가 모듈 단위로 요청한다. [MDN: JavaScript 모듈](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/Modules)
 

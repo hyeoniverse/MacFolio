@@ -5,7 +5,7 @@ import { fakeApi, type FakeComment } from './fakeApi';
 
 const CRA = 'CRA에서 Vite로 옮기기';
 const EDITOR = 'Markdown 블로그에 글쓰기 붙이기';
-const MONITOR = '무료 서버가 회수되기 전에 - 사용률을 재고 위험하면 메일로';
+const MONITOR = 'Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);

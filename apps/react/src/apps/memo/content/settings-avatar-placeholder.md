@@ -1,5 +1,5 @@
 ---
-title: 프로필 사진이 늦게 올 때 비어 보이지 않게 - 시스템 설정의 계정
+title: img 로드 전까지 대체 아이콘을 깔아 둔 시스템 설정 계정의 프로필 사진
 date: 2026-10-02
 category: 개발 기록/MacFolio/프론트엔드
 summary: 시스템 설정의 계정 화면은 GitHub 프로필 사진을 github.com에서 내려받는데, 응답이 늦으면 사진 영역 전체가 비어 있었다. 로드 중에는 회색 사람 아이콘을 표시하고 로드가 끝나면 그 위에 사진을 표시한다. CSS 적용 순서 때문에 데스크톱에도 보이던 사이드바의 ›도 행 끝으로 옮겼다.
@@ -146,9 +146,9 @@ await expect(avatar.locator('img')).toHaveCSS('opacity', '1');
 
 ## 관련 글
 
-- [언제 로그인했고 언제 끝나는지 - 시스템 설정의 계정](/memo/settings-signed-in-at)
-- [블로그 스크린샷을 테스트 코드로 찍기](/memo/screenshots-with-playwright)
-- [정적 사이트에 관리자 로그인 붙이기](/memo/admin-login-github-oauth)
-- [시스템 설정의 스크롤이 두 번 되던 것](/memo/settings-double-scroll)
+- [/auth/me의 세션 로그인·만료 시각을 시스템 설정 계정 화면에 표시하기](/memo/settings-signed-in-at)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 찍기](/memo/screenshots-with-playwright)
+- [GitHub OAuth와 해시로 저장하는 DB 세션으로 단일 관리자 로그인 구현하기](/memo/admin-login-github-oauth)
+- [앱별 최소 창 크기와 컨테이닝 블록으로 시스템 설정의 이중 스크롤 없애기](/memo/settings-double-scroll)
 
 #MacFolio #시스템설정

@@ -92,7 +92,7 @@ test.describe('메모 (블로그)', () => {
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('Fast Refresh');
 		// 다른 배포·운영 글도 Fast Refresh를 말할 수 있어 개수 대신 그 글이 남는지 본다
 		await expect(items.filter({ hasText: 'CRA에서 Vite로 옮기기' })).toHaveCount(1);
-		await expect(items.filter({ hasText: '글에서 지운 이미지는 서버에 남는다' })).toHaveCount(0);
+		await expect(items.filter({ hasText: '참조 위치 API로 쓰는 곳 없는 서버 파일' })).toHaveCount(0);
 
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('존재하지 않는 검색어');
 		await expect(memo.getByText('검색 결과가 없습니다.')).toBeVisible();
@@ -145,7 +145,7 @@ test.describe('메모 (블로그)', () => {
 		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
 		await inside.click();
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(
-			'글이 DB에만 있게 되어서 백업을 붙였다'
+			'pg_dump와 R2로 하는 DB 백업과 복원 시험'
 		);
 		await expect(page).toHaveURL(/\/memo\/db-backup$/);
 		expect(await popup).toBeNull();
@@ -216,7 +216,7 @@ test.describe('메모 (블로그)', () => {
 
 	test('코드 블록은 문법 강조가 된다', async ({ page }) => {
 		const memo = await openMemo(page);
-		await memo.locator('.memo-item', { hasText: '테스트를 붙이자' }).click();
+		await memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개' }).click();
 		const code = memo.getByRole('article').locator('pre code').first();
 		await expect(code).toHaveClass(/hljs/);
 		await expect(code.locator('.hljs-keyword').first()).toBeVisible();
@@ -463,7 +463,7 @@ test('접기 블록: 처음엔 접혀 있고, 요약을 누르거나 본문 링�
 
 test('글 안의 저장소 문서 링크(GitHub의 docs/*.md)는 텍스트 편집기에서 그 문서를 연다', async ({ page }) => {
 	const memo = await openMemo(page);
-	await memo.locator('.memo-item', { hasText: 'MacFolio 백엔드 한 장으로 보기' }).click();
+	await memo.locator('.memo-item', { hasText: 'MacFolio 백엔드 구성도' }).click();
 	const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
 	await memo.locator('.memo-markdown').getByRole('link', { name: 'docs/backend-design.md' }).first().click();
 	const editor = appWindow(page, 'textedit');

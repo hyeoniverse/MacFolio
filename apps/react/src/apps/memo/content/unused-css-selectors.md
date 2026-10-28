@@ -1,5 +1,5 @@
 ---
-title: 쓰지 않는 CSS 클래스 찾기 — 2,761개 중 정말 안 쓰는 것은 9개
+title: 문자열 검색과 조합 이름 제외로 CSS 클래스 2,761개 중 안 쓰는 9개 찾기
 date: 2026-10-17
 category: 개발 기록/MacFolio/디자인 시스템
 summary: CSS 클래스 2,761개를 소스 코드에서 문자열로 검색하니 150개가 '사용하지 않는' 것으로 나왔다. 조합해 만드는 이름과 라이브러리 클래스를 제외하니 실제로는 9개였고, 규칙 24개(166줄)와 이미지 한 장(58KB)을 삭제했다.
@@ -113,7 +113,7 @@ CSS의 모든 선택자에서 클래스 이름 2,761개를 추출하고, `.ts`·
 ## 관련 글
 
 - [4,600줄 Memo.css를 열다섯 파일로 — 차례를 지켜 나누고 결과가 같은지 확인하기](/memo/memo-css-split): 메모 CSS를 기능별로 나눈 일
-- [1,861줄짜리 데모 파일을 데모마다 한 파일로](/memo/split-creative-demos): 프로젝트 데모 CSS의 중복을 제거한 일
+- [데모별 모듈과 공유 모듈로 1,861줄 HYEONIVERSE 데모 파일 분리하기](/memo/split-creative-demos): 프로젝트 데모 CSS의 중복을 제거한 일
 - PR: [#242](https://github.com/hyeoniverse/MacFolio/pull/242)
 
 [^1]: Chrome 개발자 도구의 Coverage 패널은 페이지를 조작하는 동안 실제로 사용된 CSS·JS 바이트를 기록한다. [Chrome DevTools: Coverage](https://developer.chrome.com/docs/devtools/coverage)

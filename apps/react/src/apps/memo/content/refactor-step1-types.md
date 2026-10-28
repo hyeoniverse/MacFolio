@@ -1,5 +1,5 @@
 ---
-title: 리팩터링 1단계 — 타입과 데이터 구조
+title: zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기 (리팩터링 1단계)
 date: 2026-10-18
 category: 개발 기록/MacFolio/설계
 summary: 리팩터링 1단계 회고. 화면과 서버가 각각 정의하던 요청·응답 구조를 @macfolio/contracts의 zod 스키마로 통합하고, 1,629줄 profile.ts를 분리하고, 글 주소에 브랜드 타입을 적용했다. 채택한 방법과 제외한 방법, PR 열 개의 순서와 규모를 정리한다.
@@ -62,18 +62,18 @@ export function parseBody(input: unknown) {
 
 ## 변경 목록
 
-| 항목                               | PR                                                       | 글                                                        |
-| ---------------------------------- | -------------------------------------------------------- | --------------------------------------------------------- |
-| `packages/contracts`와 댓글·좋아요 | [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | [응답 타입을 두 번 적지 않기](/memo/contracts-comments)   |
-| 글                                 | [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | [글 도메인 옮기기](/memo/contracts-posts)                 |
-| 메시지                             | [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | [메시지 도메인 옮기기](/memo/contracts-messages)          |
-| 연락 메일                          | [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | [연락 메일의 검사 규칙을 하나로](/memo/contracts-contact) |
-| 배경화면                           | [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | [배경화면 도메인 옮기기](/memo/contracts-wallpapers)      |
-| 파일                               | [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | [올린 파일 규칙을 둘로 나누기](/memo/contracts-files)     |
-| 분석                               | [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | [분석 이벤트의 모양을 하나로](/memo/contracts-analytics)  |
-| 사이트 프로필                      | [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | [사이트 프로필로 1단계 마무리](/memo/contracts-site)      |
-| `profile.ts` 분리                  | [#208](https://github.com/hyeoniverse/MacFolio/pull/208) | [1,629줄 한 파일을 폴더로](/memo/profile-split)           |
-| 브랜드 타입                        | [#209](https://github.com/hyeoniverse/MacFolio/pull/209) | [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)      |
+| 항목                               | PR                                                       | 글                                                                                                 |
+| ---------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `packages/contracts`와 댓글·좋아요 | [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments) |
+| 글                                 | [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | [글 도메인 옮기기](/memo/contracts-posts)                                                          |
+| 메시지                             | [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | [메시지 도메인 옮기기](/memo/contracts-messages)                                                   |
+| 연락 메일                          | [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | [연락 메일의 검사 규칙을 하나로](/memo/contracts-contact)                                          |
+| 배경화면                           | [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | [배경화면 도메인 옮기기](/memo/contracts-wallpapers)                                               |
+| 파일                               | [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | [올린 파일 규칙을 둘로 나누기](/memo/contracts-files)                                              |
+| 분석                               | [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | [분석 이벤트의 모양을 하나로](/memo/contracts-analytics)                                           |
+| 사이트 프로필                      | [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | [사이트 프로필로 1단계 마무리](/memo/contracts-site)                                               |
+| `profile.ts` 분리                  | [#208](https://github.com/hyeoniverse/MacFolio/pull/208) | [index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기](/memo/profile-split)    |
+| 브랜드 타입                        | [#209](https://github.com/hyeoniverse/MacFolio/pull/209) | [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)                                               |
 
 방식은 하나다.
 
@@ -182,11 +182,11 @@ export const postSlug = (value: unknown): PostSlug | null => (isPostSlug(value) 
 
 ## 관련 글
 
-- [응답 타입을 두 번 적지 않기](/memo/contracts-comments)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
 - [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)
-- [1,629줄 한 파일을 폴더로](/memo/profile-split)
-- [손으로 쓴 입력 검사 세 개를 공유 스키마로](/memo/settings-schemas)
-- [리팩터링 2단계 — 폴더 구조와 의존](/memo/refactor-step2-structure)
+- [index.ts 재내보내기로 import 경로를 유지하며 1,629줄 profile.ts 분리하기](/memo/profile-split)
+- [if 문으로 쓴 입력 검사 세 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas)
+- [madge 순환 의존 검사와 큰 파일 분할, 파일 이름 규칙 (리팩터링 2단계)](/memo/refactor-step2-structure)
 
 [^brand]: 브랜드 타입(branded type)은 `string` 같은 기본 타입에 런타임에는 존재하지 않는 표시 속성을 교차 타입으로 붙여, 검사 함수를 거친 값만 그 타입으로 인정하게 하는 TypeScript 기법이다.
 

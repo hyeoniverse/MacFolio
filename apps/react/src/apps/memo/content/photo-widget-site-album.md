@@ -1,5 +1,5 @@
 ---
-title: 아이폰에서 사진 위젯 폴더가 적용되지 않던 이유 — 브라우저마다 따로인 localStorage와 사이트 기본값
+title: 브라우저별 localStorage 대신 첫 HTML에 싣는 사이트 기본값으로 사진 위젯 앨범 공유하기
 date: 2026-10-25
 category: 개발 기록/MacFolio/프론트엔드
 summary: 노트북에서 고른 사진 위젯 폴더가 아이폰 Safari에서는 보이지 않았다. 고른 값이 브라우저의 localStorage에만 저장됐기 때문이다. 관리자가 고른 앨범을 서버에 사이트 기본값으로 저장하고, 첫 HTML에 실어 모든 브라우저가 쓰게 했다. 방문자가 직접 고른 값은 그 브라우저에서 우선한다.
@@ -94,10 +94,10 @@ ALTER TABLE "SiteContent" ADD COLUMN "widgets" JSONB;
 
 ## 관련 글
 
-- [바탕화면과 홈 화면에 위젯](/memo/desktop-widgets): 위젯 공통 부품, 사진 위젯의 앨범 선택과 그림 폴더
-- [사진 위젯을 누르면 그 사진을 크게 보기로](/memo/photo-widget-open-current): 위젯의 앨범 id와 사진 앱의 앨범 id
-- [코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing): `GET /site`와 Worker가 첫 HTML에 싣는 구조
-- [휴대폰 홈 화면 위젯 끌어 옮기기](/memo/mobile-widget-reorder): 휴대폰 위젯 자리 저장과 페이지 순서
+- [180px 칸 격자와 공유 날씨 요청으로 만든 바탕화면·홈 화면 위젯](/memo/desktop-widgets): 위젯 공통 부품, 사진 위젯의 앨범 선택과 그림 폴더
+- [openRequest로 사진 위젯이 표시 중인 사진을 사진 앱에서 크게 보기로 열기](/memo/photo-widget-open-current): 위젯의 앨범 id와 사진 앱의 앨범 id
+- [서버에 덮어쓸 값만 저장하는 프로젝트·앱 편집과 Worker의 CSP 주소 추가](/memo/site-projects-editing): `GET /site`와 Worker가 첫 HTML에 싣는 구조
+- [Pointer Events와 FLIP으로 휴대폰 홈 화면 위젯을 2열 격자에서 끌어 옮기기](/memo/mobile-widget-reorder): 휴대폰 위젯 자리 저장과 페이지 순서
 
 [^share]: 바탕화면과 휴대폰 홈 화면은 위젯 구성이 달라 자리를 따로 저장하지만, 같은 id·종류의 위젯은 고른 값을 함께 쓴다. 이 공유도 같은 브라우저 안에서만 일어난다.
 

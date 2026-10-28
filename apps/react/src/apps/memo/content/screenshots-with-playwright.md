@@ -1,5 +1,5 @@
 ---
-title: 블로그 스크린샷을 테스트 코드로 찍기
+title: Playwright와 E2E 가짜 API로 블로그 스크린샷 찍기
 date: 2026-10-01
 category: 개발 기록/MacFolio/품질
 summary: README와 블로그 글에 넣을 스크린샷을 수동 캡처 대신 Playwright로 생성했다. E2E의 가짜 API로 화면 상태를 구성하고, 잘린 메뉴·깨진 아바타·화면 밖 표시·지연 로딩 문제를 하나씩 해결했다. 검토한 방법과 캡처한 7장의 크기를 정리한다.
@@ -167,10 +167,10 @@ await browser.close();
 
 ## 관련 글
 
-- [테스트를 붙이자 보인 버그들](/memo/bugs-found-by-tests)
+- [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
 - [9월 30일 - 편집기를 다듬고, 서버를 띄우고, 문서를 다시 쓰다](/memo/day-0930)
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)
+- [임시 저장, 버전 기록, 예약 발행을 한 행에 담는 Post 테이블과 CHECK 제약](/memo/drafts-and-versions)
 - [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e)
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 
 #MacFolio #Playwright #스크린샷

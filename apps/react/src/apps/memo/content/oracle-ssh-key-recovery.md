@@ -1,5 +1,5 @@
 ---
-title: SSH 키를 잃어버린 Oracle 서버 되살리기 — 임시 VM이 원래 서버 디스크로 부팅됐다
+title: 부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구
 date: 2026-10-20
 category: 개발 기록/MacFolio/배포·운영
 summary: 시스템 데이터 용량 문제로 Mac을 초기화하면서 서버 SSH 키도 함께 삭제되었다. 부트 볼륨을 임시 VM에 연결해 새 키를 추가하는 순서를 단계별로 정리하고, 키 암호·Cloud Shell·다른 터미널 창에서 실행한 명령 같은 시행착오와 임시 VM이 원래 서버 디스크로 부팅된 현상까지 기록했다.
@@ -509,10 +509,10 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
 
 ## 관련 글
 
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [서버 하드닝은 문서가 아니라 스크립트로 남긴다](/memo/server-hardening-audit)
-- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](/memo/secret-scanning)
+- [SSH·방화벽·컨테이너 사용자를 점검하는 audit.sh로 남기는 서버 하드닝](/memo/server-hardening-audit)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
 
 [^ocid]: Oracle Cloud Identifier. OCI의 모든 리소스에 부여되는 고유 ID로, `ocid1.instance.oc1.…` 형식의 긴 문자열이다. [Oracle 문서: Resource Identifiers](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/identifiers.htm)
 

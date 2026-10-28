@@ -238,9 +238,9 @@ macOS 팁 앱의 구성을 따랐다. 첫 화면에 찾기 칸, 둘러보기 카
 
 ## 관련 글
 
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers): `--z-tour`를 추가한 전역 층 목록
-- [sticky 도구 막대가 버튼을 가린 이유](/memo/sticky-stacking-context): 겹침 순서 때문에 단추가 눌리지 않은 다른 사례
-- [좁은 창에서 신호등 버튼 아래로 - 음악과 Safari](/memo/narrow-window-title): 통합형 창에서 신호등 영역과 앱 내용이 겹치는 구조
+- [z-index 숫자를 theme.css의 CSS 변수로 모아 겹침 순서를 한 표로](/memo/z-index-layers): `--z-tour`를 추가한 전역 층 목록
+- [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context): 겹침 순서 때문에 단추가 눌리지 않은 다른 사례
+- [컨테이너 쿼리 좁은 창에서 신호등 버튼과 겹치지 않게 음악·Safari 상단 여백 맞추기](/memo/narrow-window-title): 통합형 창에서 신호등 영역과 앱 내용이 겹치는 구조
 - [Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values): 같은 날 넓힌 Stylelint 규칙. 둘러보기 카드에서 존재하지 않는 토큰을 사용한 사례도 기록했다
 - [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021)
 

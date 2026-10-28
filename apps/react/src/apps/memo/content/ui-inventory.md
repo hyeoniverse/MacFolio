@@ -1,5 +1,5 @@
 ---
-title: 공통 부품 목록을 먼저 작성하고, 후보 아홉 개를 다시 집계했다
+title: shared/ui 부품과 직접 작성한 버튼 295곳 집계로 공통 컴포넌트 후보 줄이기
 date: 2026-10-11
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 리팩터링 4단계의 첫 작업은 코드를 바꾸지 않고 집계하는 일이었다. shared/ui 부품 15개의 props와 사용처, 새 부품 후보 9개, 직접 작성한 버튼 295곳을 집계해 docs/ui.md에 기록했고, 추출할 부품은 Sheet·Modal·SearchField 세 개로 줄였다.
@@ -141,9 +141,9 @@ git grep -c '<button' -- 'apps/react/src/**/*.tsx' ':!*.test.tsx' ':!apps/react/
 
 ## 관련 글
 
-- [문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입](/memo/branded-ids): 1단계를 끝낸 글
-- [글자 버튼 하나로 합치기, 그리고 만들지 않은 컴포넌트](/memo/shared-text-button): 열흘 전 "만들지 않는다"고 결정한 글
-- [리팩터링 4단계 — 공통 컴포넌트 설계](/memo/refactor-step4-components): 4단계 정리
+- [PostSlug·FolderPath 브랜드 타입과 검사 지점으로 글 주소 문자열 구분하기](/memo/branded-ids): 1단계를 끝낸 글
+- [계산된 스타일과 스크린샷 비교로 글자 버튼을 공통 Button 하나로 합치기](/memo/shared-text-button): 열흘 전 "만들지 않는다"고 결정한 글
+- [아이콘 버튼 45곳과 텍스트 버튼 30곳을 공통 컴포넌트로 교체하기 (리팩터링 4단계)](/memo/refactor-step4-components): 4단계 정리
 - [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal)
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
 - PR: [#210](https://github.com/hyeoniverse/MacFolio/pull/210)

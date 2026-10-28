@@ -181,7 +181,7 @@ Squash를 쓰는 저장소는 PR 제목이 곧 main의 커밋 제목이 되므�
 
 ## 관련 글
 
-- [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](/memo/macfolio-merge-strategy): 이 글의 기준을 한 저장소의 main 기록에 적용한 사례
+- [main 기록 1,940커밋 집계로 정한 MacFolio의 Merge commit 전략](/memo/macfolio-merge-strategy): 이 글의 기준을 한 저장소의 main 기록에 적용한 사례
 
 ## 참고 문서
 

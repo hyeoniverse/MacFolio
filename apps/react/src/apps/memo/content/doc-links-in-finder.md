@@ -49,8 +49,8 @@ export function bundledDocOf(href: string | undefined): string | null {
 
 ## 관련 글
 
-- [Finder 앱 - 사이트를 파일처럼 둘러보기](/memo/finder-app): 저장소 문서를 표시하는 Finder 앱
-- [MacFolio 백엔드 한 장으로 보기 - 구성도와 설계 결정](/memo/backend-design): E2E 시험에서 링크를 누르는 글
+- [사이트 데이터를 폴더로 구성한 Finder 앱과 다른 앱에 보내는 열기 요청 store](/memo/finder-app): 저장소 문서를 표시하는 Finder 앱
+- [요청 계층과 설계 결정을 담은 MacFolio 백엔드 구성도](/memo/backend-design): E2E 시험에서 링크를 누르는 글
 - [10월 21일 - 이력서를 Markdown 한 장으로, 텍스트 편집기, 위젯, 처음 온 사람을 위한 둘러보기](/memo/day-1021): 텍스트 편집기 앱을 만든 날의 기록
 
 #MacFolio #프론트엔드 #Finder #메모앱
