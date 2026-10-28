@@ -1,7 +1,7 @@
 ---
 title: 글 223편의 깨진 링크 — 주소만 적은 관련 글과 각주 뒤의 괄호
 date: 2026-10-23
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 summary: 저장소 글 223편을 검사해 링크 문제 세 종류, 11편을 찾았다. 각주 바로 뒤의 괄호는 GFM 파서마다 해석이 달라 GitHub에서는 링크가 됐다. 글을 고치고 content.test.ts에 글마다 링크 검사를 추가했다.
 ---
 
