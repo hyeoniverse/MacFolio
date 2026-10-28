@@ -99,7 +99,7 @@ Font Awesome 6의 글리프 상자는 1.25em이고, 그림은 그 안에서 좌�
 | 로딩 화면 탭 (제스처 중) | 시작음 재생, 배경 음악 요소는 아직 없음 | 시작음 재생, 배경 음악 요소에 `play()` 후 바로 `pause()` |
 | 약 2.5초 뒤 `startMusic` | 휴대폰은 조건문으로 건너뜀              | `play()` 호출. 이미 허용된 요소라 재생된다               |
 
-탭 처리 안에서 허용받으려면 그 시각에 배경 음악 요소가 있어야 한다. 그런데 바탕화면(휴대폰은 홈 화면)은 첫 방문 성능을 위해 로딩 화면을 누른 뒤에 렌더링하고([글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)), 음악 상태(`MusicProvider`)와 `<audio>`도 그 안에 있었다. 그래서 audio 요소를 React 밖의 모듈(`apps/music/musicAudio.ts`)에서 하나만 만들고, 로딩 화면과 `MusicProvider`가 같은 요소를 쓰게 했다. 이벤트 처리기는 JSX 속성 대신 `addEventListener`로 연결한다.
+탭 처리 안에서 허용받으려면 그 시각에 배경 음악 요소가 있어야 한다. 그런데 바탕화면(휴대폰은 홈 화면)은 첫 방문 성능을 위해 로딩 화면을 누른 뒤에 렌더링하고([성능 최적화: 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로 (1~3차)](/memo/site-performance-diet)), 음악 상태(`MusicProvider`)와 `<audio>`도 그 안에 있었다. 그래서 audio 요소를 React 밖의 모듈(`apps/music/musicAudio.ts`)에서 하나만 만들고, 로딩 화면과 `MusicProvider`가 같은 요소를 쓰게 했다. 이벤트 처리기는 JSX 속성 대신 `addEventListener`로 연결한다.
 
 ```ts
 /** 탭·클릭 처리 중에 동기적으로 부른다 (await·setTimeout 뒤면 제스처가 지나 허용되지 않는다) */
@@ -151,7 +151,7 @@ HTMLMediaElement.prototype.play = function () {
 - [desktop-core 플레이어 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 이 글의 대기열 동작을 추가한 플레이어 store
 - [셸 공통 CSS 변수로 휴대폰 앱의 바탕·카드·제목 막대를 iOS 스타일로 맞추기](/memo/mobile-apps-ios-style): 휴대폰 음악 보관함의 이전 구성
 - [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 같은 표지 블러 배경의 Safari 문제
-- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
+- [성능 최적화: 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로 (1~3차)](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
 
 [^webkit]: WebKit 블로그 [New `<video>` Policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/), MDN [자동 재생 가이드](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)
 
