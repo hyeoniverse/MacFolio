@@ -1,5 +1,5 @@
 ---
-title: Flux 패턴과 2026년의 상태 관리 — Action·Dispatcher·Store·View 이후에 남은 단방향 흐름
+title: Flux 패턴의 Action·Dispatcher·Store·View 단방향 흐름과 2026년 상태 관리 동향
 date: 2026-10-25
 category: 인사이트/프론트엔드
 summary: Flux는 상태 변경을 Action → Dispatcher → Store → View 한 방향으로만 흐르게 하는 구조다. 네 구성 요소와 Redux·Zustand·useSyncExternalStore가 바꾼 점을 공식 자료로 정리하고, npm 다운로드와 State of React 2025로 본 2026년 상태 관리 동향과 그 흐름에 대한 고찰을 더했다.
