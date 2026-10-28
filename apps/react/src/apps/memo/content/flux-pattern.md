@@ -1,13 +1,13 @@
 ---
-title: Flux 패턴 — Action·Dispatcher·Store·View의 단방향 흐름과 그 뒤의 Redux, 외부 store
+title: Flux 패턴과 2026년의 상태 관리 — Action·Dispatcher·Store·View 이후에 남은 단방향 흐름
 date: 2026-10-25
-category: 기술 노트/프론트엔드
-summary: Flux는 상태 변경을 Action → Dispatcher → Store → View 한 방향으로만 흐르게 하는 구조다. 양방향 바인딩의 연쇄 갱신 문제, 네 구성 요소와 waitFor, Redux가 바꾼 점, useSyncExternalStore로 구독하는 외부 store를 공식 자료 기준으로 정리했다.
+category: 인사이트/프론트엔드
+summary: Flux는 상태 변경을 Action → Dispatcher → Store → View 한 방향으로만 흐르게 하는 구조다. 네 구성 요소와 Redux·Zustand·useSyncExternalStore가 바꾼 점을 공식 자료로 정리하고, npm 다운로드와 State of React 2025로 본 2026년 상태 관리 동향과 그 흐름에 대한 고찰을 더했다.
 ---
 
 Flux는 Facebook이 2014년에 공개한 클라이언트 애플리케이션 구조다. 상태를 바꾸는 요청이 **Action → Dispatcher → Store → View** 한 방향으로만 흐르게 한다. 지금 Flux 라이브러리 자체를 쓰는 프로젝트는 드물지만, Redux·Zustand 같은 상태 관리 라이브러리와 React의 `useReducer`·`useSyncExternalStore`가 이 구조에서 나왔다.
 
-이 글은 Flux가 해결하려던 문제와 구성 요소, Flux 이후 Redux와 외부 store가 바꾼 점을 공식 자료를 기준으로 정리한다. 이 구조를 MacFolio의 store에 적용한 내용은 개발기 [MacFolio의 store 설계](/memo/macfolio-store-design)에 따로 정리했다.
+이 글은 Flux가 해결하려던 문제와 구성 요소, Flux 이후 Redux와 외부 store가 바꾼 점을 공식 자료를 기준으로 정리한다. 이어서 2026년의 상태 관리 동향을 다운로드 수치와 설문으로 확인하고, Flux에서 무엇이 빠지고 무엇이 남았는지 고찰한다. 이 구조를 MacFolio의 store에 적용한 내용은 개발기 [MacFolio의 store 설계](/memo/macfolio-store-design)에 따로 정리했다.
 
 ## Flux가 나온 이유: 양방향 바인딩의 연쇄 갱신
 
@@ -121,16 +121,54 @@ React는 18부터 이런 store를 구독하는 표준 hook으로 [`useSyncExtern
 
 React 문서는 가능하면 `useState`·`useReducer` 같은 React 내장 상태를 쓰라고 권하고, `useSyncExternalStore`는 주로 React가 아닌 코드와 연결할 때 쓴다고 설명한다. `useReducer`는 reducer와 Action을 컴포넌트 안에서 쓰는 형태라, Flux·Redux의 흐름을 React 상태로 옮긴 것에 가깝다.
 
-## 정리: 무엇이 빠지고 무엇이 남았나
+## 2026년의 상태 관리: 수치로 본 동향
+
+### npm 다운로드: zustand가 redux를 앞질렀다
+
+![상태 관리 패키지의 분기별 npm 다운로드](./images/flux-pattern-npm-trend.svg '2023년 4분기부터 2026년 3분기까지. TanStack Query와 zustand가 2026년에 redux를 앞질렀다. 2026년에는 모든 패키지가 함께 늘어, 절대값보다 순위와 비율을 본다')
+
+npm registry API로 지난 3년의 분기별 다운로드를 집계했다[^npm]. 2026년에는 다섯 패키지가 모두 3~5배 늘었다. 개별 라이브러리의 인기보다 npm 전체의 설치량(CI, 자동화된 설치)이 늘어난 영향이 크므로, 절대값보다 서로의 비율을 본다.
+
+| 비율                   | 2023년 4분기 | 2026년 3분기 |
+| ---------------------- | -----------: | -----------: |
+| zustand ÷ redux        |         0.28 |         1.24 |
+| TanStack Query ÷ redux |         0.26 |         1.54 |
+| Redux Toolkit ÷ redux  |         0.33 |         0.66 |
+
+- **zustand가 redux를 앞질렀다.** 2026년 2분기에 처음 앞섰고(4.70억 대 4.24억 회), 최근 한 주(10월 20~26일)도 5,636만 대 4,118만 회다.
+- **서버 상태 라이브러리가 가장 많다.** TanStack Query(`@tanstack/react-query`)는 같은 주 5,451만 회로, 전역 상태 라이브러리와 비슷하거나 더 많이 설치된다.
+- **redux 단독 설치는 줄고 Redux Toolkit 비중이 늘었다.** `redux`는 Redux Toolkit과 react-redux의 의존성으로도 설치되므로, redux 수치에는 Redux Toolkit 사용자가 겹쳐 있다.
+
+다운로드 수는 사용자 수가 아니다. 다른 패키지의 의존성으로 설치된 횟수와 CI가 매번 다시 받은 횟수가 섞여 있다. 방향을 보는 지표로만 쓴다.
+
+### State of React 2025: 셋 중 하나는 라이브러리를 쓰지 않는다
+
+[State of React 2025](https://2025.stateofreact.com/en-US/libraries/state-management/) 설문(2025년 11월~2026년 1월, 응답 3,760명)의 상태 관리 항목은 다음과 같다.
+
+- 응답자 1,271명(33.8%)이 상태 관리 라이브러리를 쓰지 않는다. 설문은 `useState`·`useContext` 같은 React 내장 API로 충분한 경우가 많다고 해석했다.
+- Redux와 Redux Toolkit은 오랫동안 가장 널리 쓰인 선택지이고, Zustand는 빠르게 늘고 있으며 만족도는 가장 높다. 설문은 Zustand를 이 분야의 선두로 봐도 된다고 적었다.
+- TanStack Query는 상태 관리 라이브러리 목록 밖에서도 가장 긍정적인 평가를 받았고, 기타 응답에서 가장 많이 언급된 이름(42회)이다.
+- 이번 설문은 예년보다 늦게 열려 참여가 적었다. 비율은 이 표본 안에서만 의미가 있다.
+
+### Signals: 언어 표준으로 가는 중
+
+Angular·Vue·Solid·Preact는 값이 바뀐 곳만 다시 계산하는 signal 방식의 반응성을 쓴다. TC39에는 이 반응성의 핵심(쓰기 가능한 상태, 의존을 추적하는 파생 값, 감시자)을 언어에 넣자는 [Signals 제안](https://github.com/tc39/proposal-signals)이 있다. 2026년 10월 기준으로 아직 Stage 1이고, 목표는 애플리케이션 개발자용 API가 아니라 프레임워크들이 공유할 공통 기반이다. React는 signal 대신 컴포넌트 단위로 다시 렌더링하는 방식을 유지하고 있다.
+
+## 고찰: Flux에서 무엇이 빠지고 무엇이 남았나
 
 ![Flux에서 useSyncExternalStore까지](./images/flux-pattern-evolution.svg 'Flux(2014년 5월 React 블로그), Redux 1.0.0(2015년 8월), Zustand 1.0.0(2019년 6월), React 18(2022년 3월)이 각각 빼고 바꾸고 더한 것. 네 단계 모두 View가 상태를 직접 바꾸지 않는다')
 
-- **Redux**는 Dispatcher와 여러 Store 사이의 `waitFor` 순서를 없애고, store 하나와 순수 reducer로 바꿨다.
-- **Zustand**는 dispatch되는 Action 객체와 reducer를 필수에서 뺐다. 상태를 바꾸는 함수를 store 안에 두고 `set`으로만 갱신한다.
-- **`useSyncExternalStore`**는 상태 관리 방식이 아니라, React가 외부 store를 구독하는 표준 방법이다. Transition 중에 store가 바뀌어도 화면의 컴포넌트가 서로 다른 버전을 보이지 않게 한다.
-- 네 단계 모두 **View가 상태를 직접 바꾸지 않고, 정해진 입구로 변경을 요청한 뒤 알림을 받아 다시 읽는다**는 규칙은 남았다.
+공식 자료의 변화와 2026년의 수치를 함께 놓으면, Flux 이후 10여 년의 흐름은 세 가지로 정리된다.
 
-### 언제 무엇을 고르나
+1. **중앙 장치가 사라졌다.** Redux는 Dispatcher를 순수 reducer로 바꿨고, Zustand는 Action 객체와 reducer마저 필수에서 뺐다. 상태를 바꾸는 입구는 이제 store가 노출하는 함수 호출이다. zustand가 redux를 앞지른 수치는 "모든 변경을 Action 객체로 기술한다"는 비용을 대부분의 앱이 더는 치르지 않으려 한다는 뜻으로 읽힌다. 반대로 변경 기록과 time travel이 꼭 필요한 큰 팀에서는 Redux Toolkit 비중이 늘었다.
+2. **서버 상태가 분리되었다.** Flux의 Store는 서버에서 받은 데이터와 화면 상태를 함께 담았다. 지금은 캐시·재시도·무효화를 맡는 서버 상태 라이브러리가 따로 있고, TanStack Query의 다운로드가 전역 상태 라이브러리보다 많다. 전역 store에 남는 것은 서버와 무관한 화면 상태뿐이라, store가 작아지고 셋 중 하나는 라이브러리 없이도 충분해졌다.
+3. **구독 단위가 작아졌다.** Flux의 Store는 "바뀌었다"는 이벤트 하나를 냈고, View는 Store 전체를 다시 읽었다. 이후 selector(Redux, Zustand), atom(Jotai), signal(Angular·Vue·Solid)로 구독 단위가 점점 작아졌다. 표준화가 진행 중인 Signals 제안은 이 흐름의 끝에 있다.
+
+반면 처음부터 지금까지 바뀌지 않은 규칙이 있다. **View는 상태를 직접 바꾸지 않고, 정해진 입구로 변경을 요청한 뒤 알림을 받아 다시 읽는다.** Dispatcher도 Action 객체도 빠졌지만 단방향 흐름은 모든 라이브러리에 남았고, React는 이를 `useSyncExternalStore`라는 표준 구독 방법으로 받아들였다.
+
+그래서 2026년에 상태 관리를 고를 때 질문의 순서는 "어떤 라이브러리인가"보다 "이 상태는 어디에 속하는가"가 앞선다. 서버에 속한 데이터는 서버 상태 라이브러리에, 한 화면의 상태는 React 내장 상태에 두고, 그래도 여러 화면이 함께 쓰는 상태가 남을 때 작은 외부 store를 둔다. MacFolio도 창 관리 상태만 React 밖의 작은 store(`createStore` + `useSyncExternalStore`)에 두었다. 그 과정은 [MacFolio의 store 설계](/memo/macfolio-store-design)에 적었다.
+
+## 언제 무엇을 고르나
 
 Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-should-i-use-redux)는 "Not all apps need Redux"로 시작한다. 아래 조건은 각 공식 문서가 직접 든 것이다.
 
@@ -148,4 +186,6 @@ Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-sh
 - [MacFolio의 store 설계 - Flux·Redux에서 따른 것과 뺀 것](/memo/macfolio-store-design): 이 구조를 창 관리 store에 적용한 개발기
 - [창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
 
-#TIL #React #상태관리 #아키텍처
+[^npm]: [npm registry downloads API](https://github.com/npm/registry/blob/main/docs/download-counts.md). `https://api.npmjs.org/downloads/range/<기간>/<패키지>`로 일별 다운로드를 받아 분기별로 합산했다(2026년 10월 29일 조회).
+
+#React #상태관리 #아키텍처 #동향
