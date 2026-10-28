@@ -1,5 +1,5 @@
 ---
-title: Safari 콘솔에 5초마다 쌓이던 CORP 에러 - sendBeacon과 Cross-Origin-Resource-Policy
+title: no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy
 date: 2026-10-22
 category: 개발 기록/MacFolio/백엔드
 summary: API가 helmet 기본값으로 모든 응답에 CORP same-origin을 붙이고 있었다. 사이트와 API는 출처가 달라 Safari가 no-cors 요청인 sendBeacon의 응답을 취소했다. CORS와 CORP의 차이를 정리하고, 분석 이벤트 경로 하나만 cross-origin으로 지정했다.

@@ -1,5 +1,5 @@
 ---
-title: 최소화했다 다시 열면 넓은 창이 휴대폰 모양이 되던 이유 — ref 객체와 ResizeObserver
+title: callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기
 date: 2026-10-22
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메모 창을 최소화했다가 Dock에서 다시 열면 898px 창에서도 휴대폰 모양이 됐다. 앱 컴포넌트는 마운트된 채 칸 요소만 새로 만들어지는데, ResizeObserver가 문서에서 빠진 이전 요소를 계속 관찰했다. 날씨·사진도 같은 구조라 useElementWidth 훅 하나로 수정했다.

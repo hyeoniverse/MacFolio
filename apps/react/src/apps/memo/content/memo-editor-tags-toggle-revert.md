@@ -1,5 +1,5 @@
 ---
-title: 메모 편집기 버그 셋 — 첫 태그의 \#, 펼치기만 해도 임시 저장, 되돌릴 수 없던 저장소 글
+title: remark-stringify 이스케이프와 ProseMirror 플러그인 상태로 문서 상태와 화면 상태 나누기
 date: 2026-10-23
 category: 개발 기록/MacFolio/프론트엔드
 summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, 토글을 펼치기만 해도 임시 저장되고, 서버 글이 같은 slug의 저장소 글을 가려 되돌릴 수 없었다. 저장 직전 unescapeTags, 화면 상태로 옮긴 펼침 여부, DELETE /posts/:slug/server-copy로 수정했다.

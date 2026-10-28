@@ -1,5 +1,5 @@
 ---
-title: 트래픽 분석 7 - 관리자 IP를 집계에서 제외하고 실시간을 7일로 넓히기
+title: HMAC으로 IP 원문 없이 관리자 방문 식별하기 (트래픽 분석 7)
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: 로그인하지 않은 기기에서 둘러본 관리자 방문이 집계에 섞였다. 관리자로 인증된 요청의 IP를 HMAC으로만 30일 보관해 그 IP의 방문을 제외한다. 실시간 탭은 30분에서 마스킹된 IP 보관 기간인 7일까지 넓히고 IP별 방문 표를 더했으며, 맥 Safari에서 정렬하면 이름이 사라지던 표를 고쳤다.
@@ -191,7 +191,7 @@ resetKey: String(liveMinutes),
 - [트래픽 분석 5 - UTM 조합 표와 링크 생성기](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
 - [트래픽 분석 5 - 새로 고침 없이 값 갱신하기, 폴링과 SSE 비교](/memo/activity-live-refresh): 실시간 탭의 usePolling
 - [트래픽 분석 6 - 메시지·댓글·위젯도 보이는 동안만 갱신하기](/memo/live-refresh-more): 앞 글
-- [Safari 콘솔에 5초마다 쌓이던 CORP 에러 - sendBeacon과 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
+- [no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): Safari 렌더링 차이 정리
 
 #MacFolio #트래픽분석 #개인정보 #HMAC #Safari #NestJS

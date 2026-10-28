@@ -1,5 +1,5 @@
 ---
-title: 바탕화면 보기 — 배경화면을 누르면 창을 가장자리로 치운다
+title: CSS translate와 pointer-events로 레이아웃을 건드리지 않고 창 밀어내기
 date: 2026-10-22
 category: 개발 기록/MacFolio/프론트엔드
 summary: macOS Sonoma의 '배경화면을 클릭하여 데스크탑 보기'를 옮겼다. 창 store에 desktopRevealed 상태를 추가하고, 창은 left·top 대신 CSS translate로 밀어 열기·닫기 애니메이션과 끌기 계산에서 분리했다. 바탕화면 아이콘을 끌어 고르는 동작과는 이동 거리로 구분한다.
@@ -175,7 +175,7 @@ for (let x = 40; x < window.innerWidth - 40; x += 40)
 
 - [창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계](/memo/desktop-core-windows): `desktopRevealed`를 추가한 창 store
 - [메뉴 막대의 앱 이름이 맨 앞 창을 따른다](/memo/menu-bar-app-name): `desktopFocused`와 바탕화면을 누르면 Finder가 되는 규칙
-- [최소화했다 다시 열면 넓은 창이 휴대폰 모양이 되던 이유](/memo/memo-restore-compact): 같은 날 수정한 창 최소화 관련 결함
+- [callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기](/memo/memo-restore-compact): 같은 날 수정한 창 최소화 관련 결함
 
 [^individual-transform]: CSS Transforms Module Level 2의 개별 변환 속성. 요소의 최종 변환 행렬은 `translate`, `rotate`, `scale`, `transform` 순서로 곱해 계산한다. [CSS Transforms Level 2: Individual Transforms](https://www.w3.org/TR/css-transforms-2/#individual-transforms)
 

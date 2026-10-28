@@ -149,6 +149,6 @@ summary: 리팩터링 5단계 회고. CSS 값은 하나도 바꾸지 않고 z-in
 - [4,600줄 Memo.css를 열다섯 파일로 — 차례를 지켜 나누고 결과가 같은지 확인하기](/memo/memo-css-split)
 - [두 CSS 파일에 똑같이 적힌 규칙 103개 지우기](/memo/creative-css-dedupe)
 - [2,761개 중 정말 안 쓰는 것은 9개](/memo/unused-css-selectors)
-- [토큰 아니면 막기 — 단계 밖 값 733곳을 가까운 토큰으로 옮기고 Stylelint 규칙을 넓히다](/memo/off-scale-values): 이 단계 뒤에 남은 숫자를 토큰으로 옮기고 규칙으로 강제한 작업
+- [Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values): 이 단계 뒤에 남은 숫자를 토큰으로 옮기고 규칙으로 강제한 작업
 
 #MacFolio #리팩터링 #CSS #디자인토큰

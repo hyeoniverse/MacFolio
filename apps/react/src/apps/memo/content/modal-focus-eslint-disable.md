@@ -1,5 +1,5 @@
 ---
-title: eslint-disable 한 줄이 가린 Modal의 초점 버그
+title: eslint-disable이 가린 useEffect 의존성과 exhaustive-deps
 date: 2026-10-21
 category: 개발 기록/MacFolio/디자인 시스템
 summary: Modal의 초점 effect는 주석에 '열 때 한 번만'이라고 적혀 있었지만 [onClose]에 의존해, 부모가 렌더링마다 새 함수를 넘기면 초점이 처음 칸으로 돌아갔다. exhaustive-deps를 끈 주석이 원인을 가렸고, effect를 둘로 나눠 규칙을 끄지 않고 수정했다.

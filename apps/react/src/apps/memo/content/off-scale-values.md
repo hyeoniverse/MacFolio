@@ -1,5 +1,5 @@
 ---
-title: 토큰 아니면 막기 — 단계 밖 값 733곳을 가까운 토큰으로 옮기고 Stylelint 규칙을 넓히다
+title: Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기
 date: 2026-10-21
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 간격 578곳·모서리 107곳·글자 48곳을 가까운 토큰으로 옮기고, z-index를 전역 층 토큰과 창 안의 -1~10으로, 색을 직접 쓴 그라데이션을 토큰으로 정리했다. Stylelint는 '이름 있는 값만 차단'에서 '토큰 단계 범위 안의 숫자는 모두 차단'으로 넓혀 위반 0곳에서 시작했다.

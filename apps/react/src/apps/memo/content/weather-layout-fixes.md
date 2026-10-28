@@ -113,7 +113,7 @@ iOS 모양의 하단 막대는 3열 그리드다(`grid-template-columns: 48px 1f
 - 쌓임 맥락 때문에 버튼이 클릭되지 않던 일: [sticky 도구 막대가 버튼을 가린 이유](/memo/sticky-stacking-context)
 - 화면 전체의 z-index 정리: [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers)
 - 좁은 창에서 제목이 잘리던 일: [좁은 창에서 신호등 버튼 아래로 - 음악과 Safari](/memo/narrow-window-title)
-- 최소화했다 다시 열면 `useCompact`가 폭을 측정하지 못하던 일: [최소화했다 다시 열면 넓은 창이 휴대폰 모양이 되던 이유](/memo/memo-restore-compact)
+- 최소화했다 다시 열면 `useCompact`가 폭을 측정하지 못하던 일: [callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기](/memo/memo-restore-compact)
 - PR: [#226](https://github.com/hyeoniverse/MacFolio/pull/226)
 
 #트러블슈팅 #프론트엔드 #CSS
