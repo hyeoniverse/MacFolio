@@ -151,6 +151,7 @@ Dock에서 앱을 누를 때 항상 그 앱을 앞으로 가져오던 동작도 
 - [메뉴 막대의 메뉴](/memo/menubar-menus)
 - [시계 글자가 바뀔 때마다 흔들리던 메뉴 막대](/memo/menubar-clock-width)
 - [앱이 많아지자 Dock이 Launchpad와 겹쳤다](/memo/dock-layout)
+- [창·메뉴 막대 입력 버그 셋](/memo/window-menubar-input-fixes): Dock을 누르는 동안의 깜빡임을 포함한 포인터 입력 결함
 
 [^capture]: DOM 이벤트는 캡처 단계(문서 루트 → 대상), 대상 단계, 버블링 단계(대상 → 문서 루트) 순서로 전파된다. React의 `onPointerDownCapture`처럼 `Capture`로 끝나는 속성은 캡처 단계의 핸들러다. [MDN: addEventListener의 capture 옵션](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#capture)
 

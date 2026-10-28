@@ -106,6 +106,7 @@ it('창 밖을 누르면 지금 쓰는 앱이 없어지고, 창을 누르면 돌
 - [메모 로직을 desktop-core로](/memo/desktop-core-memo): 두 번째 단계
 - [음악 플레이어를 둘로 나누기](/memo/desktop-core-music): 세 번째 단계
 - [화면과 서버가 같은 규칙을 쓰기](/memo/desktop-core-shared-rules): 분리 이후 서버와 규칙 공유
+- [바탕화면 보기 — 배경화면을 누르면 창을 가장자리로 치운다](/memo/reveal-desktop): 창 store에 `desktopRevealed` 상태를 추가한 기능
 
 [^usese]: React 18에서 추가된 hook으로, React 바깥의 저장소를 구독한다. `subscribe`와 `getSnapshot` 두 함수를 받아, 저장소가 바뀌면 컴포넌트를 다시 렌더링한다.
 

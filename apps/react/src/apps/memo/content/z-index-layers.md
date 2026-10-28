@@ -122,6 +122,8 @@ z-index: var(--z-app-error);
 - 그림자·간격을 이름으로 모은 일: [그림자와 간격에 이름 붙이기 — 간격 열 값과 그림자 다섯 값](/memo/shadow-space-tokens)
 - 스타일 리팩터링 전체: [리팩터링 5단계 — 스타일](/memo/refactor-step5-styles)
 - PR: [#231](https://github.com/hyeoniverse/MacFolio/pull/231)
+- 창 안의 z-index를 -1~10으로 제한한 규칙: [토큰 아니면 막기 — 단계 밖 값 733곳을 가까운 토큰으로 옮기고 Stylelint 규칙을 넓히다](/memo/off-scale-values)
+- `--z-tour`를 사용하는 둘러보기: [처음 온 사람을 위한 둘러보기와 팁 앱 — 화면 한 곳만 비추고 클릭은 통과시키기](/memo/first-visit-tour)
 
 [^stacking]: 자식 요소의 z-index를 그 안에서만 비교하는 독립된 겹침 단위. `position: fixed`·`sticky`, z-index가 지정된 `position: relative`·`absolute`, `opacity` 1 미만, `transform`, `filter`, `backdrop-filter` 등이 새로 만든다.
 

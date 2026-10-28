@@ -134,6 +134,7 @@ onPointerDown={(event) => {
 
 - [공통 부품 목록을 먼저 작성하고, 후보 아홉 개를 다시 집계했다](/memo/ui-inventory): 추출할 부품을 결정한 목록
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet): 다음 부품
+- [eslint-disable 한 줄이 가린 Modal의 초점 버그](/memo/modal-focus-eslint-disable): 남은 과제에 적은 `onClose` 의존 문제를 effect 분리로 수정한 일
 - [남은 시트와 창을 찾아 보니 — Modal로 옮긴 것은 하나](/memo/sheet-modal-migrate): 앱마다 직접 만든 모달을 옮긴 일
 - [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
 - PR: [#212](https://github.com/hyeoniverse/MacFolio/pull/212)

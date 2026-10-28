@@ -112,4 +112,5 @@ ETag는 전송량만 줄인다. 서버는 304를 보낼 때도 DB를 조회하�
 - [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
 - [macOS 날씨 앱 만들기 (Open-Meteo)](/memo/weather-app): 날씨 앱
 - [메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기](/memo/server-status-wifi): 메뉴 막대 서버 상태
+- [트래픽 분석 7 - 관리자 IP를 집계에서 제외하고 실시간을 7일로 넓히기](/memo/analytics-admin-ip): 다음 글
   #MacFolio #React #폴링

@@ -163,6 +163,7 @@ runner: (state, node) => {
 - [메모 앱이 읽는 접기 블록과 각주 (GitHub 병합 방식 글)](/memo/merge-strategies)
 - [메모 폴더 정리 API](/memo/memo-organization-api)
 - [한 줄에 서식 하나](/memo/memo-one-style-per-line)
+- [메모 편집기 버그 셋 — 첫 태그의 \#, 펼치기만 해도 임시 저장](/memo/memo-editor-tags-toggle-revert): › 로 접은 상태를 저장하던 방식을 화면 상태로 바꾼 후속 수정
 - [메모 칸 너비 조절](/memo/memo-pane-resize)
 - [모서리 둥글기에 이름 붙이기](/memo/radius-tokens)
 
