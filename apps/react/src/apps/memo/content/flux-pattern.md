@@ -13,6 +13,8 @@ Flux는 Facebook이 2014년에 공개한 클라이언트 애플리케이션 구�
 
 React 블로그의 글 [Flux: An Application Architecture for React](https://legacy.reactjs.org/blog/2014/05/06/flux.html)(2014년 5월 6일, Bill Fisher·Jing Chen)는 F8의 분과 세션에서 Flux를 발표한 뒤 쓴 글이다. Flux 문서의 [In-Depth Overview](https://facebookarchive.github.io/flux/docs/in-depth-overview)는 Flux를 "Facebook이 클라이언트 웹 애플리케이션을 만들 때 쓰는 구조"로 소개하고, MVC 대신 단방향 데이터 흐름을 고른 이유를 다음과 같이 적는다.
 
+![2014년 React 블로그의 Flux 발표 글](./images/flux-pattern-react-blog-2014.jpg '2014년 5월 6일 Bill Fisher·Jing Chen이 쓴 "Flux: An Application Architecture for React". F8 세션 영상 "Hacker Way: Rethinking Web App Development at Facebook"을 함께 실었다. 지금은 보관된 legacy.reactjs.org에 남아 있다(2026년 10월 29일 캡처)')
+
 > We found that two-way data bindings led to cascading updates, where changing one object led to another object changing, which could also trigger more updates.
 
 Overview가 든 출발점은 파생 데이터였다. 메시지 스레드 목록에서 읽지 않은 스레드를 강조하고, 다른 뷰에는 읽지 않은 수를 보여 주려 했다. MVC에서는 스레드 하나를 읽음으로 바꾸면 스레드 모델을 갱신한 뒤 읽지 않은 수 모델도 따로 갱신해야 했고, 이런 의존과 연쇄 갱신이 큰 MVC 애플리케이션에서 얽힌 데이터 흐름을 만든다고 적는다.
@@ -141,9 +143,13 @@ npm registry API로 지난 3년의 분기별 다운로드를 집계했다[^npm].
 
 다운로드 수는 사용자 수가 아니다. 다른 패키지의 의존성으로 설치된 횟수와 CI가 매번 다시 받은 횟수가 섞여 있다. 방향을 보는 지표로만 쓴다.
 
+![한 주 npm 다운로드](./images/flux-pattern-weekly-downloads.svg '2026년 10월 20~26일. zustand 5,636만, TanStack Query 5,451만, redux 4,118만, Redux Toolkit 3,039만 회. jotai 이하는 한 자릿수 백만 회대다')
+
 ### State of React 2025: 셋 중 하나는 라이브러리를 쓰지 않는다
 
 [State of React 2025](https://2025.stateofreact.com/en-US/libraries/state-management/) 설문(2025년 11월~2026년 1월, 응답 3,760명)의 상태 관리 항목은 다음과 같다.
+
+![State of React 2025의 상태 관리 사용률 추이](./images/flux-pattern-state-of-react-2025.jpg '설문 응답자 중 써 본 비율(Usage). 2023→2025년 Redux는 약 80%에서 75%로, Redux Toolkit은 55% 안팎에서 그대로, Zustand는 약 28%에서 50%로 올랐다. 2026년 10월 29일 캡처')
 
 - 응답자 1,271명(33.8%)이 상태 관리 라이브러리를 쓰지 않는다. 설문은 `useState`·`useContext` 같은 React 내장 API로 충분한 경우가 많다고 해석했다.
 - Redux와 Redux Toolkit은 오랫동안 가장 널리 쓰인 선택지이고, Zustand는 빠르게 늘고 있으며 만족도는 가장 높다. 설문은 Zustand를 이 분야의 선두로 봐도 된다고 적었다.
@@ -154,6 +160,8 @@ npm registry API로 지난 3년의 분기별 다운로드를 집계했다[^npm].
 
 Angular·Vue·Solid·Preact는 값이 바뀐 곳만 다시 계산하는 signal 방식의 반응성을 쓴다. TC39에는 이 반응성의 핵심(쓰기 가능한 상태, 의존을 추적하는 파생 값, 감시자)을 언어에 넣자는 [Signals 제안](https://github.com/tc39/proposal-signals)이 있다. 2026년 10월 기준으로 아직 Stage 1이고, 목표는 애플리케이션 개발자용 API가 아니라 프레임워크들이 공유할 공통 기반이다. React는 signal 대신 컴포넌트 단위로 다시 렌더링하는 방식을 유지하고 있다.
 
+![TC39 Signals 제안 저장소](./images/flux-pattern-tc39-signals.jpg 'tc39/proposal-signals README 첫머리. Stage 1이고, Angular·Vue·Solid·Svelte·MobX 등 여러 프레임워크 작성자가 설계에 참여한다. 2026년 10월 29일 캡처')
+
 ## 고찰: Flux에서 무엇이 빠지고 무엇이 남았나
 
 ![Flux에서 useSyncExternalStore까지](./images/flux-pattern-evolution.svg 'Flux(2014년 5월 React 블로그), Redux 1.0.0(2015년 8월), Zustand 1.0.0(2019년 6월), React 18(2022년 3월)이 각각 빼고 바꾸고 더한 것. 네 단계 모두 View가 상태를 직접 바꾸지 않는다')
@@ -163,6 +171,8 @@ Angular·Vue·Solid·Preact는 값이 바뀐 곳만 다시 계산하는 signal �
 1. **중앙 장치가 사라졌다.** Redux는 Dispatcher를 순수 reducer로 바꿨고, Zustand는 Action 객체와 reducer마저 필수에서 뺐다. 상태를 바꾸는 입구는 이제 store가 노출하는 함수 호출이다. zustand가 redux를 앞지른 수치는 "모든 변경을 Action 객체로 기술한다"는 비용을 대부분의 앱이 더는 치르지 않으려 한다는 뜻으로 읽힌다. 반대로 변경 기록과 time travel이 꼭 필요한 큰 팀에서는 Redux Toolkit 비중이 늘었다.
 2. **서버 상태가 분리되었다.** Flux의 Store는 서버에서 받은 데이터와 화면 상태를 함께 담았다. 지금은 캐시·재시도·무효화를 맡는 서버 상태 라이브러리가 따로 있고, TanStack Query의 다운로드가 전역 상태 라이브러리보다 많다. 전역 store에 남는 것은 서버와 무관한 화면 상태뿐이라, store가 작아지고 셋 중 하나는 라이브러리 없이도 충분해졌다.
 3. **구독 단위가 작아졌다.** Flux의 Store는 "바뀌었다"는 이벤트 하나를 냈고, View는 Store 전체를 다시 읽었다. 이후 selector(Redux, Zustand), atom(Jotai), signal(Angular·Vue·Solid)로 구독 단위가 점점 작아졌다. 표준화가 진행 중인 Signals 제안은 이 흐름의 끝에 있다.
+
+![구독 단위가 작아져 온 흐름](./images/flux-pattern-granularity.svg 'Flux Store의 변경 이벤트 하나에서 selector, atom, signal로 갈수록 값 하나가 바뀌었을 때 다시 계산되는 범위가 좁아진다')
 
 반면 처음부터 지금까지 바뀌지 않은 규칙이 있다. **View는 상태를 직접 바꾸지 않고, 정해진 입구로 변경을 요청한 뒤 알림을 받아 다시 읽는다.** Dispatcher도 Action 객체도 빠졌지만 단방향 흐름은 모든 라이브러리에 남았고, React는 이를 `useSyncExternalStore`라는 표준 구독 방법으로 받아들였다.
 
