@@ -999,7 +999,7 @@ test.describe('모바일', () => {
 				'li[data-folder-path="개발 기록/MacFolio"] > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name'
 			);
 		const paths = (names: string[]) => names.map((name) => `개발 기록/MacFolio/${name}`);
-		const NAMES = ['디자인 시스템', '배포·운영', '백엔드', '설계', '품질', '프론트엔드', '회고'];
+		const NAMES = ['디자인 시스템', '배포·운영', '백엔드', '설계', '테스트·보안·성능', '프론트엔드', '회고'];
 		await expect(topNames()).toHaveText(NAMES);
 
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();

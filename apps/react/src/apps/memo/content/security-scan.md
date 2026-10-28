@@ -1,7 +1,7 @@
 ---
 title: Semgrep과 SCA 도구로 MacFolio 점검하기 - 7건 중 실제 취약점 0
 date: 2026-10-18
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다. Semgrep이 7건을 냈고 오탐 4, 영향 없음 3, 실제 취약점은 0이었다. 영향 없음 3건은 수정했고, 라이선스를 집계했고, ERROR만 차단하는 CI 작업을 추가했다.
 ---
 
