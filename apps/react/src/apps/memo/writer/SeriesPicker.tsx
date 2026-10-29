@@ -36,7 +36,6 @@ const SeriesPicker = ({
 	// 앞의 가운뎃점·이름·순서 칸을 한 덩어리로 (좁은 칸에서 줄을 바꿔도 순서 칸만 떨어지지 않게)
 	return (
 		<span className="memo-series-pick">
-			<span aria-hidden="true">·</span>
 			{naming ? (
 				<input
 					className="memo-meta-input"
@@ -56,7 +55,7 @@ const SeriesPicker = ({
 			) : (
 				<button
 					type="button"
-					className="memo-meta-button"
+					className={`memo-series-chip ${value ? 'set' : ''}`}
 					aria-label={value ? `연재 ${value}, 바꾸기` : '연재 없음, 바꾸기'}
 					aria-haspopup="menu"
 					aria-expanded={anchor !== null}
@@ -67,7 +66,8 @@ const SeriesPicker = ({
 						setAnchor({ x: rect.left, y: rect.bottom + 6 });
 					}}
 				>
-					{value ? `연재 · ${value}` : '연재 없음'}
+					<i className={value ? 'fa-solid fa-layer-group' : 'fa-solid fa-plus'} aria-hidden="true" />
+					{value ? `연재 · ${value}` : '연재 지정'}
 				</button>
 			)}
 			{value && !naming && (

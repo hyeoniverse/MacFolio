@@ -272,7 +272,6 @@
 	min-height: 44px;
 }
 
-.container.mobile 
 /* 날짜·폴더 줄 끝의 연재 표시 (SeriesKicker): 강조색 글자 */
 .memo-series-kicker {
 	color: var(--memo-accent);

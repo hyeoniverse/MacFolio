@@ -368,6 +368,48 @@ button.memo-admin-chip {
 	width: 3.5em;
 }
 
+/* 연재 고르기 단추: 메타 줄 끝의 칩. 연재가 없으면 점선 테두리의 '+ 연재 지정', 있으면 강조색 칩 '연재 · 이름' */
+.memo-series-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35em;
+	margin-left: var(--space-4);
+	padding: 0 var(--space-8);
+	border: 1px dashed var(--memo-border);
+	border-radius: var(--radius-full);
+	background: none;
+	color: var(--memo-muted);
+	font: inherit;
+	line-height: 1.7;
+	cursor: pointer;
+	transition:
+		background-color var(--duration-fast) var(--ease-out),
+		border-color var(--duration-fast) var(--ease-out);
+}
+
+.memo-series-chip i {
+	font-size: 0.85em;
+}
+
+.memo-series-chip.set {
+	border-style: solid;
+	border-color: color-mix(in srgb, var(--memo-accent) 45%, transparent);
+	background: color-mix(in srgb, var(--memo-accent) 14%, transparent);
+	color: var(--memo-text);
+	font-weight: 600;
+}
+
+.memo-series-chip:hover,
+.memo-series-chip[aria-expanded='true'] {
+	border-color: var(--memo-accent);
+	color: var(--memo-text);
+}
+
+.memo-series-chip:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 1px;
+}
+
 /* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
 .memo-meta-button {
 	margin: 0 -3px;
