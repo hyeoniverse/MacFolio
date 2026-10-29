@@ -40,7 +40,7 @@ function runs(posts: Post[], shown: boolean[]): { shown: boolean; entries: Entry
 /**
  * 글 제목 아래의 연재 블록: 머리 줄(연재 이름·순서)과 그 아래 목록.
  * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고 연재 순서대로 늘어놓는다.
- * 길면 앞 PREVIEW편만, 지금 글이 그보다 뒤면 '1, 2, 3 ⋯ 이전 편·지금 글'처럼 보이고(사이는 '⋯'),
+ * 길면 앞 PREVIEW편만, 지금 글이 그보다 뒤면 '1, 2, 3 ⋯ 이전 편·지금 글'처럼 보이고(사이는 세로 '⋮'),
  * 목록 아래 한 자리의 단추가 '⌄ N편 더보기'와 '⌃ 접기'를 오가며 접어 둔 편을 그 자리에서 아코디언처럼 펼치고 접는다.
  * 맨 아래에 이전 편·다음 편 (그 편의 제목과 함께)
  */
@@ -82,12 +82,12 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 						</ol>
 					) : (
 						<Fragment key={group.entries[0].at}>
-							{/* 사이에 접어 둔 자리의 '⋯' (펼치면 접혀 사라진다). 맨 끝 묶음은 아래 더보기 단추가 그 자리 */}
+							{/* 사이에 접어 둔 자리의 세로 '⋮' (펼치면 접혀 사라진다). 맨 끝 묶음은 아래 더보기 단추가 그 자리 */}
 							{order < groups.length - 1 && (
 								<div className="memo-series-collapse" data-open={!all} aria-hidden="true">
 									<div className="memo-series-collapse-inner">
 										<span className="memo-series-gap">
-											<i className="fa-solid fa-ellipsis" />
+											<i className="fa-solid fa-ellipsis-vertical" />
 										</span>
 									</div>
 								</div>

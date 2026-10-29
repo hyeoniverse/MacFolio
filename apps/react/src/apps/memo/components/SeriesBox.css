@@ -148,7 +148,7 @@
 	content: '';
 }
 
-/* 접어 둔 편들 사이의 '⋯': 번호 칸 자리에 옅게 (누를 수 없다. 펼치는 단추는 목록 아래 하나) */
+/* 접어 둔 편들 사이의 세로 '⋮': 번호 칸 가운데에 옅게 (누를 수 없다. 펼치는 단추는 목록 아래 하나) */
 .memo-series-gap {
 	display: block;
 	padding: var(--space-2) 0 var(--space-2) var(--space-12);
@@ -158,6 +158,7 @@
 
 .memo-series-gap i {
 	min-width: 1.4em;
+	text-align: center;
 }
 
 /* 더보기·접기: 목록 바로 아래 한 자리의 단추 한 줄. 번호 칸 자리에 ⌄(펼치면 ⌃), 그 옆에 'N편 더보기'·'접기' */
