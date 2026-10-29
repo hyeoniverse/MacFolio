@@ -43,11 +43,16 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* 나머지 편 펼치고 접기: 목차(toc.css)와 같은 방식. 높이는 grid-template-rows 0fr ↔ 1fr, 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
+/* 나머지 편 펼치고 접기(아코디언): 높이는 grid-template-rows 0fr ↔ 1fr, 목록은 위에서 살짝 내려오며 나타난다.
+   눈에 보이게 천천히(--duration-slow), 처음과 끝을 부드럽게. 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
+.memo-series {
+	--memo-series-ease: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
 .memo-series-collapse {
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows var(--duration) var(--ease-out);
+	transition: grid-template-rows var(--duration-slow) var(--memo-series-ease);
 }
 
 .memo-series-collapse[data-open='true'] {
@@ -63,16 +68,25 @@
 	visibility: hidden;
 	opacity: 0;
 	transition:
-		opacity var(--duration-fast) var(--ease-out),
-		visibility 0s linear var(--duration);
+		opacity var(--duration) var(--ease-in),
+		visibility 0s linear var(--duration-slow);
 }
 
 .memo-series-collapse[data-open='true'] > .memo-series-collapse-inner {
 	visibility: visible;
 	opacity: 1;
 	transition:
-		opacity var(--duration) var(--ease-out),
+		opacity var(--duration-slow) var(--memo-series-ease),
 		visibility 0s;
+}
+
+.memo-series-collapse-inner > ol {
+	transform: translateY(calc(-1 * var(--space-12)));
+	transition: transform var(--duration-slow) var(--memo-series-ease);
+}
+
+.memo-series-collapse[data-open='true'] .memo-series-collapse-inner > ol {
+	transform: none;
 }
 
 /* 목록: 목차처럼 왼쪽 세로선 하나에 항목과 '더보기' 줄을 붙인다. 머리 줄 글자와 왼쪽을 맞춘다 */
@@ -218,7 +232,8 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.memo-series-collapse,
-	.memo-series-collapse-inner {
+	.memo-series-collapse-inner,
+	.memo-series-collapse-inner > ol {
 		transition: none;
 	}
 }
