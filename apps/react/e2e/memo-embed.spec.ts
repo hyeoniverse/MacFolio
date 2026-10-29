@@ -1,9 +1,9 @@
 import { test, expect, enterDesktop, appWindow } from './fixtures';
 import { fakeApi } from './fakeApi';
 
-// Flux 글은 F8 2014 발표 영상 주소를 한 줄로 적었다 (memo/content/flux-pattern.md)
-const VIDEO = 'https://www.youtube.com/watch?v=nYkdrAPrdcw';
-const EMBED = 'https://www.youtube-nocookie.com/embed/nYkdrAPrdcw';
+// Flux 글은 F8 2014 발표 영상 주소를 Flux 장(10분 20초)부터 재생하도록 한 줄로 적었다 (memo/content/flux-pattern.md)
+const VIDEO = 'https://www.youtube.com/watch?v=nYkdrAPrdcw&t=620';
+const EMBED = 'https://www.youtube-nocookie.com/embed/nYkdrAPrdcw?start=620';
 
 test.describe('메모 바깥 링크 임베드', () => {
 	test('읽기 화면: 주소만 한 줄로 적은 YouTube 링크를 iframe으로 그리고, CSP가 막지 않는다', async ({ page }) => {
