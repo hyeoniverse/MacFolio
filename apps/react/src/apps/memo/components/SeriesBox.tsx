@@ -1,4 +1,4 @@
-import { Fragment, useId, useState } from 'react';
+import { useId, useState } from 'react';
 import type { Post, Series } from '@macfolio/desktop-core/memo';
 import './SeriesBox.css';
 
@@ -25,7 +25,7 @@ function foldedPosts(total: number, index: number): boolean[] {
 /**
  * 글 제목 아래의 연재 블록: 머리 줄(연재 이름·순서)을 누르면 목록을 접고 펼친다 (펼친 채 시작).
  * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고, 길면 최신 편들과 지금 글만 보이며
- * 생략한 자리에 '⋯ N편' 표시를 둔다. 목록 맨 아래 같은 자리의 단추가 'N편 더보기'와 '접기'를 오가며,
+ * 머리 줄 오른쪽의 단추 하나가 'N편 더보기'와 '접기'를 오가며,
  * 접힌 편은 그 자리에서 높이가 늘고 줄어든다.
  * 맨 아래에 이전 편·다음 편 (그 편의 제목과 함께, 목록을 접어도 남는다)
  */
@@ -40,60 +40,54 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 	const hidden = folded.filter(Boolean).length;
 	return (
 		<nav className="memo-series" aria-label={`연재: ${name}`}>
-			<button
-				type="button"
-				className="memo-series-toggle"
-				aria-expanded={open}
-				aria-controls={listId}
-				onClick={() => setOpen(!open)}
-			>
-				<i className="fa-solid fa-layer-group memo-series-icon" aria-hidden="true" />
-				<strong>{name}</strong>
-				<span className="memo-series-count">
-					{index + 1} / {posts.length}
-				</span>
-				<i className="fa-solid fa-chevron-down memo-series-chevron" aria-hidden="true" />
-			</button>
+			<div className="memo-series-head">
+				<button
+					type="button"
+					className="memo-series-toggle"
+					aria-expanded={open}
+					aria-controls={listId}
+					onClick={() => setOpen(!open)}
+				>
+					<i className="fa-solid fa-layer-group memo-series-icon" aria-hidden="true" />
+					<strong>{name}</strong>
+					<span className="memo-series-count">
+						{index + 1} / {posts.length}
+					</span>
+					<i className="fa-solid fa-chevron-down memo-series-chevron" aria-hidden="true" />
+				</button>
+				{/* 더보기·접기: 머리 줄 오른쪽 한 자리 (목록이 늘고 줄어도 움직이지 않는다). 블록을 접으면 감춘다 */}
+				{open && hidden > 0 && (
+					<button
+						type="button"
+						className="memo-series-more"
+						aria-expanded={all}
+						aria-controls={listId}
+						onClick={() => setAll(!all)}
+					>
+						{all ? '접기' : `${hidden}편 더보기`}
+					</button>
+				)}
+			</div>
 			{/* 접고 펼칠 때 높이가 grid-template-rows 0fr ↔ 1fr로 늘고 줄어든다 (목차와 같은 방식) */}
 			<div className="memo-series-collapse" data-open={open}>
 				<div id={listId} className="memo-series-collapse-inner">
 					<div className="memo-series-track">
 						<ol className="memo-series-list">
 							{posts.map((item, at) => (
-								<Fragment key={item.slug}>
-									{/* 접힌 편들의 첫 자리: 누를 수 없는 '⋯ N편' 표시 (모두 펼치면 접힌다) */}
-									{folded[at] && !folded[at - 1] && (
-										<li className="memo-series-fold memo-series-gap" role="none" aria-hidden="true" data-folded={all}>
-											<div>
-												<span>
-													<i className="fa-solid fa-ellipsis" />
-													{folded.slice(at).findIndex((fold) => !fold)}편
-												</span>
-											</div>
-										</li>
-									)}
-									<li className="memo-series-fold" data-folded={folded[at] && !all}>
-										<div>
-											<button
-												type="button"
-												aria-current={at === index ? 'page' : undefined}
-												onClick={() => at !== index && onOpen(item)}
-											>
-												<span className="memo-series-number">{at + 1}</span>
-												<span className="memo-series-title">{item.title}</span>
-											</button>
-										</div>
-									</li>
-								</Fragment>
+								<li key={item.slug} className="memo-series-fold" data-folded={folded[at] && !all}>
+									<div>
+										<button
+											type="button"
+											aria-current={at === index ? 'page' : undefined}
+											onClick={() => at !== index && onOpen(item)}
+										>
+											<span className="memo-series-number">{at + 1}</span>
+											<span className="memo-series-title">{item.title}</span>
+										</button>
+									</div>
+								</li>
 							))}
 						</ol>
-						{/* 더보기와 접기는 목록 맨 아래 같은 자리 */}
-						{hidden > 0 && (
-							<button type="button" className="memo-series-more" aria-expanded={all} onClick={() => setAll(!all)}>
-								<i className={`fa-solid ${all ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
-								{all ? '접기' : `${hidden}편 더보기`}
-							</button>
-						)}
 					</div>
 				</div>
 			</div>

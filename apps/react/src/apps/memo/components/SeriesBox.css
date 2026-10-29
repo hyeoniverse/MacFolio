@@ -156,7 +156,7 @@
 	content: '';
 }
 
-/* 줄인 목록에서 접는 편과 '⋯ N편' 표시: 그 자리에서 높이가 grid-template-rows 1fr ↔ 0fr로 줄고 늘며,
+/* 줄인 목록에서 접는 편: 그 자리에서 높이가 grid-template-rows 1fr ↔ 0fr로 줄고 늘며,
    접힌 뒤에는 Tab·화면 낭독기에서 빠지게 감춘다 (블록 접기와 같은 방식) */
 .memo-series-fold {
 	display: grid;
@@ -185,38 +185,32 @@
 		visibility 0s linear var(--duration);
 }
 
-/* 접힌 편들의 자리: 번호 칸에 '⋯', 그 옆에 'N편' (옅은 글자, 누를 수 없다) */
-/* padding은 안쪽 글자에: 접을 때 칸 높이가 0까지 줄도록 */
-.memo-series-gap span {
-	display: flex;
-	align-items: center;
-	gap: var(--space-8);
-	padding: var(--space-4) 0 var(--space-4) var(--space-12);
-	color: var(--memo-muted);
-	font-size: var(--text-footnote);
+/* 머리 줄: 블록 접기 단추가 폭 전체, 더보기·접기 단추는 그 위 오른쪽(접기 화살표 바로 왼쪽)에 겹쳐 놓는다 */
+.memo-series-head {
+	position: relative;
 }
 
-.memo-series-gap i,
-.memo-series-more i {
-	min-width: 1.4em;
+/* 단추 자리를 비워 둔다: 화살표는 그대로 오른쪽 끝, 이름이 길면 말줄임 */
+.memo-series-head:has(.memo-series-more) .memo-series-count {
+	margin-right: 7em;
 }
 
-/* 더보기·접기: 목록 맨 아래 같은 자리의 단추 한 줄, 세로선과 왼쪽을 맞춘다 */
+/* 더보기·접기: 머리 줄 오른쪽의 작은 강조색 단추. 목록이 늘고 줄어도 자리가 그대로다 */
 .memo .memo-series-more {
-	display: flex;
-	align-items: center;
-	gap: var(--space-8);
-	width: 100%;
-	padding: var(--space-4) 0 var(--space-4) var(--space-12);
+	position: absolute;
+	top: 50%;
+	right: calc(var(--space-8) + 1.5em);
+	padding: var(--space-2) var(--space-8);
 	border: none;
+	border-radius: var(--radius-6);
 	background: none;
 	color: var(--memo-accent);
 	font-family: inherit;
 	font-size: var(--text-footnote);
 	font-weight: 600;
-	text-align: left;
-	border-radius: var(--radius-6);
+	white-space: nowrap;
 	cursor: pointer;
+	transform: translateY(-50%);
 }
 
 /* 이전 편·다음 편: 블록 맨 아래 두 칸의 카드. 옅은 바탕 위에 본문 바탕색·얇은 테두리로 떠 보이고,
@@ -314,8 +308,7 @@
 
 /* 휴대폰: 줄 높이와 단추를 손가락 터치 영역(44px) 이상으로 */
 .container.mobile .memo .memo-series-toggle,
-.container.mobile .memo .memo-series-list button,
-.container.mobile .memo .memo-series-more {
+.container.mobile .memo .memo-series-list button {
 	min-height: 44px;
 }
 

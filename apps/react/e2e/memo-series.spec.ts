@@ -19,20 +19,22 @@ test.describe('메모 연재', () => {
 		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
 		// 목록은 순서 번호대로, 번호는 위치(1부터), 제목은 그대로. 지금 글은 aria-current.
-		// 길면 지금 글과 최신 4편만 보이고(한 편만 생략되는 1편은 그대로 보인다), 생략한 자리(3~7편)에 '⋯ 5편' 표시.
-		// 목록 맨 아래의 한 단추가 'N편 더보기'로 모두 펼치고 '접기'로 되돌린다
+		// 길면 지금 글과 최신 4편만 보이고(한 편만 생략되는 1편은 그대로 보인다), 3~7편은 접어 둔다.
+		// 머리 줄 오른쪽의 한 단추가 'N편 더보기'로 모두 펼치고 '접기'로 되돌린다 (목록이 늘어도 단추 자리는 그대로)
 		const total = Number((await toggle.textContent())?.match(/\/ (\d+)/)?.[1]);
 		const items = series.getByRole('listitem');
 		const more = series.getByRole('button', { name: /편 더보기$/ });
 		await expect(items).toHaveCount(6);
 		await expect(items.nth(1).getByRole('button')).toHaveAttribute('aria-current', 'page');
 		await expect(items.nth(5)).toHaveText(new RegExp(`^${total}\\D`));
-		await expect(series.locator('.memo-series-gap')).toHaveText(`${total - 6}편`);
 		await expect(more).toHaveText(`${total - 6}편 더보기`);
+		const before = await more.boundingBox();
 		await more.click();
 		await expect(items).toHaveCount(total);
 		await expect(more).toHaveCount(0);
-		await expect(series.getByRole('button', { name: '접기' })).toHaveAttribute('aria-expanded', 'true');
+		const fold = series.getByRole('button', { name: '접기' });
+		await expect(fold).toHaveAttribute('aria-expanded', 'true');
+		expect((await fold.boundingBox())?.y).toBeCloseTo(before!.y, 0);
 		await series.getByRole('button', { name: '접기' }).click();
 		await expect(items).toHaveCount(6);
 		await more.click();
