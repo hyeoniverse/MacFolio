@@ -1,7 +1,9 @@
 ---
-title: 메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기
+title: Markdown 블로그에 글쓰기 붙이기
 date: 2026-09-29
 category: 개발 기록/MacFolio/백엔드
+series: 메모 편집기
+seriesOrder: 1
 summary: 저장소의 Markdown 글은 그대로 두고 관리자가 작성하거나 수정한 글만 서버에 저장해 겹쳐 표시한다. 편집 버튼 없이 Milkdown으로 보이는 그대로 수정하고 입력이 0.8초 멈추면 저장하며, 편집 화면과 읽기 화면의 문단 위치를 측정해 일치시켰다.
 ---
 
@@ -231,7 +233,7 @@ cd apps/react && npx playwright test e2e/memo-editor.spec.ts e2e/memo-publish.sp
 
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제](/memo/memo-recently-deleted)
-- [메모 폴더 2 - Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
+- [Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 - [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
 

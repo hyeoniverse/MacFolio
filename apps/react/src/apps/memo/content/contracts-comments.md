@@ -1,11 +1,13 @@
 ---
-title: contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기
+title: zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
+series: contracts 스키마
+seriesOrder: 1
 summary: 댓글 모양을 서버(CommentView)와 화면(Comment)이 각자 적고 있어서 서버가 필드를 바꿔도 화면은 알 수 없었다. packages/contracts에 zod 스키마를 두고 서버는 검증에, 화면은 타입에 함께 쓰게 했다. 첫 사례인 댓글·좋아요와, 이후 열두 도메인으로 확장된 과정.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계 "타입과 데이터 구조"의 첫 항목이다. 3단계에서 서버 요청을 [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client) 하나로 모았으므로, 다음 순서는 그 요청과 응답의 **모양**을 한 곳에 정의하는 것이다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계 "타입과 데이터 구조"의 첫 항목이다. 3단계에서 서버 요청을 [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client) 하나로 모았으므로, 다음 순서는 그 요청과 응답의 **모양**을 한 곳에 정의하는 것이다.
 
 ## 같은 모양을 두 번 적고 있었다
 
@@ -86,20 +88,20 @@ export type Comment = z.infer<typeof Comment>;
 <details>
 <summary>도메인별 PR과 글 (12개)</summary>
 
-| PR                                                       | 스키마 파일     | 도메인                            | 글                                                                                                                               |
-| -------------------------------------------------------- | --------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | `comments.ts`   | 댓글·좋아요                       | 이 글                                                                                                                            |
-| [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | `posts.ts`      | 블로그 글                         | [글 도메인](/memo/contracts-posts)                                                                                               |
-| [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | `messages.ts`   | 메시지                            | [메시지 도메인](/memo/contracts-messages)                                                                                        |
-| [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | `contact.ts`    | 연락 메일                         | [연락 메일](/memo/contracts-contact)                                                                                             |
-| [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | `wallpapers.ts` | 배경화면                          | [배경화면](/memo/contracts-wallpapers)                                                                                           |
-| [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | `files.ts`      | 올린 파일                         | [파일](/memo/contracts-files)                                                                                                    |
-| [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | `analytics.ts`  | 분석 이벤트                       | [분석](/memo/contracts-analytics)                                                                                                |
-| [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | `site.ts`       | 사이트 프로필                     | [사이트 프로필](/memo/contracts-site)                                                                                            |
-| [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | `settings.ts`   | 사진 캡션·사람 확인·GitHub 저장소 | [설정 입력 검사](/memo/settings-schemas)                                                                                         |
-| [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | `demos.ts`      | 데모 입력                         | [contracts 스키마 8 - 관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas) |
-| [#255](https://github.com/hyeoniverse/MacFolio/pull/255) | `documents.ts`  | 문서 파일 (새 기능)               | [Finder 문서 파일](/memo/finder-files)                                                                                           |
-| [#263](https://github.com/hyeoniverse/MacFolio/pull/263) | `finder.ts`     | 폴더 구조 (새 기능)               | [Finder 3 - R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)                          |
+| PR                                                       | 스키마 파일     | 도메인                            | 글                                                                                                          |
+| -------------------------------------------------------- | --------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | `comments.ts`   | 댓글·좋아요                       | 이 글                                                                                                       |
+| [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | `posts.ts`      | 블로그 글                         | [글 도메인](/memo/contracts-posts)                                                                          |
+| [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | `messages.ts`   | 메시지                            | [메시지 도메인](/memo/contracts-messages)                                                                   |
+| [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | `contact.ts`    | 연락 메일                         | [연락 메일](/memo/contracts-contact)                                                                        |
+| [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | `wallpapers.ts` | 배경화면                          | [배경화면](/memo/contracts-wallpapers)                                                                      |
+| [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | `files.ts`      | 올린 파일                         | [파일](/memo/contracts-files)                                                                               |
+| [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | `analytics.ts`  | 분석 이벤트                       | [분석](/memo/contracts-analytics)                                                                           |
+| [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | `site.ts`       | 사이트 프로필                     | [사이트 프로필](/memo/contracts-site)                                                                       |
+| [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | `settings.ts`   | 사진 캡션·사람 확인·GitHub 저장소 | [설정 입력 검사](/memo/settings-schemas)                                                                    |
+| [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | `demos.ts`      | 데모 입력                         | [관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas) |
+| [#255](https://github.com/hyeoniverse/MacFolio/pull/255) | `documents.ts`  | 문서 파일 (새 기능)               | [Finder 문서 파일](/memo/finder-files)                                                                      |
+| [#263](https://github.com/hyeoniverse/MacFolio/pull/263) | `finder.ts`     | 폴더 구조 (새 기능)               | [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)                |
 
 </details>
 
@@ -126,10 +128,10 @@ pnpm --filter @macfolio/api test:e2e test/comments.e2e.test.ts
 
 ## 관련 글
 
-- [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
-- [contracts 스키마 4 - zod superRefine으로 첫 실패 문구만 반환하는 화면·서버 공통 검사](/memo/contracts-contact)
-- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
-- [트래픽 분석 5 - zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
-- [contracts 스키마 7 - parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [zod superRefine으로 첫 실패 문구만 반환하는 화면·서버 공통 검사](/memo/contracts-contact)
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
+- [parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
 
 #MacFolio #리팩터링 #zod #TypeScript

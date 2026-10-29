@@ -1,7 +1,9 @@
 ---
-title: E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그
+title: 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그
 date: 2026-09-28
 category: 개발 기록/MacFolio/품질
+series: E2E 시험
+seriesOrder: 1
 summary: 창 코드를 리팩터링하기 전에 E2E 시험 10개를 먼저 작성했더니 버그 다섯 개가 드러났다. 앱 전체를 멈추던 hook 순서, 한 번도 동작한 적 없던 창 위치 복구, 오래된 클로저, 전역 클래스 충돌, ICU 버전 차이. 발견 경위와 수정 방법, 그 뒤 시험이 432개로 늘어난 과정을 적었다.
 ---
 
@@ -142,11 +144,11 @@ CI에서만 '오전'이 'AM'이 된 경우처럼, 로컬과 CI의 결과가 다�
 
 ## 관련 글
 
-- [E2E 시험 3 - Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
-- [디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
-- [desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)
 - [음악 앱 버그 세 가지 - 꺼진 앱, 쌓이는 표지, 끝없이 내려가는 시트](/memo/music-player-fixes)
-- [보안 점검 5 - Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
+- [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
 
 [^e2e]: End-to-End 시험. 실제 브라우저로 사이트를 열고 사용자처럼 클릭·입력해 결과 화면을 확인한다. 이 저장소는 [Playwright](https://playwright.dev/)를 쓴다.
 

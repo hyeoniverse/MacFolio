@@ -1,7 +1,9 @@
 ---
-title: 트래픽 분석 8 - 리퍼러 검색어와 Search Console API로 유입 검색어 수집하기
+title: 리퍼러 검색어와 Search Console API로 유입 검색어 수집하기
 date: 2026-10-22
 category: 개발 기록/MacFolio/백엔드
+series: 트래픽 분석
+seriesOrder: 8
 summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 리퍼러에 검색어가 있을 때만 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져온다. SDK 없이 서명한 서비스 계정 JWT, 설정 순서, 도메인 속성에서 이 사이트만 거르는 방법을 정리했다.
 ---
 
@@ -229,7 +231,7 @@ scp ~/Downloads/<키파일>.json macfolio:~/deploy/gsc.json
 rm ~/Downloads/<키파일>.json
 ```
 
-`macfolio`는 `~/.ssh/config`에 등록한 서버 별칭이다. `<…>`는 괄호까지 실제 값으로 바꾼다. 이 단계에서 `scp`가 `Operation timed out`으로 실패했고, 원인은 서버 주소를 잘못 기억한 것이었다([서버 운영 7 - 부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)). 별칭은 이 일을 겪고 등록했다.
+`macfolio`는 `~/.ssh/config`에 등록한 서버 별칭이다. `<…>`는 괄호까지 실제 값으로 바꾼다. 이 단계에서 `scp`가 `Operation timed out`으로 실패했고, 원인은 서버 주소를 잘못 기억한 것이었다([부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)). 별칭은 이 일을 겪고 등록했다.
 
 ```bash
 # ~/deploy/api.env
@@ -286,12 +288,12 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 ## 관련 글
 
-- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
-- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
-- [서버 운영 5 - node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
-- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
+- [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable)
-- [서버 운영 7 - 부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)
+- [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)
 
 [^referrer]: 현재 페이지로 이동하기 직전 페이지의 주소. 브라우저가 `Referer` 요청 헤더와 `document.referrer`로 제공한다([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer)).
 

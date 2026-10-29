@@ -131,9 +131,7 @@ test.describe('메모 (블로그)', () => {
 		await enterDesktop(page, '/memo/db-backup');
 		const memo = appWindow(page, 'memo');
 		const article = memo.getByRole('article');
-		await expect(article.getByRole('heading', { level: 1 })).toHaveText(
-			'서버 운영 2 - pg_dump와 R2로 하는 DB 백업과 복원 시험'
-		);
+		await expect(article.getByRole('heading', { level: 1 })).toHaveText('pg_dump와 R2로 하는 DB 백업과 복원 시험');
 
 		// 바깥 링크는 새 탭
 		const outside = article.getByRole('link', { name: 'healthchecks.io' }).first();
@@ -147,7 +145,7 @@ test.describe('메모 (블로그)', () => {
 		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
 		await inside.click();
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(
-			'배포 자동화 3 - HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기'
+			'HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기'
 		);
 		await expect(page).toHaveURL(/\/memo\/rollback-drill$/);
 		expect(await popup).toBeNull();
@@ -305,7 +303,7 @@ test.describe('메모 (블로그)', () => {
 
 	test('본문 이미지에 올리면 내려받기 버튼이 보이고, 누르면 파일로 받는다', async ({ page }) => {
 		const memo = await openMemo(page);
-		await memo.locator('.memo-item', { hasText: '메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기' }).click();
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
 		// 사진(JPEG) 그림: 도식(SVG)은 받을 파일 이름이 다르다
 		const frame = memo.locator('.memo-markdown .memo-figure-frame', { has: page.locator('img[src*=".jpg"]') }).first();
 		await frame.hover();

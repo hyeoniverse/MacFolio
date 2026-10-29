@@ -11,7 +11,7 @@ test.describe('앱 항목 주소와 공유', () => {
 		expect(pathOf(page.url())).toBe('/memo/cra-to-vite');
 
 		// 다른 글을 고르면 주소도 그 글로
-		await memo.locator('.memo-item', { hasText: '메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기' }).click();
+		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
 		await expect.poll(() => pathOf(page.url())).toMatch(/^\/memo\/[^/]+$/);
 		expect(pathOf(page.url())).not.toBe('/memo/cra-to-vite');
 

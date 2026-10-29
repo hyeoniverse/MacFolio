@@ -1,7 +1,9 @@
 ---
-title: 공통 UI 컴포넌트 5 - 모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기
+title: 모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/디자인 시스템
+series: 공통 UI 컴포넌트
+seriesOrder: 5
 summary: 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메이션을 각자 구현하고 있었다. 77줄 Modal로 추출하고 덮는 범위는 scope, 색·z-index는 CSS 변수로 지정한다. 일주일 뒤 남은 시트·모달을 다시 조사해 메모 이미지 크게 보기 하나만 옮기고, Esc 처리나 구조가 다른 나머지는 유지했다.
 ---
 
@@ -220,11 +222,11 @@ useEffect(() => {
 
 ## 관련 글
 
-- [공통 UI 컴포넌트 4 - shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
-- [공통 UI 컴포넌트 6 - 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 다음 부품
+- [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 다음 부품
 - [eslint-disable 주석이 가린 useEffect의 onClose 의존성](/memo/modal-focus-eslint-disable): 남은 과제에 적은 `onClose` 의존 문제를 effect 분리로 수정한 일
-- [디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
-- [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 이미지 크게 보기 교체가 속한 단계
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
+- [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 이미지 크게 보기 교체가 속한 단계
 - PR: [#212](https://github.com/hyeoniverse/MacFolio/pull/212), [#247](https://github.com/hyeoniverse/MacFolio/pull/247)
 
 [^1]: 최상위 층(top layer)은 문서의 z-index와 무관하게 모든 요소 위에 그려지는 별도 층이다. [MDN: Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)

@@ -147,7 +147,7 @@ await expect(avatar.locator('img')).toHaveCSS('opacity', '1');
 ## 관련 글
 
 - [/auth/me의 세션 만료 시각에 맞춰 화면을 로그아웃 상태로 전환하기](/memo/settings-signed-in-at)
-- [E2E 시험 3 - Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 - [최소 창 크기와 컨테이닝 블록으로 중첩 스크롤의 이중 스크롤 없애기](/memo/settings-double-scroll)
 

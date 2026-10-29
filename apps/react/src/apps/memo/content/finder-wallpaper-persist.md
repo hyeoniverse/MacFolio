@@ -1,7 +1,9 @@
 ---
-title: 배경화면 2 - id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기
+title: id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기
 date: 2026-10-19
 category: 개발 기록/MacFolio/프론트엔드
+series: 배경화면
+seriesOrder: 2
 summary: Finder의 '데스크탑 사진 설정'으로 선택한 배경화면이 서버 목록 검사에서 삭제된 항목으로 판정되어 새로고침마다 기본값으로 돌아가던 문제를 id 접두어 상수 하나로 수정했다. MP4도 배경화면으로 설정할 수 있고, QuickTime은 미리보기와 같은 열기 창을 쓴다.
 ---
 
@@ -131,10 +133,10 @@ const outbox = admin ? [...(sent ?? []), ...welcome] : (sent ?? []);
 
 ## 관련 글
 
-- [배경화면 1 - createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
+- [createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
-- [Finder 2 - Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)
-- [메일 앱 2 - 방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
-- [Finder 3 - R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): '데스크탑 사진 설정' 메뉴를 추가한 작업
+- [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)
+- [방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): '데스크탑 사진 설정' 메뉴를 추가한 작업
 
 #MacFolio #프론트엔드 #Finder #배경화면 #QuickTime

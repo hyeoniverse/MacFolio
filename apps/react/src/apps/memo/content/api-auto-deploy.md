@@ -1,7 +1,9 @@
 ---
-title: 배포 자동화 2 - command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백
+title: command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
+series: 배포 자동화
+seriesOrder: 2
 summary: main에 머지하면 Actions가 API 이미지를 GHCR에 올리고, 명령 하나만 실행하는 SSH 키로 서버의 deploy.sh를 부른다. 서버는 백업, 교체, 헬스 체크를 거쳐 실패하면 이전 이미지로 되돌린다. 실제 서버에서 막힌 곳과 /health 버전으로 바꾼 배포 판정 기준을 정리했다.
 ---
 
@@ -283,11 +285,11 @@ tail -20 ~/deploy/deploy.log     # 배포 기록
 
 ## 관련 글
 
-- [배포 자동화 3 - HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
-- [서버 운영 2 - pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
-- [서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [E2E 시험 5 - git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
+- [HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
+- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
 
 [^ghcr]: GitHub Container Registry. GitHub 패키지 중 컨테이너 이미지를 저장하는 레지스트리로, 주소는 `ghcr.io/<소유자>/<이미지>`다.
 

@@ -1,7 +1,9 @@
 ---
-title: contracts 스키마 7 - parseProfile의 if문 검증을 zod 스키마로 옮기기
+title: parseProfile의 if문 검증을 zod 스키마로 옮기기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
+series: contracts 스키마
+seriesOrder: 7
 summary: 사이트 프로필은 처음부터 화면과 서버가 parseProfile 하나를 사용했지만, "검증·응답 스키마는 contracts, 타입·순수 규칙은 desktop-core"라는 배치 규칙에 맞춰 옮겼다. if문 58줄을 zod로 옮기며 오류 문구 열한 개와 순서를 시험으로 고정했고, 여덟 도메인을 모두 contracts로 옮겼다.
 ---
 
@@ -159,12 +161,12 @@ cd apps/react && npx playwright test e2e/site-profile.spec.ts --project=desktop-
 
 ## 관련 글
 
-- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
-- [contracts 스키마 3 - zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)
-- [contracts 스키마 6 - 화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
-- [트래픽 분석 5 - zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
-- [모듈 구조 5 - index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
-- [리팩터링 1단계 - zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
+- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
 
 #MacFolio #리팩터링 #zod #TypeScript

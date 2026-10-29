@@ -156,7 +156,7 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 ## 관련 글
 
 - [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
-- [contracts 스키마 3 - zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)
+- [zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)
 - [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
 
 PR: [#69](https://github.com/hyeoniverse/MacFolio/pull/69)

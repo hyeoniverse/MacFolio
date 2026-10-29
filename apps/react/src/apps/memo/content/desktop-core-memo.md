@@ -1,7 +1,9 @@
 ---
-title: desktop-core 2 - desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기
+title: desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기
 date: 2026-10-09
 category: 개발 기록/MacFolio/설계
+series: desktop-core
+seriesOrder: 2
 summary: 메모 앱의 글 읽기·정렬, 태그, 폴더 정리, 찾기, 글 검사를 packages/desktop-core로 옮겼다. localStorage를 직접 읽던 세 파일은 값 검사는 core, 브라우저 읽기·쓰기는 앱으로 나눴고, 목록에 표시할 글을 정하던 hook 안의 계산도 core의 noteView로 분리했다.
 ---
 
@@ -138,9 +140,9 @@ core 패키지는 `@macfolio/desktop-core`(창 관리)와 `@macfolio/desktop-cor
 
 ## 관련 글
 
-- [desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): desktop-core 분리의 첫 단계
-- [desktop-core 3 - 결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 세 번째 단계
-- [desktop-core 4 - package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): 글 검사 규칙을 API와 함께 쓰기
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): desktop-core 분리의 첫 단계
+- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 세 번째 단계
+- [package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): 글 검사 규칙을 API와 함께 쓰기
 
 [^dom]: `tsconfig.json`의 `lib`에 `DOM`이 없으면 `window`, `localStorage` 같은 브라우저 전역 이름의 타입이 없어 `Cannot find name` 오류가 난다. core의 설정은 [창 관리 글](/memo/desktop-core-windows)에서 설명했다.
 

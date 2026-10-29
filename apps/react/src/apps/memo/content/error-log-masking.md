@@ -1,7 +1,9 @@
 ---
-title: 보안 점검 8 - 모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기
+title: 모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/품질
+series: 보안 점검
+seriesOrder: 8
 summary: 100KB를 넘는 요청 본문이 413이 아니라 500으로 응답되고 스택 트레이스가 로그에 기록되었다. 전역 예외 필터가 Express 미들웨어의 오류를 식별하게 하고, 모든 로그가 거치는 로거에서 DB 비밀번호·API 키·쿠키·메일 주소를 마스킹했다. 4xx는 로그에 기록하지 않는다.
 ---
 
@@ -166,10 +168,10 @@ pnpm --filter @macfolio/api test:e2e test/errors.e2e.test.ts
 
 ## 관련 글
 
-- [서버 운영 3 - GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
-- [서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 
 [^lookbehind]: `(?<!X)`는 현재 위치 바로 앞에 X가 없을 때만 일치하는 정규식 문법. [MDN: Lookbehind assertion](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Lookbehind_assertion)
 

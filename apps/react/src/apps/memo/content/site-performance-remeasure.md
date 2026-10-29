@@ -1,11 +1,13 @@
 ---
-title: 성능 최적화 3 - Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기
+title: Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기
 date: 2026-10-23
 category: 개발 기록/MacFolio/품질
+series: 성능 최적화
+seriesOrder: 3
 summary: 3차까지 배포된 운영 사이트를 다시 측정했다. 휴대폰 98점(LCP 1.9초), 데스크톱 97점(LCP 1.0초). 같은 측정에서 명언 위젯의 데이터 66KB가 첫 번들에 들어간 것을 찾아 lazy로 분리했다.
 ---
 
-[성능 최적화 1 - 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)에서 첫 방문 성능을 세 차례 개선했다([#319](https://github.com/hyeoniverse/MacFolio/pull/319) 1차, [#323](https://github.com/hyeoniverse/MacFolio/pull/323) 2·3차). 그 뒤 운영 사이트에서는 1차 배포 후의 값만 측정했고, 2·3차가 배포된 운영 사이트는 측정하지 않았다. 그사이 명언 위젯([#330](https://github.com/hyeoniverse/MacFolio/pull/330)), 활동 상태 보기의 IP 표 같은 기능도 추가했다. 그래서 같은 조건으로 다시 측정했다. 재측정과 4차 개선은 [#338](https://github.com/hyeoniverse/MacFolio/pull/338)에 있다.
+[휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)에서 첫 방문 성능을 세 차례 개선했다([#319](https://github.com/hyeoniverse/MacFolio/pull/319) 1차, [#323](https://github.com/hyeoniverse/MacFolio/pull/323) 2·3차). 그 뒤 운영 사이트에서는 1차 배포 후의 값만 측정했고, 2·3차가 배포된 운영 사이트는 측정하지 않았다. 그사이 명언 위젯([#330](https://github.com/hyeoniverse/MacFolio/pull/330)), 활동 상태 보기의 IP 표 같은 기능도 추가했다. 그래서 같은 조건으로 다시 측정했다. 재측정과 4차 개선은 [#338](https://github.com/hyeoniverse/MacFolio/pull/338)에 있다.
 
 결론부터 적는다.
 
@@ -125,14 +127,14 @@ simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크
 - **휴대폰 LCP 편차:** 위의 추정을 확인한다 ([성능 5차](/memo/site-performance-lcp-budget)에서 해결)
 - **4차의 운영 측정:** 배포한 뒤 다시 측정해 이 글에 더한다
 
-측정 조건과 다시 측정하는 명령은 저장소의 [`docs/performance.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/performance.md)에 정리했다. 앞선 개선 과정은 [성능 최적화 2 - 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)에 있다.
+측정 조건과 다시 측정하는 명령은 저장소의 [`docs/performance.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/performance.md)에 정리했다. 앞선 개선 과정은 [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)에 있다.
 
 ## 관련 글
 
-- [성능 최적화 1 - 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)
-- [성능 최적화 2 - 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)
-- [성능 최적화 4 - #boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 아래 두 과제를 해결한 후속
-- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
+- [휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)
+- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)
+- [#boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 아래 두 과제를 해결한 후속
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
 
 [^lcp]: Largest Contentful Paint. 화면에 보이는 가장 큰 글자 덩어리나 이미지가 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/lcp)
 

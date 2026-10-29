@@ -1,7 +1,9 @@
 ---
-title: 위젯 2 - iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path
+title: iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path
 date: 2026-10-22
 category: 개발 기록/MacFolio/프론트엔드
+series: 위젯
+seriesOrder: 2
 summary: 홈 화면의 음악 위젯만 iOS Safari에서 모서리가 각지게 그려졌다. 배경 블러에 쓴 filter가 별도 합성 레이어를 만들면서 부모의 border-radius 클리핑이 적용되지 않은 것이 원인이었다. clip-path로 같은 모양을 한 번 더 잘라 해결했다.
 ---
 
@@ -79,9 +81,9 @@ Playwright의 Chromium과 WebKit(아이폰 화면 크기)에서 수정 후에도
 ## 관련 글
 
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering)
-- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
-- [휴대폰 화면 3 - 셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
 - [isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes)
-- [휴대폰 화면 4 - 배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)
+- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)
 
 #MacFolio #TIL #프론트엔드 #CSS #Safari #iOS

@@ -123,9 +123,9 @@ expect(covered, `${width}px`).toEqual([]);
 
 ## 관련 글
 
-- [휴대폰 화면 3 - 셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
 - [isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes)
-- [E2E 시험 2 - Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 [^min-width-auto]: flex 항목은 `min-width`의 기본값 `auto`가 콘텐츠의 최소 크기(줄바꿈할 수 없는 가장 긴 단어나 입력창의 기본 폭)로 계산된다. 그래서 `flex-shrink`가 있어도 그 크기보다 작아지지 않는다. [MDN: min-width](https://developer.mozilla.org/en-US/docs/Web/CSS/min-width)
 

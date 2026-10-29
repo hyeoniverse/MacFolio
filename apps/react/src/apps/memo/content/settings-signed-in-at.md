@@ -106,13 +106,13 @@ if (left !== null && left < 2 ** 31 - 1) expiryTimer = setTimeout(() => void ref
 ## 남은 것과 배운 것
 
 - **세션 연장 기능은 없다.** 12시간이 지나면 다시 GitHub로 로그인한다. 남은 시간을 표시하는 것까지가 이번 범위다.
-- **401 응답으로도 로그아웃된다.** 이후 공통 API 클라이언트가 추가되면서, 서버가 세션을 삭제했거나 쿠키가 사라져 401을 받은 경우에도 같은 함수(`refreshAdmin`)를 호출해 화면을 전환한다([공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)). 만료 타이머와 401, 두 경로가 같은 결과로 이어진다.
+- **401 응답으로도 로그아웃된다.** 이후 공통 API 클라이언트가 추가되면서, 서버가 세션을 삭제했거나 쿠키가 사라져 401을 받은 경우에도 같은 함수(`refreshAdmin`)를 호출해 화면을 전환한다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)). 만료 타이머와 401, 두 경로가 같은 결과로 이어진다.
 - **기존 필드를 먼저 확인한다.** `createdAt`과 `expiresAt`은 처음부터 테이블에 있었다. 새 필드를 추가하지 않고 조회만 했다.
 
 ## 관련 글
 
 - [img 로드 전까지 대체 아이콘을 깔아 두는 외부 프로필 사진 표시](/memo/settings-avatar-placeholder)
-- [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 
 [^icu]: ICU(International Components for Unicode)는 날짜·숫자·언어별 형식을 제공하는 라이브러리다. 브라우저와 Node.js의 `Intl` API가 내부적으로 사용하며, 포함된 ICU 데이터 버전에 따라 같은 로케일의 출력이 달라질 수 있다.

@@ -1,7 +1,9 @@
 ---
-title: 메뉴 막대 2 - /health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시
+title: /health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시
 date: 2026-10-05
 category: 개발 기록/MacFolio/프론트엔드
+series: 메뉴 막대
+seriesOrder: 2
 summary: 장식이던 메뉴 막대의 Wi-Fi 아이콘을 이 사이트 API 서버의 상태 표시로 바꿨다. /health를 30초마다 호출해 응답 시간과 DB 상태를 막대 수로 표시한다. 메뉴가 화면 끝에서 잘리던 문제와 음량 창 위치가 어긋나던 문제도 함께 수정했다.
 ---
 
@@ -132,16 +134,16 @@ Wi-Fi 위치의 아이콘을 바꾸자 음량 창이 음량 아이콘에서 벗�
 
 ## 남은 것과 배운 것
 
-- **현재 브라우저 기준의 상태다.** 방문자의 네트워크가 느리면 서버가 정상이어도 '응답 느림'으로 표시된다. 서버 중단 알림은 별도의 업타임 모니터링이 담당한다([서버 운영 3 - GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)).
-- **PR 미리보기에서는 항상 "연결할 수 없음"이었다.** 서버가 미리보기 주소를 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)로 허용하지 않았기 때문이다. 이후 글에서 '이 주소에서는 쓸 수 없음' 상태로 구분했다([메뉴 막대 5 - no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)).
+- **현재 브라우저 기준의 상태다.** 방문자의 네트워크가 느리면 서버가 정상이어도 '응답 느림'으로 표시된다. 서버 중단 알림은 별도의 업타임 모니터링이 담당한다([GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)).
+- **PR 미리보기에서는 항상 "연결할 수 없음"이었다.** 서버가 미리보기 주소를 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)로 허용하지 않았기 때문이다. 이후 글에서 '이 주소에서는 쓸 수 없음' 상태로 구분했다([no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)).
 - **고정 위치는 인접 요소가 바뀌면 어긋난다.** 음량 창의 `right: 8.5rem`처럼 인접 요소의 폭에 의존하는 숫자는, 인접 요소가 바뀌는 시각에 버그가 된다. 팝오버는 기준 요소를 측정해 배치하는 공통 함수 하나로 통합하는 편이 낫다.
 - **대소문자만 다른 파일 이름은 만들지 않는다.** CI(Linux)에서는 통과하고 macOS에서만 실패한다.
 
 ## 관련 글
 
-- [메뉴 막대 6 - Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
-- [메뉴 막대 5 - no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)
-- [서버 운영 3 - GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
-- [공통 UI 컴포넌트 1 - placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
+- [Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
+- [no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)
+- [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
+- [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
 
 #MacFolio #데스크톱 #메뉴막대 #서버

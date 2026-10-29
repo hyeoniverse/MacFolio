@@ -1,7 +1,9 @@
 ---
-title: 트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API
+title: 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
+series: 트래픽 분석
+seriesOrder: 1
 summary: 외부 분석 도구 대신 분석 API를 직접 만들었다. 쿠키 없이 하루 해시로 순방문자를 집계하고, 원래 IP는 저장하지 않으며, 이벤트는 90일 뒤 삭제하고 일별 집계값만 보관한다. 고른 방법과 버린 방법, 테이블 두 개의 설계, 시험 12+10개를 정리했다.
 ---
 
@@ -145,7 +147,7 @@ export const dayHash = (day: string, ip: string, userAgent: string, secret: stri
 
 ## 그 뒤에 바뀐 것
 
-- 같은 날 요약을 누구나 조회하게 바꿨다. 방문자에게는 유입 호스트와 `utm` 값을 빼고 분류 결과만 응답한다. 글별 전체 조회수 경로를 추가하고, 한 방문에서 같은 글은 한 번만 집계한다([트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)).
+- 같은 날 요약을 누구나 조회하게 바꿨다. 방문자에게는 유입 호스트와 `utm` 값을 빼고 분류 결과만 응답한다. 글별 전체 조회수 경로를 추가하고, 한 방문에서 같은 글은 한 번만 집계한다([같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)).
 - 이벤트 묶음과 요약·실시간 응답의 형식을 `packages/contracts`로 옮겼다([#206](https://github.com/hyeoniverse/MacFolio/pull/206), [분석 계약](/memo/contracts-analytics)). 전송하는 사이트, 수신하는 서버, 조회하는 화면이 같은 스키마를 사용한다.
 - 쓰기 경로 전체에 같은 방식의 요청 제한을 걸 때 이 경로도 `@RateLimit`으로 옮겼다([요청 제한](/memo/rate-limit-all-writes)).
 
@@ -178,9 +180,9 @@ pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
 
 ## 관련 글
 
-- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
-- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
-- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
+- [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
 - [분석 계약](/memo/contracts-analytics)
 - [트래픽 분석 서비스 나누기](/memo/analytics-service-split)
 - [요청 제한](/memo/rate-limit-all-writes)

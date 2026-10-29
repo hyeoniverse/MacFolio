@@ -1,11 +1,13 @@
 ---
-title: 트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프
+title: 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
+series: 트래픽 분석
+seriesOrder: 3
 summary: 수집한 지표를 macOS의 활동 상태 보기 형태로 조회하는 앱을 만들었다. 탭 다섯 개, 정렬되는 표 하나, 라이브러리 없이 62줄로 렌더링한 SVG 그래프, 컨테이너 질의로 맞춘 좁은 창. 처음엔 관리자 전용이었다가 같은 날 공개 지표를 누구나 조회하게 바꿨다.
 ---
 
-[트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)에서 API를, [2](/memo/analytics-collect)에서 사이트의 수집을 만들었다. 마지막은 지표를 조회하는 화면이다. 하루 방문자 수와 많이 읽힌 글을 사이트 안에서 바로 확인하는 것이 목표였다.
+[쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)에서 API를, [2](/memo/analytics-collect)에서 사이트의 수집을 만들었다. 마지막은 지표를 조회하는 화면이다. 하루 방문자 수와 많이 읽힌 글을 사이트 안에서 바로 확인하는 것이 목표였다.
 
 작업은 [#162](https://github.com/hyeoniverse/MacFolio/pull/162)다. 첫 커밋 하나에 14개 파일, 1,336줄이 추가됐다.
 
@@ -95,7 +97,7 @@ const y = (value: number) => HEIGHT - (value / max) * (HEIGHT - 12) - 2;
 
 ### 같은 날 바꾼 것: 누구나 연다
 
-이 설계로 커밋한 지 세 시간이 안 되어, 같은 PR에서 방향을 바꿨다. 방문 수, 많이 연 앱, 국가·기기 같은 지표는 숨길 이유가 없었다. 방문자가 "이 사이트의 방문자 수"를 확인할 수 있는 편이 포트폴리오로서 더 유용하다. 그래서 `adminOnly`를 제거하고, 서버가 방문자에게는 공개용 지표만 응답하도록 했다(`scope: 'public'`). 자세한 내용은 [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)에 적었다.
+이 설계로 커밋한 지 세 시간이 안 되어, 같은 PR에서 방향을 바꿨다. 방문 수, 많이 연 앱, 국가·기기 같은 지표는 숨길 이유가 없었다. 방문자가 "이 사이트의 방문자 수"를 확인할 수 있는 편이 포트폴리오로서 더 유용하다. 그래서 `adminOnly`를 제거하고, 서버가 방문자에게는 공개용 지표만 응답하도록 했다(`scope: 'public'`). 자세한 내용은 [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)에 적었다.
 
 | 영역               | 방문자                     | 관리자             |
 | ------------------ | -------------------------- | ------------------ |
@@ -172,9 +174,9 @@ curl -s "https://macfolio-api.hyeoniverse.com/analytics/summary?from=2026-10-01&
 
 ## 관련 글
 
-- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
-- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
-- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
+- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
 - [트래픽 분석 서비스 나누기](/memo/analytics-service-split)
 - [서버 자원 보기](/memo/resource-monitor)
 - [UTM 분석](/memo/utm-analytics)

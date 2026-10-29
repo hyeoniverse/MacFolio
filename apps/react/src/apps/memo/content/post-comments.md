@@ -112,7 +112,7 @@ ThrottlerModule.forRootAsync({
 
 - 비밀번호 방식은 사흘 만에 바뀌었지만, "서버가 보관하는 정보를 최소화한다"는 결정 덕분에 전환 시각에 삭제할 개인 정보가 거의 없었다. 원문 IP나 평문 비밀번호를 저장했다면 마이그레이션으로 삭제해야 했다.
 - 응답 필드를 `select`로 제한하고 시험이 필드 목록을 정확히 비교하게 한 것이 비용이 가장 낮은 안전장치였다. 필드가 추가되면 시험이 먼저 실패한다.
-- 요청 제한은 이후 모든 쓰기 경로로 확대했다([보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)).
+- 요청 제한은 이후 모든 쓰기 경로로 확대했다([@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)).
 
 ## 직접 확인하는 방법
 
@@ -129,9 +129,9 @@ cd apps/react && npx playwright test e2e/memo-comments.spec.ts
 ## 관련 글
 
 - [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
-- [보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
 - [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
-- [메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
+- [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
 
 [^salt]: 해시 계산 전에 비밀번호에 덧붙이는 무작위 값(여기서는 16바이트). 같은 비밀번호도 salt가 다르면 해시 값이 달라지므로, 미리 계산한 해시 표(레인보우 테이블)로 여러 계정을 한꺼번에 대조할 수 없다.
 

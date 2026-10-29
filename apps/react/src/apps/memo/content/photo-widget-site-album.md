@@ -1,7 +1,9 @@
 ---
-title: 위젯 5 - 브라우저별 localStorage 값을 서버 사이트 기본값으로 옮겨 첫 HTML에 싣기
+title: 브라우저별 localStorage 값을 서버 사이트 기본값으로 옮겨 첫 HTML에 싣기
 date: 2026-10-25
 category: 개발 기록/MacFolio/프론트엔드
+series: 위젯
+seriesOrder: 5
 summary: 노트북에서 고른 사진 위젯 폴더가 아이폰 Safari에서는 보이지 않았다. 고른 값이 브라우저의 localStorage에만 저장됐기 때문이다. 관리자가 고른 앨범을 서버에 사이트 기본값으로 저장하고, 첫 HTML에 실어 모든 브라우저가 쓰게 했다. 방문자가 직접 고른 값은 그 브라우저에서 우선한다.
 ---
 
@@ -94,10 +96,10 @@ ALTER TABLE "SiteContent" ADD COLUMN "widgets" JSONB;
 
 ## 관련 글
 
-- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 위젯 공통 부품, 사진 위젯의 앨범 선택과 그림 폴더
-- [위젯 3 - openRequest로 위젯이 표시 중인 사진을 사진 앱 크게 보기로 넘기기](/memo/photo-widget-open-current): 위젯의 앨범 id와 사진 앱의 앨범 id
-- [사이트 편집 2 - 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing): `GET /site`와 Worker가 첫 HTML에 싣는 구조
-- [위젯 4 - Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 휴대폰 위젯 자리 저장과 페이지 순서
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 위젯 공통 부품, 사진 위젯의 앨범 선택과 그림 폴더
+- [openRequest로 위젯이 표시 중인 사진을 사진 앱 크게 보기로 넘기기](/memo/photo-widget-open-current): 위젯의 앨범 id와 사진 앱의 앨범 id
+- [코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing): `GET /site`와 Worker가 첫 HTML에 싣는 구조
+- [Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 휴대폰 위젯 자리 저장과 페이지 순서
 
 [^share]: 바탕화면과 휴대폰 홈 화면은 위젯 구성이 달라 자리를 따로 저장하지만, 같은 id·종류의 위젯은 고른 값을 함께 쓴다. 이 공유도 같은 브라우저 안에서만 일어난다.
 

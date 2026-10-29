@@ -1,7 +1,9 @@
 ---
-title: E2E 시험 5 - git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기
+title: git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기
 date: 2026-10-19
 category: 개발 기록/MacFolio/품질
+series: E2E 시험
+seriesOrder: 5
 summary: 화면 E2E를 3개에서 6개 샤드로 나눠 PR 시험 시간을 약 절반으로 줄이고, PR에서 이미 통과한 코드와 트리가 같은 main 커밋은 e2e를 다시 실행하지 않고 바로 배포하게 했다. 제외하거나 줄인 시험은 없다.
 ---
 
@@ -124,9 +126,9 @@ git rev-parse HEAD^{tree}     # PR 브랜치와 머지된 main 커밋에서 같�
 
 ## 관련 글
 
-- [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [E2E 시험 2 - Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
-- [E2E 시험 4 - 이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 
 [^shard]: 전체 시험을 여러 묶음으로 나눠 서로 다른 머신에서 동시에 실행하는 방식. 각 묶음을 샤드라고 한다. GitHub Actions에서는 matrix 작업 하나가 샤드 하나를 실행한다.

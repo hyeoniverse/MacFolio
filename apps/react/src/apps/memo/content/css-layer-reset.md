@@ -1,7 +1,9 @@
 ---
-title: CSS 정리 1 - 선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기
+title: 선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
+series: CSS 정리
+seriesOrder: 1
 summary: 게시 버튼 글자가 흐린 원인은 앱 루트의 .memo button { color: inherit }(0,1,1)이 버튼 클래스(0,1,0)를 이긴 데 있었다. 같은 구조로 !important가 72개 쌓여 있었다. 앱 기본값 규칙을 @layer reset으로 옮기고 화면 58장을 픽셀 단위로 비교했다.
 ---
 
@@ -136,7 +138,7 @@ import './styles/motion.css';
 import './index.css';
 ```
 
-이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 정리 3 - CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
+이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
 
 이제 게시 버튼 규칙은 `.memo-writer-publish` 하나만으로도 `reset` 층의 `.memo button`보다 우선한다. 앞에서 추가한 `.memo-writer-actions .memo-writer-publish`는 명시도가 높아도 부작용이 없어 주석과 함께 남겨 두었다.
 
@@ -246,10 +248,10 @@ for (let i = 0; i < a.length; i += 4) {
 
 ## 관련 글
 
-- [공통 UI 컴포넌트 2 - 계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
-- [공통 UI 컴포넌트 8 - 계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
-- [CSS 정리 3 - CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
-- [CSS 정리 4 - @import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
+- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
+- [계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
+- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
+- [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
 
 [^specificity]: 같은 요소에 여러 규칙이 일치할 때 어느 규칙을 적용할지 정하는 점수. (ID 수, 클래스·속성·의사 클래스 수, 태그·의사 요소 수) 세 자리를 앞자리부터 비교한다. 자세한 계산 방법은 [MDN의 Specificity 문서](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)에 있다.
 

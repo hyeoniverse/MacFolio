@@ -26,7 +26,7 @@ macOS Sonoma에는 "배경화면을 클릭하여 데스크탑 보기" 설정이 
 
 ## 상태: desktop-core 창 store의 desktopRevealed
 
-창 상태는 프레임워크와 무관한 `packages/desktop-core`의 창 store가 관리한다([desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)). 여기에 `desktopRevealed` 하나를 추가했다.
+창 상태는 프레임워크와 무관한 `packages/desktop-core`의 창 store가 관리한다([창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)). 여기에 `desktopRevealed` 하나를 추가했다.
 
 ```ts
 export interface WindowState<Name extends string> {
@@ -64,7 +64,7 @@ toggleDesktopRevealed: () =>
 	),
 ```
 
-치우는 시각에 `desktopFocused`도 `true`로 설정해 메뉴 막대의 앱 이름이 Finder가 된다. 바탕화면을 누른 것이므로 [메뉴 막대 3 - 창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name) 규칙과도 일치한다.
+치우는 시각에 `desktopFocused`도 `true`로 설정해 메뉴 막대의 앱 이름이 Finder가 된다. 바탕화면을 누른 것이므로 [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name) 규칙과도 일치한다.
 
 ## 밀어 낼 거리: revealShift
 
@@ -173,8 +173,8 @@ for (let x = 40; x < window.innerWidth - 40; x += 40)
 
 ## 관련 글
 
-- [desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `desktopRevealed`를 추가한 창 store
-- [메뉴 막대 3 - 창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name): `desktopFocused`와 바탕화면을 누르면 Finder가 되는 규칙
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `desktopRevealed`를 추가한 창 store
+- [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name): `desktopFocused`와 바탕화면을 누르면 Finder가 되는 규칙
 - [callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기](/memo/memo-restore-compact): 같은 날 수정한 창 최소화 관련 결함
 
 [^individual-transform]: CSS Transforms Module Level 2의 개별 변환 속성. 요소의 최종 변환 행렬은 `translate`, `rotate`, `scale`, `transform` 순서로 곱해 계산한다. [CSS Transforms Level 2: Individual Transforms](https://www.w3.org/TR/css-transforms-2/#individual-transforms)

@@ -1,7 +1,9 @@
 ---
-title: desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기
+title: 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기
 date: 2026-10-09
 category: 개발 기록/MacFolio/설계
+series: desktop-core
+seriesOrder: 1
 summary: 실행 중인 앱과 맨 앞 창을 정하는 로직이 React Context 안에 있었다. 이것을 React와 브라우저에 의존하지 않는 packages/desktop-core로 옮기고, React는 useSyncExternalStore로 구독만 한다. core가 react나 window를 쓰면 세 곳에서 오류가 난다.
 ---
 
@@ -103,9 +105,9 @@ it('창 밖을 누르면 지금 쓰는 앱이 없어지고, 창을 누르면 돌
 
 ## 관련 글
 
-- [desktop-core 2 - desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 두 번째 단계
-- [desktop-core 3 - 결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 세 번째 단계
-- [desktop-core 4 - package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): 분리 이후 서버와 규칙 공유
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 두 번째 단계
+- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 세 번째 단계
+- [package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): 분리 이후 서버와 규칙 공유
 - [CSS translate와 pointer-events로 레이아웃을 건드리지 않고 창 밀어내기](/memo/reveal-desktop): 창 store에 `desktopRevealed` 상태를 추가한 기능
 
 [^usese]: React 18에서 추가된 hook으로, React 바깥의 저장소를 구독한다. `subscribe`와 `getSnapshot` 두 함수를 받아, 저장소가 바뀌면 컴포넌트를 다시 렌더링한다.

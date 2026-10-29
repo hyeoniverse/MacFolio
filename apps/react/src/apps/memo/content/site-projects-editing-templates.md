@@ -1,11 +1,13 @@
 ---
-title: 사이트 편집 3 - 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계
+title: 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계
 date: 2026-10-11
 category: 개발 기록/MacFolio/프론트엔드
+series: 사이트 편집
+seriesOrder: 3
 summary: 관리자가 새 프로젝트에 고르는 Safari 페이지 템플릿을 7개에서 12·13개로 늘렸다가, 공통 내용 모델 위의 9개로 다시 설계했다. 폐기한 시도와 이유, 저장소 모양, RPG 대화창의 기록을 정리한다.
 ---
 
-[사이트 편집 2 - 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)에서 관리자가 시스템 설정에서 프로젝트를 수정하도록 했다. 그 편집 화면의 소개 탭에는 **페이지 모양**을 고르는 칸이 있다. 이 글은 그 모양(템플릿)의 변경 과정을 정리한다. 같은 PR([#187](https://github.com/hyeoniverse/MacFolio/pull/187)) 안에서 구조를 여러 번 다시 설계했기 때문에, 무엇을 폐기했고 왜 폐기했는지를 함께 기록한다.
+[코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)에서 관리자가 시스템 설정에서 프로젝트를 수정하도록 했다. 그 편집 화면의 소개 탭에는 **페이지 모양**을 고르는 칸이 있다. 이 글은 그 모양(템플릿)의 변경 과정을 정리한다. 같은 PR([#187](https://github.com/hyeoniverse/MacFolio/pull/187)) 안에서 구조를 여러 번 다시 설계했기 때문에, 무엇을 폐기했고 왜 폐기했는지를 함께 기록한다.
 
 ![템플릿 수가 7, 8, 12, 13개로 늘었다가 공통 내용 모델 위에서 4개, 다시 9개가 된 흐름](./images/site-projects-editing-templates-history.svg '템플릿 수의 변화. 마지막 세 단계가 지금 구조다')
 
@@ -273,7 +275,7 @@ RPG 대화창(`dialogue`)은 이 PR에서 제외했다. 마을, 대화, 픽셀 �
 
 ## 관련 글
 
-- [사이트 편집 2 - 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing): 이 템플릿을 고르는 편집 화면
+- [코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing): 이 템플릿을 고르는 편집 화면
 - [pdf.js와 Fullscreen API로 구현한 PDF 슬라이드쇼](/memo/project-slides)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - PR: [#187](https://github.com/hyeoniverse/MacFolio/pull/187)

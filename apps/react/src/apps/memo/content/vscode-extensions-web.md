@@ -232,7 +232,7 @@ VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 �
 
 ![Remote - SSH 상세 화면](./images/vscode-extensions-web-remote-ssh.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다 웹 버전에서 촬영해 "데스크톱 VS Code에서만 실행된다"는 안내가 함께 보인다')
 
-SSH로 원격 서버의 폴더를 열고 편집한다. 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 서버 IP 대신 별칭으로 접속하는 SSH 설정은 [서버 운영 7 - 부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)에 정리했다.
+SSH로 원격 서버의 폴더를 열고 편집한다. 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 서버 IP 대신 별칭으로 접속하는 SSH 설정은 [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)에 정리했다.
 
 ### Live Share
 
@@ -442,7 +442,7 @@ EOF
 ## 관련 글
 
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 편집기 검사와 같은 규칙을 CI에서도 확인하는 방법
-- [E2E 시험 2 - Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion): Playwright 확장으로 실행하는 시험의 구성
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion): Playwright 확장으로 실행하는 시험의 구성
 - [npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기](/memo/typescript-7-side-by-side): 편집기·컴파일러·린트가 서로 다른 TypeScript 버전을 쓰는 경우
 - [Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup): 확장이 쓰는 Node·패키지 도구 설치
 

@@ -108,7 +108,7 @@ export function useElementWidth<T extends HTMLElement>() {
 | 날씨 | `useCompact(shell)`, `ref={shell}`         | `useCompact()`가 `attach` 반환, `ref={attachShell}`         |
 | 사진 | 파일 안의 `useWidth(shell)`, `ref={shell}` | `useElementWidth()`, `useWidth` 삭제                        |
 
-이후 메시지 앱도 나란히 보기 판단에 이 훅을 사용한다([휴대폰 화면 5 - visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/messages-layout-fixes)).
+이후 메시지 앱도 나란히 보기 판단에 이 훅을 사용한다([visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/messages-layout-fixes)).
 
 ## 확인
 
@@ -124,6 +124,6 @@ export function useElementWidth<T extends HTMLElement>() {
 ## 관련 글
 
 - [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes): 날씨 앱이 `useCompact`와 `data-compact`를 쓰게 된 경위
-- [desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): 최소화 상태(`isMinimized`)를 관리하는 창 store
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): 최소화 상태(`isMinimized`)를 관리하는 창 store
 
 #MacFolio #React #ResizeObserver #트러블슈팅

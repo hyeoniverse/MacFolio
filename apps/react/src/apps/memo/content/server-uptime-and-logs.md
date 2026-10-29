@@ -1,7 +1,9 @@
 ---
-title: 서버 운영 3 - GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기
+title: GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기
 date: 2026-10-07
 category: 개발 기록/MacFolio/배포·운영
+series: 서버 운영
+seriesOrder: 3
 summary: API 서버가 중지되어도 사이트에 접속하기 전에는 알 수 없었고, 컨테이너 로그는 계속 누적됐다. 10분마다 외부에서 /health와 사이트를 호출하는 GitHub Actions 예약 실행과, 컨테이너마다 30MB까지만 보관하는 로그 설정을 추가했다. 장애를 인지하기까지 걸리는 최대 시간도 계산했다.
 ---
 
@@ -118,15 +120,15 @@ docker inspect --format '{{.Name}} {{.HostConfig.LogConfig.Config}}' $(docker co
 
 - **알림은 cron을 마지막으로 수정한 사용자에게 발송된다.** 1인 저장소라 문제가 없지만, 참여자가 늘면 알림 수신자를 별도로 지정해야 한다. GitHub 설정의 Notifications → Actions에서 실패 알림이 활성화되어 있어야 한다.
 - **60일 규칙.** 공개 저장소에 60일 동안 활동이 없으면 GitHub이 예약 실행을 비활성화한다. 저장소 관리가 멈춘 기간, 즉 감시가 가장 필요한 기간에 감시가 중단될 수 있다.
-- **30MB는 부족할 수 있다.** 로그가 많이 기록되는 날 장애를 늦게 인지하면, 그 사이의 로그가 이미 로테이션으로 삭제됐을 수 있다. 장기 보관할 로그가 생기면 파일 수를 늘리거나 서버 외부로 전송해야 한다. 로그에 기록하고 마스킹하는 항목은 [보안 점검 8 - 모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)에 정리했다.
+- **30MB는 부족할 수 있다.** 로그가 많이 기록되는 날 장애를 늦게 인지하면, 그 사이의 로그가 이미 로테이션으로 삭제됐을 수 있다. 장기 보관할 로그가 생기면 파일 수를 늘리거나 서버 외부로 전송해야 한다. 로그에 기록하고 마스킹하는 항목은 [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)에 정리했다.
 - **장애는 외부에서 감지한다.** 감시 주체가 감시 대상과 함께 중지되면 안 된다는 것이 이 작업의 핵심 기준이었다.
 
 ## 관련 글
 
-- [서버 운영 4 - Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor): 이후 같은 방향으로 추가한 서버 자원 감시
+- [Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor): 이후 같은 방향으로 추가한 서버 자원 감시
 - [되돌리기 훈련](/memo/rollback-drill)
-- [보안 점검 8 - 모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
-- [서버 운영 6 - 서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
+- [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
+- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
 
 [^anchor]: YAML에서 `&이름`으로 값에 이름을 붙이고 `*이름`으로 같은 값을 다시 참조하는 문법.
 

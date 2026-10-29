@@ -1,7 +1,9 @@
 ---
-title: 서버 운영 2 - pg_dump와 R2로 하는 DB 백업과 복원 시험
+title: pg_dump와 R2로 하는 DB 백업과 복원 시험
 date: 2026-10-05
 category: 개발 기록/MacFolio/배포·운영
+series: 서버 운영
+seriesOrder: 2
 summary: 글·이미지가 모두 1GB 무료 서버의 DB에만 있었다. 매일 pg_dump로 덤프해 완결성을 검사하고 서버에 7일, R2에 30일 보관한다. 범위를 제한한 R2 키, 8GB 업로드 상한, healthchecks 알림, 다른 DB로 복원해 행 수를 비교하는 시험까지 정리했다.
 ---
 
@@ -242,9 +244,9 @@ crontab -e
 
 ## 관련 글
 
-- [서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [배포 자동화 2 - command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)
-- [배포 자동화 3 - HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)
+- [HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기](/memo/rollback-drill)
 
 [^idle]: Oracle Cloud Always Free 인스턴스는 7일 동안 CPU·네트워크·메모리 사용률이 낮으면 유휴 인스턴스로 판단해 회수할 수 있다. [Oracle 문서: Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
 

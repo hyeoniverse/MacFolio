@@ -1,7 +1,9 @@
 ---
-title: 메뉴 막대 3 - 창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기
+title: 창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기
 date: 2026-10-05
 category: 개발 기록/MacFolio/프론트엔드
+series: 메뉴 막대
+seriesOrder: 3
 summary: 메뉴 막대에 고정 문자열로 있던 'Finder'를 맨 앞 창의 앱 이름으로 바꿨다. 창 순서와 '활성 앱'을 분리해 바탕화면을 누르면 Finder가 되게 하고, 메뉴 막대·Dock을 누를 때의 예외와 깜빡임도 수정했다.
 ---
 
@@ -149,7 +151,7 @@ Dock에서 앱을 누를 때 항상 그 앱을 앞으로 가져오던 동작도 
 ## 관련 글
 
 - [메뉴 막대의 메뉴](/memo/menubar-menus)
-- [메뉴 막대 1 - tabular-nums와 그리드 셀 겹치기로 가변 폭 텍스트의 칸 너비 고정하기](/memo/menubar-clock-width)
+- [tabular-nums와 그리드 셀 겹치기로 가변 폭 텍스트의 칸 너비 고정하기](/memo/menubar-clock-width)
 - [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout)
 - [캡처 단계 이벤트와 pointer capture로 맞춘 화면과 입력 처리 영역](/memo/window-menubar-input-fixes): Dock을 누르는 동안의 깜빡임을 포함한 포인터 입력 결함
 

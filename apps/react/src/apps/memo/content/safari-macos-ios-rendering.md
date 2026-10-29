@@ -5,7 +5,7 @@ category: 기술 노트/프론트엔드
 summary: macOS Safari에서 정상으로 보인 화면이 iOS Safari에서는 다르게 렌더링될 수 있다. 렌더링 엔진과 운영체제의 관계, macOS와 iOS WebKit의 합성 방식 차이, Chrome·Safari·Firefox의 차이, 기기 에뮬레이션 테스트가 놓치는 부분을 정리하고, 자주 생기는 문제를 도식과 코드로 비교했다.
 ---
 
-macOS Safari에서 확인한 화면이 iOS Safari에서도 같게 보인다는 보장은 없다. 두 브라우저는 같은 WebKit 엔진을 쓰지만, 같은 CSS를 다르게 렌더링하는 경우가 있다. 반대로 iOS의 Chrome은 이름은 Chrome이어도 렌더링은 WebKit이 한다. 이 글에서는 브라우저와 운영체제에 따라 렌더링 결과가 달라지는 지점과 그 대응 방법을 정리한다. 실제로 겪은 사례는 [위젯 2 - iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)에 따로 적었다.
+macOS Safari에서 확인한 화면이 iOS Safari에서도 같게 보인다는 보장은 없다. 두 브라우저는 같은 WebKit 엔진을 쓰지만, 같은 CSS를 다르게 렌더링하는 경우가 있다. 반대로 iOS의 Chrome은 이름은 Chrome이어도 렌더링은 WebKit이 한다. 이 글에서는 브라우저와 운영체제에 따라 렌더링 결과가 달라지는 지점과 그 대응 방법을 정리한다. 실제로 겪은 사례는 [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)에 따로 적었다.
 
 <details id="terms">
 <summary>먼저 알아 둘 용어</summary>
@@ -193,7 +193,7 @@ iPhone Safari는 `playsinline` 속성이 없는 `<video>`를 재생하면 전체
 <video src="loop.mp4" autoplay muted loop playsinline></video>
 ```
 
-React의 `muted` prop은 HTML 속성으로 반영되지 않는 경우가 있어서 자동 재생이 차단될 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다. MacFolio의 배경화면 동영상(`apps/react/src/desktop/WallpaperVideo.tsx`)도 `element.muted = true`를 직접 지정한다([배경화면 3 - video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)).
+React의 `muted` prop은 HTML 속성으로 반영되지 않는 경우가 있어서 자동 재생이 차단될 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다. MacFolio의 배경화면 동영상(`apps/react/src/desktop/WallpaperVideo.tsx`)도 `element.muted = true`를 직접 지정한다([video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)).
 
 ### 서드 파티 쿠키와 교차 출처 요청
 
@@ -231,10 +231,10 @@ Safari의 ITP는 서드 파티 쿠키와 저장소를 다른 브라우저보다 
 
 ## 관련 글
 
-- [위젯 2 - iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
+- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
 - [휴대폰 키보드 위에 서식 막대 띄우기 — visualViewport로 키보드 높이 재기](/memo/memo-keyboard-toolbar)
-- [배경화면 3 - video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)
-- [E2E 시험 2 - Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 [^itp]: Intelligent Tracking Prevention. 사이트를 넘나드는 추적을 막기 위해 서드 파티 쿠키 차단, 스크립트로 저장한 데이터의 보관 기간 제한 등을 적용하는 Safari의 기능이다.
 

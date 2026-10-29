@@ -1,7 +1,9 @@
 ---
-title: 배경화면 3 - video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기
+title: video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기
 date: 2026-10-20
 category: 개발 기록/MacFolio/프론트엔드
+series: 배경화면
+seriesOrder: 3
 summary: 관리자가 MP4나 움직이는 GIF를 배경화면으로 올릴 수 있게 했다. 포스터는 서버에 ffmpeg을 설치하지 않고 브라우저가 0.5초 장면을 캔버스에 렌더링해 만들고, 서버는 MP4를 파일 앞부분으로 판별하고 Range 요청에 206으로 응답한다.
 ---
 
@@ -155,10 +157,10 @@ ALTER TABLE "Upload" ADD CONSTRAINT "Upload_required_fields" CHECK (
 
 ## 관련 글
 
-- 관리자가 배경화면을 추가하는 기능: [배경화면 1 - createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
-- 고른 배경화면을 새로고침 뒤에도 유지하는 일: [배경화면 2 - id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist)
-- 업로드한 사진의 EXIF 삭제: [보안 점검 7 - JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
-- 바탕화면 `z-index` 계층 정리: [디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- 관리자가 배경화면을 추가하는 기능: [createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
+- 고른 배경화면을 새로고침 뒤에도 유지하는 일: [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist)
+- 업로드한 사진의 EXIF 삭제: [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
+- 바탕화면 `z-index` 계층 정리: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
 - PR: [#264](https://github.com/hyeoniverse/MacFolio/pull/264)
 
 [^poster]: 동영상을 불러오는 동안이나 재생할 수 없는 경우에 대신 보여 주는 정지 이미지. `<video>`의 `poster` 속성과 같은 역할이다.

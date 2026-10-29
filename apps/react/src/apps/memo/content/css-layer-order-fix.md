@@ -1,7 +1,9 @@
 ---
-title: CSS 정리 3 - CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기
+title: CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기
 date: 2026-10-12
 category: 개발 기록/MacFolio/디자인 시스템
+series: CSS 정리
+seriesOrder: 3
 summary: 공통 Button의 안쪽 여백이 0으로 계산되고 있었다. 빌드 결과에서 공통 컴포넌트 CSS 파일이 main CSS보다 먼저 로드되어 components 층이 reset 층보다 먼저 정의됐고, reset의 * { padding: 0 }이 우선 적용됐다. 층 순서 선언을 index.html 인라인 스타일로 옮겨 모든 CSS보다 먼저 선언했다.
 ---
 
@@ -77,7 +79,7 @@ summary: 공통 Button의 안쪽 여백이 0으로 계산되고 있었다. 빌�
 </style>
 ```
 
-이 사이트의 보안 헤더(CSP)는 `style-src`에 `'unsafe-inline'`을 허용하고([보안 점검 2 - CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)), 이미 로딩 화면용 인라인 스타일이 있어서 추가 변경이 필요 없었다. `styles/layers.css`는 개발 서버용으로 유지한다.
+이 사이트의 보안 헤더(CSP)는 `style-src`에 `'unsafe-inline'`을 허용하고([CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)), 이미 로딩 화면용 인라인 스타일이 있어서 추가 변경이 필요 없었다. `styles/layers.css`는 개발 서버용으로 유지한다.
 
 수정 후 답장 버튼의 `padding`은 `5px 14px`로 복원됐다. 같은 파일에 묶인 다른 공통 컴포넌트도 이제 설계한 층 순서대로 렌더링된다.
 
@@ -131,7 +133,7 @@ CSS 층 순서는 "선언 위치"가 아니라 "문서에서 처음 등장한 �
 ## 관련 글
 
 - [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
-- [CSS 정리 5 - getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe)
-- [메일 앱 1 - Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
+- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe)
+- [Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
 
 #MacFolio #CSS #메일 #트러블슈팅

@@ -120,6 +120,6 @@ useEffect(() => {
 ## 관련 글
 
 - [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal): 이 effect를 처음 만든 글. 남은 과제에 이 문제를 적어 두었다
-- [공통 UI 컴포넌트 6 - 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 같은 문제를 ref 보관으로 해결한 컴포넌트
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 같은 문제를 ref 보관으로 해결한 컴포넌트
 
 #MacFolio #공통컴포넌트 #React #ESLint #트러블슈팅

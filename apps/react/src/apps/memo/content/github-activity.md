@@ -1,7 +1,9 @@
 ---
-title: GitHub 앱 3 - 토큰 없이 github.com HTML 조각을 서버에서 파싱하는 기여 달력
+title: 토큰 없이 github.com HTML 조각을 서버에서 파싱하는 기여 달력
 date: 2026-10-03
 category: 개발 기록/MacFolio/프론트엔드
+series: GitHub 앱
+seriesOrder: 3
 summary: GitHub 앱에 기여 달력(잔디)과 최근 활동을 추가했다. 달력은 토큰 없이 조회하기 위해 github.com의 HTML 조각을 서버에서 파싱하고, 활동은 공개 이벤트를 화면용 형식으로 변환한다. 둘 다 서버 캐시를 거치고, 한쪽만 실패하면 그쪽만 이전 값을 쓴다.
 ---
 
@@ -122,9 +124,9 @@ return {
 
 ## 관련 글
 
-- [GitHub 앱 1 - API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile): 서버 캐시 구조
-- [GitHub 앱 2 - grid-auto-rows 1fr와 line-clamp, margin-top auto로 카드 높이 맞추기](/memo/github-pinned-card-size): 같은 앱의 카드 크기 수정
+- [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile): 서버 캐시 구조
+- [grid-auto-rows 1fr와 line-clamp, margin-top auto로 카드 높이 맞추기](/memo/github-pinned-card-size): 같은 앱의 카드 크기 수정
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
-- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 이 기여 달력을 쓰는 GitHub 위젯
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 이 기여 달력을 쓰는 GitHub 위젯
 
 #MacFolio #GitHub

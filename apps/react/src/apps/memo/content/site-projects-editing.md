@@ -1,13 +1,15 @@
 ---
-title: 사이트 편집 2 - 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집
+title: 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
+series: 사이트 편집
+seriesOrder: 2
 summary: 관리자가 시스템 설정에서 프로젝트와 프로젝트 앱을 수정하고, 순서를 바꾸고, 숨기고, 추가한다. 서버에는 코드 기본값에 덮어쓸 값만 저장하고, 앱 목록을 계산하기 전에 합치며, 새 데모 주소는 Worker가 CSP에 추가한다.
 ---
 
 프로필에 이어 프로젝트도 코드 밖에서 관리하게 했다([PR #187](https://github.com/hyeoniverse/MacFolio/pull/187)). 프로젝트는 Safari 탭, Finder의 프로젝트 폴더, 터미널 `projects`, 사진 앨범, 그리고 데모를 창 안의 iframe으로 표시하는 **프로젝트 앱**(Dock·Launchpad)이 함께 쓰는 목록이다. 이제 관리자가 **시스템 설정 › 프로젝트**에서 순서를 바꾸고, 숨기고, 수정하고, 새 프로젝트를 추가한다. 방문자에게는 이 항목이 보이지 않는다.
 
-이 글은 그 기능을 주제별로 정리한다. 데이터를 어떻게 저장하고 합치는지, 앱 모듈을 불러오기 전에 서버 값을 어떻게 합치는지, 편집 화면이 어떻게 생겼는지, 무엇을 검사하는지 차례로 적는다. 프로젝트 페이지의 모양(템플릿)을 다듬어 온 이야기는 길어서 [사이트 편집 3 - 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)로 나눴다.
+이 글은 그 기능을 주제별로 정리한다. 데이터를 어떻게 저장하고 합치는지, 앱 모듈을 불러오기 전에 서버 값을 어떻게 합치는지, 편집 화면이 어떻게 생겼는지, 무엇을 검사하는지 차례로 적는다. 프로젝트 페이지의 모양(템플릿)을 다듬어 온 이야기는 길어서 [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)로 나눴다.
 
 ## 데이터 모델: 서버에는 덮어쓸 값만
 
@@ -262,11 +264,11 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 ## 관련 글
 
 - [코드를 고치지 않고 프로필 바꾸기](/memo/site-profile-editing): 같은 방식의 앞선 작업
-- [사이트 편집 3 - 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates): 이 편집 화면이 고르는 페이지 모양 이야기
+- [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates): 이 편집 화면이 고르는 페이지 모양 이야기
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps): 데모를 창 안에 표시하는 앱
 - [pdf.js와 Fullscreen API로 구현한 PDF 슬라이드쇼](/memo/project-slides)
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404): 이 글의 Worker가 시작된 작업
-- [보안 점검 2 - CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers): `frame-src`를 처음 만든 작업
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers): `frame-src`를 처음 만든 작업
 - PR: [#187](https://github.com/hyeoniverse/MacFolio/pull/187), [#239](https://github.com/hyeoniverse/MacFolio/pull/239)
 
 [^upsert]: 행이 있으면 갱신(update)하고 없으면 생성(insert)하는 연산. 행 하나만 쓰는 설정 테이블에서 "처음 저장"과 "다시 저장"을 한 요청으로 처리한다.

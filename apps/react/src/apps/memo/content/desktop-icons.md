@@ -114,9 +114,9 @@ export function nearestFree(want: Cell, taken: ReadonlySet<string>, rows: number
 
 ## 관련 글
 
-- [Finder 1 - openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 바탕화면 폴더가 여는 Finder 앱
-- [Finder 3 - R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
-- [Finder 5 - 가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-home-tree): 바탕화면 가상본과 Finder 트리
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 바탕화면 폴더가 여는 Finder 앱
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
+- [가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-home-tree): 바탕화면 가상본과 Finder 트리
 - [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout): 아이콘 레이어 위에 있는 Dock
 
 [^alias]: macOS의 가상본(alias)은 원본 파일이나 폴더를 가리키는 바로가기다. 아이콘 왼쪽 아래에 작은 화살표가 붙는다.

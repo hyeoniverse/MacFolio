@@ -1,7 +1,9 @@
 ---
-title: 보안 점검 3 - iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기
+title: iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
+series: 보안 점검
+seriesOrder: 3
 summary: 프로젝트 앱의 iframe에 제한이 없어, 내장한 사이트의 target="_top" 링크 하나로 MacFolio 전체가 다른 주소로 이동할 수 있었다. sandbox로 최상위 창 이동 권한만 제외하고, 이 설정이 누락되면 실패하는 E2E를 추가했다.
 ---
 
@@ -120,11 +122,11 @@ npx playwright test e2e/project-apps.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe)
-- [보안 점검 2 - CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
-- [보안 점검 4 - react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 [^frame-src]: 페이지가 iframe으로 불러올 수 있는 출처를 제한하는 Content-Security-Policy 지시어. [MDN: CSP frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)
 
