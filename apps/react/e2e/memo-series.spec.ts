@@ -18,22 +18,22 @@ test.describe('메모 연재', () => {
 		await expect(toggle).toContainText(/2 \/ \d+/);
 		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
 
-		// 목록은 최신 편부터, 번호는 연재 안의 위치(1부터), 제목은 그대로. 지금 글은 aria-current.
-		// 길면 최신 5편만 보이고 그 아래 '⋯ N편 더보기'. 누르면 나머지가 아래로 펼쳐지고, 같은 자리의 '접기'로 되돌린다
+		// 목록은 연재 순서대로, 번호는 연재 안의 위치(1부터), 제목은 그대로. 지금 글은 aria-current.
+		// 길면 앞의 5편만 보이고 그 아래 '⋯ N편 더보기'. 누르면 나머지가 아래로 펼쳐지고, 같은 자리의 '접기'로 되돌린다
 		const total = Number((await toggle.textContent())?.match(/\/ (\d+)/)?.[1]);
 		const items = series.getByRole('listitem');
 		const more = series.getByRole('button', { name: /편 더보기$/ });
 		await expect(items).toHaveCount(5);
-		await expect(items.nth(0)).toHaveText(new RegExp(`^${total}\\D`));
-		await expect(items.nth(4)).toHaveText(new RegExp(`^${total - 4}\\D`));
+		await expect(items.nth(0)).toHaveText(/^1\s*쿠키 없이/);
+		await expect(items.nth(1).getByRole('button')).toHaveAttribute('aria-current', 'page');
+		await expect(items.nth(4)).toHaveText(/^5\D/);
 		await expect(more).toHaveText(`${total - 5}편 더보기`);
 		await more.click();
 		await expect(items).toHaveCount(total);
 		await expect(more).toHaveCount(0);
 		const fold = series.getByRole('button', { name: '접기' });
 		await expect(fold).toHaveAttribute('aria-expanded', 'true');
-		await expect(items.nth(total - 1)).toHaveText(/^1\s*쿠키 없이/);
-		await expect(items.nth(total - 2).getByRole('button')).toHaveAttribute('aria-current', 'page');
+		await expect(items.nth(total - 1)).toHaveText(new RegExp(`^${total}\\D`));
 		await fold.click();
 		await expect(items).toHaveCount(5);
 		await more.click();
@@ -44,9 +44,7 @@ test.describe('메모 연재', () => {
 		await expect(page).toHaveURL(/\/memo\/analytics-activity-monitor$/);
 		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 3`);
 		const box = memo.getByRole('navigation', { name: `연재: ${SERIES}` });
-		// 다른 글을 열면 목록은 다시 줄인 채 (첫 편은 더보기 안, 목록의 맨 끝)
-		await box.getByRole('button', { name: /편 더보기$/ }).click();
-		await box.getByRole('listitem').last().getByRole('button').click();
+		await box.getByRole('listitem').first().getByRole('button').click();
 		await expect(page).toHaveURL(/\/memo\/analytics-api$/);
 		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 1`);
 		await expect(box.getByRole('button', { name: /^이전 편/ })).toHaveCount(0);

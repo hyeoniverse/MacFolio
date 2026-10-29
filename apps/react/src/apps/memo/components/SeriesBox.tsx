@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import type { Post, Series } from '@macfolio/desktop-core/memo';
 import './SeriesBox.css';
 
-/** 목록을 다 펼치지 않고 보일 편 수 (최신 편부터). 이보다 길면 아래에 '더보기' */
+/** 목록을 다 펼치지 않고 보일 편 수 (1편부터). 이보다 길면 아래에 '더보기' */
 const PREVIEW = 5;
 
 /** 제목 바로 위의 연재 표시: '트래픽 분석 3' (번호는 연재 안의 위치, 아이콘은 화면 낭독기에 '연재'로 읽힌다) */
@@ -14,8 +14,8 @@ export const SeriesKicker = ({ series }: { series: Series }) => (
 
 /**
  * 글 제목 아래의 연재 블록: 머리 줄(연재 이름·순서)을 누르면 목록을 접고 펼친다 (펼친 채 시작).
- * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고 최신 편부터 늘어놓는다.
- * 길면 최신 PREVIEW편만 보이고, 그 아래 한 자리의 단추가 '⋯ N편 더보기'와 '접기'를 오가며 나머지를 아코디언처럼 펼치고 접는다.
+ * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고 연재 순서대로 늘어놓는다.
+ * 길면 앞의 PREVIEW편만 보이고, 그 아래 한 자리의 단추가 '⋯ N편 더보기'와 '접기'를 오가며 나머지를 아코디언처럼 펼치고 접는다.
  * 맨 아래에 이전 편·다음 편 (그 편의 제목과 함께, 목록을 접어도 남는다)
  */
 const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOpen: (post: Post) => void }) => {
@@ -26,9 +26,8 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 	const { name, posts, index } = series;
 	const previous = posts[index - 1] ?? null;
 	const next = posts[index + 1] ?? null;
-	// 최신 편부터: 위치(at)는 연재 안의 순서 그대로
-	const latestFirst = posts.map((item, at) => ({ item, at })).reverse();
-	const rest = latestFirst.slice(PREVIEW);
+	const ordered = posts.map((item, at) => ({ item, at }));
+	const rest = ordered.slice(PREVIEW);
 	const row = ({ item, at }: { item: Post; at: number }) => (
 		<li key={item.slug}>
 			<button
@@ -61,7 +60,7 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 			<div className="memo-series-collapse" data-open={open}>
 				<div id={listId} className="memo-series-collapse-inner">
 					<div className="memo-series-track">
-						<ol className="memo-series-list">{latestFirst.slice(0, PREVIEW).map(row)}</ol>
+						<ol className="memo-series-list">{ordered.slice(0, PREVIEW).map(row)}</ol>
 						{rest.length > 0 && (
 							<>
 								{/* 나머지 편: 블록 접기와 같은 방식으로 목록 아래에 펼쳐지고 접힌다 */}
