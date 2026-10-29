@@ -16,15 +16,13 @@ export const SeriesKicker = ({ series }: { series: Series }) => (
 type Entry = { item: Post; at: number };
 
 /**
- * 줄인 목록에 보일 편: 지금 글이 앞 PREVIEW편 안이면(다음 편까지) 앞 PREVIEW편.
- * 그보다 뒤면 지금 글과 그 위아래 편, 그리고 남는 칸만큼 1편부터 순서대로. 한 편만 빠지는 자리는 그 편도 보인다
+ * 줄인 목록에 보일 편: 지금 글이 앞 PREVIEW편 안이면 앞 PREVIEW편.
+ * 그보다 뒤면 이전 편과 지금 글, 그리고 남는 칸만큼 1편부터 순서대로. 한 편만 빠지는 자리는 그 편도 보인다
  */
 function shownPosts(total: number, index: number): boolean[] {
-	if (index + 1 < PREVIEW) return Array.from({ length: total }, (_, at) => at < PREVIEW);
-	const from = index - 1;
-	const to = Math.min(index + 1, total - 1);
-	const head = PREVIEW - (to - from + 1);
-	const shown = Array.from({ length: total }, (_, at) => at < head || (at >= from && at <= to));
+	if (index < PREVIEW) return Array.from({ length: total }, (_, at) => at < PREVIEW);
+	const head = PREVIEW - 2;
+	const shown = Array.from({ length: total }, (_, at) => at < head || at === index - 1 || at === index);
 	return shown.map((on, at) => on || (shown[at - 1] === true && shown[at + 1] === true));
 }
 
@@ -42,8 +40,8 @@ function runs(posts: Post[], shown: boolean[]): { shown: boolean; entries: Entry
 /**
  * 글 제목 아래의 연재 블록: 머리 줄(연재 이름·순서)과 그 아래 목록.
  * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고 연재 순서대로 늘어놓는다.
- * 길면 앞 PREVIEW편만, 지금 글이 그보다 뒤면 '1, 2 ⋯ 이전 편·지금 글·다음 편'처럼 보이고(사이는 '⋯'),
- * 목록 아래 한 자리의 단추가 '⋯ N편 더보기'와 '접기'를 오가며 접어 둔 편을 그 자리에서 아코디언처럼 펼치고 접는다.
+ * 길면 앞 PREVIEW편만, 지금 글이 그보다 뒤면 '1, 2, 3 ⋯ 이전 편·지금 글'처럼 보이고(사이는 '⋯'),
+ * 목록 아래 한 자리의 단추가 '⌄ N편 더보기'와 '⌃ 접기'를 오가며 접어 둔 편을 그 자리에서 아코디언처럼 펼치고 접는다.
  * 맨 아래에 이전 편·다음 편 (그 편의 제목과 함께)
  */
 const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOpen: (post: Post) => void }) => {
@@ -111,7 +109,7 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 						aria-controls={listId}
 						onClick={() => setAll(!all)}
 					>
-						<i className={`fa-solid ${all ? 'fa-chevron-up' : 'fa-ellipsis'}`} aria-hidden="true" />
+						<i className={`fa-solid ${all ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
 						{all ? '접기' : `${hidden}편 더보기`}
 					</button>
 				)}

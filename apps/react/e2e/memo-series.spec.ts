@@ -50,15 +50,15 @@ test.describe('메모 연재', () => {
 		await expect(box.getByRole('button', { name: /^이전 편/ })).toHaveCount(0);
 	});
 
-	test('지금 글이 앞 5편보다 뒤면 1편부터 순서대로 몇 편, ⋯, 지금 글과 그 위아래 편을 보인다', async ({ page }) => {
-		// analytics-service-split은 6편: 1, 2 ⋯ 5, 6, 7 그리고 아래에 나머지 편의 더보기
-		await enterDesktop(page, '/memo/analytics-service-split');
+	test('지금 글이 앞 5편보다 뒤면 1편부터 순서대로 몇 편, ⋯, 이전 편과 지금 글을 보인다', async ({ page }) => {
+		// analytics-beacon-corp은 9편: 1, 2, 3 ⋯ 8, 9 그리고 아래에 나머지 편의 더보기
+		await enterDesktop(page, '/memo/analytics-beacon-corp');
 		const series = appWindow(page, 'memo').getByRole('navigation', { name: `연재: ${SERIES}` });
 		const total = Number((await series.locator('.memo-series-head').textContent())?.match(/\/ (\d+)/)?.[1]);
 		const numbers = () =>
 			series.getByRole('listitem').evaluateAll((items) => items.map((item) => item.textContent?.match(/^\d+/)?.[0]));
-		await expect.poll(numbers).toEqual(['1', '2', '5', '6', '7']);
-		await expect(series.getByRole('listitem').nth(3).getByRole('button')).toHaveAttribute('aria-current', 'page');
+		await expect.poll(numbers).toEqual(['1', '2', '3', '8', '9']);
+		await expect(series.getByRole('listitem').nth(4).getByRole('button')).toHaveAttribute('aria-current', 'page');
 		await expect(series.locator('.memo-series-gap')).toBeVisible();
 		const more = series.getByRole('button', { name: /편 더보기$/ });
 		await expect(more).toHaveText(`${total - 5}편 더보기`);
@@ -68,7 +68,7 @@ test.describe('메모 연재', () => {
 		await expect.poll(numbers).toEqual(Array.from({ length: total }, (_, at) => String(at + 1)));
 		await expect(series.locator('.memo-series-gap')).toBeHidden();
 		await series.getByRole('button', { name: '접기' }).click();
-		await expect.poll(numbers).toEqual(['1', '2', '5', '6', '7']);
+		await expect.poll(numbers).toEqual(['1', '2', '3', '8', '9']);
 	});
 
 	test('글 목록 항목의 제목 앞에 연재 이름과 번호를 붙인다', async ({ page }) => {
