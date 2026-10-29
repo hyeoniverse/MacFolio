@@ -1,24 +1,29 @@
 /*
- * 메모 앱: 글 제목 아래의 연재 상자 (components/SeriesBox.tsx).
- * 얇은 테두리 상자 안에 '연재 · 이름 n/N' 줄(누르면 목록을 접고 펼친다), 번호가 붙은 목록, 이전 편·다음 편.
- * 지금 글은 강조색 막대와 굵은 글자로 표시한다
+ * 메모 앱: 연재 머리말과 연재 상자 (components/SeriesBox.tsx).
+ * 상자는 테두리 없이 옅은 바탕 하나: 머리 한 줄(이름·순서, 이전 편·다음 편)과 펼치면 그 아래 목록.
+ * 목록은 목차(styles/toc.css)와 같은 모양이다: 왼쪽 세로선에 항목을 붙이고, 지금 글은 강조색 글자와 세로선 위의 막대.
+ * 그래서 목차와 나란히 있어도 같은 계열로 읽힌다
  */
 
 .memo-series {
-	margin: 0 0 var(--space-24);
-	border: 1px solid var(--memo-border);
+	/* 목차와 같은 글자색·세로선 (toc.css의 --memo-toc-text, --memo-toc-line과 같은 값) */
+	--memo-series-text: color-mix(in srgb, var(--memo-body) 85%, var(--memo-muted));
+	--memo-series-line: color-mix(in srgb, var(--memo-text) 30%, var(--memo-bg));
+	margin: 0 0 var(--space-12);
+	padding: var(--space-4);
 	border-radius: var(--radius-10);
+	background: color-mix(in srgb, var(--memo-text) 4%, transparent);
 	font-size: var(--text-subhead);
 }
 
 .memo .memo-series-toggle {
 	display: flex;
 	align-items: center;
-	gap: var(--space-6);
+	gap: var(--space-8);
 	width: 100%;
-	padding: var(--space-10) var(--space-12);
+	padding: var(--space-6) var(--space-8);
 	border: none;
-	border-radius: inherit;
+	border-radius: var(--radius-8);
 	background: none;
 	color: var(--memo-text);
 	font-family: inherit;
@@ -27,10 +32,10 @@
 	cursor: pointer;
 }
 
-.memo-series-toggle > i:first-child,
-.memo-series-label,
+.memo-series-icon,
 .memo-series-count,
 .memo-series-chevron {
+	flex: none;
 	color: var(--memo-muted);
 }
 
@@ -42,49 +47,82 @@
 }
 
 .memo-series-count {
+	font-size: var(--text-footnote);
 	font-variant-numeric: tabular-nums;
 }
 
+/* 접기 화살표: 펼치면 ⌄, 접으면 › (목차와 같은 회전), 머리 줄 오른쪽 끝 */
 .memo-series-chevron {
 	margin-left: auto;
-	font-size: var(--text-caption2);
+	font-size: 0.75em;
+	transition: transform var(--duration-fast) var(--ease-out);
 }
 
+.memo-series-toggle[aria-expanded='false'] .memo-series-chevron {
+	transform: rotate(-90deg);
+}
+
+/* 접고 펼치기: 목차(toc.css)와 같은 방식. 높이는 grid-template-rows 0fr ↔ 1fr, 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
+.memo-series-collapse {
+	display: grid;
+	grid-template-rows: 0fr;
+	transition: grid-template-rows var(--duration) var(--ease-out);
+}
+
+.memo-series-collapse[data-open='true'] {
+	grid-template-rows: 1fr;
+}
+
+.memo-series-collapse-inner {
+	min-height: 0;
+	/* 지금 글의 막대가 세로선 왼쪽으로 2px 나가므로 잘리지 않게 */
+	padding-left: var(--space-2);
+	overflow: hidden;
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s linear var(--duration);
+}
+
+.memo-series-collapse[data-open='true'] > .memo-series-collapse-inner {
+	visibility: visible;
+	opacity: 1;
+	transition:
+		opacity var(--duration) var(--ease-out),
+		visibility 0s;
+}
+
+/* 목록: 목차처럼 왼쪽 세로선 하나에 항목을 붙인다. 머리 줄 글자와 왼쪽을 맞춘다 */
 .memo-series-list {
-	margin: 0;
-	padding: 0 var(--space-6) var(--space-6);
+	margin: var(--space-2) var(--space-8) var(--space-4);
+	padding: 0;
+	border-left: 1px solid var(--memo-series-line);
 	list-style: none;
 }
 
 .memo .memo-series-list button {
 	display: flex;
+	position: relative;
 	align-items: baseline;
 	gap: var(--space-8);
 	width: 100%;
-	padding: var(--space-6) var(--space-8);
+	padding: var(--space-4) 0 var(--space-4) var(--space-12);
 	border: none;
-	border-left: 2px solid transparent;
-	border-radius: var(--radius-6);
 	background: none;
-	color: var(--memo-body);
-	font-family: inherit;
+	color: var(--memo-series-text);
+	font: inherit;
 	font-size: var(--text-subhead);
+	line-height: 1.4;
 	text-align: left;
 	cursor: pointer;
 }
 
-.memo .memo-series-list button[aria-current='page'] {
-	border-left-color: var(--memo-accent);
-	border-radius: 0 var(--radius-6) var(--radius-6) 0;
-	color: var(--memo-text);
-	font-weight: 600;
-	cursor: default;
-}
-
 .memo-series-number {
 	flex: none;
-	min-width: 2.2em;
+	min-width: 1.4em;
 	color: var(--memo-muted);
+	font-size: var(--text-footnote);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -92,47 +130,151 @@
 	min-width: 0;
 }
 
-.memo-series-steps {
-	display: flex;
-	justify-content: space-between;
-	gap: var(--space-8);
-	padding: var(--space-6) var(--space-12) var(--space-10);
-	border-top: 1px solid var(--memo-border);
+/* 지금 글: 강조색 글자와 세로선 위에 겹친 막대 (목차의 지금 읽는 절과 같다) */
+.memo .memo-series-list button[aria-current='page'] {
+	color: var(--memo-accent);
+	font-weight: 600;
+	cursor: default;
 }
 
-.memo .memo-series-steps button {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-4);
-	padding: var(--space-4) var(--space-6);
+.memo .memo-series-list button[aria-current='page'] .memo-series-number {
+	color: var(--memo-accent);
+}
+
+.memo .memo-series-list button[aria-current='page']::before {
+	position: absolute;
+	top: var(--space-4);
+	bottom: var(--space-4);
+	left: -2px;
+	width: 3px;
+	border-radius: var(--radius-4);
+	background: var(--memo-accent);
+	content: '';
+}
+
+/* 더보기: 목록 아래 한 줄, 세로선과 왼쪽을 맞춘 옅은 글자 */
+.memo .memo-series-more {
+	display: flex;
+	align-items: baseline;
+	gap: var(--space-6);
+	margin: 0 var(--space-8) var(--space-6);
+	padding: var(--space-4) var(--space-12);
 	border: none;
 	border-radius: var(--radius-6);
 	background: none;
-	color: var(--memo-muted);
+	color: var(--memo-accent);
 	font-family: inherit;
 	font-size: var(--text-footnote);
+	font-weight: 600;
 	cursor: pointer;
+}
+
+.memo-series-more span {
+	color: var(--memo-muted);
+	font-weight: 400;
+}
+
+/* 이전 편·다음 편: 블록 맨 아래 두 칸의 카드. 옅은 바탕 위에 본문 바탕색·얇은 테두리로 떠 보이고,
+   화살표는 바깥쪽 끝, 그 안에 '이전 편'·'다음 편'(작은 회색 글자)과 그 편의 제목(한 줄) */
+.memo-series-steps {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-6);
+	padding: var(--space-4);
+}
+
+.memo .memo-series-steps button {
+	display: flex;
+	align-items: center;
+	gap: var(--space-10);
+	min-width: 0;
+	padding: var(--space-8) var(--space-12);
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-10);
+	background: var(--memo-bg);
+	color: var(--memo-text);
+	font-family: inherit;
+	text-align: left;
+	cursor: pointer;
+	transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-series-steps .next {
+	grid-column: 2;
+	justify-content: flex-end;
+	text-align: right;
+}
+
+.memo-series-steps i {
+	flex: none;
+	color: var(--memo-muted);
+	font-size: var(--text-caption1);
+}
+
+.memo-series-step-text {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.memo-series-step-text span {
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+}
+
+.memo-series-step-text strong {
+	overflow: hidden;
+	font-size: var(--text-footnote);
+	font-weight: 600;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-series-collapse,
+	.memo-series-collapse-inner,
+	.memo-series-chevron {
+		transition: none;
+	}
 }
 
 @media (hover: hover) {
 	.memo .memo-series-toggle:hover,
-	.memo .memo-series-list button:not([aria-current='page']):hover,
-	.memo .memo-series-steps button:hover {
+	.memo .memo-series-more:hover {
 		background: var(--memo-hover);
+	}
+
+	.memo .memo-series-steps button:hover {
+		border-color: var(--memo-accent);
+	}
+
+	.memo .memo-series-list button:not([aria-current='page']):hover {
+		color: var(--memo-accent);
 	}
 }
 
-/* 휴대폰: 줄 높이를 손가락 터치 영역(44px) 이상으로 */
+.memo .memo-series-toggle:focus-visible,
+.memo .memo-series-more:focus-visible,
+.memo .memo-series-steps button:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 1px;
+}
+
+.memo .memo-series-list button:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: -2px;
+}
+
+/* 휴대폰: 줄 높이와 단추를 손가락 터치 영역(44px) 이상으로 */
 .container.mobile .memo .memo-series-toggle,
-.container.mobile .memo .memo-series-list button,
-.container.mobile .memo .memo-series-steps button {
+.container.mobile .memo .memo-series-list button {
 	min-height: 44px;
 }
 
-/* 제목 위의 머리말 (SeriesKicker): 날짜 줄과 제목 사이에 강조색 작은 글자 */
+.container.mobile 
+/* 날짜·폴더 줄 끝의 연재 표시 (SeriesKicker): 강조색 글자 */
 .memo-series-kicker {
-	margin: var(--space-8) 0 calc(-1 * var(--space-4));
 	color: var(--memo-accent);
-	font-size: var(--text-footnote);
 	font-weight: 600;
 }

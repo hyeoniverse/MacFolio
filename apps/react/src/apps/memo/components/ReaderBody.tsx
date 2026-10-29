@@ -52,6 +52,7 @@ const ReaderBody = ({
 			{/* 날짜는 늘 맨 위 (최근 삭제·잠금 안내는 그 아래) */}
 			<p className="memo-reader-date">
 				<time dateTime={post.date}>{formatPostDate(post.date)}</time> · {folderLabel(post.category)}
+				{series && !post.deletedAt && <SeriesKicker series={series} />}
 				{views && <span className="memo-reader-views"> · 조회 {(views[post.slug] ?? 0).toLocaleString()}</span>}
 				{post.status?.secret && <SecretBadge />}
 			</p>
@@ -84,7 +85,6 @@ const ReaderBody = ({
 					<Button onClick={onUnlock}>잠금 풀기</Button>
 				</p>
 			)}
-			{series && !post.deletedAt && <SeriesKicker series={series} />}
 			<h1>{post.title}</h1>
 			{series && !post.deletedAt && <SeriesBox series={series} compact={compact} onOpen={onOpenSeries} />}
 			<MemoToc toc={toc} bodyRef={body} revision={revision} compact={compact} />

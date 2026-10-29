@@ -147,6 +147,31 @@
 	padding-bottom: 0.9em;
 }
 
+/*
+ * 펼치고 접을 때 내용의 높이가 부드럽게 바뀐다: ::details-content(펼칠 내용)의 block-size를 0 ↔ auto로 옮긴다.
+ * auto로의 전환은 interpolate-size가 있어야 하고, content-visibility를 allow-discrete로 함께 옮겨야 접히는 동안에도 내용이 보인다.
+ * interpolate-size를 지원하지 않는 브라우저에서는 지금처럼 바로 펼쳐진다
+ */
+:where(.prose) details {
+	interpolate-size: allow-keywords;
+	transition: padding-bottom var(--duration) var(--ease-out);
+}
+
+:where(.prose) details::details-content {
+	block-size: 0;
+	overflow-y: clip;
+	opacity: 0;
+	transition:
+		block-size var(--duration) var(--ease-out),
+		opacity var(--duration-fast) var(--ease-out),
+		content-visibility var(--duration) allow-discrete;
+}
+
+:where(.prose) details[open]::details-content {
+	block-size: auto;
+	opacity: 1;
+}
+
 :where(.prose) details > summary {
 	display: flex;
 	align-items: center;
@@ -189,6 +214,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+	:where(.prose) details,
+	:where(.prose) details::details-content,
 	:where(.prose) details > summary::before {
 		transition: none;
 	}
