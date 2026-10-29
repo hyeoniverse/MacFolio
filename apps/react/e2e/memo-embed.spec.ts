@@ -29,7 +29,7 @@ test.describe('메모 바깥 링크 임베드', () => {
 		expect(blocked.filter((text) => /youtube/i.test(text))).toEqual([]);
 	});
 
-	test('편집기: 주소 문단 아래에 같은 임베드를 보이고, 다른 곳에 글자를 써도 iframe을 다시 불러오지 않는다', async ({
+	test('편집기: 주소 문단은 숨기고 읽기 화면과 같은 임베드만 보이며, 다른 곳에 글자를 써도 iframe을 다시 불러오지 않는다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: true });
@@ -39,8 +39,13 @@ test.describe('메모 바깥 링크 임베드', () => {
 		const frame = editor.locator('.memo-embed iframe');
 		await frame.scrollIntoViewIfNeeded();
 		await expect(frame).toHaveAttribute('src', EMBED);
-		// 주소 문단은 편집할 수 있는 링크로 남는다
-		await expect(editor.getByRole('link', { name: VIDEO })).toBeVisible();
+		const source = editor.locator('p.memo-embed-source');
+		await expect(source).not.toHaveAttribute('data-editing');
+		expect((await source.boundingBox())?.height).toBe(0);
+		await expect(editor.locator('.memo-embed').getByRole('link', { name: 'YouTube에서 열기' })).toHaveAttribute(
+			'href',
+			VIDEO
+		);
 
 		await frame.evaluate((el) => (el.dataset.mark = 'same'));
 		await editor.locator('> p').first().click();
@@ -48,47 +53,85 @@ test.describe('메모 바깥 링크 임베드', () => {
 		await expect(frame).toHaveAttribute('data-mark', 'same');
 	});
 
-	test('편집기: 지원 사이트 주소를 입력하면 임베드가 붙고, 주소 글자를 바꾸면 링크·임베드·저장한 글이 새 주소를 따른다', async ({
+	test('편집기: 위·아래 화살표로 숨긴 주소 문단에 들어가면 주소가 보이고, 나오면 다시 숨는다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page, '/memo/flux-pattern');
+		const memo = appWindow(page, 'memo');
+		const editor = memo.locator('.ProseMirror');
+		const source = editor.locator('p.memo-embed-source');
+		// 주소 문단 바로 위 문단의 끝에서 아래로
+		const above = source.locator('xpath=preceding-sibling::p[1]');
+		await above.scrollIntoViewIfNeeded();
+		await above.click();
+		await page.keyboard.press('End');
+		for (let i = 0; i < 6 && !(await source.getAttribute('data-editing')); i++) await page.keyboard.press('ArrowDown');
+		await expect(source).toHaveAttribute('data-editing', 'true');
+		await expect(editor.getByRole('link', { name: VIDEO })).toBeVisible();
+		// 다시 위로 나오면 숨는다
+		await page.keyboard.press('ArrowUp');
+		await expect(source).not.toHaveAttribute('data-editing');
+		// 아래 문단의 첫 줄에서 위로 들어가면 주소 끝에 커서가 있다
+		const below = source.locator('xpath=following-sibling::*[not(contains(@class, "memo-embed"))][1]');
+		await below.click();
+		await page.keyboard.press('Home');
+		for (let i = 0; i < 6 && !(await source.getAttribute('data-editing')); i++) await page.keyboard.press('ArrowUp');
+		await expect(source).toHaveAttribute('data-editing', 'true');
+	});
+
+	test('편집기 도구 버튼: 주소 바꾸기로 다른 영상, 직접 입력한 주소도 임베드, 링크로 바꾸기·삭제, 저장한 글이 따른다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
 		await enterDesktop(page, '/memo/flux-pattern');
 		const memo = appWindow(page, 'memo');
 		const editor = memo.locator('.ProseMirror');
-		const urlParagraph = editor.locator('p', { has: page.getByRole('link', { name: VIDEO }) });
-		await urlParagraph.scrollIntoViewIfNeeded();
+		const youtube = editor.locator('.memo-embed[data-provider="youtube"]');
+		await youtube.scrollIntoViewIfNeeded();
 
-		// 주소 문단 끝에서 Enter로 새 문단을 만들고 Vimeo 주소를 직접 입력한다
-		const box = (await urlParagraph.boundingBox())!;
-		await page.mouse.click(box.x + box.width - 2, box.y + box.height / 2);
-		await page.keyboard.press('End');
-		await page.keyboard.press('Enter');
-		await page.keyboard.type('https://vimeo.com/76979871');
-		await expect(editor.locator('.memo-embed iframe[src="https://player.vimeo.com/video/76979871"]')).toHaveCount(1);
-		await expect(editor.getByRole('link', { name: 'https://vimeo.com/76979871' })).toHaveAttribute(
-			'href',
-			'https://vimeo.com/76979871'
-		);
-
-		// YouTube 주소 글자를 통째로 다른 영상 주소로 바꾼다
-		// (Vimeo 문단을 더해 화면이 스크롤되었으므로 문단을 다시 찾아 세 번 눌러 문단 전체를 고른다)
-		await urlParagraph.click({ clickCount: 3 });
+		// 주소 바꾸기: 숨긴 주소 문단이 보이고 주소 전체가 골라진다. 새 주소를 입력하면 링크·임베드가 바뀐다
+		await youtube.hover();
+		await youtube.getByRole('button', { name: '주소 바꾸기' }).click();
+		await expect(editor.locator('p.memo-embed-source[data-editing]')).toBeVisible();
 		await page.keyboard.type('https://youtu.be/dQw4w9WgXcQ');
 		await expect(editor.getByRole('link', { name: 'https://youtu.be/dQw4w9WgXcQ' })).toHaveAttribute(
 			'href',
 			'https://youtu.be/dQw4w9WgXcQ'
 		);
-		await expect(
-			editor.locator('.memo-embed iframe[src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"]')
-		).toHaveCount(1);
-		await expect(editor.locator(`.memo-embed iframe[src="${EMBED}"]`)).toHaveCount(0);
+		await expect(youtube.locator('iframe')).toHaveAttribute(
+			'src',
+			'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ'
+		);
 
-		// 임시 저장한 글에도 새 주소가 링크 글자와 대상 모두로 들어간다 (읽기 화면이 임베드로 그릴 수 있는 형태)
+		// 그 아래에 Vimeo 주소를 직접 입력하면 링크와 임베드가 붙는다
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('https://vimeo.com/76979871');
+		const vimeo = editor.locator('.memo-embed[data-provider="vimeo"]');
+		await expect(vimeo.locator('iframe')).toHaveAttribute('src', 'https://player.vimeo.com/video/76979871');
+
 		await expect
 			.poll(() => api.posts.find((post) => post.slug === 'flux-pattern')?.draft?.body ?? '')
 			.toMatch(/^<?https:\/\/youtu\.be\/dQw4w9WgXcQ>?$/m);
-		const body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
+		let body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
 		expect(body).not.toContain('nYkdrAPrdcw');
 		expect(body).toMatch(/^<?https:\/\/vimeo\.com\/76979871>?$/m);
+
+		// 링크로 바꾸기: 임베드가 사라지고 https:// 를 뺀 글자의 링크로 남는다
+		await vimeo.hover();
+		await vimeo.getByRole('button', { name: '링크로 바꾸기' }).click();
+		await expect(vimeo).toHaveCount(0);
+		await expect(editor.getByRole('link', { name: 'vimeo.com/76979871', exact: true })).toHaveAttribute(
+			'href',
+			'https://vimeo.com/76979871'
+		);
+
+		// 임베드 삭제: 주소 문단째 지운다
+		await youtube.hover();
+		await youtube.getByRole('button', { name: '임베드 삭제' }).click();
+		await expect(youtube).toHaveCount(0);
+		await expect
+			.poll(() => api.posts.find((post) => post.slug === 'flux-pattern')?.draft?.body ?? '')
+			.not.toContain('youtu.be/dQw4w9WgXcQ');
+		body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
+		expect(body).toContain('[vimeo.com/76979871](https://vimeo.com/76979871)');
 	});
 });

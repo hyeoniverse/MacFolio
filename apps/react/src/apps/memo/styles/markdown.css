@@ -386,6 +386,46 @@
 	border: 0;
 }
 
+/* 편집기: 주소 문단은 숨기고 임베드만 보인다. 키보드 커서가 들어오거나 '주소 바꾸기'를 누르면 보여 고칠 수 있다 (writer/embedPreview.ts) */
+.memo-inline-editor .ProseMirror p.memo-embed-source:not([data-editing]) {
+	height: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	opacity: 0;
+}
+
+.memo-inline-editor .ProseMirror p.memo-embed-source[data-editing] {
+	margin-bottom: 0.4em;
+	color: var(--memo-muted);
+	font-size: var(--text-footnote);
+}
+
+/* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 오른쪽 위에 보인다 */
+.memo-embed-frame {
+	position: relative;
+}
+
+.memo .memo-embed-tools {
+	display: flex;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	gap: var(--space-2);
+	opacity: 0;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-embed-tools .memo-overlay-button {
+	position: static;
+	opacity: 1;
+}
+
+.memo-embed:hover .memo-embed-tools,
+.memo .memo-embed-tools:focus-within {
+	opacity: 1;
+}
+
 .memo-embed figcaption {
 	margin-top: 0.5em;
 	color: var(--memo-muted);
