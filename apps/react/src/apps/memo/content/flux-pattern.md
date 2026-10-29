@@ -14,8 +14,6 @@ Flux는 Facebook이 2014년에 공개한 클라이언트 애플리케이션 구�
 3. npm 다운로드 수치와 개발자 설문으로 본 2026년 상태 관리 동향
 4. Flux 이후 10여 년 동안 바뀐 설계와 바뀌지 않은 규칙
 
-MacFolio의 store에 이 구조를 적용한 과정은 개발기 [MacFolio의 store 설계](/memo/macfolio-store-design)에 별도로 정리했다.
-
 ## Flux가 나온 배경: 양방향 바인딩의 연쇄 갱신
 
 Flux는 2014년 F8 컨퍼런스 세션에서 처음 발표되었고, 같은 해 5월 6일 React 블로그에 [Flux: An Application Architecture for React](https://legacy.reactjs.org/blog/2014/05/06/flux.html)(Bill Fisher·Jing Chen)가 게시되었다. Flux 문서의 [In-Depth Overview](https://facebookarchive.github.io/flux/docs/in-depth-overview)는 Flux를 "Facebook이 클라이언트 웹 애플리케이션을 만들 때 사용하는 구조"로 소개하고, MVC 대신 단방향 데이터 흐름을 채택한 이유를 다음과 같이 설명한다.
@@ -335,7 +333,7 @@ Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-sh
 - **한 화면의 갱신 로직이 복잡하고, 깊은 하위 컴포넌트까지 상태와 갱신 함수를 전달해야 하는 상태 → `useReducer` + Context.** React 문서는 reducer와 Context를 결합해 복잡한 화면의 상태를 관리하는 방법을 설명한다([Scaling Up with Reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context)).
   - 예: 단계가 여러 개인 글 작성 마법사
 - **여러 화면이 공유하는 클라이언트 상태를 store 하나로 관리하고, Action 객체와 reducer 없이 store 함수로 갱신하려는 경우 → Zustand.** [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/flux-inspired-practice)가 권장하는 방식(single store, `set`으로만 갱신, store action을 store 안에 정의)이다.
-  - 예: 다크 모드 설정, 사이드바 접힘 여부, 열린 창 목록
+  - 예: 다크 모드 설정, 사이드바 접힘 여부, 장바구니
 - **큰 상태를 여러 곳에서 사용하고, 자주 바뀌고, 갱신 로직이 복잡하고, 여러 개발자가 함께 작업하고, 상태 변화 이력을 확인해야 하는 경우 → Redux.** Redux FAQ가 Redux가 가장 효과적인 경우로 제시한 다섯 조건이다. 새로 도입할 때는 [Redux Toolkit](https://redux.js.org/introduction/getting-started)을 공식 권장 방식으로 안내한다.
   - 예: 권한·필터·편집 기록이 얽힌 대규모 관리자 화면
 - **React 외부 코드의 값을 컴포넌트에서 구독하는 경우 → `useSyncExternalStore`.** React 문서는 이 hook이 주로 React 외부 코드와 연동할 때 쓰인다고 설명한다.
@@ -356,14 +354,11 @@ Flux가 2014년에 제시한 핵심은 라이브러리보다 규칙이었다. �
 3. **여러 화면이 공유하는 클라이언트 상태가 생기면 외부 store를 도입한다.** selector로 필요한 값만 구독하는 Zustand는 2026년 2분기부터 redux보다 많이 다운로드된다.
 4. **변경 이력 추적, 미들웨어, 팀 전체의 코드 규칙 통일이 필요하면 Redux Toolkit을 선택한다.**
 
-앞으로 확인할 지표는 세 가지다. 첫째, TC39 Signals 제안이 Stage 2 이상으로 진행되는지 여부다. 표준이 되면 Angular·Vue·Solid가 같은 반응성 기반을 공유하게 되고, React가 컴포넌트 단위 렌더링을 유지할지도 다시 논의될 수 있다. 둘째, zustand ÷ redux(1.24)와 TanStack Query ÷ redux(1.54) 비율의 추이다. 셋째, 다음 State of React 설문에서 상태 관리 라이브러리를 사용하지 않는 응답 비율의 변화다.
+이 흐름이 계속될지는 다음 세 가지 지표로 확인할 수 있다.
 
-MacFolio도 같은 순서로 설계했다. 여러 창이 공유하는 창 관리 상태만 React 외부의 작은 store(`createStore` + `useSyncExternalStore`)로 관리하고, 나머지는 각 컴포넌트의 내장 상태로 관리한다. 설계 과정은 [MacFolio의 store 설계](/memo/macfolio-store-design)에 정리했다.
-
-## 관련 글
-
-- [MacFolio의 store 설계 - Flux·Redux에서 따른 것과 뺀 것](/memo/macfolio-store-design): 이 구조를 창 관리 store에 적용한 개발기
-- [창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 선택한 과정
+- **TC39 Signals 제안의 단계:** 현재 Stage 1이다. Stage 2 이상으로 진행되어 언어 표준이 되면 Angular·Vue·Solid가 같은 signal 구현을 공유하게 되고, 컴포넌트 단위로 다시 렌더링하는 React의 방식도 다시 논의될 수 있다.
+- **redux 대비 zustand·TanStack Query의 다운로드 배수:** 2026년 3분기에 zustand는 redux의 1.24배, TanStack Query는 1.54배 다운로드되었다. 2023년 4분기에는 각각 0.28배, 0.26배였다. 이 배수가 계속 커지면 Action·reducer 기반의 Redux 대신 store 함수 방식의 외부 store와 서버 상태 라이브러리를 함께 쓰는 구성이 더 늘어나고 있다는 근거가 된다.
+- **상태 관리 라이브러리를 사용하지 않는 개발자 비율:** State of React 2025에서는 33.8%였다. 다음 설문에서 이 비율이 늘어나면 React 내장 상태와 서버 상태 라이브러리만으로 충분한 애플리케이션이 늘었다는 근거가 된다.
 
 [^npm]: [npm registry downloads API](https://github.com/npm/registry/blob/main/docs/download-counts.md). `https://api.npmjs.org/downloads/range/<기간>/<패키지>`로 일별 다운로드를 받아 분기별로 합산했다(2026년 10월 29일 조회).
 
