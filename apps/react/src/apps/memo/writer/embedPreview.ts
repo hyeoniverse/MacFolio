@@ -106,7 +106,7 @@ function runEmbedAction(view: EditorView, widgetPos: number | undefined, action:
 	view.focus();
 }
 
-/** 임베드 위의 도구 버튼 (마우스를 올리면 보인다). 이미지 배치 버튼과 같은 모양 */
+/** 임베드 위의 도구 버튼 (마우스를 올리면 보인다). YouTube 재생기 안의 버튼처럼 둥근 반투명 버튼 (styles/markdown.css) */
 function toolBar(view: EditorView, getPos: () => number | undefined): HTMLElement {
 	const bar = document.createElement('span');
 	bar.className = 'memo-embed-tools';
