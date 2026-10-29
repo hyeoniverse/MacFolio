@@ -401,9 +401,9 @@
 	font-size: var(--text-footnote);
 }
 
-/* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 오른쪽 위에 보인다.
+/* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 제목 줄 아래 왼쪽에 보인다.
    모양은 YouTube 재생기 안의 링크 복사 버튼과 같다: 40px 원형 누름 영역, 바탕 없이 24px 흰 채운 아이콘(밝은 화면에서도 보이게 옅은 그림자),
-   올리면 옅은 흰 원. 자리는 그 버튼(왼쪽 아래)·재생 조작 막대(아래)와 겹치지 않는 오른쪽 위 */
+   올리면 옅은 흰 원. 자리는 재생기 위쪽 제목 줄 바로 아래 왼쪽 (제목 글자·링크 복사 버튼(왼쪽 아래)·재생 조작 막대와 겹치지 않게) */
 .memo-embed-frame {
 	position: relative;
 }
@@ -411,8 +411,9 @@
 .memo .memo-embed-tools {
 	display: flex;
 	position: absolute;
-	top: var(--space-12);
-	right: var(--space-12);
+	/* YouTube 재생기 맨 위의 채널 아이콘(48px)·제목 줄 바로 아래, 왼쪽 끝을 채널 아이콘에 맞춘다 */
+	top: 60px;
+	left: var(--space-4);
 	gap: var(--space-4);
 	opacity: 0;
 	transition: opacity var(--duration-fast) var(--ease-out);
