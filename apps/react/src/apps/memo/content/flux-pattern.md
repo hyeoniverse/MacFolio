@@ -27,6 +27,8 @@ Overview가 든 출발점은 파생 데이터였다. 메시지 스레드 목록�
 
 In-Depth Overview는 Flux의 주요 부분을 Dispatcher, Store, View 셋으로 꼽고, Action을 만드는 action creator를 "네 번째 부분"으로 설명한다.
 
+![Flux 저장소 README의 구조도](./images/flux-pattern-official-diagram.jpg 'facebookarchive/flux README에 실린 원래 구조도. 사용자 입력과 Web API 응답이 모두 Action Creators를 거쳐 Dispatcher로 가고, Store의 변경 이벤트를 받은 React Views가 다시 그린다. 2026년 10월 30일 캡처')
+
 | 구성 요소  | 역할                                                                                      | 하지 않는 일                         |
 | ---------- | ----------------------------------------------------------------------------------------- | ------------------------------------ |
 | Action     | 무엇이 일어났는지 적은 평범한 객체. 식별용 `type`과 새 데이터를 담는다                    | 상태를 직접 바꾸지 않는다            |
@@ -83,6 +85,10 @@ In-Depth Overview는 `waitFor()`가 "크고 복잡한 애플리케이션에서 �
 
 ## Flux 이후: Redux
 
+![보관된 Flux 저장소](./images/flux-pattern-archived-repo.jpg 'facebookarchive/flux 저장소는 2023년 3월 23일 보관(read-only)으로 바뀌었다. 별 17.4k, 포크 3.4k. 2026년 10월 30일 캡처')
+
+Flux 라이브러리 저장소는 2023년 3월에 보관 상태로 바뀌어 더 이상 갱신되지 않는다. 그 사이 구조의 중심은 Redux로 옮겨 갔다.
+
 [Redux 문서의 Prior Art](https://redux.js.org/understanding/history-and-design/prior-art)는 Redux가 Flux에서 가져온 것과 바꾼 것을 직접 비교한다.
 
 - **가져온 것:** 모델 갱신 로직을 한 계층(Flux의 Store, Redux의 reducer)에 모으고, 모든 변경을 Action이라는 평범한 객체로 기술한다.
@@ -99,11 +105,15 @@ In-Depth Overview는 `waitFor()`가 "크고 복잡한 애플리케이션에서 �
 
 store가 하나이고 reducer를 합성해 쓰므로, Flux의 `waitFor()`가 다루던 Store 사이의 순서 문제는 reducer 호출 순서로 바뀐다. 상태를 객체 하나로 두면 Action마다 이전·다음 상태를 기록할 수 있어 Redux DevTools의 time travel이 가능해진다.
 
+![Redux 문서의 데이터 흐름 그림](./images/flux-pattern-redux-dataflow.jpg 'Redux Fundamentals Part 2의 데이터 흐름 그림. Deposit 버튼의 이벤트 핸들러가 Action을 dispatch하고, store가 reducer를 실행해 만든 새 State가 UI의 금액으로 반영된다. 원본은 움직이는 GIF이고 그 한 장면을 캡처했다(2026년 10월 30일)')
+
 ![Redux의 흐름과 상태 스냅숏](./images/flux-pattern-redux-flow.svg '위: UI가 dispatch한 Action으로 store가 reducer를 호출해 새 state를 받고 구독자에게 알린다. 아래: todo/add와 filter/set을 거치며 state₀·state₁·state₂가 각각 다른 객체로 남는다')
 
 ## 외부 store와 useSyncExternalStore
 
 React 바깥에 상태를 두고 컴포넌트가 구독하는 방식도 Flux의 단방향 흐름을 따른다. [Zustand](https://github.com/pmndrs/zustand)는 README에서 스스로를 "simplified flux principles를 쓰는 작은 상태 관리 도구"라고 소개한다. React 없이 쓰는 vanilla `createStore`는 `getState`·`setState`·`subscribe`(와 `getInitialState`)를 돌려준다.
+
+![Zustand README 첫머리](./images/flux-pattern-zustand-readme.jpg 'pmndrs/zustand README 첫머리. 배지에 번들 크기 9.35kB, npm 버전 5.0.16, 누적 다운로드 2G가 보인다. 2026년 10월 30일 캡처')
 
 Zustand 문서의 [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/flux-inspired-practice)는 Flux·Redux에서 가져온 권장 방식을 세 가지로 적는다.
 
@@ -114,6 +124,8 @@ Zustand 문서의 [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/f
 즉 Action 객체와 Dispatcher를 빼고, store 함수가 새 상태를 만들어 구독자에게 알리는 형태다.
 
 React는 18부터 이런 store를 구독하는 표준 hook으로 [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)를 제공한다.
+
+![react.dev의 useSyncExternalStore 문서](./images/flux-pattern-react-docs.jpg 'react.dev API Reference의 useSyncExternalStore. 외부 store를 구독하는 hook으로 subscribe, getSnapshot과 서버 렌더링용 getServerSnapshot을 받는다. 2026년 10월 30일 캡처')
 
 - `subscribe(callback)`: store가 바뀌면 `callback`을 호출하고, 구독 해제 함수를 돌려준다.
 - `getSnapshot()`: store가 바뀌지 않았으면 같은 값을 돌려줘야 한다. React는 반환값을 `Object.is`로 비교해 다르면 다시 렌더링한다. 매번 새 객체를 돌려주면 비교가 항상 '다름'이 되어 무한 루프 오류가 난다.
