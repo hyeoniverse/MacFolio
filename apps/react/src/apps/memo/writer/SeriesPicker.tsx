@@ -67,7 +67,7 @@ const SeriesPicker = ({
 					}}
 				>
 					<i className={value ? 'fa-solid fa-layer-group' : 'fa-solid fa-plus'} aria-hidden="true" />
-					{value ? `연재 · ${value}` : '연재 지정'}
+					{value ?? '연재 지정'}
 				</button>
 			)}
 			{value && !naming && (

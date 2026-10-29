@@ -14,13 +14,13 @@ test.describe('메모 연재', () => {
 		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 2`);
 
 		const series = memo.getByRole('navigation', { name: `연재: ${SERIES}` });
-		const toggle = series.getByRole('button', { name: new RegExp(SERIES) });
-		await expect(toggle).toContainText(/2 \/ \d+/);
-		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+		const head = series.locator('.memo-series-head');
+		await expect(head).toContainText(SERIES);
+		await expect(head).toContainText(/2 \/ \d+/);
 
 		// 목록은 연재 순서대로, 번호는 연재 안의 위치(1부터), 제목은 그대로. 지금 글은 aria-current.
 		// 길면 앞의 5편만 보이고 그 아래 '⋯ N편 더보기'. 누르면 나머지가 아래로 펼쳐지고, 같은 자리의 '접기'로 되돌린다
-		const total = Number((await toggle.textContent())?.match(/\/ (\d+)/)?.[1]);
+		const total = Number((await head.textContent())?.match(/\/ (\d+)/)?.[1]);
 		const items = series.getByRole('listitem');
 		const more = series.getByRole('button', { name: /편 더보기$/ });
 		await expect(items).toHaveCount(5);
@@ -48,11 +48,6 @@ test.describe('메모 연재', () => {
 		await expect(page).toHaveURL(/\/memo\/analytics-api$/);
 		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 1`);
 		await expect(box.getByRole('button', { name: /^이전 편/ })).toHaveCount(0);
-
-		// 접으면 목록이 감춰지고, 이전 편·다음 편은 남는다
-		await box.getByRole('button', { name: new RegExp(SERIES) }).click();
-		await expect(box.getByRole('listitem').first()).toBeHidden();
-		await expect(box.getByRole('button', { name: /^다음 편/ })).toBeVisible();
 	});
 
 	test('글 목록 항목의 제목 앞에 연재 이름과 번호를 붙인다', async ({ page }) => {
@@ -77,7 +72,7 @@ test.describe('메모 연재', () => {
 		const title = memo.getByRole('textbox', { name: '제목' });
 		await expect(title).toHaveValue('sendBeacon으로 5초마다 묶어 보내는 방문 이벤트');
 		const box = memo.getByRole('navigation', { name: `연재: ${SERIES}` });
-		await expect(box.getByRole('button', { name: new RegExp(SERIES) })).toContainText(/2 \/ \d+/);
+		await expect(box.locator('.memo-series-head')).toContainText(/2 \/ \d+/);
 		await expect(memo.getByRole('spinbutton', { name: '연재 순서' })).toHaveValue('2');
 
 		// 새 연재로 옮기고 순서를 적는다: 한 편뿐인 연재라 상자는 없다

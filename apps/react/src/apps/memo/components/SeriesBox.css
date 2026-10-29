@@ -1,6 +1,6 @@
 /*
  * 메모 앱: 연재 머리말과 연재 상자 (components/SeriesBox.tsx).
- * 상자는 테두리 없이 옅은 바탕 하나: 머리 한 줄(이름·순서, 이전 편·다음 편)과 펼치면 그 아래 목록.
+ * 상자는 테두리 없이 옅은 바탕 하나: 머리 한 줄(이름·순서), 목록, 이전 편·다음 편.
  * 목록은 목차(styles/toc.css)와 같은 모양이다: 왼쪽 세로선에 항목을 붙이고, 지금 글은 강조색 글자와 세로선 위의 막대.
  * 그래서 목차와 나란히 있어도 같은 계열로 읽힌다
  */
@@ -16,30 +16,22 @@
 	font-size: var(--text-subhead);
 }
 
-.memo .memo-series-toggle {
+.memo-series-head {
 	display: flex;
 	align-items: center;
 	gap: var(--space-8);
-	width: 100%;
+	margin: 0;
 	padding: var(--space-6) var(--space-8);
-	border: none;
-	border-radius: var(--radius-8);
-	background: none;
 	color: var(--memo-text);
-	font-family: inherit;
-	font-size: var(--text-subhead);
-	text-align: left;
-	cursor: pointer;
 }
 
 .memo-series-icon,
-.memo-series-count,
-.memo-series-chevron {
+.memo-series-count {
 	flex: none;
 	color: var(--memo-muted);
 }
 
-.memo-series-toggle strong {
+.memo-series-head strong {
 	overflow: hidden;
 	font-weight: 600;
 	text-overflow: ellipsis;
@@ -51,18 +43,7 @@
 	font-variant-numeric: tabular-nums;
 }
 
-/* 접기 화살표: 펼치면 ⌄, 접으면 › (목차와 같은 회전), 머리 줄 오른쪽 끝 */
-.memo-series-chevron {
-	margin-left: auto;
-	font-size: 0.75em;
-	transition: transform var(--duration-fast) var(--ease-out);
-}
-
-.memo-series-toggle[aria-expanded='false'] .memo-series-chevron {
-	transform: rotate(-90deg);
-}
-
-/* 접고 펼치기: 목차(toc.css)와 같은 방식. 높이는 grid-template-rows 0fr ↔ 1fr, 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
+/* 나머지 편 펼치고 접기: 목차(toc.css)와 같은 방식. 높이는 grid-template-rows 0fr ↔ 1fr, 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
 .memo-series-collapse {
 	display: grid;
 	grid-template-rows: 0fr;
@@ -75,7 +56,8 @@
 
 .memo-series-collapse-inner {
 	min-height: 0;
-	/* 지금 글의 막대가 세로선 왼쪽으로 2px 나가므로 잘리지 않게 */
+	/* 지금 글의 막대가 세로선 왼쪽으로 2px 나가므로 잘리지 않게 (그만큼 왼쪽으로 당겨 목록과 맞춘다) */
+	margin-left: calc(-1 * var(--space-2));
 	padding-left: var(--space-2);
 	overflow: hidden;
 	visibility: hidden;
@@ -236,17 +218,12 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.memo-series-collapse,
-	.memo-series-collapse-inner,
-	.memo-series-chevron {
+	.memo-series-collapse-inner {
 		transition: none;
 	}
 }
 
 @media (hover: hover) {
-	.memo .memo-series-toggle:hover {
-		background: var(--memo-hover);
-	}
-
 	.memo .memo-series-steps button:hover {
 		border-color: var(--memo-accent);
 	}
@@ -257,7 +234,6 @@
 	}
 }
 
-.memo .memo-series-toggle:focus-visible,
 .memo .memo-series-steps button:focus-visible {
 	outline: 2px solid var(--memo-accent);
 	outline-offset: 1px;
@@ -270,7 +246,6 @@
 }
 
 /* 휴대폰: 줄 높이와 단추를 손가락 터치 영역(44px) 이상으로 */
-.container.mobile .memo .memo-series-toggle,
 .container.mobile .memo .memo-series-list button,
 .container.mobile .memo .memo-series-more {
 	min-height: 44px;
@@ -294,9 +269,4 @@
 /* 제목과의 간격은 표시가 맡는다 */
 .memo-series-kicker + h1 {
 	margin-top: 0;
-}
-
-/* 목록 안의 나머지 편 접기: 바깥 접기 칸이 이미 막대 자리를 비워 두었으니 왼쪽을 다시 맞춘다 */
-.memo-series-collapse-inner .memo-series-collapse-inner {
-	margin-left: calc(-1 * var(--space-2));
 }

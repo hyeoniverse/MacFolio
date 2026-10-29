@@ -325,14 +325,6 @@ const PostWriter = ({
 						change({ category });
 					}}
 				/>
-				<SeriesPicker
-					value={draft.series}
-					order={draft.seriesOrder}
-					names={seriesNames}
-					// 연재에서 빼면 순서도 지운다
-					onChange={(series) => change(series ? { series } : { series: undefined, seriesOrder: undefined })}
-					onOrderChange={(seriesOrder) => change({ seriesOrder })}
-				/>
 				{post?.status?.secret && <SecretBadge />}
 				<span className="memo-writer-actions">
 					<span
@@ -363,6 +355,17 @@ const PostWriter = ({
 						{scheduled ? '예약' : '게시'}
 					</Button>
 				</span>
+			</div>
+			{/* 연재: 읽기 화면의 연재 표시와 같은 자리(제목 바로 위) */}
+			<div className="memo-writer-series">
+				<SeriesPicker
+					value={draft.series}
+					order={draft.seriesOrder}
+					names={seriesNames}
+					// 연재에서 빼면 순서도 지운다
+					onChange={(series) => change(series ? { series } : { series: undefined, seriesOrder: undefined })}
+					onOrderChange={(seriesOrder) => change({ seriesOrder })}
+				/>
 			</div>
 			<textarea
 				ref={titleRef}
