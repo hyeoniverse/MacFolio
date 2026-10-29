@@ -114,9 +114,11 @@
 	cursor: pointer;
 }
 
+/* 번호 칸: 가운데 맞춤 (접어 둔 자리의 ⋮, 더보기의 화살표도 같은 폭의 가운데) */
 .memo-series-number {
 	flex: none;
 	min-width: 1.4em;
+	text-align: center;
 	color: var(--memo-muted);
 	font-size: var(--text-footnote);
 	font-variant-numeric: tabular-nums;
@@ -179,7 +181,7 @@
 
 .memo-series-more i {
 	min-width: 1.4em;
-	font-size: 0.9em;
+	text-align: center;
 }
 
 /* 이전 편·다음 편: 블록 맨 아래 두 칸의 카드. 옅은 바탕 위에 본문 바탕색·얇은 테두리로 떠 보이고,
