@@ -1,7 +1,9 @@
 ---
-title: 폴더 사이드바와 휴대폰 사진 앱을 조각으로
+title: import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
+series: 모듈 구조
+seriesOrder: 3
 summary: 메모의 폴더 사이드바(697줄)와 휴대폰 사진 앱(662줄)을 각각 345줄·337줄 본체와 하위 컴포넌트로 분리했다. 두 파일이 함께 사용하는 타입은 별도 model 파일에 두어 순환 import를 방지했고, 파일마다 필요한 import는 스크립트로 계산했다.
 ---
 
@@ -28,7 +30,7 @@ summary: 메모의 폴더 사이드바(697줄)와 휴대폰 사진 앱(662줄)�
 
 ## 폴더 사이드바
 
-`FolderSidebar.tsx` 697줄 안에 폴더 한 줄(`FolderRow`, 200줄), 이름 입력, 끌어 놓기 훅, 사이드바 본체가 있었다. `FolderRow`는 사이드바 props 타입을 `Omit<Props, …>`로 참조하고 있어서, 파일만 분리하면 `FolderRow`가 `FolderSidebar`를 import하고 `FolderSidebar`가 `FolderRow`를 렌더링하는 순환 의존이 생긴다. [서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게](/memo/break-import-cycles)의 규칙대로 두 파일이 함께 사용하는 코드(`DragItem`, `FolderSidebarProps`, 깊이 상한 안내 문장)를 `folderSidebar.model.ts`로 분리했다.
+`FolderSidebar.tsx` 697줄 안에 폴더 한 줄(`FolderRow`, 200줄), 이름 입력, 끌어 놓기 훅, 사이드바 본체가 있었다. `FolderRow`는 사이드바 props 타입을 `Omit<Props, …>`로 참조하고 있어서, 파일만 분리하면 `FolderRow`가 `FolderSidebar`를 import하고 `FolderSidebar`가 `FolderRow`를 렌더링하는 순환 의존이 생긴다. [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)의 규칙대로 두 파일이 함께 사용하는 코드(`DragItem`, `FolderSidebarProps`, 깊이 상한 안내 문장)를 `folderSidebar.model.ts`로 분리했다.
 
 ```
 memo/components/
@@ -93,7 +95,7 @@ photos/
 ## 정리
 
 - 목적은 줄 수 감소가 아니다. 전체 줄 수는 오히려 늘었다. 목적은 수정할 위치를 찾는 시간을 줄이는 것이다.
-- 두 파일이 서로의 코드를 필요로 하면, 둘 중 한쪽에 두지 않고 세 번째 파일로 분리한다. 이 규칙은 [서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게](/memo/break-import-cycles)에서 정했다.
+- 두 파일이 서로의 코드를 필요로 하면, 둘 중 한쪽에 두지 않고 세 번째 파일로 분리한다. 이 규칙은 [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)에서 정했다.
 - 기계적인 작업(import 계산)은 스크립트가 처리하고, 사람은 분할 위치만 정한다. 스크립트의 오류는 `tsc`와 ESLint가 검출한다.
 
 ## 같은 방식으로 분리하는 절차
@@ -111,9 +113,9 @@ cd ../.. && pnpm cycles      # model ↔ 컴포넌트 순환이 없는지
 
 ## 관련 글
 
-- [1,861줄짜리 데모 파일을 데모마다 한 파일로](/memo/split-creative-demos): 2단계 첫 번째 작업
-- [서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게](/memo/break-import-cycles): 순환 import를 끊는 규칙
-- [리팩터링 2단계 — 폴더 구조와 의존](/memo/refactor-step2-structure)
+- [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos): 2단계 첫 번째 작업
+- [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles): 순환 import를 끊는 규칙
+- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
 
 PR: [#190](https://github.com/hyeoniverse/MacFolio/pull/190)
 

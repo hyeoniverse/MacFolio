@@ -207,6 +207,5 @@ Record the drill result in [#100](https://github.com/hyeoniverse/MacFolio/issues
 
 - [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](https://macfolio.hyeoniverse.com/memo/rollback-drill)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](https://macfolio.hyeoniverse.com/memo/api-auto-deploy)
-- [자동 배포를 실제 서버에 걸기 - 막힌 곳 다섯](https://macfolio.hyeoniverse.com/memo/api-auto-deploy-setup)
 
 [^blue-green]: A deployment method that runs the new container alongside the old one and switches traffic only after its health check passes. Responses never stop during the switch, but more memory is used while both containers run. This server (E2.1.Micro, 1GB) replaces its single container instead.

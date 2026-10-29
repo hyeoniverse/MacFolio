@@ -1,7 +1,9 @@
 ---
-title: 메모 편집을 관리자만 하게 한 이유
+title: 정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기
 date: 2026-09-29
 category: 개발 기록/MacFolio/프론트엔드
+series: 메모 폴더
+seriesOrder: 1
 summary: 폴더 생성·드래그 이동·고정까지 구현한 뒤 모두 비활성화했다. 정적 사이트의 브라우저 코드만으로는 관리자를 판별할 수 없기 때문이다. 편집 권한은 useCanEditMemo 하나로 판단하게 했고, 다음 날 관리자 로그인이 추가되자 그 한 줄만 바꿔 다시 활성화했다.
 ---
 
@@ -89,7 +91,7 @@ export function useCanEditMemo(): boolean {
 
 ## 관련 글
 
-- [정적 사이트에 관리자 로그인 붙이기](/memo/admin-login-github-oauth)
+- [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 - [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
 - [메모에 태그 붙이기](/memo/memo-tags)
 - [메모 잠그기 - 실수로 고치지 않게](/memo/memo-lock)

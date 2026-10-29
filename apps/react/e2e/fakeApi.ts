@@ -307,6 +307,9 @@ export interface FakeContent {
 	title: string;
 	date: string;
 	category: string;
+	/** 연재 이름과 순서. 연재가 아니면 없다 (서버처럼 빈 이름은 없음으로, 이름 없이 온 순서는 버린다) */
+	series?: string;
+	seriesOrder?: number;
 	summary: string;
 	body: string;
 }
@@ -1072,10 +1075,12 @@ export async function fakeApi(
 			const method = request.method();
 			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
 			const find = (key: string) => state.posts.find((post) => post.slug === key);
-			const pick = ({ title, date, category, summary, body }: FakeContent): FakeContent => ({
+			const pick = ({ title, date, category, series, seriesOrder, summary, body }: FakeContent): FakeContent => ({
 				title,
 				date,
 				category,
+				...(series?.trim() && { series: series.trim() }),
+				...(series?.trim() && seriesOrder && { seriesOrder: Number(seriesOrder) }),
 				summary,
 				body,
 			});

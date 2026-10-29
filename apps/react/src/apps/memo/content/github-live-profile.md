@@ -1,7 +1,9 @@
 ---
-title: GitHub 앱을 진짜 GitHub로 - 프로필·README·고른 저장소
+title: API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기
 date: 2026-10-02
 category: 개발 기록/MacFolio/프론트엔드
+series: GitHub 앱
+seriesOrder: 1
 summary: 코드에 직접 입력하던 GitHub 앱의 프로필·README·고정 저장소를, API 서버가 GitHub에서 조회해 30분(토큰이 있으면 10분) 캐시한 뒤 응답하게 했다. README는 sanitize 후 렌더링하고 배지는 Contact 버튼으로 바꾸며, 표시할 저장소는 시스템 설정에서 선택한다.
 ---
 
@@ -125,9 +127,9 @@ CREATE TABLE "GithubShowcase" (
 
 ## 관련 글
 
-- [GitHub 앱에 잔디와 활동 기록 더하기](/memo/github-activity)
-- [들쭉날쭉하던 고정 저장소 카드](/memo/github-pinned-card-size)
+- [토큰 없이 github.com HTML 조각을 서버에서 파싱하는 기여 달력](/memo/github-activity)
+- [grid-auto-rows 1fr와 line-clamp, margin-top auto로 카드 높이 맞추기](/memo/github-pinned-card-size)
 - [폴더 순서를 손잡이로 바꾸기 - 저장은 경로 목록 하나로](/memo/memo-folder-order): ≡ 손잡이 UI
-- [정적 사이트에 관리자 로그인 붙이기](/memo/admin-login-github-oauth): `ADMIN_GITHUB_ID`를 쓰는 관리자 인증
+- [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth): `ADMIN_GITHUB_ID`를 쓰는 관리자 인증
 
 #MacFolio #GitHub #시스템설정

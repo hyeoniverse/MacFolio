@@ -1,7 +1,9 @@
 ---
-title: 상태 표시줄과 홈 인디케이터를 어떤 배경에서도 보이게 — 이미지 픽셀 샘플링, 대비 기준 선택, 좌우 분리
+title: 배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기
 date: 2026-10-16
 category: 개발 기록/MacFolio/프론트엔드
+series: 휴대폰 화면
+seriesOrder: 4
 summary: 휴대폰 상태 표시줄은 홈 화면에서 항상 흰색, 홈 인디케이터는 화면 모드의 글자색이라 밝은 배경화면·밤하늘에서 보이지 않았다. 배경 이미지의 픽셀까지 샘플링하고, 휘도 0.4 대신 흰색에 1.3배 가중치를 준 대비로 선택하고, 시계 쪽과 아이콘 쪽을 따로 결정했다.
 ---
 
@@ -22,7 +24,7 @@ summary: 휴대폰 상태 표시줄은 홈 화면에서 항상 흰색, 홈 인�
 
 ## 보이지 않던 경우
 
-앱 위의 상태 표시줄은 이미 뒤에 렌더링된 화면을 조회해 글자색을 결정하고 있었다(`statusBarTone.ts`, [휴대폰 앱들을 메모처럼](/memo/mobile-apps-ios-style) 참고). 막대 아래 세 지점의 요소를 찾아 바탕색을 조회하고, 평균 휘도가 0.4보다 낮으면 흰 글자다. 누락된 경우가 세 가지 있었다.
+앱 위의 상태 표시줄은 이미 뒤에 렌더링된 화면을 조회해 글자색을 결정하고 있었다(`statusBarTone.ts`, [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style) 참고). 막대 아래 세 지점의 요소를 찾아 바탕색을 조회하고, 평균 휘도가 0.4보다 낮으면 흰 글자다. 누락된 경우가 세 가지 있었다.
 
 - **홈 화면의 상태 표시줄**은 조회하지 않고 항상 흰색이었다. iOS 14·18 배경화면의 라이트 버전처럼 상단이 밝은 배경화면에서는 흰 바탕에 흰 글자였다.
 - **홈 인디케이터**는 앱 위에서는 화면 모드의 글자색(`--color-text`), 홈 화면에서는 반투명 흰색이었다. 라이트 모드에서 날씨 앱의 밤하늘을 열면 짙은 남색 위에 짙은 회색 막대였다.
@@ -124,10 +126,10 @@ Sky 배경화면은 상단 왼쪽이 옅은 청록, 오른쪽이 짙은 남색�
 
 ## 관련 글
 
-- [휴대폰 앱들을 메모처럼](/memo/mobile-apps-ios-style)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [시계 글자가 바뀔 때마다 흔들리던 메뉴 막대](/memo/menubar-clock-width)
-- [iOS Safari에서만 음악 위젯 모서리가 각지는 문제](/memo/music-widget-ios-corners)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [tabular-nums와 그리드 셀 겹치기로 가변 폭 텍스트의 칸 너비 고정하기](/memo/menubar-clock-width)
+- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
 
 [^tainted]: 다른 출처의 이미지를 CORS 허용 없이 캔버스에 그리면 캔버스가 "오염(tainted)" 상태가 되고, 이후 픽셀 데이터를 읽는 `getImageData`·`toDataURL`이 `SecurityError`를 던진다. 다른 사이트 이미지의 내용을 스크립트로 읽지 못하게 하는 보안 정책이다. [MDN: Allowing cross-origin use of images and canvas](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image)
 

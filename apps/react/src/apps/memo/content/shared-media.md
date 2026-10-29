@@ -1,11 +1,13 @@
 ---
-title: matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈
+title: matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
+series: 공통 모듈
+seriesOrder: 3
 summary: 움직임 줄이기·어두운 모드·모바일 화면 여부를 파일 20개가 matchMedia와 innerWidth로 직접 조회했다. 표기는 네 가지, 모바일 기준은 두 가지였다. media.ts와 getViewport()로 25곳을 이전하고, 가로 방향 휴대폰이 통계에서 데스크톱으로 집계되던 문제도 수정했다.
 ---
 
-이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 마지막 항목을 처리한 기록이다. 앞의 두 항목은 [공통 API 클라이언트](/memo/shared-api-client)와 [브라우저 저장소](/memo/shared-storage)였다.
+이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 마지막 항목을 처리한 기록이다. 앞의 두 항목은 [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)와 [브라우저 저장소](/memo/shared-storage)였다.
 
 ## 분산되어 있던 코드
 
@@ -137,9 +139,9 @@ npx vitest run src/shared/lib/media.test.ts
 
 ## 관련 글
 
-- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](/memo/shared-api-client): 3단계 첫 항목
-- [try/catch 열두 개를 하나로 — 브라우저 저장소 모듈](/memo/shared-storage): 3단계 두 번째 항목
-- [리팩터링 3단계 — 공통 기반 코드](/memo/refactor-step3-foundation)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client): 3단계 첫 항목
+- [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage): 3단계 두 번째 항목
+- [api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-step3-foundation)
 
 PR: [#199](https://github.com/hyeoniverse/MacFolio/pull/199)
 

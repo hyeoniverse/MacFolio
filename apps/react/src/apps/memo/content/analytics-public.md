@@ -1,11 +1,13 @@
 ---
-title: 트래픽 분석 4 - 방문자에게도 보여 주기, 글 조회수
+title: 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
+series: 트래픽 분석
+seriesOrder: 4
 summary: 관리자 전용이던 '활동 상태 보기'를 누구나 열게 했다. 같은 요약 경로에서 서버가 세션을 확인해 방문자에게는 합계와 분류 결과만, 관리자에게는 호스트·캠페인까지 응답한다. 1분 캐시, 글 조회수, 탭을 바꿔도 정렬이 유지되던 버그를 정리했다.
 ---
 
-[트래픽 분석 3](/memo/analytics-activity-monitor)까지는 '활동 상태 보기'가 관리자 전용이었다. 방문자가 열면 잠긴 화면만 표시됐다. 포트폴리오를 조회하러 온 사람에게 "직접 만든 분석이 이렇게 동작한다"를 보여 줄 수 있는 앱인데, 정작 그 사람은 조회할 수 없었다. Launchpad에도 표시되지 않아 앱의 존재조차 알 수 없었다.
+[차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)까지는 '활동 상태 보기'가 관리자 전용이었다. 방문자가 열면 잠긴 화면만 표시됐다. 포트폴리오를 조회하러 온 사람에게 "직접 만든 분석이 이렇게 동작한다"를 보여 줄 수 있는 앱인데, 정작 그 사람은 조회할 수 없었다. Launchpad에도 표시되지 않아 앱의 존재조차 알 수 없었다.
 
 관리자 전용 버전을 커밋하고 세 시간이 안 되어 같은 PR [#162](https://github.com/hyeoniverse/MacFolio/pull/162)에서 방향을 바꿨다. 서버 쪽 커밋은 7개 파일 220줄, 화면 쪽 커밋은 13개 파일 211줄을 추가했다.
 
@@ -137,10 +139,10 @@ pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
 
 ## 관련 글
 
-- [트래픽 분석 1 - API](/memo/analytics-api)
-- [트래픽 분석 2 - 수집](/memo/analytics-collect)
-- [트래픽 분석 3 - 활동 상태 보기](/memo/analytics-activity-monitor)
-- [트래픽 분석 5 - UTM](/memo/utm-analytics)
+- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
 - [분석 계약](/memo/contracts-analytics)
 - [트래픽 분석 서비스 나누기](/memo/analytics-service-split)
 

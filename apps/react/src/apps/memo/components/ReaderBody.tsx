@@ -1,9 +1,10 @@
 import { useRef, type ReactNode } from 'react';
 import Button from '@/shared/ui/button/Button';
-import { daysUntilPurge, formatPostDate, type Post } from '@macfolio/desktop-core/memo';
+import { daysUntilPurge, formatPostDate, type Post, type Series } from '@macfolio/desktop-core/memo';
 import MemoMarkdown from './MemoMarkdown';
 import SecretBadge from './SecretBadge';
 import MemoToc from './MemoToc';
+import SeriesBox, { SeriesKicker } from './SeriesBox';
 import { useTocHeadings } from '../useTocHeadings';
 
 /** 폴더 경로를 "개발기 › MacFolio"처럼 */
@@ -20,6 +21,8 @@ const ReaderBody = ({
 	editing,
 	footer,
 	compact,
+	series,
+	onOpenSeries,
 	onRestore,
 	onPurge,
 	onUnlock,
@@ -34,6 +37,9 @@ const ReaderBody = ({
 	footer: ReactNode;
 	/** 한 칸씩 보는 좁은 화면 (목차를 접은 채 시작한다) */
 	compact: boolean;
+	/** 이 글이 속한 연재 (series 칸이 같은 글이 두 편 이상). 없으면 null */
+	series: Series | null;
+	onOpenSeries: (post: Post) => void;
 	onRestore: () => void;
 	onPurge: () => void;
 	onUnlock: () => void;
@@ -78,7 +84,9 @@ const ReaderBody = ({
 					<Button onClick={onUnlock}>잠금 풀기</Button>
 				</p>
 			)}
+			{series && !post.deletedAt && <SeriesKicker series={series} />}
 			<h1>{post.title}</h1>
+			{series && !post.deletedAt && <SeriesBox series={series} compact={compact} onOpen={onOpenSeries} />}
 			<MemoToc toc={toc} bodyRef={body} revision={revision} compact={compact} />
 			<div ref={body} className="prose memo-markdown">
 				<MemoMarkdown>{post.body}</MemoMarkdown>

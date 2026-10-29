@@ -1,5 +1,5 @@
 ---
-title: 커밋 규칙을 문서 대신 CI로 지키기
+title: 정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기
 date: 2026-10-01
 category: 개발 기록/MacFolio/품질
 summary: 브랜치·커밋·PR 규칙을 기존 커밋 기록에서 추출하고, PR마다 CI가 검사하고 Rulesets로 머지를 차단하게 했다. PR 제목을 통한 스크립트 주입을 피한 방법, 로컬 시험, 그 뒤 커밋 733개가 모두 규칙을 지킨 결과까지 적었다.
@@ -161,11 +161,11 @@ git push --force-with-lease
 
 ## 관련 글
 
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot)
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies)
-- [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](/memo/macfolio-merge-strategy): 브랜치 커밋이 main에 그대로 남아 커밋마다 메시지를 검사하는 이유
-- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
-- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](/memo/secret-scanning)
+- [main 커밋 기록 집계로 Merge commit 병합 전략 정하기](/memo/macfolio-merge-strategy): 브랜치 커밋이 main에 그대로 남아 커밋마다 메시지를 검사하는 이유
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
 
 [^hook]: Git 훅은 커밋·푸시 같은 동작 전후에 실행되는 스크립트다. `.git/hooks`는 저장소와 함께 복제되지 않으므로, husky 같은 도구로 각 개발 환경에 설치해야 한다. [Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
 

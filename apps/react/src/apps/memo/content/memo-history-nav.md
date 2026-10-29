@@ -1,5 +1,5 @@
 ---
-title: 메모에 뒤로·앞으로 버튼 — 길게 누르면 지난 칸 목록, ⌘[ ⌘]
+title: 브라우저 history 대신 sessionStorage에 쌓는 앱 내부 뒤로·앞으로 기록
 date: 2026-10-27
 category: 개발 기록/MacFolio/프론트엔드
 summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더했다. 연 폴더와 본 글을 기록에 쌓고, 길게 누르거나 누른 채 아래로 끌면 지난 칸 목록이 열린다. 브라우저 기록에는 쌓지 않은 이유와 지운 글을 건너뛰는 규칙을 정리했다.
@@ -41,7 +41,7 @@ summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더�
 
 ## 브라우저 기록에 쌓지 않은 이유
 
-메모는 글을 열 때마다 주소를 `/memo/<글>`로 바꾸지만, `history.replaceState`로 바꾸기만 하고 브라우저 기록은 늘리지 않는다(`shared/lib/appLink.ts`, [앱 안의 화면에 주소 붙이기](/memo/app-links)). 한 탭 안에 메모·Safari·Finder 창이 함께 떠 있어서, 브라우저의 뒤로 가기가 어느 창의 기록을 되돌릴지 정할 수 없기 때문이다. 그래서 이 기록은 브라우저 기록과 따로 메모 창 안에 둔다.
+메모는 글을 열 때마다 주소를 `/memo/<글>`로 바꾸지만, `history.replaceState`로 바꾸기만 하고 브라우저 기록은 늘리지 않는다(`shared/lib/appLink.ts`, [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)). 한 탭 안에 메모·Safari·Finder 창이 함께 떠 있어서, 브라우저의 뒤로 가기가 어느 창의 기록을 되돌릴지 정할 수 없기 때문이다. 그래서 이 기록은 브라우저 기록과 따로 메모 창 안에 둔다.
 
 ## 새로 고쳐도 남게: sessionStorage
 
@@ -78,7 +78,7 @@ summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더�
 
 ## 관련 글
 
-- [앱 안의 화면에 주소 붙이기 - 글과 프로젝트 공유 링크](/memo/app-links): 주소 막대가 맨 앞 창의 글을 따라가는 방식
-- [메뉴 막대의 파일·보기·윈도우가 실제로 열린다](/memo/menubar-menus): 메뉴 막대 단축키가 동작하는 구조
+- [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): 주소 막대가 맨 앞 창의 글을 따라가는 방식
+- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 메뉴 막대 단축키가 동작하는 구조
 
 #MacFolio #메모앱 #React

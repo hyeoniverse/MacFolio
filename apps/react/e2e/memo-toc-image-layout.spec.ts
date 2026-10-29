@@ -113,8 +113,8 @@ test.describe('메모 목차', () => {
 		const toggle = toc.getByRole('button', { name: '목차', exact: true });
 		const row = (await toggle.boundingBox())!;
 		const nav = (await toc.boundingBox())!;
-		// 단추는 목차 칸의 오른쪽 끝까지 닿는다
-		expect(row.x + row.width).toBeCloseTo(nav.x + nav.width, 0);
+		// 단추는 목차 블록의 안쪽 여백(4px)을 빼고 오른쪽 끝까지 닿는다
+		expect(nav.x + nav.width - (row.x + row.width)).toBeLessThanOrEqual(5);
 		expect(await toggle.evaluate((el) => getComputedStyle(el).cursor)).toBe('pointer');
 		// 줄의 오른쪽 끝 가까운 빈 곳을 누른다
 		const blank = { x: row.x + row.width - 12, y: row.y + row.height / 2 };

@@ -44,6 +44,7 @@ import MemoMarkdown from './components/MemoMarkdown';
 import { NewDraftItem, NoteCard, NoteItem, NoteSections } from './components/NoteList';
 import PostFooter from './components/PostFooter';
 import ReaderBody from './components/ReaderBody';
+import SeriesBox from './components/SeriesBox';
 import { useFolderActions } from './useFolderActions';
 import { useMemoLayout } from './useMemoLayout';
 import { usePickedNotes } from './usePickedNotes';
@@ -136,6 +137,10 @@ const Memo: React.FC = () => {
 		selected,
 		older,
 		newer,
+		series,
+		seriesBySlug,
+		seriesList,
+		inView,
 	} = noteView;
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
 	const [findSlug, setFindSlug] = useState<string | null>(null);
@@ -182,6 +187,12 @@ const Memo: React.FC = () => {
 	}, [selected?.slug]);
 	const openAdjacent = (post: Post) => {
 		setQuery('');
+		setSelectedSlug(post.slug);
+	};
+	/** 연재의 다른 편: 지금 보는 폴더·태그에 없는 글이면 모든 글로 바꾼 뒤 연다 */
+	const openSeries = (post: Post) => {
+		setQuery('');
+		if (!inView(post.slug)) setCategory(ALL_CATEGORY);
 		setSelectedSlug(post.slug);
 	};
 
@@ -264,7 +275,7 @@ const Memo: React.FC = () => {
 					else setPane('reader');
 				};
 				return card ? (
-					<NoteCard key={post.slug} {...props} onOpen={open} />
+					<NoteCard key={post.slug} {...props} series={seriesBySlug.get(post.slug)} onOpen={open} />
 				) : (
 					<NoteItem
 						key={post.slug}
@@ -278,6 +289,7 @@ const Memo: React.FC = () => {
 								: undefined
 						}
 						views={!inPopular && views ? (views[post.slug] ?? 0) : undefined}
+						series={seriesBySlug.get(post.slug)}
 					/>
 				);
 			}}
@@ -843,10 +855,15 @@ const Memo: React.FC = () => {
 												: undefined
 										}
 										folders={folderPaths}
+										seriesNames={seriesList}
 										defaultFolder={newFolder}
 										onSaved={draft.onSaved}
 										renderMarkdown={renderMarkdown}
 										compact={compact}
+										series={
+											newDraft === null &&
+											series && <SeriesBox key={selected?.slug} series={series} compact={compact} onOpen={openSeries} />
+										}
 									/>
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
@@ -861,6 +878,8 @@ const Memo: React.FC = () => {
 										views={views}
 										editing={editing && Boolean(selected.locked)}
 										footer={!inTrash && postFooter(selected)}
+										series={series}
+										onOpenSeries={openSeries}
 										compact={compact}
 										onRestore={() => void restoreDeleted(selected)}
 										onPurge={() => void purgeDeleted(selected)}

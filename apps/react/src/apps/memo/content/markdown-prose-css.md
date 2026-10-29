@@ -1,7 +1,9 @@
 ---
-title: Markdown 본문 스타일을 prose.css 하나로 — 텍스트 편집기에서 빠졌던 코드 색
+title: Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기
 date: 2026-10-23
 category: 개발 기록/MacFolio/디자인 시스템
+series: CSS 정리
+seriesOrder: 7
 summary: 텍스트 편집기 창에서 연 저장소 문서의 코드 블록이 문법 강조 없이 본문 색으로 표시되었다. 강조 색 변수를 메모·Finder 창에만 정의한 것이 원인이었다. 블로그와 문서 보기가 따로 정의하던 코드·목록·구분선·접기 블록 규칙을 styles/prose.css 하나로 옮기고, 화면마다 다른 값은 --prose-* 변수로 분리했다.
 ---
 
@@ -210,11 +212,11 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 
 ## 관련 글
 
-- [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset): `@layer reset`을 도입한 작업
-- [두 CSS 파일에 똑같이 적힌 규칙 103개 지우기 — 계산된 스타일로 같은지 확인](/memo/creative-css-dedupe): 같은 방식으로 계산된 스타일을 비교한 작업
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](/memo/color-tokens): `--color-code-*` 토큰을 만든 작업
-- [메모 편집기 손보기 — 토글 목록·각주, ~ 하나짜리 취소선, 사라지는 빈 폴더](/memo/memo-editor-toggle-footnote): 편집기의 접기 블록(`div.memo-details`)
-- [글 안의 저장소 문서 링크를 Finder에서 열기](/memo/doc-links-in-finder): 텍스트 편집기에서 저장소 문서를 여는 흐름
+- [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset): `@layer reset`을 도입한 작업
+- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe): 같은 방식으로 계산된 스타일을 비교한 작업
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens): `--color-code-*` 토큰을 만든 작업
+- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 편집기의 접기 블록(`div.memo-details`)
+- [클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기](/memo/doc-links-in-finder): 텍스트 편집기에서 저장소 문서를 여는 흐름
 - PR: [#364](https://github.com/hyeoniverse/MacFolio/pull/364), 인용을 먼저 옮긴 [#361](https://github.com/hyeoniverse/MacFolio/pull/361)
 
 [^invalid]: 사용자 지정 속성 값을 대입한 결과가 그 속성에 맞지 않거나 변수가 없으면, 선언 전체가 `unset`처럼 처리된다. `color`처럼 상속되는 속성은 부모 값을, 상속되지 않는 속성은 초기값을 쓴다. MDN의 [Invalid custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties#invalid_custom_properties) 절에 정리되어 있다.

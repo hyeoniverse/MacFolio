@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="420" fill="#fff"/>
+<text x="24" y="30" font-size="15" fill="#1f2937" font-weight="600">목록의 순서를 정하는 비교 (sortPosts)</text>
+<text x="24" y="49" font-size="11" fill="#6b7280">위에서부터 차례로 비교하고, 값이 같으면 다음 기준으로 넘어간다</text>
+<rect x="24" y="66" width="214" height="80" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="38" y="90" font-size="13" fill="#1f2937" font-weight="600"><tspan fill="#2563eb">1</tspan> 날짜</text>
+<text x="38" y="112" font-size="11" fill="#4b5563">머리말 date (YYYY-MM-DD)</text>
+<text x="38" y="130" font-size="11" fill="#4b5563">최근 날짜가 위</text>
+<text x="252" y="111" font-size="14" fill="#9ca3af" text-anchor="middle">→</text>
+<rect x="266" y="66" width="228" height="80" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+<text x="280" y="90" font-size="13" fill="#1e3a8a" font-weight="600"><tspan fill="#2563eb">2</tspan> 올린 시각 <tspan font-size="10.5" font-weight="400" fill="#2563eb">(새로 추가)</tspan></text>
+<text x="280" y="112" font-size="11" fill="#4b5563">createdAt (ISO 8601, UTC)</text>
+<text x="280" y="130" font-size="11" fill="#4b5563">나중에 올린 글이 위, 모르면 맨 위</text>
+<text x="508" y="111" font-size="14" fill="#9ca3af" text-anchor="middle">→</text>
+<rect x="522" y="66" width="214" height="80" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="536" y="90" font-size="13" fill="#1f2937" font-weight="600"><tspan fill="#2563eb">3</tspan> 제목</text>
+<text x="536" y="112" font-size="11" fill="#4b5563">localeCompare 순</text>
+<text x="536" y="130" font-size="11" fill="#4b5563">고치기 전에는 날짜 바로 다음</text>
+<path d="M380 146 V170" stroke="#93c5fd" stroke-width="1.5" fill="none"/>
+<text x="24" y="190" font-size="12" fill="#1f2937" font-weight="600">2의 '올린 시각'은 글의 출처에 따라 다른 값에서 읽는다</text>
+<rect x="24" y="202" width="228" height="128" rx="8" fill="#f5f3ff" stroke="#c4b5fd"/>
+<text x="38" y="225" font-size="12" fill="#5b21b6" font-weight="600">저장소 글 (Markdown 파일)</text>
+<text x="38" y="246" font-size="11" fill="#4b5563">git에 처음 추가한 커밋의 시각</text>
+<text x="38" y="266" font-size="10.5" fill="#4b5563" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">git log --diff-filter=A</text>
+<text x="38" y="286" font-size="11" fill="#4b5563">빌드 시각에 읽어 가상 모듈</text>
+<text x="38" y="304" font-size="10.5" fill="#4b5563" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">virtual:post-created</text>
+<text x="38" y="321" font-size="11" fill="#4b5563">로 번들에 포함</text>
+<rect x="266" y="202" width="228" height="128" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="280" y="225" font-size="12" fill="#065f46" font-weight="600">서버 글 (PostgreSQL)</text>
+<text x="280" y="246" font-size="11" fill="#4b5563">처음 게시한 시각</text>
+<text x="280" y="266" font-size="10.5" fill="#4b5563" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Post.firstPublishedAt</text>
+<text x="280" y="286" font-size="11" fill="#4b5563">GET /posts 응답의</text>
+<text x="280" y="304" font-size="10.5" fill="#4b5563" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">createdAt</text>
+<text x="280" y="321" font-size="11" fill="#4b5563">필드로 전달 (선택 값)</text>
+<rect x="508" y="202" width="228" height="128" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="522" y="225" font-size="12" fill="#92400e" font-weight="600">시각을 모르는 글</text>
+<text x="522" y="246" font-size="11" fill="#4b5563">아직 커밋하지 않은 로컬 글</text>
+<text x="522" y="266" font-size="11" fill="#4b5563">게시한 적 없는 서버 글</text>
+<text x="522" y="286" font-size="11" fill="#4b5563">shallow clone 빌드의 저장소 글</text>
+<text x="522" y="308" font-size="11" fill="#4b5563">비교 값 U+FFFF → 같은 날 글 중</text>
+<text x="522" y="324" font-size="11" fill="#4b5563">맨 위 (모두 모르면 제목 순)</text>
+<rect x="24" y="346" width="712" height="54" rx="8" fill="#fff" stroke="#c4b5fd" stroke-dasharray="4 3"/>
+<text x="38" y="368" font-size="11" fill="#4b5563">저장소 글을 관리자가 서버에서 고쳐 게시해도(같은 slug의 서버 글이 저장소 글을 덮어써도)</text>
+<text x="38" y="387" font-size="11" fill="#4b5563">올린 시각은 <tspan fill="#5b21b6" font-weight="600">저장소에 처음 들어온 시각</tspan>을 유지한다. 수정·재게시로 순서가 바뀌지 않는다</text>
+</svg>

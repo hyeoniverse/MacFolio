@@ -1,5 +1,5 @@
 ---
-title: Unity WebGL 게임을 창 안에 넣기
+title: iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기
 date: 2026-09-29
 category: 개발 기록/MacFolio/프론트엔드
 summary: 별도로 배포한 Unity WebGL 게임 새싹 농장을 데스크톱의 앱으로 추가했다. iframe 삽입을 차단하는 헤더 확인, iframe 안을 클릭해도 창이 앞으로 오지 않던 문제와 blur 이벤트로 해결한 방법, 외부 사이트에 의존하지 않는 E2E, 그 코드가 프로젝트 앱 공통 컴포넌트가 된 과정.
@@ -108,7 +108,7 @@ app: {
 },
 ```
 
-같은 날 API 문서 앱도 iframe으로 표시하게 되면서, iframe 부분은 `shared/ui/web-frame/WebFrame.tsx`로 분리했다. 위의 `blur` 코드도 이 파일로 옮기고 `bringAppToFront(appName)`로 일반화했다. 로딩 중에는 앱 아이콘을 표시하고, 8초(`SLOW_MS`)가 지나도 로딩이 끝나지 않으면 새 탭에서 여는 링크를 표시한다. 사이트가 iframe 삽입을 차단하면 빈 화면만 남기 때문이다. 10월 9일에는 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성으로 내부 사이트가 최상위 창의 주소를 변경하지 못하게 했다. 자세한 내용은 [iframe sandbox](/memo/iframe-sandbox) 글에 있다.
+같은 날 API 문서 앱도 iframe으로 표시하게 되면서, iframe 부분은 `shared/ui/web-frame/WebFrame.tsx`로 분리했다. 위의 `blur` 코드도 이 파일로 옮기고 `bringAppToFront(appName)`로 일반화했다. 로딩 중에는 앱 아이콘을 표시하고, 8초(`SLOW_MS`)가 지나도 로딩이 끝나지 않으면 새 탭에서 여는 링크를 표시한다. 사이트가 iframe 삽입을 차단하면 빈 화면만 남기 때문이다. 10월 9일에는 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성으로 내부 사이트가 최상위 창의 주소를 변경하지 못하게 했다. 자세한 내용은 [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox) 글에 있다.
 
 ![새싹 농장 앱 코드의 변화 과정](./images/game-in-iframe-history.svg '앱 하나를 위해 작성한 iframe 코드가 프로젝트 앱과 API 문서 앱의 공통 컴포넌트가 되었다')
 
@@ -121,9 +121,9 @@ app: {
 ## 관련 글
 
 - PR: [#33](https://github.com/hyeoniverse/MacFolio/pull/33) (새싹 농장 앱), [#87](https://github.com/hyeoniverse/MacFolio/pull/87) (프로젝트 앱)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
-- [새싹 농장 아이콘 - 32픽셀 캐릭터로 다시 그린 풀밭](/memo/sproutfarm-icon)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [최근접 이웃 보간과 정수 배율로 픽셀 그림 아이콘 확대하기](/memo/sproutfarm-icon)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 #MacFolio #Safari #새싹농장 #iframe

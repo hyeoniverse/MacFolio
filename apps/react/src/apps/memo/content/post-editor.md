@@ -2,6 +2,8 @@
 title: Markdown 블로그에 글쓰기 붙이기
 date: 2026-09-29
 category: 개발 기록/MacFolio/백엔드
+series: 메모 편집기
+seriesOrder: 1
 summary: 저장소의 Markdown 글은 그대로 두고 관리자가 작성하거나 수정한 글만 서버에 저장해 겹쳐 표시한다. 편집 버튼 없이 Milkdown으로 보이는 그대로 수정하고 입력이 0.8초 멈추면 저장하며, 편집 화면과 읽기 화면의 문단 위치를 측정해 일치시켰다.
 ---
 
@@ -48,7 +50,7 @@ for (const item of server) {
 | `PUT /posts/:slug`    | 관리자 | 수정. 서버에 없던 저장소 글이면 새로 생성한다 |
 | `DELETE /posts/:slug` | 관리자 | 삭제 표시                                     |
 
-> 이 API는 이후 임시 저장·게시·버전 기록 구조로 바뀌었다. 저장하는 즉시 공개되던 문제를 해결하는 과정에서다([바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)).
+> 이 API는 이후 임시 저장·게시·버전 기록 구조로 바뀌었다. 저장하는 즉시 공개되던 문제를 해결하는 과정에서다([게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)).
 
 서버는 다음 규칙을 검사한다. 위반한 규칙은 모두 수집해 반환하고, 편집 화면은 입력 내용을 유지한다.
 
@@ -212,7 +214,7 @@ for (const item of server) {
 ## 남은 것·배운 것
 
 - 저장하는 즉시 공개되는 것이 첫 번째 문제였다. 다음 날 [임시 저장과 버전 기록](/memo/drafts-and-versions)으로 게시와 수정을 분리했다.
-- 삭제 표시는 이후 [최근 삭제된 항목](/memo/memo-recently-deleted)에서 `deletedAt`과 함께 "숨김"과 "휴지통" 두 의미로 나뉘었다. 겹치기를 선택할 때 정한 "서버는 변경분만 보관한다"는 원칙이 그대로 적용됐다.
+- 삭제 표시는 이후 [deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제](/memo/memo-recently-deleted)에서 `deletedAt`과 함께 "숨김"과 "휴지통" 두 의미로 나뉘었다. 겹치기를 선택할 때 정한 "서버는 변경분만 보관한다"는 원칙이 그대로 적용됐다.
 - 편집기는 `React.lazy`로 관리자에게만 불러오므로 방문자의 번들 크기는 변하지 않는다. 관리자 기능을 추가할 때는 방문자 번들에 포함되는 코드부터 확인하는 것이 효과적이었다.
 - "보이는 그대로 수정한다"를 두 화면의 문단 위치 수치로 비교하니, 눈으로는 발견하지 못한 이미지 문단의 80px 차이가 드러났다.
 
@@ -229,11 +231,11 @@ cd apps/react && npx playwright test e2e/memo-editor.spec.ts e2e/memo-publish.sp
 
 ## 관련 글
 
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)
-- [최근 삭제된 항목](/memo/memo-recently-deleted)
-- [글은 Markdown에 두고 정리만 서버에](/memo/memo-organization-api)
-- [정적 사이트에 관리자 로그인 붙이기](/memo/admin-login-github-oauth)
-- [댓글에 남기지 않은 것들](/memo/post-comments)
+- [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
+- [deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제](/memo/memo-recently-deleted)
+- [Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
+- [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
+- [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
 
 [^milkdown]: [ProseMirror](https://prosemirror.net/) 위에 만든 WYSIWYG Markdown 편집기. 문서를 ProseMirror 노드 트리로 편집하고, remark로 Markdown과 상호 변환한다.
 

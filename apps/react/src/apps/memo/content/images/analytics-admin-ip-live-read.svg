@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>최근 7일 이벤트가 8,000개일 때, 전에는 오래된 것부터 5,000개를 읽어 가장 최근 3,000개가 잘리고, 후에는 최근 것부터 20,000개까지 읽어 모두 읽는다</title>
+<defs><pattern id="h" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#fef2f2"/><rect width="5" height="10" fill="#fecaca"/></pattern></defs>
+<rect width="900" height="340" fill="#fff"/>
+<text x="24" y="32" font-size="16" fill="#1f2937" font-weight="700">GET /analytics/live가 이벤트를 읽는 순서</text>
+<text x="24" y="52" font-size="11" fill="#6b7280">예: 최근 7일 이벤트가 8,000개이고, 전 방식에서 기간만 7일로 늘린 경우 (왼쪽이 7일 전, 오른쪽이 현재 시각)</text>
+
+<text x="24" y="90" font-size="13" fill="#1f2937" font-weight="700">전</text>
+<text x="48" y="90" font-size="11.5" fill="#1f2937" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">orderBy createdAt asc, take 5000</text>
+<text x="320" y="90" font-size="11" fill="#6b7280">minutes 최대 1440 (24시간)</text>
+<rect x="24" y="102" width="530" height="38" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+<text x="289" y="126" font-size="12" fill="#1e40af" font-weight="600" text-anchor="middle">읽음 5,000개 (오래된 쪽)</text>
+<rect x="554" y="102" width="322" height="38" rx="6" fill="url(#h)" stroke="#fca5a5"/>
+<text x="715" y="126" font-size="12" fill="#b91c1c" font-weight="600" text-anchor="middle">잘림 3,000개 = 가장 최근 방문</text>
+<text x="24" y="158" font-size="10.5" fill="#6b7280">7일 전</text>
+<text x="876" y="158" font-size="10.5" fill="#6b7280" text-anchor="end">현재</text>
+<text x="24" y="178" font-size="10.5" fill="#4b5563">기간을 늘리면 상한을 넘는 시각부터 가장 필요한 최근 방문이 빠진다. 최대 24시간에서는 상한에 도달하지 않아 드러나지 않았다.</text>
+
+<text x="24" y="222" font-size="13" fill="#1f2937" font-weight="700">후</text>
+<text x="48" y="222" font-size="11.5" fill="#1f2937" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">orderBy createdAt desc, id desc, take 20000</text>
+<text x="400" y="222" font-size="11" fill="#6b7280">→ reverse()로 시간 순 · minutes 최대 10080 (7일)</text>
+<rect x="24" y="234" width="852" height="38" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+<text x="450" y="258" font-size="12" fill="#1e40af" font-weight="600" text-anchor="middle">읽음 8,000개 (전부)</text>
+<text x="24" y="290" font-size="10.5" fill="#6b7280">7일 전</text>
+<text x="876" y="290" font-size="10.5" fill="#6b7280" text-anchor="end">현재</text>
+<text x="24" y="312" font-size="10.5" fill="#4b5563">20,000개를 넘으면 가장 오래된 쪽이 잘린다. 7일은 마스킹된 IP의 보관 기간(IP_RETENTION_DAYS)과 같고, 그보다 오래된 이벤트는 maskedIp가 이미 null이다.</text>
+</svg>

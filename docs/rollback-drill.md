@@ -205,6 +205,5 @@ curl -s https://macfolio-api.hyeoniverse.com/health; echo
 
 - [되돌리기 훈련 - 헬스 체크가 실패하는 이미지를 서버에 일부러 올렸다](https://macfolio.hyeoniverse.com/memo/rollback-drill)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](https://macfolio.hyeoniverse.com/memo/api-auto-deploy)
-- [자동 배포를 실제 서버에 걸기 - 막힌 곳 다섯](https://macfolio.hyeoniverse.com/memo/api-auto-deploy-setup)
 
 [^blue-green]: 새 버전 컨테이너를 옛 버전과 함께 실행해 두고 health 확인이 끝난 뒤 트래픽을 전환하는 배포 방식이다. 전환하는 동안 응답이 중단되지 않지만, 두 컨테이너가 동시에 실행되는 동안 메모리를 더 사용한다. 이 서버(E2.1.Micro, 1GB)는 컨테이너 하나를 교체하는 방식을 사용한다.

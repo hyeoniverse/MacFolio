@@ -1,7 +1,9 @@
 ---
-title: PR을 머지하자 CI가 연달아 실패한 원인 네 가지 — 글꼴 줄 높이, 목록 재정렬, 새 취약점, scroll 이벤트
+title: CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기
 date: 2026-10-24
 category: 개발 기록/MacFolio/품질
+series: E2E 시험
+seriesOrder: 6
 summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 새로 공개된 의존성 취약점으로, 같은 날 body-parser와 multer 두 번 CI가 차단했다.
 ---
 
@@ -221,7 +223,7 @@ overrides:
 
 ## ④ 새 답글이 와도 아래로 따라가지 않은 원인: scroll 이벤트 전달 시각
 
-main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/live-refresh-more)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
+main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/activity-live-refresh)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
 
 ![새 답글을 따라 내려가지 않은 화면](./images/ci-failures-after-merges-live-refresh.jpg '맨 아래에서 받은 답글이 입력 칸 위에서 잘려 있다')
 
@@ -281,11 +283,11 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 
 ## 관련 글
 
-- [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e): 레이아웃이 측정 뒤에 바뀌어 흔들린 다른 E2E 사례
-- [하위 의존성 취약점 6건을 overrides로 고치기](/memo/dependency-vulnerabilities): 이번에 실패한 의존성 취약점 검사를 추가한 기록
-- [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](/memo/site-performance-diet): 저장소 글 원문을 별도 청크로 분리하고 웹 글꼴을 `swap`으로 바꾼 작업
-- [휴대폰 홈 화면 위젯 끌어 옮기기 — 2열 격자 규칙, Pointer Events, FLIP](/memo/mobile-widget-reorder): 실패한 위젯 크기 시험을 추가한 작업
-- [머지하고 배포까지 15분에서 5분으로: e2e 6칸과 같은 코드 다시 돌리지 않기](/memo/faster-e2e-ci): E2E를 6칸으로 나눈 CI 구성
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e): 레이아웃이 측정 뒤에 바뀌어 흔들린 다른 E2E 사례
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities): 이번에 실패한 의존성 취약점 검사를 추가한 기록
+- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 저장소 글 원문을 별도 청크로 분리하고 웹 글꼴을 `swap`으로 바꾼 작업
+- [Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 실패한 위젯 크기 시험을 추가한 작업
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci): E2E를 6칸으로 나눈 CI 구성
 
 [^trace]: `0-trace.trace`, `1-trace.trace`에는 브라우저 쪽 동작(`before`, `after`, `log`, `input`)이, `test.trace`에는 시험 코드의 단계가 기록된다. `page.evaluate`의 반환값은 `after` 기록의 `result`에 있다. [Playwright: Trace viewer](https://playwright.dev/docs/trace-viewer)
 

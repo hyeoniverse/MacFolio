@@ -1,5 +1,5 @@
 ---
-title: 바탕화면 아이콘 - 선택, 끌기, 칸 맞춤
+title: 칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기
 date: 2026-10-18
 category: 개발 기록/MacFolio/프론트엔드
 summary: 바탕화면에는 배경화면만 있었다. Finder의 문서 폴더를 macOS처럼 오른쪽 위에 배치하고, 클릭 선택, 사각형 선택, 끌어 옮기기(칸 맞춤, 위치 저장), 더블 클릭으로 열기, 오른쪽 클릭 메뉴를 구현했다. 칸 계산은 순수 함수로 분리하고 시험 10개로 고정했다.
@@ -114,10 +114,10 @@ export function nearestFree(want: Cell, taken: ReadonlySet<string>, rows: number
 
 ## 관련 글
 
-- [Finder 앱 - 사이트를 파일처럼 둘러보기](/memo/finder-app): 바탕화면 폴더가 여는 Finder 앱
-- [Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
-- [바탕화면의 포트폴리오만 비어 있었다 — 가상본 버그에서 Finder 트리까지](/memo/finder-home-tree): 바탕화면 가상본과 Finder 트리
-- [앱이 많아지자 Dock이 Launchpad와 겹쳤다](/memo/dock-layout): 아이콘 레이어 위에 있는 Dock
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 바탕화면 폴더가 여는 Finder 앱
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
+- [가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-home-tree): 바탕화면 가상본과 Finder 트리
+- [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout): 아이콘 레이어 위에 있는 Dock
 
 [^alias]: macOS의 가상본(alias)은 원본 파일이나 폴더를 가리키는 바로가기다. 아이콘 왼쪽 아래에 작은 화살표가 붙는다.
 

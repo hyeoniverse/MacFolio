@@ -160,6 +160,36 @@
 	.memo-details:is([data-open='false']:not(.memo-details-revealed), .memo-details-collapsed)
 	> :not(.memo-details-summary) {
 	display: none;
+	height: 0;
+	opacity: 0;
+	translate: 0 calc(-1 * var(--space-12));
+}
+
+/*
+ * › 로 접고 펼치는 동안(writer/details.ts가 편집기에 .memo-details-animating을 잠깐 붙인다)만 읽기 화면의 접기 블록과 같은 아코디언:
+ * 내용의 높이는 0 ↔ auto(interpolate-size), 위에서 살짝 내려오며 나타난다. display는 allow-discrete로 함께 옮겨 접히는 동안에도 보인다
+ */
+.memo-inline-editor .memo-details {
+	interpolate-size: allow-keywords;
+}
+
+.memo-details-animating .memo-details {
+	transition: padding-bottom var(--duration-slow) var(--ease-in-out);
+}
+
+.memo-details-animating .memo-details > :not(.memo-details-summary) {
+	overflow-y: clip;
+	transition:
+		height var(--duration-slow) var(--ease-in-out),
+		opacity var(--duration-slow) var(--ease-in-out),
+		translate var(--duration-slow) var(--ease-in-out),
+		display var(--duration-slow) allow-discrete;
+
+	@starting-style {
+		height: 0;
+		opacity: 0;
+		translate: 0 calc(-1 * var(--space-12));
+	}
 }
 
 .memo-inline-editor .memo-details > :last-child:not(.memo-details-summary) {
@@ -167,7 +197,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.memo-inline-editor .memo-details-summary::before {
+	.memo-inline-editor .memo-details-summary::before,
+	.memo-details-animating .memo-details,
+	.memo-details-animating .memo-details > :not(.memo-details-summary) {
 		transition: none;
 	}
 }

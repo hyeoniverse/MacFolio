@@ -35,6 +35,8 @@ const POST_EXAMPLE = {
 	title: '새 글',
 	date: '2026-09-29',
 	category: '개발기/MacFolio',
+	series: '트래픽 분석',
+	seriesOrder: 3,
 	summary: '목록에 보일 한 줄',
 	body: '## 제목\n\n본문 (Markdown)',
 };

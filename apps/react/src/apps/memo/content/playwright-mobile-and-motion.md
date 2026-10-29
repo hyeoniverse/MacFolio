@@ -1,7 +1,9 @@
 ---
-title: Playwright로 모바일과 애니메이션까지 테스트하기
+title: Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기
 date: 2026-09-29
 category: 개발 기록/MacFolio/품질
+series: E2E 시험
+seriesOrder: 2
 summary: 휴대폰 화면과 창 애니메이션을 추가하자 E2E 결과가 불안정해졌다. iPhone도 Chromium으로 에뮬레이션하는 프로젝트 3개, 664px 뷰포트, 기본 움직임 줄이기와 1ms 전환의 문제, 병렬 실행 시 로딩 지연을 정리했다.
 ---
 
@@ -123,7 +125,7 @@ await expect(loading).toBeHidden({ timeout: 20_000 });
 
 - 이 설정 위에서 시험이 계속 늘었다. 이 글을 수정한 시각 기준 `e2e/` 아래 spec 파일은 47개, `test(` 호출은 434곳이다. 휴대폰 프로젝트가 실행하는 `mobile.spec.ts`·`mobile-motion.spec.ts`는 시험 64개이고, iPhone·Android 두 프로젝트에서 각각 한 번씩 실행된다.
 - 애니메이션이 활성화된 시험은 `mobile-motion.spec.ts`의 "모바일: 앱은 아이콘에서 커지고, 홈으로 가면 아이콘으로 줄어든 뒤 사라진다" 등이다. 고정 시간이 아니라 `getAnimations().length`가 0이 될 때까지 기다리므로, CI 러너가 느려도 결과가 바뀌지 않는다.
-- 이후 CI는 E2E를 6개 샤드로 나눠 병렬 실행하도록 변경했다(`--shard=N/6`, [머지하고 배포까지 15분에서 5분으로](/memo/faster-e2e-ci)). 시험 수가 늘어 단일 실행으로는 시간이 오래 걸렸기 때문이다.
+- 이후 CI는 E2E를 6개 샤드로 나눠 병렬 실행하도록 변경했다(`--shard=N/6`, [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)). 시험 수가 늘어 단일 실행으로는 시간이 오래 걸렸기 때문이다.
 
 ## 남은 과제와 정리
 
@@ -152,10 +154,10 @@ Playwright를 업데이트한 뒤 `npx playwright install`을 실행하지 않�
 
 ## 관련 글
 
-- [머지하고 배포까지 15분에서 5분으로: e2e 6칸과 같은 코드 다시 돌리지 않기](/memo/faster-e2e-ci)
-- [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e)
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 - [휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style)
-- [블로그 스크린샷을 테스트 코드로 찍기](/memo/screenshots-with-playwright)
+- [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
 
 [^reduced-motion]: 사용자가 OS 설정에서 움직임 줄이기를 켰는지 알려 주는 미디어 쿼리. Playwright의 `reducedMotion` 옵션은 브라우저가 이 값을 `reduce`로 보고하게 한다. [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
 

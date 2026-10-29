@@ -1,5 +1,5 @@
 ---
-title: 날씨 앱의 세 가지 어긋남 — 가려진 신호등, 휴대폰 안의 넓은 창, 밀려난 목록 버튼
+title: useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준
 date: 2026-10-16
 category: 개발 기록/MacFolio/프론트엔드
 summary: 날씨 앱에서 신호등이 사이드바에 가려졌고, 641~767px 휴대폰 화면에 넓은 창 모양이 렌더링되었고, 장소가 하나면 목록 버튼이 밀려났다. 셋 다 두 규칙이 서로 다른 기준을 쓰던 곳이라 기준을 하나로 통일하고 E2E 시험 3개로 검증했다.
@@ -21,7 +21,7 @@ summary: 날씨 앱에서 신호등이 사이드바에 가려졌고, 641~767px �
 
 떠 있는 사이드바의 오른쪽 위에는 사이드바 버튼이 있고, 이 버튼도 신호등 줄과 같은 높이에 있다. 그대로 두면 끌기 영역이 위에 있어서 버튼이 클릭되지 않는다. 사이드바는 블러([`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter)) 때문에 새 [쌓임 맥락](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)을 만들므로, 내부 버튼의 `z-index`만 올려서는 효과가 없다. 그래서 수정 전 코드는 사이드바 전체를 `z-index: 4`로 올렸고, 그 결과 어두운 사이드바가 신호등을 덮었다.
 
-이것은 메모 도구 막대에서 겪은 쌓임 맥락 문제([sticky 도구 막대가 버튼을 가린 이유](/memo/sticky-stacking-context))와 같은 구조다. 그때는 `position: sticky`가, 이번에는 `backdrop-filter`가 쌓임 맥락을 만들었다.
+이것은 메모 도구 막대에서 겪은 쌓임 맥락 문제([position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context))와 같은 구조다. 그때는 `position: sticky`가, 이번에는 `backdrop-filter`가 쌓임 맥락을 만들었다.
 
 사이드바는 신호등 줄 아래로 내리고, 사이드바 버튼만 사이드바 밖으로 분리해 `z-index: 4`로 올렸다. 버튼 위치는 사이드바 크기로 계산한다.
 
@@ -109,10 +109,11 @@ iOS 모양의 하단 막대는 3열 그리드다(`grid-template-columns: 48px 1f
 
 ## 관련 글
 
-- 날씨 앱을 처음 만든 일: [macOS 날씨 앱 만들기 (Open-Meteo)](/memo/weather-app)
-- 쌓임 맥락 때문에 버튼이 클릭되지 않던 일: [sticky 도구 막대가 버튼을 가린 이유](/memo/sticky-stacking-context)
-- 화면 전체의 z-index 정리: [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers)
-- 좁은 창에서 제목이 잘리던 일: [좁은 창에서 신호등 버튼 아래로 - 음악과 Safari](/memo/narrow-window-title)
+- 날씨 앱을 처음 만든 일: [Open-Meteo 지오코딩 지연을 내장 도시 목록 우선 검색으로 줄이기](/memo/weather-app)
+- 쌓임 맥락 때문에 버튼이 클릭되지 않던 일: [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)
+- 화면 전체의 z-index 정리: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- 좁은 창에서 제목이 잘리던 일: [컨테이너 쿼리 좁은 창에서 flex: none으로 신호등 버튼 영역 확보하기](/memo/narrow-window-title)
+- 최소화했다 다시 열면 `useCompact`가 폭을 측정하지 못하던 일: [callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기](/memo/memo-restore-compact)
 - PR: [#226](https://github.com/hyeoniverse/MacFolio/pull/226)
 
 #트러블슈팅 #프론트엔드 #CSS

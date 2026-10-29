@@ -1,7 +1,9 @@
 ---
-title: 글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기
+title: react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
+series: 보안 점검
+seriesOrder: 4
 summary: 메모 글과 GitHub README는 Markdown과 HTML을 렌더링한다. 위험한 링크와 스크립트를 차단하는 설정은 이미 있었지만 이를 검증하는 시험이 없었다. 공격 문자열로 단위 시험과 E2E를 추가하고, 차단 설정을 제거하면 시험이 실패하는 것까지 확인했다.
 ---
 
@@ -116,9 +118,9 @@ npx playwright test e2e/markdown-safety.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [리팩터링 7단계 — 보안](/memo/refactor-step7-security)
-- [GitHub 앱을 진짜 GitHub로 - 프로필·README·고른 저장소](/memo/github-live-profile)
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 
 #MacFolio #보안 #XSS #Markdown #테스트

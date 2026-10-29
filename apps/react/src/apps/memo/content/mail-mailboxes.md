@@ -1,7 +1,9 @@
 ---
-title: 메일 앱의 보낸 편지함과 관리자 받은 편지함
+title: 방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
+series: 메일 앱
+seriesOrder: 2
 summary: 메일 앱으로 보낸 메일을 서버에 1년 보관하고, 방문자 쿠키의 HMAC으로 필터링한 보낸 편지함에서만 조회되게 했다. 관리자는 받은 편지함에서 모든 메일을 조회하고 앱 안에서 답장한다. 답장은 메일 발송이 성공한 뒤에 저장한다.
 ---
 
@@ -24,7 +26,7 @@ summary: 메일 앱으로 보낸 메일을 서버에 1년 보관하고, 방문�
 
 ## 접근 범위: 서버가 쿠키로 필터링한다
 
-보낸 편지함은 **본인 메일만** 표시해야 한다. 회원 가입이 없는 사이트에서 본인을 식별하는 방법은 이미 있었다. 메시지 앱과 댓글이 사용하는 방문자 쿠키다([이름·비밀번호 없이 쓰는 메시지와 댓글](/memo/visitor-identity)). 처음 요청한 브라우저에 무작위 토큰을 쿠키([`HttpOnly`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly), 유효 기간 1년)로 발급하고, DB에는 그 토큰의 HMAC[^hmac]만 저장한다.
+보낸 편지함은 **본인 메일만** 표시해야 한다. 회원 가입이 없는 사이트에서 본인을 식별하는 방법은 이미 있었다. 메시지 앱과 댓글이 사용하는 방문자 쿠키다([httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)). 처음 요청한 브라우저에 무작위 토큰을 쿠키([`HttpOnly`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly), 유효 기간 1년)로 발급하고, DB에는 그 토큰의 HMAC[^hmac]만 저장한다.
 
 메일을 보내는 시각에 이 HMAC을 메일과 함께 `visitorHash` 열에 저장하고, `GET /contact/mine`은 요청 쿠키의 HMAC과 같은 메일만 반환한다. 화면에서 숨기는 방식이 아니라 서버가 쿼리 조건으로 필터링하므로, 요청을 조작해도 다른 방문자의 메일은 받을 수 없다.
 
@@ -175,11 +177,11 @@ cd apps/react && npx playwright test e2e/mail.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](/memo/contact-mail)
-- [이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름](/memo/visitor-identity)
-- [메일 앱에서 주소를 누르면 복사하기](/memo/mail-copy-address)
-- [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
-- [Finder에서 고른 배경화면이 새로고침하면 사라지던 문제와 QuickTime 열기 창](/memo/finder-wallpaper-persist)
+- [Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
+- [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
+- [navigator.clipboard로 이름 없이 이메일 주소만 복사하기](/memo/mail-copy-address)
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
+- [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist)
 
 [^hmac]: HMAC(Hash-based Message Authentication Code)은 비밀 키와 입력을 함께 해시한 값이다. 키를 모르면 해시 값에서 원래 토큰을 계산할 수 없고, 같은 토큰은 항상 같은 값이 되므로 비교에 사용할 수 있다. 서버는 Node.js의 [`crypto.createHmac`](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options)으로 계산한다.
 

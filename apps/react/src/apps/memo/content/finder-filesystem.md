@@ -1,7 +1,9 @@
 ---
-title: Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기
+title: R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템
 date: 2026-10-19
 category: 개발 기록/MacFolio/프론트엔드
+series: Finder
+seriesOrder: 3
 summary: 관리자가 Finder에서 새 폴더를 만들고, 이름을 바꾸고, 파일과 폴더를 끌어 옮긴다. 구조는 서버(/finder/layout)에 저장해 방문자도 같은 구조를 조회한다. 블로그 폴더는 메모의 정리 내용을 수정해 메모와 동기화되고, 바탕화면은 Finder의 데스크탑 폴더가 되었다.
 ---
 
@@ -169,11 +171,11 @@ macOS에서 바탕화면은 사용자 폴더 안의 "데스크탑" 폴더다. Fi
 
 ## 관련 글
 
-- [Finder 앱 - 사이트를 파일처럼 둘러보기](/memo/finder-app)
-- [Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기](/memo/finder-files): R2 업로드와 미리보기 앱
-- [바탕화면 아이콘 - 선택, 끌기, 칸 맞춤](/memo/desktop-icons): 바탕화면 아이콘의 칸 계산
-- [메모 로직을 desktop-core로 - localStorage는 어디에 둘까](/memo/desktop-core-memo): 메모 정리 함수의 위치
-- [바탕화면의 포트폴리오만 비어 있었다 — 가상본 버그에서 Finder 트리까지](/memo/finder-home-tree): 이후 Finder 트리 개편
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
+- [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files): R2 업로드와 미리보기 앱
+- [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons): 바탕화면 아이콘의 칸 계산
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 메모 정리 함수의 위치
+- [가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-home-tree): 이후 Finder 트리 개편
 
 [^desktop]: 처음에는 포트폴리오에 업로드하고 위치만 바탕화면으로 기록했다. 본문 "macOS와 같은 휴지통" 절의 문제로 `desktop/…` 키를 추가했다.
 
