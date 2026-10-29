@@ -366,4 +366,4 @@ Flux가 2014년에 제시한 핵심은 라이브러리보다 규칙이었다. �
 
 [^npm]: [npm registry downloads API](https://github.com/npm/registry/blob/main/docs/download-counts.md). `https://api.npmjs.org/downloads/range/<기간>/<패키지>`로 일별 다운로드를 받아 분기별로 합산했다(2026년 10월 29일 조회).
 
-#React #상태관리 #아키텍처 #동향
+#React #상태관리 #아키텍처 #트렌드 #인사이트
