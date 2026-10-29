@@ -26,7 +26,17 @@ Flux는 2014년 F8 컨퍼런스 세션에서 처음 발표되었고, 같은 해 
 
 양방향 바인딩(two-way data binding)은 모델이 바뀌면 뷰가 갱신되고, 뷰에서 입력이 들어오면 모델도 갱신되는 연결 방식이다. Overview가 예로 든 문제는 파생 데이터의 동기화였다. 메시지 스레드 목록에서 읽지 않은 스레드를 강조하고, 다른 뷰에 읽지 않은 메시지 수를 표시하는 화면이 있다. MVC 구조에서는 스레드 하나를 읽음으로 바꿀 때 스레드 모델과 읽지 않은 수 모델을 각각 갱신해야 한다. Overview는 이런 모델 사이의 의존과 연쇄 갱신이 큰 MVC 애플리케이션의 데이터 흐름을 복잡하게 만든다고 지적한다.
 
-모델과 뷰가 양방향으로 연결되어 있으면 모델 하나의 변경이 다른 모델과 뷰로 연쇄적으로 전파된다. 애플리케이션 규모가 커질수록 사용자 동작 하나가 어떤 상태를 바꾸는지 추적하기 어렵다. Flux는 상태를 바꾸는 경로를 하나로 제한해 이 문제를 해결한다.
+모델과 뷰가 양방향으로 연결되어 있으면 모델 하나의 변경이 다른 모델과 뷰로 연쇄적으로 전파된다. 다음 코드는 메시지 화면의 모델과 뷰가 서로를 직접 갱신하는 예다.
+
+```js
+// 모델과 뷰가 서로의 변경 이벤트를 구독해 직접 갱신한다
+thread.on('change:read', () => unreadCounter.recalculate()); // 스레드 → 읽지 않은 수 모델
+unreadCounter.on('change', () => tabBadge.render()); // 읽지 않은 수 → 탭 배지 뷰
+tabBadge.on('click', () => threadList.markAllRead()); // 배지 클릭 → 다시 모든 스레드 모델
+threadList.on('change', () => unreadCounter.recalculate()); // 스레드 목록 → 다시 읽지 않은 수
+```
+
+스레드 하나를 읽음으로 바꾸면 `unreadCounter`와 `tabBadge`가 차례로 갱신된다. 배지를 클릭하면 `threadList`가 바뀌고, 그 변경이 다시 `unreadCounter`를 갱신한다. 모델이 수십 개로 늘어나면 어떤 동작이 어떤 순서로 어느 모델을 바꾸는지 코드만 보고 파악하기 어렵고, 같은 모델이 한 번의 동작에 여러 번 갱신되는 경우도 생긴다. Flux는 상태를 바꾸는 경로를 하나로 제한해 이 문제를 해결한다.
 
 ![양방향 바인딩과 Flux의 단방향 흐름](./images/flux-pattern-mvc-vs-flux.svg '왼쪽: 모델과 뷰가 서로를 갱신해 변경이 연쇄된다. 오른쪽: 상태 변경은 Action에서 시작해 Dispatcher와 Store를 거쳐 View로만 전달된다')
 
@@ -51,6 +61,29 @@ In-Depth Overview는 Flux의 주요 구성 요소로 Dispatcher, Store, View를 
 4. View는 변경 이벤트를 받아 Store에서 상태를 다시 조회하고 렌더링한다.
 
 ![Flux 한 사이클의 시퀀스](./images/flux-pattern-cycle.svg 'View → action creator → Dispatcher → 두 Store의 콜백 → change 이벤트 → View 순서. 상태 변경 요청과 변경 알림은 서로 다른 경로로 전달되고, View에서 Store로 직접 연결된 경로는 없다')
+
+할 일 목록에 항목 하나를 추가하는 과정을 코드로 쓰면 다음과 같다.
+
+```js
+// action creator: 발생한 일을 기술한 Action을 만들어 Dispatcher에 보낸다
+function createTodo(text) {
+	AppDispatcher.dispatch({ type: 'todo/create', text });
+}
+
+// Store: Dispatcher에 콜백을 등록하고, 처리할 Action이면 상태를 갱신한 뒤 변경 이벤트를 발생시킨다
+const todos = [];
+AppDispatcher.register((action) => {
+	if (action.type === 'todo/create') {
+		todos.push({ text: action.text, done: false });
+		TodoStore.emit('change');
+	}
+});
+
+// View: 변경 이벤트를 받으면 Store에서 목록을 다시 조회해 렌더링한다
+TodoStore.on('change', () => render(TodoStore.getAll()));
+```
+
+View는 `todos` 배열에 직접 접근하지 않는다. 항목을 추가하려면 `createTodo()`로 Action을 보내야 하고, 화면은 `change` 이벤트를 받은 뒤에만 다시 그려진다.
 
 상태를 바꾸는 경로가 Dispatcher를 거치는 Action 하나뿐이므로, Dispatcher를 통과한 Action만 기록하면 어떤 상태가 어떤 이유로 바뀌었는지 추적할 수 있다.
 
@@ -110,6 +143,24 @@ Redux의 [세 가지 원칙](https://redux.js.org/understanding/thinking-in-redu
 | State is read-only                   | 상태를 바꾸는 방법은 발생한 일을 기술한 Action을 보내는 것뿐이다 | 같다                                                       |
 | Changes are made with pure functions | Action에 따른 상태 트리의 변경은 순수 함수인 reducer로 정의한다  | Flux Store는 내부 상태를 직접 갱신하고 이벤트를 발생시킨다 |
 
+같은 할 일 추가를 Redux reducer로 작성하면 다음과 같다.
+
+```js
+// reducer: 이전 상태와 Action을 받아 새 상태를 반환하는 순수 함수
+function todosReducer(state = [], action) {
+	switch (action.type) {
+		case 'todo/add':
+			return [...state, { text: action.text, done: false }]; // 기존 배열을 복사한 새 배열
+		default:
+			return state;
+	}
+}
+
+store.dispatch({ type: 'todo/add', text: '장보기' });
+```
+
+`state.push(...)`로 기존 배열을 직접 수정하고 같은 배열을 반환하면, Redux와 react-redux는 이전 상태와 다음 상태가 같은 객체라고 판단해 화면을 갱신하지 않는다. Redux DevTools의 기록에도 이전 상태와 다음 상태가 같은 배열로 남아, 특정 시점의 상태로 되돌아갈 수 없다.
+
 store가 하나이고 reducer를 합성해 사용하므로, Flux에서 `waitFor()`로 관리하던 Store 사이의 실행 순서는 reducer 호출 순서로 대체된다. 상태가 객체 하나이므로 Action마다 이전 상태와 다음 상태를 기록할 수 있고, Redux DevTools의 time travel 기능은 이 기록을 이용한다.
 
 ![Redux 문서의 데이터 흐름 그림](./images/flux-pattern-redux-dataflow.jpg 'Redux Fundamentals Part 2의 데이터 흐름 그림. Deposit 버튼의 이벤트 핸들러가 Action을 dispatch하고, store가 reducer를 실행해 만든 새 State가 UI의 금액에 반영된다. 원본 GIF의 한 장면을 캡처했다(2026년 10월 30일)')
@@ -128,7 +179,22 @@ Zustand 문서의 [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/f
 - **`set`/`setState`로만 갱신:** 변경 내용을 기존 상태에 병합하고 구독자에게 알리는 처리는 `set`이 담당한다.
 - **Colocate store actions:** 다른 Flux 계열 라이브러리처럼 Action을 dispatch하고 reducer로 처리하지 않고, 상태를 바꾸는 함수(store action)를 store 안에 함께 정의한다. reducer 방식이 필요하면 store에 `dispatch` 함수를 직접 정의할 수 있다.
 
-Zustand는 Action 객체와 Dispatcher를 생략하고, store에 정의한 함수가 새 상태를 만들어 구독자에게 알리는 구조다.
+Zustand는 Action 객체와 Dispatcher를 생략하고, store에 정의한 함수가 새 상태를 만들어 구독자에게 알리는 구조다. 같은 할 일 추가를 Zustand로 작성하면 다음과 같다.
+
+```js
+const useTodoStore = create((set) => ({
+	todos: [],
+	// store action: 상태를 바꾸는 함수를 store 안에 함께 정의한다
+	addTodo: (text) => set((state) => ({ todos: [...state.todos, { text, done: false }] })),
+}));
+
+// 컴포넌트는 selector로 필요한 값만 구독하고, store action을 직접 호출한다
+const todos = useTodoStore((state) => state.todos);
+const addTodo = useTodoStore((state) => state.addTodo);
+addTodo('장보기');
+```
+
+Redux에서는 Action 타입(`'todo/add'`), reducer의 `case`, `dispatch` 호출을 각각 작성해야 했다. Zustand에서는 `addTodo` 함수 하나로 같은 변경을 처리한다. 상태를 새 배열로 교체하고 구독자에게 알리는 순서는 Redux와 같다.
 
 React는 18 버전부터 이런 외부 store를 구독하는 표준 hook인 [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)를 제공한다.
 
@@ -139,6 +205,25 @@ React는 18 버전부터 이런 외부 store를 구독하는 표준 hook인 [`us
 - Transition(우선순위가 낮아 중단될 수 있는 업데이트) 도중 store가 바뀌면, React는 DOM에 반영하기 직전 `getSnapshot`을 다시 호출한다. 값이 다르면 그 업데이트를 중단할 수 없는 업데이트로 처음부터 다시 실행한다. 한 화면의 컴포넌트들이 서로 다른 버전의 store 값을 표시하는 tearing 현상을 막기 위한 처리다.
 
 ![useSyncExternalStore의 구독 순서](./images/flux-pattern-use-sync-external-store.svg '렌더링 중 getSnapshot으로 v1을 조회하고 subscribe로 콜백을 등록한다. store가 setState로 바뀌면 콜백이 호출되고, React가 getSnapshot을 다시 호출해 v2와 Object.is로 비교한 뒤 다르면 다시 렌더링한다')
+
+React 문서의 예는 브라우저의 온라인 상태를 구독하는 hook이다. `navigator.onLine`은 React가 관리하지 않는 값이므로 외부 store로 취급한다.
+
+```js
+function subscribe(callback) {
+	window.addEventListener('online', callback);
+	window.addEventListener('offline', callback);
+	return () => {
+		window.removeEventListener('online', callback);
+		window.removeEventListener('offline', callback);
+	};
+}
+
+function useOnlineStatus() {
+	return useSyncExternalStore(subscribe, () => navigator.onLine); // getSnapshot은 boolean을 반환한다
+}
+```
+
+반대로 `getSnapshot`을 `() => ({ todos: store.todos })`처럼 작성하면 호출할 때마다 새 객체가 만들어진다. 내용이 같아도 `Object.is` 비교 결과가 항상 '다름'이므로 React가 렌더링을 반복하다 오류를 발생시킨다. 이 경우 `() => store.todos`처럼 store가 보관한 값을 그대로 반환해야 한다.
 
 React 문서는 가능하면 `useState`·`useReducer` 같은 React 내장 상태를 사용하라고 권장하고, `useSyncExternalStore`는 주로 React 외부 코드와 연동할 때 사용한다고 설명한다. `useReducer`는 reducer와 Action을 컴포넌트 안에서 사용하는 hook으로, Flux·Redux의 갱신 방식을 React 내장 상태에 적용한 형태다.
 
@@ -189,13 +274,23 @@ signal은 값이 바뀌면 그 값에 의존하는 계산과 화면만 다시 �
 
 ### 1. Dispatcher와 Action 객체가 선택 사항이 되었다
 
-Redux는 Dispatcher를 순수 함수인 reducer로 대체했고, Zustand는 Action 객체와 reducer도 필수 요소에서 제외했다. 현재 대부분의 라이브러리에서 상태를 변경하는 방법은 store가 제공하는 함수를 호출하는 것이다.
+Redux는 Dispatcher를 순수 함수인 reducer로 대체했고, Zustand는 Action 객체와 reducer도 필수 요소에서 제외했다. 현재 대부분의 라이브러리는 store가 제공하는 함수를 호출해 상태를 변경한다.
 
 모든 변경을 Action 객체로 기술하면 변경 기록을 남기고 time travel 디버깅을 할 수 있지만, Action 타입과 reducer를 매번 정의해야 하는 코드가 늘어난다. zustand가 redux를 추월한 수치는 많은 애플리케이션이 이 정의 코드를 줄이는 쪽을 선택했다는 근거다. 변경 기록이 필요한 대규모 프로젝트에서는 Redux 대신 Redux Toolkit의 비중이 늘었다.
 
 ### 2. 서버 상태를 별도 라이브러리로 관리한다
 
-Flux의 Store는 서버에서 받은 데이터와 화면 상태를 함께 보관했다. 현재는 서버 데이터의 캐싱, 재요청, 무효화(invalidation)를 담당하는 서버 상태 라이브러리를 별도로 사용하고, TanStack Query의 다운로드 수는 전역 상태 라이브러리보다 많다. 서버 데이터가 빠지면 전역 store에는 서버와 무관한 화면 상태만 남는다. store 규모가 작아지면서 React 내장 상태만으로 충분한 애플리케이션이 늘었고, 설문 응답자의 33.8%가 상태 관리 라이브러리를 사용하지 않는다는 결과도 같은 변화를 보여 준다.
+Flux의 Store는 서버에서 받은 데이터와 화면 상태를 함께 보관했다. 글 목록을 전역 store에 보관하면 로딩 상태, 오류, 마지막으로 받아 온 시각, 다른 화면에서 글을 수정했을 때 목록을 다시 받아 오는 로직을 모두 직접 작성해야 한다.
+
+```js
+// 서버 상태 라이브러리(TanStack Query): 캐싱과 재요청을 라이브러리가 처리한다
+const { data: posts, isPending, error } = useQuery({ queryKey: ['posts'], queryFn: fetchPosts });
+
+// 글을 수정한 뒤 'posts' 캐시를 무효화하면 목록을 사용하는 모든 화면이 새 데이터를 받아 온다
+queryClient.invalidateQueries({ queryKey: ['posts'] });
+```
+
+현재는 이처럼 서버 데이터의 캐싱, 재요청, 무효화(invalidation, 캐시를 오래된 것으로 표시해 다시 요청하게 하는 처리)를 담당하는 서버 상태 라이브러리를 별도로 사용하고, TanStack Query의 다운로드 수는 전역 상태 라이브러리보다 많다. 서버 데이터가 빠지면 전역 store에는 서버와 무관한 화면 상태만 남는다. store 규모가 작아지면서 React 내장 상태만으로 충분한 애플리케이션이 늘었고, 설문 응답자의 33.8%가 상태 관리 라이브러리를 사용하지 않는다는 결과도 같은 변화를 보여 준다.
 
 ### 3. 구독 단위가 세분화되었다
 
@@ -208,7 +303,22 @@ Flux의 Store는 서버에서 받은 데이터와 화면 상태를 함께 보관
 | atom        | Jotai             | 상태를 작은 단위(atom)로 나누고, 바뀐 atom을 사용하는 컴포넌트 |
 | signal      | Angular·Vue·Solid | 바뀐 값에 의존하는 계산과 DOM                                  |
 
-selector는 store 전체에서 컴포넌트가 사용하는 값만 골라내는 함수이고, atom은 전역 상태를 독립적으로 구독할 수 있는 작은 단위로 나눈 것이다. TC39의 Signals 제안은 이 중 가장 세밀한 signal 방식을 언어 표준으로 정의하려는 시도다.
+selector는 store 전체에서 컴포넌트가 사용하는 값만 골라내는 함수이고, atom은 전역 상태를 독립적으로 구독할 수 있도록 나눈 작은 상태 단위다. 장바구니 수량 하나가 바뀌는 경우로 비교하면 다음과 같다.
+
+```js
+// selector (Zustand): 장바구니 개수를 선택한 컴포넌트만 다시 렌더링된다. 사용자 이름을 선택한 헤더는 그대로다
+const count = useShopStore((state) => state.cart.length);
+
+// atom (Jotai): 장바구니를 별도 atom으로 나누면 cartAtom을 사용하는 컴포넌트만 다시 렌더링된다
+const cartAtom = atom([]);
+const cart = useAtomValue(cartAtom);
+
+// signal (Preact Signals): 컴포넌트를 다시 렌더링하지 않고 cartCount에 의존하는 텍스트 노드만 갱신한다
+const cartCount = signal(0);
+effect(() => (badge.textContent = String(cartCount.value)));
+```
+
+Flux 방식이라면 장바구니가 바뀔 때 Store 전체의 `change` 이벤트가 발생하고, 헤더처럼 장바구니와 무관한 View도 Store를 다시 조회한다. TC39의 Signals 제안은 이 중 가장 세밀한 signal 방식을 언어 표준으로 정의하려는 시도다.
 
 ![구독 단위가 세분화되어 온 과정](./images/flux-pattern-granularity.svg 'Flux Store의 변경 이벤트에서 selector, atom, signal 순으로, 값 하나가 바뀌었을 때 다시 계산되는 범위가 좁아진다')
 
@@ -216,20 +326,39 @@ selector는 store 전체에서 컴포넌트가 사용하는 값만 골라내는 
 
 변하지 않은 규칙도 있다. **View는 상태를 직접 변경하지 않고, 정해진 함수나 Action으로 변경을 요청한 뒤 변경 알림을 받아 상태를 다시 조회한다.** Dispatcher와 Action 객체는 생략되었지만 단방향 흐름은 모든 라이브러리에 남아 있고, React는 `useSyncExternalStore`로 이 구독 방식을 표준 API에 포함했다.
 
-따라서 2026년에 상태 관리 방식을 선택할 때는 라이브러리보다 상태의 종류를 먼저 구분해야 한다. 서버 데이터는 서버 상태 라이브러리로, 한 화면에서만 쓰는 상태는 React 내장 상태로 관리하고, 여러 화면이 공유하는 상태가 남을 때 작은 외부 store를 도입한다. MacFolio도 창 관리 상태만 React 외부의 작은 store(`createStore` + `useSyncExternalStore`)로 관리한다. 설계 과정은 [MacFolio의 store 설계](/memo/macfolio-store-design)에 정리했다.
-
 ## 상황별 선택 기준
 
-Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-should-i-use-redux)는 "Not all apps need Redux"라는 문장으로 시작한다. 아래 기준은 각 라이브러리의 공식 문서에 근거한다.
+Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-should-i-use-redux)는 "Not all apps need Redux"라는 문장으로 시작한다. 아래 기준은 각 라이브러리의 공식 문서에 근거하고, 예는 블로그 앱을 기준으로 들었다.
 
-- **한 컴포넌트 안에서만 쓰는 상태 → `useState`·`useReducer`.** React 문서는 가능하면 React 내장 상태를 사용하라고 권장한다([useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)의 Note).
-- **한 화면의 갱신 로직이 복잡하고, 깊은 하위 컴포넌트까지 상태와 갱신 함수를 전달해야 하는 경우 → `useReducer` + Context.** React 문서는 reducer와 Context를 결합해 복잡한 화면의 상태를 관리하는 방법을 설명한다([Scaling Up with Reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context)).
-- **큰 상태를 애플리케이션 여러 곳에서 사용하고, 자주 바뀌고, 갱신 로직이 복잡하고, 여러 개발자가 함께 작업하고, 상태 변화 이력을 확인해야 하는 경우 → Redux.** Redux FAQ가 Redux가 가장 효과적인 경우로 제시한 다섯 조건이다. 새로 도입할 때는 [Redux Toolkit](https://redux.js.org/introduction/getting-started)을 공식 권장 방식으로 안내한다.
-- **전역 상태를 store 하나에 보관하되, Action 객체와 reducer 없이 store 함수로 갱신하려는 경우 → Zustand.** [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/flux-inspired-practice)가 권장하는 방식(single store, `set`으로만 갱신, store action을 store 안에 정의)이다.
-- **React 외부 코드(브라우저 API, 다른 라이브러리, 직접 구현한 store)의 상태를 컴포넌트에서 구독하는 경우 → `useSyncExternalStore`.** React 문서는 이 hook이 주로 React 외부 코드와 연동할 때 쓰인다고 설명한다.
-- **데이터가 서버에 있고, 다른 사용자가 변경할 수 있으며, 시간이 지나면 최신 상태가 아니게 되는 경우 → 서버 상태 라이브러리(예: TanStack Query).** [TanStack Query 개요](https://tanstack.com/query/latest/docs/framework/react/overview)는 기존 상태 관리 라이브러리가 클라이언트 상태에는 적합하지만 비동기 데이터와 서버 상태에는 적합하지 않다고 설명한다.
+- **한 컴포넌트 안에서만 사용하는 상태 → `useState`·`useReducer`.** React 문서는 가능하면 React 내장 상태를 사용하라고 권장한다([useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)의 Note).
+  - 예: 댓글 입력 칸의 내용, 드롭다운 메뉴의 열림 여부
+- **한 화면의 갱신 로직이 복잡하고, 깊은 하위 컴포넌트까지 상태와 갱신 함수를 전달해야 하는 상태 → `useReducer` + Context.** React 문서는 reducer와 Context를 결합해 복잡한 화면의 상태를 관리하는 방법을 설명한다([Scaling Up with Reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context)).
+  - 예: 단계가 여러 개인 글 작성 마법사
+- **여러 화면이 공유하는 클라이언트 상태를 store 하나로 관리하고, Action 객체와 reducer 없이 store 함수로 갱신하려는 경우 → Zustand.** [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/flux-inspired-practice)가 권장하는 방식(single store, `set`으로만 갱신, store action을 store 안에 정의)이다.
+  - 예: 다크 모드 설정, 사이드바 접힘 여부, 열린 창 목록
+- **큰 상태를 여러 곳에서 사용하고, 자주 바뀌고, 갱신 로직이 복잡하고, 여러 개발자가 함께 작업하고, 상태 변화 이력을 확인해야 하는 경우 → Redux.** Redux FAQ가 Redux가 가장 효과적인 경우로 제시한 다섯 조건이다. 새로 도입할 때는 [Redux Toolkit](https://redux.js.org/introduction/getting-started)을 공식 권장 방식으로 안내한다.
+  - 예: 권한·필터·편집 기록이 얽힌 대규모 관리자 화면
+- **React 외부 코드의 값을 컴포넌트에서 구독하는 경우 → `useSyncExternalStore`.** React 문서는 이 hook이 주로 React 외부 코드와 연동할 때 쓰인다고 설명한다.
+  - 예: 온라인 상태(`navigator.onLine`), 창 크기, 직접 구현한 store
+- **데이터가 서버에 있고, 다른 사용자가 바꿀 수 있으며, 시간이 지나면 최신 상태가 아니게 되는 경우 → 서버 상태 라이브러리(예: TanStack Query).** [TanStack Query 개요](https://tanstack.com/query/latest/docs/framework/react/overview)는 기존 상태 관리 라이브러리가 클라이언트 상태에는 적합하지만 비동기 데이터와 서버 상태에는 적합하지 않다고 설명한다.
+  - 예: 글 목록, 댓글, 좋아요 수
 
-여러 조건에 해당하면 상태의 종류마다 다른 방식을 함께 사용한다. 예를 들어 서버에서 받은 글 목록은 서버 상태 라이브러리로, 편집 화면의 선택 상태는 `useReducer`로 관리한다. Redux FAQ도 Redux가 다루는 문제(상태 관리, 서버 데이터 캐싱, UI로 데이터 전달)의 일부를 해결하는 다른 도구가 많다고 설명한다.
+한 애플리케이션 안에서도 상태의 종류마다 다른 방식을 함께 사용한다. 예를 들어 블로그 편집 화면에서 글 목록은 TanStack Query로, 편집 중인 글의 선택 영역은 `useReducer`로, 다크 모드 설정은 Zustand로 관리할 수 있다.
+
+## 마치며: 2026년의 상태 관리 설계
+
+Flux가 2014년에 제시한 핵심은 라이브러리보다 규칙이었다. 상태는 정해진 경로로만 변경하고, View는 변경 알림을 받은 뒤 상태를 다시 조회한다. 12년이 지난 지금도 이 규칙은 Redux, Zustand, `useSyncExternalStore`에 모두 적용되어 있다. 바뀐 것은 규칙을 구현하는 데 필요한 코드의 양이다. Dispatcher, Action 타입 상수, reducer를 모두 작성하던 구조는 store 함수 하나를 호출하는 구조로 줄었고, 서버 데이터는 전역 store에서 분리되었다.
+
+2026년의 수치와 공식 문서를 근거로 하면, 새 프로젝트의 상태는 다음 순서로 설계한다.
+
+1. **서버 데이터를 먼저 분리한다.** API에서 받은 데이터는 서버 상태 라이브러리에 맡기고 전역 store에 복사하지 않는다. 2026년 3분기 TanStack Query의 다운로드는 redux의 1.54배로, 집계한 다섯 패키지 가운데 가장 많다.
+2. **남은 상태는 React 내장 상태로 시작한다.** State of React 2025 응답자의 33.8%는 상태 관리 라이브러리 없이 개발한다.
+3. **여러 화면이 공유하는 클라이언트 상태가 생기면 외부 store를 도입한다.** selector로 필요한 값만 구독하는 Zustand는 2026년 2분기부터 redux보다 많이 다운로드된다.
+4. **변경 이력 추적, 미들웨어, 팀 전체의 코드 규칙 통일이 필요하면 Redux Toolkit을 선택한다.**
+
+앞으로 확인할 지표는 세 가지다. 첫째, TC39 Signals 제안이 Stage 2 이상으로 진행되는지 여부다. 표준이 되면 Angular·Vue·Solid가 같은 반응성 기반을 공유하게 되고, React가 컴포넌트 단위 렌더링을 유지할지도 다시 논의될 수 있다. 둘째, zustand ÷ redux(1.24)와 TanStack Query ÷ redux(1.54) 비율의 추이다. 셋째, 다음 State of React 설문에서 상태 관리 라이브러리를 사용하지 않는 응답 비율의 변화다.
+
+MacFolio도 같은 순서로 설계했다. 여러 창이 공유하는 창 관리 상태만 React 외부의 작은 store(`createStore` + `useSyncExternalStore`)로 관리하고, 나머지는 각 컴포넌트의 내장 상태로 관리한다. 설계 과정은 [MacFolio의 store 설계](/memo/macfolio-store-design)에 정리했다.
 
 ## 관련 글
 
