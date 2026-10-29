@@ -156,61 +156,25 @@
 	content: '';
 }
 
-/* 줄인 목록에서 접는 편: 그 자리에서 높이가 grid-template-rows 1fr ↔ 0fr로 줄고 늘며,
-   접힌 뒤에는 Tab·화면 낭독기에서 빠지게 감춘다 (블록 접기와 같은 방식) */
-.memo-series-fold {
-	display: grid;
-	grid-template-rows: 1fr;
-	transition:
-		grid-template-rows var(--duration) var(--ease-out),
-		opacity var(--duration) var(--ease-out),
-		visibility 0s;
-}
-
-.memo-series-fold > * {
-	min-height: 0;
-	/* 지금 글의 막대가 세로선 왼쪽으로 2px 나가므로 잘리지 않게 */
-	margin-left: calc(-1 * var(--space-2));
-	padding-left: var(--space-2);
-	overflow: hidden;
-}
-
-.memo-series-fold[data-folded='true'] {
-	grid-template-rows: 0fr;
-	visibility: hidden;
-	opacity: 0;
-	transition:
-		grid-template-rows var(--duration) var(--ease-out),
-		opacity var(--duration-fast) var(--ease-out),
-		visibility 0s linear var(--duration);
-}
-
-/* 머리 줄: 블록 접기 단추가 폭 전체, 더보기·접기 단추는 그 위 오른쪽(접기 화살표 바로 왼쪽)에 겹쳐 놓는다 */
-.memo-series-head {
-	position: relative;
-}
-
-/* 단추 자리를 비워 둔다: 화살표는 그대로 오른쪽 끝, 이름이 길면 말줄임 */
-.memo-series-head:has(.memo-series-more) .memo-series-count {
-	margin-right: 7em;
-}
-
-/* 더보기·접기: 머리 줄 오른쪽의 작은 강조색 단추. 목록이 늘고 줄어도 자리가 그대로다 */
+/* 더보기·접기: 목록 바로 아래 한 자리의 단추 한 줄. 번호 칸 자리에 '⋯'(펼치면 ⌃), 그 옆에 'N편 더보기'·'접기' */
 .memo .memo-series-more {
-	position: absolute;
-	top: 50%;
-	right: calc(var(--space-8) + 1.5em);
-	padding: var(--space-2) var(--space-8);
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	width: 100%;
+	padding: var(--space-4) 0 var(--space-4) var(--space-12);
 	border: none;
-	border-radius: var(--radius-6);
 	background: none;
-	color: var(--memo-accent);
+	color: var(--memo-muted);
 	font-family: inherit;
 	font-size: var(--text-footnote);
-	font-weight: 600;
-	white-space: nowrap;
+	text-align: left;
 	cursor: pointer;
-	transform: translateY(-50%);
+}
+
+.memo-series-more i {
+	min-width: 1.4em;
+	font-size: 0.9em;
 }
 
 /* 이전 편·다음 편: 블록 맨 아래 두 칸의 카드. 옅은 바탕 위에 본문 바탕색·얇은 테두리로 떠 보이고,
@@ -273,15 +237,13 @@
 @media (prefers-reduced-motion: reduce) {
 	.memo-series-collapse,
 	.memo-series-collapse-inner,
-	.memo-series-chevron,
-	.memo-series-fold {
+	.memo-series-chevron {
 		transition: none;
 	}
 }
 
 @media (hover: hover) {
-	.memo .memo-series-toggle:hover,
-	.memo .memo-series-more:hover {
+	.memo .memo-series-toggle:hover {
 		background: var(--memo-hover);
 	}
 
@@ -289,7 +251,8 @@
 		border-color: var(--memo-accent);
 	}
 
-	.memo .memo-series-list button:not([aria-current='page']):hover {
+	.memo .memo-series-list button:not([aria-current='page']):hover,
+	.memo .memo-series-more:hover {
 		color: var(--memo-accent);
 	}
 }
@@ -308,7 +271,8 @@
 
 /* 휴대폰: 줄 높이와 단추를 손가락 터치 영역(44px) 이상으로 */
 .container.mobile .memo .memo-series-toggle,
-.container.mobile .memo .memo-series-list button {
+.container.mobile .memo .memo-series-list button,
+.container.mobile .memo .memo-series-more {
 	min-height: 44px;
 }
 
@@ -330,4 +294,9 @@
 /* 제목과의 간격은 표시가 맡는다 */
 .memo-series-kicker + h1 {
 	margin-top: 0;
+}
+
+/* 목록 안의 나머지 편 접기: 바깥 접기 칸이 이미 막대 자리를 비워 두었으니 왼쪽을 다시 맞춘다 */
+.memo-series-collapse-inner .memo-series-collapse-inner {
+	margin-left: calc(-1 * var(--space-2));
 }
