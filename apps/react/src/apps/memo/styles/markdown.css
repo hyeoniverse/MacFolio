@@ -411,9 +411,9 @@
 .memo .memo-embed-tools {
 	display: flex;
 	position: absolute;
-	/* YouTube 재생기 맨 위의 채널 아이콘(48px)·제목 줄 바로 아래, 왼쪽 끝을 채널 아이콘에 맞춘다 */
+	/* YouTube 재생기 맨 위의 채널 아이콘(48px)·제목 줄 바로 아래. 왼쪽은 재생기 안 링크 복사 버튼과 같은 20px이라 아이콘이 같은 세로줄(28px)에 선다 */
 	top: 60px;
-	left: var(--space-4);
+	left: var(--space-20);
 	gap: var(--space-4);
 	opacity: 0;
 	transition: opacity var(--duration-fast) var(--ease-out);
