@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
 	adjacentPosts,
+	seriesOf,
 	type AdminPost,
 	ALL_CATEGORY,
 	type Arrangement,
@@ -135,6 +136,13 @@ export function useNoteView({
 	// 본문 아래의 이전 글·다음 글: 지금 폴더 안에서 날짜 순으로 옆 글 (검색어와 상관없이)
 	const { older, newer } =
 		selected && !inTrash ? adjacentPosts(inCategory, selected.slug) : { older: null, newer: null };
+	// 제목 아래의 연재 상자: 폴더와 상관없이 모든 글에서 같은 연재를 모은다 (desktop-core의 series.ts)
+	const series = useMemo(
+		() => (selected && !inTrash ? seriesOf(organized, selected) : null),
+		[selected, inTrash, organized]
+	);
+	/** 지금 보기(폴더·태그)에 있는 글인지 (연재의 다른 편을 열 때 보기를 모든 글로 바꿀지) */
+	const inView = (slug: PostSlug) => inCategory.some((post) => post.slug === slug);
 
 	// 주소 막대에 지금 글의 주소를 둔다 (새로 고침하거나 주소를 복사해도 그 글로). 게시하지 않은 글은 주소가 없다.
 	// 글을 다 읽어 오기 전에는 그대로 둔다 (글 주소로 들어온 그 글이 아직 없을 수 있다)
@@ -177,5 +185,7 @@ export function useNoteView({
 		selected,
 		older,
 		newer,
+		series,
+		inView,
 	};
 }

@@ -136,6 +136,8 @@ const Memo: React.FC = () => {
 		selected,
 		older,
 		newer,
+		series,
+		inView,
 	} = noteView;
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
 	const [findSlug, setFindSlug] = useState<string | null>(null);
@@ -182,6 +184,12 @@ const Memo: React.FC = () => {
 	}, [selected?.slug]);
 	const openAdjacent = (post: Post) => {
 		setQuery('');
+		setSelectedSlug(post.slug);
+	};
+	/** 연재의 다른 편: 지금 보는 폴더·태그에 없는 글이면 모든 글로 바꾼 뒤 연다 */
+	const openSeries = (post: Post) => {
+		setQuery('');
+		if (!inView(post.slug)) setCategory(ALL_CATEGORY);
 		setSelectedSlug(post.slug);
 	};
 
@@ -861,6 +869,8 @@ const Memo: React.FC = () => {
 										views={views}
 										editing={editing && Boolean(selected.locked)}
 										footer={!inTrash && postFooter(selected)}
+										series={series}
+										onOpenSeries={openSeries}
 										compact={compact}
 										onRestore={() => void restoreDeleted(selected)}
 										onPurge={() => void purgeDeleted(selected)}
