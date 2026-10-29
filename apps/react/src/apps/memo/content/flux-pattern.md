@@ -22,6 +22,10 @@ Flux는 2014년 F8 컨퍼런스 세션에서 처음 발표되었고, 같은 해 
 
 > We found that two-way data bindings led to cascading updates, where changing one object led to another object changing, which could also trigger more updates.
 
+같은 내용은 F8 2014 세션 "Hacker Way: Rethinking Web App Development at Facebook"에서 발표되었다. 이 발표는 React의 "데이터가 바뀌면 화면을 다시 렌더링한다"는 설계와 함께, 그 데이터를 한 방향으로만 갱신하는 Flux를 소개했다.
+
+![F8 2014 세션 영상](./images/flux-pattern-f8-2014-video.jpg 'Meta Developers 채널의 "Hacker Way: Rethinking Web App Development at Facebook"(44분 35초). 화면의 슬라이드 "IDEAL: ALWAYS RE-RENDER"는 메시지 데이터 배열이 그대로 HTML 목록으로 다시 렌더링되는 React의 모델을 보여 준다. 2026년 10월 30일 캡처')
+
 양방향 바인딩(two-way data binding)은 모델이 바뀌면 뷰가 갱신되고, 뷰에서 입력이 들어오면 모델도 갱신되는 연결 방식이다. Overview가 예로 든 문제는 파생 데이터의 동기화였다. 메시지 스레드 목록에서 읽지 않은 스레드를 강조하고, 다른 뷰에 읽지 않은 메시지 수를 표시하는 화면이 있다. MVC 구조에서는 스레드 하나를 읽음으로 바꿀 때 스레드 모델과 읽지 않은 수 모델을 각각 갱신해야 한다. Overview는 이런 모델 사이의 의존과 연쇄 갱신이 큰 MVC 애플리케이션의 데이터 흐름을 복잡하게 만든다고 지적한다.
 
 모델과 뷰가 양방향으로 연결되어 있으면 모델 하나의 변경이 다른 모델과 뷰로 연쇄적으로 전파된다. 다음 코드는 메시지 화면의 모델과 뷰가 서로를 직접 갱신하는 예다.
@@ -57,8 +61,6 @@ In-Depth Overview는 Flux의 주요 구성 요소로 Dispatcher, Store, View를 
 2. Dispatcher는 그 Action을 등록된 **모든** Store의 콜백에 전달한다.
 3. 각 Store는 Action의 `type`을 확인하고, 처리 대상이면 자신의 상태를 갱신한 뒤 변경 이벤트를 발생시킨다.
 4. View는 변경 이벤트를 받아 Store에서 상태를 다시 조회하고 렌더링한다.
-
-![Flux 한 사이클의 시퀀스](./images/flux-pattern-cycle.svg 'View → action creator → Dispatcher → 두 Store의 콜백 → change 이벤트 → View 순서. 상태 변경 요청과 변경 알림은 서로 다른 경로로 전달되고, View에서 Store로 직접 연결된 경로는 없다')
 
 할 일 목록에 항목 하나를 추가하는 과정을 코드로 쓰면 다음과 같다.
 
@@ -161,9 +163,11 @@ store.dispatch({ type: 'todo/add', text: '장보기' });
 
 store가 하나이고 reducer를 합성해 사용하므로, Flux에서 `waitFor()`로 관리하던 Store 사이의 실행 순서는 reducer 호출 순서로 대체된다. 상태가 객체 하나이므로 Action마다 이전 상태와 다음 상태를 기록할 수 있고, Redux DevTools의 time travel 기능은 이 기록을 이용한다.
 
-![Redux 문서의 데이터 흐름 그림](./images/flux-pattern-redux-dataflow.jpg 'Redux Fundamentals Part 2의 데이터 흐름 그림. Deposit 버튼의 이벤트 핸들러가 Action을 dispatch하고, store가 reducer를 실행해 만든 새 State가 UI의 금액에 반영된다. 원본 GIF의 한 장면을 캡처했다(2026년 10월 30일)')
+![Redux DevTools 확장](./images/flux-pattern-redux-devtools.jpg 'Redux DevTools 확장의 공식 데모 화면(TodoMVC 예제). 가운데 Inspector는 @@INIT, ADD_TODO, COMPLETE_TODO 순으로 dispatch된 Action 목록과 선택한 Action의 내용을 보여 주고, 오른쪽 Diff 탭은 그 Action으로 completed가 false에서 true로 바뀐 것을 보여 준다. 아래 슬라이더를 움직이면 기록된 Action의 순서대로 앞뒤 상태로 이동한다. reduxjs/redux-devtools 저장소의 extension README에서 2026년 10월 30일 캡처')
 
-![Redux의 흐름과 상태 스냅숏](./images/flux-pattern-redux-flow.svg '위: UI가 dispatch한 Action으로 store가 reducer를 호출해 새 state를 받고 구독자에게 알린다. 아래: todo/add와 filter/set을 거치며 state₀·state₁·state₂가 각각 별도 객체로 보존된다')
+위 화면에서 `COMPLETE_TODO` Action을 선택하면 Diff 탭에 그 Action이 바꾼 값만 표시된다. 슬라이더를 왼쪽으로 옮기면 할 일을 완료하기 전 상태의 화면이 다시 렌더링된다. reducer가 상태를 직접 수정하지 않고 매번 새 객체를 반환하기 때문에 가능한 기능이다.
+
+![Redux 문서의 데이터 흐름 그림](./images/flux-pattern-redux-dataflow.jpg 'Redux Fundamentals Part 2의 데이터 흐름 그림. Deposit 버튼의 이벤트 핸들러가 Action을 dispatch하고, store가 reducer를 실행해 만든 새 State가 UI의 금액에 반영된다. 원본 GIF의 한 장면을 캡처했다(2026년 10월 30일)')
 
 ## 외부 store와 useSyncExternalStore
 
@@ -245,8 +249,6 @@ npm registry API로 최근 3년의 분기별 다운로드를 집계했다[^npm].
 
 다운로드 수는 사용자 수와 다르다. 다른 패키지의 의존성으로 설치된 횟수와 CI가 빌드마다 다시 내려받은 횟수가 포함된다. 따라서 이 수치는 증감 방향을 확인하는 지표로만 사용했다.
 
-![한 주 npm 다운로드](./images/flux-pattern-weekly-downloads.svg '2026년 10월 20~26일. zustand 5,636만, TanStack Query 5,451만, redux 4,118만, Redux Toolkit 3,039만 회. jotai 이하는 수백만 회 수준이다')
-
 ### State of React 2025: 응답자의 33.8%는 상태 관리 라이브러리를 사용하지 않음
 
 [State of React 2025](https://2025.stateofreact.com/en-US/libraries/state-management/) 설문(2025년 11월~2026년 1월, 응답 3,760명)의 상태 관리 항목 결과는 다음과 같다.
@@ -301,7 +303,11 @@ queryClient.invalidateQueries({ queryKey: ['posts'] });
 | atom        | Jotai             | 상태를 작은 단위(atom)로 나누고, 바뀐 atom을 사용하는 컴포넌트 |
 | signal      | Angular·Vue·Solid | 바뀐 값에 의존하는 계산과 DOM                                  |
 
-selector는 store 전체에서 컴포넌트가 사용하는 값만 골라내는 함수이고, atom은 전역 상태를 독립적으로 구독할 수 있도록 나눈 작은 상태 단위다. 장바구니 수량 하나가 바뀌는 경우로 비교하면 다음과 같다.
+selector는 store 전체에서 컴포넌트가 사용하는 값만 골라내는 함수이고, atom은 전역 상태를 독립적으로 구독할 수 있도록 나눈 작은 상태 단위다.
+
+![Jotai 홈페이지](./images/flux-pattern-jotai.jpg 'jotai.org 첫 화면. "atom을 조합해 상태를 만들고, atom 의존성에 따라 렌더링이 자동으로 최적화된다", "React context의 불필요한 리렌더링 문제를 해결한다"고 소개한다. 2026년 10월 30일 캡처')
+
+Jotai는 홈페이지에서 atom 방식의 목적을 React context와 비교해 설명한다. context 값이 바뀌면 그 context를 사용하는 모든 컴포넌트가 다시 렌더링되지만, atom은 바뀐 atom을 사용하는 컴포넌트만 다시 렌더링된다. 장바구니 수량 하나가 바뀌는 경우로 비교하면 다음과 같다.
 
 ```js
 // selector (Zustand): 장바구니 개수를 선택한 컴포넌트만 다시 렌더링된다. 사용자 이름을 선택한 헤더는 그대로다
@@ -317,8 +323,6 @@ effect(() => (badge.textContent = String(cartCount.value)));
 ```
 
 Flux 방식이라면 장바구니가 바뀔 때 Store 전체의 `change` 이벤트가 발생하고, 헤더처럼 장바구니와 무관한 View도 Store를 다시 조회한다. TC39의 Signals 제안은 이 중 가장 세밀한 signal 방식을 언어 표준으로 정의하려는 시도다.
-
-![구독 단위가 세분화되어 온 과정](./images/flux-pattern-granularity.svg 'Flux Store의 변경 이벤트에서 selector, atom, signal 순으로, 값 하나가 바뀌었을 때 다시 계산되는 범위가 좁아진다')
 
 ### 유지된 규칙
 
