@@ -357,6 +357,47 @@
 }
 
 /*
+ * 바깥 링크 임베드 (components/MemoEmbed.tsx, 편집기는 writer/embedPreview.ts): 주소만 한 줄로 적은 YouTube·Vimeo 등.
+ * 본문 폭에 맞추고, 동영상은 가로세로 비율(16:9 등), 코드 예제·음악은 사이트별 높이로 그린다. 모서리와 테두리는 본문 이미지와 같다
+ */
+.memo-embed {
+	display: block;
+	margin: 1.2em 0;
+}
+
+.memo-embed-frame {
+	overflow: hidden;
+	width: 100%;
+	border-radius: 0.6em;
+	background: var(--memo-search-bg);
+	box-shadow: 0 0 0 1px var(--memo-border);
+}
+
+/* 세로 동영상(YouTube Shorts)은 본문 폭 전체로 늘리지 않는다 */
+.memo-embed[data-provider='youtube'] .memo-embed-frame[style*='9 / 16'] {
+	max-width: 22rem;
+	margin: 0 auto;
+}
+
+.memo-embed iframe {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.memo-embed figcaption {
+	margin-top: 0.5em;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	text-align: center;
+}
+
+.memo-embed figcaption a {
+	color: inherit;
+}
+
+/*
  * 이미지 배치: 주소 끝의 #left·#right·#float-left·#float-right (desktop-core의 imageLayout.ts, 읽기·편집 화면 같은 모양).
  * 정렬은 본문 폭보다 좁은 이미지에서만 보인다 (넓은 이미지는 본문 폭에 맞춘다).
  * 띄우기는 본문의 40% 폭으로 왼쪽·오른쪽에 두고, 이어지는 문단이 옆으로 흐른다

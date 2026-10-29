@@ -43,6 +43,15 @@ describe('보안 헤더', () => {
 		expect(csp['frame-src']).toEqual([
 			"'self'",
 			'https://challenges.cloudflare.com',
+			// 메모 글의 임베드 (memo/embeds.ts)
+			'https://codepen.io',
+			'https://codesandbox.io',
+			'https://open.spotify.com',
+			'https://player.vimeo.com',
+			'https://stackblitz.com',
+			'https://www.figma.com',
+			'https://www.loom.com',
+			'https://www.youtube-nocookie.com',
 			'https://newpick-tan.vercel.app',
 			'https://what-to-do-chi.vercel.app',
 		]);

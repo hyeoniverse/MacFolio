@@ -24,6 +24,7 @@ import { closeImageZoom, useImageZoom } from './imageZoom';
 import { Lightbox } from '../components/MarkdownImage';
 import LinkHover from './LinkHover';
 import { findPlugin } from './findPlugin';
+import { embedPreview } from './embedPreview';
 import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
 import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
@@ -367,6 +368,8 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 				.use(gapText)
 				.use(gapClickPlugin)
 				.use(findPlugin)
+				// 주소만 한 줄로 적은 YouTube 등의 링크 아래에 읽기 화면과 같은 임베드 (embedPreview.ts)
+				.use(embedPreview)
 				.use(codeHighlight)
 				.use(tagHighlight),
 		[]

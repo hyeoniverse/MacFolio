@@ -4,6 +4,8 @@ import { rehypeHighlightCode } from '../highlight';
 import MarkdownImage from './MarkdownImage';
 import MarkdownLink from './MarkdownLink';
 import CodeBlock from './CodeBlock';
+import MemoEmbed from './MemoEmbed';
+import { embedBlockOfParagraph } from '../embedBlock';
 
 /** 코드 블록 문법 강조 (highlight.ts) */
 const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
@@ -28,6 +30,11 @@ const MARKDOWN_COMPONENTS: Components = {
 		</MarkdownLink>
 	),
 	pre: ({ node: _node, ...props }) => <CodeBlock {...props} />,
+	// 주소만 한 줄로 적은 YouTube·Vimeo 등의 링크는 임베드로 (embedBlock.ts)
+	p: ({ node, children, ...rest }) => {
+		const block = node ? embedBlockOfParagraph(node) : null;
+		return block ? <MemoEmbed block={block} /> : <p {...rest}>{children}</p>;
+	},
 	img: ({ src, alt, title }) => (
 		<MarkdownImage src={typeof src === 'string' ? src : undefined} alt={alt} title={title} />
 	),

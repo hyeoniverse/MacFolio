@@ -1,6 +1,9 @@
 // 사이트 응답에 붙이는 보안 헤더. 빌드할 때 dist/_headers에 쓰고(vite.config.ts), 로컬 미리보기(vite preview)에도 같은 값을 붙인다.
 // CSP의 출처 목록은 손으로 적지 않는다: API 주소는 빌드 환경 변수에서, 창 안에 띄우는 사이트는 PROJECTS의 demo에서 만든다.
 
+// 빌드한 dist가 아니라 src를 바로 쓴다 (vite.config.ts가 이 파일을 읽을 때 desktop-core를 빌드하지 않아도 되게)
+import { EMBED_ORIGINS } from '../../../packages/desktop-core/src/memo/embeds';
+
 /** Cloudflare Turnstile (메일 앱의 스팸 막기): 스크립트, 확인 요청, 위젯 iframe */
 const TURNSTILE = 'https://challenges.cloudflare.com';
 
@@ -67,7 +70,8 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		// blob:: 방문자가 놓은 PDF(이 탭의 blob 주소)를 pdf.js가 fetch로 읽는다 (Finder localFiles)
 		// data:: 이력서 PDF의 레이아웃 엔진(WebAssembly)이 자기 몸통을 data: 주소로 읽는다. 바깥으로 나가는 연결은 아니다
 		'connect-src': ["'self'", 'blob:', 'data:', ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
-		'frame-src': ["'self'", TURNSTILE, ...frameOrigins(frameUrls)],
+		// 메모 글에 주소만 한 줄로 적은 YouTube·Vimeo 등의 임베드 (desktop-core memo/embeds.ts의 목록)
+		'frame-src': ["'self'", TURNSTILE, ...Object.values(EMBED_ORIGINS).sort(), ...frameOrigins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],
 		'base-uri': ["'self'"],

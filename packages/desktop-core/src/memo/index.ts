@@ -1,6 +1,7 @@
 // 메모(블로그) 로직: 글 읽기·정렬, 태그, 폴더 정리, 찾기, 글 검사. 화면과 저장(localStorage·API)은 앱 쪽에 있다
 export * from './arrange.js';
 export * from './caption.js';
+export * from './embeds.js';
 export * from './find.js';
 export * from './imageLayout.js';
 export * from './organize.js';
