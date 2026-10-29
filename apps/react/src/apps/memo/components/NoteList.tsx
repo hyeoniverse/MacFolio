@@ -36,7 +36,7 @@ interface NoteProps {
 	series?: { name: string; number: number };
 }
 
-/** 제목 앞의 연재 표시: '트래픽 분석 #3' (아이콘은 화면 낭독기에 '연재'로 읽힌다) */
+/** 제목 위 한 줄의 연재 표시: '트래픽 분석 #3' (아이콘은 화면 낭독기에 '연재'로 읽힌다) */
 const SeriesMark = ({ series }: { series: { name: string; number: number } }) => (
 	<span className="memo-item-series">
 		<i className="fa-solid fa-layer-group" role="img" aria-label="연재" /> {series.name} #{series.number}
@@ -114,6 +114,7 @@ export const NoteItem = ({
 		onClick={onOpen}
 	>
 		{picked && <PickMark on={picked.has(post.slug)} />}
+		{series && <SeriesMark series={series} />}
 		<strong>
 			{popularity && (
 				<span className={`memo-item-rank rank-${popularity.rank}`} aria-label={`${popularity.rank}위`}>
@@ -122,7 +123,6 @@ export const NoteItem = ({
 			)}
 			{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
 			<SecretMark post={post} />
-			{series && <SeriesMark series={series} />}
 			{post.title}
 			<StatusBadge post={post} />
 		</strong>

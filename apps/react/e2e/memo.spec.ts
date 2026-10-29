@@ -225,16 +225,7 @@ test.describe('메모 (블로그)', () => {
 	test('정렬 기준·순서와 날짜별 그룹화를 바꾸고, 다시 열어도 그대로다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const list = memo.getByRole('region', { name: '글 목록' });
-		// 제목 앞의 연재 표시(.memo-item-series)는 빼고 제목 글자만
-		const titlesOf = (region: typeof list) =>
-			region.locator('.memo-item strong').evaluateAll((items) =>
-				items.map((item) =>
-					[...item.childNodes]
-						.filter((node) => !(node instanceof Element && node.classList.contains('memo-item-series')))
-						.map((node) => node.textContent)
-						.join('')
-				)
-			);
+		const titlesOf = (region: typeof list) => region.locator('.memo-item strong').allTextContents();
 		const titles = () => titlesOf(list);
 		const openSortMenu = async () => {
 			await memo.getByRole('button', { name: '정렬과 그룹화' }).click();
