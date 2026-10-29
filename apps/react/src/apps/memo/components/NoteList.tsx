@@ -36,10 +36,10 @@ interface NoteProps {
 	series?: { name: string; number: number };
 }
 
-/** 제목 앞의 연재 표시: '트래픽 분석 3' (아이콘은 화면 낭독기에 '연재'로 읽힌다) */
+/** 제목 앞의 연재 표시: '트래픽 분석 [3]' (아이콘은 화면 낭독기에 '연재'로 읽힌다) */
 const SeriesMark = ({ series }: { series: { name: string; number: number } }) => (
 	<span className="memo-item-series">
-		<i className="fa-solid fa-layer-group" role="img" aria-label="연재" /> {series.name} {series.number}
+		<i className="fa-solid fa-layer-group" role="img" aria-label="연재" /> {series.name} [{series.number}]
 	</span>
 );
 

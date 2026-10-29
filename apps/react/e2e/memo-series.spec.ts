@@ -80,7 +80,7 @@ test.describe('메모 연재', () => {
 		await enterDesktop(page, '/memo/analytics-collect');
 		const memo = appWindow(page, 'memo');
 		const item = memo.locator('.memo-item', { hasText: 'sendBeacon으로 5초마다' });
-		await expect(item.locator('.memo-item-series')).toHaveText(`${SERIES} 2`);
+		await expect(item.locator('.memo-item-series')).toHaveText(`${SERIES} [2]`);
 	});
 
 	test('연재가 아닌 글에는 머리말과 연재 상자가 없다', async ({ page }) => {
