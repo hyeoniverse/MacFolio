@@ -5,6 +5,7 @@ import {
 	NAV_HISTORY_VERSION,
 	parseNavHistory,
 	pruneNavHistory,
+	rememberScroll,
 	serializeNavHistory,
 	stepList,
 	stepTarget,
@@ -62,6 +63,35 @@ describe('메모 뒤로·앞으로 기록', () => {
 			EMPTY_NAV_HISTORY
 		);
 		expect(history.entries).toEqual([entry('a'), entry('b', '기술 노트')]);
+	});
+});
+
+describe('본문 스크롤 위치', () => {
+	it('떠나는 지금 칸에 스크롤 위치를 적고(정수, 0 이상), 새 칸에는 없다', () => {
+		let history = visit(EMPTY_NAV_HISTORY, entry('a'));
+		history = visit(rememberScroll(history, 1234.6), entry('b'));
+		expect(history.entries.map((item) => item.scroll)).toEqual([1235, undefined]);
+		expect(rememberScroll(history, -5).entries[1].scroll).toBe(0);
+	});
+
+	it('같은 위치면 기록을 바꾸지 않고, 칸이 없으면 그대로', () => {
+		const history = rememberScroll(visit(EMPTY_NAV_HISTORY, entry('a')), 100);
+		expect(rememberScroll(history, 100)).toBe(history);
+		expect(rememberScroll(EMPTY_NAV_HISTORY, 100)).toBe(EMPTY_NAV_HISTORY);
+	});
+
+	it('스크롤 위치는 같은 칸인지 가르는 데 쓰지 않는다', () => {
+		const history = rememberScroll(visit(EMPTY_NAV_HISTORY, entry('a')), 300);
+		expect(visit(history, entry('a'))).toBe(history);
+	});
+
+	it('저장했다 다시 읽어도 남고, 이상한 값이면 기록을 버린다', () => {
+		const history = rememberScroll(visit(EMPTY_NAV_HISTORY, entry('a')), 300);
+		expect(parseNavHistory(JSON.parse(JSON.stringify(serializeNavHistory(history))))).toEqual(history);
+		for (const scroll of [-1, 'x', Number.MAX_SAFE_INTEGER])
+			expect(parseNavHistory({ ...serializeNavHistory(history), entries: [{ ...entry('a'), scroll }] })).toEqual(
+				EMPTY_NAV_HISTORY
+			);
 	});
 });
 

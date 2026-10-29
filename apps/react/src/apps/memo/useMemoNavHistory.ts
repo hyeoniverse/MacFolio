@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import {
 	ALL_CATEGORY,
 	folderLabelOf,
@@ -11,6 +11,7 @@ import { readJson, STORAGE_KEYS, writeJson } from '@/shared/lib/storage';
 import {
 	parseNavHistory,
 	pruneNavHistory,
+	rememberScroll,
 	sameEntry,
 	serializeNavHistory,
 	stepList,
@@ -35,7 +36,8 @@ export interface NavStep {
 /**
  * 메모의 뒤로·앞으로 (Finder·Safari의 ‹ ›). 연 폴더와 본 글이 바뀔 때마다 기록에 쌓고,
  * 뒤로·앞으로 가면 그 폴더와 글을 다시 연다 (검색어와 조건은 비운다: 그 글이 목록에 보이게).
- * 지운 글처럼 지금 없는 글의 칸은 건너뛴다. 기록 규칙은 navHistory.ts
+ * 지운 글처럼 지금 없는 글의 칸은 건너뛴다. 기록 규칙은 navHistory.ts.
+ * 칸을 떠날 때 본문의 스크롤 위치를 그 칸에 적어 두고, 뒤로·앞으로 돌아오면 그 위치를 restoreScroll에 넘긴다
  */
 export function useMemoNavHistory({
 	category,
@@ -45,6 +47,8 @@ export function useMemoNavHistory({
 	folders,
 	ready,
 	open,
+	scrollRef,
+	restoreScroll,
 }: {
 	category: string;
 	tagSelection: TagSelection;
@@ -58,6 +62,10 @@ export function useMemoNavHistory({
 	ready: boolean;
 	/** 기록의 한 칸을 연다 */
 	open: (entry: { category: string; tagSelection: TagSelection | null; slug: string | null }) => void;
+	/** 본문 스크롤 영역 (떠날 때의 위치를 적는다) */
+	scrollRef: RefObject<HTMLElement | null>;
+	/** 뒤로·앞으로로 다른 글을 열 때, 그 글을 그릴 다음에 맞출 스크롤 위치 */
+	restoreScroll: (top: number) => void;
 }) {
 	// 새로 고쳐도 남게 이 탭의 sessionStorage에서 읽는다 (탭마다 따로, 탭을 닫으면 사라진다: 브라우저 기록과 같은 범위)
 	const [history, setHistory] = useState<NavHistory>(() =>
@@ -66,6 +74,18 @@ export function useMemoNavHistory({
 	/** 뒤로·앞으로로 연 동안에는 기록을 쌓지 않는다 (지금 칸만 옮긴다) */
 	const stepping = useRef(false);
 	const tags = category === TAG_VIEW ? JSON.stringify(tagSelection) : '';
+
+	// 본문의 마지막 스크롤 위치. 다른 글을 열면 본문이 맨 위로 가므로, 그 전에 본 위치를 떠나는 칸에 적으려고 따로 둔다
+	// (본문 영역은 글을 고를 때 생기고 바뀔 수 있어, 문서에서 스크롤 이벤트를 받아 그 영역의 것만 본다)
+	const lastScroll = useRef(0);
+	useEffect(() => {
+		const onScroll = (event: Event) => {
+			const scroller = scrollRef.current;
+			if (scroller && event.target === scroller) lastScroll.current = scroller.scrollTop;
+		};
+		document.addEventListener('scroll', onScroll, { capture: true, passive: true });
+		return () => document.removeEventListener('scroll', onScroll, { capture: true });
+	}, [scrollRef]);
 
 	const bySlug = useMemo(() => new Map(posts.map((post) => [post.slug as string, post])), [posts]);
 	const folderSet = useMemo(() => new Set(folders), [folders]);
@@ -92,7 +112,7 @@ export function useMemoNavHistory({
 			stepping.current = false;
 			return;
 		}
-		setHistory((current) => visit(current, { category, tags, slug }));
+		setHistory((current) => visit(rememberScroll(current, lastScroll.current), { category, tags, slug }));
 	}, [ready, category, tags, slug]);
 
 	useEffect(() => {
@@ -105,14 +125,16 @@ export function useMemoNavHistory({
 			if (!entry || index === history.index) return;
 			// 지금 보이는 칸과 같으면 화면이 바뀌지 않아 기록 effect가 돌지 않는다. 그때는 표시만 옮긴다
 			stepping.current = !sameEntry(entry, { category, tags, slug });
-			setHistory((current) => ({ ...current, index }));
+			setHistory((current) => ({ ...rememberScroll(current, lastScroll.current), index }));
+			// 다른 글이면 그 글을 떠날 때의 위치에서 시작한다 (같은 글이면 본문이 바뀌지 않으니 그대로 둔다)
+			if (entry.slug && entry.slug !== slug) restoreScroll(entry.scroll ?? 0);
 			open({
 				category: entry.category,
 				tagSelection: entry.tags ? (JSON.parse(entry.tags) as TagSelection) : null,
 				slug: entry.slug,
 			});
 		},
-		[history, open, category, tags, slug]
+		[history, open, category, tags, slug, restoreScroll]
 	);
 
 	const back = stepTarget(history, -1, usable);
