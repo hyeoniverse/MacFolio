@@ -1,5 +1,5 @@
 ---
-title: 직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기
+title: 디자인 토큰 5 - 직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기
 date: 2026-10-18
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱 CSS에 직접 작성한 hex 513곳 중 288곳을 theme.css의 색 토큰으로 바꿨다. 테마와 무관한 값은 Apple 시스템 색 이름으로, 라이트·다크 쌍은 두 선언이 정확히 일치할 때만 통합했다. 계산된 스타일 41만여 개를 비교해 화면 변화가 없는 것을 확인했다.
@@ -119,15 +119,15 @@ TS·TSX 안의 hex 403곳도 그대로 두었다. 프로젝트 소개 데이터�
 ## 남은 과제와 정리
 
 - 쌍이 일치하지 않는 39곳(`#3a3a3c` 등)은 의도한 차이인지 수작업 중 생긴 차이인지 화면을 하나씩 검토해야 판단할 수 있다. 이번 작업은 "화면 변화 없음"이 조건이라 보류했다.
-- `rgb()`·`rgba()` 425곳은 변경하지 않았다. 대부분 그림자와 반투명 배경이다. 그림자 다섯 값은 [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)에서 별도로 토큰화했다.
+- `rgb()`·`rgba()` 425곳은 변경하지 않았다. 대부분 그림자와 반투명 배경이다. 그림자 다섯 값은 [디자인 토큰 4 - 그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)에서 별도로 토큰화했다.
 - "변경 전후의 계산된 스타일 비교"로 검증하니, 수백 곳을 치환해도 화면을 하나씩 확인할 필요가 없었다. 반대로, 비교로 검증할 수 없는 변경(실제 색 수정)은 같은 커밋에 포함하지 않았다.
 
 ## 관련 글
 
-- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
-- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
-- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
-- [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
+- [디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [디자인 토큰 2 - 자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
+- [디자인 토큰 3 - Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
+- [디자인 토큰 4 - 그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
 
 [^token]: 색·간격·글자 크기처럼 디자인에서 반복되는 값에 용도를 나타내는 이름을 붙여 한 곳에서 관리하는 방식. 이 사이트에서는 `styles/theme.css`의 CSS 사용자 정의 속성(`--color-*` 등)으로 정의한다.
 

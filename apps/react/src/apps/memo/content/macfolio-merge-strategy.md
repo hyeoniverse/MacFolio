@@ -145,9 +145,9 @@ gh repo edit hyeoniverse/MacFolio --enable-squash-merge=false --enable-rebase-me
 
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 세 방식의 차이와 고르는 기준 (일반론)
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 브랜치 커밋마다 메시지 형식을 검사하는 conventions 워크플로와 Ruleset
-- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): 머지 커밋으로 병합되는 Dependabot PR
-- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
+- [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
+- [보안 점검 9 - GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): 머지 커밋으로 병합되는 Dependabot PR
+- [메모 편집기 5 - Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
 - 병합 방식 글을 처음 작성한 날의 기록: [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
 
 #MacFolio #Git #GitHub

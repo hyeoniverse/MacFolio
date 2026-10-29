@@ -1,5 +1,5 @@
 ---
-title: @import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증
+title: CSS 정리 4 - @import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증
 date: 2026-10-16
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 4,600줄 Memo.css를 규칙을 옮기지 않고 구역 경계에서만 분할해 열다섯 파일로 나눴다. 원래 파일은 순서대로 불러오는 @import 목록만 남겼고, 분할 전후 빌드한 CSS의 md5가 같은 것으로 검증했다.
@@ -77,7 +77,7 @@ PR([#238](https://github.com/hyeoniverse/MacFolio/pull/238))의 변경 규모는
 
 - [리팩터링 2단계: 구조](/memo/refactor-step2-structure)
 - [폴더 사이드바와 휴대폰 사진 앱 나누기](/memo/split-sidebar-photos)
-- [선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [CSS 정리 1 - 선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
 
 [^cascade]: CSS 캐스케이드는 출처·`!important`, 캐스케이드 레이어, 명시도, 선언 순서 차례로 비교한다. 앞 단계가 모두 같을 때만 선언 순서로 정해진다. [MDN: Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
 

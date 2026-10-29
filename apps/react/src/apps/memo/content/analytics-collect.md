@@ -111,7 +111,7 @@ Apple 메뉴 맨 위에 "오늘 방문자 N명"을 추가했다. 메뉴를 열 �
 ## 그 뒤에 바뀐 것
 
 - 서버 요청을 `shared/api/client.ts`의 `api()` 하나로 통합할 때([#196](https://github.com/hyeoniverse/MacFolio/pull/196), [공용 API 클라이언트](/memo/shared-api-client)) 오늘 방문자 수를 조회하는 코드도 옮겼다. `sendBeacon`은 응답을 읽지 않으므로 그대로 두었다.
-- UTM을 다섯 가지(`source`, `medium`, `campaign`, `term`, `content`)로 늘리고, 읽은 `utm_*`는 주소창에서 삭제한다([트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)). 삭제하지 않으면 새로 고칠 때마다 같은 캠페인이 다시 집계된다.
+- UTM을 다섯 가지(`source`, `medium`, `campaign`, `term`, `content`)로 늘리고, 읽은 `utm_*`는 주소창에서 삭제한다([트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)). 삭제하지 않으면 새로 고칠 때마다 같은 캠페인이 다시 집계된다.
 
 ## 남은 것, 배운 것
 
@@ -135,10 +135,10 @@ npx playwright test e2e/analytics.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [트래픽 분석 1 - API](/memo/analytics-api)
-- [트래픽 분석 3 - 활동 상태 보기](/memo/analytics-activity-monitor)
-- [트래픽 분석 4 - 공개](/memo/analytics-public)
-- [트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
+- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
+- [트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
 - [앱 링크와 주소 막대](/memo/app-links)
 - [공용 API 클라이언트](/memo/shared-api-client)
 

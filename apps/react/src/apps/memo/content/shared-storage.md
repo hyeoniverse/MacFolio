@@ -1,11 +1,11 @@
 ---
-title: readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기
+title: 공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
 summary: 브라우저 저장소를 사용하는 파일 7개가 각각 키 문자열, JSON.parse, try/catch(12개)를 포함하고 있었다. storage.ts에 키 목록과 readJson·writeJson을 정의하고 예외를 그곳에서 처리해, 호출하는 쪽에는 형태 검사만 남았다.
 ---
 
-이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 두 번째 항목을 처리한 기록이다. 첫 번째 항목은 [공통 API 클라이언트](/memo/shared-api-client)였다.
+이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 두 번째 항목을 처리한 기록이다. 첫 번째 항목은 [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)였다.
 
 ## 분산되어 있던 코드
 
@@ -129,7 +129,7 @@ PR 전체로는 14개 파일, 322줄 추가와 134줄 삭제였다. 추가된 �
 - 키 문자열을 한 객체로 통합하면 "이 사이트가 브라우저에 무엇을 저장하는가"라는 질문에 파일 하나로 답할 수 있다. 개인정보 안내(휴지통의 '내 브라우저 데이터')와도 연동된다.
 - 모듈을 import할 수 없는 위치(`theme-boot.js`)는 예외로 두고 양쪽에 주석을 남긴다. 무리하게 통합해 첫 화면 렌더링이 늦어지면 손해다.
 
-같은 단계의 마지막 작업은 화면 크기 판단(`matchMedia`·`innerWidth` 25곳)을 `useIsMobile`·`useViewport`로 통일하는 일이다([matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)).
+같은 단계의 마지막 작업은 화면 크기 판단(`matchMedia`·`innerWidth` 25곳)을 `useIsMobile`·`useViewport`로 통일하는 일이다([공통 모듈 3 - matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)).
 
 ## 사용 방법
 
@@ -147,8 +147,8 @@ grep -rn "localStorage\|sessionStorage" src | grep -v "shared/lib/storage\|\.tes
 
 ## 관련 글
 
-- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client): 3단계 첫 항목
-- [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media): 3단계 마지막 항목
+- [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client): 3단계 첫 항목
+- [공통 모듈 3 - matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media): 3단계 마지막 항목
 - [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas): 설정 값의 형태 검사
 - [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
 

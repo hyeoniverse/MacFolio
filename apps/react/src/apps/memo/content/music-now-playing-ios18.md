@@ -1,5 +1,5 @@
 ---
-title: WebKit의 요소별 재생 허용 규칙과 탭 처리 중 audio 요소 허용받기
+title: 휴대폰 화면 6 - WebKit의 요소별 재생 허용 규칙과 탭 처리 중 audio 요소 허용받기
 date: 2026-10-23
 category: 개발 기록/MacFolio/프론트엔드
 summary: 휴대폰 음악 앱의 지금 재생 중을 iOS 18 음악 앱의 구성(쓸어내려 닫는 손잡이, 큰 표지와 ••• 버튼, 대기열 화면, 어두운 메뉴)으로 다시 만들었다. 함께 휴대폰에서 배경 음악이 재생되지 않던 원인(요소마다 사용자 제스처를 요구하는 WebKit의 재생 규칙)을 로딩 화면의 탭 처리 안에서 audio 요소를 허용받는 방식으로 해결했다.
@@ -81,7 +81,7 @@ Font Awesome 6의 글리프 상자는 1.25em이고, 그림은 그 안에서 좌�
 
 ## 다음 재생 목록의 순서 바꾸기
 
-대기열은 `packages/desktop-core`의 플레이어 store가 관리한다([결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music)). 여기에 두 동작을 추가했다.
+대기열은 `packages/desktop-core`의 플레이어 store가 관리한다([desktop-core 3 - 결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music)). 여기에 두 동작을 추가했다.
 
 - `jumpTo(trackId)`: 목록의 곡을 누르면 대기열 순서는 그대로 두고 그 위치로 건너뛴다. 이전에는 `playFrom`으로 대기열을 처음부터 다시 만들었다
 - `moveUpcoming(from, to)`: '다음 재생' 목록(지금 곡 다음부터, 끝에 닿으면 처음부터 지금 곡 앞까지)에서 한 곡을 옮긴다. 결과 대기열은 지금 곡을 맨 앞(position 0)에 두고 바뀐 순서로 잇는다
@@ -148,9 +148,9 @@ HTMLMediaElement.prototype.play = function () {
 ## 관련 글
 
 - [isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes): 이전 지금 재생 중 시트와 배경 음악의 실행 상태
-- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 이 글의 대기열 동작을 추가한 플레이어 store
-- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style): 휴대폰 음악 보관함의 이전 구성
-- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 같은 표지 블러 배경의 Safari 문제
+- [desktop-core 3 - 결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 이 글의 대기열 동작을 추가한 플레이어 store
+- [휴대폰 화면 3 - 셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style): 휴대폰 음악 보관함의 이전 구성
+- [위젯 2 - iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 같은 표지 블러 배경의 Safari 문제
 - [성능 최적화 2 - 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
 
 [^webkit]: WebKit 블로그 [New `<video>` Policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/), MDN [자동 재생 가이드](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)

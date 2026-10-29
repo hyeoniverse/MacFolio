@@ -1,11 +1,11 @@
 ---
-title: @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기
+title: 보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
 summary: 요청 제한 방식이 세 가지로 나뉘어 있었고 글 작성·파일 업로드·분석 이벤트에는 1분 제한이 없었다. 제한 이름 7개를 한 파일에 정의하고 쓰기 경로 33개에 @RateLimit 한 줄로 적용했다. 가드 순서를 한 번 잘못 지정했고, 누락된 경로와 순서는 경로 표 시험이 검출한다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 "요청 제한을 한 방식으로"를 처리한 기록이다([PR #162](https://github.com/hyeoniverse/MacFolio/pull/162)). 이전 글([Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test))에서 만든 경로 표에 제한 열을 추가하는 작업이기도 하다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 "요청 제한을 한 방식으로"를 처리한 기록이다([PR #162](https://github.com/hyeoniverse/MacFolio/pull/162)). 이전 글([보안 점검 5 - Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test))에서 만든 경로 표에 제한 열을 추가하는 작업이기도 하다.
 
 ## 세 가지로 나뉘어 있던 제한
 
@@ -96,7 +96,7 @@ export function RateLimit(name: RateLimitName) {
 
 ## 서버 설정 확인
 
-요청 제한은 IP 단위로 집계한다. API 앞에 Cloudflare Tunnel이 있으므로, 서버가 `X-Forwarded-For`를 신뢰하지 않으면 모든 방문자가 터널의 IP 하나로 인식되어 한 사용자가 제한에 걸리면 전체가 차단된다. 이 PR을 머지하기 전에 환경 변수 수정이 필요한지 판단하려고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지 먼저 확인했다. 이 값은 이번 변경뿐 아니라 기존 로그인·댓글 제한에도 필요하다([Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)의 trust proxy 도식 참고).
+요청 제한은 IP 단위로 집계한다. API 앞에 Cloudflare Tunnel이 있으므로, 서버가 `X-Forwarded-For`를 신뢰하지 않으면 모든 방문자가 터널의 IP 하나로 인식되어 한 사용자가 제한에 걸리면 전체가 차단된다. 이 PR을 머지하기 전에 환경 변수 수정이 필요한지 판단하려고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지 먼저 확인했다. 이 값은 이번 변경뿐 아니라 기존 로그인·댓글 제한에도 필요하다([서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)의 trust proxy 도식 참고).
 
 ```bash
 grep '^TRUST_PROXY=' ~/deploy/api.env     # TRUST_PROXY=1
@@ -117,11 +117,11 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 관련 글
 
-- [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
+- [보안 점검 5 - Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
 - [Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings)
 - [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
-- [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
-- [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
+- [보안 점검 11 - PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
+- [보안 점검 8 - 모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
 - [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 
 [^decorator]: 같은 대상에 데코레이터가 여러 개 있으면, 데코레이터 표현식은 위에서 아래로 평가되고 결과 함수는 아래(대상에 가까운 쪽)에서 위로 호출된다. [TypeScript 문서: Decorator Composition](https://www.typescriptlang.org/docs/handbook/decorators.html#decorator-composition)

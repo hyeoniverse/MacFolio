@@ -87,7 +87,7 @@ export function refreshBin() {
 ## 관련 글
 
 - [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
-- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
+- [Finder 1 - openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
 - [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout)
 
 #MacFolio #프론트엔드 #휴지통 #macOS

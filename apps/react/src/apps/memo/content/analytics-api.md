@@ -178,9 +178,9 @@ pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
 
 ## 관련 글
 
-- [트래픽 분석 2 - 수집](/memo/analytics-collect)
-- [트래픽 분석 3 - 활동 상태 보기](/memo/analytics-activity-monitor)
-- [트래픽 분석 4 - 공개](/memo/analytics-public)
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
+- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
 - [분석 계약](/memo/contracts-analytics)
 - [트래픽 분석 서비스 나누기](/memo/analytics-service-split)
 - [요청 제한](/memo/rate-limit-all-writes)

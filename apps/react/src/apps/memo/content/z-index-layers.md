@@ -1,5 +1,5 @@
 ---
-title: 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기
+title: 디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기
 date: 2026-10-16
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 화면 전체에서 겹치는 요소의 z-index가 1000·1001·9999·10000처럼 숫자로 13개 파일 20곳에 흩어져 있었다. 값은 그대로 두고 theme.css의 --z-* 이름 15개로 옮겨 겹침 순서를 한 표에서 확인할 수 있게 했다.
@@ -48,7 +48,7 @@ MacFolio의 데스크톱 화면은 겹치는 계층이 많다. 바탕화면 위�
 | TypeScript 상수로 모아 인라인 스타일  | 타입 검사로 오타를 검출한다                | 대부분의 z-index는 CSS 파일에 있다. 스타일을 TS로 옮겨야 한다                |
 | CSS 변수 `--z-*`를 `theme.css`에 정의 | CSS 파일에서 바로 사용한다. 한 표로 보인다 | 변수 이름 오타는 CSS가 오류 없이 무시한다                                    |
 
-색·글자 크기·모서리도 이미 `theme.css`의 변수로 옮기는 중이었다([직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)). 디자인 값을 같은 파일에 같은 방식([CSS 사용자 지정 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties))으로 정의하면 검색 위치가 하나로 줄어들어 CSS 변수를 선택했다.
+색·글자 크기·모서리도 이미 `theme.css`의 변수로 옮기는 중이었다([디자인 토큰 5 - 직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)). 디자인 값을 같은 파일에 같은 방식([CSS 사용자 지정 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties))으로 정의하면 검색 위치가 하나로 줄어들어 CSS 변수를 선택했다.
 
 값을 100 간격으로 다시 매기는 방안도 검토했지만 적용하지 않았다. 숫자를 바꾸면 렌더링 결과가 바뀔 수 있고, 그러면 이번 작업이 "이름 붙이기"가 아니라 "겹침 순서 변경"이 된다. 두 변경을 한 PR에 섞지 않았다.
 
@@ -118,11 +118,11 @@ z-index: var(--z-app-error);
 
 - sticky가 쌓임 맥락을 만들어 도구 막대 버튼이 가려진 일: [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)
 - 날씨 앱에서 backdrop-filter가 같은 문제를 만든 일: [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes)
-- 색을 이름으로 모은 일: [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
-- 그림자·간격을 이름으로 모은 일: [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
+- 색을 이름으로 모은 일: [디자인 토큰 5 - 직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
+- 그림자·간격을 이름으로 모은 일: [디자인 토큰 4 - 그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
 - 스타일 리팩터링 전체: [리팩터링 5단계 - CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
 - PR: [#231](https://github.com/hyeoniverse/MacFolio/pull/231)
-- 창 안의 z-index를 -1~10으로 제한한 규칙: [Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values)
+- 창 안의 z-index를 -1~10으로 제한한 규칙: [디자인 토큰 6 - Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values)
 - `--z-tour`를 사용하는 둘러보기: [box-shadow 스포트라이트와 pointer-events로 클릭을 통과시키는 온보딩 오버레이](/memo/first-visit-tour)
 
 [^stacking]: 자식 요소의 z-index를 그 안에서만 비교하는 독립된 겹침 단위. `position: fixed`·`sticky`, z-index가 지정된 `position: relative`·`absolute`, `opacity` 1 미만, `transform`, `filter`, `backdrop-filter` 등이 새로 만든다.

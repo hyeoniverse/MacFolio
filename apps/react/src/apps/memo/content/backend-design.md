@@ -89,13 +89,13 @@ API로 들어온 요청은 모두 같은 계층을 순서대로 거친다.
 
 ![10월 3일과 지금](./images/backend-design-growth.svg '기능 모듈은 11개에서 24개로, API 시험은 120여 개에서 309개로')
 
-| 바뀐 곳        | 10월 3일                                      | 현재                                                                                                                                              |
-| -------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 요청 제한      | 로그인, 댓글·메시지 쓰기에만 `ThrottlerGuard` | 모든 쓰기 경로에 `@RateLimit` 데코레이터 하나로 적용 ([쓰기 경로에 요청 제한](/memo/rate-limit-all-writes))                                       |
-| 입력 형식      | 서버의 DTO와 화면의 타입을 따로 작성          | `packages/contracts`의 [zod](https://zod.dev/) 스키마를 서버·화면이 함께 사용 ([분석 이벤트 계약](/memo/contracts-analytics))                     |
-| 권한 확인      | 경로마다 `@UseGuards`를 사람이 검토           | 경로 85개를 표 하나와 비교하는 시험 ([API 경로를 표 하나로](/memo/api-route-table-test))                                                          |
-| 배포           | 서버에서 `git pull` 후 빌드                   | GitHub Actions가 이미지를 빌드하고 서버는 이미지만 교체 ([command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)) |
-| 새로 생긴 모듈 | —                                             | 트래픽 분석, 서버 자원, 문서 파일(R2), Finder 폴더, 사이트 프로필, 좋아요, 번역·요약 등                                                           |
+| 바뀐 곳        | 10월 3일                                      | 현재                                                                                                                                                              |
+| -------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 요청 제한      | 로그인, 댓글·메시지 쓰기에만 `ThrottlerGuard` | 모든 쓰기 경로에 `@RateLimit` 데코레이터 하나로 적용 ([쓰기 경로에 요청 제한](/memo/rate-limit-all-writes))                                                       |
+| 입력 형식      | 서버의 DTO와 화면의 타입을 따로 작성          | `packages/contracts`의 [zod](https://zod.dev/) 스키마를 서버·화면이 함께 사용 ([분석 이벤트 계약](/memo/contracts-analytics))                                     |
+| 권한 확인      | 경로마다 `@UseGuards`를 사람이 검토           | 경로 85개를 표 하나와 비교하는 시험 ([API 경로를 표 하나로](/memo/api-route-table-test))                                                                          |
+| 배포           | 서버에서 `git pull` 후 빌드                   | GitHub Actions가 이미지를 빌드하고 서버는 이미지만 교체 ([배포 자동화 2 - command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)) |
+| 새로 생긴 모듈 | —                                             | 트래픽 분석, 서버 자원, 문서 파일(R2), Finder 폴더, 사이트 프로필, 좋아요, 번역·요약 등                                                                           |
 
 현재 시험 수는 e2e 131개(파일 23개)와 단위 178개이고, DB 테이블(Prisma 모델)은 23개다.
 
@@ -137,13 +137,13 @@ pnpm --filter @macfolio/api test:e2e   # HTTP 경계 시험
 - [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
 - [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
-- [Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
-- [createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
-- [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
-- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [메모 폴더 2 - Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
+- [배경화면 1 - createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
+- [GitHub 앱 1 - API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
+- [서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
 - [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
-- [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
+- [보안 점검 5 - Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
 
 [^samesite]: `SameSite`는 다른 사이트에서 시작된 요청에 쿠키를 함께 보낼지 정하는 쿠키 속성이다. `Lax`이면 같은 사이트(등록 가능한 도메인이 같은 주소) 사이의 요청과 최상위 이동에만 쿠키를 보낸다.
 

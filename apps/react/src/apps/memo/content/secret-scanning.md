@@ -1,5 +1,5 @@
 ---
-title: gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기
+title: 보안 점검 10 - gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/품질
 summary: 저장소 기록 전체를 gitleaks로 검사한 결과 검출된 항목은 Oracle 문서의 시험용 개인 키 4건뿐이었다. 기본 규칙이 검출하지 못하는 Resend·Groq 키와 DB 비밀번호 규칙을 추가하고, PR·main·매주 월요일마다 기록 전체를 다시 검사하는 CI 작업을 만들었다.
@@ -96,7 +96,7 @@ PR과 main push마다, 그리고 매주 월요일에 실행된다. 월요일에�
   run: ./gitleaks git --redact --verbose --exit-code 1 .
 ```
 
-권한은 `contents: read`뿐이고, 같은 브랜치에서 새 실행이 시작되면 이전 실행을 취소한다. 바이너리는 버전(8.30.1)과 SHA-256 체크섬을 지정해 내려받는다. 액션(`gitleaks/gitleaks-action`)을 사용하지 않은 이유는 조직 저장소에 라이선스가 필요하고, 내려받는 바이너리를 직접 고정하는 방식이 이전 글([GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot))과 같은 기준이기 때문이다. `fetch-depth: 0`으로 기록 전체를 내려받아 검사하고, 검출되면 실패한다. 커밋 791개·392MB 검사에 약 15초가 걸린다.
+권한은 `contents: read`뿐이고, 같은 브랜치에서 새 실행이 시작되면 이전 실행을 취소한다. 바이너리는 버전(8.30.1)과 SHA-256 체크섬을 지정해 내려받는다. 액션(`gitleaks/gitleaks-action`)을 사용하지 않은 이유는 조직 저장소에 라이선스가 필요하고, 내려받는 바이너리를 직접 고정하는 방식이 이전 글([보안 점검 9 - GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot))과 같은 기준이기 때문이다. `fetch-depth: 0`으로 기록 전체를 내려받아 검사하고, 검출되면 실패한다. 커밋 791개·392MB 검사에 약 15초가 걸린다.
 
 ## 저장소 설정에서 활성화할 항목
 
@@ -146,10 +146,10 @@ gitleaks git --redact --verbose --exit-code 1 .
 
 ## 관련 글
 
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
-- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
+- [보안 점검 9 - GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
+- [보안 점검 12 - Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
 - [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
-- [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
+- [보안 점검 8 - 모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
 - [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 SSH 키 복구](/memo/oracle-ssh-key-recovery)
 
 [^entropy]: 섀넌 엔트로피. 문자열에 나타나는 각 문자의 빈도로 계산하는 무작위성 지표로, 같은 문자가 반복될수록 낮아진다. gitleaks는 규칙의 `entropy` 값보다 낮은 일치 항목을 검출에서 제외한다. [gitleaks README](https://github.com/gitleaks/gitleaks#configuration)

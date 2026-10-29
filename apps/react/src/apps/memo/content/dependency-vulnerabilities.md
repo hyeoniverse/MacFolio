@@ -1,5 +1,5 @@
 ---
-title: pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기
+title: 보안 점검 1 - pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
 summary: pnpm audit --prod에서 운영 의존성 취약점 6건(high 3)이 검출되었다. 모두 직접 설치하지 않은 하위 패키지였고, 상위 패키지는 이미 최신이었다. pnpm overrides로 하위 패키지만 같은 메이저 안에서 올리고, CI에 high 이상을 차단하는 검사를 추가했다.
@@ -158,10 +158,10 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 
 ## 관련 글
 
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
-- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
-- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
+- [보안 점검 9 - GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
+- [보안 점검 12 - Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
+- [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [E2E 시험 5 - git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
 
 [^transitive]: 직접 설치한 패키지가 다시 의존하는 패키지. `package.json`에는 없지만 잠금 파일과 `node_modules`에는 포함된다.
 

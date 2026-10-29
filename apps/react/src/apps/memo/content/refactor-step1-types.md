@@ -62,18 +62,18 @@ export function parseBody(input: unknown) {
 
 ## 변경 목록
 
-| 항목                               | PR                                                       | 글                                                                                                 |
-| ---------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| `packages/contracts`와 댓글·좋아요 | [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments) |
-| 글                                 | [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | [글 도메인 옮기기](/memo/contracts-posts)                                                          |
-| 메시지                             | [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | [메시지 도메인 옮기기](/memo/contracts-messages)                                                   |
-| 연락 메일                          | [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | [연락 메일의 검사 규칙을 하나로](/memo/contracts-contact)                                          |
-| 배경화면                           | [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | [배경화면 도메인 옮기기](/memo/contracts-wallpapers)                                               |
-| 파일                               | [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | [올린 파일 규칙을 둘로 나누기](/memo/contracts-files)                                              |
-| 분석                               | [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | [분석 이벤트의 모양을 하나로](/memo/contracts-analytics)                                           |
-| 사이트 프로필                      | [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | [사이트 프로필로 1단계 마무리](/memo/contracts-site)                                               |
-| `profile.ts` 분리                  | [#208](https://github.com/hyeoniverse/MacFolio/pull/208) | [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)        |
-| 브랜드 타입                        | [#209](https://github.com/hyeoniverse/MacFolio/pull/209) | [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)                                               |
+| 항목                               | PR                                                       | 글                                                                                                                      |
+| ---------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `packages/contracts`와 댓글·좋아요 | [#200](https://github.com/hyeoniverse/MacFolio/pull/200) | [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments) |
+| 글                                 | [#201](https://github.com/hyeoniverse/MacFolio/pull/201) | [글 도메인 옮기기](/memo/contracts-posts)                                                                               |
+| 메시지                             | [#202](https://github.com/hyeoniverse/MacFolio/pull/202) | [메시지 도메인 옮기기](/memo/contracts-messages)                                                                        |
+| 연락 메일                          | [#203](https://github.com/hyeoniverse/MacFolio/pull/203) | [연락 메일의 검사 규칙을 하나로](/memo/contracts-contact)                                                               |
+| 배경화면                           | [#204](https://github.com/hyeoniverse/MacFolio/pull/204) | [배경화면 도메인 옮기기](/memo/contracts-wallpapers)                                                                    |
+| 파일                               | [#205](https://github.com/hyeoniverse/MacFolio/pull/205) | [올린 파일 규칙을 둘로 나누기](/memo/contracts-files)                                                                   |
+| 분석                               | [#206](https://github.com/hyeoniverse/MacFolio/pull/206) | [분석 이벤트의 모양을 하나로](/memo/contracts-analytics)                                                                |
+| 사이트 프로필                      | [#207](https://github.com/hyeoniverse/MacFolio/pull/207) | [사이트 프로필로 1단계 마무리](/memo/contracts-site)                                                                    |
+| `profile.ts` 분리                  | [#208](https://github.com/hyeoniverse/MacFolio/pull/208) | [모듈 구조 5 - index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)               |
+| 브랜드 타입                        | [#209](https://github.com/hyeoniverse/MacFolio/pull/209) | [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)                                                                    |
 
 방식은 하나다.
 
@@ -182,9 +182,9 @@ export const postSlug = (value: unknown): PostSlug | null => (isPostSlug(value) 
 
 ## 관련 글
 
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
 - [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)
-- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [모듈 구조 5 - index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
 - [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)
 - [리팩터링 2단계 - 순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
 

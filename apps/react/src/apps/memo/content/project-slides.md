@@ -106,7 +106,7 @@ export function firstProjectPdf(entries: DocumentEntry[], projectId: string): Do
 
 ## 관련 글
 
-- [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)
+- [Finder 2 - Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
 

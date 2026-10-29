@@ -79,6 +79,6 @@ summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더�
 ## 관련 글
 
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): 주소 막대가 맨 앞 창의 글을 따라가는 방식
-- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 메뉴 막대 단축키가 동작하는 구조
+- [메뉴 막대 4 - 앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 메뉴 막대 단축키가 동작하는 구조
 
 #MacFolio #메모앱 #React

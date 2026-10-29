@@ -1,11 +1,11 @@
 ---
-title: node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기
+title: 서버 운영 5 - node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/배포·운영
 summary: 종량제 Oracle 계정의 이번 달 요금과 예산을 서버 탭에 표시하고 80%·100%에서 메일로 알리게 했다. 요청 서명은 SDK 없이 node:crypto로 직접 생성하고, 실제 키 없이 Oracle 문서의 시험 값과 문자 단위로 비교해 검증했다.
 ---
 
-[Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)에서 사용률을 측정하고 회수 위험을 알리게 했다. 계정을 종량제(Pay As You Go)로 전환하면 회수 위험은 없어지지만 요금이 발생할 수 있다. [Always Free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) 한도 안에서는 0원이지만, 한도 밖의 자원을 실수로 생성하면 청구된다. 그래서 종량제 계정에서는 이번 달 요금과 예산 한도를 표시하고, 예산에 가까워지면 메일로 알리게 했다([PR #153](https://github.com/hyeoniverse/MacFolio/pull/153), 이슈 [#10](https://github.com/hyeoniverse/MacFolio/issues/10)).
+[서버 운영 4 - Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)에서 사용률을 측정하고 회수 위험을 알리게 했다. 계정을 종량제(Pay As You Go)로 전환하면 회수 위험은 없어지지만 요금이 발생할 수 있다. [Always Free](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm) 한도 안에서는 0원이지만, 한도 밖의 자원을 실수로 생성하면 청구된다. 그래서 종량제 계정에서는 이번 달 요금과 예산 한도를 표시하고, 예산에 가까워지면 메일로 알리게 했다([PR #153](https://github.com/hyeoniverse/MacFolio/pull/153), 이슈 [#10](https://github.com/hyeoniverse/MacFolio/issues/10)).
 
 ## 배경
 
@@ -186,8 +186,8 @@ docker compose logs --tail 50 api            # 서명 오류가 없는지
 ## 관련 글
 
 - [무료 서버가 회수되기 전에 - 사용률을 측정하고 위험하면 메일로](/memo/resource-monitor)
-- [Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
-- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [메뉴 막대 6 - Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
+- [서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 
 [^httpsig]: Oracle API는 IETF 초안 "HTTP Signatures"(draft-cavage-http-signatures)의 방식을 사용한다. 지정한 헤더 값을 정해진 순서로 이어 붙인 문자열에 개인 키로 서명하고, 서버는 등록된 공개 키로 같은 문자열을 재구성해 검증한다. 본문이나 헤더가 전송 중에 바뀌면 검증에 실패한다.
 

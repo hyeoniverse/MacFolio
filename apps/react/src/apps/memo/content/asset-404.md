@@ -117,13 +117,13 @@ curl -sI https://macfolio.hyeoniverse.com/assets/does-not-exist.js | grep -iE '^
 curl -sI https://macfolio.hyeoniverse.com/memo/asset-404 | head -1   # 화면 주소는 200 (SPA)
 ```
 
-Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`로 실행한다. 설정은 루트의 [wrangler.jsonc](https://github.com/hyeoniverse/MacFolio/blob/main/wrangler.jsonc)에 있고, `not_found_handling`과 Worker를 먼저 호출하는 범위(`run_worker_first`)는 [Workers 정적 자산 라우팅 문서](https://developers.cloudflare.com/workers/static-assets/routing/)에 설명되어 있다. 배포는 [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)의 `wrangler deploy`가 수행한다. 되돌리려면 이 Worker를 제거하고 다시 배포한다. 그러면 예전처럼 모든 없는 주소에 `index.html`이 응답된다.
+Worker 시험은 `cd apps/react && npx vitest run worker/notFound.test.ts`로 실행한다. 설정은 루트의 [wrangler.jsonc](https://github.com/hyeoniverse/MacFolio/blob/main/wrangler.jsonc)에 있고, `not_found_handling`과 Worker를 먼저 호출하는 범위(`run_worker_first`)는 [Workers 정적 자산 라우팅 문서](https://developers.cloudflare.com/workers/static-assets/routing/)에 설명되어 있다. 배포는 [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)의 `wrangler deploy`가 수행한다. 되돌리려면 이 Worker를 제거하고 다시 배포한다. 그러면 예전처럼 모든 없는 주소에 `index.html`이 응답된다.
 
 ## 관련 글
 
 - [삭제된 옛 코드 파일을 요청하는 React.lazy 로드 실패 구분하기](/memo/app-error-alert): 이 문제가 화면에 드러난 경로
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): Worker가 `index.html`로 보내는 앱 주소
-- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [보안 점검 2 - CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable): 이후 Worker에 추가된 SEO 처리
 

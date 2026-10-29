@@ -172,9 +172,9 @@ curl -s "https://macfolio-api.hyeoniverse.com/analytics/summary?from=2026-10-01&
 
 ## 관련 글
 
-- [트래픽 분석 1 - API](/memo/analytics-api)
-- [트래픽 분석 2 - 수집](/memo/analytics-collect)
-- [트래픽 분석 4 - 공개](/memo/analytics-public)
+- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
+- [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
 - [트래픽 분석 서비스 나누기](/memo/analytics-service-split)
 - [서버 자원 보기](/memo/resource-monitor)
 - [UTM 분석](/memo/utm-analytics)

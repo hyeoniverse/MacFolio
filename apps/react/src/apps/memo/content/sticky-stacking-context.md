@@ -138,13 +138,13 @@ z-index가 예상과 다르게 동작하면, 조상 요소 중 쌓임 맥락을 
 - "표시되지만 클릭되지 않는다"는 증상은 대부분 다른 요소가 위를 덮고 있다는 뜻이다. [`document.elementFromPoint(x, y)`](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint)로 그 좌표에서 이벤트를 수신하는 요소를 먼저 확인하면 원인을 빨리 찾는다.
 - 이런 함정은 수정한 위치에 이유를 주석으로 남긴다. 코드만 보면 sticky가 더 간단한 방법으로 보이기 때문이다.
 
-이후 화면 전체의 z-index를 이름으로 정리한 작업([흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers))에도 같은 원칙을 적용했다. 이름을 붙여도 쌓임 맥락 안의 값은 맥락 밖의 값과 비교되지 않는다.
+이후 화면 전체의 z-index를 이름으로 정리한 작업([디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers))에도 같은 원칙을 적용했다. 이름을 붙여도 쌓임 맥락 안의 값은 맥락 밖의 값과 비교되지 않는다.
 
 ## 관련 글
 
-- 화면 전체의 겹침 순서를 이름으로 정리한 작업: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- 화면 전체의 겹침 순서를 이름으로 정리한 작업: [디자인 토큰 1 - 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
 - 같은 날의 작업 기록: [9월 29일 - Safari 포트폴리오, 그리고 첫 API와 관리자 로그인](/memo/day-0929)
-- 메모 CSS를 분할하면서 이 주석을 옮긴 작업: [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
+- 메모 CSS를 분할하면서 이 주석을 옮긴 작업: [CSS 정리 4 - @import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
 - PR: [#33](https://github.com/hyeoniverse/MacFolio/pull/33)
 
 [^1]: 쌓임 맥락: 자식 요소의 z-index를 서로 비교하는 범위. 맥락 안의 요소는 맥락 밖의 요소와 직접 비교되지 않고, 맥락을 생성한 요소 하나의 순서를 따른다.

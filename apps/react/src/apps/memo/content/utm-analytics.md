@@ -1,5 +1,5 @@
 ---
-title: 트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석
+title: 트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석
 date: 2026-10-18
 category: 개발 기록/MacFolio/백엔드
 summary: 어느 곳에 게시한 링크로 방문했는지 확인하려고 UTM 집계를 보강했다. 매체 표, 출처·매체·캠페인 조합 표와 일별 추이, term·content 열, 링크 생성기를 추가했고, 조합 키 구분자를 두 번 수정해 ' / '로 정했다.
@@ -86,7 +86,7 @@ export const utmKey = (source?: string | null, medium?: string | null, campaign?
 2. 사이트의 `utmOf()`가 첫 주소를 읽을 때
 3. 서버의 `EventInput` 스키마가 이벤트를 수신할 때
 
-생성기에 `LinkedIn`을 입력하든, 주소에 `utm_source=LinkedIn`을 직접 붙이든 표에는 `linkedin` 한 행으로 집계된다. 이벤트 스키마 전체는 [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)에서 다룬다.
+생성기에 `LinkedIn`을 입력하든, 주소에 `utm_source=LinkedIn`을 직접 붙이든 표에는 `linkedin` 한 행으로 집계된다. 이벤트 스키마 전체는 [트래픽 분석 5 - zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)에서 다룬다.
 
 ![링크 생성기와 사이트가 cleanUtm으로 값을 다듬고, 서버가 같은 함수로 받아 DailyStat에 조합 키로 저장한다](./images/utm-analytics-flow.svg '보내는 쪽과 받는 쪽이 같은 cleanUtm을 쓴다')
 
@@ -174,7 +174,7 @@ if (kept.length === parts.length) return null;
 - [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
 - [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
 - [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
-- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
+- [트래픽 분석 5 - zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
 
 PR: [#253](https://github.com/hyeoniverse/MacFolio/pull/253) · 이슈: [#211](https://github.com/hyeoniverse/MacFolio/issues/211)
 

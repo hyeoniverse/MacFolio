@@ -181,7 +181,7 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
 - [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
-- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
+- [Finder 1 - openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
 - [Vite 두 번째 진입점과 iframe으로 Scalar API 문서 격리하기](/memo/api-docs-app)
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable)
 

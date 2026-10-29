@@ -54,11 +54,11 @@ if (!response.ok) {
 
 ## 변경 목록
 
-| 항목                 | PR                                                       | 글                                                                                               |
-| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 공통 API 클라이언트  | [#196](https://github.com/hyeoniverse/MacFolio/pull/196) | [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client) |
-| 브라우저 저장소 모듈 | [#198](https://github.com/hyeoniverse/MacFolio/pull/198) | [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)        |
-| 미디어 쿼리 모듈     | [#199](https://github.com/hyeoniverse/MacFolio/pull/199) | [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)        |
+| 항목                 | PR                                                       | 글                                                                                                             |
+| -------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| 공통 API 클라이언트  | [#196](https://github.com/hyeoniverse/MacFolio/pull/196) | [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client) |
+| 브라우저 저장소 모듈 | [#198](https://github.com/hyeoniverse/MacFolio/pull/198) | [공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)        |
+| 미디어 쿼리 모듈     | [#199](https://github.com/hyeoniverse/MacFolio/pull/199) | [공통 모듈 3 - matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)        |
 
 ## 구현
 
@@ -154,9 +154,9 @@ export const prefersReducedMotion = () => mediaMatches(REDUCED_MOTION);
 
 ## 관련 글
 
-- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
-- [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)
-- [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)
+- [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)
+- [공통 모듈 3 - matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)
 - [리팩터링 계획을 마치며 — 일곱 단계 전후](/memo/refactor-retrospective)
 
 #MacFolio #리팩터링 #React #TypeScript

@@ -1,5 +1,5 @@
 ---
-title: zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기
+title: contracts 스키마 3 - zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
 summary: 메시지 앱의 Thread·Message 타입과 고정 항목 id 'owner'가 서버와 화면에 각각 정의되어 있었다. contracts로 옮기는 과정에서 화면의 mine?: boolean과 서버의 mine: boolean이 다른 것을 발견했고, 서버의 요청 검증은 MessageInput = CommentInput 한 줄로 정의했다.
@@ -161,8 +161,8 @@ cd apps/react && npx playwright test e2e/messages.spec.ts --project=desktop-chro
 
 ## 관련 글
 
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
 - [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
 - [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
 - [리팩터링 1단계 - zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)

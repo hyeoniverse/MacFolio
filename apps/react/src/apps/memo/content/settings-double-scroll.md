@@ -151,7 +151,7 @@ position: relative;
 
 - [메모 칸 너비 조절 — 그리드 칸을 차지하지 않는 손잡이 두 개](/memo/memo-pane-resize)
 - [Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings)
-- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
+- [E2E 시험 4 - 이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 - [img 로드 전까지 대체 아이콘을 깔아 두는 외부 프로필 사진 표시](/memo/settings-avatar-placeholder)
 
 [^hidden]: 화면에는 보이지 않지만 스크린 리더는 읽는 텍스트다. 보통 `position: absolute`, 1px 크기, `clip`으로 시각적으로만 숨긴다. `display: none`과 달리 접근성 트리에 남는다.

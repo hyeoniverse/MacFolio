@@ -152,6 +152,6 @@ LCP가 늦은 원인도 둘로 나뉘었다.
 
 - [성능 최적화 2 - 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)
 - [성능 최적화 3 - Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기](/memo/site-performance-remeasure)
-- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
+- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
 
 #MacFolio #성능 #Lighthouse #웹폰트 #코드분할

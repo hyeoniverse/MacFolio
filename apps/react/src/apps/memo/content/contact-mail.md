@@ -1,5 +1,5 @@
 ---
-title: Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기
+title: 메일 앱 1 - Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
 summary: mailto 링크로 동작하던 메일 앱의 보내기를 서버가 Resend API로 직접 발송하도록 바꿨다. 방문자 주소는 Reply-To에 넣고, 스팸은 Turnstile과 하루 상한으로 차단하며, 설정이 없으면 기존처럼 메일 앱을 연다. 발송 방식 비교, 요청 처리 순서, 시험, 이후 변경 사항을 정리한다.
@@ -143,8 +143,8 @@ pnpm --filter @macfolio/api test:e2e test/contact.e2e.test.ts
 
 ## 관련 글
 
-- [방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
-- [zod superRefine으로 첫 실패 문구만 반환하는 화면·서버 공통 검사](/memo/contracts-contact)
+- [메일 앱 2 - 방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
+- [contracts 스키마 4 - zod superRefine으로 첫 실패 문구만 반환하는 화면·서버 공통 검사](/memo/contracts-contact)
 - [Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings)
 - [앱 목록에 등록하지 않고 데스크톱이 직접 렌더링하는 시스템 창](/memo/about-this-mac)
 

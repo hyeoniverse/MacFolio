@@ -1,5 +1,5 @@
 ---
-title: 180px 칸 격자 좌표로 바탕화면 위젯 배치하기
+title: 위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기
 date: 2026-10-21
 category: 개발 기록/MacFolio/프론트엔드
 summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. 정보를 보는 위젯은 유리, 글을 읽는 위젯은 불투명한 판이고, 사진 위젯은 Finder › 그림의 폴더도 선택한다. 잘리던 앱과 시계, 날씨 요청 공유, 휴대폰 Finder 편집과 휴지통 문제까지 정리했다.
@@ -110,7 +110,7 @@ summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. �
 1. 홈 화면을 움직이지 않고 0.55초 누르면 편집 모드가 된다. 위젯과 아이콘이 흔들리고, 위젯마다 − 버튼이 생기고, 편집 중에는 앱이 열리지 않는다.
 2. +는 아래에서 올라오는 갤러리 시트를 연다. 시트는 iOS처럼 화면 아래 4/5만 덮고, 위에 남은 흐린 홈 화면을 누르면 닫힌다(처음에는 상태 표시줄 아래까지 모두 덮어서 바깥을 누를 곳이 없었다).
 3. 한 페이지에는 위젯을 세 줄까지 배치한다(작은 위젯 둘이 한 줄, 중간 위젯은 한 줄 전체). 현재 페이지가 차 있으면 자리가 있는 첫 페이지에 추가하고 그 페이지로 이동한다. 어느 페이지에도 자리가 없는 크기는 갤러리에서 비활성화된다.
-4. 위젯을 끌어 순서를 바꾼다. 처음에는 삭제와 추가만 지원했고, 끌기는 이후에 추가했다([Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder)).
+4. 위젯을 끌어 순서를 바꾼다. 처음에는 삭제와 추가만 지원했고, 끌기는 이후에 추가했다([위젯 4 - Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder)).
 
 구성은 `macfolio:mobile:widgets`에 저장하고, 휴지통의 '내 브라우저 데이터'에서 바탕화면 위젯과 함께 삭제한다.
 
@@ -244,8 +244,8 @@ expect(asked.forecast).toEqual(['37.5665']);
 - [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons): 위젯 아래 레이어의 아이콘과 칸 계산
 - [Open-Meteo 지오코딩 지연을 내장 도시 목록 우선 검색으로 줄이기](/memo/weather-app): 날씨 위젯이 응답을 공유하는 앱
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app): 사진 위젯의 앨범
-- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 이후 음악 위젯 수정
-- [Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 편집 모드에서 위젯 순서 바꾸기
+- [위젯 2 - iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 이후 음악 위젯 수정
+- [위젯 4 - Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 편집 모드에서 위젯 순서 바꾸기
 - [ref 정리 함수에서 제거 직전 DOM을 복제해 만드는 퇴장 애니메이션](/memo/global-motion): 시트 퇴장에 쓴 `useExitMotion`
 
 [^exit]: 닫힌 요소는 React 트리에서 바로 제거되므로, 제거 직전의 DOM을 복사해 퇴장 애니메이션을 재생한다. [관련 글](/memo/global-motion)에서 설명했다.

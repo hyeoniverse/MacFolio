@@ -59,7 +59,7 @@ useOpenRequest('messages', (id) => {
 - `target="_blank"`, `rel="noopener noreferrer"`: 사이트의 다른 바깥 링크와 같다
 - 바깥 링크 아이콘 `fa-arrow-up-right-from-square`와 스크린 리더용 `(새 탭)`(`.visually-hidden`). 숨은 텍스트가 엉뚱한 컨테이닝 블록을 기준으로 배치되지 않도록 링크에 `position: relative`를 둔다([최소 창 크기와 컨테이닝 블록으로 중첩 스크롤의 이중 스크롤 없애기](/memo/settings-double-scroll))
 - 색은 `--color-link` 토큰이라 라이트·다크 값이 따로 적용된다
-- 휴대폰의 새 피드백 머리는 대화 위에 떠 있는 반투명 막대다([visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/messages-layout-fixes)). 머리 높이는 `ResizeObserver`로 측정하므로 링크 한 줄이 늘어도 첫 말풍선이 머리에 가려지지 않는다
+- 휴대폰의 새 피드백 머리는 대화 위에 떠 있는 반투명 막대다([휴대폰 화면 5 - visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/messages-layout-fixes)). 머리 높이는 `ResizeObserver`로 측정하므로 링크 한 줄이 늘어도 첫 말풍선이 머리에 가려지지 않는다
 
 ### 바깥 링크 집계
 
@@ -76,8 +76,8 @@ useOpenRequest('messages', (id) => {
 
 ## 관련 글
 
-- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): `requestOpen`·`useOpenRequest` 구조
-- [openRequest로 위젯이 표시 중인 사진을 사진 앱 크게 보기로 넘기기](/memo/photo-widget-open-current): 같은 요청을 사진 앱으로 넓힌 사례
-- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 도움말 메뉴와 앱별 메뉴
+- [Finder 1 - openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): `requestOpen`·`useOpenRequest` 구조
+- [위젯 3 - openRequest로 위젯이 표시 중인 사진을 사진 앱 크게 보기로 넘기기](/memo/photo-widget-open-current): 같은 요청을 사진 앱으로 넓힌 사례
+- [메뉴 막대 4 - 앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus): 도움말 메뉴와 앱별 메뉴
 - [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline): 첫 불러오기 실패 경고창
 - [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect): 바깥 링크 집계

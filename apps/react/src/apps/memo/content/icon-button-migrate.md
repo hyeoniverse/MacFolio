@@ -1,5 +1,5 @@
 ---
-title: 계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기
+title: 공통 UI 컴포넌트 8 - 계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기
 date: 2026-10-17
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버튼 30곳을 Button으로 옮겼다. 공통 CSS가 더하는 값은 앱 규칙이나 명시도 0인 :where() 규칙으로 되돌리고, E2E 중 공통 클래스를 뺀 상태와 넣은 상태의 계산된 스타일을 비교해 화면 변화가 없음을 확인했다.
@@ -205,9 +205,9 @@ summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버
 
 ## 관련 글
 
-- [IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기](/memo/ui-a11y-names): 직전 작업([#243](https://github.com/hyeoniverse/MacFolio/pull/243))
-- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button): `IconButton`을 처음 만든 작업([#60](https://github.com/hyeoniverse/MacFolio/pull/60))
-- [계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button): `Button`을 처음 만든 작업
+- [공통 UI 컴포넌트 7 - IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기](/memo/ui-a11y-names): 직전 작업([#243](https://github.com/hyeoniverse/MacFolio/pull/243))
+- [공통 UI 컴포넌트 2 - 계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button): `IconButton`을 처음 만든 작업([#60](https://github.com/hyeoniverse/MacFolio/pull/60))
+- [공통 UI 컴포넌트 3 - 계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button): `Button`을 처음 만든 작업
 - [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset): 앱 reset 레이어를 도입한 작업
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory): 옮길 버튼을 집계한 목록
 

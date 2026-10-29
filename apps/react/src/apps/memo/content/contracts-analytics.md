@@ -1,5 +1,5 @@
 ---
-title: zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기
+title: 트래픽 분석 5 - zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
 summary: 분석 이벤트의 전송 형식, 서버 검증(parseBatch 55줄), 조회 응답 타입이 세 파일에 각각 정의되어 있었다. 이벤트 묶음과 응답 타입을 contracts의 zod 스키마로 옮기고, 요청 헤더와 비밀 키가 필요한 코드만 서버에 남겼다. 다른 방법과의 비교, 이후 UTM을 추가할 때의 변경 범위까지 정리했다.
@@ -125,7 +125,7 @@ export type Breakdown = (typeof BREAKDOWNS)[number]; // 화면의 유니언 타�
 
 ## 이후: UTM을 추가한 시각의 변경 범위
 
-일주일 뒤 UTM[^utm] 매개변수 다섯 가지와 조합 표를 추가했다([트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)). 그때 수정한 스키마는 contracts의 `EventInput`과 `BREAKDOWNS` 두 곳뿐이었고, 전송하는 사이트·수신하는 서버·조회하는 화면이 모두 이 변경을 따랐다. 표는 열두 개에서 열여섯 개로 늘었고, 시험 **요약은 표 열여섯 개를 모두 가진다**가 누락된 표를 검출한다. 사이트에서 UTM 값을 정리하는 규칙(소문자, 공백은 `-`, 100자)도 contracts의 `cleanUtm` 하나를 화면과 서버가 함께 사용한다.
+일주일 뒤 UTM[^utm] 매개변수 다섯 가지와 조합 표를 추가했다([트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)). 그때 수정한 스키마는 contracts의 `EventInput`과 `BREAKDOWNS` 두 곳뿐이었고, 전송하는 사이트·수신하는 서버·조회하는 화면이 모두 이 변경을 따랐다. 표는 열두 개에서 열여섯 개로 늘었고, 시험 **요약은 표 열여섯 개를 모두 가진다**가 누락된 표를 검출한다. 사이트에서 UTM 값을 정리하는 규칙(소문자, 공백은 `-`, 100자)도 contracts의 `cleanUtm` 하나를 화면과 서버가 함께 사용한다.
 
 ## 남긴 것과 정리
 
@@ -151,10 +151,10 @@ pnpm --filter @macfolio/api test:e2e test/analytics.e2e.test.ts
 - [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
 - [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
 - [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
-- [트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
-- [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
+- [트래픽 분석 6 - 상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)
+- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [contracts 스키마 6 - 화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
 
 [^hmac]: `날짜:IP:User-Agent` 문자열을 서버의 비밀 키로 [HMAC](https://developer.mozilla.org/en-US/docs/Glossary/HMAC)-SHA256 해시한 값(`dayHash`). 같은 날 같은 IP·브라우저면 같은 값이고, 날짜가 바뀌면 다른 값이 되어 날짜를 넘어 방문자를 추적할 수 없다. 자세한 방식은 [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)에 정리했다.
 

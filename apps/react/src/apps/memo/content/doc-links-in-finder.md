@@ -1,5 +1,5 @@
 ---
-title: 클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기
+title: Finder 4 - 클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기
 date: 2026-10-19
 category: 개발 기록/MacFolio/프론트엔드
 summary: 블로그 글의 저장소 문서 링크(GitHub의 docs/*.md, README, CONTRIBUTING)를 누르면 새 탭의 GitHub 대신 사이트의 Finder에서 그 문서를 연다. 사이트 빌드에 이미 포함된 문서라 외부 사이트로 이동할 필요가 없다.
@@ -49,7 +49,7 @@ export function bundledDocOf(href: string | undefined): string | null {
 
 ## 관련 글
 
-- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 저장소 문서를 표시하는 Finder 앱
+- [Finder 1 - openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 저장소 문서를 표시하는 Finder 앱
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design): E2E 시험에서 링크를 누르는 글
 - [10월 21일 - 이력서를 Markdown 한 장으로, 텍스트 편집기, 위젯, 처음 온 사람을 위한 둘러보기](/memo/day-1021): 텍스트 편집기 앱을 만든 날의 기록
 

@@ -100,9 +100,9 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 
 ## 이후 변경
 
-- 엿새 뒤 iframe에 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성을 적용했다(`4e0604324`). 내부 사이트의 `target="_top"` 링크가 이 사이트 자체를 다른 주소로 이동시킬 수 있었기 때문이다. `allow-scripts`·`allow-same-origin`은 허용하고 `allow-top-navigation`은 허용하지 않는다. 시험 "안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다"가 가짜 페이지의 링크를 클릭한 뒤 주소가 유지되는지 확인한다. 자세한 내용은 [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)에 정리했다.
+- 엿새 뒤 iframe에 [`sandbox`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox) 속성을 적용했다(`4e0604324`). 내부 사이트의 `target="_top"` 링크가 이 사이트 자체를 다른 주소로 이동시킬 수 있었기 때문이다. `allow-scripts`·`allow-same-origin`은 허용하고 `allow-top-navigation`은 허용하지 않는다. 시험 "안에 띄운 사이트의 링크가 이 사이트를 다른 주소로 바꾸지 못한다"가 가짜 페이지의 링크를 클릭한 뒤 주소가 유지되는지 확인한다. 자세한 내용은 [보안 점검 3 - iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)에 정리했다.
 - `ProjectApp`의 iframe 부분은 API 문서 앱과 공유하는 `shared/ui/web-frame/WebFrame.tsx`로 옮겼다.
-- 프로젝트와 프로젝트 앱은 이후 시스템 설정에서 코드 수정 없이 추가·수정할 수 있게 되었다([코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)). 서버에는 덮어쓸 값만 저장하고, 새 앱의 주소는 CSP에도 추가한다.
+- 프로젝트와 프로젝트 앱은 이후 시스템 설정에서 코드 수정 없이 추가·수정할 수 있게 되었다([사이트 편집 2 - 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)). 서버에는 덮어쓸 값만 저장하고, 새 앱의 주소는 CSP에도 추가한다.
 
 ## 남은 것·배운 것
 
@@ -112,10 +112,10 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 
 ## 관련 글
 
-- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [보안 점검 3 - iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 - [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout)
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
-- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [모듈 구조 5 - index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
 - [PROJECTS 단일 원본으로 GitHub 스냅샷과 프로젝트 목록 합치기](/memo/projects-one-list)
 
 [^brand]: 브랜드 타입(branded type)은 `string` 같은 기본 타입에 실행 시점에는 존재하지 않는 표시 속성을 교차 타입으로 붙여, 검사 함수를 거친 값만 그 타입으로 인정하게 하는 TypeScript 기법이다. 이 저장소의 `PostSlug`·`FolderPath`도 같은 방식이다.

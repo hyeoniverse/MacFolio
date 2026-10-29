@@ -142,9 +142,9 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 
 - [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
-- [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
-- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
-- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [보안 점검 7 - JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
+- [서버 운영 2 - pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+- [contracts 스키마 6 - 화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
 
 [^bytea]: PostgreSQL의 이진 데이터 열 타입. 이 사이트는 별도 객체 저장소 없이 업로드 파일을 DB에 직접 저장한다.
 

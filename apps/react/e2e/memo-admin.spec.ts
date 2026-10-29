@@ -153,7 +153,7 @@ test.describe('메모 편집 (관리자)', () => {
 	test('메모를 고정하면 맨 위 고정됨 묶음에 들어가고, 풀 수 있다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		const title = '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그';
+		const title = 'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그';
 
 		// 우클릭 메뉴로 고정
 		await memo.locator('.memo-item', { hasText: title }).click({ button: 'right' });
@@ -181,7 +181,7 @@ test.describe('메모 편집 (관리자)', () => {
 	test('메모를 잠그면 고치거나 지울 수 없고, 잠금을 풀면 다시 고친다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		const title = '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그';
+		const title = 'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그';
 		const item = memo.locator('.memo-item', { hasText: title });
 		await item.click();
 		await expect(memo.locator('.ProseMirror')).toBeVisible();
@@ -271,7 +271,7 @@ test.describe('메모 편집 (관리자)', () => {
 		await page.getByRole('menuitem', { name: '저장소 글로 되돌리기' }).click();
 		await memo.getByRole('alertdialog').getByRole('button', { name: '되돌리기' }).click();
 		await expect(
-			memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' })
+			memo.locator('.memo-item', { hasText: 'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' })
 		).toBeVisible();
 		await expect(item).toHaveCount(0);
 		expect(api.posts).toEqual([]);

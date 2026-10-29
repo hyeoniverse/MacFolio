@@ -138,8 +138,8 @@ cd apps/react && npx playwright test e2e/safari.spec.ts --project=desktop-chromi
 ## 관련 글
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas)
-- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [contracts 스키마 8 - 관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas)
+- [보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
 
 [^prompt-injection]: 프롬프트 인젝션은 모델에 전달되는 입력 안에 지시문을 넣어, 개발자가 작성한 지시 대신 그 지시를 따르게 만드는 공격이다([OWASP: Prompt Injection](https://owasp.org/www-community/attacks/PromptInjection)).
 

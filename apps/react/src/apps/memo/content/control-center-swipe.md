@@ -1,5 +1,5 @@
 ---
-title: 캡처 단계 리스너와 Touch Events로 구현한 전체 화면 스와이프 판정
+title: 휴대폰 화면 1 - 캡처 단계 리스너와 Touch Events로 구현한 전체 화면 스와이프 판정
 date: 2026-09-29
 category: 개발 기록/MacFolio/프론트엔드
 summary: 상태 표시줄 44px 영역에서만 열리던 휴대폰 제어 센터를 화면 어디서든 스와이프로 열고 닫게 했다. 문서 전체에서 캡처 단계로 이벤트를 수신하고, 스크롤할 내용이 남은 영역에서는 스크롤을 우선하고, 손가락 입력은 Touch Events로 받아 패널이 손가락을 따라 움직이게 했다.
@@ -189,7 +189,7 @@ E2E `apps/react/e2e/mobile.spec.ts`에 4개를 추가했다.
 ## 관련 글
 
 - [휴대폰 앱들을 메모처럼 - 함께 쓰는 바탕과 카드, iOS 음악](/memo/mobile-apps-ios-style)
-- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [E2E 시험 2 - Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
 
 #MacFolio #휴대폰 #제스처

@@ -1,5 +1,5 @@
 ---
-title: variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기
+title: 공통 UI 컴포넌트 9 - variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기
 date: 2026-10-18
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 같은 부품이 macOS와 iOS 모양을 선택하는 곳을 모두 찾았다. variant가 적합한 곳은 Menu 하나라 className="touch"를 variant="ios"로 바꿨고(9파일), Sheet·Modal 등은 이유를 기록하고 별도 부품으로 유지했다.
@@ -123,8 +123,8 @@ variant={props.editing ? 'ios' : 'mac'}
 ## 관련 글
 
 - [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate): 버튼 모양을 variant로 선택하는 방식
-- [모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기](/memo/ui-modal): 휴대폰 시트와 데스크톱 모달을 분리한 이유
-- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
+- [공통 UI 컴포넌트 5 - 모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기](/memo/ui-modal): 휴대폰 시트와 데스크톱 모달을 분리한 이유
+- [공통 UI 컴포넌트 6 - 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
 - [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 4단계 정리
 - PR: [#250](https://github.com/hyeoniverse/MacFolio/pull/250)
 

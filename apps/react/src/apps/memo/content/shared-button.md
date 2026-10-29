@@ -1,5 +1,5 @@
 ---
-title: 계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기
+title: 공통 UI 컴포넌트 2 - 계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 앱 기본값을 CSS 레이어로 내린 덕분에 남은 !important 66개를 모두 삭제했다. 화면 58장과 계산된 스타일 약 1,200건을 비교해 차이 세 건을 찾아 수정했고, 앱마다 별도로 있던 아이콘 버튼 4종을 IconButton 하나로 통합했다.
@@ -157,18 +157,18 @@ for (let i = 0; i < count; i++) {
 
 ## 남은 것·배운 것
 
-- 이 글 이후 `ListRow`와 `SegmentedControl`은 만들지 않기로 했다. 외형은 같아도 앱마다 의미가 달랐다([계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button)).
+- 이 글 이후 `ListRow`와 `SegmentedControl`은 만들지 않기로 했다. 외형은 같아도 앱마다 의미가 달랐다([공통 UI 컴포넌트 3 - 계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button)).
 - 이 글을 쓴 시각에 CSS의 `!important`는 23개였다. 동작 줄이기(`motion.css`)와 레이어 설정, 그리고 이후 추가한 Safari 프로젝트 페이지(다른 사이트 디자인을 재현하는 곳)에 있다. 앱 화면에는 다시 생기지 않았다.
 - `!important`는 다른 규칙의 명시도 문제를 가린다. 삭제하면 가려져 있던 버그(활성 버튼 호버, 한 번도 적용되지 않던 고정 버튼 규칙)가 드러난다.
 - 스크린샷 비교는 캡처 시점만 확인한다. 상태(호버, 활성)가 많은 곳은 계산된 스타일을 상태별로 기록해 비교해야 한다. 이 방법은 이후 [텍스트 버튼 전환](/memo/icon-button-migrate)에서도 그대로 사용했다.
-- 레이어 밖의 규칙은 명시도와 관계없이 레이어 안의 규칙보다 우선한다. `*`나 `a` 같은 전역 규칙도 레이어 안에 넣어야 레이어 순서가 의도대로 동작한다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
+- 레이어 밖의 규칙은 명시도와 관계없이 레이어 안의 규칙보다 우선한다. `*`나 `a` 같은 전역 규칙도 레이어 안에 넣어야 레이어 순서가 의도대로 동작한다([CSS 정리 3 - CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
 
 ## 관련 글
 
 - [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
-- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
-- [계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button)
+- [CSS 정리 3 - CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
+- [공통 UI 컴포넌트 3 - 계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button)
 - [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate)
-- [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
+- [공통 UI 컴포넌트 1 - placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
 
 #MacFolio #CSS #공통컴포넌트

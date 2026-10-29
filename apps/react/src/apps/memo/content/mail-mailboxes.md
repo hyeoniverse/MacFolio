@@ -1,5 +1,5 @@
 ---
-title: 방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기
+title: 메일 앱 2 - 방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기
 date: 2026-10-07
 category: 개발 기록/MacFolio/백엔드
 summary: 메일 앱으로 보낸 메일을 서버에 1년 보관하고, 방문자 쿠키의 HMAC으로 필터링한 보낸 편지함에서만 조회되게 했다. 관리자는 받은 편지함에서 모든 메일을 조회하고 앱 안에서 답장한다. 답장은 메일 발송이 성공한 뒤에 저장한다.
@@ -175,11 +175,11 @@ cd apps/react && npx playwright test e2e/mail.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
+- [메일 앱 1 - Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
 - [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
-- [navigator.clipboard로 이름 없이 이메일 주소만 복사하기](/memo/mail-copy-address)
-- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
-- [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist)
+- [메일 앱 3 - navigator.clipboard로 이름 없이 이메일 주소만 복사하기](/memo/mail-copy-address)
+- [공통 UI 컴포넌트 6 - 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
+- [배경화면 2 - id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist)
 
 [^hmac]: HMAC(Hash-based Message Authentication Code)은 비밀 키와 입력을 함께 해시한 값이다. 키를 모르면 해시 값에서 원래 토큰을 계산할 수 없고, 같은 토큰은 항상 같은 값이 되므로 비교에 사용할 수 있다. 서버는 Node.js의 [`crypto.createHmac`](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options)으로 계산한다.
 

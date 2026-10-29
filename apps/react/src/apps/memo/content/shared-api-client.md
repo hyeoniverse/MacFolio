@@ -1,5 +1,5 @@
 ---
-title: 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기
+title: 공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
 summary: 서버를 호출하는 파일 22개가 각각 credentials·JSON 헤더·try/catch·실패 문구를 작성하고 있었다. 111줄짜리 client.ts의 api()·apiFetch()로 통합하고, 401은 한 곳에서 처리해 관리자 상태를 즉시 로그아웃으로 전환한다.
@@ -97,11 +97,11 @@ async function send(fetchImpl, apiUrl, path, method, json) {
 
 ## 통합하지 않은 호출
 
-| 호출                                              | 통합하지 않은 이유                                                                                                                                                   |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 날씨(Open-Meteo), 효과음 파일, 글 이미지 내려받기 | 자체 서버가 아니라 쿠키·실패 문구 규칙이 다르다                                                                                                                      |
-| `/health` 확인(`serverStatus.ts`)                 | CORS 차단과 서버 중지를 구분하려고 `no-cors`로 한 번 더 요청하는 별도 흐름 ([no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin))   |
-| 분석 이벤트 전송                                  | [`sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)이 우선이고 fetch는 `keepalive` 대안이라, 클라이언트에 넣으면 오히려 복잡해진다 |
+| 호출                                              | 통합하지 않은 이유                                                                                                                                                               |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 날씨(Open-Meteo), 효과음 파일, 글 이미지 내려받기 | 자체 서버가 아니라 쿠키·실패 문구 규칙이 다르다                                                                                                                                  |
+| `/health` 확인(`serverStatus.ts`)                 | CORS 차단과 서버 중지를 구분하려고 `no-cors`로 한 번 더 요청하는 별도 흐름 ([메뉴 막대 5 - no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)) |
+| 분석 이벤트 전송                                  | [`sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)이 우선이고 fetch는 `keepalive` 대안이라, 클라이언트에 넣으면 오히려 복잡해진다             |
 
 시험이 주입하던 `fetchImpl` 인자는 모듈 시그니처를 유지하고 옵션으로 전달한다. 이제 `signal`·`headers`가 항상 붙으므로, 시험 쪽은 요청 형태를 `objectContaining`으로 부분 일치 검사하도록 바꿨다.
 
@@ -139,7 +139,7 @@ async function send(fetchImpl, apiUrl, path, method, json) {
 - 순환 의존을 피하려고 핸들러 등록 방식을 사용했다. 하위 모듈이 상위 모듈의 동작을 호출해야 할 때는 상위 모듈에서 함수를 전달받는다.
 - 자체 서버가 아닌 호출(Open-Meteo 등)은 통합하지 않았다. 규칙이 다른 호출을 한 함수에 넣으면 옵션만 늘어난다.
 
-같은 단계의 다음 작업은 `localStorage` 접근 통일([readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage))과 화면 크기 판단(`useIsMobile`·`useViewport`) 통일([matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media))이다.
+같은 단계의 다음 작업은 `localStorage` 접근 통일([공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage))과 화면 크기 판단(`useIsMobile`·`useViewport`) 통일([공통 모듈 3 - matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media))이다.
 
 ## 사용 방법
 
@@ -154,11 +154,11 @@ grep -rn "fetch(" src --include=*.ts --include=*.tsx | grep -v shared/api   # �
 
 ## 관련 글
 
-- [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage): 이어서 localStorage 접근을 통합한 작업
-- [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)
+- [공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage): 이어서 localStorage 접근을 통합한 작업
+- [공통 모듈 3 - matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)
 - [리팩터링 3단계 - api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-step3-foundation)
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
-- [no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)
+- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [메뉴 막대 5 - no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-blocked-origin)
 
 PR: [#196](https://github.com/hyeoniverse/MacFolio/pull/196)
 

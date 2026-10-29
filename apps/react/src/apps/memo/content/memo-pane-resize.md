@@ -160,7 +160,7 @@ export function savePaneWidth(pane: ResizablePane, width: number) {
 - [메모 앱 태그](/memo/memo-tags)
 - [deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제](/memo/memo-recently-deleted)
 - [메모 다듬기](/memo/notes-polish)
-- [pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order)
+- [메모 폴더 3 - pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order)
 - [메모 편집기 손보기 — 토글 목록·각주 (220~440px 취소선 문제)](/memo/memo-editor-toggle-footnote)
 
 #MacFolio #메모앱 #CSS #React

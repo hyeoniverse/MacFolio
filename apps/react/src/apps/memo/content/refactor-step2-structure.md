@@ -33,13 +33,13 @@ summary: 리팩터링 2단계 회고. 순환 의존 두 개를 세 번째 파일
 
 ## 변경 목록
 
-| 항목                                   | PR                                                       | 글                                                                                                     |
-| -------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| 순환 의존 분리와 `pnpm cycles`         | [#188](https://github.com/hyeoniverse/MacFolio/pull/188) | [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)                   |
-| `CreativeDemos.tsx` 분할               | [#189](https://github.com/hyeoniverse/MacFolio/pull/189) | [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos)           |
-| `FolderSidebar.tsx`·`PhotosMobile.tsx` | [#190](https://github.com/hyeoniverse/MacFolio/pull/190) | [import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/split-sidebar-photos) |
-| 앱 안의 파일 이름 규칙                 | [#191](https://github.com/hyeoniverse/MacFolio/pull/191) | [폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)   |
-| `CreativeCms.tsx` 분할                 | [#193](https://github.com/hyeoniverse/MacFolio/pull/193) | (데모 글의 끝에서 함께 다룸)                                                                           |
+| 항목                                   | PR                                                       | 글                                                                                                                   |
+| -------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| 순환 의존 분리와 `pnpm cycles`         | [#188](https://github.com/hyeoniverse/MacFolio/pull/188) | [모듈 구조 1 - madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)                   |
+| `CreativeDemos.tsx` 분할               | [#189](https://github.com/hyeoniverse/MacFolio/pull/189) | [모듈 구조 2 - 둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos)           |
+| `FolderSidebar.tsx`·`PhotosMobile.tsx` | [#190](https://github.com/hyeoniverse/MacFolio/pull/190) | [모듈 구조 3 - import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/split-sidebar-photos) |
+| 앱 안의 파일 이름 규칙                 | [#191](https://github.com/hyeoniverse/MacFolio/pull/191) | [폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)                 |
+| `CreativeCms.tsx` 분할                 | [#193](https://github.com/hyeoniverse/MacFolio/pull/193) | (데모 글의 끝에서 함께 다룸)                                                                                         |
 
 ## 구현
 
@@ -99,7 +99,7 @@ registry↔Finder 순환은 Finder가 "창으로 열리는 앱 목록"을 얻으
 | `memo/writer/popover.ts`     | `memo/writer/usePopover.ts`       | 훅이다                  |
 | `memo/writer/attachments.ts` | 서버 호출만 `attachmentsApi.ts`로 | 계산과 서버 호출이 섞임 |
 
-`githubActivity.ts`는 대소문자만 다른 `GithubActivity.tsx`와 macOS의 대소문자 비구분 파일 시스템에서 충돌한 적이 있는 파일이다([/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi) 끝 부분). 이름 규칙을 정한 뒤로는 이런 이름 쌍이 생길 가능성이 줄었다.
+`githubActivity.ts`는 대소문자만 다른 `GithubActivity.tsx`와 macOS의 대소문자 비구분 파일 시스템에서 충돌한 적이 있는 파일이다([메뉴 막대 2 - /health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi) 끝 부분). 이름 규칙을 정한 뒤로는 이런 이름 쌍이 생길 가능성이 줄었다.
 
 ![두 순환 의존을 셋째 파일로 푼 모양과 파일 이름 규칙 네 가지](./images/refactor-step2-structure-cycles.svg '서로 import하던 짝은 공통 부분을 셋째 파일로 꺼내 한 방향으로 만들었다')
 
@@ -143,9 +143,9 @@ registry↔Finder 순환은 Finder가 "창으로 열리는 앱 목록"을 얻으
 
 ## 관련 글
 
-- [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)
-- [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos)
-- [import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/split-sidebar-photos)
+- [모듈 구조 1 - madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)
+- [모듈 구조 2 - 둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos)
+- [모듈 구조 3 - import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/split-sidebar-photos)
 - [폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)
 - [리팩터링 계획을 마치며 — 일곱 단계 전후](/memo/refactor-retrospective)
 

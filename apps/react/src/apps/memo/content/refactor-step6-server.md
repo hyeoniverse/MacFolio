@@ -39,11 +39,11 @@ export function parseSpeechRequest(body: unknown): SpeechRequest {
 
 ## 변경 내용
 
-| 항목                | PR                                                       | 글                                                                                                          |
-| ------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| 분석 서비스 분리    | [#233](https://github.com/hyeoniverse/MacFolio/pull/233) | [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)            |
-| 관리자 설정 세 본문 | [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)                            |
-| 데모 네 본문        | [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | [관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas) |
+| 항목                | PR                                                       | 글                                                                                                                               |
+| ------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| 분석 서비스 분리    | [#233](https://github.com/hyeoniverse/MacFolio/pull/233) | [트래픽 분석 6 - 상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)                 |
+| 관리자 설정 세 본문 | [#235](https://github.com/hyeoniverse/MacFolio/pull/235) | [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)                                                 |
+| 데모 네 본문        | [#236](https://github.com/hyeoniverse/MacFolio/pull/236) | [contracts 스키마 8 - 관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기](/memo/settings-schemas) |
 
 ## 검토한 방법
 
@@ -154,7 +154,7 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 관련 글
 
-- [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)
+- [트래픽 분석 6 - 상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)
 - [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)
 - [리팩터링 1단계 - zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
 

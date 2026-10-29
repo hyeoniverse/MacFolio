@@ -1,5 +1,5 @@
 ---
-title: 트래픽 분석 7 - HMAC으로 IP 원문 없이 관리자 방문 식별하기
+title: 트래픽 분석 11 - HMAC으로 IP 원문 없이 관리자 방문 식별하기
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: 로그인하지 않은 기기에서 둘러본 관리자 방문이 집계에 섞였다. 관리자로 인증된 요청의 IP를 HMAC으로만 30일 보관해 그 IP의 방문을 제외한다. 실시간 탭은 30분에서 마스킹된 IP 보관 기간인 7일까지 넓히고 IP별 방문 표를 더했으며, 맥 Safari에서 정렬하면 이름이 사라지던 표를 고쳤다.
@@ -117,7 +117,7 @@ const events = (
 
 ### 갱신 간격
 
-실시간 탭은 [트래픽 분석 6 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh)의 `usePolling`으로 갱신한다. 7일치 이벤트를 10초마다 다시 조회하지 않도록 기간에 따라 간격을 나눴다.
+실시간 탭은 [트래픽 분석 10 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh)의 `usePolling`으로 갱신한다. 7일치 이벤트를 10초마다 다시 조회하지 않도록 기간에 따라 간격을 나눴다.
 
 ```ts
 intervalMs: liveMinutes > 30 ? LIVE_SLOW_POLL_MS : LIVE_POLL_MS, // 60초 : 10초
@@ -188,9 +188,9 @@ resetKey: String(liveMinutes),
 
 - [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
 - [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor): 실시간 탭과 StatTable을 만든 글
-- [트래픽 분석 5 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
-- [트래픽 분석 6 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh): 실시간 탭의 usePolling
-- [no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
+- [트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
+- [트래픽 분석 10 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh): 실시간 탭의 usePolling
+- [트래픽 분석 9 - no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): Safari 렌더링 차이 정리
 
 #MacFolio #트래픽분석 #개인정보 #HMAC #Safari #NestJS

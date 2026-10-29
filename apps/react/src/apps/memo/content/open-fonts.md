@@ -178,6 +178,6 @@ PDF 이력서와 공유 카드도 Pretendard로 바꿨다. 브라우저의 react
 
 - [성능 최적화 2 - 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
 - [성능 최적화 4 - #boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
-- [CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](/memo/ci-failures-after-merges): 글꼴마다 다른 줄 높이로 위젯 크기가 달라진 사례
+- [E2E 시험 6 - CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](/memo/ci-failures-after-merges): 글꼴마다 다른 줄 높이로 위젯 크기가 달라진 사례
 
 #MacFolio #글꼴 #웹폰트 #라이선스 #성능

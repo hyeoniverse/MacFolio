@@ -1,5 +1,5 @@
 ---
-title: 폴더 대신 *Api.ts·model.ts·use*.ts 이름 규칙으로 파일 종류 구분하기
+title: 모듈 구조 4 - 폴더 대신 *Api.ts·model.ts·use*.ts 이름 규칙으로 파일 종류 구분하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
 summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 이름이 종류를 나타내게 했다. 서버 호출은 *Api.ts, 순수 계산은 model.ts, 훅은 use*.ts. 폴더 규칙을 채택하지 않은 이유, 규칙에 어긋난 파일 아홉 개를 맞춘 과정, 다음 단계에서 얻은 효과를 정리했다.
@@ -104,7 +104,7 @@ export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?min
 
 ## 다음 단계에서 얻은 효과
 
-바로 다음 3단계에서 앱마다 흩어진 `fetch`를 `shared/api/client.ts`의 `api()` 하나로 모았다([공통 API 클라이언트](/memo/shared-api-client)). 이때 수정할 파일을 찾는 작업이 `*Api.ts` 검색으로 끝났다. 이후 응답 모양을 `packages/contracts`의 스키마로 옮길 때([contracts 패키지](/memo/contracts-comments))도 `*Api.ts`만 열면 됐다. 현재 `activityApi.ts`는 응답 타입을 `@macfolio/contracts`에서 가져와 다시 내보내기만 한다.
+바로 다음 3단계에서 앱마다 흩어진 `fetch`를 `shared/api/client.ts`의 `api()` 하나로 모았다([공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)). 이때 수정할 파일을 찾는 작업이 `*Api.ts` 검색으로 끝났다. 이후 응답 모양을 `packages/contracts`의 스키마로 옮길 때([contracts 패키지](/memo/contracts-comments))도 `*Api.ts`만 열면 됐다. 현재 `activityApi.ts`는 응답 타입을 `@macfolio/contracts`에서 가져와 다시 내보내기만 한다.
 
 ## 남은 것, 배운 것
 
@@ -139,9 +139,9 @@ pnpm cycles                                    # 이름을 바꾸면서 순환 i
 
 - [리팩터링 2단계 - 순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
 - [리팩터링 3단계 - api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-step3-foundation)
-- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)
+- [공통 모듈 1 - 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [모듈 구조 1 - madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)
 
 [^rename]: git은 이름 변경을 별도로 기록하지 않고, 삭제된 파일과 추가된 파일의 내용이 50% 이상 같으면 이름 변경으로 표시한다. 내용을 거의 바꾸지 않아야 `git log --follow`로 이력이 이어진다. [git diff 문서의 `-M` 옵션](https://git-scm.com/docs/git-diff)
 

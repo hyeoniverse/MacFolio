@@ -74,6 +74,6 @@ summary: 픽셀 그림은 색을 섞지 않는 최근접 이웃 보간과 정수
 ## 관련 글
 
 - [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe): 새싹 농장 게임을 창 안에 넣은 일
-- [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates): 이 프로젝트 페이지의 템플릿 구조
+- [사이트 편집 3 - 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates): 이 프로젝트 페이지의 템플릿 구조
 
 #MacFolio #픽셀아트 #이미지보간 #CSS

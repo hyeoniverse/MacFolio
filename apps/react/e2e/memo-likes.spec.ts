@@ -4,8 +4,8 @@ import type { Page } from '@playwright/test';
 import { fakeApi, type FakeComment } from './fakeApi';
 
 const CRA = 'CRA에서 Vite로 옮기기';
-const EDITOR = 'Markdown 블로그에 글쓰기 붙이기';
-const MONITOR = 'Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림';
+const EDITOR = '메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기';
+const MONITOR = '서버 운영 4 - Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);

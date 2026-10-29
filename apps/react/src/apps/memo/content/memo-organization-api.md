@@ -1,5 +1,5 @@
 ---
-title: Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리
+title: 메모 폴더 2 - Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리
 date: 2026-09-29
 category: 개발 기록/MacFolio/백엔드
 summary: 관리자가 메모 폴더를 정리하게 하면서 글은 Markdown에 그대로 두고, 정리 내용(폴더·이동·고정)만 서버에 JSON 하나로 저장해 글 목록 위에 겹쳐 표시했다. 페이지를 떠나는 시각의 keepalive 요청이 전송되지 않아, 편집마다 즉시 순차 저장한다.
@@ -93,7 +93,7 @@ saveQueue.current = saveQueue.current.then(async () => {
 
 ## 이후 변경
 
-정리 내용의 필드는 이후 두 개가 추가됐다. 다음 날 잠금(`locks`, [메모 잠그기](/memo/memo-lock)), 그다음 날 폴더 순서(`order`, [폴더 순서를 손잡이로 바꾸기](/memo/memo-folder-order))다. 필드를 추가할 때마다 "이전에 저장한 JSON에는 이 필드가 없다"는 경우를 세 곳(서버 검사, 서버 응답, 화면 수신)에서 빈 값으로 채웠다. 10월 9일에는 이 구조와 검사 규칙을 `packages/desktop-core/src/memo/rules.ts`로 옮겨 화면과 서버가 같은 코드를 사용한다([desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)).
+정리 내용의 필드는 이후 두 개가 추가됐다. 다음 날 잠금(`locks`, [메모 잠그기](/memo/memo-lock)), 그다음 날 폴더 순서(`order`, [폴더 순서를 손잡이로 바꾸기](/memo/memo-folder-order))다. 필드를 추가할 때마다 "이전에 저장한 JSON에는 이 필드가 없다"는 경우를 세 곳(서버 검사, 서버 응답, 화면 수신)에서 빈 값으로 채웠다. 10월 9일에는 이 구조와 검사 규칙을 `packages/desktop-core/src/memo/rules.ts`로 옮겨 화면과 서버가 같은 코드를 사용한다([desktop-core 2 - desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)).
 
 ```ts
 export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
@@ -101,7 +101,7 @@ export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves:
 
 ![정리 내용이 자란 길](./images/memo-organization-api-growth.svg '네 칸으로 시작해 잠금과 순서가 더해졌고, 규칙은 desktop-core로 옮겼다')
 
-"글은 Markdown에"라는 결정도 같은 날 일부 바뀌었다. 관리자 글쓰기([PR #44](https://github.com/hyeoniverse/MacFolio/pull/44), [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor))가 추가되어 관리자가 작성하거나 수정한 글은 서버에 저장된다. 저장소의 Markdown 글은 그대로 유지되고, 서버 글과 Markdown 글이 같은 목록에 함께 표시된다. 정리 내용은 두 종류의 글에 같은 방식으로 적용된다.
+"글은 Markdown에"라는 결정도 같은 날 일부 바뀌었다. 관리자 글쓰기([PR #44](https://github.com/hyeoniverse/MacFolio/pull/44), [메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기](/memo/post-editor))가 추가되어 관리자가 작성하거나 수정한 글은 서버에 저장된다. 저장소의 Markdown 글은 그대로 유지되고, 서버 글과 Markdown 글이 같은 목록에 함께 표시된다. 정리 내용은 두 종류의 글에 같은 방식으로 적용된다.
 
 ## 남은 것·배운 것
 
@@ -126,9 +126,9 @@ npx playwright test e2e/memo-admin.spec.ts --project=desktop-chromium
 ## 관련 글
 
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
-- [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
-- [정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo)
-- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
+- [메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
+- [메모 폴더 1 - 정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo)
+- [desktop-core 2 - desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
 - [메모 잠그기](/memo/memo-lock)
 - [폴더 순서를 손잡이로 바꾸기](/memo/memo-folder-order)
 

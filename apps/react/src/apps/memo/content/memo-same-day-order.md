@@ -170,8 +170,8 @@ expect(again.body.createdAt).toBe(first.body.publishedAt);
 
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions): 같은 행에 게시본과 임시본을 보관하고 게시마다 버전을 남기는 구조
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable): 빌드 시각에 글 목록과 사이트맵을 만드는 `seo/posts.ts`
-- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 최근 글 위젯
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
-- [pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
+- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 최근 글 위젯
+- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
+- [메모 폴더 3 - pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
 
 #MacFolio #메모앱 #git #Prisma #PostgreSQL

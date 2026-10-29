@@ -107,6 +107,6 @@ summary: 열흘 동안 기능을 추가하며 쌓인 중복 코드를 정리한 
 - 토큰을 사용하지 않은 새 CSS 값을 차단하는 린트 규칙을 추가한다. 의도적으로 남긴 값이 많아 예외 목록부터 정해야 한다.
 - 비슷한 값의 통합(간격 18px·28px, 같은 의미의 `z-index` 값)은 화면을 확인하며 하나씩 진행한다.
 
-관련 글: [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan) · [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens) · [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory). 계획 이슈: [#150](https://github.com/hyeoniverse/MacFolio/issues/150).
+관련 글: [보안 점검 12 - Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan) · [디자인 토큰 4 - 그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens) · [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-inventory). 계획 이슈: [#150](https://github.com/hyeoniverse/MacFolio/issues/150).
 
 #MacFolio #리팩터링 #회고

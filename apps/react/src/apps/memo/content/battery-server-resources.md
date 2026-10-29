@@ -1,11 +1,11 @@
 ---
-title: Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리
+title: 메뉴 막대 6 - Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리
 date: 2026-10-10
 category: 개발 기록/MacFolio/프론트엔드
 summary: 장식이던 메뉴 막대의 배터리 아이콘에 데이터를 연결했다. 관리자에게는 Always Free 서버의 유휴 회수 위험도를, 방문자에게는 최근 7일 방문 수의 직전 7일 대비 증감률을 표시한다. 충전량 계산, 직접 작성한 SVG, 특정 탭으로 앱 열기, 시험을 정리했다.
 ---
 
-메뉴 막대의 Wi-Fi 위치에는 이미 서버(API) 가동 여부가 표시된다([/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)). 그 옆 배터리는 3/4이 채워진 고정 이미지였다. 서버 자원 감시 기능을 구현한 뒤([Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)) 이 배터리 아이콘에 데이터를 연결했다. 관리자에게는 서버 자원을, 방문자에게는 방문 추이를 표시한다. 사용률을 확인하려고 매번 '활동 상태 보기'를 여는 대신, 메뉴 막대만 보고 위험 여부를 판단할 수 있게 하는 것이 목적이었다.
+메뉴 막대의 Wi-Fi 위치에는 이미 서버(API) 가동 여부가 표시된다([메뉴 막대 2 - /health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)). 그 옆 배터리는 3/4이 채워진 고정 이미지였다. 서버 자원 감시 기능을 구현한 뒤([서버 운영 4 - Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)) 이 배터리 아이콘에 데이터를 연결했다. 관리자에게는 서버 자원을, 방문자에게는 방문 추이를 표시한다. 사용률을 확인하려고 매번 '활동 상태 보기'를 여는 대신, 메뉴 막대만 보고 위험 여부를 판단할 수 있게 하는 것이 목적이었다.
 
 같은 날 커밋 세 개로 구현했다(서버 자원 배터리, macOS 형태 SVG, 방문자용 방문 추이). 모두 PR [#162](https://github.com/hyeoniverse/MacFolio/pull/162)로 병합됐다. 메뉴는 `src/desktop/status-bar/BatteryMenu.tsx`(132줄), 값 계산은 `src/apps/activity/useServerResources.ts`(88줄)와 `useVisitTrend.ts`(75줄), 그림은 `src/shared/server/ServerBattery.tsx`다.
 
@@ -113,9 +113,9 @@ macOS 배터리 메뉴처럼 짧은 항목으로 구성했다.
 
 ## 관련 글
 
-- [Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)
-- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)
+- [서버 운영 4 - Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림](/memo/resource-monitor)
+- [메뉴 막대 2 - /health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)
 - [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
-- [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
+- [서버 운영 5 - node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
 
 #MacFolio #프론트엔드 #메뉴막대 #서버 #방문분석

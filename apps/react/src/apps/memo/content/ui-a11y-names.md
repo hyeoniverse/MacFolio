@@ -1,5 +1,5 @@
 ---
-title: IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기
+title: 공통 UI 컴포넌트 7 - IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기
 date: 2026-10-17
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 공통 부품이 스크린 리더에 어떤 이름과 역할로 읽히는지 브라우저 없이 실행하는 시험 10개로 고정하고 규칙을 문서 표로 정리했다. 아이콘만 있는 버튼은 label을 생략하면 타입 검사에서 오류가 나도록 했다.
@@ -128,7 +128,7 @@ html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 ## 관련 글
 
 - 앱마다 직접 작성한 아이콘 버튼을 IconButton으로 옮긴 작업: [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate)
-- 공통 부품 목록을 작성한 작업: [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory)
+- 공통 부품 목록을 작성한 작업: [공통 UI 컴포넌트 4 - shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory)
 - 리팩터링 4단계 정리: [리팩터링 4단계 - 계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components)
 - 접근성 패턴 참고: [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
 - PR: [#243](https://github.com/hyeoniverse/MacFolio/pull/243)

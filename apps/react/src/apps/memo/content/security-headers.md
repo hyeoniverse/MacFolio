@@ -1,5 +1,5 @@
 ---
-title: CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기
+title: 보안 점검 2 - CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
 summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더가 하나도 없었다. CSP 출처 목록을 직접 작성하지 않고 빌드 환경 변수와 PROJECTS에서 생성하고, E2E가 같은 CSP로 실행되어 차단된 요청이 있으면 실패하게 했다. 이후 출처가 네 차례 추가된 기록도 정리한다.
@@ -13,7 +13,7 @@ summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더�
 - 글이나 README의 Markdown 처리에 결함이 생긴 경우, 삽입된 스크립트가 임의의 서버로 요청을 보내는 것
 - 외부 링크를 누르는 시각에 `/memo/<글 주소>` 같은 전체 경로가 `Referer` 헤더로 전달되는 것
 
-Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)). CSP는 그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층이다.
+Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([보안 점검 4 - react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)). CSP는 그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층이다.
 
 <details>
 <summary>용어 정리</summary>
@@ -184,10 +184,10 @@ curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|s
 
 ## 관련 글
 
-- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [보안 점검 3 - iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 - [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
-- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
+- [보안 점검 4 - react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 PR: [#156](https://github.com/hyeoniverse/MacFolio/pull/156)
 

@@ -1,5 +1,5 @@
 ---
-title: 트래픽 분석 6 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기
+title: 트래픽 분석 10 - visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기
 date: 2026-10-23
 category: 개발 기록/MacFolio/백엔드
 summary: 활동 상태 보기, 메모 조회수·댓글, 메시지, 받은 편지함, 위젯이 앱을 연 시각의 값에 머물러 있었다. 탭이 보이고 창이 열린 동안만 다시 조회하는 usePolling 훅을 만들고, 위젯 여러 개의 같은 요청은 공유 폴러로 하나로 묶었다. SSE·WebSocket과 비용도 비교했다.
@@ -219,12 +219,12 @@ SSE로 바꿔도 값이 더 빨리 바뀌지 않는다. 방문 이벤트는 브�
 
 - [트래픽 분석 3 - 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor): 활동 상태 보기를 처음 만든 글
 - [트래픽 분석 4 - 같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public): 방문자에게 요약을 공개하고 1분 캐시를 둔 글
-- [트래픽 분석 7 - HMAC으로 IP 원문 없이 관리자 방문 식별하기](/memo/analytics-admin-ip): 다음 글
-- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi): 메뉴 막대의 서버 상태도 탭이 보일 때만 확인한다
-- [video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper): 숨은 탭에서 동영상 배경화면을 멈추는 같은 방법
+- [트래픽 분석 11 - HMAC으로 IP 원문 없이 관리자 방문 식별하기](/memo/analytics-admin-ip): 다음 글
+- [메뉴 막대 2 - /health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi): 메뉴 막대의 서버 상태도 탭이 보일 때만 확인한다
+- [배경화면 3 - video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper): 숨은 탭에서 동영상 배경화면을 멈추는 같은 방법
 - [방문자 쿠키 HMAC으로 중복을 막는 로그인 없는 좋아요](/memo/memo-likes-popular): 조회·댓글·좋아요로 인기글을 매기는 글
-- [zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages): 메시지 앱 API를 contracts 스키마로 옮긴 글
-- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
+- [contracts 스키마 3 - zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages): 메시지 앱 API를 contracts 스키마로 옮긴 글
+- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
 - [Open-Meteo 지오코딩 지연을 내장 도시 목록 우선 검색으로 줄이기](/memo/weather-app): 날씨 앱
 
 #MacFolio #React #폴링

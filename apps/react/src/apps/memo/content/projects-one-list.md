@@ -414,10 +414,10 @@ GitHub 앱의 고정 저장소, Finder, 터미널의 `project` 번호도 같은 
 
 ## 관련 글
 
-- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [모듈 구조 5 - index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
-- [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)
+- [사이트 편집 3 - 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)
 
 #MacFolio #Safari #프로젝트

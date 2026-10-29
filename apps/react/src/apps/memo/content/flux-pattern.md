@@ -7,7 +7,7 @@ summary: Flux는 상태 변경을 Action → Dispatcher → Store → View 한 �
 
 Flux는 Facebook이 2014년에 공개한 클라이언트 애플리케이션 구조다. 상태를 바꾸는 요청이 **Action → Dispatcher → Store → View** 한 방향으로만 흐르게 한다. 지금 Flux 라이브러리 자체를 쓰는 프로젝트는 드물지만, Redux·Zustand 같은 상태 관리 라이브러리와 React의 `useReducer`·`useSyncExternalStore`가 이 구조에서 나왔다.
 
-이 글은 Flux가 해결하려던 문제와 구성 요소, Flux 이후 Redux와 외부 store가 바꾼 점을 공식 자료를 기준으로 정리한다. 이 구조를 MacFolio의 store에 적용한 내용은 개발기 [createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design)에 따로 정리했다.
+이 글은 Flux가 해결하려던 문제와 구성 요소, Flux 이후 Redux와 외부 store가 바꾼 점을 공식 자료를 기준으로 정리한다. 이 구조를 MacFolio의 store에 적용한 내용은 개발기 [desktop-core 5 - createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design)에 따로 정리했다.
 
 ## Flux가 나온 이유: 양방향 바인딩의 연쇄 갱신
 
@@ -145,7 +145,7 @@ Redux FAQ의 [When should I use Redux?](https://redux.js.org/faq/general#when-sh
 
 ## 관련 글
 
-- [createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design): 이 구조를 창 관리 store에 적용한 개발기
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
+- [desktop-core 5 - createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design): 이 구조를 창 관리 store에 적용한 개발기
+- [desktop-core 1 - 창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
 
 #TIL #React #상태관리 #아키텍처

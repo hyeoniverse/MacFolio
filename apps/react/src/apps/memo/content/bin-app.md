@@ -75,7 +75,7 @@ it('코드가 쓰는 macfolio: 저장 키를 모두 다룬다 (새 키를 쓰면
 });
 ```
 
-목록은 코드 안의 배열(`src/apps/bin/siteStorage.ts`의 `BROWSER_DATA`)이다. 새 키를 사용하면서 이 배열에 추가하지 않으면, 휴지통이 그 데이터를 인식하지 못한 채 "남긴 것이 없습니다"를 표시한다. 그래서 단위 시험이 소스 전체에서 `localStorage`·`sessionStorage`를 사용하는 파일의 `macfolio:` 키를 수집해, 모두 목록에 있는지 확인한다([readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage) 이후에는 키가 `STORAGE_KEYS` 한 곳에 모였다).
+목록은 코드 안의 배열(`src/apps/bin/siteStorage.ts`의 `BROWSER_DATA`)이다. 새 키를 사용하면서 이 배열에 추가하지 않으면, 휴지통이 그 데이터를 인식하지 못한 채 "남긴 것이 없습니다"를 표시한다. 그래서 단위 시험이 소스 전체에서 `localStorage`·`sessionStorage`를 사용하는 파일의 `macfolio:` 키를 수집해, 모두 목록에 있는지 확인한다([공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage) 이후에는 키가 `STORAGE_KEYS` 한 곳에 모였다).
 
 방문자 이름 쿠키(`macfolio_visitor`)는 다르게 처리한다. 서버가 설정하는 [httpOnly 쿠키](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#security)라 사이트의 JavaScript가 읽거나 삭제할 수 없다. 그래서 쿠키의 용도와 브라우저 설정에서 삭제하는 방법만 안내한다. 쿠키 존재 여부를 확인하려고 서버의 `GET /visitor`를 호출하지도 않는다. 그 요청이 쿠키가 없는 방문자에게 새 쿠키를 발급하기 때문이다.
 
@@ -116,6 +116,6 @@ iOS에는 휴지통 앱이 없다. 그래서 앱 정보에 `desktopOnly`를 지�
 - [참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기](/memo/server-files-cleanup)
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
 - [CRA에서 Vite로 옮기기](/memo/cra-to-vite)
-- [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)
+- [공통 모듈 2 - readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)
 
 #MacFolio #데스크톱 #개인정보

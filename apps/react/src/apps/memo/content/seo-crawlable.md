@@ -118,7 +118,7 @@ sitemap의 프로젝트 목록은 관리자가 수정한 사이트 콘텐츠까�
 
 ## 관련 글
 
-- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [보안 점검 2 - CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
 
 참고 문서: [Google 검색 센터 — JavaScript SEO 기본사항](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics), [Cloudflare Workers 정적 자산 라우팅(run_worker_first)](https://developers.cloudflare.com/workers/static-assets/binding/#run_worker_first)

@@ -132,7 +132,7 @@ simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크
 - [성능 최적화 1 - 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report)
 - [성능 최적화 2 - 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)
 - [성능 최적화 4 - #boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 아래 두 과제를 해결한 후속
-- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
+- [위젯 1 - 180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
 
 [^lcp]: Largest Contentful Paint. 화면에 보이는 가장 큰 글자 덩어리나 이미지가 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/lcp)
 

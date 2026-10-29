@@ -44,7 +44,9 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('끝에 태그 줄이 있는 글을 고쳐 저장해도 첫 태그가 \\#로 깨지지 않는다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		await memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' }).click();
+		await memo
+			.locator('.memo-item', { hasText: 'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' })
+			.click();
 		const editor = memo.locator('.ProseMirror');
 		await expect(editor).toBeVisible();
 		await editor.locator('> p').first().click();
@@ -459,7 +461,7 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('이미지: 캡션을 눌러 그 자리에서 고치고, 내려받기 버튼으로 받고, 끌 때 놓을 자리가 보인다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		await memo.locator('.memo-item', { hasText: '메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기' }).click();
 		const figure = memo.locator('.ProseMirror > .memo-figure').first();
 		await expect(figure).toBeVisible();
 
@@ -957,7 +959,7 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('편집기의 코드 블록에도 읽기 화면과 같은 복사 버튼이 있다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		await memo.locator('.memo-item', { hasText: '메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기' }).click();
 		await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
 		const block = memo.locator('.ProseMirror .memo-code').first();
 		const copy = block.getByRole('button', { name: '코드 복사' });
@@ -1029,7 +1031,7 @@ test.describe('바로 고치기 (관리자)', () => {
 		await memo.getByRole('button', { name: '메모 삭제', exact: true }).first().click();
 		await expect(memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' })).toHaveCount(0);
 		await memo
-			.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' })
+			.locator('.memo-item', { hasText: 'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그' })
 			.click({ button: 'right' });
 		await page.getByRole('menuitem', { name: '메모 삭제' }).click();
 		await expect(memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개' })).toHaveCount(0);
@@ -1044,7 +1046,9 @@ test.describe('바로 고치기 (관리자)', () => {
 		await trash.click();
 		const items = memo.locator('.memo-item');
 		await expect(items).toHaveCount(2);
-		await expect(items.first()).toContainText('리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그');
+		await expect(items.first()).toContainText(
+			'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그'
+		);
 		await expect(items.first()).toContainText('30일 남음');
 		// 고칠 수 없는 읽기 화면: 안내 상자에 남은 날과 되돌려 놓기·즉시 삭제, 도구 막대의 휴지통은 즉시 삭제
 		await items.first().click();
@@ -1089,7 +1093,10 @@ test.describe('바로 고치기 (관리자)', () => {
 	test('최근 삭제된 항목의 ••• 메뉴로 휴지통을 비운다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
-		for (const title of ['CRA에서 Vite로 옮기기', '리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그']) {
+		for (const title of [
+			'CRA에서 Vite로 옮기기',
+			'E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그',
+		]) {
 			await memo.locator('.memo-item', { hasText: title }).click({ button: 'right' });
 			await page.getByRole('menuitem', { name: '메모 삭제' }).click();
 		}

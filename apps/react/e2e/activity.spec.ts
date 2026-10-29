@@ -89,7 +89,7 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		// 블로그 글은 제목으로: 전체 기간 조회수와 이 기간의 보기
 		await expect(activity.getByRole('table', { name: '블로그 글 조회수 (전체 기간)' }).locator('tbody tr')).toHaveText([
 			/^CRA에서 Vite로 옮기기42/,
-			/^Markdown 블로그에 글쓰기 붙이기7/,
+			/^메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기7/,
 		]);
 		await expect(activity.getByRole('table', { name: '글·프로젝트 (이 기간)' })).toContainText(
 			'메모 › CRA에서 Vite로 옮기기'
@@ -234,7 +234,7 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await enterDesktop(page, '/memo/cra-to-vite');
 		const memo = appWindow(page, 'memo');
 		await expect(memo.locator('.memo-reader-date')).toContainText('조회 42');
-		await memo.locator('.memo-item', { hasText: 'Markdown 블로그에 글쓰기 붙이기' }).click();
+		await memo.locator('.memo-item', { hasText: '메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기' }).click();
 		await expect(memo.locator('.memo-reader-date')).toContainText('조회 7');
 	});
 
@@ -491,13 +491,13 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 			const blog = activity.getByRole('table', { name: '블로그 글 조회수 (전체 기간)' });
 			await expect(blog.locator('tbody tr')).toHaveText([
 				/^CRA에서 Vite로 옮기기42/,
-				/^Markdown 블로그에 글쓰기 붙이기7/,
+				/^메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기7/,
 			]);
 			await expect(activity.locator('.activity-updated')).toHaveText(/^\d{2}:\d{2}:\d{2} 갱신$/);
 			// 적은 순으로 정렬해 둔다
 			await blog.getByRole('button', { name: '조회' }).click();
 			await expect(blog.locator('tbody tr')).toHaveText([
-				/^Markdown 블로그에 글쓰기 붙이기7/,
+				/^메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기7/,
 				/^CRA에서 Vite로 옮기기42/,
 			]);
 
@@ -507,14 +507,14 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 			const before = views.count;
 			await page.clock.fastForward(30_000);
 			await expect(blog.locator('tbody tr')).toHaveText([
-				/^Markdown 블로그에 글쓰기 붙이기7/,
+				/^메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기7/,
 				/^CRA에서 Vite로 옮기기42/,
 			]);
 			await page.clock.fastForward(31_000);
 			// 정렬(적은 순)은 그대로, 값만 바뀐다
 			await expect(blog.locator('tbody tr')).toHaveText([
 				/^CRA에서 Vite로 옮기기42/,
-				/^Markdown 블로그에 글쓰기 붙이기50/,
+				/^메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기50/,
 			]);
 			await expect(blog.locator('th[aria-sort="ascending"]')).toHaveText('조회');
 			await expect(activity.getByRole('table', { name: '앱' })).toContainText('메모950');
@@ -527,7 +527,7 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 			// 다시 보이면 바로 묻는다
 			api.analyticsViews.memo['post-editor'] = 60;
 			await setHidden(page, false);
-			await expect(blog.locator('tbody tr').last()).toHaveText(/^Markdown 블로그에 글쓰기 붙이기60/);
+			await expect(blog.locator('tbody tr').last()).toHaveText(/^메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기60/);
 			expect(views.count).toBe(before + 2);
 		});
 

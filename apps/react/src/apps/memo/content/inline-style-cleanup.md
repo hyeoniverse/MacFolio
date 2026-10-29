@@ -1,5 +1,5 @@
 ---
-title: 인라인 style을 CSS 클래스와 CSS 변수 전달 함수 cssVars()로 옮기기
+title: CSS 정리 2 - 인라인 style을 CSS 클래스와 CSS 변수 전달 함수 cssVars()로 옮기기
 date: 2026-10-08
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 여러 컴포넌트에 분산된 인라인 스타일을 세 종류로 나눴다. 고정 값은 CSS로, 데이터마다 바뀌는 색·크기는 cssVars()로 CSS 변수만 전달하고, 계산된 좌표만 인라인에 남겼다. 전후 스크린샷 37장이 바이트 단위로 일치했고, 타입 단언 61곳이 0이 됐다.
@@ -110,9 +110,9 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 
 ## 관련 글
 
-- [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
-- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
-- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
+- [E2E 시험 3 - Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
+- [디자인 토큰 5 - 직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
+- [디자인 토큰 3 - Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
 - [리팩터링 5단계 - CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
 
 #MacFolio #CSS #리팩터링

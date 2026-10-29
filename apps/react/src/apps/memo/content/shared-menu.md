@@ -1,5 +1,5 @@
 ---
-title: placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기
+title: 공통 UI 컴포넌트 1 - placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
 summary: 컨텍스트 메뉴, Apple 메뉴, 서식 창, 달력 등 다섯 곳이 "바깥 클릭 시 닫기"와 "화면 안 위치 보정"을 각각 구현하고 있었다. placement·useDismiss·Menu 세 모듈로 분리해 전환하고, 스크린샷 40장 비교로 바뀐 메뉴 네 개를 확인했다.
@@ -136,17 +136,17 @@ E2E도 수정했다. 메시지와 팝업 시험이 메뉴를 메시지 창 안�
 
 ## 이후 변경과 배운 것
 
-- `Menu`는 이 사이트에서 가장 많이 사용되는 공통 컴포넌트가 됐다. 이 글을 쓴 시각에 28개 파일이 사용했다. 휴대폰에서 iOS처럼 크게 표시되는 모양은 이후 `variant="ios"`로 선택하게 했다([variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기](/memo/ui-variant-pairs)).
+- `Menu`는 이 사이트에서 가장 많이 사용되는 공통 컴포넌트가 됐다. 이 글을 쓴 시각에 28개 파일이 사용했다. 휴대폰에서 iOS처럼 크게 표시되는 모양은 이후 `variant="ios"`로 선택하게 했다([공통 UI 컴포넌트 9 - variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기](/memo/ui-variant-pairs)).
 - 메뉴의 호버 색은 현재도 전역 강조색(`--color-accent`)이다. macOS도 앱과 관계없이 시스템 강조색으로 메뉴를 표시하므로 유지했다.
 - 같은 코드가 네 번 복사되면 다섯 번째는 조금씩 달라진다. 이번에는 메시지만 `window`에 리스너를 등록했고, 위치 보정은 다섯 곳이 모두 달랐다.
 - `pointerdown`과 `click`은 다른 시각에 발생한다. 둘을 함께 쓰는 "바깥 클릭 시 닫기"는 여는 버튼을 안쪽과 바깥 중 어디로 취급할지 먼저 결정해야 한다.
-- 렌더링마다 새로 생성되는 함수·배열을 리스너 effect의 의존성에 넣지 않는다. 최신 값은 ref에 저장하고 리스너는 한 번만 등록한다. 이 방식은 이후 `Sheet`에서도 그대로 사용했다([오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)).
+- 렌더링마다 새로 생성되는 함수·배열을 리스너 effect의 의존성에 넣지 않는다. 최신 값은 ref에 저장하고 리스너는 한 번만 등록한다. 이 방식은 이후 `Sheet`에서도 그대로 사용했다([공통 UI 컴포넌트 6 - 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)).
 
 ## 관련 글
 
 - [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
-- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
-- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
-- [variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기](/memo/ui-variant-pairs)
+- [공통 UI 컴포넌트 2 - 계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
+- [메뉴 막대 4 - 앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
+- [공통 UI 컴포넌트 9 - variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기](/memo/ui-variant-pairs)
 
 #MacFolio #공통컴포넌트

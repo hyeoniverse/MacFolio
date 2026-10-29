@@ -160,9 +160,9 @@ pnpm dev:all
 ## 관련 글
 
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
-- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+- [서버 운영 2 - pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
 
 [^check-null]: PostgreSQL 문서: "a check constraint is satisfied if the check expression evaluates to true or the null value" ([5.5.1. Check Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)).

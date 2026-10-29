@@ -152,6 +152,6 @@ ALTER TABLE "Post" ADD COLUMN "secret" BOOLEAN NOT NULL DEFAULT false;
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
 - [블로그에 좋아요와 인기글 폴더 붙이기](/memo/memo-likes-popular)
-- [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
+- [보안 점검 5 - Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
 
 #MacFolio #메모앱 #보안

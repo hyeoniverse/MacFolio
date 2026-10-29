@@ -1,5 +1,5 @@
 ---
-title: HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기
+title: 배포 자동화 3 - HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기
 date: 2026-10-18
 category: 개발 기록/MacFolio/배포·운영
 summary: 자동 배포의 롤백을 실제 서버에서 확인했다. 코드에 스위치를 추가하지 않고 HEALTHCHECK false 레이어만 추가한 훈련용 이미지를 배포했다. 120초 대기 후 41초 만에 이전 버전으로 복귀했고, Actions는 3분 만에 실패로 종료되었다.
@@ -174,9 +174,9 @@ docker compose up -d api
 ## 관련 글
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
-- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
-- [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+- [서버 운영 3 - GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
+- [서버 운영 6 - 서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
+- [서버 운영 2 - pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
 
 [^forced-command]: `authorized_keys`의 키 앞에 `command="…"`를 지정하면, 그 키로 접속할 때 클라이언트가 요청한 명령 대신 지정한 명령만 실행된다. 요청한 명령은 `SSH_ORIGINAL_COMMAND` 환경 변수로 전달된다. [OpenSSH 매뉴얼: sshd(8) AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)
 

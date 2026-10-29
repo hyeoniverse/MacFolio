@@ -103,8 +103,8 @@ Editor.make().use(commonmark).use(gfm).use(cjkFriendly);
 ## 관련 글
 
 - [한 줄에 모양은 하나 — 노션 대신 macOS 메모를 따른 이유, 그리고 구분선](/memo/memo-one-style-per-line)
-- [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
-- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
+- [메모 편집기 1 - Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
+- [보안 점검 4 - react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 [^charref]: `&#xAC00;`처럼 문자를 유니코드 코드 포인트로 표기하는 HTML 문법. `AC00`은 '가'의 코드 포인트다. 이렇게 바꾸면 닫는 `**` 바로 뒤 문자가 문장부호 `&`가 되어 위 조건 2를 충족하므로, 직렬화기가 강조를 유지하려고 이 형태를 선택한다.
 

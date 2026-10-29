@@ -1,5 +1,5 @@
 ---
-title: Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험
+title: 보안 점검 5 - Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험
 date: 2026-10-09
 category: 개발 기록/MacFolio/품질
 summary: 관리자 API에 가드를 빠뜨려도 오류가 나지 않는다. 컨트롤러 데코레이터에서 경로·가드를 읽어 표와 비교하고, 관리자 경로는 로그인 없이 401, 본문을 받는 경로는 잘못된 값에 400인지 한 파일에서 확인한다. 64개로 시작한 표는 10월 19일 85개가 됐다.
@@ -140,10 +140,10 @@ mv apps/api/src/resources/resources.controller.ts.bak apps/api/src/resources/res
 ## 관련 글
 
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
-- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
 - [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
-- [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [E2E 시험 1 - 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
+- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
 
 [^dto]: Data Transfer Object. NestJS에서는 요청 본문의 모양을 클래스로 선언하고 `class-validator` 데코레이터로 검사하는 방식을 말한다. [NestJS Validation](https://docs.nestjs.com/techniques/validation)
 

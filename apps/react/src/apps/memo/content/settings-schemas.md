@@ -1,5 +1,5 @@
 ---
-title: 관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기
+title: contracts 스키마 8 - 관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기
 date: 2026-10-16
 category: 개발 기록/MacFolio/백엔드
 summary: 관리자 설정과 AI 데모의 요청 검사는 서버의 if 문과 화면의 상수가 따로 같은 상한을 정의했다. 일곱 규칙을 @macfolio/contracts의 zod 스키마로 옮겨 서버와 화면이 같은 값을 쓰게 하고, 거절 문구와 검사 순서는 그대로 유지했다.
@@ -287,12 +287,12 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 ## 관련 글
 
 - [리팩터링 6단계 - 책임별 서비스 분리와 공유 zod 스키마로 정리한 서버 코드](/memo/refactor-step6-server)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
-- [DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기](/memo/contracts-wallpapers)
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
-- [리팩터링 1단계 마무리 - parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
+- [contracts 스키마 1 - zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [contracts 스키마 5 - DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기](/memo/contracts-wallpapers)
+- [contracts 스키마 2 - ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [contracts 스키마 7 - parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
 - [Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings)
-- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes): 데모가 사용하는 유료 API의 호출 횟수를 제한하는 이유
+- [보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes): 데모가 사용하는 유료 API의 호출 횟수를 제한하는 이유
 
 PR: [#235](https://github.com/hyeoniverse/MacFolio/pull/235) · [#236](https://github.com/hyeoniverse/MacFolio/pull/236) · 리팩터링 계획: [#150](https://github.com/hyeoniverse/MacFolio/issues/150)
 

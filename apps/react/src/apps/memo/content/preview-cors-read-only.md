@@ -1,5 +1,5 @@
 ---
-title: PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기
+title: 보안 점검 11 - PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/품질
 summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하고 있었다. SameSite=Lax가 이미 차단하고 있었지만 서버에서도 차단하게 했다. 허용 목록을 exact·pattern으로 분류해 pattern에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다.
@@ -134,10 +134,10 @@ curl -s -o /dev/null -w '%{http_code}\n' -H 'Origin: https://feat-x-macfolio.hye
 
 ## 관련 글
 
-- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
-- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [보안 점검 6 - @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [배포 자동화 1 - Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
+- [보안 점검 9 - GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
+- [서버 운영 1 - Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [리팩터링 7단계 - CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
 
 #MacFolio #보안 #CORS #NestJS

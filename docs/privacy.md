@@ -92,9 +92,9 @@ Finder에서 여는 이력서·포트폴리오·자격증 파일은 Cloudflare R
 
 ## 관련 글
 
-- [트래픽 분석 1 - 쿠키 없이 순방문자 세기](https://macfolio.hyeoniverse.com/memo/analytics-api)
-- [트래픽 분석 2 - 사이트에서 모아 보내기](https://macfolio.hyeoniverse.com/memo/analytics-collect)
-- [트래픽 분석 5 - UTM 조합 표와 링크 생성기](https://macfolio.hyeoniverse.com/memo/utm-analytics)
+- [트래픽 분석 1 - 쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](https://macfolio.hyeoniverse.com/memo/analytics-api)
+- [트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](https://macfolio.hyeoniverse.com/memo/analytics-collect)
+- [트래픽 분석 7 - 출처·매체·캠페인 조합 키로 집계하는 UTM 분석](https://macfolio.hyeoniverse.com/memo/utm-analytics)
 - [무엇을 검색하고 들어왔나 - 검색어와 Google Search Console](https://macfolio.hyeoniverse.com/memo/search-keywords)
 - [이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름](https://macfolio.hyeoniverse.com/memo/visitor-identity)
 - [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](https://macfolio.hyeoniverse.com/memo/contact-mail)
