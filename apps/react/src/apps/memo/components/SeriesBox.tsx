@@ -17,13 +17,12 @@ type Entry = { item: Post; at: number };
 
 /**
  * 줄인 목록에 보일 편: 지금 글이 앞 PREVIEW편 안이면 앞 PREVIEW편.
- * 그보다 뒤면 이전 편과 지금 글, 그리고 남는 칸만큼 1편부터 순서대로. 한 편만 빠지는 자리는 그 편도 보인다
+ * 그보다 뒤면 이전 편과 지금 글, 그리고 남는 칸만큼 1편부터 순서대로 (한 편만 빠져도 그 자리는 '⋮')
  */
 function shownPosts(total: number, index: number): boolean[] {
 	if (index < PREVIEW) return Array.from({ length: total }, (_, at) => at < PREVIEW);
 	const head = PREVIEW - 2;
-	const shown = Array.from({ length: total }, (_, at) => at < head || at === index - 1 || at === index);
-	return shown.map((on, at) => on || (shown[at - 1] === true && shown[at + 1] === true));
+	return Array.from({ length: total }, (_, at) => at < head || at === index - 1 || at === index);
 }
 
 /** 이어진 편끼리 묶는다: 보이는 묶음과 접어 둔 묶음이 번갈아 온다 */

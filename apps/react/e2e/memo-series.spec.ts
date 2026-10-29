@@ -69,6 +69,11 @@ test.describe('메모 연재', () => {
 		await expect(series.locator('.memo-series-gap')).toBeHidden();
 		await series.getByRole('button', { name: '접기' }).click();
 		await expect.poll(numbers).toEqual(['1', '2', '3', '8', '9']);
+
+		// 6편(analytics-service-split)처럼 한 편만 빠져도 그 자리는 ⋮: 1, 2, 3 ⋮ 5, 6
+		await enterDesktop(page, '/memo/analytics-service-split');
+		await expect.poll(numbers).toEqual(['1', '2', '3', '5', '6']);
+		await expect(series.locator('.memo-series-gap')).toBeVisible();
 	});
 
 	test('글 목록 항목의 제목 앞에 연재 이름과 번호를 붙인다', async ({ page }) => {
