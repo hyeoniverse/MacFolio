@@ -148,6 +148,18 @@
 	content: '';
 }
 
+/* 접어 둔 편들 사이의 '⋯': 번호 칸 자리에 옅게 (누를 수 없다. 펼치는 단추는 목록 아래 하나) */
+.memo-series-gap {
+	display: block;
+	padding: var(--space-2) 0 var(--space-2) var(--space-12);
+	color: var(--memo-muted);
+	font-size: var(--text-footnote);
+}
+
+.memo-series-gap i {
+	min-width: 1.4em;
+}
+
 /* 더보기·접기: 목록 바로 아래 한 자리의 단추 한 줄. 번호 칸 자리에 '⋯'(펼치면 ⌃), 그 옆에 'N편 더보기'·'접기' */
 .memo .memo-series-more {
 	display: flex;
