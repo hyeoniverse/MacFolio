@@ -2,7 +2,7 @@
 title: 주소에서 ID를 뽑아 만든 iframe 임베드와 ProseMirror 위젯 장식으로 그리는 바깥 링크 미리 보기
 date: 2026-10-30
 category: 개발 기록/MacFolio/프론트엔드
-summary: 메모 글에 YouTube·Vimeo·CodePen 등의 주소만 한 줄로 적으면 iframe 임베드로 그리게 했다. 원래 주소 대신 주소에서 뽑은 ID로 임베드 주소를 새로 만들고, 같은 출처 목록을 CSP frame-src에 쓴다. 편집기는 글을 바꾸지 않는 위젯 장식으로 같은 임베드를 보인다.
+summary: 메모 글에 YouTube·SoundCloud·CodePen 등 21개 사이트의 주소만 한 줄로 적으면 iframe 임베드로 그리게 했다. 원래 주소 대신 주소에서 뽑은 ID로 임베드 주소를 새로 만들고, 같은 출처 목록을 CSP frame-src에 쓴다. 편집기는 글을 바꾸지 않는 위젯 장식으로 같은 임베드를 보인다.
 ---
 
 메모 글에서 동영상을 소개하려면 지금까지 영상 화면을 캡처해 이미지로 넣어야 했다. [Flux 글](/memo/flux-pattern)의 F8 2014 발표 영상도 YouTube 페이지를 캡처한 JPG였고, 읽는 사람은 캡처 아래의 링크를 눌러 YouTube로 이동해야 영상을 재생할 수 있었다. 이 글은 바깥 링크를 iframe 임베드로 그리는 기능을 더한 과정이다.
@@ -46,16 +46,38 @@ function youtube(url: ParsedUrl): Embed | null {
 1. **글에 적힌 주소를 신뢰하지 않는다.** 서버 글은 관리자만 쓰지만, 주소에 `javascript:`나 다른 출처, 예상하지 못한 검색 인자가 섞여도 iframe에는 들어가지 않아야 한다. ID에 `[\w-]` 밖의 글자가 있으면 임베드하지 않고 링크로 둔다. https가 아닌 주소도 임베드하지 않는다.
 2. **사이트마다 임베드 주소가 다르다.** YouTube의 `watch?v=`, Vimeo의 `vimeo.com/<숫자>`, CodePen의 `/pen/` 주소는 iframe에 넣으면 페이지 전체가 열리거나 거부된다. 각 사이트가 안내하는 임베드 전용 주소로 바꿔야 한다.
 
-| 사이트      | 받는 주소                                             | 임베드 주소                                       | 크기                            |
-| ----------- | ----------------------------------------------------- | ------------------------------------------------- | ------------------------------- |
-| YouTube     | `watch?v=`, `youtu.be/`, `shorts/`, `live/`, `embed/` | `www.youtube-nocookie.com/embed/<id>`             | 16:9 (Shorts 9:16)              |
-| Vimeo       | `vimeo.com/<숫자>`                                    | `player.vimeo.com/video/<id>`                     | 16:9                            |
-| CodePen     | `codepen.io/<user>/pen/<id>`                          | `codepen.io/<user>/embed/<id>?default-tab=result` | 높이 420px                      |
-| CodeSandbox | `/s/<id>`, `/p/sandbox/<id>`                          | `codesandbox.io/embed/<id>`                       | 높이 500px                      |
-| StackBlitz  | `stackblitz.com/edit/<id>`                            | `stackblitz.com/edit/<id>?embed=1`                | 높이 500px                      |
-| Spotify     | `track`·`album`·`playlist`·`episode`·`show`·`artist`  | `open.spotify.com/embed/<종류>/<id>`              | 곡·에피소드 152px, 나머지 352px |
-| Loom        | `loom.com/share/<id>`                                 | `www.loom.com/embed/<id>`                         | 16:9                            |
-| Figma       | `file`·`design`·`proto`·`board`·`slides`              | `www.figma.com/embed?embed_host=share&url=…`      | 16:10                           |
+| 분류          | 사이트         | 받는 주소                                                                | 크기                                |
+| ------------- | -------------- | ------------------------------------------------------------------------ | ----------------------------------- |
+| 동영상        | YouTube        | `watch?v=`, `youtu.be/`, `shorts/`, `live/`, `embed/` (`t=`는 시작 초로) | 16:9 (Shorts 9:16, 최대 폭 352px)   |
+|               | Vimeo          | `vimeo.com/<숫자>`                                                       | 16:9                                |
+|               | Twitch         | 채널(생방송), `videos/<숫자>`, 클립                                      | 16:9                                |
+|               | TED            | `ted.com/talks/<slug>`                                                   | 16:9                                |
+|               | Streamable     | `streamable.com/<id>`                                                    | 16:9                                |
+|               | Loom           | `loom.com/share/<id>`                                                    | 16:9                                |
+| SNS           | TikTok         | `tiktok.com/@<사용자>/video/<숫자>`                                      | 높이 760px, 최대 폭 340px           |
+|               | Instagram      | `instagram.com/p/<코드>`, `reel/`, `tv/`                                 | 높이 720px, 최대 폭 540px           |
+| 음악·팟캐스트 | Spotify        | `track`·`album`·`playlist`·`episode`·`show`·`artist`                     | 곡·에피소드 152px, 나머지 352px     |
+|               | SoundCloud     | 사용자, 곡, `sets/<재생 목록>`                                           | 곡 166px, 나머지 450px              |
+|               | Apple Music    | `album`·`playlist`·`song`·`music-video`·`station` (`?i=` 곡)             | 곡 175px, 나머지 450px              |
+|               | Apple 팟캐스트 | `podcast/<이름>/id<숫자>` (`?i=` 에피소드)                               | 에피소드 175px, 쇼 16:9             |
+| 코드          | CodePen        | `codepen.io/<user>/pen/<id>`                                             | 높이 420px                          |
+|               | CodeSandbox    | `/s/<id>`, `/p/sandbox/<id>`                                             | 높이 500px                          |
+|               | StackBlitz     | `stackblitz.com/edit/<id>`                                               | 높이 500px                          |
+|               | JSFiddle       | `jsfiddle.net/<id>`, `/<user>/<id>`                                      | 높이 420px                          |
+| 디자인·문서   | Figma          | `file`·`design`·`proto`·`board`·`slides`                                 | 16:10                               |
+|               | Miro           | `miro.com/app/board/<id>`                                                | 16:9                                |
+|               | Canva          | `canva.com/design/<id>/<공유 토큰>/…`                                    | 16:9                                |
+|               | Google 문서    | 문서·프레젠테이션·스프레드시트(공유·게시 주소), 설문지(응답 주소)        | 프레젠테이션 16:9, 나머지 480~800px |
+|               | Google Drive   | `drive.google.com/file/d/<id>`                                           | 4:3                                 |
+
+주소만으로 임베드 주소를 만들 수 없는 사이트는 넣지 않았다.
+
+| 사이트                  | 넣지 않은 이유                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- |
+| X(Twitter), GitHub Gist | iframe이 아니라 사이트의 스크립트를 페이지에 넣는 방식이다. CSP의 `script-src`를 바깥 출처에 열어야 한다   |
+| Bandcamp, SlideShare    | 임베드 주소에 공유 주소에 없는 내부 ID가 들어간다. 알아내려면 사이트의 API(oEmbed)에 요청해야 한다         |
+| Dailymotion             | 예전 임베드 주소가 새 재생기(`geo.dailymotion.com`)로 넘어가는데, 사이트에 등록한 Player ID 없이는 403이다 |
+| 네이버 TV               | 임베드 주소(`tv.naver.com/embed/<id>`)가 다른 서비스 주소로 넘어가, 주소 체계가 바뀐 것으로 보인다         |
 
 YouTube는 `youtube-nocookie.com`을 쓴다. YouTube가 제공하는 개인정보 보호 강화 모드의 주소로, 방문자가 재생 버튼을 누르기 전에는 YouTube 쿠키를 남기지 않는다.
 
@@ -68,17 +90,21 @@ desktop-core는 브라우저·Node·Cloudflare Worker 어디서나 돌도록 `li
 사이트의 CSP(Content-Security-Policy)는 `frame-src`에 적은 출처만 iframe으로 열 수 있다. iframe 주소를 만드는 코드와 CSP 목록을 따로 관리하면 사이트를 더할 때 한쪽을 빠뜨리기 쉽다. 그래서 `embeds.ts`가 임베드 출처 목록 `EMBED_ORIGINS`를 내보내고, `worker/securityHeaders.ts`가 이 목록을 그대로 `frame-src`에 더한다.
 
 ```ts
-export const EMBED_ORIGINS: Readonly<Record<EmbedProvider, string>> = {
-	youtube: 'https://www.youtube-nocookie.com',
-	vimeo: 'https://player.vimeo.com',
+export const EMBED_ORIGINS: Readonly<Record<EmbedProvider, readonly string[]>> = {
+	youtube: ['https://www.youtube-nocookie.com'],
+	twitch: ['https://player.twitch.tv', 'https://clips.twitch.tv'],
 	…
 };
 
 // worker/securityHeaders.ts
-'frame-src': ["'self'", TURNSTILE, ...Object.values(EMBED_ORIGINS).sort(), ...frameOrigins(frameUrls)],
+'frame-src': ["'self'", TURNSTILE, ...Object.values(EMBED_ORIGINS).flat().sort(), ...frameOrigins(frameUrls)],
 ```
 
-`embeds.test.ts`는 만든 iframe 주소가 모두 `EMBED_ORIGINS`의 출처로 시작하는지 확인한다. 새 사이트를 더하면서 출처를 목록에 적지 않으면 이 시험이 실패한다. CSP는 `vite.config.ts`도 읽기 때문에, desktop-core를 빌드하지 않아도 되도록 패키지 이름 대신 `src`의 상대 경로로 가져온다.
+사이트마다 출처를 배열로 둔 것은 iframe 주소의 출처와 재생기가 실제로 여는 출처가 다른 경우가 있어서다. Twitch는 생방송·다시보기는 `player.twitch.tv`, 클립은 `clips.twitch.tv`를 쓴다. CSP의 `frame-src`는 iframe이 리다이렉트로 넘어간 주소에도 적용되므로, 넘어가는 출처까지 적어야 한다.
+
+Twitch 재생기는 삽입한 사이트의 도메인을 `parent` 인자로 받아야 열린다. 그래서 `embedOf(href, { parent })`가 도메인을 받고, 브라우저에서는 `location.hostname`을 넘긴다. 도메인을 모르는 환경(서버, 시험)에서는 Twitch를 임베드하지 않는다.
+
+`embeds.test.ts`는 만든 iframe 주소가 모두 그 사이트의 `EMBED_ORIGINS` 출처로 시작하는지 확인한다. 새 사이트를 더하면서 출처를 목록에 적지 않으면 이 시험이 실패한다. CSP는 `vite.config.ts`도 읽기 때문에, desktop-core를 빌드하지 않아도 되도록 패키지 이름 대신 `src`의 상대 경로로 가져온다.
 
 ## 읽기 화면: 문단을 figure로 바꾼다
 
@@ -168,7 +194,7 @@ state.doc.descendants((node, pos) => {
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `embeds.test.ts` (desktop-core) | 사이트별 주소 해석, 시작 시각 `t=1m30s` → 90초, http·지원하지 않는 사이트·ID에 다른 글자가 섞인 주소는 null, 모든 iframe 주소가 `EMBED_ORIGINS` 안                                                                                                                                    |
 | `embedBlock.test.ts`            | 주소 링크 하나뿐인 문단만 임베드, 문장 속 링크·글자를 붙인 링크는 제외                                                                                                                                                                                                                |
-| `securityHeaders.test.ts`       | `frame-src`에 임베드 출처 8개                                                                                                                                                                                                                                                         |
+| `securityHeaders.test.ts`       | `frame-src`에 임베드 출처 22개 (21개 사이트)                                                                                                                                                                                                                                          |
 | `memo-embed.spec.ts` (E2E)      | 읽기 화면의 iframe 주소·제목·16:9 비율·"YouTube에서 열기" 링크, CSP 위반 메시지 없음. 편집 화면에서 주소 문단의 높이가 0이고 같은 임베드·캡션이 보임, 다른 문단에 입력한 뒤에도 같은 iframe 요소 유지                                                                                 |
 | `memo-embed.spec.ts` (E2E 추가) | 위·아래 화살표로 주소 문단에 들어가면 보이고 나오면 숨음. 주소 바꾸기로 다른 영상 주소를 입력하면 링크 대상·임베드·임시 저장한 Markdown이 새 주소를 따르고, 직접 입력한 Vimeo 주소도 임베드됨. 링크로 바꾸기는 `[vimeo.com/…](https://vimeo.com/…)`로, 임베드 삭제는 주소 문단을 지움 |
 
