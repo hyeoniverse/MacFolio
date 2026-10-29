@@ -154,22 +154,36 @@
  */
 :where(.prose) details {
 	interpolate-size: allow-keywords;
-	transition: padding-bottom var(--duration) var(--ease-out);
+	transition: padding-bottom var(--duration-slow) var(--ease-in-out);
 }
 
+/* 연재 목록·목차와 같은 아코디언: 천천히(--duration-slow, --ease-in-out), 내용은 위에서 살짝 내려오며 나타난다 */
 :where(.prose) details::details-content {
 	block-size: 0;
 	overflow-y: clip;
 	opacity: 0;
 	transition:
-		block-size var(--duration) var(--ease-out),
-		opacity var(--duration-fast) var(--ease-out),
-		content-visibility var(--duration) allow-discrete;
+		block-size var(--duration-slow) var(--ease-in-out),
+		opacity var(--duration) var(--ease-in),
+		content-visibility var(--duration-slow) allow-discrete;
 }
 
 :where(.prose) details[open]::details-content {
 	block-size: auto;
 	opacity: 1;
+	transition:
+		block-size var(--duration-slow) var(--ease-in-out),
+		opacity var(--duration-slow) var(--ease-in-out),
+		content-visibility var(--duration-slow) allow-discrete;
+}
+
+:where(.prose) details > :not(summary) {
+	translate: 0 calc(-1 * var(--space-12));
+	transition: translate var(--duration-slow) var(--ease-in-out);
+}
+
+:where(.prose) details[open] > :not(summary) {
+	translate: none;
 }
 
 :where(.prose) details > summary {
@@ -216,6 +230,7 @@
 @media (prefers-reduced-motion: reduce) {
 	:where(.prose) details,
 	:where(.prose) details::details-content,
+	:where(.prose) details > :not(summary),
 	:where(.prose) details > summary::before {
 		transition: none;
 	}

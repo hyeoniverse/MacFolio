@@ -44,15 +44,11 @@
 }
 
 /* 나머지 편 펼치고 접기(아코디언): 높이는 grid-template-rows 0fr ↔ 1fr, 목록은 위에서 살짝 내려오며 나타난다.
-   눈에 보이게 천천히(--duration-slow), 처음과 끝을 부드럽게. 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
-.memo-series {
-	--memo-series-ease: cubic-bezier(0.65, 0, 0.35, 1);
-}
-
+   눈에 보이게 천천히(--duration-slow, --ease-in-out: 목차·토글 블록과 같다). 접힌 뒤에는 Tab으로 들어가지 않게 감춘다 */
 .memo-series-collapse {
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows var(--duration-slow) var(--memo-series-ease);
+	transition: grid-template-rows var(--duration-slow) var(--ease-in-out);
 }
 
 .memo-series-collapse[data-open='true'] {
@@ -76,13 +72,13 @@
 	visibility: visible;
 	opacity: 1;
 	transition:
-		opacity var(--duration-slow) var(--memo-series-ease),
+		opacity var(--duration-slow) var(--ease-in-out),
 		visibility 0s;
 }
 
 .memo-series-collapse-inner > ol {
 	transform: translateY(calc(-1 * var(--space-12)));
-	transition: transform var(--duration-slow) var(--memo-series-ease);
+	transition: transform var(--duration-slow) var(--ease-in-out);
 }
 
 .memo-series-collapse[data-open='true'] .memo-series-collapse-inner > ol {

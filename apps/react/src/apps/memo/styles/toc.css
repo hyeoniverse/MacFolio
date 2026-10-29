@@ -80,12 +80,12 @@
 
 /*
  * 접고 펼치기: 높이는 grid-template-rows 0fr ↔ 1fr로 바꿔 내용 높이를 재지 않고도 부드럽게 늘고 줄인다 (메모 목록의 새 항목과 같은 방식).
- * 목록은 서서히 나타난다. 접힌 뒤에는 visibility: hidden으로 감춰 Tab으로 들어가지 않게 한다 (줄어드는 동안은 보이고, 끝나면 감춘다)
+ * 목록은 서서히 위에서 내려오며 나타난다(--duration-slow, --ease-in-out: 연재 목록·토글 블록과 같은 아코디언). 접힌 뒤에는 visibility: hidden으로 감춰 Tab으로 들어가지 않게 한다 (줄어드는 동안은 보이고, 끝나면 감춘다)
  */
 .memo-toc-collapse {
 	display: grid;
 	grid-template-rows: 0fr;
-	transition: grid-template-rows var(--duration) var(--ease-out);
+	transition: grid-template-rows var(--duration-slow) var(--ease-in-out);
 }
 
 .memo-toc-collapse[data-open='true'] {
@@ -100,16 +100,26 @@
 	visibility: hidden;
 	opacity: 0;
 	transition:
-		opacity var(--duration-fast) var(--ease-out),
-		visibility 0s linear var(--duration);
+		opacity var(--duration) var(--ease-in),
+		visibility 0s linear var(--duration-slow);
 }
 
 .memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner {
 	visibility: visible;
 	opacity: 1;
 	transition:
-		opacity var(--duration) var(--ease-out),
+		opacity var(--duration-slow) var(--ease-in-out),
 		visibility 0s;
+}
+
+/* 목록은 위에서 살짝 내려오며 나타난다 (연재 목록의 더보기와 같은 아코디언) */
+.memo-toc-collapse-inner > * {
+	transform: translateY(calc(-1 * var(--space-12)));
+	transition: transform var(--duration-slow) var(--ease-in-out);
+}
+
+.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner > * {
+	transform: none;
 }
 
 /* 목록: 왼쪽 세로선 하나에 항목을 붙인다. 본문 위 목차에서는 머리 줄 글자와 왼쪽을 맞춘다 (연재 목록과 같은 자리) */
@@ -243,7 +253,9 @@
 	.memo-toc-chevron,
 	.memo-toc-collapse,
 	.memo-toc-collapse-inner,
-	.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner {
+	.memo-toc-collapse-inner > *,
+	.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner,
+	.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner > * {
 		transition: none;
 	}
 
