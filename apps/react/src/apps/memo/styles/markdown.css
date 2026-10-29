@@ -402,8 +402,8 @@
 }
 
 /* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 오른쪽 위에 보인다.
-   모양은 YouTube 재생기 안의 링크 복사 버튼과 같게 둥글고 반투명한 검은 바탕에 흰 아이콘 (재생기 위에서 같은 계열로 보이게).
-   자리는 그 버튼(왼쪽 아래)·재생 조작 막대(아래)와 겹치지 않는 오른쪽 위 */
+   모양은 YouTube 재생기 안의 링크 복사 버튼과 같다: 40px 원형 누름 영역, 바탕 없이 24px 흰 채운 아이콘(밝은 화면에서도 보이게 옅은 그림자),
+   올리면 옅은 흰 원. 자리는 그 버튼(왼쪽 아래)·재생 조작 막대(아래)와 겹치지 않는 오른쪽 위 */
 .memo-embed-frame {
 	position: relative;
 }
@@ -413,7 +413,7 @@
 	position: absolute;
 	top: var(--space-12);
 	right: var(--space-12);
-	gap: var(--space-8);
+	gap: var(--space-4);
 	opacity: 0;
 	transition: opacity var(--duration-fast) var(--ease-out);
 }
@@ -423,18 +423,20 @@
 	width: 40px;
 	height: 40px;
 	border-radius: var(--radius-full);
-	background-color: color-mix(in srgb, black 60%, transparent);
+	background-color: transparent;
 	color: var(--color-white);
 	opacity: 1;
+	backdrop-filter: none;
 }
 
 .memo .memo-embed-tools .memo-overlay-button:hover {
-	background-color: color-mix(in srgb, black 80%, transparent);
+	background-color: color-mix(in srgb, white 20%, transparent);
 }
 
 .memo .memo-embed-tools svg {
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
+	filter: drop-shadow(0 0 2px color-mix(in srgb, black 60%, transparent));
 }
 
 .memo-embed:hover .memo-embed-tools,

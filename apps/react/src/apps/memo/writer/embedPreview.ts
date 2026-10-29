@@ -60,21 +60,22 @@ function sourceRange(view: EditorView, widgetPos: number | undefined) {
 
 type EmbedAction = 'edit' | 'unembed' | 'remove';
 
+/** 아이콘은 YouTube 재생기의 버튼처럼 24px 채운 모양. '링크로 바꾸기'는 YouTube의 링크 복사(사슬)와 헷갈리지 않게 밑줄 친 글자 */
 const TOOL_BUTTONS: { action: EmbedAction; label: string; icon: string }[] = [
 	{
 		action: 'edit',
 		label: '주소 바꾸기',
-		icon: '<path d="M10.5 2.5l3 3L6 13H3v-3z"/>',
+		icon: '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm17.71-10.21a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z"/>',
 	},
 	{
 		action: 'unembed',
 		label: '링크로 바꾸기',
-		icon: '<path d="M6.5 9.5l3-3"/><path d="M7 4.5l1-1a2.5 2.5 0 013.5 3.5l-1 1"/><path d="M9 11.5l-1 1A2.5 2.5 0 014.5 9l1-1"/>',
+		icon: '<path d="M12 17a6 6 0 0 0 6-6V3h-2.5v8a3.5 3.5 0 1 1-7 0V3H6v8a6 6 0 0 0 6 6Zm-7 2v2h14v-2H5Z"/>',
 	},
 	{
 		action: 'remove',
 		label: '임베드 삭제',
-		icon: '<path d="M3 4.5h10"/><path d="M6.5 4.5V3h3v1.5"/><path d="M4.5 4.5l.5 8.5h6l.5-8.5"/>',
+		icon: '<path d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12ZM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4Z"/>',
 	},
 ];
 
@@ -106,7 +107,7 @@ function runEmbedAction(view: EditorView, widgetPos: number | undefined, action:
 	view.focus();
 }
 
-/** 임베드 위의 도구 버튼 (마우스를 올리면 보인다). YouTube 재생기 안의 버튼처럼 둥근 반투명 버튼 (styles/markdown.css) */
+/** 임베드 위의 도구 버튼 (마우스를 올리면 보인다). YouTube 재생기 안의 버튼(링크 복사)과 같은 모양 (styles/markdown.css) */
 function toolBar(view: EditorView, getPos: () => number | undefined): HTMLElement {
 	const bar = document.createElement('span');
 	bar.className = 'memo-embed-tools';
@@ -118,7 +119,7 @@ function toolBar(view: EditorView, getPos: () => number | undefined): HTMLElemen
 		button.className = 'memo-overlay-button';
 		button.setAttribute('aria-label', label);
 		button.title = label;
-		button.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icon}</svg>`;
+		button.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true">${icon}</svg>`;
 		button.addEventListener('mousedown', (event) => event.preventDefault());
 		button.addEventListener('click', () => runEmbedAction(view, getPos(), action));
 		bar.append(button);
