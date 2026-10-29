@@ -1,8 +1,8 @@
 // 사이트 응답에 붙이는 보안 헤더. 빌드할 때 dist/_headers에 쓰고(vite.config.ts), 로컬 미리보기(vite preview)에도 같은 값을 붙인다.
 // CSP의 출처 목록은 손으로 적지 않는다: API 주소는 빌드 환경 변수에서, 창 안에 띄우는 사이트는 PROJECTS의 demo에서 만든다.
 
-// 빌드한 dist가 아니라 src를 바로 쓴다 (vite.config.ts가 이 파일을 읽을 때 desktop-core를 빌드하지 않아도 되게)
-import { EMBED_ORIGINS } from '../../../packages/desktop-core/src/memo/embeds';
+// 빌드한 dist가 아니라 src를 바로 쓴다 (seo/posts.ts와 같다. vite.config.ts가 이 파일을 읽을 때 desktop-core를 빌드하지 않아도 되게)
+import { EMBED_ORIGINS } from '../../../packages/desktop-core/src/memo';
 
 /** Cloudflare Turnstile (메일 앱의 스팸 막기): 스크립트, 확인 요청, 위젯 iframe */
 const TURNSTILE = 'https://challenges.cloudflare.com';

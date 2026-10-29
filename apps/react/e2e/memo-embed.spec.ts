@@ -47,4 +47,48 @@ test.describe('메모 바깥 링크 임베드', () => {
 		await page.keyboard.type('추가');
 		await expect(frame).toHaveAttribute('data-mark', 'same');
 	});
+
+	test('편집기: 지원 사이트 주소를 입력하면 임베드가 붙고, 주소 글자를 바꾸면 링크·임베드·저장한 글이 새 주소를 따른다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		await enterDesktop(page, '/memo/flux-pattern');
+		const memo = appWindow(page, 'memo');
+		const editor = memo.locator('.ProseMirror');
+		const urlParagraph = editor.locator('p', { has: page.getByRole('link', { name: VIDEO }) });
+		await urlParagraph.scrollIntoViewIfNeeded();
+
+		// 주소 문단 끝에서 Enter로 새 문단을 만들고 Vimeo 주소를 직접 입력한다
+		const box = (await urlParagraph.boundingBox())!;
+		await page.mouse.click(box.x + box.width - 2, box.y + box.height / 2);
+		await page.keyboard.press('End');
+		await page.keyboard.press('Enter');
+		await page.keyboard.type('https://vimeo.com/76979871');
+		await expect(editor.locator('.memo-embed iframe[src="https://player.vimeo.com/video/76979871"]')).toHaveCount(1);
+		await expect(editor.getByRole('link', { name: 'https://vimeo.com/76979871' })).toHaveAttribute(
+			'href',
+			'https://vimeo.com/76979871'
+		);
+
+		// YouTube 주소 글자를 통째로 다른 영상 주소로 바꾼다
+		// (Vimeo 문단을 더해 화면이 스크롤되었으므로 문단을 다시 찾아 세 번 눌러 문단 전체를 고른다)
+		await urlParagraph.click({ clickCount: 3 });
+		await page.keyboard.type('https://youtu.be/dQw4w9WgXcQ');
+		await expect(editor.getByRole('link', { name: 'https://youtu.be/dQw4w9WgXcQ' })).toHaveAttribute(
+			'href',
+			'https://youtu.be/dQw4w9WgXcQ'
+		);
+		await expect(
+			editor.locator('.memo-embed iframe[src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"]')
+		).toHaveCount(1);
+		await expect(editor.locator(`.memo-embed iframe[src="${EMBED}"]`)).toHaveCount(0);
+
+		// 임시 저장한 글에도 새 주소가 링크 글자와 대상 모두로 들어간다 (읽기 화면이 임베드로 그릴 수 있는 형태)
+		await expect
+			.poll(() => api.posts.find((post) => post.slug === 'flux-pattern')?.draft?.body ?? '')
+			.toMatch(/^<?https:\/\/youtu\.be\/dQw4w9WgXcQ>?$/m);
+		const body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
+		expect(body).not.toContain('nYkdrAPrdcw');
+		expect(body).toMatch(/^<?https:\/\/vimeo\.com\/76979871>?$/m);
+	});
 });
