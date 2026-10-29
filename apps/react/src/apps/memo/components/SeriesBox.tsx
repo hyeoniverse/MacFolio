@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { Fragment, useId, useState } from 'react';
 import type { Post, Series } from '@macfolio/desktop-core/memo';
 import './SeriesBox.css';
 
@@ -12,30 +12,21 @@ export const SeriesKicker = ({ series }: { series: Series }) => (
 	</p>
 );
 
-/** 목록의 한 줄: 연재 글(위치 at) 또는 at부터 생략한 글 수 */
-type Row = { at: number; hidden?: number };
-
 /**
- * 목록의 줄: 접은 목록은 최신 PREVIEW편, 지금 글이 그보다 앞이면 지금 글과 최신 PREVIEW - 1편.
- * 사이에 생략한 글은 '⋯ N편 더보기' 줄 하나로 (한 편뿐이면 줄 대신 그 편을 보인다)
+ * 줄인 목록에서 접어 둘 편: 최신 PREVIEW편과 지금 글은 보이고(지금 글이 그보다 앞이면 최신 PREVIEW - 1편),
+ * 나머지는 접는다. 한 편만 접히는 자리는 접지 않고 그 편을 보인다
  */
-function seriesRows(total: number, index: number, all: boolean): Row[] {
+function foldedPosts(total: number, index: number): boolean[] {
 	const latest = total - PREVIEW;
-	const shown = (at: number) => all || at === index || at >= (index < latest ? latest + 1 : latest);
-	const rows: Row[] = [];
-	for (let at = 0; at < total; at++) {
-		const last = rows.at(-1);
-		if (shown(at)) rows.push({ at });
-		else if (last?.hidden) last.hidden++;
-		else rows.push({ at, hidden: 1 });
-	}
-	return rows.map((row) => (row.hidden === 1 ? { at: row.at } : row));
+	const folded = Array.from({ length: total }, (_, at) => at !== index && at < (index < latest ? latest + 1 : latest));
+	return folded.map((fold, at) => fold && (folded[at - 1] || folded[at + 1]));
 }
 
 /**
  * 글 제목 아래의 연재 블록: 머리 줄(연재 이름·순서)을 누르면 목록을 접고 펼친다 (펼친 채 시작).
  * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고, 길면 최신 편들과 지금 글만 보이며
- * 생략한 자리에 '⋯ N편 더보기' 줄을 두어 누르면 모두 보이고, 모두 보일 때는 맨 아래 '접기'로 되돌린다.
+ * 생략한 자리에 '⋯ N편' 표시를 둔다. 목록 맨 아래 같은 자리의 단추가 'N편 더보기'와 '접기'를 오가며,
+ * 접힌 편은 그 자리에서 높이가 늘고 줄어든다.
  * 맨 아래에 이전 편·다음 편 (그 편의 제목과 함께, 목록을 접어도 남는다)
  */
 const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOpen: (post: Post) => void }) => {
@@ -45,7 +36,8 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 	const { name, posts, index } = series;
 	const previous = posts[index - 1] ?? null;
 	const next = posts[index + 1] ?? null;
-	const rows = seriesRows(posts.length, index, all);
+	const folded = foldedPosts(posts.length, index);
+	const hidden = folded.filter(Boolean).length;
 	return (
 		<nav className="memo-series" aria-label={`연재: ${name}`}>
 			<button
@@ -67,33 +59,39 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 				<div id={listId} className="memo-series-collapse-inner">
 					<div className="memo-series-track">
 						<ol className="memo-series-list">
-							{rows.map((row) =>
-								row.hidden ? (
-									// 생략한 자리: 목록 항목이 아닌 단추 한 줄 (항목 수에 넣지 않는다)
-									<li key={`hidden-${row.at}`} role="none">
-										<button type="button" className="memo-series-more" onClick={() => setAll(true)}>
-											<i className="fa-solid fa-ellipsis" aria-hidden="true" />
-											{row.hidden}편 더보기
-										</button>
+							{posts.map((item, at) => (
+								<Fragment key={item.slug}>
+									{/* 접힌 편들의 첫 자리: 누를 수 없는 '⋯ N편' 표시 (모두 펼치면 접힌다) */}
+									{folded[at] && !folded[at - 1] && (
+										<li className="memo-series-fold memo-series-gap" role="none" aria-hidden="true" data-folded={all}>
+											<div>
+												<span>
+													<i className="fa-solid fa-ellipsis" />
+													{folded.slice(at).findIndex((fold) => !fold)}편
+												</span>
+											</div>
+										</li>
+									)}
+									<li className="memo-series-fold" data-folded={folded[at] && !all}>
+										<div>
+											<button
+												type="button"
+												aria-current={at === index ? 'page' : undefined}
+												onClick={() => at !== index && onOpen(item)}
+											>
+												<span className="memo-series-number">{at + 1}</span>
+												<span className="memo-series-title">{item.title}</span>
+											</button>
+										</div>
 									</li>
-								) : (
-									<li key={posts[row.at].slug}>
-										<button
-											type="button"
-											aria-current={row.at === index ? 'page' : undefined}
-											onClick={() => row.at !== index && onOpen(posts[row.at])}
-										>
-											<span className="memo-series-number">{row.at + 1}</span>
-											<span className="memo-series-title">{posts[row.at].title}</span>
-										</button>
-									</li>
-								)
-							)}
+								</Fragment>
+							))}
 						</ol>
-						{all && posts.length > PREVIEW && (
-							<button type="button" className="memo-series-more" onClick={() => setAll(false)}>
-								<i className="fa-solid fa-chevron-up" aria-hidden="true" />
-								접기
+						{/* 더보기와 접기는 목록 맨 아래 같은 자리 */}
+						{hidden > 0 && (
+							<button type="button" className="memo-series-more" aria-expanded={all} onClick={() => setAll(!all)}>
+								<i className={`fa-solid ${all ? 'fa-chevron-up' : 'fa-chevron-down'}`} aria-hidden="true" />
+								{all ? '접기' : `${hidden}편 더보기`}
 							</button>
 						)}
 					</div>

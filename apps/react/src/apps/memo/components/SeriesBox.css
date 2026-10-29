@@ -156,7 +156,52 @@
 	content: '';
 }
 
-/* 더보기: 생략한 자리(목록 앞·뒤)에 세로선을 따라 놓은 옅은 한 줄. 번호 칸 자리에 '⋯', 그 옆에 'N편 더보기' */
+/* 줄인 목록에서 접는 편과 '⋯ N편' 표시: 그 자리에서 높이가 grid-template-rows 1fr ↔ 0fr로 줄고 늘며,
+   접힌 뒤에는 Tab·화면 낭독기에서 빠지게 감춘다 (블록 접기와 같은 방식) */
+.memo-series-fold {
+	display: grid;
+	grid-template-rows: 1fr;
+	transition:
+		grid-template-rows var(--duration) var(--ease-out),
+		opacity var(--duration) var(--ease-out),
+		visibility 0s;
+}
+
+.memo-series-fold > * {
+	min-height: 0;
+	/* 지금 글의 막대가 세로선 왼쪽으로 2px 나가므로 잘리지 않게 */
+	margin-left: calc(-1 * var(--space-2));
+	padding-left: var(--space-2);
+	overflow: hidden;
+}
+
+.memo-series-fold[data-folded='true'] {
+	grid-template-rows: 0fr;
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		grid-template-rows var(--duration) var(--ease-out),
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s linear var(--duration);
+}
+
+/* 접힌 편들의 자리: 번호 칸에 '⋯', 그 옆에 'N편' (옅은 글자, 누를 수 없다) */
+/* padding은 안쪽 글자에: 접을 때 칸 높이가 0까지 줄도록 */
+.memo-series-gap span {
+	display: flex;
+	align-items: center;
+	gap: var(--space-8);
+	padding: var(--space-4) 0 var(--space-4) var(--space-12);
+	color: var(--memo-muted);
+	font-size: var(--text-footnote);
+}
+
+.memo-series-gap i,
+.memo-series-more i {
+	min-width: 1.4em;
+}
+
+/* 더보기·접기: 목록 맨 아래 같은 자리의 단추 한 줄, 세로선과 왼쪽을 맞춘다 */
 .memo .memo-series-more {
 	display: flex;
 	align-items: center;
@@ -165,15 +210,13 @@
 	padding: var(--space-4) 0 var(--space-4) var(--space-12);
 	border: none;
 	background: none;
-	color: var(--memo-muted);
+	color: var(--memo-accent);
 	font-family: inherit;
 	font-size: var(--text-footnote);
+	font-weight: 600;
 	text-align: left;
+	border-radius: var(--radius-6);
 	cursor: pointer;
-}
-
-.memo-series-more i {
-	min-width: 1.4em;
 }
 
 /* 이전 편·다음 편: 블록 맨 아래 두 칸의 카드. 옅은 바탕 위에 본문 바탕색·얇은 테두리로 떠 보이고,
@@ -236,13 +279,15 @@
 @media (prefers-reduced-motion: reduce) {
 	.memo-series-collapse,
 	.memo-series-collapse-inner,
-	.memo-series-chevron {
+	.memo-series-chevron,
+	.memo-series-fold {
 		transition: none;
 	}
 }
 
 @media (hover: hover) {
-	.memo .memo-series-toggle:hover {
+	.memo .memo-series-toggle:hover,
+	.memo .memo-series-more:hover {
 		background: var(--memo-hover);
 	}
 
@@ -250,8 +295,7 @@
 		border-color: var(--memo-accent);
 	}
 
-	.memo .memo-series-list button:not([aria-current='page']):hover,
-	.memo .memo-series-more:hover {
+	.memo .memo-series-list button:not([aria-current='page']):hover {
 		color: var(--memo-accent);
 	}
 }
