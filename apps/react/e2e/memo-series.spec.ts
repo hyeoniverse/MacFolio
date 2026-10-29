@@ -1,4 +1,5 @@
 import { test, expect, enterDesktop, appWindow } from './fixtures';
+import { fakeApi } from './fakeApi';
 
 test.describe('메모 연재 상자', () => {
 	test('연재 글은 제목 아래에 같은 연재의 목록과 이전 편·다음 편을 보인다', async ({ page }) => {
@@ -46,5 +47,16 @@ test.describe('메모 연재 상자', () => {
 		const memo = appWindow(page, 'memo');
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toBeVisible();
 		await expect(memo.getByRole('navigation', { name: /^연재:/ })).toHaveCount(0);
+	});
+
+	test('관리자 편집 화면에도 제목 아래에 연재 상자가 있다', async ({ page }) => {
+		await fakeApi(page, { signedIn: true });
+		await enterDesktop(page, '/memo/analytics-collect');
+		const memo = appWindow(page, 'memo');
+		await expect(memo.getByRole('textbox', { name: '제목' })).toHaveValue(/^트래픽 분석 2 - /);
+		const series = memo.getByRole('navigation', { name: '연재: 트래픽 분석' });
+		await expect(series.getByRole('button', { name: /트래픽 분석/ })).toContainText(/2\/\d+/);
+		await series.getByRole('button', { name: '다음 편' }).click();
+		await expect(memo.getByRole('textbox', { name: '제목' })).toHaveValue(/^트래픽 분석 3 - /);
 	});
 });

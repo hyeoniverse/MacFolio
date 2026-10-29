@@ -44,6 +44,7 @@ import MemoMarkdown from './components/MemoMarkdown';
 import { NewDraftItem, NoteCard, NoteItem, NoteSections } from './components/NoteList';
 import PostFooter from './components/PostFooter';
 import ReaderBody from './components/ReaderBody';
+import SeriesBox from './components/SeriesBox';
 import { useFolderActions } from './useFolderActions';
 import { useMemoLayout } from './useMemoLayout';
 import { usePickedNotes } from './usePickedNotes';
@@ -855,6 +856,10 @@ const Memo: React.FC = () => {
 										onSaved={draft.onSaved}
 										renderMarkdown={renderMarkdown}
 										compact={compact}
+										series={
+											newDraft === null &&
+											series && <SeriesBox key={selected?.slug} series={series} compact={compact} onOpen={openSeries} />
+										}
 									/>
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>

@@ -57,6 +57,8 @@ interface Props {
 	onLeaveFolder?: () => void;
 	/** 한 칸씩 보는 좁은 화면 (목차의 떠 있는 버튼을 쓰지 않는다) */
 	compact?: boolean;
+	/** 제목 아래에 둘 연재 상자 (읽기 화면과 같은 SeriesBox). 연재 글이 아니거나 새 메모면 없다 */
+	series?: React.ReactNode;
 	ref?: React.Ref<PostWriterHandle>;
 }
 
@@ -128,6 +130,7 @@ const PostWriter = ({
 	onDraftChange,
 	onLeaveFolder,
 	compact = false,
+	series,
 	ref,
 }: Props) => {
 	const [draft, setDraft] = useState<PostDraft>(() =>
@@ -358,6 +361,7 @@ const PostWriter = ({
 					}
 				}}
 			/>
+			{series}
 			<MemoToc toc={toc} bodyRef={bodyRef} revision={draft.body} compact={compact} editor />
 			<div ref={bodyRef} className="memo-writer-body">
 				<Suspense fallback={<div className="prose memo-markdown">{renderMarkdown(draft.body)}</div>}>
