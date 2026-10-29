@@ -4,7 +4,7 @@ import { daysUntilPurge, formatPostDate, type Post, type Series } from '@macfoli
 import MemoMarkdown from './MemoMarkdown';
 import SecretBadge from './SecretBadge';
 import MemoToc from './MemoToc';
-import SeriesBox from './SeriesBox';
+import SeriesBox, { SeriesKicker } from './SeriesBox';
 import { useTocHeadings } from '../useTocHeadings';
 
 /** 폴더 경로를 "개발기 › MacFolio"처럼 */
@@ -37,7 +37,7 @@ const ReaderBody = ({
 	footer: ReactNode;
 	/** 한 칸씩 보는 좁은 화면 (목차를 접은 채 시작한다) */
 	compact: boolean;
-	/** 이 글이 속한 연재 (제목이 "이름 번호 - 제목"인 글이 두 편 이상). 없으면 null */
+	/** 이 글이 속한 연재 (series 칸이 같은 글이 두 편 이상). 없으면 null */
 	series: Series | null;
 	onOpenSeries: (post: Post) => void;
 	onRestore: () => void;
@@ -84,6 +84,7 @@ const ReaderBody = ({
 					<Button onClick={onUnlock}>잠금 풀기</Button>
 				</p>
 			)}
+			{series && !post.deletedAt && <SeriesKicker series={series} />}
 			<h1>{post.title}</h1>
 			{series && !post.deletedAt && <SeriesBox series={series} compact={compact} onOpen={onOpenSeries} />}
 			<MemoToc toc={toc} bodyRef={body} revision={revision} compact={compact} />

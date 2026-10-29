@@ -13,6 +13,7 @@ import { env } from '@/shared/config/env';
 import DatePicker from '@/shared/ui/date/DatePicker';
 import Button from '@/shared/ui/button/Button';
 import SecretBadge from '../components/SecretBadge';
+import SeriesPicker from './SeriesPicker';
 import MemoToc from '../components/MemoToc';
 import { useTocHeadings } from '../useTocHeadings';
 
@@ -43,6 +44,8 @@ interface Props {
 	/** 게시한 내용이나 저장소 원본이 있는지 (있으면 '변경 사항 버리기'로 돌아갈 곳이 있다) */
 	hasPublished: boolean;
 	folders: string[];
+	/** 연재 고르기 목록: 글에 쓰인 연재 이름 */
+	seriesNames: string[];
 	/** 새 메모의 폴더 */
 	defaultFolder: string;
 	/** 임시 저장·게시할 때마다: 서버가 돌려준 글 */
@@ -123,6 +126,7 @@ const PostWriter = ({
 	post,
 	hasPublished,
 	folders,
+	seriesNames,
 	defaultFolder,
 	onSaved,
 	onDiscarded,
@@ -135,7 +139,15 @@ const PostWriter = ({
 }: Props) => {
 	const [draft, setDraft] = useState<PostDraft>(() =>
 		post
-			? { title: post.title, date: post.date, category: post.category, summary: post.summary, body: post.body }
+			? {
+					title: post.title,
+					date: post.date,
+					category: post.category,
+					...(post.series && { series: post.series }),
+					...(post.seriesOrder && { seriesOrder: post.seriesOrder }),
+					summary: post.summary,
+					body: post.body,
+				}
 			: { title: '', date: today(), category: defaultFolder, summary: '', body: '' }
 	);
 	const [status, setStatus] = useState<Status>({ kind: 'idle' });
@@ -312,6 +324,14 @@ const PostWriter = ({
 						if (category !== draft.category) onLeaveFolder?.();
 						change({ category });
 					}}
+				/>
+				<SeriesPicker
+					value={draft.series}
+					order={draft.seriesOrder}
+					names={seriesNames}
+					// 연재에서 빼면 순서도 지운다
+					onChange={(series) => change(series ? { series } : { series: undefined, seriesOrder: undefined })}
+					onOrderChange={(seriesOrder) => change({ seriesOrder })}
 				/>
 				{post?.status?.secret && <SecretBadge />}
 				<span className="memo-writer-actions">

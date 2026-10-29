@@ -32,7 +32,16 @@ interface NoteProps {
 	onContextMenu?: (event: React.MouseEvent) => void;
 	/** 누르면 (메모 선택 중이면 넣고 빼기는 부르는 쪽이 한다) */
 	onOpen: () => void;
+	/** 연재 글이면 연재 이름과 번호 (series.ts의 seriesPositions) */
+	series?: { name: string; number: number };
 }
+
+/** 연재 표시: '연재 · 트래픽 분석 3' */
+const SeriesMark = ({ series }: { series: { name: string; number: number } }) => (
+	<span className="memo-item-series">
+		연재 · {series.name} {series.number}
+	</span>
+);
 
 /** 메모 선택 중의 동그라미 */
 const PickMark = ({ on }: { on: boolean }) => (
@@ -88,6 +97,7 @@ export const NoteItem = ({
 	today,
 	popularity,
 	views,
+	series,
 }: NoteProps & {
 	active: boolean;
 	today: Date;
@@ -126,6 +136,7 @@ export const NoteItem = ({
 		</span>
 		<span className="memo-item-folder">
 			<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
+			{series && <SeriesMark series={series} />}
 			{views !== undefined && <span className="memo-item-views">조회 {views.toLocaleString()}</span>}
 			{post.deletedAt && <span className="memo-item-purge">{daysUntilPurge(post.deletedAt, today)}일 남음</span>}
 		</span>
@@ -150,7 +161,7 @@ const CardPreview = ({ post }: { post: Post }) => {
 };
 
 /** 갤러리의 카드: 미리보기, 고정 표시, 제목, 날짜 */
-export const NoteCard = ({ post, picked, dragging, drag, onContextMenu, onOpen }: NoteProps) => (
+export const NoteCard = ({ post, picked, dragging, drag, onContextMenu, onOpen, series }: NoteProps) => (
 	<li>
 		<button
 			type="button"
@@ -174,6 +185,7 @@ export const NoteCard = ({ post, picked, dragging, drag, onContextMenu, onOpen }
 				{post.title}
 			</strong>
 			<time dateTime={post.date}>{formatPostDate(post.date)}</time>
+			{series && <SeriesMark series={series} />}
 		</button>
 	</li>
 );

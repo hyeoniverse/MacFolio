@@ -124,6 +124,20 @@
 	font-size: var(--text-caption2);
 }
 
+/* 연재 글: 날짜 아래 한 줄 (목록의 '· 연재 …'와 달리 앞의 가운뎃점 없이) */
+.memo-card > .memo-item-series {
+	overflow: hidden;
+	max-width: 100%;
+	color: var(--memo-muted);
+	font-size: var(--text-caption2);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-card > .memo-item-series::before {
+	content: none;
+}
+
 /* 갤러리에서 연 글 */
 .memo.view-gallery.gallery-note .memo-reader {
 	animation: rise-in var(--duration) var(--ease-out);

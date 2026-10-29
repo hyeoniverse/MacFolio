@@ -1,6 +1,13 @@
 import { useId, useState } from 'react';
-import { parseSeriesTitle, type Post, type Series } from '@macfolio/desktop-core/memo';
+import type { Post, Series } from '@macfolio/desktop-core/memo';
 import './SeriesBox.css';
+
+/** 제목 위의 작은 머리말: "연재 · 트래픽 분석 3" (번호는 연재 안의 위치) */
+export const SeriesKicker = ({ series }: { series: Series }) => (
+	<p className="memo-series-kicker">
+		연재 · {series.name} {series.index + 1}
+	</p>
+);
 
 /**
  * 글 제목 아래의 연재 상자: "연재 · 트래픽 분석 3/11"과 접고 펼치는 전체 목록, 이전 편·다음 편.
@@ -31,21 +38,18 @@ const SeriesBox = ({ series, compact, onOpen }: { series: Series; compact: boole
 			</button>
 			{open && (
 				<ol id={listId} className="memo-series-list">
-					{posts.map((item, at) => {
-						const title = parseSeriesTitle(item.title);
-						return (
-							<li key={item.slug}>
-								<button
-									type="button"
-									aria-current={at === index ? 'page' : undefined}
-									onClick={() => at !== index && onOpen(item)}
-								>
-									<span className="memo-series-number">{title?.label ?? at + 1}</span>
-									<span className="memo-series-title">{title?.rest ?? item.title}</span>
-								</button>
-							</li>
-						);
-					})}
+					{posts.map((item, at) => (
+						<li key={item.slug}>
+							<button
+								type="button"
+								aria-current={at === index ? 'page' : undefined}
+								onClick={() => at !== index && onOpen(item)}
+							>
+								<span className="memo-series-number">{at + 1}</span>
+								<span className="memo-series-title">{item.title}</span>
+							</button>
+						</li>
+					))}
 				</ol>
 			)}
 			{(previous || next) && (

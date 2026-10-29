@@ -44,6 +44,28 @@ describe('postInput', () => {
 		});
 	});
 
+	it('연재 이름은 다듬고, 비우면 연재가 아닌 글 (40자까지)', () => {
+		const base = { title: 'a', category: '기타', body: 'b' };
+		const read = (series: unknown) => parse(postInput(TODAY), { ...base, series });
+		expect(read(' 트래픽 분석 ')).toMatchObject({ value: { series: '트래픽 분석' } });
+		const empty = read('  ');
+		expect('value' in empty && empty.value.series).toBeUndefined();
+		expect(read('가'.repeat(41))).toEqual({ errors: ['연재 이름은 40자까지 입력할 수 있습니다.'] });
+	});
+
+	it('연재 순서는 1~999 정수 (숫자 문자열도 받고, 비우면 날짜 순)', () => {
+		const base = { title: 'a', category: '기타', body: 'b', series: '연재' };
+		const read = (seriesOrder: unknown) => parse(postInput(TODAY), { ...base, seriesOrder });
+		expect(read(3)).toMatchObject({ value: { seriesOrder: 3 } });
+		expect(read('4')).toMatchObject({ value: { seriesOrder: 4 } });
+		for (const empty of [null, '', undefined]) {
+			const result = read(empty);
+			expect('value' in result && result.value.seriesOrder).toBeUndefined();
+		}
+		for (const wrong of [0, 1.5, 1000, 'x'])
+			expect(read(wrong)).toEqual({ errors: ['연재 순서는 1부터 999까지의 정수입니다.'] });
+	});
+
 	it('문자열이 아닌 칸은 빈 칸으로 본다 (숫자 날짜 → 오늘)', () => {
 		expect(parse(postInput(TODAY), { title: 'a', date: 20260929, category: '기타', body: 'b' })).toEqual({
 			value: { title: 'a', date: TODAY, category: '기타', summary: '', body: 'b' },

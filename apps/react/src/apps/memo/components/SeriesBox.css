@@ -128,3 +128,11 @@
 .container.mobile .memo .memo-series-steps button {
 	min-height: 44px;
 }
+
+/* 제목 위의 머리말 (SeriesKicker): 날짜 줄과 제목 사이에 강조색 작은 글자 */
+.memo-series-kicker {
+	margin: var(--space-8) 0 calc(-1 * var(--space-4));
+	color: var(--memo-accent);
+	font-size: var(--text-footnote);
+	font-weight: 600;
+}

@@ -85,6 +85,22 @@ describe('toPost', () => {
 		});
 	});
 
+	it('머리말 series를 연재 이름으로 읽는다 (비어 있으면 없음)', () => {
+		expect(toPost('a' as PostSlug, '---\ntitle: t\ndate: 2026-09-28\nseries: 트래픽 분석 \n---\n본문')?.series).toBe(
+			'트래픽 분석'
+		);
+		expect(toPost('a' as PostSlug, '---\ntitle: t\ndate: 2026-09-28\nseries:\n---\n본문')).not.toHaveProperty('series');
+	});
+
+	it('머리말 seriesOrder는 1 이상 정수만 읽는다', () => {
+		const read = (value: string) =>
+			toPost('a' as PostSlug, `---\ntitle: t\ndate: 2026-09-28\nseries: s\nseriesOrder: ${value}\n---\n본문`);
+		expect(read('3')?.seriesOrder).toBe(3);
+		expect(read('0')).not.toHaveProperty('seriesOrder');
+		expect(read('1.5')).not.toHaveProperty('seriesOrder');
+		expect(read('')).not.toHaveProperty('seriesOrder');
+	});
+
 	it('제목이나 날짜 형식이 잘못되면 null', () => {
 		expect(toPost('a' as PostSlug, '---\ndate: 2026-09-28\n---\n')).toBeNull();
 		expect(toPost('a' as PostSlug, '---\ntitle: t\ndate: 9월 28일\n---\n')).toBeNull();
@@ -266,6 +282,15 @@ describe('mergeServerPosts', () => {
 		body: '서버 본문',
 		deleted: false,
 		...extra,
+	});
+
+	it('서버 글의 연재 이름이 저장소 글의 연재 이름을 대신한다 (서버에서 연재를 빼면 빠진다)', () => {
+		const merged = mergeServerPosts(
+			[make('a', '2026-09-29', { series: '옛 연재' }), make('b', '2026-09-29', { series: '옛 연재' })],
+			[server('a', { series: '새 연재' }), server('b')]
+		);
+		expect(merged.find((post) => post.slug === 'a')?.series).toBe('새 연재');
+		expect(merged.find((post) => post.slug === 'b')).not.toHaveProperty('series');
 	});
 
 	it('올린 시각: 저장소 글을 서버에서 고쳐도 저장소에 처음 들어온 시각, 서버에만 있는 글은 서버에 만든 시각', () => {

@@ -138,6 +138,8 @@ const Memo: React.FC = () => {
 		older,
 		newer,
 		series,
+		seriesBySlug,
+		seriesList,
 		inView,
 	} = noteView;
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
@@ -273,7 +275,7 @@ const Memo: React.FC = () => {
 					else setPane('reader');
 				};
 				return card ? (
-					<NoteCard key={post.slug} {...props} onOpen={open} />
+					<NoteCard key={post.slug} {...props} series={seriesBySlug.get(post.slug)} onOpen={open} />
 				) : (
 					<NoteItem
 						key={post.slug}
@@ -287,6 +289,7 @@ const Memo: React.FC = () => {
 								: undefined
 						}
 						views={!inPopular && views ? (views[post.slug] ?? 0) : undefined}
+						series={seriesBySlug.get(post.slug)}
 					/>
 				);
 			}}
@@ -852,6 +855,7 @@ const Memo: React.FC = () => {
 												: undefined
 										}
 										folders={folderPaths}
+										seriesNames={seriesList}
 										defaultFolder={newFolder}
 										onSaved={draft.onSaved}
 										renderMarkdown={renderMarkdown}

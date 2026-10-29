@@ -346,6 +346,28 @@ button.memo-admin-chip {
 	font-size: var(--text-caption);
 }
 
+/* 연재 고르기의 새 이름·순서 칸 (writer/SeriesPicker.tsx): 메타 줄 글자 크기 그대로 얇은 테두리 */
+.memo-series-pick {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3em;
+	white-space: nowrap;
+}
+
+.memo-meta-input {
+	width: 9em;
+	padding: 0 var(--space-4);
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+}
+
+.memo-meta-input.memo-series-order {
+	width: 3.5em;
+}
+
 /* 날짜·폴더: 글자처럼 보이다가 올리면 누를 수 있다는 표시 */
 .memo-meta-button {
 	margin: 0 -3px;

@@ -1,7 +1,9 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import {
 	adjacentPosts,
+	seriesNames,
 	seriesOf,
+	seriesPositions,
 	type AdminPost,
 	ALL_CATEGORY,
 	type Arrangement,
@@ -141,6 +143,9 @@ export function useNoteView({
 		() => (selected && !inTrash ? seriesOf(organized, selected) : null),
 		[selected, inTrash, organized]
 	);
+	// 목록 항목의 '연재 · 이름 N' 표시와 편집 화면의 연재 고르기 목록
+	const seriesBySlug = useMemo(() => seriesPositions(organized), [organized]);
+	const seriesList = useMemo(() => seriesNames(organized), [organized]);
 	/** 지금 보기(폴더·태그)에 있는 글인지 (연재의 다른 편을 열 때 보기를 모든 글로 바꿀지) */
 	const inView = (slug: PostSlug) => inCategory.some((post) => post.slug === slug);
 
@@ -186,6 +191,8 @@ export function useNoteView({
 		older,
 		newer,
 		series,
+		seriesBySlug,
+		seriesList,
 		inView,
 	};
 }
