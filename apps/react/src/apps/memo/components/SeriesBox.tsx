@@ -5,11 +5,11 @@ import './SeriesBox.css';
 /** 목록을 다 펼치지 않고 보일 편 수 (지금 글을 가운데에 둔다). 이보다 길면 '더보기' */
 const PREVIEW = 5;
 
-/** 날짜·폴더 줄 끝의 연재 표시: " · 연재 트래픽 분석 3" (번호는 연재 안의 위치) */
+/** 제목 바로 위의 연재 표시: '트래픽 분석 3' (번호는 연재 안의 위치, 아이콘은 화면 낭독기에 '연재'로 읽힌다) */
 export const SeriesKicker = ({ series }: { series: Series }) => (
-	<span className="memo-series-kicker">
-		{' · '}연재 {series.name} {series.index + 1}
-	</span>
+	<p className="memo-series-kicker">
+		<i className="fa-solid fa-layer-group" role="img" aria-label="연재" /> {series.name} {series.index + 1}
+	</p>
 );
 
 /** 지금 글을 가운데에 두고 보일 범위 [시작, 끝) */
@@ -21,7 +21,8 @@ function previewRange(total: number, index: number): [number, number] {
 
 /**
  * 글 제목 아래의 연재 블록: 머리 줄(연재 이름·순서)을 누르면 목록을 접고 펼친다 (펼친 채 시작).
- * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고, 길면 지금 글 주변만 보이다가 '더보기'로 모두 보인다.
+ * 목록은 목차와 같은 모양(왼쪽 세로선, 지금 글은 강조색 막대)이고, 길면 지금 글 주변만 보이며
+ * 생략한 자리(앞·뒤)에 '⋯ N편 더보기' 줄을 두어 누르면 모두 보인다.
  * 맨 아래에 이전 편·다음 편 (그 편의 제목과 함께, 목록을 접어도 남는다)
  */
 const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOpen: (post: Post) => void }) => {
@@ -32,7 +33,14 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 	const previous = posts[index - 1] ?? null;
 	const next = posts[index + 1] ?? null;
 	const [start, end] = all ? [0, posts.length] : previewRange(posts.length, index);
-	const hidden = posts.length - (end - start);
+	/** 생략한 자리의 '⋯ N편 더보기' 줄: 세로선 위, 생략한 쪽(앞·뒤)에 두고 누르면 모두 보인다 */
+	const more = (count: number) =>
+		count > 0 && (
+			<button type="button" className="memo-series-more" onClick={() => setAll(true)}>
+				<i className="fa-solid fa-ellipsis" aria-hidden="true" />
+				{count}편 더보기
+			</button>
+		);
 	return (
 		<nav className="memo-series" aria-label={`연재: ${name}`}>
 			<button
@@ -52,28 +60,27 @@ const SeriesBox = ({ series, onOpen }: { series: Series; compact?: boolean; onOp
 			{/* 접고 펼칠 때 높이가 grid-template-rows 0fr ↔ 1fr로 늘고 줄어든다 (목차와 같은 방식) */}
 			<div className="memo-series-collapse" data-open={open}>
 				<div id={listId} className="memo-series-collapse-inner">
-					<ol className="memo-series-list" start={start + 1}>
-						{posts.slice(start, end).map((item, offset) => {
-							const at = start + offset;
-							return (
-								<li key={item.slug}>
-									<button
-										type="button"
-										aria-current={at === index ? 'page' : undefined}
-										onClick={() => at !== index && onOpen(item)}
-									>
-										<span className="memo-series-number">{at + 1}</span>
-										<span className="memo-series-title">{item.title}</span>
-									</button>
-								</li>
-							);
-						})}
-					</ol>
-					{hidden > 0 && (
-						<button type="button" className="memo-series-more" onClick={() => setAll(true)}>
-							더보기… <span>{posts.length}편 모두</span>
-						</button>
-					)}
+					<div className="memo-series-track">
+						{more(start)}
+						<ol className="memo-series-list" start={start + 1}>
+							{posts.slice(start, end).map((item, offset) => {
+								const at = start + offset;
+								return (
+									<li key={item.slug}>
+										<button
+											type="button"
+											aria-current={at === index ? 'page' : undefined}
+											onClick={() => at !== index && onOpen(item)}
+										>
+											<span className="memo-series-number">{at + 1}</span>
+											<span className="memo-series-title">{item.title}</span>
+										</button>
+									</li>
+								);
+							})}
+						</ol>
+						{more(posts.length - end)}
+					</div>
 				</div>
 			</div>
 			{/* 접어도 이전 편·다음 편은 남는다 */}

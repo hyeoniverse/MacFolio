@@ -155,6 +155,24 @@
 	color: inherit;
 }
 
+/* 연재 글: 제목 앞의 강조색 글자 '트래픽 분석 3' (본문 제목 위 표시와 같은 모양) */
+.memo-item-series {
+	margin-right: var(--space-6);
+	color: var(--memo-accent);
+	font-size: var(--text-caption1);
+	font-weight: 600;
+}
+
+.memo-item-series i {
+	font-size: 0.85em;
+}
+
+/* 고른 줄은 바탕이 강조색이라 글자색을 따른다 */
+.memo-item.active .memo-item-series {
+	color: inherit;
+	opacity: 0.85;
+}
+
 .memo-item-reactions {
 	font-variant-numeric: tabular-nums;
 }

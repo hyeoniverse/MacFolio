@@ -36,10 +36,10 @@ interface NoteProps {
 	series?: { name: string; number: number };
 }
 
-/** 연재 표시: '연재 · 트래픽 분석 3' */
+/** 제목 앞의 연재 표시: '트래픽 분석 3' (아이콘은 화면 낭독기에 '연재'로 읽힌다) */
 const SeriesMark = ({ series }: { series: { name: string; number: number } }) => (
 	<span className="memo-item-series">
-		연재 · {series.name} {series.number}
+		<i className="fa-solid fa-layer-group" role="img" aria-label="연재" /> {series.name} {series.number}
 	</span>
 );
 
@@ -122,6 +122,7 @@ export const NoteItem = ({
 			)}
 			{post.locked && <i className="fa-solid fa-lock memo-item-lock" role="img" aria-label="잠김" />}
 			<SecretMark post={post} />
+			{series && <SeriesMark series={series} />}
 			{post.title}
 			<StatusBadge post={post} />
 		</strong>
@@ -136,7 +137,6 @@ export const NoteItem = ({
 		</span>
 		<span className="memo-item-folder">
 			<i className="fa-regular fa-folder" aria-hidden="true" /> {folderName(post.category)}
-			{series && <SeriesMark series={series} />}
 			{views !== undefined && <span className="memo-item-views">조회 {views.toLocaleString()}</span>}
 			{post.deletedAt && <span className="memo-item-purge">{daysUntilPurge(post.deletedAt, today)}일 남음</span>}
 		</span>
@@ -180,12 +180,12 @@ export const NoteCard = ({ post, picked, dragging, drag, onContextMenu, onOpen, 
 					</span>
 				)}
 			</span>
+			{series && <SeriesMark series={series} />}
 			<strong>
 				<SecretMark post={post} />
 				{post.title}
 			</strong>
 			<time dateTime={post.date}>{formatPostDate(post.date)}</time>
-			{series && <SeriesMark series={series} />}
 		</button>
 	</li>
 );

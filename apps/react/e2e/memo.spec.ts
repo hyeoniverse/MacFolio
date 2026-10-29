@@ -225,7 +225,17 @@ test.describe('메모 (블로그)', () => {
 	test('정렬 기준·순서와 날짜별 그룹화를 바꾸고, 다시 열어도 그대로다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const list = memo.getByRole('region', { name: '글 목록' });
-		const titles = () => list.locator('.memo-item strong').allTextContents();
+		// 제목 앞의 연재 표시(.memo-item-series)는 빼고 제목 글자만
+		const titlesOf = (region: typeof list) =>
+			region.locator('.memo-item strong').evaluateAll((items) =>
+				items.map((item) =>
+					[...item.childNodes]
+						.filter((node) => !(node instanceof Element && node.classList.contains('memo-item-series')))
+						.map((node) => node.textContent)
+						.join('')
+				)
+			);
+		const titles = () => titlesOf(list);
 		const openSortMenu = async () => {
 			await memo.getByRole('button', { name: '정렬과 그룹화' }).click();
 			return page.getByRole('menu', { name: '정렬과 그룹화' });
@@ -256,9 +266,7 @@ test.describe('메모 (블로그)', () => {
 		// 이 브라우저에 저장되어 다시 열어도 그대로
 		await page.reload();
 		const again = await openMemo(page);
-		await expect
-			.poll(() => again.getByRole('region', { name: '글 목록' }).locator('.memo-item strong').allTextContents())
-			.toEqual([...byTitle].reverse());
+		await expect.poll(() => titlesOf(again.getByRole('region', { name: '글 목록' }))).toEqual([...byTitle].reverse());
 	});
 
 	test('본문 아래의 이전 글·다음 글로 날짜 순으로 옮겨 다닌다', async ({ page }) => {

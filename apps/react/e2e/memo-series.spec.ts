@@ -5,13 +5,13 @@ import { fakeApi } from './fakeApi';
 const SERIES = '트래픽 분석';
 
 test.describe('메모 연재', () => {
-	test('연재 글은 날짜 줄에 연재 표시, 제목 아래에 같은 연재의 목록과 이전 편·다음 편을 보인다', async ({ page }) => {
+	test('연재 글은 제목 위에 연재 표시, 제목 아래에 같은 연재의 목록과 이전 편·다음 편을 보인다', async ({ page }) => {
 		await enterDesktop(page, '/memo/analytics-collect');
 		const memo = appWindow(page, 'memo');
 		const article = memo.getByRole('article');
 		const heading = article.getByRole('heading', { level: 1 });
 		await expect(heading).toHaveText('sendBeacon으로 5초마다 묶어 보내는 방문 이벤트');
-		await expect(article.locator('.memo-series-kicker')).toHaveText(` · 연재 ${SERIES} 2`);
+		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 2`);
 
 		const series = memo.getByRole('navigation', { name: `연재: ${SERIES}` });
 		const toggle = series.getByRole('button', { name: new RegExp(SERIES) });
@@ -31,11 +31,11 @@ test.describe('메모 연재', () => {
 		// 다음 편, 목록의 첫 편, 이전 편이 없는 첫 편
 		await series.getByRole('button', { name: '다음 편' }).click();
 		await expect(page).toHaveURL(/\/memo\/analytics-activity-monitor$/);
-		await expect(article.locator('.memo-series-kicker')).toHaveText(` · 연재 ${SERIES} 3`);
+		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 3`);
 		const box = memo.getByRole('navigation', { name: `연재: ${SERIES}` });
 		await box.getByRole('listitem').nth(0).getByRole('button').click();
 		await expect(page).toHaveURL(/\/memo\/analytics-api$/);
-		await expect(article.locator('.memo-series-kicker')).toHaveText(` · 연재 ${SERIES} 1`);
+		await expect(article.locator('.memo-series-kicker')).toHaveText(`${SERIES} 1`);
 		await expect(box.getByRole('button', { name: /^이전 편/ })).toHaveCount(0);
 
 		// 접으면 목록이 감춰지고, 이전 편·다음 편은 남는다
@@ -44,11 +44,11 @@ test.describe('메모 연재', () => {
 		await expect(box.getByRole('button', { name: /^다음 편/ })).toBeVisible();
 	});
 
-	test('글 목록 항목에 연재 이름과 번호를 붙인다', async ({ page }) => {
+	test('글 목록 항목의 제목 앞에 연재 이름과 번호를 붙인다', async ({ page }) => {
 		await enterDesktop(page, '/memo/analytics-collect');
 		const memo = appWindow(page, 'memo');
 		const item = memo.locator('.memo-item', { hasText: 'sendBeacon으로 5초마다' });
-		await expect(item.locator('.memo-item-series')).toHaveText(`연재 · ${SERIES} 2`);
+		await expect(item.locator('.memo-item-series')).toHaveText(`${SERIES} 2`);
 	});
 
 	test('연재가 아닌 글에는 머리말과 연재 상자가 없다', async ({ page }) => {
