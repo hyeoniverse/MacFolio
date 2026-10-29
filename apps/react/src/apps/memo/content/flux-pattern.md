@@ -21,7 +21,7 @@ summary: 상태 관리 라이브러리는 Flux에서 Redux, Zustand로 바뀌었
 
 ### 양방향 바인딩의 연쇄 갱신
 
-Flux는 2014년 F8 컨퍼런스 세션에서 처음 발표되었고, 같은 해 5월 6일 React 블로그에 [Flux: An Application Architecture for React](https://legacy.reactjs.org/blog/2014/05/06/flux.html)(Bill Fisher·Jing Chen)가 게시되었다. F8 세션 "Hacker Way: Rethinking Web App Development at Facebook"(44분 35초)은 React의 "데이터가 바뀌면 화면을 다시 렌더링한다"는 설계와 함께, 그 데이터를 한 방향으로만 갱신하는 Flux를 소개했다.
+Flux는 2014년 F8 컨퍼런스 세션에서 처음 발표되었고, 같은 해 5월 6일 React 블로그에 [Flux: An Application Architecture for React](https://legacy.reactjs.org/blog/2014/05/06/flux.html)(Bill Fisher·Jing Chen)가 게시되었다. F8 세션 "Hacker Way: Rethinking Web App Development at Facebook"(전체 44분 35초)은 React의 "데이터가 바뀌면 화면을 다시 렌더링한다"는 설계와 함께, 그 데이터를 한 방향으로만 갱신하는 Flux를 소개했다.
 
 https://www.youtube.com/watch?v=nYkdrAPrdcw
 
