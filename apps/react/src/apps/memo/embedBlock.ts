@@ -13,7 +13,8 @@ export interface EmbedBlock {
  */
 export function embedBlockOf(href: string | undefined, text: string): EmbedBlock | null {
 	if (!href || text.trim() !== href) return null;
-	const embed = embedOf(href);
+	// Twitch 재생기는 삽입한 사이트의 도메인(parent)이 있어야 열린다
+	const embed = embedOf(href, { parent: globalThis.location?.hostname });
 	return embed ? { href, embed } : null;
 }
 

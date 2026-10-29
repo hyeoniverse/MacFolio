@@ -71,7 +71,7 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		// data:: 이력서 PDF의 레이아웃 엔진(WebAssembly)이 자기 몸통을 data: 주소로 읽는다. 바깥으로 나가는 연결은 아니다
 		'connect-src': ["'self'", 'blob:', 'data:', ...api, TURNSTILE, ...OPEN_METEO, NPM_REGISTRY, R2_ENDPOINT],
 		// 메모 글에 주소만 한 줄로 적은 YouTube·Vimeo 등의 임베드 (desktop-core memo/embeds.ts의 목록)
-		'frame-src': ["'self'", TURNSTILE, ...Object.values(EMBED_ORIGINS).sort(), ...frameOrigins(frameUrls)],
+		'frame-src': ["'self'", TURNSTILE, ...Object.values(EMBED_ORIGINS).flat().sort(), ...frameOrigins(frameUrls)],
 		'worker-src': ["'self'", 'blob:'],
 		'object-src': ["'none'"],
 		'base-uri': ["'self'"],

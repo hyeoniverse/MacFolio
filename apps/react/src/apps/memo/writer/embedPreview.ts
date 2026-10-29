@@ -137,6 +137,10 @@ function embedDom({ href, embed }: EmbedBlock, view: EditorView, getPos: () => n
 	frame.className = 'memo-embed-frame';
 	if (embed.aspectRatio) frame.style.aspectRatio = embed.aspectRatio;
 	else frame.style.height = `${embed.height}px`;
+	if (embed.maxWidth) {
+		frame.style.maxWidth = `${embed.maxWidth}px`;
+		frame.style.marginInline = 'auto';
+	}
 	const iframe = frame.appendChild(document.createElement('iframe'));
 	iframe.src = embed.src;
 	iframe.title = `${embed.name} 임베드`;

@@ -358,7 +358,8 @@
 
 /*
  * 바깥 링크 임베드 (components/MemoEmbed.tsx, 편집기는 writer/embedPreview.ts): 주소만 한 줄로 적은 YouTube·Vimeo 등.
- * 본문 폭에 맞추고, 동영상은 가로세로 비율(16:9 등), 코드 예제·음악은 사이트별 높이로 그린다. 모서리와 테두리는 본문 이미지와 같다
+ * 본문 폭에 맞추고, 동영상은 가로세로 비율(16:9 등), 코드 예제·음악은 사이트별 높이로 그린다. 세로 영상·SNS 게시물은 최대 폭을 두고
+ * 가운데에 둔다(인라인 style, memo/embeds.ts의 maxWidth). 모서리와 테두리는 본문 이미지와 같다
  */
 .memo-embed {
 	display: block;
@@ -371,12 +372,6 @@
 	border-radius: 0.6em;
 	background: var(--memo-search-bg);
 	box-shadow: 0 0 0 1px var(--memo-border);
-}
-
-/* 세로 동영상(YouTube Shorts)은 본문 폭 전체로 늘리지 않는다 */
-.memo-embed[data-provider='youtube'] .memo-embed-frame[style*='9 / 16'] {
-	max-width: 22rem;
-	margin: 0 auto;
 }
 
 .memo-embed iframe {

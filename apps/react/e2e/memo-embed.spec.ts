@@ -134,4 +134,50 @@ test.describe('메모 바깥 링크 임베드', () => {
 		body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
 		expect(body).toContain('[vimeo.com/76979871](https://vimeo.com/76979871)');
 	});
+
+	test('읽기 화면: SoundCloud·Twitch·TikTok·Apple Music도 임베드하고, Twitch에는 이 사이트 도메인을 parent로 넘긴다', async ({
+		page,
+	}) => {
+		const blocked: string[] = [];
+		page.on('console', (message) => {
+			if (/Content Security Policy|Refused to frame/i.test(message.text())) blocked.push(message.text());
+		});
+		// 바깥 재생기는 불러오지 않는다 (네트워크·재생기 안의 오류에 시험이 흔들리지 않게). CSP 검사는 요청 전에 일어나므로 그대로 확인된다
+		await page.route(
+			/^https:\/\/(w\.soundcloud\.com|player\.twitch\.tv|www\.tiktok\.com|embed\.music\.apple\.com)\//,
+			(route) => route.fulfill({ status: 200, contentType: 'text/html', body: '<!doctype html><title>embed</title>' })
+		);
+		const api = await fakeApi(page);
+		const body = [
+			'https://soundcloud.com/forss/flickermood',
+			'https://www.twitch.tv/twitch',
+			'https://www.tiktok.com/@scout2015/video/6718335390845095173',
+			'https://music.apple.com/us/album/1989-taylors-version/1708308989',
+		].join('\n\n');
+		const content = { title: '임베드 사이트', date: '2026-10-30', category: '기타', summary: '', body };
+		api.posts.push({ slug: 'embed-sites', ...content, published: content, deleted: false });
+		await enterDesktop(page, '/memo/embed-sites');
+		const memo = appWindow(page, 'memo');
+		const frames = memo.locator('.memo-embed iframe');
+		await expect(frames).toHaveCount(4);
+		const host = new URL(page.url()).hostname;
+		await expect(memo.locator('.memo-embed[data-provider="soundcloud"] iframe')).toHaveAttribute(
+			'src',
+			/^https:\/\/w\.soundcloud\.com\/player\/\?url=https%3A%2F%2Fsoundcloud\.com%2Fforss%2Fflickermood/
+		);
+		await expect(memo.locator('.memo-embed[data-provider="twitch"] iframe')).toHaveAttribute(
+			'src',
+			`https://player.twitch.tv/?channel=twitch&parent=${host}&autoplay=false`
+		);
+		// 세로 영상은 최대 폭(340px)으로 가운데에
+		const tiktok = memo.locator('.memo-embed[data-provider="tiktok"] .memo-embed-frame');
+		expect((await tiktok.boundingBox())!.width).toBeLessThanOrEqual(340);
+		await expect(memo.locator('.memo-embed[data-provider="applemusic"] iframe')).toHaveAttribute(
+			'src',
+			'https://embed.music.apple.com/us/album/1989-taylors-version/1708308989'
+		);
+		for (let i = 0; i < 4; i++) await frames.nth(i).scrollIntoViewIfNeeded();
+		await page.waitForTimeout(1000);
+		expect(blocked).toEqual([]);
+	});
 });

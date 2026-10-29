@@ -13,7 +13,10 @@ const MemoEmbed = ({ block: { href, embed } }: { block: EmbedBlock }) => (
 	<figure className="memo-embed" data-provider={embed.provider}>
 		<div
 			className="memo-embed-frame"
-			style={embed.aspectRatio ? { aspectRatio: embed.aspectRatio } : { height: embed.height }}
+			style={{
+				...(embed.aspectRatio ? { aspectRatio: embed.aspectRatio } : { height: embed.height }),
+				...(embed.maxWidth && { maxWidth: embed.maxWidth, marginInline: 'auto' }),
+			}}
 		>
 			<iframe
 				src={embed.src}
