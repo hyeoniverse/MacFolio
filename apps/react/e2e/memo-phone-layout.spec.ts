@@ -67,5 +67,32 @@ test.describe('메모: 휴대폰 화면이면 폭과 상관없이 한 칸씩', (
 			const lineBottom = () => last.evaluate((element) => element.getBoundingClientRect().bottom);
 			await expect.poll(lineBottom).toBeLessThanOrEqual(bar.y);
 		});
+
+		test('글자 크기를 바꿔도 게시 알약은 공유·••• 알약과 같은 줄·높이, 글자 크기 알약은 새 메모 버튼 위에 같은 높이로 뜬다', async ({
+			page,
+		}) => {
+			await fakeApi(page, { signedIn: true });
+			await enterDesktop(page);
+			await page.locator('[data-launch="memo"]').click();
+			const memo = appWindow(page, 'memo');
+			await memo.locator('.memo-item').first().click();
+			await expect(memo.locator('.memo-writer-actions')).toBeVisible();
+			// 편집 화면의 글자 크기는 zoom이라, 줄이면 그 안의 게시 알약까지 작아지고 위로 올라가 옆 알약과 겹쳤다
+			for (const step of ['글자 작게', '글자 크게', '글자 크게']) {
+				await memo.getByRole('button', { name: step }).click();
+				const top = await box(page, '[data-app="memo"] .memo-phone-top');
+				const publish = await box(page, '[data-app="memo"] .memo-writer-actions');
+				expect(Math.round(publish.y)).toBe(Math.round(top.y));
+				expect(Math.round(publish.height)).toBe(Math.round(top.height));
+				expect(publish.x + publish.width).toBeLessThan(top.x);
+			}
+			// 글자 크기 알약: 위 알약과 같은 높이, 새 메모 버튼과 오른쪽 끝을 맞추고 겹치지 않는다
+			const top = await box(page, '[data-app="memo"] .memo-phone-top');
+			const size = await box(page, '[data-app="memo"] .memo-text-size');
+			const compose = await box(page, '[data-app="memo"] .memo-reader .memo-phone-compose');
+			expect(Math.round(size.height)).toBe(Math.round(top.height));
+			expect(Math.round(size.x + size.width)).toBe(Math.round(compose.x + compose.width));
+			expect(size.y + size.height).toBeLessThanOrEqual(compose.y - 8);
+		});
 	});
 });
