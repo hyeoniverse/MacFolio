@@ -1,7 +1,7 @@
 ---
 title: deletedAt 열과 CHECK 제약으로 삭제한 글을 복구하는 소프트 삭제
 date: 2026-10-01
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/서버·API
 summary: 삭제한 메모를 복구할 방법이 없어 macOS 메모처럼 '최근 삭제된 항목'을 추가했다. Post에 deletedAt 열과 CHECK 제약을 추가하고, 복구·영구 삭제·30일 정리 API와 드래그 앤 드롭을 구현했다. 저장소 Markdown 글을 숨기는 표시가 핵심이었다.
 ---
 

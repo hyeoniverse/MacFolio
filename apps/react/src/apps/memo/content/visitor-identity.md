@@ -1,7 +1,7 @@
 ---
 title: httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기
 date: 2026-10-02
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 summary: 메시지와 댓글에서 이름·비밀번호 입력 칸을 제거했다. 서버가 처음 방문한 브라우저에 httpOnly 쿠키를 발급하고, 그 HMAC 해시로 "🦊 날쌘 여우" 같은 이름(720가지)을 정한다. 삭제 권한도 쿠키를 기준으로 판단하고, 메시지 앱은 처음으로 서버에 저장한다.
 ---
 

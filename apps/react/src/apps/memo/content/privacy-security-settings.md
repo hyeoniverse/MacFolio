@@ -1,7 +1,7 @@
 ---
 title: Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기
 date: 2026-10-10
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 summary: 메일에만 있던 Cloudflare Turnstile 사람 확인을 댓글·메시지에도 걸 수 있게 하고, macOS '개인정보 보호 및 보안' 모양 화면에서 관리자가 곳마다 켜고 끄게 했다. 설정은 서버 DB의 한 행짜리 테이블에 저장하고, 확인은 requireHuman 함수 하나로 통합했다.
 ---
 

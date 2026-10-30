@@ -1,7 +1,7 @@
 ---
 title: 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기
 date: 2026-10-12
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 6
 summary: 휴대폰 시트 3곳(메일 쓰기·메일 동작·음악 지금 재생 중)의 오버레이·애니메이션·닫기·role을 Sheet로 추출하고 모양은 variant 세 개로 나눴다. 닫기 타이머를 제거했고, 전환 중 발견한 343px 스크롤 튐과 가로 40px 스크롤도 수정했다.

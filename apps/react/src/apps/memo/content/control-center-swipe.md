@@ -1,7 +1,7 @@
 ---
 title: 캡처 단계 리스너와 Touch Events로 구현한 전체 화면 스와이프 판정
 date: 2026-09-29
-category: 개발 기록/MacFolio/UI·인터랙션
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 휴대폰 화면
 seriesOrder: 1
 summary: 상태 표시줄 44px 영역에서만 열리던 휴대폰 제어 센터를 화면 어디서든 스와이프로 열고 닫게 했다. 문서 전체에서 캡처 단계로 이벤트를 수신하고, 스크롤할 내용이 남은 영역에서는 스크롤을 우선하고, 손가락 입력은 Touch Events로 받아 패널이 손가락을 따라 움직이게 했다.

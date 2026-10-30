@@ -1,7 +1,7 @@
 ---
 title: IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능한 이름 강제하기
 date: 2026-10-17
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 7
 summary: 공통 부품이 스크린 리더에 어떤 이름과 역할로 읽히는지 브라우저 없이 실행하는 시험 10개로 고정하고 규칙을 문서 표로 정리했다. 아이콘만 있는 버튼은 label을 생략하면 타입 검사에서 오류가 나도록 했다.

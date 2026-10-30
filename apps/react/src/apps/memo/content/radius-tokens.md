@@ -1,7 +1,7 @@
 ---
 title: 자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기
 date: 2026-10-16
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 series: 디자인 토큰
 seriesOrder: 2
 summary: 576곳에 마흔 가지 넘는 값으로 작성된 border-radius 가운데 자주 쓰는 여섯 값에 --radius-xs~--radius-full 이름을 붙이고 239곳을 교체했다. 값이 같아 화면은 바뀌지 않는다. 사흘 뒤 다시 집계하니 같은 값의 숫자가 115곳 새로 생겨 있었다.

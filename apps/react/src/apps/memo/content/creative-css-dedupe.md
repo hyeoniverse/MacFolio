@@ -1,7 +1,7 @@
 ---
 title: getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기
 date: 2026-10-16
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
 seriesOrder: 5
 summary: Safari HYEONIVERSE 페이지 CSS에 공통 부품 CSS와 동일한 규칙 103개가 복사되어 있었다. 복사본을 삭제해 파일이 1,444줄 → 735줄(gzip 8.1KB → 5.1KB)로 줄었고, 요소 3,720개의 계산된 스타일이 전후로 같은지 기기·테마별로 비교했다.

@@ -1,7 +1,7 @@
 ---
 title: zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기
 date: 2026-10-11
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 series: contracts 스키마
 seriesOrder: 3
 summary: 메시지 앱의 Thread·Message 타입과 고정 항목 id 'owner'가 서버와 화면에 각각 정의되어 있었다. contracts로 옮기는 과정에서 화면의 mine?: boolean과 서버의 mine: boolean이 다른 것을 발견했고, 서버의 요청 검증은 MessageInput = CommentInput 한 줄로 정의했다.

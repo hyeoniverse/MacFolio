@@ -1,7 +1,7 @@
 ---
 title: R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템
 date: 2026-10-19
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/서버·API
 series: Finder
 seriesOrder: 3
 summary: 관리자가 Finder에서 새 폴더를 만들고, 이름을 바꾸고, 파일과 폴더를 끌어 옮긴다. 구조는 서버(/finder/layout)에 저장해 방문자도 같은 구조를 조회한다. 블로그 폴더는 메모의 정리 내용을 수정해 메모와 동기화되고, 바탕화면은 Finder의 데스크탑 폴더가 되었다.

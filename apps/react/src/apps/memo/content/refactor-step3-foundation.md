@@ -1,7 +1,7 @@
 ---
 title: api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기
 date: 2026-10-18
-category: 개발 기록/MacFolio/아키텍처
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 리팩터링
 seriesOrder: 3
 summary: 리팩터링 3단계 회고. 파일마다 따로 구현하던 서버 요청, 브라우저 저장소, matchMedia 조회를 client.ts·storage.ts·media.ts 세 모듈로 통합했다. 서버 요청 코드는 346줄에서 179줄이 됐고, 401 처리는 한 곳으로 모였다.

@@ -1,7 +1,7 @@
 ---
 title: id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기
 date: 2026-10-19
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/서버·API
 series: 배경화면
 seriesOrder: 2
 summary: Finder의 '데스크탑 사진 설정'으로 선택한 배경화면이 서버 목록 검사에서 삭제된 항목으로 판정되어 새로고침마다 기본값으로 돌아가던 문제를 id 접두어 상수 하나로 수정했다. MP4도 배경화면으로 설정할 수 있고, QuickTime은 미리보기와 같은 열기 창을 쓴다.

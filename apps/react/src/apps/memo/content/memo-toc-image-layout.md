@@ -1,7 +1,7 @@
 ---
 title: React 커밋의 ref 연결 순서를 고려해 본문 h2로 목차 만들기
 date: 2026-10-27
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/화면·스타일
 summary: 긴 글을 훑어볼 수 있게 제목 아래 목차와 스크롤하면 뜨는 목차 버튼을 더했다. 이미지는 주소 끝의 #left·#right·#float-left·#float-right로 정렬하고 글을 옆으로 흐르게 한다. 표기를 고른 이유, 목차가 비어 있던 ref 순서 문제, 휴대폰 처리를 적었다.
 ---
 

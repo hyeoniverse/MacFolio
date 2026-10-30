@@ -1,7 +1,7 @@
 ---
 title: pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그
 date: 2026-10-02
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메모 폴더
 seriesOrder: 3
 summary: 항상 가나다순이던 메모 폴더를 iOS 메모처럼 편집 화면의 ≡ 핸들로 드래그해 같은 계층의 순서를 바꾸게 했다. 순서는 폴더 경로를 나열한 목록 하나로 저장하고, 이름을 바꾸거나 이동하면 목록의 경로도 함께 갱신한다.

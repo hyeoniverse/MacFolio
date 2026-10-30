@@ -1,7 +1,7 @@
 ---
 title: 파일 확장자로 고르는 사이트 안 앱과 sandbox iframe으로 여는 메모 첨부 파일
 date: 2026-10-30
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 메모 글에 올린 첨부 파일을 누르면 PDF·그림은 미리보기, md·txt는 텍스트 편집기, html은 Safari 새 탭으로 열리게 했다. 파일 이름의 확장자로 앱을 고르고, HTML은 스크립트를 막은 sandbox iframe의 srcdoc으로 그린다.
 ---
 

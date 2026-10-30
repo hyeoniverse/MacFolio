@@ -1,7 +1,7 @@
 ---
 title: zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기
 date: 2026-10-11
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 series: contracts 스키마
 seriesOrder: 1
 summary: 댓글 모양을 서버(CommentView)와 화면(Comment)이 각자 적고 있어서 서버가 필드를 바꿔도 화면은 알 수 없었다. packages/contracts에 zod 스키마를 두고 서버는 검증에, 화면은 타입에 함께 쓰게 했다. 첫 사례인 댓글·좋아요와, 이후 열두 도메인으로 확장된 과정.

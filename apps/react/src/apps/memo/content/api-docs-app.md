@@ -1,7 +1,7 @@
 ---
 title: Vite 두 번째 진입점과 iframe으로 Scalar API 문서 격리하기
 date: 2026-10-05
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/구조·상태 관리
 summary: 서버 메뉴의 'API 문서 열기'가 사이트 안의 앱을 연다. 서버의 Swagger를 iframe에 표시하던 첫 방법을 폐기하고, 코드에서 생성한 openapi.json을 별도 페이지에서 Scalar로 렌더링한다. 스냅숏 시험, 방문 기록, overflow clip 수정까지 정리했다.
 ---
 

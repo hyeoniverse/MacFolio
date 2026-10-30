@@ -1,7 +1,7 @@
 ---
 title: 공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기
 date: 2026-10-10
-category: 개발 기록/MacFolio/아키텍처
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 공통 모듈
 seriesOrder: 1
 summary: 서버를 호출하는 파일 22개가 각각 credentials·JSON 헤더·try/catch·실패 문구를 작성하고 있었다. 111줄짜리 client.ts의 api()·apiFetch()로 통합하고, 401은 한 곳에서 처리해 관리자 상태를 즉시 로그아웃으로 전환한다.

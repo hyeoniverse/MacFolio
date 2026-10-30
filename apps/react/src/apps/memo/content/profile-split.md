@@ -1,7 +1,7 @@
 ---
 title: index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기
 date: 2026-10-11
-category: 개발 기록/MacFolio/아키텍처
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 모듈 구조
 seriesOrder: 5
 summary: 프로필·기술·타입·프로젝트 7개가 담긴 1,629줄짜리 shared/profile.ts를 profile/ 폴더로 분리하고 프로젝트마다 파일 하나를 배치했다. index.ts가 재내보내기(re-export)하므로 외부 27곳의 import는 그대로였고, 내용은 한 글자도 변경하지 않았다.

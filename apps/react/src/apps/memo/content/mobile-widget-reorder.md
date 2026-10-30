@@ -1,7 +1,7 @@
 ---
 title: Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기
 date: 2026-10-23
-category: 개발 기록/MacFolio/UI·인터랙션
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 위젯
 seriesOrder: 4
 summary: 휴대폰 홈 화면 편집 모드에서 위젯을 끌어 순서를 바꾸도록 구현했다. 2열 격자의 배치 규칙을 순수 함수로 정리하고, 끄는 위젯은 translate로, 비켜 주는 위젯은 FLIP으로 움직였다. 처음 구성에서 음악 위젯과 GitHub 잔디의 자리도 맞바꿨다.

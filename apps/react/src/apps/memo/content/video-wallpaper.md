@@ -1,7 +1,7 @@
 ---
 title: video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기
 date: 2026-10-20
-category: 개발 기록/MacFolio/UI·인터랙션
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 배경화면
 seriesOrder: 3
 summary: 관리자가 MP4나 움직이는 GIF를 배경화면으로 올릴 수 있게 했다. 포스터는 서버에 ffmpeg을 설치하지 않고 브라우저가 0.5초 장면을 캔버스에 렌더링해 만들고, 서버는 MP4를 파일 앞부분으로 판별하고 Range 요청에 206으로 응답한다.

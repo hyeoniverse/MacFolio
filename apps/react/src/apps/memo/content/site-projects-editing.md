@@ -1,7 +1,7 @@
 ---
 title: 코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집
 date: 2026-10-11
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 series: 사이트 편집
 seriesOrder: 2
 summary: 관리자가 시스템 설정에서 프로젝트와 프로젝트 앱을 수정하고, 순서를 바꾸고, 숨기고, 추가한다. 서버에는 코드 기본값에 덮어쓸 값만 저장하고, 앱 목록을 계산하기 전에 합치며, 새 데모 주소는 Worker가 CSP에 추가한다.

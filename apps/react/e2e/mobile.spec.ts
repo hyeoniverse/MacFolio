@@ -1000,21 +1000,20 @@ test.describe('모바일', () => {
 			);
 		const paths = (names: string[]) => names.map((name) => `개발 기록/MacFolio/${name}`);
 		const NAMES = [
-			'API·데이터',
-			'UI·인터랙션',
-			'기능 구현',
+			'구조·상태 관리',
 			'배포·운영',
-			'스타일·컴포넌트',
-			'아키텍처',
+			'서버·API',
+			'인터랙션·브라우저 API',
 			'테스트·보안·성능',
+			'화면·스타일',
 			'회고',
 		];
 		await expect(topNames()).toHaveText(NAMES);
 
 		await folders.getByRole('button', { name: '폴더 편집' }).tap();
-		// 끌기: 세 번째 '기능 구현'을 맨 위로 (두 손잡이가 한 화면에 들어오게 가운데로 스크롤한 뒤 끈다)
-		const handle = folders.getByRole('button', { name: '순서 바꾸기 (기능 구현)' });
-		const target = folders.getByRole('button', { name: '순서 바꾸기 (API·데이터)' });
+		// 끌기: 세 번째 '서버·API'를 맨 위로 (두 손잡이가 한 화면에 들어오게 가운데로 스크롤한 뒤 끈다)
+		const handle = folders.getByRole('button', { name: '순서 바꾸기 (서버·API)' });
+		const target = folders.getByRole('button', { name: '순서 바꾸기 (구조·상태 관리)' });
 		await target.evaluate((element) => element.scrollIntoView({ block: 'center' }));
 		const from = (await handle.boundingBox())!;
 		const to = (await target.boundingBox())!;
@@ -1022,13 +1021,13 @@ test.describe('모바일', () => {
 		await page.mouse.down();
 		await page.mouse.move(from.x + from.width / 2, to.y + 4, { steps: 8 });
 		await page.mouse.up();
-		const moved = ['기능 구현', 'API·데이터', 'UI·인터랙션', ...NAMES.slice(3)];
+		const moved = ['서버·API', '구조·상태 관리', '배포·운영', ...NAMES.slice(3)];
 		await expect(topNames()).toHaveText(moved);
 		await expect.poll(() => api.organization.order).toEqual(paths(moved));
 
 		// 키보드: ↓로 한 칸 내린다
-		await folders.getByRole('button', { name: '순서 바꾸기 (기능 구현)' }).press('ArrowDown');
-		await expect(topNames()).toHaveText(['API·데이터', '기능 구현', 'UI·인터랙션', ...NAMES.slice(3)]);
+		await folders.getByRole('button', { name: '순서 바꾸기 (서버·API)' }).press('ArrowDown');
+		await expect(topNames()).toHaveText(['구조·상태 관리', '서버·API', '배포·운영', ...NAMES.slice(3)]);
 	});
 
 	test('메일은 iOS 메일처럼: 메일상자 → 사서함 → 메일로 한 화면씩, 넘어갈 때 옆으로 밀려 들어온다', async ({

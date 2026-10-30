@@ -1,7 +1,7 @@
 ---
 title: tabular-nums와 그리드 셀 겹치기로 가변 폭 텍스트의 칸 너비 고정하기
 date: 2026-10-03
-category: 개발 기록/MacFolio/UI·인터랙션
+category: 개발 기록/MacFolio/화면·스타일
 series: 메뉴 막대
 seriesOrder: 1
 summary: 메뉴 막대 오른쪽 끝의 시계 글자 너비가 바뀔 때마다 그 왼쪽의 재생·Wi-Fi·배터리 아이콘이 이동했다. tabular-nums와, 숨긴 가장 넓은 시각 문자열을 같은 그리드 셀에 겹쳐 배치하는 방법으로 시계 칸 너비를 고정했다.

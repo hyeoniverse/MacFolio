@@ -1,7 +1,7 @@
 ---
 title: 토글 펼침 여부를 문서 대신 ProseMirror 플러그인 상태에 두기
 date: 2026-10-23
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메모 편집기
 seriesOrder: 8
 summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, 토글을 펼치기만 해도 임시 저장되고, 서버 글이 같은 slug의 저장소 글을 가려 되돌릴 수 없었다. 저장 직전 unescapeTags, 화면 상태로 옮긴 펼침 여부, DELETE /posts/:slug/server-copy로 수정했다.

@@ -1,7 +1,7 @@
 ---
 title: 브라우저별 localStorage 값을 서버 사이트 기본값으로 옮겨 첫 HTML에 싣기
 date: 2026-10-25
-category: 개발 기록/MacFolio/UI·인터랙션
+category: 개발 기록/MacFolio/서버·API
 series: 위젯
 seriesOrder: 5
 summary: 노트북에서 고른 사진 위젯 폴더가 아이폰 Safari에서는 보이지 않았다. 고른 값이 브라우저의 localStorage에만 저장됐기 때문이다. 관리자가 고른 앨범을 서버에 사이트 기본값으로 저장하고, 첫 HTML에 실어 모든 브라우저가 쓰게 했다. 방문자가 직접 고른 값은 그 브라우저에서 우선한다.

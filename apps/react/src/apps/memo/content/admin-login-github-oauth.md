@@ -1,7 +1,7 @@
 ---
 title: GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기
 date: 2026-09-29
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 summary: GitHub OAuth로 내 계정만 관리자로 인증한다. 비밀번호 없이 GitHub 숫자 ID로 확인하고, DB에는 세션 토큰 대신 해시만 저장한다. state 쿠키, DB 세션과 JWT 비교, AdminGuard, GitHub 없이 실행하는 시험까지 정리했다.
 ---
 

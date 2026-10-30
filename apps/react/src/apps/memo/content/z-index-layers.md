@@ -1,7 +1,7 @@
 ---
 title: 흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기
 date: 2026-10-16
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 series: 디자인 토큰
 seriesOrder: 1
 summary: 화면 전체에서 겹치는 요소의 z-index가 1000·1001·9999·10000처럼 숫자로 13개 파일 20곳에 흩어져 있었다. 값은 그대로 두고 theme.css의 --z-* 이름 15개로 옮겨 겹침 순서를 한 표에서 확인할 수 있게 했다.

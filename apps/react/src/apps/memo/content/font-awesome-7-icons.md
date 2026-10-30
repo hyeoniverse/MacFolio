@@ -1,7 +1,7 @@
 ---
 title: Font Awesome 7에서 제거된 6의 글꼴 이름과 SVG 텍스트 아이콘
 date: 2026-10-19
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 summary: Font Awesome을 7로 업그레이드한 뒤 HYEONIVERSE 구조도의 아이콘이 깨졌다. 7은 5·4의 글꼴 이름은 호환용으로 유지했지만 6의 이름은 제거했고, SVG 텍스트로 렌더링하는 아이콘 다섯 곳이 6의 이름을 직접 지정하고 있었다.
 ---
 

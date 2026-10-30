@@ -1,7 +1,7 @@
 ---
 title: 인라인 style을 CSS 클래스와 CSS 변수 전달 함수 cssVars()로 옮기기
 date: 2026-10-08
-category: 개발 기록/MacFolio/스타일·컴포넌트
+category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
 seriesOrder: 2
 summary: 여러 컴포넌트에 분산된 인라인 스타일을 세 종류로 나눴다. 고정 값은 CSS로, 데이터마다 바뀌는 색·크기는 cssVars()로 CSS 변수만 전달하고, 계산된 좌표만 인라인에 남겼다. 전후 스크린샷 37장이 바이트 단위로 일치했고, 타입 단언 61곳이 0이 됐다.

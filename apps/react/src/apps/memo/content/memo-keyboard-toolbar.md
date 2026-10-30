@@ -1,7 +1,7 @@
 ---
 title: 레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기
 date: 2026-10-16
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/화면·스타일
 series: 메모 편집기
 seriesOrder: 7
 summary: 휴대폰에서 메모를 쓰다 키보드가 올라오면 서식 알약이 키보드 뒤에 가려졌다. iOS Safari는 키보드가 올라와도 레이아웃 뷰포트를 줄이지 않는다. visualViewport로 가려진 높이를 측정해 서식 막대를 키보드 바로 위에 표시하고, iOS 메모의 문단 도구도 추가했다.

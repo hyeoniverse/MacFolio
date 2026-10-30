@@ -1,7 +1,7 @@
 ---
 title: 방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기
 date: 2026-10-07
-category: 개발 기록/MacFolio/API·데이터
+category: 개발 기록/MacFolio/서버·API
 series: 메일 앱
 seriesOrder: 2
 summary: 메일 앱으로 보낸 메일을 서버에 1년 보관하고, 방문자 쿠키의 HMAC으로 필터링한 보낸 편지함에서만 조회되게 했다. 관리자는 받은 편지함에서 모든 메일을 조회하고 앱 안에서 답장한다. 답장은 메일 발송이 성공한 뒤에 저장한다.

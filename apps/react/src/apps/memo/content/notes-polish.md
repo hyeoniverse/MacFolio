@@ -1,7 +1,7 @@
 ---
 title: 본문 형제 선택자 여백 때문에 어긋난 편집기 표 핸들 위치
 date: 2026-09-30
-category: 개발 기록/MacFolio/기능 구현
+category: 개발 기록/MacFolio/화면·스타일
 series: 메모 편집기
 seriesOrder: 2
 summary: macOS 메모와 나란히 비교하며 표 핸들, 글 내부 찾기·대치, 도구를 접고 확장되는 검색 칸, 이미지 캡션·내려받기, Safari 탭을 구현했다. 핸들 위치가 13px 어긋난 원인은 본문 문단 간격 규칙이었다.

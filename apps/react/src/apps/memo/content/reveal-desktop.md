@@ -1,7 +1,7 @@
 ---
 title: CSS translate와 pointer-events로 레이아웃을 건드리지 않고 창 밀어내기
 date: 2026-10-22
-category: 개발 기록/MacFolio/UI·인터랙션
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: macOS Sonoma의 '배경화면을 클릭하여 데스크탑 보기'를 옮겼다. 창 store에 desktopRevealed 상태를 추가하고, 창은 left·top 대신 CSS translate로 밀어 열기·닫기 애니메이션과 끌기 계산에서 분리했다. 바탕화면 아이콘을 끌어 고르는 동작과는 이동 거리로 구분한다.
 ---
 
