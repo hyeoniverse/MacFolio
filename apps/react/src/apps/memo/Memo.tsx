@@ -83,7 +83,7 @@ const Memo: React.FC = () => {
 		adminPosts,
 		upsertAdminPost,
 		dropAdminPost,
-		status,
+		loadBody,
 		canEdit,
 		editing,
 		today,
@@ -103,7 +103,6 @@ const Memo: React.FC = () => {
 		adminPosts,
 		editing,
 		today,
-		ready: status === 'ready',
 		stats,
 	});
 	const {
@@ -186,7 +185,9 @@ const Memo: React.FC = () => {
 	// 다른 글을 열면 본문 맨 위부터, 뒤로·앞으로로 돌아온 글은 떠날 때의 위치부터.
 	// 편집기·목차처럼 늦게 그려지는 내용이 있으면 높이가 바뀌고, 브라우저의 스크롤 앵커링이 위치를 옮긴다.
 	// 그래서 본문이 자리 잡을 동안(약 0.6초, 40프레임) 매 프레임 위치를 다시 맞춘다
+	// 원문을 받는 중인 글(목록용 글)은 본문이 오면 맞춘다 (빈 본문에서는 그 위치로 스크롤할 수 없다)
 	useEffect(() => {
+		if (selected?.bodyPending) return;
 		const scroller = readerScroll.current;
 		const top = pendingScroll.current ?? 0;
 		pendingScroll.current = null;
@@ -209,7 +210,12 @@ const Memo: React.FC = () => {
 			scroller.removeEventListener('wheel', stop);
 			scroller.removeEventListener('touchstart', stop);
 		};
-	}, [selected?.slug]);
+	}, [selected?.slug, selected?.bodyPending]);
+	// 연 글이 목록용 글이면(저장소 글의 원문 묶음이 아직 오지 않았다) 그 글의 원문만 먼저 받는다
+	const pendingSlug = selected?.bodyPending ? selected.slug : null;
+	useEffect(() => {
+		if (pendingSlug) loadBody(pendingSlug);
+	}, [pendingSlug, loadBody]);
 	const openAdjacent = (post: Post) => {
 		setQuery('');
 		setSelectedSlug(post.slug);
@@ -484,7 +490,11 @@ const Memo: React.FC = () => {
 		);
 
 	/** 편집기를 보이는 중인지 (관리자, 최근 삭제·잠금이 아닌 글이나 새 메모. 읽기 화면으로 보는 중이면 아니다) */
-	const writing = editing && !inTrash && (newDraft !== null || (selected !== null && !selected.locked && !readerView));
+	// 원문을 받기 전의 저장소 글(목록용 글)은 편집기에 열지 않는다: 목록용 본문을 고친 글로 저장하지 않게. 원문이 오면 연다
+	const writing =
+		editing &&
+		!inTrash &&
+		(newDraft !== null || (selected !== null && !selected.locked && !readerView && !selected.bodyPending));
 
 	/** 비슷한 글 열기: 검색어를 지우고 그 글을 연다 */
 	const openSimilar = (post: Post) => {
@@ -493,19 +503,17 @@ const Memo: React.FC = () => {
 		setPane('reader');
 	};
 	/** 결과가 본문에서만 걸렸을 때 목록 맨 위의 고친 검색어 */
-	const didYouMeanLine = status === 'ready' && didYouMean && (
+	const didYouMeanLine = didYouMean && (
 		<SuggestLine suggestion={didYouMean} className="memo-search-did-you-mean" onSuggest={setQuery} />
 	);
 	/** 목록 위의 메모 개수 */
 	const countLabel = inTags && visible.length === 0 ? '메모 없음' : `${visible.length}개의 메모`;
 	const empty = (
 		<>
-			{status === 'loading' && <EmptyState className="memo-empty">불러오는 중…</EmptyState>}
-			{status === 'error' && <EmptyState className="memo-empty">글을 불러오지 못했습니다.</EmptyState>}
-			{status === 'ready' && visible.length === 0 && !similar && (
+			{visible.length === 0 && !similar && (
 				<EmptyState className="memo-empty">{query || filter ? '검색 결과가 없습니다.' : '메모 없음'}</EmptyState>
 			)}
-			{status === 'ready' && similar && (
+			{similar && (
 				<SimilarResults
 					suggestion={similar.suggestion}
 					posts={similar.posts}
@@ -529,7 +537,6 @@ const Memo: React.FC = () => {
 		slug: selected?.slug ?? null,
 		posts: organized,
 		folders: folderPaths,
-		ready: status === 'ready',
 		open: ({ category: target, tagSelection: tagsAt, slug }) => {
 			setTagSelection((current) => tagsAt ?? { ...EMPTY_TAG_SELECTION, match: current.match });
 			setCategory(target);
@@ -917,7 +924,7 @@ const Memo: React.FC = () => {
 								</div>
 							)}
 							{/* 고른 글이 없을 때 (검색 결과가 없거나 빈 폴더): macOS 메모처럼 본문 칸 가운데에 짧은 안내 */}
-							{status === 'ready' && !selected && newDraft === null && similar && !compact && (
+							{!selected && newDraft === null && similar && !compact && (
 								<SearchEmptyReader
 									query={searchQuery}
 									suggestion={similar.suggestion}
@@ -926,7 +933,7 @@ const Memo: React.FC = () => {
 									onOpen={openSimilar}
 								/>
 							)}
-							{status === 'ready' && !selected && newDraft === null && !(similar && !compact) && (
+							{!selected && newDraft === null && !(similar && !compact) && (
 								<EmptyState className="memo-reader-empty">선택한 메모 없음</EmptyState>
 							)}
 						</div>

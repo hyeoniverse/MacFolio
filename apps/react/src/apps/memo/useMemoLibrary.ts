@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	type AdminPost,
 	EMPTY_ORGANIZATION,
@@ -7,12 +7,14 @@ import {
 	type Organization,
 	organizePosts,
 	type Post,
+	type PostSlug,
 	type PostStats,
 	type ServerPost,
 } from '@macfolio/desktop-core/memo';
 import { fetchOrganization, organizationEvents, publishOrganization, saveOrganization } from './organizationApi';
 import { fetchAdminPosts, fetchServerPosts } from './postsApi';
 import { getPostRepository } from './repository';
+import { loadPostBody } from './repository/postBody';
 import { useCanEditMemo } from './useCanEditMemo';
 import { env } from '@/shared/config/env';
 import { notify } from '@/desktop/notifications/notificationStore';
@@ -21,8 +23,8 @@ import { usePolling } from '@/shared/hooks/usePolling';
 import { keepIfSame } from '@/shared/lib/poller';
 import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import { fetchPostCounts, type Likes, type PostCounts } from './likes/likesApi';
-// 글 원문 묶음은 메모 앱과 함께 받는다: 메모를 열면 목록이 비어 보이는 순간 없이 바로 채워지게 (첫 화면은 이 묶음을 받지 않는다)
-import '@/apps/memo/repository/contentFiles';
+// 목록용 글 (원문 대신 목록이 읽는 부분만). 원문 묶음(3.7MB)을 받기 전에 목록을 그린다 (vite.config.ts)
+import LIST_POSTS from 'virtual:post-list';
 
 /** 조회수·댓글 수·좋아요 수를 다시 묻는 간격. 서버가 조회수를 1분 동안 같은 값으로 준다 */
 const STATS_POLL_MS = 60_000;
@@ -40,13 +42,12 @@ const isoDate = (date: Date) =>
  * - 글마다 조회수 (트래픽 분석 #102), 댓글 수·좋아요 수 (인기글)
  */
 export function useMemoLibrary() {
-	/** 저장소의 Markdown 글 */
-	const [repoPosts, setRepoPosts] = useState<Post[]>([]);
+	/** 저장소의 Markdown 글. 처음에는 목록용 글(본문은 목록이 읽는 부분만, bodyPending)이고 원문 묶음이 오면 바꾼다 */
+	const [repoPosts, setRepoPosts] = useState<Post[]>(LIST_POSTS);
 	/** 방문자용 서버 글 (게시한 글, 지운·예약 표시) */
 	const [publicPosts, setPublicPosts] = useState<ServerPost[]>([]);
 	/** 관리자용 서버 글 (게시한 내용과 임시 저장). 관리자로 로그인했을 때만 읽는다 */
 	const [adminPosts, setAdminPosts] = useState<AdminPost[] | null>(null);
-	const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 	// 편집(폴더·옮기기·고정)은 관리자만. 방문자에게는 편집 버튼을 보이지 않는다 (admin.ts)
 	const canEdit = useCanEditMemo();
 	/** 관리자 목록을 읽었으면 편집기로 본다 (읽기 전에는 게시한 내용으로 읽기만) */
@@ -55,16 +56,10 @@ export function useMemoLibrary() {
 	const today = useMemo(() => new Date(), []);
 	const todayIso = isoDate(today);
 	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다.
-	// 저장소 글(따로 받는 청크)이 오기 전에는 서버 글만으로 목록을 그리지 않는다. 저장소 글이 뒤늦게 합쳐지면
-	// 목록 순서와 처음 여는 글이 바뀌어, 그 시각에 누른 항목 자리에 다른 글이 놓인다
+	// 저장소 글은 목록용 글로 처음부터 있다: 서버 글만으로 목록을 그렸다가 저장소 글이 뒤늦게 합쳐져 순서가 바뀌는 일이 없다
 	const posts = useMemo(
-		() =>
-			status === 'loading'
-				? []
-				: editing
-					? mergeAdminPosts(repoPosts, adminPosts, todayIso)
-					: mergeServerPosts(repoPosts, publicPosts),
-		[status, editing, repoPosts, adminPosts, publicPosts, todayIso]
+		() => (editing ? mergeAdminPosts(repoPosts, adminPosts, todayIso) : mergeServerPosts(repoPosts, publicPosts)),
+		[editing, repoPosts, adminPosts, publicPosts, todayIso]
 	);
 
 	// 글마다 조회수와 댓글 수·좋아요 수 (인기글 순위). 메모 창이 보이는 동안 1분마다 다시 묻는다.
@@ -115,6 +110,7 @@ export function useMemoLibrary() {
 		setCounts((current) => ({ ...current, [slug]: { likes: current?.[slug]?.likes ?? 0, comments } }));
 	};
 
+	// 원문 묶음은 목록을 그린 뒤 바로 받는다 (본문 검색·편집에 쓴다). 받지 못하면 목록용 글을 그대로 두고 연 글만 따로 받는다
 	useEffect(() => {
 		let cancelled = false;
 		getPostRepository()
@@ -122,12 +118,25 @@ export function useMemoLibrary() {
 			.then((list) => {
 				if (cancelled) return;
 				setRepoPosts(list);
-				setStatus('ready');
 			})
-			.catch(() => setStatus('error'));
+			.catch(() => {});
 		return () => {
 			cancelled = true;
 		};
+	}, []);
+
+	/** 연 글(목록용 글)의 원문을 원문 묶음보다 먼저 받는다. 그사이 묶음이 와서 원문이 있으면 그대로 둔다 */
+	const loadBody = useCallback((slug: PostSlug) => {
+		void loadPostBody(slug).then((body) => {
+			if (body === null) return;
+			setRepoPosts((current) =>
+				current.map((post) => {
+					if (post.slug !== slug || !post.bodyPending) return post;
+					const { bodyPending: _pending, ...rest } = post;
+					return { ...rest, body };
+				})
+			);
+		});
 	}, []);
 
 	// 서버의 게시 글 (관리자가 사이트에서 쓴 글): 메모 창이 보이는 동안 10분마다 다시 묻는다.
@@ -208,10 +217,10 @@ export function useMemoLibrary() {
 
 	return {
 		repoPosts,
+		loadBody,
 		adminPosts,
 		upsertAdminPost,
 		dropAdminPost,
-		status,
 		canEdit,
 		editing,
 		today,

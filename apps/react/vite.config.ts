@@ -8,6 +8,7 @@ import react from '@vitejs/plugin-react';
 import { loadOgAssets, ogImagePng } from '../../packages/og-card/src/index';
 import {
 	createdTimes,
+	listPosts,
 	recentPosts,
 	rssXml,
 	seoPosts,
@@ -168,19 +169,32 @@ function recentPostsPlugin(): Plugin {
 	// 'virtual:post-created': 글마다 올린 시각 (git). 메모 앱이 글 원문 묶음과 함께 불러와 같은 날 글의 순서를 정한다
 	const createdId = 'virtual:post-created';
 	const createdResolved = `\0${createdId}`;
+	// 'virtual:post-list': 메모 목록용 글 (원문 대신 목록이 읽는 부분만). 메모 앱이 원문 묶음을 받기 전에 목록을 그린다
+	const listId = 'virtual:post-list';
+	const listResolved = `\0${listId}`;
 	const contentDir = fileURLToPath(new URL('./src/apps/memo/content', import.meta.url));
 	return {
 		name: 'macfolio-recent-posts',
 		resolveId: (source) =>
-			source === id ? resolved : source === indexId ? indexResolved : source === createdId ? createdResolved : null,
+			source === id
+				? resolved
+				: source === indexId
+					? indexResolved
+					: source === createdId
+						? createdResolved
+						: source === listId
+							? listResolved
+							: null,
 		async load(source) {
 			if (source === createdResolved) return `export default ${JSON.stringify(contentCreatedTimes(contentDir))};`;
-			if (source !== resolved && source !== indexResolved) return null;
+			if (source !== resolved && source !== indexResolved && source !== listResolved) return null;
 			const names = readdirSync(contentDir).filter((name) => name.endsWith('.md'));
 			for (const name of names) this.addWatchFile(join(contentDir, name));
 			const files = Object.fromEntries(
 				names.map((name) => [`./content/${name}`, readFileSync(join(contentDir, name), 'utf8')])
 			);
+			if (source === listResolved)
+				return `export default ${JSON.stringify(await listPosts(files, contentCreatedTimes(contentDir)))};`;
 			const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(new Date());
 			const limit = source === resolved ? RECENT_POSTS : Infinity;
 			return `export default ${JSON.stringify(await recentPosts(files, limit, today, contentCreatedTimes(contentDir)))};`;

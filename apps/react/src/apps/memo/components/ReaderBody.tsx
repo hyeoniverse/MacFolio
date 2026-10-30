@@ -88,8 +88,9 @@ const ReaderBody = ({
 			<h1>{post.title}</h1>
 			{series && !post.deletedAt && <SeriesBox series={series} compact={compact} onOpen={onOpenSeries} />}
 			<MemoToc toc={toc} bodyRef={body} revision={revision} compact={compact} />
-			<div ref={body} className="prose memo-markdown">
-				<MemoMarkdown>{post.body}</MemoMarkdown>
+			<div ref={body} className="prose memo-markdown" aria-busy={post.bodyPending ? true : undefined}>
+				{/* 원문을 받는 동안(목록용 글)은 본문 자리를 비워 둔다. 목록용 본문은 그림·태그만 모은 것이라 보이지 않는다 */}
+				{!post.bodyPending && <MemoMarkdown>{post.body}</MemoMarkdown>}
 			</div>
 			{footer}
 		</div>

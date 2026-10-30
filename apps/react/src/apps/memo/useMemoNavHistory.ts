@@ -45,7 +45,6 @@ export function useMemoNavHistory({
 	slug,
 	posts,
 	folders,
-	ready,
 	open,
 	scrollRef,
 	restoreScroll,
@@ -58,8 +57,6 @@ export function useMemoNavHistory({
 	posts: Post[];
 	/** 지금 있는 폴더 경로 (없어진 폴더의 칸을 거른다) */
 	folders: readonly string[];
-	/** 글을 다 불러왔는지. 불러오기 전에는 기록을 쌓거나 거르지 않는다 (처음 화면의 빈 칸이 저장한 앞쪽 칸을 지우지 않게) */
-	ready: boolean;
 	/** 기록의 한 칸을 연다 */
 	open: (entry: { category: string; tagSelection: TagSelection | null; slug: string | null }) => void;
 	/** 본문 스크롤 영역 (떠날 때의 위치를 적는다) */
@@ -98,22 +95,21 @@ export function useMemoNavHistory({
 		[bySlug, folderSet]
 	);
 
-	// 글을 다 불러온 시각에 한 번: 저장해 둔 기록에서 갈 수 없게 된 칸을 빼고 지금 칸을 맞춘다 (아래 쌓기보다 먼저)
+	// 처음 한 번 (저장소 글은 목록용 글로 처음부터 있다): 저장해 둔 기록에서 갈 수 없게 된 칸을 빼고 지금 칸을 맞춘다 (아래 쌓기보다 먼저)
 	const pruned = useRef(false);
 	useEffect(() => {
-		if (!ready || pruned.current) return;
+		if (pruned.current) return;
 		pruned.current = true;
 		setHistory((current) => pruneNavHistory(current, usable));
-	}, [ready, usable]);
+	}, [usable]);
 
 	useEffect(() => {
-		if (!ready) return;
 		if (stepping.current) {
 			stepping.current = false;
 			return;
 		}
 		setHistory((current) => visit(rememberScroll(current, lastScroll.current), { category, tags, slug }));
-	}, [ready, category, tags, slug]);
+	}, [category, tags, slug]);
 
 	useEffect(() => {
 		writeJson(STORAGE_KEYS.memoHistory, serializeNavHistory(history), 'session');

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" width="760" height="360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="360" rx="16" fill="#f5f5f7"/>
+<text x="24" y="36" font-size="17" fill="#1d1d1f" font-weight="700">메모를 연 뒤의 요청 순서 (전송량은 brotli 압축 기준, 도식)</text>
+<text x="24" y="72" font-size="14" fill="#1d1d1f" font-weight="700">개선 전</text>
+<rect x="24" y="84" width="150" height="28" rx="6" fill="#0a84ff"/>
+<text x="99" y="103" font-size="12" fill="#fff" text-anchor="middle">Memo 청크 224KB</text>
+<rect x="178" y="84" width="420" height="28" rx="6" fill="#ff9f0a"/>
+<text x="388" y="103" font-size="12" fill="#fff" text-anchor="middle">contentFiles 805KB (글 247편 원문 3.76MB)</text>
+<line x1="602" y1="78" x2="602" y2="140" stroke="#ff3b30" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="608" y="96" font-size="12" fill="#ff3b30">목록·본문 표시</text>
+<text x="24" y="134" font-size="12" fill="#6e6e73">두 청크를 차례로 받은 뒤에야 목록을 그린다</text>
+<text x="24" y="178" font-size="14" fill="#1d1d1f" font-weight="700">개선 후</text>
+<rect x="24" y="190" width="180" height="28" rx="6" fill="#0a84ff"/>
+<text x="114" y="209" font-size="12" fill="#fff" text-anchor="middle">Memo 청크 269KB (색인 포함)</text>
+<line x1="208" y1="184" x2="208" y2="306" stroke="#34c759" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="214" y="202" font-size="12" fill="#248a3d">목록 표시</text>
+<rect x="212" y="230" width="34" height="28" rx="6" fill="#34c759"/>
+<text x="252" y="249" font-size="12" fill="#1d1d1f">연 글 한 편 10KB → 본문 표시</text>
+<rect x="212" y="270" width="420" height="28" rx="6" fill="#ff9f0a" fill-opacity="0.55"/>
+<text x="422" y="289" font-size="12" fill="#1d1d1f" text-anchor="middle">contentFiles 805KB (뒤에서 받는다: 본문 검색·편집)</text>
+<text x="24" y="330" font-size="12" fill="#6e6e73">목록은 Memo 청크만으로, 본문은 그 글의 청크만으로 그린다. 막대 길이는 대략적인 비율이다</text>
+</svg>
