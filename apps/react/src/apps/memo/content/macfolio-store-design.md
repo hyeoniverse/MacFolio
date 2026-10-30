@@ -1,7 +1,9 @@
 ---
-title: MacFolio의 store 설계 - Flux·Redux에서 따른 것과 뺀 것
+title: createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것
 date: 2026-10-26
 category: 개발 기록/MacFolio/설계
+series: desktop-core
+seriesOrder: 5
 summary: MacFolio는 창·로그인·알림 상태를 desktop-core의 createStore로 만들고 React는 useSyncExternalStore로 구독한다. Flux·Redux에서 단방향 흐름과 불변 갱신은 따르고 Action·Dispatcher·단일 store는 뺀 이유, ESLint가 흐름을 강제하는 구조를 정리했다.
 ---
 
@@ -73,7 +75,7 @@ const state = useSyncExternalStore(store.subscribe, store.getState);
 - **store 사이의 순서를 관리하지 않는다.** 창·설정·로그인 store는 서로의 갱신 결과에 의존하지 않아 `waitFor`가 필요한 경우가 없었다.
 - **변경 기록이 없다.** Action이 없으니 Redux DevTools 같은 기록·재생은 할 수 없다. 상태가 작고, 동작은 메서드 단위 시험으로 확인한다.
 
-이 선택은 창 관리를 React 밖으로 옮긴 [#139](https://github.com/hyeoniverse/MacFolio/pull/139)에서 정했다. 당시 Context에 reducer만 분리하는 방법, zustand를 쓰는 방법, 직접 만든 작은 store를 비교했고, 의존성 없이 React 18 기본 API로 구독할 수 있는 마지막 방법을 골랐다([창 관리를 React 밖으로](/memo/desktop-core-windows)). 형태가 Zustand의 vanilla store와 거의 같은 것은 같은 문제(React 밖에 상태를 두고 구독)를 같은 방식으로 풀었기 때문이다.
+이 선택은 창 관리를 React 밖으로 옮긴 [#139](https://github.com/hyeoniverse/MacFolio/pull/139)에서 정했다. 당시 Context에 reducer만 분리하는 방법, zustand를 쓰는 방법, 직접 만든 작은 store를 비교했고, 의존성 없이 React 18 기본 API로 구독할 수 있는 마지막 방법을 골랐다([창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)). 형태가 Zustand의 vanilla store와 거의 같은 것은 같은 문제(React 밖에 상태를 두고 구독)를 같은 방식으로 풀었기 때문이다.
 
 ## 프레임워크 분리가 단방향 흐름을 강제한다
 
@@ -82,11 +84,11 @@ const state = useSyncExternalStore(store.subscribe, store.getState);
 ## 관련 글
 
 - [Flux의 Action·Dispatcher·Store 단방향 흐름에서 찾은 좋은 상태 관리 코드의 세 가지 조건](/memo/flux-pattern): 이 글이 비교하는 Flux·Redux·외부 store의 일반론
-- [창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정 ([#139](https://github.com/hyeoniverse/MacFolio/pull/139))
-- [메모 로직을 desktop-core로 - localStorage는 어디에 둘까](/memo/desktop-core-memo): 같은 store 구조를 메모 로직에 적용
-- [음악 플레이어를 둘로 나누기 - 무엇을 재생할지와 어떻게 재생할지](/memo/desktop-core-music): 재생 상태 store와 오디오 재생의 분리
-- [화면과 서버가 같은 규칙을 쓰기 - 소스는 Vite가, 빌드 결과는 Node가](/memo/desktop-core-shared-rules): core의 규칙을 API 서버도 쓰는 구조
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정 ([#139](https://github.com/hyeoniverse/MacFolio/pull/139))
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 같은 store 구조를 메모 로직에 적용
+- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 재생 상태 store와 오디오 재생의 분리
+- [package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): core의 규칙을 API 서버도 쓰는 구조
 
-[^core-guard]: core에 `import { useState } from 'react'`나 `window.innerWidth`를 넣으면 `tsc`와 ESLint가 오류를 낸다. 세 가지 검사(타입 설정, 의존성 선언, lint)는 [창 관리를 React 밖으로](/memo/desktop-core-windows)의 "core의 React 의존을 막는 세 장치"에 정리했다.
+[^core-guard]: core에 `import { useState } from 'react'`나 `window.innerWidth`를 넣으면 `tsc`와 ESLint가 오류를 낸다. 세 가지 검사(타입 설정, 의존성 선언, lint)는 [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)의 "core의 React 의존을 막는 세 장치"에 정리했다.
 
 #MacFolio #React #상태관리 #아키텍처

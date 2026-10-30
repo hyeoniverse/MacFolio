@@ -1,7 +1,9 @@
 ---
-title: 한 줄에 서식 하나 — 노션 대신 macOS 메모를 따른 이유, 그리고 구분선
+title: 한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기
 date: 2026-10-16
 category: 개발 기록/MacFolio/프론트엔드
+series: 메모 편집기
+seriesOrder: 6
 summary: 메모 편집기에서 목록 항목을 머리말로 바꾸면 반응이 없고, 머리말을 토글로 바꾸면 빈 토글이 추가됐다. 노션 대신 macOS 메모처럼 한 줄에 서식 하나로 정해 선택한 서식으로 그 줄을 변환하고, 구분선 스타일과 --- 저장도 수정했다.
 ---
 
@@ -92,8 +94,8 @@ PR의 변경 규모는 8개 파일, 177줄 추가, 8줄 삭제다. 편집기 코
 
 ## 관련 글
 
-- [메모 편집기 손보기 — 토글 목록·각주](/memo/memo-editor-toggle-footnote)
-- [표 다듬기](/memo/table-polish)
+- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote)
+- [표 다듬기](/memo/table-gap-cursor)
 - [한국어 굵게가 풀리던 문제](/memo/cjk-emphasis)
 
 [^content-expr]: ProseMirror 스키마에서 노드가 담을 수 있는 자식의 종류와 순서를 정규식과 비슷한 문법으로 적은 것. `paragraph block*`은 "문단 하나 다음에 블록 0개 이상"이라는 뜻이다. [ProseMirror Guide: Content Expressions](https://prosemirror.net/docs/guide/#schema.content_expressions)

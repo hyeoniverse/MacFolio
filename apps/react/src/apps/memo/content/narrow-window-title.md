@@ -1,5 +1,5 @@
 ---
-title: 좁은 창에서 신호등 버튼 아래로 - 음악과 Safari
+title: 컨테이너 쿼리 좁은 창에서 flex: none으로 신호등 버튼 영역 확보하기
 date: 2026-10-02
 category: 개발 기록/MacFolio/프론트엔드
 summary: 음악 창을 좁히면 휴대폰 화면으로 바뀌며 보관함 제목이 신호등 버튼에 가려지고 곡 목록에서 돌아갈 방법이 없었다. Safari는 여백 요소가 축소되어 뒤로·앞으로 버튼이 신호등 아래로 들어갔다. 상단에 44px 여백과 flex: none을 지정하고, 앱 9개를 창 폭 5가지로 검사하는 시험을 추가했다.
@@ -123,9 +123,9 @@ expect(covered, `${width}px`).toEqual([]);
 
 ## 관련 글
 
-- [휴대폰 앱들을 메모처럼](/memo/mobile-apps-ios-style)
-- [음악 앱 버그 세 가지](/memo/music-player-fixes)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 [^min-width-auto]: flex 항목은 `min-width`의 기본값 `auto`가 콘텐츠의 최소 크기(줄바꿈할 수 없는 가장 긴 단어나 입력창의 기본 폭)로 계산된다. 그래서 `flex-shrink`가 있어도 그 크기보다 작아지지 않는다. [MDN: min-width](https://developer.mozilla.org/en-US/docs/Web/CSS/min-width)
 

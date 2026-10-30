@@ -1,7 +1,9 @@
 ---
-title: 리팩터링 7단계 — 보안
+title: CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기
 date: 2026-10-18
 category: 개발 기록/MacFolio/품질
+series: 리팩터링
+seriesOrder: 7
 summary: 리팩터링 7단계를 정리한다. 사이트 헤더와 CSP, iframe sandbox, 쓰기 경로의 요청 제한, 의존성 취약점, 액션 고정과 비밀 값 검사를 하나의 기준으로 통일했다. 동작이 바뀌는 작업이라 PR을 분리하고 바뀌는 동작마다 시험을 추가했다.
 ---
 
@@ -36,30 +38,30 @@ API에는 helmet, `httpOnly`·`SameSite=Lax`·`Secure` 쿠키, 해시로 저장�
 
 **프론트엔드**
 
-| 항목                       | PR                                                       | 글                                                                               |
-| -------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| 보안 헤더와 CSP            | [#156](https://github.com/hyeoniverse/MacFolio/pull/156) | [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)                        |
-| iframe sandbox             | [#157](https://github.com/hyeoniverse/MacFolio/pull/157) | [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)                      |
-| HTML 넣는 곳·Markdown 링크 | [#159](https://github.com/hyeoniverse/MacFolio/pull/159) | [글과 README가 스크립트가 되지 않는다는 것을 시험으로](/memo/markdown-xss-tests) |
+| 항목                       | PR                                                       | 글                                                                                           |
+| -------------------------- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 보안 헤더와 CSP            | [#156](https://github.com/hyeoniverse/MacFolio/pull/156) | [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)          |
+| iframe sandbox             | [#157](https://github.com/hyeoniverse/MacFolio/pull/157) | [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)     |
+| HTML 넣는 곳·Markdown 링크 | [#159](https://github.com/hyeoniverse/MacFolio/pull/159) | [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests) |
 
 **API**
 
-| 항목                             | PR                                                       | 글                                                                      |
-| -------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------- |
-| 경로 표와 `AdminGuard`, 400 검증 | [#160](https://github.com/hyeoniverse/MacFolio/pull/160) | [API 경로 64개를 표 하나로 고정하기](/memo/api-route-table-test)        |
-| 요청 제한 한 방식                | [#162](https://github.com/hyeoniverse/MacFolio/pull/162) | [쓰기 경로 33개에 같은 방식으로 요청 제한](/memo/rate-limit-all-writes) |
-| 업로드 EXIF 지우기               | [#163](https://github.com/hyeoniverse/MacFolio/pull/163) | [올린 사진의 EXIF를 지우되 방향은 남기기](/memo/upload-strip-exif)      |
-| 오류 응답·로그 마스킹            | [#167](https://github.com/hyeoniverse/MacFolio/pull/167) | [오류 응답은 감추고, 로그는 가리고](/memo/error-log-masking)            |
-| 미리보기 CORS                    | [#182](https://github.com/hyeoniverse/MacFolio/pull/182) | [PR 미리보기 주소에는 읽기만 열기](/memo/preview-cors-read-only)        |
+| 항목                             | PR                                                       | 글                                                                                                      |
+| -------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 경로 표와 `AdminGuard`, 400 검증 | [#160](https://github.com/hyeoniverse/MacFolio/pull/160) | [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)        |
+| 요청 제한 한 방식                | [#162](https://github.com/hyeoniverse/MacFolio/pull/162) | [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes) |
+| 업로드 EXIF 지우기               | [#163](https://github.com/hyeoniverse/MacFolio/pull/163) | [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)               |
+| 오류 응답·로그 마스킹            | [#167](https://github.com/hyeoniverse/MacFolio/pull/167) | [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)                      |
+| 미리보기 CORS                    | [#182](https://github.com/hyeoniverse/MacFolio/pull/182) | [PR 미리보기 주소에는 읽기만 열기](/memo/preview-cors-read-only)                                        |
 
 **의존성과 CI, 서버**
 
-| 항목                      | PR                                                       | 글                                                                                   |
-| ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 취약점 6건과 `pnpm audit` | [#152](https://github.com/hyeoniverse/MacFolio/pull/152) | [하위 의존성 취약점 6건을 overrides로](/memo/dependency-vulnerabilities)             |
-| 액션 SHA 고정·Dependabot  | [#169](https://github.com/hyeoniverse/MacFolio/pull/169) | [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot) |
-| 비밀 값 스캔              | [#170](https://github.com/hyeoniverse/MacFolio/pull/170) | [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](/memo/secret-scanning)           |
-| 서버 하드닝 점검          | [#183](https://github.com/hyeoniverse/MacFolio/pull/183) | [서버 하드닝은 문서가 아니라 스크립트로](/memo/server-hardening-audit)               |
+| 항목                      | PR                                                       | 글                                                                                                      |
+| ------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| 취약점 6건과 `pnpm audit` | [#152](https://github.com/hyeoniverse/MacFolio/pull/152) | [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities) |
+| 액션 SHA 고정·Dependabot  | [#169](https://github.com/hyeoniverse/MacFolio/pull/169) | [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)       |
+| 비밀 값 스캔              | [#170](https://github.com/hyeoniverse/MacFolio/pull/170) | [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)         |
+| 서버 하드닝 점검          | [#183](https://github.com/hyeoniverse/MacFolio/pull/183) | [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)            |
 
 ![사이트, API, 서버, CI의 계층마다 적용한 보안 설정과 PR 번호](./images/refactor-step7-security-layers.svg '한 계층이 놓쳐도 다음 계층이 차단하도록 계층마다 별도로 적용했다')
 
@@ -135,7 +137,7 @@ npx playwright test e2e/project-apps.spec.ts
 ~/macfolio/ops/audit.sh      # 모두 OK
 ```
 
-각 항목의 상세 내용은 [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers), [서버 하드닝은 문서가 아니라 스크립트로](/memo/server-hardening-audit), [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)에 있다. 코드: [apps/react/worker/securityHeaders.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.ts), [apps/react/src/shared/ui/web-frame/WebFrame.tsx](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/ui/web-frame/WebFrame.tsx), [ops/audit.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/audit.sh).
+각 항목의 상세 내용은 [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers), [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit), [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)에 있다. 코드: [apps/react/worker/securityHeaders.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.ts), [apps/react/src/shared/ui/web-frame/WebFrame.tsx](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/ui/web-frame/WebFrame.tsx), [ops/audit.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/audit.sh).
 
 참고 문서: [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [MDN iframe sandbox](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#sandbox).
 
@@ -145,7 +147,7 @@ npx playwright test e2e/project-apps.spec.ts
 - 저장소 설정의 Secret scanning·Push protection과 Ruleset의 필수 검사는 수동으로 활성화한다.
 - 서버 하드닝은 문서 대신 읽기 전용 스크립트 `ops/audit.sh`로 기록했다.
 
-이후 같은 주제로 Semgrep과 SCA 도구를 사용해 다시 점검했다. 도구가 보고한 7건 중 실제 취약점은 없었다([Semgrep과 SCA 도구로 MacFolio 점검하기 - 7건 중 실제 취약점 0](/memo/security-scan)).
+이후 같은 주제로 Semgrep과 SCA 도구를 사용해 다시 점검했다. 도구가 보고한 7건 중 실제 취약점은 없었다([Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)).
 
 ## 정리
 
@@ -155,12 +157,12 @@ npx playwright test e2e/project-apps.spec.ts
 
 ## 관련 글
 
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [쓰기 경로 33개에 같은 방식으로 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [서버 하드닝은 문서가 아니라 스크립트로 남긴다](/memo/server-hardening-audit)
-- [Semgrep과 SCA 도구로 MacFolio 점검하기 - 7건 중 실제 취약점 0](/memo/security-scan)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
+- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
+- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
 
-- 이전 단계: [리팩터링 6단계 — 서버](/memo/refactor-step6-server)
+- 이전 단계: [책임별 서비스 분리와 공유 zod 스키마로 정리한 서버 코드](/memo/refactor-step6-server)
 - 전체 회고: [리팩터링 계획을 마치며 — 일곱 단계 전후](/memo/refactor-retrospective)
 
 #MacFolio #보안 #CSP #CI

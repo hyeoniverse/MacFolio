@@ -1,7 +1,9 @@
 ---
-title: 1,861줄짜리 데모 파일을 데모마다 한 파일로
+title: 둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기
 date: 2026-10-10
 category: 개발 기록/MacFolio/설계
+series: 모듈 구조
+seriesOrder: 2
 summary: HYEONIVERSE 페이지의 데모 여덟 개와 색 계산이 한 파일(1,861줄)에 있었다. 데모마다 한 파일로 분리하고 둘 이상이 사용하는 코드만 별도 모듈로 추출하자 가장 큰 파일이 401줄이 됐고, 색 계산에는 처음으로 단위 시험 7개가 생겼다.
 ---
 
@@ -106,8 +108,8 @@ cd ../.. && pnpm cycles
 
 ## 관련 글
 
-- [폴더 사이드바와 휴대폰 사진 앱을 조각으로](/memo/split-sidebar-photos): 2단계 두 번째 작업
-- [리팩터링 2단계 — 폴더 구조와 의존](/memo/refactor-step2-structure)
+- [import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/split-sidebar-photos): 2단계 두 번째 작업
+- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
 
 PR: [#189](https://github.com/hyeoniverse/MacFolio/pull/189)
 

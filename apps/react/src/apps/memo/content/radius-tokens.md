@@ -1,7 +1,9 @@
 ---
-title: 모서리 둥글기에 이름 붙이기 — 576곳 중 239곳을 여섯 이름으로
+title: 자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기
 date: 2026-10-16
 category: 개발 기록/MacFolio/디자인 시스템
+series: 디자인 토큰
+seriesOrder: 2
 summary: 576곳에 마흔 가지 넘는 값으로 작성된 border-radius 가운데 자주 쓰는 여섯 값에 --radius-xs~--radius-full 이름을 붙이고 239곳을 교체했다. 값이 같아 화면은 바뀌지 않는다. 사흘 뒤 다시 집계하니 같은 값의 숫자가 115곳 새로 생겨 있었다.
 ---
 
@@ -120,10 +122,10 @@ summary: 576곳에 마흔 가지 넘는 값으로 작성된 border-radius 가운
 
 ## 관련 글
 
-- [z-index 숫자에 이름 붙이기](/memo/z-index-layers)
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](/memo/color-tokens)
-- [그림자와 간격에 이름 붙이기](/memo/shadow-space-tokens)
-- [리팩터링 5단계 — 스타일](/memo/refactor-step5-styles)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
+- [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
+- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
 
 [^custom]: CSS 사용자 지정 속성(CSS 변수)은 `--`로 시작하는 이름에 값을 저장하고 `var(--이름)`으로 참조하는 기능이다. 빌드 도구 없이 브라우저가 실행 시점에 값을 계산한다.
 

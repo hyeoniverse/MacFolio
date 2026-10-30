@@ -1,5 +1,5 @@
 ---
-title: 앱이 많아지자 Dock이 Launchpad와 겹쳤다
+title: 절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치
 date: 2026-10-05
 category: 개발 기록/MacFolio/프론트엔드
 summary: Dock의 Launchpad·휴지통은 절대 위치로 고정되어 있었고 앱 칸 수는 근사식으로 계산했다. 실행 중인 앱 아이콘이 끝에 추가되면 Launchpad 아래로 겹쳤다. Dock을 내용 폭만큼 넓어지는 한 줄 flex로 바꾸고, 칸 수는 CSS와 같은 치수로 계산하는 함수 하나로 통합했다.
@@ -113,7 +113,7 @@ while (shown > 0 && shown + runningOf(shown).length > capacity) shown -= 1;
 
 ## 관련 글
 
-- [API 문서를 사이트 안의 앱으로](/memo/api-docs-app): 이 수정이 함께 들어간 PR의 본 작업
-- [바탕화면 아이콘 - 선택, 끌기, 칸 맞춤](/memo/desktop-icons): 같은 칸 계산 방식을 쓴 바탕화면 아이콘
+- [Vite 두 번째 진입점과 iframe으로 Scalar API 문서 격리하기](/memo/api-docs-app): 이 수정이 함께 들어간 PR의 본 작업
+- [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons): 같은 칸 계산 방식을 쓴 바탕화면 아이콘
 
 #MacFolio #데스크톱 #Dock

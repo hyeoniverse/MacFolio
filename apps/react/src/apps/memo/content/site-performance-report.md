@@ -1,13 +1,15 @@
 ---
-title: 성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로
+title: 휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트
 date: 2026-10-22
 category: 개발 기록/MacFolio/품질
+series: 성능 최적화
+seriesOrder: 1
 summary: 사이트의 첫 방문 성능을 Lighthouse로 측정했다. 휴대폰 55점(LCP 25.7초), 데스크톱 62점(LCP 5.8초)에 첫 방문마다 5~9MB를 전송하고 있었다. 세 차례 개선한 뒤 다시 측정하니 78~87점·98점, 0.5~0.8MB가 되었다. 운영 사이트 측정값도 정리했다.
 ---
 
 바탕화면 위젯을 추가한 뒤, 휴대폰으로 사이트에 처음 접속하면 로딩 화면이 표시되기 전까지 검은 화면이 오래 유지되었다. 이 지연을 수치로 확인하려고 [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview)로 첫 방문 성능을 측정했다.
 
-결론부터 적는다. 휴대폰은 Lighthouse 55점에 LCP(최대 콘텐츠가 렌더링되기까지)가 25.7초, 데스크톱은 62점에 5.8초였다. 첫 방문마다 휴대폰은 4.9MB, 데스크톱은 9MB를 전송했다. 원인을 세 차례에 걸쳐 개선한 뒤([#319](https://github.com/hyeoniverse/MacFolio/pull/319) 1차, [#323](https://github.com/hyeoniverse/MacFolio/pull/323) 2·3차) 같은 조건으로 다시 측정했다. 개선 과정은 [첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)에, 3차까지 배포된 운영 사이트의 재측정은 [성능 재측정](/memo/site-performance-remeasure)에 따로 정리했다.
+결론부터 적는다. 휴대폰은 Lighthouse 55점에 LCP(최대 콘텐츠가 렌더링되기까지)가 25.7초, 데스크톱은 62점에 5.8초였다. 첫 방문마다 휴대폰은 4.9MB, 데스크톱은 9MB를 전송했다. 원인을 세 차례에 걸쳐 개선한 뒤([#319](https://github.com/hyeoniverse/MacFolio/pull/319) 1차, [#323](https://github.com/hyeoniverse/MacFolio/pull/323) 2·3차) 같은 조건으로 다시 측정했다. 개선 과정은 [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)에, 3차까지 배포된 운영 사이트의 재측정은 [성능 재측정](/memo/site-performance-remeasure)에 따로 정리했다.
 
 <details>
 <summary>용어 정리: FCP, LCP, TBT, CLS</summary>
@@ -150,8 +152,8 @@ LCP가 늦은 원인도 둘로 나뉘었다.
 
 ## 관련 글
 
-- [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](/memo/site-performance-diet)
-- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](/memo/site-performance-remeasure)
-- [바탕화면과 홈 화면에 위젯 — 칸 격자, 같이 쓰는 부품, 한 번만 묻는 날씨](/memo/desktop-widgets)
+- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)
+- [Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기](/memo/site-performance-remeasure)
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
 
 #MacFolio #성능 #Lighthouse #웹폰트 #코드분할

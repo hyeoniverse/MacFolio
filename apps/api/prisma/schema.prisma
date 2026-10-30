@@ -113,6 +113,10 @@ model Post {
   date             String?
   /// 폴더 경로 (예: 개발기/MacFolio)
   category         String?
+  /// 연재 이름. 같은 이름의 글을 묶는다. null이면 연재가 아닌 글 (게시한 내용이 있어도 null일 수 있다)
+  series           String?
+  /// 연재 안의 순서 (1 이상). null이면 순서를 적은 글 뒤에 날짜 순
+  seriesOrder      Int?
   summary          String?
   /// Markdown 본문
   body             String?
@@ -123,6 +127,9 @@ model Post {
   draftTitle       String?
   draftDate        String?
   draftCategory    String?
+  /// 임시 저장의 연재 이름. 임시 저장이 있을 때(draftTitle이 있을 때) null이면 연재에서 뺀 것
+  draftSeries      String?
+  draftSeriesOrder Int?
   draftSummary     String?
   draftBody        String?
   draftUpdatedAt   DateTime?
@@ -147,6 +154,9 @@ model PostRevision {
   title     String
   date      String
   category  String
+  /// 연재 이름. 연재가 아니었거나 이 열을 두기 전의 버전이면 null
+  series      String?
+  seriesOrder Int?
   summary   String
   body      String
   createdAt DateTime @default(now())

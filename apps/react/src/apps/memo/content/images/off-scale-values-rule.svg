@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 540" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="540" fill="#fff"/>
+<text x="380.0" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">Stylelint가 막는 px 값: #280(이름 있는 값만) → #296(단계 범위 안 전부)</text>
+<text x="380.0" y="44" font-size="11" fill="#6b7280" text-anchor="middle">빨강은 lint 오류, 초록은 허용. 위 줄은 #296 이전, 아래 줄은 #296 이후 (apps/react/stylelint.config.mjs)</text>
+<rect x="20" y="70" width="720" height="140" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="36" y="96" font-size="13" fill="#1f2937" font-weight="600">간격</text>
+<text x="36" y="114" font-size="10" fill="#6b7280">gap·padding·margin</text>
+<text x="178" y="114" font-size="11" fill="#4b5563" text-anchor="end">전</text>
+<line x1="190" y1="110" x2="720" y2="110" stroke="#d1d5db" stroke-width="2"/>
+<circle cx="219.4" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="248.9" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="278.3" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="307.8" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="337.2" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="366.7" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="396.1" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="425.6" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="484.4" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="543.3" cy="110" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<text x="190" y="130" font-size="10.5" fill="#4b5563">토큰과 같은 값 10개만, 값이 하나뿐인 선언(^…px$)만 · 그 사이 값과 단축 속성(5px 1px)은 통과</text>
+<text x="178" y="166" font-size="11" fill="#4b5563" text-anchor="end">후</text>
+<line x1="190" y1="162" x2="720" y2="162" stroke="#d1d5db" stroke-width="2"/>
+<rect x="219.4" y="156" width="338.6" height="12" rx="6" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="190.0" cy="162" r="5" fill="#6ee7b7" stroke="#065f46"/>
+<rect x="204.7" y="156" width="10.0" height="12" rx="6" fill="#6ee7b7" stroke="#065f46"/>
+<rect x="572.8" y="156" width="147.2" height="12" rx="6" fill="#6ee7b7" stroke="#065f46"/>
+<text x="190" y="184" font-size="10.5" fill="#4b5563">2~25px는 위치와 상관없이 모두 오류 (단축 속성 안의 값 포함)</text>
+<rect x="20" y="220" width="720" height="140" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="36" y="246" font-size="13" fill="#1f2937" font-weight="600">모서리</text>
+<text x="36" y="264" font-size="10" fill="#6b7280">border-radius</text>
+<text x="178" y="264" font-size="11" fill="#4b5563" text-anchor="end">전</text>
+<line x1="190" y1="260" x2="720" y2="260" stroke="#d1d5db" stroke-width="2"/>
+<circle cx="248.9" cy="260" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="278.3" cy="260" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="307.8" cy="260" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="337.2" cy="260" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="396.1" cy="260" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="513.9" cy="260" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<text x="190" y="280" font-size="10.5" fill="#4b5563">토큰과 같은 값 6개만, 값이 하나뿐인 선언(^…px$)만 · 그 사이 값과 단축 속성(5px 1px)은 통과</text>
+<text x="178" y="316" font-size="11" fill="#4b5563" text-anchor="end">후</text>
+<line x1="190" y1="312" x2="720" y2="312" stroke="#d1d5db" stroke-width="2"/>
+<rect x="234.2" y="306" width="338.6" height="12" rx="6" fill="#fca5a5" stroke="#991b1b"/>
+<rect x="204.7" y="306" width="14.7" height="12" rx="6" fill="#6ee7b7" stroke="#065f46"/>
+<rect x="587.5" y="306" width="132.5" height="12" rx="6" fill="#6ee7b7" stroke="#065f46"/>
+<text x="190" y="334" font-size="10.5" fill="#4b5563">3~26px는 위치와 상관없이 모두 오류 (단축 속성 안의 값 포함)  · 980·999px도 막음</text>
+<rect x="20" y="370" width="720" height="140" rx="8" fill="#f9fafb" stroke="#e5e7eb"/>
+<text x="36" y="396" font-size="13" fill="#1f2937" font-weight="600">글자</text>
+<text x="36" y="414" font-size="10" fill="#6b7280">font-size</text>
+<text x="178" y="414" font-size="11" fill="#4b5563" text-anchor="end">전</text>
+<line x1="190" y1="410" x2="720" y2="410" stroke="#d1d5db" stroke-width="2"/>
+<circle cx="351.9" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="366.7" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="381.4" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="410.8" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="425.6" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="440.3" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="484.4" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<circle cx="513.9" cy="410" r="5" fill="#fca5a5" stroke="#991b1b"/>
+<text x="190" y="430" font-size="10.5" fill="#4b5563">토큰과 같은 값 8개만, 값이 하나뿐인 선언(^…px$)만 · 그 사이 값과 단축 속성(5px 1px)은 통과</text>
+<text x="178" y="466" font-size="11" fill="#4b5563" text-anchor="end">후</text>
+<line x1="190" y1="462" x2="720" y2="462" stroke="#d1d5db" stroke-width="2"/>
+<rect x="351.9" y="456" width="353.3" height="12" rx="6" fill="#fca5a5" stroke="#991b1b"/>
+<rect x="278.3" y="456" width="58.9" height="12" rx="6" fill="#6ee7b7" stroke="#065f46"/>
+<circle cx="720.0" cy="462" r="5" fill="#6ee7b7" stroke="#065f46"/>
+<text x="190" y="484" font-size="10.5" fill="#4b5563">11~35px는 위치와 상관없이 모두 오류 (단축 속성 안의 값 포함)</text>
+<text x="190.0" y="518" font-size="10" fill="#6b7280" text-anchor="middle">0px</text>
+<text x="248.9" y="518" font-size="10" fill="#6b7280" text-anchor="middle">4px</text>
+<text x="307.8" y="518" font-size="10" fill="#6b7280" text-anchor="middle">8px</text>
+<text x="366.7" y="518" font-size="10" fill="#6b7280" text-anchor="middle">12px</text>
+<text x="425.6" y="518" font-size="10" fill="#6b7280" text-anchor="middle">16px</text>
+<text x="484.4" y="518" font-size="10" fill="#6b7280" text-anchor="middle">20px</text>
+<text x="543.3" y="518" font-size="10" fill="#6b7280" text-anchor="middle">24px</text>
+<text x="602.2" y="518" font-size="10" fill="#6b7280" text-anchor="middle">28px</text>
+<text x="661.1" y="518" font-size="10" fill="#6b7280" text-anchor="middle">32px</text>
+<text x="720.0" y="518" font-size="10" fill="#6b7280" text-anchor="middle">36px</text>
+</svg>

@@ -1,5 +1,5 @@
 ---
-title: 이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름
+title: httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기
 date: 2026-10-02
 category: 개발 기록/MacFolio/백엔드
 summary: 메시지와 댓글에서 이름·비밀번호 입력 칸을 제거했다. 서버가 처음 방문한 브라우저에 httpOnly 쿠키를 발급하고, 그 HMAC 해시로 "🦊 날쌘 여우" 같은 이름(720가지)을 정한다. 삭제 권한도 쿠키를 기준으로 판단하고, 메시지 앱은 처음으로 서버에 저장한다.
@@ -90,7 +90,7 @@ export function visitorName(hexHash: string): string {
 repository = env.apiUrl ? createApiConversationRepository(env.apiUrl) : createLocalConversationRepository(visitorId());
 ```
 
-이 선택 방식은 이후 `VITE_MESSAGES_STORE` 환경 변수로 바뀌었다([서버가 없으면 메시지 앱을 열지 않기](/memo/messages-offline)).
+이 선택 방식은 이후 `VITE_MESSAGES_STORE` 환경 변수로 바뀌었다([첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)).
 
 서버는 피드백(`MessageThread`)과 말풍선(`GuestMessage`)을 저장한다. 사이트 주인의 고정 안내 글은 프론트엔드 코드에 그대로 두고, 서버에는 그 글에 단 답글만 저장한다(`threadId`가 빈 글). 서버를 사용하지 않을 때는 이전처럼 브라우저에 저장하는데, 이때도 브라우저 id로 같은 방식의 이름을 정한다. 그래서 이름 재료 목록이 서버와 프론트엔드 두 곳에 있다.
 
@@ -155,9 +155,9 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 관련 글
 
-- [댓글에 남기지 않은 것들](/memo/post-comments)
-- [서버 저장소와 로컬 저장소가 같은 모양을 쓰게 — 메시지 도메인 옮기기](/memo/contracts-messages)
-- [서버가 없으면 메시지 앱을 열지 않기 - 저장소를 .env로 고르기](/memo/messages-offline)
+- [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
+- [zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)
+- [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
 
 PR: [#69](https://github.com/hyeoniverse/MacFolio/pull/69)
 

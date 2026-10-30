@@ -34,7 +34,11 @@ export interface Organization {
 export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
 
 /** 글 길이 (글자 수) */
-export const POST_LIMITS = { title: 100, summary: 200, body: 50_000 } as const;
+export const POST_LIMITS = { title: 100, series: 40, seriesOrder: 999, summary: 200, body: 50_000 } as const;
+
+/** 연재 순서 번호로 쓸 수 있는 값: 1부터 POST_LIMITS.seriesOrder까지의 정수 */
+export const isSeriesOrder = (value: unknown): value is number =>
+	Number.isInteger(value) && (value as number) >= 1 && (value as number) <= POST_LIMITS.seriesOrder;
 
 /** 실제로 있는 날짜인지 (YYYY-MM-DD, 2026-02-30 같은 날짜는 거절) */
 export function isCalendarDate(value: string): boolean {

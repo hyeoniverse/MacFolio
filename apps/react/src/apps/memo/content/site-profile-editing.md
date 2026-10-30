@@ -1,7 +1,9 @@
 ---
-title: 코드를 수정하지 않고 프로필 바꾸기
+title: 코드 상수였던 사이트 프로필을 행 하나짜리 테이블로 옮겨 편집하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
+series: 사이트 편집
+seriesOrder: 1
 summary: 이름·이메일·GitHub 주소가 코드 상수라 이 저장소로 사이트를 배포하려면 코드를 수정해야 했다. 프로필을 행 하나짜리 테이블에 저장하고 관리자가 시스템 설정에서 편집하게 했으며, 상수를 읽던 15개 파일이 프로필 저장소를 읽도록 바꿨다.
 ---
 
@@ -152,7 +154,7 @@ export const PINNED_MESSAGES = [{ text: '안녕하세요, 김정현입니다 �
 - 화면은 처음에 코드의 기본값으로 렌더링한 뒤 서버의 프로필이 도착하면 갱신한다. 저장한 값이 기본값과 다르면 첫 렌더링 시각에 기본 이름이 잠시 표시될 수 있다.
 - 모듈 평가 시각에 계산하는 상수는 편하지만, 나중에 바뀔 수 있는 값과 섞이면 원인을 찾기 어려운 버그가 된다. 바뀔 수 있는 값은 상수 대신 함수로 정의하고 사용하는 시각에 읽는다.
 - 서버와 화면이 같은 검사 함수를 사용하므로, 화면은 전송 전에 서버와 같은 이유를 표시하고 서버는 같은 이유로 거절한다. 두 쪽의 규칙이 어긋나지 않는다.
-- 테이블 이름을 `SiteContent`로 넓게 정한 결정은 바로 다음 작업에서 쓰였다. 프로젝트 내용도 같은 테이블에 저장했다([코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing)).
+- 테이블 이름을 `SiteContent`로 넓게 정한 결정은 바로 다음 작업에서 쓰였다. 프로젝트 내용도 같은 테이블에 저장했다([코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)).
 
 ## 따라 하는 방법
 
@@ -177,9 +179,9 @@ curl -s https://api.github.com/users/<로그인 이름> | grep '"id"'
 
 ## 관련 글
 
-- [코드를 고치지 않고 프로젝트와 앱 관리하기](/memo/site-projects-editing)
-- [이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리](/memo/contracts-site)
-- [1,629줄 한 파일을 폴더로 — 프로젝트마다 한 파일, 경로는 그대로](/memo/profile-split)
-- [GitHub 앱을 진짜 GitHub로 - 프로필·README·고른 저장소](/memo/github-live-profile)
+- [코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)
+- [parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
+- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
 
 #MacFolio #백엔드 #프론트엔드 #NestJS #Prisma #상태관리

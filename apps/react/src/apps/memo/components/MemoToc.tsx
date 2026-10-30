@@ -178,6 +178,7 @@ const MemoToc = ({
 					aria-controls={listId}
 					onClick={inline.toggle}
 				>
+					<i className="fa-solid fa-list-ul memo-toc-icon" aria-hidden="true" />
 					목차
 					<i className="fa-solid fa-chevron-down memo-toc-chevron" aria-hidden="true" />
 				</button>

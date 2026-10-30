@@ -92,7 +92,7 @@ test.describe('메모 (블로그)', () => {
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('Fast Refresh');
 		// 다른 배포·운영 글도 Fast Refresh를 말할 수 있어 개수 대신 그 글이 남는지 본다
 		await expect(items.filter({ hasText: 'CRA에서 Vite로 옮기기' })).toHaveCount(1);
-		await expect(items.filter({ hasText: '글에서 지운 이미지는 서버에 남는다' })).toHaveCount(0);
+		await expect(items.filter({ hasText: '참조 위치 API로 쓰는 곳 없는 서버 파일' })).toHaveCount(0);
 
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('존재하지 않는 검색어');
 		await expect(memo.getByText('검색 결과가 없습니다.')).toBeVisible();
@@ -128,10 +128,10 @@ test.describe('메모 (블로그)', () => {
 	});
 
 	test('본문의 바깥 링크는 새 탭으로, 다른 글 링크는 메모 앱 안에서 그 글로', async ({ page }) => {
-		await enterDesktop(page, '/memo/r2-backup-setup');
+		await enterDesktop(page, '/memo/db-backup');
 		const memo = appWindow(page, 'memo');
 		const article = memo.getByRole('article');
-		await expect(article.getByRole('heading', { level: 1 })).toHaveText(/R2에 DB 백업 걸기/);
+		await expect(article.getByRole('heading', { level: 1 })).toHaveText('pg_dump와 R2로 하는 DB 백업과 복원 시험');
 
 		// 바깥 링크는 새 탭
 		const outside = article.getByRole('link', { name: 'healthchecks.io' }).first();
@@ -139,15 +139,15 @@ test.describe('메모 (블로그)', () => {
 		await expect(outside).toHaveAttribute('rel', /noopener/);
 
 		// 다른 글 링크: 새 탭 없이 같은 메모 앱에서 그 글이 열리고, 주소 막대도 그 글로
-		const inside = article.getByRole('link', { name: '백업 스크립트' });
-		await expect(inside).toHaveAttribute('href', '/memo/db-backup');
+		const inside = article.getByRole('link', { name: '되돌리기 훈련', exact: true });
+		await expect(inside).toHaveAttribute('href', '/memo/rollback-drill');
 		await expect(inside).not.toHaveAttribute('target', '_blank');
 		const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
 		await inside.click();
 		await expect(memo.getByRole('article').getByRole('heading', { level: 1 })).toHaveText(
-			'글이 DB에만 있게 되어서 백업을 붙였다'
+			'HEALTHCHECK가 실패하는 이미지로 자동 배포 롤백 훈련하기'
 		);
-		await expect(page).toHaveURL(/\/memo\/db-backup$/);
+		await expect(page).toHaveURL(/\/memo\/rollback-drill$/);
 		expect(await popup).toBeNull();
 	});
 
@@ -216,7 +216,7 @@ test.describe('메모 (블로그)', () => {
 
 	test('코드 블록은 문법 강조가 된다', async ({ page }) => {
 		const memo = await openMemo(page);
-		await memo.locator('.memo-item', { hasText: '테스트를 붙이자' }).click();
+		await memo.locator('.memo-item', { hasText: '리팩터링 전 E2E 시험 10개' }).click();
 		const code = memo.getByRole('article').locator('pre code').first();
 		await expect(code).toHaveClass(/hljs/);
 		await expect(code.locator('.hljs-keyword').first()).toBeVisible();
@@ -225,7 +225,8 @@ test.describe('메모 (블로그)', () => {
 	test('정렬 기준·순서와 날짜별 그룹화를 바꾸고, 다시 열어도 그대로다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const list = memo.getByRole('region', { name: '글 목록' });
-		const titles = () => list.locator('.memo-item strong').allTextContents();
+		const titlesOf = (region: typeof list) => region.locator('.memo-item strong').allTextContents();
+		const titles = () => titlesOf(list);
 		const openSortMenu = async () => {
 			await memo.getByRole('button', { name: '정렬과 그룹화' }).click();
 			return page.getByRole('menu', { name: '정렬과 그룹화' });
@@ -256,9 +257,7 @@ test.describe('메모 (블로그)', () => {
 		// 이 브라우저에 저장되어 다시 열어도 그대로
 		await page.reload();
 		const again = await openMemo(page);
-		await expect
-			.poll(() => again.getByRole('region', { name: '글 목록' }).locator('.memo-item strong').allTextContents())
-			.toEqual([...byTitle].reverse());
+		await expect.poll(() => titlesOf(again.getByRole('region', { name: '글 목록' }))).toEqual([...byTitle].reverse());
 	});
 
 	test('본문 아래의 이전 글·다음 글로 날짜 순으로 옮겨 다닌다', async ({ page }) => {
@@ -463,7 +462,7 @@ test('접기 블록: 처음엔 접혀 있고, 요약을 누르거나 본문 링�
 
 test('글 안의 저장소 문서 링크(GitHub의 docs/*.md)는 텍스트 편집기에서 그 문서를 연다', async ({ page }) => {
 	const memo = await openMemo(page);
-	await memo.locator('.memo-item', { hasText: 'MacFolio 백엔드 한 장으로 보기' }).click();
+	await memo.locator('.memo-item', { hasText: 'MacFolio 백엔드 구성도' }).click();
 	const popup = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
 	await memo.locator('.memo-markdown').getByRole('link', { name: 'docs/backend-design.md' }).first().click();
 	const editor = appWindow(page, 'textedit');

@@ -55,9 +55,9 @@ test.describe('메모 뒤로·앞으로', () => {
 	test('폴더를 옮긴 것도 기록되고, 길게 누르면 지난 칸 목록에서 골라 간다', async ({ page }) => {
 		const memo = await openMemo(page);
 		const first = await openNth(memo, 0);
-		// 본문 머리의 폴더 (날짜 · 개발 기록 › MacFolio › …): 목록의 둘째 줄도 이 폴더여야 한다 ('모든 글'이 아니라)
+		// 본문 머리의 폴더 (날짜 · 인사이트, 날짜 · 개발 기록 › MacFolio › …): 목록의 둘째 줄도 이 폴더여야 한다 ('모든 글'이 아니라)
 		const firstFolder = ((await memo.locator('.memo-reader-date').first().textContent()) ?? '').split(' · ')[1].trim();
-		expect(firstFolder).toContain(' › ');
+		expect(firstFolder).not.toBe('');
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
 		await folders.locator('li[data-folder-path="개발 기록/MacFolio/회고"] > .memo-folder-row .memo-folder').click();
 		const retro = await openNth(memo, 1);

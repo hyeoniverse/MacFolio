@@ -340,6 +340,11 @@ Flux가 2014년에 제시한 핵심은 라이브러리보다 규칙이었다. 12
 
 2026년의 수치는 이 기준의 방향과 일치한다. 서버 상태 라이브러리(TanStack Query, redux 대비 1.54배)와 store action 방식(zustand, 1.24배)의 다운로드가 늘었고, 설문 응답자의 33.8%는 상태 관리 라이브러리 없이 개발한다. 앞으로 TC39 Signals 제안이 Stage 2 이상으로 진행되면 조건 3을 언어 수준에서 지원하게 되고, 컴포넌트 단위로 다시 렌더링하는 React의 방식도 다시 논의될 수 있다. 어느 경우에도 좋은 상태 관리 코드를 판단하는 기준은 세 가지 조건으로 유지될 것이다.
 
+## 관련 글
+
+- [createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design): 세 가지 조건을 MacFolio의 창 관리 store에 적용한 개발기
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
+
 [^npm]: [npm registry downloads API](https://github.com/npm/registry/blob/main/docs/download-counts.md). `https://api.npmjs.org/downloads/range/<기간>/<패키지>`로 일별 다운로드를 받아 분기별로 합산했다(2026년 10월 29일 조회).
 
 #React #상태관리 #아키텍처 #트렌드 #인사이트

@@ -5,7 +5,7 @@ import { fakeApi, type FakeComment } from './fakeApi';
 
 const CRA = 'CRA에서 Vite로 옮기기';
 const EDITOR = 'Markdown 블로그에 글쓰기 붙이기';
-const MONITOR = '무료 서버가 회수되기 전에 - 사용률을 재고 위험하면 메일로';
+const MONITOR = 'Oracle Always Free 회수를 막는 /proc 사용률 측정과 위험 메일 알림';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);
@@ -96,11 +96,14 @@ test.describe('인기글', () => {
 
 		const items = memo.locator('.memo-list .memo-item');
 		await expect(items).toHaveCount(3);
-		await expect(items.nth(0)).toContainText(`1${CRA}`);
+		await expect(items.nth(0).locator('.memo-item-rank')).toHaveText('1');
+		await expect(items.nth(0)).toContainText(CRA);
 		await expect(items.nth(0).locator('.memo-item-meta')).toHaveText('조회 42');
-		await expect(items.nth(1)).toContainText(`2${EDITOR}`);
+		await expect(items.nth(1).locator('.memo-item-rank')).toHaveText('2');
+		await expect(items.nth(1)).toContainText(EDITOR);
 		await expect(items.nth(1).locator('.memo-item-meta')).toHaveText('조회 7 · 댓글 3');
-		await expect(items.nth(2)).toContainText(`3${MONITOR}`);
+		await expect(items.nth(2).locator('.memo-item-rank')).toHaveText('3');
+		await expect(items.nth(2)).toContainText(MONITOR);
 		await expect(items.nth(2).locator('.memo-item-meta')).toHaveText('좋아요 7');
 		// 날짜별 묶음·고정 묶음 없이 순위 그대로
 		await expect(memo.locator('.memo-list .memo-section-title')).toHaveCount(0);
@@ -108,9 +111,11 @@ test.describe('인기글', () => {
 		// 3위 글에 좋아요 → 21 + 3 = 24 > 22: 2위로
 		await items.nth(2).click();
 		await memo.getByRole('button', { name: '이 글 좋아요 7개' }).click();
-		await expect(items.nth(1)).toContainText(`2${MONITOR}`);
+		await expect(items.nth(1).locator('.memo-item-rank')).toHaveText('2');
+		await expect(items.nth(1)).toContainText(MONITOR);
 		await expect(items.nth(1).locator('.memo-item-meta')).toHaveText('좋아요 8');
-		await expect(items.nth(2)).toContainText(`3${EDITOR}`);
+		await expect(items.nth(2).locator('.memo-item-rank')).toHaveText('3');
+		await expect(items.nth(2)).toContainText(EDITOR);
 	});
 
 	test('인기글이 아닌 목록 줄과 본문 위 날짜 줄에도 조회수를 보인다', async ({ page }) => {

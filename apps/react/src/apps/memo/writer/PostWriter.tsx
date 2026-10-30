@@ -13,6 +13,7 @@ import { env } from '@/shared/config/env';
 import DatePicker from '@/shared/ui/date/DatePicker';
 import Button from '@/shared/ui/button/Button';
 import SecretBadge from '../components/SecretBadge';
+import SeriesPicker from './SeriesPicker';
 import MemoToc from '../components/MemoToc';
 import { useTocHeadings } from '../useTocHeadings';
 
@@ -43,6 +44,8 @@ interface Props {
 	/** 게시한 내용이나 저장소 원본이 있는지 (있으면 '변경 사항 버리기'로 돌아갈 곳이 있다) */
 	hasPublished: boolean;
 	folders: string[];
+	/** 연재 고르기 목록: 글에 쓰인 연재 이름 */
+	seriesNames: string[];
 	/** 새 메모의 폴더 */
 	defaultFolder: string;
 	/** 임시 저장·게시할 때마다: 서버가 돌려준 글 */
@@ -57,6 +60,8 @@ interface Props {
 	onLeaveFolder?: () => void;
 	/** 한 칸씩 보는 좁은 화면 (목차의 떠 있는 버튼을 쓰지 않는다) */
 	compact?: boolean;
+	/** 제목 아래에 둘 연재 상자 (읽기 화면과 같은 SeriesBox). 연재 글이 아니거나 새 메모면 없다 */
+	series?: React.ReactNode;
 	ref?: React.Ref<PostWriterHandle>;
 }
 
@@ -121,6 +126,7 @@ const PostWriter = ({
 	post,
 	hasPublished,
 	folders,
+	seriesNames,
 	defaultFolder,
 	onSaved,
 	onDiscarded,
@@ -128,11 +134,20 @@ const PostWriter = ({
 	onDraftChange,
 	onLeaveFolder,
 	compact = false,
+	series,
 	ref,
 }: Props) => {
 	const [draft, setDraft] = useState<PostDraft>(() =>
 		post
-			? { title: post.title, date: post.date, category: post.category, summary: post.summary, body: post.body }
+			? {
+					title: post.title,
+					date: post.date,
+					category: post.category,
+					...(post.series && { series: post.series }),
+					...(post.seriesOrder && { seriesOrder: post.seriesOrder }),
+					summary: post.summary,
+					body: post.body,
+				}
 			: { title: '', date: today(), category: defaultFolder, summary: '', body: '' }
 	);
 	const [status, setStatus] = useState<Status>({ kind: 'idle' });
@@ -341,6 +356,17 @@ const PostWriter = ({
 					</Button>
 				</span>
 			</div>
+			{/* 연재: 읽기 화면의 연재 표시와 같은 자리(제목 바로 위) */}
+			<div className="memo-writer-series">
+				<SeriesPicker
+					value={draft.series}
+					order={draft.seriesOrder}
+					names={seriesNames}
+					// 연재에서 빼면 순서도 지운다
+					onChange={(series) => change(series ? { series } : { series: undefined, seriesOrder: undefined })}
+					onOrderChange={(seriesOrder) => change({ seriesOrder })}
+				/>
+			</div>
 			<textarea
 				ref={titleRef}
 				className="memo-writer-title"
@@ -358,6 +384,7 @@ const PostWriter = ({
 					}
 				}}
 			/>
+			{series}
 			<MemoToc toc={toc} bodyRef={bodyRef} revision={draft.body} compact={compact} editor />
 			<div ref={bodyRef} className="memo-writer-body">
 				<Suspense fallback={<div className="prose memo-markdown">{renderMarkdown(draft.body)}</div>}>

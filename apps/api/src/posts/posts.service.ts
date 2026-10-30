@@ -22,7 +22,15 @@ type Row = Prisma.PostGetPayload<{ include: { _count: { select: { revisions: tru
 const publishedOf = (row: Row): PostInput | null =>
 	row.title === null
 		? null
-		: { title: row.title, date: row.date!, category: row.category!, summary: row.summary ?? '', body: row.body! };
+		: {
+				title: row.title,
+				date: row.date!,
+				category: row.category!,
+				...(row.series && { series: row.series }),
+				...(row.seriesOrder && { seriesOrder: row.seriesOrder }),
+				summary: row.summary ?? '',
+				body: row.body!,
+			};
 
 const draftOf = (row: Row): PostInput | null =>
 	row.draftTitle === null
@@ -31,6 +39,8 @@ const draftOf = (row: Row): PostInput | null =>
 				title: row.draftTitle,
 				date: row.draftDate!,
 				category: row.draftCategory!,
+				...(row.draftSeries && { series: row.draftSeries }),
+				...(row.draftSeriesOrder && { seriesOrder: row.draftSeriesOrder }),
 				summary: row.draftSummary ?? '',
 				body: row.draftBody!,
 			};
@@ -54,6 +64,8 @@ const draftFields = (input: PostInput) => ({
 	draftTitle: input.title,
 	draftDate: input.date,
 	draftCategory: input.category,
+	draftSeries: input.series ?? null,
+	draftSeriesOrder: input.series ? (input.seriesOrder ?? null) : null,
 	draftSummary: input.summary,
 	draftBody: input.body,
 	draftUpdatedAt: new Date(),
@@ -63,12 +75,33 @@ const NO_DRAFT = {
 	draftTitle: null,
 	draftDate: null,
 	draftCategory: null,
+	draftSeries: null,
+	draftSeriesOrder: null,
 	draftSummary: null,
 	draftBody: null,
 	draftUpdatedAt: null,
 };
 
-const NO_PUBLISHED = { title: null, date: null, category: null, summary: null, body: null, publishedAt: null };
+const NO_PUBLISHED = {
+	title: null,
+	date: null,
+	category: null,
+	series: null,
+	seriesOrder: null,
+	summary: null,
+	body: null,
+	publishedAt: null,
+};
+
+/**
+ * 게시한 내용·버전에 넣을 열. 연재가 아니면 series·seriesOrder를 null로 적어 이전 게시의 연재를 지운다
+ * (undefined면 Prisma가 열을 그대로 둔다). 연재 이름 없이 온 순서는 버린다
+ */
+const contentFields = (input: PostInput) => ({
+	...input,
+	series: input.series ?? null,
+	seriesOrder: input.series ? (input.seriesOrder ?? null) : null,
+});
 
 const WITH_COUNT = { _count: { select: { revisions: true } } } as const;
 
@@ -109,6 +142,8 @@ export class PostsService {
 				title: row.title!,
 				date: row.date!,
 				category: row.category!,
+				...(row.series && { series: row.series }),
+				...(row.seriesOrder && { seriesOrder: row.seriesOrder }),
 				summary: row.summary ?? '',
 				body: row.body!,
 				deleted: false,
@@ -176,7 +211,7 @@ export class PostsService {
 		this.checkSlug(slug);
 		await this.checkUnlocked(slug);
 		const value = this.parse(input);
-		const published = { ...value, publishedAt: new Date() };
+		const published = { ...contentFields(value), publishedAt: new Date() };
 		const row = await this.prisma.$transaction(async (tx) => {
 			await tx.post.upsert({
 				where: { slug },
@@ -188,7 +223,7 @@ export class PostsService {
 				where: { slug, firstPublishedAt: null },
 				data: { firstPublishedAt: published.publishedAt },
 			});
-			await tx.postRevision.create({ data: { postSlug: slug, ...value, createdBy: admin } });
+			await tx.postRevision.create({ data: { postSlug: slug, ...contentFields(value), createdBy: admin } });
 			// 오래된 버전은 지운다
 			const old = await tx.postRevision.findMany({
 				where: { postSlug: slug },
@@ -326,7 +361,18 @@ export class PostsService {
 			? await this.prisma.postRevision.findFirst({ where: { id, postSlug: slug } })
 			: null;
 		if (!row) throw new NotFoundException('버전이 없습니다.');
-		const { title, date, category, summary, body, createdAt, createdBy } = row;
-		return { id, title, date, category, summary, body, createdAt: createdAt.toISOString(), createdBy };
+		const { title, date, category, series, seriesOrder, summary, body, createdAt, createdBy } = row;
+		return {
+			id,
+			title,
+			date,
+			category,
+			...(series && { series }),
+			...(seriesOrder && { seriesOrder }),
+			summary,
+			body,
+			createdAt: createdAt.toISOString(),
+			createdBy,
+		};
 	}
 }

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="520" fill="#fff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1e3a8a"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#065f46"/></marker></defs>
+<text x="380.0" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">둘러보기의 비추기 구조: 덮개는 그리기만 하고 클릭은 아래로 통과시킨다</text>
+<text x="380.0" y="44" font-size="11" fill="#6b7280" text-anchor="middle">왼쪽은 화면 정면, 오른쪽은 같은 화면을 옆에서 자른 단면 (위가 사용자 쪽). desktop/tour/Tour.tsx · Tour.css</text>
+<text x="24" y="68" font-size="12" fill="#1f2937" font-weight="600">정면</text>
+<rect x="24" y="80" width="300" height="300" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+<rect x="44" y="104" width="160" height="100" rx="6" fill="#fff" stroke="#d1d5db"/>
+<rect x="44" y="328" width="260" height="40" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<rect x="64" y="334" width="28" height="28" rx="7" fill="#9ca3af"/>
+<rect x="106" y="334" width="28" height="28" rx="7" fill="#9ca3af"/>
+<rect x="148" y="334" width="28" height="28" rx="7" fill="#9ca3af"/>
+<rect x="190" y="334" width="28" height="28" rx="7" fill="#34c759"/>
+<rect x="232" y="334" width="28" height="28" rx="7" fill="#9ca3af"/>
+<rect x="274" y="334" width="28" height="28" rx="7" fill="#9ca3af"/>
+<path d="M24,80 h300 v300 h-300 z M184,328 h40 v40 h-40 z" fill="#000" fill-opacity="0.45" fill-rule="evenodd"/>
+<rect x="184" y="328" width="40" height="40" rx="10" fill="none" stroke="#007aff" stroke-width="2.5"/>
+<rect x="114" y="240" width="170" height="74" rx="10" fill="#fff" stroke="#d1d5db"/>
+<text x="126" y="260" font-size="11" fill="#1f2937" font-weight="600">방명록은 메시지 앱에</text>
+<text x="126" y="277" font-size="9.5" fill="#007aff">빛나는 곳을 눌러 보세요</text>
+<text x="126" y="300" font-size="9.5" fill="#6b7280">7 / 15</text>
+<rect x="234" y="288" width="38" height="18" rx="9" fill="#007aff"/>
+<text x="253" y="301" font-size="9.5" fill="#fff" text-anchor="middle">다음</text>
+<text x="24" y="402" font-size="10.5" fill="#4b5563">구멍 = .tour-spotlight 상자 하나. box-shadow: 0 0 0 9999px</text>
+<text x="24" y="418" font-size="10.5" fill="#4b5563">--tour-dim(rgba(0,0,0,.45))이 상자 바깥만 어둡게 칠한다</text>
+<text x="24" y="434" font-size="10.5" fill="#4b5563">카드는 비춘 곳 아래(공간이 없으면 위), 화면 가장자리 16px 안</text>
+<text x="350" y="68" font-size="12" fill="#1f2937" font-weight="600">단면</text>
+<rect x="350" y="100" width="290" height="58" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="362" y="122" font-size="11.5" fill="#1e3a8a" font-weight="600">카드 .tour-card</text>
+<text x="362" y="141" font-size="10.5" fill="#4b5563">pointer-events: auto — 단추만 클릭을 받는다</text>
+<rect x="350" y="196" width="305" height="62" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+<rect x="705" y="196" width="31" height="62" rx="8" fill="#e5e7eb" stroke="#9ca3af"/>
+<rect x="655" y="196" width="50" height="62" fill="none" stroke="#007aff" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="362" y="216" font-size="11.5" fill="#374151" font-weight="600">.tour 덮개 (fixed, z-index 9500)</text>
+<text x="362" y="233" font-size="10.5" fill="#4b5563">pointer-events: none — 그리기만 하고</text>
+<text x="362" y="248" font-size="10.5" fill="#4b5563">어두운 곳·구멍 모두 클릭이 아래로 통과</text>
+<text x="650" y="274" font-size="10" fill="#007aff" text-anchor="end">비춘 구멍 (.tour-spotlight)</text>
+<rect x="350" y="300" width="386" height="58" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="362" y="322" font-size="11.5" fill="#065f46" font-weight="600">바탕화면 · 창 · Dock (원래 화면)</text>
+<text x="362" y="341" font-size="10.5" fill="#4b5563">Dock 아이콘이 클릭을 받아 앱이 그대로 열린다</text>
+<rect x="664" y="313" width="32" height="32" rx="8" fill="#34c759"/>
+<text x="680" y="90" font-size="10.5" fill="#1e3a8a" text-anchor="middle">클릭</text>
+<line x1="680" y1="96" x2="680" y2="308" stroke="#1e3a8a" stroke-width="2" marker-end="url(#ar)"/>
+<rect x="350" y="392" width="386" height="92" rx="8" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="362" y="412" font-size="11.5" fill="#92400e" font-weight="600">document의 click 리스너 (캡처 단계)</text>
+<text x="362" y="432" font-size="10.5" fill="#4b5563">비춘 요소.contains(event.target)이면</text>
+<text x="362" y="449" font-size="10.5" fill="#4b5563">setTimeout(() =&gt; stepTour(1), 0): 원래 클릭이 끝난 뒤 다음 단계</text>
+<text x="362" y="466" font-size="10.5" fill="#4b5563">preventDefault를 호출하지 않아 원래 동작은 그대로</text>
+<line x1="680" y1="358" x2="680" y2="389" stroke="#065f46" stroke-width="1.6" marker-end="url(#ag)"/>
+<text x="672" y="380" font-size="10" fill="#065f46" text-anchor="end">같은 click 이벤트</text>
+</svg>

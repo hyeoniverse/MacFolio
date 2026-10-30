@@ -1,8 +1,10 @@
 ---
-title: SSH 키를 잃어버린 Oracle 서버 되살리기 — 임시 VM이 원래 서버 디스크로 부팅됐다
+title: 부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구
 date: 2026-10-20
 category: 개발 기록/MacFolio/배포·운영
-summary: 시스템 데이터 용량 문제로 Mac을 초기화하면서 서버 SSH 키도 함께 삭제되었다. 부트 볼륨을 임시 VM에 연결해 새 키를 추가하는 순서를 단계별로 정리하고, 키 암호·Cloud Shell·다른 터미널 창에서 실행한 명령 같은 시행착오와 임시 VM이 원래 서버 디스크로 부팅된 현상까지 기록했다.
+series: 서버 운영
+seriesOrder: 7
+summary: Mac 초기화로 서버 SSH 키를 잃었다. 부트 볼륨을 임시 VM에 연결해 authorized_keys에 새 키를 넣는 순서와 시행착오를 정리했다. 복구 사흘 뒤의 SSH 시간 초과는 임시 VM의 공인 IP를 서버 주소로 기억한 탓이었고, ~/.ssh/config 별칭과 예약 IP로 재발을 막았다.
 ---
 
 Mac의 시스템 데이터 용량이 커져 초기화하자 로컬 API의 `.env`가 삭제되었다. 서버의 `~/deploy/api.env`에 배포 값이 모두 있으므로, 내려받아 로컬용 값만 수정하면 된다. 그런데 서버에 접속할 SSH 키도 `~/.ssh` 폴더와 함께 삭제된 상태였다. 이 글은 키 없이 Oracle 서버에 다시 접속하기까지의 **실제 작업 순서**와 그 과정의 시행착오를 기록한 것이다.
@@ -11,18 +13,19 @@ Mac의 시스템 데이터 용량이 커져 초기화하자 로컬 API의 `.env`
 
 ## 전체 순서
 
-| 단계 | 작업                                      | 실행 위치                    | 서버 중지 |
-| ---- | ----------------------------------------- | ---------------------------- | --------- |
-| 0    | 키가 실제로 없는지 확인                   | Mac                          |           |
-| 1    | 복구 방법 선택                            |                              |           |
-| 2    | 새 SSH 키 생성                            | Mac                          |           |
-| 3    | 임시 VM 생성, 접속 확인                   | Oracle 콘솔, Mac             |           |
-| 4    | 원래 서버 중지, 부트 볼륨 분리            | Oracle 콘솔                  | 중지 시작 |
-| 5    | 분리한 볼륨을 임시 VM에 연결              | Cloud Shell                  | ↓         |
-| 6    | 임시 VM에서 새 키 추가 (실제 결과는 다름) | 임시 VM                      | ↓         |
-| 7    | 원상 복구, 원래 서버 시작                 | Cloud Shell                  | 중지 종료 |
-| 8    | 후속 정리: 배포 secret, 이전 키, 임시 VM  | Mac, 원래 서버, GitHub, 콘솔 |           |
-| 9    | 원래 목적인 로컬 `.env` 복원              | Mac                          |           |
+| 단계 | 작업                                         | 실행 위치                    | 서버 중지 |
+| ---- | -------------------------------------------- | ---------------------------- | --------- |
+| 0    | 키가 실제로 없는지 확인                      | Mac                          |           |
+| 1    | 복구 방법 선택                               |                              |           |
+| 2    | 새 SSH 키 생성                               | Mac                          |           |
+| 3    | 임시 VM 생성, 접속 확인                      | Oracle 콘솔, Mac             |           |
+| 4    | 원래 서버 중지, 부트 볼륨 분리               | Oracle 콘솔                  | 중지 시작 |
+| 5    | 분리한 볼륨을 임시 VM에 연결                 | Cloud Shell                  | ↓         |
+| 6    | 임시 VM에서 새 키 추가 (실제 결과는 다름)    | 임시 VM                      | ↓         |
+| 7    | 원상 복구, 원래 서버 시작                    | Cloud Shell                  | 중지 종료 |
+| 8    | 후속 정리: 배포 secret, 이전 키, 임시 VM     | Mac, 원래 서버, GitHub, 콘솔 |           |
+| 9    | 원래 목적인 로컬 `.env` 복원                 | Mac                          |           |
+| 10   | 복구 뒤 시간 초과: 접속 주소 확인, 재발 방지 | Mac, Cloud Shell             |           |
 
 터미널 창이 세 개(Mac 터미널, Oracle Cloud Shell, 임시 VM에 SSH로 접속한 터미널)이므로, 단계마다 **명령을 실행할 창**을 먼저 표시했다. 이 구분을 놓쳐 생긴 시행착오가 가장 많았다.
 
@@ -437,6 +440,88 @@ sed -i '1{/^ssh-rsa /d}' ~/.ssh/authorized_keys   # 1번 줄이 ssh-rsa일 때�
 
 GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitHub 문서: Authorizing OAuth apps](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/authorizing-oauth-apps)), 로컬 로그인에는 콜백이 `http://localhost:4000/…`인 개발용 앱이 별도로 필요하다. 나머지(AI·번역·R2·메일 키 등)는 그대로 유지했다. 그 결과 로컬에서 메일 기능을 시험하면 실제 메일이 발송되고, 파일을 업로드하면 실제 버킷에 저장된다.
 
+## 10. 복구 뒤의 함정: 임시 VM의 공인 IP를 서버 주소로 기억 (Mac, Cloud Shell)
+
+복구 사흘 뒤(10월 23일) Search Console 서비스 계정 키를 서버로 옮기려고 `scp`를 실행하자 시간 초과가 발생했다.
+
+```text
+$ scp ~/Downloads/<키>.json ubuntu@198.51.100.10:~/deploy/gsc.json
+ssh: connect to host 198.51.100.10 port 22: Operation timed out
+```
+
+이 절의 IP는 모두 문서용 예시 주소다[^doc-ip]. `198.51.100.10`은 서버 주소로 기억하던 주소이고, `203.0.113.20`은 서버의 실제 주소다.
+
+`Operation timed out`은 3단계의 `Connection refused`와 다르다. refused는 서버까지 도달했지만 그 포트에서 수신 대기하는 프로세스가 없다는 뜻이고, timed out은 **응답이 아예 오지 않았다**는 뜻이다. 그래서 sshd 설정보다 네트워크 경로, 방화벽, 주소를 먼저 의심한다([Oracle 문서: Troubleshooting the SSH Connection](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/troubleshooting-ssh-connection.htm)).
+
+### 원인을 좁힌 순서
+
+![SSH 시간 초과 원인 좁히기](./images/ssh-timeout-public-ip-diagnosis.svg '같은 주소를 여러 곳에서 시도하고, 성공한 경로와 실패한 경로를 비교해 원인을 하나씩 배제했다')
+
+| 순서 | 확인                             | 결과                               | 배제한 원인                    |
+| ---- | -------------------------------- | ---------------------------------- | ------------------------------ |
+| 1    | Oracle 보안 목록의 Ingress Rules | `0.0.0.0/0` TCP 22 허용            | 클라우드 방화벽                |
+| 2    | API `/health`                    | `status: ok`, 최신 버전            | 서버가 꺼진 경우               |
+| 3    | 최근 CI의 `api-deploy`           | 성공 (GitHub Actions가 SSH로 접속) | sshd, 서버 방화벽              |
+| 4    | Mac에서 `nc -zv github.com 22`   | 연결됨                             | 이 네트워크가 22번을 막는 경우 |
+| 5    | 휴대폰 핫스팟에서 같은 주소      | 시간 초과                          | 특정 통신사 경로               |
+| 6    | Oracle Cloud Shell에서 같은 주소 | 시간 초과                          | 한국에서 Oracle까지의 경로     |
+| 7    | Cloud Shell에서 VNIC 조회        | 공인 IP가 다른 주소                | **원인: 접속 주소**            |
+
+3번이 단서였다. GitHub Actions는 Secrets의 `DEPLOY_HOST`로 SSH 접속해 배포하고, 이 배포가 같은 날 성공했다. 따라서 sshd와 22번 포트는 정상이고 인터넷에서 접근할 수 있다. 그런데 6번에서 Oracle 네트워크 안(같은 도쿄 리전의 Cloud Shell)에서도 실패했다. 경로 문제라면 Oracle 내부에서는 연결되어야 하므로, 남는 차이는 **Actions와 Mac이 접속한 주소가 다르다**는 것뿐이었다.
+
+<details>
+<summary>중간에 의심했다가 배제한 것</summary>
+
+- **Mac에서 실행 중인 Docker**: 로컬 컨테이너는 Mac에서 바깥으로 나가는 SSH 연결에 영향을 주지 않는다. 실행 중인 컨테이너도 없었다
+- **traceroute**: 국내망을 지나 해외 백본까지는 응답이 있고 그 뒤로는 없었다. Oracle은 이런 추적 패킷에 원래 응답하지 않아서, 차단 위치를 판단하는 근거가 되지 못했다
+- **네트워크 보안 그룹(NSG)**: VNIC 조회 결과 `nsg`가 빈 목록이었다. 보안 목록 하나만 적용된다
+
+</details>
+
+서버의 현재 공인 IP는 Cloud Shell에서 조회한다.
+
+```bash
+ID=$(oci search resource structured-search --query-text "query instance resources" \
+  --query 'data.items[0].identifier' --raw-output)
+oci compute instance list-vnics --instance-id "$ID" \
+  --query 'data[].{public:"public-ip",private:"private-ip",nsg:"nsg-ids"}' --output table
+```
+
+콘솔에서는 **Compute → Instances → 서버 → Networking → Primary VNIC의 Public IPv4 address**에 있다.
+
+### 그 주소의 출처
+
+Mac의 `~/.ssh/known_hosts`에 답이 있었다. 접속한 서버의 주소와 호스트 키가 처음 접속한 순서대로 기록되는 파일이고, 0단계에서 `~/.ssh`가 없었으므로 이 복구 작업에서 새로 생성되었다.
+
+```text
+$ awk '{print NR": "$1" "$2}' ~/.ssh/known_hosts
+1: 198.51.100.10 ssh-ed25519
+2: 198.51.100.10 ssh-rsa
+3: 198.51.100.10 ecdsa-sha2-nistp256
+4: 203.0.113.20 ssh-ed25519
+```
+
+1~3행은 3단계에서 접속을 확인한 **임시 VM**의 주소이고, 4행은 8단계에서 새 키로 접속한 원래 서버의 주소다. 3~7단계 내내 임시 VM에 접속하며 그 주소를 반복해서 입력했고, 그 주소를 서버 주소로 기억했다. 원래 서버의 IP는 바뀌지 않았다. 10월 5일에 등록한 `DEPLOY_HOST`로 배포가 계속 성공한 것이 근거다. API는 Cloudflare Tunnel로, 배포는 Secrets의 주소로 접속하므로, 사람이 직접 SSH로 접속하기 전까지는 드러나지 않았다.
+
+인스턴스 생성 화면의 **Automatically assign public IPv4 address**로 할당되는 주소는 임시(Ephemeral) 공인 IP[^ephemeral]라, 서버를 중지했다 시작하면 실제로 바뀔 수 있다. 4·7단계처럼 서버를 중지·시작하는 작업 뒤에는 이 경우도 확인 대상이다.
+
+### 재발 방지
+
+| 설정                               | 위치           | 효과                                                                                           |
+| ---------------------------------- | -------------- | ---------------------------------------------------------------------------------------------- |
+| `~/.ssh/config` 별칭               | Mac            | 서버 IP를 한 곳에만 기록하고 `ssh macfolio`로 접속한다. 기억이나 터미널 기록에 의존하지 않는다 |
+| 예약된 공인 IP(Reserved public IP) | VNIC의 IP 화면 | 서버를 중지·시작해도 IP가 바뀌지 않는다. Always Free 계정에서도 1개 무료                       |
+
+```text
+Host macfolio
+  HostName <현재 공인 IP>
+  User ubuntu
+  IdentityFile ~/.ssh/oracle-macfolio.key
+  IdentitiesOnly yes
+```
+
+서버 IP가 실제로 바뀐 경우에는 GitHub Secrets의 `DEPLOY_HOST`와 `DEPLOY_KNOWN_HOSTS`도 함께 갱신해야 API 자동 배포가 동작한다. 공인 IP 확인 명령과 별칭 설정은 [배포 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md#3-oracle-vm-만들기)에 있다.
+
 ## 시행착오 정리
 
 | 단계 | 실수                                               | 대응                                                                      |
@@ -451,6 +536,7 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
 | 5    | 빈 변수, 수동 복사한 OCID                          | `--query … --raw-output`으로 저장하고 `echo "[$변수]"`로 확인한다         |
 | 6    | `lsblk`를 Cloud Shell에서, `scp`를 서버에서 실행   | 실행 전에 프롬프트 앞부분을 확인한다                                      |
 | 6    | (임시 VM이 재부팅되어 원래 디스크로 부팅)          | 디스크를 연결한 뒤에는 재부팅하지 않고, 작업 전에 `findmnt /`로 확인한다  |
+| 10   | 임시 VM의 공인 IP를 서버 주소로 기억               | VNIC에서 조회한 주소를 `~/.ssh/config` 별칭에 기록한다                    |
 
 ## 정리
 
@@ -459,6 +545,7 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
 - 콘솔 버튼이 비활성이면 Cloud Shell의 OCI CLI로 연결한다. Paravirtualized이면 연결 즉시 인식된다
 - 같은 이미지에서 생성된 두 디스크는 루트 레이블이 같다. 연결한 상태로 재부팅하면 연결한 디스크로 부팅될 수 있고, 그러면 cloud-init이 호스트 키를 교체하고 임시 VM의 공개 키를 추가한다
 - 호스트 키가 바뀌면 배포가 사용하는 `DEPLOY_KNOWN_HOSTS`를 교체하고, 분실한 이전 키 줄은 삭제한다
+- `Operation timed out`인데 API와 자동 배포가 정상이면, 먼저 접속하는 주소가 서버의 현재 공인 IP인지 조회한다. 성공하는 경로(Actions)와 실패하는 경로(Mac)를 비교하면 서버 쪽 원인을 한 번에 배제할 수 있다
 - 새 비밀 키와 암호는 비밀번호 관리자처럼 Mac 외부에도 보관한다. Mac을 초기화하기 전에는 `~/.ssh`와 `.env`처럼 저장소에 없는 파일부터 백업한다
 
 배포 문서의 키 복구 절차도 이번 실제 작업 순서로 수정했다.
@@ -468,7 +555,7 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
 영어 문서는 이 글과 관련된 부분만 번역해 인용했다.
 
 <details>
-<summary>공식 문서 11개와 인용 내용</summary>
+<summary>공식 문서와 인용 내용</summary>
 
 - [Connecting to a Linux Instance](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/connect-to-linux-instance.htm) (Oracle)
   - "SSH 키를 잃어버렸으면 인스턴스를 종료하고, 제공된 SSH 키나 직접 만든 SSH 키로 새 인스턴스를 만든다."
@@ -501,6 +588,10 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
   - `ssh_deletekeys`: "호스트 SSH 키를 지운다. 기본 호스트 키가 든 이미지의 비밀 호스트 키를 다시 쓰지 않게 한다. 기본값 `true`."
   - `allow_public_ssh_keys`: "`true`면 데이터소스 메타데이터의 공개 SSH 키를 사용자의 `.ssh/authorized_keys` 파일로 가져온다. 기본값 `true`."
   - 실행 빈도: 인스턴스마다 한 번(once-per-instance).
+- [Troubleshooting the SSH Connection](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/troubleshooting-ssh-connection.htm) (Oracle)
+  - 10단계의 timed out과 refused 구분, 원인 확인 순서.
+- [Public IP Addresses](https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingpublicIPs.htm) (Oracle)
+  - 임시(Ephemeral) IP와 예약된(Reserved) IP의 차이.
 - [Error 530](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-530/), [Error 1033](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1033/) (Cloudflare)
   - 530: "Cloudflare가 원본 호스트 이름을 확인하지 못한다는 뜻이다." 자세한 원인은 함께 오는 1XXX 오류를 본다.
   - 1033: "터널이 Cloudflare 네트워크에 연결되어 있지 않다. 트래픽을 받을 정상 `cloudflared` 인스턴스를 찾지 못했기 때문이다."
@@ -509,12 +600,16 @@ GitHub OAuth 앱은 등록한 콜백 주소로만 리다이렉트하므로([GitH
 
 ## 관련 글
 
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [서버 하드닝은 문서가 아니라 스크립트로 남긴다](/memo/server-hardening-audit)
-- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](/memo/secret-scanning)
+- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
 
 [^ocid]: Oracle Cloud Identifier. OCI의 모든 리소스에 부여되는 고유 ID로, `ocid1.instance.oc1.…` 형식의 긴 문자열이다. [Oracle 문서: Resource Identifiers](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/identifiers.htm)
+
+[^doc-ip]: `198.51.100.0/24`, `203.0.113.0/24`는 문서와 예제에 쓰도록 예약된 주소 범위다([RFC 5737](https://www.rfc-editor.org/rfc/rfc5737)). 실제 서버 주소는 글에 적지 않는다.
+
+[^ephemeral]: Oracle Cloud의 공인 IP는 두 종류다. 임시(Ephemeral) IP는 인스턴스의 VNIC에 묶여 수명이 같고, 예약된(Reserved) IP는 계정에 남아 있어 다른 VNIC로 옮기거나 다시 붙일 수 있다.
 
 [^cloud-init]: 클라우드 VM의 첫 부팅 시각에 호스트 이름, SSH 키, 사용자 등을 메타데이터에 따라 설정하는 초기화 도구. [cloud-init 문서](https://docs.cloud-init.io/en/latest/)
 

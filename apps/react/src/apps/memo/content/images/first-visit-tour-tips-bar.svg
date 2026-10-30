@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="330" fill="#fff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#991b1b"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#065f46"/></marker></defs>
+<text x="380.0" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">팁 앱 위쪽 막대의 빈 곳을 누른 시각, 클릭을 받는 요소 (#325)</text>
+<text x="380.0" y="44" font-size="11" fill="#6b7280" text-anchor="middle">통합형 창(chrome="unified")의 단면. 위가 사용자 쪽, 숫자는 z-index</text>
+<text x="24" y="76" font-size="12.5" fill="#1f2937" font-weight="600">전: 막대 전체가 z-index 4</text>
+<rect x="24" y="96" width="340" height="50" rx="8" fill="#eff6ff" stroke="#93c5fd"/>
+<rect x="114" y="106" width="54" height="30" rx="15" fill="#fff" stroke="#93c5fd"/>
+<text x="141.0" y="126" font-size="11" fill="#1e3a8a" text-anchor="middle">◀ ▶</text>
+<rect x="174" y="106" width="30" height="30" rx="15" fill="#fff" stroke="#93c5fd"/>
+<text x="189.0" y="126" font-size="11" fill="#1e3a8a" text-anchor="middle">⌂</text>
+<text x="216" y="126" font-size="11" fill="#1e3a8a">블로그 읽는 법</text>
+<text x="32" y="126" font-size="10.5" fill="#1e3a8a" font-weight="600">4 .tips-bar</text>
+<rect x="24" y="186" width="340" height="50" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<circle cx="172" cy="211" r="6" fill="#ff5f57"/>
+<circle cx="190" cy="211" r="6" fill="#febc2e"/>
+<circle cx="208" cy="211" r="6" fill="#28c840"/>
+<text x="32" y="216" font-size="10.5" fill="#374151" font-weight="600">3 .macos-titlebar</text>
+<text x="220" y="216" font-size="10.5" fill="#4b5563">끌기 · 두 번 눌러 키우기</text>
+<line x1="348" y1="82" x2="348" y2="118" stroke="#991b1b" stroke-width="2" marker-end="url(#ar)"/>
+<text x="348" y="140" font-size="14" fill="#991b1b" text-anchor="middle" font-weight="700">×</text>
+<text x="24" y="266" font-size="10.5" fill="#991b1b">막대 전체가 클릭을 받아 아래 층에 닿지 않는다</text>
+<text x="24" y="283" font-size="10.5" fill="#4b5563">뒤로·앞으로·홈 단추와 신호등은 전후 모두 눌렸다</text>
+<text x="348" y="78" font-size="10" fill="#4b5563" text-anchor="middle">빈 곳 클릭</text>
+<text x="396" y="76" font-size="12.5" fill="#1f2937" font-weight="600">후: 막대는 z-index 4, 단추만 클릭을 받는다</text>
+<rect x="396" y="96" width="340" height="50" rx="8" fill="none" stroke="#93c5fd" stroke-dasharray="4 3"/>
+<rect x="486" y="106" width="54" height="30" rx="15" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="513.0" y="126" font-size="11" fill="#1e3a8a" text-anchor="middle">◀ ▶</text>
+<rect x="546" y="106" width="30" height="30" rx="15" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="561.0" y="126" font-size="11" fill="#1e3a8a" text-anchor="middle">⌂</text>
+<text x="588" y="126" font-size="11" fill="#1e3a8a">블로그 읽는 법</text>
+<text x="404" y="126" font-size="10.5" fill="#1e3a8a" font-weight="600">4 .tips-bar</text>
+<rect x="396" y="186" width="340" height="50" rx="8" fill="#f3f4f6" stroke="#9ca3af"/>
+<circle cx="544" cy="211" r="6" fill="#ff5f57"/>
+<circle cx="562" cy="211" r="6" fill="#febc2e"/>
+<circle cx="580" cy="211" r="6" fill="#28c840"/>
+<text x="404" y="216" font-size="10.5" fill="#374151" font-weight="600">3 .macos-titlebar</text>
+<text x="592" y="216" font-size="10.5" fill="#4b5563">끌기 · 두 번 눌러 키우기</text>
+<line x1="720" y1="82" x2="720" y2="204" stroke="#065f46" stroke-width="2" marker-end="url(#ag)"/>
+<text x="396" y="266" font-size="10.5" fill="#065f46">pointer-events: none → 클릭이 제목 표시줄로 통과, 창이 움직인다</text>
+<text x="396" y="283" font-size="10.5" fill="#4b5563">.tips-bar button만 pointer-events: auto</text>
+<text x="720" y="78" font-size="10" fill="#4b5563" text-anchor="middle">빈 곳 클릭</text>
+</svg>

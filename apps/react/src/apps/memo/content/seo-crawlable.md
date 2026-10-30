@@ -1,5 +1,5 @@
 ---
-title: 자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기
+title: Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기
 date: 2026-10-20
 category: 개발 기록/MacFolio/프론트엔드
 summary: 사이트가 자바스크립트로만 렌더링되어 검색엔진에는 빈 페이지로 보였다. Worker가 주소마다 제목·설명·Open Graph·구조화 데이터와 글·프로젝트 본문을 HTML에 넣고, 서버에 작성한 글까지 합친 sitemap.xml을 생성하게 했다.
@@ -118,8 +118,8 @@ sitemap의 프로젝트 목록은 관리자가 수정한 사이트 콘텐츠까�
 
 ## 관련 글
 
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [없는 코드 파일에 index.html을 주던 문제](/memo/asset-404)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
 
 참고 문서: [Google 검색 센터 — JavaScript SEO 기본사항](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics), [Cloudflare Workers 정적 자산 라우팅(run_worker_first)](https://developers.cloudflare.com/workers/static-assets/binding/#run_worker_first)
 

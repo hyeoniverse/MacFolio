@@ -1,7 +1,9 @@
 ---
-title: 화면과 서버가 같은 규칙을 쓰기 - 소스는 Vite가, 빌드 결과는 Node가
+title: package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기
 date: 2026-10-09
 category: 개발 기록/MacFolio/설계
+series: desktop-core
+seriesOrder: 4
 summary: 폴더 3단·이름 30자·제목 100자 같은 규칙이 화면 코드와 서버 코드에 각각 정의되어 있었다. desktop-core 한 곳으로 옮겨 둘이 함께 사용하게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽도록 package.json exports 조건으로 분리했다.
 ---
 
@@ -139,11 +141,11 @@ pnpm --filter @macfolio/api test:e2e test/posts.e2e.test.ts   # DB가 필요하�
 
 ## 관련 글
 
-- [창 관리를 React 밖으로 - desktop-core 패키지의 첫 단계](/memo/desktop-core-windows)
-- [메모 로직을 desktop-core로 - localStorage는 어디에 둘까](/memo/desktop-core-memo)
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
 - [음악 플레이어를 둘로 나누기 - 무엇을 틀지와 어떻게 틀지](/memo/desktop-core-music)
-- [타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기](/memo/contracts-posts)
-- [MacFolio 백엔드 한 장으로 보기 - 구성도와 설계 결정](/memo/backend-design)
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
 
 [^desktop-core]: `packages/desktop-core`는 React·Vue 같은 UI 프레임워크에 의존하지 않는 로직(상태 저장소, 창 관리, 메모 규칙, 음악 재생 목록)을 모은 워크스페이스 패키지다. ESLint 규칙으로 React와 `@/*` import를 금지한다.
 

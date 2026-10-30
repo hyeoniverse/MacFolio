@@ -124,6 +124,15 @@
 	font-size: var(--text-caption2);
 }
 
+/* 연재 글: 제목 위 한 줄 (목록의 제목 앞 표시와 같은 강조색 글자) */
+.memo-card > .memo-item-series {
+	overflow: hidden;
+	max-width: 100%;
+	margin: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 /* 갤러리에서 연 글 */
 .memo.view-gallery.gallery-note .memo-reader {
 	animation: rise-in var(--duration) var(--ease-out);

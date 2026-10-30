@@ -1,17 +1,49 @@
 ---
-title: '!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기'
+title: 선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기
 date: 2026-10-01
 category: 개발 기록/MacFolio/디자인 시스템
-summary: 앱마다 정의한 `.app button { color: inherit }`가 버튼 클래스보다 우선 적용되어, 버튼마다 지정한 색·글꼴을 !important로 덮어써 왔다. 이 기본값을 @layer reset으로 옮기고 화면 58장을 전후로 캡처해 픽셀 단위로 비교했다. 변경된 화면은 네 곳이었다.
+series: CSS 정리
+seriesOrder: 1
+summary: 게시 버튼 글자가 흐린 원인은 앱 루트의 .memo button { color: inherit }(0,1,1)이 버튼 클래스(0,1,0)를 이긴 데 있었다. 같은 구조로 !important가 72개 쌓여 있었다. 앱 기본값 규칙을 @layer reset으로 옮기고 화면 58장을 픽셀 단위로 비교했다.
 ---
 
-[게시 버튼 글자가 흐렸던 이유 - 선택자 우선순위에 진 색](/memo/memo-button-specificity)에서는 게시 버튼 하나만 수정했고, 근본 원인은 그대로였다. 이 글은 그 원인을 제거한 기록이고, 공통 컴포넌트 작업([#57](https://github.com/hyeoniverse/MacFolio/pull/57))의 첫 커밋이다.
+메모 편집기를 다듬는 PR([#55](https://github.com/hyeoniverse/MacFolio/pull/55))에서 게시 버튼 하나의 글자색을 고쳤고, 그 원인인 앱 루트의 기본값 규칙은 공통 컴포넌트 작업([#57](https://github.com/hyeoniverse/MacFolio/pull/57))의 첫 커밋에서 CSS 층으로 옮겼다. 두 작업은 같은 날(10월 1일) 진행했다. 이 글은 증상에서 원인, 임시 수정, 근본 수정까지를 순서대로 정리한 것이다.
 
-10월 1일 새벽, 게시 버튼 글을 다시 읽어도 `:where(.memo) button`이 왜 문제인지 명확히 정리되지 않았다. 공통 버튼 컴포넌트가 있는지, 클래스와 스타일이 어떤 구조로 연결되어 있는지 도식으로 정리하자, 앱마다 루트에 기본값을 정의하고 그 위를 `!important`로 덮어쓰는 구조가 드러났다. 컴포넌트 구조 정리가 필요하다고 판단해, 이 글의 층 정리를 시작으로 공통 컴포넌트를 만드는 리팩터링을 진행했다.
+## 증상: 게시 버튼 글자가 흐림
 
-## 원인: 앱 루트의 기본값
+메모 편집기 오른쪽 위의 **게시** 버튼은 수정한 내용이 있으면 노란 바탕으로 활성화된다. 그런데 활성화된 버튼의 글자가 흐려서 잘 읽히지 않았다.
 
-메모 앱의 CSS 맨 위에는 이런 규칙이 있다.
+![수정 전 게시 버튼](./images/memo-publish-before.jpg '노란 바탕 위 글자가 회색이라 흐리다')
+
+CSS에는 진한 갈색을 지정해 두었다.
+
+```css
+.memo-writer-publish {
+	background-color: #edbb4d;
+	color: #2b2100;
+}
+```
+
+바탕은 노란색으로 표시되는데 글자색만 지정한 값과 달랐다.
+
+## 원인 찾기: 일치하는 규칙 나열
+
+브라우저에서 버튼의 계산된 값([`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle))을 조회하니 글자색이 `rgb(107, 114, 128)`이었다. 메모 앱의 보조 글자색(`--memo-muted`)이다. 이 버튼에 일치하는 규칙 중 `color`를 지정하는 규칙을 [`document.styleSheets`](https://developer.mozilla.org/en-US/docs/Web/API/Document/styleSheets)에서 모두 추출했다.
+
+```ts
+const rules = [];
+for (const sheet of document.styleSheets)
+	for (const rule of sheet.cssRules)
+		if (rule.selectorText && rule.style.color && button.matches(rule.selectorText))
+			rules.push(`${rule.selectorText} → ${rule.style.color}`);
+```
+
+```text
+.memo button → inherit
+.memo-writer-publish → rgb(43, 33, 0)
+```
+
+개발자 도구의 Computed 탭이 보여 주는 정보를 코드로 추출한 것이다. 원인은 메모 앱 CSS 맨 위의 다음 규칙이었다.
 
 ```css
 .memo button {
@@ -21,24 +53,48 @@ summary: 앱마다 정의한 `.app button { color: inherit }`가 버튼 클래�
 }
 ```
 
-버튼이 브라우저 기본 글꼴(Arial 등) 대신 앱의 글꼴·글자색을 상속하게 하는 규칙이다. 메일(`.mail button`), 메시지, 음악, 터미널 단축어에도 같은 규칙이 있고, Safari에는 링크용(`.safari a`)이 있다.
+버튼이 브라우저 기본 글꼴(Arial 등) 대신 앱의 글꼴·글자색을 상속하게 하는 규칙이다. 문제는 **명시도**(specificity)[^specificity]였다.
 
-문제는 [명시도(specificity)](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)다.
+| 선택자                 | 클래스 | 태그 | 명시도        |
+| ---------------------- | ------ | ---- | ------------- |
+| `.memo button`         | 1      | 1    | **(0, 1, 1)** |
+| `.memo-writer-publish` | 1      | 0    | **(0, 1, 0)** |
 
-| 선택자                                        | 구성                  | 명시도        |
-| --------------------------------------------- | --------------------- | ------------- |
-| `.memo button` (기본값)                       | 클래스 1개 + 태그 1개 | **(0, 1, 1)** |
-| `.memo-tool`, `.memo-writer-publish` (버튼별) | 클래스 1개            | **(0, 1, 0)** |
+클래스 수가 같으면 태그가 하나 더 있는 `.memo button`이 우선한다. 파일 안의 선언 순서는 명시도가 같을 때만 비교한다. 그래서 갈색 대신 `inherit`이 적용되어 부모의 보조 글자색을 상속했다.
 
-기본값의 명시도가 더 높아 버튼 규칙보다 우선 적용된다. 그래서 버튼마다 지정한 색과 글꼴이 무시됐고, 그때마다 `!important`로 덮어쓰거나 선택자를 길게 작성해 명시도를 맞췄다.
+![두 규칙의 명시도](./images/memo-button-specificity.svg '클래스 수가 같으면 태그 수로 우선순위가 정해진다')
 
-앱 전체를 집계하니 `!important`가 72개였다.
+`font: inherit`도 같은 방식으로 덮어쓰고 있었다. `font`는 **`font-size`·`font-weight`까지 함께 지정하는** [단축 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties)이다. 게시 버튼에는 `font-size: 11px; font-weight: 600`을 지정했지만, 계산된 값은 부모를 상속한 `12px`, `400`이었다.
+
+## 당장의 수정과 한계
+
+| 방법                                 | 장점                      | 단점                                                        |
+| ------------------------------------ | ------------------------- | ----------------------------------------------------------- |
+| `.memo button`의 명시도를 낮춘다     | 근본 원인을 해결한다      | 그동안 덮여 있던 버튼 글꼴 선언이 한꺼번에 적용된다         |
+| 게시 버튼에 `!important`             | 선언 하나만 추가하면 된다 | 이후 이 버튼 색을 바꾸는 규칙에도 `!important`가 필요해진다 |
+| **게시 버튼 규칙의 명시도를 높인다** | 이 버튼만 바뀐다          | 버튼마다 부모 클래스를 붙이는 작업이 필요하다               |
+
+첫 번째 방법은 다른 버튼에서도 클래스에 지정한 글꼴이 덮여 있을 수 있어, 적용하면 앱 전체의 버튼 모양이 바뀐다. 편집기 PR의 수정 대상은 게시 버튼 하나라서 세 번째 방법을 적용했다.
+
+```css
+/* 글자색은 .memo button(color: inherit)보다 앞서도록 .memo-writer-actions를 붙인다 */
+.memo-writer-actions .memo-writer-publish {
+	background-color: #edbb4d;
+	color: #2b2100;
+}
+```
+
+명시도가 (0, 2, 0)이 되어 `.memo button`보다 우선한다. 같은 줄의 "변경 사항 버리기" 버튼 규칙도 구조가 같아서 함께 높였다.
+
+![수정 후 게시 버튼](./images/memo-publish-after.jpg '노란 바탕 위에 진한 갈색 글자')
+
+이 방법은 버튼 하나를 고칠 뿐이다. 같은 기본값 규칙이 메일(`.mail button`), 메시지, 음악, 터미널 단축어에도 있고, Safari에는 링크용(`.safari a`)이 있다. 그동안 버튼마다 지정한 색과 글꼴이 무시되는 곳은 `!important`로 덮어쓰거나 선택자를 길게 작성해 명시도를 맞춰 왔다. 앱 전체를 집계하니 `!important`가 72개였다.
 
 | 앱   | 메모 | 메시지 | 음악 | GitHub | 메일 | 터미널 | Safari |
 | ---- | ---- | ------ | ---- | ------ | ---- | ------ | ------ |
 | 개수 | 27   | 13     | 11   | 7      | 6    | 4      | 4      |
 
-대부분이 버튼·링크의 색과 글꼴이었다.
+대부분이 버튼·링크의 색과 글꼴이었다. 원인은 기본값 규칙 여섯 개이고, 이 규칙의 우선순위를 낮추지 않으면 `!important`는 계속 늘어난다.
 
 ## 명시도 대신 층
 
@@ -75,14 +131,18 @@ CSS 층([`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer))을 
 변경한 파일은 여섯 개다. `Memo.css`(`.memo button`), `Mail.css`, `Messages.css`, `Music.css`, `Shortcuts.css`(`.shortcuts button`), `Safari.css`(`.safari a`). 층 순서를 정의하는 `styles/layers.css`는 `main.tsx`가 다른 CSS보다 먼저 import하도록 첫 줄에 추가했다.
 
 ```ts
-// main.tsx (이때)
+// main.tsx (이 커밋 시각)
 import './styles/layers.css';
 import './styles/theme.css';
 import './styles/motion.css';
 import './index.css';
 ```
 
-이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다](/memo/css-layer-order-fix)).
+이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
+
+이제 게시 버튼 규칙은 `.memo-writer-publish` 하나만으로도 `reset` 층의 `.memo button`보다 우선한다. 앞에서 추가한 `.memo-writer-actions .memo-writer-publish`는 명시도가 높아도 부작용이 없어 주석과 함께 남겨 두었다.
+
+![캐스케이드 레이어 순서](./images/memo-button-specificity-layers.svg '레이어 순서가 명시도보다 먼저 비교되므로, 버튼 클래스 하나로도 reset보다 우선한다')
 
 ## 변경 범위를 사전에 알 수 없다
 
@@ -168,7 +228,7 @@ for (let i = 0; i < a.length; i += 4) {
 
 ![!important가 든 줄: 이 커밋 전 74, 공통 IconButton PR 뒤 4, 지금 23](./images/css-layer-reset-important-count.svg '줄 단위로 센 !important. 지금 남은 것은 대부분 Safari 프로젝트 페이지와 움직임 줄이기 규칙')
 
-다음 PR([#60](https://github.com/hyeoniverse/MacFolio/pull/60), [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](/memo/icon-button-migrate))에서 4줄까지 줄었다. 현재는 23줄이다.
+다음 PR([#60](https://github.com/hyeoniverse/MacFolio/pull/60), [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate))에서 4줄까지 줄었다. 현재는 23줄이다.
 
 | 위치                     | 줄 수 | 용도                                                      |
 | ------------------------ | ----- | --------------------------------------------------------- |
@@ -180,15 +240,19 @@ for (let i = 0; i < a.length; i += 4) {
 
 ## 정리
 
+- "지정한 값이 적용되지 않는다"는 대개 다른 규칙이 우선한다는 뜻이다. 계산된 값을 조회하고 그 요소에 일치하는 규칙을 모두 추출하면 적용된 규칙이 바로 드러난다.
+- `font`·`background`·`border` 같은 단축 속성은 지정하지 않은 하위 속성까지 초기화한다. 앱 루트의 기본값에 단축 속성을 쓰면 영향 범위가 넓다.
 - `!important`가 많다는 것은 증상이지 원인이 아니다. 72개를 하나씩 삭제하기 전에 필요했던 이유를 추적하니 원인은 기본값 규칙 여섯 개였다.
 - 영향이 앱 전체에 분산되는 CSS 변경은 화면 캡처 비교가 가장 빠른 검증 방법이다. 다만 비교 전에 같은 코드로 두 번 캡처해 노이즈(시계)를 먼저 제거해야, 남은 차이를 모두 실제 변경으로 해석할 수 있다.
 - 기본값에 덮여 있던 값이 적용되는 것은 "결함"이 아니라 "원래 의도가 이제야 반영된 것"일 수 있다. 변경된 네 곳 중 세 곳이 그랬다.
 
 ## 관련 글
 
-- [게시 버튼 글자가 흐렸던 이유 - 선택자 우선순위에 진 색](/memo/memo-button-specificity)
-- [!important 66개 지우기와 공통 아이콘 버튼](/memo/shared-button)
-- [손으로 쓴 글자 버튼 30곳을 Button으로 — 모양은 그대로 두고](/memo/text-button-migrate)
-- [공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다](/memo/css-layer-order-fix)
+- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
+- [계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
+- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
+- [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
 
-#MacFolio #CSS #공통컴포넌트
+[^specificity]: 같은 요소에 여러 규칙이 일치할 때 어느 규칙을 적용할지 정하는 점수. (ID 수, 클래스·속성·의사 클래스 수, 태그·의사 요소 수) 세 자리를 앞자리부터 비교한다. 자세한 계산 방법은 [MDN의 Specificity 문서](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)에 있다.
+
+#MacFolio #메모앱 #CSS #공통컴포넌트 #트러블슈팅

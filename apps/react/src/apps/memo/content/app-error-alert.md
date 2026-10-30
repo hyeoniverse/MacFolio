@@ -1,5 +1,5 @@
 ---
-title: 배포 직후 메모가 안 열리던 까닭 - 옛 코드 파일과 OS 경고창
+title: 삭제된 옛 코드 파일을 요청하는 React.lazy 로드 실패 구분하기
 date: 2026-10-02
 category: 개발 기록/MacFolio/배포·운영
 summary: 배포 전에 열어 둔 탭에서 메모를 열면 "memo 앱에서 문제가 발생했습니다"가 표시되었다. 삭제된 옛 코드 파일을 요청하고 있었다. 다시 불러오기가 작동하지 않는 이유를 확인하고, 코드 로드 실패 오류를 구분해 새로고침을 안내하는 OS 경고창으로 바꿨다.
@@ -84,7 +84,7 @@ const chunk = isChunkLoadError(error);
 
 [다시 열기]는 오류 상태를 초기화해 앱을 다시 렌더링한다. 앱 화면의 일시적인 오류는 이것으로 해결된다. 코드 로드 실패는 다시 렌더링해도 같은 파일을 요청하므로 [새로고침]만 효과가 있다.
 
-경고창은 앱 창 안이 아니라 화면 전체를 덮는다. 오류가 난 앱은 창 내용을 렌더링하지 못해서 그 안에 표시할 수 없기 때문이다. 쌓임 순서는 `--z-app-error: 15000`으로, 펼친 메뉴(`--z-menu`, 10000)와 전체 화면 보기(`--z-fullscreen`, 12000)보다 위, 로그인 화면(`--z-login`, 20000)보다 아래다. 이 값들은 [z-index 숫자에 이름 붙이기](/memo/z-index-layers)에서 정리한 표에 있다.
+경고창은 앱 창 안이 아니라 화면 전체를 덮는다. 오류가 난 앱은 창 내용을 렌더링하지 못해서 그 안에 표시할 수 없기 때문이다. 쌓임 순서는 `--z-app-error: 15000`으로, 펼친 메뉴(`--z-menu`, 10000)와 전체 화면 보기(`--z-fullscreen`, 12000)보다 위, 로그인 화면(`--z-login`, 20000)보다 아래다. 이 값들은 [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)에서 정리한 표에 있다.
 
 ## 시험
 
@@ -97,7 +97,7 @@ const chunk = isChunkLoadError(error);
 
 ## 남은 것, 배운 것
 
-- 사흘 뒤 이 경고창이 표시되는 경로를 하나 더 찾았다. 사이트가 삭제된 코드 파일 자리에 `index.html`을 200으로 응답했고, 그 응답에 1년 캐시 헤더까지 붙어 있었다([없는 코드 파일에 index.html을 주던 문제](/memo/asset-404)). 경고창은 앱이 멈추지 않게 하는 마지막 처리이고, 근본 해결은 서버가 404를 응답하는 것이었다.
+- 사흘 뒤 이 경고창이 표시되는 경로를 하나 더 찾았다. 사이트가 삭제된 코드 파일 자리에 `index.html`을 200으로 응답했고, 그 응답에 1년 캐시 헤더까지 붙어 있었다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)). 경고창은 앱이 멈추지 않게 하는 마지막 처리이고, 근본 해결은 서버가 404를 응답하는 것이었다.
 - 옛 빌드 파일을 몇 번의 배포 동안 보관하면 경고창 자체가 필요 없다. 정적 자산을 통째로 교체하는 현재 배포 방식에서는 별도 보관소가 필요해서 아직 적용하지 않았다.
 - 지연 로딩(`React.lazy`)을 쓰면 "나중에 내려받을 파일이 삭제될 수 있다"는 실패 경로가 함께 생긴다. 첫 화면을 가볍게 하려고 분리한 코드만큼 배포 시각과의 경합도 생긴다.
 
@@ -121,10 +121,10 @@ npx playwright test e2e/app-error.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [없는 코드 파일에 index.html을 주던 문제](/memo/asset-404): 같은 증상의 서버 쪽 원인
-- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal): 경고창이 쓰는 공통 컴포넌트
+- [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404): 같은 증상의 서버 쪽 원인
+- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal): 경고창이 쓰는 공통 컴포넌트
 - [CRA에서 Vite로 옮기기](/memo/cra-to-vite)
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
 
 [^boundary]: React의 [오류 경계(error boundary)](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)는 자식 컴포넌트가 렌더링 중 던진 오류를 받아 대체 화면을 표시하는 컴포넌트다. `React.lazy`가 코드를 내려받지 못한 경우도 렌더링 오류로 전달된다.
 

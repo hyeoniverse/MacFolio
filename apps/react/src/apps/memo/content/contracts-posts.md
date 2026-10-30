@@ -1,7 +1,9 @@
 ---
-title: 타입은 desktop-core에, 스키마는 contracts에 — 글 도메인 옮기기
+title: ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/백엔드
+series: contracts 스키마
+seriesOrder: 2
 summary: 블로그 글(posts)의 요청·응답을 contracts로 옮겼다. 글 타입은 이미 desktop-core에 있어서 스키마를 그 타입에 맞춰 선언(ZodType<PostContent>)하고, 어긋나면 tsc가 막게 했다. 서버의 if문 스물한 줄을 스키마 하나로 대체했고 400 응답의 이유 순서도 유지했다.
 ---
 
@@ -190,11 +192,11 @@ pnpm --filter @macfolio/desktop-core test
 
 ## 관련 글
 
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](/memo/contracts-comments)
-- [바로 고치는 블로그에 임시 저장과 버전 기록 붙이기](/memo/drafts-and-versions)
-- [메모 로직을 desktop-core로 - localStorage는 어디에 둘까](/memo/desktop-core-memo)
-- [문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)
-- [리팩터링 1단계 — 타입과 데이터 구조](/memo/refactor-step1-types)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
+- [PostSlug·FolderPath 브랜드 타입과 검사 지점으로 글 주소 문자열 구분하기](/memo/branded-ids)
+- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
 
 [^tsc]: TypeScript 컴파일러. 이 저장소에서는 `pnpm typecheck`가 패키지마다 `tsc`를 실행해 타입만 검사한다.
 

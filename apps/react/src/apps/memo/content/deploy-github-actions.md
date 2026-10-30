@@ -1,7 +1,9 @@
 ---
-title: 프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만
+title: Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기
 date: 2026-10-03
 category: 개발 기록/MacFolio/배포·운영
+series: 배포 자동화
+seriesOrder: 1
 summary: Cloudflare 빌드 서버가 빌드 환경을 초기화하지 못하고 시간 초과로 실패하는 일이 이어졌다. 빌드와 배포를 GitHub Actions로 옮겨, 시험을 통과한 main 커밋만 wrangler deploy로 배포하고 PR에는 브랜치 이름 기반 미리보기 주소를 댓글로 남긴다.
 ---
 
@@ -82,7 +84,7 @@ pnpm exec wrangler versions upload --preview-alias "$alias" | tee upload.log
 
 ![배포 구조 전후](./images/deploy-github-actions-flow.svg '전: Cloudflare가 시험과 따로 빌드 / 후: check를 통과한 뒤 GitHub Actions가 배포')
 
-`VITE_API_URL`은 빌드 시각에 코드에 삽입되는 값이므로 배포 빌드에만 지정한다. `check`의 E2E는 가짜 API 주소를 사용하므로 빈 값으로 둔다. 비밀 값이 아니므로 워크플로 상단에 기록했다. 이전에는 Cloudflare 대시보드의 빌드 변수에 입력해야 했고, 실행 변수 칸에 잘못 입력하면 빌드에 반영되지 않았다([API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel) 참고). 워크플로로 옮기면서 이 문제도 없어졌다.
+`VITE_API_URL`은 빌드 시각에 코드에 삽입되는 값이므로 배포 빌드에만 지정한다. `check`의 E2E는 가짜 API 주소를 사용하므로 빈 값으로 둔다. 비밀 값이 아니므로 워크플로 상단에 기록했다. 이전에는 Cloudflare 대시보드의 빌드 변수에 입력해야 했고, 실행 변수 칸에 잘못 입력하면 빌드에 반영되지 않았다([Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel) 참고). 워크플로로 옮기면서 이 문제도 없어졌다.
 
 Cloudflare 관련 값은 API 토큰(Workers 편집 권한)과 계정 ID만 GitHub Secrets에 저장한다. 토큰이 없으면 미리보기는 건너뛰고, 배포는 실패로 처리한다. 미리보기는 생략해도 되지만, main 배포가 알림 없이 생략되면 사이트 갱신이 중단된 사실을 발견할 수 없기 때문이다.
 
@@ -94,7 +96,7 @@ Cloudflare 관련 값은 API 토큰(Workers 편집 권한)과 계정 ID만 GitHu
 
 ## 이후 변경 사항
 
-현재 `ci.yml`의 `deploy`는 `needs: [check, e2e-reuse, e2e, api-image, api-deploy]`다. 화면 E2E를 별도 작업으로 분리해 여러 샤드로 병렬 실행하고([머지하고 배포까지 15분에서 5분으로](/memo/faster-e2e-ci)), API 서버도 같은 워크플로에서 이미지를 빌드해 배포하면서([API 자동 배포](/memo/api-auto-deploy)) 선행 작업이 늘었다. 순서는 API 배포가 먼저, 프론트엔드 배포가 나중이다. 새 화면이 아직 배포되지 않은 API를 호출하는 상황을 막기 위해서다.
+현재 `ci.yml`의 `deploy`는 `needs: [check, e2e-reuse, e2e, api-image, api-deploy]`다. 화면 E2E를 별도 작업으로 분리해 여러 샤드로 병렬 실행하고([git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)), API 서버도 같은 워크플로에서 이미지를 빌드해 배포하면서([command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)) 선행 작업이 늘었다. 순서는 API 배포가 먼저, 프론트엔드 배포가 나중이다. 새 화면이 아직 배포되지 않은 API를 호출하는 상황을 막기 위해서다.
 
 ![지금 main에 push했을 때 작업이 기다리는 순서](./images/deploy-github-actions-needs.svg 'deploy는 시험과 API 배포가 모두 끝나야 실행된다')
 
@@ -129,11 +131,11 @@ CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=… pnpm exec wrangler versions u
 ## 관련 글
 
 - [CRA에서 Vite로 옮기기](/memo/cra-to-vite)
-- [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](/memo/deploy-api-oracle-tunnel)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [머지하고 배포까지 15분에서 5분으로: e2e 6칸과 같은 코드 다시 돌리지 않기](/memo/faster-e2e-ci)
-- [PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기](/memo/preview-cors-read-only)
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot)
+- [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
+- [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
 
 [^builds]: 저장소를 연결하면 push마다 Cloudflare가 직접 빌드·배포하는 기능. [Cloudflare 문서: Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/)
 
