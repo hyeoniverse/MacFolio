@@ -44,7 +44,7 @@ const MarkdownImage: React.FC<Props> = ({ src, alt = '', title }) => {
 					title="이미지 내려받기"
 					onClick={() => void downloadImage(resolved, alt)}
 				>
-					<i className="fa-solid fa-arrow-down" aria-hidden="true" />
+					<i className="fa-solid fa-download" aria-hidden="true" />
 				</button>
 			</span>
 			{title && (
