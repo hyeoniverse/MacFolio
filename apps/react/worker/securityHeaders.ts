@@ -64,7 +64,8 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 		'style-src': ["'self'", "'unsafe-inline'"],
 		// GitHub README·글의 바깥 그림은 주소를 미리 알 수 없다. 그림은 스크립트를 실행하지 못하니 https 전체를 연다
 		'img-src': ["'self'", 'data:', 'blob:', 'https:', ...api],
-		'media-src': ["'self'", 'blob:', ...api],
+		// 메모 글에 주소만 적은 바깥 영상·음악 파일(<video>·<audio>)은 주소를 미리 알 수 없다. 미디어는 스크립트를 실행하지 못하니 그림처럼 https 전체를 연다
+		'media-src': ["'self'", 'blob:', 'https:', ...api],
 		'font-src': ["'self'", 'data:'],
 		// R2: 관리자가 문서 파일을 서명 주소로 바로 올린다 (계정마다 주소가 달라 * 하나로 연다. 서명이 없으면 쓸 수 없다)
 		// blob:: 방문자가 놓은 PDF(이 탭의 blob 주소)를 pdf.js가 fetch로 읽는다 (Finder localFiles)

@@ -180,4 +180,52 @@ test.describe('메모 바깥 링크 임베드', () => {
 		await page.waitForTimeout(1000);
 		expect(blocked).toEqual([]);
 	});
+
+	for (const admin of [false, true])
+		test(`영상·음악 파일: 주소만 적은 영상 주소와 올린 음악 파일을 재생기로 그린다 (${admin ? '편집 화면' : '읽기 화면'})`, async ({
+			page,
+		}) => {
+			const blocked: string[] = [];
+			page.on('console', (message) => {
+				if (/Content Security Policy|Refused to load media/i.test(message.text())) blocked.push(message.text());
+			});
+			// 파일 응답은 가짜로 (재생기가 요청만 하면 된다)
+			await page.route(/^https:\/\/(media\.example\.com|api\.example\.com)\//, (route) =>
+				route.fulfill({ status: 200, contentType: 'application/octet-stream', body: '' })
+			);
+			const api = await fakeApi(page, { signedIn: admin });
+			const body = [
+				'https://media.example.com/clips/demo.mp4',
+				'[노래.mp3](https://api.example.com/files/abc123 "첨부 파일 · 3.2 MB")',
+				'문장 속 파일 https://media.example.com/clips/demo.mp4 은 링크다.',
+			].join('\n\n');
+			const content = { title: '재생기', date: '2026-10-30', category: '기타', summary: '', body };
+			api.posts.push({ slug: 'media-demo', ...content, published: content, deleted: false });
+			await enterDesktop(page, '/memo/media-demo');
+			const memo = appWindow(page, 'memo');
+			const video = memo.locator('.memo-media[data-kind="video"] video');
+			const audio = memo.locator('.memo-media[data-kind="audio"] audio');
+			await expect(video).toHaveAttribute('src', 'https://media.example.com/clips/demo.mp4');
+			await expect(video).toHaveAttribute('controls', '');
+			await expect(audio).toHaveAttribute('src', 'https://api.example.com/files/abc123');
+			await expect(memo.locator('.memo-media')).toHaveCount(2);
+			// 캡션: 파일 이름 링크 (올린 파일은 첨부 파일 제목 그대로)
+			await expect(memo.locator('.memo-media[data-kind="video"] figcaption a')).toHaveText('demo.mp4');
+			await expect(memo.locator('.memo-media[data-kind="audio"] figcaption a')).toHaveAttribute(
+				'title',
+				'첨부 파일 · 3.2 MB'
+			);
+			if (admin) {
+				// 편집기: 원래 링크 문단은 숨기고, 재생기에는 주소 바꾸기·삭제만 (링크로 바꾸기는 없다)
+				await expect(memo.locator('.ProseMirror p.memo-embed-source')).toHaveCount(2);
+				const figure = memo.locator('.memo-media[data-kind="audio"]');
+				await figure.hover();
+				await expect(figure.getByRole('button')).toHaveText(['', '']);
+				await expect(figure.getByRole('button', { name: '주소 바꾸기' })).toBeVisible();
+				await expect(figure.getByRole('button', { name: '링크로 바꾸기' })).toHaveCount(0);
+				await figure.getByRole('button', { name: '임베드 삭제' }).click();
+				await expect(memo.locator('.memo-media')).toHaveCount(1);
+			}
+			expect(blocked).toEqual([]);
+		});
 });

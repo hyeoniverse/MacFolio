@@ -40,6 +40,8 @@ describe('보안 헤더', () => {
 		);
 		expect(csp['connect-src']).toContain('https://macfolio-api.hyeoniverse.com');
 		expect(csp['media-src']).toContain('https://macfolio-api.hyeoniverse.com');
+		// 메모 글의 바깥 영상·음악 파일 (스크립트를 실행하지 못하는 미디어라 https 전체)
+		expect(csp['media-src']).toContain('https:');
 		expect(csp['frame-src']).toEqual([
 			"'self'",
 			'https://challenges.cloudflare.com',

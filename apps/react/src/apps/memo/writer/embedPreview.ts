@@ -1,17 +1,27 @@
 import { $prose } from '@milkdown/kit/utils';
 import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, TextSelection, type EditorState, type Transaction } from '@milkdown/kit/prose/state';
-import { embedOf } from '@macfolio/desktop-core/memo';
+import { embedOf, mediaKindOf } from '@macfolio/desktop-core/memo';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
-import { embedBlockOf, type EmbedBlock } from '../embedBlock';
+import { linkBlockOf, type EmbedBlock, type LinkBlock, type MediaBlock } from '../embedBlock';
 import { EMBED_ALLOW } from '../components/MemoEmbed';
 
-/** 편집기 문단이 주소 링크 하나뿐이면 그 임베드 (읽기 화면의 embedBlockOfParagraph와 같은 규칙) */
-function embedBlockOfNode(paragraph: Node): EmbedBlock | null {
-	if (paragraph.type.name !== 'paragraph' || paragraph.childCount !== 1) return null;
-	const text = paragraph.firstChild!;
-	const link = text.isText ? text.marks.find((mark) => mark.type.name === 'link') : undefined;
-	return link ? embedBlockOf(String(link.attrs.href), text.text ?? '') : null;
+/**
+ * 편집기 문단이 링크 하나뿐이면 그 임베드·재생기 (읽기 화면의 linkBlockOfParagraph와 같은 규칙).
+ * 올린 파일을 넣으면 링크 뒤에 빈칸 하나가 붙으므로 공백 글자는 무시한다
+ */
+function linkBlockOfNode(paragraph: Node): LinkBlock | null {
+	if (paragraph.type.name !== 'paragraph') return null;
+	const parts: Node[] = [];
+	let other = false;
+	paragraph.forEach((child) => {
+		if (!child.isText) other = true;
+		else if (child.marks.some((mark) => mark.type.name === 'link')) parts.push(child);
+		else if (child.text?.trim()) other = true;
+	});
+	if (other || parts.length !== 1) return null;
+	const link = parts[0].marks.find((mark) => mark.type.name === 'link')!;
+	return linkBlockOf(String(link.attrs.href), parts[0].text ?? '', link.attrs.title as string | null);
 }
 
 /** 주소 하나뿐인 문단의 글자 (공백 없는 https 주소) */
@@ -20,7 +30,7 @@ const URL_ONLY = /^https:\/\/\S+$/;
 /**
  * 주소만 있는 문단의 링크를 글자와 맞춘다. 저장하는 Markdown과 읽기 화면의 임베드가 글자의 주소를 따르게 하려는 것이다.
  * - 주소 글자를 고치면 링크 대상(href)이 예전 주소로 남는다 → 링크를 새 글자 주소로 바꾼다
- * - 지원 사이트의 주소를 직접 입력하면 링크가 없는 글자다 → 링크를 건다 (붙여 넣은 주소는 편집기가 이미 링크로 만든다)
+ * - 지원 사이트나 영상·음악 파일의 주소를 직접 입력하면 링크가 없는 글자다 → 링크를 건다 (붙여 넣은 주소는 편집기가 이미 링크로 만든다)
  */
 function syncUrlLinks(state: EditorState): Transaction | null {
 	const link = state.schema.marks.link;
@@ -39,7 +49,7 @@ function syncUrlLinks(state: EditorState): Transaction | null {
 			if (mark) linked = true;
 			if (!mark || mark.attrs.href !== text) matches = false;
 		});
-		if (!onlyText || matches || (!linked && !embedOf(text))) return false;
+		if (!onlyText || matches || (!linked && !embedOf(text) && !mediaKindOf(text))) return false;
 		const from = pos + 1;
 		const to = from + node.content.size;
 		tr ??= state.tr;
@@ -53,7 +63,7 @@ function syncUrlLinks(state: EditorState): Transaction | null {
 function sourceRange(view: EditorView, widgetPos: number | undefined) {
 	if (widgetPos === undefined) return null;
 	const paragraph = view.state.doc.resolve(widgetPos).nodeBefore;
-	if (!paragraph || !embedBlockOfNode(paragraph)) return null;
+	if (!paragraph || !linkBlockOfNode(paragraph)) return null;
 	const start = widgetPos - paragraph.nodeSize;
 	return { start, end: widgetPos, from: start + 1, to: widgetPos - 1, paragraph };
 }
@@ -108,12 +118,12 @@ function runEmbedAction(view: EditorView, widgetPos: number | undefined, action:
 }
 
 /** 임베드 위의 도구 버튼 (마우스를 올리면 보인다). YouTube 재생기 안의 버튼(링크 복사)과 같은 모양 (styles/markdown.css) */
-function toolBar(view: EditorView, getPos: () => number | undefined): HTMLElement {
+function toolBar(view: EditorView, getPos: () => number | undefined, actions: readonly EmbedAction[]): HTMLElement {
 	const bar = document.createElement('span');
 	bar.className = 'memo-embed-tools';
 	bar.setAttribute('role', 'group');
 	bar.setAttribute('aria-label', '임베드');
-	for (const { action, label, icon } of TOOL_BUTTONS) {
+	for (const { action, label, icon } of TOOL_BUTTONS.filter((button) => actions.includes(button.action))) {
 		const button = document.createElement('button');
 		button.type = 'button';
 		button.className = 'memo-overlay-button';
@@ -148,7 +158,7 @@ function embedDom({ href, embed }: EmbedBlock, view: EditorView, getPos: () => n
 	iframe.allow = EMBED_ALLOW;
 	iframe.allowFullscreen = true;
 	iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-	frame.append(toolBar(view, getPos));
+	frame.append(toolBar(view, getPos, ['edit', 'unembed', 'remove']));
 	// 읽기 화면과 같은 캡션: 원래 주소를 새 탭에서 연다
 	const caption = figure.appendChild(document.createElement('figcaption'));
 	const link = caption.appendChild(document.createElement('a'));
@@ -158,6 +168,38 @@ function embedDom({ href, embed }: EmbedBlock, view: EditorView, getPos: () => n
 	link.textContent = `${embed.name}에서 열기`;
 	return figure;
 }
+
+/**
+ * 읽기 화면의 MemoMedia와 같은 모양의 <video>·<audio>와 도구 버튼(주소 바꾸기·삭제).
+ * 재생기는 이미 링크가 아니므로 '링크로 바꾸기'는 없다
+ */
+function mediaDom({ href, kind, name, title }: MediaBlock, view: EditorView, getPos: () => number | undefined) {
+	const figure = document.createElement('figure');
+	figure.className = 'memo-media';
+	figure.dataset.kind = kind;
+	figure.contentEditable = 'false';
+	const frame = figure.appendChild(document.createElement('div'));
+	frame.className = 'memo-media-frame';
+	const player = frame.appendChild(document.createElement(kind));
+	player.src = href;
+	player.controls = true;
+	player.preload = 'metadata';
+	player.setAttribute('aria-label', name);
+	if (player instanceof HTMLVideoElement) player.playsInline = true;
+	frame.append(toolBar(view, getPos, ['edit', 'remove']));
+	const caption = figure.appendChild(document.createElement('figcaption'));
+	const link = caption.appendChild(document.createElement('a'));
+	link.href = href;
+	if (title) link.title = title;
+	link.target = '_blank';
+	link.rel = 'noopener noreferrer';
+	link.textContent = name;
+	return figure;
+}
+
+/** 위젯 DOM: 임베드는 iframe, 영상·음악은 재생기 */
+const widgetDom = (block: LinkBlock, view: EditorView, getPos: () => number | undefined) =>
+	block.type === 'embed' ? embedDom(block, view, getPos) : mediaDom(block, view, getPos);
 
 /**
  * 숨긴 주소 문단으로 키보드 커서를 옮긴다. 높이가 0인 문단은 브라우저의 위·아래 화살표 이동이 건너뛰므로,
@@ -172,14 +214,14 @@ function moveIntoSource(view: EditorView, event: KeyboardEvent): boolean {
 	const boundary = down ? $head.after() : $head.before();
 	const $boundary = view.state.doc.resolve(boundary);
 	const sibling = down ? $boundary.nodeAfter : $boundary.nodeBefore;
-	if (!sibling || !embedBlockOfNode(sibling)) return false;
+	if (!sibling || !linkBlockOfNode(sibling)) return false;
 	const target = down ? boundary + 1 : boundary - 1;
 	view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, target)).scrollIntoView());
 	return true;
 }
 
 /**
- * 주소만 한 줄로 적은 문단을 읽기 화면처럼 임베드로 보인다. 글(Markdown)은 그대로 주소 한 줄이고, 화면에서만
+ * 주소만 한 줄로 적은 문단과 영상·음악 파일 링크를 읽기 화면처럼 임베드·재생기로 보인다. 글(Markdown)은 그대로 주소 한 줄이고, 화면에서만
  * 주소 문단을 숨기고(커서가 들어오면 보인다) 그 뒤에 임베드 위젯을 붙인다. 주소를 고치면 링크와 임베드가 함께 바뀐다.
  * 같은 주소면 같은 key로 위젯을 다시 쓰므로 글자를 입력해도 iframe이 다시 불러와지지 않는다
  */
@@ -195,7 +237,7 @@ export const embedPreview = $prose(
 					const { from, to } = state.selection;
 					state.doc.descendants((node, pos) => {
 						if (node.type.name !== 'paragraph') return true;
-						const block = embedBlockOfNode(node);
+						const block = linkBlockOfNode(node);
 						if (!block) return false;
 						// 주소 문단은 숨기고, 커서나 선택이 그 안에 있을 때만 보인다 (styles/markdown.css의 .memo-embed-source)
 						const editing = from > pos && to < pos + node.nodeSize;
@@ -206,9 +248,10 @@ export const embedPreview = $prose(
 							})
 						);
 						decorations.push(
-							Decoration.widget(pos + node.nodeSize, (view, getPos) => embedDom(block, view, getPos), {
+							Decoration.widget(pos + node.nodeSize, (view, getPos) => widgetDom(block, view, getPos), {
 								side: -1,
-								key: `embed:${block.embed.src}`,
+								// 같은 key면 DOM(iframe·재생기)을 다시 만들지 않는다
+								key: block.type === 'embed' ? `embed:${block.embed.src}` : `media:${block.href}`,
 								ignoreSelection: true,
 								stopEvent: () => true,
 							})
