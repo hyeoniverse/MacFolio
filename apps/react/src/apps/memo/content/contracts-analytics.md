@@ -1,7 +1,7 @@
 ---
 title: zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기
 date: 2026-10-11
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
 seriesOrder: 5
 summary: 분석 이벤트의 전송 형식, 서버 검증(parseBatch 55줄), 조회 응답 타입이 세 파일에 각각 정의되어 있었다. 이벤트 묶음과 응답 타입을 contracts의 zod 스키마로 옮기고, 요청 헤더와 비밀 키가 필요한 코드만 서버에 남겼다. 다른 방법과의 비교, 이후 UTM을 추가할 때의 변경 범위까지 정리했다.

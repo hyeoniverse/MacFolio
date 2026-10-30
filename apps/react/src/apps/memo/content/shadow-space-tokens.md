@@ -1,7 +1,7 @@
 ---
 title: 그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기
 date: 2026-10-18
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 디자인 토큰
 seriesOrder: 4
 summary: padding·margin·gap 3,657곳 중 값이 모두 자주 쓰는 열 값(2~24px)인 1,543곳을 --space-* 이름으로, 세 곳 이상 반복된 그림자 다섯 값 19곳을 --shadow-* 이름으로 교체했다. 값이 같아 화면은 바뀌지 않으며, 계산된 스타일 비교로 확인했다.

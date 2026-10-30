@@ -1,7 +1,7 @@
 ---
 title: placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기
 date: 2026-10-01
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 1
 summary: 컨텍스트 메뉴, Apple 메뉴, 서식 창, 달력 등 다섯 곳이 "바깥 클릭 시 닫기"와 "화면 안 위치 보정"을 각각 구현하고 있었다. placement·useDismiss·Menu 세 모듈로 분리해 전환하고, 스크린샷 40장 비교로 바뀐 메뉴 네 개를 확인했다.

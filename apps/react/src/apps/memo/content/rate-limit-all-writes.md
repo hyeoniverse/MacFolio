@@ -1,7 +1,7 @@
 ---
 title: @RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기
 date: 2026-10-09
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
 seriesOrder: 6
 summary: 요청 제한 방식이 세 가지로 나뉘어 있었고 글 작성·파일 업로드·분석 이벤트에는 1분 제한이 없었다. 제한 이름 7개를 한 파일에 정의하고 쓰기 경로 33개에 @RateLimit 한 줄로 적용했다. 가드 순서를 한 번 잘못 지정했고, 누락된 경로와 순서는 경로 표 시험이 검출한다.

@@ -1,7 +1,7 @@
 ---
 title: variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기
 date: 2026-10-18
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 9
 summary: 같은 부품이 macOS와 iOS 모양을 선택하는 곳을 모두 찾았다. variant가 적합한 곳은 Menu 하나라 className="touch"를 variant="ios"로 바꿨고(9파일), Sheet·Modal 등은 이유를 기록하고 별도 부품으로 유지했다.

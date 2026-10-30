@@ -1,7 +1,7 @@
 ---
 title: 선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기
 date: 2026-10-01
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
 seriesOrder: 1
 summary: 게시 버튼 글자가 흐린 원인은 앱 루트의 .memo button { color: inherit }(0,1,1)이 버튼 클래스(0,1,0)를 이긴 데 있었다. 같은 구조로 !important가 72개 쌓여 있었다. 앱 기본값 규칙을 @layer reset으로 옮기고 화면 58장을 픽셀 단위로 비교했다.

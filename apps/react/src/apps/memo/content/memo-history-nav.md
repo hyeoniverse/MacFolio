@@ -1,7 +1,7 @@
 ---
 title: 브라우저 history 대신 sessionStorage에 쌓는 앱 내부 뒤로·앞으로 기록
 date: 2026-10-27
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 summary: 메모 앱 도구 막대에 Finder·Safari처럼 ‹ › 버튼을 더했다. 연 폴더와 본 글을 기록에 쌓고, 길게 누르면 지난 칸 목록이 열린다. 브라우저 기록에 쌓지 않은 이유, 지운 글을 건너뛰는 규칙, 돌아온 글을 떠날 때의 스크롤 위치에서 여는 방법을 정리했다.
 ---
 

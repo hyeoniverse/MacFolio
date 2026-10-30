@@ -1,7 +1,7 @@
 ---
 title: 공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계
 date: 2026-10-11
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 사이트 편집
 seriesOrder: 3
 summary: 관리자가 새 프로젝트에 고르는 Safari 페이지 템플릿을 7개에서 12·13개로 늘렸다가, 공통 내용 모델 위의 9개로 다시 설계했다. 폐기한 시도와 이유, 저장소 모양, RPG 대화창의 기록을 정리한다.

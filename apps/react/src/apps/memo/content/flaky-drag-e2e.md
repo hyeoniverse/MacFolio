@@ -1,7 +1,7 @@
 ---
 title: 이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E
 date: 2026-10-01
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: E2E 시험
 seriesOrder: 4
 summary: 블로그 글에 이미지를 추가한 PR에서, 변경과 무관한 이미지 드래그 E2E가 실패했다. 이벤트를 하나씩 기록해 확인한 원인은 두 가지였다. 이미지 로드가 끝나기 전에 측정한 좌표, 그리고 마지막 이동 단계에서 발생하지 않은 dragover.

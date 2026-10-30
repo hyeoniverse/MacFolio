@@ -1,7 +1,7 @@
 ---
 title: GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기
 date: 2026-10-10
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
 seriesOrder: 9
 summary: 다른 커밋으로 옮길 수 있는 태그(@v7) 대신 액션 9종을 커밋 SHA로 고정하고, 토큰 권한을 축소하고, 새 버전은 Dependabot이 PR로 제안하게 했다. 이후 열흘 동안 Dependabot PR 10개를 병합했고, 규칙 검사의 예외 조건도 한 번 수정했다.

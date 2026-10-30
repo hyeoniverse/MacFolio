@@ -1,7 +1,7 @@
 ---
 title: 캡처 단계 이벤트와 pointer capture로 맞춘 화면과 입력 처리 영역
 date: 2026-10-22
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 최대화한 창은 크기 조절 커서만 표시되고 끌리지 않았고, Dock을 누르는 동안 메뉴 막대 앱 이름이 Finder로 깜빡였고, 음량 창은 맨 위를 눌러도 91%였다. 셋 다 화면에 보이는 것과 입력을 처리하는 조건·영역이 달랐던 곳이다.
 ---
 

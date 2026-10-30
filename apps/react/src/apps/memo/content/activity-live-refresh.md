@@ -1,7 +1,7 @@
 ---
 title: visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기
 date: 2026-10-23
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
 seriesOrder: 10
 summary: 활동 상태 보기, 메모 조회수·댓글, 메시지, 받은 편지함, 위젯이 앱을 연 시각의 값에 머물러 있었다. 탭이 보이고 창이 열린 동안만 다시 조회하는 usePolling 훅을 만들고, 위젯 여러 개의 같은 요청은 공유 폴러로 하나로 묶었다. SSE·WebSocket과 비용도 비교했다.

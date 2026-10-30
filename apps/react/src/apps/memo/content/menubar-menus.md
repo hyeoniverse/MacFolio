@@ -1,7 +1,7 @@
 ---
 title: 앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조
 date: 2026-10-05
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 메뉴 막대
 seriesOrder: 4
 summary: 장식이던 File·Edit·View 글자를 실제 메뉴로 바꿨다. 앱이 열려 있는 동안 메뉴를 등록하고 메뉴 막대가 공통 메뉴와 병합한다. ⌥ 단축키, 앱 고유 항목만 남기는 정리, 밀려 온 제목·1.5px 어긋남 같은 버그도 수정했다.

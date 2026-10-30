@@ -1,7 +1,7 @@
 ---
 title: remark-cjk-friendly로 한국어 조사 앞에서 깨지는 CommonMark 굵게 바로잡기
 date: 2026-10-01
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/화면·스타일
 summary: `**취소(cancelled)**가`가 굵게로 렌더링되지 않고 별표가 그대로 표시됐다. CommonMark의 닫는 구분자 규칙이 조사를 붙여 쓰는 한국어와 맞지 않아서였다. 글을 수정하는 대신 읽기 화면과 편집기에 같은 플러그인을 적용했고, 편집기가 저장 시 글을 변형하던 문제도 함께 해결했다.
 ---
 

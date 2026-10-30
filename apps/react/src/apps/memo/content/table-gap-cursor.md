@@ -1,7 +1,7 @@
 ---
 title: ProseMirror 표의 틈 커서·셀 범위 선택·Backspace 삭제를 macOS 메모처럼 만들기
 date: 2026-10-01
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메모 편집기
 seriesOrder: 3
 summary: 편집기의 표 옆에 커서를 놓을 수 없었다. 틈 커서는 이미 있었지만 CSS를 불러오지 않아 표시되지 않았고, 그 위치에서 입력한 글자는 사라졌으며, 표 옆 여백은 편집기 밖이라 클릭이 전달되지 않았다. 표 양옆 세로 커서, 끌어 선택한 칸의 테두리·꼭짓점 표시, 빈 행·열과 표의 Backspace 삭제를 macOS 메모 기준으로 구현한 기록.

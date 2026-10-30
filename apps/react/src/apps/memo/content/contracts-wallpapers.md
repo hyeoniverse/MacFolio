@@ -1,7 +1,7 @@
 ---
 title: DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기
 date: 2026-10-11
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: contracts 스키마
 seriesOrder: 5
 summary: 배경화면 이름 한도 40자가 DB CHECK 제약, 서버 rules.ts, 화면 WallpaperGroup.tsx에 각각 정의되어 있었다. 이름 정리 함수·한도·이름 변경 요청 본문·목록 타입을 contracts로 옮겼다. 업로드는 multipart라 스키마 없이 같은 이름 정리 함수만 거친다.

@@ -1,7 +1,7 @@
 ---
 title: API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기
 date: 2026-10-02
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/서버·API
 series: GitHub 앱
 seriesOrder: 1
 summary: 코드에 직접 입력하던 GitHub 앱의 프로필·README·고정 저장소를, API 서버가 GitHub에서 조회해 30분(토큰이 있으면 10분) 캐시한 뒤 응답하게 했다. README는 sanitize 후 렌더링하고 배지는 Contact 버튼으로 바꾸며, 표시할 저장소는 시스템 설정에서 선택한다.

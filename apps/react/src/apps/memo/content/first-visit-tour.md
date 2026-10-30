@@ -1,7 +1,7 @@
 ---
 title: box-shadow 스포트라이트와 pointer-events로 클릭을 통과시키는 온보딩 오버레이
 date: 2026-10-21
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 첫 방문자에게 화면을 어둡게 덮고 한 곳만 비추는 둘러보기와 macOS 팁 앱을 추가했다. 덮개는 pointer-events none으로 클릭을 통과시키고, 비춘 곳의 클릭은 캡처 단계에서 감지해 원래 동작 뒤 다음 단계로 넘긴다. 이후 팁 앱의 위쪽 막대가 제목 표시줄을 덮어 창을 끌 수 없던 문제를 수정했다.
 ---
 

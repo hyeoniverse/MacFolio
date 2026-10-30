@@ -1,7 +1,7 @@
 ---
 title: Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기
 date: 2026-10-23
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
 seriesOrder: 7
 summary: 텍스트 편집기 창에서 연 저장소 문서의 코드 블록이 문법 강조 없이 본문 색으로 표시되었다. 강조 색 변수를 메모·Finder 창에만 정의한 것이 원인이었다. 블로그와 문서 보기가 따로 정의하던 코드·목록·구분선·접기 블록 규칙을 styles/prose.css 하나로 옮기고, 화면마다 다른 값은 --prose-* 변수로 분리했다.

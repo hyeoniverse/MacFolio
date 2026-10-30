@@ -1,7 +1,7 @@
 ---
 title: 180px 칸 격자 좌표로 바탕화면 위젯 배치하기
 date: 2026-10-21
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/화면·스타일
 series: 위젯
 seriesOrder: 1
 summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. 정보를 보는 위젯은 유리, 글을 읽는 위젯은 불투명한 판이고, 사진 위젯은 Finder › 그림의 폴더도 선택한다. 잘리던 앱과 시계, 날씨 요청 공유, 휴대폰 Finder 편집과 휴지통 문제까지 정리했다.

@@ -1,7 +1,7 @@
 ---
 title: 차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프
 date: 2026-10-07
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
 seriesOrder: 3
 summary: 수집한 지표를 macOS의 활동 상태 보기 형태로 조회하는 앱을 만들었다. 탭 다섯 개, 정렬되는 표 하나, 라이브러리 없이 62줄로 렌더링한 SVG 그래프, 컨테이너 질의로 맞춘 좁은 창. 처음엔 관리자 전용이었다가 같은 날 공개 지표를 누구나 조회하게 바꿨다.

@@ -1,7 +1,7 @@
 ---
 title: 계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기
 date: 2026-10-01
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 2
 summary: 앱 기본값을 CSS 레이어로 내린 덕분에 남은 !important 66개를 모두 삭제했다. 화면 58장과 계산된 스타일 약 1,200건을 비교해 차이 세 건을 찾아 수정했고, 앱마다 별도로 있던 아이콘 버튼 4종을 IconButton 하나로 통합했다.

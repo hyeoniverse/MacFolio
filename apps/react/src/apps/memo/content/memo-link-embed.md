@@ -1,7 +1,7 @@
 ---
 title: 주소에서 ID를 뽑아 만든 iframe 임베드와 ProseMirror 위젯 장식으로 그리는 바깥 링크 미리 보기
 date: 2026-10-30
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 메모 글에 YouTube·SoundCloud·CodePen 등 21개 사이트의 주소만 한 줄로 적으면 iframe 임베드로, 영상·음악 파일은 브라우저 재생기로 그리게 했다. 원래 주소 대신 주소에서 뽑은 ID로 임베드 주소를 새로 만들고, 같은 출처 목록을 CSP frame-src에 쓴다. 편집기는 글을 바꾸지 않는 위젯 장식으로 같은 임베드를 보인다.
 ---
 

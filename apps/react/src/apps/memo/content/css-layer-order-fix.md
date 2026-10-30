@@ -1,7 +1,7 @@
 ---
 title: CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기
 date: 2026-10-12
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
 seriesOrder: 3
 summary: 공통 Button의 안쪽 여백이 0으로 계산되고 있었다. 빌드 결과에서 공통 컴포넌트 CSS 파일이 main CSS보다 먼저 로드되어 components 층이 reset 층보다 먼저 정의됐고, reset의 * { padding: 0 }이 우선 적용됐다. 층 순서 선언을 index.html 인라인 스타일로 옮겨 모든 CSS보다 먼저 선언했다.

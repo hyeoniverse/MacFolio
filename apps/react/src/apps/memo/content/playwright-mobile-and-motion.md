@@ -1,7 +1,7 @@
 ---
 title: Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기
 date: 2026-09-29
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: E2E 시험
 seriesOrder: 2
 summary: 휴대폰 화면과 창 애니메이션을 추가하자 E2E 결과가 불안정해졌다. iPhone도 Chromium으로 에뮬레이션하는 프로젝트 3개, 664px 뷰포트, 기본 움직임 줄이기와 1ms 전환의 문제, 병렬 실행 시 로딩 지연을 정리했다.

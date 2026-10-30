@@ -1,7 +1,7 @@
 ---
 title: Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기
 date: 2026-10-23
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: 성능 최적화
 seriesOrder: 3
 summary: 3차까지 배포된 운영 사이트를 다시 측정했다. 휴대폰 98점(LCP 1.9초), 데스크톱 97점(LCP 1.0초). 같은 측정에서 명언 위젯의 데이터 66KB가 첫 번들에 들어간 것을 찾아 lazy로 분리했다.

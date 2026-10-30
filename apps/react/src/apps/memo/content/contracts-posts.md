@@ -1,7 +1,7 @@
 ---
 title: ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기
 date: 2026-10-11
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: contracts 스키마
 seriesOrder: 2
 summary: 블로그 글(posts)의 요청·응답을 contracts로 옮겼다. 글 타입은 이미 desktop-core에 있어서 스키마를 그 타입에 맞춰 선언(ZodType<PostContent>)하고, 어긋나면 tsc가 막게 했다. 서버의 if문 스물한 줄을 스키마 하나로 대체했고 400 응답의 이유 순서도 유지했다.

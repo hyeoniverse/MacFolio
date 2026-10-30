@@ -1,7 +1,7 @@
 ---
 title: Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리
 date: 2026-09-29
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: 메모 폴더
 seriesOrder: 2
 summary: 관리자가 메모 폴더를 정리하게 하면서 글은 Markdown에 그대로 두고, 정리 내용(폴더·이동·고정)만 서버에 JSON 하나로 저장해 글 목록 위에 겹쳐 표시했다. 페이지를 떠나는 시각의 keepalive 요청이 전송되지 않아, 편집마다 즉시 순차 저장한다.

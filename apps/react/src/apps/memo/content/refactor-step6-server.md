@@ -1,7 +1,7 @@
 ---
 title: 책임별 서비스 분리와 공유 zod 스키마로 정리한 서버 코드
 date: 2026-10-18
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: 리팩터링
 seriesOrder: 6
 summary: 리팩터링 6단계를 정리한다. 341줄 AnalyticsService를 저장·집계·조회 세 서비스로 분리하고, 관리자 설정 세 요청 본문과 데모 네 요청 본문의 수작업 검사를 1단계의 공유 스키마로 옮겼다. 경로·응답·거절 문구는 유지하고 API e2e 124개로 확인했다.

@@ -1,7 +1,7 @@
 ---
 title: git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기
 date: 2026-10-19
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: E2E 시험
 seriesOrder: 5
 summary: 화면 E2E를 3개에서 6개 샤드로 나눠 PR 시험 시간을 약 절반으로 줄이고, PR에서 이미 통과한 코드와 트리가 같은 main 커밋은 e2e를 다시 실행하지 않고 바로 배포하게 했다. 제외하거나 줄인 시험은 없다.

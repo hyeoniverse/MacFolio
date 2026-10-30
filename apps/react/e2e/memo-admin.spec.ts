@@ -244,7 +244,7 @@ test.describe('메모 편집 (관리자)', () => {
 		const changed = {
 			title: '서버에서 고친 제목',
 			date: '2026-09-29',
-			category: '개발 기록/MacFolio/품질',
+			category: '개발 기록/MacFolio/테스트·보안·성능',
 			summary: '',
 			body: '서버에서 고친 본문',
 		};

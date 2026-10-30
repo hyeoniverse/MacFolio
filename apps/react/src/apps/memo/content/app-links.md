@@ -1,7 +1,7 @@
 ---
 title: History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기
 date: 2026-10-01
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 summary: 단일 페이지 위에 창을 표시하는 사이트라 글 하나를 가리키는 링크가 없었다. /memo/<글>, /safari/<프로젝트>로 접속하면 해당 화면이 열리게 하고, 주소 막대가 맨 앞 창을 따르게 하고, 공유 버튼과 글 사이 링크를 추가했다.
 ---
 

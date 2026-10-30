@@ -1,7 +1,7 @@
 ---
 title: 직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기
 date: 2026-10-18
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 디자인 토큰
 seriesOrder: 5
 summary: 앱 CSS에 직접 작성한 hex 513곳 중 288곳을 theme.css의 색 토큰으로 바꿨다. 테마와 무관한 값은 Apple 시스템 색 이름으로, 라이트·다크 쌍은 두 선언이 정확히 일치할 때만 통합했다. 계산된 스타일 41만여 개를 비교해 화면 변화가 없는 것을 확인했다.

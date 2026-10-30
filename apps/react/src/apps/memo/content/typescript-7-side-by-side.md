@@ -1,7 +1,7 @@
 ---
 title: npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기
 date: 2026-10-12
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 summary: Dependabot의 TypeScript 7 PR이 린트 단계에서 실패했다. typescript 이름에는 TS 6 호환 패키지를, @typescript/native에는 TS 7을 npm 별칭으로 지정해 tsc는 7로, typescript-eslint는 6 API로 실행되게 했다. 타입 체크는 약 23초에서 5초로 줄었다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기
 date: 2026-10-16
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 디자인 토큰
 seriesOrder: 3
 summary: CSS의 font-size 958곳 중 자주 쓰는 여덟 값에 Apple HIG의 글자 스타일 이름(--text-caption2~title2)을 붙여 645곳을 바꿨다. 값은 그대로라 화면은 같다. 사흘 뒤 다른 브랜치에서 숫자 값 375곳이 다시 유입된 경위까지 정리했다.

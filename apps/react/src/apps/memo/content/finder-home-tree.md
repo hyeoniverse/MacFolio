@@ -1,7 +1,7 @@
 ---
 title: 가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리
 date: 2026-10-20
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/서버·API
 series: Finder
 seriesOrder: 5
 summary: 미리보기 열기 창에서 바탕화면의 포트폴리오를 열면 비어 있었다. 한 줄로 수정할 수 있었지만, 근본 원인은 가상본을 빈 폴더로 표현한 구조였다. 가상본을 별도 종류로 분리하고, 서로 독립된 최상위 위치들을 macOS처럼 Macintosh HD 아래 한 트리로 통합한 과정을 정리했다.

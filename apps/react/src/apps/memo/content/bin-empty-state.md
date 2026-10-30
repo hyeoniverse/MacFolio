@@ -1,7 +1,7 @@
 ---
 title: 같은 탭에는 오지 않는 storage 이벤트를 주기 확인으로 보완하기
 date: 2026-10-11
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 summary: 휴지통이 비었는데도 Dock에는 종이가 가득 담긴 휴지통 아이콘이 표시됐다. 기존 아이콘에서 빈 휴지통 아이콘을 제작하고, 같은 탭의 localStorage 변경을 감지하는 방법을 정해 Dock에 반영하고, 휴지통 창은 Finder처럼 가운데를 비웠다.
 ---
 

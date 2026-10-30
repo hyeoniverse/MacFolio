@@ -1,7 +1,7 @@
 ---
 title: @import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증
 date: 2026-10-16
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
 seriesOrder: 4
 summary: 4,600줄 Memo.css를 규칙을 옮기지 않고 구역 경계에서만 분할해 열다섯 파일로 나눴다. 원래 파일은 순서대로 불러오는 @import 목록만 남겼고, 분할 전후 빌드한 CSS의 md5가 같은 것으로 검증했다.

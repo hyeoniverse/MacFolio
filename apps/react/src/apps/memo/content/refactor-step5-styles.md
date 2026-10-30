@@ -1,7 +1,7 @@
 ---
 title: CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기
 date: 2026-10-18
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 리팩터링
 seriesOrder: 5
 summary: 리팩터링 5단계 회고. CSS 값은 하나도 바꾸지 않고 z-index·모서리·글자 크기·간격·그림자·색에 이름을 붙였고, 4,600줄 Memo.css를 열다섯 파일로 분할했으며, 중복과 사용하지 않는 규칙을 삭제했다. 동일 여부는 자동 비교로 확인했다.

@@ -1,7 +1,7 @@
 ---
 title: 서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기
 date: 2026-10-10
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: 서버 운영
 seriesOrder: 6
 summary: "SSH는 키로만, 열린 포트는 22뿐, 컨테이너는 root가 아닌 사용자로, 보안 업데이트는 자동으로." 이 네 가지를 문서에 적는 대신 ops/audit.sh가 서버 상태를 읽어 OK/확인을 출력하게 했다. 첫 실행에서 스크립트 쪽 오류 두 가지(루프백 DNS, distroless 사용자)를 수정했다.

@@ -1,7 +1,7 @@
 ---
 title: Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기
 date: 2026-10-15
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메모 편집기
 seriesOrder: 5
 summary: 편집기 서식 메뉴에 토글 목록과 각주를 추가하고, <details> 표기를 토글로 읽어 같은 표기로 저장한다. 220~440px가 취소선이 되던 문제, 마지막 글이 이동하면 폴더가 사라지던 문제, 긴 요약 때문에 게시가 실패하던 문제도 수정했다.

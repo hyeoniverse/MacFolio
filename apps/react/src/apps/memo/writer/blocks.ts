@@ -107,7 +107,7 @@ function downloadButton(getNode: () => Node) {
 	button.contentEditable = 'false';
 	button.setAttribute('aria-label', '이미지 내려받기');
 	button.title = '이미지 내려받기';
-	button.innerHTML = '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';
+	button.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i>';
 	button.addEventListener('mousedown', (event) => event.preventDefault());
 	button.addEventListener('click', () => {
 		const node = getNode();

@@ -1,7 +1,7 @@
 ---
 title: position sticky가 만든 쌓임 맥락에 갇힌 z-index
 date: 2026-09-29
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 summary: 메모 도구 막대에 position sticky를 적용하자 버튼이 표시되는데도 클릭되지 않았다. sticky가 생성한 쌓임 맥락 때문에 z-index 4가 창 끌기 영역(3) 아래에 놓였고, 도구 막대 대신 그 아래 영역만 스크롤하도록 바꿔 해결했다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: 리퍼러 검색어와 Search Console API로 유입 검색어 수집하기
 date: 2026-10-22
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
 seriesOrder: 8
 summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 리퍼러에 검색어가 있을 때만 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져온다. SDK 없이 서명한 서비스 계정 JWT, 설정 순서, 도메인 속성에서 이 사이트만 거르는 방법을 정리했다.

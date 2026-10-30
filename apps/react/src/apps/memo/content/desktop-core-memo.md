@@ -1,7 +1,7 @@
 ---
 title: desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기
 date: 2026-10-09
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/구조·상태 관리
 series: desktop-core
 seriesOrder: 2
 summary: 메모 앱의 글 읽기·정렬, 태그, 폴더 정리, 찾기, 글 검사를 packages/desktop-core로 옮겼다. localStorage를 직접 읽던 세 파일은 값 검사는 core, 브라우저 읽기·쓰기는 앱으로 나눴고, 목록에 표시할 글을 정하던 hook 안의 계산도 core의 noteView로 분리했다.

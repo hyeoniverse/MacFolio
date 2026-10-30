@@ -1,7 +1,7 @@
 ---
 title: 클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기
 date: 2026-10-19
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: Finder
 seriesOrder: 4
 summary: 블로그 글의 저장소 문서 링크(GitHub의 docs/*.md, README, CONTRIBUTING)를 누르면 새 탭의 GitHub 대신 사이트의 Finder에서 그 문서를 연다. 사이트 빌드에 이미 포함된 문서라 외부 사이트로 이동할 필요가 없다.

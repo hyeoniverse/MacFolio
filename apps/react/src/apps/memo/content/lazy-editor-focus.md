@@ -1,7 +1,7 @@
 ---
 title: 마운트 전 React.lazy 편집기로 가는 포커스를 onReady까지 대기시키기
 date: 2026-10-10
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메모 편집기
 seriesOrder: 4
 summary: 메모 편집 E2E 몇 개가 전체 실행 시에만 간헐적으로 실패했다. 의도적으로 부하를 걸어 재현하자 원인은 앱 코드였다. 제목에서 Enter를 누르면 본문 편집기로 포커스를 이동하는데, 지연 로딩하는 편집기가 느린 기기에서는 아직 마운트되지 않았다.

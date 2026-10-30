@@ -1,7 +1,7 @@
 ---
 title: 리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그
 date: 2026-09-28
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: E2E 시험
 seriesOrder: 1
 summary: 창 코드를 리팩터링하기 전에 E2E 시험 10개를 먼저 작성했더니 버그 다섯 개가 드러났다. 앱 전체를 멈추던 hook 순서, 한 번도 동작한 적 없던 창 위치 복구, 오래된 클로저, 전역 클래스 충돌, ICU 버전 차이. 발견 경위와 수정 방법, 그 뒤 시험이 432개로 늘어난 과정을 적었다.

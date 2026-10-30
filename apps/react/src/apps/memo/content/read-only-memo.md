@@ -1,7 +1,7 @@
 ---
 title: 정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기
 date: 2026-09-29
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 메모 폴더
 seriesOrder: 1
 summary: 폴더 생성·드래그 이동·고정까지 구현한 뒤 모두 비활성화했다. 정적 사이트의 브라우저 코드만으로는 관리자를 판별할 수 없기 때문이다. 편집 권한은 useCanEditMemo 하나로 판단하게 했고, 다음 날 관리자 로그인이 추가되자 그 한 줄만 바꿔 다시 활성화했다.

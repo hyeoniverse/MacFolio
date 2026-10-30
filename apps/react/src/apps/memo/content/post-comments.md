@@ -1,7 +1,7 @@
 ---
 title: scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글
 date: 2026-09-29
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 summary: 가입 없이 이름·비밀번호로 작성하는 블로그 댓글을 추가하며 비밀번호는 scrypt 해시로, IP는 앞 두 자리와 HMAC으로만 저장했다. 응답 필드를 select로 제한하고 검사 규칙을 화면·서버가 공유하게 했다. 사흘 뒤 방문자 쿠키 방식으로 바뀐 과정도 정리한다.
 ---
 

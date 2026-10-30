@@ -1,7 +1,7 @@
 ---
 title: navigator.clipboard로 이름 없이 이메일 주소만 복사하기
 date: 2026-10-10
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메일 앱
 seriesOrder: 3
 summary: 메일 앱에서 사이트 주인의 주소를 누르면 이름 없이 이메일 주소만 복사되게 했다. 처음 만든 툴팁은 사이트의 다른 복사 기능과 같은 알림으로 바꿨고, 제목 막대 없는 창의 드래그 영역에 가려 클릭되지 않던 버튼은 z-index를 올렸다.

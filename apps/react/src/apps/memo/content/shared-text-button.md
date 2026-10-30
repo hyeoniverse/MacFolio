@@ -1,7 +1,7 @@
 ---
 title: 계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출
 date: 2026-10-01
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 3
 summary: 여섯 곳에 각각 정의된 취소·보내기·삭제 버튼을 공통 Button 하나로 통합하고, 계산된 스타일과 스크린샷 58장으로 모양이 유지되는 것을 확인했다. 다른 후보 다섯 개는 사용처가 적거나 의미가 달라 만들지 않았다.

@@ -1,7 +1,7 @@
 ---
 title: main 커밋 기록 집계로 Merge commit 병합 전략 정하기
 date: 2026-10-12
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 summary: MacFolio는 PR을 Create a merge commit으로 병합한다. main 기록 1,940커밋을 집계해 선택 기준 세 가지에 적용하고, Rebase and merge가 섞인 PR 53개의 기록, CONTRIBUTING·conventions 검사·Ruleset으로 적용한 내용과 아직 켜지 않은 저장소 설정을 정리했다.
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: 정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기
 date: 2026-10-01
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 summary: 브랜치·커밋·PR 규칙을 기존 커밋 기록에서 추출하고, PR마다 CI가 검사하고 Rulesets로 머지를 차단하게 했다. PR 제목을 통한 스크립트 주입을 피한 방법, 로컬 시험, 그 뒤 커밋 733개가 모두 규칙을 지킨 결과까지 적었다.
 ---
 

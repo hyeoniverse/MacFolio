@@ -1,7 +1,7 @@
 ---
 title: PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기
 date: 2026-10-10
-category: 개발 기록/MacFolio/품질
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
 seriesOrder: 11
 summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하고 있었다. SameSite=Lax가 이미 차단하고 있었지만 서버에서도 차단하게 했다. 허용 목록을 exact·pattern으로 분류해 pattern에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다.

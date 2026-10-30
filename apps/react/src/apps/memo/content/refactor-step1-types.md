@@ -1,7 +1,7 @@
 ---
 title: zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기
 date: 2026-10-18
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 리팩터링
 seriesOrder: 1
 summary: 리팩터링 1단계 회고. 화면과 서버가 각각 정의하던 요청·응답 구조를 @macfolio/contracts의 zod 스키마로 통합하고, 1,629줄 profile.ts를 분리하고, 글 주소에 브랜드 타입을 적용했다. 채택한 방법과 제외한 방법, PR 열 개의 순서와 규모를 정리한다.

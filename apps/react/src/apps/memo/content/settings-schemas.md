@@ -1,7 +1,7 @@
 ---
 title: 관리자 설정과 AI 데모의 if 문 입력 검사 일곱 개를 contracts의 zod 스키마로 옮기기
 date: 2026-10-16
-category: 개발 기록/MacFolio/백엔드
+category: 개발 기록/MacFolio/서버·API
 series: contracts 스키마
 seriesOrder: 8
 summary: 관리자 설정과 AI 데모의 요청 검사는 서버의 if 문과 화면의 상수가 따로 같은 상한을 정의했다. 일곱 규칙을 @macfolio/contracts의 zod 스키마로 옮겨 서버와 화면이 같은 값을 쓰게 하고, 거절 문구와 검사 순서는 그대로 유지했다.

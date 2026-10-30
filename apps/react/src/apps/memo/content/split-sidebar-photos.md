@@ -1,7 +1,7 @@
 ---
 title: import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기
 date: 2026-10-10
-category: 개발 기록/MacFolio/설계
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 모듈 구조
 seriesOrder: 3
 summary: 메모의 폴더 사이드바(697줄)와 휴대폰 사진 앱(662줄)을 각각 345줄·337줄 본체와 하위 컴포넌트로 분리했다. 두 파일이 함께 사용하는 타입은 별도 model 파일에 두어 순환 import를 방지했고, 파일마다 필요한 import는 스크립트로 계산했다.

@@ -1,7 +1,7 @@
 ---
 title: 계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기
 date: 2026-10-17
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 8
 summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버튼 30곳을 Button으로 옮겼다. 공통 CSS가 더하는 값은 앱 규칙이나 명시도 0인 :where() 규칙으로 되돌리고, E2E 중 공통 클래스를 뺀 상태와 넣은 상태의 계산된 스타일을 비교해 화면 변화가 없음을 확인했다.

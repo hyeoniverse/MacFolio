@@ -1,7 +1,7 @@
 ---
 title: shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기
 date: 2026-10-11
-category: 개발 기록/MacFolio/디자인 시스템
+category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
 seriesOrder: 4
 summary: 리팩터링 4단계의 첫 작업은 코드를 바꾸지 않고 집계하는 일이었다. shared/ui 부품 15개의 props와 사용처, 새 부품 후보 9개, 직접 작성한 버튼 295곳을 집계해 docs/ui.md에 기록했고, 추출할 부품은 Sheet·Modal·SearchField 세 개로 줄였다.

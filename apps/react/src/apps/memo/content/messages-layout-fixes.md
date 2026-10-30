@@ -1,7 +1,7 @@
 ---
 title: visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기
 date: 2026-10-23
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/화면·스타일
 series: 휴대폰 화면
 seriesOrder: 5
 summary: 메시지 앱에서 iPad mini처럼 넓은 휴대폰 화면의 검색 알약이 입력 칸을 덮었고, iOS Safari에서 키보드가 올라오면 대화 머리까지 화면 밖으로 밀렸고, 빈 목록의 말풍선 아이콘 윗부분이 잘렸다. 셋 다 두 기준이 어긋난 곳이라 기준을 맞추고 E2E 시험으로 검증했다.

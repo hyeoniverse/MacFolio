@@ -1,7 +1,7 @@
 ---
 title: 창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기
 date: 2026-10-05
-category: 개발 기록/MacFolio/프론트엔드
+category: 개발 기록/MacFolio/구조·상태 관리
 series: 메뉴 막대
 seriesOrder: 3
 summary: 메뉴 막대에 고정 문자열로 있던 'Finder'를 맨 앞 창의 앱 이름으로 바꿨다. 창 순서와 '활성 앱'을 분리해 바탕화면을 누르면 Finder가 되게 하고, 메뉴 막대·Dock을 누를 때의 예외와 깜빡임도 수정했다.
