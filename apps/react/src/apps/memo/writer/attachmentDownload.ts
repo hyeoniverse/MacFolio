@@ -16,7 +16,7 @@ export function attachmentDownloadButton(href: string, name: string): HTMLButton
 	button.contentEditable = 'false';
 	button.setAttribute('aria-label', `${name} 내려받기`);
 	button.title = '내려받기';
-	button.innerHTML = '<i class="fa-solid fa-arrow-down" aria-hidden="true"></i>';
+	button.innerHTML = '<i class="fa-solid fa-download" aria-hidden="true"></i>';
 	// 편집기의 커서와 포커스를 그대로 둔다
 	button.addEventListener('mousedown', (event) => event.preventDefault());
 	button.addEventListener('click', () => void downloadFile(href, name));

@@ -85,7 +85,7 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 					title="내려받기"
 					onClick={() => void downloadFile(href, fileName)}
 				>
-					<i className="fa-solid fa-arrow-down" aria-hidden="true" />
+					<i className="fa-solid fa-download" aria-hidden="true" />
 				</button>
 			</span>
 		);
