@@ -163,9 +163,11 @@ test.describe('메모 뒤로·앞으로', () => {
 			const memo = await openMemo(page);
 			const scroller = memo.locator('.memo-scroll:has(> .memo-reader-compact-bar)');
 			const scrollTop = () => scroller.evaluate((el) => el.scrollTop);
+			// 본문(원문·편집기)이 다 그려져 그 높이가 될 때까지 다시 스크롤한다
 			const scrollTo = async (top: number) => {
-				await scroller.evaluate((el, value) => el.scrollTo({ top: value }), top);
-				await expect.poll(scrollTop).toBe(top);
+				await expect
+					.poll(() => scroller.evaluate((el, value) => (el.scrollTo({ top: value }), el.scrollTop), top))
+					.toBe(top);
 			};
 			const back = memo.getByRole('button', { name: '뒤로', exact: true });
 			const forward = memo.getByRole('button', { name: '앞으로', exact: true });
