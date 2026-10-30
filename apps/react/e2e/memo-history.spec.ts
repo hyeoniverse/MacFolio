@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, dockItem, appWindow } from './fixtures';
 import type { Locator, Page } from '@playwright/test';
+import { fakeApi } from './fakeApi';
 
 async function openMemo(page: Page) {
 	await enterDesktop(page);
@@ -153,4 +154,34 @@ test.describe('메모 뒤로·앞으로', () => {
 		await expect(otherMemo.getByRole('button', { name: '뒤로', exact: true })).toBeDisabled();
 		await other.close();
 	});
+
+	for (const admin of [false, true])
+		test(`뒤로·앞으로 돌아온 글은 떠날 때의 스크롤 위치에서 시작한다 (${admin ? '편집 화면' : '읽기 화면'})`, async ({
+			page,
+		}) => {
+			if (admin) await fakeApi(page, { signedIn: true });
+			const memo = await openMemo(page);
+			const scroller = memo.locator('.memo-scroll:has(> .memo-reader-compact-bar)');
+			const scrollTop = () => scroller.evaluate((el) => el.scrollTop);
+			const scrollTo = async (top: number) => {
+				await scroller.evaluate((el, value) => el.scrollTo({ top: value }), top);
+				await expect.poll(scrollTop).toBe(top);
+			};
+			const back = memo.getByRole('button', { name: '뒤로', exact: true });
+			const forward = memo.getByRole('button', { name: '앞으로', exact: true });
+
+			const first = await openNth(memo, 1);
+			await scrollTo(900);
+			const second = await openNth(memo, 2);
+			// 새로 연 글은 맨 위부터
+			await expect.poll(scrollTop).toBe(0);
+			await scrollTo(400);
+
+			await back.click();
+			await expect.poll(() => readerTitle(memo)).toBe(first);
+			await expect.poll(scrollTop).toBe(900);
+			await forward.click();
+			await expect.poll(() => readerTitle(memo)).toBe(second);
+			await expect.poll(scrollTop).toBe(400);
+		});
 });

@@ -1,6 +1,7 @@
 // 블로그 글 규칙. React와 DOM에 의존하지 않는 순수 함수만 둔다.
 // 글은 Markdown 파일이고, 맨 위 머리말(---로 감싼 key: value)에 제목·날짜·카테고리를 적는다.
 import type { FolderPath, PostSlug } from './rules.js';
+import { isSeriesOrder } from './rules.js';
 import { imageLayoutOf } from './imageLayout.js';
 import { matchesQuery, normalizeSearchText, parseQuery } from './search.js';
 
@@ -11,6 +12,10 @@ export interface Post {
 	/** YYYY-MM-DD */
 	date: string;
 	category: string;
+	/** 연재 이름 (머리말 series). 같은 이름의 글을 묶는다 (series.ts) */
+	series?: string;
+	/** 연재 안의 순서 (머리말 seriesOrder, 1 이상). 없으면 순서를 적은 글 뒤에 날짜 순으로 */
+	seriesOrder?: number;
 	/** 목록 미리보기. 없으면 본문 앞부분을 쓴다 */
 	summary: string;
 	/** Markdown 본문 (머리말 제외) */
@@ -98,6 +103,8 @@ export function toPost(slug: PostSlug, source: string): Post | null {
 		title: meta.title,
 		date: meta.date,
 		category: meta.category || '기타',
+		...(meta.series?.trim() && { series: meta.series.trim() }),
+		...(isSeriesOrder(Number(meta.seriesOrder)) && { seriesOrder: Number(meta.seriesOrder) }),
 		summary: meta.summary || excerpt(body),
 		body: body.trim(),
 		...(meta.pinned === 'true' && { pinned: true }),
@@ -110,6 +117,10 @@ export interface ServerPost {
 	title: string;
 	date: string;
 	category: string;
+	/** 연재 이름. 연재가 아니거나 이 값을 주기 전의 API면 없다 */
+	series?: string;
+	/** 연재 안의 순서 (1 이상). 없으면 날짜 순 */
+	seriesOrder?: number;
 	summary: string;
 	body: string;
 	deleted: boolean;
@@ -134,6 +145,8 @@ export function mergeServerPosts(posts: Post[], server: ServerPost[]): Post[] {
 			title: item.title,
 			date: item.date,
 			category: item.category,
+			...(item.series && { series: item.series }),
+			...(item.seriesOrder && { seriesOrder: item.seriesOrder }),
 			summary: item.summary || excerpt(item.body),
 			body: item.body,
 			...(original?.pinned && { pinned: true }),
@@ -150,6 +163,10 @@ export interface PostContent {
 	/** YYYY-MM-DD */
 	date: string;
 	category: string;
+	/** 연재 이름. 연재가 아니면 없다 */
+	series?: string;
+	/** 연재 안의 순서 (1 이상). 없으면 날짜 순 */
+	seriesOrder?: number;
 	summary: string;
 	body: string;
 }
@@ -190,6 +207,8 @@ const toListPost = (
 	title: content.title,
 	date: content.date,
 	category: content.category,
+	...(content.series && { series: content.series }),
+	...(content.seriesOrder && { seriesOrder: content.seriesOrder }),
 	summary: content.summary || excerpt(content.body),
 	body: content.body,
 	...(pinned && { pinned: true }),

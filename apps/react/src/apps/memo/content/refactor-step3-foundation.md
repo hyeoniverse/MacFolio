@@ -1,7 +1,9 @@
 ---
-title: 리팩터링 3단계 — 공통 기반 코드
+title: api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기
 date: 2026-10-18
 category: 개발 기록/MacFolio/아키텍처
+series: 리팩터링
+seriesOrder: 3
 summary: 리팩터링 3단계 회고. 파일마다 따로 구현하던 서버 요청, 브라우저 저장소, matchMedia 조회를 client.ts·storage.ts·media.ts 세 모듈로 통합했다. 서버 요청 코드는 346줄에서 179줄이 됐고, 401 처리는 한 곳으로 모였다.
 ---
 
@@ -54,11 +56,11 @@ if (!response.ok) {
 
 ## 변경 목록
 
-| 항목                 | PR                                                       | 글                                                       |
-| -------------------- | -------------------------------------------------------- | -------------------------------------------------------- |
-| 공통 API 클라이언트  | [#196](https://github.com/hyeoniverse/MacFolio/pull/196) | [fetch 33곳을 client.ts 하나로](/memo/shared-api-client) |
-| 브라우저 저장소 모듈 | [#198](https://github.com/hyeoniverse/MacFolio/pull/198) | [try/catch 열두 개를 하나로](/memo/shared-storage)       |
-| 미디어 쿼리 모듈     | [#199](https://github.com/hyeoniverse/MacFolio/pull/199) | [matchMedia 네 가지 표기를 하나로](/memo/shared-media)   |
+| 항목                 | PR                                                       | 글                                                                                               |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 공통 API 클라이언트  | [#196](https://github.com/hyeoniverse/MacFolio/pull/196) | [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client) |
+| 브라우저 저장소 모듈 | [#198](https://github.com/hyeoniverse/MacFolio/pull/198) | [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)        |
+| 미디어 쿼리 모듈     | [#199](https://github.com/hyeoniverse/MacFolio/pull/199) | [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)        |
 
 ## 구현
 
@@ -154,9 +156,9 @@ export const prefersReducedMotion = () => mediaMatches(REDUCED_MOTION);
 
 ## 관련 글
 
-- [fetch 33곳을 client.ts 하나로](/memo/shared-api-client)
-- [try/catch 열두 개를 하나로](/memo/shared-storage)
-- [matchMedia 네 가지 표기를 하나로](/memo/shared-media)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-storage)
+- [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)
 - [리팩터링 계획을 마치며 — 일곱 단계 전후](/memo/refactor-retrospective)
 
 #MacFolio #리팩터링 #React #TypeScript

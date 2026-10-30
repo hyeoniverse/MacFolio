@@ -1,7 +1,9 @@
 ---
-title: 성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산
+title: #boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기
 date: 2026-10-23
 category: 개발 기록/MacFolio/테스트·보안·성능
+series: 성능 최적화
+seriesOrder: 4
 summary: 로컬 휴대폰 LCP가 회차마다 3.3초와 4.6초로 갈리던 원인은 글꼴이 아니라 #boot-splash를 삭제하는 시각이었다. 로딩 화면을 누를 때까지 남겨 4초대 회차를 없앴고, 첫 방문 번들 크기에 CI 상한을 걸었다.
 ---
 
@@ -141,9 +143,9 @@ boot 번들(assets/boot-wshPrf4V.js)이 49.4KB로, 상한 45.0KB보다 4.4KB 큽
 
 ## 관련 글
 
-- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](/memo/site-performance-remeasure): 이 글이 이어받은 두 과제를 남긴 측정
-- [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](/memo/site-performance-diet): `#boot-splash`와 시작 안내를 HTML로 옮긴 1·3차
-- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](/memo/site-performance-report): 측정 조건과 전체 경과
+- [Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기](/memo/site-performance-remeasure): 이 글이 이어받은 두 과제를 남긴 측정
+- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): `#boot-splash`와 시작 안내를 HTML로 옮긴 1·3차
+- [휴대폰 LCP를 25.7초에서 3.2초로 줄인 Lighthouse 성능 측정 리포트](/memo/site-performance-report): 측정 조건과 전체 경과
 
 [^lcp]: Largest Contentful Paint. 화면에 보이는 가장 큰 글자 블록이나 이미지가 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/lcp)
 

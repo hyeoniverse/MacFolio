@@ -1,7 +1,9 @@
 ---
-title: Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기
+title: Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기
 date: 2026-10-18
 category: 개발 기록/MacFolio/기능 구현
+series: Finder
+seriesOrder: 2
 summary: Finder 문서 아래에 이력서·포트폴리오·자격증 폴더를 만들고, PDF와 그림은 macOS처럼 별도 창의 미리보기 앱에서 연다. 파일은 저장소가 아니라 Cloudflare R2에 보관하고 사이트 Worker가 같은 출처(/files/)로 제공한다. 관리자는 끌어다 놓아 R2에 바로 업로드한다.
 ---
 
@@ -208,9 +210,9 @@ curl -si -X OPTIONS "https://$A.r2.cloudflarestorage.com/$B/desktop/test.gif" \
 
 ## 관련 글
 
-- [Finder 앱 - 사이트를 파일처럼 둘러보기](/memo/finder-app): Finder의 트리 구조
-- [Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기](/memo/finder-filesystem): 업로드한 파일을 폴더로 정리하기
-- [화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기](/memo/contracts-files): 업로드 규칙을 contracts로 옮긴 작업
-- [Finder에서 고른 배경화면이 새로고침하면 사라지던 문제와 QuickTime 열기 창](/memo/finder-wallpaper-persist): 동영상과 QuickTime 열기 창
+- [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): Finder의 트리 구조
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 업로드한 파일을 폴더로 정리하기
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files): 업로드 규칙을 contracts로 옮긴 작업
+- [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist): 동영상과 QuickTime 열기 창
 
 #MacFolio #프론트엔드 #Finder #미리보기 #pdfjs #CloudflareR2 #CSP #업로드

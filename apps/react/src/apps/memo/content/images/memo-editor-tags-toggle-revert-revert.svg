@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 446" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/></marker></defs>
+<rect width="760" height="446" fill="#fff"/>
+<text x="380.0" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">같은 slug의 서버 글이 저장소 글을 가리는 구조와 되돌리기</text>
+<text x="380.0" y="44" font-size="11" fill="#6b7280" text-anchor="middle">방문자·관리자 목록은 같은 slug면 서버 글을 사용한다 (mergeServerPosts · mergeAdminPosts)</text>
+<text x="12" y="74" font-size="12" fill="#991b1b" text-anchor="start" font-weight="600">되돌리기 전</text>
+<rect x="12" y="84" width="208" height="84" rx="6" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="22" y="103" font-size="11.5" fill="#1f2937" text-anchor="start" font-weight="600">저장소 글</text>
+<text x="22" y="121" font-size="9.8" fill="#4b5563" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">content/&lt;slug&gt;.md</text>
+<text x="22" y="137" font-size="10.5" fill="#4b5563" text-anchor="start">import.meta.glob으로 번들</text>
+<rect x="276" y="84" width="208" height="84" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="286" y="103" font-size="11.5" fill="#991b1b" text-anchor="start" font-weight="600">DB의 서버 글</text>
+<text x="286" y="121" font-size="10.5" fill="#4b5563" text-anchor="start">Post 행: 게시 내용 · 임시 저장</text>
+<text x="286" y="137" font-size="10.5" fill="#4b5563" text-anchor="start">PostRevision: 게시마다 1개</text>
+<rect x="540" y="84" width="208" height="84" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="550" y="103" font-size="11.5" fill="#991b1b" text-anchor="start" font-weight="600">화면</text>
+<text x="550" y="121" font-size="10.5" fill="#4b5563" text-anchor="start">서버 글만 표시</text>
+<text x="550" y="137" font-size="10.5" fill="#4b5563" text-anchor="start">저장소 파일 수정은 반영 안 됨</text>
+<text x="550" y="153" font-size="9.8" fill="#4b5563" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">overridesRepo: true</text>
+<text x="248" y="131.0" font-size="16" fill="#6b7280" text-anchor="middle">+</text>
+<line x1="488" y1="126.0" x2="536" y2="126.0" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="512.0" y="121.0" font-size="9.5" fill="#6b7280" text-anchor="middle">같은 slug</text>
+<text x="12" y="196" font-size="12" fill="#166534" text-anchor="start" font-weight="600">DELETE /posts/:slug/server-copy</text>
+<rect x="12" y="206" width="208" height="84" rx="6" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="22" y="225" font-size="11.5" fill="#1f2937" text-anchor="start" font-weight="600">검사</text>
+<text x="22" y="243" font-size="10.5" fill="#4b5563" text-anchor="start">AdminGuard · @RateLimit</text>
+<text x="22" y="259" font-size="10.5" fill="#4b5563" text-anchor="start">잠긴 메모 → 409</text>
+<text x="22" y="275" font-size="10.5" fill="#4b5563" text-anchor="start">서버에 행 없음 → 404</text>
+<rect x="276" y="206" width="208" height="84" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+<text x="286" y="225" font-size="11.5" fill="#166534" text-anchor="start" font-weight="600">트랜잭션 하나</text>
+<text x="286" y="243" font-size="9.8" fill="#4b5563" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">postRevision.deleteMany</text>
+<text x="286" y="259" font-size="9.8" fill="#4b5563" text-anchor="start" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">post.delete</text>
+<rect x="540" y="206" width="208" height="84" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+<text x="550" y="225" font-size="11.5" fill="#166534" text-anchor="start" font-weight="600">화면</text>
+<text x="550" y="243" font-size="10.5" fill="#4b5563" text-anchor="start">저장소 글 다시 표시</text>
+<text x="550" y="259" font-size="10.5" fill="#4b5563" text-anchor="start">편집기를 저장소 글로 다시 그림</text>
+<line x1="224" y1="248.0" x2="272" y2="248.0" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="488" y1="248.0" x2="536" y2="248.0" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="12" y="318" font-size="12" fill="#1f2937" text-anchor="start" font-weight="600">서버 글을 정리하는 두 경로의 차이</text>
+<rect x="12" y="328" width="362" height="66" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="22" y="347" font-size="11.5" fill="#991b1b" text-anchor="start" font-weight="600">메모 삭제 · 영구 삭제</text>
+<text x="22" y="365" font-size="10.5" fill="#4b5563" text-anchor="start">저장소 글을 가리는 deleted 표시가 남는다</text>
+<text x="22" y="381" font-size="10.5" fill="#4b5563" text-anchor="start">→ 저장소 글도 목록에서 사라진다</text>
+<rect x="386" y="328" width="362" height="66" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+<text x="396" y="347" font-size="11.5" fill="#166534" text-anchor="start" font-weight="600">저장소 글로 되돌리기</text>
+<text x="396" y="365" font-size="10.5" fill="#4b5563" text-anchor="start">Post 행과 PostRevision을 모두 삭제</text>
+<text x="396" y="381" font-size="10.5" fill="#4b5563" text-anchor="start">→ 저장소 글이 원래대로 보인다</text>
+<text x="380" y="424" font-size="10.5" fill="#6b7280" text-anchor="middle">서버는 저장소에 같은 파일이 있는지 모른다. 그래서 메뉴는 overridesRepo인 글에만 표시한다</text>
+</svg>

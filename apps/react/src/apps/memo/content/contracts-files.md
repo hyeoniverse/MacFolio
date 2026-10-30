@@ -1,7 +1,9 @@
 ---
-title: 화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기
+title: 화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기
 date: 2026-10-11
 category: 개발 기록/MacFolio/API·데이터
+series: contracts 스키마
+seriesOrder: 6
 summary: 서버 files/rules.ts에 섞여 있던 규칙을 "화면도 알아야 하는가"를 기준으로 나눴다. 10MB 한도·주소 형식·이미지 형식·응답 타입은 contracts로 옮기고, 매직 바이트·EXIF·파일 이름 정리는 서버에 남겼다. 같은 값이 두 번 정의되던 세 곳을 한 곳으로 통합했다.
 ---
 
@@ -171,12 +173,12 @@ pnpm --filter @macfolio/api test -- src/files/rules.test.ts
 
 ## 관련 글
 
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](/memo/contracts-comments)
-- [숫자 40이 세 곳에 — 배경화면 도메인 옮기기](/memo/contracts-wallpapers)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기](/memo/contracts-wallpapers)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
-- [올린 사진의 EXIF를 지우되 방향은 남기기](/memo/upload-strip-exif)
-- [글에서 지운 이미지는 서버에 남는다 - 쓰는 곳이 없는 파일 찾기](/memo/server-files-cleanup)
-- [이미 한 곳이었다, 자리만 옮겼다 — 사이트 프로필로 1단계 마무리](/memo/contracts-site)
+- [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
+- [참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기](/memo/server-files-cleanup)
+- [parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
 
 [^magic]: 파일 형식마다 정해진 파일 앞부분의 고정 바이트열(매직 넘버, 파일 시그니처). 확장자나 브라우저가 보낸 MIME 타입과 달리 파일 내용 자체에서 읽으므로 이름을 바꿔도 달라지지 않는다.
 

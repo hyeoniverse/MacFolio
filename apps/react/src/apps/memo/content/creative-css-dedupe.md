@@ -1,7 +1,9 @@
 ---
-title: 두 CSS 파일에 똑같이 적힌 규칙 103개 지우기 — 계산된 스타일로 같은지 확인
+title: getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기
 date: 2026-10-16
 category: 개발 기록/MacFolio/스타일·컴포넌트
+series: CSS 정리
+seriesOrder: 5
 summary: Safari HYEONIVERSE 페이지 CSS에 공통 부품 CSS와 동일한 규칙 103개가 복사되어 있었다. 복사본을 삭제해 파일이 1,444줄 → 735줄(gzip 8.1KB → 5.1KB)로 줄었고, 요소 3,720개의 계산된 스타일이 전후로 같은지 기기·테마별로 비교했다.
 ---
 
@@ -86,14 +88,14 @@ import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project
 
 - 다른 파일 쌍의 중복 규칙(5개 이하)은 그대로 두었다. 템플릿마다 우연히 같은 선언(`display: flex` 등)을 사용한 것이라, 통합하면 오히려 템플릿 간 의존이 생긴다.
 - `CreativeParts.css`(879줄)는 여전히 크다. 컴포넌트별 파일 분리는 컴포넌트가 더 늘어나면 진행한다.
-- 이 작업 이후 간격·그림자 값을 `--space-*`·`--shadow-*` 토큰으로 바꾸는 정리가 이어졌다([그림자와 간격에 이름 붙이기 — 간격 열 값과 그림자 다섯 값](/memo/shadow-space-tokens)). 복사본이 남아 있었다면 같은 값을 두 번 치환해야 했다.
+- 이 작업 이후 간격·그림자 값을 `--space-*`·`--shadow-*` 토큰으로 바꾸는 정리가 이어졌다([그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)). 복사본이 남아 있었다면 같은 값을 두 번 치환해야 했다.
 
 "공통 부분 통합"이라는 추상적인 작업은 집계하면 구체적인 위치 하나로 좁혀진다. 이번에는 파일 쌍 하나에 중복의 대부분이 집중되어 있었다. 또 CSS를 삭제할 때 "화면이 같아 보인다"는 확인만으로는 부족하다. 계산된 스타일을 기록해 비교하면, 삭제한 규칙이 결과에 영향을 주지 않았다는 것을 수치로 제시할 수 있다.
 
 ## 관련 글
 
-- [!important 72개의 뿌리 - 앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)
-- [공통 버튼의 여백이 사라진 이유 — CSS 층 순서는 처음 나온 파일이 정한다](/memo/css-layer-order-fix)
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](/memo/color-tokens)
+- [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
 
 #MacFolio #CSS #리팩터링

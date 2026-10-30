@@ -15,6 +15,7 @@ import { requestOpen } from '@/shared/lib/openRequest';
 import MarkdownToolbar from './MarkdownToolbar';
 import ResumeEditor, { type EditHistory } from './ResumeEditor';
 import { resetTextEdit, stepTextEdit, useTextEdit, openInTextEdit } from './textEditStore';
+import { fileNameOf, isRemoteFile } from '@/shared/lib/fileApps';
 import './TextEdit.css';
 
 let mounted = 0;
@@ -138,7 +139,9 @@ const TextEdit: React.FC = () => {
 					path,
 					name: resumeFileName(lang, lang === 'en' ? englishName : profile.name),
 				}).name
-			: path.split('/').at(-1)!;
+			: isRemoteFile(path)
+				? fileNameOf(path)
+				: path.split('/').at(-1)!;
 	// macOS처럼 제목 뒤에 문서 상태를 붙인다 (저장소 문서는 잠긴 문서)
 	const status = !path ? '' : resume ? (source ? '원문' : '') : '잠김';
 	const title = status ? `${name} — ${status}` : name;

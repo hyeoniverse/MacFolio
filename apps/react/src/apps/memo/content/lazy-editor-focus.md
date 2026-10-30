@@ -1,7 +1,9 @@
 ---
-title: 간헐적으로 실패하는 시험이 찾아 준 버그 - 아직 로드되지 않은 편집기로 이동한 포커스
+title: 마운트 전 React.lazy 편집기로 가는 포커스를 onReady까지 대기시키기
 date: 2026-10-10
 category: 개발 기록/MacFolio/테스트·보안·성능
+series: 메모 편집기
+seriesOrder: 4
 summary: 메모 편집 E2E 몇 개가 전체 실행 시에만 간헐적으로 실패했다. 의도적으로 부하를 걸어 재현하자 원인은 앱 코드였다. 제목에서 Enter를 누르면 본문 편집기로 포커스를 이동하는데, 지연 로딩하는 편집기가 느린 기기에서는 아직 마운트되지 않았다.
 ---
 
@@ -130,8 +132,8 @@ await page.route(/InlineEditor-[\w-]+\.js$/, async (route) => {
 
 ## 관련 글
 
-- [글 한 편 추가했더니 E2E가 깨졌다 - 이미지 끌기 테스트가 흔들린 이유](/memo/flaky-drag-e2e)
-- [테스트를 붙이자 보인 버그들](/memo/bugs-found-by-tests)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
+- [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
+- [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 #MacFolio #테스트 #Playwright #트러블슈팅

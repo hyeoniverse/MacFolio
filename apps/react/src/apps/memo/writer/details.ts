@@ -215,6 +215,23 @@ export function handleDetailsKey(view: EditorView, event: KeyboardEvent): boolea
 	return true;
 }
 
+/** 접고 펼치는 동안 편집기 전체에 붙이는 표시: 이때만 토글 내용이 아코디언처럼 움직인다 (styles/markdown.css).
+ * 늘 움직이게 두면 편집기를 열 때나 토글 안에 새 문단을 쓸 때도 나타나는 움직임이 걸린다.
+ * 편집기 맨 바깥(view.dom)의 속성 변화는 편집기가 글 변경으로 읽지 않는다 */
+const ANIMATING = 'memo-details-animating';
+const ANIMATION_MS = 450;
+const animationTimers = new WeakMap<HTMLElement, ReturnType<typeof setTimeout>>();
+
+function animateToggle(view: EditorView) {
+	const root = view.dom;
+	clearTimeout(animationTimers.get(root));
+	root.classList.add(ANIMATING);
+	animationTimers.set(
+		root,
+		setTimeout(() => root.classList.remove(ANIMATING), ANIMATION_MS)
+	);
+}
+
 /** › 를 누른 것이면 화면에서만 접고 펼친다: 글은 그대로라 고친 것으로 치지 않는다 (임시 저장하지 않는다) */
 function toggleOnClick(view: EditorView, node: Node, nodePos: number, event: MouseEvent, direct: boolean): boolean {
 	if (!direct || node.type.name !== 'details_summary') return false;
@@ -227,6 +244,7 @@ function toggleOnClick(view: EditorView, node: Node, nodePos: number, event: Mou
 	const tr = showOnScreen(view.state.tr, view.state, detailsPos, details, open);
 	// 접을 때 커서가 내용 안에 있으면 요약 끝으로
 	if (!open) tr.setSelection(TextSelection.create(tr.doc, nodePos + node.nodeSize - 1));
+	animateToggle(view);
 	view.dispatch(tr);
 	return true;
 }

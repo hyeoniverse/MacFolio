@@ -220,6 +220,34 @@ describe('블로그 글 (e2e)', () => {
 		await admin('get', '/posts/cra-to-vite/revisions/abc').expect(400);
 	});
 
+	it('연재 이름·순서는 임시 저장·게시·버전에 함께 남고, 비워 게시하면 연재에서 빠진다', async () => {
+		const SERIES = { ...POST, series: ' 트래픽 분석 ', seriesOrder: 3 };
+		const draft = await admin('put', '/posts/cra-to-vite/draft').send(SERIES).expect(200);
+		expect(draft.body.draft).toMatchObject({ series: '트래픽 분석', seriesOrder: 3 });
+
+		await admin('post', '/posts/cra-to-vite/publish').send(SERIES).expect(200);
+		const listed = await request(server()).get('/posts').expect(200);
+		expect(listed.body[0]).toMatchObject({ series: '트래픽 분석', seriesOrder: 3 });
+
+		// 연재 이름 없이 온 순서는 버리고, 앞 게시의 연재도 지운다
+		const removed = await admin('post', '/posts/cra-to-vite/publish')
+			.send({ ...POST, series: '', seriesOrder: 2 })
+			.expect(200);
+		expect(removed.body.published).not.toHaveProperty('series');
+		expect(removed.body.published).not.toHaveProperty('seriesOrder');
+
+		const revisions = await admin('get', '/posts/cra-to-vite/revisions').expect(200);
+		const first = await admin('get', `/posts/cra-to-vite/revisions/${revisions.body[1].id}`).expect(200);
+		expect(first.body).toMatchObject({ series: '트래픽 분석', seriesOrder: 3 });
+
+		const wrong = await admin('put', '/posts/cra-to-vite/draft')
+			.send({ ...POST, series: '가'.repeat(41), seriesOrder: 0 })
+			.expect(400);
+		expect(wrong.body.message).toEqual(
+			expect.arrayContaining(['연재 이름은 40자까지 입력할 수 있습니다.', '연재 순서는 1부터 999까지의 정수입니다.'])
+		);
+	});
+
 	it(`버전은 글마다 최근 ${MAX_REVISIONS}개만 남긴다`, async () => {
 		await admin('post', '/posts/cra-to-vite/publish').send(POST).expect(200);
 		await prisma.postRevision.createMany({

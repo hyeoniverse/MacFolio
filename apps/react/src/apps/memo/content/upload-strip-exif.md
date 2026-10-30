@@ -1,7 +1,9 @@
 ---
-title: 올린 사진의 EXIF를 지우되 방향은 남기기
+title: JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기
 date: 2026-10-09
 category: 개발 기록/MacFolio/테스트·보안·성능
+series: 보안 점검
+seriesOrder: 7
 summary: 휴대폰 사진에는 촬영 위치의 위도·경도와 기기 이름이 들어 있어 글에 업로드하면 그대로 공개된다. 의존성 없이 JPEG·PNG·WebP의 세그먼트·청크를 순회하며 메타데이터만 제거하고, 사진이 회전되어 표시되지 않도록 JPEG 방향 값 하나만 남겼다.
 ---
 
@@ -166,10 +168,10 @@ exiftool 받은.jpg | grep -iE 'gps|model|orientation'     # Orientation만 남�
 
 ## 관련 글
 
-- [글에서 지운 이미지는 서버에 남는다 - 쓰는 곳이 없는 파일 찾기](/memo/server-files-cleanup)
-- [화면도 알아야 하는가 — 올린 파일 규칙을 둘로 나누기](/memo/contracts-files)
-- [리팩터링 7단계 — 보안](/memo/refactor-step7-security)
-- [Semgrep과 SCA 도구로 MacFolio 점검하기](/memo/security-scan)
+- [참조 위치 API로 쓰는 곳 없는 서버 파일만 골라 지우기](/memo/server-files-cleanup)
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan)
 
 PR: [#163](https://github.com/hyeoniverse/MacFolio/pull/163)
 

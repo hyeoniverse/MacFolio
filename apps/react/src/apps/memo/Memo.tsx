@@ -44,6 +44,7 @@ import MemoMarkdown from './components/MemoMarkdown';
 import { NewDraftItem, NoteCard, NoteItem, NoteSections } from './components/NoteList';
 import PostFooter from './components/PostFooter';
 import ReaderBody from './components/ReaderBody';
+import SeriesBox from './components/SeriesBox';
 import { useFolderActions } from './useFolderActions';
 import { useMemoLayout } from './useMemoLayout';
 import { usePickedNotes } from './usePickedNotes';
@@ -136,6 +137,10 @@ const Memo: React.FC = () => {
 		selected,
 		older,
 		newer,
+		series,
+		seriesBySlug,
+		seriesList,
+		inView,
 	} = noteView;
 	/** 찾기 막대를 연 글 (다른 글로 옮겨 가면 닫힌 것으로 본다) */
 	const [findSlug, setFindSlug] = useState<string | null>(null);
@@ -176,12 +181,43 @@ const Memo: React.FC = () => {
 	const [noteMenu, setNoteMenu] = useState<{ slug: string; x: number; y: number } | null>(null);
 
 	const readerScroll = useRef<HTMLDivElement>(null);
-	// 다른 글을 열면 본문 맨 위부터
+	/** 뒤로·앞으로로 연 글의 스크롤 위치 (useMemoNavHistory가 정한다). 없으면 맨 위 */
+	const pendingScroll = useRef<number | null>(null);
+	// 다른 글을 열면 본문 맨 위부터, 뒤로·앞으로로 돌아온 글은 떠날 때의 위치부터.
+	// 편집기·목차처럼 늦게 그려지는 내용이 있으면 높이가 바뀌고, 브라우저의 스크롤 앵커링이 위치를 옮긴다.
+	// 그래서 본문이 자리 잡을 동안(약 0.6초, 40프레임) 매 프레임 위치를 다시 맞춘다
 	useEffect(() => {
-		readerScroll.current?.scrollTo?.({ top: 0 });
+		const scroller = readerScroll.current;
+		const top = pendingScroll.current ?? 0;
+		pendingScroll.current = null;
+		scroller?.scrollTo?.({ top });
+		if (!scroller || top === 0) return;
+		let frames = 0;
+		let frame = 0;
+		const retry = () => {
+			if (frames++ > 40) return;
+			if (Math.abs(scroller.scrollTop - top) > 1) scroller.scrollTo({ top });
+			frame = requestAnimationFrame(retry);
+		};
+		frame = requestAnimationFrame(retry);
+		// 그동안 사용자가 직접 스크롤하면 맞추기를 멈춘다
+		const stop = () => cancelAnimationFrame(frame);
+		scroller.addEventListener('wheel', stop, { passive: true });
+		scroller.addEventListener('touchstart', stop, { passive: true });
+		return () => {
+			stop();
+			scroller.removeEventListener('wheel', stop);
+			scroller.removeEventListener('touchstart', stop);
+		};
 	}, [selected?.slug]);
 	const openAdjacent = (post: Post) => {
 		setQuery('');
+		setSelectedSlug(post.slug);
+	};
+	/** 연재의 다른 편: 지금 보는 폴더·태그에 없는 글이면 모든 글로 바꾼 뒤 연다 */
+	const openSeries = (post: Post) => {
+		setQuery('');
+		if (!inView(post.slug)) setCategory(ALL_CATEGORY);
 		setSelectedSlug(post.slug);
 	};
 
@@ -264,7 +300,7 @@ const Memo: React.FC = () => {
 					else setPane('reader');
 				};
 				return card ? (
-					<NoteCard key={post.slug} {...props} onOpen={open} />
+					<NoteCard key={post.slug} {...props} series={seriesBySlug.get(post.slug)} onOpen={open} />
 				) : (
 					<NoteItem
 						key={post.slug}
@@ -278,6 +314,7 @@ const Memo: React.FC = () => {
 								: undefined
 						}
 						views={!inPopular && views ? (views[post.slug] ?? 0) : undefined}
+						series={seriesBySlug.get(post.slug)}
 					/>
 				);
 			}}
@@ -502,6 +539,10 @@ const Memo: React.FC = () => {
 			setPicked(null);
 			if (slug) setSelectedSlug(postSlug(slug));
 			setPane(slug ? 'reader' : 'list');
+		},
+		scrollRef: readerScroll,
+		restoreScroll: (top) => {
+			pendingScroll.current = top;
 		},
 	});
 	const historyNav = !phone && (
@@ -843,10 +884,15 @@ const Memo: React.FC = () => {
 												: undefined
 										}
 										folders={folderPaths}
+										seriesNames={seriesList}
 										defaultFolder={newFolder}
 										onSaved={draft.onSaved}
 										renderMarkdown={renderMarkdown}
 										compact={compact}
+										series={
+											newDraft === null &&
+											series && <SeriesBox key={selected?.slug} series={series} compact={compact} onOpen={openSeries} />
+										}
 									/>
 									{newDraft === null && selected && !selected.status?.draftOnly && postFooter(selected)}
 								</div>
@@ -861,6 +907,8 @@ const Memo: React.FC = () => {
 										views={views}
 										editing={editing && Boolean(selected.locked)}
 										footer={!inTrash && postFooter(selected)}
+										series={series}
+										onOpenSeries={openSeries}
 										compact={compact}
 										onRestore={() => void restoreDeleted(selected)}
 										onPurge={() => void purgeDeleted(selected)}

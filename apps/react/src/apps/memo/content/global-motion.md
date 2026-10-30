@@ -1,5 +1,5 @@
 ---
-title: 사라질 때도 움직이게 - 복사본으로 하는 퇴장 애니메이션
+title: ref 정리 함수에서 제거 직전 DOM을 복제해 만드는 퇴장 애니메이션
 date: 2026-10-08
 category: 개발 기록/MacFolio/스타일·컴포넌트
 summary: 메뉴·경고창·팝업은 닫힐 때 애니메이션 없이 즉시 사라졌다. 여는 쪽 코드를 수정하지 않고, React가 요소를 제거하기 직전 ref 정리 함수에서 DOM을 복제해 그 복제본에 퇴장 애니메이션을 적용했다. 내용이 교체되는 영역, 동작별 애니메이션, 버튼 색 전환도 공통 규칙으로 맞췄다.
@@ -178,9 +178,9 @@ E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.c
 
 ## 관련 글
 
-- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal)
-- [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
-- [메뉴 다섯 벌을 하나로 - useDismiss, placement, Menu](/memo/shared-menu)
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
+- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal)
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
+- [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 
 #MacFolio #공통컴포넌트 #애니메이션

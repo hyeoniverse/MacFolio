@@ -1,11 +1,13 @@
 ---
-title: 프로젝트 앱의 iframe에 sandbox 걸기
+title: iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기
 date: 2026-10-09
 category: 개발 기록/MacFolio/테스트·보안·성능
+series: 보안 점검
+seriesOrder: 3
 summary: 프로젝트 앱의 iframe에 제한이 없어, 내장한 사이트의 target="_top" 링크 하나로 MacFolio 전체가 다른 주소로 이동할 수 있었다. sandbox로 최상위 창 이동 권한만 제외하고, 이 설정이 누락되면 실패하는 E2E를 추가했다.
 ---
 
-프로젝트 앱([프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps))은 NewPick, QRU 같은 배포한 사이트를 창 안의 iframe으로 표시한다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목을 점검하다가 이 iframe에 `sandbox` 속성이 없다는 것을 확인했다. 당시 iframe은 프로젝트 앱과 API 문서 앱이 공유하는 `shared/ui/web-frame/WebFrame.tsx`에 있었고, 속성은 `src`·`title`·`allow`·`allowFullScreen`뿐이었다. 이 글은 이를 수정한 [#157](https://github.com/hyeoniverse/MacFolio/pull/157)의 기록이다.
+프로젝트 앱([PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps))은 NewPick, QRU 같은 배포한 사이트를 창 안의 iframe으로 표시한다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목을 점검하다가 이 iframe에 `sandbox` 속성이 없다는 것을 확인했다. 당시 iframe은 프로젝트 앱과 API 문서 앱이 공유하는 `shared/ui/web-frame/WebFrame.tsx`에 있었고, 속성은 `src`·`title`·`allow`·`allowFullScreen`뿐이었다. 이 글은 이를 수정한 [#157](https://github.com/hyeoniverse/MacFolio/pull/157)의 기록이다.
 
 ## 허용되어 있던 동작
 
@@ -84,7 +86,7 @@ const FRAME_SANDBOX = [
 ].join(' ');
 ```
 
-공통 컴포넌트 한 곳에만 적용하면 되므로, 프로젝트 앱 5개(HYEONIVERSE·NewPick·QRU·WTD·새싹 농장)와 API 문서 앱이 동시에 같은 권한을 갖는다. [Unity WebGL 게임을 창 안에 넣기](/memo/game-in-iframe) 작업에서 iframe 코드를 공통 컴포넌트로 통합해 두었기 때문이다.
+공통 컴포넌트 한 곳에만 적용하면 되므로, 프로젝트 앱 5개(HYEONIVERSE·NewPick·QRU·WTD·새싹 농장)와 API 문서 앱이 동시에 같은 권한을 갖는다. [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe) 작업에서 iframe 코드를 공통 컴포넌트로 통합해 두었기 때문이다.
 
 `sandbox`는 다른 방어 수단과 함께 동작한다. iframe에 넣을 수 있는 주소는 CSP `frame-src`[^frame-src]가 결정하고(프로젝트 데모 주소만 허용), 내장된 사이트가 할 수 있는 동작은 `sandbox`와 `allow`(권한 정책)가 결정한다.
 
@@ -120,11 +122,11 @@ npx playwright test e2e/project-apps.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [리팩터링 7단계 — 보안](/memo/refactor-step7-security)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [Unity WebGL 게임을 창 안에 넣기](/memo/game-in-iframe)
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
-- [글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기](/memo/markdown-xss-tests)
+- 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
+- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 [^frame-src]: 페이지가 iframe으로 불러올 수 있는 출처를 제한하는 Content-Security-Policy 지시어. [MDN: CSP frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)
 

@@ -1,5 +1,5 @@
 ---
-title: 서버가 없으면 메시지 앱을 열지 않기 - 저장소를 .env로 고르기
+title: 첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리
 date: 2026-10-02
 category: 개발 기록/MacFolio/API·데이터
 summary: 서버에 연결하지 못하면 메시지 앱이 빈 목록과 "Failed to fetch"를 표시했다. 첫 불러오기가 실패하면 경고창을 표시하고 앱을 종료하며, 사용 중 연결이 끊기면 전송 실패만 알린다. 서버 없이 확인할 때는 VITE_MESSAGES_STORE=local로 저장소를 선택한다.
@@ -131,7 +131,7 @@ E2E 시험은 API 주소를 주입하던 전역 변수(`__MACFOLIO_API_URL__`) �
 
 - 앱을 종료한 뒤 다시 시도하려면 앱을 다시 열어야 한다. 서버 복구 여부를 자동으로 다시 확인하지는 않는다.
 - 가장 중요한 변경은 저장소 기본값을 "주소가 있으면 서버"에서 "항상 서버, `local`일 때만 브라우저"로 바꾼 것이다. 배포 설정이 빠졌을 때 다른 위치에 조용히 저장되는 것보다, 앱이 열리지 않아 즉시 발견되는 편이 낫다.
-- 두 저장소는 이후 `packages/contracts`의 같은 `Thread`·`Message` 타입을 사용하도록 정리했다([서버 저장소와 로컬 저장소가 같은 모양을 쓰게](/memo/contracts-messages)).
+- 두 저장소는 이후 `packages/contracts`의 같은 `Thread`·`Message` 타입을 사용하도록 정리했다([zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)).
 
 ## 직접 확인하는 방법
 
@@ -152,8 +152,8 @@ pnpm dev:all
 
 ## 관련 글
 
-- [이름·비밀번호 없이 쓰는 메시지와 댓글 - 방문자 쿠키로 정하는 이름](/memo/visitor-identity)
-- [서버 저장소와 로컬 저장소가 같은 모양을 쓰게 — 메시지 도메인 옮기기](/memo/contracts-messages)
-- [댓글에 남기지 않은 것들](/memo/post-comments)
+- [httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)
+- [zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-messages)
+- [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
 
 #MacFolio #메시지 #서버

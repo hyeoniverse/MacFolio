@@ -1,7 +1,9 @@
 ---
-title: OS마다 다르던 글꼴을 하나로 — Apple 글꼴 배포를 멈추고 Pretendard·JetBrains Mono·Noto Serif KR로
+title: 오픈 라이선스 글꼴로 바꾸고 첫 화면 글꼴을 1,187KB에서 568KB로 줄이기
 date: 2026-10-26
 category: 개발 기록/MacFolio/스타일·컴포넌트
+series: 성능 최적화
+seriesOrder: 5
 summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -apple-system을 앞에 둔 글꼴 지정과 웹 배포 허락이 없는 Apple 웹 글꼴(Regular 하나)이었다. 오픈 라이선스 글꼴로 바꾸고, 첫 화면 글꼴을 1,187KB에서 568KB로 줄여 CI 예산을 걸었다.
 ---
 
@@ -80,7 +82,7 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 메모 앱 첫 화면(글 234편의 제목·요약)이 받는 Pretendard | 92조각 중 거의 전부, 약 1.7MB             | core 하나, 456KB           |
 | `@font-face` CSS (첫 방문 번들에 포함, brotli)          | 약 14.6KB → 성능 예산 265KB 초과(271.4KB) | 1KB 미만 → 259.7KB         |
 
-글 목록은 한 화면에 다양한 한글이 나와 빈도 순 조각이 거의 다 필요했다. 그래서 예전 Apple 글꼴과 같은 방식([첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet))으로 `scripts/subset-font.py`를 다시 썼다.
+글 목록은 한 화면에 다양한 한글이 나와 빈도 순 조각이 거의 다 필요했다. 그래서 예전 Apple 글꼴과 같은 방식([글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet))으로 `scripts/subset-font.py`를 다시 썼다.
 
 - **core:** 영문·숫자·라틴-1, 문장 부호, 화살표, 한글 자모, KS X 1001 완성형 2,350자. 가변 글꼴이라 굵기 전체를 포함해 456KB (아래 '전송량 줄이기'에서 다시 나눴다)
 - **ext-0\~7:** 나머지 한글 8,822자를 코드 순서로 8등분(각 170\~210KB). 저장소의 글과 화면 문구 전체에서 KS X 1001 밖 글자는 '긂·똠·햏' 세 글자, 글 2편뿐이었다
@@ -176,8 +178,8 @@ PDF 이력서와 공유 카드도 Pretendard로 바꿨다. 브라우저의 react
 
 ## 관련 글
 
-- [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
-- [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
-- [PR을 머지하자 CI가 연달아 실패한 원인 네 가지](/memo/ci-failures-after-merges): 글꼴마다 다른 줄 높이로 위젯 크기가 달라진 사례
+- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
+- [#boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
+- [CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](/memo/ci-failures-after-merges): 글꼴마다 다른 줄 높이로 위젯 크기가 달라진 사례
 
 #MacFolio #글꼴 #웹폰트 #라이선스 #성능

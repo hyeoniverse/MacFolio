@@ -1,5 +1,5 @@
 ---
-title: API 문서를 사이트 안의 앱으로
+title: Vite 두 번째 진입점과 iframe으로 Scalar API 문서 격리하기
 date: 2026-10-05
 category: 개발 기록/MacFolio/기능 구현
 summary: 서버 메뉴의 'API 문서 열기'가 사이트 안의 앱을 연다. 서버의 Swagger를 iframe에 표시하던 첫 방법을 폐기하고, 코드에서 생성한 openapi.json을 별도 페이지에서 Scalar로 렌더링한다. 스냅숏 시험, 방문 기록, overflow clip 수정까지 정리했다.
@@ -104,7 +104,7 @@ history.pushState = history.replaceState.bind(history);
 
 ## Wi-Fi 아이콘
 
-Wi-Fi 아이콘은 같은 두께의 반원 세 개로 렌더링되어 macOS 아이콘과 형태가 달랐다. 아래쪽 꼭짓점은 채워진 부채꼴로, 위쪽 두 줄은 끝이 둥근 호로 다시 그렸다. 막대 수(0~3)로 상태를 표시하는 방식과 '연결할 수 없음'의 사선은 그대로 유지했다([메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기](/memo/server-status-wifi)).
+Wi-Fi 아이콘은 같은 두께의 반원 세 개로 렌더링되어 macOS 아이콘과 형태가 달랐다. 아래쪽 꼭짓점은 채워진 부채꼴로, 위쪽 두 줄은 끝이 둥근 호로 다시 그렸다. 막대 수(0~3)로 상태를 표시하는 방식과 '연결할 수 없음'의 사선은 그대로 유지했다([/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)).
 
 ## 확인
 
@@ -123,11 +123,11 @@ Wi-Fi 아이콘은 같은 두께의 반원 세 개로 렌더링되어 macOS 아�
 
 ## 관련 글
 
-- [메뉴 막대의 Wi-Fi 자리에 서버 상태 띄우기](/memo/server-status-wifi)
-- [프로젝트 앱의 iframe에 sandbox 걸기](/memo/iframe-sandbox)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [PR 미리보기 주소에는 CORS로 읽기만 열고 관리자 쿠키는 주지 않기](/memo/preview-cors-read-only)
-- [사이트에 CSP와 보안 헤더 붙이기](/memo/security-headers)
+- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)
+- [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
+- [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 
 [^mpa]: Vite는 `build.rollupOptions.input`에 HTML 파일을 여러 개 지정해 페이지마다 별도 번들을 생성할 수 있다([Vite 멀티 페이지 앱](https://vite.dev/guide/build.html#multi-page-app)).
 

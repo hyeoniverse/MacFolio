@@ -1,11 +1,11 @@
 ---
-title: 정적 사이트에 관리자 로그인 붙이기
+title: GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기
 date: 2026-09-29
 category: 개발 기록/MacFolio/API·데이터
 summary: GitHub OAuth로 내 계정만 관리자로 인증한다. 비밀번호 없이 GitHub 숫자 ID로 확인하고, DB에는 세션 토큰 대신 해시만 저장한다. state 쿠키, DB 세션과 JWT 비교, AdminGuard, GitHub 없이 실행하는 시험까지 정리했다.
 ---
 
-[메모 편집을 관리자만 하게 한 이유](/memo/read-only-memo) 글에서, 정적 사이트는 브라우저 코드만으로 관리자를 식별할 수 없다고 적었다. 브라우저에 내려간 코드는 누구나 열어 수정할 수 있으므로, "관리자에게만 편집 버튼을 표시한다"는 조건문은 어떤 요청도 차단하지 못한다. 메모, 사진, 배경 화면, 프로필을 사이트 안에서 수정하려면 서버가 요청마다 "이 사람이 관리자인가"를 판단해야 했다.
+[정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo) 글에서, 정적 사이트는 브라우저 코드만으로 관리자를 식별할 수 없다고 적었다. 브라우저에 내려간 코드는 누구나 열어 수정할 수 있으므로, "관리자에게만 편집 버튼을 표시한다"는 조건문은 어떤 요청도 차단하지 못한다. 메모, 사진, 배경 화면, 프로필을 사이트 안에서 수정하려면 서버가 요청마다 "이 사람이 관리자인가"를 판단해야 했다.
 
 그래서 API 서버(NestJS + Prisma + PostgreSQL)를 만들고 관리자 로그인부터 붙였다([백엔드 설계](/memo/backend-design)). 첫 구현은 [#38](https://github.com/hyeoniverse/MacFolio/pull/38)이다. 같은 PR 안에서 관리자 확인 기준을 계정 이름에서 숫자 ID로 바꾸고, 로그인 경로에 요청 제한을 걸었다. 코드는 `apps/api/src/auth/` 아래 여섯 파일(시험 제외 360줄)이다. 주요 다섯 파일은 다음과 같다.
 
@@ -191,18 +191,18 @@ pnpm --filter @macfolio/api test:e2e test/auth.e2e.test.ts
 <details>
 <summary>배포 환경에 처음 연결한 시각에 겪은 두 가지 증상</summary>
 
-서버용 명령(`docker run --env-file /etc/macfolio/api.env …`)을 로컬 컴퓨터에서 실행해 `no such file or directory`가 발생했다. 서버를 모두 실행한 뒤에도 사이트가 "관리자 서버가 아직 연결되지 않았습니다"를 표시하며 로그인 버튼이 비활성화되어 있었다. 원인은 빌드 시각에 번들에 들어가는 `VITE_API_URL`이었고, 그 과정은 [API 서버를 무료로 띄우기](/memo/deploy-api-oracle-tunnel)에 적었다. 두 증상 모두 `docs/deployment.md`의 '문제 해결' 표에 기록했다.
+서버용 명령(`docker run --env-file /etc/macfolio/api.env …`)을 로컬 컴퓨터에서 실행해 `no such file or directory`가 발생했다. 서버를 모두 실행한 뒤에도 사이트가 "관리자 서버가 아직 연결되지 않았습니다"를 표시하며 로그인 버튼이 비활성화되어 있었다. 원인은 빌드 시각에 번들에 들어가는 `VITE_API_URL`이었고, 그 과정은 [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)에 적었다. 두 증상 모두 `docs/deployment.md`의 '문제 해결' 표에 기록했다.
 
 </details>
 
 ## 관련 글
 
-- [메모 편집을 관리자만 하게 한 이유](/memo/read-only-memo)
+- [정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo)
 - [백엔드 설계](/memo/backend-design)
 - [모든 쓰기 경로에 요청 제한](/memo/rate-limit-all-writes)
 - [미리보기 주소는 읽기만](/memo/preview-cors-read-only)
 - [계정 화면의 로그인 시각](/memo/settings-signed-in-at)
-- [API 서버를 무료로 띄우기](/memo/deploy-api-oracle-tunnel)
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 
 [^scope]: OAuth에서 앱이 사용자에게 요청하는 권한 범위. scope 없이 요청하면 공개 정보만 읽을 수 있다([GitHub 문서](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps)).
 

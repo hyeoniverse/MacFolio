@@ -1,7 +1,9 @@
 ---
-title: 음악 플레이어를 둘로 나누기 - 무엇을 재생할지와 어떻게 재생할지
+title: 결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기
 date: 2026-10-09
 category: 개발 기록/MacFolio/아키텍처
+series: desktop-core
+seriesOrder: 3
 summary: 음악 앱의 MusicContext는 다음 곡을 정하는 일과 audio 요소를 재생·정지하는 일을 한 컴포넌트에서 했다. 앞쪽을 desktop-core의 플레이어 store로 옮기고, 동작마다 'moved'·'stopped'·'restart' 같은 결과를 돌려주게 했다. React는 그 결과를 보고 audio만 다룬다.
 ---
 
@@ -135,8 +137,8 @@ createPlayerStore({ trackIdsOf: (id) => findPlaylist(id).trackIds, playlistId: A
 
 ## 관련 글
 
-- [창 관리를 React 밖으로](/memo/desktop-core-windows): desktop-core 분리의 첫 단계
-- [메모 로직을 desktop-core로](/memo/desktop-core-memo): 두 번째 단계
-- [화면과 서버가 같은 규칙을 쓰기](/memo/desktop-core-shared-rules): 분리 이후 서버와 규칙 공유
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): desktop-core 분리의 첫 단계
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 두 번째 단계
+- [package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): 분리 이후 서버와 규칙 공유
 
 #MacFolio #데스크톱 #리팩터링

@@ -1,5 +1,6 @@
 // 편집기 명령. Milkdown 명령과 ProseMirror 상태를 쓴다 (InlineEditor에서만 불러온다).
 import type { Ctx } from '@milkdown/kit/ctx';
+import { mediaKindOf } from '@macfolio/desktop-core/memo';
 import { editorViewCtx } from '@milkdown/kit/core';
 import { lift } from '@milkdown/kit/prose/commands';
 import type { Node } from '@milkdown/kit/prose/model';
@@ -307,7 +308,20 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 			// 파일 이름 글자에 링크를 건다. 제목(title)으로 첨부 파일임을 표시해 읽기·편집 화면이 같은 모양으로 그린다
 			const { state } = view;
 			const link = state.schema.marks.link.create({ href: action.href, title: attachmentTitle(action.size) });
-			view.dispatch(state.tr.replaceSelectionWith(state.schema.text(action.name, [link]), false).insertText(' '));
+			const text = state.schema.text(action.name, [link]);
+			if (!mediaKindOf(action.name)) {
+				view.dispatch(state.tr.replaceSelectionWith(text, false).insertText(' '));
+				break;
+			}
+			// 영상·음악은 링크 혼자 한 문단이어야 재생기로 그린다 (embedPreview.ts). 커서는 그 다음 새 문단에 둔다:
+			// 커서가 링크 문단 안에 남으면 고치라고 원래 링크 줄을 보이고 아래 캡션을 숨겨, 이름이 위에 있다가 나가면 아래로 옮겨 간다
+			const paragraph = state.schema.nodes.paragraph;
+			const { $from } = state.selection;
+			const blocks = [paragraph.create(null, text), paragraph.create()];
+			const empty = $from.parent.isTextblock && $from.parent.content.size === 0;
+			const at = empty ? $from.before() : $from.after();
+			const tr = empty ? state.tr.replaceWith(at, $from.after(), blocks) : state.tr.insert(at, blocks);
+			view.dispatch(tr.setSelection(TextSelection.create(tr.doc, at + blocks[0].nodeSize + 1)).scrollIntoView());
 			break;
 		}
 	}

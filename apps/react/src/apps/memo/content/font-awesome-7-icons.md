@@ -1,5 +1,5 @@
 ---
-title: 구조도 아이콘이 깨진 까닭 - Font Awesome 7의 글꼴 이름
+title: Font Awesome 7에서 제거된 6의 글꼴 이름과 SVG 텍스트 아이콘
 date: 2026-10-19
 category: 개발 기록/MacFolio/스타일·컴포넌트
 summary: Font Awesome을 7로 업그레이드한 뒤 HYEONIVERSE 구조도의 아이콘이 깨졌다. 7은 5·4의 글꼴 이름은 호환용으로 유지했지만 6의 이름은 제거했고, SVG 텍스트로 렌더링하는 아이콘 다섯 곳이 6의 이름을 직접 지정하고 있었다.
@@ -97,9 +97,9 @@ font-family: 'Font Awesome 7 Free';
 
 ## 관련 글
 
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot): Font Awesome 7 업그레이드를 연 Dependabot 설정
-- [1,861줄짜리 데모 파일을 데모마다 한 파일로](/memo/split-creative-demos): HYEONIVERSE 페이지의 데모 분리
-- [두 CSS 파일에 똑같이 적힌 규칙 103개 지우기 — 계산된 스타일로 같은지 확인](/memo/creative-css-dedupe): 같은 페이지의 CSS 정리
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): Font Awesome 7 업그레이드를 연 Dependabot 설정
+- [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/split-creative-demos): HYEONIVERSE 페이지의 데모 분리
+- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe): 같은 페이지의 CSS 정리
 
 [^pua]: 유니코드의 U+E000~U+F8FF 구간으로, 표준 문자가 배정되지 않아 글꼴마다 임의의 기호를 넣는다. Font Awesome도 이 구간에 아이콘을 배치하므로, 해당 글꼴이 없으면 다른 글꼴로 대체할 문자가 없다.
 

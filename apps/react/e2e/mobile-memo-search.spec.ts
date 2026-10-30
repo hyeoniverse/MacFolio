@@ -27,8 +27,8 @@ test.describe('휴대폰 메모 검색', () => {
 		await memo.getByRole('searchbox', { name: '글 검색' }).fill('dispetcher');
 		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
 		await expect(similar.getByRole('button', { name: 'dispatcher', exact: true })).toBeVisible();
-		await similar.getByRole('button', { name: /Flux 패턴/ }).tap();
-		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
+		await similar.getByRole('button', { name: /Flux의 Action·Dispatcher/ }).tap();
+		await expect(memo.getByRole('article', { name: /^Flux의 Action·Dispatcher/ })).toBeVisible();
 	});
 
 	test('검색 결과는 날짜 묶음 없이 순위대로, 결과가 없어지면 목록에 이전 글이 남지 않는다', async ({ page }) => {

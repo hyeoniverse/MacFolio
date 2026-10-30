@@ -1,5 +1,5 @@
 ---
-title: 굵게가 한국어 뒤에서 깨지는 이유
+title: remark-cjk-friendly로 한국어 조사 앞에서 깨지는 CommonMark 굵게 바로잡기
 date: 2026-10-01
 category: 개발 기록/MacFolio/기능 구현
 summary: `**취소(cancelled)**가`가 굵게로 렌더링되지 않고 별표가 그대로 표시됐다. CommonMark의 닫는 구분자 규칙이 조사를 붙여 쓰는 한국어와 맞지 않아서였다. 글을 수정하는 대신 읽기 화면과 편집기에 같은 플러그인을 적용했고, 편집기가 저장 시 글을 변형하던 문제도 함께 해결했다.
@@ -104,7 +104,7 @@ Editor.make().use(commonmark).use(gfm).use(cjkFriendly);
 
 - [한 줄에 모양은 하나 — 노션 대신 macOS 메모를 따른 이유, 그리고 구분선](/memo/memo-one-style-per-line)
 - [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
-- [글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기](/memo/markdown-xss-tests)
+- [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
 [^charref]: `&#xAC00;`처럼 문자를 유니코드 코드 포인트로 표기하는 HTML 문법. `AC00`은 '가'의 코드 포인트다. 이렇게 바꾸면 닫는 `**` 바로 뒤 문자가 문장부호 `&`가 되어 위 조건 2를 충족하므로, 직렬화기가 강조를 유지하려고 이 형태를 선택한다.
 

@@ -7,6 +7,8 @@ import remarkCjkFriendly from 'remark-cjk-friendly';
 import { rehypeHighlightCode } from '@/apps/memo/highlight';
 import { colorSchemeOf, resolveImage, resolveLink } from './repoDocs';
 import { DOC_IMAGES, DOC_SOURCES, docSource } from './docsBundle';
+import { useRemoteText } from '@/shared/hooks/useRemoteText';
+import { fileAppOf, fileNameOf, isRemoteFile } from '@/shared/lib/fileApps';
 import { useResume } from '@/shared/site/resumeStore';
 import { projectLinkId } from './resumeModel';
 import './DocView.css';
@@ -65,11 +67,26 @@ interface DocViewProps {
  * 저장소 문서를 GitHub처럼 그린다. 문서 안의 HTML(가운데 정렬, 그림)은 GitHub와 같은 규칙으로 거르고
  * (rehype-sanitize의 기본값), 코드 블록은 메모와 같은 색으로, mermaid 코드 블록은 그림으로 그린다.
  */
+/**
+ * 주소로 받은 파일(글에 올린 첨부 파일)의 본문. Markdown은 그대로 그리고,
+ * 글자 파일(txt·json 등)은 고정폭 그대로 보이게 코드 블록으로 감싼다 (안의 ``` 보다 긴 울타리로)
+ */
+function remoteSource(path: string, { text, error }: { text: string | null; error: boolean }): string {
+	if (error) return '파일을 불러오지 못했습니다.';
+	if (text === null) return '';
+	const target = fileAppOf(fileNameOf(path));
+	if (target?.app === 'textedit' && target.markdown) return text;
+	const longest = Math.max(2, ...(text.match(/`+/g) ?? []).map((run) => run.length));
+	const fence = '`'.repeat(longest + 1);
+	return `${fence}text\n${text}\n${fence}`;
+}
+
 const DocView: React.FC<DocViewProps> = ({ path, dark, onOpenDoc, onOpenProject }) => {
 	// 이력서는 관리자가 고치면 바로 다시 그린다 (저장소 문서는 바뀌지 않는다)
 	useResume('ko');
 	useResume('en');
-	const source = docSource(path) ?? '';
+	const remote = useRemoteText(isRemoteFile(path) ? path : null);
+	const source = isRemoteFile(path) ? remoteSource(path, remote) : (docSource(path) ?? '');
 	const openDoc = useRef(onOpenDoc);
 	const openProject = useRef(onOpenProject);
 	useEffect(() => {

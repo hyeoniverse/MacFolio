@@ -1,5 +1,5 @@
 ---
-title: MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계
+title: main 커밋 기록 집계로 Merge commit 병합 전략 정하기
 date: 2026-10-12
 category: 개발 기록/MacFolio/테스트·보안·성능
 summary: MacFolio는 PR을 Create a merge commit으로 병합한다. main 기록 1,940커밋을 집계해 선택 기준 세 가지에 적용하고, Rebase and merge가 섞인 PR 53개의 기록, CONTRIBUTING·conventions 검사·Ruleset으로 적용한 내용과 아직 켜지 않은 저장소 설정을 정리했다.
@@ -102,7 +102,7 @@ $ git log --oneline --first-parent -3 main
 | `main` Ruleset                        | `check`, `conventions`, `secrets` 세 검사를 필수로 지정. 통과하기 전에는 Merge 버튼이 비활성화                         |
 | 머지 커밋 메시지 설정                 | 제목 `Merge pull request #N from …`(`MERGE_MESSAGE`), 본문 PR 제목(`PR_TITLE`). GitHub 기본값 그대로                   |
 
-Squash 방식이라면 PR 제목만 검사하면 되지만, Merge commit 방식에서는 브랜치의 커밋 하나하나가 main 기록이 된다. 커밋 메시지 규칙과 검사는 [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)에 정리했다.
+Squash 방식이라면 PR 제목만 검사하면 되지만, Merge commit 방식에서는 브랜치의 커밋 하나하나가 main 기록이 된다. 커밋 메시지 규칙과 검사는 [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci)에 정리했다.
 
 머지 커밋 본문에는 PR 제목이 들어가므로, `--first-parent`로 조회할 때 PR 번호와 제목이 함께 출력된다.
 
@@ -144,10 +144,10 @@ gh repo edit hyeoniverse/MacFolio --enable-squash-merge=false --enable-rebase-me
 ## 관련 글
 
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 세 방식의 차이와 고르는 기준 (일반론)
-- [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci): 브랜치 커밋마다 메시지 형식을 검사하는 conventions 워크플로와 Ruleset
-- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](/memo/pin-actions-dependabot): 머지 커밋으로 병합되는 Dependabot PR
-- [메모 편집기 손보기 — 토글 목록·각주, ~ 하나짜리 취소선, 사라지는 빈 폴더](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
+- [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 브랜치 커밋마다 메시지 형식을 검사하는 conventions 워크플로와 Ruleset
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): 머지 커밋으로 병합되는 Dependabot PR
+- [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
 - 병합 방식 글을 처음 작성한 날의 기록: [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
 
 #MacFolio #Git #GitHub

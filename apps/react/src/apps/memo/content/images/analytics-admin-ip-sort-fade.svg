@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>정렬을 바꿀 때 전에는 모든 표가 tbody를 새로 만들고 페이드를 걸었고, 후에는 이름이 버튼인 표만 tbody를 유지하고 페이드를 걸지 않는다</title>
+<defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#6b7280"/></marker></defs>
+<rect width="900" height="470" fill="#fff"/>
+<text x="24" y="32" font-size="16" fill="#1f2937" font-weight="700">StatTable에서 표 머리를 눌러 정렬을 바꿀 때</text>
+<text x="24" y="52" font-size="11" fill="#6b7280">이름 칸이 버튼인 표는 유입 경로 탭의 '출처 / 매체 / 캠페인' 하나다 (누르면 그 조합의 일별 방문을 펼친다)</text>
+
+<rect x="24" y="72" width="416" height="380" rx="12" fill="#fff" stroke="#d1d5db"/>
+<text x="44" y="100" font-size="14" fill="#1f2937" font-weight="700">전</text>
+<rect x="68" y="86" width="150" height="22" rx="11" fill="#fef2f2"/>
+<text x="143" y="101" font-size="11" fill="#b91c1c" font-weight="600" text-anchor="middle">맥 Safari에서 이름이 빈칸</text>
+<rect x="44" y="122" width="376" height="44" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="58" y="141" font-size="11.5" fill="#1f2937">정렬 변경 → tbody의 key가 바뀜</text>
+<text x="58" y="157" font-size="10.5" fill="#6b7280" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">key="value-false" → key="name-true"</text>
+<line x1="232" y1="168" x2="232" y2="182" stroke="#6b7280" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="44" y="184" width="376" height="44" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="58" y="203" font-size="11.5" fill="#1f2937">tbody 삭제 후 새로 생성 + .motion-swap</text>
+<text x="58" y="219" font-size="10.5" fill="#6b7280">animation: fade-in (opacity 0 → 1)</text>
+<line x1="232" y1="230" x2="232" y2="244" stroke="#6b7280" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="44" y="246" width="376" height="44" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="58" y="265" font-size="11.5" fill="#1f2937">새 줄의 이름 칸 = &lt;button&gt;</text>
+<text x="58" y="281" font-size="10.5" fill="#6b7280" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">overflow: hidden; text-overflow: ellipsis</text>
+<line x1="232" y1="292" x2="232" y2="306" stroke="#6b7280" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="44" y="308" width="376" height="44" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="58" y="327" font-size="11.5" fill="#991b1b" font-weight="600">맥 Safari: 버튼 안의 글자가 그려지지 않음</text>
+<text x="58" y="343" font-size="10.5" fill="#4b5563">숫자 칸과 비율 막대는 보이고 이름 칸만 빈칸</text>
+<text x="44" y="380" font-size="10.5" fill="#6b7280">이름이 글자인 다른 표(묶어 보기, 들어온 곳, 캠페인·출처·매체)는</text>
+<text x="44" y="396" font-size="10.5" fill="#6b7280">같은 페이드를 받아도 글자가 보였다.</text>
+<text x="44" y="420" font-size="10.5" fill="#6b7280">Chromium, Playwright WebKit, 휴대폰 화면에서는 재현되지 않음</text>
+
+<rect x="460" y="72" width="416" height="380" rx="12" fill="#fff" stroke="#d1d5db"/>
+<text x="480" y="100" font-size="14" fill="#1f2937" font-weight="700">후</text>
+<rect x="504" y="86" width="186" height="22" rx="11" fill="#ecfdf5"/>
+<text x="597" y="101" font-size="11" fill="#047857" font-weight="600" text-anchor="middle">이름이 버튼인 표만 페이드 제외</text>
+<rect x="480" y="122" width="376" height="44" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="494" y="141" font-size="11.5" fill="#1f2937">정렬 변경 → onSelect가 있는 표는 key 없음</text>
+<text x="494" y="157" font-size="10.5" fill="#6b7280" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">key={onSelect ? undefined : …}</text>
+<line x1="668" y1="168" x2="668" y2="182" stroke="#6b7280" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="480" y="184" width="376" height="44" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="494" y="203" font-size="11.5" fill="#1f2937">tbody 유지, tr 순서만 변경</text>
+<text x="494" y="219" font-size="10.5" fill="#6b7280">.motion-swap 없음 (tr의 key는 행 키 그대로)</text>
+<line x1="668" y1="230" x2="668" y2="244" stroke="#6b7280" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="480" y="246" width="376" height="44" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="494" y="273" font-size="11.5" fill="#065f46" font-weight="600">버튼을 다시 만들지 않아 글자가 그대로 보임</text>
+<rect x="480" y="320" width="376" height="44" rx="8" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="494" y="339" font-size="11.5" fill="#1f2937">다른 표: 이전과 같이 tbody를 새로 만들고 페이드</text>
+<text x="494" y="355" font-size="10.5" fill="#6b7280">className={onSelect ? undefined : 'motion-swap'}</text>
+<text x="480" y="396" font-size="10.5" fill="#6b7280">CSS는 바꾸지 않았다. 버튼의 말줄임(…)도 그대로다.</text>
+</svg>

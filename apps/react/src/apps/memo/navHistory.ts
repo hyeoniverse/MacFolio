@@ -11,6 +11,8 @@ export interface NavEntry {
 	tags: string;
 	/** 본 글 주소. 글이 없는 폴더면 null */
 	slug: string | null;
+	/** 이 칸을 떠날 때의 본문 스크롤 위치(px). 뒤로·앞으로 돌아오면 이 위치에서 시작한다. 아직 떠나지 않은 칸은 없다 */
+	scroll?: number;
 }
 
 export interface NavHistory {
@@ -26,6 +28,19 @@ export const EMPTY_NAV_HISTORY: NavHistory = { entries: [], index: -1 };
 
 export const sameEntry = (a: NavEntry, b: NavEntry) =>
 	a.category === b.category && a.tags === b.tags && a.slug === b.slug;
+
+/** 스크롤 위치의 상한(px). 저장한 값이 이상하면 버린다 */
+const MAX_SCROLL = 10_000_000;
+
+/** 지금 칸에 떠나는 순간의 본문 스크롤 위치를 적는다 (다른 칸으로 가기 직전에 부른다). 같으면 그대로 */
+export function rememberScroll(history: NavHistory, scroll: number): NavHistory {
+	const current = history.entries[history.index];
+	const top = Math.round(Math.min(Math.max(scroll, 0), MAX_SCROLL));
+	if (!current || !Number.isFinite(top) || current.scroll === top) return history;
+	const entries = history.entries.slice();
+	entries[history.index] = { ...current, scroll: top };
+	return { ...history, entries };
+}
 
 /**
  * 새 칸을 지금 칸 뒤에 쌓는다. 앞으로 갈 기록은 버린다(Safari와 같다). 지금 칸과 같으면 그대로.
@@ -77,8 +92,10 @@ export const serializeNavHistory = (history: NavHistory) => ({
 
 const isEntry = (value: unknown): value is NavEntry => {
 	if (!value || typeof value !== 'object') return false;
-	const { category, tags, slug } = value as Record<string, unknown>;
+	const { category, tags, slug, scroll } = value as Record<string, unknown>;
 	return (
+		(scroll === undefined ||
+			(typeof scroll === 'number' && Number.isFinite(scroll) && scroll >= 0 && scroll <= MAX_SCROLL)) &&
 		typeof category === 'string' &&
 		category.length <= 300 &&
 		typeof tags === 'string' &&
@@ -94,7 +111,9 @@ export function parseNavHistory(value: unknown): NavHistory {
 	if (v !== NAV_HISTORY_VERSION || !Array.isArray(entries) || !entries.every(isEntry)) return EMPTY_NAV_HISTORY;
 	if (typeof index !== 'number' || !Number.isInteger(index)) return EMPTY_NAV_HISTORY;
 	const dropped = Math.max(0, entries.length - NAV_HISTORY_LIMIT);
-	const kept = entries.slice(dropped).map(({ category, tags, slug }) => ({ category, tags, slug }));
+	const kept = entries
+		.slice(dropped)
+		.map(({ category, tags, slug, scroll }) => ({ category, tags, slug, ...(scroll !== undefined && { scroll }) }));
 	if (kept.length === 0) return EMPTY_NAV_HISTORY;
 	return { entries: kept, index: Math.min(Math.max(index - dropped, 0), kept.length - 1) };
 }

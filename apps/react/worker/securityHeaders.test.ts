@@ -40,9 +40,34 @@ describe('보안 헤더', () => {
 		);
 		expect(csp['connect-src']).toContain('https://macfolio-api.hyeoniverse.com');
 		expect(csp['media-src']).toContain('https://macfolio-api.hyeoniverse.com');
+		// 메모 글의 바깥 영상·음악 파일 (스크립트를 실행하지 못하는 미디어라 https 전체)
+		expect(csp['media-src']).toContain('https:');
 		expect(csp['frame-src']).toEqual([
 			"'self'",
 			'https://challenges.cloudflare.com',
+			// 메모 글의 임베드 (memo/embeds.ts)
+			'https://clips.twitch.tv',
+			'https://codepen.io',
+			'https://codesandbox.io',
+			'https://docs.google.com',
+			'https://drive.google.com',
+			'https://embed.music.apple.com',
+			'https://embed.podcasts.apple.com',
+			'https://embed.ted.com',
+			'https://jsfiddle.net',
+			'https://miro.com',
+			'https://open.spotify.com',
+			'https://player.twitch.tv',
+			'https://player.vimeo.com',
+			'https://stackblitz.com',
+			'https://streamable.com',
+			'https://w.soundcloud.com',
+			'https://www.canva.com',
+			'https://www.figma.com',
+			'https://www.instagram.com',
+			'https://www.loom.com',
+			'https://www.tiktok.com',
+			'https://www.youtube-nocookie.com',
 			'https://newpick-tan.vercel.app',
 			'https://what-to-do-chi.vercel.app',
 		]);

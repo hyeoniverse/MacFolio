@@ -1,5 +1,5 @@
 ---
-title: 미리보기 슬라이드쇼와 프로젝트 발표 자료
+title: pdf.js와 Fullscreen API로 구현한 PDF 슬라이드쇼
 date: 2026-10-19
 category: 개발 기록/MacFolio/기능 구현
 summary: 미리보기 앱에 macOS처럼 보기 › 슬라이드쇼(⇧⌘F)를 추가해 검은 화면에 한 페이지씩 맞춰 렌더링하고, 종료하면 마지막으로 본 페이지로 이동하게 했다. 발표 자료는 slides 필드를 추가했다가 제거하고, Finder 프로젝트 폴더의 PDF로 지정하도록 변경했다.
@@ -106,9 +106,9 @@ export function firstProjectPdf(entries: DocumentEntry[], projectId: string): Do
 
 ## 관련 글
 
-- [Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기](/memo/finder-files)
-- [프로젝트를 앱으로 - 배포한 사이트를 창 안에 띄우기](/memo/project-apps)
-- [사진 앱 - 프로젝트 화면을 앨범으로](/memo/photos-app)
+- [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)
+- [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
+- [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
 
 [^capture]: DOM 이벤트는 캡처 단계(바깥 → 대상)와 버블링 단계(대상 → 바깥)를 거친다. `addEventListener`의 세 번째 인수를 `true`로 지정하면 캡처 단계에서 수신하므로, 다른 요소의 리스너보다 먼저 처리하고 전파를 멈출 수 있다. [MDN addEventListener](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener) 참고.
 

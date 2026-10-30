@@ -1,7 +1,9 @@
 ---
-title: 글자 크기에 이름 붙이기 — Apple 글자 스타일 이름을 빌려 645곳을 여덟 이름으로
+title: Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기
 date: 2026-10-16
 category: 개발 기록/MacFolio/스타일·컴포넌트
+series: 디자인 토큰
+seriesOrder: 3
 summary: CSS의 font-size 958곳 중 자주 쓰는 여덟 값에 Apple HIG의 글자 스타일 이름(--text-caption2~title2)을 붙여 645곳을 바꿨다. 값은 그대로라 화면은 같다. 사흘 뒤 다른 브랜치에서 숫자 값 375곳이 다시 유입된 경위까지 정리했다.
 ---
 
@@ -130,10 +132,10 @@ macOS 앱의 본문은 13px이라 데스크톱 창 안에서는 `--text-footnote
 ## 관련 글
 
 - PR: [#234](https://github.com/hyeoniverse/MacFolio/pull/234)
-- [리팩터링 5단계 — 스타일](/memo/refactor-step5-styles)
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers)
-- [모서리 둥글기에 이름 붙이기 — 576곳 중 239곳을 여섯 이름으로](/memo/radius-tokens)
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](/memo/color-tokens)
-- [그림자와 간격에 이름 붙이기 — 간격 열 값과 그림자 다섯 값](/memo/shadow-space-tokens)
+- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
+- [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
 
 #MacFolio #CSS #리팩터링

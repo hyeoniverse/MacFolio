@@ -1,7 +1,9 @@
 ---
-title: 같은 뜻, 다른 문구 — 연락 메일의 검사 규칙을 하나로
+title: zod superRefine으로 첫 실패 문구만 반환하는 화면·서버 공통 검사
 date: 2026-10-11
 category: 개발 기록/MacFolio/API·데이터
+series: contracts 스키마
+seriesOrder: 4
 summary: 연락 메일의 검사 규칙을 화면과 서버가 각자 적어 문구가 달랐고, 서버만 검사하는 규칙도 있었다. contracts에 칸마다 [검사, 문구] 목록을 두고 처음 어긋난 문구 하나만 반환하게 했다. 화면은 칸 아래에, 서버는 400 배열로 같은 문구를 쓴다.
 ---
 
@@ -124,10 +126,10 @@ cd apps/react && npx playwright test e2e/mail.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- [메일 앱에서 진짜로 메일 보내기 - Resend와 Turnstile](/memo/contact-mail)
-- [메일 앱의 보낸 편지함과 관리자 받은 편지함](/memo/mail-mailboxes)
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](/memo/contracts-comments)
-- [보내는 쪽과 받는 쪽 — 분석 이벤트의 모양을 하나로](/memo/contracts-analytics)
+- [Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
+- [방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
 
 [^cc]: 제어 문자(control character)는 화면에 표시되지 않는 문자(U+0000–U+001F, U+007F 등)다. 제목은 메일의 Subject 헤더(`[MacFolio] 제목`)에, 이름은 본문 끝의 "보낸 사람: 이름 <이메일>" 줄에 들어간다(`apps/api/src/contact/rules.ts`의 `buildEmail`). 헤더 값에 줄바꿈이 섞이면 헤더를 추가로 끼워 넣는 [메일 헤더 인젝션](https://en.wikipedia.org/wiki/Email_injection)에 쓰일 수 있다. 그래서 이름·제목은 한 줄만 허용하고, 모든 칸에서 줄바꿈·탭을 제외한 제어 문자를 거부한다.
 

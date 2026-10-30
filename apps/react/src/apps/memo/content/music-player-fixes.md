@@ -1,5 +1,5 @@
 ---
-title: 음악 앱 버그 세 가지 - 꺼진 앱, 누적되는 표지, 반복되는 시트 애니메이션
+title: isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그
 date: 2026-10-18
 category: 개발 기록/MacFolio/기능 구현
 summary: 배경 음악이 재생되는데 Dock의 음악은 꺼진 상태였고, 셔플을 누르면 표지가 누적됐고, 지금 재생 중 시트의 닫힘 애니메이션이 반복됐다. 창과 실행이 섞인 isRunning, 형제 요소의 같은 React key, 렌더링마다 새로 만든 ref 함수가 원인이었다.
@@ -115,13 +115,13 @@ ref 콜백이 정리 함수를 반환하는 기능은 [React 19에서 추가됐�
 
 - 첫 커밋(`cc72fa82a`)은 `runningAtStart`로 증상을 가렸고, 두 번째 커밋(`8b64610ba`)에서 그 변경을 되돌리고 store를 분리했다. `manifest.ts`와 `initialWindows.ts`는 두 커밋에서 추가했다가 되돌린 줄이 거의 같다. 증상을 가리는 수정이 먼저 들어가면 원인을 수정할 때 그만큼 다시 삭제해야 한다.
 - `isRunning`이라는 이름이 "창이 있다"를 뜻하는 것이 혼란의 근본 원인이었다. 이름은 유지하고 주석으로 의미를 기록했다. 이후 `hasWindow`처럼 이름을 바꾸는 것이 남은 작업이다.
-- 동작 줄이기가 켜진 시험 환경에서는 애니메이션 버그가 드러나지 않는다. 애니메이션을 검증하는 시험은 그 설정을 끄고 실행해야 한다. 이것은 [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)에서 정한 기본값이 놓친 경우였다.
+- 동작 줄이기가 켜진 시험 환경에서는 애니메이션 버그가 드러나지 않는다. 애니메이션을 검증하는 시험은 그 설정을 끄고 실행해야 한다. 이것은 [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)에서 정한 기본값이 놓친 경우였다.
 
 ## 관련 글
 
-- [Playwright로 모바일과 애니메이션까지 테스트하기](/memo/playwright-mobile-and-motion)
-- [휴대폰 앱들을 메모처럼](/memo/mobile-apps-ios-style)
-- [메뉴 막대의 앱 이름이 맨 앞 창을 따른다](/memo/menu-bar-app-name)
-- [iOS Safari에서만 음악 위젯 모서리가 각지는 문제](/memo/music-widget-ios-corners)
+- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name)
+- [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
 
 #MacFolio #프론트엔드 #음악 #React #상태설계

@@ -1,4 +1,6 @@
-// 이미지 내려받기. 다른 주소(API, Unsplash 등)의 그림은 <a download>가 듣지 않아서 받아 와 파일로 저장한다.
+// 이미지·첨부 파일 내려받기. 다른 주소(API, Unsplash 등)의 파일은 <a download>가 듣지 않아서 받아 와 파일로 저장한다.
+
+import { fetchFileBlob } from '@/shared/api/remoteFileApi';
 
 const EXTENSIONS: Record<string, string> = {
 	'image/png': 'png',
@@ -25,15 +27,31 @@ export async function downloadImage(src: string, alt: string) {
 		const response = await fetch(src);
 		if (!response.ok) throw new Error(String(response.status));
 		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = imageFileName(alt, src, blob.type);
-		document.body.append(link);
-		link.click();
-		link.remove();
-		setTimeout(() => URL.revokeObjectURL(url), 1000);
+		saveBlob(blob, imageFileName(alt, src, blob.type));
 	} catch {
 		window.open(src, '_blank', 'noopener,noreferrer');
 	}
+}
+
+/**
+ * 글에 올린 첨부 파일을 링크 글자(올릴 때의 파일 이름)로 저장한다. 링크를 누르면 사이트 안 앱으로 열리므로 따로 둔 길이다.
+ * 받지 못하면 새 탭에서 연다 (API가 Content-Disposition: attachment로 내주므로 브라우저가 내려받는다)
+ */
+export async function downloadFile(src: string, name: string) {
+	try {
+		saveBlob(await fetchFileBlob(src), name);
+	} catch {
+		window.open(src, '_blank', 'noopener,noreferrer');
+	}
+}
+
+function saveBlob(blob: Blob, name: string) {
+	const url = URL.createObjectURL(blob);
+	const link = document.createElement('a');
+	link.href = url;
+	link.download = name;
+	document.body.append(link);
+	link.click();
+	link.remove();
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }

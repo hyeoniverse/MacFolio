@@ -1,7 +1,9 @@
 ---
-title: 액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게
+title: GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기
 date: 2026-10-10
 category: 개발 기록/MacFolio/테스트·보안·성능
+series: 보안 점검
+seriesOrder: 9
 summary: 다른 커밋으로 옮길 수 있는 태그(@v7) 대신 액션 9종을 커밋 SHA로 고정하고, 토큰 권한을 축소하고, 새 버전은 Dependabot이 PR로 제안하게 했다. 이후 열흘 동안 Dependabot PR 10개를 병합했고, 규칙 검사의 예외 조건도 한 번 수정했다.
 ---
 
@@ -106,10 +108,10 @@ git ls-remote https://github.com/actions/checkout 'refs/tags/v7.0.1*'
 
 ## 관련 글
 
-- [커밋 규칙을 문서 대신 CI로 지키기](/memo/commit-conventions-ci)
+- [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci)
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies)
-- [하위 의존성 취약점 6건을 overrides로 고치기](/memo/dependency-vulnerabilities)
-- [TypeScript 7로 올리기 — 컴파일러는 7, 린트는 6을 나란히](/memo/typescript-7-side-by-side)
-- [프론트엔드 배포를 GitHub Actions로 - 시험을 통과한 커밋만](/memo/deploy-github-actions)
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)
+- [npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기](/memo/typescript-7-side-by-side)
+- [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
 
 #MacFolio #보안 #CI #GitHubActions #Dependabot

@@ -1,11 +1,13 @@
 ---
-title: try/catch 열두 개를 하나로 — 브라우저 저장소 모듈
+title: readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기
 date: 2026-10-10
 category: 개발 기록/MacFolio/아키텍처
+series: 공통 모듈
+seriesOrder: 2
 summary: 브라우저 저장소를 사용하는 파일 7개가 각각 키 문자열, JSON.parse, try/catch(12개)를 포함하고 있었다. storage.ts에 키 목록과 readJson·writeJson을 정의하고 예외를 그곳에서 처리해, 호출하는 쪽에는 형태 검사만 남았다.
 ---
 
-이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 두 번째 항목을 처리한 기록이다. 첫 번째 항목은 [공통 API 클라이언트](/memo/shared-api-client)였다.
+이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계의 두 번째 항목을 처리한 기록이다. 첫 번째 항목은 [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)였다.
 
 ## 분산되어 있던 코드
 
@@ -75,7 +77,7 @@ export const STORAGE_KEYS = {
 
 두 번째 인자로 `'session'`을 전달하면 `sessionStorage`를 사용한다.
 
-호출하는 쪽에는 **형태 검사**만 남는다. 저장된 JSON이 현재 코드가 기대하는 형태인지는 저장소 모듈이 판단할 수 없으므로, 기존대로 `parseSettings`·`parseArrangement` 같은 순수 함수가 검사한다([손으로 쓴 입력 검사 세 개를 공유 스키마로](/memo/settings-schemas)).
+호출하는 쪽에는 **형태 검사**만 남는다. 저장된 JSON이 현재 코드가 기대하는 형태인지는 저장소 모듈이 판단할 수 없으므로, 기존대로 `parseSettings`·`parseArrangement` 같은 순수 함수가 검사한다([서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas)).
 
 ```ts
 // 전 (settingsStore.ts)
@@ -94,7 +96,7 @@ export const settingsStore = createStore<Settings>(parseSettings(readJson(STORAG
 
 ## 휴지통의 '내 브라우저 데이터'와 연동
 
-휴지통 앱에는 이 사이트가 브라우저에 저장한 값을 표시하고 삭제하는 화면이 있다(`bin/siteStorage.ts`, [휴지통 앱 - 비울 수 있는 것만 담기까지](/memo/bin-app)). 그 목록 `BROWSER_DATA`도 키 문자열을 별도로 작성하고 있었는데, 이제 `STORAGE_KEYS`를 참조한다. 코드에 `'macfolio:…'` 키가 새로 추가되면 `BROWSER_DATA`에 누락됐다고 알리는 시험은 유지한다. 키가 한 파일로 통합되어 시험이 검사할 위치도 사실상 하나다.
+휴지통 앱에는 이 사이트가 브라우저에 저장한 값을 표시하고 삭제하는 화면이 있다(`bin/siteStorage.ts`, [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)). 그 목록 `BROWSER_DATA`도 키 문자열을 별도로 작성하고 있었는데, 이제 `STORAGE_KEYS`를 참조한다. 코드에 `'macfolio:…'` 키가 새로 추가되면 `BROWSER_DATA`에 누락됐다고 알리는 시험은 유지한다. 키가 한 파일로 통합되어 시험이 검사할 위치도 사실상 하나다.
 
 `public/theme-boot.js`만 예외다. React가 로드되기 전에 테마를 읽어 깜빡임을 방지하는 다섯 줄짜리 스크립트라 모듈을 import할 수 없어, 키를 문자열 그대로 작성한다. `STORAGE_KEYS.settings` 옆에 이 사실을 주석으로 남겼다.
 
@@ -129,7 +131,7 @@ PR 전체로는 14개 파일, 322줄 추가와 134줄 삭제였다. 추가된 �
 - 키 문자열을 한 객체로 통합하면 "이 사이트가 브라우저에 무엇을 저장하는가"라는 질문에 파일 하나로 답할 수 있다. 개인정보 안내(휴지통의 '내 브라우저 데이터')와도 연동된다.
 - 모듈을 import할 수 없는 위치(`theme-boot.js`)는 예외로 두고 양쪽에 주석을 남긴다. 무리하게 통합해 첫 화면 렌더링이 늦어지면 손해다.
 
-같은 단계의 마지막 작업은 화면 크기 판단(`matchMedia`·`innerWidth` 25곳)을 `useIsMobile`·`useViewport`로 통일하는 일이다([matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈](/memo/shared-media)).
+같은 단계의 마지막 작업은 화면 크기 판단(`matchMedia`·`innerWidth` 25곳)을 `useIsMobile`·`useViewport`로 통일하는 일이다([matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media)).
 
 ## 사용 방법
 
@@ -147,10 +149,10 @@ grep -rn "localStorage\|sessionStorage" src | grep -v "shared/lib/storage\|\.tes
 
 ## 관련 글
 
-- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](/memo/shared-api-client): 3단계 첫 항목
-- [matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈](/memo/shared-media): 3단계 마지막 항목
-- [손으로 쓴 입력 검사 세 개를 공유 스키마로 — 서버와 화면이 같은 규칙을 쓰게](/memo/settings-schemas): 설정 값의 형태 검사
-- [휴지통 앱 - 비울 수 있는 것만 담기까지](/memo/bin-app)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client): 3단계 첫 항목
+- [matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-media): 3단계 마지막 항목
+- [서버 if 문 검사와 화면 상한을 zod 스키마 하나로 합치기](/memo/settings-schemas): 설정 값의 형태 검사
+- [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
 
 PR: [#198](https://github.com/hyeoniverse/MacFolio/pull/198)
 

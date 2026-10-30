@@ -5,6 +5,7 @@ import {
 	folderPathError,
 	isCalendarDate,
 	isPostSlug,
+	isSeriesOrder,
 	POST_LIMITS,
 	type PostSlug,
 	type AdminPost as AdminPostShape,
@@ -16,9 +17,12 @@ import { requestBody } from './parse.js';
 /** 문자열이 아니면 빈 문자열로 보고 앞뒤 공백을 다듬는다 (서버가 하던 그대로) */
 const text = () => z.preprocess((value) => (typeof value === 'string' ? value.trim() : ''), z.string());
 
+const SERIES_ORDER_ERROR = `연재 순서는 1부터 ${POST_LIMITS.seriesOrder}까지의 정수입니다.`;
+
 /**
  * 글 쓰기·임시 저장·게시 요청 몸통. 날짜가 비어 있으면 오늘(서버 기준).
- * 이유는 칸 순서(제목 → 날짜 → 폴더 → 요약 → 본문)대로 모두 모은다
+ * 이유는 칸 순서(제목 → 날짜 → 폴더 → 연재 → 요약 → 본문)대로 모두 모은다.
+ * 연재 이름은 비우면(또는 보내지 않으면) 연재가 아닌 글이다. 연재 순서는 비우면(null·빈 문자열) 날짜 순
  */
 export const postInput = (today: string): z.ZodType<PostContentShape, unknown> =>
 	requestBody({
@@ -32,6 +36,16 @@ export const postInput = (today: string): z.ZodType<PostContentShape, unknown> =
 			const error = category ? folderPathError(category) : '폴더를 골라주세요.';
 			if (error) ctx.addIssue({ code: 'custom', message: error });
 		}),
+		series: text()
+			.refine(
+				(series) => series.length <= POST_LIMITS.series,
+				`연재 이름은 ${POST_LIMITS.series}자까지 입력할 수 있습니다.`
+			)
+			.transform((series) => series || undefined),
+		seriesOrder: z.preprocess(
+			(value) => (value === null || value === undefined || value === '' ? undefined : Number(value)),
+			z.number({ error: SERIES_ORDER_ERROR }).refine(isSeriesOrder, SERIES_ORDER_ERROR).optional()
+		),
 		summary: text().refine(
 			(summary) => summary.length <= POST_LIMITS.summary,
 			`요약은 ${POST_LIMITS.summary}자까지 입력할 수 있습니다.`
@@ -49,6 +63,10 @@ export const PostContent: z.ZodType<PostContentShape> = z.object({
 	/** YYYY-MM-DD */
 	date: z.string(),
 	category: z.string(),
+	/** 연재 이름. 연재가 아니면 없다 */
+	series: z.string().optional(),
+	/** 연재 안의 순서 (1 이상). 없으면 날짜 순 */
+	seriesOrder: z.number().int().positive().optional(),
 	summary: z.string(),
 	body: z.string(),
 });
@@ -63,6 +81,10 @@ export const ServerPost: z.ZodType<ServerPostShape> = z.object({
 	title: z.string(),
 	date: z.string(),
 	category: z.string(),
+	/** 연재 이름. 연재가 아니면 없다 */
+	series: z.string().optional(),
+	/** 연재 안의 순서 (1 이상). 없으면 날짜 순 */
+	seriesOrder: z.number().int().positive().optional(),
 	summary: z.string(),
 	body: z.string(),
 	deleted: z.boolean(),
@@ -108,5 +130,13 @@ export const RevisionSummary = z.object({
 export type RevisionSummary = z.infer<typeof RevisionSummary>;
 
 /** 예전 버전 하나의 내용 */
-export const Revision = RevisionSummary.extend({ category: z.string(), summary: z.string(), body: z.string() });
+export const Revision = RevisionSummary.extend({
+	category: z.string(),
+	/** 연재 이름. 연재가 아니었거나 연재 칸을 두기 전의 버전이면 없다 */
+	series: z.string().optional(),
+	/** 연재 안의 순서. 없으면 날짜 순 */
+	seriesOrder: z.number().int().positive().optional(),
+	summary: z.string(),
+	body: z.string(),
+});
 export type Revision = z.infer<typeof Revision>;

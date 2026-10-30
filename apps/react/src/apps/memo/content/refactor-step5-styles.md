@@ -1,7 +1,9 @@
 ---
-title: 리팩터링 5단계 — 스타일
+title: CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기
 date: 2026-10-18
 category: 개발 기록/MacFolio/스타일·컴포넌트
+series: 리팩터링
+seriesOrder: 5
 summary: 리팩터링 5단계 회고. CSS 값은 하나도 바꾸지 않고 z-index·모서리·글자 크기·간격·그림자·색에 이름을 붙였고, 4,600줄 Memo.css를 열다섯 파일로 분할했으며, 중복과 사용하지 않는 규칙을 삭제했다. 동일 여부는 자동 비교로 확인했다.
 ---
 
@@ -32,16 +34,16 @@ summary: 리팩터링 5단계 회고. CSS 값은 하나도 바꾸지 않고 z-in
 
 ## 변경 목록
 
-| 항목                   | PR                                                       | 글                                                                       |
-| ---------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `z-index` 레이어       | [#231](https://github.com/hyeoniverse/MacFolio/pull/231) | [z-index 숫자에 이름 붙이기](/memo/z-index-layers)                       |
-| 모서리                 | [#232](https://github.com/hyeoniverse/MacFolio/pull/232) | [모서리 둥글기에 이름 붙이기](/memo/radius-tokens)                       |
-| 글자 크기              | [#234](https://github.com/hyeoniverse/MacFolio/pull/234) | [글자 크기에 이름 붙이기](/memo/font-size-tokens)                        |
-| `Memo.css` 분할        | [#238](https://github.com/hyeoniverse/MacFolio/pull/238) | [4,600줄 Memo.css를 열다섯 파일로](/memo/memo-css-split)                 |
-| Safari 페이지 CSS 중복 | [#241](https://github.com/hyeoniverse/MacFolio/pull/241) | [두 CSS 파일에 똑같이 적힌 규칙 103개 지우기](/memo/creative-css-dedupe) |
-| 사용하지 않는 선택자   | [#242](https://github.com/hyeoniverse/MacFolio/pull/242) | [2,761개 중 정말 안 쓰는 것은 9개](/memo/unused-css-selectors)           |
-| 그림자와 간격          | [#248](https://github.com/hyeoniverse/MacFolio/pull/248) | [그림자와 간격에 이름 붙이기](/memo/shadow-space-tokens)                 |
-| 색                     | [#249](https://github.com/hyeoniverse/MacFolio/pull/249) | [색에 이름 붙이기](/memo/color-tokens)                                   |
+| 항목                   | PR                                                       | 글                                                                                             |
+| ---------------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `z-index` 레이어       | [#231](https://github.com/hyeoniverse/MacFolio/pull/231) | [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)              |
+| 모서리                 | [#232](https://github.com/hyeoniverse/MacFolio/pull/232) | [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)     |
+| 글자 크기              | [#234](https://github.com/hyeoniverse/MacFolio/pull/234) | [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)          |
+| `Memo.css` 분할        | [#238](https://github.com/hyeoniverse/MacFolio/pull/238) | [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)          |
+| Safari 페이지 CSS 중복 | [#241](https://github.com/hyeoniverse/MacFolio/pull/241) | [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe)    |
+| 사용하지 않는 선택자   | [#242](https://github.com/hyeoniverse/MacFolio/pull/242) | [2,761개 중 정말 안 쓰는 것은 9개](/memo/unused-css-selectors)                                 |
+| 그림자와 간격          | [#248](https://github.com/hyeoniverse/MacFolio/pull/248) | [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)    |
+| 색                     | [#249](https://github.com/hyeoniverse/MacFolio/pull/249) | [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens) |
 
 ## 구현
 
@@ -141,13 +143,14 @@ summary: 리팩터링 5단계 회고. CSS 값은 하나도 바꾸지 않고 z-in
 
 ## 관련 글
 
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](/memo/z-index-layers)
-- [모서리 둥글기에 이름 붙이기 — 576곳 중 239곳을 여섯 이름으로](/memo/radius-tokens)
-- [글자 크기에 이름 붙이기 — Apple 글자 스타일 이름을 빌려 645곳을 여덟 이름으로](/memo/font-size-tokens)
-- [그림자와 간격에 이름 붙이기 — 간격 열 값과 그림자 다섯 값](/memo/shadow-space-tokens)
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](/memo/color-tokens)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
+- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
+- [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
 - [4,600줄 Memo.css를 열다섯 파일로 — 차례를 지켜 나누고 결과가 같은지 확인하기](/memo/memo-css-split)
-- [두 CSS 파일에 똑같이 적힌 규칙 103개 지우기](/memo/creative-css-dedupe)
+- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe)
 - [2,761개 중 정말 안 쓰는 것은 9개](/memo/unused-css-selectors)
+- [Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values): 이 단계 뒤에 남은 숫자를 토큰으로 옮기고 규칙으로 강제한 작업
 
 #MacFolio #리팩터링 #CSS #디자인토큰

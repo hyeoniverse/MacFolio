@@ -1,7 +1,9 @@
 ---
-title: Finder 앱 - 사이트를 파일처럼 둘러보기
+title: openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기
 date: 2026-10-03
 category: 개발 기록/MacFolio/기능 구현
+series: Finder
+seriesOrder: 1
 summary: Dock에 Finder 아이콘은 있었지만 눌러도 창이 열리지 않았다. 저장소 문서, 프로젝트, 블로그 글, 앱을 폴더와 파일로 구성해 탐색하는 Finder를 만들었다. 문서는 Finder 안에서 GitHub처럼 렌더링하고(Mermaid 도식 포함), 글은 메모, 프로젝트는 Safari, 앱은 해당 앱으로 연다.
 ---
 
@@ -134,15 +136,15 @@ const components = useMemo<Components>(
 
 ## 남은 것과 배운 것
 
-다음 작업은 바탕화면이었다. Finder 트리에 '데스크톱' 폴더를 추가하고, 그 안의 항목을 바탕화면에 아이콘으로 배치하는 계획이었다. 이후 [바탕화면 아이콘](/memo/desktop-icons)([#259](https://github.com/hyeoniverse/MacFolio/pull/259))으로 구현했고, 빈 이력서 폴더도 [Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기](/memo/finder-files)([#255](https://github.com/hyeoniverse/MacFolio/pull/255))에서 채웠다.
+다음 작업은 바탕화면이었다. Finder 트리에 '데스크톱' 폴더를 추가하고, 그 안의 항목을 바탕화면에 아이콘으로 배치하는 계획이었다. 이후 [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)([#259](https://github.com/hyeoniverse/MacFolio/pull/259))으로 구현했고, 빈 이력서 폴더도 [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)([#255](https://github.com/hyeoniverse/MacFolio/pull/255))에서 채웠다.
 
 배운 것: 앱 사이에 열기 요청을 전달할 때는 받는 쪽이 아직 마운트되지 않았을 가능성을 먼저 고려해야 한다. 이벤트는 사라지고 값은 남는다. 그리고 react-markdown의 `components`는 참조가 바뀌면 요소를 다시 마운트한다. 같은 문제를 두 번 겪은 뒤, 이런 객체는 컴포넌트 바깥 상수나 `useMemo`로 정의하는 것을 규칙으로 정했다.
 
 ## 관련 글
 
-- [Finder 폴더를 진짜 데스크탑처럼: 새 폴더, 이름 변경, 끌어서 옮기기](/memo/finder-filesystem)
-- [바탕화면 아이콘 - 선택, 끌기, 칸 맞춤](/memo/desktop-icons)
-- [글 안의 저장소 문서 링크를 Finder에서 열기](/memo/doc-links-in-finder): 메모 글의 문서 링크도 Finder로
+- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)
+- [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)
+- [클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기](/memo/doc-links-in-finder): 메모 글의 문서 링크도 Finder로
 
 [^click]: `click`은 같은 요소에서 `mousedown`과 `mouseup`이 모두 발생해야 발생한다. 두 이벤트 사이에 요소가 교체되면 `click`이 발생하지 않는다.
 

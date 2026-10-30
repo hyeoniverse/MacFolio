@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 450" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>관리자로 인증된 요청의 IP를 HMAC으로 AdminIp 표에 기록하고, 방문 이벤트는 관리자 세션이 있거나 AdminIp에 있는 IP면 저장하지 않는다</title>
+<defs>
+<marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#374151"/></marker>
+<marker id="i" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#4f46e5"/></marker>
+</defs>
+<rect width="900" height="450" fill="#fff"/>
+<text x="24" y="32" font-size="16" fill="#1f2937" font-weight="700">관리자 IP를 기록하고 그 IP의 방문을 집계에서 제외</text>
+<text x="24" y="52" font-size="11" fill="#6b7280">위: 기록 (AdminIpService.remember) · 아래: 판정 (AdminIpService.isAdminIp) · IP 원문은 어디에도 저장하지 않는다</text>
+
+<!-- 기록 -->
+<rect x="24" y="76" width="250" height="132" rx="10" fill="#eef2ff" stroke="#a5b4fc"/>
+<text x="40" y="98" font-size="12.5" fill="#3730a3" font-weight="600">관리자로 인증된 요청</text>
+<text x="40" y="122" font-size="11" fill="#1f2937">· GitHub 로그인 콜백 (세션 발급 직후)</text>
+<text x="40" y="144" font-size="11" fill="#1f2937">· AdminGuard를 통과한 요청</text>
+<text x="52" y="160" font-size="10" fill="#6b7280">관리자가 사이트를 열면 /auth/me 등</text>
+<text x="40" y="182" font-size="11" fill="#1f2937">· 세션 쿠키가 붙은 방문 이벤트</text>
+<text x="52" y="198" font-size="10" fill="#6b7280">POST /analytics/events</text>
+
+<line x1="278" y1="142" x2="348" y2="142" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#i)"/>
+<rect x="350" y="96" width="230" height="92" rx="10" fill="#fff" stroke="#4f46e5" stroke-width="1.5"/>
+<text x="465" y="120" font-size="12.5" fill="#4f46e5" font-weight="600" text-anchor="middle">remember(ip)</text>
+<text x="465" y="141" font-size="10.5" fill="#374151" text-anchor="middle">HMAC-SHA256(IP_HASH_SECRET,</text>
+<text x="465" y="156" font-size="10.5" fill="#374151" text-anchor="middle">"admin-ip:" + IP) → 64자 16진수</text>
+<text x="465" y="176" font-size="10" fill="#6b7280" text-anchor="middle">같은 IP는 10분에 한 번만 upsert</text>
+
+<line x1="584" y1="142" x2="654" y2="142" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#i)"/>
+<rect x="656" y="96" width="220" height="92" rx="10" fill="#f3f4f6" stroke="#9ca3af"/>
+<text x="766" y="120" font-size="12.5" fill="#1f2937" font-weight="600" text-anchor="middle">AdminIp 표</text>
+<text x="766" y="141" font-size="10.5" fill="#374151" text-anchor="middle">ipHash (기본 키)</text>
+<text x="766" y="156" font-size="10.5" fill="#374151" text-anchor="middle">lastSeenAt (인덱스)</text>
+<text x="766" y="176" font-size="10" fill="#6b7280" text-anchor="middle">마지막 기록 후 30일 보관</text>
+
+<!-- 판정 -->
+<line x1="766" y1="190" x2="766" y2="288" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#k)"/>
+<text x="776" y="226" font-size="10.5" fill="#4b5563">1분마다 다시 읽어 메모리 Set에 보관</text>
+<text x="776" y="242" font-size="10.5" fill="#4b5563">읽기 전에 30일 지난 행 삭제</text>
+
+<rect x="24" y="290" width="230" height="64" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="139" y="315" font-size="12.5" fill="#1f2937" font-weight="600" text-anchor="middle">방문 이벤트</text>
+<text x="139" y="334" font-size="10.5" fill="#6b7280" text-anchor="middle">POST /analytics/events</text>
+<line x1="258" y1="322" x2="338" y2="322" stroke="#374151" stroke-width="1.5" marker-end="url(#k)"/>
+
+<path d="M465 284 L590 322 L465 360 L340 322 Z" fill="#fffbeb" stroke="#f59e0b" stroke-width="1.5"/>
+<text x="465" y="318" font-size="11" fill="#92400e" font-weight="600" text-anchor="middle">관리자 세션이 있는가</text>
+<text x="465" y="334" font-size="11" fill="#92400e" font-weight="600" text-anchor="middle">또는 AdminIp에 있는 IP인가</text>
+<line x1="656" y1="322" x2="594" y2="322" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#k)"/>
+<rect x="656" y="292" width="220" height="60" rx="10" fill="#fff" stroke="#9ca3af" stroke-dasharray="4 3"/>
+<text x="766" y="318" font-size="11.5" fill="#1f2937" font-weight="600" text-anchor="middle">isAdminIp(ip)</text>
+<text x="766" y="336" font-size="10.5" fill="#6b7280" text-anchor="middle">요청 IP의 HMAC이 Set에 있는가</text>
+
+<line x1="465" y1="362" x2="465" y2="384" stroke="#374151" stroke-width="1.5"/>
+<line x1="465" y1="384" x2="300" y2="384" stroke="#374151" stroke-width="1.5"/>
+<line x1="300" y1="384" x2="300" y2="396" stroke="#374151" stroke-width="1.5" marker-end="url(#k)"/>
+<line x1="465" y1="384" x2="630" y2="384" stroke="#374151" stroke-width="1.5"/>
+<line x1="630" y1="384" x2="630" y2="396" stroke="#374151" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="190" y="398" width="220" height="40" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="300" y="423" font-size="11.5" fill="#991b1b" font-weight="600" text-anchor="middle">예: 저장하지 않고 204</text>
+<rect x="520" y="398" width="220" height="40" rx="8" fill="#ecfdf5" stroke="#6ee7b7"/>
+<text x="630" y="423" font-size="11.5" fill="#065f46" font-weight="600" text-anchor="middle">아니요: AnalyticsEvent에 저장</text>
+</svg>

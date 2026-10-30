@@ -1,7 +1,9 @@
 ---
-title: 메시지 앱의 세 가지 어긋남 — 넓은 휴대폰 화면의 입력 칸, 키보드에 밀리는 머리, 잘린 말풍선 아이콘
+title: visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기
 date: 2026-10-23
 category: 개발 기록/MacFolio/기능 구현
+series: 휴대폰 화면
+seriesOrder: 5
 summary: 메시지 앱에서 iPad mini처럼 넓은 휴대폰 화면의 검색 알약이 입력 칸을 덮었고, iOS Safari에서 키보드가 올라오면 대화 머리까지 화면 밖으로 밀렸고, 빈 목록의 말풍선 아이콘 윗부분이 잘렸다. 셋 다 두 기준이 어긋난 곳이라 기준을 맞추고 E2E 시험으로 검증했다.
 ---
 
@@ -114,9 +116,9 @@ Font Awesome은 아이콘에 `line-height: 1`을 지정하므로 줄 상자는 4
 
 ## 관련 글
 
-- [날씨 앱의 세 가지 어긋남 — 가려진 신호등, 휴대폰 안의 넓은 창, 밀려난 목록 버튼](/memo/weather-layout-fixes): 641~767px 구간의 같은 종류 문제
-- [휴대폰 키보드 위에 서식 막대 표시하기 — visualViewport로 키보드 높이 측정](/memo/memo-keyboard-toolbar): `keyboardInset()`을 처음 만든 글
+- [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes): 641~767px 구간의 같은 종류 문제
+- [레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/memo-keyboard-toolbar): `keyboardInset()`을 처음 만든 글
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): iOS Safari에서만 보이는 다른 차이
-- [서버가 없으면 메시지 앱을 열지 않기 - 저장소를 .env로 고르기](/memo/messages-offline): 메시지 앱의 다른 수정
+- [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline): 메시지 앱의 다른 수정
 
 #MacFolio #TIL #프론트엔드 #CSS #Safari #iOS

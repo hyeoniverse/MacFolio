@@ -1,7 +1,9 @@
 ---
-title: 휴대폰 메모 화면 개선 - iOS 메모처럼 플로팅 버튼과 좁은 표
+title: 컴포넌트는 공유하고 휴대폰에서만 플로팅 막대를 쓰는 iOS 메모 화면
 date: 2026-10-01
 category: 개발 기록/MacFolio/기능 구현
+series: 휴대폰 화면
+seriesOrder: 2
 summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iOS 메모처럼 제목 막대를 제거하고 버튼을 위아래에 플로팅으로 배치했고, 목록·폴더 화면도 큰 제목과 흰 카드 그룹으로 바꿨다. 좁은 표는 단어 중간에서 줄을 바꾸지 않고 가로로 스크롤한다.
 ---
 
@@ -155,13 +157,13 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 - 스크롤 컨테이너(`overflow: auto`) 안의 요소를 컨테이너 밖 기준으로 배치하면 브라우저마다 결과가 다르다. 데스크톱 Chrome에서 정상이던 배치가 휴대폰에서는 표시되지 않았다. 플로팅 버튼은 처음부터 스크롤 컨테이너 밖에 배치한다.
 - 컨테이너 쿼리의 기준은 "가장 가까운 컨테이너"다. 컨테이너를 하나 추가하면 그 하위의 컨테이너 쿼리가 모두 새 컨테이너를 측정한다.
 - 실제 앱(iOS 메모)과 나란히 비교하는 방법이 가장 빨랐다. 버튼 크기만 맞추다가 나란히 비교한 뒤에야 화면 구조 자체가 다르다는 것을 확인했다.
-- 이후 키보드 위 서식 막대와 문단 도구를 추가했다([휴대폰 키보드 위에 서식 막대 표시하기](/memo/memo-keyboard-toolbar)).
+- 이후 키보드 위 서식 막대와 문단 도구를 추가했다([레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/memo-keyboard-toolbar)).
 
 ## 관련 글
 
 - [휴대폰 앱들을 iOS처럼](/memo/mobile-apps-ios-style)
 - [메모 태그](/memo/memo-tags)
-- [휴대폰 키보드 위에 서식 막대 표시하기](/memo/memo-keyboard-toolbar)
+- [레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/memo-keyboard-toolbar)
 - [메뉴·팝오버를 공통 Menu로](/memo/shared-menu)
 
 #MacFolio #메모앱 #휴대폰

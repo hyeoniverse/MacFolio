@@ -1,7 +1,9 @@
 ---
-title: macOS 메모처럼 다듬기 - 표 핸들, 찾기·대치, 확장되는 검색 칸
+title: 본문 형제 선택자 여백 때문에 어긋난 편집기 표 핸들 위치
 date: 2026-09-30
 category: 개발 기록/MacFolio/기능 구현
+series: 메모 편집기
+seriesOrder: 2
 summary: macOS 메모와 나란히 비교하며 표 핸들, 글 내부 찾기·대치, 도구를 접고 확장되는 검색 칸, 이미지 캡션·내려받기, Safari 탭을 구현했다. 핸들 위치가 13px 어긋난 원인은 본문 문단 간격 규칙이었다.
 ---
 
@@ -217,11 +219,11 @@ registry.set('memo-find-current', new Highlight(...(current >= 0 ? [ranges[curre
 
 ## 관련 글
 
-- [메모 칸 너비 조절](/memo/memo-pane-resize)
+- [그리드 칸을 차지하지 않는 절대 위치 리사이즈 핸들로 칸 너비 조절하기](/memo/memo-pane-resize)
 - [메모 태그](/memo/memo-tags)
-- [게시 버튼 글자가 흐렸던 원인](/memo/memo-button-specificity)
-- [표 다듬기](/memo/table-polish)
-- [메뉴 막대의 파일·보기·윈도우가 실제로 열린다](/memo/menubar-menus)
+- [선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [표 다듬기](/memo/table-gap-cursor)
+- [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
 
 [^fixed-container]: `container-type: size` 또는 `inline-size`는 요소에 레이아웃 격리(layout containment)를 적용하고, 레이아웃 격리가 적용된 요소는 `position: fixed` 자손의 포함 블록(containing block)이 된다. 그래서 고정 위치 요소가 뷰포트가 아니라 그 컨테이너를 기준으로 배치된다. [MDN: Containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block)
 

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<rect width="760" height="420" fill="#fff"/>
+<text x="380" y="26" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="600">상태 관리 패키지의 분기별 npm 다운로드 (백만 회)</text>
+<text x="380" y="44" font-size="11" fill="#6b7280" text-anchor="middle">npm registry API, 2023년 4분기 ~ 2026년 3분기. CI 설치와 다른 패키지의 의존성으로 받은 횟수를 포함한다</text>
+<line x1="70" y1="360.0" x2="610" y2="360.0" stroke="#e5e7eb"/>
+<text x="62" y="364.0" font-size="10.5" fill="#6b7280" text-anchor="end">0</text>
+<line x1="70" y1="310.7" x2="610" y2="310.7" stroke="#e5e7eb"/>
+<text x="62" y="314.7" font-size="10.5" fill="#6b7280" text-anchor="end">150</text>
+<line x1="70" y1="261.3" x2="610" y2="261.3" stroke="#e5e7eb"/>
+<text x="62" y="265.3" font-size="10.5" fill="#6b7280" text-anchor="end">300</text>
+<line x1="70" y1="212.0" x2="610" y2="212.0" stroke="#e5e7eb"/>
+<text x="62" y="216.0" font-size="10.5" fill="#6b7280" text-anchor="end">450</text>
+<line x1="70" y1="162.7" x2="610" y2="162.7" stroke="#e5e7eb"/>
+<text x="62" y="166.7" font-size="10.5" fill="#6b7280" text-anchor="end">600</text>
+<line x1="70" y1="113.3" x2="610" y2="113.3" stroke="#e5e7eb"/>
+<text x="62" y="117.3" font-size="10.5" fill="#6b7280" text-anchor="end">750</text>
+<line x1="70" y1="64.0" x2="610" y2="64.0" stroke="#e5e7eb"/>
+<text x="62" y="68.0" font-size="10.5" fill="#6b7280" text-anchor="end">900</text>
+<text x="70.0" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">23.Q4</text>
+<text x="168.2" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">24.Q2</text>
+<text x="266.4" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">24.Q4</text>
+<text x="364.5" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">25.Q2</text>
+<text x="462.7" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">25.Q4</text>
+<text x="560.9" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">26.Q2</text>
+<text x="610.0" y="378" font-size="10.5" fill="#6b7280" text-anchor="middle">26.Q3</text>
+<polyline points="70.0,351.0 119.1,348.3 168.2,346.1 217.3,343.3 266.4,341.4 315.5,337.1 364.5,320.9 413.6,306.7 462.7,309.0 511.8,270.4 560.9,138.1 610.0,94.1" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="70.0,350.3 119.1,347.6 168.2,345.8 217.3,343.2 266.4,341.7 315.5,336.8 364.5,328.9 413.6,316.6 462.7,304.5 511.8,267.1 560.9,205.5 610.0,145.1" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="70.0,325.4 119.1,320.9 168.2,318.9 217.3,316.4 266.4,317.0 315.5,313.2 364.5,306.1 413.6,296.8 462.7,291.0 511.8,265.5 560.9,220.7 610.0,186.9" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="70.0,348.6 119.1,346.8 168.2,345.8 217.3,344.9 266.4,344.6 315.5,343.1 364.5,340.2 413.6,334.3 462.7,328.9 511.8,310.3 560.9,275.0 610.0,245.6" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linejoin="round"/>
+<polyline points="70.0,357.5 119.1,356.6 168.2,356.2 217.3,355.3 266.4,355.5 315.5,354.8 364.5,353.5 413.6,351.7 462.7,350.7 511.8,348.2 560.9,341.0 610.0,335.9" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linejoin="round"/>
+<text x="618" y="98.1" font-size="11.5" fill="#ef4444" font-weight="600">TanStack Query 808</text>
+<text x="618" y="149.1" font-size="11.5" fill="#f59e0b" font-weight="600">zustand 653</text>
+<text x="618" y="190.9" font-size="11.5" fill="#7c3aed" font-weight="600">redux 526</text>
+<text x="618" y="249.6" font-size="11.5" fill="#a78bfa" font-weight="600">Redux Toolkit 348</text>
+<text x="618" y="339.9" font-size="11.5" fill="#10b981" font-weight="600">jotai 73</text>
+<text x="340.0" y="400" font-size="10.5" fill="#6b7280" text-anchor="middle">연도.분기 (예: 26.Q2 = 2026년 4~6월)</text>
+</svg>

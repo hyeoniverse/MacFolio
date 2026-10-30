@@ -1,7 +1,9 @@
 ---
-title: 공통 부품 목록을 먼저 작성하고, 후보 아홉 개를 다시 집계했다
+title: shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기
 date: 2026-10-11
 category: 개발 기록/MacFolio/스타일·컴포넌트
+series: 공통 UI 컴포넌트
+seriesOrder: 4
 summary: 리팩터링 4단계의 첫 작업은 코드를 바꾸지 않고 집계하는 일이었다. shared/ui 부품 15개의 props와 사용처, 새 부품 후보 9개, 직접 작성한 버튼 295곳을 집계해 docs/ui.md에 기록했고, 추출할 부품은 Sheet·Modal·SearchField 세 개로 줄였다.
 ---
 
@@ -126,7 +128,7 @@ git grep -c '<button' -- 'apps/react/src/**/*.tsx' ':!*.test.tsx' ':!apps/react/
 
 ## 다시 집계한 계기
 
-10월 11일 새벽 이 문서의 PR을 처음 올린 시각의 제목은 "docs(ui): shared/ui 부품 목록과 새로 뽑을 후보 아홉의 지금 수"였다. 무엇을 하는 PR인지 제목만으로 알기 어려워 제목을 수정했다. 내용에서도 두 가지 지적이 있었다.
+10월 11일 새벽에 올린 이 문서의 첫 판에는 두 가지 지적이 있었다.
 
 1. "보류. 수가 많아도 모양·뜻이 다르다"로 기록한 후보는 모양을 통일하면 되는 것 아닌가.
 2. 버튼이 공통 컴포넌트의 기본인데 왜 후보에 없는가.
@@ -141,11 +143,11 @@ git grep -c '<button' -- 'apps/react/src/**/*.tsx' ':!*.test.tsx' ':!apps/react/
 
 ## 관련 글
 
-- [문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입](/memo/branded-ids): 1단계를 끝낸 글
-- [글자 버튼 하나로 합치기, 그리고 만들지 않은 컴포넌트](/memo/shared-text-button): 열흘 전 "만들지 않는다"고 결정한 글
-- [리팩터링 4단계 — 공통 컴포넌트 설계](/memo/refactor-step4-components): 4단계 정리
-- [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](/memo/ui-modal)
-- [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](/memo/ui-sheet)
+- [PostSlug·FolderPath 브랜드 타입과 검사 지점으로 글 주소 문자열 구분하기](/memo/branded-ids): 1단계를 끝낸 글
+- [계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-text-button): 열흘 전 "만들지 않는다"고 결정한 글
+- [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 4단계 정리
+- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal)
+- [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
 - PR: [#210](https://github.com/hyeoniverse/MacFolio/pull/210)
 
 [^1]: `grep -l`은 일치하는 줄 대신 일치하는 파일 이름만 출력한다. `wc -l`로 그 줄 수를 집계하면 파일 수가 된다.

@@ -64,16 +64,16 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(reader).toContainText('‘dispetcher’에 맞는 메모가 없습니다.');
 		await expect(reader.getByRole('button', { name: 'dispatcher', exact: true })).toBeVisible();
 		await expect(memo.getByText('선택한 메모 없음')).toHaveCount(0);
-		await expect(similar.getByRole('listitem').first()).toContainText('Flux 패턴');
+		await expect(similar.getByRole('listitem').first()).toContainText('Flux의 Action·Dispatcher');
 
 		await similar.getByRole('button', { name: 'dispatcher', exact: true }).click();
 		await expect(search).toHaveValue('dispatcher');
-		await expect(memo.locator('.memo-item', { hasText: 'Flux 패턴' }).first()).toBeVisible();
+		await expect(memo.locator('.memo-item', { hasText: 'Flux의 Action·Dispatcher' }).first()).toBeVisible();
 
 		await search.fill('dispetcher');
-		await similar.getByRole('button', { name: /Flux 패턴/ }).click();
+		await similar.getByRole('button', { name: /Flux의 Action·Dispatcher/ }).click();
 		await expect(search).toHaveValue('');
-		await expect(memo.getByRole('article', { name: /^Flux 패턴/ })).toBeVisible();
+		await expect(memo.getByRole('article', { name: /^Flux의 Action·Dispatcher/ })).toBeVisible();
 	});
 
 	test('최근 검색: 입력을 마친 검색어가 ⌄ 메뉴에 남고, 고르면 다시 찾는다. 다시 열어도 남는다', async ({ page }) => {
