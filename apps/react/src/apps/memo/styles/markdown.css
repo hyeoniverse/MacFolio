@@ -419,29 +419,23 @@
 	color: inherit;
 }
 
-/* 편집기의 음악 재생기: 재생 막대가 낮아 버튼을 위에 겹치지 않는다. 재생기 폭은 읽기 화면과 같게 두고,
-   버튼은 그 아래 캡션 줄 왼쪽에 옅은 글자색으로 (오른쪽 아래에는 창의 글자 크기 버튼이 떠 있다) */
-.memo .memo-media[data-kind='audio'] .memo-embed-tools {
+/* 편집기의 영상·음악 재생기 버튼(주소 바꾸기·삭제): 재생기의 자체 버튼과 겹치지 않게 재생기 위가 아니라 아래 캡션 줄 왼쪽에,
+   페이지 바탕 위라 옅은 글자색으로 (오른쪽 아래에는 창의 글자 크기 버튼이 떠 있다) */
+.memo .memo-media .memo-embed-tools {
 	top: 100%;
 	left: 0;
 }
 
-.memo .memo-media[data-kind='audio'] .memo-embed-tools .memo-overlay-button {
+.memo .memo-media .memo-embed-tools .memo-overlay-button {
 	width: 32px;
 	height: 32px;
 	color: var(--memo-muted);
 }
 
-.memo .memo-media[data-kind='audio'] .memo-embed-tools svg {
+.memo .memo-media .memo-embed-tools svg {
 	width: 20px;
 	height: 20px;
 	filter: none;
-}
-
-/* 편집기의 영상 재생기: 버튼을 영상 위 왼쪽 위에 (임베드는 YouTube 제목 줄 아래, 영상 파일은 제목이 없다) */
-.memo .memo-media[data-kind='video'] .memo-embed-tools {
-	top: var(--space-12);
-	left: var(--space-12);
 }
 
 /* 편집기: 주소 문단은 숨기고 임베드만 보인다. 키보드 커서가 들어오거나 '주소 바꾸기'를 누르면 보여 고칠 수 있다 (writer/embedPreview.ts) */
@@ -457,6 +451,12 @@
 	margin-bottom: 0.4em;
 	color: var(--memo-muted);
 	font-size: var(--text-footnote);
+}
+
+/* 원래 링크 문단이 보이는 동안(커서가 그 안에 있을 때)은 아래 캡션을 숨겨, 주소·첨부 파일 배지가 한 곳에만 보이게 한다.
+   위젯은 원래 문단 바로 뒤에 붙으므로 형제 선택자로 고른다 */
+.memo-inline-editor .ProseMirror p.memo-embed-source[data-editing] + :is(.memo-embed, .memo-media) figcaption {
+	visibility: hidden;
 }
 
 /* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 제목 줄 아래 왼쪽에 보인다.
