@@ -9,7 +9,7 @@ import { unlockMusicAudio } from '@/apps/music/musicAudio';
 
 declare global {
 	interface Window {
-		/** 앱이 뜨기 전에 첫 그림(#boot-splash)을 눌렀는지 (public/theme-boot.js가 적는다) */
+		/** 앱이 뜨기 전에 첫 그림(#boot-splash)을 눌렀는지 (index.html의 인라인 스크립트, worker/themeBoot.ts가 적는다) */
 		__macfolioTapped?: boolean;
 	}
 }
@@ -81,7 +81,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onStart, onLoadingComplet
 		};
 
 		document.addEventListener('click', startLoading);
-		// 스크립트를 받는 동안 첫 그림을 이미 눌렀으면 바로 시작한다 (public/theme-boot.js)
+		// 스크립트를 받는 동안 첫 그림을 이미 눌렀으면 바로 시작한다 (worker/themeBoot.ts)
 		if (window.__macfolioTapped) startLoading();
 
 		return () => {

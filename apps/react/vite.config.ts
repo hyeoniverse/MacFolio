@@ -20,6 +20,18 @@ import {
 import { ogCardVersion, SITE_ORIGIN } from './seo/site';
 import { DEFAULT_PROJECTS, PROFILE } from './src/shared/profile';
 import { headersFileBlock, securityHeaders } from './worker/securityHeaders';
+import { THEME_BOOT } from './worker/themeBoot';
+
+/**
+ * 첫 화면의 테마 적용 스크립트를 index.html의 <head>에 인라인으로 넣는다 (worker/themeBoot.ts).
+ * 파일로 두면 렌더링을 막는 요청이 하나 더 생긴다. CSP는 이 내용의 해시만 허용한다
+ */
+function themeBootPlugin(): Plugin {
+	return {
+		name: 'macfolio-theme-boot',
+		transformIndexHtml: (html) => html.replace('<!--theme-boot-->', `<script>${THEME_BOOT}</script>`),
+	};
+}
 
 /**
  * 보안 헤더 (worker/securityHeaders.ts). 빌드하면 dist/_headers 끝에 모든 경로(/*) 덩어리를 더하고,
@@ -309,6 +321,7 @@ const FILES_ORIGIN =
 export default defineConfig({
 	plugins: [
 		react(),
+		themeBootPlugin(),
 		securityHeadersPlugin(),
 		publicImagesPlugin(),
 		recentPostsPlugin(),
