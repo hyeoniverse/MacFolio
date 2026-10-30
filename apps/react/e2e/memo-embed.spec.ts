@@ -216,12 +216,17 @@ test.describe('메모 바깥 링크 임베드', () => {
 				'title',
 				'첨부 파일 · 3.2 MB'
 			);
+			// 올린 파일의 캡션 배지 안에는 내려받기 버튼 [📎 노래.mp3 ⬇]. 주소만 적은 바깥 파일은 링크만
+			await expect(
+				memo.locator('.memo-media[data-kind="audio"] figcaption').getByRole('button', { name: '노래.mp3 내려받기' })
+			).toBeVisible();
+			await expect(memo.locator('.memo-media[data-kind="video"] figcaption button')).toHaveCount(0);
 			if (admin) {
 				// 편집기: 원래 링크 문단은 숨기고, 재생기에는 주소 바꾸기·삭제만 (링크로 바꾸기는 없다)
 				await expect(memo.locator('.ProseMirror p.memo-embed-source')).toHaveCount(2);
 				const figure = memo.locator('.memo-media[data-kind="audio"]');
 				await figure.hover();
-				await expect(figure.getByRole('button')).toHaveText(['', '']);
+				await expect(figure.locator('.memo-embed-tools').getByRole('button')).toHaveText(['', '']);
 				await expect(figure.getByRole('button', { name: '주소 바꾸기' })).toBeVisible();
 				await expect(figure.getByRole('button', { name: '링크로 바꾸기' })).toHaveCount(0);
 				// 버튼은 재생기 자체 버튼(아래 조작 막대)과 겹치지 않게: 영상은 위쪽 줄의 Safari 전체 화면·PiP 버튼 오른쪽, 음악은 재생 막대 아래 왼쪽
@@ -265,6 +270,8 @@ test.describe('메모 바깥 링크 임베드', () => {
 				expect(Math.abs(source.center - caption.center)).toBeLessThan(4);
 				expect(Math.abs(source.x)).toBeLessThan(4);
 				await page.keyboard.press('ArrowRight');
+				// 편집기는 브라우저의 selectionchange를 다음 차례에 읽는다. 선택이 풀린 것을 편집기가 알 때까지 한 차례 기다린다
+				await page.evaluate(() => new Promise((resolve) => setTimeout(resolve)));
 				await page.keyboard.press('Enter');
 				await expect(editingSource).toHaveCount(0);
 				await expect(figure.locator('figcaption')).toBeVisible();

@@ -5,6 +5,8 @@ import { embedOf, mediaKindOf } from '@macfolio/desktop-core/memo';
 import { Decoration, DecorationSet, type EditorView } from '@milkdown/kit/prose/view';
 import { linkBlockOf, type EmbedBlock, type LinkBlock, type MediaBlock } from '../embedBlock';
 import { EMBED_ALLOW } from '../components/MemoEmbed';
+import { attachmentDownloadButton } from './attachmentDownload';
+import { ATTACHMENT_TITLE } from './attachments';
 
 /**
  * 편집기 문단이 링크 하나뿐이면 그 임베드·재생기 (읽기 화면의 linkBlockOfParagraph와 같은 규칙).
@@ -203,6 +205,8 @@ function mediaDom({ href, kind, name, title }: MediaBlock, view: EditorView, get
 	link.target = '_blank';
 	link.rel = 'noopener noreferrer';
 	link.textContent = name;
+	// 올린 파일이면 읽기 화면처럼 배지 안에 내려받기 버튼
+	if (title?.startsWith(ATTACHMENT_TITLE)) caption.append(attachmentDownloadButton(href, name));
 	return figure;
 }
 

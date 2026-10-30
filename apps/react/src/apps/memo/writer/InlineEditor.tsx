@@ -25,6 +25,7 @@ import { Lightbox } from '../components/MarkdownImage';
 import LinkHover from './LinkHover';
 import { findPlugin } from './findPlugin';
 import { embedPreview } from './embedPreview';
+import { attachmentDownload } from './attachmentDownload';
 import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
 import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
@@ -370,6 +371,8 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 				.use(findPlugin)
 				// 주소만 한 줄로 적은 YouTube 등의 링크 아래에 읽기 화면과 같은 임베드 (embedPreview.ts)
 				.use(embedPreview)
+				// 첨부 파일 배지 안의 내려받기 버튼 (attachmentDownload.ts)
+				.use(attachmentDownload)
 				.use(codeHighlight)
 				.use(tagHighlight),
 		[]

@@ -304,22 +304,40 @@
 	border-color: var(--memo-accent);
 }
 
-/* 읽기 화면의 첨부 파일 내려받기 버튼: 배지 바로 오른쪽 (components/MarkdownLink.tsx). 편집 화면은 링크에 올리면 뜨는 상자에 둔다 */
-.memo-attachment {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-2);
-	max-width: 100%;
+/* 첨부 파일 배지 안의 내려받기 버튼 [📎 이름 ⬇] (읽기 화면 components/MarkdownLink.tsx, 편집기 writer/attachmentDownload.ts).
+   링크 안에 버튼을 둘 수 없어 버튼은 링크 바로 뒤의 형제다. 배지의 오른쪽 여백을 버튼만큼 넓히고, 버튼을 그 여백 안으로 당긴다:
+   여백 34px = 이름과의 틈 6px + 버튼 22px + 오른쪽 6px, 버튼은 왼쪽으로 28px(버튼 22px + 오른쪽 6px) */
+.memo-markdown a[title^='첨부 파일']:has(+ .memo-attachment-download) {
+	padding-right: 34px;
 	vertical-align: middle;
 }
 
-.memo-attachment-download.ui-icon-button {
+.memo-markdown .memo-attachment-download {
+	display: inline-grid;
+	position: relative;
 	flex: none;
-	min-width: 26px;
-	width: 26px;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	margin-left: -28px;
 	padding: 0;
-	height: 26px;
-	font-size: var(--text-footnote);
+	border: 0;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.memo-markdown .memo-attachment-download:hover {
+	background-color: color-mix(in srgb, var(--memo-text) 10%, transparent);
+	color: var(--memo-text);
+}
+
+.memo-markdown .memo-attachment-download:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: 1px;
 }
 
 /* 편집기 안의 체크 항목: 왼쪽 네모를 누르면 체크 */

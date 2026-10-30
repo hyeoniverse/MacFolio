@@ -5,7 +5,6 @@ import { useOpenAttachment } from '../useOpenAttachment';
 import { ATTACHMENT_TITLE } from '../writer/attachments';
 import { fileAppOf } from '@/shared/lib/fileApps';
 import { downloadFile } from '../download';
-import IconButton from '@/shared/ui/button/IconButton';
 
 interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 	href?: string;
@@ -59,7 +58,8 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 	const target = href ? linkTargetOf(href) : null;
 
 	// 올린 첨부 파일(링크 제목 '첨부 파일 · …')은 종류에 맞는 사이트 안 앱으로 (PDF·그림은 미리보기, md·txt는 텍스트 편집기, html은 Safari).
-	// 맞는 앱이 없으면(zip 등) 새 탭에서 연다. 어느 쪽이든 옆의 내려받기 버튼으로 올릴 때의 파일 이름 그대로 받는다
+	// 맞는 앱이 없으면(zip 등) 새 탭에서 연다. 어느 쪽이든 배지 안의 내려받기 버튼 [📎 이름 ⬇]으로 올릴 때의 파일 이름 그대로 받는다
+	// (링크 안에 버튼을 둘 수 없어 링크 뒤에 두고 CSS로 배지 안에 당긴다. 편집기는 writer/attachmentDownload.ts)
 	const fileName = typeof children === 'string' ? children : null;
 	if (href && fileName && title?.startsWith(ATTACHMENT_TITLE)) {
 		const opensInApp = Boolean(fileAppOf(fileName));
@@ -78,13 +78,15 @@ const MarkdownLink: React.FC<Props> = ({ href, title, children, ...rest }) => {
 				>
 					{children}
 				</a>
-				<IconButton
+				<button
+					type="button"
 					className="memo-attachment-download"
-					icon="fa-solid fa-arrow-down"
-					label={`${fileName} 내려받기`}
+					aria-label={`${fileName} 내려받기`}
 					title="내려받기"
 					onClick={() => void downloadFile(href, fileName)}
-				/>
+				>
+					<i className="fa-solid fa-arrow-down" aria-hidden="true" />
+				</button>
 			</span>
 		);
 	}

@@ -4,7 +4,6 @@ import { useOpenAttachment } from '../useOpenAttachment';
 import { ATTACHMENT_TITLE } from './attachments';
 import { fileAppOf } from '@/shared/lib/fileApps';
 import { useOpenLink } from '../useOpenLink';
-import { downloadFile } from '../download';
 
 /** 링크에서 버튼으로 마우스를 옮기는 동안 버튼을 남겨 두는 시간 */
 const HIDE_DELAY_MS = 300;
@@ -138,10 +137,11 @@ const LinkHover = () => {
 		};
 	}, [openLink]);
 
-	// 올린 첨부 파일이면 버튼에 열 앱 이름을 보이고, 내려받기 버튼을 더한다
+	// 올린 첨부 파일이면 버튼에 열 앱 이름을 보인다
 	const attachmentName = shown?.link.textContent?.trim() ?? '';
-	const isAttachment = Boolean(shown?.link.title.startsWith(ATTACHMENT_TITLE));
-	const attachmentApp = isAttachment ? (fileAppOf(attachmentName)?.app ?? null) : null;
+	const attachmentApp = shown?.link.title.startsWith(ATTACHMENT_TITLE)
+		? (fileAppOf(attachmentName)?.app ?? null)
+		: null;
 
 	return (
 		<>
@@ -173,19 +173,6 @@ const LinkHover = () => {
 						/>
 						{attachmentApp ? `${APP_NAMES[attachmentApp]}에서 열기` : linkActionLabel(shown.target)}
 					</button>
-					{isAttachment && (
-						<button
-							type="button"
-							onMouseDown={(event) => event.preventDefault()}
-							onClick={() => {
-								void downloadFile(shown.href, attachmentName);
-								setShown(null);
-							}}
-						>
-							<i className="fa-solid fa-arrow-down" aria-hidden="true" />
-							내려받기
-						</button>
-					)}
 					<span className="memo-link-hover-href" title={shown.href}>
 						{shortHref(shown.href)}
 					</span>

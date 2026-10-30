@@ -98,15 +98,22 @@ test.describe('메모 첨부 파일을 사이트 안 앱으로 열기', () => {
 		await open.click();
 		await expect(appWindow(page, 'textedit').getByRole('heading', { name: '회의 메모' })).toBeVisible();
 
-		// 같은 상자의 내려받기 버튼은 올릴 때의 파일 이름으로 저장한다
+		// 배지 안의 내려받기 버튼 [📎 notes.md ⬇]은 올릴 때의 파일 이름으로 저장한다
 		await dockItem(page, 'memo').click();
-		await memo.locator('.ProseMirror').getByRole('link', { name: 'notes.md' }).hover();
+		const badge = memo.locator('.ProseMirror').getByRole('link', { name: 'notes.md' });
+		const download = memo.locator('.ProseMirror').getByRole('button', { name: 'notes.md 내려받기' });
+		const [badgeBox, buttonBox] = [(await badge.boundingBox())!, (await download.boundingBox())!];
+		expect(buttonBox.x).toBeGreaterThan(badgeBox.x);
+		expect(buttonBox.x + buttonBox.width).toBeLessThan(badgeBox.x + badgeBox.width);
 		const downloading = page.waitForEvent('download');
-		await memo.locator('.memo-link-hover').getByRole('button', { name: '내려받기', exact: true }).click();
+		await download.click();
 		expect((await downloading).suggestedFilename()).toBe('notes.md');
+		// 내려받기는 글을 바꾸지 않는다
+		await page.waitForTimeout(300);
+		expect(api.postSaves).toBe(0);
 	});
 
-	test('읽기 화면: 첨부 파일 배지 옆의 내려받기 버튼은 앱으로 열지 않고 파일 이름 그대로 저장한다', async ({
+	test('읽기 화면: 첨부 파일 배지 안의 내려받기 버튼은 앱으로 열지 않고 파일 이름 그대로 저장한다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page);
@@ -127,6 +134,11 @@ test.describe('메모 첨부 파일을 사이트 안 앱으로 열기', () => {
 		const article = appWindow(page, 'memo').getByRole('article');
 		// 앱으로 여는 파일과 맞는 앱이 없는 파일 모두 내려받기 버튼이 있다
 		await expect(article.getByRole('button', { name: 'archive.zip 내려받기' })).toBeVisible();
+		// 버튼은 배지 안(이름 오른쪽)에 있다
+		const badgeBox = (await article.getByRole('link', { name: 'notes.md' }).boundingBox())!;
+		const buttonBox = (await article.getByRole('button', { name: 'notes.md 내려받기' }).boundingBox())!;
+		expect(buttonBox.x + buttonBox.width).toBeLessThan(badgeBox.x + badgeBox.width);
+		expect(Math.abs(buttonBox.y + buttonBox.height / 2 - (badgeBox.y + badgeBox.height / 2))).toBeLessThan(2);
 		const downloading = page.waitForEvent('download');
 		await article.getByRole('button', { name: 'notes.md 내려받기' }).click();
 		expect((await downloading).suggestedFilename()).toBe('notes.md');
