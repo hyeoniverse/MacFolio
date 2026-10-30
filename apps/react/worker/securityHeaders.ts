@@ -3,6 +3,7 @@
 
 // 빌드한 dist가 아니라 src를 바로 쓴다 (seo/posts.ts와 같다. vite.config.ts가 이 파일을 읽을 때 desktop-core를 빌드하지 않아도 되게)
 import { EMBED_ORIGINS } from '../../../packages/desktop-core/src/memo';
+import { THEME_BOOT_HASH } from './themeBoot';
 
 /** Cloudflare Turnstile (메일 앱의 스팸 막기): 스크립트, 확인 요청, 위젯 iframe */
 const TURNSTILE = 'https://challenges.cloudflare.com';
@@ -57,9 +58,9 @@ export function contentSecurityPolicy({ apiUrl, frameUrls = [], testApiUrls = []
 	const api = origins([apiUrl, ...testApiUrls]);
 	const directives: Record<string, string[]> = {
 		'default-src': ["'self'"],
-		// 인라인 스크립트는 없다 (테마 적용 스크립트도 public/theme-boot.js 파일이다)
+		// 인라인 스크립트는 첫 화면의 테마 적용 스크립트(themeBoot.ts) 하나만, 그 내용의 해시로 허용한다
 		// 'wasm-unsafe-eval': WebAssembly 컴파일만 연다 (이력서 PDF의 레이아웃 엔진). 자바스크립트 eval은 그대로 막는다
-		'script-src': ["'self'", "'wasm-unsafe-eval'", TURNSTILE],
+		'script-src': ["'self'", `'${THEME_BOOT_HASH}'`, "'wasm-unsafe-eval'", TURNSTILE],
 		// React의 style 속성, Mermaid·Scalar가 만드는 <style> 때문에 인라인 스타일은 연다
 		'style-src': ["'self'", "'unsafe-inline'"],
 		// GitHub README·글의 바깥 그림은 주소를 미리 알 수 없다. 그림은 스크립트를 실행하지 못하니 https 전체를 연다

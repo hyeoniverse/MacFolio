@@ -294,11 +294,11 @@ I also tried merging small shared modules into one bundle with Rolldown's `codeS
 
 Through Round 2, the phone LCP element was the "Files" icon on the home screen. But on the first visit the loading screen ("Tap to start loading") covers the home screen, so this icon isn't visible. Chrome counts hidden elements as LCP candidates too. Running app code to render an invisible screen and receiving icons, widget images and weather used up the first visit's network and CPU.
 
-| Change                                                                                                                      | Effect                                                             |
-| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| Render the desktop (the home screen on phones) after the loading screen is tapped (`App.tsx`, `onStart` of `LoadingScreen`) | Transfer before entering: phone 725 → 483KB, desktop 1,848 → 771KB |
-| Include the start prompt in the HTML's first render (`#boot-splash`) too. "Tap" on phones, "Click" on desktop (media query) | LCP becomes the prompt the HTML renders first                      |
-| If tapped before the scripts arrive, `theme-boot.js` records it and the loading screen starts as soon as it appears         | No need to tap twice                                               |
+| Change                                                                                                                                                    | Effect                                                             |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Render the desktop (the home screen on phones) after the loading screen is tapped (`App.tsx`, `onStart` of `LoadingScreen`)                               | Transfer before entering: phone 725 → 483KB, desktop 1,848 → 771KB |
+| Include the start prompt in the HTML's first render (`#boot-splash`) too. "Tap" on phones, "Click" on desktop (media query)                               | LCP becomes the prompt the HTML renders first                      |
+| If tapped before the scripts arrive, the inline script in `<head>` (`worker/themeBoot.ts`) records it and the loading screen starts as soon as it appears | No need to tap twice                                               |
 
 The desktop renders during the 2.5 seconds the progress bar fills after the tap, so it's visible as soon as the loading screen lifts. The time from the tap until the desktop appears grew from 0.13s to 0.17s, but that time is behind the loading screen.
 

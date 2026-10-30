@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { contentSecurityPolicy, headersFileBlock, originOf, securityHeaders } from './securityHeaders';
+import { THEME_BOOT_HASH } from './themeBoot';
 
 /** CSP 문자열을 지시어 → 값 목록으로 */
 function parse(csp: string): Record<string, string[]> {
@@ -74,9 +75,14 @@ describe('보안 헤더', () => {
 		expect(csp['script-src']).not.toContain('https://newpick-tan.vercel.app');
 	});
 
-	it('인라인·eval 스크립트와 플러그인을 막고(WebAssembly 컴파일만 연다), 다른 사이트의 iframe에 들어가지 않는다', () => {
+	it('인라인 스크립트는 첫 화면의 스크립트 해시 하나만, eval과 플러그인은 막고(WebAssembly 컴파일만 연다), 다른 사이트의 iframe에 들어가지 않는다', () => {
 		const csp = parse(contentSecurityPolicy({}));
-		expect(csp['script-src']).toEqual(["'self'", "'wasm-unsafe-eval'", 'https://challenges.cloudflare.com']);
+		expect(csp['script-src']).toEqual([
+			"'self'",
+			`'${THEME_BOOT_HASH}'`,
+			"'wasm-unsafe-eval'",
+			'https://challenges.cloudflare.com',
+		]);
 		expect(csp['object-src']).toEqual(["'none'"]);
 		expect(csp['base-uri']).toEqual(["'self'"]);
 		expect(csp['frame-ancestors']).toEqual(["'self'"]);

@@ -213,7 +213,6 @@ test.describe('데스크톱', () => {
 
 	test('스크립트를 받는 동안과 로딩 화면을 누르기 전까지 배경화면 대신 검은 화면이 보인다', async ({ page }) => {
 		// 앱 스크립트(빌드한 /assets/*.js)를 늦게 받게 해서 로딩 화면이 뜨기 전의 모습을 본다.
-		// <head>의 theme-boot.js는 HTML 읽기를 멈추는 작은 스크립트라 붙잡지 않는다
 		let release = () => {};
 		const held = new Promise<void>((resolve) => (release = resolve));
 		await page.route(/\/assets\/.*\.js$/, async (route) => {
@@ -239,6 +238,27 @@ test.describe('데스크톱', () => {
 		await loading.click();
 		await expect.poll(isBooting).toBe(false);
 		await expect(loading).toBeHidden({ timeout: 20_000 });
+	});
+
+	test('<head>의 인라인 스크립트가 앱 스크립트보다 먼저 저장한 테마를 적용하고, 그동안 누른 것을 적어 둔다', async ({
+		page,
+	}) => {
+		// 첫 화면의 스크립트는 파일이 아니라 HTML 안에 있다 (worker/themeBoot.ts, CSP는 그 해시만 허용)
+		await page.addInitScript(() => localStorage.setItem('macfolio:settings', JSON.stringify({ theme: 'dark' })));
+		let release = () => {};
+		const held = new Promise<void>((resolve) => (release = resolve));
+		await page.route(/\/assets\/.*\.js$/, async (route) => {
+			await held;
+			await route.continue();
+		});
+		await page.goto('/', { waitUntil: 'commit' });
+		await page.waitForFunction(() => document.readyState !== 'loading');
+		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+		await page.locator('#boot-splash').click();
+		expect(await page.evaluate(() => (window as { __macfolioTapped?: boolean }).__macfolioTapped)).toBe(true);
+		release();
+		// 앱이 뜨면 누른 것을 보고 바로 시작한다 (다시 누르지 않아도 된다)
+		await expect(page.locator('.loading-container')).toBeHidden({ timeout: 20_000 });
 	});
 
 	test('로딩 화면을 넘기면 Dock과 시작 앱이 보인다', async ({ page }) => {

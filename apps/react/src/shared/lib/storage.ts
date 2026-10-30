@@ -4,7 +4,7 @@
 
 /** 저장 키. 'macfolio:' 접두어로 다른 사이트·라이브러리의 키와 구분한다 */
 export const STORAGE_KEYS = {
-	/** public/theme-boot.js(깜빡임 방지)도 이 키를 글자 그대로 읽는다 */
+	/** worker/themeBoot.ts(첫 화면의 깜빡임 방지 스크립트)도 이 키를 글자 그대로 읽는다 */
 	settings: 'macfolio:settings',
 	memoArrangement: 'macfolio:memo:arrangement',
 	memoRecentFinds: 'macfolio:memo:recent-finds',
