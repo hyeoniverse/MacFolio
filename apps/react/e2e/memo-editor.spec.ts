@@ -1502,6 +1502,36 @@ test('편집 중에도 이미지를 크게 본다: 크게 보기 버튼과 두 �
 	expect(api.postSaves).toBe(0);
 });
 
+test('편집 중인 이미지는 삭제 버튼으로 지운다 (크게 보기 버튼 왼쪽)', async ({ page }) => {
+	const api = await fakeApi(page, { signedIn: true });
+	const content = {
+		title: '이미지 시험',
+		date: '2026-10-16',
+		category: '기술 노트/Git',
+		summary: '',
+		body: '앞 문단\n\n![앨범 표지](/imgs/Album_1.webp "앨범 표지 캡션")\n\n뒤 문단',
+	};
+	api.posts = [{ slug: 'image-post', ...content, deleted: false, published: content }];
+	const memo = await openMemo(page, api);
+	await memo.locator('.memo-item', { hasText: '이미지 시험' }).click();
+	const editor = memo.locator('.ProseMirror');
+	const figure = editor.locator('.memo-figure-frame');
+
+	await figure.hover();
+	const remove = figure.getByRole('button', { name: '이미지 삭제' });
+	await expect(remove).toBeVisible();
+	const [removeBox, zoomBox] = [
+		(await remove.boundingBox())!,
+		(await figure.getByRole('button', { name: '이미지 크게 보기' }).boundingBox())!,
+	];
+	expect(removeBox.x + removeBox.width).toBeLessThanOrEqual(zoomBox.x);
+	expect(Math.abs(removeBox.y - zoomBox.y)).toBeLessThan(1);
+	await remove.click();
+	await expect(editor.locator('.memo-figure')).toHaveCount(0);
+	await expect(editor).toContainText('뒤 문단');
+	await expect.poll(() => api.posts[0]?.body).not.toContain('Album_1');
+});
+
 test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동하지 않는다)', () => {
 	test('상자는 편집기 안에 머문다: 오른쪽 끝의 링크는 상자를 편집기 안쪽으로 밀어 잘리지 않게 한다', async ({
 		page,

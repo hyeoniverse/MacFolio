@@ -181,8 +181,27 @@ function zoomButton(getNode: () => Node) {
 	return button;
 }
 
+/** 이미지 삭제 버튼 (크게 보기 버튼 왼쪽). 그림을 골라 Delete를 누르지 않아도 지울 수 있게 */
+function deleteButton(view: EditorView, getPos: () => number | undefined, getNode: () => Node) {
+	const button = document.createElement('button');
+	button.type = 'button';
+	button.className = 'memo-overlay-button memo-figure-delete';
+	button.contentEditable = 'false';
+	button.setAttribute('aria-label', '이미지 삭제');
+	button.title = '이미지 삭제';
+	button.innerHTML = '<i class="fa-solid fa-trash" aria-hidden="true"></i>';
+	button.addEventListener('mousedown', (event) => event.preventDefault());
+	button.addEventListener('click', () => {
+		const pos = getPos();
+		if (pos === undefined) return;
+		view.dispatch(view.state.tr.delete(pos, pos + getNode().nodeSize));
+		view.focus();
+	});
+	return button;
+}
+
 /**
- * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 크게 보기·내려받기 버튼.
+ * 이미지(블록·글줄 안) 모양: 읽기 화면처럼 가운데 그림 + 아래 캡션, 그림 오른쪽 위에 삭제·크게 보기·내려받기 버튼.
  * 편집기에서는 이미지를 누르면 이미지가 골라진다. 크게 보려면 크게 보기 버튼을 누르거나 이미지를 두 번 누른다.
  * 캡션을 누르면 그 자리에서 고친다 (비어 있으면 '캡션 추가'). Enter나 초점을 옮기면 저장, Esc는 취소
  */
@@ -205,6 +224,7 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 	frame.append(
 		img,
 		layout.bar,
+		deleteButton(view, getPos, () => current),
 		zoomButton(() => current),
 		downloadButton(() => current)
 	);
@@ -299,11 +319,13 @@ const figureView = (initial: Node, view: EditorView, getPos: () => number | unde
 		selectNode: () => dom.classList.add('selected'),
 		deselectNode: () => dom.classList.remove('selected'),
 		ignoreMutation: () => true,
-		// 캡션 입력칸·배치·크게 보기·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
+		// 캡션 입력칸·배치·삭제·크게 보기·내려받기 버튼·캡션 링크는 편집기가 가로채지 않게
 		stopEvent: (event: Event) => {
 			const target = event.target as Element;
 			return Boolean(
-				target.closest?.('.memo-caption-input, .memo-figure-zoom, .memo-figure-download, .memo-figure-layout') ||
+				target.closest?.(
+					'.memo-caption-input, .memo-figure-delete, .memo-figure-zoom, .memo-figure-download, .memo-figure-layout'
+				) ||
 				(event.type === 'click' && target.closest?.('.memo-caption a')) ||
 				(event.type === 'mousedown' && target.closest?.('.memo-caption'))
 			);
