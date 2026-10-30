@@ -89,15 +89,26 @@ HTML에서는 링크(`<a>`) 안에 버튼을 넣을 수 없다. 그래서 버튼
 ```
 
 ```css
-/* 여백 34px = 이름과의 틈 6px + 버튼 22px + 오른쪽 6px. 버튼은 왼쪽으로 28px 당긴다 */
+/* 여백 40px = 이름과의 틈 12px + 버튼 22px + 오른쪽 6px. 버튼은 왼쪽으로 28px 당긴다 */
 .memo-markdown a[title^='첨부 파일']:has(+ .memo-attachment-download) {
-	padding-right: 34px;
+	padding-right: 40px;
 }
 .memo-markdown .memo-attachment-download {
 	width: 22px;
 	margin-left: -28px;
 }
+/* 이름과 버튼 사이의 세로 구분선. 틈 12px의 가운데에 둔다 */
+.memo-markdown .memo-attachment-download::before {
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	left: -6px;
+	width: 1px;
+	content: '';
+}
 ```
+
+구분선은 버튼의 `::before` 가상 요소로 그려 버튼과 함께 움직인다. 위젯으로 그리는 편집 화면의 버튼도 같은 클래스라 같은 구분선이 보인다.
 
 처음에는 감싸는 `span`을 `inline-flex`로 두었는데, 재생기 캡션처럼 폭이 내용에 맞춰지는 자리에서 파일 이름이 두 줄로 꺾였다. 플렉스 상자의 폭이 링크 폭에서 음수 여백만큼 줄어든 값으로 잡혀, 링크가 그만큼 좁아졌기 때문이다. 감싸는 `span`을 일반 인라인으로 두어 해결했다.
 

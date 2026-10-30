@@ -308,7 +308,7 @@
    링크 안에 버튼을 둘 수 없어 버튼은 링크 바로 뒤의 형제다. 배지의 오른쪽 여백을 버튼만큼 넓히고, 버튼을 그 여백 안으로 당긴다:
    여백 34px = 이름과의 틈 6px + 버튼 22px + 오른쪽 6px, 버튼은 왼쪽으로 28px(버튼 22px + 오른쪽 6px) */
 .memo-markdown a[title^='첨부 파일']:has(+ .memo-attachment-download) {
-	padding-right: 34px;
+	padding-right: 40px;
 	vertical-align: middle;
 }
 
@@ -329,6 +329,16 @@
 	font-size: var(--text-footnote);
 	vertical-align: middle;
 	cursor: pointer;
+}
+
+.memo-markdown .memo-attachment-download::before {
+	position: absolute;
+	top: 5px;
+	bottom: 5px;
+	left: -6px;
+	width: 1px;
+	background-color: color-mix(in srgb, var(--memo-text) 18%, transparent);
+	content: '';
 }
 
 .memo-markdown .memo-attachment-download:hover {
