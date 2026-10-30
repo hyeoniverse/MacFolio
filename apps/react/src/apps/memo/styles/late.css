@@ -176,6 +176,11 @@
 	right: 44px;
 }
 
+/* 편집기 이미지의 삭제 버튼: 크게 보기 버튼 왼쪽 */
+.memo .memo-figure-delete {
+	right: 80px;
+}
+
 .memo-code:hover .memo-overlay-button,
 .memo-figure-frame:hover .memo-overlay-button,
 .memo .memo-overlay-button:focus-visible {

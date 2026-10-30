@@ -83,7 +83,7 @@ const state = useSyncExternalStore(store.subscribe, store.getState);
 
 ## 관련 글
 
-- [Flux 패턴 — Action·Dispatcher·Store·View의 단방향 흐름과 그 뒤의 Redux, 외부 store](/memo/flux-pattern): 이 글이 비교하는 Flux·Redux·외부 store의 일반론
+- [Flux의 Action·Dispatcher·Store 단방향 흐름에서 찾은 좋은 상태 관리 코드의 세 가지 조건](/memo/flux-pattern): 이 글이 비교하는 Flux·Redux·외부 store의 일반론
 - [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정 ([#139](https://github.com/hyeoniverse/MacFolio/pull/139))
 - [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 같은 store 구조를 메모 로직에 적용
 - [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 재생 상태 store와 오디오 재생의 분리

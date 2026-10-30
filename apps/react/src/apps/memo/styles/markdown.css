@@ -389,6 +389,211 @@
 }
 
 /*
+ * 바깥 링크 임베드 (components/MemoEmbed.tsx, 편집기는 writer/embedPreview.ts): 주소만 한 줄로 적은 YouTube·Vimeo 등.
+ * 본문 폭에 맞추고, 동영상은 가로세로 비율(16:9 등), 코드 예제·음악은 사이트별 높이로 그린다. 세로 영상·SNS 게시물은 최대 폭을 두고
+ * 가운데에 둔다(인라인 style, memo/embeds.ts의 maxWidth). 모서리와 테두리는 본문 이미지와 같다
+ */
+.memo-embed {
+	display: block;
+	margin: 1.2em 0;
+}
+
+.memo-embed-frame {
+	overflow: hidden;
+	width: 100%;
+	border-radius: 0.6em;
+	background: var(--memo-search-bg);
+	box-shadow: 0 0 0 1px var(--memo-border);
+}
+
+.memo-embed iframe {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+/*
+ * 영상·음악 파일 재생기 (components/MemoMedia.tsx, 편집기는 writer/embedPreview.ts): 브라우저 기본 <video>·<audio>.
+ * 영상은 본문 이미지처럼 본문 폭에 맞추고 모서리·테두리를 같게, 음악은 본문 폭의 재생 막대 한 줄
+ */
+.memo-media {
+	display: block;
+	margin: 1.2em 0;
+}
+
+.memo-media-frame {
+	position: relative;
+}
+
+.memo-media video {
+	display: block;
+	width: 100%;
+	max-height: 70vh;
+	border-radius: 0.6em;
+	background: var(--color-black);
+	box-shadow: 0 0 0 1px var(--memo-border);
+}
+
+.memo-media audio {
+	display: block;
+	width: 100%;
+}
+
+.memo-media figcaption {
+	margin-top: 0.5em;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	text-align: center;
+}
+
+.memo-media figcaption a {
+	color: inherit;
+}
+
+/* 편집기의 영상·음악 재생기 버튼(주소 바꾸기·삭제). 재생기의 자체 버튼(아래 조작 막대)과 겹치지 않게:
+   - 영상: 마우스를 올리면 영상 위쪽 줄의 Safari 전체 화면·PiP 버튼 오른쪽에, 영상 위에서도 보이게 반투명 어두운 원 바탕의 흰 아이콘
+   - 음악: 재생 막대가 낮아 위에 겹치지 않고, 아래 캡션 줄 왼쪽에 옅은 글자색으로 (오른쪽 아래에는 창의 글자 크기 버튼이 떠 있다) */
+.memo .memo-media[data-kind='video'] .memo-embed-tools {
+	/* Safari의 기본 재생기는 처음 재생한 뒤부터 위쪽 줄 왼쪽에 전체 화면·PiP 버튼을, 오른쪽에 음량을 둔다. 이 줄은 영상 모서리에서
+	   6px 안쪽, 높이 46px(수직 중심 29px)이다. 36px 버튼의 중심을 29px에 맞추고, 재생 전에는 왼쪽 모서리에 붙인다 */
+	top: 11px;
+	left: var(--space-6);
+}
+
+.memo .memo-media[data-kind='video'][data-started] .memo-embed-tools {
+	/* 재생한 뒤에는 전체 화면·PiP 버튼 묶음 오른쪽으로 비킨다 */
+	left: 100px;
+}
+
+.memo .memo-media[data-kind='video'] .memo-embed-tools .memo-overlay-button {
+	width: 36px;
+	height: 36px;
+	background-color: color-mix(in srgb, black 55%, transparent);
+	color: var(--color-white);
+}
+
+.memo .memo-media[data-kind='video'] .memo-embed-tools .memo-overlay-button:hover {
+	background-color: color-mix(in srgb, black 75%, transparent);
+}
+
+.memo .memo-media[data-kind='video'] .memo-embed-tools svg {
+	width: 20px;
+	height: 20px;
+	filter: none;
+}
+
+.memo .memo-media[data-kind='audio'] .memo-embed-tools {
+	top: 100%;
+	left: 0;
+}
+
+.memo .memo-media[data-kind='audio'] .memo-embed-tools .memo-overlay-button {
+	width: 32px;
+	height: 32px;
+	color: var(--memo-muted);
+}
+
+.memo .memo-media[data-kind='audio'] .memo-embed-tools svg {
+	width: 20px;
+	height: 20px;
+	filter: none;
+}
+
+/* 편집기: 주소 문단은 숨기고 임베드만 보인다. 키보드 커서가 들어오거나 '주소 바꾸기'를 누르면 보여 고칠 수 있다 (writer/embedPreview.ts) */
+.memo-inline-editor .ProseMirror p.memo-embed-source:not([data-editing]) {
+	height: 0;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	opacity: 0;
+}
+
+.memo-inline-editor .ProseMirror p.memo-embed-source[data-editing] {
+	margin-bottom: 0.4em;
+	color: var(--memo-muted);
+	font-size: var(--text-footnote);
+}
+
+/* 원래 링크 문단이 보이는 동안(커서가 그 안에 있을 때)은 캡션을 숨겨, 주소·첨부 파일 배지가 한 곳에만 보이게 한다.
+   임베드 위젯은 주소 문단 바로 뒤에 붙으므로 형제 선택자로 고른다 */
+.memo-inline-editor .ProseMirror p.memo-embed-source[data-editing] + .memo-embed figcaption {
+	visibility: hidden;
+}
+
+/* 영상·음악 위젯은 원래 문단 바로 앞에 붙는다. 커서가 들어와 첨부 파일 줄이 보이면 캡션 대신 그 줄을 캡션 자리(재생기 아래 가운데)에 둔다 */
+.memo-inline-editor .ProseMirror .memo-media:has(+ p.memo-embed-source[data-editing]) {
+	margin-bottom: 0;
+}
+
+.memo-inline-editor .ProseMirror .memo-media:has(+ p.memo-embed-source[data-editing]) figcaption {
+	display: none;
+}
+
+.memo-inline-editor .ProseMirror .memo-media + p.memo-embed-source[data-editing] {
+	/* 캡션(.memo-media figcaption)과 같은 글자 크기·위 여백이라 파일 이름이 같은 높이에 선다 */
+	margin: 0.5em 0 1.2em;
+	font-size: var(--text-caption);
+	text-align: center;
+}
+
+/* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 제목 줄 아래 왼쪽에 보인다.
+   모양은 YouTube 재생기 안의 링크 복사 버튼과 같다: 40px 원형 누름 영역, 바탕 없이 24px 흰 채운 아이콘(밝은 화면에서도 보이게 옅은 그림자),
+   올리면 옅은 흰 원. 자리는 재생기 위쪽 제목 줄 바로 아래 왼쪽 (제목 글자·링크 복사 버튼(왼쪽 아래)·재생 조작 막대와 겹치지 않게) */
+.memo-embed-frame {
+	position: relative;
+}
+
+.memo .memo-embed-tools {
+	display: flex;
+	position: absolute;
+	/* YouTube 재생기 맨 위의 채널 아이콘(48px)·제목 줄 바로 아래. 왼쪽은 재생기 안 링크 복사 버튼과 같은 20px이라 아이콘이 같은 세로줄(28px)에 선다 */
+	top: 60px;
+	left: var(--space-20);
+	gap: var(--space-4);
+	opacity: 0;
+	transition: opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-embed-tools .memo-overlay-button {
+	position: static;
+	width: 40px;
+	height: 40px;
+	border-radius: var(--radius-full);
+	background-color: transparent;
+	color: var(--color-white);
+	opacity: 1;
+	backdrop-filter: none;
+}
+
+.memo .memo-embed-tools .memo-overlay-button:hover {
+	background-color: color-mix(in srgb, white 20%, transparent);
+}
+
+.memo .memo-embed-tools svg {
+	width: 24px;
+	height: 24px;
+	filter: drop-shadow(0 0 2px color-mix(in srgb, black 60%, transparent));
+}
+
+.memo-embed:hover .memo-embed-tools,
+.memo-media:hover .memo-embed-tools,
+.memo .memo-embed-tools:focus-within {
+	opacity: 1;
+}
+
+.memo-embed figcaption {
+	margin-top: 0.5em;
+	color: var(--memo-muted);
+	font-size: var(--text-caption);
+	text-align: center;
+}
+
+.memo-embed figcaption a {
+	color: inherit;
+}
+
+/*
  * 이미지 배치: 주소 끝의 #left·#right·#float-left·#float-right (desktop-core의 imageLayout.ts, 읽기·편집 화면 같은 모양).
  * 정렬은 본문 폭보다 좁은 이미지에서만 보인다 (넓은 이미지는 본문 폭에 맞춘다).
  * 띄우기는 본문의 40% 폭으로 왼쪽·오른쪽에 두고, 이어지는 문단이 옆으로 흐른다
