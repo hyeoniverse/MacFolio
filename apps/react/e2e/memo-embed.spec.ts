@@ -228,10 +228,14 @@ test.describe('메모 바깥 링크 임베드', () => {
 				await video.hover();
 				const frame = (await video.locator('video').boundingBox())!;
 				const videoTools = (await video.locator('.memo-embed-tools').boundingBox())!;
-				// Safari 재생기의 위쪽 줄(영상 위 6px부터 높이 46px, 수직 중심 29px)과 중심을 맞추고, 전체 화면·PiP 버튼 오른쪽에 둔다
+				// Safari 재생기의 위쪽 줄(영상 위 6px부터 높이 46px, 수직 중심 29px)과 중심을 맞춘다. 재생 전에는 왼쪽 모서리에 붙는다
 				expect(Math.abs(videoTools.y + videoTools.height / 2 - frame.y - 29)).toBeLessThan(2);
-				expect(videoTools.x - frame.x).toBeGreaterThanOrEqual(96);
-				expect(videoTools.x - frame.x).toBeLessThan(110);
+				expect(videoTools.x - frame.x).toBeLessThan(10);
+				// 한 번 재생하면 Safari가 보이는 전체 화면·PiP 버튼 오른쪽으로 비킨다
+				await video.locator('video').dispatchEvent('play');
+				const playedTools = (await video.locator('.memo-embed-tools').boundingBox())!;
+				expect(playedTools.x - frame.x).toBeGreaterThanOrEqual(96);
+				expect(playedTools.x - frame.x).toBeLessThan(110);
 				const music = memo.locator('.memo-media[data-kind="audio"]');
 				await music.hover();
 				const bar = (await music.locator('audio').boundingBox())!;

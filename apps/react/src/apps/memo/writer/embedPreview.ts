@@ -193,6 +193,8 @@ function mediaDom({ href, kind, name, title }: MediaBlock, view: EditorView, get
 	player.preload = 'metadata';
 	player.setAttribute('aria-label', name);
 	if (player instanceof HTMLVideoElement) player.playsInline = true;
+	// Safari는 처음 재생한 뒤부터 영상 위쪽 줄에 전체 화면·PiP 버튼을 보인다. 도구 버튼이 그 자리를 비키도록 표시한다
+	player.addEventListener('play', () => (figure.dataset.started = ''), { once: true });
 	frame.append(toolBar(view, getPos, ['edit', 'remove']));
 	const caption = figure.appendChild(document.createElement('figcaption'));
 	const link = caption.appendChild(document.createElement('a'));
