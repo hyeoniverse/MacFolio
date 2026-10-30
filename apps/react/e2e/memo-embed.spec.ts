@@ -223,12 +223,14 @@ test.describe('메모 바깥 링크 임베드', () => {
 				await expect(figure.getByRole('button')).toHaveText(['', '']);
 				await expect(figure.getByRole('button', { name: '주소 바꾸기' })).toBeVisible();
 				await expect(figure.getByRole('button', { name: '링크로 바꾸기' })).toHaveCount(0);
-				// 버튼은 재생기 자체 버튼(아래 조작 막대)과 겹치지 않게: 영상은 오른쪽 위 모서리, 음악은 재생 막대 아래 왼쪽
+				// 버튼은 재생기 자체 버튼(아래 조작 막대)과 겹치지 않게: 영상은 오른쪽 위(Safari의 위쪽 조작 줄 아래), 음악은 재생 막대 아래 왼쪽
 				const video = memo.locator('.memo-media[data-kind="video"]');
 				await video.hover();
 				const frame = (await video.locator('video').boundingBox())!;
 				const videoTools = (await video.locator('.memo-embed-tools').boundingBox())!;
-				expect(videoTools.y - frame.y).toBeLessThan(20);
+				// Safari 재생기의 위쪽 조작 줄(음량 등) 아래, 아래쪽 조작 막대보다는 위
+				expect(videoTools.y - frame.y).toBeGreaterThanOrEqual(44);
+				expect(videoTools.y + videoTools.height).toBeLessThan(frame.y + frame.height - 60);
 				expect(frame.x + frame.width - (videoTools.x + videoTools.width)).toBeLessThan(20);
 				const music = memo.locator('.memo-media[data-kind="audio"]');
 				await music.hover();
