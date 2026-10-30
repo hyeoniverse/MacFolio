@@ -35,3 +35,9 @@ declare module 'virtual:post-index' {
 	const posts: { slug: string; title: string; date: string; category: string }[];
 	export default posts;
 }
+
+/** 메모 목록용 글, 정렬한 순서 (vite.config.ts의 recentPostsPlugin). 본문은 목록이 읽는 부분만 (bodyPending) */
+declare module 'virtual:post-list' {
+	const posts: import('@macfolio/desktop-core/memo').Post[];
+	export default posts;
+}

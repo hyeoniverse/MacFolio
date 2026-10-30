@@ -14,6 +14,7 @@ export * from './search.js';
 export * from './series.js';
 export * from './tagFilter.js';
 export * from './tags.js';
+export * from './listing.js';
 export { createStaticPostRepository } from './repository/staticPostRepository.js';
 export type { PostRepository } from './repository/types.js';
 export * from './noteView.js';

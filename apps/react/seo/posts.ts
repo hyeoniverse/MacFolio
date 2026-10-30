@@ -8,7 +8,13 @@ import ReactMarkdown from 'react-markdown';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 import remarkGfm from 'remark-gfm';
 // vite.config.ts가 읽는 파일이라 패키지 이름(빌드한 dist) 대신 desktop-core의 src를 바로 가져온다
-import { createStaticPostRepository, resolveImageSrc, tagsOf } from '../../../packages/desktop-core/src/memo';
+import {
+	createStaticPostRepository,
+	resolveImageSrc,
+	tagsOf,
+	toListingPost,
+	type Post,
+} from '../../../packages/desktop-core/src/memo';
 import { SITE_ORIGIN, type SeoPost } from './site';
 
 /** content 폴더 기준 그림 경로(images/a.png) → 빌드한 주소(/assets/a-해시.png). 화면의 contentImages.ts와 같은 모양 */
@@ -113,6 +119,14 @@ export async function seoPosts(
 			...(image && { image }),
 		};
 	});
+}
+
+/**
+ * 메모 목록용 글 (빌드할 때 'virtual:post-list'로 넣는다). 원문 대신 목록이 읽는 부분만 남긴다 (desktop-core의 listing.ts).
+ * 메모 앱은 이 목록을 먼저 그리고, 원문은 연 글만 따로 받는다
+ */
+export async function listPosts(files: Record<string, string>, created: Record<string, string> = {}): Promise<Post[]> {
+	return (await createStaticPostRepository(files, undefined, created).list()).map(toListingPost);
 }
 
 /** 위젯에 보일 최근 글 (빌드할 때 'virtual:recent-posts'로 넣는다). 본문 없이 제목·날짜·분류만 */

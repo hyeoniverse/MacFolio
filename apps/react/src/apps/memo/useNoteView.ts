@@ -45,7 +45,6 @@ export function useNoteView({
 	adminPosts,
 	editing,
 	today,
-	ready,
 	stats,
 }: {
 	organized: Post[];
@@ -54,8 +53,6 @@ export function useNoteView({
 	adminPosts: AdminPost[] | null;
 	editing: boolean;
 	today: Date;
-	/** 글을 다 읽어 왔는지 (그 전에는 주소 막대를 그대로 둔다) */
-	ready: boolean;
 	/** 글마다 조회·댓글·좋아요 (인기글). 서버가 없으면 null */
 	stats: Record<string, PostStats> | null;
 }) {
@@ -150,12 +147,11 @@ export function useNoteView({
 	const inView = (slug: PostSlug) => inCategory.some((post) => post.slug === slug);
 
 	// 주소 막대에 지금 글의 주소를 둔다 (새로 고침하거나 주소를 복사해도 그 글로). 게시하지 않은 글은 주소가 없다.
-	// 글을 다 읽어 오기 전에는 그대로 둔다 (글 주소로 들어온 그 글이 아직 없을 수 있다)
 	// 주소로 들어왔거나 직접 글을 고른 뒤부터 (처음 보이는 글로 사이트 주소를 덮지 않게)
 	const address = selectedSlug !== null && selected && !inTrash && !selected.status?.draftOnly ? selected.slug : null;
 	useEffect(() => {
-		if (ready) setAppAddress('memo', address);
-	}, [ready, address]);
+		setAppAddress('memo', address);
+	}, [address]);
 	// 메모 앱을 닫으면 주소가 없다
 	useEffect(() => () => setAppAddress('memo', null), []);
 
