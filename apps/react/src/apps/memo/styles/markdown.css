@@ -483,10 +483,26 @@
 	font-size: var(--text-footnote);
 }
 
-/* 원래 링크 문단이 보이는 동안(커서가 그 안에 있을 때)은 아래 캡션을 숨겨, 주소·첨부 파일 배지가 한 곳에만 보이게 한다.
-   위젯은 원래 문단 바로 뒤에 붙으므로 형제 선택자로 고른다 */
-.memo-inline-editor .ProseMirror p.memo-embed-source[data-editing] + :is(.memo-embed, .memo-media) figcaption {
+/* 원래 링크 문단이 보이는 동안(커서가 그 안에 있을 때)은 캡션을 숨겨, 주소·첨부 파일 배지가 한 곳에만 보이게 한다.
+   임베드 위젯은 주소 문단 바로 뒤에 붙으므로 형제 선택자로 고른다 */
+.memo-inline-editor .ProseMirror p.memo-embed-source[data-editing] + .memo-embed figcaption {
 	visibility: hidden;
+}
+
+/* 영상·음악 위젯은 원래 문단 바로 앞에 붙는다. 커서가 들어와 첨부 파일 줄이 보이면 캡션 대신 그 줄을 캡션 자리(재생기 아래 가운데)에 둔다 */
+.memo-inline-editor .ProseMirror .memo-media:has(+ p.memo-embed-source[data-editing]) {
+	margin-bottom: 0;
+}
+
+.memo-inline-editor .ProseMirror .memo-media:has(+ p.memo-embed-source[data-editing]) figcaption {
+	display: none;
+}
+
+.memo-inline-editor .ProseMirror .memo-media + p.memo-embed-source[data-editing] {
+	/* 캡션(.memo-media figcaption)과 같은 글자 크기·위 여백이라 파일 이름이 같은 높이에 선다 */
+	margin: 0.5em 0 1.2em;
+	font-size: var(--text-caption);
+	text-align: center;
 }
 
 /* 편집기 임베드의 도구 버튼 (주소 바꾸기·링크로 바꾸기·삭제): 임베드에 마우스를 올리면 제목 줄 아래 왼쪽에 보인다.

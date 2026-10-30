@@ -1,5 +1,6 @@
 import { test, expect, enterDesktop, appWindow } from './fixtures';
 import { fakeApi } from './fakeApi';
+import type { Locator } from '@playwright/test';
 
 // Flux 글은 F8 2014 발표 영상 주소를 Flux 장(10분 20초)부터 재생하도록 한 줄로 적었다 (memo/content/flux-pattern.md)
 const VIDEO = 'https://www.youtube.com/watch?v=nYkdrAPrdcw&t=620';
@@ -242,11 +243,32 @@ test.describe('메모 바깥 링크 임베드', () => {
 				const musicTools = (await music.locator('.memo-embed-tools').boundingBox())!;
 				expect(musicTools.y).toBeGreaterThanOrEqual(bar.y + bar.height - 1);
 				expect(musicTools.x - bar.x).toBeLessThan(2);
-				// 원래 링크 문단이 보이는 동안(주소 바꾸기)은 아래 캡션을 숨겨 첨부 파일 배지가 한 곳에만 보인다
+				// 원래 링크 문단이 보이는 동안(주소 바꾸기)은 캡션을 숨겨 첨부 파일 배지가 한 곳에만 보인다.
+				// 그 문단은 캡션 자리(재생기 아래 가운데)에 놓여, 엔터로 빠져나와 캡션이 다시 보여도 파일 이름 자리가 그대로다
+				// 편집기가 커서 자리로 스크롤하므로, 위치는 재생 막대 아래 끝에서 잰 세로 거리로 비교한다
+				const player = figure.locator('audio');
+				const belowBar = async (target: Locator) => {
+					const [box, barBox] = [(await target.boundingBox())!, (await player.boundingBox())!];
+					return {
+						center: box.y + box.height / 2 - (barBox.y + barBox.height),
+						x: box.x + box.width / 2 - (barBox.x + barBox.width / 2),
+					};
+				};
+				const caption = await belowBar(figure.locator('figcaption a'));
 				await figure.hover();
 				await figure.getByRole('button', { name: '주소 바꾸기' }).click();
-				await expect(memo.locator('.ProseMirror p.memo-embed-source[data-editing]')).toBeVisible();
+				const editingSource = memo.locator('.ProseMirror p.memo-embed-source[data-editing]');
+				await expect(editingSource).toBeVisible();
 				await expect(figure.locator('figcaption')).toBeHidden();
+				const source = await belowBar(editingSource.locator('a'));
+				expect(source.center).toBeGreaterThan(0);
+				expect(Math.abs(source.center - caption.center)).toBeLessThan(4);
+				expect(Math.abs(source.x)).toBeLessThan(4);
+				await page.keyboard.press('ArrowRight');
+				await page.keyboard.press('Enter');
+				await expect(editingSource).toHaveCount(0);
+				await expect(figure.locator('figcaption')).toBeVisible();
+				expect(Math.abs((await belowBar(figure.locator('figcaption a'))).center - caption.center)).toBeLessThan(1);
 				await figure.hover();
 				await figure.getByRole('button', { name: '임베드 삭제' }).click();
 				await expect(memo.locator('.memo-media')).toHaveCount(1);

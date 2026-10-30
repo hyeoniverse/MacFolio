@@ -206,9 +206,19 @@ function mediaDom({ href, kind, name, title }: MediaBlock, view: EditorView, get
 	return figure;
 }
 
-/** 위젯 DOM: 임베드는 iframe, 영상·음악은 재생기 */
-const widgetDom = (block: LinkBlock, view: EditorView, getPos: () => number | undefined) =>
-	block.type === 'embed' ? embedDom(block, view, getPos) : mediaDom(block, view, getPos);
+/**
+ * 위젯 DOM: 임베드는 iframe, 영상·음악은 재생기. 재생기 위젯은 원래 문단 앞에 붙으므로(decorations 참고),
+ * 도구 버튼에는 임베드처럼 원래 문단의 끝 위치를 넘긴다
+ */
+function widgetDom(block: LinkBlock, view: EditorView, getPos: () => number | undefined) {
+	if (block.type === 'embed') return embedDom(block, view, getPos);
+	const sourceEnd = () => {
+		const pos = getPos();
+		const paragraph = pos === undefined ? null : view.state.doc.nodeAt(pos);
+		return pos === undefined || !paragraph ? undefined : pos + paragraph.nodeSize;
+	};
+	return mediaDom(block, view, sourceEnd);
+}
 
 /**
  * 숨긴 주소 문단으로 키보드 커서를 옮긴다. 높이가 0인 문단은 브라우저의 위·아래 화살표 이동이 건너뛰므로,
@@ -257,9 +267,12 @@ export const embedPreview = $prose(
 								...(editing && { 'data-editing': 'true' }),
 							})
 						);
+						// 임베드는 주소 문단 뒤에 붙여, 고치는 주소 줄이 임베드 위에 보인다. 영상·음악은 원래 문단 앞에 붙여, 커서가 들어와
+						// 보이는 첨부 파일 줄이 평소의 캡션처럼 재생기 아래에 놓인다 (편집 여부로 파일 이름 자리가 바뀌지 않게)
+						const media = block.type === 'media';
 						decorations.push(
-							Decoration.widget(pos + node.nodeSize, (view, getPos) => widgetDom(block, view, getPos), {
-								side: -1,
+							Decoration.widget(media ? pos : pos + node.nodeSize, (view, getPos) => widgetDom(block, view, getPos), {
+								side: media ? 1 : -1,
 								// 같은 key면 DOM(iframe·재생기)을 다시 만들지 않는다
 								key: block.type === 'embed' ? `embed:${block.embed.src}` : `media:${block.href}`,
 								ignoreSelection: true,
