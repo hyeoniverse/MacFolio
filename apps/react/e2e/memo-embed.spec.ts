@@ -109,12 +109,13 @@ test.describe('메모 바깥 링크 임베드', () => {
 		const vimeo = editor.locator('.memo-embed[data-provider="vimeo"]');
 		await expect(vimeo.locator('iframe')).toHaveAttribute('src', 'https://player.vimeo.com/video/76979871');
 
+		// 임시 저장은 입력이 멈춘 뒤 나가므로, Vimeo 주소까지 반영된 본문을 기다린다
 		await expect
 			.poll(() => api.posts.find((post) => post.slug === 'flux-pattern')?.draft?.body ?? '')
-			.toMatch(/^<?https:\/\/youtu\.be\/dQw4w9WgXcQ>?$/m);
+			.toMatch(/^<?https:\/\/vimeo\.com\/76979871>?$/m);
 		let body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
+		expect(body).toMatch(/^<?https:\/\/youtu\.be\/dQw4w9WgXcQ>?$/m);
 		expect(body).not.toContain('nYkdrAPrdcw');
-		expect(body).toMatch(/^<?https:\/\/vimeo\.com\/76979871>?$/m);
 
 		// 링크로 바꾸기: 임베드가 사라지고 https:// 를 뺀 글자의 링크로 남는다
 		await vimeo.hover();
