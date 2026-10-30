@@ -24,6 +24,11 @@ function linkBlockOfNode(paragraph: Node): LinkBlock | null {
 	return linkBlockOf(String(link.attrs.href), parts[0].text ?? '', link.attrs.title as string | null);
 }
 
+/**
+ * 표는 건너뛴다: 표 칸 안의 문단은 읽기 화면에서 <p>가 아니라 임베드하지 않고, 칸 안에 재생기를 넣지도 않는다
+ */
+const TABLE_NODES = new Set(['table']);
+
 /** 주소 하나뿐인 문단의 글자 (공백 없는 https 주소) */
 const URL_ONLY = /^https:\/\/\S+$/;
 
@@ -37,6 +42,7 @@ function syncUrlLinks(state: EditorState): Transaction | null {
 	if (!link) return null;
 	let tr: Transaction | null = null;
 	state.doc.descendants((node, pos) => {
+		if (TABLE_NODES.has(node.type.name)) return false;
 		if (node.type.name !== 'paragraph') return true;
 		const text = node.textContent;
 		if (!URL_ONLY.test(text)) return false;
@@ -45,7 +51,8 @@ function syncUrlLinks(state: EditorState): Transaction | null {
 		let onlyText = true;
 		node.forEach((child) => {
 			const mark = link.isInSet(child.marks);
-			if (!child.isText) onlyText = false;
+			// 코드 글자(`https://…`)는 주소를 보여 주려고 쓴 것이라 링크를 걸지 않는다
+			if (!child.isText || child.marks.some((other) => other.type.name === 'inlineCode')) onlyText = false;
 			if (mark) linked = true;
 			if (!mark || mark.attrs.href !== text) matches = false;
 		});
@@ -236,6 +243,7 @@ export const embedPreview = $prose(
 					const decorations: Decoration[] = [];
 					const { from, to } = state.selection;
 					state.doc.descendants((node, pos) => {
+						if (TABLE_NODES.has(node.type.name)) return false;
 						if (node.type.name !== 'paragraph') return true;
 						const block = linkBlockOfNode(node);
 						if (!block) return false;

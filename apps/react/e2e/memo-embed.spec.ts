@@ -242,4 +242,27 @@ test.describe('메모 바깥 링크 임베드', () => {
 			}
 			expect(blocked).toEqual([]);
 		});
+
+	test('편집기: 글을 열기만 해서는 고치지 않는다 (표 칸 안·코드 글자의 주소는 링크로 바꾸지 않는다)', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		const body = [
+			'| 링크 | 예 |',
+			'| --- | --- |',
+			'| 바깥 파일 | `https://example.com/clips/demo.mp4` |',
+			'| 영상 | https://www.youtube.com/watch?v=nYkdrAPrdcw |',
+			'',
+			'`https://example.com/clips/demo.mp4`',
+		].join('\n');
+		const content = { title: '표 속 주소', date: '2026-10-30', category: '기타', summary: '', body };
+		api.posts.push({ slug: 'table-urls', ...content, published: content, deleted: false });
+		await enterDesktop(page, '/memo/table-urls');
+		const memo = appWindow(page, 'memo');
+		await expect(memo.locator('.ProseMirror table')).toBeVisible();
+		await page.waitForTimeout(1500);
+		expect(api.postSaves).toBe(0);
+		// 표 칸 안에는 재생기를 넣지 않는다
+		await expect(memo.locator('.ProseMirror table :is(.memo-embed, .memo-media)')).toHaveCount(0);
+	});
 });
