@@ -15,16 +15,30 @@ import SafariMobile from '@/apps/safari/SafariMobile';
 import { loadSerifKorean } from '@/apps/safari/serifFont';
 import { useAppWindowShown } from '@/desktop/useAppWindowShown';
 import Toolbar from '@/shared/ui/toolbar/Toolbar';
+import FilePage from '@/apps/safari/FilePage';
+import { FILE_TAB_PREFIX, fileNameOf } from '@/shared/lib/fileApps';
 
 const external = { target: '_blank', rel: 'noopener noreferrer' } as const;
 
-/** 탭 하나: 프로젝트 id, 또는 새 탭을 열었을 때의 시작 페이지 */
+/** 탭 하나: 프로젝트 id, 새 탭을 열었을 때의 시작 페이지, 또는 메모 글의 첨부 파일(file:<주소>, HTML 문서) */
 const START = 'start';
 type TabId = string;
 
 const findProject = (id: TabId) => PROJECTS.find((project) => project.id === id);
+/** 첨부 파일 탭이면 그 파일 주소 */
+const fileOf = (id: TabId) => (id.startsWith(FILE_TAB_PREFIX) ? id.slice(FILE_TAB_PREFIX.length) : null);
 /** 탭 제목. 지금 탭은 넓어서 다 보이고, 다른 탭은 좁아서 앞부분만 보인다 (말줄임) */
 const tabTitle = (project?: Project) => project?.name ?? '시작 페이지';
+const titleOf = (id: TabId) => {
+	const file = fileOf(id);
+	return file ? fileNameOf(file) : tabTitle(findProject(id));
+};
+/** 탭 본문: 프로젝트 페이지, 첨부 파일, 시작 페이지 */
+const pageOf = (id: TabId, onOpen: (id: string) => void) => {
+	const project = findProject(id);
+	const file = fileOf(id);
+	return project ? <ProjectPage project={project} /> : file ? <FilePage url={file} /> : <StartPage onOpen={onOpen} />;
+};
 
 /** 주소창에 보일 주소 (데모가 있으면 데모, 없으면 저장소) */
 const addressOf = (project: Project) => project.demo ?? project.url;
@@ -72,12 +86,15 @@ const Safari: React.FC = () => {
 		// 순서도 시스템 설정에서 정한 차례로 (닫아 둔 탭은 닫힌 채, 시작 페이지 탭은 끝에)
 		setTabs((previous) => [
 			...ids.filter((id) => previous.includes(id) || added.includes(id)),
-			...previous.filter((id) => id === START),
+			...previous.filter((id) => id === START || fileOf(id)),
 		]);
-		setActiveId((current) => (current === START || findProject(current) ? current : (ids[0] ?? START)));
+		setActiveId((current) =>
+			current === START || fileOf(current) || findProject(current) ? current : (ids[0] ?? START)
+		);
 	}, [projectsVersion]);
 	const index = Math.max(0, tabs.indexOf(activeId));
 	const active = findProject(activeId);
+	const activeFile = fileOf(activeId);
 	const tabList = useRef<HTMLDivElement>(null);
 
 	// 고른 탭이 탭 막대 밖에 있으면 보이게 넘긴다
@@ -130,8 +147,9 @@ const Safari: React.FC = () => {
 	};
 
 	// Finder에서 프로젝트를 열면 그 탭으로 간다. 닫아 둔 탭이면 다시 연다 (shared/lib/openRequest.ts)
+	// 메모 글의 첨부 파일(file:<주소>)은 그 파일의 탭을 연다 (같은 파일이면 그 탭으로)
 	useOpenRequest('safari', (id) => {
-		if (!findProject(id)) return;
+		if (!findProject(id) && !fileOf(id)) return;
 		setTabs((current) => (current.includes(id) ? current : [...current.filter((tab) => tab !== START), id]));
 		choose(id);
 	});
@@ -206,9 +224,9 @@ const Safari: React.FC = () => {
 			role="tabpanel"
 			id="safari-tabpanel"
 			aria-labelledby={mobile ? undefined : `safari-tab-${activeId}`}
-			aria-label={mobile ? tabTitle(active) : undefined}
+			aria-label={mobile ? titleOf(activeId) : undefined}
 		>
-			{active ? <ProjectPage project={active} /> : <StartPage onOpen={openFromStart} />}
+			{pageOf(activeId, openFromStart)}
 		</div>
 	);
 
@@ -221,13 +239,16 @@ const Safari: React.FC = () => {
 						tabs={tabs}
 						activeId={activeId}
 						projectOf={findProject}
-						titleOf={(id) => tabTitle(findProject(id))}
-						renderPage={(id) => {
-							const project = findProject(id);
-							return project ? <ProjectPage project={project} /> : <StartPage onOpen={() => undefined} />;
-						}}
+						titleOf={titleOf}
+						renderPage={(id) => pageOf(id, () => undefined)}
 						page={page}
-						address={active ? { href: addressOf(active), text: displayAddress(addressOf(active)) } : null}
+						address={
+							active
+								? { href: addressOf(active), text: displayAddress(addressOf(active)) }
+								: activeFile
+									? { href: activeFile, text: fileNameOf(activeFile) }
+									: null
+						}
 						onChoose={choose}
 						onCloseTab={closeTab}
 						onNewTab={newTab}
@@ -251,6 +272,11 @@ const Safari: React.FC = () => {
 								<i className="fa-solid fa-lock" aria-hidden="true" />
 								<span>{displayAddress(addressOf(active))}</span>
 							</a>
+						) : activeFile ? (
+							<a className="safari-address" href={activeFile} {...external} title="새 탭에서 열기">
+								<i className="fa-regular fa-file-code" aria-hidden="true" />
+								<span>{fileNameOf(activeFile)}</span>
+							</a>
 						) : (
 							<span className="safari-address placeholder">
 								<i className="fa-solid fa-magnifying-glass" aria-hidden="true" />
@@ -270,7 +296,7 @@ const Safari: React.FC = () => {
 					<div ref={tabList} className="safari-tabs" role="tablist" aria-label="프로젝트 탭">
 						{tabs.map((id) => {
 							const project = findProject(id);
-							const title = tabTitle(project);
+							const title = titleOf(id);
 							const selected = id === activeId;
 							return (
 								// 새 탭은 톡 나타나고, 닫은 탭은 작아지며 사라진다
@@ -292,7 +318,11 @@ const Safari: React.FC = () => {
 										className="safari-tab-button"
 										onClick={() => choose(id)}
 									>
-										<Favicon project={project} />
+										{fileOf(id) ? (
+											<i className="fa-regular fa-file-code safari-file-favicon" aria-hidden="true" />
+										) : (
+											<Favicon project={project} />
+										)}
 										<span title={title}>{title}</span>
 									</button>
 								</div>

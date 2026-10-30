@@ -9,8 +9,9 @@ export const test = base.extend<{ pageErrors: Error[]; noApi: void; cspViolation
 			await page.addInitScript(() => {
 				window.__MACFOLIO_API_URL__ = '';
 				window.__MACFOLIO_MESSAGES_STORE__ = 'local';
-				// 처음 방문 둘러보기는 본 것으로 둔다 (화면을 덮지 않게). 둘러보기 테스트는 firstVisit()으로 지운다
-				localStorage.setItem('macfolio:tour', 'done');
+				// 처음 방문 둘러보기는 본 것으로 둔다 (화면을 덮지 않게). 둘러보기 테스트는 firstVisit()으로 지운다.
+				// 이 스크립트는 모든 프레임에서 돈다: 저장소를 쓸 수 없는 sandbox iframe(Safari의 첨부 HTML 탭)에서는 건너뛴다
+				if (window === window.top) localStorage.setItem('macfolio:tour', 'done');
 			});
 			// 기술 칸의 npm 검색은 바깥으로 나가지 않게 빈 결과 (시험에서 결과가 필요하면 다시 route한다)
 			await page.route('https://registry.npmjs.org/**', (route) => route.fulfill({ json: { objects: [] } }));
@@ -56,7 +57,7 @@ export async function storeMessagesOnServer(page: Page) {
 
 /** 처음 온 사람으로 시작한다 (둘러보기가 뜬다) */
 export async function firstVisit(page: Page) {
-	await page.addInitScript(() => localStorage.removeItem('macfolio:tour'));
+	await page.addInitScript(() => window === window.top && localStorage.removeItem('macfolio:tour'));
 }
 
 /** 로딩 화면을 클릭해 넘기고 데스크톱에 들어간다. path로 앱 항목 주소(/memo/<글> 등)를 열 수 있다 */
