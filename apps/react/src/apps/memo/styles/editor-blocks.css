@@ -304,6 +304,24 @@
 	border-color: var(--memo-accent);
 }
 
+/* 읽기 화면의 첨부 파일 내려받기 버튼: 배지 바로 오른쪽 (components/MarkdownLink.tsx). 편집 화면은 링크에 올리면 뜨는 상자에 둔다 */
+.memo-attachment {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	max-width: 100%;
+	vertical-align: middle;
+}
+
+.memo-attachment-download.ui-icon-button {
+	flex: none;
+	min-width: 26px;
+	width: 26px;
+	padding: 0;
+	height: 26px;
+	font-size: var(--text-footnote);
+}
+
 /* 편집기 안의 체크 항목: 왼쪽 네모를 누르면 체크 */
 .memo-inline-editor li[data-item-type='task'] {
 	position: relative;

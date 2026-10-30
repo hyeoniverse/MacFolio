@@ -97,5 +97,39 @@ test.describe('메모 첨부 파일을 사이트 안 앱으로 열기', () => {
 		const open = memo.getByRole('button', { name: '텍스트 편집기에서 열기' });
 		await open.click();
 		await expect(appWindow(page, 'textedit').getByRole('heading', { name: '회의 메모' })).toBeVisible();
+
+		// 같은 상자의 내려받기 버튼은 올릴 때의 파일 이름으로 저장한다
+		await dockItem(page, 'memo').click();
+		await memo.locator('.ProseMirror').getByRole('link', { name: 'notes.md' }).hover();
+		const downloading = page.waitForEvent('download');
+		await memo.locator('.memo-link-hover').getByRole('button', { name: '내려받기', exact: true }).click();
+		expect((await downloading).suggestedFilename()).toBe('notes.md');
+	});
+
+	test('읽기 화면: 첨부 파일 배지 옆의 내려받기 버튼은 앱으로 열지 않고 파일 이름 그대로 저장한다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page);
+		api.uploads.push({
+			id: 'notes0000000001',
+			name: 'notes.md',
+			type: 'text/markdown',
+			image: false,
+			data: Buffer.from('# 회의 메모\n'),
+		});
+		const body = [
+			`회의록 [notes.md](${FAKE_API}/files/notes0000000001 "첨부 파일 · 1 KB")`,
+			`압축 [archive.zip](${FAKE_API}/files/zip000000000001 "첨부 파일 · 1 KB")`,
+		].join('\n\n');
+		const content = { title: '첨부 파일', date: '2026-10-30', category: '기타', summary: '', body };
+		api.posts.push({ slug: 'attachments', ...content, published: content, deleted: false });
+		await enterDesktop(page, '/memo/attachments');
+		const article = appWindow(page, 'memo').getByRole('article');
+		// 앱으로 여는 파일과 맞는 앱이 없는 파일 모두 내려받기 버튼이 있다
+		await expect(article.getByRole('button', { name: 'archive.zip 내려받기' })).toBeVisible();
+		const downloading = page.waitForEvent('download');
+		await article.getByRole('button', { name: 'notes.md 내려받기' }).click();
+		expect((await downloading).suggestedFilename()).toBe('notes.md');
+		await expect(appWindow(page, 'textedit')).toHaveCount(0);
 	});
 });
