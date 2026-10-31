@@ -5,10 +5,12 @@ import { apiFetch, onUnauthorized } from '@/shared/api/client';
 import { notify } from '@/desktop/notifications/notificationStore';
 import { saveAppsBeforeLeaving } from '@/desktop/appsBeforeLeaving';
 import { checkAdmin, readLoginResult, type AdminState, type LoginResult } from '@/shared/auth/admin';
+import { readString, removeKey, STORAGE_KEYS, writeString } from '@/shared/lib/storage';
 
 /**
  * 관리자 로그인 상태. 세션은 API가 httpOnly 쿠키로 들고 있어서 브라우저 코드는 토큰을 보지 못한다.
  * 로그인했는지는 /auth/me로 묻는다. 권한은 서버가 요청마다 다시 확인하므로, 이 상태는 화면을 바꾸는 데만 쓴다.
+ * 로그인한 적이 없는 브라우저(방문자)는 묻지 않는다: 묻으면 401 응답이 브라우저 콘솔에 오류로 남는다(Lighthouse 권장사항)
  */
 export const adminStore = createStore<AdminState>({ status: env.apiUrl ? 'checking' : 'disabled', login: null });
 
@@ -22,6 +24,9 @@ onUnauthorized(() => {
 export async function refreshAdmin() {
 	const state = await checkAdmin(env.apiUrl);
 	adminStore.setState(state);
+	// 로그인했으면 표시를 남기고, 세션이 끝났으면 지운다 (서버에 닿지 않았으면 그대로 둔다)
+	if (state.status === 'signed-in') writeString(STORAGE_KEYS.adminSignedIn, '1');
+	else if (state.status === 'signed-out') removeKey(STORAGE_KEYS.adminSignedIn);
 	// 세션이 끝나면 다시 물어서 로그아웃된 화면으로 바꾼다 (켜 둔 채로 만료 시각이 지나도 로그인한 것처럼 보이지 않게)
 	clearTimeout(expiryTimer);
 	const left = state.expiresAt ? state.expiresAt.getTime() - Date.now() : null;
@@ -68,6 +73,7 @@ export async function signOut() {
 		await apiFetch('/auth/logout', { method: 'POST' });
 	} finally {
 		clearTimeout(expiryTimer);
+		removeKey(STORAGE_KEYS.adminSignedIn);
 		adminStore.setState({ status: 'signed-out', login: null });
 		notify({ app: 'passwords', title: '로그아웃함', body: '관리자 로그인을 마쳤습니다.' });
 	}
@@ -82,6 +88,11 @@ export async function initAdmin() {
 	if (result) {
 		window.history.replaceState(window.history.state, '', cleanHref);
 		loginFlowStore.setState({ result });
+	}
+	// 로그인한 적이 없고 지금 GitHub에서 돌아온 것도 아니면, 묻지 않고 로그아웃된 상태로 둔다
+	if (env.apiUrl && !result && readString(STORAGE_KEYS.adminSignedIn) === null) {
+		adminStore.setState({ status: 'signed-out', login: null });
+		return;
 	}
 	await refreshAdmin();
 }

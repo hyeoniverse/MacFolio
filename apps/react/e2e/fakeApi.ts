@@ -479,6 +479,8 @@ export async function fakeApi(
 		window.__MACFOLIO_API_URL__ = url;
 		window.__MACFOLIO_MESSAGES_STORE__ = 'server';
 	}, FAKE_API);
+	// 로그인한 채로 시작하면, 이 브라우저에서 로그인한 적이 있다는 표시도 남긴다 (없으면 /auth/me를 묻지 않는다: shared/auth/adminStore.ts)
+	if (signedIn) await page.addInitScript(() => localStorage.setItem('macfolio:admin:signed-in', '1'));
 	await page.route('https://github.com/*.png*', (route) => route.fulfill({ status: 404 }));
 	// 사진 찾기 결과의 그림 (1×1 PNG)
 	await page.route('https://images.test/**', (route) =>
