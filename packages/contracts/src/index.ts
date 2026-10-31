@@ -1,4 +1,6 @@
 // API 요청·응답의 모양. 스키마(값)와 타입이 같은 이름이라, 서버는 `parse(CommentInput, body)`로 검사하고 화면은 `type Comment`로 쓴다
+// 브라우저에서 zod가 eval을 시도하지 않게, 스키마보다 먼저 설정한다
+import './zodConfig.js';
 export { parse, requestBody, type Parsed } from './parse.js';
 export { Comment, CommentInput, COMMENT_BODY_MAX, Likes, PostStats } from './comments.js';
 export {
