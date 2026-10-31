@@ -127,8 +127,24 @@ test.describe('관리자 로그인', () => {
 		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
 	});
 
+	test('방문자(로그인한 적 없는 브라우저)는 로그인 상태를 서버에 묻지 않는다 (401이 콘솔 오류로 남지 않게)', async ({
+		page,
+	}) => {
+		await fakeApi(page);
+		const asked: string[] = [];
+		page.on('request', (request) => {
+			if (request.url().endsWith('/auth/me')) asked.push(request.url());
+		});
+		await enterDesktop(page);
+		await page.getByRole('button', { name: 'Apple 메뉴', exact: true }).click();
+		await expect(appleMenu(page).getByRole('menuitem', { name: '관리자 로그인…' })).toBeEnabled();
+		expect(asked).toEqual([]);
+	});
+
 	test('관리자 서버에 닿지 못하면 Apple 메뉴에서 바로 다시 확인하고, 닿으면 로그인할 수 있다', async ({ page }) => {
 		await fakeApi(page);
+		// 이 브라우저에서 로그인한 적이 있어야 시작할 때 묻는다 (shared/auth/adminStore.ts)
+		await page.addInitScript(() => localStorage.setItem('macfolio:admin:signed-in', '1'));
 		// 처음에는 /auth/me가 닿지 않는다 (서버가 잠깐 꺼진 것처럼)
 		const down = (route: { abort: () => Promise<void> }) => route.abort();
 		await page.route(`${FAKE_API}/auth/me`, down);

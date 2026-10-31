@@ -24,6 +24,8 @@ export const STORAGE_KEYS = {
 	mobileWidgets: 'macfolio:mobile:widgets',
 	/** 처음 방문 둘러보기를 마쳤거나 건너뛰었는지 (desktop/tour) */
 	tour: 'macfolio:tour',
+	/** 이 브라우저에서 관리자로 로그인한 적이 있는지. 있을 때만 시작할 때 /auth/me를 묻는다 (shared/auth/adminStore.ts) */
+	adminSignedIn: 'macfolio:admin:signed-in',
 	/** 저장 형식 버전이 바뀌면 키를 바꾼다 */
 	messages: 'macfolio:messages:v2',
 	messagesVisitor: 'macfolio:messages:visitor',

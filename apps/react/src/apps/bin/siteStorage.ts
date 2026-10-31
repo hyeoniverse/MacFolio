@@ -103,6 +103,16 @@ export const BROWSER_DATA: BrowserDataItem[] = [
 		fillsTrash: false,
 	},
 	{
+		id: 'admin-signed-in',
+		name: '관리자 로그인 표시',
+		description:
+			'이 브라우저에서 관리자로 로그인했다는 표시. 있을 때만 사이트를 열 때 로그인 상태를 서버에 묻는다 (로그인 정보는 아니다)',
+		storage: 'local',
+		keys: [STORAGE_KEYS.adminSignedIn],
+		afterClear: '관리자라면 다음에 사이트를 열 때 다시 로그인해야 관리자 화면이 보입니다',
+		fillsTrash: false,
+	},
+	{
 		id: 'local-messages',
 		name: '이 브라우저에 저장한 메시지',
 		description: '서버 없이 띄운 사이트에서 메시지 앱에 쓴 글과, 그 글을 쓴 사람을 가리는 무작위 값',
