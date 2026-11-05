@@ -174,7 +174,7 @@ DBA(Database Administrator)는 데이터베이스 시스템의 관리와 운영�
 </details>
 
 <details>
-<summary>2. 3단계 데이터베이스 구조와 데이터 독립성 (정정)</summary>
+<summary>2. 3단계 데이터베이스 구조와 데이터 독립성</summary>
 
 > 3단계 데이터베이스 구조란 무엇이며 이것은 데이터 독립성과 어떻게 연관되는지 설명해 보라.
 
@@ -187,7 +187,7 @@ DBA(Database Administrator)는 데이터베이스 시스템의 관리와 운영�
 </details>
 
 <details>
-<summary>3. 데이터 정의어 (정정)</summary>
+<summary>3. 데이터 정의어</summary>
 
 > 데이터 정의어를 설명하라.
 
@@ -279,7 +279,7 @@ DELETE FROM ENROL WHERE Sno = 200 AND Cno = 'C123';     -- 삭제: 이찬수의 
 </details>
 
 <details>
-<summary>8. 데이터 제어어의 연산 (정정)</summary>
+<summary>8. 데이터 제어어의 연산</summary>
 
 > 데이터 제어어에 포함되는 연산들을 설명하라.
 
@@ -312,7 +312,7 @@ REVOKE UPDATE ON STUDENT FROM user1;
 </details>
 
 <details>
-<summary>10. 외부 스키마와 저장 데이터베이스 구조의 관계 (정정)</summary>
+<summary>10. 외부 스키마와 저장 데이터베이스 구조의 관계</summary>
 
 > 외부 스키마와 저장 데이터베이스 구조와의 관계를 설명하라.
 
@@ -323,7 +323,7 @@ REVOKE UPDATE ON STUDENT FROM user1;
 </details>
 
 <details>
-<summary>11. 절차적 DML과 비절차적 DML의 장단점 (정정)</summary>
+<summary>11. 절차적 DML과 비절차적 DML의 장단점</summary>
 
 > 절차적 조작어와 비절차적 조작어의 장단점을 설명하라.
 
@@ -337,7 +337,7 @@ REVOKE UPDATE ON STUDENT FROM user1;
 </details>
 
 <details>
-<summary>12. DBMS 구성 요소의 기능과 상호 관계 (정정)</summary>
+<summary>12. DBMS 구성 요소의 기능과 상호 관계</summary>
 
 > DBMS를 구성하는 소프트웨어 모듈, 즉 구성 요소의 기능과 이들 간의 상호 관계를 설명해 보라.
 

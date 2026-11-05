@@ -276,7 +276,7 @@ DBMS가 논리적 구조와 물리적 구조 사이의 사상을 정의하는 �
 </details>
 
 <details>
-<summary>4. 응용 시스템과 정보 시스템의 관계 (정정)</summary>
+<summary>4. 응용 시스템과 정보 시스템의 관계</summary>
 
 > 응용 시스템이란 무엇이며, 정보 시스템과 어떤 관계를 가지고 있는지 설명해 보라.
 
@@ -287,7 +287,7 @@ DBMS가 논리적 구조와 물리적 구조 사이의 사상을 정의하는 �
 </details>
 
 <details>
-<summary>5. 데이터 처리 시스템과 정보 처리 시스템 (정정)</summary>
+<summary>5. 데이터 처리 시스템과 정보 처리 시스템</summary>
 
 > 데이터 처리 시스템과 정보 처리 시스템을 구분하여 설명해 보라.
 
@@ -357,7 +357,7 @@ DBMS가 논리적 구조와 물리적 구조 사이의 사상을 정의하는 �
 </details>
 
 <details>
-<summary>10. 데이터 처리 시스템에서 데이터베이스의 중요성 (정정)</summary>
+<summary>10. 데이터 처리 시스템에서 데이터베이스의 중요성</summary>
 
 > 데이터 처리 시스템에서 데이터베이스의 중요성을 설명해 보라.
 
@@ -383,7 +383,7 @@ DBMS가 논리적 구조와 물리적 구조 사이의 사상을 정의하는 �
 </details>
 
 <details>
-<summary>12. 전산화·사무 자동화·정보의 관계 (정정)</summary>
+<summary>12. 전산화·사무 자동화·정보의 관계</summary>
 
 > 전산화, 사무 자동화, 정보를 각각 설명하고, 이들이 서로 어떻게 연관되는가를 논의해 보라.
 
@@ -491,7 +491,7 @@ WHERE Dept = '컴퓨터';
 </details>
 
 <details>
-<summary>21. 논리적·물리적 데이터베이스를 구분하는 이점 (정정)</summary>
+<summary>21. 논리적·물리적 데이터베이스를 구분하는 이점</summary>
 
 > 물리적 데이터베이스와 논리적 데이터베이스를 구분하여 고려할 때 얻을 수 있는 이점은 무엇인가?
 
@@ -502,7 +502,7 @@ WHERE Dept = '컴퓨터';
 </details>
 
 <details>
-<summary>22. 데이터 공용의 이점·단점과 보완책 (정정)</summary>
+<summary>22. 데이터 공용의 이점·단점과 보완책</summary>
 
 > 데이터 공용(data sharing)을 할 때 얻는 이점과 단점을 설명하고, 단점을 보완하기 위한 대책을 설명해 보라.
 
@@ -520,7 +520,7 @@ WHERE Dept = '컴퓨터';
 ### 2장
 
 <details>
-<summary>1. 파일 시스템의 장단점 (정정)</summary>
+<summary>1. 파일 시스템의 장단점</summary>
 
 > 파일 시스템의 장단점을 설명하라.
 
@@ -535,7 +535,7 @@ WHERE Dept = '컴퓨터';
 </details>
 
 <details>
-<summary>2. 데이터 종속성의 문제점과 해결책 (정정)</summary>
+<summary>2. 데이터 종속성의 문제점과 해결책</summary>
 
 > 데이터 종속성을 설명하고, 그 문제점과 해결책을 설명해 보라.
 
@@ -555,7 +555,7 @@ WHERE Dept = '컴퓨터';
 </details>
 
 <details>
-<summary>4. DBMS의 필수 기능 (정정)</summary>
+<summary>4. DBMS의 필수 기능</summary>
 
 > DBMS가 갖추어야 될 필수 기능은 어떤 것인가를 설명하라.
 
@@ -584,7 +584,7 @@ WHERE Dept = '컴퓨터';
 </details>
 
 <details>
-<summary>7. 무결성이 깨졌을 때의 파급 효과 (정정)</summary>
+<summary>7. 무결성이 깨졌을 때의 파급 효과</summary>
 
 > 데이터의 무결성이 유지되지 않았을 경우의 파급 효과를 설명하라.
 
@@ -604,7 +604,7 @@ WHERE Dept = '컴퓨터';
 </details>
 
 <details>
-<summary>9. 데이터베이스 관리 시스템과 파일 관리 시스템 (정정)</summary>
+<summary>9. 데이터베이스 관리 시스템과 파일 관리 시스템</summary>
 
 > 데이터베이스 관리 시스템과 파일 관리 시스템을 비교 설명하라.
 
@@ -630,7 +630,7 @@ DBMS는 응용 프로그램과 데이터 사이의 중재자로서 모든 응용
 </details>
 
 <details>
-<summary>11. 현재 DBMS의 정의·조작·제어 기능 (정정)</summary>
+<summary>11. 현재 DBMS의 정의·조작·제어 기능</summary>
 
 > 현재 사용되고 있는 DBMS들을 살펴보고, 각각 정의 기능, 조작 기능, 제어 기능에 대해 알아보라.
 

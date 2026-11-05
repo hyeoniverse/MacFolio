@@ -454,7 +454,7 @@ ENROL | Sno | Cno | … | Final        CONDITIONS
 ## 연습문제 풀이
 
 <details>
-<summary>7. 연산 결과 릴레이션의 기본 키 (정정)</summary>
+<summary>7. 연산 결과 릴레이션의 기본 키</summary>
 
 > 두 릴레이션 R과 S가 있다고 하자. 다음 연산의 결과 릴레이션에 대한 기본 키를 식별해 보라.
 
@@ -478,7 +478,7 @@ R의 기본 키를 A, S의 기본 키를 B로 둔다. 결과 릴레이션의 기
 </details>
 
 <details>
-<summary>8. 납품 데이터베이스 질의를 관계 대수와 관계 해석으로 (정정)</summary>
+<summary>8. 납품 데이터베이스 질의를 관계 대수와 관계 해석으로</summary>
 
 > S(Sno, Sname, Status, City), P(Pno, Pname, Colour, Weight), SP(Sno, Pno, Qty)에 대해 다음 질의를 관계 대수, 관계 해석으로 표현하라. (가) 모든 납품업자의 Sname과 City (나) Pno가 123인 제품을 발송한 납품업자의 Sname (다) Colour가 red인 제품의 Pname (라) Pname이 Nut인 제품을 발송한 납품업자의 Sname
 
@@ -524,7 +524,7 @@ C = S ⋈N B
 </details>
 
 <details>
-<summary>5주차 과제. 자연 조인을 기본 연산으로 계산 (정정)</summary>
+<summary>5주차 과제. 자연 조인을 기본 연산으로 계산</summary>
 
 > `학생 ⋈N 등록`을 카티션 프로덕트(×), 실렉트(σ), 프로젝트(π) 순서로 계산하라.
 

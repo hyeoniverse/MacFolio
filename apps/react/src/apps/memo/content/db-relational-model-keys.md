@@ -187,7 +187,7 @@ R ⊆ D1 × D2 × … × Dn
 4장 연습문제 14문항을 다시 풀었다.
 
 <details>
-<summary>1. 용어 설명 (정정)</summary>
+<summary>1. 용어 설명</summary>
 
 > 릴레이션, 도메인, 카디널리티, 릴레이션 스키마, 릴레이션 인스턴스, 정규 릴레이션, 릴레이션 차수, 튜플을 간단히 설명하라.
 
@@ -265,7 +265,7 @@ R ⊆ D1 × D2 × … × Dn
 </details>
 
 <details>
-<summary>8. 키의 종류와 관계 (정정)</summary>
+<summary>8. 키의 종류와 관계</summary>
 
 > 키에는 어떤 종류가 있고 그들 간에는 어떤 관계가 있는가? 슈퍼 키와 후보 키의 차이점을 설명하라.
 
@@ -284,7 +284,7 @@ R ⊆ D1 × D2 × … × Dn
 </details>
 
 <details>
-<summary>9. 외래 키의 정의와 중요성 (정정)</summary>
+<summary>9. 외래 키의 정의와 중요성</summary>
 
 > 외래 키란 무엇이며 왜 중요한지 설명하라.
 
@@ -295,7 +295,7 @@ R ⊆ D1 × D2 × … × Dn
 </details>
 
 <details>
-<summary>10. 납품 데이터베이스의 키와 무결성 (정정)</summary>
+<summary>10. 납품 데이터베이스의 키와 무결성</summary>
 
 > 다음 S(납품업자), P(제품), SP(발송) 릴레이션 스키마가 있다.
 

@@ -241,7 +241,7 @@ EXEC SQL EXECUTE objSQL USING :cno, :grade;
 ## 연습문제 풀이
 
 <details>
-<summary>2. 커서의 정의와 삽입 SQL에서의 사용 (정정)</summary>
+<summary>2. 커서의 정의와 삽입 SQL에서의 사용</summary>
 
 > 커서란 무엇이고 삽입 SQL에서 어떻게 사용되는가를 설명하라.
 
@@ -272,7 +272,7 @@ SQL은 한 번의 SELECT로 레코드 집합을 반환하지만, C 같은 호스
 </details>
 
 <details>
-<summary>3. 뷰의 정의와 갱신 문제 (정정)</summary>
+<summary>3. 뷰의 정의와 갱신 문제</summary>
 
 > SQL에서 뷰는 어떻게 정의되는가? 뷰를 갱신할 때 일어나는 문제점은 무엇인지 설명하라.
 
@@ -310,7 +310,7 @@ C413의 Avpoint를 90으로 갱신하면 평균이 90이 되도록 C413 등록 3
 </details>
 
 <details>
-<summary>4. AS와 튜플 변수 (정정)</summary>
+<summary>4. AS와 튜플 변수</summary>
 
 > SQL 문에서 테이블 이름과 열 이름을 별도로 지정하는 AS에 대해 설명해 보라. 튜플 변수와는 어떻게 구별할 수 있는가?
 

@@ -607,7 +607,7 @@ STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에
 </details>
 
 <details>
-<summary>5. 학생·과목·등록 질의를 SQL로 표현 (정정)</summary>
+<summary>5. 학생·과목·등록 질의를 SQL로 표현</summary>
 
 > 학생(학번, 이름, 학년), 과목(과목번호, 과목이름, 교수), 등록(과목번호, 학번, 점수) 릴레이션에서 다음 질의문을 SQL로 표현하라.
 
@@ -658,7 +658,7 @@ UPDATE 학생 SET 학년 = 4 WHERE 학번 = 12345;
 </details>
 
 <details>
-<summary>6. 납품 데이터베이스 질의를 SQL로 표현 (정정)</summary>
+<summary>6. 납품 데이터베이스 질의를 SQL로 표현</summary>
 
 > S(Sno, Sname, Status, City), P(Pno, Pname, Colour, Weight), SP(Sno, Pno, Qty)에서 다음 질의문을 SQL로 표현하라.
 
@@ -686,7 +686,7 @@ WHERE  P.Pname = 'Nut';
 </details>
 
 <details>
-<summary>실습 1. 예제 테이블을 DDL로 정의 (정정)</summary>
+<summary>실습 1. 예제 테이블을 DDL로 정의</summary>
 
 > 학생(STUDENT), 과목(COURSE), 등록(ENROL) 테이블을 CREATE TABLE 문으로 정의하라.
 
@@ -750,7 +750,7 @@ CREATE TABLE ENROL
 </details>
 
 <details>
-<summary>실습 2. 검색문 15개의 결과 (정정)</summary>
+<summary>실습 2. 검색문 15개의 결과</summary>
 
 > 본문의 검색문 15개를 예제 데이터에 적용한 결과를 구하라.
 
