@@ -1,9 +1,9 @@
 /*
- * 메모 앱: 글의 목차 막대 (components/MemoToc.tsx). 글 제목 바로 아래의 한 줄짜리 탭 막대:
- * Apple 문서·설정의 탭(세그먼트) 막대처럼 상자 없이 글자만 늘어놓고, 지금 읽는 절은 강조색 글자와 아래 2px 막대로 표시한다.
+ * 메모 앱: 글의 목차 막대 (components/MemoToc.tsx). 글 제목 바로 아래의 한 줄:
+ * [‹ 이전 절] [지금 읽는 절 › 소제목] [다음 절 ›] [목록 버튼]. 상자 없이 글자만 두고, 목록 버튼을 누르면 모든 제목이 막대 아래에 떠서 펼쳐진다.
  * 본문을 넘기면 스크롤 칸(.memo-scroll) 맨 위에 붙는다. 바탕은 메모 바탕색이라 본문은 막대 밑으로 지나가고,
  * 붙은 동안만(data-stuck) 아래에 얇은 구분선을 긋는다.
- * 노랑 강조색 글자는 사용자가 고른 그대로 쓴다: 다크 바탕에서는 9.6:1이지만 흰 바탕에서는 1.75:1로 WCAG AA에 못 미친다 (아래 막대로도 구분된다)
+ * 펼친 목록에서 지금 읽는 제목은 노랑 강조색 글자 대신 옅은 강조색 바탕과 왼쪽 막대로 표시한다 (흰 바탕의 노랑 글자는 1.75:1로 읽기 어렵다)
  */
 
 /* 막대가 원래 놓일 자리 (높이 0, MemoToc가 붙었는지 잴 때 쓴다) */
@@ -39,73 +39,193 @@
 	border-bottom-color: var(--memo-border);
 }
 
-/* 한 줄: 넘치면 막대 안에서 가로로 넘긴다 (스크롤 막대는 감춘다). 항목의 offsetLeft를 이 목록 기준으로 재도록 position을 준다 */
-.memo-toc-bar-list {
-	display: flex;
-	position: relative;
-	gap: var(--space-20);
-	margin: 0;
-	padding: 0;
-	overflow-x: auto;
-	overflow-y: hidden;
-	overscroll-behavior-x: contain;
-	list-style: none;
-	scrollbar-width: none;
+/* 한 줄: 이전 · 현재 · 다음은 남는 폭을 1 : 2 : 1로 나누고, 목록 버튼은 제 폭. 긴 제목은 말줄임표로 자른다 */
+.memo-toc-bar-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-8);
+	min-height: 40px;
 }
 
-.memo-toc-bar-list::-webkit-scrollbar {
-	display: none;
-}
-
-.memo-toc-bar-list > li {
-	flex: none;
-}
-
-.memo .memo-toc-bar-list button {
-	position: relative;
-	padding: var(--space-10) 0;
+.memo .memo-toc-bar :is(.memo-toc-bar-step, .memo-toc-bar-toggle) {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-6);
+	min-width: 0;
+	min-height: 32px;
+	padding: 0 var(--space-6);
 	border: none;
+	border-radius: var(--radius-6);
 	background: none;
 	color: var(--memo-muted);
 	font: inherit;
-	font-size: var(--text-subhead);
 	line-height: 1.3;
-	white-space: nowrap;
 	cursor: pointer;
-	transition: color var(--duration-fast) var(--ease-out);
+	transition:
+		color var(--duration-fast) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-toc-bar .memo-toc-bar-step[data-side='next'] {
+	justify-self: end;
+}
+
+.memo .memo-toc-bar :is(.memo-toc-bar-step, .memo-toc-bar-toggle) i {
+	flex: none;
+	font-size: 0.75em;
+}
+
+.memo-toc-bar-step-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* 첫 절·마지막 절: 자리는 지키고 화살표만 흐리게 */
+.memo .memo-toc-bar .memo-toc-bar-step:disabled {
+	cursor: default;
+	opacity: 0.35;
+}
+
+/* 펼친 동안 목록 버튼은 눌린 모양 */
+.memo .memo-toc-bar .memo-toc-bar-toggle[aria-expanded='true'] {
+	background-color: color-mix(in srgb, var(--memo-text) 10%, transparent);
+	color: var(--memo-text);
 }
 
 /* 마우스 올림: 기본 글자색으로 진하게 (손가락으로 탭한 뒤 :hover가 남는 휴대폰에서는 쓰지 않는다) */
 @media (hover: hover) {
-	.memo .memo-toc-bar-list button:hover {
+	.memo .memo-toc-bar :is(.memo-toc-bar-step, .memo-toc-bar-toggle, .memo-toc-bar-list button):hover:not(:disabled) {
+		background-color: color-mix(in srgb, var(--memo-text) 7%, transparent);
 		color: var(--memo-text);
 	}
 }
 
-.memo .memo-toc-bar-list button:focus-visible {
+.memo .memo-toc-bar button:focus-visible {
 	outline: 2px solid var(--memo-accent);
 	outline-offset: -2px;
 }
 
-/* 지금 읽는 절: 강조색 글자와 아래 2px 막대 (마우스를 올려도 강조색 그대로) */
-.memo .memo-toc-bar-list button[aria-current='location'] {
-	color: var(--memo-accent);
+/* 지금 읽는 절: 가운데에 진한 글자, 그 안의 소제목은 › 뒤에 흐리게 */
+.memo-toc-bar-current {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+	gap: var(--space-6);
+	min-width: 0;
+	margin: 0;
+	color: var(--memo-text);
+	line-height: 1.3;
+	white-space: nowrap;
 }
 
-.memo .memo-toc-bar-list button[aria-current='location']::after {
+.memo-toc-bar-section {
+	flex: 0 1 auto;
+	overflow: hidden;
+	font-weight: 600;
+	text-overflow: ellipsis;
+}
+
+/* 소제목은 절 이름보다 먼저 줄어든다 */
+.memo-toc-bar-sub {
+	flex: 0 100 auto;
+	overflow: hidden;
+	color: var(--memo-muted);
+	text-overflow: ellipsis;
+}
+
+.memo-toc-bar-sub::before {
+	margin-right: var(--space-6);
+	content: '›';
+}
+
+.memo-toc-bar-placeholder {
+	overflow: hidden;
+	color: var(--memo-muted);
+	text-overflow: ellipsis;
+}
+
+/* 펼친 목록: 막대 바로 아래 오른쪽 끝(목록 버튼 밑)에 뜨는 카드. 길면 카드 안에서 넘긴다 */
+.memo-toc-bar-list {
 	position: absolute;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	height: 2px;
-	border-radius: 1px;
+	top: calc(100% + var(--space-4));
+	right: var(--memo-toc-bar-bleed);
+	width: min(360px, calc(100% - 2 * var(--memo-toc-bar-bleed)));
+	max-height: min(60vh, 440px);
+	margin: 0;
+	padding: var(--space-6);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-14);
+	background-color: var(--memo-bg);
+	box-shadow: var(--shadow-menu);
+	list-style: none;
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top right;
+}
+
+.memo .memo-toc-bar-list button {
+	display: block;
+	position: relative;
+	width: 100%;
+	padding: var(--space-6) var(--space-10);
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	line-height: 1.35;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* ### 소제목: 들여 쓰고 흐리게 */
+.memo .memo-toc-bar-list li[data-level='3'] button {
+	padding-left: calc(var(--space-10) + 1em);
+	color: var(--memo-muted);
+	font-size: 0.93em;
+}
+
+/* 지금 읽는 제목: 옅은 강조색 바탕과 왼쪽 막대 */
+.memo .memo-toc-bar-list button[aria-current='location'] {
+	background-color: color-mix(in srgb, var(--memo-accent) 16%, transparent);
+	color: var(--memo-text);
+	font-weight: 600;
+}
+
+.memo .memo-toc-bar-list button[aria-current='location']::before {
+	position: absolute;
+	top: var(--space-6);
+	bottom: var(--space-6);
+	left: 3px;
+	width: 3px;
+	border-radius: 2px;
 	background-color: var(--memo-accent);
 	content: '';
 }
 
-/* 휴대폰: 항목 높이를 손가락 터치 영역(44px) 이상으로 */
-.memo .memo-toc-bar[data-compact] .memo-toc-bar-list button {
+/* 휴대폰: 버튼 높이를 손가락 터치 영역(44px) 이상으로. 이전·다음은 화살표만 두고 가운데에 폭을 몰아준다 */
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-row {
+	grid-template-columns: 44px minmax(0, 1fr) 44px 44px;
+	gap: var(--space-2);
+}
+
+.memo .memo-toc-bar[data-compact] :is(.memo-toc-bar-step, .memo-toc-bar-toggle, .memo-toc-bar-list button) {
+	justify-content: center;
+	justify-self: stretch;
 	min-height: 44px;
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-list button {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-step-text {
+	display: none;
 }
 
 /*
@@ -130,7 +250,11 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.memo-toc-bar,
-	.memo .memo-toc-bar-list button {
+	.memo .memo-toc-bar button {
 		transition: none;
+	}
+
+	.memo-toc-bar-list {
+		animation: none;
 	}
 }
