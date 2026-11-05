@@ -188,7 +188,8 @@
 
 :where(.prose) details > summary {
 	display: flex;
-	align-items: center;
+	/* 요약이 여러 줄이면 › 를 첫 줄의 가운데에 둔다 (::before의 margin-top) */
+	align-items: flex-start;
 	gap: 0.5em;
 	margin: 0 -0.9em;
 	padding: 0.7em 0.9em;
@@ -207,6 +208,7 @@
 	flex: none;
 	width: 0.45em;
 	height: 0.45em;
+	margin-top: calc((1lh - 0.45em) / 2);
 	border-right: 2px solid var(--prose-muted);
 	border-bottom: 2px solid var(--prose-muted);
 	transform: rotate(-45deg);

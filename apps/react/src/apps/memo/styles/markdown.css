@@ -131,7 +131,8 @@
 
 .memo-inline-editor .memo-details-summary {
 	display: flex;
-	align-items: center;
+	/* 읽기 화면과 같게: 여러 줄이면 › 를 첫 줄의 가운데에 */
+	align-items: flex-start;
 	gap: 0.5em;
 	margin: 0 -0.9em;
 	padding: 0.7em 0.9em;
@@ -143,6 +144,7 @@
 	flex: none;
 	width: 0.45em;
 	height: 0.45em;
+	margin-top: calc((1lh - 0.45em) / 2);
 	margin-right: 0.15em;
 	border-right: 2px solid var(--memo-muted);
 	border-bottom: 2px solid var(--memo-muted);
