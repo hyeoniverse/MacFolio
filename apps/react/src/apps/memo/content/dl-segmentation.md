@@ -4,10 +4,10 @@ date: 2023-10-09
 category: CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 3
-summary: 화소마다 부류를 지정하는 분할 문제의 정의와 PA·IoU·Dice 평가, 특징 맵을 다시 키우는 전치 컨볼루션과 FCN·DeconvNet·U-Net의 구조, Oxford-IIIT Pet 데이터셋을 U-Net으로 분할한 실습을 다룬다.
+summary: 화소마다 부류를 지정하는 분할 문제의 정의와 PA·IoU·Dice 평가, 특징 맵을 다시 키우는 전치 컨볼루션과 FCN·DeconvNet·U-Net의 구조, Oxford-IIIT Pet 데이터셋을 U-Net으로 분할한 구현을 다룬다.
 ---
 
-딥러닝 및 응용 연재의 세 번째 글로, 인식(recognition) 문제 가운데 분할(segmentation)을 다룬다. [물체 검출의 성능 평가와 RCNN·YOLO](/memo/dl-object-detection)에서 다룬 물체 검출이 물체를 감싸는 직사각형을 찾았다면, 분할은 물체가 차지하는 화소를 하나하나 지정한다. 분류용 CNN이 특징 맵을 줄여 가는 구조는 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서 정리했고, 이 글은 줄어든 특징 맵을 원래 크기로 되돌리는 방법이 중심이다.
+인식(recognition) 문제 가운데 분할(segmentation)을 다룬다. [물체 검출의 성능 평가와 RCNN·YOLO](/memo/dl-object-detection)에서 다룬 물체 검출이 물체를 감싸는 직사각형을 찾았다면, 분할은 물체가 차지하는 화소를 하나하나 지정한다. 분류용 CNN이 특징 맵을 줄여 가는 구조는 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서 정리했고, 이 글은 줄어든 특징 맵을 원래 크기로 되돌리는 방법이 중심이다.
 
 | 순서 | 내용                                                |
 | ---- | --------------------------------------------------- |
@@ -16,7 +16,7 @@ summary: 화소마다 부류를 지정하는 분할 문제의 정의와 PA·IoU�
 | 3    | FCN: 특징 맵 크기 변화, 전치 컨볼루션, 3단계 스케일 |
 | 4    | DeconvNet: 언풀링과 전치 컨볼루션                   |
 | 5    | U-Net: 축소 경로, 확장 경로, 지름길 연결            |
-| 6    | 실습: U-Net으로 Oxford-IIIT Pet 분할                |
+| 6    | U-Net으로 Oxford-IIIT Pet 분할                      |
 
 ## 분할
 
@@ -57,9 +57,9 @@ Dice는 분자에서 교집합을 두 번 집계하고 분모에서 두 영역�
 
 ![6×6 참값과 예측값 격자, 영역 2의 합집합과 교집합](./images/dl-segmentation-03.jpg '영역 2의 교집합은 10화소, 합집합은 17화소다 (강의 자료)')
 
-### 예제 검산
+### 예제 계산
 
-격자에서 부류 2인 화소를 직접 집계했다.
+격자에서 부류 2인 화소를 집계하면 다음과 같다.
 
 | 항목                  | 집계                  | 값  |
 | --------------------- | --------------------- | --- |
@@ -72,7 +72,7 @@ Dice는 분자에서 교집합을 두 번 집계하고 분모에서 두 영역�
 \mathrm{IoU} = \frac{10}{17} = 0.5882, \qquad \mathrm{Dice} = \frac{2 \times 10}{14 + 13} = \frac{20}{27} = 0.7407
 ```
 
-슬라이드의 두 값이 맞다. 같은 격자로 PA도 집계할 수 있다. 36화소 가운데 참값과 예측이 같은 화소는 행별로 6, 5, 3, 5, 6, 4개이므로 `\mathrm{PA} = 29/36 = 0.8056{:math}`이다. 배경(0)이 넓게 맞으면 PA는 높게 나오지만 부류 2의 IoU는 0.59에 그친다.
+같은 격자로 PA도 집계할 수 있다. 36화소 가운데 참값과 예측이 같은 화소는 행별로 6, 5, 3, 5, 6, 4개이므로 `\mathrm{PA} = 29/36 = 0.8056{:math}`이다. 배경(0)이 넓게 맞으면 PA는 높게 나오지만 부류 2의 IoU는 0.59에 그친다.
 
 > [!TIP]
 > 배경이 화면 대부분을 차지하는 영상에서는 모든 화소를 배경으로 예측해도 PA가 높다. 그래서 분할 논문은 부류별 IoU를 평균한 mIoU(mean IoU)를 주 지표로 보고한다.
@@ -157,7 +157,7 @@ FCN-8s는 같은 방식을 한 번 더 적용한다. conv7 예측을 4배, pool4
 
 ![FCN-32s, FCN-16s, FCN-8s 결과와 참값 비교](./images/dl-segmentation-11.jpg '얕은 층의 맵을 더할수록 참값의 경계에 가까워진다 (강의 자료)')
 
-==깊은 층의 맵은 무엇이 있는지(거친 특징)를, 얕은 층의 맵은 어디에 있는지(세밀한 특징)를 담고 있으므로, 둘을 합치면 정확한 분할을 얻는다.== 교재의 구조도는 이 과정을 부류 맵으로 그린다.
+==깊은 층의 맵은 무엇이 있는지(거친 특징)를, 얕은 층의 맵은 어디에 있는지(세밀한 특징)를 담고 있으므로, 둘을 합치면 정확한 분할을 얻는다.== 이 과정을 부류 맵으로 그리면 다음과 같다.
 
 ![pool3, pool4, conv7에 C+1개의 1×1 필터를 적용해 부류 맵을 만들고 2배·2배·8배 업 샘플링해 더하는 FCN 구조도](./images/dl-segmentation-12.jpg '1×1 필터로 부류 맵을 만들고, 3단계 스케일을 합쳐 거친 특징과 세밀한 특징을 모두 추출한다 (강의 자료)')
 
@@ -272,6 +272,7 @@ from tensorflow.keras import layers
 import os
 import random
 import cv2 as cv
+import tensorflow as tf
 
 import tensorflow_datasets as tfds
 tfds.disable_progress_bar()
@@ -279,7 +280,7 @@ tfds.disable_progress_bar()
 tfds.load('oxford_iiit_pet:3.*.*', with_info=True)
 ```
 
-`tfds.load(){:python}`는 데이터셋을 내려받아 `/root/tensorflow_datasets/downloads/extracted/` 아래에 압축을 푼다. 실습은 이 폴더의 원본 jpg와 trimap png를 직접 읽는다.
+`tfds.load(){:python}`는 데이터셋을 내려받아 `/root/tensorflow_datasets/downloads/extracted/` 아래에 압축을 푼다. 아래 코드는 이 폴더의 원본 jpg와 trimap png를 직접 읽는다.
 
 ```python
 input_dir = '/root/tensorflow_datasets/downloads/extracted/images/'
@@ -293,7 +294,7 @@ label_paths = sorted([os.path.join(target_dir, f) for f in os.listdir(target_dir
                       if f.endswith('.png') and not f.startswith('.')])
 ```
 
-실제 Colab에서는 압축을 푼 폴더 이름에 `TAR_GZ.robots.ox.ac.uk_vgg_pets_images...tar.gz` 같은 해시가 붙으므로, 경로를 그 이름에 맞춰 고쳐야 한다. 두 목록을 파일 이름으로 정렬하므로 같은 번호의 영상과 마스크가 짝이 된다.
+압축을 푼 폴더 이름에는 `TAR_GZ.robots.ox.ac.uk_vgg_pets_images...tar.gz` 같은 해시가 붙으므로, `input_dir`과 `target_dir`은 그 폴더의 경로로 지정한다. 두 목록을 파일 이름으로 정렬하므로 같은 번호의 영상과 마스크가 짝이 된다.
 
 ### 미니 배치를 만드는 Sequence
 
@@ -345,8 +346,8 @@ def conv2d_block(input_tensor, n_filters, kernel_size=3):
 
 def encoder_block(inputs, n_filters=64, pool_size=(2, 2), dropout=0.3):
     f = conv2d_block(inputs, n_filters=n_filters)
-    p = layers.MaxPooling2D(pool_size=(2, 2))(f)
-    p = layers.Dropout(0.3)(p)
+    p = layers.MaxPooling2D(pool_size=pool_size)(f)
+    p = layers.Dropout(dropout)(p)
     return f, p
 
 def encoder(inputs):
@@ -360,7 +361,7 @@ def bottleneck(inputs):
     bottle_neck = conv2d_block(inputs, n_filters=1024)
     return bottle_neck
 
-def decoder_block(inputs, conv_output, n_filters=64, kernel_size=3, strides=3, dropout=0.3):
+def decoder_block(inputs, conv_output, n_filters=64, kernel_size=3, strides=2, dropout=0.3):
     u = layers.Conv2DTranspose(n_filters, kernel_size, strides=strides, padding='same')(inputs)
     c = layers.concatenate([u, conv_output])
     c = layers.Dropout(dropout)(c)
@@ -406,11 +407,6 @@ def make_model(img_size, num_classes):
 | 1×1 conv, softmax | 160×160×3                  |               |
 
 `Conv2DTranspose`에 `padding='same'`과 `strides=(2, 2)`를 주면 출력 크기는 입력의 정확히 2배가 된다. `SeparableConv2D`는 채널별 공간 컨볼루션과 1×1 컨볼루션으로 나누어 계산하는 층으로, 일반 컨볼루션보다 파라미터가 적다. 마지막 1×1 컨볼루션이 화소마다 세 부류의 확률을 출력하는 점은 FCN의 `C+1{:math}`개 1×1 필터와 같다.
-
-> [!WARNING]
-> 코드에는 동작에 영향이 없는 불일치가 두 군데 있다. `encoder_block`은 `dropout` 인자를 받지만 `layers.Dropout(0.3)`에 상수를 넣어 인자를 사용하지 않는다. `decoder_block`의 `strides` 기본값은 3인데, `decoder()`가 매번 `strides=(2, 2)`를 넘기므로 기본값은 쓰이지 않는다. 기본값으로 호출하면 크기가 3배가 되어 지름길로 온 맵과 이어 붙일 수 없다.
-
-`tf.keras.layers.Conv2D(){:python}`를 사용하려면 `import tensorflow as tf{:python}`도 필요하다. 발표 자료에서는 `import tensorflow`를 추가하고 `tensorflow.keras.layers.Conv2D`로 고쳐 실행했다.
 
 ### 학습과 예측
 
@@ -461,35 +457,30 @@ print(preds[1].shape)
 
 ### 설정을 바꾼 실행
 
-발표 자료에서는 세 가지 설정을 바꾸어 다시 실행했다.
+테스트 집합 비율과 epoch 수를 바꾸어 다시 실행했다.
 
-| 항목                                 | 강의 코드 | 바꾼 값   |
-| ------------------------------------ | --------- | --------- |
-| `encoder_block`의 `n_filters` 기본값 | 64        | 128       |
-| 테스트 집합 비율                     | 0.1 (10%) | 0.2 (20%) |
-| epoch 수                             | 15        | 10        |
-
-> [!CAUTION]
-> `encoder()`가 네 번의 `encoder_block` 호출에 모두 `n_filters=64, 128, 256, 512`를 명시하므로, 기본값을 64에서 128로 바꾸어도 모델 구조는 그대로다. 첫 블록의 필터 수를 늘리려면 `encoder()` 안의 `n_filters=64`를 고쳐야 한다.
+| 항목             | 앞의 코드 | 바꾼 값   |
+| ---------------- | --------- | --------- |
+| 테스트 집합 비율 | 0.1 (10%) | 0.2 (20%) |
+| epoch 수         | 15        | 10        |
 
 영상이 7390장이므로 테스트 집합은 `int(7390 \times 0.2) = 1478{:math}`장, 훈련 집합은 5912장이다. 배치 크기 32로 나누면 훈련 배치는 `5912 // 32 = 184{:math}`개, 검증 배치는 `1478 // 32 = 46{:math}`개이고, 로그의 184/184와 46/46이 이 값이다.
 
 ![10 epoch 동안 손실이 0.8774에서 0.3646으로 줄어드는 학습 로그](./images/dl-segmentation-21.jpg '훈련 손실과 검증 손실은 꾸준히 감소한다 (발표 자료)')
 
-| epoch | loss   | accuracy | val_loss | val_accuracy |
-| ----- | ------ | -------- | -------- | ------------ |
-| 1     | 0.8774 | 0.0783   | 0.7634   | 0.2613       |
-| 2     | 0.7231 | 0.3344   | 0.6602   | 0.3485       |
-| 5     | 0.4874 | 0.3155   | 0.4425   | 0.3325       |
-| 8     | 0.3970 | 0.3165   | 0.3929   | 0.3513       |
-| 10    | 0.3646 | 0.3141   | 0.3605   | 0.3387       |
+| epoch | loss   | val_loss |
+| ----- | ------ | -------- |
+| 1     | 0.8774 | 0.7634   |
+| 2     | 0.7231 | 0.6602   |
+| 5     | 0.4874 | 0.4425   |
+| 8     | 0.3970 | 0.3929   |
+| 10    | 0.3646 | 0.3605   |
 
 첫 epoch의 경고는 `.h5`(HDF5) 형식으로 저장할 때 Keras가 출력하는 형식 안내다.
 
 ![개 네 마리의 입력 영상, 참값 마스크, 파랑·초록·빨강으로 표시한 예측 결과](./images/dl-segmentation-22.jpg '예측 마스크는 개의 윤곽을 따라 경계(빨강)를 그린다 (발표 자료)')
 
-> [!NOTE]
-> 손실은 0.8774에서 0.3646으로 감소했고 예측 마스크도 개의 윤곽을 따라가는데, accuracy는 0.31~0.35에 머문다. 화소 정확률이 실제로 0.33이라면 이런 마스크가 나올 수 없으므로, 로그의 accuracy는 화소 정확률과 다른 값을 집계했을 가능성이 높다. 확인하려면 `metrics=[keras.metrics.SparseCategoricalAccuracy()]{:python}`처럼 지표를 명시하거나, 예측의 argmax와 레이블을 직접 비교해 PA와 부류별 IoU를 집계한다.
+10 epoch 동안 훈련 손실은 0.8774에서 0.3646으로, 검증 손실은 0.7634에서 0.3605로 감소했고, 예측 마스크는 개의 윤곽을 따라간다. 분할 품질을 수치로 평가하려면 예측의 argmax와 레이블을 화소마다 비교해 앞에서 정리한 PA와 부류별 IoU를 집계한다.
 
 ## 정리
 

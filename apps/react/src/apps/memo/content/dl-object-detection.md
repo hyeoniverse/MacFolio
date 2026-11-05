@@ -7,7 +7,7 @@ seriesOrder: 2
 summary: 인식의 세부 문제와 데이터셋, CAM·Grad-CAM으로 분류 근거를 설명하는 방법, IoU·AP·mAP로 검출 성능을 평가하는 절차, 두 단계 방법론 RCNN·Fast RCNN과 한 단계 방법론 YOLO의 구조를 정리했다.
 ---
 
-딥러닝 및 응용 연재의 두 번째 글로, 강의 4주차 자료(주교재 『컴퓨터 비전과 딥러닝』 9장)의 인식과 물체 검출을 다룬다. [앞 글](/memo/dl-cnn-transfer-learning)의 CNN과 사전 학습 모델이 여기서 분류기와 검출기의 백본이 된다.
+인식의 세부 문제와 물체 검출을 다룬다. [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)의 CNN과 사전 학습 모델이 여기서 분류기와 검출기의 백본이 된다.
 
 ## 인식의 세부 문제
 
@@ -40,9 +40,6 @@ summary: 인식의 세부 문제와 데이터셋, CAM·Grad-CAM으로 분류 근
 | ILSVRC      | ImageNet 중 1000부류, 훈련 약 128만·검증 5만·테스트 10만 장 | ICCV(홀수 해), ECCV(짝수 해)와 함께 대회를 열었다             |
 | COCO        | 80부류, 약 33만 장                                          | 분할 정보와 영상을 설명하는 문장(캡션) 제공, 2015~2020년 대회 |
 | Open Images | 구글 제공                                                   | 분류, 검출, 분할 정보와 관계(행동) 레이블                     |
-
-> [!NOTE]
-> 강의 슬라이드는 PASCAL VOC를 50만 장, ILSVRC 테스트 집합을 15만 장으로 적었다. VOC2012의 분류·검출용 훈련+검증 영상은 11,530장이고, ILSVRC 2012의 테스트 집합은 10만 장이므로 표에는 이 값을 적었다.
 
 ![PASCAL VOC 분할, ImageNet 부류 예, COCO 분할과 캡션, Open Images 관계 레이블 샘플](./images/dl-object-detection-02.jpg '데이터셋마다 레이블 종류가 다르다 (강의 자료)')
 
@@ -106,19 +103,16 @@ S_c = \sum_k w_k^c F_k = \sum_k w_k^c \frac{1}{Z}\sum_{x,y} f_k(x, y), \qquad M_
 
 ==부류 점수를 만든 가중치를 특징 맵에 그대로 곱해 더하면 위치별 기여도 지도가 된다.== GAP 구조로 바꾼 뒤에는 FC층을 다시 미세 조정(fine-tuning)해 분류 성능을 회복한다.
 
-![6×6×3에서 3×3×4 특징 맵을 만들고 GAP로 3, 5, 2, 1을 얻은 뒤 FC층 가중치 w1~w4로 Camel 확률을 계산하는 예](./images/dl-object-detection-09.jpg 'Conv/Pool을 거치면 특징 맵 크기는 줄고 채널은 늘어난다 (강의 자료)')
+6×6×3 입력이 Conv/Pool을 거쳐 3×3×4 특징 맵이 되었다면, GAP는 네 채널의 아홉 칸을 각각 평균해 길이 4의 벡터를 만든다.
 
-그림의 GAP 값을 다시 계산했다.
+| 특징 맵 | 아홉 칸의 합           | 평균 `F_k{:math}` |
+| ------- | ---------------------- | ----------------- |
+| 1       | 2+4+1+2+3+4+4+2+6 = 28 | 3.11              |
+| 2       | 2+5+4+1+6+7+9+3+5 = 42 | 4.67              |
+| 3       | 2+4+2+1+3+3+1+1+1 = 18 | 2.00              |
+| 4       | 0+2+3+1+2−4−1−3+1 = 1  | 0.11              |
 
-| 특징 맵 | 아홉 칸의 합           | 평균 | 그림 값 |
-| ------- | ---------------------- | ---- | ------- |
-| 1       | 2+4+1+2+3+4+4+2+6 = 28 | 3.11 | 3       |
-| 2       | 2+5+4+1+6+7+9+3+5 = 42 | 4.67 | 5       |
-| 3       | 2+4+2+1+3+3+1+1+1 = 18 | 2.00 | 2       |
-| 4       | 0+2+3+1+2−4−1−3+1 = 1  | 0.11 | 1       |
-
-> [!WARNING]
-> 네 번째 특징 맵의 평균은 1/9 ≈ 0.11인데 그림에는 1로 적혀 있다. 앞의 세 값은 반올림으로 설명되지만 네 번째 값은 합(1)을 평균 자리에 적은 오기로 보인다.
+FC층은 이 네 값에 부류마다 가중치 `w_1^c, \ldots, w_4^c{:math}`를 곱해 더한 점수로 Dog, Camel, Cat, Cow 같은 부류의 확률을 계산한다.
 
 CAM의 단점은 구조 제약이다. GAP 바로 앞의 끝단 특징 맵으로만 지도를 만들 수 있고, GAP가 없는 모델은 구조를 바꿔 다시 학습해야 한다.
 
@@ -138,7 +132,7 @@ Grad-CAM(Gradient-weighted CAM, Selvaraju 외, 2017)은 가중치를 그레이�
 
 `y^c{:math}`는 softmax 이전의 부류 c 점수, `A^k{:math}`는 k번째 특징 맵, Z는 특징 맵의 화소 수다. ReLU는 부류 c에 양의 영향을 주는 위치만 남긴다. GAP 구조에서는 `\alpha_k^c{:math}`가 CAM의 `w_k^c{:math}`에 비례하므로 Grad-CAM은 CAM의 일반화다.
 
-강의 예제는 ResNet50의 마지막 합성곱 블록 출력 `conv5_block3_out`(7×7×2048)에서 wood_rabbit(ImageNet 330번 부류)의 Grad-CAM을 구한다.
+다음 예제는 ResNet50의 마지막 합성곱 블록 출력 `conv5_block3_out`(7×7×2048)에서 wood_rabbit(ImageNet 330번 부류)의 Grad-CAM을 구한다.
 
 ```python
 import tensorflow as tf
@@ -174,7 +168,7 @@ superimposed_img = heatmap * 0.4 + img  # 0.4는 히트맵의 강도
 
 ![토끼 영상에 Grad-CAM 히트맵을 겹친 결과](./images/dl-object-detection-10.jpg 'wood_rabbit 판단의 근거가 몸통 털 부분에 몰려 있다 (강의 자료)')
 
-같은 코드를 MobileNet과 버스 영상에 적용한 과제 실습은 [앞 글의 Grad-CAM 실습 절](/memo/dl-cnn-transfer-learning)에 정리했다.
+같은 코드를 MobileNet과 버스 영상에 적용한 결과는 [앞 글의 Grad-CAM 구현 절](/memo/dl-cnn-transfer-learning)에 정리했다.
 
 ## 적대적 공격
 
@@ -254,7 +248,7 @@ IoU(Intersection over Union)는 예측 박스와 참값 박스의 겹침 정도�
 | 5    | ⓔ    | TP   | 3       | 2       | 0.6    | 0.75   |
 | 6    | ⓒ    | FP   | 3       | 3       | 0.5    | 0.75   |
 
-가로축에 재현율, 세로축에 정밀도를 놓고 그리면 정밀도-재현율 곡선이 되고, 곡선 아래 빗금 영역이 AP다. 교재 그림은 (0.25, 1.0), (0.5, 0.666), (0.75, 0.6), (0.75, 0.5)를 잇는다.
+가로축에 재현율, 세로축에 정밀도를 놓고 그리면 정밀도-재현율 곡선이 되고, 곡선 아래 빗금 영역이 AP다. 아래 그림의 곡선은 (0.25, 1.0), (0.5, 0.666), (0.75, 0.6), (0.75, 0.5)를 잇는다.
 
 ![(0.25, 1.0), (0.5, 0.666), (0.75, 0.6), (0.75, 0.5)를 잇는 정밀도-재현율 곡선과 빗금 친 AP 영역](./images/dl-object-detection-14.jpg '빗금 영역의 넓이가 AP다 (강의 자료)')
 
@@ -302,7 +296,7 @@ RCNN(Regions with CNN features, Girshick 외, 2014)은 VOC2012에서 이전 최�
 
 ![VOC2007 훈련 집합에서 aeroplane, bicycle, bird, car 영역을 227×227로 변형한 샘플](./images/dl-object-detection-18.jpg '종횡비와 무관하게 정사각형으로 늘린다 (강의 자료)')
 
-부류별 선형 SVM은 4096차원 특징 벡터를 입력받아 부류마다 점수(부류 확률)를 낸다. 교재 그림은 VOC 20부류에 물체 아님(non object)을 더한 21개 SVM으로 표현한다. 모든 영역에 점수를 매긴 뒤 탐욕적 비최대 억제(greedy non-maximum suppression)를 적용한다.
+부류별 선형 SVM은 4096차원 특징 벡터를 입력받아 부류마다 점수(부류 확률)를 낸다. 아래 그림은 VOC 20부류에 물체 아님(non object)을 더한 21개 SVM으로 표현한다. 모든 영역에 점수를 매긴 뒤 탐욕적 비최대 억제(greedy non-maximum suppression)를 적용한다.
 
 ![축구 영상에서 영역을 제안하고 227×227 CNN으로 4096차원 특징을 뽑아 SVM 21개로 분류하는 과정](./images/dl-object-detection-19.jpg '영역 제안, 특징 추출, 분류가 분리되어 있다 (강의 자료)')
 
@@ -349,7 +343,7 @@ YOLO(You Only Look Once, Redmon 외, 2016)는 RCNN보다 정확률은 떨어지�
 ```
 
 > [!NOTE]
-> 원 논문은 PASCAL VOC의 20부류로 실험해 칸마다 2 × 5 + 20 = 30차원, 출력 7×7×30을 썼다. 교재는 COCO의 80부류에 맞춰 90차원으로 설명한다.
+> 원 논문은 PASCAL VOC의 20부류로 실험해 칸마다 2 × 5 + 20 = 30차원, 출력 7×7×30을 썼다. 위 계산은 COCO의 80부류를 기준으로 한 값이다.
 
 ### 신경망 구조와 손실 함수
 
@@ -440,7 +434,7 @@ def yolo_detect(img, yolo_model, out_layers):  # YOLO 모델로 물체 검출
                 centerx, centery = int(vec85[0] * width), int(vec85[1] * height)
                 w, h = int(vec85[2] * width), int(vec85[3] * height)
                 x, y = int(centerx - w / 2), int(centery - h / 2)
-                box.append([x, y, x + w, y + h])
+                box.append([x, y, w, h])  # NMSBoxes는 (x, y, w, h)를 받는다
                 conf.append(float(confidence))
                 id.append(class_id)
 
@@ -457,23 +451,20 @@ if img is None:
 
 res = yolo_detect(img, model, out_layers)
 for i in range(len(res)):  # 검출된 물체를 영상에 표시
-    x1, y1, x2, y2, confidence, id = res[i]
+    x, y, w, h, confidence, id = res[i]
     text = str(class_names[id]) + '%.3f' % confidence
-    cv.rectangle(img, (x1, y1), (x2, y2), colors[id], 2)
-    cv.putText(img, text, (x1, y1 + 30), cv.FONT_HERSHEY_PLAIN, 1.5, colors[id], 2)
+    cv.rectangle(img, (x, y), (x + w, y + h), colors[id], 2)
+    cv.putText(img, text, (x, y + 30), cv.FONT_HERSHEY_PLAIN, 1.5, colors[id], 2)
 cv2_imshow(img)
 ```
 
-| 코드                                                      | 역할                                                                                        |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `getUnconnectedOutLayers()`                               | 뒤에 연결된 층이 없는 출력층, 즉 세 스케일의 YOLO 층 번호를 돌려준다 (1부터 시작해 `i - 1`) |
-| `blobFromImage(img, 1.0/256, (448, 448), …, swapRB=True)` | 화소를 0~1로 줄이고 448×448로 바꾸며, OpenCV의 BGR을 RGB로 바꾼다                           |
-| `vec85[0:4]`                                              | 영상 크기에 대한 비율로 표현한 박스 중심과 너비·높이                                        |
-| `vec85[5:]`                                               | 80부류 확률. 최댓값의 부류와 확률을 신뢰도로 쓴다                                           |
-| `cv.dnn.NMSBoxes(box, conf, 0.5, 0.4)`                    | 신뢰도 0.5 이상 박스 중 IoU 0.4를 넘게 겹치는 박스를 비최대 억제로 제거한다                 |
-
-> [!CAUTION]
-> `cv.dnn.NMSBoxes()`는 박스를 (x, y, w, h)로 받는다. 교재 코드는 (x1, y1, x2, y2)를 넘기므로 NMS 안에서 계산하는 IoU가 실제 박스와 다르다. `box.append([x, y, w, h])`로 넘기고 그리는 시각에 x + w, y + h로 바꾸는 편이 맞다.
+| 코드                                                      | 역할                                                                                                        |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `getUnconnectedOutLayers()`                               | 뒤에 연결된 층이 없는 출력층, 즉 세 스케일의 YOLO 층 번호를 돌려준다 (1부터 시작해 `i - 1`)                 |
+| `blobFromImage(img, 1.0/256, (448, 448), …, swapRB=True)` | 화소를 0~1로 줄이고 448×448로 바꾸며, OpenCV의 BGR을 RGB로 바꾼다                                           |
+| `vec85[0:4]`                                              | 영상 크기에 대한 비율로 표현한 박스 중심과 너비·높이                                                        |
+| `vec85[5:]`                                               | 80부류 확률. 최댓값의 부류와 확률을 신뢰도로 쓴다                                                           |
+| `cv.dnn.NMSBoxes(box, conf, 0.5, 0.4)`                    | (x, y, w, h) 박스 가운데 신뢰도 0.5 이상인 것만 남기고, IoU 0.4를 넘게 겹치는 박스를 비최대 억제로 제거한다 |
 
 축구 영상에서는 두 선수를 각각 1.00과 0.941의 신뢰도로 person 부류로, 공을 0.999의 신뢰도로 sports ball 부류로 검출했다.
 

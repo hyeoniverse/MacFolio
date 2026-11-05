@@ -7,7 +7,7 @@ seriesOrder: 8
 summary: 영상을 패치로 잘라 트랜스포머 인코더에 넣는 비전 트랜스포머(ViT)의 구조, 트랜스포머의 장거리 의존·확장성·설명 가능성, CIFAR-10 분류 실습과 데이터 증강 효과를 정리했다.
 ---
 
-딥러닝 및 응용 연재의 여덟 번째 글로, 영상 분류에 트랜스포머를 적용한 비전 트랜스포머(Vision Transformer, ViT)를 다룬다. 셀프 어텐션, 멀티 헤드 어텐션, 층 정규화 같은 구성 요소는 [트랜스포머를 다룬 7편](/memo/dl-transformer)에서 정리했고, 이 글은 그 인코더를 영상에 맞게 바꾼 부분과 Keras 실습을 중심으로 본다.
+비전 트랜스포머(Vision Transformer, ViT)는 영상 분류에 트랜스포머를 적용한 모델이다. 셀프 어텐션, 멀티 헤드 어텐션, 층 정규화 같은 구성 요소는 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)에서 정리했고, 이 글은 그 인코더를 영상에 맞게 바꾼 부분과 Keras 실습을 중심으로 본다.
 
 ## 컨볼루션 신경망에서 트랜스포머로
 
@@ -32,13 +32,13 @@ summary: 영상을 패치로 잘라 트랜스포머 인코더에 넣는 비전 �
 | 추적 | MOTR, TransTrack, TrackFormer | 프레임 사이에서 같은 물체를 이어 간다            |
 | 백본 | Swin 트랜스포머               | 하나의 모델로 분류, 검출, 분할, 추적을 모두 푼다 |
 
-검출과 분할은 [2편](/memo/dl-object-detection)과 [3편](/memo/dl-segmentation)에서 컨볼루션 신경망 기반 모델로 다뤘다.
+검출과 분할은 [물체 검출의 성능 평가와 RCNN·YOLO](/memo/dl-object-detection)와 [의미 분할의 성능 평가와 FCN·DeconvNet·U-Net](/memo/dl-segmentation)에서 컨볼루션 신경망 기반 모델로 다뤘다.
 
 ## 분류를 위한 트랜스포머
 
 ### 영상 분류와 ViT
 
-영상 분류는 컴퓨터 비전의 가장 기본적인 문제다. 2012년 AlexNet 이후 컨볼루션 신경망이 성능을 획기적으로 끌어올렸다([1편](/memo/dl-cnn-transfer-learning)). 영상 분류에 트랜스포머를 적용해서도 성능 향상을 얻을 수 있는지에 대해, ==ViT는 트랜스포머만으로도 컨볼루션 신경망에 견줄 만한 분류 성능을 낼 수 있다는 긍정적인 답을 주었다.==
+영상 분류는 컴퓨터 비전의 가장 기본적인 문제다. 2012년 AlexNet 이후 컨볼루션 신경망이 성능을 획기적으로 끌어올렸다([컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)). 영상 분류에 트랜스포머를 적용해서도 성능 향상을 얻을 수 있는지에 대해, ==ViT는 트랜스포머만으로도 컨볼루션 신경망에 견줄 만한 분류 성능을 낼 수 있다는 긍정적인 답을 주었다.==
 
 ![고양이 영상이 신경망 모델을 거쳐 부류별 확률(0 사람 0.001, 1 자전거 0.01, 12 고양이 0.93 등)로 출력되는 그림](./images/dl-vision-transformer-18.jpg '영상 분류는 부류마다 확률을 출력하고 가장 큰 부류를 답으로 고른다 (강의 자료)')
 
@@ -61,7 +61,7 @@ ViT는 트랜스포머가 분류 문제를 얼마나 잘 푸는지 확인할 목
 
 ![ViT 전체 구조도: 영상을 9개 패치로 잘라 선형 투영하고 위치 임베딩과 class 토큰(0번)을 더해 Transformer Encoder에 넣고, MLP Head가 부류를 출력한다. 오른쪽은 L번 반복하는 인코더 블록(Norm, Multi-Head Attention, Norm, MLP, 잔차 연결)](./images/dl-vision-transformer-03.jpg 'ViT는 트랜스포머의 인코더만 쓰고 디코더는 없다 (강의 자료)')
 
-ViT는 [7편](/memo/dl-transformer)의 트랜스포머에서 인코더만 가져온다. 출력이 문장이 아니라 부류 하나이므로 디코더가 필요 없다.
+ViT는 [트랜스포머](/memo/dl-transformer)에서 인코더만 가져온다. 출력이 문장이 아니라 부류 하나이므로 디코더가 필요 없다.
 
 ### 패치 임베딩
 
@@ -90,7 +90,7 @@ ViT는 [7편](/memo/dl-transformer)의 트랜스포머에서 인코더만 가져
 </details>
 
 > [!NOTE]
-> 7편의 트랜스포머는 위치 인코딩을 사인·코사인 식으로 고정했지만, ViT의 위치 임베딩 `\mathbf{E}_{pos}{:math}`는 학습으로 정하는 파라미터다.
+> 원래 트랜스포머는 위치 인코딩을 사인·코사인 식으로 고정했지만, ViT의 위치 임베딩 `\mathbf{E}_{pos}{:math}`는 학습으로 정하는 파라미터다.
 
 ### 인코더 블록
 
@@ -106,13 +106,13 @@ ViT의 인코더 블록은 층 정규화(LN), 멀티 헤드 셀프 어텐션(MSA
 ![ViT의 Transformer Encoder 블록: Embedded Patches → Norm → Multi-Head Attention → 덧셈 → Norm → MLP → 덧셈을 L번 반복하는 그림과 z'_l, z_l 식](./images/dl-vision-transformer-06.jpg '정규화를 MSA와 MLP 앞에 두고, 각 층의 입력을 출력에 더한다 (강의 자료)')
 
 > [!TIP] 정규화 위치
-> 7편의 원래 트랜스포머는 `\mathrm{Norm}(\mathbf{X} + \mathrm{MHA}(\mathbf{X})){:math}`처럼 잔차를 더한 뒤 정규화(post-norm)하지만, ViT는 MSA와 MLP에 넣기 전에 정규화(pre-norm)한다. 식에서 LN이 괄호 안쪽에 있는 차이다.
+> 원래 트랜스포머는 `\mathrm{Norm}(\mathbf{X} + \mathrm{MHA}(\mathbf{X})){:math}`처럼 잔차를 더한 뒤 정규화(post-norm)하지만, ViT는 MSA와 MLP에 넣기 전에 정규화(pre-norm)한다. 식에서 LN이 괄호 안쪽에 있는 차이다.
 
 #### 층 정규화
 
 층 정규화(layer normalization)는 모든 영상 임베딩을 채널(특징 차원) 기준으로 정규화한다. 토큰 하나의 `D{:math}`개 값으로 평균과 표준편차를 구하므로 배치 크기와 무관하다.
 
-![배치 정규화는 특징 하나를 배치 방향으로, 층 정규화는 샘플 하나를 특징 방향으로 평균·표준편차를 구하는 예시 그림](./images/dl-vision-transformer-05.jpg '배치 정규화는 모든 학습 샘플에 같은 통계를, 층 정규화는 모든 특징 차원에 같은 통계를 쓴다. 그림의 평균·표준편차는 반올림한 근사값이다 (강의 자료)')
+![배치 정규화는 특징 하나를 배치 방향으로, 층 정규화는 샘플 하나를 특징 방향으로 평균·표준편차를 구하는 예시 그림](./images/dl-vision-transformer-05.jpg '배치 정규화는 모든 학습 샘플에 같은 통계를, 층 정규화는 모든 특징 차원에 같은 통계를 쓴다. (강의 자료)')
 
 | 정규화      | 통계를 구하는 방향                | 그림에서                        |
 | ----------- | --------------------------------- | ------------------------------- |
@@ -121,7 +121,7 @@ ViT의 인코더 블록은 층 정규화(LN), 멀티 헤드 셀프 어텐션(MSA
 
 #### 멀티 헤드 셀프 어텐션
 
-MSA(Multi-Head Self Attention)는 패치 임베딩과 위치 임베딩을 더한 토큰으로 셀프 어텐션을 수행한다. 계산은 7편과 같다.
+MSA(Multi-Head Self Attention)는 패치 임베딩과 위치 임베딩을 더한 토큰으로 셀프 어텐션을 수행한다. 계산은 원래 트랜스포머와 같다.
 
 ```math
 \mathrm{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathrm{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^\mathsf{T}}{\sqrt{d_k}}\right)\mathbf{V}
@@ -133,16 +133,15 @@ MSA의 출력에는 잔차 연결(residual connection)로 입력을 더한다(ad
 
 #### MLP
 
-MLP는 두 개의 선형 층으로 구성되며, 첫 번째 층에서 임베딩 크기를 확장하고 두 번째 층에서 원래 임베딩 크기로 되돌린다. 7편의 위치별 FF 층과 같은 형태다.
+MLP는 두 개의 선형 층으로 구성되며, 첫 번째 층에서 임베딩 크기를 확장하고 두 번째 층에서 원래 임베딩 크기로 되돌린다. 원래 트랜스포머의 위치별 FF 층과 같은 형태이고, 비선형 함수로 ReLU 대신 GELU를 쓴다.
 
 ```math
-\mathbf{X}'' = \mathrm{FFN}(\mathbf{X}') = \mathrm{ReLU}(\mathbf{X}'\mathbf{W}_1 + \mathbf{b}_1)\,\mathbf{W}_2 + \mathbf{b}_2
+\mathrm{MLP}(\mathbf{X}) = \mathrm{GELU}(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1)\,\mathbf{W}_2 + \mathbf{b}_2
 ```
 
 ![d_model 차원 벡터 x가 d_ff 차원 y로 넓어졌다가 다시 d_model 차원으로 줄어드는 그림](./images/dl-vision-transformer-08.jpg 'd_model 차원을 d_ff 차원으로 넓혔다가 다시 d_model 차원으로 줄인다 (강의 자료)')
 
-> [!NOTE]
-> 슬라이드의 식은 원래 트랜스포머의 ReLU를 썼지만, ViT 논문의 MLP는 GELU 비선형 함수를 쓴다. 뒤의 실습 코드도 `tf.nn.gelu`를 쓴다.
+GELU(Gaussian Error Linear Unit)는 입력에 표준 정규분포의 누적 분포 함수 값을 곱한 `\mathrm{GELU}(x) = x\,\Phi(x){:math}`로, 0 근처에서 ReLU보다 매끄럽게 변한다. 뒤의 실습 코드도 `tf.nn.gelu`를 쓴다.
 
 ### MLP head와 class 토큰
 
@@ -199,7 +198,7 @@ MLP는 두 개의 선형 층으로 구성되며, 첫 번째 층에서 임베딩 
 
 ### 설명 가능성
 
-자기 주목 행렬을 활용하면 모델이 어디를 보고 판단했는지 더 쉽고 정확하게 설명할 수 있다. [1편](/memo/dl-cnn-transfer-learning)의 Grad-CAM처럼 따로 기울기를 계산하지 않아도 주목 값 자체가 근거가 된다. 예를 들어 미세 분류(fine-grained classification)를 하는 TransFG[^transfg]는 새의 부리나 개의 코끝처럼 부류를 가르는 특정한 곳에 집중한다.
+자기 주목 행렬을 활용하면 모델이 어디를 보고 판단했는지 더 쉽고 정확하게 설명할 수 있다. [컨볼루션 신경망 글](/memo/dl-cnn-transfer-learning)의 Grad-CAM처럼 따로 기울기를 계산하지 않아도 주목 값 자체가 근거가 된다. 예를 들어 미세 분류(fine-grained classification)를 하는 TransFG[^transfg]는 새의 부리나 개의 코끝처럼 부류를 가르는 특정한 곳에 집중한다.
 
 ![새 세 장과 개 세 장 위에 TransFG가 주목한 부위를 빨간 상자로 표시한 그림](./images/dl-vision-transformer-14.jpg '미세 분류에서 트랜스포머는 부리, 눈, 코끝처럼 종을 구별하는 부위에 주목한다 (강의 자료)')
 
@@ -322,7 +321,7 @@ def create_vit_classifier():
 model = create_vit_classifier()
 model.layers[1].adapt(x_train)
 
-model.compile(optimizer=Adam(), loss=SparseCategoricalCrossentropy(from_logits=True), metrics=['accuracy'])
+model.compile(optimizer=Adam(), loss=SparseCategoricalCrossentropy(), metrics=['accuracy'])
 hist = model.fit(x_train, y_train, batch_size=128, epochs=100, validation_data=(x_test, y_test), verbose=1)
 
 res = model.evaluate(x_test, y_test, verbose=0)
@@ -349,10 +348,7 @@ plt.grid()
 plt.show()
 ```
 
-`model.layers[1]{:python}`은 `Input` 다음의 `Normalization` 층이고, `adapt(x_train){:python}`으로 학습 데이터의 평균과 분산을 미리 계산해 둔다. 배치 크기 128로 100세대 학습한다.
-
-> [!WARNING]
-> 출력층이 이미 `activation='softmax'`인데 손실 함수에 `from_logits=True`를 주면, Keras는 확률을 로짓으로 보고 softmax를 한 번 더 적용한다. 학습은 진행되지만 의도와 다른 손실이 계산되므로 `from_logits=False`(기본값)로 써야 맞다.
+`model.layers[1]{:python}`은 `Input` 다음의 `Normalization` 층이고, `adapt(x_train){:python}`으로 학습 데이터의 평균과 분산을 미리 계산해 둔다. 출력층이 `activation='softmax'`로 확률을 내므로 손실 함수는 기본값(`from_logits=False`)인 `SparseCategoricalCrossentropy()`를 쓴다. 배치 크기 128로 100세대 학습한다.
 
 ![정확률 75.15%와 정확도 그래프(학습 0.96까지 오르고 검증 0.75 근처에서 정체), 손실 그래프(검증 손실이 20세대 뒤로 다시 오름)](./images/dl-vision-transformer-16.jpg '테스트 정확률 75.15%: 학습 정확도만 오르고 검증 손실은 다시 커지는 과적합이 보인다 (강의 자료)')
 
@@ -400,7 +396,7 @@ def create_vit_classifier():
 
 정확률이 75.15%에서 81.86%로 크게 올랐다. ==데이터 증강은 데이터가 적어 불리한 ViT의 약점을 보완한다.== 검증 정확도가 40세대 무렵까지 학습 정확도보다 높게 함께 오르고, 검증 손실도 다시 커지지 않는다.
 
-다음 글 [9편](/memo/dl-toxic-comment-kcelectra)에서는 트랜스포머 인코더 기반 언어 모델 KcELECTRA로 악성 댓글을 분류한 기말 프로젝트를 다룬다.
+다음 글 [KcELECTRA 미세 조정으로 만든 악성 댓글 분류 모델](/memo/dl-toxic-comment-kcelectra)에서는 트랜스포머 인코더 기반 언어 모델 KcELECTRA로 악성 댓글 분류 모델을 만든 과정을 다룬다.
 
 [^bello]: I. Bello et al., "Attention Augmented Convolutional Networks", ICCV 2019.
 

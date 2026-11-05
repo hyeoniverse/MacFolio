@@ -4,16 +4,16 @@ date: 2023-10-23
 category: CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 5
-summary: 텍스트를 신경망에 넣기 위한 원핫 코드와 단어 임베딩(word2vec, GloVe), 텍스트 전처리와 IMDB 감정 분류, seq2seq와 교사 강요, query-key-value 어텐션과 바다나우 어텐션, 영어-프랑스어 번역 실습을 다룬다.
+summary: 텍스트를 신경망에 넣기 위한 원핫 코드와 단어 임베딩(word2vec, GloVe), 텍스트 전처리와 IMDB 감정 분류, seq2seq와 교사 강요, query-key-value 어텐션과 바다나우 어텐션, LSTM으로 구현한 영어-프랑스어 번역을 다룬다.
 ---
 
-딥러닝 및 응용 연재의 다섯 번째 글로, [앞 글](/memo/dl-rnn)의 순환 신경망으로 텍스트를 다루는 방법을 정리한다. 단어를 벡터로 바꾸는 원핫 코드와 단어 임베딩, 그 벡터로 문장의 감정을 분류하는 IMDB 실습, 문장을 다른 문장으로 바꾸는 seq2seq와 어텐션까지 강의 8·10주차의 내용을 다룬다. 마지막의 어텐션은 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)으로 이어진다.
+[순환 신경망과 LSTM으로 만든 시계열 예측](/memo/dl-rnn)의 순환 신경망으로 텍스트를 다루는 방법을 정리한다. 단어를 벡터로 바꾸는 원핫 코드와 단어 임베딩, 그 벡터로 문장의 감정을 분류하는 IMDB 예, 문장을 다른 문장으로 바꾸는 seq2seq와 어텐션까지 다룬다. 마지막의 어텐션은 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)으로 이어진다.
 
-| 순서 | 내용                                                   | 강의   |
-| ---- | ------------------------------------------------------ | ------ |
-| 1    | 텍스트 데이터, 원핫 코드, 단어 임베딩(word2vec, GloVe) | 8주차  |
-| 2    | IMDB 감정 분류, GloVe로 단어 관계 찾기                 | 8주차  |
-| 3    | seq2seq, 교사 강요, 어텐션, 번역 실습                  | 10주차 |
+| 순서 | 내용                                                   |
+| ---- | ------------------------------------------------------ |
+| 1    | 텍스트 데이터, 원핫 코드, 단어 임베딩(word2vec, GloVe) |
+| 2    | IMDB 감정 분류, GloVe로 단어 관계 찾기                 |
+| 3    | seq2seq, 교사 강요, 어텐션, 번역 모델 구현             |
 
 ## 자연어 처리와 텍스트 데이터
 
@@ -54,9 +54,6 @@ How popular is Python?
 {'python': 1, 'freshman': 2, 'loves': 3, 'we': 4, 'teach': 5, 'to': 6, 'how': 7, 'popular': 8, 'is': 9}
 ```
 
-> [!NOTE]
-> 슬라이드의 딕셔너리는 `{'python':1, 'freshman':2, 'loves':1, 'we':1, ...}`로 빈도와 순위가 섞여 있다. 순위를 부여한 딕셔너리는 위와 같고, 그래야 아래 숫자 코드 [2 3 1], [4 5 1 6 2], [7 8 9 1]과 맞는다.
-
 | 문장                         | 숫자 코드   | 원핫 코드 (9차원)                                           |
 | ---------------------------- | ----------- | ----------------------------------------------------------- |
 | Freshman loves python.       | [2 3 1]     | [010000000] [001000000] [100000000]                         |
@@ -93,9 +90,6 @@ How popular is Python?
 ### word2vec
 
 word2vec(Mikolov 외, 구글, 2013)은 "비슷한 문맥에서 등장하는 단어는 비슷한 의미를 가진다"고 가정한다. 구글이 공개한 사전 학습 모델은 약 1000억 단어 규모의 구글 뉴스 데이터로 학습해 약 300만 개의 단어와 구를 300차원 공간에 표현한다.
-
-> [!NOTE]
-> 슬라이드에는 "1000억 개 가량의 뉴스"로 적혀 있지만, 구글 뉴스 데이터셋의 규모는 기사 수가 아니라 단어 수로 약 1000억 개다.
 
 학습 방식은 CBOW와 Skip-gram 두 가지다.
 
@@ -204,10 +198,9 @@ print(shortword.sub('', text))
 | 어간 추출(stemming)        | 접사를 규칙으로 잘라 단어의 의미를 담은 핵심 부분(어간)만 남김 | formalize → formal, allowance → allow, electrical → electric |
 | 표제어 추출(lemmatization) | 사전의 기본형(표제어)으로 바꿈                                 | am, are, is → be                                             |
 
-> [!NOTE]
-> 슬라이드는 어간 추출을 "단어의 의미를 담고 있는 핵심 부분", 표제어 추출을 "단어에 추가적인 의미를 주는 부분 제거"로 설명하는데, 앞의 것은 어간(stem), 뒤의 것은 접사(affix)의 설명이다. 위 표처럼 어간 추출은 접사를 잘라 어간을 남기는 방법이고, 표제어 추출은 품사 정보를 사용해 기본형을 찾는 방법이다. 예의 electricical은 electrical의 오타다.
+어간 추출은 품사를 고려하지 않고 정해진 규칙으로 접사를 잘라 내므로 결과가 사전에 없는 단어일 수 있다. 표제어 추출은 품사 정보를 사용해 사전에 있는 기본형을 찾는다.
 
-## IMDB 실습
+## IMDB 감정 분류
 
 ### 데이터 확인
 
@@ -224,7 +217,7 @@ num_classes = len(set(y_train))
 print('카테고리 : {}'.format(num_classes))
 
 word2id = imdb.get_word_index()
-id2word = {word: id for id, word in word2id.items()}
+id2word = {id: word for word, id in word2id.items()}
 
 for i in range(1, 21):
     print(id2word[i], end='/')
@@ -242,7 +235,7 @@ the/and/a/of/to/is/br/in/it/i/this/that/was/as/for/with/movie/but/film/on/
 첫번째 훈련용 리뷰의 레이블 : 1
 ```
 
-IMDB는 토큰화와 정수 인코딩이 끝난 상태로 제공된다. 단어 번호는 빈도 순위이므로 1번이 the, 2번이 and다. 컴프리헨션의 변수 이름 `id, word`가 실제 값(단어, 번호)과 반대로 붙어 있지만, 결과 딕셔너리 `id2word`는 이름대로 번호를 키로, 단어를 값으로 가진다. `load_data()`는 기본값으로 시작 표시(1), 사전 밖 단어(2)를 위해 번호를 3만큼 밀어 저장하므로, 리뷰의 번호를 단어로 바꿀 때는 3을 빼야 한다. 레이블 1은 긍정, 0은 부정이다. br은 리뷰 HTML에 들어 있던 줄 바꿈 태그가 단어로 남은 것이다.
+IMDB는 토큰화와 정수 인코딩이 끝난 상태로 제공된다. 단어 번호는 빈도 순위이므로 1번이 the, 2번이 and다. `word2id`는 단어를 키로, 번호를 값으로 가지므로 키와 값을 뒤집어 번호로 단어를 찾는 `id2word`를 만든다. `load_data()`는 기본값으로 시작 표시(1), 사전 밖 단어(2)를 위해 번호를 3만큼 밀어 저장하므로, 리뷰의 번호를 단어로 바꿀 때는 3을 빼야 한다. 레이블 1은 긍정, 0은 부정이다. br은 리뷰 HTML에 들어 있던 줄 바꿈 태그가 단어로 남은 것이다.
 
 ### 임베딩층과 다층 퍼셉트론
 
@@ -332,12 +325,12 @@ hist = embed.fit(x_train, y_train, epochs=20, batch_size=64, validation_split=0.
 
 ![10 epoch에서 조기 멈춤한 LSTM 학습 로그와 모델 요약, 정확률 86.468, 학습 곡선](./images/dl-word-embedding-attention-13.jpg '검증 정확률이 5 epoch(0.8764)에서 가장 높았고, 이후 5 epoch 동안 오르지 않아 10 epoch에서 멈췄다 (발표 자료)')
 
-발표 자료의 실행에서는 5 epoch의 검증 정확률 0.8764가 최고였고, 6~10 epoch에서 이를 넘지 못해 학습이 멈췄다. `restore_best_weights=True`이므로 5 epoch의 가중치로 평가한 테스트 정확률은 86.47%다. 강의 자료의 실행에서는 3 epoch(0.8784)가 최고였고 8 epoch에서 멈춰 86.76%가 나왔다.
+그림의 실행에서는 5 epoch의 검증 정확률 0.8764가 최고였고, 6~10 epoch에서 이를 넘지 못해 학습이 멈췄다. `restore_best_weights=True`이므로 5 epoch의 가중치로 평가한 테스트 정확률은 86.47%다. 같은 코드를 다시 실행하면 3 epoch(0.8784)가 최고였고 8 epoch에서 멈춰 86.76%가 나왔다.
 
-| 모델                        | 파라미터 | 테스트 정확률 (강의) | 테스트 정확률 (발표) |
-| --------------------------- | -------- | -------------------- | -------------------- |
-| Embedding + Flatten + Dense | 422209   | 86.88%               | 86.67%               |
-| Embedding + LSTM            | 166305   | 86.76%               | 86.47%               |
+| 모델                        | 파라미터 | 테스트 정확률 (그림의 실행) | 테스트 정확률 (다시 실행) |
+| --------------------------- | -------- | --------------------------- | ------------------------- |
+| Embedding + Flatten + Dense | 422209   | 86.67%                      | 86.88%                    |
+| Embedding + LSTM            | 166305   | 86.47%                      | 86.76%                    |
 
 > [!IMPORTANT] 두 모델 모두 문장의 의미를 파악하지 못한다
 > LSTM이 다층 퍼셉트론보다 낫지 않다. 두 프로그램 모두 boring, terrible, bad가 많으면 부정, wonderful, good이 자주 나타나면 긍정으로, 사실상 단어의 빈도에 따라 분류한다. "To me all of the movies are terrible, but this one is not."은 긍정 문장이지만 terrible이 있다는 이유로 두 프로그램 모두 부정으로 분류한다.
@@ -384,7 +377,7 @@ print('벡터의 차원 수 :', len(dictionary['class']))
 벡터의 차원 수 : 100
 ```
 
-`glove.6B.100d.txt`는 한 줄에 단어 하나와 100개의 실수가 공백으로 구분되어 있다. 강의 자료의 코드는 마지막 두 줄에서 `embedding_dict['class']`를 사용해 딕셔너리 이름이 맞지 않으므로, 위처럼 `dictionary`로 고쳐야 실행된다.
+`glove.6B.100d.txt`는 한 줄에 단어 하나와 100개의 실수가 공백으로 구분되어 있다.
 
 ```python
 # 가장 가까운 단어를 찾아주는 함수
@@ -484,7 +477,7 @@ V = \begin{pmatrix} 1 & 2 & 5 \\ 1 & 1 & 5 \\ 3 & 2 & 4 \\ 6 & 1 & 2 \end{pmatri
 \mathbf{c} = \mathrm{softmax}(\mathbf{q}K^{\top})V
 ```
 
-직접 다시 계산한 값이다.
+계산 과정의 값은 다음과 같다.
 
 | 단계                                                         | 값                           |
 | ------------------------------------------------------------ | ---------------------------- |
@@ -534,7 +527,7 @@ seq2seq + 어텐션 모델에서 query, key, value는 다음과 같다.
 
 ![g5를 query로, h1~h5를 key와 value로 사용해 주목 가중치 0.151, 0.340, 0.162, 0.169, 0.178과 문맥 벡터 c를 계산하고 g6에 전달하는 그림](./images/dl-word-embedding-attention-09.jpg 'g5가 query이고 h1~h5가 key이자 value다 (강의 자료)')
 
-`\mathbf{g}^5 = (0.2, 0.9, 0.0){:math}`, `\mathbf{h}^1 = (0.1, 0.0, 0.8){:math}`, `\mathbf{h}^2 = (0.1, 0.9, 0.0){:math}`, `\mathbf{h}^3 = (0.0, 0.1, 0.8){:math}`, `\mathbf{h}^4 = (0.2, 0.1, 0.6){:math}`, `\mathbf{h}^5 = (0.9, 0.0, 0.1){:math}`일 때 다시 계산한 값이다.
+`\mathbf{g}^5 = (0.2, 0.9, 0.0){:math}`, `\mathbf{h}^1 = (0.1, 0.0, 0.8){:math}`, `\mathbf{h}^2 = (0.1, 0.9, 0.0){:math}`, `\mathbf{h}^3 = (0.0, 0.1, 0.8){:math}`, `\mathbf{h}^4 = (0.2, 0.1, 0.6){:math}`, `\mathbf{h}^5 = (0.9, 0.0, 0.1){:math}`일 때 계산 과정의 값은 다음과 같다.
 
 | 단계                               | 값                                  |
 | ---------------------------------- | ----------------------------------- |
@@ -559,9 +552,9 @@ seq2seq + 어텐션 모델에서 query, key, value는 다음과 같다.
 `\tau_1, \tau_2{:math}`는 활성 함수, `\mathbf{y}^{i-1}{:math}`은 이전 시점의 출력 단어다.
 
 > [!TIP]
-> 원 논문의 바다나우 어텐션은 query와 key의 유사도를 내적이 아니라 작은 신경망(`\mathbf{v}^{\top}\tanh(W_1\mathbf{g}^{i-1} + W_2\mathbf{h}^j){:math}`)으로 계산하는 가산(additive) 방식이다. 강의 예제처럼 내적으로 유사도를 구하는 방식은 루옹(Luong) 어텐션에서 쓰였고, 트랜스포머의 스케일드 내적 어텐션으로 이어진다.
+> 바다나우 어텐션은 query와 key의 유사도를 작은 신경망(`\mathbf{v}^{\top}\tanh(W_1\mathbf{g}^{i-1} + W_2\mathbf{h}^j){:math}`)으로 계산하는 가산(additive) 방식이다. 위 예처럼 내적으로 유사도를 구하는 방식은 루옹(Luong) 어텐션이고, 트랜스포머의 스케일드 내적 어텐션으로 이어진다.
 
-## 실습: RNN을 이용한 인코더-디코더
+## RNN을 이용한 인코더-디코더 구현
 
 영어 문장을 프랑스어로 번역하는 seq2seq를 LSTM으로 만든다. 데이터는 manythings.org의 영어-프랑스어 병렬 말뭉치 `fra-eng.zip`이다.
 
@@ -576,7 +569,7 @@ import pandas as pd
 import tensorflow as tf
 import unicodedata
 import urllib3
-from tensorflow.keras.layers import Embedding, GRU, Dense
+from tensorflow.keras.layers import Embedding, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.preprocessing.text import Tokenizer
 
@@ -754,7 +747,7 @@ encoder_states = [state_h, state_c]  # 인코더의 은닉 상태와 셀 상태�
 
 # 디코더
 decoder_inputs = Input(shape=(None,))
-dec_emb_layer = Embedding(tar_vocab_size, hidden_units)  # 임베딩 층
+dec_emb_layer = Embedding(tar_vocab_size, embedding_dim)  # 임베딩 층
 dec_emb = dec_emb_layer(decoder_inputs)
 dec_masking = Masking(mask_value=0.0)(dec_emb)  # 패딩 0은 연산에서 제외
 
@@ -787,8 +780,6 @@ model.fit(x=[encoder_input_train, decoder_input_train], y=decoder_target_train,
 | 디코더 `initial_state=encoder_states` | 인코더의 마지막 상태로 디코더를 시작한다                                                    |
 | 디코더 `return_sequences=True`        | 모든 시점의 은닉 상태를 출력해 시점마다 단어를 예측한다                                     |
 | `Dense(tar_vocab_size, softmax)`      | 매 시점 프랑스어 7873개 단어의 확률                                                         |
-
-`dec_emb_layer`의 출력 차원은 `hidden_units`(64)로, `embedding_dim`과 값이 같아 결과는 동일하다. 첫 import 줄의 `GRU`는 이 실습에서 사용하지 않는다.
 
 ### 추론용 모델
 
@@ -841,7 +832,7 @@ def decode_sequence(input_seq):
     # stop_condition이 True가 될 때까지 루프 반복
     # 구현의 간소화를 위해서 이 함수는 배치 크기를 1로 가정합니다.
     while not stop_condition:
-        # 이점 시점의 상태 states_value를 현 시점의 초기 상태로 사용
+        # 이전 시점의 상태 states_value를 현 시점의 초기 상태로 사용
         output_tokens, h, c = decoder_model.predict([target_seq] + states_value)
 
         # 예측 결과를 단어로 변환
