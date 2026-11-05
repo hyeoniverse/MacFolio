@@ -250,7 +250,8 @@ TCP 공격은 모두 프로토콜이 보관하는 상태와 신뢰하는 필드�
 
 공통된 방어의 뿌리는 두 가지다. 출발지 주소 위조를 어렵게 만드는 진입 필터링과, 공격자가 헤더·데이터를 보거나 조작하지 못하게 하는 암호화다. 네트워크 경계에서 트래픽을 걸러 내는 방법은 [방화벽의 종류와 iptables 규칙](/memo/net-firewall)에서, 터널 전체를 암호화하는 방법은 [VPN과 터널링: IPsec과 TLS VPN](/memo/net-vpn)에서 이어서 다룬다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - W. Eddy, "TCP SYN Flooding Attacks and Common Mitigations," RFC 4987, 2007. <https://www.rfc-editor.org/rfc/rfc4987>
 - J. Postel, "Transmission Control Protocol," RFC 793, 1981. <https://www.rfc-editor.org/rfc/rfc793>
@@ -263,3 +264,5 @@ TCP 공격은 모두 프로토콜이 보관하는 상태와 신뢰하는 필드�
 [^watson]: Paul Watson, "Slipping in the Window: TCP Reset Attacks," 2004. 수신 창이 넓을수록 적은 추측으로 창 안에 드는 번호를 맞힌다는 분석을 담았다.
 
 [^savage]: S. Savage, N. Cardwell, D. Wetherall, T. Anderson, "TCP Congestion Control with a Misbehaving Receiver," _ACM SIGCOMM CCR_, vol. 29, no. 5, 1999.
+
+</details>

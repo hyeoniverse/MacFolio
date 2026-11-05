@@ -251,7 +251,8 @@ SYN 스캔과 Open 스캔의 차이가 핸드셰이크 완성 여부였듯, 이 
 
 HTTP 요청 하나를 TCP 핸드셰이크부터 응답·종료까지 따라 읽으면, 앞 글에서 다룬 TCP 상태 전이와 순서 번호가 실제 패킷에서 어떻게 나타나는지 확인할 수 있다. 소켓 API로 이런 서버와 클라이언트를 직접 만드는 과정은 [소켓 프로그래밍](/memo/net-socket-programming)에서, TCP를 노리는 공격은 [TCP 공격](/memo/net-tcp-attacks)에서 이어진다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - C. Sanders, _Practical Packet Analysis_, 3rd ed., No Starch Press, 2017.
 - R. Fielding, J. Reschke, [RFC 7230: HTTP/1.1 Message Syntax and Routing](https://www.rfc-editor.org/rfc/rfc7230), 2014.
@@ -259,3 +260,5 @@ HTTP 요청 하나를 TCP 핸드셰이크부터 응답·종료까지 따라 읽�
 - J. Postel, [RFC 793: Transmission Control Protocol](https://www.rfc-editor.org/rfc/rfc793), 1981.
 - [Wireshark User's Guide](https://www.wireshark.org/docs/wsug_html_chunked/).
 - [Nmap: Port Scanning Techniques](https://nmap.org/book/man-port-scanning-techniques.html).
+
+</details>

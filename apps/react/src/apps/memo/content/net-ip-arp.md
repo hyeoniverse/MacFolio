@@ -249,13 +249,18 @@ U는 사용 가능, G는 게이트웨이를 거치는 간접 경로, H는 호스
 
 호스트 ID가 5비트이므로 한 서브넷은 32개 주소를 갖고, .32 서브넷의 브로드캐스트 주소는 호스트 비트가 모두 1인 .63이다.
 
-CIDR 표기는 마스크의 1의 개수를 접두사 길이로 적는다. 192.168.32.189/26의 네트워크와 브로드캐스트 주소를 구해 보자.
+CIDR 표기는 마스크의 1의 개수를 접두사 길이로 적는다. 192.168.32.189/26의 네트워크와 브로드캐스트 주소는 다음 순서로 구한다.
+
+1. /26은 1이 26개이므로 마스크는 255.255.255.192이고, 넷째 옥텟 192는 `11000000`이다.
+2. 넷째 옥텟 189(`10111101`)를 마스크와 AND하면 `10000000` = 128이므로 네트워크 주소는 192.168.32.128이다.
+3. 호스트 비트 6개를 모두 1로 채우면 `10111111` = 191이므로 브로드캐스트 주소는 192.168.32.191이다.
+4. 네트워크와 브로드캐스트를 뺀 .129~.190이 호스트에 쓸 수 있는 주소다.
+
+   ```math
+   2^{32-26} - 2 = 64 - 2 = 62\ \text{대}
+   ```
 
 ![192.168.32.0/24를 /26 네 개로 나누면 .0, .64, .128, .192 서브넷이 되고, 189는 10111101이라 마스크 11000000과 AND하면 128, 호스트 비트를 모두 1로 채우면 191](./images/net-ip-arp-subnet.svg '네트워크 192.168.32.128, 브로드캐스트 192.168.32.191, 사용 가능 .129~.190')
-
-```math
-2^{32-26} - 2 = 64 - 2 = 62\ \text{대}
-```
 
 > [!TIP]
 > 마스크의 마지막 0이 아닌 옥텟 값을 256에서 빼면 서브넷 크기가 나온다. /26의 넷째 옥텟은 192이고 256 − 192 = 64이므로 서브넷은 0, 64, 128, 192에서 시작한다. 189는 128과 192 사이이므로 네트워크는 .128, 브로드캐스트는 다음 서브넷 시작 직전인 .191이다.
@@ -395,7 +400,14 @@ aa aa aa aa aa aa  c0 a8 00 0a                    송신자 MAC, 송신자 IP 19
 00 ... 00                                         패딩 18바이트
 ```
 
-0xc0 = 192, 0xa8 = 168, 0x0a = 10, 0x1e = 30이다. 응답은 op가 00 02로 바뀌고, 송신자 칸에 cc:cc:cc:cc:cc:cc와 192.168.0.30이, 타깃 칸에 요청자의 MAC과 IP가 들어가며, 이더넷 목적지는 aa:aa:aa:aa:aa:aa다.
+0xc0 = 192, 0xa8 = 168, 0x0a = 10, 0x1e = 30이다. 응답은 요청과 다음 칸이 다르다.
+
+| 필드          | 요청                            | 응답                            |
+| ------------- | ------------------------------- | ------------------------------- |
+| 이더넷 목적지 | ff:ff:ff:ff:ff:ff(브로드캐스트) | aa:aa:aa:aa:aa:aa(요청자)       |
+| op            | 00 01(요청)                     | 00 02(응답)                     |
+| 송신자 MAC·IP | aa:aa:aa:aa:aa:aa, 192.168.0.10 | cc:cc:cc:cc:cc:cc, 192.168.0.30 |
+| 타깃 MAC·IP   | 00:00:00:00:00:00, 192.168.0.30 | aa:aa:aa:aa:aa:aa, 192.168.0.10 |
 
 </details>
 
@@ -553,7 +565,8 @@ ARP는 응용이나 관리자가 의식하지 못하는 사이에 동작한다. 
 | 변형      | 프록시 ARP는 라우터가 대리 응답, Gratuitous ARP는 중복 감지와 캐시 갱신    |
 | 스푸핑    | 인증 없는 응답으로 캐시 오염. 정적 항목, DAI, 감시, 암호화로 대응          |
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - W. Richard Stevens, Kevin R. Fall, [TCP/IP Illustrated, Volume 1: The Protocols](https://www.informit.com/store/tcp-ip-illustrated-volume-1-the-protocols-9780321336316), Addison-Wesley
 - [RFC 791: Internet Protocol](https://www.rfc-editor.org/rfc/rfc791)
@@ -575,3 +588,5 @@ ARP는 응용이나 관리자가 의식하지 못하는 사이에 동작한다. 
 - [RFC 5737: IPv4 Address Blocks Reserved for Documentation](https://www.rfc-editor.org/rfc/rfc5737)
 - [RFC 8200: Internet Protocol, Version 6 (IPv6) Specification](https://www.rfc-editor.org/rfc/rfc8200)
 - [IANA IPv4 Special-Purpose Address Registry](https://www.iana.org/assignments/iana-ipv4-special-registry/iana-ipv4-special-registry.xhtml)
+
+</details>

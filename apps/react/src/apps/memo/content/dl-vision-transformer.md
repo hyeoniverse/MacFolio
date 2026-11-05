@@ -101,7 +101,27 @@ ViT는 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl
 <details>
 <summary>논문 설정으로 크기 계산하기</summary>
 
-224×224 컬러 영상을 `P = 16{:math}`로 자르면 `N = 224 \cdot 224 / 16^2 = 196{:math}`개 패치가 나오고, 패치 하나는 `16^2 \cdot 3 = 768{:math}`차원이다. ViT-Base는 `D = 768{:math}`이므로 `\mathbf{E}{:math}`는 `768 \times 768{:math}`, `\mathbf{E}_{pos}{:math}`는 class 토큰을 포함해 `197 \times 768{:math}` 크기다.
+224×224 컬러 영상(`C = 3{:math}`, `H = W = 224{:math}`)을 `P = 16{:math}`으로 자르고 ViT-Base(`D = 768{:math}`)에 넣는 경우다.
+
+1. 패치 수는 영상의 화소 수를 패치 하나의 화소 수로 나눈 값이다.
+
+   ```math
+   N = \frac{HW}{P^2} = \frac{224 \cdot 224}{16^2} = \frac{50{,}176}{256} = 196
+   ```
+
+2. 패치 하나를 펼친 벡터의 차원은 패치의 화소 수에 채널 수를 곱한 값이다.
+
+   ```math
+   P^2 \cdot C = 16^2 \cdot 3 = 768
+   ```
+
+3. 선형 투영과 위치 임베딩의 크기가 정해진다. 위치 임베딩은 class 토큰 하나를 더해 `N + 1{:math}`행이다.
+
+| 행렬                      | 크기                            | 값                      |
+| ------------------------- | ------------------------------- | ----------------------- |
+| `\mathbf{E}{:math}`       | `(P^2 \cdot C) \times D{:math}` | `768 \times 768{:math}` |
+| `\mathbf{E}_{pos}{:math}` | `(N + 1) \times D{:math}`       | `197 \times 768{:math}` |
+| `\mathbf{z}_0{:math}`     | `(N + 1) \times D{:math}`       | `197 \times 768{:math}` |
 
 </details>
 

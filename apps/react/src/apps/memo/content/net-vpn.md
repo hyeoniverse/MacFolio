@@ -198,8 +198,11 @@ VPN은 공용망 위에 암호화된 사설망을 세운다. 핵심은 IP 터널
 
 TLS/SSL VPN은 TUN 가상 인터페이스로 IP 패킷을 얻고, `select(){:c}`로 TUN과 소켓을 감시하며 사이에서 패킷을 전달한다. 라우팅으로 트래픽을 터널에 태우면 방화벽이 보지 못하는 통로가 생긴다. 네트워크 보안 연재는 전송 프로토콜의 동작에서 시작해, 그것을 노리는 공격과 경계의 방화벽, 그리고 터널 전체를 보호하는 VPN까지 이어졌다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - S. Kent, K. Seo, "Security Architecture for the Internet Protocol," RFC 4301, 2005. <https://www.rfc-editor.org/rfc/rfc4301>
 - T. Dierks, E. Rescorla, "The Transport Layer Security (TLS) Protocol Version 1.2," RFC 5246, 2008. <https://www.rfc-editor.org/rfc/rfc5246>
 - Wenliang Du, _Computer & Internet Security: A Hands-on Approach_, 2nd Ed., 2019.
+
+</details>

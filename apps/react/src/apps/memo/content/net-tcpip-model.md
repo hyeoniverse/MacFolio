@@ -388,13 +388,20 @@ SLIP에는 단점이 많다. 양 끝 시스템이 서로의 IP 주소를 미리 
 
 ### CSLIP
 
-SLIP 회선은 19,200bps 이하로 느렸고 Telnet, Rlogin 같은 대화형 TCP 트래픽에 많이 쓰였다. 앞에서 계산한 것처럼 1바이트를 보내는 데 TCP 20, IP 20으로 헤더만 40바이트다. CSLIP(Compressed SLIP, RFC 1144)은 한 연결의 연속된 패킷에서 두 헤더의 필드 대부분이 바뀌지 않는다는 성질을 이용해 40바이트를 보통 3~5바이트로 줄인다. 19,200bps 회선에서 데이터 1바이트짜리 패킷의 송신 시간을 비교하면 다음과 같다.
+SLIP 회선은 19,200bps 이하로 느렸고 Telnet, Rlogin 같은 대화형 TCP 트래픽에 많이 쓰였다. 앞에서 계산한 것처럼 1바이트를 보내는 데 TCP 20, IP 20으로 헤더만 40바이트다. CSLIP(Compressed SLIP, RFC 1144)은 한 연결의 연속된 패킷에서 두 헤더의 필드 대부분이 바뀌지 않는다는 성질을 이용해 40바이트를 보통 3~5바이트로 줄인다. 비동기 직렬 회선은 바이트마다 시작 비트와 정지 비트를 더해 10비트를 보내므로, 송신 시간은 패킷 바이트 수에 10을 곱해 회선 속도로 나눈 값이다.
 
 ```math
-\frac{(40+1) \times 10}{19200} \approx 21\,\text{ms} \quad\rightarrow\quad \frac{(4+1) \times 10}{19200} \approx 2.6\,\text{ms}
+\text{송신 시간} = \frac{\text{패킷 바이트} \times 10}{19200\,\text{bps}}
 ```
 
-비동기 직렬 회선은 바이트마다 시작 비트와 정지 비트를 더해 10비트를 보내므로 10을 곱했다. 헤더를 4바이트로 압축하면 송신 시간이 8분의 1 수준으로 줄어 대화형 응답이 눈에 띄게 빨라진다.
+19,200bps 회선에서 데이터 1바이트짜리 패킷을 비교하면 다음과 같다.
+
+| 구성  | 헤더 | 패킷 바이트 | 선로 비트 | 송신 시간 |
+| ----- | ---- | ----------- | --------- | --------- |
+| SLIP  | 40   | 40 + 1 = 41 | 410       | 약 21ms   |
+| CSLIP | 4    | 4 + 1 = 5   | 50        | 약 2.6ms  |
+
+헤더를 4바이트로 압축하면 송신 시간이 8분의 1 수준으로 줄어 대화형 응답이 눈에 띄게 빨라진다.
 
 ### PPP
 
@@ -496,7 +503,8 @@ RFC 1191의 경로 MTU 발견(path MTU discovery)은 IP 헤더의 DF(Don't Fragm
 
 다음 글 [IP 헤더와 서브넷, ARP 주소 변환](/memo/net-ip-arp)에서는 IP 헤더의 필드, 서브넷 마스크 계산, IP 주소를 MAC 주소로 바꾸는 ARP와 그 약점을 노린 ARP 스푸핑을 다룬다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - W. Richard Stevens, Kevin R. Fall, [TCP/IP Illustrated, Volume 1: The Protocols](https://www.informit.com/store/tcp-ip-illustrated-volume-1-the-protocols-9780321336316), Addison-Wesley
 - Larry L. Peterson, Bruce S. Davie, [Computer Networks: A Systems Approach](https://book.systemsapproach.org/)
@@ -523,3 +531,5 @@ RFC 1191의 경로 MTU 발견(path MTU discovery)은 IP 헤더의 DF(Don't Fragm
 - [IANA IEEE 802 Numbers (EtherType)](https://www.iana.org/assignments/ieee-802-numbers/ieee-802-numbers.xhtml)
 - [IANA Protocol Numbers](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
 - [IANA Service Name and Transport Protocol Port Number Registry](https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml)
+
+</details>

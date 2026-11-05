@@ -425,7 +425,8 @@ Scapy는 패킷을 계층 객체로 다루므로, 수집한 패킷의 각 계층
 
 패킷이 커널에서 응용까지 어떤 경로로 오르는지, 어느 필드가 검증되지 않는지를 알면 공격의 원리와 방어의 위치가 함께 보인다. 수집한 세그먼트로 TCP를 직접 노리는 공격은 [TCP 공격](/memo/net-tcp-attacks)에서, 소켓 API로 서버와 클라이언트를 만드는 과정은 [소켓 프로그래밍](/memo/net-socket-programming)에서 이어진다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - C. Sanders, _Practical Packet Analysis_, 3rd ed., No Starch Press, 2017.
 - W. Du, _Computer Security: A Hands-on Approach_, 2nd ed., 2019. (Part III Network Security)
@@ -436,3 +437,5 @@ Scapy는 패킷을 계층 객체로 다루므로, 수집한 패킷의 각 계층
 - F. Gont, S. Bellovin, [RFC 6528: Defending against Sequence Number Attacks](https://www.rfc-editor.org/rfc/rfc6528), 2012.
 
 [^bpf]: BPF는 이후 확장되어(eBPF) 패킷 필터링을 넘어 커널 추적과 관측에 널리 쓰이지만, 여기서는 원래의 패킷 필터 역할만 다룬다.
+
+</details>

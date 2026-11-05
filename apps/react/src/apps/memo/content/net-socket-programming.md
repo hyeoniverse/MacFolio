@@ -505,7 +505,13 @@ int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
 
 ![연결 수립 세 단계에서 서버 listenfd는 {*:13, *:*}를 유지하고, 클라이언트는 임시 포트를 받으며, accept 뒤 connfd가 생기는 그림](./images/net-socket-programming-concurrent.svg '로컬 포트가 같은 소켓 여럿을 원격 주소로 구별한다')
 
-연결 수립 과정의 소켓 주소 쌍은 세 단계로 변한다. `accept(){:c}` 대기 중인 수신 소켓은 `{*:13, *:*}`다. `*:13`의 IP는 `INADDR_ANY`의 결과, 포트는 `bind(){:c}`의 결과이고 원격 주소는 없다. `connect(){:c}` 직후 클라이언트 소켓에 임시 포트(예: 50000)가 정해진다. 연결이 끝나면 서버에 `{198.51.100.10:13, 203.0.113.7:50000}`인 연결 소켓이 새로 생기고 수신 소켓은 그대로 남는다. ==서버의 연결 소켓은 모두 로컬 포트 13을 쓰고, 커널은 출발지·목적지 IP와 포트 네 값으로 세그먼트를 소켓에 배정한다.== `fork(){:c}` 서버라면 이 연결 소켓을 자식 프로세스가 맡는다.
+연결 수립 과정의 소켓 주소 쌍은 세 단계로 변한다.
+
+1. `accept(){:c}` 대기: 수신 소켓은 `{*:13, *:*}`다. IP는 `INADDR_ANY`, 포트는 `bind(){:c}`의 결과다.
+2. `connect(){:c}` 직후: 클라이언트 소켓에 임시 포트(예: 50000)가 정해진다.
+3. 연결 완료: 서버에 `{198.51.100.10:13, 203.0.113.7:50000}`인 연결 소켓이 새로 생기고 수신 소켓은 그대로 남는다.
+
+==서버의 연결 소켓은 모두 로컬 포트 13을 쓰고, 커널은 출발지·목적지 IP와 포트 네 값으로 세그먼트를 소켓에 배정한다.== `fork(){:c}` 서버라면 이 연결 소켓을 자식 프로세스가 맡는다.
 
 ### 버퍼 크기와 MSS
 
@@ -684,7 +690,10 @@ const char *inet_ntop(int domain, const void *addrptr, char *dst_str, size_t len
 /* 성공하면 dst_str, 실패하면 NULL */
 ```
 
-p는 표기(presentation: IPv4 점 표기, IPv6 16진 문자열), n은 네트워크 순서 이진 주소다. `domain`은 `AF_INET` 또는 `AF_INET6`이고 `addrptr`은 그에 맞는 `in_addr`/`in6_addr`를 가리킨다. daytime 클라이언트가 반환값을 `<= 0{:c}`으로 검사한 이유는 0(형식 오류)과 −1을 모두 실패로 처리하기 위해서다. `inet_ntop(){:c}`은 `len`이 작으면 `NULL`을 돌려주고 `errno`를 `ENOSPC`로 설정하므로, 버퍼는 `INET_ADDRSTRLEN`(16)이나 `INET6_ADDRSTRLEN`(46)으로 잡는다. IPv4 최장 문자열 `255.255.255.255`는 15글자에 널 문자를 더해 16이고, IPv6 최장 문자열인 IPv4 매핑 형식 `ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255`는 30 + 15 = 45글자에 널 문자를 더해 46이다.
+p는 표기(presentation: IPv4 점 표기, IPv6 16진 문자열), n은 네트워크 순서 이진 주소다. `domain`은 `AF_INET` 또는 `AF_INET6`이고 `addrptr`은 그에 맞는 `in_addr`/`in6_addr`를 가리킨다. daytime 클라이언트가 반환값을 `<= 0{:c}`으로 검사한 이유는 0(형식 오류)과 −1을 모두 실패로 처리하기 위해서다. `inet_ntop(){:c}`은 `len`이 작으면 `NULL`을 돌려주고 `errno`를 `ENOSPC`로 설정하므로, 버퍼는 최장 문자열에 널 문자 자리를 더한 상수로 잡는다.
+
+- `INET_ADDRSTRLEN` = 16: IPv4 최장 `255.255.255.255`는 15글자 + 널 1
+- `INET6_ADDRSTRLEN` = 46: IPv6 최장인 IPv4 매핑 형식 `ffff:ffff:ffff:ffff:ffff:ffff:255.255.255.255`는 30 + 15 = 45글자 + 널 1
 
 ### getnameinfo()와 getaddrinfo()
 
@@ -804,7 +813,11 @@ for (;;) {
 
 ![클라이언트의 Commander와 Monitor가 인터넷을 거쳐 서버의 Coordinator에 연결하고, Coordinator가 기기 1부터 N까지를 관리하는 스마트 홈 시스템 구성](./images/net-socket-programming-smart-home.svg 'Commander는 설정을 바꾸고 Monitor는 상태를 감시한다')
 
-Commander는 표준 입력으로 받은 명령을 보낸다. `QUERY`는 현재 온도와 안전 범위를 묻고, `CONFIGURE UPPER_BOUND 30`·`CONFIGURE LOWER_BOUND -5`는 범위를 바꾼다. Monitor는 반복문 안에서 `sleep(){:c}`으로 주기를 정해 `POLLING`을 보내고 `safe` 또는 `warning`을 출력한다. 서버 쪽 Coordinator는 두 클라이언트의 소켓을 `select(){:c}`로 다중화하고, `POLLING`마다 온도를 `refresh_temp(){:c}`로 −1, 0, +1 중 하나만큼 바꿔 안전 범위 안이면 `safe`, 밖이면 `warning`으로 응답한다. 초기 상태는 온도 25, 상한 30, 하한 −5이고, 모든 프로그램이 같은 호스트의 `127.0.0.1:8080`으로 접속한다.
+모든 프로그램은 `127.0.0.1:8080`으로 접속한다. Commander는 표준 입력의 명령을, Monitor는 `sleep(){:c}` 주기마다 `POLLING`을 보낸다. 서버 쪽 Coordinator는 두 클라이언트의 소켓을 `select(){:c}`로 다중화하고, `POLLING`마다 `refresh_temp(){:c}`로 온도를 −1, 0, +1 중 하나만큼 바꾼다. 초기 상태는 온도 25, 상한 30, 하한 −5다.
+
+- `QUERY`(Commander): 현재 온도와 안전 범위
+- `CONFIGURE UPPER_BOUND 30`, `CONFIGURE LOWER_BOUND -5`(Commander): 범위를 바꾼다
+- `POLLING`(Monitor): 온도가 범위 안이면 `safe`, 밖이면 `warning`
 
 | 매크로·함수              | 동작                                                          |
 | ------------------------ | ------------------------------------------------------------- |
@@ -1007,7 +1020,12 @@ safe (temp 24)
 safe (temp 25)
 ```
 
-명령이 TCP 페이로드에 실려 가는지는 Wireshark로 확인한다. `127.0.0.1` 통신은 루프백 인터페이스(macOS `lo0`, 리눅스 `lo`)를 거치므로 그 인터페이스를 캡처하고 `tcp.port == 8080` 필터를 건다. `QUERY` 패킷의 페이로드는 `51 55 45 52 59 0a` 6바이트이고, `CONFIGURE UPPER_BOUND 30`은 24글자에 개행을 더해 25바이트다. Wireshark 사용법은 [Wireshark로 HTTP 트래픽과 TCP 핸드셰이크 분석하기](/memo/net-wireshark-http)에서 다룬다.
+명령이 TCP 페이로드에 실려 가는지는 Wireshark로 확인한다. `127.0.0.1` 통신은 루프백 인터페이스(macOS `lo0`, 리눅스 `lo`)를 거치므로 그 인터페이스를 캡처하고 `tcp.port == 8080` 필터를 건다. 페이로드는 글자 수에 개행 1바이트를 더한 길이다.
+
+- `QUERY`: 5 + 1 = 6바이트, `51 55 45 52 59 0a`
+- `CONFIGURE UPPER_BOUND 30`: 24 + 1 = 25바이트
+
+Wireshark 사용법은 [Wireshark로 HTTP 트래픽과 TCP 핸드셰이크 분석하기](/memo/net-wireshark-http)에서 다룬다.
 
 > [!WARNING] 평문 제어 프로토콜의 위험
 > 이 프로토콜은 인증도 암호화도 없다. 같은 네트워크에서 캡처하면 명령이 그대로 보이고, 8080번 포트에 접속할 수 있는 누구나 `CONFIGURE`로 안전 범위를 바꿀 수 있다. 실제 IoT 기기라면 TLS로 채널을 암호화하고 클라이언트를 인증하며, 최소한 방화벽으로 접속 출발지를 제한한다. 방화벽 규칙은 [방화벽의 종류와 iptables 규칙](/memo/net-firewall)에서 다룬다.
@@ -1145,7 +1163,8 @@ safe (temp 26)
 
 이 글의 서버들은 정상적인 클라이언트를 가정했다. 연결 큐를 SYN으로 채우거나, 시퀀스 번호를 맞춰 RST를 끼워 넣거나, 평문 세션에 명령을 주입하는 공격은 소켓 API 아래의 TCP 상태를 노린다. 이 공격과 방어는 [TCP 프로토콜을 겨냥한 공격과 방어](/memo/net-tcp-attacks)에서 다룬다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - J. Postel, "Daytime Protocol," RFC 867, 1983. <https://www.rfc-editor.org/rfc/rfc867>
 - J. Postel, "User Datagram Protocol," RFC 768, 1980. <https://www.rfc-editor.org/rfc/rfc768>
@@ -1161,3 +1180,5 @@ safe (temp 26)
 - W. Richard Stevens, Bill Fenner, Andrew M. Rudoff, _UNIX Network Programming, Volume 1: The Sockets Networking API_, 3rd Ed., Addison-Wesley, 2003.
 - Michael Kerrisk, _The Linux Programming Interface_, No Starch Press, 2010. <https://man7.org/tlpi/>
 - Kevin R. Fall, W. Richard Stevens, _TCP/IP Illustrated, Volume 1: The Protocols_, 2nd Ed., Addison-Wesley, 2011.
+
+</details>

@@ -257,7 +257,8 @@ ssh -D 9000 -C home
 
 리눅스에서는 netfilter 훅에 LKM으로 콜백을 걸거나, 그 위의 iptables로 테이블·체인·규칙을 구성한다. 연결 추적 확장으로 상태 기반 규칙을 세우고, SSH 터널링은 방화벽 규칙을 우회하는 대표적인 경로다. 방화벽이 보지 못하는 터널 안을 암호화로 통째로 보호하는 방식이 VPN이다.
 
-## 참고 문헌
+<details>
+<summary>참고 문헌</summary>
 
 - S. M. Bellovin, W. R. Cheswick, "Network Firewalls," _IEEE Communications Magazine_, vol. 32, no. 9, 1994.
 - M. Leech et al., "SOCKS Protocol Version 5," RFC 1928, 1996. <https://www.rfc-editor.org/rfc/rfc1928>
@@ -265,3 +266,5 @@ ssh -D 9000 -C home
 - Wenliang Du, _Computer & Internet Security: A Hands-on Approach_, 2nd Ed., 2019.
 
 [^bell94]: S. M. Bellovin, W. R. Cheswick, "Network Firewalls," _IEEE Communications Magazine_, vol. 32, no. 9, pp. 50–57, 1994.
+
+</details>
