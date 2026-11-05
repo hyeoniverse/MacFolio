@@ -75,4 +75,15 @@ describe('REMARK_PLUGINS', () => {
 		expect(render('==닫히지 않음')).toBe('<p>==닫히지 않음</p>');
 		expect(render('`a == b`와 ====')).toBe('<p><code>a == b</code>와 ====</p>');
 	});
+
+	it('제목에 글 안 주소(id)를 붙여 [제목](#주소) 링크로 이동할 수 있다', () => {
+		expect(render('## 데이터와 정보')).toBe('<h2 id="user-content-데이터와-정보">데이터와 정보</h2>');
+		expect(render('### 1단계: `정규` 개체 타입')).toBe(
+			'<h3 id="user-content-1단계-정규-개체-타입">1단계: <code>정규</code> 개체 타입</h3>'
+		);
+		// 같은 제목은 -1, -2
+		expect(render('## 정리\n\n## 정리')).toBe(
+			'<h2 id="user-content-정리">정리</h2>\n<h2 id="user-content-정리-1">정리</h2>'
+		);
+	});
 });

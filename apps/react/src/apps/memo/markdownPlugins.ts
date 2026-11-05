@@ -17,6 +17,7 @@ export const REMARK_PLUGINS: Options['remarkPlugins'] = [
 	remarkDetails,
 	remarkTags,
 	remarkHighlight,
+	remarkHeadingIds,
 ];
 
 interface MdNode {
@@ -72,6 +73,44 @@ const isSpace = (text: string) => /^\s/.test(text);
  * `a == b`처럼 여는 `==` 뒤나 닫는 `==` 앞이 공백이면 형광펜이 아니라 글자 그대로 둔다.
  * 편집기(writer/highlightMark.ts)도 이 함수로 읽는다
  */
+/**
+ * 제목의 글 안 주소 이름 (GitHub와 같은 규칙): 소문자로 바꾸고, 글자·숫자·공백·`-`·`_`만 남긴 뒤 공백을 `-`로.
+ * `## 데이터와 정보` → `데이터와-정보`, `### 1단계: 정규 개체 타입` → `1단계-정규-개체-타입`
+ */
+export const headingSlug = (text: string) =>
+	text
+		.trim()
+		.toLowerCase()
+		.replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
+		.replace(/\s/g, '-');
+
+const textOf = (node: MdNode): string =>
+	node.type === 'text' || node.type === 'inlineCode' ? (node.value ?? '') : (node.children ?? []).map(textOf).join('');
+
+/**
+ * 제목에 id를 붙여 `[데이터와 정보](#데이터와-정보)`처럼 글 안의 절로 이동하게 한다.
+ * 같은 이름이 또 나오면 GitHub처럼 `-1`, `-2`를 붙인다. 사이트의 다른 id와 겹치지 않게 각주·접기 블록처럼
+ * `user-content-`를 앞에 붙인다 (MarkdownLink가 짧은 이름으로도 찾는다)
+ */
+export function remarkHeadingIds() {
+	return (tree: MdNode) => {
+		const used = new Map<string, number>();
+		const walk = (node: MdNode) => {
+			if (node.type === 'heading') {
+				const base = headingSlug(textOf(node));
+				if (!base) return;
+				const count = used.get(base) ?? 0;
+				used.set(base, count + 1);
+				const slug = count ? `${base}-${count}` : base;
+				node.data = { ...node.data, hProperties: { ...node.data?.hProperties, id: `user-content-${slug}` } };
+				return;
+			}
+			node.children?.forEach(walk);
+		};
+		walk(tree);
+	};
+}
+
 export function remarkHighlight() {
 	const walk = (node: MdNode) => {
 		if (!node.children || NO_HIGHLIGHT.has(node.type)) return;
