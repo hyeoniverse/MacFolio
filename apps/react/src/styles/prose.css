@@ -53,6 +53,49 @@
 	border-left: 3px solid var(--prose-quote-line);
 }
 
+/* ─── 콜아웃 (> [!NOTE] … markdownPlugins.ts의 remarkCallouts, 편집기는 writer/callouts.ts) ───
+ * 종류마다 색 하나로 왼쪽 선·제목·옅은 바탕을 칠한다. 바탕은 색을 투명하게 섞어 라이트·다크 모두 본문 글자 대비를 지킨다 */
+:where(.prose) .memo-callout {
+	--callout: var(--color-link);
+	padding: 0.7em 1em;
+	border-left: 3px solid var(--callout);
+	border-radius: 0 var(--radius-8) var(--radius-8) 0;
+	background-color: color-mix(in srgb, var(--callout) 9%, transparent);
+}
+
+:where(.prose) .memo-callout-tip {
+	--callout: var(--color-system-green);
+}
+
+:where(.prose) .memo-callout-important {
+	--callout: var(--color-system-indigo);
+}
+
+:where(.prose) .memo-callout-warning {
+	--callout: var(--color-system-orange);
+}
+
+:where(.prose) .memo-callout-caution {
+	--callout: var(--color-system-red);
+}
+
+:where(.prose) .memo-callout-title {
+	display: flex;
+	align-items: center;
+	gap: 0.45em;
+	margin: 0;
+	font-weight: 600;
+}
+
+/* 제목 글자는 본문 색(주황·초록 글자는 밝은 바탕에서 대비가 낮다), 아이콘만 종류 색 */
+:where(.prose) .memo-callout-title > i {
+	color: var(--callout);
+}
+
+:where(.prose) .memo-callout > :not(.memo-callout-title) {
+	margin-top: 0.5em;
+}
+
 /* ─── 구분선 (---) ─── 브라우저 기본값(회색 2px 입체 선, 아래 여백 없음) 대신 가는 테두리색 선, 위아래 같은 여백.
  * 요소 선택자라 흐름 간격(점수 0)보다 앞서 위 여백도 1.8em이다 */
 :where(.prose) hr {

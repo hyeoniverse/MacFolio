@@ -86,4 +86,15 @@ describe('REMARK_PLUGINS', () => {
 			'<h2 id="user-content-정리">정리</h2>\n<h2 id="user-content-정리-1">정리</h2>'
 		);
 	});
+
+	it('> [!NOTE] 같은 GitHub 경고 표기는 콜아웃 상자로, 같은 줄의 글자는 제목으로 그린다', () => {
+		expect(render('> [!NOTE]\n> 정규화는 의미로 판단한다.')).toBe(
+			'<aside class="memo-callout memo-callout-note">\n<p class="memo-callout-title"><i class="fa-solid fa-circle-info" aria-hidden="true"></i>참고</p>\n<p>정규화는 의미로 판단한다.</p>\n</aside>'
+		);
+		expect(render('> [!warning] Heath의 정리\n> 역은 성립하지 않는다.')).toBe(
+			'<aside class="memo-callout memo-callout-warning">\n<p class="memo-callout-title"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>Heath의 정리</p>\n<p>역은 성립하지 않는다.</p>\n</aside>'
+		);
+		// 표시가 없거나 모르는 종류면 인용 그대로
+		expect(render('> [!TODO] 할 일')).toBe('<blockquote>\n<p>[!TODO] 할 일</p>\n</blockquote>');
+	});
 });

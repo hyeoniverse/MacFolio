@@ -18,6 +18,7 @@ export const REMARK_PLUGINS: Options['remarkPlugins'] = [
 	remarkTags,
 	remarkHighlight,
 	remarkHeadingIds,
+	remarkCallouts,
 ];
 
 interface MdNode {
@@ -109,6 +110,55 @@ export function remarkHeadingIds() {
 		};
 		walk(tree);
 	};
+}
+
+/** 콜아웃 종류 → 제목·아이콘 (GitHub 경고 표기 `> [!NOTE]`와 같은 다섯 종류) */
+export const CALLOUTS = {
+	note: { title: '참고', icon: 'fa-solid fa-circle-info' },
+	tip: { title: '팁', icon: 'fa-solid fa-lightbulb' },
+	important: { title: '중요', icon: 'fa-solid fa-star' },
+	warning: { title: '주의', icon: 'fa-solid fa-triangle-exclamation' },
+	caution: { title: '경고', icon: 'fa-solid fa-circle-exclamation' },
+} as const;
+export type CalloutKind = keyof typeof CALLOUTS;
+
+/** 인용 블록 첫 줄의 콜아웃 표시: `[!NOTE]` 뒤에 같은 줄로 적은 글자는 제목이 된다 */
+export const CALLOUT_MARK = /^\[!(note|tip|important|warning|caution)\][ \t]*([^\n]*)\n?/i;
+
+/**
+ * `> [!NOTE]`로 시작하는 인용 블록을 콜아웃 상자(`<aside class="memo-callout memo-callout-note">`)로 그린다.
+ * 제목은 종류 이름(참고·팁·중요·주의·경고)이고, `> [!NOTE] Heath의 정리`처럼 같은 줄에 적으면 그 글자가 제목이 된다.
+ * 표시가 없는 인용 블록은 그대로다
+ */
+export function remarkCallouts() {
+	const walk = (node: MdNode) => {
+		node.children?.forEach(walk);
+		if (node.type !== 'blockquote') return;
+		const first = node.children?.[0];
+		const text = first?.type === 'paragraph' ? first.children?.[0] : undefined;
+		const match = text?.type === 'text' ? CALLOUT_MARK.exec(text.value ?? '') : null;
+		if (!first || !text || !match) return;
+		const kind = match[1].toLowerCase() as CalloutKind;
+		text.value = (text.value ?? '').slice(match[0].length);
+		// 표시 뒤에 줄바꿈만 남았으면 그 줄바꿈과 빈 문단을 걷어 낸다
+		if (!text.value) first.children = first.children?.slice(1);
+		if (first.children?.[0]?.type === 'break') first.children = first.children.slice(1);
+		if (!first.children?.length) node.children = node.children?.slice(1);
+		const title: MdNode = {
+			type: 'calloutTitle',
+			data: { hName: 'p', hProperties: { className: ['memo-callout-title'] } },
+			children: [
+				{
+					type: 'calloutIcon',
+					data: { hName: 'i', hProperties: { className: [CALLOUTS[kind].icon], ariaHidden: 'true' } },
+				},
+				{ type: 'text', value: match[2].trim() || CALLOUTS[kind].title },
+			],
+		};
+		node.children = [title, ...(node.children ?? [])];
+		node.data = { hName: 'aside', hProperties: { className: ['memo-callout', `memo-callout-${kind}`] } };
+	};
+	return (tree: MdNode) => walk(tree);
 }
 
 export function remarkHighlight() {
