@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">스테이블 디퓨전(잠재 디퓨전 모델)의 생성 과정</text>
+  <rect x="20" y="52" width="600" height="150" rx="10" fill="#f5f5f7" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="34" y="72" font-size="12" fill="#6e6e73">잠재 공간 64×64×4</text>
+  <rect x="40" y="100" width="90" height="56" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="85" y="124" text-anchor="middle" font-size="13" fill="#1d1d1f">잡음 z_T</text>
+  <text x="85" y="142" text-anchor="middle" font-size="11" fill="#6e6e73">N(0, I)</text>
+  <line x1="130" y1="128" x2="186" y2="128" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="188" y="90" width="200" height="76" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="288" y="116" text-anchor="middle" font-size="14" font-weight="600" fill="#0a84ff">U-Net ε_θ(z_t, t, τ(y))</text>
+  <text x="288" y="136" text-anchor="middle" font-size="11" fill="#1d1d1f">잡음 예측, 교차 어텐션으로</text>
+  <text x="288" y="152" text-anchor="middle" font-size="11" fill="#1d1d1f">텍스트 조건 주입</text>
+  <path d="M388 112 C440 112, 440 70, 288 70 C230 70, 210 80, 210 88" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="440" y="80" font-size="11" fill="#0a84ff">t = T, …, 1 반복</text>
+  <line x1="388" y1="140" x2="466" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="468" y="112" width="90" height="56" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="513" y="136" text-anchor="middle" font-size="13" fill="#1d1d1f">잠재 z_0</text>
+  <text x="513" y="154" text-anchor="middle" font-size="11" fill="#6e6e73">잡음 제거 결과</text>
+  <rect x="40" y="240" width="160" height="56" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="120" y="264" text-anchor="middle" font-size="13" fill="#1d1d1f">프롬프트 y</text>
+  <text x="120" y="282" text-anchor="middle" font-size="11" fill="#6e6e73">스노우 글로브 속 바나나</text>
+  <line x1="200" y1="268" x2="226" y2="268" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="228" y="240" width="130" height="56" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="293" y="264" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">CLIP 텍스트 인코더</text>
+  <text x="293" y="282" text-anchor="middle" font-size="11" fill="#1d1d1f">τ(y): 77×768</text>
+  <line x1="293" y1="240" x2="293" y2="168" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="513" y1="168" x2="513" y2="236" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="440" y="238" width="120" height="56" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="500" y="262" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">VAE 디코더 D</text>
+  <text x="500" y="280" text-anchor="middle" font-size="11" fill="#1d1d1f">8배 업샘플링</text>
+  <line x1="560" y1="266" x2="580" y2="266" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="605" y="262" text-anchor="middle" font-size="12" fill="#1d1d1f">이미지</text>
+  <text x="605" y="278" text-anchor="middle" font-size="10" fill="#6e6e73">512×512×3</text>
+</svg>
