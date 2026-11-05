@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 530" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="530" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+
+  <!-- RFC 1042 -->
+  <text x="20" y="18" font-size="13" font-weight="600" fill="#1d1d1f">IEEE 802.2/802.3 캡슐화(RFC 1042)</text>
+  <g stroke="#6e6e73" stroke-width="1.2" fill="none">
+    <path d="M22,42 V36 H158 V42"/>
+    <path d="M163,42 V36 H292 V42"/>
+    <path d="M298,42 V36 H398 V42"/>
+  </g>
+  <g font-size="11" fill="#6e6e73" text-anchor="middle">
+    <rect x="58" y="28" width="64" height="14" fill="#fff"/>
+    <text x="90" y="40">802.3 MAC</text>
+    <rect x="198" y="28" width="58" height="14" fill="#fff"/>
+    <text x="227" y="40">802.2 LLC</text>
+    <rect x="316" y="28" width="64" height="14" fill="#fff"/>
+    <text x="348" y="40">802.2 SNAP</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.1" fill="#f2f2f7">
+    <rect x="20" y="50" width="50" height="46"/>
+    <rect x="70" y="50" width="50" height="46"/>
+    <rect x="120" y="50" width="40" height="46"/>
+    <rect x="160" y="50" width="45" height="46"/>
+    <rect x="205" y="50" width="45" height="46"/>
+    <rect x="250" y="50" width="45" height="46"/>
+    <rect x="295" y="50" width="60" height="46"/>
+    <rect x="355" y="50" width="45" height="46"/>
+    <rect x="400" y="50" width="170" height="46" fill="#fff"/>
+    <rect x="570" y="50" width="50" height="46"/>
+  </g>
+  <g font-size="11" fill="#1d1d1f" text-anchor="middle">
+    <text x="45" y="70">목적지</text><text x="45" y="85">주소</text>
+    <text x="95" y="70">발신지</text><text x="95" y="85">주소</text>
+    <text x="140" y="77">길이</text>
+    <text x="182.5" y="70">DSAP</text><text x="182.5" y="85">AA</text>
+    <text x="227.5" y="70">SSAP</text><text x="227.5" y="85">AA</text>
+    <text x="272.5" y="64">제어</text><text x="272.5" y="77" font-size="9.5" fill="#6e6e73">(cntl)</text><text x="272.5" y="90">03</text>
+    <text x="325" y="64">기관 코드</text><text x="325" y="77" font-size="9.5" fill="#6e6e73">(org code)</text><text x="325" y="90">00</text>
+    <text x="377.5" y="77">유형</text>
+    <text x="485" y="77">데이터</text>
+    <text x="595" y="77">CRC</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="45" y="112">6</text><text x="95" y="112">6</text><text x="140" y="112">2</text>
+    <text x="182.5" y="112">1</text><text x="227.5" y="112">1</text><text x="272.5" y="112">1</text>
+    <text x="325" y="112">3</text><text x="377.5" y="112">2</text><text x="485" y="112">38~1492</text><text x="595" y="112">4</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.1" fill="#fff">
+    <rect x="355" y="122" width="45" height="26"/>
+    <rect x="400" y="122" width="170" height="26"/>
+    <rect x="355" y="172" width="45" height="26"/>
+    <rect x="400" y="172" width="120" height="26"/>
+    <rect x="520" y="172" width="50" height="26"/>
+    <rect x="355" y="222" width="45" height="26"/>
+    <rect x="400" y="222" width="120" height="26"/>
+    <rect x="520" y="222" width="50" height="26"/>
+  </g>
+  <g font-size="11.5" fill="#1d1d1f" text-anchor="middle">
+    <text x="377.5" y="133" font-size="9.5">유형</text><text x="377.5" y="144" font-size="9.5">0800</text>
+    <text x="485" y="139">IP 데이터그램</text>
+    <text x="377.5" y="183" font-size="9.5">유형</text><text x="377.5" y="194" font-size="9.5">0806</text>
+    <text x="460" y="189">ARP 요청/응답</text><text x="545" y="189">PAD</text>
+    <text x="377.5" y="233" font-size="9.5">유형</text><text x="377.5" y="244" font-size="9.5">8035</text>
+    <text x="460" y="239">RARP 요청/응답</text><text x="545" y="239">PAD</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="377.5" y="164">2</text><text x="485" y="164">38~1492</text>
+    <text x="377.5" y="214">2</text><text x="460" y="214">28</text><text x="545" y="214">10</text>
+    <text x="377.5" y="264">2</text><text x="460" y="264">28</text><text x="545" y="264">10</text>
+  </g>
+
+  <!-- RFC 894 -->
+  <text x="20" y="292" font-size="13" font-weight="600" fill="#1d1d1f">이더넷 캡슐화(RFC 894)</text>
+  <line x1="167" y1="306" x2="568" y2="306" stroke="#6e6e73" stroke-width="1.2" marker-start="url(#a)" marker-end="url(#a)"/>
+  <rect x="330" y="298" width="76" height="14" fill="#fff"/>
+  <text x="368" y="310" text-anchor="middle" font-size="11" fill="#6e6e73">46~1500바이트</text>
+  <g stroke="#1d1d1f" stroke-width="1.1" fill="#f2f2f7">
+    <rect x="20" y="316" width="50" height="40"/>
+    <rect x="70" y="316" width="50" height="40"/>
+    <rect x="120" y="316" width="45" height="40"/>
+    <rect x="165" y="316" width="405" height="40" fill="#fff"/>
+    <rect x="570" y="316" width="50" height="40"/>
+  </g>
+  <g font-size="11" fill="#1d1d1f" text-anchor="middle">
+    <text x="45" y="333">목적지</text><text x="45" y="348">주소</text>
+    <text x="95" y="333">발신지</text><text x="95" y="348">주소</text>
+    <text x="142.5" y="340">유형</text>
+    <text x="367.5" y="340">데이터</text>
+    <text x="595" y="340">CRC</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="45" y="372">6</text><text x="95" y="372">6</text><text x="142.5" y="372">2</text>
+    <text x="367.5" y="372">46~1500</text><text x="595" y="372">4</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.1" fill="#fff">
+    <rect x="120" y="380" width="45" height="26"/>
+    <rect x="165" y="380" width="405" height="26"/>
+    <rect x="120" y="480" width="45" height="26"/>
+    <rect x="165" y="480" width="180" height="26"/>
+    <rect x="345" y="480" width="70" height="26"/>
+  </g>
+  <g stroke="#0a84ff" stroke-width="2.5" fill="#e5f1ff">
+    <rect x="120" y="430" width="45" height="26"/>
+    <rect x="165" y="430" width="180" height="26"/>
+    <rect x="345" y="430" width="70" height="26"/>
+  </g>
+  <g font-size="11.5" fill="#1d1d1f" text-anchor="middle">
+    <text x="142.5" y="391" font-size="9.5">유형</text><text x="142.5" y="402" font-size="9.5">0800</text>
+    <text x="367.5" y="397">IP 데이터그램</text>
+    <text x="142.5" y="441" font-size="9.5">유형</text><text x="142.5" y="452" font-size="9.5">0806</text>
+    <text x="255" y="447" font-weight="600">ARP 요청/응답</text><text x="380" y="447" font-weight="600">PAD</text>
+    <text x="142.5" y="491" font-size="9.5">유형</text><text x="142.5" y="502" font-size="9.5">8035</text>
+    <text x="255" y="497">RARP 요청/응답</text><text x="380" y="497">PAD</text>
+  </g>
+  <g font-size="12" text-anchor="middle">
+    <text x="142.5" y="420" fill="#6e6e73">2</text><text x="367.5" y="420" fill="#6e6e73">46~1500</text>
+    <text x="142.5" y="471" fill="#0a84ff">2</text><text x="255" y="471" fill="#0a84ff">28</text><text x="380" y="471" fill="#0a84ff">18</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="142.5" y="522">2</text><text x="255" y="522">28</text><text x="380" y="522">18</text>
+  </g>
+</svg>

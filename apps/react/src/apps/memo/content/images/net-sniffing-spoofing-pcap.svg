@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <rect x="20" y="20" width="600" height="290" rx="10" fill="#f2f2f7" stroke="#d1d1d6" stroke-width="1.2"/>
+  <rect x="36" y="34" width="200" height="262" rx="6" fill="none" stroke="#0a84ff" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="136" y="56" text-anchor="middle" font-size="14" fill="#0a84ff" font-weight="700">Wireshark</text>
+  <rect x="66" y="74" width="140" height="56" rx="6" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="136.0" y="98.2" text-anchor="middle" font-size="13" fill="#1d1d1f">패킷 분석기</text>
+  <text x="136.0" y="115.1" text-anchor="middle" font-size="13" fill="#1d1d1f">(packet analyzer)</text>
+  <rect x="66" y="200" width="140" height="70" rx="6" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="136.0" y="222.8" text-anchor="middle" font-size="13" fill="#1d1d1f">패킷 수집</text>
+  <text x="136.0" y="239.7" text-anchor="middle" font-size="13" fill="#1d1d1f">(packet capture,</text>
+  <text x="136.0" y="256.6" text-anchor="middle" font-size="13" fill="#1d1d1f">pcap)</text>
+  <line x1="136" y1="132" x2="136" y2="196" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)" marker-start="url(#bs)"/>
+  <line x1="30" y1="165" x2="250" y2="165" stroke="#6e6e73" stroke-width="1" stroke-dasharray="5 4"/>
+  <line x1="390" y1="165" x2="610" y2="165" stroke="#6e6e73" stroke-width="1" stroke-dasharray="5 4"/>
+  <rect x="420" y="40" width="180" height="60" rx="6" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="510.0" y="66.5" text-anchor="middle" font-size="12" fill="#1d1d1f">응용</text>
+  <text x="510.0" y="82.1" text-anchor="middle" font-size="12" fill="#1d1d1f">(웹 브라우저, 메일 클라이언트)</text>
+  <text x="604" y="156" text-anchor="end" font-size="12" fill="#6e6e73">응용</text>
+  <text x="604" y="182" text-anchor="end" font-size="12" fill="#6e6e73">OS</text>
+  <rect x="410" y="192" width="190" height="26" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="505.0" y="209.3" text-anchor="middle" font-size="12" fill="#1d1d1f">전송(Transport) TCP/UDP</text>
+  <rect x="410" y="218" width="190" height="26" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="505.0" y="235.3" text-anchor="middle" font-size="12" fill="#1d1d1f">네트워크(Network) IP</text>
+  <rect x="410" y="244" width="190" height="26" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="505.0" y="261.3" text-anchor="middle" font-size="12" fill="#1d1d1f">링크(Link) Ethernet</text>
+  <rect x="410" y="270" width="190" height="26" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="505.0" y="287.3" text-anchor="middle" font-size="12" fill="#1d1d1f">물리(Physical)</text>
+  <line x1="505" y1="190" x2="505" y2="104" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+  <line x1="408" y1="257" x2="210" y2="236" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+  <text x="310" y="206.0" text-anchor="middle" font-size="12" fill="#0a84ff">송수신한 모든</text>
+  <text x="310" y="220.8" text-anchor="middle" font-size="12" fill="#0a84ff">Ethernet 프레임의 사본</text>
+  <line x1="505" y1="296" x2="505" y2="350" stroke="#1d1d1f" stroke-width="1.6"/>
+  <line x1="80" y1="350" x2="560" y2="350" stroke="#1d1d1f" stroke-width="2"/>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="42" y="332" width="36" height="25" rx="2"/><line x1="60" y1="357" x2="60" y2="362"/><line x1="50" y1="362" x2="70" y2="362"/></g>
+  <text x="60" y="378" text-anchor="middle" font-size="12" fill="#1d1d1f">이 컴퓨터</text>
+  <rect x="562.0" y="339.0" width="56" height="22" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+  <text x="590.0" y="354.0" text-anchor="middle" font-size="12" fill="#1d1d1f">공유기</text>
+  <text x="320" y="372" text-anchor="middle" font-size="12" fill="#6e6e73">Ethernet 케이블</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">무상태 필터와 상태 기반 필터의 차이</text>
+  <!-- incoming packet -->
+  <rect x="30" y="70" width="200" height="66" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+  <text x="130" y="92" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">도착 패킷</text>
+  <text x="130" y="112" text-anchor="middle" font-size="11.5" fill="#6e6e73">목적지 포트 80, ACK 비트 설정</text>
+  <text x="130" y="128" text-anchor="middle" font-size="11.5" fill="#6e6e73">그러나 열린 연결 없음</text>
+  <!-- stateless -->
+  <rect x="300" y="56" width="310" height="92" rx="8" fill="#ff9f0a" fill-opacity="0.1" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="315" y="78" font-size="13" font-weight="600" fill="#1d1d1f">무상태 필터</text>
+  <text x="315" y="100" font-size="11.5" fill="#1d1d1f">규칙: 80번 포트 + ACK → 허용</text>
+  <text x="315" y="120" font-size="11.5" fill="#1d1d1f">연결 여부를 보지 않으므로</text>
+  <text x="315" y="138" font-size="12" font-weight="600" fill="#ff9f0a">말이 안 되는 패킷도 통과</text>
+  <line x1="230" y1="103" x2="298" y2="103" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+  <!-- stateful -->
+  <rect x="300" y="180" width="310" height="110" rx="8" fill="#34c759" fill-opacity="0.1" stroke="#34c759" stroke-width="1.2"/>
+  <text x="315" y="202" font-size="13" font-weight="600" fill="#1d1d1f">상태 기반 필터</text>
+  <text x="315" y="224" font-size="11.5" fill="#1d1d1f">연결 상태 표에서 해당 흐름을 조회</text>
+  <text x="315" y="244" font-size="11.5" fill="#1d1d1f">SYN·FIN으로 설정·종료를 추적</text>
+  <text x="315" y="264" font-size="11.5" fill="#1d1d1f">열린 연결이 없는 ACK → 차단</text>
+  <text x="315" y="283" font-size="12" font-weight="600" fill="#34c759">문맥에 맞는 패킷만 통과</text>
+  <line x1="130" y1="136" x2="130" y2="235" stroke="#34c759" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <line x1="130" y1="235" x2="298" y2="235" stroke="#34c759" stroke-width="2" marker-end="url(#g)"/>
+  <defs>
+    <marker id="o" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#ff9f0a"/></marker>
+    <marker id="g" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#34c759"/></marker>
+  </defs>
+</svg>

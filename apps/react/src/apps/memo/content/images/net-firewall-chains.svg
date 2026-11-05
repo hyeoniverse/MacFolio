@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <defs><marker id="r" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker></defs>
+<ellipse cx="80" cy="60" rx="66" ry="46" fill="#5ac8fa" fill-opacity="0.55" stroke="#0a84ff"/>
+<text x="80" y="65" text-anchor="middle" font-size="14" fill="#1d1d1f">인터넷</text>
+<ellipse cx="394" cy="60" rx="70" ry="46" fill="#5ac8fa" fill-opacity="0.55" stroke="#0a84ff"/>
+<text x="394" y="57" text-anchor="middle" font-size="14" fill="#1d1d1f">보호 대상</text><text x="394" y="75" text-anchor="middle" font-size="14" fill="#1d1d1f">네트워크</text>
+<line x1="146" y1="52" x2="180" y2="52" stroke="#1d1d1f"/><line x1="290" y1="52" x2="324" y2="52" stroke="#1d1d1f"/>
+<rect x="180" y="26" width="110" height="64" fill="#fff" stroke="#1d1d1f"/>
+<text x="235" y="50" text-anchor="middle" font-size="12" fill="#1d1d1f">iptables를 쓰는</text><text x="235" y="68" text-anchor="middle" font-size="12" fill="#1d1d1f">리눅스 호스트</text>
+<line x1="146" y1="60" x2="180" y2="60" stroke="#ff3b30" stroke-width="4" marker-end="url(#r)"/>
+<line x1="324" y1="60" x2="290" y2="60" stroke="#ff3b30" stroke-width="4" marker-end="url(#r)"/>
+<text x="480" y="46" font-size="15" font-weight="600" fill="#3a3acc">INPUT 체인</text>
+<text x="480" y="66" font-size="12.5" fill="#3a3acc">(iptables 호스트로</text><text x="480" y="84" font-size="12.5" fill="#3a3acc">들어오는 트래픽)</text>
+<ellipse cx="80" cy="180" rx="66" ry="46" fill="#5ac8fa" fill-opacity="0.55" stroke="#0a84ff"/>
+<text x="80" y="185" text-anchor="middle" font-size="14" fill="#1d1d1f">인터넷</text>
+<ellipse cx="394" cy="180" rx="70" ry="46" fill="#5ac8fa" fill-opacity="0.55" stroke="#0a84ff"/>
+<text x="394" y="177" text-anchor="middle" font-size="14" fill="#1d1d1f">보호 대상</text><text x="394" y="195" text-anchor="middle" font-size="14" fill="#1d1d1f">네트워크</text>
+<line x1="146" y1="172" x2="180" y2="172" stroke="#1d1d1f"/><line x1="290" y1="172" x2="324" y2="172" stroke="#1d1d1f"/>
+<rect x="180" y="146" width="110" height="64" fill="#fff" stroke="#1d1d1f"/>
+<text x="235" y="170" text-anchor="middle" font-size="12" fill="#1d1d1f">iptables를 쓰는</text><text x="235" y="188" text-anchor="middle" font-size="12" fill="#1d1d1f">리눅스 호스트</text>
+<line x1="180" y1="180" x2="146" y2="180" stroke="#ff3b30" stroke-width="4" marker-end="url(#r)"/>
+<line x1="290" y1="180" x2="324" y2="180" stroke="#ff3b30" stroke-width="4" marker-end="url(#r)"/>
+<text x="480" y="166" font-size="15" font-weight="600" fill="#3a3acc">OUTPUT 체인</text>
+<text x="480" y="186" font-size="12.5" fill="#3a3acc">(iptables 호스트에서</text><text x="480" y="204" font-size="12.5" fill="#3a3acc">나가는 트래픽)</text>
+<ellipse cx="80" cy="300" rx="66" ry="46" fill="#5ac8fa" fill-opacity="0.55" stroke="#0a84ff"/>
+<text x="80" y="305" text-anchor="middle" font-size="14" fill="#1d1d1f">인터넷</text>
+<ellipse cx="394" cy="300" rx="70" ry="46" fill="#5ac8fa" fill-opacity="0.55" stroke="#0a84ff"/>
+<text x="394" y="297" text-anchor="middle" font-size="14" fill="#1d1d1f">보호 대상</text><text x="394" y="315" text-anchor="middle" font-size="14" fill="#1d1d1f">네트워크</text>
+<line x1="146" y1="292" x2="180" y2="292" stroke="#1d1d1f"/><line x1="290" y1="292" x2="324" y2="292" stroke="#1d1d1f"/>
+<rect x="180" y="266" width="110" height="64" fill="#fff" stroke="#1d1d1f"/>
+<text x="235" y="290" text-anchor="middle" font-size="12" fill="#1d1d1f">iptables를 쓰는</text><text x="235" y="308" text-anchor="middle" font-size="12" fill="#1d1d1f">리눅스 호스트</text>
+<line x1="146" y1="300" x2="180" y2="300" stroke="#ff3b30" stroke-width="4" marker-end="url(#r)"/>
+<line x1="290" y1="300" x2="324" y2="300" stroke="#ff3b30" stroke-width="4" marker-end="url(#r)"/>
+<text x="480" y="286" font-size="15" font-weight="600" fill="#3a3acc">FORWARD 체인</text>
+<text x="480" y="306" font-size="12.5" fill="#3a3acc">(호스트를 거쳐</text><text x="480" y="324" font-size="12.5" fill="#3a3acc">지나가는 트래픽)</text>
+</svg>

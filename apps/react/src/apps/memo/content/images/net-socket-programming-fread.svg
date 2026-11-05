@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="230" fill="#fff"/><defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<text x="94" y="91" text-anchor="end" font-size="13" font-weight="600" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">hello2.txt</text>
+<rect x="104" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="119.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">H</text>
+<rect x="135" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="150.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">e</text>
+<rect x="166" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="181.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">l</text>
+<rect x="197" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="212.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">a</text>
+<rect x="228" y="70" width="31" height="32" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="243.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">b</text>
+<rect x="259" y="70" width="31" height="32" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="274.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">c</text>
+<rect x="290" y="70" width="31" height="32" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="305.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">d</text>
+<rect x="321" y="70" width="31" height="32" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="336.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">w</text>
+<rect x="352" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="367.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">o</text>
+<rect x="383" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="398.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">r</text>
+<rect x="414" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="429.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">l</text>
+<rect x="445" y="70" width="31" height="32" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="460.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">d</text>
+<rect x="476" y="70" width="31" height="32" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="491.5" y="91" text-anchor="middle" font-size="14" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">!</text>
+<rect x="507" y="70" width="31" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="538" y="70" width="31" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="4 3"/>
+<rect x="569" y="70" width="31" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="104" y="118" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">0</text>
+<text x="228" y="118" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">4</text>
+<text x="352" y="118" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">8</text>
+<text x="476" y="118" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">12</text>
+<text x="507" y="118" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">13</text>
+<text x="104" y="40" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="400">feof(fp) 0</text>
+<line x1="104" y1="46" x2="104" y2="60" stroke="#6e6e73" stroke-width="1.6"/><path d="M99,59 L104,67 L109,59 z" fill="#6e6e73"/>
+<text x="228" y="40" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="400">feof(fp) 0</text>
+<line x1="228" y1="46" x2="228" y2="60" stroke="#6e6e73" stroke-width="1.6"/><path d="M223,59 L228,67 L233,59 z" fill="#6e6e73"/>
+<text x="352" y="40" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="400">feof(fp) 0</text>
+<line x1="352" y1="46" x2="352" y2="60" stroke="#6e6e73" stroke-width="1.6"/><path d="M347,59 L352,67 L357,59 z" fill="#6e6e73"/>
+<text x="476" y="40" text-anchor="middle" font-size="12" fill="#6e6e73" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="400">feof(fp) 0</text>
+<line x1="476" y1="46" x2="476" y2="60" stroke="#6e6e73" stroke-width="1.6"/><path d="M471,59 L476,67 L481,59 z" fill="#6e6e73"/>
+<text x="600" y="40" text-anchor="middle" font-size="12" fill="#ff9f0a" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600">feof(fp) 1</text>
+<line x1="600" y1="46" x2="600" y2="60" stroke="#ff9f0a" stroke-width="1.6"/><path d="M595,59 L600,67 L605,59 z" fill="#ff9f0a"/>
+<line x1="106" y1="142" x2="226" y2="142" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+<text x="166.0" y="162" text-anchor="middle" font-size="12" fill="#1d1d1f"><tspan font-family="ui-monospace, SFMono-Regular, Menlo, monospace">fread</tspan> → 4</text>
+<text x="166.0" y="180" text-anchor="middle" font-size="12" fill="#6e6e73">4바이트 읽음</text>
+<line x1="230" y1="142" x2="350" y2="142" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+<text x="290.0" y="162" text-anchor="middle" font-size="12" fill="#1d1d1f"><tspan font-family="ui-monospace, SFMono-Regular, Menlo, monospace">fread</tspan> → 4</text>
+<text x="290.0" y="180" text-anchor="middle" font-size="12" fill="#6e6e73">4바이트 읽음</text>
+<line x1="354" y1="142" x2="474" y2="142" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+<text x="414.0" y="162" text-anchor="middle" font-size="12" fill="#1d1d1f"><tspan font-family="ui-monospace, SFMono-Regular, Menlo, monospace">fread</tspan> → 4</text>
+<text x="414.0" y="180" text-anchor="middle" font-size="12" fill="#6e6e73">4바이트 읽음</text>
+<line x1="478" y1="142" x2="598" y2="142" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+<text x="538.0" y="162" text-anchor="middle" font-size="12" fill="#1d1d1f"><tspan font-family="ui-monospace, SFMono-Regular, Menlo, monospace">fread</tspan> → 1</text>
+<text x="538.0" y="180" text-anchor="middle" font-size="12" fill="#6e6e73">1바이트 읽고 EOF</text>
+<text x="320" y="216" text-anchor="middle" font-size="12" fill="#6e6e73">fread(buffer, 1, 4, fp) 반복, 합계 13바이트</text>
+</svg>

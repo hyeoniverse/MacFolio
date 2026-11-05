@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <g fill="#f2f2f7" stroke="#1d1d1f">
+    <rect x="20" y="20" width="440" height="40"/>
+    <rect x="20" y="60" width="440" height="40"/>
+    <rect x="20" y="100" width="110" height="40"/>
+    <rect x="130" y="100" width="110" height="40"/>
+    <rect x="240" y="100" width="220" height="40"/>
+  </g>
+  <g fill="#e8f2ff" stroke="#1d1d1f">
+    <rect x="20" y="148" width="220" height="40"/>
+    <rect x="240" y="148" width="220" height="40"/>
+    <rect x="20" y="188" width="220" height="40"/>
+    <rect x="240" y="188" width="220" height="40"/>
+  </g>
+  <path d="M20,228 H460 V290 H130 V322 H20 Z" fill="#fff" stroke="#1d1d1f"/>
+  <rect x="130" y="290" width="110" height="32" fill="#fff4e5" stroke="#ff9f0a"/>
+  <g font-size="12.5" text-anchor="middle" fill="#1d1d1f">
+    <text x="240" y="45">32비트 출발지 IP 주소</text>
+    <text x="240" y="85">32비트 목적지 IP 주소</text>
+    <text x="75" y="125">0 (8비트)</text>
+    <text x="185" y="125">8비트 프로토콜(17)</text>
+    <text x="350" y="125">16비트 UDP 길이</text>
+    <text x="130" y="173">16비트 출발지 포트 번호</text>
+    <text x="350" y="173">16비트 목적지 포트 번호</text>
+    <text x="130" y="213">16비트 UDP 길이</text>
+    <text x="350" y="213">16비트 UDP 체크섬</text>
+    <text x="240" y="264">데이터</text>
+    <text x="185" y="311" font-size="11.5">패딩 바이트(0)</text>
+  </g>
+  <g fill="none" stroke="#6e6e73" stroke-width="1.5">
+    <path d="M476,22 q8,0 8,8 v42 q0,8 8,8 q-8,0 -8,8 v42 q0,8 -8,8"/>
+    <path d="M476,150 q8,0 8,8 v22 q0,8 8,8 q-8,0 -8,8 v22 q0,8 -8,8"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f">
+    <text x="500" y="76">UDP 가상 헤더</text>
+    <text x="500" y="94" font-size="11" fill="#6e6e73">(pseudo header)</text>
+    <text x="500" y="193">UDP 헤더</text>
+  </g>
+  <text x="20" y="346" font-size="12" fill="#6e6e73">가상 헤더와 패딩 바이트는 체크섬 계산에만 포함하고 실제로 전송하지 않는다.</text>
+</svg>

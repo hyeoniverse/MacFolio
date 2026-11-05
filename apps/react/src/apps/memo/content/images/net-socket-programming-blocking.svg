@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <text x="110" y="26" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">클라이언트 1</text>
+  <text x="320" y="26" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">서버</text>
+  <text x="530" y="26" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">클라이언트 2</text>
+  <line x1="110" y1="36" x2="110" y2="318" stroke="#1d1d1f" stroke-width="3" marker-end="url(#k)"/>
+  <line x1="320" y1="36" x2="320" y2="318" stroke="#1d1d1f" stroke-width="3" marker-end="url(#k)"/>
+  <line x1="530" y1="36" x2="530" y2="318" stroke="#1d1d1f" stroke-width="3" marker-end="url(#k)"/>
+  <text x="100" y="70" text-anchor="end" font-size="12.5" fill="#1d1d1f">connect 호출</text>
+  <line x1="112" y1="66" x2="316" y2="90" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#k)"/>
+  <text x="330" y="94" text-anchor="start" font-size="12.5" fill="#1d1d1f">accept 호출</text>
+  <line x1="316" y1="98" x2="114" y2="116" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#k)"/>
+  <text x="100" y="120" text-anchor="end" font-size="12.5" fill="#1d1d1f">connect 반환</text>
+  <text x="100" y="138" text-anchor="end" font-size="12.5" fill="#1d1d1f">fgets 호출</text>
+  <text x="100" y="156" text-anchor="end" font-size="12.5" fill="#1d1d1f">…</text>
+  <line x1="112" y1="120" x2="316" y2="138" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#k)"/>
+  <text x="330" y="142" text-anchor="start" font-size="12.5" fill="#1d1d1f">accept 반환</text>
+  <text x="330" y="160" text-anchor="start" font-size="12.5" fill="#1d1d1f">read 호출</text>
+  <text x="330" y="178" text-anchor="start" font-size="12.5" fill="#1d1d1f">…</text>
+  <text x="540" y="172" text-anchor="start" font-size="12.5" fill="#1d1d1f">connect 호출</text>
+  <line x1="528" y1="168" x2="324" y2="196" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#k)"/>
+  <text x="122" y="226" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-weight="700">→ 클라이언트 1은</text>
+  <text x="122" y="242" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-weight="700">사용자 입력을 기다린다</text>
+  <text x="332" y="272" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-weight="700">→ 서버는 클라이언트 1의</text>
+  <text x="332" y="288" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-weight="700">데이터를 기다린다</text>
+  <text x="520" y="222" text-anchor="end" font-size="11.5" fill="#1d1d1f" font-weight="700">→ 클라이언트 2는</text>
+  <text x="520" y="238" text-anchor="end" font-size="11.5" fill="#1d1d1f" font-weight="700">연결 요청이 완료되기를</text>
+  <text x="520" y="254" text-anchor="end" font-size="11.5" fill="#1d1d1f" font-weight="700">기다린다</text>
+</svg>

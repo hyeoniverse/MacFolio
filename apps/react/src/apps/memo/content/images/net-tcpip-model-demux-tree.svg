@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <!-- 단계 띠 -->
+  <g fill="#f2f2f7">
+    <rect x="10" y="10" width="620" height="100" rx="8"/>
+    <rect x="10" y="118" width="620" height="138" rx="8" fill="#fafafc"/>
+    <rect x="10" y="264" width="620" height="126" rx="8"/>
+  </g>
+  <g font-size="12" fill="#0a84ff" font-weight="600">
+    <text x="470" y="30">③ TCP·UDP 헤더의</text>
+    <text x="470" y="46">목적지 포트 번호</text>
+    <text x="470" y="140">② IP 헤더의</text>
+    <text x="470" y="156">프로토콜 값</text>
+    <text x="470" y="290">① 이더넷 헤더의</text>
+    <text x="470" y="306">프레임 유형</text>
+  </g>
+  <g fill="#fff" stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="30" y="64" width="70" height="30" rx="5"/>
+    <rect x="130" y="64" width="70" height="30" rx="5"/>
+    <rect x="250" y="64" width="70" height="30" rx="5"/>
+    <rect x="350" y="64" width="70" height="30" rx="5"/>
+    <rect x="30" y="168" width="70" height="30" rx="5"/>
+    <rect x="120" y="168" width="70" height="30" rx="5"/>
+    <rect x="210" y="168" width="70" height="30" rx="5" stroke="#0a84ff" stroke-width="1.6"/>
+    <rect x="320" y="168" width="70" height="30" rx="5" stroke="#0a84ff" stroke-width="1.6"/>
+    <rect x="175" y="278" width="80" height="30" rx="5" stroke="#ff9f0a" stroke-width="1.8"/>
+    <rect x="40" y="278" width="80" height="30" rx="5"/>
+    <rect x="310" y="278" width="80" height="30" rx="5"/>
+    <rect x="165" y="334" width="100" height="40" rx="5" fill="#f2f2f7"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle">
+    <text x="65" y="84">응용</text>
+    <text x="165" y="84">응용</text>
+    <text x="285" y="84">응용</text>
+    <text x="385" y="84">응용</text>
+    <text x="115" y="84" fill="#6e6e73">…</text>
+    <text x="335" y="84" fill="#6e6e73">…</text>
+    <text x="65" y="188">ICMP</text>
+    <text x="155" y="188">IGMP</text>
+    <text x="245" y="188">TCP</text>
+    <text x="355" y="188">UDP</text>
+    <text x="215" y="298">IP</text>
+    <text x="80" y="298">ARP</text>
+    <text x="350" y="298">RARP</text>
+    <text x="215" y="352">이더넷</text>
+    <text x="215" y="367">드라이버</text>
+    <text x="215" y="396" font-size="12" fill="#6e6e73">수신 프레임 ↑</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)">
+    <line x1="215" y1="334" x2="215" y2="312"/>
+    <line x1="190" y1="340" x2="100" y2="312"/>
+    <line x1="240" y1="340" x2="330" y2="312"/>
+    <line x1="200" y1="278" x2="75" y2="202"/>
+    <line x1="208" y1="278" x2="160" y2="202"/>
+    <line x1="222" y1="278" x2="240" y2="202"/>
+    <line x1="235" y1="278" x2="345" y2="202"/>
+    <line x1="230" y1="168" x2="80" y2="98"/>
+    <line x1="245" y1="168" x2="175" y2="98"/>
+    <line x1="345" y1="168" x2="295" y2="98"/>
+    <line x1="365" y1="168" x2="385" y2="98"/>
+  </g>
+</svg>

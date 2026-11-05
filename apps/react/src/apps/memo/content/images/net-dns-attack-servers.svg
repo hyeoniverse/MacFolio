@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="430" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">권한 네임서버, 재귀 네임서버, 스텁 리졸버</text>
+  <!-- 주 서버 -->
+  <rect x="16" y="44" width="300" height="118" rx="10" fill="#f5f5f7" stroke="#6e6e73"/>
+  <text x="166" y="64" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d1d1f">주 네임서버(primary)</text>
+  <path d="M34 80h70l14 14v52H34z" fill="#fff" stroke="#1d1d1f"/>
+  <text x="73" y="114" text-anchor="middle" font-size="12" fill="#1d1d1f">마스터</text>
+  <text x="73" y="130" text-anchor="middle" font-size="12" fill="#1d1d1f">존 파일</text>
+  <rect x="160" y="80" width="140" height="52" rx="8" fill="#0a84ff"/>
+  <text x="230" y="111" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">네임서버</text>
+  <line x1="118" y1="106" x2="158" y2="106" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"/>
+  <text x="230" y="152" text-anchor="middle" font-size="11" fill="#6e6e73">UDP·TCP 53</text>
+  <!-- 보조 서버 -->
+  <rect x="404" y="44" width="220" height="118" rx="10" fill="#f5f5f7" stroke="#6e6e73"/>
+  <text x="514" y="64" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d1d1f">보조 네임서버(secondary)</text>
+  <rect x="444" y="80" width="140" height="52" rx="8" fill="#0a84ff"/>
+  <text x="514" y="111" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">네임서버</text>
+  <text x="514" y="152" text-anchor="middle" font-size="11" fill="#6e6e73">UDP·TCP 53</text>
+  <line x1="302" y1="106" x2="442" y2="106" stroke="#1d1d1f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="372" y="98" text-anchor="middle" font-size="11.5" fill="#1d1d1f">존 전송</text>
+  <text x="372" y="122" text-anchor="middle" font-size="10.5" fill="#6e6e73">(AXFR·IXFR, TCP)</text>
+  <!-- 반복 질의 -->
+  <path d="M110 250 V200 H514 V164" stroke="#0a84ff" stroke-width="1.4" fill="none" stroke-dasharray="5 4" marker-start="url(#b)" marker-end="url(#b)"/>
+  <path d="M230 200 V164" stroke="#0a84ff" stroke-width="1.4" fill="none" stroke-dasharray="5 4" marker-end="url(#b)"/>
+  <text x="372" y="192" text-anchor="middle" font-size="12" fill="#0a84ff">반복 질의·응답</text>
+  <!-- 재귀 네임서버 -->
+  <rect x="16" y="250" width="240" height="150" rx="10" fill="#f5f5f7" stroke="#6e6e73"/>
+  <text x="136" y="420" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d1d1f">재귀 네임서버(캐시 DNS 서버)</text>
+  <rect x="40" y="266" width="140" height="36" rx="8" fill="#1d1d1f"/>
+  <text x="110" y="289" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">리졸버</text>
+  <rect x="40" y="346" width="140" height="36" rx="8" fill="#1d1d1f"/>
+  <text x="110" y="369" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">네임서버</text>
+  <rect x="194" y="310" width="52" height="28" rx="14" fill="#e8f2ff" stroke="#0a84ff"/>
+  <text x="220" y="329" text-anchor="middle" font-size="12" fill="#1d1d1f">캐시</text>
+  <path d="M180 284 H220 V308" stroke="#1d1d1f" stroke-width="1.2" fill="none" marker-end="url(#a)"/>
+  <path d="M220 340 V364 H182" stroke="#1d1d1f" stroke-width="1.2" fill="none" marker-end="url(#a)"/>
+  <!-- 사용자 호스트 -->
+  <rect x="404" y="250" width="220" height="150" rx="10" fill="#f5f5f7" stroke="#6e6e73"/>
+  <text x="514" y="420" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d1d1f">사용자 호스트</text>
+  <rect x="444" y="266" width="140" height="34" rx="17" fill="#fff" stroke="#1d1d1f"/>
+  <text x="514" y="288" text-anchor="middle" font-size="13" fill="#1d1d1f">응용 프로그램</text>
+  <line x1="414" y1="322" x2="614" y2="322" stroke="#1d1d1f" stroke-width="2"/>
+  <text x="608" y="316" text-anchor="end" font-size="10.5" fill="#6e6e73">이름 해석 API</text>
+  <rect x="444" y="346" width="140" height="36" rx="18" fill="#0a84ff"/>
+  <text x="514" y="369" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">스텁 리졸버</text>
+  <line x1="514" y1="302" x2="514" y2="344" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#a)" marker-end="url(#a)"/>
+  <line x1="184" y1="364" x2="440" y2="364" stroke="#1d1d1f" stroke-width="1.4" stroke-dasharray="5 4" marker-start="url(#a)" marker-end="url(#a)"/>
+  <text x="312" y="356" text-anchor="middle" font-size="12" fill="#1d1d1f">재귀 질의·응답</text>
+  <text x="312" y="382" text-anchor="middle" font-size="11" fill="#6e6e73">UDP 53</text>
+</svg>

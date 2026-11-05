@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="410" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">수신 대기 소켓의 두 큐와 accept()</text>
+  <!-- 서버 프로세스 -->
+  <rect x="16" y="52" width="130" height="44" rx="8" fill="#1d1d1f"/>
+  <text x="81" y="79" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">서버 프로세스</text>
+  <text x="20" y="170" font-size="12" fill="#6e6e73">커널(TCP)</text>
+  <!-- 큐 묶음 -->
+  <rect x="170" y="112" width="300" height="196" rx="8" fill="none" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="320" y="104" text-anchor="middle" font-size="11.5" fill="#6e6e73">전통 BSD: 두 큐의 합 ≤ backlog</text>
+  <!-- 완료 큐 -->
+  <rect x="186" y="128" width="268" height="62" rx="6" fill="#e8f2ff"/>
+  <g fill="#fff" stroke="#0a84ff" stroke-width="1.4"><rect x="204" y="144" width="30" height="30"/><rect x="246" y="144" width="30" height="30"/></g>
+  <text x="300" y="155" font-size="12" font-weight="600" fill="#0a84ff">완료 연결 큐</text>
+  <text x="300" y="172" font-size="11.5" fill="#1d1d1f">ESTABLISHED</text>
+  <!-- 미완료 큐 -->
+  <rect x="186" y="230" width="268" height="62" rx="6" fill="#f5f5f7"/>
+  <g fill="#fff" stroke="#6e6e73" stroke-width="1.4"><rect x="204" y="246" width="30" height="30"/><rect x="246" y="246" width="30" height="30"/><rect x="288" y="246" width="30" height="30" stroke-dasharray="3 3"/></g>
+  <text x="330" y="257" font-size="12" font-weight="600" fill="#1d1d1f">미완료 연결 큐</text>
+  <text x="330" y="274" font-size="11.5" fill="#1d1d1f">SYN_RCVD</text>
+  <!-- 화살표 -->
+  <path d="M219 142 C219 112 120 120 96 98" stroke="#1d1d1f" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="20" y="124" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">accept()</text>
+  <path d="M303 244 C303 214 262 206 262 178" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+  <text x="314" y="214" font-size="11.5" fill="#0a84ff">ACK 도착: handshake 완료</text>
+  <line x1="303" y1="340" x2="303" y2="280" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="314" y="336" font-size="11.5" fill="#1d1d1f">SYN 도착 → SYN+ACK 송신</text>
+  <!-- 오른쪽: 호출 흐름 -->
+  <line x1="490" y1="52" x2="490" y2="394" stroke="#d1d1d6"/>
+  <text x="506" y="60" font-size="12" font-weight="600" fill="#1d1d1f">수동 소켓(서버)</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <rect x="510" y="72" width="96" height="26" rx="5" fill="#fff" stroke="#1d1d1f"/><text x="558" y="90">socket()</text>
+    <rect x="510" y="110" width="96" height="26" rx="5" fill="#fff" stroke="#1d1d1f"/><text x="558" y="128">bind()</text>
+    <rect x="510" y="148" width="96" height="26" rx="5" fill="#fff" stroke="#1d1d1f"/><text x="558" y="166">listen()</text>
+    <rect x="510" y="186" width="96" height="26" rx="5" fill="#0a84ff"/><text x="558" y="204" fill="#fff">accept()</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"><line x1="558" y1="98" x2="558" y2="108"/><line x1="558" y1="136" x2="558" y2="146"/><line x1="558" y1="174" x2="558" y2="184"/></g>
+  <text x="506" y="250" font-size="12" font-weight="600" fill="#1d1d1f">능동 소켓(클라이언트)</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <rect x="510" y="262" width="96" height="26" rx="5" fill="#fff" stroke="#1d1d1f"/><text x="558" y="280">socket()</text>
+    <rect x="510" y="300" width="96" height="26" rx="5" fill="#0a84ff"/><text x="558" y="318" fill="#fff">connect()</text>
+  </g>
+  <line x1="558" y1="288" x2="558" y2="298" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"/>
+  <text x="506" y="348" font-size="11" fill="#6e6e73">큐가 가득 차면</text>
+  <text x="506" y="363" font-size="11" fill="#6e6e73">connect()가 늦어질 수 있다.</text>
+  <text x="506" y="378" font-size="11" fill="#6e6e73">accept()는 완료 큐가</text>
+  <text x="506" y="393" font-size="11" fill="#6e6e73">비어 있으면 블록된다</text>
+  <text x="16" y="394" font-size="11.5" fill="#6e6e73">리눅스 2.2 이후 backlog는 완료 큐에만 적용</text>
+</svg>

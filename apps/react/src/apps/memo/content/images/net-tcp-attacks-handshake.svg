@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">3-방향 핸드셰이크와 TCB 저장</text>
+  <!-- lifelines -->
+  <text x="150" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">클라이언트</text>
+  <text x="490" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">서버</text>
+  <line x1="150" y1="68" x2="150" y2="300" stroke="#c7c7cc" stroke-width="1.5"/>
+  <line x1="490" y1="68" x2="490" y2="300" stroke="#c7c7cc" stroke-width="1.5"/>
+  <!-- SYN -->
+  <line x1="150" y1="92" x2="488" y2="128" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="315" y="100" text-anchor="middle" font-size="12" fill="#0a84ff">SYN, seq = x</text>
+  <!-- SYN-ACK -->
+  <line x1="490" y1="150" x2="152" y2="186" stroke="#1d1d1f" stroke-width="2" marker-end="url(#ar2)"/>
+  <text x="320" y="160" text-anchor="middle" font-size="12" fill="#1d1d1f">SYN+ACK, seq = y, ack = x+1</text>
+  <!-- ACK -->
+  <line x1="150" y1="208" x2="488" y2="244" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="315" y="216" text-anchor="middle" font-size="12" fill="#0a84ff">ACK, seq = x+1, ack = y+1</text>
+  <!-- server TCB note -->
+  <rect x="505" y="118" width="128" height="52" fill="#ff9f0a" fill-opacity="0.14" stroke="#ff9f0a" stroke-width="1"/>
+  <text x="512" y="136" font-size="11" fill="#1d1d1f">SYN 수신 → TCB를</text>
+  <text x="512" y="152" font-size="11" fill="#1d1d1f">반개방 큐에 보관</text>
+  <text x="512" y="166" font-size="11" fill="#6e6e73">(half-open, 연결 미완성)</text>
+  <rect x="505" y="236" width="128" height="34" fill="#34c759" fill-opacity="0.14" stroke="#34c759" stroke-width="1"/>
+  <text x="512" y="256" font-size="11" fill="#1d1d1f">ACK 수신 → 큐에서</text>
+  <text x="512" y="268" font-size="11" fill="#1d1d1f">제거, ESTABLISHED</text>
+  <text x="150" y="292" text-anchor="middle" font-size="11" fill="#6e6e73">연결 완료</text>
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0a84ff"/></marker>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1d1d1f"/></marker>
+  </defs>
+</svg>

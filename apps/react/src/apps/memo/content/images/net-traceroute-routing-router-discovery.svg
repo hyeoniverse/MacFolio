@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="450" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">ICMP 라우터 청원과 라우터 광고 메시지 형식</text>
+  <text x="60" y="56" font-size="13" font-weight="600" fill="#1d1d1f">라우터 청원(router solicitation)</text>
+  <g font-size="11" fill="#6e6e73" text-anchor="middle">
+    <text x="60" y="76">0</text><text x="180" y="76">7 8</text><text x="300" y="76">15 16</text><text x="540" y="76">31</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="60" y="84" width="120" height="32" fill="#e5f1ff"/>
+    <rect x="180" y="84" width="120" height="32" fill="#e5f1ff"/>
+    <rect x="300" y="84" width="240" height="32" fill="#f2f2f7"/>
+    <rect x="60" y="116" width="480" height="32" fill="#fff"/>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <text x="120" y="105">유형(10)</text><text x="240" y="105">코드(0)</text><text x="420" y="105">체크섬</text>
+    <text x="300" y="137" fill="#6e6e73">사용하지 않음(0으로 보냄)</text>
+  </g>
+  <text x="60" y="190" font-size="13" font-weight="600" fill="#1d1d1f">라우터 광고(router advertisement)</text>
+  <g font-size="11" fill="#6e6e73" text-anchor="middle">
+    <text x="60" y="210">0</text><text x="180" y="210">7 8</text><text x="300" y="210">15 16</text><text x="540" y="210">31</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="60" y="218" width="120" height="32" fill="#e5f1ff"/>
+    <rect x="180" y="218" width="120" height="32" fill="#e5f1ff"/>
+    <rect x="300" y="218" width="240" height="32" fill="#f2f2f7"/>
+    <rect x="60" y="250" width="120" height="32" fill="#f2f2f7"/>
+    <rect x="180" y="250" width="120" height="32" fill="#f2f2f7"/>
+    <rect x="300" y="250" width="240" height="32" fill="#f2f2f7"/>
+    <rect x="60" y="282" width="480" height="30" fill="#fff4e5"/>
+    <rect x="60" y="312" width="480" height="30" fill="#eaf8ee"/>
+    <rect x="60" y="342" width="480" height="30" fill="#fff4e5"/>
+    <rect x="60" y="372" width="480" height="30" fill="#eaf8ee"/>
+    <path d="M60 402 V430 M540 402 V430" fill="none"/>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <text x="120" y="239">유형(9)</text><text x="240" y="239">코드(0)</text><text x="420" y="239">체크섬</text>
+    <text x="120" y="271">주소의 개수</text><text x="240" y="271">주소 항목 길이</text><text x="420" y="271">생존 시간</text>
+    <text x="300" y="302">라우터 주소 [1]</text>
+    <text x="300" y="332">우선권 레벨 [1]</text>
+    <text x="300" y="362">라우터 주소 [2]</text>
+    <text x="300" y="392">우선권 레벨 [2]</text>
+    <text x="300" y="422" fill="#6e6e73">⋯</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.2" fill="none">
+    <line x1="548" y1="84" x2="580" y2="84"/><line x1="548" y1="148" x2="580" y2="148"/>
+    <line x1="566" y1="88" x2="566" y2="144"/>
+    <path d="M562 94 L566 86 L570 94 M562 138 L566 146 L570 138"/>
+    <line x1="548" y1="218" x2="580" y2="218"/><line x1="548" y1="282" x2="580" y2="282"/>
+    <line x1="566" y1="222" x2="566" y2="278"/>
+    <path d="M562 228 L566 220 L570 228 M562 272 L566 280 L570 272"/>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <text x="574" y="120">8바이트</text>
+    <text x="574" y="254">8바이트</text>
+  </g>
+</svg>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="420" fill="#fff"/>
+  <defs>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+  </defs>
+
+  <!-- 호스트 -->
+  <g font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <text x="60" y="26">A</text><text x="300" y="26">B</text><text x="590" y="26">C</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="60" y="44">공격자</text><text x="300" y="44">피해 서버</text><text x="590" y="44">정상 호스트</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.5">
+    <line x1="60" y1="54" x2="60" y2="350"/><line x1="300" y1="54" x2="300" y2="400"/><line x1="590" y1="54" x2="590" y2="400"/>
+  </g>
+
+  <!-- 위조 SYN 세 개 -->
+  <g stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)">
+    <line x1="60" y1="64" x2="298" y2="96"/>
+    <line x1="60" y1="124" x2="298" y2="156"/>
+    <line x1="60" y1="184" x2="298" y2="216"/>
+  </g>
+  <g font-size="13" font-weight="600" fill="#ff3b30" text-anchor="middle">
+    <text x="170" y="72">SYN</text><text x="170" y="132">SYN</text><text x="170" y="192">SYN</text>
+  </g>
+
+  <!-- 대량 SYN -->
+  <g stroke="#ff3b30" stroke-width="1.2" marker-end="url(#r)">
+    <line x1="60" y1="240" x2="298" y2="268"/>
+    <line x1="60" y1="250" x2="298" y2="278"/>
+    <line x1="60" y1="260" x2="298" y2="288"/>
+    <line x1="60" y1="270" x2="298" y2="298"/>
+    <line x1="60" y1="280" x2="298" y2="308"/>
+    <line x1="60" y1="290" x2="298" y2="318"/>
+    <line x1="60" y1="300" x2="298" y2="328"/>
+  </g>
+  <text x="170" y="240" text-anchor="middle" font-size="13" font-weight="600" fill="#ff3b30">SYN × 다수</text>
+
+  <!-- B에 쌓이는 상태 -->
+  <g fill="#f2f2f7" stroke="#6e6e73">
+    <rect x="312" y="80" width="110" height="40" rx="5"/>
+    <rect x="312" y="140" width="110" height="40" rx="5"/>
+    <rect x="312" y="200" width="110" height="40" rx="5"/>
+    <rect x="312" y="262" width="110" height="40" rx="5"/>
+    <rect x="320" y="272" width="110" height="40" rx="5"/>
+    <rect x="328" y="282" width="110" height="40" rx="5"/>
+    <rect x="336" y="292" width="110" height="40" rx="5"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <text x="367" y="98">IP/포트,</text><text x="367" y="113">MSS, …</text>
+    <text x="367" y="158">IP/포트,</text><text x="367" y="173">MSS, …</text>
+    <text x="367" y="218">IP/포트,</text><text x="367" y="233">MSS, …</text>
+    <text x="391" y="310">IP/포트,</text><text x="391" y="325">MSS, …</text>
+  </g>
+  <text x="456" y="300" font-size="12" fill="#6e6e73">half-open</text>
+  <text x="456" y="316" font-size="12" fill="#6e6e73">큐 포화</text>
+
+  <text x="60" y="378" font-size="13" fill="#1d1d1f">피해자 B의 메모리 소진</text>
+
+  <!-- 정상 SYN 거부 -->
+  <line x1="590" y1="352" x2="304" y2="384" stroke="#34c759" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="470" y="356" text-anchor="middle" font-size="13" font-weight="600" fill="#34c759">SYN</text>
+  <g stroke="#ff3b30" stroke-width="2.5"><line x1="290" y1="378" x2="306" y2="394"/><line x1="306" y1="378" x2="290" y2="394"/></g>
+  <text x="312" y="412" font-size="12" fill="#ff3b30">거부</text>
+</svg>
