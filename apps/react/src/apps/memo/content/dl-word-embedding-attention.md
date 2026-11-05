@@ -7,19 +7,30 @@ seriesOrder: 5
 summary: 텍스트를 신경망에 넣기 위한 원핫 코드와 단어 임베딩(word2vec, GloVe), 텍스트 전처리와 IMDB 감정 분류, seq2seq와 교사 강요, query-key-value 어텐션과 바다나우 어텐션, LSTM으로 구현한 영어-프랑스어 번역을 다룬다.
 ---
 
-[순환 신경망과 LSTM으로 만든 시계열 예측](/memo/dl-rnn)의 순환 신경망으로 텍스트를 다루는 방법을 정리한다. 단어를 벡터로 바꾸는 원핫 코드와 단어 임베딩, 그 벡터로 문장의 감정을 분류하는 IMDB 예, 문장을 다른 문장으로 바꾸는 seq2seq와 어텐션까지 다룬다. 마지막의 어텐션은 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)으로 이어진다.
+## 들어가기 전에
 
-| 순서 | 내용                                                   |
-| ---- | ------------------------------------------------------ |
-| 1    | 텍스트 데이터, 원핫 코드, 단어 임베딩(word2vec, GloVe) |
-| 2    | IMDB 감정 분류, GloVe로 단어 관계 찾기                 |
-| 3    | seq2seq, 교사 강요, 어텐션, 번역 모델 구현             |
+순환 신경망은 수치 벡터의 시퀀스를 입력받는다. 텍스트는 기호의 열이므로 먼저 단어를 벡터로 바꿔야 한다. 사전 번호를 원핫 코드로 바꾸는 가장 단순한 방법은 사전 크기만큼 긴 희소 벡터를 만들고, movie와 film처럼 뜻이 같은 단어도 movie와 banana처럼 무관한 단어와 똑같은 거리에 놓는다. 단어의 뜻을 벡터의 거리와 방향에 담는 표현이 필요하다.
+
+번역은 또 다른 문제를 낳는다. "I am a student"는 네 단어, "je suis étudiant"는 세 단어이고, 출력 단어의 순서도 입력과 일대일로 맞지 않는다. seq2seq는 인코더 RNN이 입력 문장을 읽어 벡터 하나로 압축하고 디코더 RNN이 그 벡터에서 출력 문장을 만들어 길이 차이를 해결한다. 그러나 문장이 길어질수록 고정된 크기의 벡터 하나에 담을 수 있는 정보가 모자라고, 어텐션은 디코더가 단어를 하나 만드는 시각마다 입력 문장 전체를 다시 조회해 이 병목을 없앤다.
+
+이 글이 답하려는 질문은 두 가지다. 단어의 의미를 담은 벡터는 어떻게 학습하는가. 그리고 길이가 다른 두 문장을 잇는 인코더-디코더에서 어텐션은 어떤 계산으로 지금 필요한 입력 단어를 골라내는가.
+
+| 순서 | 내용                                                          |
+| ---- | ------------------------------------------------------------- |
+| 1    | 텍스트 데이터의 특성, 원핫 코드, 단어 임베딩(word2vec, GloVe) |
+| 2    | 텍스트 전처리: 토큰화, 정제, 정규화                           |
+| 3    | IMDB 감정 분류(다층 퍼셉트론, LSTM), GloVe로 단어 관계 찾기   |
+| 4    | seq2seq와 교사 강요                                           |
+| 5    | query-key-value 어텐션과 바다나우 어텐션                      |
+| 6    | LSTM 인코더-디코더로 만든 영어-프랑스어 번역                  |
+
+RNN과 LSTM의 구조, many to one과 many to many 형태는 [순환 신경망과 LSTM으로 만든 시계열 예측](/memo/dl-rnn)에서 다뤘다. 이 글의 감정 분류는 many to one, 번역은 입력을 모두 읽은 뒤 출력을 시작하는 many to many 구조다.
 
 ## 자연어 처리와 텍스트 데이터
 
 자연어는 일상생활에서 사용하는 언어이고, 자연어 처리(NLP, natural language processing)는 자연어의 의미를 분석해 컴퓨터가 처리할 수 있게 하는 인공지능 분야다. 언어 번역, 음성 인식, 사용자의 감성 분석, 텍스트 분류(스팸 메일 분류, 뉴스 기사 카테고리 분류), 고객 응대 챗봇, 소설이나 시를 쓰는 창작 인공지능 등에 응용한다.
 
-영화평 데이터셋 IMDB의 예제 문장에는 텍스트의 특성이 잘 드러난다.
+영화평 데이터셋 [IMDB](https://aclanthology.org/P11-1015/)의 예제 문장에는 텍스트의 특성이 잘 드러난다.
 
 ```text
 Once again Mr. Costner has dragged out a movie for far longer than necessary. Aside
@@ -76,7 +87,7 @@ How popular is Python?
 | 원핫 코드   | `(1\ 0\ 0\ 0 \cdots 0\ 0\ 0){:math}`, 요소 10000개 |
 | 단어 임베딩 | `(0.01\ 0.23\ 0.0 \cdots 0.002){:math}`, 요소 16개 |
 
-![Korea→Seoul과 Spain→Madrid 화살표가 평행하고 movie와 film이 가까이 있는 2차원 임베딩 공간](./images/dl-word-embedding-attention-01.jpg '의미가 비슷한 단어는 가까이 놓이고, 나라와 수도의 관계는 같은 방향의 벡터가 된다 (강의 자료)')
+![Korea→Seoul과 Spain→Madrid 화살표가 평행하고 movie와 film이 가까이 있는 2차원 임베딩 공간](./images/dl-word-embedding-attention-01.jpg '의미가 비슷한 단어는 가까이 놓이고, 나라와 수도의 관계는 같은 방향의 벡터가 된다')
 
 단어를 벡터 공간에 표현하는 아이디어는 오래전부터 연구되었다. 영국의 언어학자 퍼스(J. R. Firth)는 1957년에 "You shall know a word by the company it keeps."라고 썼다. 단어의 의미는 함께 등장하는 단어로 정해진다는 통찰이다. "영화"라는 단어는 "아카데미", "흥행" 같은 단어와 함께 등장할 가능성이 높다.
 
@@ -89,7 +100,7 @@ How popular is Python?
 
 ### word2vec
 
-word2vec(Mikolov 외, 구글, 2013)은 "비슷한 문맥에서 등장하는 단어는 비슷한 의미를 가진다"고 가정한다. 구글이 공개한 사전 학습 모델은 약 1000억 단어 규모의 구글 뉴스 데이터로 학습해 약 300만 개의 단어와 구를 300차원 공간에 표현한다.
+word2vec([Mikolov 외, 구글, 2013](https://arxiv.org/abs/1301.3781))은 "비슷한 문맥에서 등장하는 단어는 비슷한 의미를 가진다"고 가정한다. 구글이 공개한 사전 학습 모델은 약 1000억 단어 규모의 구글 뉴스 데이터로 학습해 약 300만 개의 단어와 구를 300차원 공간에 표현한다.
 
 학습 방식은 CBOW와 Skip-gram 두 가지다.
 
@@ -98,7 +109,7 @@ word2vec(Mikolov 외, 구글, 2013)은 "비슷한 문맥에서 등장하는 단�
 | CBOW(Continuous Bag of Words) | 주변 단어들 | 중심 단어   |
 | Skip-gram                     | 중심 단어   | 주변 단어들 |
 
-![The fat cat sat on the mat에서 중심 단어를 한 칸씩 옮기며 주변 단어 원핫 벡터를 만든 표와, fat·cat·on·the를 입력해 sat을 예측하는 CBOW 신경망](./images/dl-word-embedding-attention-02.jpg 'CBOW는 윈도우 안의 주변 단어 네 개로 가운데 단어 sat을 예측한다 (강의 자료)')
+![The fat cat sat on the mat에서 중심 단어를 한 칸씩 옮기며 주변 단어 원핫 벡터를 만든 표와, 입력층에 fat·cat·on·the를 넣어 투사층을 거쳐 출력층에서 sat을 예측하는 CBOW 신경망](./images/dl-word-embedding-attention-cbow.svg 'CBOW는 윈도우 안의 주변 단어 네 개로 가운데 단어 sat을 예측한다')
 
 CBOW 신경망은 입력층, 투사층(projection layer), 출력층으로 이루어진다. 원핫 벡터 `\mathbf{x}{:math}`에 가중치 행렬 `W_{V \times M}{:math}`을 곱하면 `W{:math}`의 한 행이 그대로 선택된다. `V{:math}`는 사전 크기, `M{:math}`은 임베딩 차원이다.
 
@@ -106,17 +117,17 @@ CBOW 신경망은 입력층, 투사층(projection layer), 출력층으로 이루
 \mathbf{x}_{\text{cat}} \times W_{V \times M} = \mathbf{v}_{\text{cat}}
 ```
 
-![cat의 원핫 벡터와 W를 곱하면 W의 세 번째 행이 선택되고, cat과 on의 벡터를 투사층에서 평균해 W'로 sat을 예측하는 그림](./images/dl-word-embedding-attention-03.jpg '원핫 벡터와 W의 곱은 W의 한 행을 꺼내는 조회(lookup)이고, 그 행이 단어의 M차원 임베딩 벡터다 (강의 자료)')
+![cat의 원핫 벡터와 W를 곱하면 W의 세 번째 행이 선택되고, cat과 on의 벡터를 투사층에서 평균해 W'로 sat을 예측하는 그림](./images/dl-word-embedding-attention-lookup.svg '원핫 벡터와 W의 곱은 W의 한 행을 꺼내는 조회(lookup)이고, 그 행이 단어의 M차원 임베딩 벡터다')
 
 ==학습이 끝난 뒤 `W{:math}`의 각 행이 각 단어의 `M{:math}`차원 임베딩 벡터가 된다.== 투사층은 주변 단어 벡터들의 평균을 계산하고, `W'_{M \times V}{:math}`와 소프트맥스로 중심 단어의 확률을 출력한다.
 
-![중심 단어 cat과 sat에 대해 주변 단어 쌍을 만든 Skip-gram 데이터셋과, sat 하나로 fat·cat·on·the를 예측하는 신경망](./images/dl-word-embedding-attention-04.jpg '윈도우 크기 2이면 중심 단어 하나에 (중심, 주변) 쌍이 네 개 생긴다 (강의 자료)')
+![중심 단어 cat과 sat에 대해 주변 단어 쌍을 만든 Skip-gram 데이터셋과, 입력층의 sat 하나로 출력층의 fat·cat·on·the를 예측하는 신경망](./images/dl-word-embedding-attention-skipgram.svg '윈도우 크기 2이면 중심 단어 하나에 (중심, 주변) 쌍이 네 개 생긴다')
 
 Skip-gram은 중심 단어 하나로 주변 단어 여럿을 예측한다. 윈도우 크기가 2이면 "The fat cat sat on the mat"에서 중심 단어 cat에 대해 (cat, The), (cat, fat), (cat, sat), (cat, on) 네 쌍이 생긴다. 전반적으로 Skip-gram이 CBOW보다 성능이 좋다고 알려져 있다.
 
 ### GloVe
 
-GloVe(Global Vectors, Pennington, Socher, Manning, 스탠퍼드 대학, 2014)는 카운트 기반 방법과 예측 기반 방법을 모두 사용하는 단어 임베딩 방법이다. 공개된 glove.6B 모델은 위키피디아(2014)와 Gigaword 5 데이터의 60억 토큰으로 학습해 약 40만 개의 단어를 50, 100, 200, 300차원 공간에 표현한다.
+GloVe(Global Vectors, [Pennington, Socher, Manning, 스탠퍼드 대학, 2014](https://aclanthology.org/D14-1162/))는 카운트 기반 방법과 예측 기반 방법을 모두 사용하는 단어 임베딩 방법이다. 공개된 glove.6B 모델은 위키피디아(2014)와 Gigaword 5 데이터의 60억 토큰으로 학습해 약 40만 개의 단어를 50, 100, 200, 300차원 공간에 표현한다.
 
 GloVe의 아이디어는 ==임베딩된 중심 단어 벡터와 주변 단어 벡터의 내적이 전체 말뭉치에서의 동시 등장 확률(의 로그)이 되도록 만드는 것==이다. `X_{ij}{:math}`를 단어 `i{:math}`의 문맥에 단어 `j{:math}`가 등장한 횟수라 하면 다음 관계를 목표로 학습한다.
 
@@ -130,10 +141,10 @@ word2vec이 윈도우 안의 지역 문맥만 사용하는 데 비해, GloVe는 
 
 텐서플로는 두 가지 텍스트 데이터셋을 제공한다.
 
-| 데이터셋 | 내용                                              | 주 용도                             |
-| -------- | ------------------------------------------------- | ----------------------------------- |
-| IMDB     | 영화 댓글 50000개를 긍정·부정으로 레이블링        | 감정 분류(sentiment classification) |
-| Reuters  | 로이터 통신 뉴스 11228개를 46개 토픽으로 레이블링 | 토픽 분류                           |
+| 데이터셋                                                                                        | 내용                                              | 주 용도                             |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------------------- | ----------------------------------- |
+| IMDB                                                                                            | 영화 댓글 50000개를 긍정·부정으로 레이블링        | 감정 분류(sentiment classification) |
+| [Reuters](https://archive.ics.uci.edu/dataset/137/reuters+21578+text+categorization+collection) | 로이터 통신 뉴스 11228개를 46개 토픽으로 레이블링 | 토픽 분류                           |
 
 ### 전처리 과정
 
@@ -395,7 +406,7 @@ print(find_closest_words(dictionary["animal"] - dictionary["lion"] + dictionary[
 print(find_closest_words(dictionary["queen"] - dictionary["king"] + dictionary["actress"])[:5])
 ```
 
-![가까운 단어와 단어 추론 코드, 기대하는 결과 Madrid, tree, actor, 그리고 실제 출력 여섯 줄](./images/dl-word-embedding-attention-14.jpg '단어 벡터의 덧셈·뺄셈으로 수도, 상위 범주, 성별 관계를 추론한다 (강의 자료)')
+![가까운 단어와 단어 추론 코드, 기대하는 결과 Madrid, tree, actor, 그리고 실제 출력 여섯 줄](./images/dl-word-embedding-attention-14.jpg '단어 벡터의 덧셈·뺄셈으로 수도, 상위 범주, 성별 관계를 추론한다')
 
 | 질의                   | 가까운 단어 5개 (유클리드 거리)                |
 | ---------------------- | ---------------------------------------------- |
@@ -410,7 +421,7 @@ seoul - korea + spain의 1위는 기대한 대로 madrid다. 나머지 두 추�
 
 ## seq2seq
 
-==seq2seq(sequence-to-sequence)는 입력 시퀀스로부터 다른 도메인의 시퀀스를 출력하는 모델이다.== 서츠케버(Sutskever, Vinyals, Le)가 2014년에 발표한 자연어 처리 분야의 획기적 아이디어로, 챗봇과 기계 번역에 사용한다. 가변 길이의 문장을 가변 길이의 문장으로 변환한다.
+==seq2seq(sequence-to-sequence)는 입력 시퀀스로부터 다른 도메인의 시퀀스를 출력하는 모델이다.== 서츠케버([Sutskever, Vinyals, Le](https://arxiv.org/abs/1409.3215))가 2014년에 발표한 자연어 처리 분야의 획기적 아이디어로, 챗봇과 기계 번역에 사용한다. 가변 길이의 문장을 가변 길이의 문장으로 변환한다.
 
 | 구성                          | 역할                                                                                      |
 | ----------------------------- | ----------------------------------------------------------------------------------------- |
@@ -419,7 +430,7 @@ seoul - korea + spain의 1위는 기대한 대로 madrid다. 나머지 두 추�
 | 디코더(decoder)               | 컨텍스트 벡터를 받아 번역된 단어를 한 개씩 순차적으로 출력하는 RNN(LSTM)                  |
 | `<sos>`, `<eos>`              | 문장의 시작과 끝을 의미하는 심볼                                                          |
 
-![I am a student를 읽는 LSTM 인코더, 단어 임베딩 표, CONTEXT, sos부터 je suis étudiant eos를 출력하는 LSTM 디코더와 Dense·softmax 층](./images/dl-word-embedding-attention-06.jpg '인코더의 마지막 은닉 상태가 컨텍스트 벡터가 되어 디코더의 초기 상태로 전달된다 (강의 자료)')
+![I am a student를 읽는 LSTM 인코더, 단어 임베딩 표, 컨텍스트 벡터, sos부터 je suis étudiant eos를 출력하는 LSTM 디코더와 Dense·softmax 층](./images/dl-word-embedding-attention-seq2seq.svg '인코더의 마지막 은닉 상태가 컨텍스트 벡터가 되어 디코더의 초기 상태로 전달된다')
 
 인코더의 각 단어는 임베딩층을 거쳐 밀집 벡터(그림의 I = (0.157, -0.25, 0.478, -0.78) 같은 4차원 벡터)로 입력된다. 디코더는 매 시점 은닉 상태를 Dense층과 소프트맥스에 통과시켜 사전의 모든 단어에 대한 확률을 얻고, 가장 확률이 높은 단어를 출력한다.
 
@@ -427,7 +438,7 @@ seoul - korea + spain의 1위는 기대한 대로 madrid다. 나머지 두 추�
 
 ==교사 강요(teacher forcing)는 훈련 과정에서 이전 시점의 디코더 출력 대신 이전 시점의 실제값(정답)을 현재 시점의 디코더 입력으로 주는 방법이다.== 이전 시점의 예측이 틀렸을 때 잘못된 정보가 계속 입력되면 연쇄 작용으로 디코더 전체의 예측이 어려워지기 때문이다.
 
-![저게 저절로 붉어질 리 없다를 읽은 인코더 h1~h5 뒤에, 회색 영역의 정답 단어를 디코더 g2~g7의 입력으로 넣는 학습 단계](./images/dl-word-embedding-attention-05.jpg '학습 단계에서는 회색 영역의 정답 단어(That, can′t, …)를 디코더에 입력한다 (강의 자료)')
+![저게 저절로 붉어질 리 없다를 읽은 인코더 h1~h5 뒤에, 회색 영역의 정답 단어를 디코더 g2~g7의 입력으로 넣는 학습 단계](./images/dl-word-embedding-attention-05.jpg '학습 단계에서는 회색 영역의 정답 단어(That, can′t, …)를 디코더에 입력한다')
 
 | 단계            | 디코더의 다음 시점 입력          |
 | --------------- | -------------------------------- |
@@ -463,7 +474,7 @@ RNN에 기반한 seq2seq 모델에는 두 가지 문제가 있다.
 2. 유사도 벡터 `\mathbf{s} = (s_1, s_2, s_3, s_4){:math}`에 소프트맥스를 적용해 주목 벡터(attention vector) `\mathbf{a}{:math}`를 계산한다. 원소의 합이 1이 된다.
 3. 주목 벡터 `\mathbf{a}{:math}`를 가중치로 사용해 value의 가중합, 즉 문맥 벡터(context vector) `\mathbf{c}{:math}`를 계산한다.
 
-![query 하나와 key 네 개의 유사도, 소프트맥스로 얻은 주목 벡터, value 네 개의 가중합으로 얻은 문맥 벡터](./images/dl-word-embedding-attention-07.jpg 'q는 세 번째 key k3과 가장 유사하므로 세 번째 value v3에 가장 많이 주목한다 (강의 자료)')
+![query 하나와 key 네 개의 유사도, 소프트맥스로 얻은 주목 벡터, value 네 개의 가중합으로 얻은 문맥 벡터](./images/dl-word-embedding-attention-07.jpg 'q는 세 번째 key k3과 가장 유사하므로 세 번째 value v3에 가장 많이 주목한다')
 
 행렬로 쓰면 key와 value를 행으로 쌓은 `K{:math}`, `V{:math}`로 한 줄에 표현된다.
 
@@ -511,21 +522,21 @@ s_4 &= 0.990 \times 0.020 + 0.099 \times 0.999 + 0.099 \times 0.020 = 0.1207
 
 ### 바다나우 어텐션
 
-seq2seq는 모든 정보를 인코더의 마지막 은닉 상태 `\mathbf{h}^5{:math}`에 쥐어짜 넣어야 하는 부담이 있다. 바다나우(Bahdanau, Cho, Bengio, 2014)는 디코더가 인코더의 모든 상태 `\mathbf{h}^1, \mathbf{h}^2, \ldots{:math}`에 접근할 수 있게 허용했다.
+seq2seq는 모든 정보를 인코더의 마지막 은닉 상태 `\mathbf{h}^5{:math}`에 쥐어짜 넣어야 하는 부담이 있다. 바다나우([Bahdanau, Cho, Bengio, 2014](https://arxiv.org/abs/1409.0473))는 디코더가 인코더의 모든 상태 `\mathbf{h}^1, \mathbf{h}^2, \ldots{:math}`에 접근할 수 있게 허용했다.
 
-![저게 저절로 붉어질 리 없다를 읽은 인코더와, 자기 회귀로 That can′t turn red by itself를 생성하는 디코더의 추론 단계](./images/dl-word-embedding-attention-08.jpg '디코더 g6가 itself를 생성하려면 인코더의 h2(저절로)에 주목해야 한다 (강의 자료)')
+![저게 저절로 붉어질 리 없다를 읽은 인코더와, 자기 회귀로 That can′t turn red by itself를 생성하는 디코더의 추론 단계](./images/dl-word-embedding-attention-08.jpg '디코더 g6가 itself를 생성하려면 인코더의 h2(저절로)에 주목해야 한다')
 
 "저게 저절로 붉어질 리 없다"를 "That can't turn red by itself"로 번역할 때, 디코더 `\mathbf{g}^6{:math}`가 itself를 제대로 생성하려면 인코더의 `\mathbf{h}^2{:math}`('저절로')에 주목해야 한다. 주목 벡터가 두 번째 원소에서 가장 큰 값을 가지는 것이 바람직하다.
 
 seq2seq + 어텐션 모델에서 query, key, value는 다음과 같다.
 
-| 이름       | 해당하는 벡터                           |
-| ---------- | --------------------------------------- |
-| Q (query)  | `t{:math}` 시점의 디코더 셀의 은닉 상태 |
-| K (keys)   | 모든 시점의 인코더 셀의 은닉 상태들     |
-| V (values) | 모든 시점의 인코더 셀의 은닉 상태들     |
+| 이름       | 해당하는 벡터                             |
+| ---------- | ----------------------------------------- |
+| Q (query)  | `t-1{:math}` 시점의 디코더 셀의 은닉 상태 |
+| K (keys)   | 모든 시점의 인코더 셀의 은닉 상태들       |
+| V (values) | 모든 시점의 인코더 셀의 은닉 상태들       |
 
-![g5를 query로, h1~h5를 key와 value로 사용해 주목 가중치 0.151, 0.340, 0.162, 0.169, 0.178과 문맥 벡터 c를 계산하고 g6에 전달하는 그림](./images/dl-word-embedding-attention-09.jpg 'g5가 query이고 h1~h5가 key이자 value다 (강의 자료)')
+![g5를 query로, h1~h5를 key와 value로 사용해 주목 가중치 0.151, 0.340, 0.162, 0.169, 0.178과 문맥 벡터 c를 계산하고 g6에 전달하는 그림](./images/dl-word-embedding-attention-09.jpg 'g5가 query이고 h1~h5가 key이자 value다')
 
 `\mathbf{g}^5 = (0.2, 0.9, 0.0){:math}`, `\mathbf{h}^1 = (0.1, 0.0, 0.8){:math}`, `\mathbf{h}^2 = (0.1, 0.9, 0.0){:math}`, `\mathbf{h}^3 = (0.0, 0.1, 0.8){:math}`, `\mathbf{h}^4 = (0.2, 0.1, 0.6){:math}`, `\mathbf{h}^5 = (0.9, 0.0, 0.1){:math}`일 때 계산 과정의 값은 다음과 같다.
 
@@ -537,26 +548,26 @@ seq2seq + 어텐션 모델에서 query, key, value는 다음과 같다.
 
 주목 벡터는 기대대로 두 번째(`\mathbf{h}^2{:math}`, '저절로')에서 가장 크다. 이 문맥 벡터가 다음 시점의 디코더 `\mathbf{g}^6{:math}`에 입력된다.
 
-일반화하면 디코더 `i{:math}`번째 시점에서 query는 `\mathbf{g}^{i-1}{:math}`, key와 value는 `\mathbf{h}^1, \ldots, \mathbf{h}^T{:math}`이고, 주목 가중치 `a_1^i, \ldots, a_T^i{:math}`로 문맥 벡터 `\mathbf{c}^i{:math}`를 만든다. 기본 seq2seq 수식(11.4)에 `\mathbf{c}^i{:math}` 항 하나가 추가된다(11.6).
+일반화하면 디코더 `i{:math}`번째 시점에서 query는 `\mathbf{g}^{i-1}{:math}`, key와 value는 `\mathbf{h}^1, \ldots, \mathbf{h}^T{:math}`이고, 주목 가중치 `a_1^i, \ldots, a_T^i{:math}`로 문맥 벡터 `\mathbf{c}^i{:math}`를 만든다. 기본 seq2seq 수식에 `\mathbf{c}^i{:math}` 항 하나가 추가된다.
 
 ```math
-\text{기본 seq2seq: } \left\{\begin{aligned} \mathbf{g}^i &= \tau_1\left(\mathbf{U}^3\mathbf{g}^{i-1} + \mathbf{U}^1\mathbf{y}^{i-1}\right) \\ \mathbf{o}^i &= \tau_2\left(\mathbf{U}^2\mathbf{g}^i\right) \end{aligned}\right. \qquad (11.4)
+\text{기본 seq2seq: } \left\{\begin{aligned} \mathbf{g}^i &= \tau_1\left(\mathbf{U}^3\mathbf{g}^{i-1} + \mathbf{U}^1\mathbf{y}^{i-1}\right) \\ \mathbf{o}^i &= \tau_2\left(\mathbf{U}^2\mathbf{g}^i\right) \end{aligned}\right.
 ```
 
 ```math
-\text{seq2seq + 어텐션: } \left\{\begin{aligned} \mathbf{g}^i &= \tau_1\left(\mathbf{U}^3\mathbf{g}^{i-1} + \mathbf{U}^1\mathbf{y}^{i-1} + \mathbf{U}^4\mathbf{c}^i\right) \\ \mathbf{o}^i &= \tau_2\left(\mathbf{U}^2\mathbf{g}^i\right) \end{aligned}\right. \qquad (11.6)
+\text{seq2seq + 어텐션: } \left\{\begin{aligned} \mathbf{g}^i &= \tau_1\left(\mathbf{U}^3\mathbf{g}^{i-1} + \mathbf{U}^1\mathbf{y}^{i-1} + \mathbf{U}^4\mathbf{c}^i\right) \\ \mathbf{o}^i &= \tau_2\left(\mathbf{U}^2\mathbf{g}^i\right) \end{aligned}\right.
 ```
 
-![인코더 h1~hT와 주목 가중치 a^i, 디코더 g^{i-1}을 query로 문맥 벡터 c^i를 만드는 일반적인 구조와 두 수식](./images/dl-word-embedding-attention-10.jpg '디코더의 매 시점 g^{i-1}이 query가 되어 c^i를 새로 계산한다 (강의 자료)')
+![인코더 h1~hT와 주목 가중치 a^i, 디코더 g^{i-1}을 query로 문맥 벡터 c^i를 만드는 일반적인 구조와 두 수식](./images/dl-word-embedding-attention-10.jpg '디코더의 매 시점 g^{i-1}이 query가 되어 c^i를 새로 계산한다')
 
 `\tau_1, \tau_2{:math}`는 활성 함수, `\mathbf{y}^{i-1}{:math}`은 이전 시점의 출력 단어다.
 
 > [!TIP]
-> 바다나우 어텐션은 query와 key의 유사도를 작은 신경망(`\mathbf{v}^{\top}\tanh(W_1\mathbf{g}^{i-1} + W_2\mathbf{h}^j){:math}`)으로 계산하는 가산(additive) 방식이다. 위 예처럼 내적으로 유사도를 구하는 방식은 루옹(Luong) 어텐션이고, 트랜스포머의 스케일드 내적 어텐션으로 이어진다.
+> 바다나우 어텐션은 query와 key의 유사도를 작은 신경망(`\mathbf{v}^{\top}\tanh(W_1\mathbf{g}^{i-1} + W_2\mathbf{h}^j){:math}`)으로 계산하는 가산(additive) 방식이다. 위 예처럼 내적으로 유사도를 구하는 방식은 루옹([Luong](https://arxiv.org/abs/1508.04025)) 어텐션이고, 트랜스포머의 스케일드 내적 어텐션으로 이어진다.
 
 ## RNN을 이용한 인코더-디코더 구현
 
-영어 문장을 프랑스어로 번역하는 seq2seq를 LSTM으로 만든다. 데이터는 manythings.org의 영어-프랑스어 병렬 말뭉치 `fra-eng.zip`이다.
+영어 문장을 프랑스어로 번역하는 seq2seq를 LSTM으로 만든다. 데이터는 [manythings.org](https://www.manythings.org/anki/)의 영어-프랑스어 병렬 말뭉치 `fra-eng.zip`이다.
 
 ```python
 import os
@@ -621,7 +632,7 @@ def preprocess_sentence(sent):
     # ex) "I am a student." => "I am a student ."
     sent = re.sub(r"([?.!,¿])", r" \1", sent)
 
-    # (a-z, A-Z, ".", "?", "!", ",") 이들을 제외하고는 전부 공백으로 변환
+    # (a-z, A-Z, ".", "?", "!") 이들을 제외하고는 전부 공백으로 변환
     sent = re.sub(r"[^a-zA-Z!.?]+", r" ", sent)
 
     # 다수 개의 공백을 하나의 공백으로 치환
@@ -652,6 +663,11 @@ def load_preprocessed_data():
                 break
 
     return encoder_input, decoder_input, decoder_target
+
+sents_en_in, sents_fra_in, sents_fra_out = load_preprocessed_data()
+print('인코더의 입력 :', sents_en_in[:5])
+print('디코더의 입력 :', sents_fra_in[:5])
+print('디코더의 레이블 :', sents_fra_out[:5])
 ```
 
 `unicodedata.normalize('NFD', s)`는 é를 e와 결합용 악센트 기호로 분해하고, 범주가 `Mn`(결합 문자)인 기호를 버리면 악센트가 사라진다. `fra.txt`의 한 줄은 영어, 프랑스어, 출처가 탭으로 구분되어 있다.
@@ -684,6 +700,11 @@ decoder_target = pad_sequences(decoder_target, padding="post")
 
 src_vocab_size = len(tokenizer_en.word_index) + 1
 tar_vocab_size = len(tokenizer_fra.word_index) + 1
+
+print('인코더의 입력의 크기(shape) :', encoder_input.shape)
+print('디코더의 입력의 크기(shape) :', decoder_input.shape)
+print('디코더의 레이블의 크기(shape) :', decoder_target.shape)
+print('영어 단어 집합의 크기 : {:d}, 프랑스어 단어 집합의 크기 : {:d}'.format(src_vocab_size, tar_vocab_size))
 ```
 
 ```text
@@ -716,6 +737,12 @@ decoder_target_train = decoder_target[:-n_of_val]
 encoder_input_test = encoder_input[-n_of_val:]
 decoder_input_test = decoder_input[-n_of_val:]
 decoder_target_test = decoder_target[-n_of_val:]
+
+print('encoder input 샘플 출력: ', encoder_input[30997])
+print('decoder input 샘플 출력: ', decoder_input[30997])
+print('decoder target 샘플 출력:', decoder_target[30997])
+print('훈련 source 데이터의 크기 :', encoder_input_train.shape)
+print('테스트 source 데이터의 크기 :', encoder_input_test.shape)
 ```
 
 ```text
@@ -740,7 +767,7 @@ hidden_units = 64
 # 인코더
 encoder_inputs = Input(shape=(None,))
 enc_emb = Embedding(src_vocab_size, embedding_dim)(encoder_inputs)  # 임베딩 층
-enc_masking = Masking(mask_value=0.0)(enc_emb)  # 패딩 0은 연산에서 제외
+enc_masking = Masking(mask_value=0.0)(enc_emb)  # 모든 값이 0인 시점은 연산에서 제외
 encoder_lstm = LSTM(hidden_units, return_state=True)  # 상태값 리턴을 위해 return_state는 True
 encoder_outputs, state_h, state_c = encoder_lstm(enc_masking)  # 은닉 상태와 셀 상태를 리턴
 encoder_states = [state_h, state_c]  # 인코더의 은닉 상태와 셀 상태를 저장
@@ -749,7 +776,7 @@ encoder_states = [state_h, state_c]  # 인코더의 은닉 상태와 셀 상태�
 decoder_inputs = Input(shape=(None,))
 dec_emb_layer = Embedding(tar_vocab_size, embedding_dim)  # 임베딩 층
 dec_emb = dec_emb_layer(decoder_inputs)
-dec_masking = Masking(mask_value=0.0)(dec_emb)  # 패딩 0은 연산에서 제외
+dec_masking = Masking(mask_value=0.0)(dec_emb)  # 모든 값이 0인 시점은 연산에서 제외
 
 # 상태값 리턴을 위해 return_state는 True,
 # 모든 시점에 대해서 단어를 예측하기 위해 return_sequences는 True
@@ -772,14 +799,14 @@ model.fit(x=[encoder_input_train, decoder_input_train], y=decoder_target_train,
           batch_size=128, epochs=50)
 ```
 
-| 부분                                  | 의미                                                                                        |
-| ------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `Input(shape=(None,))`                | 길이를 정하지 않은 정수 시퀀스                                                              |
-| `Masking(mask_value=0.0)`             | 임베딩 결과가 0인 패딩 위치를 LSTM 연산에서 건너뛴다                                        |
-| 인코더 `return_state=True`            | 출력과 함께 마지막 은닉 상태 `state_h`, 셀 상태 `state_c`를 돌려준다. 이 둘이 컨텍스트 벡터 |
-| 디코더 `initial_state=encoder_states` | 인코더의 마지막 상태로 디코더를 시작한다                                                    |
-| 디코더 `return_sequences=True`        | 모든 시점의 은닉 상태를 출력해 시점마다 단어를 예측한다                                     |
-| `Dense(tar_vocab_size, softmax)`      | 매 시점 프랑스어 7873개 단어의 확률                                                         |
+| 부분                                  | 의미                                                                                                                                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Input(shape=(None,))`                | 길이를 정하지 않은 정수 시퀀스                                                                                                                                                            |
+| `Masking(mask_value=0.0)`             | 임베딩 벡터의 모든 값이 0인 시점을 LSTM 연산에서 건너뛴다. 0번(패딩)의 임베딩 벡터도 학습되는 값이어서 0이 아니므로, 패딩을 확실히 제외하려면 `Embedding(..., mask_zero=True)`를 사용한다 |
+| 인코더 `return_state=True`            | 출력과 함께 마지막 은닉 상태 `state_h`, 셀 상태 `state_c`를 돌려준다. 이 둘이 컨텍스트 벡터                                                                                               |
+| 디코더 `initial_state=encoder_states` | 인코더의 마지막 상태로 디코더를 시작한다                                                                                                                                                  |
+| 디코더 `return_sequences=True`        | 모든 시점의 은닉 상태를 출력해 시점마다 단어를 예측한다                                                                                                                                   |
+| `Dense(tar_vocab_size, softmax)`      | 매 시점 프랑스어 7873개 단어의 확률                                                                                                                                                       |
 
 ### 추론용 모델
 
@@ -890,7 +917,7 @@ for seq_index in [3, 50, 100, 300, 1001]:
 
 `decoded_sentence[1:-5]`는 앞의 공백과 끝의 `<eos>` 다섯 글자를 잘라 낸다.
 
-![입력 문장, 정답 문장, 번역 문장 다섯 쌍](./images/dl-word-embedding-attention-11.jpg '짧은 문장은 정확히 번역하지만 형용사나 동사가 다른 단어로 바뀌는 경우가 많다 (강의 자료)')
+![입력 문장, 정답 문장, 번역 문장 다섯 쌍](./images/dl-word-embedding-attention-11.jpg '짧은 문장은 정확히 번역하지만 형용사나 동사가 다른 단어로 바뀌는 경우가 많다')
 
 | 입력                | 정답                                  | 번역                     |
 | ------------------- | ------------------------------------- | ------------------------ |

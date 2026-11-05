@@ -29,7 +29,7 @@
     <path d="M300 140 L318 140" stroke="#1d1d1f" stroke-width="1.5"/>
     <path d="M312 135 L320 140 L312 145" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
     <rect x="326" y="70" width="18" height="140" fill="#0a84ff" fill-opacity="0.15" stroke="#0a84ff"/>
-    <text x="335" y="230" text-anchor="middle" font-size="12" fill="#1d1d1f">flatten</text>
+    <text x="335" y="230" text-anchor="middle" font-size="12" fill="#1d1d1f">펼치기(flatten)</text>
     <text x="335" y="248" text-anchor="middle" font-size="11" fill="#6e6e73">48차원</text>
     <text x="335" y="264" text-anchor="middle" font-size="11" fill="#6e6e73">(P²·C = 16·3)</text>
   </g>

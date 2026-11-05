@@ -7,15 +7,33 @@ seriesOrder: 7
 summary: 순환 신경망 없이 어텐션만으로 만든 트랜스포머의 인코더·디코더 구조, 위치 인코딩, 셀프 어텐션과 멀티 헤드 어텐션 계산 예제, 마스킹, 층별 가중치 수를 정리했다.
 ---
 
-트랜스포머(Transformer)는 2017년 논문 「Attention Is All You Need」가 제안한, 어텐션만으로 이루어진 신경망 구조다. 이 글은 인코더와 디코더가 어떤 층으로 이루어지는지, 위치 인코딩과 셀프 어텐션이 행렬로 어떻게 계산되는지를 작은 수치 예제로 따라가고, 학습할 가중치 수까지 계산한다.
+## 들어가기 전에
+
+어텐션을 붙인 seq2seq도 인코더와 디코더는 여전히 RNN이다. RNN은 t번째 은닉 상태를 계산하려면 t−1번째 은닉 상태가 있어야 하므로, 단어 50개로 된 문장은 50번의 계산을 차례로 거친다. GPU가 수천 개의 연산을 동시에 처리할 수 있어도 문장 안에서는 병렬화할 수 없고, 긴 문장과 큰 말뭉치로 학습할수록 이 순차 계산이 병목이 된다.
+
+거리 문제도 남는다. "The animal didn't cross the street because it was too tired"에서 it이 animal을 가리킨다는 관계는 두 단어 사이의 은닉 상태를 하나씩 거쳐야 전달되고, 그 사이 정보는 희미해진다. seq2seq의 어텐션은 디코더와 인코더 사이에만 있었고, 같은 문장 안 단어끼리의 관계는 RNN이 순서대로 전달했다.
+
+트랜스포머는 순환 구조를 없애고 문장 전체를 행렬 하나로 넣는다. ==셀프 어텐션은 문장 안의 모든 단어 쌍이 서로 얼마나 주목할지를 행렬 곱 한 번으로 계산한다.== 어떤 두 단어든 한 층 안에서 직접 연결되고, 모든 위치를 병렬로 계산한다. 대신 RNN이 구조로 담고 있던 순서 정보가 사라지므로 이를 입력에 따로 더해야 한다.
+
+이 글이 답하려는 질문은 세 가지다. 순환 없이 단어의 순서를 어떻게 표현하는가. 셀프 어텐션과 멀티 헤드 어텐션은 행렬로 어떻게 계산되는가. 디코더는 학습 단계에서 정답 문장을 한꺼번에 받으면서도 아직 생성하지 않은 뒤쪽 단어를 어떻게 보지 않는가. 작은 수치 예제로 계산을 따라가고, 학습할 가중치 수까지 계산한다.
+
+| 순서 | 내용                                                      |
+| ---- | --------------------------------------------------------- |
+| 1    | seq2seq와 트랜스포머 비교, 인코더·디코더 구조와 세 MHA 층 |
+| 2    | 단어 임베딩과 사인·코사인 위치 인코딩                     |
+| 3    | 셀프 어텐션과 멀티 헤드 어텐션의 계산 예제                |
+| 4    | Add & Norm, 위치별 FF 층, 인코더 블록의 가중치 수         |
+| 5    | 디코더의 Masked MHA와 인코더-디코더 MHA, 전체 동작        |
+
+seq2seq, 교사 강요, query-key-value 어텐션은 [단어 임베딩과 seq2seq, 어텐션](/memo/dl-word-embedding-attention)에서 다뤘고, Add & Norm의 잔차 연결은 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)의 ResNet과 같은 구조다. 행렬 곱과 softmax 계산에 익숙하면 수치 예제를 손으로 검산할 수 있다.
 
 ## seq2seq에서 트랜스포머로
 
 [단어 임베딩과 seq2seq, 어텐션](/memo/dl-word-embedding-attention)에서 seq2seq와 어텐션을 정리했다. seq2seq는 인코더 RNN이 입력 문장을 읽고 디코더 RNN이 출력 문장을 만드는 구조이고, 어텐션은 디코더가 단어를 만드는 시각마다 인코더의 모든 은닉 상태 중 어디에 주목할지를 계산해 문맥 벡터를 만든다. seq2seq 어텐션에서 query는 디코더의 은닉 상태 하나, 즉 벡터 하나였다.
 
-트랜스포머는 2017년 구글이 자연어 처리를 위해 제안한 모델이다[^vaswani]. ==트랜스포머는 컨볼루션 신경망과 순환 신경망의 구성 요소를 모두 없애고 어텐션(주목)만으로 신경망을 구현한다.== 논문은 2023년 11월 12일 구글 스칼라 기준으로 96,297회 인용됐다.
+트랜스포머는 2017년 구글이 자연어 처리를 위해 제안한 모델이다[^vaswani]. ==트랜스포머는 컨볼루션 신경망과 순환 신경망의 구성 요소를 모두 없애고 어텐션(주목)만으로 신경망을 구현한다.== 이후 BERT, GPT, ViT 같은 모델이 모두 이 구조를 바탕으로 만들어졌다.
 
-![논문 「Attention Is All You Need」의 첫 쪽: 저자 8명과 초록](./images/dl-transformer-01.jpg '논문 초록: 순환과 컨볼루션 없이 어텐션 메커니즘만 쓴다 (강의 자료)')
+![논문 「Attention Is All You Need」의 첫 쪽: 저자 8명과 초록](./images/dl-transformer-01.jpg '논문 초록: 순환과 컨볼루션 없이 어텐션 메커니즘만 쓴다')
 
 | 구분           | 기존 seq2seq                        | 트랜스포머                                      |
 | -------------- | ----------------------------------- | ----------------------------------------------- |
@@ -24,11 +42,21 @@ summary: 순환 신경망 없이 어텐션만으로 만든 트랜스포머의 �
 | 순서 정보      | 순환 구조 자체가 순서를 반영        | 위치 인코딩을 더해 반영                         |
 | 단어 사이 관계 | 디코더가 인코더에 주목하는 어텐션만 | 셀프 어텐션으로 같은 문장 안의 단어끼리도 주목  |
 
-![기존 seq2seq(인코더 하나, 디코더 하나)와 트랜스포머(인코더 6개, 디코더 6개, 마지막 인코더 출력이 모든 디코더로 연결)의 비교 그림](./images/dl-transformer-03.jpg '"I am a student"를 "je suis étudiant"로 번역할 때 마지막 인코더의 출력이 여섯 디코더 모두에 전달된다 (강의 자료)')
+논문은 길이 `n{:math}`, 차원 `d{:math}`인 시퀀스를 처리하는 층을 세 기준으로 비교한다. 순차 연산 수는 병렬화할 수 없는 단계의 수이고, 최대 경로 길이는 두 위치의 정보가 서로 닿기까지 거쳐야 하는 연산 수다.
+
+| 층 종류     | 층당 계산량                     | 순차 연산 수  | 최대 경로 길이       |
+| ----------- | ------------------------------- | ------------- | -------------------- |
+| 셀프 어텐션 | `O(n^2 \cdot d){:math}`         | `O(1){:math}` | `O(1){:math}`        |
+| 순환층      | `O(n \cdot d^2){:math}`         | `O(n){:math}` | `O(n){:math}`        |
+| 컨볼루션층  | `O(k \cdot n \cdot d^2){:math}` | `O(1){:math}` | `O(\log_k n){:math}` |
+
+컨볼루션층의 `k{:math}`는 커널 크기이고, 최대 경로 길이는 팽창(dilated) 컨볼루션을 쌓은 경우다. 기계 번역의 문장처럼 길이 `n{:math}`이 표현 차원 `d{:math}`보다 작은 경우에는 셀프 어텐션의 계산량이 순환층보다 작고, 어떤 두 단어든 한 번의 연산으로 연결된다.
+
+![기존 seq2seq(인코더 하나, 디코더 하나)와 트랜스포머(인코더 6개, 디코더 6개, 마지막 인코더 출력이 모든 디코더로 연결)의 비교 그림](./images/dl-transformer-03.jpg '"I am a student"를 "je suis étudiant"로 번역할 때 마지막 인코더의 출력이 여섯 디코더 모두에 전달된다')
 
 ## 모델 구조
 
-![트랜스포머 전체 구조도: 왼쪽 인코더 블록(Multi-Head Attention, Feed Forward, Add & Norm)과 오른쪽 디코더 블록(Masked Multi-Head Attention, Multi-Head Attention, Feed Forward), 그 위의 Linear와 Softmax](./images/dl-transformer-02.jpg '인코더 블록과 디코더 블록을 각각 N번 쌓고, 디코더 출력은 Linear와 Softmax를 거쳐 단어 확률이 된다 (강의 자료)')
+![트랜스포머 전체 구조도: 왼쪽 인코더 블록(멀티 헤드 어텐션, 피드포워드, 각 층 뒤의 더하기·정규화)과 오른쪽 디코더 블록(마스크를 적용한 멀티 헤드 어텐션, 멀티 헤드 어텐션, 피드포워드), 그 위의 선형 변환과 softmax](./images/dl-transformer-architecture.svg '인코더 블록과 디코더 블록을 각각 N번 쌓고, 디코더 출력은 선형 변환(Linear)과 softmax를 거쳐 단어 확률이 된다. 더하기·정규화는 Add & Norm 층이다')
 
 트랜스포머는 6개의 인코더 층과 6개의 디코더 층으로 이루어지고, 디코더는 인코더로부터 정보를 전달받아 출력 결과를 만든다. 디코더는 시작 심볼 `<sos>`를 입력받아 종료 심볼 `<eos>`가 나올 시각까지 연산을 반복한다.
 
@@ -69,7 +97,7 @@ RNN은 단어를 순서대로 처리하지만 트랜스포머는 모든 단어�
 \mathbf{X} = \mathbf{S} + \mathbf{P}
 ```
 
-![단어 I, am, a, student의 임베딩 벡터 S 위에 위치 인코딩 P를 더해 X를 만드는 그림](./images/dl-transformer-04.jpg '단어마다 임베딩 벡터에 같은 크기의 위치 인코딩 벡터를 원소별로 더한다 (강의 자료)')
+![단어 I, am, a, student의 임베딩 벡터 S 위에 위치 인코딩 P를 더해 X를 만드는 그림](./images/dl-transformer-positional-sum.svg '단어마다 임베딩 벡터에 같은 크기의 위치 인코딩 벡터를 원소별로 더한다')
 
 `\mathbf{P}{:math}`는 삼각함수로 만든다. 위치 `pos{:math}`의 단어에서 짝수 번째 차원은 사인, 홀수 번째 차원은 코사인 값을 쓴다.
 
@@ -78,13 +106,13 @@ p_{pos,2i} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right), \qquad
 p_{pos,2i+1} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
 ```
 
-![위치 인코딩 행렬 P의 (pos, i) 원소를 단어 임베딩 행렬에 더하는 그림](./images/dl-transformer-06.jpg '행은 단어의 위치 pos, 열은 차원 i이고 P의 (pos, i) 원소를 같은 자리에 더한다 (강의 자료)')
+![위치 인코딩 행렬 P의 (pos, i) 원소를 단어 임베딩 행렬에 더하는 그림](./images/dl-transformer-06.jpg '행은 단어의 위치 pos, 열은 차원 i이고 P의 (pos, i) 원소를 같은 자리에 더한다')
 
 차원 번호 `i{:math}`가 작을수록 분모가 작아 주기가 짧고, 클수록 주기가 길다. 그래서 각 위치는 주기가 다른 사인·코사인 값의 조합으로 고유한 패턴을 갖는다.
 
-![T=6, d_model=8인 경우 S 행렬, 위치 인코딩 행렬 P의 히트맵, pos=2와 pos=3 행의 값을 그린 그래프](./images/dl-transformer-05.jpg 'T=6, d_model=8: pos=2와 pos=3 행의 값 패턴이 서로 다르다 (강의 자료)')
+![T=6, d_model=8인 경우 S 행렬, 위치 인코딩 행렬 P의 히트맵, pos=2와 pos=3 행의 값을 그린 그래프](./images/dl-transformer-05.jpg 'T=6, d_model=8: pos=2와 pos=3 행의 값 패턴이 서로 다르다')
 
-![T=10, d_model=64인 경우 위치 인코딩 행렬의 히트맵과 pos=2, pos=3 행의 그래프](./images/dl-transformer-07.jpg 'T=10, d_model=64: 앞쪽 차원은 위치에 따라 값이 크게 바뀌고 뒤쪽 차원은 거의 일정하게 반복된다 (강의 자료)')
+![T=10, d_model=64인 경우 위치 인코딩 행렬의 히트맵과 pos=2, pos=3 행의 그래프](./images/dl-transformer-07.jpg 'T=10, d_model=64: 앞쪽 차원은 위치에 따라 값이 크게 바뀌고, 뒤쪽 차원은 위치와 관계없이 사인 0, 코사인 1 근처에 머문다')
 
 ==위치 인코딩을 더하면 같은 단어라도 문장 안의 위치에 따라 트랜스포머에 들어가는 벡터 값이 달라지므로, 트랜스포머의 입력은 순서 정보가 반영된 임베딩 벡터가 된다.==
 
@@ -92,6 +120,21 @@ p_{pos,2i+1} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
 <summary>그래프의 첫 값 검산</summary>
 
 `d_{model} = 8{:math}`, `pos = 2{:math}`에서 0번 차원은 `\sin(2/10000^0) = \sin 2 \approx 0.909{:math}`, 1번 차원은 `\cos 2 \approx -0.416{:math}`이다. 그림의 pos = 2 그래프가 0.9 근처에서 시작해 −0.4 근처로 내려가는 모양과 맞는다. pos = 3이면 `\sin 3 \approx 0.141{:math}`, `\cos 3 \approx -0.990{:math}`이라 그래프가 0.14에서 −1.0으로 떨어진다.
+
+</details>
+
+<details>
+<summary>사인·코사인 쌍이 상대 위치를 표현하는 원리</summary>
+
+차원 쌍 `(2i, 2i+1){:math}`의 각진동수를 `\omega_i = 1/10000^{2i/d_{model}}{:math}`로 두면, 위치 `pos{:math}`의 값은 `(\sin \omega_i pos, \cos \omega_i pos){:math}`이다. 삼각함수의 덧셈 정리로 `k{:math}`칸 떨어진 위치의 값을 쓰면 다음과 같다.
+
+```math
+\begin{pmatrix} \sin \omega_i (pos + k) \\ \cos \omega_i (pos + k) \end{pmatrix} =
+\begin{pmatrix} \cos \omega_i k & \sin \omega_i k \\ -\sin \omega_i k & \cos \omega_i k \end{pmatrix}
+\begin{pmatrix} \sin \omega_i pos \\ \cos \omega_i pos \end{pmatrix}
+```
+
+가운데 행렬은 `k{:math}`에만 의존하고 `pos{:math}`와는 무관하다. 그래서 `\mathbf{p}_{pos+k}{:math}`는 `\mathbf{p}_{pos}{:math}`의 선형 변환으로 표현되고, 논문은 이 성질 덕분에 모델이 상대 위치에 주목하는 법을 쉽게 학습할 것이라 보았다.
 
 </details>
 
@@ -120,7 +163,7 @@ p_{pos,2i+1} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
 
 논문은 `d_{key} = d_{value} = d_{model}/h = 512/8 = 64{:math}`로 둔다. `h{:math}`는 병렬로 처리하는 헤드의 개수다.
 
-![Scaled Dot-Product Attention 구조도: Q와 K의 MatMul, Scale, Mask(선택), SoftMax, V와의 MatMul](./images/dl-transformer-08.jpg 'Q와 K를 곱하고 √d_key로 나눈 뒤 softmax를 거쳐 V에 곱한다. Mask는 디코더에서만 쓴다 (강의 자료)')
+![스케일드 점곱 어텐션 구조도: Q와 K의 행렬 곱, 스케일, 마스크(선택), softmax, V와의 행렬 곱](./images/dl-transformer-scaled-dot-product.svg 'Q와 K를 곱하고 √d_key로 나눈 뒤 softmax를 거쳐 V에 곱한다. 마스크는 디코더에서만 쓴다')
 
 > [!TIP] √d_key로 나누는 까닭
 > 내적 `\mathbf{q}\cdot\mathbf{k}{:math}`는 차원 `d_{key}{:math}`가 클수록 값의 크기가 커진다. 값이 크면 softmax가 한 원소에 거의 1을 몰아주어 기울기가 아주 작아지므로, 논문은 `\sqrt{d_{key}}{:math}`로 나눠 크기를 맞춘다. 그래서 이 연산의 이름이 scaled dot-product attention이다.
@@ -152,7 +195,7 @@ p_{pos,2i+1} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
 
 `\mathbf{Q}\mathbf{K}^\mathsf{T}{:math}`를 `\sqrt{2}{:math}`로 나눠 행마다 softmax를 적용하면 주목 행렬이 된다.
 
-![QK^T 행렬과 softmax(QK^T/√d_key) 주목 행렬의 값](./images/dl-transformer-09.jpg '주목 행렬의 각 행은 합이 1인 주목 벡터다 (강의 자료)')
+![QK^T 행렬과 softmax(QK^T/√d_key) 주목 행렬의 값](./images/dl-transformer-09.jpg '주목 행렬의 각 행은 합이 1인 주목 벡터다')
 
 주목 행렬의 행은 각 단어의 주목 벡터다. 첫 행 두 번째 열의 0.2024는 첫 단어 '저게'가 두 번째 단어 '저절로'에 0.2024만큼 주목해야 한다는 뜻이다. 마지막 단어 '없다'는 자기 자신에 0.8444를 준다. 주목 행렬에 `\mathbf{V}{:math}`를 곱하면 문맥 행렬이 나온다.
 
@@ -205,7 +248,7 @@ Q, K, V, A, C = self_attention(X, Wq, Wk, Wv, 2)
 
 멀티 헤드 어텐션(Multi-head Attention, MHA)은 헤드를 여러 개 갖는다. 논문 기준으로는 512차원의 단어 벡터를 8로 나눈 64차원의 Q, K, V로 바꿔 어텐션을 수행한다. 각 헤드는 고유한 변환 행렬 `\mathbf{W}_i^Q, \mathbf{W}_i^K, \mathbf{W}_i^V{:math}`로 셀프 어텐션을 독립적으로 수행하고, ==헤드끼리 서로 다른 관계를 포착해 상호 보완하므로 헤드 하나보다 성능이 좋다.==
 
-![Multi-Head Attention 구조도: V, K, Q가 각각 Linear를 거쳐 h개의 Scaled Dot-Product Attention으로 들어가고 Concat 뒤 Linear를 지난다](./images/dl-transformer-10.jpg 'h개의 헤드가 각자 어텐션을 계산하고 결과를 이어 붙인 뒤 선형 변환한다 (강의 자료)')
+![멀티 헤드 어텐션 구조도: V, K, Q가 각각 선형 변환을 거쳐 h개의 스케일드 점곱 어텐션으로 들어가고, 결과를 이어 붙인 뒤 선형 변환을 지난다](./images/dl-transformer-multi-head.svg 'h개의 헤드가 각자 어텐션을 계산하고 결과를 이어 붙인 뒤 선형 변환한다')
 
 헤드 번호 `i{:math}`를 붙여 식을 다시 쓰면 다음과 같다.
 
@@ -217,7 +260,7 @@ Q, K, V, A, C = self_attention(X, Wq, Wk, Wv, 2)
 \end{aligned}
 ```
 
-![MHA 식에서 Concatenate 결과가 T×d_model, W^O가 d_model×d_model 크기임을 표시한 그림](./images/dl-transformer-11.jpg '헤드 h개의 T×d_value 결과를 이으면 T×d_model이 되고, d_model×d_model 크기의 W^O를 곱한다 (강의 자료)')
+![MHA 식에서 Concatenate 결과가 T×d_model, W^O가 d_model×d_model 크기임을 표시한 그림](./images/dl-transformer-11.jpg '헤드 h개의 T×d_value 결과를 이으면 T×d_model이 되고, d_model×d_model 크기의 W^O를 곱한다')
 
 헤드가 두 개(`h = 2{:math}`)이고 두 헤드의 문맥 행렬이 다음과 같다고 가정한다. `\mathbf{C}_1{:math}`은 앞 절에서 계산한 행렬이다.
 
@@ -228,7 +271,7 @@ Q, K, V, A, C = self_attention(X, Wq, Wk, Wv, 2)
 
 두 행렬을 열 방향으로 이어 붙이면 `5 \times 4{:math}` 행렬이 되고, `4 \times 4{:math}` 행렬 `\mathbf{W}^O{:math}`를 곱하면 최종 문맥 행렬 `\mathbf{C}{:math}`가 된다.
 
-![Concatenate(C1, C2)에 4×4 행렬 W^O를 곱해 5×4 문맥 행렬 C를 얻는 계산](./images/dl-transformer-12.jpg '이어 붙인 행렬에 W^O를 곱해 입력 X와 같은 T×d_model 크기로 돌려놓는다 (강의 자료)')
+![Concatenate(C1, C2)에 4×4 행렬 W^O를 곱해 5×4 문맥 행렬 C를 얻는 계산](./images/dl-transformer-12.jpg '이어 붙인 행렬에 W^O를 곱해 입력 X와 같은 T×d_model 크기로 돌려놓는다')
 
 ### Add & Norm 층
 
@@ -238,7 +281,7 @@ Add는 잔차 연결이고 Norm은 층 정규화다. MHA의 입력 `\mathbf{X}{:
 \mathbf{X}' = \mathrm{Norm}(\mathbf{X} + \mathbf{C}) = \mathrm{Norm}(\mathbf{X} + \mathrm{MHA}(\mathbf{X}))
 ```
 
-![층 정규화와 배치 정규화가 정규화하는 범위를 미니 배치 N개의 3차원 블록에 색칠해 비교한 그림](./images/dl-transformer-13.jpg '층 정규화는 샘플 하나의 모든 특징을, 배치 정규화는 특징 하나를 미니 배치 전체에 걸쳐 정규화한다 (강의 자료)')
+![층 정규화와 배치 정규화가 정규화하는 범위를 미니 배치 N개의 3차원 블록에 색칠해 비교한 그림](./images/dl-transformer-13.jpg '층 정규화는 샘플 하나의 모든 특징을, 배치 정규화는 특징 하나를 미니 배치 전체에 걸쳐 정규화한다')
 
 | 정규화                           | 평균·분산을 구하는 범위          | 특징                                             |
 | -------------------------------- | -------------------------------- | ------------------------------------------------ |
@@ -293,7 +336,7 @@ MHA의 Q, K, V 행렬은 `512 \times 64{:math}` 크기가 헤드 8개마다 3개
 
 예를 들어 출력 문장 `<SOS> That can't turn red by itself <EOS>`가 디코더에 입력되고(`T = 8{:math}`), `\mathbf{Q}\mathbf{K}^\mathsf{T}{:math}`가 아래와 같으며 `d_{key} = 2{:math}`라고 가정한다. 마스킹한 행렬의 −는 아주 큰 음수다.
 
-![8×8 QK^T 행렬, 대각선 위를 −로 가린 masking(QK^T), softmax 결과 하삼각 주목 행렬](./images/dl-transformer-14.jpg 'i번째 단어는 그 이전에 나온 단어에만 주목한다 (강의 자료)')
+![8×8 QK^T 행렬, 대각선 위를 −로 가린 masking(QK^T), softmax 결과 하삼각 주목 행렬](./images/dl-transformer-14.jpg 'i번째 단어는 자기 자신과 그 앞의 단어에만 주목한다')
 
 첫 행은 자기 자신에만 1.000을 주고, 둘째 행은 앞의 두 단어에 0.507과 0.493을 나눠 준다. 대각선 위쪽은 모두 0이다.
 
@@ -309,9 +352,9 @@ MHA의 Q, K, V 행렬은 `512 \times 64{:math}` 크기가 헤드 8개마다 3개
 \end{aligned}
 ```
 
-![인코더 블록의 출력이 디코더 두 번째 MHA의 K와 V로 들어가고, Q는 디코더의 Masked MHA 출력에서 오는 연결을 표시한 구조도](./images/dl-transformer-15.jpg '인코더 쪽 MHA는 K, V, Q가 모두 같은 입력이고, 디코더 두 번째 MHA는 K와 V만 인코더에서 온다 (강의 자료)')
+![인코더 블록의 출력이 디코더 두 번째 MHA의 K와 V로 들어가고, Q는 디코더의 Masked MHA 출력에서 오는 연결을 표시한 구조도](./images/dl-transformer-kvq-sources.svg '인코더 쪽 MHA는 K, V, Q가 모두 같은 입력이고, 디코더 두 번째 MHA는 K와 V만 인코더에서 온다')
 
-언어 번역에서는 출력 문장의 정보를 가진 query가 입력 문장의 정보를 가진 key와 value에 얼마나 주목하는지를 계산하는 효과가 있다. [seq2seq 어텐션](/memo/dl-word-embedding-attention)이 하던 일을 행렬 단위로 한꺼번에 하는 층이다.
+언어 번역에서는 출력 문장의 정보를 가진 query가 입력 문장의 정보를 가진 key와 value에 얼마나 주목하는지를 계산하는 효과가 있다. [단어 임베딩과 seq2seq, 어텐션](/memo/dl-word-embedding-attention)에서 다룬 seq2seq 어텐션이 하던 일을 행렬 단위로 한꺼번에 하는 층이다.
 
 ### 디코더 블록의 가중치 수
 
@@ -325,7 +368,7 @@ MHA의 Q, K, V 행렬은 `512 \times 64{:math}` 크기가 헤드 8개마다 3개
 
 ## 전체 동작
 
-![인코더 블록 1부터 N까지와 디코더 블록 1부터 N까지를 쌓고, 마지막 인코더 블록의 출력이 모든 디코더 블록의 Multi-Head Attention에 연결되며 맨 위에 Linear와 softmax가 있는 그림](./images/dl-transformer-16.jpg 'N개의 인코더 블록과 N개의 디코더 블록(논문은 N=6)으로 구성된 트랜스포머 (강의 자료)')
+![인코더 블록 1부터 N까지와 디코더 블록 1부터 N까지를 쌓고, 마지막 인코더 블록의 출력이 모든 디코더 블록의 멀티 헤드 어텐션에 연결되며 맨 위에 선형 변환과 softmax가 있는 그림](./images/dl-transformer-stacked-blocks.svg 'N개의 인코더 블록과 N개의 디코더 블록(논문은 N=6)으로 구성된 트랜스포머')
 
 전체 흐름을 순서대로 적으면 다음과 같다.
 
@@ -340,4 +383,4 @@ MHA의 Q, K, V 행렬은 `512 \times 64{:math}` 크기가 헤드 8개마다 3개
 
 다음 글 [비전 트랜스포머(ViT)의 패치 임베딩과 분류 구조](/memo/dl-vision-transformer)에서는 이 트랜스포머의 인코더를 영상 분류에 그대로 옮긴 비전 트랜스포머(ViT)를 다룬다.
 
-[^vaswani]: A. Vaswani et al., "Attention Is All You Need", NeurIPS 2017.
+[^vaswani]: A. Vaswani et al., ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762), NeurIPS 2017.

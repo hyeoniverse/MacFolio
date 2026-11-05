@@ -7,7 +7,23 @@ seriesOrder: 8
 summary: 영상을 패치로 잘라 트랜스포머 인코더에 넣는 비전 트랜스포머(ViT)의 구조, 트랜스포머의 장거리 의존·확장성·설명 가능성, CIFAR-10 분류 실습과 데이터 증강 효과를 정리했다.
 ---
 
-비전 트랜스포머(Vision Transformer, ViT)는 영상 분류에 트랜스포머를 적용한 모델이다. 셀프 어텐션, 멀티 헤드 어텐션, 층 정규화 같은 구성 요소는 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)에서 정리했고, 이 글은 그 인코더를 영상에 맞게 바꾼 부분과 Keras 실습을 중심으로 본다.
+## 들어가기 전에
+
+컨볼루션은 3×3 같은 작은 창 안의 이웃 화소만 본다. 영상 왼쪽 위의 새 부리와 오른쪽 아래의 꼬리를 함께 고려하려면 층을 여러 번 쌓아 수용장을 넓혀야 하고, 두 위치의 관계는 중간 층을 거치며 간접적으로만 반영된다. 트랜스포머의 셀프 어텐션은 한 층에서 모든 위치 쌍의 관계를 직접 계산하고, 자연어 처리에서는 모델과 데이터를 키울수록 성능이 계속 오른다는 결과가 나왔다. 이 구조를 영상 분류에도 쓸 수 있는지가 출발점이다.
+
+영상을 트랜스포머에 그대로 넣기는 어렵다. 224×224 영상의 화소 50,176개를 각각 토큰으로 쓰면 주목 행렬의 원소가 약 25억 개가 된다. 비전 트랜스포머(Vision Transformer, ViT)는 영상을 16×16 패치로 잘라 196개 토큰으로 만들고, 패치 하나를 문장의 단어 하나처럼 다뤄 이 문제를 피한다.
+
+이 글이 답하려는 질문은 두 가지다. 패치로 자른 영상은 어떤 과정을 거쳐 트랜스포머 인코더의 입력이 되고 부류 하나로 출력되는가. 그리고 지역성 같은 가정을 구조에 담지 않은 ViT는 CNN과 비교해 데이터 양에 따라 어떤 성능을 보이는가. 마지막에는 CIFAR-10처럼 작은 데이터셋에서 ViT를 직접 학습해 그 차이를 확인한다.
+
+| 순서 | 내용                                                                    |
+| ---- | ----------------------------------------------------------------------- |
+| 1    | 컴퓨터 비전이 CNN에서 트랜스포머로 옮겨 간 흐름과 과업별 모델           |
+| 2    | ViT의 구조: 패치 임베딩, class 토큰, 위치 임베딩, 인코더 블록, MLP head |
+| 3    | 사전 학습 데이터 양에 따른 ViT와 CNN 비교                               |
+| 4    | 트랜스포머의 특성: 장거리 의존, 확장성, 설명 가능성                     |
+| 5    | Keras로 CIFAR-10 분류, 영상 확대와 데이터 증강                          |
+
+셀프 어텐션, 멀티 헤드 어텐션, 층 정규화, 위치별 FF 층은 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)에서 다뤘고, ViT는 그 인코더를 거의 그대로 쓴다. 비교 대상인 CNN의 수용장과 데이터 증강은 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서 다뤘다.
 
 ## 컨볼루션 신경망에서 트랜스포머로
 
@@ -20,17 +36,17 @@ summary: 영상을 패치로 잘라 트랜스포머 인코더에 넣는 비전 �
 
 어텐션 증강 컨볼루션 신경망(attention augmented convolutional network)[^bello]은 컨볼루션 연산으로 특징 맵을 만들고, 컨볼루션이 만든 특징 맵과 트랜스포머의 MHA로 만든 특징 맵을 이어 붙여 다음 층으로 넘긴다. 이 방식은 기존 ResNet이나 SENet(Squeeze-and-Excitation Network)보다 우수한 성능을 보였다.
 
-![입력 특징 맵에서 컨볼루션으로 만든 특징 맵(파란색)과 Multi-head 자기 주목(MHA)으로 만든 특징 맵(주황색)을 이어 붙이는 그림](./images/dl-vision-transformer-01.jpg '컨볼루션 신경망이 백본이고 트랜스포머가 보조하는 방식 (강의 자료)')
+![입력 특징 맵에서 컨볼루션으로 만든 특징 맵(파란색)과 Multi-head 자기 주목(MHA)으로 만든 특징 맵(주황색)을 이어 붙이는 그림](./images/dl-vision-transformer-01.jpg '컨볼루션 신경망이 백본이고 트랜스포머가 보조하는 방식')
 
 2020년 이후에는 이렇게 어정쩡하게 결합하는 형태에서 벗어나려는 시도가 이어졌다. 대표적인 성공 사례는 다음과 같다.
 
-| 과업 | 모델                          | 하는 일                                          |
-| ---- | ----------------------------- | ------------------------------------------------ |
-| 분류 | ViT[^vit]                     | 영상 전체를 대표하는 부류 하나를 고른다          |
-| 검출 | DETR (Carion 2020)            | 물체마다 바운딩 박스와 부류를 출력한다           |
-| 분할 | SETR (Zheng 2021)             | 화소 단위로 부류를 출력한다                      |
-| 추적 | MOTR, TransTrack, TrackFormer | 프레임 사이에서 같은 물체를 이어 간다            |
-| 백본 | Swin 트랜스포머               | 하나의 모델로 분류, 검출, 분할, 추적을 모두 푼다 |
+| 과업 | 모델                                                                                                                                      | 하는 일                                            |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| 분류 | ViT[^vit]                                                                                                                                 | 영상 전체를 대표하는 부류 하나를 고른다            |
+| 검출 | DETR ([Carion 2020](https://arxiv.org/abs/2005.12872))                                                                                    | 물체마다 바운딩 박스와 부류를 출력한다             |
+| 분할 | SETR ([Zheng 2021](https://arxiv.org/abs/2012.15840))                                                                                     | 화소 단위로 부류를 출력한다                        |
+| 추적 | [MOTR](https://arxiv.org/abs/2105.03247), [TransTrack](https://arxiv.org/abs/2012.15460), [TrackFormer](https://arxiv.org/abs/2101.02702) | 프레임 사이에서 같은 물체를 이어 간다              |
+| 백본 | [Swin 트랜스포머](https://arxiv.org/abs/2103.14030)                                                                                       | 분류, 검출, 분할 등 여러 과업에 공통 백본으로 쓴다 |
 
 검출과 분할은 [물체 검출의 성능 평가와 RCNN·YOLO](/memo/dl-object-detection)와 [의미 분할의 성능 평가와 FCN·DeconvNet·U-Net](/memo/dl-segmentation)에서 컨볼루션 신경망 기반 모델로 다뤘다.
 
@@ -40,11 +56,11 @@ summary: 영상을 패치로 잘라 트랜스포머 인코더에 넣는 비전 �
 
 영상 분류는 컴퓨터 비전의 가장 기본적인 문제다. 2012년 AlexNet 이후 컨볼루션 신경망이 성능을 획기적으로 끌어올렸다([컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)). 영상 분류에 트랜스포머를 적용해서도 성능 향상을 얻을 수 있는지에 대해, ==ViT는 트랜스포머만으로도 컨볼루션 신경망에 견줄 만한 분류 성능을 낼 수 있다는 긍정적인 답을 주었다.==
 
-![고양이 영상이 신경망 모델을 거쳐 부류별 확률(0 사람 0.001, 1 자전거 0.01, 12 고양이 0.93 등)로 출력되는 그림](./images/dl-vision-transformer-18.jpg '영상 분류는 부류마다 확률을 출력하고 가장 큰 부류를 답으로 고른다 (강의 자료)')
+![고양이 영상이 신경망 모델을 거쳐 부류별 확률(0 사람 0.001, 1 자전거 0.01, 12 고양이 0.93 등)로 출력되는 그림](./images/dl-vision-transformer-18.jpg '영상 분류는 부류마다 확률을 출력하고 가장 큰 부류를 답으로 고른다')
 
 ViT는 논문 「An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale」에서 제안됐고, 2021년 ICLR(International Conference on Learning Representations)에서 발표됐다.
 
-![ViT 논문 첫 쪽의 제목, 저자(Google Research, Brain Team), 초록](./images/dl-vision-transformer-02.jpg '초록: CNN에 기대지 않고 영상 패치의 시퀀스에 순수 트랜스포머를 적용해도 분류를 잘한다 (강의 자료)')
+![ViT 논문 첫 쪽의 제목, 저자(Google Research, Brain Team), 초록](./images/dl-vision-transformer-02.jpg '초록: CNN에 기대지 않고 영상 패치의 시퀀스에 순수 트랜스포머를 적용해도 분류를 잘한다')
 
 ViT는 트랜스포머가 분류 문제를 얼마나 잘 푸는지 확인할 목적으로 기존 트랜스포머 구조를 최대한 그대로 재현했다. 다만 영상은 문장과 특성이 크게 다르므로 그 차이를 고려해 입력 부분을 설계했다.
 
@@ -59,9 +75,9 @@ ViT는 트랜스포머가 분류 문제를 얼마나 잘 푸는지 확인할 목
 
 ### ViT의 구조
 
-![ViT 전체 구조도: 영상을 9개 패치로 잘라 선형 투영하고 위치 임베딩과 class 토큰(0번)을 더해 Transformer Encoder에 넣고, MLP Head가 부류를 출력한다. 오른쪽은 L번 반복하는 인코더 블록(Norm, Multi-Head Attention, Norm, MLP, 잔차 연결)](./images/dl-vision-transformer-03.jpg 'ViT는 트랜스포머의 인코더만 쓰고 디코더는 없다 (강의 자료)')
+![ViT 전체 구조도: 영상을 9개 패치로 잘라 펼친 패치를 선형 투영하고, 0번 class 토큰과 위치 임베딩을 더해 트랜스포머 인코더에 넣으면 MLP head가 부류(새, 공, 자동차 …)를 출력한다. 오른쪽은 L번 반복하는 인코더 블록(층 정규화, 멀티 헤드 어텐션, 덧셈, 층 정규화, MLP, 덧셈)](./images/dl-vision-transformer-architecture.svg 'ViT는 트랜스포머의 인코더만 쓰고 디코더는 없다')
 
-ViT는 [트랜스포머](/memo/dl-transformer)에서 인코더만 가져온다. 출력이 문장이 아니라 부류 하나이므로 디코더가 필요 없다.
+ViT는 [트랜스포머의 셀프 어텐션과 멀티 헤드 어텐션](/memo/dl-transformer)에서 다룬 트랜스포머의 인코더만 가져온다. 출력이 문장이 아니라 부류 하나이므로 디코더가 필요 없다.
 
 ### 패치 임베딩
 
@@ -75,7 +91,7 @@ ViT는 [트랜스포머](/memo/dl-transformer)에서 인코더만 가져온다. 
 \qquad \mathbf{E} \in \mathbb{R}^{(P^2 \cdot C) \times D},\ \mathbf{E}_{pos} \in \mathbb{R}^{(N+1) \times D}
 ```
 
-![패치 9개를 Linear Projection of Flattened Patches로 투영하고 0번 class 토큰과 1~9번 위치 임베딩을 붙이는 그림과 z0 식](./images/dl-vision-transformer-04.jpg '패치 N개와 class 토큰 1개, 모두 N+1개의 D차원 토큰이 인코더에 들어간다 (강의 자료)')
+![패치 9개를 펼쳐 선형 투영하고 0번 class 토큰과 0~9번 위치 임베딩을 붙이는 그림과 z0 식](./images/dl-vision-transformer-embedding.svg '패치 N개와 class 토큰 1개, 모두 N+1개의 D차원 토큰이 인코더에 들어간다')
 
 | 구성 요소                   | 역할                                                                                    |
 | --------------------------- | --------------------------------------------------------------------------------------- |
@@ -88,6 +104,14 @@ ViT는 [트랜스포머](/memo/dl-transformer)에서 인코더만 가져온다. 
 224×224 컬러 영상을 `P = 16{:math}`로 자르면 `N = 224 \cdot 224 / 16^2 = 196{:math}`개 패치가 나오고, 패치 하나는 `16^2 \cdot 3 = 768{:math}`차원이다. ViT-Base는 `D = 768{:math}`이므로 `\mathbf{E}{:math}`는 `768 \times 768{:math}`, `\mathbf{E}_{pos}{:math}`는 class 토큰을 포함해 `197 \times 768{:math}` 크기다.
 
 </details>
+
+논문은 크기가 다른 세 모델을 비교한다. 이름 뒤의 숫자는 패치 크기로, ViT-L/16은 ViT-Large에 `16 \times 16{:math}` 패치를 쓴 모델이다. 패치가 작을수록 토큰 수가 늘어 계산량이 커진다.
+
+| 모델      | 층 수 `L{:math}` | 은닉 차원 `D{:math}` | MLP 차원 | 헤드 수 | 매개변수 수 |
+| --------- | ---------------- | -------------------- | -------- | ------- | ----------- |
+| ViT-Base  | 12               | 768                  | 3072     | 12      | 86M         |
+| ViT-Large | 24               | 1024                 | 4096     | 16      | 307M        |
+| ViT-Huge  | 32               | 1280                 | 5120     | 16      | 632M        |
 
 > [!NOTE]
 > 원래 트랜스포머는 위치 인코딩을 사인·코사인 식으로 고정했지만, ViT의 위치 임베딩 `\mathbf{E}_{pos}{:math}`는 학습으로 정하는 파라미터다.
@@ -103,7 +127,7 @@ ViT의 인코더 블록은 층 정규화(LN), 멀티 헤드 셀프 어텐션(MSA
 \end{aligned}
 ```
 
-![ViT의 Transformer Encoder 블록: Embedded Patches → Norm → Multi-Head Attention → 덧셈 → Norm → MLP → 덧셈을 L번 반복하는 그림과 z'_l, z_l 식](./images/dl-vision-transformer-06.jpg '정규화를 MSA와 MLP 앞에 두고, 각 층의 입력을 출력에 더한다 (강의 자료)')
+![ViT의 트랜스포머 인코더 블록: 임베딩된 패치 → 층 정규화 → 멀티 헤드 셀프 어텐션 → 덧셈 → 층 정규화 → MLP → 덧셈을 L번 반복하는 그림과 z′ℓ, zℓ 식](./images/dl-vision-transformer-encoder-block.svg '정규화를 MSA와 MLP 앞에 두고, 각 층의 입력을 출력에 더한다')
 
 > [!TIP] 정규화 위치
 > 원래 트랜스포머는 `\mathrm{Norm}(\mathbf{X} + \mathrm{MHA}(\mathbf{X})){:math}`처럼 잔차를 더한 뒤 정규화(post-norm)하지만, ViT는 MSA와 MLP에 넣기 전에 정규화(pre-norm)한다. 식에서 LN이 괄호 안쪽에 있는 차이다.
@@ -112,7 +136,7 @@ ViT의 인코더 블록은 층 정규화(LN), 멀티 헤드 셀프 어텐션(MSA
 
 층 정규화(layer normalization)는 모든 영상 임베딩을 채널(특징 차원) 기준으로 정규화한다. 토큰 하나의 `D{:math}`개 값으로 평균과 표준편차를 구하므로 배치 크기와 무관하다.
 
-![배치 정규화는 특징 하나를 배치 방향으로, 층 정규화는 샘플 하나를 특징 방향으로 평균·표준편차를 구하는 예시 그림](./images/dl-vision-transformer-05.jpg '배치 정규화는 모든 학습 샘플에 같은 통계를, 층 정규화는 모든 특징 차원에 같은 통계를 쓴다. (강의 자료)')
+![배치 정규화는 특징 하나를 배치 방향으로, 층 정규화는 샘플 하나를 특징 방향으로 평균·표준편차를 구하는 예시 그림](./images/dl-vision-transformer-normalization.svg '배치 정규화는 모든 학습 샘플에 같은 통계를, 층 정규화는 모든 특징 차원에 같은 통계를 쓴다.')
 
 | 정규화      | 통계를 구하는 방향                | 그림에서                        |
 | ----------- | --------------------------------- | ------------------------------- |
@@ -127,7 +151,7 @@ MSA(Multi-Head Self Attention)는 패치 임베딩과 위치 임베딩을 더한
 \mathrm{Attention}(\mathbf{Q}, \mathbf{K}, \mathbf{V}) = \mathrm{softmax}\left(\frac{\mathbf{Q}\mathbf{K}^\mathsf{T}}{\sqrt{d_k}}\right)\mathbf{V}
 ```
 
-![Q와 K^T의 곱을 √d_k로 나눠 softmax를 적용하고 V를 곱해 Attention Value Matrix를 얻는 행렬 그림](./images/dl-vision-transformer-07.jpg '패치 토큰마다 다른 모든 패치 토큰에 주목한 결과를 얻는다 (강의 자료)')
+![Q와 K^T의 곱을 √d_k로 나눠 softmax를 적용하고 V를 곱해 어텐션 값 행렬 α를 얻는 행렬 그림](./images/dl-vision-transformer-attention-matrix.svg '패치 토큰마다 다른 모든 패치 토큰에 주목한 결과를 얻는다')
 
 MSA의 출력에는 잔차 연결(residual connection)로 입력을 더한다(add 연산).
 
@@ -139,7 +163,7 @@ MLP는 두 개의 선형 층으로 구성되며, 첫 번째 층에서 임베딩 
 \mathrm{MLP}(\mathbf{X}) = \mathrm{GELU}(\mathbf{X}\mathbf{W}_1 + \mathbf{b}_1)\,\mathbf{W}_2 + \mathbf{b}_2
 ```
 
-![d_model 차원 벡터 x가 d_ff 차원 y로 넓어졌다가 다시 d_model 차원으로 줄어드는 그림](./images/dl-vision-transformer-08.jpg 'd_model 차원을 d_ff 차원으로 넓혔다가 다시 d_model 차원으로 줄인다 (강의 자료)')
+![d_model 차원 벡터 x가 d_ff 차원 y로 넓어졌다가 다시 d_model 차원으로 줄어드는 그림](./images/dl-vision-transformer-08.jpg 'd_model 차원을 d_ff 차원으로 넓혔다가 다시 d_model 차원으로 줄인다')
 
 GELU(Gaussian Error Linear Unit)는 입력에 표준 정규분포의 누적 분포 함수 값을 곱한 `\mathrm{GELU}(x) = x\,\Phi(x){:math}`로, 0 근처에서 ReLU보다 매끄럽게 변한다. 뒤의 실습 코드도 `tf.nn.gelu`를 쓴다.
 
@@ -151,11 +175,11 @@ GELU(Gaussian Error Linear Unit)는 입력에 표준 정규분포의 누적 분�
 \mathbf{y} = \mathrm{LN}(\mathbf{z}_L^0)
 ```
 
-![Class token+PE 0, Patch1+PE 1, …, Patch9+PE 9가 Transformer Encoder X 12를 지나고, z_{12,0}만 정규화해 MLP로 1000차원 부류를 출력하는 그림](./images/dl-vision-transformer-09.jpg '인코더 12개를 지난 뒤 0번 위치(class 토큰)의 출력만 MLP head에 넣어 1000개 부류를 분류한다 (강의 자료)')
+![class 토큰 + PE 0, 패치 1 + PE 1, …, 패치 9 + PE 9가 트랜스포머 인코더 12개를 지나고, z_{12,0}만 정규화해 MLP로 1000차원 부류를 출력하는 그림](./images/dl-vision-transformer-mlp-head.svg '인코더 12개를 지난 뒤 0번 위치(class 토큰)의 출력만 MLP head에 넣어 1000개 부류를 분류한다')
 
 ### 결론: 데이터가 많을수록 유리하다
 
-![왼쪽: 사전 학습 데이터셋(ImageNet, ImageNet-21k, JFT-300M)별 ImageNet Top1 정확도에서 BiT와 ViT 크기별 비교. 오른쪽: JFT 사전 학습 샘플 수(10M~300M)에 따른 5-shot 정확도에서 ViT와 ResNet(BiT) 비교](./images/dl-vision-transformer-10.jpg '사전 학습 데이터가 작으면 BiT(ResNet)가 앞서고, JFT-300M처럼 커지면 큰 ViT가 앞선다 (강의 자료)')
+![왼쪽: 사전 학습 데이터셋(ImageNet, ImageNet-21k, JFT-300M)별 ImageNet Top1 정확도에서 BiT와 ViT 크기별 비교. 오른쪽: JFT 사전 학습 샘플 수(10M~300M)에 따른 5-shot 정확도에서 ViT와 ResNet(BiT) 비교](./images/dl-vision-transformer-10.jpg '사전 학습 데이터가 작으면 BiT(ResNet)가 앞서고, JFT-300M처럼 커지면 큰 ViT가 앞선다')
 
 | 사전 학습 데이터                  | 더 나은 모델                                  |
 | --------------------------------- | --------------------------------------------- |
@@ -179,28 +203,28 @@ GELU(Gaussian Error Linear Unit)는 입력에 표준 정규분포의 누적 분�
 
 "우리는 \_\_에서 배불리 먹고 실컷 놀다 배를 마을로 날랐다"라는 문장에서 빈칸이 '강'이면 '배'는 타는 배이고, '농장'이면 먹는 배다. '배'의 뜻을 정하려면 멀리 떨어진 빈칸의 단어를 참고해야 한다.
 
-![격자 위의 두 화소(파란색, 빨간색)가 각자의 컨볼루션 수용장 안의 이웃만 참고하는 그림](./images/dl-vision-transformer-11.jpg '컨볼루션은 한 층에서 가까운 이웃만 보므로 멀리 떨어진 두 화소의 관계는 층을 여러 번 거쳐야 반영된다 (강의 자료)')
+![격자 위의 두 화소(파란색, 빨간색)가 각자의 컨볼루션 수용장 안의 이웃만 참고하는 그림](./images/dl-vision-transformer-11.jpg '컨볼루션은 한 층에서 가까운 이웃만 보므로 멀리 떨어진 두 화소의 관계는 층을 여러 번 거쳐야 반영된다')
 
-![문장의 '배를'이 '우리는', '강에서', '마을로', '날랐다' 등 모든 단어와 선으로 연결되고 '강에서'에 가장 진하게 주목하는 그림](./images/dl-vision-transformer-12.jpg "트랜스포머는 자기 주목으로 '배를'과 멀리 떨어진 '강에서'의 관계를 바로 계산한다 (강의 자료)")
+![문장의 '배를'이 '우리는', '강에서', '마을로', '날랐다' 등 모든 단어와 선으로 연결되고 '강에서'에 가장 진하게 주목하는 그림](./images/dl-vision-transformer-12.jpg "트랜스포머는 자기 주목으로 '배를'과 멀리 떨어진 '강에서'의 관계를 바로 계산한다")
 
 트랜스포머는 지역 정보와 전역 정보를 모두 능숙하게 처리한다는 연구 결과도 있다[^cordonnier]. 아래 그림은 층마다 각 헤드가 주목하는 영역이다. 앞쪽 층에는 가운데 화소 근처에 주목하는 헤드가 많고, 뒤쪽 층으로 갈수록 넓은 범위에 주목하는 헤드가 늘어난다.
 
-![Layer 1부터 Layer 6까지 가운데 화소를 기준으로 헤드별 주목 영역을 색 원으로 그린 그림](./images/dl-vision-transformer-13.jpg '한 층 안에서도 가까운 곳을 보는 헤드와 먼 곳을 보는 헤드가 함께 있다 (강의 자료)')
+![Layer 1부터 Layer 6까지 가운데 화소를 기준으로 헤드별 주목 영역을 색 원으로 그린 그림](./images/dl-vision-transformer-13.jpg '한 층 안에서도 가까운 곳을 보는 헤드와 먼 곳을 보는 헤드가 함께 있다')
 
 ### 확장성
 
 | 분야        | 확장성 실험 결과                                                                                                                                 |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 자연어 처리 | 모델 크기, 데이터 크기, 계산 자원 사이의 관계를 체계적으로 실험한 결과 큰 스케일이 유리하다는 결론. 확장성 경쟁 중                               |
-| 컴퓨터 비전 | 5백만~20억 개 매개변수의 트랜스포머를 3천만~30억 장 데이터셋으로 실험한 결과, 모델 크기·데이터 크기·계산 자원을 함께 늘리면 성능이 오른다[^zhai] |
+| 컴퓨터 비전 | 5백만~20억 개 매개변수의 트랜스포머를 1백만~30억 장 데이터셋으로 실험한 결과, 모델 크기·데이터 크기·계산 자원을 함께 늘리면 성능이 오른다[^zhai] |
 
 ==모델이 작으면 모델 크기가 병목이 되어 데이터셋을 키워도 성능이 오르지 않는다.== 세 요소를 함께 키워야 한다.
 
 ### 설명 가능성
 
-자기 주목 행렬을 활용하면 모델이 어디를 보고 판단했는지 더 쉽고 정확하게 설명할 수 있다. [컨볼루션 신경망 글](/memo/dl-cnn-transfer-learning)의 Grad-CAM처럼 따로 기울기를 계산하지 않아도 주목 값 자체가 근거가 된다. 예를 들어 미세 분류(fine-grained classification)를 하는 TransFG[^transfg]는 새의 부리나 개의 코끝처럼 부류를 가르는 특정한 곳에 집중한다.
+자기 주목 행렬을 활용하면 모델이 어디를 보고 판단했는지 더 쉽고 정확하게 설명할 수 있다. [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서 다룬 Grad-CAM처럼 따로 기울기를 계산하지 않아도 주목 값 자체가 근거가 된다. 예를 들어 미세 분류(fine-grained classification)를 하는 TransFG[^transfg]는 새의 부리나 개의 코끝처럼 부류를 가르는 특정한 곳에 집중한다.
 
-![새 세 장과 개 세 장 위에 TransFG가 주목한 부위를 빨간 상자로 표시한 그림](./images/dl-vision-transformer-14.jpg '미세 분류에서 트랜스포머는 부리, 눈, 코끝처럼 종을 구별하는 부위에 주목한다 (강의 자료)')
+![새 세 장과 개 세 장 위에 TransFG가 주목한 부위를 빨간 상자로 표시한 그림](./images/dl-vision-transformer-14.jpg '미세 분류에서 트랜스포머는 부리, 눈, 코끝처럼 종을 구별하는 부위에 주목한다')
 
 ## 분류를 위한 트랜스포머 실습
 
@@ -229,7 +253,7 @@ N = 6                                  # 인코더 블록의 개수
 
 패치 크기가 4이므로 `p2 = (32 // 4) ** 2 = 64{:python}`개 패치가 나온다. 각 헤드의 key 차원은 `d_model // h = 8{:python}`이다.
 
-![실습 신경망 구조: Embedded patches 위에 Norm, Multi-Head Attention, Add, Norm, Feed Forward, Add로 된 블록을 N개 쌓고 Feed Forward와 softmax로 끝나는 그림](./images/dl-vision-transformer-15.jpg '실습 신경망은 인코더 블록 N개 위에 완전 연결층과 softmax를 둔다 (강의 자료)')
+![실습 신경망 구조: 임베딩된 패치 위에 층 정규화, 멀티 헤드 어텐션, 덧셈, 층 정규화, 피드 포워드, 덧셈으로 된 블록을 N개 쌓고 피드 포워드와 softmax로 끝나는 그림](./images/dl-vision-transformer-practice-network.svg '실습 신경망은 인코더 블록 N개 위에 완전 연결층과 softmax를 둔다')
 
 ### 패치 생성과 패치 인코딩
 
@@ -350,7 +374,7 @@ plt.show()
 
 `model.layers[1]{:python}`은 `Input` 다음의 `Normalization` 층이고, `adapt(x_train){:python}`으로 학습 데이터의 평균과 분산을 미리 계산해 둔다. 출력층이 `activation='softmax'`로 확률을 내므로 손실 함수는 기본값(`from_logits=False`)인 `SparseCategoricalCrossentropy()`를 쓴다. 배치 크기 128로 100세대 학습한다.
 
-![정확률 75.15%와 정확도 그래프(학습 0.96까지 오르고 검증 0.75 근처에서 정체), 손실 그래프(검증 손실이 20세대 뒤로 다시 오름)](./images/dl-vision-transformer-16.jpg '테스트 정확률 75.15%: 학습 정확도만 오르고 검증 손실은 다시 커지는 과적합이 보인다 (강의 자료)')
+![정확률 75.15%와 정확도 그래프(학습 0.96까지 오르고 검증 0.75 근처에서 정체), 손실 그래프(검증 손실이 20세대 뒤로 다시 오름)](./images/dl-vision-transformer-16.jpg '테스트 정확률 75.15%: 학습 정확도만 오르고 검증 손실은 다시 커지는 과적합이 보인다')
 
 테스트 정확률은 75.15%로 컨볼루션 신경망보다 열등한 성능이다. 학습 정확도는 0.96까지 오르지만 검증 정확도는 0.75에서 멈추고, 검증 손실은 20세대 무렵부터 다시 오른다. CIFAR-10은 5만 장뿐이라 앞 절의 결론처럼 데이터가 적을 때 ViT가 불리하다.
 
@@ -392,18 +416,18 @@ def create_vit_classifier():
 
 증강 층은 학습할 때만 무작위 변환을 적용하고 평가할 때는 입력을 그대로 통과시킨다.
 
-![정확률 81.86%와 정확도 그래프(학습과 검증이 함께 0.8 이상으로 오름), 손실 그래프(검증 손실이 0.55 근처까지 내려감)](./images/dl-vision-transformer-17.jpg '테스트 정확률 81.86%: 학습과 검증 곡선의 간격이 좁아져 과적합이 줄었다 (강의 자료)')
+![정확률 81.86%와 정확도 그래프(학습과 검증이 함께 0.8 이상으로 오름), 손실 그래프(검증 손실이 0.55 근처까지 내려감)](./images/dl-vision-transformer-17.jpg '테스트 정확률 81.86%: 학습과 검증 곡선의 간격이 좁아져 과적합이 줄었다')
 
 정확률이 75.15%에서 81.86%로 크게 올랐다. ==데이터 증강은 데이터가 적어 불리한 ViT의 약점을 보완한다.== 검증 정확도가 40세대 무렵까지 학습 정확도보다 높게 함께 오르고, 검증 손실도 다시 커지지 않는다.
 
 다음 글 [KcELECTRA 미세 조정으로 만든 악성 댓글 분류 모델](/memo/dl-toxic-comment-kcelectra)에서는 트랜스포머 인코더 기반 언어 모델 KcELECTRA로 악성 댓글 분류 모델을 만든 과정을 다룬다.
 
-[^bello]: I. Bello et al., "Attention Augmented Convolutional Networks", ICCV 2019.
+[^bello]: I. Bello et al., ["Attention Augmented Convolutional Networks"](https://arxiv.org/abs/1904.09925), ICCV 2019.
 
-[^vit]: A. Dosovitskiy et al., "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale", ICLR 2021.
+[^vit]: A. Dosovitskiy et al., ["An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"](https://arxiv.org/abs/2010.11929), ICLR 2021.
 
-[^cordonnier]: J.-B. Cordonnier et al., "On the Relationship between Self-Attention and Convolutional Layers", ICLR 2020.
+[^cordonnier]: J.-B. Cordonnier et al., ["On the Relationship between Self-Attention and Convolutional Layers"](https://arxiv.org/abs/1911.03584), ICLR 2020.
 
-[^zhai]: X. Zhai et al., "Scaling Vision Transformers", CVPR 2022.
+[^zhai]: X. Zhai et al., ["Scaling Vision Transformers"](https://arxiv.org/abs/2106.04560), CVPR 2022.
 
-[^transfg]: J. He et al., "TransFG: A Transformer Architecture for Fine-grained Recognition", 2021.
+[^transfg]: J. He et al., ["TransFG: A Transformer Architecture for Fine-grained Recognition"](https://arxiv.org/abs/2103.07976), AAAI 2022.

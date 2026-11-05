@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="260" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">컨볼루션층과 ReLU를 이어 쌓기</text>
+<polygon points="30,70 60,40 70,40 40,70" fill="#f4c7c7" stroke="#1d1d1f" opacity="0.85"/><polygon points="40,70 70,40 70,190 40,220" fill="#f4c7c7" stroke="#1d1d1f"/><rect x="30" y="70" width="10" height="150" fill="#f4c7c7" stroke="#1d1d1f" opacity="0.7"/>
+<polygon points="200,82 230,52 240,52 210,82" fill="#c9d8f2" stroke="#1d1d1f" opacity="0.85"/><polygon points="210,82 240,52 240,178 210,208" fill="#c9d8f2" stroke="#1d1d1f"/><rect x="200" y="82" width="10" height="126" fill="#c9d8f2" stroke="#1d1d1f" opacity="0.7"/>
+<polygon points="410,94 440,64 454,64 424,94" fill="#cfe8c7" stroke="#1d1d1f" opacity="0.85"/><polygon points="424,94 454,64 454,166 424,196" fill="#cfe8c7" stroke="#1d1d1f"/><rect x="410" y="94" width="14" height="102" fill="#cfe8c7" stroke="#1d1d1f" opacity="0.7"/>
+  <g font-size="12" fill="#6e6e73">
+    <text x="76" y="64">32</text><text x="62" y="214">32</text><text x="28" y="238">3</text>
+    <text x="246" y="76">28</text><text x="232" y="196">28</text><text x="198" y="226">6</text>
+    <text x="460" y="88">24</text><text x="448" y="180">24</text><text x="406" y="214">10</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.3" marker-end="url(#a)">
+    <line x1="94" y1="110" x2="190" y2="110"/><line x1="262" y1="110" x2="400" y2="110"/><line x1="478" y1="110" x2="572" y2="110"/>
+  </g>
+  <g font-size="12.5" fill="#1d1d1f">
+    <text x="100" y="134">컨볼루션</text><text x="100" y="151" fill="#ff3b30">ReLU</text>
+    <text x="100" y="170" fill="#0a84ff">예: 5×5×3</text><text x="100" y="186" fill="#0a84ff">필터 6개</text>
+    <text x="276" y="134">컨볼루션</text><text x="276" y="151" fill="#ff3b30">ReLU</text>
+    <text x="276" y="170" fill="#34c759">예: 5×5×6</text><text x="276" y="186" fill="#34c759">필터 10개</text>
+    <text x="276" y="204" fill="#6e6e73" font-size="11.5">(필터 깊이 = 입력 채널 6)</text>
+    <text x="490" y="134">컨볼루션</text><text x="490" y="151" fill="#ff3b30">ReLU</text>
+  </g>
+  <text x="590" y="114" font-size="16" fill="#6e6e73">…</text>
+</svg>

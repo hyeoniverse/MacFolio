@@ -46,7 +46,7 @@
 	<line x1="520" y1="78" x2="520" y2="128" stroke="#1d1d1f" stroke-dasharray="4 3" marker-end="url(#a)" />
 	<line x1="502" y1="202" x2="502" y2="164" stroke="#1d1d1f" marker-end="url(#a)" />
 	<rect x="478" y="130" width="70" height="32" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="2" />
-	<text x="513" y="151" font-size="12" fill="#0a84ff" text-anchor="middle">concat</text>
+	<text x="513" y="151" font-size="12" fill="#0a84ff" text-anchor="middle">이어 붙임</text>
 	<line x1="548" y1="146" x2="572" y2="146" stroke="#1d1d1f" marker-end="url(#a)" />
 	<rect x="574" y="130" width="50" height="32" rx="6" fill="#ffffff" stroke="#1d1d1f" />
 	<text x="599" y="151" font-size="12" fill="#1d1d1f" text-anchor="middle">1024</text>
