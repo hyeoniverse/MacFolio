@@ -98,3 +98,35 @@ export function tocPosition(entries: readonly TocEntry[], items: readonly number
 		next: items[current + 1] ?? -1,
 	};
 }
+
+/**
+ * 제목 바로 아래 단계의 하위 제목들 (본문 제목 번호): 그 제목 뒤에서 같은 단계 이하의 제목이 나오기 전까지의 제목 가운데 가장 얕은 단계.
+ * 예: ## 아래에 ###가 있으면 ###들, ### 없이 ####만 있으면 ####들. 목차 막대의 경로에 마우스를 올리면 펼치는 목록이다
+ */
+export function tocChildren(entries: readonly TocEntry[], index: number): number[] {
+	const parent = entries[index];
+	if (!parent) return [];
+	const inside: number[] = [];
+	for (let next = index + 1; next < entries.length && entries[next].level > parent.level; next++) inside.push(next);
+	const level = Math.min(...inside.map((next) => entries[next].level));
+	return inside.filter((next) => entries[next].level === level);
+}
+
+/** 제목의 부모: 앞으로 거슬러 올라가며 처음 만나는 더 얕은 단계의 제목. 없으면 -1 */
+function parentOf(entries: readonly TocEntry[], index: number): number {
+	for (let before = index - 1; before >= 0; before--) if (entries[before].level < entries[index].level) return before;
+	return -1;
+}
+
+/**
+ * 같은 계층의 제목들 (그 제목 자신을 포함, 본문 순서): 같은 부모 아래의 바로 아래 단계 제목들.
+ * 부모가 없는 맨 위 단계(## 절)면 부모 없는 같은 단계의 제목들. 목차 막대에서 지금 읽는 제목에 마우스를 올리면 펼치는 목록이다
+ */
+export function tocSiblings(entries: readonly TocEntry[], index: number): number[] {
+	if (!entries[index]) return [];
+	const parent = parentOf(entries, index);
+	if (parent >= 0) return tocChildren(entries, parent);
+	return entries.flatMap((entry, other) =>
+		entry.level === entries[index].level && parentOf(entries, other) < 0 ? [other] : []
+	);
+}

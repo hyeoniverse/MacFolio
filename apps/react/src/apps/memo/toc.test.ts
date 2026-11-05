@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { activeBarItem, activeHeading, showsToc, tocBarItems, tocPosition, type TocEntry } from './toc';
+import {
+	activeBarItem,
+	activeHeading,
+	showsToc,
+	tocBarItems,
+	tocChildren,
+	tocPosition,
+	tocSiblings,
+	type TocEntry,
+} from './toc';
 
 describe('목차', () => {
 	it('제목이 셋 이상일 때만 보인다', () => {
@@ -61,5 +70,30 @@ describe('목차', () => {
 		expect(tocPosition(entries, items, 4).trail).toEqual([4]);
 		expect(tocPosition(entries, items, 5).trail).toEqual([4, 5]);
 		expect(tocPosition(entries, items, 7).trail).toEqual([7]);
+	});
+
+	it('하위 제목 목록은 바로 아래 단계만: ## 아래 ###들, ### 아래 ####들, ### 없이 ####만 있으면 ####들', () => {
+		const h = (level: 2 | 3 | 4): TocEntry => ({ level, text: `${level}` });
+		//               0     1     2     3     4     5     6     7
+		const entries = [h(2), h(3), h(4), h(4), h(3), h(2), h(4), h(2)];
+		expect(tocChildren(entries, 0)).toEqual([1, 4]);
+		expect(tocChildren(entries, 1)).toEqual([2, 3]);
+		expect(tocChildren(entries, 4)).toEqual([]);
+		expect(tocChildren(entries, 5)).toEqual([6]);
+		expect(tocChildren(entries, 7)).toEqual([]);
+		expect(tocChildren(entries, -1)).toEqual([]);
+	});
+
+	it('같은 계층의 제목: 같은 부모 아래 바로 아래 단계, 맨 위 단계는 모든 절', () => {
+		const h = (level: 2 | 3 | 4): TocEntry => ({ level, text: `${level}` });
+		//               0     1     2     3     4     5     6     7
+		const entries = [h(2), h(3), h(4), h(4), h(3), h(2), h(4), h(2)];
+		expect(tocSiblings(entries, 0)).toEqual([0, 5, 7]);
+		expect(tocSiblings(entries, 4)).toEqual([1, 4]);
+		expect(tocSiblings(entries, 3)).toEqual([2, 3]);
+		expect(tocSiblings(entries, 6)).toEqual([6]);
+		// 첫 ## 앞의 ### (부모 없음): 부모 없는 ###들
+		const lead = [h(3), h(3), h(2), h(3)];
+		expect(tocSiblings(lead, 1)).toEqual([0, 1]);
 	});
 });

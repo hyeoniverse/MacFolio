@@ -372,6 +372,69 @@ test.describe('메모 목차', () => {
 		// 펼친 목록에도 #### 가 들여 쓴 채 들어간다
 		await press(toggle);
 		await expect(list.locator('li[data-level="4"] button')).toHaveText(['가-1', '가-2']);
+		await page.keyboard.press('Escape');
+	});
+
+	test('경로의 제목에 마우스를 올리면 그 하위 제목을, 맨 끝(지금 읽는) 제목은 같은 계층의 제목을 펼친다. 고르면 그 제목으로 간다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: false });
+		const filler = '글.\n\n'.repeat(30);
+		const content = {
+			title: '깊은 제목의 글',
+			date: '2026-10-27',
+			category: '개발기/MacFolio',
+			summary: '',
+			body:
+				'머리말.\n\n'.repeat(5) +
+				`## 하나\n\n${filler}### 가\n\n${filler}#### 가-1\n\n${filler}#### 가-2\n\n${filler}### 나\n\n${filler}## 둘\n\n${filler}`,
+		};
+		api.posts = [{ slug: 'deep-post', ...content, deleted: false, published: content }];
+		await enterDesktop(page, '/memo/deep-post');
+		const memo = appWindow(page, 'memo');
+		const { nav, section, sub } = bar(memo);
+		const body = memo.locator('.memo-reader-body .memo-markdown');
+		await jumpFromBlock(memo, '가-1');
+		await expect(sub).toHaveText(['가', '가-1']);
+		const peek = nav.locator('.memo-toc-bar-peek');
+		const hover = async (crumb: Locator) => {
+			const rect = await box(crumb);
+			await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+		};
+
+		// 절 이름: 그 절의 ### 들
+		await hover(section);
+		await expect(peek.locator('button')).toHaveText(['가', '나']);
+		await expect(section).toHaveAttribute('aria-expanded', 'true');
+		// 경로에 있는 제목은 표시한다
+		await expect(peek.locator('[aria-current="location"]')).toHaveText('가');
+		// ### : 그 아래 #### 들
+		await hover(sub.first());
+		await expect(peek.locator('button')).toHaveText(['가-1', '가-2']);
+		// 맨 끝 (지금 읽는 ####): 같은 계층의 #### 들, 들여 쓰지 않는다
+		await hover(sub.last());
+		await expect(peek.locator('button')).toHaveText(['가-1', '가-2']);
+		const pads = await peek.locator('button').evaluateAll((els) => els.map((el) => getComputedStyle(el).paddingLeft));
+		expect(new Set(pads).size).toBe(1);
+		// 목록으로 마우스를 옮겨도 닫히지 않고, 고르면 그 제목으로 가서 닫힌다
+		await hover(peek.getByRole('button', { name: '가-2', exact: true }));
+		await expect(peek).toBeVisible();
+		await peek.getByRole('button', { name: '가-2', exact: true }).click();
+		await expect(peek).toHaveCount(0);
+		await expect(body.locator(':scope > h4', { hasText: '가-2' })).toBeInViewport();
+		await expect(sub).toHaveText(['가', '가-2']);
+		// 마우스가 떠나면 닫힌다
+		await hover(section);
+		await expect(peek).toBeVisible();
+		await page.mouse.move(10, 600);
+		await expect(peek).toHaveCount(0);
+		// 경로의 제목을 누르면 그 제목으로 간다
+		await press(section);
+		await expect(body.locator(':scope > h2', { hasText: '하나' })).toBeInViewport();
+		await expect(sub).toHaveCount(0);
+		// 맨 위 절의 같은 계층: 모든 절
+		await hover(section);
+		await expect(peek.locator('button')).toHaveText(['하나', '둘']);
 	});
 
 	test('## 제목이 둘 미만이면 ### 제목까지 모두 절로 오간다', async ({ page }) => {

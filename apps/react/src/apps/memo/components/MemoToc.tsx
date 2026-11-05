@@ -1,12 +1,15 @@
-import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
+import { Fragment, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
 import { prefersReducedMotion } from '@/shared/lib/media';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
-import { activeHeading, showsToc, tocBarItems, tocPosition, type TocEntry } from '../toc';
+import { activeHeading, showsToc, tocBarItems, tocChildren, tocPosition, tocSiblings, type TocEntry } from '../toc';
 import type { useTocHeadings } from '../useTocHeadings';
 import { useTocDisclosure } from '../useTocDisclosure';
 
 /** 붙은 막대 아래 끝에서 이만큼 내려온 선을 지난 제목을 읽는 중으로 본다 (제목 한 줄과 위 여백) */
 const ACTIVE_ROOM = 48;
+
+/** 경로의 제목에서 마우스가 떠난 뒤 펼친 목록을 닫기까지 (그 사이에 목록으로 옮겨 가면 닫지 않는다) */
+const PEEK_CLOSE_DELAY = 180;
 
 /** 제목으로 넘길 때 붙은 막대 아래에 남기는 틈 */
 const JUMP_GAP = 8;
@@ -95,6 +98,34 @@ const MemoToc = ({
 
 	useDismiss(open, () => setOpen(false), [nav]);
 
+	// 경로의 제목에 마우스를 올리면 펼치는 목록: 위 단계 제목은 그 하위 제목들, 맨 끝(지금 읽는) 제목은 같은 계층의 제목들
+	const [peek, setPeek] = useState<{ owner: number; list: number[]; left: number } | null>(null);
+	const peekList = useRef<HTMLOListElement>(null);
+	const peekTimer = useRef(0);
+	const crumbs = section >= 0 ? [section, ...trail] : [];
+	const peekOf = (index: number) => {
+		const list = index === crumbs[crumbs.length - 1] ? tocSiblings(entries, index) : tocChildren(entries, index);
+		return list.length > (index === crumbs[crumbs.length - 1] ? 1 : 0) ? list : [];
+	};
+	const keepPeek = () => window.clearTimeout(peekTimer.current);
+	const closePeek = () => {
+		keepPeek();
+		setPeek(null);
+	};
+	const leavePeek = () => {
+		keepPeek();
+		peekTimer.current = window.setTimeout(() => setPeek(null), PEEK_CLOSE_DELAY);
+	};
+	const showPeek = (index: number, crumb: HTMLElement) => {
+		keepPeek();
+		const list = peekOf(index);
+		// 목록은 그 제목 바로 아래, 왼쪽 끝을 맞춘다 (offsetLeft는 위치를 잡은 막대 기준, 글자 크기 배율과 같은 좌표)
+		setPeek(list.length ? { owner: index, list, left: crumb.offsetLeft } : null);
+		if (list.length) setOpen(false);
+	};
+	useDismiss(peek !== null, closePeek, [nav]);
+	useEffect(() => () => window.clearTimeout(peekTimer.current), []);
+
 	// 지금 읽는 절과, 막대가 스크롤 칸 위에 붙었는지
 	useEffect(() => {
 		const scroller = bodyRef.current?.closest<HTMLElement>('.memo-scroll');
@@ -113,7 +144,10 @@ const MemoToc = ({
 			const nowStuck = Boolean(home && home.top < top + stick - 0.5);
 			setStuck(nowStuck);
 			// 맨 위로 돌아가 막대가 감춰지면 펼친 목록도 닫는다
-			if (!nowStuck) setOpen(false);
+			if (!nowStuck) {
+				setOpen(false);
+				setPeek(null);
+			}
 			// 붙은 막대의 아래 끝 (스크롤 칸 위에서). 좁은 화면의 막대는 높이가 0이라 위 여백까지다
 			const covered = Math.max(0, stick) + bar.height;
 			// 제목으로 넘기는 scrollIntoView·찾기·초점 이동이 제목을 막대 밑에 숨기지 않게 스크롤 칸의 scroll-padding으로 막대 높이를 비운다
@@ -159,6 +193,7 @@ const MemoToc = ({
 	const jump = (index: number) => {
 		const heading = headings.current[index];
 		setOpen(false);
+		closePeek();
 		if (!heading) return;
 		heading.scrollIntoView({ block: 'start', behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
 		if (editor) {
@@ -174,10 +209,10 @@ const MemoToc = ({
 	};
 
 	/** 목록 안에서 ↑·↓로 위아래 제목에 초점을 옮긴다. Esc로 닫으면 초점을 목록 버튼으로 돌린다 (닫는 일은 useDismiss) */
-	const onListKey = (event: KeyboardEvent<HTMLOListElement>) => {
-		if (event.key === 'Escape') toggle.current?.focus({ preventScroll: true });
+	const onListKey = (event: KeyboardEvent<HTMLOListElement>, back: HTMLElement | null = toggle.current) => {
+		if (event.key === 'Escape') back?.focus({ preventScroll: true });
 		if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-		const buttons = [...(list.current?.querySelectorAll('button') ?? [])];
+		const buttons = [...event.currentTarget.querySelectorAll('button')];
 		const at = buttons.indexOf(document.activeElement as HTMLButtonElement);
 		const to = buttons[Math.min(buttons.length - 1, Math.max(0, at + (event.key === 'ArrowDown' ? 1 : -1)))];
 		event.preventDefault();
@@ -240,13 +275,34 @@ const MemoToc = ({
 					<p className="memo-toc-bar-current" data-direction={shown.forward ? 'forward' : 'back'}>
 						{section >= 0 ? (
 							<>
-								<span key={`section-${section}`} className="memo-toc-bar-section">
-									{entries[section].text}
-								</span>
-								{trail.map((index) => (
-									<span key={`sub-${index}`} className="memo-toc-bar-sub" data-level={entries[index].level}>
-										{entries[index].text}
-									</span>
+								{crumbs.map((index, position) => (
+									<Fragment key={index}>
+										{position > 0 && (
+											<span className="memo-toc-bar-sep" aria-hidden="true">
+												›
+											</span>
+										)}
+										<button
+											type="button"
+											className={position ? 'memo-toc-bar-sub' : 'memo-toc-bar-section'}
+											data-level={entries[index].level}
+											data-crumb={index}
+											aria-haspopup={peekOf(index).length ? 'true' : undefined}
+											aria-expanded={peekOf(index).length ? peek?.owner === index : undefined}
+											onMouseEnter={(event) => showPeek(index, event.currentTarget)}
+											onMouseLeave={leavePeek}
+											onClick={() => jump(index)}
+											onKeyDown={(event) => {
+												// ↓: 목록을 펼치고 첫 제목에 초점
+												if (event.key !== 'ArrowDown' || !peekOf(index).length) return;
+												event.preventDefault();
+												showPeek(index, event.currentTarget);
+												requestAnimationFrame(() => peekList.current?.querySelector('button')?.focus());
+											}}
+										>
+											{entries[index].text}
+										</button>
+									</Fragment>
 								))}
 							</>
 						) : (
@@ -280,6 +336,38 @@ const MemoToc = ({
 						<i className="fa-solid fa-list-ul" aria-hidden="true" />
 					</button>
 				</div>
+				{peek && (
+					<div
+						className="memo-toc-bar-panel memo-toc-bar-peek"
+						style={{ left: peek.left }}
+						onMouseEnter={keepPeek}
+						onMouseLeave={leavePeek}
+					>
+						<ol
+							ref={peekList}
+							className="memo-toc-bar-list"
+							// Esc: 닫고 그 목록을 연 경로의 제목으로 초점을 돌린다
+							onKeyDown={(event) =>
+								onListKey(
+									event,
+									nav.current?.querySelector<HTMLElement>(`.memo-toc-bar-current [data-crumb="${peek.owner}"]`) ?? null
+								)
+							}
+						>
+							{peek.list.map((index) => (
+								<li key={index} data-level={entries[index].level}>
+									<button
+										type="button"
+										aria-current={crumbs.includes(index) ? 'location' : undefined}
+										onClick={() => jump(index)}
+									>
+										{entries[index].text}
+									</button>
+								</li>
+							))}
+						</ol>
+					</div>
+				)}
 				{open && (
 					// 바탕·모서리·그림자는 넘기지 않는 바깥 상자에 두고 목록만 그 안에서 넘긴다.
 					// Safari는 넘기는 상자 끝에서 튕길 때 그 상자의 바탕까지 함께 밀어, 목록 자체에 바탕을 두면 튕기는 틈으로 뒤의 본문이 비친다
