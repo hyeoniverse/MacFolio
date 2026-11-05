@@ -181,7 +181,10 @@ ALTER TABLE ENROL DROP Grade CASCADE;            -- 열 삭제
 | NUMERIC         | NUMBER(p, s) | 전체 자릿수 p와 소수 자릿수 s. 정수 6자리·소수 2자리면 `NUMBER(8,2){:sql}`   |
 | DATE, TIMESTAMP | DATE         | 날짜와 시각을 1초 단위로 보관한다                                            |
 
-==CHAR는 짧은 쪽 끝에 공백을 채워 비교하므로 끝의 공백만 다른 두 문자열이 같고, VARCHAR2는 공백도 문자로 비교하므로 다르다.== `'AA' = 'AA   '`은 CHAR에서 참, VARCHAR2에서 거짓이다. 길이가 다양한 열에는 저장 공간이 실제 데이터 크기만큼만 드는 VARCHAR2가 적합하다.
+> [!WARNING] CHAR와 VARCHAR2의 비교
+> ==CHAR는 짧은 쪽 끝에 공백을 채워 비교하므로 끝의 공백만 다른 두 문자열이 같고, VARCHAR2는 공백도 문자로 비교하므로 다르다.== `'AA' = 'AA   '`은 CHAR에서 참, VARCHAR2에서 거짓이다.
+
+길이가 다양한 열에는 저장 공간이 실제 데이터 크기만큼만 드는 VARCHAR2가 적합하다.
 
 테이블 이름과 열 이름은 문자로 시작해야 하고, `A-Z`, `a-z`, `0-9`, `_`, `$`, `#`만 쓸 수 있으며, 예약어는 쓸 수 없다. `10_PLAYER`는 숫자로 시작해서, `T-PLAYER`는 `-`를 포함해서 잘못된 이름이다. 한 테이블 안에서 열 이름이 중복될 수 없고, 열마다 데이터 타입을 반드시 지정한다.
 
@@ -208,7 +211,8 @@ CREATE TABLE PLAYER
 | CHECK       | 참·거짓으로 평가되는 논리식으로 입력 값의 범위를 제한한다                                               |
 | FOREIGN KEY | 다른 테이블의 기본 키를 복사해 테이블 사이의 관계를 정의한다. 참조 무결성 옵션을 지정할 수 있다         |
 
-==Oracle의 외래 키는 `ON DELETE CASCADE{:sql}`와 `ON DELETE SET NULL{:sql}`만 지원하고 `ON UPDATE{:sql}` 절은 지원하지 않는다.== 표준 SQL의 `ON UPDATE CASCADE{:sql}`를 그대로 쓰면 Oracle에서는 문법 오류가 난다.
+> [!WARNING]
+> ==Oracle의 외래 키는 `ON DELETE CASCADE{:sql}`와 `ON DELETE SET NULL{:sql}`만 지원하고 `ON UPDATE{:sql}` 절은 지원하지 않는다.== 표준 SQL의 `ON UPDATE CASCADE{:sql}`를 그대로 쓰면 Oracle에서는 문법 오류가 난다.
 
 테이블 구조 변경은 Oracle에서 다음과 같이 쓴다.
 
@@ -367,7 +371,10 @@ SELECT COUNT(DISTINCT Cno) FROM ENROL WHERE Sno = 300;     -- 3 (C312, C324, C41
 SELECT AVG(Midterm) AS 중간평균 FROM ENROL WHERE Cno = 'C413';  -- (90 + 95 + 80) / 3 = 88.33…
 ```
 
-`GROUP BY{:sql}`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING{:sql}`은 그룹에 대한 조건이다. ==행에 대한 조건인 `WHERE{:sql}`는 그룹을 만들기 전에, `HAVING{:sql}`은 그룹을 만든 뒤에 적용된다.==
+`GROUP BY{:sql}`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING{:sql}`은 그룹에 대한 조건이다.
+
+> [!IMPORTANT]
+> ==행에 대한 조건인 `WHERE{:sql}`는 그룹을 만들기 전에, `HAVING{:sql}`은 그룹을 만든 뒤에 적용된다.==
 
 ```sql
 -- 과목별 기말성적 평균
@@ -390,7 +397,8 @@ HAVING   COUNT(*) >= 3;
 | C413 | 90       | (95 + 90 + 85) / 3 |
 | E412 | 85       | (95 + 75) / 2      |
 
-Oracle은 정수 열의 `AVG{:sql}`도 82.5처럼 소수로 반환하지만, SQL Server는 정수 열의 `AVG{:sql}`를 정수로 반환해 82가 된다. 소수 결과가 필요하면 `AVG(Final * 1.0){:sql}`처럼 실수로 바꿔 계산한다.
+> [!NOTE]
+> Oracle은 정수 열의 `AVG{:sql}`도 82.5처럼 소수로 반환하지만, SQL Server는 정수 열의 `AVG{:sql}`를 정수로 반환해 82가 된다. 소수 결과가 필요하면 `AVG(Final * 1.0){:sql}`처럼 실수로 바꿔 계산한다.
 
 ### 부속 질의(subquery)
 
@@ -467,7 +475,9 @@ NOT 미정은 미정이다.
 SELECT Sno, Sname FROM STUDENT WHERE Dept IS NULL;
 ```
 
-- ==NULL 검사는 `열_이름 IS [NOT] NULL{:sql}` 형식만 허용한다.== 표준 SQL에서 `Dept = NULL{:sql}`은 잘못된 문법이고, 이 식을 실행하는 DBMS에서도 결과가 미정이라 행을 하나도 반환하지 않는다.
+> [!WARNING]
+> ==NULL 검사는 `열_이름 IS [NOT] NULL{:sql}` 형식만 허용한다.== 표준 SQL에서 `Dept = NULL{:sql}`은 잘못된 문법이고, 이 식을 실행하는 DBMS에서도 결과가 미정이라 행을 하나도 반환하지 않는다.
+
 - 조건식에서 NULL을 비교 연산자와 쓰면 결과가 미정이 되고, WHERE 절은 참인 행만 반환하므로 그 행은 결과에서 제외된다.
 - 예제 STUDENT에는 Dept가 NULL인 행이 없어 위 질의의 결과는 공집합이다.
 
@@ -562,7 +572,10 @@ SET    Dept = (SELECT Dept FROM COURSE WHERE Cname = '데이터베이스')
 WHERE  Year = 4;
 ```
 
-마지막 질의의 부속 질의는 '컴퓨터' 한 행을 반환하므로, 4학년인 100과 400의 Dept가 '컴퓨터'로 갱신된다. 두 학생은 이미 컴퓨터학과라 값은 바뀌지 않는다. ==WHERE 절을 생략한 UPDATE는 테이블의 모든 행을 갱신한다.==
+마지막 질의의 부속 질의는 '컴퓨터' 한 행을 반환하므로, 4학년인 100과 400의 Dept가 '컴퓨터'로 갱신된다. 두 학생은 이미 컴퓨터학과라 값은 바뀌지 않는다.
+
+> [!CAUTION]
+> ==WHERE 절을 생략한 UPDATE는 테이블의 모든 행을 갱신한다.==
 
 ### DELETE
 
@@ -585,7 +598,10 @@ WHERE  Cno = 'C413' AND Final < 60
 
 STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에 참조 무결성 문제가 생길 수 있다. 위 ENROL 정의처럼 `ON DELETE CASCADE{:sql}`면 학번 100의 등록 행 (100, C413)과 (100, E412)도 함께 삭제되고, 옵션이 없으면(NO ACTION) 삭제가 거부된다. 마지막 질의는 C413의 기말성적이 95, 90, 85라 삭제되는 행이 없다.
 
-==WHERE 절을 생략하면 테이블의 모든 행이 삭제되지만 테이블 정의는 남는다.== 테이블 자체를 제거하는 것은 `DROP TABLE{:sql}`이다. Oracle은 `DELETE ENROL;{:sql}`처럼 `FROM{:sql}`을 생략해도 된다.
+> [!CAUTION]
+> ==WHERE 절을 생략하면 테이블의 모든 행이 삭제되지만 테이블 정의는 남는다.== 테이블 자체를 제거하는 것은 `DROP TABLE{:sql}`이다.
+
+Oracle은 `DELETE ENROL;{:sql}`처럼 `FROM{:sql}`을 생략해도 된다.
 
 ## 연습문제 풀이
 
