@@ -1,6 +1,6 @@
 ---
 title: 관계 데이터 모델의 릴레이션, 키, 무결성 제약
-date: 2023-03-07
+date: 2023-03-28
 category: CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 3

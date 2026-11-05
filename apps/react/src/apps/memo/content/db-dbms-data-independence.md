@@ -1,6 +1,6 @@
 ---
 title: 파일 시스템의 데이터 종속성·중복성과 DBMS의 데이터 독립성
-date: 2023-03-07
+date: 2023-03-14
 category: CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 1

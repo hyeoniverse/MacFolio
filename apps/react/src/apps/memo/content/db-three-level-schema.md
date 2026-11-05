@@ -1,6 +1,6 @@
 ---
 title: 3단계 스키마와 DBMS 구성 요소
-date: 2023-03-07
+date: 2023-03-21
 category: CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 2
