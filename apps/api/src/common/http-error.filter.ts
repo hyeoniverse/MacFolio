@@ -15,7 +15,8 @@ export interface ErrorBody {
 /**
  * 에러 응답을 한 가지 모양(ErrorBody)으로 맞춘다.
  * - NestJS의 HttpException: 상태와 설명을 그대로
- * - Express 미들웨어(body-parser 등)의 http-errors: 상태는 그대로, 설명은 우리말로 (너무 큰 몸통 413, 깨진 JSON 400)
+ * - Express 미들웨어(body-parser 등)의 http-errors: 상태는 그대로, 설명은 우리말로 (너무 큰 몸통 413, 깨진 JSON 400).
+ *   NestJS가 HttpException으로 감싸 넘기면(cause) 그 종류로 우리말 설명을 찾는다
  * - 그 밖의 에러(DB, 코드 버그): 내용(스택, DB 메시지 등)을 밖으로 내보내지 않고 500으로만 알리며, 서버 로그에 남긴다
  *   (로그의 비밀 값은 SafeLogger가 가린다)
  */
@@ -58,12 +59,19 @@ function httpLikeStatus(exception: unknown): { statusCode: number; message: stri
 	return { statusCode: status, message: known ?? (typeof message === 'string' ? message : statusName(status)) };
 }
 
+/** NestJS 12.3부터 Express 어댑터가 http-errors를 HttpException으로 감싸 cause에 둔다: 그 종류의 우리말 설명 */
+function wrappedHttpLikeMessage(exception: HttpException): string | undefined {
+	const type = (exception.cause as HttpLikeError | undefined)?.type;
+	return typeof type === 'string' ? HTTP_LIKE_MESSAGES[type] : undefined;
+}
+
 export function toErrorBody(exception: unknown, path: string, now = new Date()): ErrorBody {
 	if (exception instanceof HttpException) {
 		const statusCode = exception.getStatus();
 		const body = exception.getResponse();
 		const message =
-			typeof body === 'string' ? body : ((body as { message?: string | string[] }).message ?? exception.message);
+			wrappedHttpLikeMessage(exception) ??
+			(typeof body === 'string' ? body : ((body as { message?: string | string[] }).message ?? exception.message));
 		return { statusCode, error: statusName(statusCode), message, path, timestamp: now.toISOString() };
 	}
 	const httpLike = httpLikeStatus(exception);
