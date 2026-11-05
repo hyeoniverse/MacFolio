@@ -143,6 +143,7 @@ const FormatTools = () => {
 									['strong', '굵게', 'B'],
 									['emphasis', '기울임', 'I'],
 									['strike', '취소선', 'S'],
+									['highlight', '형광펜', 'H'],
 									['code', '코드', '</>'],
 								] as const
 							).map(([mark, label, glyph]) => (

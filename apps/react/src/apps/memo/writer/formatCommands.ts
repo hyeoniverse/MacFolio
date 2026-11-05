@@ -20,6 +20,7 @@ import {
 	wrapInOrderedListCommand,
 } from '@milkdown/kit/preset/commonmark';
 import { insertTableCommand, toggleStrikethroughCommand } from '@milkdown/kit/preset/gfm';
+import { toggleHighlightCommand } from './highlightMark';
 import { callCommand } from '@milkdown/kit/utils';
 import { moveTablePart, runTableOp, selectCells, tableStateOf } from './tableCommands';
 import { clearFind, replaceFind, setFind } from './findPlugin';
@@ -60,6 +61,7 @@ export function formatStateOf(state: EditorState): FormatState {
 		strong: has('strong'),
 		emphasis: has('emphasis'),
 		strike: has('strike_through'),
+		highlight: has('highlight'),
 		code: has('inlineCode'),
 	};
 	return result;
@@ -218,6 +220,7 @@ export function runFormat(ctx: Ctx, action: FormatAction) {
 				strong: toggleStrongCommand,
 				emphasis: toggleEmphasisCommand,
 				strike: toggleStrikethroughCommand,
+				highlight: toggleHighlightCommand,
 				code: toggleInlineCodeCommand,
 			}[action.mark];
 			callCommand(command.key)(ctx);

@@ -57,4 +57,22 @@ describe('REMARK_PLUGINS', () => {
 		// 속성이 붙은 줄은 접기로 알아보지 않는다 (지금처럼 글자로 보인다)
 		expect(render('<details onclick="x">\n\n내용\n\n</details>')).not.toContain('<details');
 	});
+
+	it('==형광펜==은 <mark>로, 안의 다른 서식도 그대로 그린다', () => {
+		expect(render('핵심은 ==데이터 독립성==이다')).toBe(
+			'<p>핵심은 <mark class="memo-highlight">데이터 독립성</mark>이다</p>'
+		);
+		expect(render('==**굵게** 와 [링크](https://a.b)==')).toBe(
+			'<p><mark class="memo-highlight"><strong>굵게</strong> 와 <a href="https://a.b">링크</a></mark></p>'
+		);
+		expect(render('==하나== 그리고 ==둘==')).toBe(
+			'<p><mark class="memo-highlight">하나</mark> 그리고 <mark class="memo-highlight">둘</mark></p>'
+		);
+	});
+
+	it('공백을 낀 ==, 짝이 없는 ==, 코드 안의 ==는 글자 그대로다', () => {
+		expect(render('a == b 이고 c == d')).toBe('<p>a == b 이고 c == d</p>');
+		expect(render('==닫히지 않음')).toBe('<p>==닫히지 않음</p>');
+		expect(render('`a == b`와 ====')).toBe('<p><code>a == b</code>와 ====</p>');
+	});
 });

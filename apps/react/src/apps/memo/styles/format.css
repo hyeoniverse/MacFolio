@@ -101,6 +101,13 @@
 	text-decoration: line-through;
 }
 
+.memo-format-marks .mark-highlight {
+	background-image: linear-gradient(transparent 50%, var(--memo-highlight) 50%);
+	background-size: 1.2em 100%;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
 .memo-format-marks .mark-code {
 	font-family: var(--font-mono);
 	font-size: var(--text-caption);

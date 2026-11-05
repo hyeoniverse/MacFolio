@@ -66,6 +66,15 @@
 	border-radius: 1px;
 }
 
+.memo-markdown mark,
+.memo-inline-editor mark {
+	color: inherit;
+	background: linear-gradient(transparent 45%, var(--memo-highlight) 45%);
+	border-radius: 2px;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+}
+
 .memo-markdown a {
 	color: var(--memo-accent);
 	text-decoration: underline;

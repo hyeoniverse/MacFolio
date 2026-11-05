@@ -60,7 +60,7 @@ export interface FormatState {
 	summary: boolean;
 	table: TableState | null;
 	image: ImageState | null;
-	marks: { strong: boolean; emphasis: boolean; strike: boolean; code: boolean };
+	marks: { strong: boolean; emphasis: boolean; strike: boolean; highlight: boolean; code: boolean };
 }
 
 export type FormatAction =
@@ -106,7 +106,7 @@ export const EMPTY_FORMAT: FormatState = {
 	summary: false,
 	table: null,
 	image: null,
-	marks: { strong: false, emphasis: false, strike: false, code: false },
+	marks: { strong: false, emphasis: false, strike: false, highlight: false, code: false },
 };
 
 /** 편집기(.memo-inline-editor) 기준 위치 */

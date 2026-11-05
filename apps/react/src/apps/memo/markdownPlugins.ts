@@ -16,6 +16,7 @@ export const REMARK_PLUGINS: Options['remarkPlugins'] = [
 	remarkCjkFriendly,
 	remarkDetails,
 	remarkTags,
+	remarkHighlight,
 ];
 
 interface MdNode {
@@ -56,6 +57,71 @@ export function remarkTags() {
 			if (last < child.value.length) parts.push({ type: 'text', value: child.value.slice(last) });
 			return parts;
 		});
+	};
+	return (tree: MdNode) => walk(tree);
+}
+
+/** 형광펜으로 바꾸지 않는 곳: 코드와 HTML (안의 `==`는 글자 그대로) */
+const NO_HIGHLIGHT = new Set(['code', 'inlineCode', 'html', 'image', 'imageReference']);
+const HIGHLIGHT_MARK = '==';
+const isSpace = (text: string) => /^\s/.test(text);
+
+/**
+ * 형광펜(`==강조==`)을 `<mark class="memo-highlight">`로. Obsidian·Typora와 같은 표기다.
+ * 한 문단(글줄을 담은 노드) 안에서 `==`를 짝지으며, 사이에 굵게·링크 같은 다른 서식이 있어도 된다.
+ * `a == b`처럼 여는 `==` 뒤나 닫는 `==` 앞이 공백이면 형광펜이 아니라 글자 그대로 둔다.
+ * 편집기(writer/highlightMark.ts)도 이 함수로 읽는다
+ */
+export function remarkHighlight() {
+	const walk = (node: MdNode) => {
+		if (!node.children || NO_HIGHLIGHT.has(node.type)) return;
+		node.children.forEach(walk);
+		if (!node.children.some((child) => child.type === 'text' && child.value?.includes(HIGHLIGHT_MARK))) return;
+
+		// 글자 노드를 `==` 앞뒤로 나눈다. null이 `==` 자리
+		const items: (MdNode | null)[] = [];
+		for (const child of node.children) {
+			if (child.type !== 'text' || !child.value?.includes(HIGHLIGHT_MARK)) {
+				items.push(child);
+				continue;
+			}
+			child.value.split(HIGHLIGHT_MARK).forEach((part, index) => {
+				if (index > 0) items.push(null);
+				if (part) items.push({ type: 'text', value: part });
+			});
+		}
+
+		const out: MdNode[] = [];
+		let open = -1; // 여는 `==`를 넣어 둔 out의 자리
+		for (const [index, item] of items.entries()) {
+			if (item) {
+				out.push(item);
+				continue;
+			}
+			const before = out.at(-1);
+			const closes = open >= 0 && out.length > open + 1 && !(before?.type === 'text' && /\s$/.test(before.value ?? ''));
+			if (closes) {
+				const children = out.splice(open + 1);
+				out[open] = {
+					type: 'highlight',
+					data: { hName: 'mark', hProperties: { className: ['memo-highlight'] } },
+					children,
+				};
+				open = -1;
+				continue;
+			}
+			const next = items[index + 1];
+			out.push({ type: 'text', value: HIGHLIGHT_MARK });
+			if (next && !(next.type === 'text' && isSpace(next.value ?? ''))) open = out.length - 1;
+		}
+
+		// 짝이 없는 `==`는 글자로 남았다. 이웃한 글자 노드를 합친다
+		node.children = out.reduce<MdNode[]>((merged, child) => {
+			const last = merged.at(-1);
+			if (child.type === 'text' && last?.type === 'text') last.value = `${last.value ?? ''}${child.value ?? ''}`;
+			else merged.push(child);
+			return merged;
+		}, []);
 	};
 	return (tree: MdNode) => walk(tree);
 }

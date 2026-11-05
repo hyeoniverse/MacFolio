@@ -27,6 +27,7 @@ import { findPlugin } from './findPlugin';
 import { embedPreview } from './embedPreview';
 import { attachmentDownload } from './attachmentDownload';
 import { anchorsPlugin, footnoteDefinitionView, footnoteReferenceView } from './anchors';
+import { highlightMark } from './highlightMark';
 import { detailsRemark, detailsSchema, detailsSummarySchema, detailsToggleClick, handleDetailsKey } from './details';
 import { codeBlockView, imageBlockRemark, imageBlockSchema, imageBlockView, inlineImageView } from './blocks';
 import { Milkdown, MilkdownProvider, useEditor } from '@milkdown/react';
@@ -342,6 +343,7 @@ const Inner = ({ markdown, onChange, onReady }: Props) => {
 				.use(commonmark)
 				.use(gfmWithoutSingleTilde)
 				.use(strikethroughDoubleTilde)
+				.use(highlightMark)
 				.use(cjkFriendly)
 				.use(history)
 				.use(clipboard)
