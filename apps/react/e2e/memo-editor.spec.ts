@@ -1272,7 +1272,7 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 		expect(api.posts[0].body).toBe(api.posts[0].published?.body);
 	});
 
-	test('글 안 제목 링크(#제목-주소)를 누르면 편집 화면에서도 그 제목으로 가고, 같은 이름의 둘째 제목은 -1로 간다', async ({
+	test('편집 화면의 글 안 제목 링크(#제목-주소)는 누르면 편집하고, 이동 버튼·⌘ 누르기로 그 제목에 간다. 같은 이름의 둘째 제목은 -1', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -1291,20 +1291,28 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 		await memo.locator('.memo-item', { hasText: '제목 링크 있는 글' }).click();
 		const editor = memo.locator('.ProseMirror');
 		const target = editor.locator('h2', { hasText: '데이터와 정보' });
+		const hover = memo.locator('.memo-link-hover');
+		const link = editor.locator('a[href="#데이터와-정보"]');
+		// 누르면 이동하지 않고 그 자리에 커서가 놓인다 (링크 글자를 고칠 수 있다)
+		await link.click();
 		await expect(target).not.toBeInViewport();
-		await editor.locator('a[href="#데이터와-정보"]').click();
+		// 마우스를 올리면 뜨는 버튼으로 그 제목에 간다
+		await link.hover();
+		await expect(hover).toContainText('#데이터와-정보');
+		await hover.getByRole('button', { name: '그 자리로 이동' }).click();
 		await expect(target).toBeInViewport();
 		await expect(target).toHaveClass(/memo-anchor-hit/);
 
+		// ⌘·Ctrl을 누른 채 누르면 버튼 없이 바로 간다
 		await editor.locator('p').first().scrollIntoViewIfNeeded();
-		await editor.locator('a[href="#정리-1"]').click();
+		await editor.locator('a[href="#정리-1"]').click({ modifiers: ['ControlOrMeta'] });
 		await expect(editor.locator('h2', { hasText: '정리' }).last()).toBeInViewport();
 		// 따라가기만 해서는 글이 바뀌지 않는다
 		await page.waitForTimeout(800);
 		expect(api.posts[0].body).toBe(api.posts[0].published?.body);
 	});
 
-	test('글 안 링크(#terms)를 누르면 접힌 블록을 펼치며 그리로 가고, Option을 누른 채 누르면 링크 글자를 고친다', async ({
+	test('글 안 링크(#terms)의 이동 버튼은 접힌 블록을 펼치며 그리로 가고, 링크를 누르면 링크 글자를 고친다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -1324,7 +1332,8 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 
 		const link = memo.locator('.ProseMirror a[href="#terms"]');
 		await link.scrollIntoViewIfNeeded();
-		await link.click();
+		await link.hover();
+		await memo.locator('.memo-link-hover').getByRole('button', { name: '그 자리로 이동' }).click();
 		// 화면에서만 펼친다 (저장한 글의 <details>는 그대로)
 		await expect(details).toHaveClass(/memo-details-revealed/);
 		await expect(details.getByText('접힌 설명')).toBeVisible();
@@ -1337,7 +1346,7 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 		await expect(details.getByText('접힌 설명')).toBeHidden();
 
 		await link.scrollIntoViewIfNeeded();
-		await link.click({ modifiers: ['Alt'] });
+		await link.click();
 		await page.keyboard.type('를');
 		// 링크 글자 안에 들어간다. 링크를 따라가며 펼친 접기 블록은 화면에서만 펼쳐서 저장한 글은 그대로다
 		await expect.poll(() => api.posts[0].body).toMatch(/\[용어[^\]]*를[^\]]*\]\(#terms\)/);

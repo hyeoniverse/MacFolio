@@ -1,7 +1,8 @@
 // 편집기의 각주와 글 안 링크: 읽기 화면(MarkdownLink, remark-gfm의 각주)과 같은 번호와 같은 이동.
 // - 각주 번호는 저장한 이름([^no-ff])이 아니라 본문에 처음 나온 차례(1, 2, 3 …)로 보인다
 // - 본문의 [번호]를 누르면 각주 내용으로, 각주 끝의 ↩ 를 누르면 본문의 그 자리로 간다
-// - [글자](#terms) 같은 글 안 링크를 누르면 그 자리(접기 블록, 각주, 제목)로 간다. Option(Alt)을 누른 채 누르면 링크 글자를 고친다
+// - [글자](#terms) 같은 글 안 링크는 다른 링크처럼 누르면 그 자리에 커서가 놓여 링크 글자를 고칠 수 있다.
+//   마우스를 올리면 뜨는 버튼(LinkHover)이나 ⌘·Ctrl을 누른 채 누르면 그 자리(접기 블록, 각주, 제목)로 간다 (FOLLOW_ANCHOR_EVENT)
 // 도착한 자리는 읽기 화면처럼 잠깐 칠한다 (memo-anchor-hit)
 import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, PluginKey, TextSelection, type EditorState, type Transaction } from '@milkdown/kit/prose/state';
@@ -9,6 +10,9 @@ import { Decoration, DecorationSet, type EditorView, type ViewMutationRecord } f
 import { footnoteDefinitionSchema, footnoteReferenceSchema } from '@milkdown/kit/preset/gfm';
 import { $prose, $view } from '@milkdown/kit/utils';
 import { headingSlug } from '../markdownPlugins';
+
+/** LinkHover가 글 안 링크를 따라가라고 링크 요소에 보내는 이벤트 (detail: '#이름'). 편집기 view가 받는다 */
+export const FOLLOW_ANCHOR_EVENT = 'memo-follow-anchor';
 
 /** 도착 표시를 지우기까지 (styles/markdown.css의 memo-anchor-hit 애니메이션 길이) */
 const HIT_MS = 1600;
@@ -279,13 +283,15 @@ export const anchorsPlugin = $prose(
 					goToDefinition(view, node.attrs.label as string);
 					return true;
 				},
-				handleClick(view, _pos, event) {
-					if (event.button !== 0 || event.altKey || event.metaKey || event.ctrlKey || event.shiftKey) return false;
-					const link = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
-					const href = link?.getAttribute('href');
-					if (!link || !href || href.length < 2 || !view.dom.contains(link)) return false;
-					return followAnchor(view, href);
-				},
+			},
+			// 글 안 링크는 누르면 편집(커서), 따라가기는 LinkHover의 버튼·⌘ 누르기가 이 이벤트로 알린다
+			view(view) {
+				const follow = (event: Event) => {
+					const hash = (event as CustomEvent<string>).detail;
+					if (typeof hash === 'string' && hash.length > 1) followAnchor(view, hash);
+				};
+				view.dom.addEventListener(FOLLOW_ANCHOR_EVENT, follow);
+				return { destroy: () => view.dom.removeEventListener(FOLLOW_ANCHOR_EVENT, follow) };
 			},
 		})
 );

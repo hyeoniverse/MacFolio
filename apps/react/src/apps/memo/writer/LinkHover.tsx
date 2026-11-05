@@ -4,6 +4,7 @@ import { useOpenAttachment } from '../useOpenAttachment';
 import { ATTACHMENT_TITLE } from './attachments';
 import { fileAppOf } from '@/shared/lib/fileApps';
 import { useOpenLink } from '../useOpenLink';
+import { FOLLOW_ANCHOR_EVENT } from './anchors';
 
 /** 링크에서 버튼으로 마우스를 옮기는 동안 버튼을 남겨 두는 시간 */
 const HIDE_DELAY_MS = 300;
@@ -36,6 +37,8 @@ function scrollTopOf(element: HTMLElement) {
 
 /** 버튼 옆에 보일 짧은 주소: 사이트 안이면 경로, 바깥이면 호스트와 경로 */
 function shortHref(href: string) {
+	// 글 안 자리는 # 뒤 이름만 (제목 주소는 한글이라 풀어서 보인다)
+	if (href.startsWith('#')) return decodeURIComponent(href);
 	try {
 		const url = new URL(href, window.location.origin);
 		const path = decodeURIComponent(url.pathname);
@@ -49,7 +52,8 @@ function shortHref(href: string) {
  * 편집 중인 본문의 링크에 마우스를 올리면 링크 위에 이동 버튼을 띄운다.
  * 편집기에서는 링크를 눌러도 이동하지 않고 그 자리에 커서가 놓인다 (링크 글자를 고칠 수 있게).
  * 버튼은 읽기 화면과 같은 규칙으로 연다: 사이트 안의 글·프로젝트는 그 앱에서, 저장소 문서는 Finder에서, 바깥 주소는 새 탭에서.
- * ⌘·Ctrl을 누르고 링크를 누르면 버튼 없이 바로 연다. 같은 글 안의 자리(#각주)는 누르면 이동한다 (anchors.ts)
+ * ⌘·Ctrl을 누르고 링크를 누르면 버튼 없이 바로 연다. 같은 글 안의 자리(#제목, #각주, #접기 블록)도 같은 방식이고,
+ * 버튼을 누르면 편집기가 그 자리로 스크롤한다 (anchors.ts의 FOLLOW_ANCHOR_EVENT)
  */
 const LinkHover = () => {
 	const marker = useRef<HTMLSpanElement>(null);
@@ -69,6 +73,10 @@ const LinkHover = () => {
 	/** 올린 첨부 파일(제목 '첨부 파일 · …')은 종류에 맞는 사이트 안 앱으로, 나머지는 링크 종류대로 */
 	const openLink = useCallback(
 		(href: string, link: HTMLAnchorElement | null) => {
+			if (href.startsWith('#')) {
+				link?.dispatchEvent(new CustomEvent(FOLLOW_ANCHOR_EVENT, { detail: href, bubbles: true }));
+				return;
+			}
 			const name = link?.textContent?.trim() ?? '';
 			if (link?.title.startsWith(ATTACHMENT_TITLE) && fileAppOf(name) && openAttachment(href, name)) return;
 			openLinkTarget(linkTargetOf(href));
@@ -88,7 +96,7 @@ const LinkHover = () => {
 		const linkOf = (node: EventTarget | null) => {
 			const link = node instanceof Element ? node.closest<HTMLAnchorElement>('.ProseMirror a[href]') : null;
 			const href = link?.getAttribute('href');
-			return link && href && !href.startsWith('#') && root.contains(link) ? { link, href } : null;
+			return link && href && href !== '#' && root.contains(link) ? { link, href } : null;
 		};
 		const onOver = (event: MouseEvent) => {
 			const hit = linkOf(event.target);
