@@ -179,33 +179,53 @@ describe('결과가 없을 때', () => {
 });
 
 describe('성능', () => {
-	it('글 240편(본문 8,600자씩)에서 검색어를 한 글자씩 칠 때 한 번에 평균 5ms 안 (검색용 글자는 처음 한 번만 만든다)', () => {
-		const words = ['메모', '검색', '성능', 'react', 'store', '프론트엔드', '배포', '서버', 'merge', '위젯'];
-		const many = Array.from({ length: 240 }, (_, i) =>
-			post(
-				`post-${i}`,
-				`글 ${i} ${words[i % words.length]}`,
-				Array.from({ length: 1400 }, (_, j) => words[(i * 7 + j) % words.length]).join(' ')
-			)
-		);
-		const typed = [
-			'프',
-			'프론',
-			'프론트',
-			'프론트엔',
-			'프론트엔드',
-			'프론트엔드 성',
-			'프론트엔드 성능',
-			'merge s',
-			'리액',
-			'리액트',
-			'타입스크립',
-			'없는말',
-		];
-		for (const query of typed) rankPosts(many, query); // 검색용 글자를 만든다
+	const words = ['메모', '검색', '성능', 'react', 'store', '프론트엔드', '배포', '서버', 'merge', '위젯'];
+	/** 글 240편, 본문 8,600자씩 */
+	const many = Array.from({ length: 240 }, (_, i) =>
+		post(
+			`post-${i}`,
+			`글 ${i} ${words[i % words.length]}`,
+			Array.from({ length: 1400 }, (_, j) => words[(i * 7 + j) % words.length]).join(' ')
+		)
+	);
+	/** 검색어를 한 글자씩 치는 순서 */
+	const typed = [
+		'프',
+		'프론',
+		'프론트',
+		'프론트엔',
+		'프론트엔드',
+		'프론트엔드 성',
+		'프론트엔드 성능',
+		'merge s',
+		'리액',
+		'리액트',
+		'타입스크립',
+		'없는말',
+	];
+	const typeAll = () => {
+		for (const query of typed) rankPosts(many, query);
+	};
+
+	it('검색용 글자는 글마다 처음 한 번만 만들고, 검색어를 칠 때마다 같은 것을 그대로 쓴다', () => {
+		typeAll();
+		const built = many.map(searchIndexOf);
+		for (let round = 0; round < 10; round++) typeAll();
+		expect(many.every((item, i) => searchIndexOf(item) === built[i])).toBe(true);
+	});
+
+	it('검색용 글자를 둔 뒤의 검색 한 번은 글 240편의 검색용 글자를 새로 만드는 것보다 5배 넘게 싸다 (러너 속도와 무관한 상대 비교)', () => {
+		// 같은 내용의 새 글 객체: 검색용 글자가 없어 처음부터 만든다
+		const fresh = many.map((item) => ({ ...item }));
+		const buildStart = Date.now();
+		for (const item of fresh) searchIndexOf(item);
+		const build = Date.now() - buildStart;
+
+		typeAll(); // 검색용 글자를 만들어 둔다
 		const start = Date.now();
-		for (let round = 0; round < 10; round++) for (const query of typed) rankPosts(many, query);
-		const average = (Date.now() - start) / (10 * typed.length);
-		expect(average).toBeLessThan(5);
+		for (let round = 0; round < 10; round++) typeAll();
+		const perQuery = (Date.now() - start) / (10 * typed.length);
+		// 검색용 글자를 매번 다시 만들면 검색 한 번이 build와 비슷해진다. 공유 러너의 속도 변동은 두 값에 같이 걸린다
+		expect(perQuery).toBeLessThan(build / 5);
 	});
 });
