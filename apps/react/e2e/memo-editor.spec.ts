@@ -1272,6 +1272,38 @@ test.describe('편집 화면의 각주·글 안 링크, 관리자 표시로 읽�
 		expect(api.posts[0].body).toBe(api.posts[0].published?.body);
 	});
 
+	test('글 안 제목 링크(#제목-주소)를 누르면 편집 화면에서도 그 제목으로 가고, 같은 이름의 둘째 제목은 -1로 간다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: true });
+		api.posts = [
+			post('제목 링크 있는 글', [
+				'처음은 [데이터와 정보](#데이터와-정보), 둘째 정리는 [정리](#정리-1)에 있다.',
+				'## 정리',
+				...filler,
+				'## 데이터와 정보',
+				...filler,
+				'## 정리',
+				'끝 문단',
+			]),
+		];
+		const memo = await openMemo(page, api);
+		await memo.locator('.memo-item', { hasText: '제목 링크 있는 글' }).click();
+		const editor = memo.locator('.ProseMirror');
+		const target = editor.locator('h2', { hasText: '데이터와 정보' });
+		await expect(target).not.toBeInViewport();
+		await editor.locator('a[href="#데이터와-정보"]').click();
+		await expect(target).toBeInViewport();
+		await expect(target).toHaveClass(/memo-anchor-hit/);
+
+		await editor.locator('p').first().scrollIntoViewIfNeeded();
+		await editor.locator('a[href="#정리-1"]').click();
+		await expect(editor.locator('h2', { hasText: '정리' }).last()).toBeInViewport();
+		// 따라가기만 해서는 글이 바뀌지 않는다
+		await page.waitForTimeout(800);
+		expect(api.posts[0].body).toBe(api.posts[0].published?.body);
+	});
+
 	test('글 안 링크(#terms)를 누르면 접힌 블록을 펼치며 그리로 가고, Option을 누른 채 누르면 링크 글자를 고친다', async ({
 		page,
 	}) => {

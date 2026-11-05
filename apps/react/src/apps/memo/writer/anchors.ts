@@ -1,13 +1,14 @@
 // 편집기의 각주와 글 안 링크: 읽기 화면(MarkdownLink, remark-gfm의 각주)과 같은 번호와 같은 이동.
 // - 각주 번호는 저장한 이름([^no-ff])이 아니라 본문에 처음 나온 차례(1, 2, 3 …)로 보인다
 // - 본문의 [번호]를 누르면 각주 내용으로, 각주 끝의 ↩ 를 누르면 본문의 그 자리로 간다
-// - [글자](#terms) 같은 글 안 링크를 누르면 그 자리(접기 블록, 각주)로 간다. Option(Alt)을 누른 채 누르면 링크 글자를 고친다
+// - [글자](#terms) 같은 글 안 링크를 누르면 그 자리(접기 블록, 각주, 제목)로 간다. Option(Alt)을 누른 채 누르면 링크 글자를 고친다
 // 도착한 자리는 읽기 화면처럼 잠깐 칠한다 (memo-anchor-hit)
 import type { Node } from '@milkdown/kit/prose/model';
 import { Plugin, PluginKey, TextSelection, type EditorState, type Transaction } from '@milkdown/kit/prose/state';
 import { Decoration, DecorationSet, type EditorView, type ViewMutationRecord } from '@milkdown/kit/prose/view';
 import { footnoteDefinitionSchema, footnoteReferenceSchema } from '@milkdown/kit/preset/gfm';
 import { $prose, $view } from '@milkdown/kit/utils';
+import { headingSlug } from '../markdownPlugins';
 
 /** 도착 표시를 지우기까지 (styles/markdown.css의 memo-anchor-hit 애니메이션 길이) */
 const HIT_MS = 1600;
@@ -47,9 +48,27 @@ function findDetails(doc: Node, id: string) {
 	return found as { pos: number; node: Node } | null;
 }
 
+/** 제목 주소(읽기 화면의 remarkHeadingIds와 같은 규칙: 같은 이름이 또 나오면 -1, -2)로 찾는다 */
+function findHeading(doc: Node, name: string) {
+	const used = new Map<string, number>();
+	let found: { pos: number; node: Node } | null = null;
+	doc.descendants((node, pos) => {
+		if (found) return false;
+		if (node.type.name !== 'heading') return true;
+		const base = headingSlug(node.textContent);
+		if (!base) return false;
+		const count = used.get(base) ?? 0;
+		used.set(base, count + 1);
+		if ((count ? `${base}-${count}` : base) === name) found = { pos, node };
+		return false;
+	});
+	return found as { pos: number; node: Node } | null;
+}
+
 /**
  * 글 안 링크의 # 뒤 이름으로 갈 자리. 읽기 화면의 id와 같은 이름을 받는다:
- * user-content-fn-이름(각주 내용), user-content-fnref-이름(본문의 각주 번호), 접기 블록의 id(terms, user-content-terms)
+ * user-content-fn-이름(각주 내용), user-content-fnref-이름(본문의 각주 번호), 접기 블록의 id(terms, user-content-terms),
+ * 제목 주소(데이터와-정보, user-content-데이터와-정보)
  */
 export function anchorTarget(doc: Node, hash: string) {
 	const name = decodeURIComponent(hash.replace(/^#/, '')).replace(/^user-content-/, '');
@@ -57,7 +76,7 @@ export function anchorTarget(doc: Node, hash: string) {
 	if (fn) return findNode(doc, 'footnote_definition', fn[1]);
 	const ref = /^fnref-(.+?)(?:-\d+)?$/.exec(name);
 	if (ref) return findNode(doc, 'footnote_reference', ref[1]);
-	return findDetails(doc, name.toLowerCase());
+	return findDetails(doc, name.toLowerCase()) ?? findHeading(doc, name.toLowerCase());
 }
 
 interface AnchorsState {
@@ -136,7 +155,7 @@ function goTo(view: EditorView, pos: number, caret: number) {
 	if (dom instanceof HTMLElement) {
 		const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		dom.scrollIntoView({
-			block: node.type.name === 'details_block' ? 'start' : 'center',
+			block: node.type.name === 'details_block' || node.type.name === 'heading' ? 'start' : 'center',
 			behavior: reduce ? 'auto' : 'smooth',
 		});
 	}
@@ -164,7 +183,8 @@ export function followAnchor(view: EditorView, hash: string): boolean {
 	const { pos, node } = found;
 	if (node.type.name === 'footnote_definition') goTo(view, pos, lastTextPos(node, pos));
 	else if (node.type.name === 'footnote_reference') goTo(view, pos, pos + node.nodeSize);
-	// 접기 블록은 요약 끝에 커서를 둔다
+	// 제목은 그 줄 끝에, 접기 블록은 요약 끝에 커서를 둔다
+	else if (node.type.name === 'heading') goTo(view, pos, pos + node.nodeSize - 1);
 	else goTo(view, pos, pos + 1 + (node.firstChild?.nodeSize ?? 2) - 1);
 	return true;
 }
