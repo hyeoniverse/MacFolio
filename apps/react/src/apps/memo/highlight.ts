@@ -5,20 +5,25 @@ import { toText } from 'hast-util-to-text';
 import { createLowlight } from 'lowlight';
 import { visit } from 'unist-util-visit';
 import bash from 'highlight.js/lib/languages/bash';
+import c from 'highlight.js/lib/languages/c';
 import css from 'highlight.js/lib/languages/css';
+import diff from 'highlight.js/lib/languages/diff';
 import javascript from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
 import markdown from 'highlight.js/lib/languages/markdown';
+import python from 'highlight.js/lib/languages/python';
+import sql from 'highlight.js/lib/languages/sql';
 import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import yaml from 'highlight.js/lib/languages/yaml';
 
-const lowlight = createLowlight({ bash, css, javascript, json, markdown, typescript, xml, yaml });
+const lowlight = createLowlight({ bash, c, css, diff, javascript, json, markdown, python, sql, typescript, xml, yaml });
 // 코드 블록에 흔히 적는 다른 이름 (```tsx, ```sh 등)
 lowlight.registerAlias({
 	typescript: ['ts', 'tsx'],
 	javascript: ['js', 'jsx'],
-	bash: ['sh', 'shell', 'zsh'],
+	json: ['jsonc'],
+	bash: ['sh', 'shell', 'zsh', 'console'],
 	xml: ['html'],
 	markdown: ['md'],
 	yaml: ['yml'],
