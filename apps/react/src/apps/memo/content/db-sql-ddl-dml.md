@@ -177,7 +177,7 @@ SELECT의 결과도 테이블이므로, SQL은 결과가 다시 테이블이 되
 
 - 한 테이블 안에 똑같은 행이 중복될 수 있다.
 - 기본 키가 반드시 있어야 하는 것은 아니다.
-- 그래서 SQL 테이블은 같은 원소의 중복을 허용하는 다중 집합(multiset, bag)이다.
+- ==그래서 SQL 테이블은 같은 원소의 중복을 허용하는 다중 집합(multiset, bag)이다.==
 
 `SELECT Dept FROM STUDENT`는 {컴퓨터, 전기, 컴퓨터, 컴퓨터, 산공} 다섯 행을 반환한다. 집합과 같은 결과가 필요하면 `DISTINCT`를 쓴다.
 
@@ -267,7 +267,7 @@ SELECT COUNT(DISTINCT Cno) FROM ENROL WHERE Sno = 300;     -- 학번 300이 등�
 SELECT AVG(Midterm) AS 중간평균 FROM ENROL WHERE Cno = 'C413';
 ```
 
-`GROUP BY`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING`은 그룹에 대한 조건이다. 행에 대한 조건인 `WHERE`는 그룹을 만들기 전에, `HAVING`은 그룹을 만든 뒤에 적용된다.
+`GROUP BY`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING`은 그룹에 대한 조건이다. ==행에 대한 조건인 `WHERE`는 그룹을 만들기 전에, `HAVING`은 그룹을 만든 뒤에 적용된다.==
 
 ```sql
 -- 과목별 기말성적 평균
@@ -345,7 +345,7 @@ NOT 미정은 미정이다.
 SELECT Sno, Sname FROM STUDENT WHERE Dept IS NULL;
 ```
 
-- NULL 검사는 `열_이름 IS [NOT] NULL` 형식만 허용한다. `Dept = NULL`은 잘못된 문법이다.
+- ==NULL 검사는 `열_이름 IS [NOT] NULL` 형식만 허용한다.== `Dept = NULL`은 잘못된 문법이다.
 - 조건식에서 NULL을 비교 연산자와 쓰면 결과가 미정이 되고, WHERE 절은 참인 행만 반환하므로 그 행은 결과에서 제외된다.
 
 ### EXISTS
