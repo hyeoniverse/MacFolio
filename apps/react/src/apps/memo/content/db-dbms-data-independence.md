@@ -614,14 +614,14 @@ DBMS는 응용 프로그램과 데이터 사이의 중재자로서 모든 응용
 
 현재는 2세대 관계 DBMS와 객체 개념을 더한 객체-관계 DBMS가 함께 쓰인다. 널리 쓰이는 Oracle과 SQL Server를 제어 기능의 네 요건에 맞춰 비교하면 다음과 같다.
 
-| 기능                 | Oracle                                                             | SQL Server                                                     |
-| -------------------- | ------------------------------------------------------------------ | -------------------------------------------------------------- |
-| 정의                 | `CREATE`·`ALTER`·`DROP`으로 테이블·인덱스·뷰 정의                  | `CREATE`·`ALTER`·`DROP`으로 데이터베이스·테이블·인덱스·뷰 정의 |
-| 조작                 | `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `MERGE`                    | `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `MERGE`                |
-| 제어: 무결성         | `PRIMARY KEY`, `FOREIGN KEY`, `CHECK`, `NOT NULL` 제약             | `PRIMARY KEY`, `FOREIGN KEY`, `CHECK`, `NOT NULL` 제약         |
-| 제어: 보안·권한      | 사용자 계정, 롤(role), `GRANT`/`REVOKE`                            | 로그인·사용자, 롤, `GRANT`/`REVOKE`/`DENY`                     |
-| 제어: 병행 수행 제어 | 트랜잭션(`COMMIT`/`ROLLBACK`), 행 수준 잠금, 다중 버전 읽기 일관성 | 트랜잭션, 잠금, 격리 수준(스냅숏 격리 포함)                    |
-| 제어: 복구           | 리두 로그와 언두, RMAN 백업·복구                                   | 트랜잭션 로그, `BACKUP DATABASE`/`RESTORE DATABASE`            |
+| 기능                 | Oracle                                                                         | SQL Server                                                                       |
+| -------------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| 정의                 | `CREATE{:sql}`·`ALTER{:sql}`·`DROP{:sql}`으로 테이블·인덱스·뷰 정의            | `CREATE{:sql}`·`ALTER{:sql}`·`DROP{:sql}`으로 데이터베이스·테이블·인덱스·뷰 정의 |
+| 조작                 | `SELECT{:sql}`, `INSERT{:sql}`, `UPDATE{:sql}`, `DELETE{:sql}`, `MERGE`        | `SELECT{:sql}`, `INSERT{:sql}`, `UPDATE{:sql}`, `DELETE{:sql}`, `MERGE`          |
+| 제어: 무결성         | `PRIMARY KEY{:sql}`, `FOREIGN KEY{:sql}`, `CHECK{:sql}`, `NOT NULL{:sql}` 제약 | `PRIMARY KEY{:sql}`, `FOREIGN KEY{:sql}`, `CHECK{:sql}`, `NOT NULL{:sql}` 제약   |
+| 제어: 보안·권한      | 사용자 계정, 롤(role), `GRANT{:sql}`/`REVOKE{:sql}`                            | 로그인·사용자, 롤, `GRANT{:sql}`/`REVOKE{:sql}`/`DENY`                           |
+| 제어: 병행 수행 제어 | 트랜잭션(`COMMIT`/`ROLLBACK`), 행 수준 잠금, 다중 버전 읽기 일관성             | 트랜잭션, 잠금, 격리 수준(스냅숏 격리 포함)                                      |
+| 제어: 복구           | 리두 로그와 언두, RMAN 백업·복구                                               | 트랜잭션 로그, `BACKUP DATABASE`/`RESTORE DATABASE`                              |
 
 </details>
 

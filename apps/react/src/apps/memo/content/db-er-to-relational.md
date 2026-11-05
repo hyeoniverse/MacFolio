@@ -293,7 +293,7 @@ Oracle은 표준 SQL의 데이터 타입을 다음 이름으로 쓴다.
 | ------------ | ----------- | -------------------------------------------------------------------------------------------- |
 | CHARACTER(s) | CHAR(s)     | 고정 길이 문자열. 기본 1바이트, 최대 2,000바이트. 값이 s보다 짧으면 나머지를 공백으로 채운다 |
 | VARCHAR(s)   | VARCHAR2(s) | 가변 길이 문자열. 최대 4,000바이트. 실제 값의 길이만큼만 저장한다                            |
-| NUMERIC      | NUMBER(p,s) | 전체 자릿수 p, 소수 자릿수 s. 정수 6자리·소수 2자리는 `NUMBER(8,2)`                          |
+| NUMERIC      | NUMBER(p,s) | 전체 자릿수 p, 소수 자릿수 s. 정수 6자리·소수 2자리는 `NUMBER(8,2){:sql}`                    |
 | DATETIME     | DATE        | 날짜와 시각. 1초 단위                                                                        |
 
 ==CHAR는 짧은 쪽 끝에 공백을 채워 비교하므로 `'AA'`와 `'AA  '`를 같다고 판단하고, VARCHAR2는 공백도 한 문자로 비교하므로 다르다고 판단한다.== 사원번호처럼 길이가 정해진 코드는 CHAR, 이름처럼 길이가 다양한 값은 VARCHAR2가 알맞다.
@@ -306,7 +306,7 @@ Oracle은 표준 SQL의 데이터 타입을 다음 이름으로 쓴다.
 | CHECK       | 참·거짓으로 평가되는 논리식으로 입력 값의 범위를 제한한다                                                            |
 | FOREIGN KEY | 다른 테이블의 기본 키를 참조한다. 참조 무결성 옵션을 지정할 수 있다                                                  |
 
-NOT NULL처럼 열 정의 뒤에 쓰는 방식을 열 수준, `CONSTRAINT ... PRIMARY KEY (...)`처럼 열 정의를 마친 뒤 모아 쓰는 방식을 테이블 수준 제약이라 하며, 한 문장에서 섞어 써도 된다. 제약조건에 이름을 붙이면 `ALTER TABLE ... DROP CONSTRAINT 이름`으로 제거할 수 있다. 테이블 이름과 열 이름은 문자로 시작하고 A-Z, a-z, 0-9, \_, $, # 만 쓸 수 있으며 예약어는 쓸 수 없다(`10_PLAYER`, `T-PLAYER`는 잘못된 이름이다).
+NOT NULL처럼 열 정의 뒤에 쓰는 방식을 열 수준, `CONSTRAINT ... PRIMARY KEY (...){:sql}`처럼 열 정의를 마친 뒤 모아 쓰는 방식을 테이블 수준 제약이라 하며, 한 문장에서 섞어 써도 된다. 제약조건에 이름을 붙이면 `ALTER TABLE ... DROP CONSTRAINT 이름{:sql}`으로 제거할 수 있다. 테이블 이름과 열 이름은 문자로 시작하고 A-Z, a-z, 0-9, \_, $, # 만 쓸 수 있으며 예약어는 쓸 수 없다(`10_PLAYER`, `T-PLAYER`는 잘못된 이름이다).
 
 #### DDL
 
@@ -422,21 +422,21 @@ ALTER TABLE PROJECT ADD CONSTRAINT PROJECT_UK1 UNIQUE (Manager);
 
 이 제약을 건 뒤 이미 다른 프로젝트를 관리하는 사원번호로 프로젝트를 넣으면 `ORA-00001: unique constraint (<스키마>.PROJECT_UK1) violated` 오류가 난다.
 
-==테이블을 만드는 순서도 외래 키가 정한다.== EMPLOYEE는 DEPART를, PROJECT는 EMPLOYEE를 참조하므로 DEPART → EMPLOYEE → PROJECT 순서로 만들어야 한다. SUPPLY는 SUPPLIER, PROJECT, COMPONENT가 모두 있어야 만들 수 있다. 데이터를 넣을 때도 같은 순서다. 사원 행의 Dept 값은 DEPART에 있는 부서번호여야 하고(참조 무결성), 그렇지 않으면 Oracle이 `ORA-02291: integrity constraint (<스키마>.EMPLOYEE_FK1) violated - parent key not found` 오류를 반환한다. 반대로 테이블을 제거할 때는 참조하는 테이블부터 제거하거나 `DROP TABLE DEPART CASCADE CONSTRAINTS`로 참조하는 외래 키 제약을 함께 제거한다.
+==테이블을 만드는 순서도 외래 키가 정한다.== EMPLOYEE는 DEPART를, PROJECT는 EMPLOYEE를 참조하므로 DEPART → EMPLOYEE → PROJECT 순서로 만들어야 한다. SUPPLY는 SUPPLIER, PROJECT, COMPONENT가 모두 있어야 만들 수 있다. 데이터를 넣을 때도 같은 순서다. 사원 행의 Dept 값은 DEPART에 있는 부서번호여야 하고(참조 무결성), 그렇지 않으면 Oracle이 `ORA-02291: integrity constraint (<스키마>.EMPLOYEE_FK1) violated - parent key not found` 오류를 반환한다. 반대로 테이블을 제거할 때는 참조하는 테이블부터 제거하거나 `DROP TABLE DEPART CASCADE CONSTRAINTS{:sql}`로 참조하는 외래 키 제약을 함께 제거한다.
 
 #### ALTER TABLE 명령
 
 ALTER 실습에 쓴 ADD, MODIFY, DROP COLUMN 외에 Oracle이 지원하는 테이블 변경 명령은 다음과 같다.
 
-| 명령                                                     | 동작                                                                                                    |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `ALTER TABLE t ADD (열 타입)`                            | 열을 추가한다. 새 열은 항상 마지막 열이 되며 위치를 지정할 수 없다                                      |
-| `ALTER TABLE t DROP COLUMN 열`                           | 열을 제거한다. 한 번에 하나씩, 최소 한 열은 남아야 하며 복구할 수 없다                                  |
-| `ALTER TABLE t MODIFY (열 타입 [DEFAULT 식] [NOT NULL])` | 데이터 타입, 기본값, NOT NULL 제약을 변경한다                                                           |
-| `ALTER TABLE t RENAME COLUMN 옛이름 TO 새이름`           | 열 이름을 바꾸고 관련 제약조건도 자동으로 고친다. ANSI/ISO 표준이 아니라 Oracle 등 일부 DBMS의 기능이다 |
-| `ALTER TABLE t ADD CONSTRAINT 이름 ...`                  | 테이블을 만든 뒤 제약조건을 추가한다                                                                    |
-| `ALTER TABLE t DROP CONSTRAINT 이름`                     | 제약조건을 제거한다                                                                                     |
-| `RENAME t TO 새이름`                                     | 테이블 이름을 바꾼다                                                                                    |
+| 명령                                                           | 동작                                                                                                    |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `ALTER TABLE t ADD (열 타입){:sql}`                            | 열을 추가한다. 새 열은 항상 마지막 열이 되며 위치를 지정할 수 없다                                      |
+| `ALTER TABLE t DROP COLUMN 열{:sql}`                           | 열을 제거한다. 한 번에 하나씩, 최소 한 열은 남아야 하며 복구할 수 없다                                  |
+| `ALTER TABLE t MODIFY (열 타입 [DEFAULT 식] [NOT NULL]){:sql}` | 데이터 타입, 기본값, NOT NULL 제약을 변경한다                                                           |
+| `ALTER TABLE t RENAME COLUMN 옛이름 TO 새이름{:sql}`           | 열 이름을 바꾸고 관련 제약조건도 자동으로 고친다. ANSI/ISO 표준이 아니라 Oracle 등 일부 DBMS의 기능이다 |
+| `ALTER TABLE t ADD CONSTRAINT 이름 ...{:sql}`                  | 테이블을 만든 뒤 제약조건을 추가한다                                                                    |
+| `ALTER TABLE t DROP CONSTRAINT 이름{:sql}`                     | 제약조건을 제거한다                                                                                     |
+| `RENAME t TO 새이름`                                           | 테이블 이름을 바꾼다                                                                                    |
 
 #### ALTER로 스키마를 만들 때 생기는 오류
 
@@ -444,10 +444,10 @@ ALTER 실습에 쓴 ADD, MODIFY, DROP COLUMN 외에 Oracle이 지원하는 테�
 
 | 부분         | 잘못된 스크립트                                                                                         | 문제                                                                                                                                            |
 | ------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| 열 이름 변경 | `CREATE TABLE`에서 이미 Ename으로 만든 뒤 `RENAME COLUMN Name TO Ename` 실행                            | Name 열이 없고 Ename이 이미 있어 `ORA-00957: duplicate column name`이 난다. Name으로 만든 직후에 바꿔야 한다                                    |
+| 열 이름 변경 | `CREATE TABLE{:sql}`에서 이미 Ename으로 만든 뒤 `RENAME COLUMN Name TO Ename` 실행                      | Name 열이 없고 Ename이 이미 있어 `ORA-00957: duplicate column name`이 난다. Name으로 만든 직후에 바꿔야 한다                                    |
 | 제약 추가    | CREATE TABLE PROJECT 없이 PROJECT에, CREATE TABLE ASSIGN보다 먼저 ASSIGN에 기본 키 추가                 | 테이블이 아직 없어 `ORA-00942`가 난다                                                                                                           |
 | 소속         | DEPART에 Eno 열과 사원 외래 키를 넣었다가 제약만 제거하고, ASSIGN(Eno, Dno) 관계 테이블을 따로 만들었다 | 1:N에서 1 쪽에 외래 키를 넣은 오류다. 제약을 제거해도 Eno 열은 남는다. ASSIGN의 기본 키 {Eno, Dno}는 한 사원이 여러 부서에 속하는 것도 허용한다 |
-| 포함         | `FOREIGN KEY(Cno) REFERENCES COMPONENT(Cno)`                                                            | 자기 기본 키를 자기가 참조해 모든 행이 자기 자신을 가리킨다. 상위 부품을 담을 Contain 열을 따로 두고 그 열을 외래 키로 해야 한다                |
+| 포함         | `FOREIGN KEY(Cno) REFERENCES COMPONENT(Cno){:sql}`                                                      | 자기 기본 키를 자기가 참조해 모든 행이 자기 자신을 가리킨다. 상위 부품을 담을 Contain 열을 따로 두고 그 열을 외래 키로 해야 한다                |
 | 근무         | WORK(Eno, Pno)                                                                                          | 관계의 애트리뷰트인 역할과 근무 기간이 없다                                                                                                     |
 
 ==1:N 관계는 N 쪽 테이블의 외래 키 열 하나로 표현되므로, 소속에 ASSIGN 같은 관계 테이블은 필요하지 않다.== 위 DDL은 EMPLOYEE에 Dept 열을 둔다.
@@ -552,7 +552,7 @@ COMMIT;
 
 </details>
 
-INSERT는 `INSERT INTO 테이블 (열 목록) VALUES (...)`처럼 열을 지정하는 형식과, 위처럼 열 목록 없이 모든 열의 값을 테이블의 열 순서대로 빠짐없이 주는 형식이 있다. 열을 지정하는 형식에서 빠진 열에는 NULL(DEFAULT가 정의되어 있으면 기본값)이 들어가며, 기본 키나 NOT NULL 열은 빠뜨릴 수 없다. 문자 값은 작은따옴표로 감싸고 숫자 값은 감싸지 않는다.
+INSERT는 `INSERT INTO 테이블 (열 목록) VALUES (...){:sql}`처럼 열을 지정하는 형식과, 위처럼 열 목록 없이 모든 열의 값을 테이블의 열 순서대로 빠짐없이 주는 형식이 있다. 열을 지정하는 형식에서 빠진 열에는 NULL(DEFAULT가 정의되어 있으면 기본값)이 들어가며, 기본 키나 NOT NULL 열은 빠뜨릴 수 없다. 문자 값은 작은따옴표로 감싸고 숫자 값은 감싸지 않는다.
 
 #### 검색문 종류별 SELECT
 
@@ -575,7 +575,7 @@ INSERT는 `INSERT INTO 테이블 (열 목록) VALUES (...)`처럼 열을 지정�
 | EXISTS                    | 부양가족이 있는 사원                       |
 | UNION                     | 프로젝트 관리자이거나 부양가족이 있는 사원 |
 
-일반 검색은 `DISTINCT`로 중복을 제거한다. `ALL`이 기본값이라 생략하면 중복 행이 모두 나온다.
+일반 검색은 `DISTINCT{:sql}`로 중복을 제거한다. `ALL`이 기본값이라 생략하면 중복 행이 모두 나온다.
 
 ```sql
 SELECT DISTINCT Duty FROM EMPLOYEE;
@@ -721,7 +721,7 @@ SELECT Cname, Price FROM COMPONENT WHERE Cname LIKE '메%';
 | 메인보드 | 500   |
 | 메모리   | 100   |
 
-NULL은 `= NULL`로 비교하면 결과가 UNKNOWN이 되어 어떤 행도 선택되지 않으므로 `IS NULL`로 검색한다.
+NULL은 `= NULL{:sql}`로 비교하면 결과가 UNKNOWN이 되어 어떤 행도 선택되지 않으므로 `IS NULL{:sql}`로 검색한다.
 
 ```sql
 SELECT Cno, Cname FROM COMPONENT WHERE Contain IS NULL;
@@ -795,7 +795,7 @@ DELETE FROM CONDUCT  WHERE Eno = 'E230005';   -- 1개 행 삭제
 DELETE FROM EMPLOYEE WHERE Eno = 'E230005';   -- 1개 행 삭제
 ```
 
-외래 키에 `ON DELETE CASCADE`를 지정하지 않았으므로, ==자식 테이블의 참조 행을 먼저 삭제한 뒤에야 부모 행을 삭제할 수 있다.== E230005는 프로젝트 관리자도 아니고 부양가족도 없어 CONDUCT 행만 삭제하면 된다.
+외래 키에 `ON DELETE CASCADE{:sql}`를 지정하지 않았으므로, ==자식 테이블의 참조 행을 먼저 삭제한 뒤에야 부모 행을 삭제할 수 있다.== E230005는 프로젝트 관리자도 아니고 부양가족도 없어 CONDUCT 행만 삭제하면 된다.
 
 </details>
 

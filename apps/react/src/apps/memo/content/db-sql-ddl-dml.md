@@ -48,7 +48,7 @@ SQL에서는 관계 모델의 공식 용어 대신 릴레이션은 테이블, �
 CREATE SCHEMA UNIVERSITY AUTHORIZATION SHLEE;
 ```
 
-`CREATE SCHEMA` 대신 `CREATE DATABASE`를 쓰는 DBMS도 있다. 카탈로그(catalog)는 SQL 시스템 안의 스키마 집합이며, 카탈로그 안의 모든 스키마 정보를 제공하는 특별한 스키마 `INFORMATION_SCHEMA`를 반드시 포함한다.
+`CREATE SCHEMA{:sql}` 대신 `CREATE DATABASE{:sql}`를 쓰는 DBMS도 있다. 카탈로그(catalog)는 SQL 시스템 안의 스키마 집합이며, 카탈로그 안의 모든 스키마 정보를 제공하는 특별한 스키마 `INFORMATION_SCHEMA`를 반드시 포함한다.
 
 ### 도메인 정의
 
@@ -67,14 +67,14 @@ CREATE DOMAIN DEPT CHAR(4)
 
 - 학과 도메인 DEPT를 네 자리 문자열로 정의한다.
 - 값을 주지 않으면 기본값은 `NULL`이지만, 여기서는 `'???'`로 지정했다.
-- `CHECK (VALUE IN (…))`은 목록에 있는 값만 허용해, 사용자가 임의의 학과명을 넣지 못하게 한다.
+- `CHECK (VALUE IN (…)){:sql}`은 목록에 있는 값만 허용해, 사용자가 임의의 학과명을 넣지 못하게 한다.
 - 강의록은 제약조건 이름을 `VALID-DEPT`로 썼지만, 따옴표 없는 식별자에는 `-`를 쓸 수 없으므로 `VALID_DEPT`로 적었다.
 
-도메인은 `ALTER DOMAIN DEPT …`로 변경하고, `DROP DOMAIN 도메인_이름 RESTRICT | CASCADE`로 삭제한다.
+도메인은 `ALTER DOMAIN DEPT …{:sql}`로 변경하고, `DROP DOMAIN 도메인_이름 RESTRICT | CASCADE{:sql}`로 삭제한다.
 
 ### RESTRICT와 CASCADE
 
-`DROP` 문에는 대부분 두 옵션 중 하나를 붙인다.
+`DROP{:sql}` 문에는 대부분 두 옵션 중 하나를 붙인다.
 
 | 옵션     | 동작                                                      |
 | -------- | --------------------------------------------------------- |
@@ -96,8 +96,8 @@ CREATE DOMAIN DEPT CHAR(4)
 
 | 종류                           | 생성 방법                  | 저장                                                |
 | ------------------------------ | -------------------------- | --------------------------------------------------- |
-| 기본 테이블(base table)        | `CREATE TABLE`             | DBMS의 파일로 생성·저장되어 독자적으로 존재         |
-| 가상 테이블(virtual table, 뷰) | `CREATE VIEW`              | 기본 테이블에서 유도되며 독자적으로 존재하지 않는다 |
+| 기본 테이블(base table)        | `CREATE TABLE{:sql}`       | DBMS의 파일로 생성·저장되어 독자적으로 존재         |
+| 가상 테이블(virtual table, 뷰) | `CREATE VIEW{:sql}`        | 기본 테이블에서 유도되며 독자적으로 존재하지 않는다 |
 | 임시 테이블(temporary table)   | 질의 처리 과정의 중간 결과 | DDL로 만들지 않는다                                 |
 
 ### 기본 테이블 생성
@@ -122,7 +122,7 @@ CREATE TABLE 테이블_이름
 | FOREIGN KEY | 외래 키와 참조 무결성, 참조된 행이 삭제·갱신되면 할 동작 |
 | CHECK       | 그 밖의 무결성 제약조건                                  |
 
-==SQL에서는 기본 키뿐 아니라 참조된 테이블의 후보 키(UNIQUE 열)도 외래 키로 참조할 수 있다.== `ON DELETE`·`ON UPDATE` 옵션은 네 가지다.
+==SQL에서는 기본 키뿐 아니라 참조된 테이블의 후보 키(UNIQUE 열)도 외래 키로 참조할 수 있다.== `ON DELETE{:sql}`·`ON UPDATE{:sql}` 옵션은 네 가지다.
 
 | 옵션        | 참조된 행이 삭제·갱신되면                                      |
 | ----------- | -------------------------------------------------------------- |
@@ -168,7 +168,7 @@ ALTER TABLE ENROL ADD Final CHAR DEFAULT 'F';   -- 열 추가
 ALTER TABLE ENROL DROP Grade CASCADE;            -- 열 삭제
 ```
 
-열을 삭제할 때의 `RESTRICT`·`CASCADE`도 테이블 삭제와 같다. 그 열을 참조하는 뷰나 제약조건이 있으면 `RESTRICT`는 실행을 거부하고, `CASCADE`는 그 뷰와 제약조건까지 삭제한다. `ALTER TABLE … ALTER 열_이름`으로는 기본값을 지정(`SET DEFAULT`)하거나 삭제(`DROP DEFAULT`)한다.
+열을 삭제할 때의 `RESTRICT{:sql}`·`CASCADE{:sql}`도 테이블 삭제와 같다. 그 열을 참조하는 뷰나 제약조건이 있으면 `RESTRICT{:sql}`는 실행을 거부하고, `CASCADE{:sql}`는 그 뷰와 제약조건까지 삭제한다. `ALTER TABLE … ALTER 열_이름{:sql}`으로는 기본값을 지정(`SET DEFAULT{:sql}`)하거나 삭제(`DROP DEFAULT{:sql}`)한다.
 
 ### Oracle의 DDL
 
@@ -178,7 +178,7 @@ ALTER TABLE ENROL DROP Grade CASCADE;            -- 열 삭제
 | --------------- | ------------ | ---------------------------------------------------------------------------- |
 | CHAR(s)         | CHAR(s)      | 고정 길이, 기본 1바이트, 최대 2,000바이트. 값이 s보다 짧으면 공백으로 채운다 |
 | VARCHAR(s)      | VARCHAR2(s)  | 가변 길이, 최대 4,000바이트. 실제 값의 바이트만 저장한다                     |
-| NUMERIC         | NUMBER(p, s) | 전체 자릿수 p와 소수 자릿수 s. 정수 6자리·소수 2자리면 `NUMBER(8,2)`         |
+| NUMERIC         | NUMBER(p, s) | 전체 자릿수 p와 소수 자릿수 s. 정수 6자리·소수 2자리면 `NUMBER(8,2){:sql}`   |
 | DATE, TIMESTAMP | DATE         | 날짜와 시각을 1초 단위로 보관한다                                            |
 
 ==CHAR는 짧은 쪽 끝에 공백을 채워 비교하므로 끝의 공백만 다른 두 문자열이 같고, VARCHAR2는 공백도 문자로 비교하므로 다르다.== `'AA' = 'AA   '`은 CHAR에서 참, VARCHAR2에서 거짓이다. 길이가 다양한 열에는 저장 공간이 실제 데이터 크기만큼만 드는 VARCHAR2가 적합하다.
@@ -198,7 +198,7 @@ CREATE TABLE PLAYER
    CONSTRAINT PLAYER_FK FOREIGN KEY (TEAM_ID) REFERENCES TEAM(TEAM_ID));
 ```
 
-`NOT NULL`처럼 열 정의 뒤에 쓰는 제약조건을 열 수준(column level), `CONSTRAINT PLAYER_PK …`처럼 열 정의를 마친 뒤 모아 쓰는 제약조건을 테이블 수준(table level) 제약조건이라 한다. 두 방식은 기능이 같고 한 문장 안에서 섞어 쓸 수 있다. ==`CONSTRAINT 이름`으로 제약조건에 이름을 붙이면 나중에 그 이름으로 제약조건을 삭제하거나 다시 추가할 수 있다.== 이름을 생략하면 Oracle은 `SYS_C0012345` 같은 이름을 자동으로 붙인다.
+`NOT NULL{:sql}`처럼 열 정의 뒤에 쓰는 제약조건을 열 수준(column level), `CONSTRAINT PLAYER_PK …{:sql}`처럼 열 정의를 마친 뒤 모아 쓰는 제약조건을 테이블 수준(table level) 제약조건이라 한다. 두 방식은 기능이 같고 한 문장 안에서 섞어 쓸 수 있다. ==`CONSTRAINT 이름{:sql}`으로 제약조건에 이름을 붙이면 나중에 그 이름으로 제약조건을 삭제하거나 다시 추가할 수 있다.== 이름을 생략하면 Oracle은 `SYS_C0012345` 같은 이름을 자동으로 붙인다.
 
 | 제약조건    | Oracle 강의록의 설명                                                                                    |
 | ----------- | ------------------------------------------------------------------------------------------------------- |
@@ -208,7 +208,7 @@ CREATE TABLE PLAYER
 | CHECK       | 참·거짓으로 평가되는 논리식으로 입력 값의 범위를 제한한다                                               |
 | FOREIGN KEY | 다른 테이블의 기본 키를 복사해 테이블 사이의 관계를 정의한다. 참조 무결성 옵션을 지정할 수 있다         |
 
-==Oracle의 외래 키는 `ON DELETE CASCADE`와 `ON DELETE SET NULL`만 지원하고 `ON UPDATE` 절은 지원하지 않는다.== 표준 SQL의 `ON UPDATE CASCADE`를 그대로 쓰면 Oracle에서는 문법 오류가 난다.
+==Oracle의 외래 키는 `ON DELETE CASCADE{:sql}`와 `ON DELETE SET NULL{:sql}`만 지원하고 `ON UPDATE{:sql}` 절은 지원하지 않는다.== 표준 SQL의 `ON UPDATE CASCADE{:sql}`를 그대로 쓰면 Oracle에서는 문법 오류가 난다.
 
 테이블 구조 변경은 Oracle에서 다음과 같이 쓴다.
 
@@ -229,10 +229,10 @@ DROP TABLE TEAM CASCADE CONSTRAINTS;                      -- 참조하는 외래
 <summary>Oracle 구문의 제한</summary>
 
 - `ADD`로 추가한 열은 테이블의 마지막 열이 되며, 위치를 지정할 수 없다.
-- `DROP COLUMN`은 열 하나를 지정하고, 삭제한 뒤에도 테이블에 열이 하나 이상 남아야 한다.
+- `DROP COLUMN{:sql}`은 열 하나를 지정하고, 삭제한 뒤에도 테이블에 열이 하나 이상 남아야 한다.
 - `RENAME COLUMN`은 관련 제약조건의 열 이름도 함께 바꾸지만, ANSI/ISO 표준이 아니라 Oracle 등 일부 DBMS만 지원한다.
-- SQL Server는 `MODIFY` 대신 `ALTER TABLE … ALTER COLUMN`을 쓰고, 테이블 구조는 `sp_help`로 조회한다.
-- 강의록은 `DROP TABLE … [CASCADE CONSTRAINT]`로 적었지만 Oracle의 키워드는 `CASCADE CONSTRAINTS`다.
+- SQL Server는 `MODIFY` 대신 `ALTER TABLE … ALTER COLUMN{:sql}`을 쓰고, 테이블 구조는 `sp_help`로 조회한다.
+- 강의록은 `DROP TABLE … [CASCADE CONSTRAINT]{:sql}`로 적었지만 Oracle의 키워드는 `CASCADE CONSTRAINTS{:sql}`다.
 
 </details>
 
@@ -262,7 +262,7 @@ FROM   테이블_리스트
 - 기본 키가 반드시 있어야 하는 것은 아니다.
 - ==그래서 SQL 테이블은 같은 원소의 중복을 허용하는 다중 집합(multiset, bag)이다.==
 
-`SELECT Dept FROM STUDENT`는 {컴퓨터, 전기, 컴퓨터, 컴퓨터, 산공} 다섯 행을 반환한다. ==집합과 같은 결과가 필요하면 `DISTINCT`를 쓴다.==
+`SELECT Dept FROM STUDENT{:sql}`는 {컴퓨터, 전기, 컴퓨터, 컴퓨터, 산공} 다섯 행을 반환한다. ==집합과 같은 결과가 필요하면 `DISTINCT{:sql}`를 쓴다.==
 
 ```sql
 SELECT DISTINCT Dept FROM STUDENT;   -- 컴퓨터, 전기, 산공
@@ -314,7 +314,7 @@ WHERE  Cno = 'C312';
 | 400  | 중간시험 = | 93   |
 | 500  | 중간시험 = | 88   |
 
-Oracle에서는 `AS`를 생략하고 `SELECT PLAYER_NAME 선수명 FROM PLAYER`처럼 열 이름 바로 뒤에 별칭(alias)을 써도 된다. 별칭에 공백이나 특수 문자가 있거나 대소문자를 구분해야 하면 `"선수 이름"`처럼 큰따옴표로 감싼다. 산술 연산자는 NUMBER와 DATE 타입에 적용되고, 우선순위는 괄호, `*`·`/`, `+`·`-` 순이다.
+Oracle에서는 `AS`를 생략하고 `SELECT PLAYER_NAME 선수명 FROM PLAYER{:sql}`처럼 열 이름 바로 뒤에 별칭(alias)을 써도 된다. 별칭에 공백이나 특수 문자가 있거나 대소문자를 구분해야 하면 `"선수 이름"`처럼 큰따옴표로 감싼다. 산술 연산자는 NUMBER와 DATE 타입에 적용되고, 우선순위는 괄호, `*`·`/`, `+`·`-` 순이다.
 
 ### 조인
 
@@ -367,7 +367,7 @@ SELECT COUNT(DISTINCT Cno) FROM ENROL WHERE Sno = 300;     -- 3 (C312, C324, C41
 SELECT AVG(Midterm) AS 중간평균 FROM ENROL WHERE Cno = 'C413';  -- (90 + 95 + 80) / 3 = 88.33…
 ```
 
-`GROUP BY`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING`은 그룹에 대한 조건이다. ==행에 대한 조건인 `WHERE`는 그룹을 만들기 전에, `HAVING`은 그룹을 만든 뒤에 적용된다.==
+`GROUP BY{:sql}`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING{:sql}`은 그룹에 대한 조건이다. ==행에 대한 조건인 `WHERE{:sql}`는 그룹을 만들기 전에, `HAVING{:sql}`은 그룹을 만든 뒤에 적용된다.==
 
 ```sql
 -- 과목별 기말성적 평균
@@ -390,11 +390,11 @@ HAVING   COUNT(*) >= 3;
 | C413 | 90       | (95 + 90 + 85) / 3 |
 | E412 | 85       | (95 + 75) / 2      |
 
-Oracle은 정수 열의 `AVG`도 82.5처럼 소수로 반환하지만, SQL Server는 정수 열의 `AVG`를 정수로 반환해 82가 된다. 소수 결과가 필요하면 `AVG(Final * 1.0)`처럼 실수로 바꿔 계산한다.
+Oracle은 정수 열의 `AVG{:sql}`도 82.5처럼 소수로 반환하지만, SQL Server는 정수 열의 `AVG{:sql}`를 정수로 반환해 82가 된다. 소수 결과가 필요하면 `AVG(Final * 1.0){:sql}`처럼 실수로 바꿔 계산한다.
 
 ### 부속 질의(subquery)
 
-다른 질의문 안에 중첩된 SELECT 문을 부속 질의라 하고, 부속 질의를 포함한 바깥 질의를 중첩 질의라 한다. 부속 질의도 SELECT-FROM-WHERE-GROUP BY-HAVING 형태를 갖는다. `IN` 뒤의 부속 질의는 집합 멤버십 연산자(∈)로 해석된다. `ORDER BY`는 항상 마지막에 적용하므로 부속 질의 안에는 쓸 수 없고 바깥 질의에만 쓴다.
+다른 질의문 안에 중첩된 SELECT 문을 부속 질의라 하고, 부속 질의를 포함한 바깥 질의를 중첩 질의라 한다. 부속 질의도 SELECT-FROM-WHERE-GROUP BY-HAVING 형태를 갖는다. `IN` 뒤의 부속 질의는 집합 멤버십 연산자(∈)로 해석된다. `ORDER BY{:sql}`는 항상 마지막에 적용하므로 부속 질의 안에는 쓸 수 없고 바깥 질의에만 쓴다.
 
 ```sql
 -- C413에 등록한 학생의 이름 → 나수영, 정기태, 송병길
@@ -426,11 +426,11 @@ WHERE  Final > ALL (SELECT Final FROM ENROL WHERE Sno = 500);
 | 400 | C324 | 90    |
 | 400 | C413 | 85    |
 
-==`IN` 부속 질의로 쓴 질의는 대부분 조인으로 바꿔 쓸 수 있다.== 첫 질의는 [조인](#조인) 절의 질의와 결과가 같다. 다만 조인은 바깥 테이블의 한 행이 안쪽 테이블의 여러 행과 맞으면 그 행을 여러 번 반환하므로, 학생 한 명이 조건에 맞는 등록 행을 여럿 가질 수 있으면 `DISTINCT`를 붙여야 같은 결과가 된다.
+==`IN` 부속 질의로 쓴 질의는 대부분 조인으로 바꿔 쓸 수 있다.== 첫 질의는 [조인](#조인) 절의 질의와 결과가 같다. 다만 조인은 바깥 테이블의 한 행이 안쪽 테이블의 여러 행과 맞으면 그 행을 여러 번 반환하므로, 학생 한 명이 조건에 맞는 등록 행을 여럿 가질 수 있으면 `DISTINCT{:sql}`를 붙여야 같은 결과가 된다.
 
 ### LIKE
 
-`LIKE`는 부분 문자열 패턴(substring pattern)을 비교하는 연산자다.
+`LIKE{:sql}`는 부분 문자열 패턴(substring pattern)을 비교하는 연산자다.
 
 | 패턴     | 의미                                 |
 | -------- | ------------------------------------ |
@@ -467,7 +467,7 @@ NOT 미정은 미정이다.
 SELECT Sno, Sname FROM STUDENT WHERE Dept IS NULL;
 ```
 
-- ==NULL 검사는 `열_이름 IS [NOT] NULL` 형식만 허용한다.== 표준 SQL에서 `Dept = NULL`은 잘못된 문법이고, 이 식을 실행하는 DBMS에서도 결과가 미정이라 행을 하나도 반환하지 않는다.
+- ==NULL 검사는 `열_이름 IS [NOT] NULL{:sql}` 형식만 허용한다.== 표준 SQL에서 `Dept = NULL{:sql}`은 잘못된 문법이고, 이 식을 실행하는 DBMS에서도 결과가 미정이라 행을 하나도 반환하지 않는다.
 - 조건식에서 NULL을 비교 연산자와 쓰면 결과가 미정이 되고, WHERE 절은 참인 행만 반환하므로 그 행은 결과에서 제외된다.
 - 예제 STUDENT에는 Dept가 NULL인 행이 없어 위 질의의 결과는 공집합이다.
 
@@ -477,7 +477,7 @@ SELECT Sno, Sname FROM STUDENT WHERE Dept IS NULL;
 
 ### EXISTS
 
-`EXISTS`는 부속 질의의 결과가 공집합이 아니면 참이다. 부속 질의가 바깥 질의의 행(`STUDENT.Sno`)을 참조하므로, 바깥 행마다 부속 질의를 평가한다.
+`EXISTS{:sql}`는 부속 질의의 결과가 공집합이 아니면 참이다. 부속 질의가 바깥 질의의 행(`STUDENT.Sno`)을 참조하므로, 바깥 행마다 부속 질의를 평가한다.
 
 ```sql
 -- C413에 등록한 학생 → 나수영, 정기태, 송병길
@@ -530,7 +530,7 @@ SELECT Sno, Sname, Year FROM STUDENT WHERE Dept = '컴퓨터';
 
 - 문자 타입(CHAR, VARCHAR2) 값은 작은따옴표로 감싸고, 숫자는 따옴표 없이 쓴다.
 - 모르는 값은 `NULL`로 명시한다. Oracle은 빈 문자열 `''`도 NULL로 취급한다.
-- DATE 열에는 `to_date('2020-01-01', 'yyyy-mm-dd')`처럼 문자열과 형식 모델을 함께 넘기거나, 표준 날짜 리터럴 `DATE '2020-01-01'`을 쓴다.
+- DATE 열에는 `to_date('2020-01-01', 'yyyy-mm-dd')`처럼 문자열과 형식 모델을 함께 넘기거나, 표준 날짜 리터럴 `DATE '2020-01-01'{:sql}`을 쓴다.
 
 ```sql
 INSERT INTO PLAYER (PLAYER_ID, PLAYER_NAME, TEAM_ID, POSITION, HEIGHT, BACK_NO, BIRTH_DATE)
@@ -583,9 +583,9 @@ WHERE  Cno = 'C413' AND Final < 60
   AND  ENROL.Sno IN (SELECT Sno FROM STUDENT WHERE Dept = '컴퓨터');
 ```
 
-STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에 참조 무결성 문제가 생길 수 있다. 위 ENROL 정의처럼 `ON DELETE CASCADE`면 학번 100의 등록 행 (100, C413)과 (100, E412)도 함께 삭제되고, 옵션이 없으면(NO ACTION) 삭제가 거부된다. 마지막 질의는 C413의 기말성적이 95, 90, 85라 삭제되는 행이 없다.
+STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에 참조 무결성 문제가 생길 수 있다. 위 ENROL 정의처럼 `ON DELETE CASCADE{:sql}`면 학번 100의 등록 행 (100, C413)과 (100, E412)도 함께 삭제되고, 옵션이 없으면(NO ACTION) 삭제가 거부된다. 마지막 질의는 C413의 기말성적이 95, 90, 85라 삭제되는 행이 없다.
 
-==WHERE 절을 생략하면 테이블의 모든 행이 삭제되지만 테이블 정의는 남는다.== 테이블 자체를 제거하는 것은 `DROP TABLE`이다. Oracle은 `DELETE ENROL;`처럼 `FROM`을 생략해도 된다.
+==WHERE 절을 생략하면 테이블의 모든 행이 삭제되지만 테이블 정의는 남는다.== 테이블 자체를 제거하는 것은 `DROP TABLE{:sql}`이다. Oracle은 `DELETE ENROL;{:sql}`처럼 `FROM{:sql}`을 생략해도 된다.
 
 ## 연습문제 풀이
 
@@ -598,13 +598,13 @@ STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에
 
 릴레이션은 추상적 개념이고 테이블은 릴레이션을 기술하는 구체적 표현이다. 차이는 [SQL 테이블과 릴레이션의 차이](#sql-테이블과-릴레이션의-차이) 절에서 다룬 중복 행 허용이 핵심이고, 순서와 키까지 비교하면 다음과 같다.
 
-| 항목      | 릴레이션                       | SQL 테이블                                        |
-| --------- | ------------------------------ | ------------------------------------------------- |
-| 원소      | 튜플의 집합, 중복 튜플 없음    | 행의 다중 집합(bag), 중복 행 허용                 |
-| 키        | 모든 릴레이션에 기본 키가 있다 | 기본 키 없이 정의할 수 있다                       |
-| 튜플 순서 | 없다                           | 정해져 있지 않고 `ORDER BY`로 지정한다            |
-| 열 순서   | 애트리뷰트 집합이라 순서 없음  | 정의한 순서가 있어 `SELECT *`와 `INSERT`가 따른다 |
-| 집합 결과 | 연산 결과도 항상 집합          | `DISTINCT`를 명세해야 중복이 제거된다             |
+| 항목      | 릴레이션                       | SQL 테이블                                                    |
+| --------- | ------------------------------ | ------------------------------------------------------------- |
+| 원소      | 튜플의 집합, 중복 튜플 없음    | 행의 다중 집합(bag), 중복 행 허용                             |
+| 키        | 모든 릴레이션에 기본 키가 있다 | 기본 키 없이 정의할 수 있다                                   |
+| 튜플 순서 | 없다                           | 정해져 있지 않고 `ORDER BY{:sql}`로 지정한다                  |
+| 열 순서   | 애트리뷰트 집합이라 순서 없음  | 정의한 순서가 있어 `SELECT *{:sql}`와 `INSERT{:sql}`가 따른다 |
+| 집합 결과 | 연산 결과도 항상 집합          | `DISTINCT{:sql}`를 명세해야 중복이 제거된다                   |
 
 </details>
 
@@ -631,7 +631,7 @@ FROM   학생 JOIN 등록 ON 학생.학번 = 등록.학번
 WHERE  학생.학년 = 4 AND 과목.과목이름 = 'DBMS';
 ```
 
-안쪽 부속 질의는 `=`가 아니라 `IN`으로 쓴다. ==`=` 뒤의 부속 질의는 결과가 한 행일 때만 쓸 수 있다.== 과목이름은 키가 아니라 'DBMS'인 과목이 둘이면 `=`는 실행 오류가 난다. 조인으로 쓰면 한 학생이 'DBMS' 과목을 둘 수강했을 때 이름이 두 번 나오므로 `DISTINCT`를 붙이고, 동명이인을 하나로 합치지 않도록 학번도 함께 출력했다.
+안쪽 부속 질의는 `=`가 아니라 `IN`으로 쓴다. ==`=` 뒤의 부속 질의는 결과가 한 행일 때만 쓸 수 있다.== 과목이름은 키가 아니라 'DBMS'인 과목이 둘이면 `=`는 실행 오류가 난다. 조인으로 쓰면 한 학생이 'DBMS' 과목을 둘 수강했을 때 이름이 두 번 나오므로 `DISTINCT{:sql}`를 붙이고, 동명이인을 하나로 합치지 않도록 학번도 함께 출력했다.
 
 #### (2) 'DBMS' 과목 삭제
 
@@ -639,7 +639,7 @@ WHERE  학생.학년 = 4 AND 과목.과목이름 = 'DBMS';
 DELETE FROM 과목 WHERE 과목이름 = 'DBMS';
 ```
 
-등록이 과목번호로 과목을 참조하는 외래 키를 가지면, 외래 키의 `ON DELETE` 옵션에 따라 DBMS 과목의 등록 행이 함께 삭제되거나(CASCADE) 삭제 자체가 거부된다(NO ACTION).
+등록이 과목번호로 과목을 참조하는 외래 키를 가지면, 외래 키의 `ON DELETE{:sql}` 옵션에 따라 DBMS 과목의 등록 행이 함께 삭제되거나(CASCADE) 삭제 자체가 거부된다(NO ACTION).
 
 #### (3) 'AI' 과목 삽입 (과목번호 'C419')
 
@@ -683,7 +683,7 @@ FROM   S JOIN SP ON S.Sno = SP.Sno
 WHERE  P.Pname = 'Nut';
 ```
 
-(1)에서 `SELECT Sname City FROM S`처럼 쉼표를 빠뜨리면 City가 Sname 열의 별칭이 되어, City 열 대신 Sname 값을 City라는 이름으로 출력한다. (4)는 Pname이 키가 아니라 Nut 제품이 여럿이면 같은 납품업자가 여러 번 나오므로 `DISTINCT`를 붙였다. (2)는 SP의 기본 키가 {Sno, Pno}라 Pno = 123인 발송 행이 납품업자마다 하나뿐이어서 중복이 생기지 않는다.
+(1)에서 `SELECT Sname City FROM S{:sql}`처럼 쉼표를 빠뜨리면 City가 Sname 열의 별칭이 되어, City 열 대신 Sname 값을 City라는 이름으로 출력한다. (4)는 Pname이 키가 아니라 Nut 제품이 여럿이면 같은 납품업자가 여러 번 나오므로 `DISTINCT{:sql}`를 붙였다. (2)는 SP의 기본 키가 {Sno, Pno}라 Pno = 123인 발송 행이 납품업자마다 하나뿐이어서 중복이 생기지 않는다.
 
 </details>
 
@@ -729,15 +729,15 @@ CREATE TABLE ENROL
 
 DDL을 쓸 때 틀리기 쉬운 부분은 다음과 같다.
 
-| 틀리기 쉬운 부분              | 문제                                                  | 고친 내용                |
-| ----------------------------- | ----------------------------------------------------- | ------------------------ |
-| `FOREGIN KEY`                 | 키워드 오타로 문법 오류                               | `FOREIGN KEY`            |
-| ENROL의 `Sno INT NOT NULL` 뒤 | 쉼표가 빠져 다음 열 정의와 붙는다                     | 쉼표 추가                |
-| `Midterm ≥ 0`, `Final ≤ 100`  | `≥`·`≤`는 SQL 연산자가 아니다                         | `>=`, `<=`               |
-| `Sname CHAR`, `Dept CHAR` 등  | 길이를 생략하면 `CHAR(1)`이라 '컴퓨터'를 넣을 수 없다 | `CHAR(10)`처럼 길이 명시 |
-| 이름 없는 PRIMARY KEY·CHECK   | 오류는 아니지만 이름으로 제약조건을 삭제할 수 없다    | `CONSTRAINT 이름` 추가   |
+| 틀리기 쉬운 부분                         | 문제                                                        | 고친 내용                      |
+| ---------------------------------------- | ----------------------------------------------------------- | ------------------------------ |
+| `FOREGIN KEY`                            | 키워드 오타로 문법 오류                                     | `FOREIGN KEY{:sql}`            |
+| ENROL의 `Sno INT NOT NULL{:sql}` 뒤      | 쉼표가 빠져 다음 열 정의와 붙는다                           | 쉼표 추가                      |
+| `Midterm ≥ 0`, `Final ≤ 100`             | `≥`·`≤`는 SQL 연산자가 아니다                               | `>=`, `<=`                     |
+| `Sname CHAR{:sql}`, `Dept CHAR{:sql}` 등 | 길이를 생략하면 `CHAR(1){:sql}`이라 '컴퓨터'를 넣을 수 없다 | `CHAR(10){:sql}`처럼 길이 명시 |
+| 이름 없는 PRIMARY KEY·CHECK              | 오류는 아니지만 이름으로 제약조건을 삭제할 수 없다          | `CONSTRAINT 이름{:sql}` 추가   |
 
-제약조건에 이름을 붙여 두면 `ALTER TABLE ENROL DROP CONSTRAINT ENROL_SCORE`처럼 이름으로 제거할 수 있다. 위 정의는 표준 SQL이고, [Oracle의 DDL](#oracle의-ddl) 절의 규칙대로 Oracle에서 실행하려면 가변 길이 문자열을 VARCHAR2로, 정수를 NUMBER로 바꾸고 Oracle이 지원하지 않는 `ON UPDATE CASCADE`를 뺀다.
+제약조건에 이름을 붙여 두면 `ALTER TABLE ENROL DROP CONSTRAINT ENROL_SCORE{:sql}`처럼 이름으로 제거할 수 있다. 위 정의는 표준 SQL이고, [Oracle의 DDL](#oracle의-ddl) 절의 규칙대로 Oracle에서 실행하려면 가변 길이 문자열을 VARCHAR2로, 정수를 NUMBER로 바꾸고 Oracle이 지원하지 않는 `ON UPDATE CASCADE{:sql}`를 뺀다.
 
 ```sql
 -- Oracle 버전의 ENROL (STUDENT·COURSE도 같은 방식으로 바꾼다)
@@ -760,23 +760,23 @@ CREATE TABLE ENROL
 
 > 본문의 검색문 15개를 예제 데이터에 적용한 결과를 구하라.
 
-| 번호 | 검색문                      | 결과                                                               |
-| ---- | --------------------------- | ------------------------------------------------------------------ |
-| 1    | `DISTINCT Dept`             | 컴퓨터, 전기, 산공                                                 |
-| 2    | `SELECT *`                  | STUDENT 5행 전체                                                   |
-| 3    | 컴퓨터학과 4학년            | (100, 나수영), (400, 송병길)                                       |
-| 4    | 중간성적 90 이상 정렬       | 400 C312, 400 C324, 300 C312, 300 C413, 100 C413, 100 E412         |
-| 5    | C312 중간성적 + 3           | 300 93, 400 93, 500 88                                             |
-| 6    | C413 등록 학생 조인         | 나수영 컴퓨터 A, 정기태 컴퓨터 A, 송병길 컴퓨터 B                  |
-| 7    | 같은 학과 학번 쌍           | (100, 300), (100, 400), (300, 400)                                 |
-| 8    | `COUNT(*)`                  | 5                                                                  |
-| 9    | 과목별 기말평균             | C123 80, C312 90, C324 82.5, C413 90, E412 85                      |
-| 10   | 수강생 3명 이상 과목의 평균 | C312 90, C413 90                                                   |
-| 11   | C413 등록 학생 (`IN`)       | 나수영, 정기태, 송병길                                             |
-| 12   | `Cno LIKE 'C%'`             | C123 프로그래밍, C312 자료 구조, C324 파일 구조, C413 데이터베이스 |
-| 13   | `Dept IS NULL`              | 공집합 (교재 가정으로는 600 김길동)                                |
-| 14   | C413 등록 학생 (`EXISTS`)   | 나수영, 정기태, 송병길                                             |
-| 15   | 3학년 `UNION` C324 등록     | 200, 300, 400                                                      |
+| 번호 | 검색문                          | 결과                                                               |
+| ---- | ------------------------------- | ------------------------------------------------------------------ |
+| 1    | `DISTINCT Dept{:sql}`           | 컴퓨터, 전기, 산공                                                 |
+| 2    | `SELECT *{:sql}`                | STUDENT 5행 전체                                                   |
+| 3    | 컴퓨터학과 4학년                | (100, 나수영), (400, 송병길)                                       |
+| 4    | 중간성적 90 이상 정렬           | 400 C312, 400 C324, 300 C312, 300 C413, 100 C413, 100 E412         |
+| 5    | C312 중간성적 + 3               | 300 93, 400 93, 500 88                                             |
+| 6    | C413 등록 학생 조인             | 나수영 컴퓨터 A, 정기태 컴퓨터 A, 송병길 컴퓨터 B                  |
+| 7    | 같은 학과 학번 쌍               | (100, 300), (100, 400), (300, 400)                                 |
+| 8    | `COUNT(*){:sql}`                | 5                                                                  |
+| 9    | 과목별 기말평균                 | C123 80, C312 90, C324 82.5, C413 90, E412 85                      |
+| 10   | 수강생 3명 이상 과목의 평균     | C312 90, C413 90                                                   |
+| 11   | C413 등록 학생 (`IN`)           | 나수영, 정기태, 송병길                                             |
+| 12   | `Cno LIKE 'C%'{:sql}`           | C123 프로그래밍, C312 자료 구조, C324 파일 구조, C413 데이터베이스 |
+| 13   | `Dept IS NULL{:sql}`            | 공집합 (교재 가정으로는 600 김길동)                                |
+| 14   | C413 등록 학생 (`EXISTS{:sql}`) | 나수영, 정기태, 송병길                                             |
+| 15   | 3학년 `UNION{:sql}` C324 등록   | 200, 300, 400                                                      |
 
 9번에서 C324의 기말평균은 (75 + 90) / 2 = 82.5이고, Oracle도 82.5를 반환한다. 정수로 버리는 DBMS가 있다는 점은 [집계 함수](#집계-함수-group-by-having) 절에서 다뤘다. 13번의 600 김길동은 교재가 Dept가 NULL인 학생 (600, 김길동)을 STUDENT에 추가했다고 가정한 결과다. 위 예제 데이터 5행에는 학과가 NULL인 학생이 없어 결과는 공집합이다.
 
@@ -785,10 +785,10 @@ CREATE TABLE ENROL
 ## 정리
 
 - SQL은 DDL·DML·DCL을 모두 제공하는 비절차적 표준 언어이며, 결과가 다시 테이블인 폐쇄 시스템이다.
-- 외래 키의 `ON DELETE`·`ON UPDATE` 옵션으로 참조 무결성을 지키는 방법(거부, 널, 기본값, 연쇄)을 정한다. Oracle은 `ON UPDATE`를 지원하지 않는다.
-- Oracle은 VARCHAR2·NUMBER·DATE 타입을 쓰고, 이름을 붙인 제약조건을 `ALTER TABLE … DROP/ADD CONSTRAINT`로 관리한다.
-- SQL 테이블은 중복 행을 허용하는 다중 집합이라, 집합 결과가 필요하면 `DISTINCT`를 쓴다.
-- NULL 비교는 미정이 되므로 `IS NULL`로 검사한다.
+- 외래 키의 `ON DELETE{:sql}`·`ON UPDATE{:sql}` 옵션으로 참조 무결성을 지키는 방법(거부, 널, 기본값, 연쇄)을 정한다. Oracle은 `ON UPDATE{:sql}`를 지원하지 않는다.
+- Oracle은 VARCHAR2·NUMBER·DATE 타입을 쓰고, 이름을 붙인 제약조건을 `ALTER TABLE … DROP/ADD CONSTRAINT{:sql}`로 관리한다.
+- SQL 테이블은 중복 행을 허용하는 다중 집합이라, 집합 결과가 필요하면 `DISTINCT{:sql}`를 쓴다.
+- NULL 비교는 미정이 되므로 `IS NULL{:sql}`로 검사한다.
 
 ## 관련 글
 

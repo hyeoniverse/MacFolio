@@ -197,7 +197,7 @@ DBA(Database Administrator)는 데이터베이스 시스템의 관리와 운영�
 | 물리적 데이터 구조  | 내부 스키마(데이터 저장 정의어로 명세) |
 | 두 구조 사이의 사상 | 논리적 구조와 물리적 구조의 대응 관계  |
 
-DBA가 주로 사용하며, DDL로 명세한 스키마는 DDL 컴파일러가 내부 형태로 변환해 카탈로그에 저장한다. SQL의 `CREATE TABLE`, `ALTER TABLE`, `DROP TABLE`이 DDL이다.
+DBA가 주로 사용하며, DDL로 명세한 스키마는 DDL 컴파일러가 내부 형태로 변환해 카탈로그에 저장한다. SQL의 `CREATE TABLE{:sql}`, `ALTER TABLE{:sql}`, `DROP TABLE{:sql}`이 DDL이다.
 
 </details>
 
@@ -279,7 +279,7 @@ DELETE FROM ENROL WHERE Sno = 200 AND Cno = 'C123';     -- 삭제: 이찬수의 
 
 > 데이터 제어어에 포함되는 연산들을 설명하라.
 
-DCL은 보안, 무결성, 회복, 병행 수행을 제어한다. 각 항목의 목적은 [데이터 제어어](#데이터-제어어dcl) 절의 표와 같다. SQL에서는 권한을 부여하는 `GRANT`와 회수하는 `REVOKE`가 보안을 담당하고, 트랜잭션을 끝내는 `COMMIT`과 취소하는 `ROLLBACK`이 회복과 병행 제어의 단위를 지정한다.
+DCL은 보안, 무결성, 회복, 병행 수행을 제어한다. 각 항목의 목적은 [데이터 제어어](#데이터-제어어dcl) 절의 표와 같다. SQL에서는 권한을 부여하는 `GRANT{:sql}`와 회수하는 `REVOKE{:sql}`가 보안을 담당하고, 트랜잭션을 끝내는 `COMMIT`과 취소하는 `ROLLBACK`이 회복과 병행 제어의 단위를 지정한다.
 
 ```sql
 GRANT SELECT, UPDATE ON STUDENT TO user1;
