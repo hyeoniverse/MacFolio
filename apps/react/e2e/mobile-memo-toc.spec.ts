@@ -12,54 +12,62 @@ async function enterHome(page: Page, path: string) {
 }
 
 test.describe('휴대폰 메모: 목차와 이미지 배치', () => {
-	test('목차 막대는 한 줄이고, 이전·다음 화살표와 목록 버튼으로 오간다. 넘기면 위쪽 알약 바로 아래에 붙어 가리지 않는다', async ({
+	test('목차 블록에서 제목을 탭하면 그 제목으로 가고, 위 왼쪽 뒤로 버튼 옆에 목차 버튼이 떠서 모든 제목을 펼친다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: false });
 		await enterHome(page, '/memo/merge-strategies');
-		const nav = page.getByRole('navigation', { name: '목차' });
-		const buttons = nav.locator('.memo-toc-bar-row button');
-		await expect(buttons.first()).toBeVisible();
-		// 손가락으로 누르기 쉽게 버튼은 44px 이상이다. 이전·다음은 화살표만 둔다
-		for (const button of await buttons.all()) {
-			const rect = (await button.boundingBox())!;
-			expect(rect.height).toBeGreaterThanOrEqual(44);
-			expect(rect.width).toBeGreaterThanOrEqual(44);
-		}
-		await expect(nav.locator('.memo-toc-bar-step-text').first()).toBeHidden();
-		await expect(nav).not.toHaveAttribute('data-stuck', /.*/);
-		// 떠 있는 목차 버튼은 없다
+		const nav = page.getByRole('navigation', { name: '목차 막대' });
+		const toc = page.getByRole('navigation', { name: '목차', exact: true });
+		// 목차 블록: 접힌 채 시작하고, 줄은 손가락으로 누르기 쉽게 44px 이상
+		const toggle = toc.getByRole('button', { name: '목차', exact: true });
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+		expect((await toggle.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+		// 맨 위에서는 막대가 감춰져 있다. 떠 있는 목차 버튼은 없다
+		await expect(nav).toBeHidden();
 		await expect(page.getByRole('button', { name: '목차 보기' })).toHaveCount(0);
 
-		// 목록에서 셋째 제목을 탭한다
-		await nav.getByRole('button', { name: '목차 펼치기', exact: true }).tap();
-		const item = nav.locator('.memo-toc-bar-list button').nth(2);
+		// 블록을 펼쳐 셋째 제목을 탭한다
+		await toggle.tap();
+		const item = toc.locator('.memo-toc-list button').nth(2);
+		expect((await item.boundingBox())!.height).toBeGreaterThanOrEqual(44);
 		const name = (await item.textContent())!.trim();
 		await item.tap();
-		await expect(nav.locator('.memo-toc-bar-list')).toHaveCount(0);
 		const heading = page.locator('.memo-reader-body .memo-markdown').getByRole('heading', { name }).first();
 		await expect(heading).toBeInViewport();
 		await expect(nav).toHaveAttribute('data-stuck', 'true');
-		await expect(nav.locator('.memo-toc-bar-current')).toContainText(name);
-		// 붙은 막대는 위쪽 알약(공유·•••) 아래에 있어 가리지 않는다
-		const pill = (await page.locator('.memo-phone-top').boundingBox())!;
-		const bar = (await nav.boundingBox())!;
-		expect(bar.y).toBeGreaterThanOrEqual(pill.y + pill.height);
-		// 붙은 자리는 스크롤 칸이 본문을 그리기 시작하는 곳(위 여백 아래)이다
+		// 휴대폰에서는 한 줄 막대 대신 떠 있는 목차 버튼 하나: 이전·현재·다음은 감추고, 버튼은 위 왼쪽 뒤로 버튼 바로 오른쪽에 같은 높이로 놓인다
+		const tocButton = nav.getByRole('button', { name: '모든 제목 보기', exact: true });
+		await expect(tocButton).toBeVisible();
+		await expect(nav.locator('.memo-toc-bar-current')).toBeHidden();
+		await expect(nav.locator('.memo-toc-bar-step')).toHaveCount(2);
+		for (const step of await nav.locator('.memo-toc-bar-step').all()) await expect(step).toBeHidden();
+		const back = (await page.locator('.mobile-navbar-home').boundingBox())!;
+		const button = (await tocButton.boundingBox())!;
+		expect(button.width).toBeGreaterThanOrEqual(44);
+		expect(button.height).toBeGreaterThanOrEqual(44);
+		expect(Math.abs(button.y - back.y)).toBeLessThanOrEqual(1);
+		expect(button.x).toBeGreaterThan(back.x + back.width);
+		expect(button.x - (back.x + back.width)).toBeLessThanOrEqual(12);
+		// 본문을 넘겨도 버튼은 제자리에 있다
 		const scroller = page.locator('.memo-reader .memo-scroll');
-		const contentTop = await scroller.evaluate(
-			(el) => el.getBoundingClientRect().top + parseFloat(getComputedStyle(el).paddingTop)
-		);
-		expect(Math.abs(bar.y - contentTop)).toBeLessThanOrEqual(1);
-		// 알약 뒤로 본문 글자가 비치지 않게 막대 위쪽을 바탕색으로 덮는다
-		expect(await nav.evaluate((el) => getComputedStyle(el, '::before').content)).not.toBe('none');
-		// 제목은 막대 아래에 보인다
-		expect((await heading.boundingBox())!.y).toBeGreaterThanOrEqual(bar.y + bar.height - 1);
+		await scroller.evaluate((el) => el.scrollBy(0, 600));
+		await expect.poll(async () => Math.round((await tocButton.boundingBox())!.y)).toBe(Math.round(button.y));
+		// 제목은 위쪽 버튼 줄 아래에 보인다
+		await heading.evaluate((el) => el.scrollIntoView({ block: 'start' }));
+		expect((await heading.boundingBox())!.y).toBeGreaterThanOrEqual(back.y + back.height - 1);
 
-		// 다음 화살표로 다음 절에 간다
-		const before = await nav.locator('.memo-toc-bar-section').textContent();
-		await nav.locator('.memo-toc-bar-step[data-side="next"]').tap();
-		await expect(nav.locator('.memo-toc-bar-section')).not.toHaveText(before!);
+		// 버튼을 누르면 지금 읽는 제목을 표시한 목록이 펼쳐지고, 고르면 그 제목으로 가서 닫힌다
+		await tocButton.tap();
+		const list = nav.locator('.memo-toc-bar-list');
+		await expect(list.locator('[aria-current="location"]')).toHaveText(name);
+		const last = list.locator('button').last();
+		const lastName = (await last.textContent())!.trim();
+		await last.tap();
+		await expect(list).toHaveCount(0);
+		await expect(
+			page.locator('.memo-reader-body .memo-markdown').getByRole('heading', { name: lastName }).last()
+		).toBeInViewport();
 		// 막대 바탕이 화면 폭을 넘쳐 가로 스크롤을 만들지 않는다
 		expect(await scroller.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
 	});

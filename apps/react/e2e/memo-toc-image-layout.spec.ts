@@ -24,21 +24,69 @@ const press = async (button: Locator) => {
 	await button.page().mouse.click(rect.x + rect.width / 2, rect.y + rect.height / 2);
 };
 
+/** 제목 아래의 목차 블록 */
+const block = (scope: Locator) => {
+	const nav = scope.getByRole('navigation', { name: '목차', exact: true });
+	return {
+		nav,
+		toggle: nav.getByRole('button', { name: '목차', exact: true }),
+		items: nav.locator('.memo-toc-list button'),
+	};
+};
+
+/** 목차 블록을 펼치고 그 제목을 눌러 그 절로 간다 (막대가 붙는다) */
+const jumpFromBlock = async (scope: Locator, name: string) => {
+	const { toggle, nav } = block(scope);
+	if ((await toggle.getAttribute('aria-expanded')) !== 'true') await toggle.click();
+	await nav.getByRole('button', { name, exact: true }).click();
+};
+
 const bar = (scope: Locator) => {
-	const nav = scope.getByRole('navigation', { name: '목차' });
+	// 붙기 전의 막대는 inert라 접근성 트리에 없으므로 class로 찾는다
+	const nav = scope.locator('nav.memo-toc-bar');
 	return {
 		nav,
 		prev: nav.locator('.memo-toc-bar-step[data-side="prev"]'),
 		next: nav.locator('.memo-toc-bar-step[data-side="next"]'),
 		section: nav.locator('.memo-toc-bar-section'),
 		sub: nav.locator('.memo-toc-bar-sub'),
-		toggle: nav.getByRole('button', { name: '목차 펼치기', exact: true }),
+		toggle: nav.getByRole('button', { name: '모든 제목 보기', exact: true }),
 		list: nav.locator('.memo-toc-bar-list'),
 	};
 };
 
 test.describe('메모 목차', () => {
-	test('제목 아래의 목차 막대: 지금 읽는 절과 소제목, 이전·다음 절을 한 줄에 보이고, 넘기면 스크롤 칸 위에 붙는다', async ({
+	test('제목 아래의 목차 블록: 접힌 채 시작하고, 펼치면 모든 제목을 보이며 펼친 상태를 기억한다', async ({ page }) => {
+		await fakeApi(page, { signedIn: false });
+		await enterDesktop(page, '/memo/merge-strategies');
+		const memo = appWindow(page, 'memo');
+		const { nav, toggle, items } = block(memo);
+		const body = memo.locator('.memo-reader-body .memo-markdown');
+		const headings = await headingTexts(body);
+		// 블록은 글 제목 아래에 있고 접힌 채 시작한다
+		const title = await box(memo.locator('.memo-reader-body h1'));
+		expect((await box(nav)).y).toBeGreaterThan(title.y);
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+		await expect(items.first()).toBeHidden();
+		// 맨 위에서는 막대가 감춰져 있고 자리도 차지하지 않는다 (블록 바로 아래에 본문)
+		await expect(bar(memo).nav).toBeHidden();
+		const gap = (await box(body)).y - ((await box(nav)).y + (await box(nav)).height);
+		expect(gap).toBeLessThan(32);
+
+		await toggle.click();
+		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+		await expect(items).toHaveText(headings);
+		await expect.poll(() => page.evaluate(() => localStorage.getItem('macfolio:memo:toc-open'))).toBe('true');
+		// 다시 열어도 펼친 채
+		await page.reload();
+		await enterDesktop(page, '/memo/merge-strategies');
+		await expect(block(appWindow(page, 'memo')).toggle).toHaveAttribute('aria-expanded', 'true');
+		// 접으면 기억도 지운다
+		await block(appWindow(page, 'memo')).toggle.click();
+		await expect.poll(() => page.evaluate(() => localStorage.getItem('macfolio:memo:toc-open'))).toBeNull();
+	});
+
+	test('목차 블록이 화면 위로 지나가면 목차 막대가 붙어 나타난다: 지금 읽는 절과 소제목, 이전·다음 절을 한 줄에 보인다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: false });
@@ -49,30 +97,25 @@ test.describe('메모 목차', () => {
 		const scroller = memo.locator('.memo-reader .memo-scroll');
 		const sections = await expectedSections(body);
 		expect(sections.length).toBeGreaterThanOrEqual(3);
-		// 막대는 글 제목 바로 아래, 한 줄이다
-		const title = await box(memo.locator('.memo-reader-body h1'));
-		expect((await box(nav)).y).toBeGreaterThan(title.y);
-		expect((await box(nav)).height).toBeLessThan(56);
-		// 맨 위: 붙지 않았고, 읽는 절은 없고, 다음은 첫 절이다
-		await expect(nav).not.toHaveAttribute('data-stuck', /.*/);
-		await expect(nav.locator('.memo-toc-bar-placeholder')).toHaveText(`목차 · 절 ${sections.length}개`);
-		await expect(prev).toBeDisabled();
-		await expect(next).toHaveAccessibleName(`다음 절: ${sections[0]}`);
+		await expect(nav).toBeHidden();
 
-		// 다음 절로: 그 제목으로 가서 초점을 두고, 막대는 붙어 구분선을 긋는다. 주소의 #는 바꾸지 않는다
-		await press(next);
+		// 블록에서 첫 절로: 그 제목으로 가서 초점을 두고, 막대가 스크롤 칸 맨 위에 붙어 나타난다. 주소의 #는 바꾸지 않는다
+		await jumpFromBlock(memo, sections[0]);
 		const first = body.locator(':scope > h2', { hasText: sections[0] }).first();
 		await expect(first).toBeInViewport();
 		await expect(first).toBeFocused();
 		await expect(page).toHaveURL(/\/memo\/merge-strategies$/);
 		await expect(nav).toHaveAttribute('data-stuck', 'true');
+		await expect(nav).toBeVisible();
 		await expect.poll(async () => Math.round((await box(nav)).y - (await box(scroller)).y)).toBe(0);
-		expect(await nav.evaluate((el) => getComputedStyle(el).borderBottomColor)).not.toBe('rgba(0, 0, 0, 0)');
+		expect((await box(nav)).height).toBeLessThan(56);
 		await expect(section).toHaveText(sections[0]);
 		await expect(prev).toBeDisabled();
 		await expect(next).toHaveAccessibleName(`다음 절: ${sections[1]}`);
 		// 제목이 막대에 가리지 않는다
 		expect((await box(first)).y).toBeGreaterThanOrEqual((await box(nav)).y + (await box(nav)).height - 1);
+		// 블록의 지금 읽는 제목도 같이 표시한다
+		await expect(block(memo).nav.locator('[aria-current="location"]')).toHaveText(sections[0]);
 
 		await press(next);
 		await expect(section).toHaveText(sections[1]);
@@ -103,15 +146,16 @@ test.describe('메모 목차', () => {
 		await scroller.evaluate((el) => el.scrollTo(0, el.scrollHeight));
 		await expect(section).toHaveText(sections[sections.length - 1]);
 		await expect(next).toBeDisabled();
-		// 맨 위로 돌아가면 붙지 않은 자리로
+		// 맨 위로 돌아가면 막대는 다시 감춰진다
 		await scroller.evaluate((el) => el.scrollTo(0, 0));
 		await expect(nav).not.toHaveAttribute('data-stuck', /.*/);
-		await expect(section).toHaveCount(0);
+		await expect(nav).toBeHidden();
 
 		// 글자 크기 버튼(가 가)의 배율이 목차에도 걸린다
-		const before = (await box(nav)).height;
+		const toc = block(memo).nav;
+		const before = (await box(toc)).height;
 		await memo.getByRole('button', { name: '글자 크게' }).click();
-		await expect.poll(async () => (await box(nav)).height).toBeGreaterThan(before * 1.1);
+		await expect.poll(async () => (await box(toc)).height).toBeGreaterThan(before * 1.1);
 		// 배율이 걸려도 본문 칸이 가로로 넘치지 않는다 (막대 바탕을 좌우 여백까지 넓힌 만큼)
 		expect(await scroller.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
 	});
@@ -193,7 +237,8 @@ test.describe('메모 목차', () => {
 		await enterDesktop(page, '/memo/merge-strategies');
 		const memo = appWindow(page, 'memo');
 		const { nav, next } = bar(memo);
-		await press(next);
+		const sections = await expectedSections(memo.locator('.memo-reader-body .memo-markdown'));
+		await jumpFromBlock(memo, sections[0]);
 		await expect(nav).toHaveAttribute('data-stuck', 'true');
 		expect((await box(nav)).height).toBeLessThan(56);
 		const text = next.locator('.memo-toc-bar-step-text');
@@ -205,7 +250,7 @@ test.describe('메모 목차', () => {
 		expect(await scroller.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
 	});
 
-	test('편집 화면에도 목차 막대와 글자 크기 버튼이 있다. 목록에서 고르면 그 제목에 커서를 두고, 키운 글자에서도 누른 자리에 입력된다', async ({
+	test('편집 화면에도 목차 블록·막대와 글자 크기 버튼이 있다. 블록에서 고르면 그 제목에 커서를 두고, 키운 글자에서도 누른 자리에 입력된다', async ({
 		page,
 	}) => {
 		await fakeApi(page, { signedIn: true });
@@ -217,9 +262,7 @@ test.describe('메모 목차', () => {
 		const expected = (await editor.locator(':scope > h2').allTextContents()).map((text) => text.trim());
 
 		const target = expected[2];
-		await press(toggle);
-		await list.getByRole('button', { name: target, exact: true }).click();
-		await expect(list).toHaveCount(0);
+		await jumpFromBlock(memo, target);
 		const heading = editor.locator(':scope > h2', { hasText: target }).first();
 		await expect(heading).toBeInViewport();
 		await expect(editor).toBeFocused();
@@ -246,6 +289,7 @@ test.describe('메모 목차', () => {
 		await memo.getByRole('button', { name: '글자 크게' }).click();
 		expect(await editor.evaluate((el) => getComputedStyle(el).zoom)).toBe('1.15');
 		expect(await nav.evaluate((el) => getComputedStyle(el).zoom)).toBe('1.15');
+		expect(await block(memo).nav.evaluate((el) => getComputedStyle(el).zoom)).toBe('1.15');
 		const paragraph = editor.locator(':scope > p').first();
 		await paragraph.evaluate((el) => el.scrollIntoView({ block: 'center' }));
 		const rect = (await paragraph.boundingBox())!;
@@ -271,7 +315,7 @@ test.describe('메모 목차', () => {
 		await enterDesktop(page, '/memo/short-post');
 		const memo = appWindow(page, 'memo');
 		await expect(memo.locator('.memo-reader-body h1')).toHaveText('짧은 글');
-		await expect(memo.getByRole('navigation', { name: '목차' })).toHaveCount(0);
+		await expect(memo.getByRole('navigation', { name: /^목차/ })).toHaveCount(0);
 	});
 
 	test('## 제목이 둘 미만이면 ### 제목까지 모두 절로 오간다', async ({ page }) => {
@@ -281,14 +325,19 @@ test.describe('메모 목차', () => {
 			date: '2026-10-27',
 			category: '개발기/MacFolio',
 			summary: '',
-			body: '## 하나\n\n글.\n\n### 가\n\n글.\n\n### 나\n\n글.',
+			// 막대가 붙을 만큼 길게 (머리말과 절마다 문단 30개)
+			body:
+				'머리말.\n\n'.repeat(5) +
+				['하나', '가', '나']
+					.map((name, index) => `${index ? '###' : '##'} ${name}\n\n${'글.\n\n'.repeat(30)}`)
+					.join(''),
 		};
 		api.posts = [{ slug: 'sub-post', ...content, deleted: false, published: content }];
 		await enterDesktop(page, '/memo/sub-post');
-		const { nav, next, section } = bar(appWindow(page, 'memo'));
-		await expect(nav.locator('.memo-toc-bar-placeholder')).toHaveText('목차 · 절 3개');
-		await expect(next).toHaveAccessibleName('다음 절: 하나');
-		await press(next);
+		const memo = appWindow(page, 'memo');
+		const { next, section } = bar(memo);
+		await expect(block(memo).items).toHaveText(['하나', '가', '나']);
+		await jumpFromBlock(memo, '하나');
 		await expect(section).toHaveText('하나');
 		await expect(next).toHaveAccessibleName('다음 절: 가');
 	});

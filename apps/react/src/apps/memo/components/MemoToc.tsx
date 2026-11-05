@@ -1,8 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
 import { prefersReducedMotion } from '@/shared/lib/media';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
-import { activeHeading, showsToc, tocBarItems, tocPosition } from '../toc';
+import { activeHeading, showsToc, tocBarItems, tocPosition, type TocEntry } from '../toc';
 import type { useTocHeadings } from '../useTocHeadings';
+import { useTocDisclosure } from '../useTocDisclosure';
 
 /** 붙은 막대 아래 끝에서 이만큼 내려온 선을 지난 제목을 읽는 중으로 본다 (제목 한 줄과 위 여백) */
 const ACTIVE_ROOM = 48;
@@ -10,13 +11,46 @@ const ACTIVE_ROOM = 48;
 /** 제목으로 넘길 때 붙은 막대 아래에 남기는 틈 */
 const JUMP_GAP = 8;
 
+/** 목차 항목들 (제목 아래 목차 블록과 막대의 펼친 목록이 같이 쓴다) */
+const TocList = ({
+	id,
+	className,
+	entries,
+	active,
+	onJump,
+	listRef,
+	onKeyDown,
+}: {
+	id?: string;
+	className: string;
+	entries: TocEntry[];
+	active: number;
+	onJump: (index: number) => void;
+	listRef?: RefObject<HTMLOListElement | null>;
+	onKeyDown?: (event: KeyboardEvent<HTMLOListElement>) => void;
+}) => (
+	<ol ref={listRef} id={id} className={className} onKeyDown={onKeyDown}>
+		{entries.map((entry, index) => (
+			<li key={index} data-level={entry.level}>
+				<button type="button" aria-current={index === active ? 'location' : undefined} onClick={() => onJump(index)}>
+					{entry.text}
+				</button>
+			</li>
+		))}
+	</ol>
+);
+
 /**
- * 글의 목차: 글 제목 바로 아래의 한 줄 막대. 평소에는 지금 읽는 절(+그 안의 ### 소제목)과 이전·다음 절만 보이고,
- * 오른쪽 끝의 목록 버튼으로 모든 제목을 펼친다. 절은 ## 제목이다 (## 제목이 둘 미만이면 모든 제목, toc.ts의 tocBarItems).
- * 본문 제목이 TOC_MIN_HEADINGS개 미만이면 그리지 않는다.
- * - 본문을 넘기면 스크롤 칸 맨 위에 붙어 있고(position: sticky), 붙은 동안만 아래에 얇은 구분선을 긋는다 (styles/toc.css)
- * - 펼친 목록은 막대 아래에 떠 있고, 바깥을 누르거나 Esc를 누르거나 제목을 고르면 닫힌다
- * 이전·다음 버튼과 목록의 제목을 누르면 본문의 그 제목으로 스크롤한다. 주소의 #는 바꾸지 않는다 (글 주소가 /memo/<글>이라서, 각주 이동과 같은 원칙).
+ * 글의 목차. 본문의 ## · ### 제목으로 만든다. 제목이 TOC_MIN_HEADINGS개 미만이면 그리지 않는다.
+ * - 제목 아래의 목차 블록: Apple 개발자 문서의 'On This Page'처럼 왼쪽 세로선에 붙인 목록. 접힌 채 시작하고,
+ *   누르면(클릭·탭·Enter·Space) 펼치고 다시 누르면 접는다. 펼쳐 두면 기억한다 (useTocDisclosure)
+ * - 목차 막대: 블록이 화면 위로 지나가면 스크롤 칸 맨 위에 붙어 나타나는 한 줄(position: sticky, 붙기 전에는 감춘다).
+ *   지금 읽는 절(+그 안의 ### 소제목)과 이전·다음 절을 보이고, 오른쪽 끝의 목록 버튼으로 모든 제목을 펼친다.
+ *   절은 ## 제목이다 (## 제목이 둘 미만이면 모든 제목, toc.ts의 tocBarItems).
+ *   펼친 목록은 막대 아래에 떠 있고, 바깥을 누르거나 Esc를 누르거나 제목을 고르면 닫힌다
+ *   휴대폰(compact)에서는 한 줄을 차지하지 않게 이전·현재·다음을 감추고 오른쪽 위에 떠 있는 목록 버튼 하나만 남긴다 (styles/toc.css)
+ * - 지금 읽는 제목은 블록과 펼친 목록 모두 강조색으로 표시한다 (styles/toc.css)
+ * 항목·이전·다음 버튼을 누르면 본문의 그 제목으로 스크롤한다. 주소의 #는 바꾸지 않는다 (글 주소가 /memo/<글>이라서, 각주 이동과 같은 원칙).
  * 편집 화면(editor)에서는 제목 앞에 커서를 둔다 (제목에 tabindex를 붙이면 편집기 문서가 바뀌므로 초점 대신 커서)
  */
 const MemoToc = ({
@@ -32,7 +66,7 @@ const MemoToc = ({
 	bodyRef: RefObject<HTMLDivElement | null>;
 	/** 본문이 바뀌면 바뀌는 값 (글 주소와 본문) */
 	revision: string;
-	/** 좁은 화면: 항목 높이를 손가락 터치 영역(44px) 이상으로 */
+	/** 좁은 화면: 목차 블록의 줄을 손가락 터치 영역(44px) 이상으로, 막대는 떠 있는 목록 버튼 하나로 */
 	compact: boolean;
 	/** 편집 화면 */
 	editor?: boolean;
@@ -41,12 +75,14 @@ const MemoToc = ({
 	const [active, setActive] = useState(-1);
 	const [stuck, setStuck] = useState(false);
 	const [open, setOpen] = useState(false);
+	const inline = useTocDisclosure({ remember: true });
 	/** 막대가 원래 놓일 자리 (높이 0). 막대가 이 자리보다 아래에 있으면 스크롤 칸 위에 붙은 것이다 */
 	const anchor = useRef<HTMLDivElement>(null);
 	const nav = useRef<HTMLElement>(null);
 	const list = useRef<HTMLOListElement>(null);
 	const toggle = useRef<HTMLButtonElement>(null);
 	const listId = useId();
+	const inlineListId = useId();
 
 	const visible = showsToc(entries);
 	const items = useMemo(() => tocBarItems(entries), [entries]);
@@ -65,11 +101,16 @@ const MemoToc = ({
 			if (!nav.current || !bar) return;
 			const top = scroller.getBoundingClientRect().top;
 			const home = anchor.current?.getBoundingClientRect();
-			setStuck(Boolean(home && bar.top > home.top + 0.5));
-			// 붙은 막대의 아래 끝 (스크롤 칸 위에서): 막대는 스크롤 칸의 위 여백 + 자기 top에 붙는다 (휴대폰은 알약 아래)
-			const covered =
-				Math.max(0, parseFloat(getComputedStyle(scroller).paddingTop) + parseFloat(getComputedStyle(nav.current).top)) +
-				bar.height;
+			// 막대가 붙는 선 (스크롤 칸 위에서): 스크롤 칸 위 여백 + 막대의 top (휴대폰은 알약 아래). 좁은 화면의 막대는 붙지 않아 top이 auto다
+			const stick =
+				parseFloat(getComputedStyle(scroller).paddingTop) + (parseFloat(getComputedStyle(nav.current).top) || 0);
+			// 막대가 원래 놓일 자리가 그 선 위로 지나가면 붙은 것이다 (좁은 화면에서는 같은 선을 지나면 떠 있는 버튼을 보인다)
+			const nowStuck = Boolean(home && home.top < top + stick - 0.5);
+			setStuck(nowStuck);
+			// 맨 위로 돌아가 막대가 감춰지면 펼친 목록도 닫는다
+			if (!nowStuck) setOpen(false);
+			// 붙은 막대의 아래 끝 (스크롤 칸 위에서). 좁은 화면의 막대는 높이가 0이라 위 여백까지다
+			const covered = Math.max(0, stick) + bar.height;
 			// 제목으로 넘기는 scrollIntoView·찾기·초점 이동이 제목을 막대 밑에 숨기지 않게 스크롤 칸의 scroll-padding으로 막대 높이를 비운다
 			scroller.style.scrollPaddingTop = `${Math.round(covered + JUMP_GAP)}px`;
 			setActive(
@@ -103,7 +144,7 @@ const MemoToc = ({
 		const target = panel?.querySelectorAll('button')[Math.max(0, active)];
 		if (!panel || !target) return;
 		target.focus({ preventScroll: true });
-		// scrollIntoView는 본문 스크롤 칸까지 움직이므로 목록만 넘긴다 (항목의 offsetParent는 position: absolute인 목록)
+		// scrollIntoView는 본문 스크롤 칸까지 움직이므로 목록만 넘긴다 (항목의 offsetParent는 position: relative인 목록)
 		const item = target.parentElement!;
 		panel.scrollTop = item.offsetTop - (panel.clientHeight - item.offsetHeight) / 2;
 		// 펼칠 때 한 번만 (읽는 제목이 바뀔 때마다 초점을 옮기지 않는다)
@@ -142,13 +183,34 @@ const MemoToc = ({
 
 	return (
 		<>
+			<nav className="memo-toc" aria-label="목차" data-compact={compact || undefined} onKeyDown={inline.onKeyDown}>
+				<button
+					type="button"
+					className="memo-toc-toggle memo-toc-heading"
+					aria-expanded={inline.open}
+					aria-controls={inlineListId}
+					onClick={inline.toggle}
+				>
+					<i className="fa-solid fa-list-ul memo-toc-icon" aria-hidden="true" />
+					목차
+					<i className="fa-solid fa-chevron-down memo-toc-chevron" aria-hidden="true" />
+				</button>
+				{/* 접고 펼칠 때 높이가 grid-template-rows 0fr ↔ 1fr로 늘고 줄며 목록이 서서히 나타난다 (styles/toc.css) */}
+				<div className="memo-toc-collapse" data-open={inline.open}>
+					<div className="memo-toc-collapse-inner">
+						<TocList id={inlineListId} className="memo-toc-list" entries={entries} active={active} onJump={jump} />
+					</div>
+				</div>
+			</nav>
 			<div ref={anchor} className="memo-toc-bar-anchor" aria-hidden="true" />
 			<nav
 				ref={nav}
 				className="memo-toc-bar"
-				aria-label="목차"
+				aria-label="목차 막대"
 				data-stuck={stuck || undefined}
 				data-compact={compact || undefined}
+				// 붙기 전(목차 블록이 보이는 동안)에는 감춘 막대에 Tab·화면 읽기 프로그램이 들어가지 않게 한다
+				inert={!stuck}
 				// 마우스로 누른 버튼이 초점을 받으면 브라우저가 붙은 막대를 scroll-padding 아래로 보이려고 본문을 위로 넘긴다.
 				// 누르기만으로는 초점을 옮기지 않는다 (키보드 초점과 펼친 목록의 초점은 그대로)
 				onMouseDown={(event) => event.preventDefault()}
@@ -190,7 +252,7 @@ const MemoToc = ({
 						ref={toggle}
 						type="button"
 						className="memo-toc-bar-toggle"
-						aria-label="목차 펼치기"
+						aria-label="모든 제목 보기"
 						aria-expanded={open}
 						aria-controls={listId}
 						onClick={() => setOpen((value) => !value)}
@@ -199,19 +261,19 @@ const MemoToc = ({
 					</button>
 				</div>
 				{open && (
-					<ol ref={list} id={listId} className="memo-toc-bar-list" onKeyDown={onListKey}>
-						{entries.map((entry, index) => (
-							<li key={index} data-level={entry.level}>
-								<button
-									type="button"
-									aria-current={index === active ? 'location' : undefined}
-									onClick={() => jump(index)}
-								>
-									{entry.text}
-								</button>
-							</li>
-						))}
-					</ol>
+					// 바탕·모서리·그림자는 넘기지 않는 바깥 상자에 두고 목록만 그 안에서 넘긴다.
+					// Safari는 넘기는 상자 끝에서 튕길 때 그 상자의 바탕까지 함께 밀어, 목록 자체에 바탕을 두면 튕기는 틈으로 뒤의 본문이 비친다
+					<div className="memo-toc-bar-panel">
+						<TocList
+							listRef={list}
+							id={listId}
+							className="memo-toc-bar-list"
+							entries={entries}
+							active={active}
+							onJump={jump}
+							onKeyDown={onListKey}
+						/>
+					</div>
 				)}
 			</nav>
 		</>

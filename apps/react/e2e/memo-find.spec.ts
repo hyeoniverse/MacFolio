@@ -125,7 +125,7 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		const memo = appWindow(page, 'memo');
 		// 본문을 넘기면 목차 막대가 스크롤 칸 맨 위에 붙는다 (검색 칸 바로 아래)
 		await memo.locator('.memo-reader .memo-scroll').evaluate((el) => el.scrollBy(0, 3000));
-		const bar = memo.getByRole('navigation', { name: '목차' });
+		const bar = memo.getByRole('navigation', { name: '목차 막대' });
 		await expect(bar).toHaveAttribute('data-stuck', 'true');
 		await memo.getByRole('searchbox', { name: '글 검색' }).click();
 		const recent = memo.locator('.memo-search-recent');

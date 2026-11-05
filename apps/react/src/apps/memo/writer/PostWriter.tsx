@@ -58,7 +58,7 @@ interface Props {
 	onDraftChange?: (draft: PostDraft) => void;
 	/** 폴더를 바꿨다: 떠난 폴더가 비어도 목록에 남긴다 */
 	onLeaveFolder?: () => void;
-	/** 한 칸씩 보는 좁은 화면 (목차 막대 항목을 터치 크기로) */
+	/** 한 칸씩 보는 좁은 화면 (목차 블록의 줄과 목차 막대의 버튼을 터치 크기로) */
 	compact?: boolean;
 	/** 제목 아래에 둘 연재 상자 (읽기 화면과 같은 SeriesBox). 연재 글이 아니거나 새 메모면 없다 */
 	series?: React.ReactNode;
