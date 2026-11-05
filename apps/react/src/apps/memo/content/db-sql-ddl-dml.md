@@ -1,7 +1,7 @@
 ---
 title: SQL 데이터 정의문과 SELECT·INSERT·UPDATE 조작문
 date: 2023-04-18
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 5
 summary: SQL의 특징, CREATE·ALTER·DROP과 외래 키의 ON DELETE·ON UPDATE 옵션, Oracle의 VARCHAR2·NUMBER·제약조건 이름, SELECT의 조인·집계·GROUP BY·부속 질의·NULL·EXISTS·UNION, INSERT·UPDATE·DELETE를 예제 결과와 함께 정리하고 6장 연습문제를 풀었다.

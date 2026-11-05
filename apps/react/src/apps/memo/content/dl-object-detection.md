@@ -1,7 +1,7 @@
 ---
 title: 물체 검출의 성능 평가와 RCNN·YOLO
 date: 2023-09-25
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 2
 summary: 인식의 세부 문제와 데이터셋, CAM·Grad-CAM으로 분류 근거를 설명하는 방법, IoU·AP·mAP로 검출 성능을 평가하는 절차, 두 단계 방법론 RCNN·Fast RCNN과 한 단계 방법론 YOLO의 구조를 정리했다.

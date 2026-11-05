@@ -1,7 +1,7 @@
 ---
 title: TCP/IP 계층 모델과 캡슐화
 date: 2021-09-13
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 1
 summary: TCP/IP 4계층과 OSI 7계층의 대응, 헤더를 겹겹이 붙이는 캡슐화와 식별자로 받을 프로그램을 찾는 역다중화, 포트 번호와 RFC 표준화 과정, 이더넷·SLIP·PPP 링크 계층과 MTU를 정리했다.

@@ -1,7 +1,7 @@
 ---
 title: DNS의 계층 구조와 캐시 오염 공격, DNSSEC 방어
 date: 2021-11-08
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 7
 summary: DNS의 도메인 계층, 존과 권한 네임서버, 재귀·반복 질의, 캐시와 메시지 형식을 정리하고, 로컬·원격 캐시 오염과 Kaminsky 공격, 악성 네임서버의 응답 위조, DNS 리바인딩, DNS 서비스 거부 공격의 원리와 방어를 다룬다.

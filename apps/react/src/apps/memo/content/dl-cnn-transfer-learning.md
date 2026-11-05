@@ -1,7 +1,7 @@
 ---
 title: 컨볼루션 신경망의 구조와 전이 학습
 date: 2023-09-11
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 1
 summary: 컨볼루션 신경망의 컨볼루션·패딩·스트라이드·풀링, 출력 크기와 파라미터 수 계산, LeNet-5부터 SENet까지의 대표 구조, 손실 함수와 옵티마이저, 사전 학습 모델을 백본으로 쓰는 전이 학습, Grad-CAM 시각화를 정리했다.

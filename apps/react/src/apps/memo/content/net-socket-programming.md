@@ -1,7 +1,7 @@
 ---
 title: BSD 소켓 API로 만드는 TCP 서버와 클라이언트
 date: 2021-11-15
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 8
 summary: 파일 디스크립터에서 출발해 BSD 소켓 API의 socket·bind·listen·accept·connect 흐름, 소켓 주소 구조체와 바이트 순서, 이름·주소 변환 함수를 정리하고, daytime 서버·클라이언트와 select() 기반 다중 클라이언트 서버를 직접 구현한다.

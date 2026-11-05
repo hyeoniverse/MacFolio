@@ -1,7 +1,7 @@
 ---
 title: 의미 분할의 성능 평가와 FCN·DeconvNet·U-Net
 date: 2023-10-09
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 3
 summary: 화소마다 부류를 지정하는 분할 문제의 정의와 PA·IoU·Dice 평가, 특징 맵을 다시 키우는 전치 컨볼루션과 FCN·DeconvNet·U-Net의 구조, Oxford-IIIT Pet 데이터셋을 U-Net으로 분할한 구현을 다룬다.

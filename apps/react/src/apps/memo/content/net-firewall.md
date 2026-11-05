@@ -1,7 +1,7 @@
 ---
 title: 방화벽의 종류와 iptables 규칙
 date: 2021-11-29
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 10
 summary: 패킷 필터·상태 기반·프록시 방화벽의 차이와 배치 위치를 정리하고, 리눅스 netfilter와 iptables로 체인·규칙·연결 추적 기반 방화벽을 만들고 SSH 터널링으로 우회하는 방법까지 다룬다.

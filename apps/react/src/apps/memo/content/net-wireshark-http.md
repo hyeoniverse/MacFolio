@@ -1,7 +1,7 @@
 ---
 title: Wireshark로 HTTP 트래픽과 TCP 핸드셰이크 분석하기
 date: 2021-11-04
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 6
 summary: Wireshark로 HTTP 트래픽을 수집해 http.host·요청 메서드·상태 코드로 거르고, TCP 3-way handshake를 순서 번호까지 따라 읽으며, Flow Graph·Expert Information으로 재전송을 확인하고, 수집한 패킷에서 TCP 포트 스캔을 탐지하는 분석 절차를 다룬다.

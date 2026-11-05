@@ -1,7 +1,7 @@
 ---
 title: TCP 프로토콜을 겨냥한 공격과 방어
 date: 2021-11-22
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 9
 summary: SYN 플러딩, RST 리셋, 세션 하이재킹, FIN-WAIT2 플러딩, 증폭·낙관적 ACK 공격의 원리를 TCP 상태 기계와 시퀀스 번호로 설명하고, SYN 쿠키와 암호화 같은 방어를 정리한다.

@@ -1,7 +1,7 @@
 ---
 title: ICMP와 traceroute, IP 라우팅 테이블
 date: 2021-10-05
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 3
 summary: ICMP 메시지 유형, TTL과 ICMP 오류로 경로를 찾는 traceroute의 동작과 한계, IP 소스 라우팅 옵션, 라우팅 테이블의 검색 순서와 플래그, ICMP 도달 불가·재지정·라우터 발견 메시지와 그 보안 문제를 정리했다.

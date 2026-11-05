@@ -1,7 +1,7 @@
 ---
 title: 비전 트랜스포머(ViT)의 패치 임베딩과 분류 구조
 date: 2023-11-20
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 8
 summary: 영상을 패치로 잘라 트랜스포머 인코더에 넣는 비전 트랜스포머(ViT)의 구조, 트랜스포머의 장거리 의존·확장성·설명 가능성, CIFAR-10 분류 실습과 데이터 증강 효과를 정리했다.

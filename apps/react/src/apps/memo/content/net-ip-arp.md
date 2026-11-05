@@ -1,7 +1,7 @@
 ---
 title: IP 헤더와 서브넷, ARP 주소 변환
 date: 2021-09-27
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 2
 summary: IPv4 헤더의 필드와 체크섬·조각화 계산, 홉 단위 IP 라우팅, 서브넷 마스크와 특수 주소, IP 주소를 MAC 주소로 바꾸는 ARP의 패킷 형식·캐시·프록시 ARP·Gratuitous ARP와 ARP 스푸핑의 원리와 방어를 정리했다.

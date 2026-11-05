@@ -1,7 +1,7 @@
 ---
 title: 순환 신경망과 LSTM으로 만든 시계열 예측
 date: 2023-10-16
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 4
 summary: 시계열 데이터를 다루는 순환 신경망(RNN)의 구조와 순환식, 장기 의존성을 해결하는 LSTM의 세 게이트, 윈도우 단위 샘플링으로 만든 비트코인 가격 예측과 MAE·MAPE·등락 정확률 평가를 다룬다.

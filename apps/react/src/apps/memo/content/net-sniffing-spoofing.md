@@ -1,7 +1,7 @@
 ---
 title: 패킷 스니핑과 스푸핑, pcap과 원시 소켓의 이해
 date: 2021-11-01
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 5
 summary: 허브·스위치·라우터 환경에서 패킷을 수집하는 위치와 방법(포트 미러링, 허빙 아웃, 탭, ARP 캐시 포이즈닝), libpcap과 BPF, 원시 소켓으로 패킷을 다루는 원리, Scapy를 이용한 분석, 그리고 각 기법에 대한 방어를 다룬다.

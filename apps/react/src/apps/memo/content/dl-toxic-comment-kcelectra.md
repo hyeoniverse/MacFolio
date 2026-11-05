@@ -1,7 +1,7 @@
 ---
 title: KcELECTRA 미세 조정으로 만든 악성 댓글 분류 모델
 date: 2023-12-18
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 9
 summary: KcELECTRA로 악성 댓글 분류 모델을 만든 과정을 정리한다. 공개 악성 댓글 데이터셋 두 개를 합쳐 전처리하고, 인터넷 댓글로 사전 학습한 KcELECTRA를 Hugging Face Trainer로 미세 조정했다. 테스트 정확도 92.3%의 결과와 혼동 행렬, 과적합과 데이터 처리의 개선 방향을 분석한다.

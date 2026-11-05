@@ -1,7 +1,7 @@
 ---
 title: UDP와 TCP의 헤더, 연결 설정과 종료, 상태 전이
 date: 2021-10-18
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 4
 summary: 전송 계층의 두 프로토콜인 UDP와 TCP를 헤더 필드부터 다룬다. UDP 체크섬과 IP 단편화, Path MTU 발견, TCP의 3-way handshake와 연결 종료, 상태 전이도, TIME_WAIT, RST, 동시 개방, 옵션, 수신 연결 큐까지 정리한다.

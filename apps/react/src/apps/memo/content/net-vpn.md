@@ -1,7 +1,7 @@
 ---
 title: VPN과 터널링: IPsec과 TLS VPN
 date: 2021-12-06
-category: CS/네트워크 보안
+category: 학습/CS/네트워크 보안
 series: 네트워크 보안
 seriesOrder: 11
 summary: 공용망 위에 사설망을 세우는 VPN의 원리를 IP 터널링과 캡슐화로 설명하고, TUN 가상 인터페이스로 TLS/SSL VPN을 만들고 라우팅으로 트래픽을 터널에 태워 방화벽을 우회하는 과정까지 다룬다.

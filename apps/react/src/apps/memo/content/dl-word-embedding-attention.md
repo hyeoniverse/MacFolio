@@ -1,7 +1,7 @@
 ---
 title: 단어 임베딩과 seq2seq, 어텐션
 date: 2023-10-23
-category: CS/딥러닝
+category: 학습/CS/딥러닝
 series: 딥러닝 및 응용
 seriesOrder: 5
 summary: 텍스트를 신경망에 넣기 위한 원핫 코드와 단어 임베딩(word2vec, GloVe), 텍스트 전처리와 IMDB 감정 분류, seq2seq와 교사 강요, query-key-value 어텐션과 바다나우 어텐션, LSTM으로 구현한 영어-프랑스어 번역을 다룬다.
