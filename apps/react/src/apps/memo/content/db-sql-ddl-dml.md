@@ -589,8 +589,10 @@ STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에
 
 ## 연습문제 풀이
 
+교재 6장 연습문제 가운데 과제로 나온 1·5·6번과, 6·7주차 수업의 실습 과제 2개를 풀었다. 연습문제 번호는 교재 번호 그대로이고, 같은 장의 2·3·4번은 [뷰·커서 글](/memo/db-sql-view-cursor)에서 푼다.
+
 <details>
-<summary>1. SQL 테이블과 릴레이션의 차이</summary>
+<summary>연습문제 1. SQL 테이블과 릴레이션의 차이</summary>
 
 > SQL에서 정의되는 테이블과 관계 데이터 모델에서 정의된 릴레이션의 차이점을 설명하라.
 
@@ -607,7 +609,7 @@ STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에
 </details>
 
 <details>
-<summary>5. 학생·과목·등록 질의를 SQL로 표현</summary>
+<summary>연습문제 5. 학생·과목·등록 질의를 SQL로 표현</summary>
 
 > 학생(학번, 이름, 학년), 과목(과목번호, 과목이름, 교수), 등록(과목번호, 학번, 점수) 릴레이션에서 다음 질의문을 SQL로 표현하라.
 
@@ -658,7 +660,7 @@ UPDATE 학생 SET 학년 = 4 WHERE 학번 = 12345;
 </details>
 
 <details>
-<summary>6. 납품 데이터베이스 질의를 SQL로 표현</summary>
+<summary>연습문제 6. 납품 데이터베이스 질의를 SQL로 표현</summary>
 
 > S(Sno, Sname, Status, City), P(Pno, Pname, Colour, Weight), SP(Sno, Pno, Qty)에서 다음 질의문을 SQL로 표현하라.
 

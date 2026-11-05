@@ -453,8 +453,10 @@ ENROL | Sno | Cno | … | Final        CONDITIONS
 
 ## 연습문제 풀이
 
+교재 5장 연습문제 가운데 과제로 나온 7·8번과, 5·6주차 수업의 실습 과제 3개를 풀었다. 연습문제 번호는 교재 번호 그대로다.
+
 <details>
-<summary>7. 연산 결과 릴레이션의 기본 키</summary>
+<summary>연습문제 7. 연산 결과 릴레이션의 기본 키</summary>
 
 > 두 릴레이션 R과 S가 있다고 하자. 다음 연산의 결과 릴레이션에 대한 기본 키를 식별해 보라.
 
@@ -476,7 +478,7 @@ R의 기본 키를 A, S의 기본 키를 B로 둔다. 결과 릴레이션의 기
 </details>
 
 <details>
-<summary>8. 납품 데이터베이스 질의를 관계 대수와 관계 해석으로</summary>
+<summary>연습문제 8. 납품 데이터베이스 질의를 관계 대수와 관계 해석으로</summary>
 
 > S(Sno, Sname, Status, City), P(Pno, Pname, Colour, Weight), SP(Sno, Pno, Qty)에 대해 다음 질의를 관계 대수, 관계 해석으로 표현하라. (가) 모든 납품업자의 Sname과 City (나) Pno가 123인 제품을 발송한 납품업자의 Sname (다) Colour가 red인 제품의 Pname (라) Pname이 Nut인 제품을 발송한 납품업자의 Sname
 
@@ -522,7 +524,7 @@ C = S ⋈N B
 </details>
 
 <details>
-<summary>5주차 과제. 자연 조인을 기본 연산으로 계산</summary>
+<summary>실습 1. 자연 조인을 기본 연산으로 계산</summary>
 
 > `학생 ⋈N 등록`을 카티션 프로덕트(×), 실렉트(σ), 프로젝트(π) 순서로 계산하라.
 
@@ -564,7 +566,7 @@ C = S ⋈N B
 </details>
 
 <details>
-<summary>6주차 과제 1. 모든 과목의 이름과 담당교수</summary>
+<summary>실습 2. 모든 과목의 이름과 담당교수</summary>
 
 > 모든 교과목의 이름과 담당 교수를 검색하라.
 
@@ -583,7 +585,7 @@ C = S ⋈N B
 </details>
 
 <details>
-<summary>6주차 과제 2. 데이터베이스 수강생의 중간성적과 기말성적</summary>
+<summary>실습 3. 데이터베이스 수강생의 중간성적과 기말성적</summary>
 
 > 데이터베이스 교과목을 수강하는 학생들의 중간성적과 기말성적을 검색하라.
 
