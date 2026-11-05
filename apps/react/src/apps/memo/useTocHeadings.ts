@@ -3,13 +3,13 @@ import type { TocEntry } from './toc';
 
 /**
  * 목차가 읽는 제목. 읽기 화면은 본문(.memo-markdown)의 맨 위 단계, 편집 화면은 편집기(.ProseMirror)의 맨 위 단계
- * ## · ### 제목이다 (접기 블록·각주 안의 제목은 뺀다)
+ * ## · ### · #### 제목이다 (접기 블록·각주 안의 제목은 뺀다)
  */
 const headingsIn = (body: HTMLElement | null, editor: boolean) =>
 	body
 		? [
 				...body.querySelectorAll<HTMLHeadingElement>(
-					editor ? '.ProseMirror > h2, .ProseMirror > h3' : ':scope > h2, :scope > h3'
+					editor ? '.ProseMirror > :is(h2, h3, h4)' : ':scope > :is(h2, h3, h4)'
 				),
 			]
 		: [];
@@ -30,7 +30,7 @@ export function useTocHeadings(bodyRef: RefObject<HTMLDivElement | null>, revisi
 		const read = () => {
 			headings.current = headingsIn(bodyRef.current, editor);
 			const next = headings.current.map((heading) => ({
-				level: heading.tagName === 'H3' ? (3 as const) : (2 as const),
+				level: Number(heading.tagName[1]) as TocEntry['level'],
 				text: heading.textContent?.trim() ?? '',
 			}));
 			setEntries((current) => (sameEntries(current, next) ? current : next));

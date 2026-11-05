@@ -5,9 +5,9 @@ import { LAYOUT_POST_TITLE, layoutPost } from './memoLayoutPost';
 
 const box = async (locator: Locator) => (await locator.boundingBox())!;
 
-/** 본문 제목 (접기 블록 밖의 ## · ###, 본문 순서) */
+/** 본문 제목 (접기 블록 밖의 ## · ### · ####, 본문 순서) */
 const headingTexts = async (body: Locator) =>
-	(await body.locator(':scope > h2, :scope > h3').allTextContents()).map((text) => text.trim());
+	(await body.locator(':scope > :is(h2, h3, h4)').allTextContents()).map((text) => text.trim());
 
 /** 본문 제목 가운데 이전·다음으로 오가는 절 (toc.ts의 tocBarItems와 같은 규칙) */
 const expectedSections = async (body: Locator) => {
@@ -134,6 +134,12 @@ test.describe('메모 목차', () => {
 			return node?.textContent?.trim() ?? '';
 		});
 		await expect(section).toHaveText(parent);
+		// 절이 바뀌면 새 글자가 읽는 방향으로 미끄러지며 나타난다 (아래로 읽어 가면 아래에서 올라온다).
+		// 시험은 움직임 줄이기로 돌므로 그 설정을 끄고 본다 (켜져 있으면 움직이지 않는다)
+		expect(await sub.evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
+		await page.emulateMedia({ reducedMotion: 'no-preference' });
+		expect(await sub.evaluate((el) => getComputedStyle(el).animationName)).toBe('memo-toc-swap-forward');
+		await page.emulateMedia({ reducedMotion: 'reduce' });
 		// 이전·현재·다음·목록 버튼이 한 줄에 놓인다
 		const centers = await nav
 			.locator('.memo-toc-bar-row > *')
@@ -225,13 +231,15 @@ test.describe('메모 목차', () => {
 		const target = headings[headings.length - 1];
 		await list.getByRole('button', { name: target, exact: true }).click();
 		await expect(list).toHaveCount(0);
-		const heading = body.locator(':scope > :is(h2, h3)', { hasText: target }).last();
+		const heading = body.locator(':scope > :is(h2, h3, h4)', { hasText: target }).last();
 		await expect(heading).toBeInViewport();
 		await expect(heading).toBeFocused();
 		await expect(nav).toHaveAttribute('data-stuck', 'true');
 	});
 
-	test('좁은 창에서도 한 줄을 지키고, 긴 제목은 말줄임표로 자른다', async ({ page }) => {
+	test('이전·다음은 마우스를 올리면 절 이름까지 펼치고, 좁은 창에서도 한 줄을 지키며 긴 제목은 말줄임표로 자른다', async ({
+		page,
+	}) => {
 		await fakeApi(page, { signedIn: false });
 		await page.setViewportSize({ width: 1000, height: 800 });
 		await enterDesktop(page, '/memo/merge-strategies');
@@ -246,6 +254,16 @@ test.describe('메모 목차', () => {
 			'ellipsis',
 			'nowrap',
 		]);
+		// 이전·다음은 평소에 화살표만, 마우스를 올리면 그 절 이름까지 펼친다
+		const width = () => text.evaluate((el) => el.getBoundingClientRect().width);
+		await page.mouse.move(0, 0);
+		await expect.poll(width).toBeLessThan(1);
+		const arrow = await box(next);
+		await page.mouse.move(arrow.x + arrow.width - 8, arrow.y + arrow.height / 2);
+		await expect.poll(width).toBeGreaterThan(40);
+		await expect(text).toHaveCSS('opacity', '1');
+		// 펼쳐도 한 줄 그대로다
+		expect((await box(nav)).height).toBeLessThan(56);
 		const scroller = memo.locator('.memo-reader .memo-scroll');
 		expect(await scroller.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
 	});
@@ -316,6 +334,44 @@ test.describe('메모 목차', () => {
 		const memo = appWindow(page, 'memo');
 		await expect(memo.locator('.memo-reader-body h1')).toHaveText('짧은 글');
 		await expect(memo.getByRole('navigation', { name: /^목차/ })).toHaveCount(0);
+	});
+
+	test('#### 제목도 목차에 들어가고, 막대에는 읽는 자리까지의 하위 제목 경로(## › ### › ####)를 보인다', async ({
+		page,
+	}) => {
+		const api = await fakeApi(page, { signedIn: false });
+		const filler = '글.\n\n'.repeat(30);
+		const content = {
+			title: '깊은 제목의 글',
+			date: '2026-10-27',
+			category: '개발기/MacFolio',
+			summary: '',
+			body:
+				'머리말.\n\n'.repeat(5) +
+				`## 하나\n\n${filler}### 가\n\n${filler}#### 가-1\n\n${filler}#### 가-2\n\n${filler}### 나\n\n${filler}## 둘\n\n${filler}`,
+		};
+		api.posts = [{ slug: 'deep-post', ...content, deleted: false, published: content }];
+		await enterDesktop(page, '/memo/deep-post');
+		const memo = appWindow(page, 'memo');
+		const { section, sub, toggle, list } = bar(memo);
+		// 목차 블록: #### 는 한 단계 더 들여 쓴다
+		await block(memo).toggle.click();
+		await expect(block(memo).items).toHaveText(['하나', '가', '가-1', '가-2', '나', '둘']);
+		const pad = (name: string) =>
+			block(memo)
+				.nav.getByRole('button', { name, exact: true })
+				.evaluate((el) => parseFloat(getComputedStyle(el).paddingLeft));
+		expect(await pad('가-1')).toBeGreaterThan(await pad('가'));
+
+		await jumpFromBlock(memo, '가-2');
+		await expect(section).toHaveText('하나');
+		// 같은 단계의 앞 제목(가-1)은 넣지 않고, 부모(가)와 지금 제목(가-2)만
+		await expect(sub).toHaveText(['가', '가-2']);
+		await jumpFromBlock(memo, '나');
+		await expect(sub).toHaveText(['나']);
+		// 펼친 목록에도 #### 가 들여 쓴 채 들어간다
+		await press(toggle);
+		await expect(list.locator('li[data-level="4"] button')).toHaveText(['가-1', '가-2']);
 	});
 
 	test('## 제목이 둘 미만이면 ### 제목까지 모두 절로 오간다', async ({ page }) => {

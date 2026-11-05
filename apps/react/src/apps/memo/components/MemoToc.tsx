@@ -41,11 +41,13 @@ const TocList = ({
 );
 
 /**
- * 글의 목차. 본문의 ## · ### 제목으로 만든다. 제목이 TOC_MIN_HEADINGS개 미만이면 그리지 않는다.
+ * 글의 목차. 본문의 ## · ### · #### 제목으로 만든다. 제목이 TOC_MIN_HEADINGS개 미만이면 그리지 않는다.
  * - 제목 아래의 목차 블록: Apple 개발자 문서의 'On This Page'처럼 왼쪽 세로선에 붙인 목록. 접힌 채 시작하고,
  *   누르면(클릭·탭·Enter·Space) 펼치고 다시 누르면 접는다. 펼쳐 두면 기억한다 (useTocDisclosure)
  * - 목차 막대: 블록이 화면 위로 지나가면 스크롤 칸 맨 위에 붙어 나타나는 한 줄(position: sticky, 붙기 전에는 감춘다).
- *   지금 읽는 절(+그 안의 ### 소제목)과 이전·다음 절을 보이고, 오른쪽 끝의 목록 버튼으로 모든 제목을 펼친다.
+ *   가운데에 지금 읽는 절 이름과, 그 안에서 읽는 자리까지의 하위 제목 경로(## › ### › ####, toc.ts의 tocPosition)를 보인다.
+ *   양옆의 이전·다음 화살표는 마우스를 올리면 그 절 이름까지 펼친다. 절·하위 제목이 바뀌면 글자가 읽는 방향으로 미끄러지며 나타난다.
+ *   오른쪽 끝의 목록 버튼으로 모든 제목을 펼친다.
  *   절은 ## 제목이다 (## 제목이 둘 미만이면 모든 제목, toc.ts의 tocBarItems).
  *   펼친 목록은 막대 아래에 떠 있고, 바깥을 누르거나 Esc를 누르거나 제목을 고르면 닫힌다
  *   휴대폰(compact)에서는 한 줄을 차지하지 않게 이전·현재·다음을 감추고 오른쪽 위에 떠 있는 목록 버튼 하나만 남긴다 (styles/toc.css)
@@ -86,7 +88,10 @@ const MemoToc = ({
 
 	const visible = showsToc(entries);
 	const items = useMemo(() => tocBarItems(entries), [entries]);
-	const { section, sub, prev, next } = tocPosition(entries, items, active);
+	const { section, trail, prev, next } = tocPosition(entries, items, active);
+	// 읽는 제목이 바뀐 방향 (막대의 글자가 아래에서 올라오거나 위에서 내려오며 바뀐다). 렌더 중에 앞 값과 비교해 고친다
+	const [shown, setShown] = useState({ active, forward: true });
+	if (shown.active !== active) setShown({ active, forward: active > shown.active });
 
 	useDismiss(open, () => setOpen(false), [nav]);
 
@@ -225,13 +230,24 @@ const MemoToc = ({
 						onClick={() => jump(prev)}
 					>
 						<i className="fa-solid fa-chevron-left" aria-hidden="true" />
-						{prev >= 0 && <span className="memo-toc-bar-step-text">{entries[prev].text}</span>}
+						{prev >= 0 && (
+							<span key={prev} className="memo-toc-bar-step-text">
+								{entries[prev].text}
+							</span>
+						)}
 					</button>
-					<p className="memo-toc-bar-current">
+					{/* 절·하위 제목이 바뀌면 그 글자만 새로 그려(key) 바뀐 방향으로 미끄러지며 나타난다 (styles/toc.css의 memo-toc-swap) */}
+					<p className="memo-toc-bar-current" data-direction={shown.forward ? 'forward' : 'back'}>
 						{section >= 0 ? (
 							<>
-								<span className="memo-toc-bar-section">{entries[section].text}</span>
-								{sub >= 0 && <span className="memo-toc-bar-sub">{entries[sub].text}</span>}
+								<span key={`section-${section}`} className="memo-toc-bar-section">
+									{entries[section].text}
+								</span>
+								{trail.map((index) => (
+									<span key={`sub-${index}`} className="memo-toc-bar-sub" data-level={entries[index].level}>
+										{entries[index].text}
+									</span>
+								))}
 							</>
 						) : (
 							<span className="memo-toc-bar-placeholder">목차 · 절 {items.length}개</span>
@@ -245,7 +261,11 @@ const MemoToc = ({
 						disabled={next < 0}
 						onClick={() => jump(next)}
 					>
-						{next >= 0 && <span className="memo-toc-bar-step-text">{entries[next].text}</span>}
+						{next >= 0 && (
+							<span key={next} className="memo-toc-bar-step-text">
+								{entries[next].text}
+							</span>
+						)}
 						<i className="fa-solid fa-chevron-right" aria-hidden="true" />
 					</button>
 					<button

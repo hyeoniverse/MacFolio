@@ -1,8 +1,8 @@
-// 글의 목차: 본문의 ## · ### 제목. 순수 함수만 둔다 (그리기와 스크롤은 components/MemoToc.tsx의 목차 막대)
+// 글의 목차: 본문의 ## · ### · #### 제목. 순수 함수만 둔다 (그리기와 스크롤은 components/MemoToc.tsx의 목차 막대)
 
 export interface TocEntry {
-	/** 2(##) 또는 3(###) */
-	level: 2 | 3;
+	/** 2(##), 3(###), 4(####) */
+	level: 2 | 3 | 4;
 	text: string;
 }
 
@@ -31,7 +31,7 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 /**
  * 목차 막대가 이전·다음으로 오가는 절: 본문 제목(entries) 가운데 ## 제목의 번호. ## 제목이 둘 미만이면(### 위주의 글) 모든 제목.
- * ### 제목은 절 안의 소제목으로 현재 절 옆에 함께 보인다 (tocPosition)
+ * ### · #### 제목은 절 안의 하위 제목으로 현재 절 옆에 경로로 함께 보인다 (tocPosition)
  */
 export function tocBarItems(entries: readonly TocEntry[]): number[] {
 	const sections = entries.flatMap((entry, index) => (entry.level === 2 ? [index] : []));
@@ -55,8 +55,11 @@ export function activeBarItem(items: readonly number[], active: number): number 
 export interface TocPosition {
 	/** 지금 읽는 절 (본문 제목 번호). 첫 절보다 위면 -1 */
 	section: number;
-	/** 지금 읽는 절 안의 ### 소제목. 절 머리를 읽는 중이거나 소제목이 없으면 -1 */
-	sub: number;
+	/**
+	 * 지금 읽는 절 안에서 읽는 자리까지의 하위 제목 경로 (본문 제목 번호, 얕은 단계부터).
+	 * 예: ## 절 › ### 소제목 › #### 세부 제목을 읽는 중이면 [###, ####]. 절 머리를 읽는 중이면 빈 배열
+	 */
+	trail: number[];
 	/** 이전 절. 없으면 -1 */
 	prev: number;
 	/** 다음 절. 없으면 -1 (첫 절보다 위면 첫 절) */
@@ -64,7 +67,24 @@ export interface TocPosition {
 }
 
 /**
- * 목차 막대에 보일 이전·현재(+소제목)·다음 절
+ * 절 안에서 읽는 제목까지의 하위 제목 경로: 읽는 제목에서 절 머리 쪽으로 거슬러 올라가며, 단계가 더 얕은 제목을 하나씩 모은다.
+ * (#### 앞의 가장 가까운 ###가 그 ####의 부모다. 절보다 깊은 단계만 모은다)
+ */
+function trailOf(entries: readonly TocEntry[], section: number, active: number): number[] {
+	const trail: number[] = [];
+	let above: number = 5;
+	for (let index = active; index > section; index--) {
+		const { level } = entries[index];
+		if (level < above && level > entries[section].level) {
+			trail.unshift(index);
+			above = level;
+		}
+	}
+	return trail;
+}
+
+/**
+ * 목차 막대에 보일 이전·현재(+하위 제목 경로)·다음 절
  * @param items tocBarItems의 결과
  * @param active 지금 읽는 제목의 번호 (activeHeading의 결과)
  */
@@ -73,7 +93,7 @@ export function tocPosition(entries: readonly TocEntry[], items: readonly number
 	const section = current >= 0 ? items[current] : -1;
 	return {
 		section,
-		sub: section >= 0 && active > section && entries[active]?.level === 3 ? active : -1,
+		trail: section >= 0 ? trailOf(entries, section, active) : [],
 		prev: current > 0 ? items[current - 1] : -1,
 		next: items[current + 1] ?? -1,
 	};
