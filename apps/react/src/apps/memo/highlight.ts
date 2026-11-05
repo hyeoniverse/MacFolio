@@ -5,20 +5,25 @@ import { toText } from 'hast-util-to-text';
 import { createLowlight } from 'lowlight';
 import { visit } from 'unist-util-visit';
 import bash from 'highlight.js/lib/languages/bash';
+import c from 'highlight.js/lib/languages/c';
 import css from 'highlight.js/lib/languages/css';
+import diff from 'highlight.js/lib/languages/diff';
 import javascript from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
 import markdown from 'highlight.js/lib/languages/markdown';
+import python from 'highlight.js/lib/languages/python';
+import sql from 'highlight.js/lib/languages/sql';
 import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import yaml from 'highlight.js/lib/languages/yaml';
 
-const lowlight = createLowlight({ bash, css, javascript, json, markdown, typescript, xml, yaml });
+const lowlight = createLowlight({ bash, c, css, diff, javascript, json, markdown, python, sql, typescript, xml, yaml });
 // 코드 블록에 흔히 적는 다른 이름 (```tsx, ```sh 등)
 lowlight.registerAlias({
 	typescript: ['ts', 'tsx'],
 	javascript: ['js', 'jsx'],
-	bash: ['sh', 'shell', 'zsh'],
+	json: ['jsonc'],
+	bash: ['sh', 'shell', 'zsh', 'console'],
 	xml: ['html'],
 	markdown: ['md'],
 	yaml: ['yml'],
@@ -31,11 +36,27 @@ const languageOf = (node: Element) =>
 		.find((name) => name.startsWith('language-'))
 		?.slice('language-'.length);
 
-/** ```언어 로 적은 코드 블록을 강조한다. 언어를 적지 않았거나 모르는 언어면 그대로 둔다 */
+/** 인라인 코드 끝의 언어 꼬리표: `SELECT * FROM t{:sql}` → 코드 `SELECT * FROM t`, 언어 sql (rehype-pretty-code와 같은 표기) */
+const INLINE_LANGUAGE = /^([\s\S]*\S)\{:([\w+#-]+)\}$/;
+
+/** `코드{:언어}`로 적은 인라인 코드를 코드 블록과 같은 규칙으로 강조한다. 모르는 언어면 꼬리표까지 글자 그대로 둔다 */
+function highlightInline(node: Element) {
+	const match = INLINE_LANGUAGE.exec(toText(node, { whitespace: 'pre' }));
+	if (!match || !lowlight.registered(match[2])) return;
+	const [, code, language] = match;
+	node.children = lowlight.highlight(language, code).children as Element['children'];
+	node.properties.className = [`language-${language}`, 'hljs'];
+}
+
+/** ```언어 로 적은 코드 블록(과 `코드{:언어}` 인라인 코드)을 강조한다. 언어를 적지 않았거나 모르는 언어면 그대로 둔다 */
 export function rehypeHighlightCode() {
 	return (tree: Root) => {
 		visit(tree, 'element', (node, _index, parent) => {
-			if (node.tagName !== 'code' || (parent as Element | undefined)?.tagName !== 'pre') return;
+			if (node.tagName !== 'code') return;
+			if ((parent as Element | undefined)?.tagName !== 'pre') {
+				highlightInline(node);
+				return;
+			}
 			const language = languageOf(node);
 			if (!language || !lowlight.registered(language)) return;
 			const result = lowlight.highlight(language, toText(node, { whitespace: 'pre' }));

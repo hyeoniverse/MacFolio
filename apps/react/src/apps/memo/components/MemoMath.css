@@ -1,0 +1,17 @@
+/* 본문 수식 (MemoMath). 블록 수식은 가운데 정렬하고, 화면보다 넓으면 가로로 넘긴다 */
+.memo-math-block {
+	margin: 1em 0;
+	overflow-x: auto;
+	overflow-y: hidden;
+	text-align: center;
+}
+
+/* KaTeX는 글자를 본문보다 조금 크게(1.21em) 그린다. 본문 줄 높이에 맞춰 조금 줄인다 */
+.memo-math .katex {
+	font-size: 1.1em;
+}
+
+/* 불러오기 전·식이 틀렸을 때 보이는 원문 */
+.memo-math-source code {
+	white-space: pre-wrap;
+}

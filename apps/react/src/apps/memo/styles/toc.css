@@ -1,15 +1,20 @@
 /*
- * 메모 앱: 글의 목차 (components/MemoToc.tsx). Apple 개발자 문서의 'On This Page'처럼 가벼운 목록:
- * 상자·배경 없이 '목차' 제목과 접기 화살표, 얇은 왼쪽 세로선에 붙인 항목.
- * 지금 읽는 절은 강조색 글자와 세로선 위의 굵은 막대로 표시한다. 떠 있는 목차 창도 같은 목록이고 바탕만 메뉴 재질이다.
- * 목차 글자는 본문보다 약간만 옅다: 제목·화살표·## · ### 항목 모두 본문 글자색(--memo-body)에서 보조 글자색 쪽으로 한 단계 옮긴 색·기본 굵기이고
- * ('목차' 제목만 굵게), 단계는 들여쓰기로만 나눈다.
- * 마우스를 올리면 메모 강조색(노랑) 글자, 지금 읽는 절은 강조색 글자에 세로선 위의 막대를 더해 둘을 구분한다.
- * 노랑 글자는 사용자가 고른 그대로 쓴다: 다크 바탕에서는 9.6:1이지만 흰 바탕에서는 1.75:1로 WCAG AA에 못 미친다 (막대·글자 위치로도 구분된다)
+ * 메모 앱: 글의 목차 (components/MemoToc.tsx). 두 부분이다.
+ *
+ * 1. 목차 블록: 글 제목·연재 상자 아래. Apple 개발자 문서의 'On This Page'처럼 가벼운 목록:
+ *    연재 상자와 같은 옅은 바탕에 '목차' 제목과 접기 화살표, 얇은 왼쪽 세로선에 붙인 항목.
+ *    지금 읽는 절은 강조색 글자와 세로선 위의 굵은 막대로 표시한다.
+ *    목차 글자는 본문보다 약간만 옅다: 제목·화살표·## · ### 항목 모두 본문 글자색(--memo-body)에서 보조 글자색 쪽으로 한 단계 옮긴 색·기본 굵기이고
+ *    ('목차' 제목만 굵게), 단계는 들여쓰기로만 나눈다. 마우스를 올리면 메모 강조색(노랑) 글자.
+ *    노랑 글자는 사용자가 고른 그대로 쓴다: 다크 바탕에서는 9.6:1이지만 흰 바탕에서는 1.75:1로 WCAG AA에 못 미친다 (막대·글자 위치로도 구분된다)
+ *
+ * 2. 목차 막대: 블록이 화면 위로 지나가면 스크롤 칸(.memo-scroll) 맨 위에 붙어 나타나는 한 줄:
+ *    [‹ 이전 절] [지금 읽는 절 › 소제목] [다음 절 ›] [목록 버튼]. 상자 없이 글자만 두고, 목록 버튼을 누르면 모든 제목이 막대 아래에 떠서 펼쳐진다.
+ *    붙기 전에는 감추고, 본문을 밀지 않게 제 높이만큼 아래 여백을 음수로 둔다. 바탕은 메모 바탕색이라 본문은 막대 밑으로 지나가고, 아래에 얇은 구분선을 긋는다.
+ *    펼친 목록에서 지금 읽는 제목은 노랑 글자 대신 옅은 강조색 바탕과 왼쪽 막대로 표시한다
  */
 
-.memo-toc,
-.memo-toc-panel {
+.memo-toc {
 	/* 목차 글자: 본문 글자색 85%와 보조 글자색 15% (본문과 거의 같고 약간만 옅다) */
 	--memo-toc-text: color-mix(in srgb, var(--memo-body) 85%, var(--memo-muted));
 	/* 왼쪽 세로선: 구분선(--memo-border)보다 진한 불투명 회색. 기본 글자색 30%를 바탕에 섞는다 */
@@ -122,7 +127,7 @@
 	transform: none;
 }
 
-/* 목록: 왼쪽 세로선 하나에 항목을 붙인다. 본문 위 목차에서는 머리 줄 글자와 왼쪽을 맞춘다 (연재 목록과 같은 자리) */
+/* 목록: 왼쪽 세로선 하나에 항목을 붙인다. 머리 줄 글자와 왼쪽을 맞춘다 (연재 목록과 같은 자리) */
 .memo-toc-list {
 	margin: var(--space-4) 0 0;
 	padding: 0;
@@ -148,6 +153,12 @@
 /* ### 제목: 색은 같고 한 단계 들여 쓴다 */
 .memo .memo-toc-list li[data-level='3'] button {
 	padding-left: var(--space-24);
+}
+
+/* #### 제목: 한 단계 더 들여 쓰고 조금 작게 */
+.memo .memo-toc-list li[data-level='4'] button {
+	padding-left: calc(var(--space-24) + var(--space-12));
+	font-size: 0.93em;
 }
 
 /* 마우스 올림: 메모 강조색 글자 */
@@ -184,71 +195,6 @@
 	padding-block: var(--space-12);
 }
 
-/* 떠 있는 목차 버튼: 높이 0인 줄에 붙여 본문을 밀지 않고, 스크롤 영역 위에 붙어 있다.
-   글자 크기 버튼(.memo-text-size, z-index 8)보다 위 (좁은 창에서 목차 창이 그 자리까지 내려와도 가리지 않게).
-   최근 검색 목록이 열린 검색 칸(10)보다는 아래 */
-.memo-toc-float {
-	display: flex;
-	position: sticky;
-	top: var(--space-8);
-	z-index: 9;
-	justify-content: flex-end;
-	height: 0;
-}
-
-.memo .memo-toc-float-button {
-	width: 32px;
-	height: 32px;
-	border: 1px solid var(--memo-border);
-	border-radius: 50%;
-	background: var(--memo-panel-bg);
-	box-shadow: var(--memo-panel-shadow);
-	backdrop-filter: blur(16px) saturate(180%);
-	animation: fade-in var(--duration-fast) var(--ease-out);
-}
-
-/*
- * 목차 창: 메뉴 재질의 바탕 위에 같은 목록을 메뉴 크기(footnote 글자, 메뉴와 같은 모서리)로.
- * 높이는 본문 스크롤 칸(--memo-toc-room, MemoToc가 잰다) 안에서 글자 크기 버튼 위까지:
- * 칸 높이 - 창 위치(위 여백 8 + 버튼 32 + 간격 8) - 글자 크기 버튼 자리(아래 여백 16 + 높이 32 + 간격 12)
- */
-.memo-toc-panel {
-	position: absolute;
-	top: calc(32px + var(--space-8));
-	right: 0;
-	box-sizing: border-box;
-	width: min(18rem, 70vw);
-	max-height: max(160px, min(60vh, calc(var(--memo-toc-room, 100vh) - 108px)));
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	padding: var(--space-8) var(--space-12) var(--space-10);
-	border-radius: var(--radius-14);
-	background: var(--memo-panel-bg);
-	box-shadow: var(--memo-panel-shadow), var(--shadow-menu);
-	font-size: var(--text-footnote);
-	backdrop-filter: blur(16px) saturate(180%);
-	animation: pop-in var(--duration-fast) var(--ease-out);
-	transform-origin: top right;
-}
-
-.memo-toc-panel .memo-toc-heading {
-	padding: var(--space-2) 0;
-	font-size: var(--text-footnote);
-}
-
-.memo .memo-toc-panel .memo-toc-list button {
-	padding-block: var(--space-4);
-	font-size: var(--text-footnote);
-}
-
-.memo .memo-toc-panel .memo-toc-list li[data-level='2'] button {
-	padding-left: var(--space-10);
-}
-
-.memo .memo-toc-panel .memo-toc-list li[data-level='3'] button {
-	padding-left: var(--space-20);
-}
-
 @media (prefers-reduced-motion: reduce) {
 	.memo-toc-chevron,
 	.memo-toc-collapse,
@@ -258,18 +204,13 @@
 	.memo-toc-collapse[data-open='true'] > .memo-toc-collapse-inner > * {
 		transition: none;
 	}
-
-	.memo-toc-panel,
-	.memo .memo-toc-float-button {
-		animation: none;
-	}
 }
 
 .memo-toc .memo-toc-list {
 	margin: var(--space-2) var(--space-8) var(--space-8);
 }
 
-/* 본문 위 목차의 머리 줄: 연재 상자와 같은 배치 (왼쪽 아이콘, 오른쪽 끝 화살표) */
+/* 목차 블록의 머리 줄: 연재 상자와 같은 배치 (왼쪽 아이콘, 오른쪽 끝 화살표) */
 .memo .memo-toc .memo-toc-toggle {
 	gap: var(--space-8);
 }
@@ -283,4 +224,450 @@
 	margin-left: auto;
 	color: var(--memo-muted);
 	font-size: 0.75em;
+}
+
+/* ---- 목차 막대 ---- */
+
+/* 막대가 원래 놓일 자리 (높이 0, MemoToc가 붙었는지 잴 때 쓴다) */
+.memo-toc-bar-anchor {
+	height: 0;
+}
+
+/*
+ * 붙는 자리: sticky의 top은 스크롤 칸의 안쪽 여백(padding) 안쪽에서 잰다. 읽기 칸의 위 여백(note.css의 .memo-reader .memo-scroll, 4px)만큼
+ * 위로 올려 스크롤 칸 맨 위에 딱 붙인다 (그 4px 틈으로 본문 글자가 비치지 않게).
+ * 겹침: 본문 안의 그림·코드 상자(제자리 겹침)보다 위, 휴대폰의 떠 있는 버튼(5)·글자 크기 버튼(8)보다 아래
+ */
+.memo-toc-bar {
+	position: sticky;
+	top: calc(-1 * var(--space-4));
+	z-index: 4;
+	/* 스크롤 칸의 좌우 여백(note.css 2rem, 좁은 화면 1.25rem)까지 바탕과 구분선을 넓혀, 본문 그림의 테두리가 막대 옆으로 비치지 않게 한다.
+	   글자 크기 배율(zoom)이 걸리면 여백도 배율만큼 커지므로 배율로 나눠 스크롤 칸 여백과 딱 맞춘다 (가로 스크롤이 생기지 않게) */
+	--memo-toc-bar-bleed: calc(2rem / var(--memo-text-scale, 1));
+	/* 막대 높이(한 줄 + 구분선 1px)만큼 아래 여백을 음수로 두어, 붙기 전에는 자리를 차지하지 않는다 */
+	--memo-toc-bar-height: 41px;
+	margin: 0 calc(-1 * var(--memo-toc-bar-bleed)) calc(-1 * var(--memo-toc-bar-height));
+	padding: 0 var(--memo-toc-bar-bleed);
+	border-bottom: 1px solid var(--memo-border);
+	background-color: var(--memo-bg);
+	font-size: var(--text-subhead);
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s linear var(--duration-fast);
+}
+
+:where(.memo-shell[data-compact]) .memo-toc-bar {
+	--memo-toc-bar-bleed: calc(1.25rem / var(--memo-text-scale, 1));
+}
+
+.memo-toc-bar[data-stuck] {
+	visibility: visible;
+	opacity: 1;
+	transition:
+		opacity var(--duration-fast) var(--ease-out),
+		visibility 0s;
+}
+
+/* 한 줄: 이전 · 현재 · 다음은 남는 폭을 1 : 2 : 1로 나누고, 목록 버튼은 제 폭. 긴 제목은 말줄임표로 자른다 */
+.memo-toc-bar-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-8);
+	height: calc(var(--memo-toc-bar-height) - 1px);
+}
+
+.memo .memo-toc-bar :is(.memo-toc-bar-step, .memo-toc-bar-toggle) {
+	display: inline-flex;
+	align-items: center;
+	min-width: 0;
+	max-width: 100%;
+	min-height: 32px;
+	padding: 0 var(--space-6);
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--memo-muted);
+	font: inherit;
+	line-height: 1.3;
+	cursor: pointer;
+	transition:
+		color var(--duration-fast) var(--ease-out),
+		background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-toc-bar .memo-toc-bar-step[data-side='next'] {
+	justify-self: end;
+}
+
+.memo .memo-toc-bar :is(.memo-toc-bar-step, .memo-toc-bar-toggle) i {
+	flex: none;
+	font-size: 0.75em;
+}
+
+/*
+ * 이전·다음 절 이름: 평소에는 화살표만 보이고, 마우스를 올리거나 키보드 초점이 오면 화살표 옆으로 펼쳐진다.
+ * 폭(max-width)과 투명도를 함께 바꿔 글자가 화살표에서 밀려 나오듯 보인다. 칸(1fr)보다 길면 말줄임표로 자른다
+ */
+.memo-toc-bar-step-text {
+	min-width: 0;
+	max-width: 0;
+	overflow: hidden;
+	opacity: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	transition:
+		max-width var(--duration) var(--ease-out),
+		margin var(--duration) var(--ease-out),
+		opacity var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-toc-bar .memo-toc-bar-step:is(:hover, :focus-visible) .memo-toc-bar-step-text {
+	max-width: 24em;
+	opacity: 1;
+}
+
+.memo .memo-toc-bar .memo-toc-bar-step[data-side='prev']:is(:hover, :focus-visible) .memo-toc-bar-step-text {
+	margin-left: var(--space-6);
+}
+
+.memo .memo-toc-bar .memo-toc-bar-step[data-side='next']:is(:hover, :focus-visible) .memo-toc-bar-step-text {
+	margin-right: var(--space-6);
+}
+
+/* 첫 절·마지막 절: 자리는 지키고 화살표만 흐리게 */
+.memo .memo-toc-bar .memo-toc-bar-step:disabled {
+	cursor: default;
+	opacity: 0.35;
+}
+
+/* 펼친 동안 목록 버튼은 눌린 모양 */
+.memo .memo-toc-bar .memo-toc-bar-toggle[aria-expanded='true'] {
+	background-color: color-mix(in srgb, var(--memo-text) 10%, transparent);
+	color: var(--memo-text);
+}
+
+/* 마우스 올림: 기본 글자색으로 진하게 (손가락으로 탭한 뒤 :hover가 남는 휴대폰에서는 쓰지 않는다) */
+@media (hover: hover) {
+	.memo .memo-toc-bar :is(.memo-toc-bar-step, .memo-toc-bar-toggle, .memo-toc-bar-list button):hover:not(:disabled) {
+		background-color: color-mix(in srgb, var(--memo-text) 7%, transparent);
+		color: var(--memo-text);
+	}
+}
+
+.memo .memo-toc-bar button:focus-visible {
+	outline: 2px solid var(--memo-accent);
+	outline-offset: -2px;
+}
+
+/* 지금 읽는 절: 가운데에 진한 절 이름, 그 안의 하위 제목 경로(### › ####)는 › 뒤에 이어 쓴다 */
+.memo-toc-bar-current {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
+	gap: var(--space-6);
+	min-width: 0;
+	margin: 0;
+	color: var(--memo-text);
+	line-height: 1.3;
+	white-space: nowrap;
+}
+
+.memo-toc-bar-section {
+	flex: 0 1 auto;
+	overflow: hidden;
+	color: var(--memo-text);
+	text-overflow: ellipsis;
+}
+
+/* 하위 제목: 절 이름보다 먼저 줄어든다 (경로의 앞쪽 제목이 먼저). 지금 읽는 맨 끝 제목은 기본 글자색, 그 위 단계는 흐리게 */
+.memo-toc-bar-sub {
+	flex: 0 100 auto;
+	min-width: 1.5em;
+	overflow: hidden;
+	color: var(--memo-muted);
+	text-overflow: ellipsis;
+}
+
+.memo-toc-bar-sub:last-child {
+	flex-shrink: 50;
+	color: var(--memo-body);
+}
+
+/* 경로의 제목 사이 › */
+.memo-toc-bar-sep {
+	flex: none;
+	color: var(--memo-muted);
+}
+
+/*
+ * 경로의 제목은 단추다: 누르면 그 제목으로 가고, 마우스를 올리면 그 제목과 같은 계층의 제목들을 펼친다.
+ * 글자만 보이다가 마우스를 올리면 옅은 바탕이 깔린다
+ */
+.memo .memo-toc-bar-current :is(.memo-toc-bar-section, .memo-toc-bar-sub) {
+	min-width: 0;
+	margin: 0 calc(-1 * var(--space-4));
+	padding: var(--space-2) var(--space-4);
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	font: inherit;
+	line-height: 1.3;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.memo .memo-toc-bar-current .memo-toc-bar-section {
+	font-weight: 600;
+}
+
+@media (hover: hover) {
+	.memo .memo-toc-bar-current :is(.memo-toc-bar-section, .memo-toc-bar-sub):hover {
+		background-color: color-mix(in srgb, var(--memo-text) 7%, transparent);
+	}
+}
+
+.memo .memo-toc-bar-current [aria-expanded='true'] {
+	background-color: color-mix(in srgb, var(--memo-text) 10%, transparent);
+}
+
+/* 경로의 제목에서 펼친 목록: 그 제목 바로 아래, 왼쪽 끝을 맞춘다 (left는 MemoToc가 준다). 폭은 제목 길이에 맞추되 너무 넓지 않게 */
+.memo-toc-bar-peek {
+	right: auto;
+	width: max-content;
+	min-width: 180px;
+	max-width: min(320px, 80%);
+	transform-origin: top left;
+}
+
+/* 한 목록의 제목은 모두 같은 단계라 들여 쓰지 않는다 */
+.memo .memo-toc-bar-peek .memo-toc-bar-list li[data-level] button {
+	padding-left: var(--space-10);
+	color: var(--memo-text);
+	font-size: inherit;
+}
+
+.memo-toc-bar-peek .memo-toc-bar-list button {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.memo-toc-bar-placeholder {
+	overflow: hidden;
+	color: var(--memo-muted);
+	text-overflow: ellipsis;
+}
+
+/*
+ * 절·소제목이 바뀔 때: 새로 그린 글자(MemoToc가 key로 바꾼다)만 읽는 방향으로 미끄러지며 나타난다.
+ * 아래로 읽어 가면 아래에서 올라오고, 위로 돌아가면 위에서 내려온다. 그대로인 글자(같은 절의 이름)는 움직이지 않는다
+ */
+@keyframes memo-toc-swap-forward {
+	from {
+		opacity: 0;
+		transform: translateY(0.55em);
+	}
+}
+
+@keyframes memo-toc-swap-back {
+	from {
+		opacity: 0;
+		transform: translateY(-0.55em);
+	}
+}
+
+@keyframes memo-toc-fade {
+	from {
+		opacity: 0;
+	}
+}
+
+.memo-toc-bar-current > * {
+	animation: memo-toc-swap-forward var(--duration) var(--ease-out);
+}
+
+.memo-toc-bar-current[data-direction='back'] > * {
+	animation-name: memo-toc-swap-back;
+}
+
+.memo .memo-toc-bar .memo-toc-bar-step:is(:hover, :focus-visible) .memo-toc-bar-step-text {
+	animation: memo-toc-fade var(--duration-fast) var(--ease-out);
+}
+
+/* 펼친 목록: 막대 바로 아래 오른쪽 끝(목록 버튼 밑)에 뜨는 카드. 카드(바깥 상자)는 넘기지 않고 바탕·모서리·그림자를 맡으며,
+   안의 목록만 넘긴다. 목록 끝에서 튕겨도 비는 자리에는 카드 바탕이 보인다 (overflow: clip으로 둥근 모서리 밖은 자른다) */
+.memo-toc-bar-panel {
+	position: absolute;
+	top: calc(100% + var(--space-4));
+	right: var(--memo-toc-bar-bleed);
+	width: min(360px, calc(100% - 2 * var(--memo-toc-bar-bleed)));
+	overflow: clip;
+	border: 1px solid var(--memo-border);
+	border-radius: var(--radius-14);
+	background-color: var(--memo-bg);
+	box-shadow: var(--shadow-menu);
+	animation: pop-in var(--duration-fast) var(--ease-out);
+	transform-origin: top right;
+}
+
+.memo-toc-bar-list {
+	position: relative;
+	max-height: min(60vh, 440px);
+	margin: 0;
+	padding: var(--space-6);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	list-style: none;
+}
+
+.memo .memo-toc-bar-list button {
+	display: block;
+	position: relative;
+	width: 100%;
+	padding: var(--space-6) var(--space-10);
+	border: none;
+	border-radius: var(--radius-6);
+	background: none;
+	color: var(--memo-text);
+	font: inherit;
+	line-height: 1.35;
+	text-align: left;
+	cursor: pointer;
+}
+
+/* ### 소제목: 들여 쓰고 흐리게 */
+.memo .memo-toc-bar-list li[data-level='3'] button {
+	padding-left: calc(var(--space-10) + 1em);
+	color: var(--memo-muted);
+	font-size: 0.93em;
+}
+
+/* ####: 한 단계 더 들여 쓰고 조금 더 작게 */
+.memo .memo-toc-bar-list li[data-level='4'] button {
+	padding-left: calc(var(--space-10) + 2em);
+	color: var(--memo-muted);
+	font-size: 0.88em;
+}
+
+/* 지금 읽는 제목: 옅은 강조색 바탕과 왼쪽 막대 */
+.memo .memo-toc-bar-list button[aria-current='location'] {
+	background-color: color-mix(in srgb, var(--memo-accent) 16%, transparent);
+	color: var(--memo-text);
+	font-weight: 600;
+}
+
+.memo .memo-toc-bar-list button[aria-current='location']::before {
+	position: absolute;
+	top: var(--space-6);
+	bottom: var(--space-6);
+	left: 3px;
+	width: 3px;
+	border-radius: 2px;
+	background-color: var(--memo-accent);
+	content: '';
+}
+
+/*
+ * 좁은 화면(한 칸 보기): 한 줄 막대 대신 떠 있는 목차 버튼 하나. 좁은 화면에서 한 줄을 늘 차지하지 않게 이전·현재·다음은 감추고
+ * 목록 버튼(44px, 손가락 터치 영역)만 남긴다. 누르면 같은 목록이 버튼 아래에 펼쳐진다
+ */
+.memo .memo-toc-bar[data-compact] {
+	--memo-toc-bar-height: 0px;
+	position: static;
+	margin: 0;
+	padding: 0;
+	border-bottom: none;
+	background: none;
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-row {
+	display: block;
+	height: 0;
+}
+
+.memo .memo-toc-bar[data-compact] :is(.memo-toc-bar-step, .memo-toc-bar-current) {
+	display: none;
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-toggle {
+	justify-content: center;
+	position: absolute;
+	top: var(--space-8);
+	right: var(--space-16);
+	z-index: 5;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	border: 1px solid var(--memo-border);
+	border-radius: 50%;
+	background: var(--memo-panel-bg);
+	box-shadow: var(--memo-panel-shadow);
+	color: var(--memo-text);
+	backdrop-filter: blur(16px) saturate(180%);
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-toggle[aria-expanded='true'] {
+	background: color-mix(in srgb, var(--memo-accent) 22%, var(--memo-panel-bg));
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-toggle i {
+	font-size: 1em;
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-panel {
+	top: calc(var(--space-8) + 44px + var(--space-6));
+	right: var(--space-16);
+	left: var(--space-16);
+	width: auto;
+	z-index: 5;
+}
+
+.memo .memo-toc-bar[data-compact] .memo-toc-bar-list button {
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+}
+
+/*
+ * 휴대폰의 한 칸 보기: 위 왼쪽의 뒤로 버튼(44px 동그라미, 왼쪽 16px)과 오른쪽 공유·••• 알약(phone-note.css의 .memo-phone-top)이
+ * 본문 위 --phone-top 높이에 떠 있다. 목차 버튼은 뒤로 버튼 바로 오른쪽(간격 8px)에 같은 모양으로 둔다.
+ * 막대와 그 조상(.memo-reader-body, .memo-scroll)은 위치를 잡지 않으므로 버튼과 목록은 .memo-reader(position: relative)에 맞춰 놓이고
+ * 본문을 넘겨도 제자리에 있다
+ */
+.container.mobile :where(.memo-shell[data-compact]) .memo .memo-toc-bar .memo-toc-bar-toggle,
+.container.mobile :where(.memo-shell[data-compact]) .memo-toc-bar .memo-toc-bar-toggle {
+	top: var(--phone-top);
+	right: auto;
+	left: calc(16px + 44px + var(--space-8));
+	border: none;
+	background-color: var(--phone-card-bg);
+	box-shadow: var(--shadow-float);
+	font-size: var(--text-title3);
+	backdrop-filter: none;
+}
+
+.container.mobile :where(.memo-shell[data-compact]) .memo-toc-bar .memo-toc-bar-panel {
+	top: calc(var(--phone-top) + 44px + var(--space-8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.memo-toc-bar,
+	.memo .memo-toc-bar button,
+	.memo-toc-bar-step-text {
+		transition: none;
+	}
+
+	.memo-toc-bar-current > *,
+	.memo .memo-toc-bar .memo-toc-bar-step .memo-toc-bar-step-text {
+		animation: none;
+	}
+
+	.memo-toc-bar-panel {
+		animation: none;
+	}
 }

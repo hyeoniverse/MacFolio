@@ -57,4 +57,48 @@ describe('REMARK_PLUGINS', () => {
 		// 속성이 붙은 줄은 접기로 알아보지 않는다 (지금처럼 글자로 보인다)
 		expect(render('<details onclick="x">\n\n내용\n\n</details>')).not.toContain('<details');
 	});
+
+	it('==형광펜==은 <mark>로, 안의 다른 서식도 그대로 그린다', () => {
+		expect(render('핵심은 ==데이터 독립성==이다')).toBe(
+			'<p>핵심은 <mark class="memo-highlight">데이터 독립성</mark>이다</p>'
+		);
+		expect(render('==**굵게** 와 [링크](https://a.b)==')).toBe(
+			'<p><mark class="memo-highlight"><strong>굵게</strong> 와 <a href="https://a.b">링크</a></mark></p>'
+		);
+		expect(render('==하나== 그리고 ==둘==')).toBe(
+			'<p><mark class="memo-highlight">하나</mark> 그리고 <mark class="memo-highlight">둘</mark></p>'
+		);
+	});
+
+	it('공백을 낀 ==, 짝이 없는 ==, 코드 안의 ==는 글자 그대로다', () => {
+		// prettier가 줄 첫머리의 ==를 \\==로 이스케이프해도 형광펜이다
+		expect(render('> \\==**정의**==이다')).toBe(
+			'<blockquote>\n<p><mark class="memo-highlight"><strong>정의</strong></mark>이다</p>\n</blockquote>'
+		);
+		expect(render('a == b 이고 c == d')).toBe('<p>a == b 이고 c == d</p>');
+		expect(render('==닫히지 않음')).toBe('<p>==닫히지 않음</p>');
+		expect(render('`a == b`와 ====')).toBe('<p><code>a == b</code>와 ====</p>');
+	});
+
+	it('제목에 글 안 주소(id)를 붙여 [제목](#주소) 링크로 이동할 수 있다', () => {
+		expect(render('## 데이터와 정보')).toBe('<h2 id="user-content-데이터와-정보">데이터와 정보</h2>');
+		expect(render('### 1단계: `정규` 개체 타입')).toBe(
+			'<h3 id="user-content-1단계-정규-개체-타입">1단계: <code>정규</code> 개체 타입</h3>'
+		);
+		// 같은 제목은 -1, -2
+		expect(render('## 정리\n\n## 정리')).toBe(
+			'<h2 id="user-content-정리">정리</h2>\n<h2 id="user-content-정리-1">정리</h2>'
+		);
+	});
+
+	it('> [!NOTE] 같은 GitHub 경고 표기는 콜아웃 상자로, 같은 줄의 글자는 제목으로 그린다', () => {
+		expect(render('> [!NOTE]\n> 정규화는 의미로 판단한다.')).toBe(
+			'<aside class="memo-callout memo-callout-note">\n<p class="memo-callout-title"><i class="fa-solid fa-circle-info" aria-hidden="true"></i>참고</p>\n<p>정규화는 의미로 판단한다.</p>\n</aside>'
+		);
+		expect(render('> [!warning] Heath의 정리\n> 역은 성립하지 않는다.')).toBe(
+			'<aside class="memo-callout memo-callout-warning">\n<p class="memo-callout-title"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>Heath의 정리</p>\n<p>역은 성립하지 않는다.</p>\n</aside>'
+		);
+		// 표시가 없거나 모르는 종류면 인용 그대로
+		expect(render('> [!TODO] 할 일')).toBe('<blockquote>\n<p>[!TODO] 할 일</p>\n</blockquote>');
+	});
 });

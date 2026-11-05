@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">커서의 DECLARE → OPEN → FETCH → CLOSE</text>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <g font-size="12" text-anchor="middle">
+    <rect x="20" y="56" width="130" height="50" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="85" y="78" font-weight="600" fill="#1f2937">DECLARE C1</text>
+    <text x="85" y="95" font-size="10" fill="#6b7280">SELECT와 연결 (선언문)</text>
+    <rect x="175" y="56" width="130" height="50" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="240" y="78" font-weight="600" fill="#4f46e5">OPEN C1</text>
+    <text x="240" y="95" font-size="10" fill="#6b7280">질의 실행, 활동 세트 생성</text>
+    <rect x="330" y="56" width="130" height="50" rx="6" fill="#ecfdf5" stroke="#059669"/>
+    <text x="395" y="78" font-weight="600" fill="#059669">FETCH C1 INTO</text>
+    <text x="395" y="95" font-size="10" fill="#6b7280">다음 행을 호스트 변수로</text>
+    <rect x="490" y="56" width="130" height="50" rx="6" fill="#fff1f2" stroke="#be123c"/>
+    <text x="555" y="78" font-weight="600" fill="#be123c">CLOSE C1</text>
+    <text x="555" y="95" font-size="10" fill="#6b7280">활동 세트 해제</text>
+  </g>
+  <g stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)">
+    <line x1="150" y1="81" x2="173" y2="81"/>
+    <line x1="305" y1="81" x2="328" y2="81"/>
+    <line x1="460" y1="81" x2="488" y2="81"/>
+    <path d="M370 106 C 350 135, 440 135, 420 108"/>
+  </g>
+  <text x="395" y="146" text-anchor="middle" font-size="10" fill="#059669">SQLSTATE ≠ "02000"이면 반복</text>
+  <text x="475" y="72" text-anchor="middle" font-size="9" fill="#be123c">"02000"</text>
+
+  <!-- 활동 세트 -->
+  <text x="240" y="178" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2937">활동 세트 (Dept = :dept인 학생)</text>
+  <g font-size="11" fill="#374151">
+    <rect x="160" y="188" width="160" height="22" fill="#f9fafb" stroke="#d1d5db"/><text x="172" y="203">100 나수영 4</text>
+    <rect x="160" y="210" width="160" height="22" fill="#d1fae5" stroke="#059669"/><text x="172" y="225">300 정기태 1</text>
+    <rect x="160" y="232" width="160" height="22" fill="#f9fafb" stroke="#d1d5db"/><text x="172" y="247">400 송병길 4</text>
+  </g>
+  <g stroke="#059669" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="120" y1="221" x2="156" y2="221"/>
+  </g>
+  <text x="114" y="225" text-anchor="end" font-size="11" fill="#059669">커서 위치</text>
+
+  <g font-size="11" fill="#374151">
+    <rect x="390" y="196" width="200" height="50" rx="6" fill="#fff" stroke="#9ca3af"/>
+    <text x="402" y="214">호스트 변수</text>
+    <text x="402" y="234">:sno = 300, :sname = '정기태', :year = 1</text>
+  </g>
+  <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)">
+    <line x1="320" y1="221" x2="388" y2="221"/>
+  </g>
+  <text x="320" y="282" text-anchor="middle" font-size="11" fill="#6b7280">FETCH마다 커서가 한 행씩 전진하고, 그 행의 값을 호스트 변수에 복사한다</text>
+</svg>

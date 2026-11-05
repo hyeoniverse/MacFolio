@@ -1,5 +1,9 @@
 import { type PostSlug, toPost, validateDraft } from '@macfolio/desktop-core/memo';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import ReactMarkdown from 'react-markdown';
 import { describe, expect, it } from 'vitest';
+import { REMARK_PLUGINS } from './markdownPlugins';
 
 const files = import.meta.glob<string>('./content/*.md', { query: '?raw', import: 'default', eager: true });
 const slugs = new Set(Object.keys(files).map((path) => path.replace(/^\.\/content\//, '').replace(/\.md$/, '')));
@@ -35,5 +39,14 @@ describe('저장소 글', () => {
 		expect(bare).toEqual([]);
 		// [^각주](…)는 각주가 아니라 '^각주'라는 링크가 된다. 괄호 설명은 각주 앞에 둔다
 		expect(lines.flatMap((line) => line.match(/\[\^[^\]]+\]\(/g) ?? [])).toEqual([]);
+	});
+
+	it.each(Object.entries(files))('%s의 글 안 링크(#주소)는 그 글의 제목·각주·접기 블록을 가리킨다', (_path, source) => {
+		const html = renderToStaticMarkup(createElement(ReactMarkdown, { remarkPlugins: REMARK_PLUGINS }, source));
+		const ids = new Set([...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]));
+		const missing = [...html.matchAll(/href="#([^"]+)"/g)]
+			.map((match) => decodeURIComponent(match[1]))
+			.filter((id) => !ids.has(id) && !ids.has(`user-content-${id}`));
+		expect(missing).toEqual([]);
 	});
 });

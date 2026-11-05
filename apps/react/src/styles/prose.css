@@ -53,6 +53,58 @@
 	border-left: 3px solid var(--prose-quote-line);
 }
 
+/* ─── 콜아웃 (> [!NOTE] … markdownPlugins.ts의 remarkCallouts, 편집기는 writer/callouts.ts) ───
+ * Apple 개발자 문서의 Note 상자처럼: 선 없이 둥근 카드에 종류 색을 아주 옅게 섞은 바탕, 작은 제목 줄.
+ * 바탕은 색을 투명하게 섞어 라이트·다크 모두 본문 글자 대비를 지킨다 */
+:where(.prose) .memo-callout {
+	--callout: var(--color-link);
+	padding: 0.85em 1.1em;
+	/* 편집기에서는 인용 블록에 class를 덧씌우므로 인용의 왼쪽 선을 지운다 */
+	border-left: none;
+	border-radius: var(--radius-14);
+	background-color: color-mix(in srgb, var(--callout) 7%, transparent);
+}
+
+:where(.prose) .memo-callout-tip {
+	--callout: var(--color-system-green);
+}
+
+:where(.prose) .memo-callout-important {
+	--callout: var(--color-system-indigo);
+}
+
+:where(.prose) .memo-callout-warning {
+	--callout: var(--color-system-orange);
+}
+
+:where(.prose) .memo-callout-caution {
+	--callout: var(--color-system-red);
+}
+
+/* 제목은 본문보다 작고 굵게. 글자는 본문 색(주황·초록 글자는 밝은 바탕에서 대비가 낮다), 아이콘만 종류 색 */
+:where(.prose) .memo-callout-title {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	margin: 0;
+	font-size: var(--text-subhead);
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+:where(.prose) .memo-callout-title > i {
+	color: var(--callout);
+	font-size: 0.95em;
+}
+
+:where(.prose) .memo-callout > :not(.memo-callout-title) {
+	margin-top: 0.4em;
+}
+
+:where(.prose) .memo-callout > :last-child {
+	margin-bottom: 0;
+}
+
 /* ─── 구분선 (---) ─── 브라우저 기본값(회색 2px 입체 선, 아래 여백 없음) 대신 가는 테두리색 선, 위아래 같은 여백.
  * 요소 선택자라 흐름 간격(점수 0)보다 앞서 위 여백도 1.8em이다 */
 :where(.prose) hr {
@@ -188,7 +240,8 @@
 
 :where(.prose) details > summary {
 	display: flex;
-	align-items: center;
+	/* 요약이 여러 줄이면 › 를 첫 줄의 가운데에 둔다 (::before의 margin-top) */
+	align-items: flex-start;
 	gap: 0.5em;
 	margin: 0 -0.9em;
 	padding: 0.7em 0.9em;
@@ -207,6 +260,7 @@
 	flex: none;
 	width: 0.45em;
 	height: 0.45em;
+	margin-top: calc((1lh - 0.45em) / 2);
 	border-right: 2px solid var(--prose-muted);
 	border-bottom: 2px solid var(--prose-muted);
 	transform: rotate(-45deg);

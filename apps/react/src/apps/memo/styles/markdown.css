@@ -66,6 +66,15 @@
 	border-radius: 1px;
 }
 
+.memo-markdown mark,
+.memo-inline-editor mark {
+	color: inherit;
+	background: linear-gradient(transparent 45%, var(--memo-highlight) 45%);
+	border-radius: 2px;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+}
+
 .memo-markdown a {
 	color: var(--memo-accent);
 	text-decoration: underline;
@@ -122,7 +131,8 @@
 
 .memo-inline-editor .memo-details-summary {
 	display: flex;
-	align-items: center;
+	/* 읽기 화면과 같게: 여러 줄이면 › 를 첫 줄의 가운데에 */
+	align-items: flex-start;
 	gap: 0.5em;
 	margin: 0 -0.9em;
 	padding: 0.7em 0.9em;
@@ -134,6 +144,7 @@
 	flex: none;
 	width: 0.45em;
 	height: 0.45em;
+	margin-top: calc((1lh - 0.45em) / 2);
 	margin-right: 0.15em;
 	border-right: 2px solid var(--memo-muted);
 	border-bottom: 2px solid var(--memo-muted);
@@ -701,11 +712,11 @@
 }
 
 /*
- * 편집 화면의 글자 크기: 읽기 화면처럼 판 전체를 zoom하지 않고 날짜·제목·목차(떠 있는 목차 버튼·창 포함)·본문(.ProseMirror)만 키운다.
+ * 편집 화면의 글자 크기: 읽기 화면처럼 판 전체를 zoom하지 않고 날짜·제목·목차 블록·목차 막대·본문(.ProseMirror)만 키운다.
  * 편집기의 떠 있는 도구(표 손잡이·서식 막대·링크 판)는 .ProseMirror 밖에서 화면 좌표로 자리를 잡으므로,
  * 그 조상까지 zoom하면 좌표가 배율만큼 한 번 더 곱해져 어긋난다
  */
-.memo-writer-scale :is(.memo-writer-meta, .memo-writer-title, .memo-toc, .memo-toc-float, .ProseMirror) {
+.memo-writer-scale :is(.memo-writer-meta, .memo-writer-title, .memo-toc, .memo-toc-bar, .ProseMirror) {
 	zoom: var(--memo-text-scale, 1);
 }
 
@@ -718,7 +729,7 @@
 	position: absolute;
 	right: 16px;
 	bottom: 16px;
-	/* 떠 있는 목차 버튼·창(9)보다 아래 */
+	/* 본문 위 목차 막대(4)보다 위 */
 	z-index: 8;
 	display: flex;
 	padding: var(--space-2);

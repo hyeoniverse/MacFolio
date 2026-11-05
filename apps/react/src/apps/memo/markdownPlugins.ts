@@ -16,6 +16,9 @@ export const REMARK_PLUGINS: Options['remarkPlugins'] = [
 	remarkCjkFriendly,
 	remarkDetails,
 	remarkTags,
+	remarkHighlight,
+	remarkHeadingIds,
+	remarkCallouts,
 ];
 
 interface MdNode {
@@ -56,6 +59,158 @@ export function remarkTags() {
 			if (last < child.value.length) parts.push({ type: 'text', value: child.value.slice(last) });
 			return parts;
 		});
+	};
+	return (tree: MdNode) => walk(tree);
+}
+
+/** 형광펜으로 바꾸지 않는 곳: 코드와 HTML (안의 `==`는 글자 그대로) */
+const NO_HIGHLIGHT = new Set(['code', 'inlineCode', 'html', 'image', 'imageReference']);
+const HIGHLIGHT_MARK = '==';
+const isSpace = (text: string) => /^\s/.test(text);
+
+/**
+ * 형광펜(`==강조==`)을 `<mark class="memo-highlight">`로. Obsidian·Typora와 같은 표기다.
+ * 한 문단(글줄을 담은 노드) 안에서 `==`를 짝지으며, 사이에 굵게·링크 같은 다른 서식이 있어도 된다.
+ * `a == b`처럼 여는 `==` 뒤나 닫는 `==` 앞이 공백이면 형광펜이 아니라 글자 그대로 둔다.
+ * 편집기(writer/highlightMark.ts)도 이 함수로 읽는다
+ */
+/**
+ * 제목의 글 안 주소 이름 (GitHub와 같은 규칙): 소문자로 바꾸고, 글자·숫자·공백·`-`·`_`만 남긴 뒤 공백을 `-`로.
+ * `## 데이터와 정보` → `데이터와-정보`, `### 1단계: 정규 개체 타입` → `1단계-정규-개체-타입`
+ */
+export const headingSlug = (text: string) =>
+	text
+		.trim()
+		.toLowerCase()
+		.replace(/[^\p{L}\p{N}\p{M}\s_-]/gu, '')
+		.replace(/\s/g, '-');
+
+const textOf = (node: MdNode): string =>
+	node.type === 'text' || node.type === 'inlineCode' ? (node.value ?? '') : (node.children ?? []).map(textOf).join('');
+
+/**
+ * 제목에 id를 붙여 `[데이터와 정보](#데이터와-정보)`처럼 글 안의 절로 이동하게 한다.
+ * 같은 이름이 또 나오면 GitHub처럼 `-1`, `-2`를 붙인다. 사이트의 다른 id와 겹치지 않게 각주·접기 블록처럼
+ * `user-content-`를 앞에 붙인다 (MarkdownLink가 짧은 이름으로도 찾는다)
+ */
+export function remarkHeadingIds() {
+	return (tree: MdNode) => {
+		const used = new Map<string, number>();
+		const walk = (node: MdNode) => {
+			if (node.type === 'heading') {
+				const base = headingSlug(textOf(node));
+				if (!base) return;
+				const count = used.get(base) ?? 0;
+				used.set(base, count + 1);
+				const slug = count ? `${base}-${count}` : base;
+				node.data = { ...node.data, hProperties: { ...node.data?.hProperties, id: `user-content-${slug}` } };
+				return;
+			}
+			node.children?.forEach(walk);
+		};
+		walk(tree);
+	};
+}
+
+/** 콜아웃 종류 → 제목·아이콘 (GitHub 경고 표기 `> [!NOTE]`와 같은 다섯 종류) */
+export const CALLOUTS = {
+	note: { title: '참고', icon: 'fa-solid fa-circle-info' },
+	tip: { title: '팁', icon: 'fa-solid fa-lightbulb' },
+	important: { title: '중요', icon: 'fa-solid fa-star' },
+	warning: { title: '주의', icon: 'fa-solid fa-triangle-exclamation' },
+	caution: { title: '경고', icon: 'fa-solid fa-circle-exclamation' },
+} as const;
+export type CalloutKind = keyof typeof CALLOUTS;
+
+/** 인용 블록 첫 줄의 콜아웃 표시: `[!NOTE]` 뒤에 같은 줄로 적은 글자는 제목이 된다 */
+export const CALLOUT_MARK = /^\[!(note|tip|important|warning|caution)\][ \t]*([^\n]*)\n?/i;
+
+/**
+ * `> [!NOTE]`로 시작하는 인용 블록을 콜아웃 상자(`<aside class="memo-callout memo-callout-note">`)로 그린다.
+ * 제목은 종류 이름(참고·팁·중요·주의·경고)이고, `> [!NOTE] Heath의 정리`처럼 같은 줄에 적으면 그 글자가 제목이 된다.
+ * 표시가 없는 인용 블록은 그대로다
+ */
+export function remarkCallouts() {
+	const walk = (node: MdNode) => {
+		node.children?.forEach(walk);
+		if (node.type !== 'blockquote') return;
+		const first = node.children?.[0];
+		const text = first?.type === 'paragraph' ? first.children?.[0] : undefined;
+		const match = text?.type === 'text' ? CALLOUT_MARK.exec(text.value ?? '') : null;
+		if (!first || !text || !match) return;
+		const kind = match[1].toLowerCase() as CalloutKind;
+		text.value = (text.value ?? '').slice(match[0].length);
+		// 표시 뒤에 줄바꿈만 남았으면 그 줄바꿈과 빈 문단을 걷어 낸다
+		if (!text.value) first.children = first.children?.slice(1);
+		if (first.children?.[0]?.type === 'break') first.children = first.children.slice(1);
+		if (!first.children?.length) node.children = node.children?.slice(1);
+		const title: MdNode = {
+			type: 'calloutTitle',
+			data: { hName: 'p', hProperties: { className: ['memo-callout-title'] } },
+			children: [
+				{
+					type: 'calloutIcon',
+					data: { hName: 'i', hProperties: { className: [CALLOUTS[kind].icon], ariaHidden: 'true' } },
+				},
+				{ type: 'text', value: match[2].trim() || CALLOUTS[kind].title },
+			],
+		};
+		node.children = [title, ...(node.children ?? [])];
+		node.data = { hName: 'aside', hProperties: { className: ['memo-callout', `memo-callout-${kind}`] } };
+	};
+	return (tree: MdNode) => walk(tree);
+}
+
+export function remarkHighlight() {
+	const walk = (node: MdNode) => {
+		if (!node.children || NO_HIGHLIGHT.has(node.type)) return;
+		node.children.forEach(walk);
+		if (!node.children.some((child) => child.type === 'text' && child.value?.includes(HIGHLIGHT_MARK))) return;
+
+		// 글자 노드를 `==` 앞뒤로 나눈다. null이 `==` 자리
+		const items: (MdNode | null)[] = [];
+		for (const child of node.children) {
+			if (child.type !== 'text' || !child.value?.includes(HIGHLIGHT_MARK)) {
+				items.push(child);
+				continue;
+			}
+			child.value.split(HIGHLIGHT_MARK).forEach((part, index) => {
+				if (index > 0) items.push(null);
+				if (part) items.push({ type: 'text', value: part });
+			});
+		}
+
+		const out: MdNode[] = [];
+		let open = -1; // 여는 `==`를 넣어 둔 out의 자리
+		for (const [index, item] of items.entries()) {
+			if (item) {
+				out.push(item);
+				continue;
+			}
+			const before = out.at(-1);
+			const closes = open >= 0 && out.length > open + 1 && !(before?.type === 'text' && /\s$/.test(before.value ?? ''));
+			if (closes) {
+				const children = out.splice(open + 1);
+				out[open] = {
+					type: 'highlight',
+					data: { hName: 'mark', hProperties: { className: ['memo-highlight'] } },
+					children,
+				};
+				open = -1;
+				continue;
+			}
+			const next = items[index + 1];
+			out.push({ type: 'text', value: HIGHLIGHT_MARK });
+			if (next && !(next.type === 'text' && isSpace(next.value ?? ''))) open = out.length - 1;
+		}
+
+		// 짝이 없는 `==`는 글자로 남았다. 이웃한 글자 노드를 합친다
+		node.children = out.reduce<MdNode[]>((merged, child) => {
+			const last = merged.at(-1);
+			if (child.type === 'text' && last?.type === 'text') last.value = `${last.value ?? ''}${child.value ?? ''}`;
+			else merged.push(child);
+			return merged;
+		}, []);
 	};
 	return (tree: MdNode) => walk(tree);
 }
