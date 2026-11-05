@@ -71,6 +71,16 @@ const FormatTools = () => {
 			</IconButton>
 			<IconButton
 				className="memo-format-quick"
+				on={state.marks.highlight}
+				label="형광펜"
+				title="형광펜 (⌘⇧H)"
+				aria-pressed={state.marks.highlight}
+				{...quick}
+				onClick={() => act({ type: 'mark', mark: 'highlight' })}
+				icon="fa-solid fa-highlighter"
+			/>
+			<IconButton
+				className="memo-format-quick"
 				on={state.list === 'task'}
 				label="체크리스트"
 				aria-pressed={state.list === 'task'}

@@ -301,9 +301,13 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(editor).toContainText('220~440px, 380~640px이고 ~예외~ 없음.');
 	});
 
-	test('형광펜: ==글자==를 치거나 서식의 형광펜 버튼을 누르면 <mark>가 되고, ==로 저장한다', async ({ page }) => {
+	test('형광펜: ==글자==를 치거나 툴바·서식 메뉴의 형광펜 버튼을 누르면 <mark>가 되고, ==로 저장한다', async ({
+		page,
+	}) => {
 		const api = await fakeApi(page, { signedIn: true });
 		const memo = await openMemo(page, api);
+		// 사이드바를 가려 넓히면 도구 막대에 빠른 버튼(형광펜)이 나온다
+		await memo.getByRole('button', { name: '사이드바 가리기' }).click();
 		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await page.keyboard.type('형광펜 시험');
 		await page.keyboard.press('Enter');
@@ -317,13 +321,19 @@ test.describe('바로 고치기 (관리자)', () => {
 		await page.keyboard.press('Enter');
 		await page.keyboard.type('버튼으로 강조');
 		for (let i = 0; i < 2; i++) await page.keyboard.press('Shift+ArrowLeft');
-		await memo.getByRole('button', { name: '서식', exact: true }).click();
-		const highlight = page.getByRole('button', { name: '형광펜', exact: true });
-		await highlight.click();
+		const toolbarHighlight = memo.getByRole('button', { name: '형광펜', exact: true });
+		await toolbarHighlight.click();
 		await expect(editor.locator('mark').nth(1)).toHaveText('강조');
 		await expect.poll(() => api.posts[0]?.body).toContain('버튼으로 ==강조==');
-		await expect(highlight).toHaveAttribute('aria-pressed', 'true');
-		await highlight.click();
+		await expect(toolbarHighlight).toHaveAttribute('aria-pressed', 'true');
+
+		// 서식(가가) 메뉴의 형광펜도 같은 서식이다: 켜진 것으로 보이고, 누르면 끈다
+		await memo.getByRole('button', { name: '서식', exact: true }).click();
+		const panelHighlight = page
+			.getByRole('dialog', { name: '서식' })
+			.getByRole('button', { name: '형광펜', exact: true });
+		await expect(panelHighlight).toHaveAttribute('aria-pressed', 'true');
+		await panelHighlight.click();
 		await expect(editor.locator('mark')).toHaveCount(1);
 	});
 
