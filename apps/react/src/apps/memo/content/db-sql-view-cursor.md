@@ -55,6 +55,8 @@ CREATE VIEW COMHONOR
 
 열 이름을 생략하면 SELECT의 열 이름을 상속한다. 집계 함수나 산술식으로 만든 열, 조인으로 이름이 중복되는 열이 있으면 열 이름을 반드시 명세한다.
 
+![STUDENT 테이블에서 CSTUDENT 뷰에 해당하는 컴퓨터 학과 행과 Sno·Sname·Year 열만 밝게 남기고 나머지는 음영 처리한 그림](./images/db-sql-view-cursor-note-01.jpg 'STUDENT 테이블에서 CSTUDENT 뷰에 해당하는 컴퓨터 학과 행과 Sno·Sname·Year 열만 밝게 남기고 나머지는 음영 처리한 그림 (강의 자료)')
+
 ### 뷰의 제거
 
 ```sql
@@ -85,6 +87,8 @@ RESTRICT는 다른 곳에서 참조하지 않을 때만 제거하고, CASCADE는
 3. DISTINCT, GROUP BY, HAVING이 쓰인 경우
 4. 두 개 이상의 테이블이 관련된 경우
 5. 변경할 수 없는 뷰를 기초로 정의된 경우
+
+![뷰 ⊃ 이론적으로 변경이 가능한 뷰 ⊃ 실제로 변경이 가능한 뷰 포함 관계를 겹친 사각형으로 그린 그림](./images/db-sql-view-cursor-note-02.jpg '뷰 ⊃ 이론적으로 변경이 가능한 뷰 ⊃ 실제로 변경이 가능한 뷰 포함 관계를 겹친 사각형으로 그린 그림 (강의 자료)')
 
 ### 뷰의 장단점
 

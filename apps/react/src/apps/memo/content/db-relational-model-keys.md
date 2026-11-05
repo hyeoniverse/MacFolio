@@ -33,6 +33,8 @@ summary: 관계 데이터 모델의 도메인·애트리뷰트·튜플과 릴레
 
 이 릴레이션의 차수(degree)는 애트리뷰트 수인 4이고, 카디널리티(cardinality)는 튜플 수인 5다.
 
+![학생(STUDENT) 테이블(학번·이름·학년·학과 5행: 나수영·이찬수·정기태·송병길·박종화)](./images/db-relational-model-keys-note-01.jpg '학생(STUDENT) 테이블(학번·이름·학년·학과 5행: 나수영·이찬수·정기태·송병길·박종화) (강의 자료)')
+
 ## 도메인과 애트리뷰트
 
 ==**도메인(domain)** 은 애트리뷰트가 가질 수 있는 값들의 집합이다.== 학번의 도메인이 세 자리 자연수라면 실수나 문자열은 들어갈 수 없다.
@@ -67,6 +69,14 @@ R ⊆ D1 × D2 × … × Dn
 
 즉 R은 `di ∈ Di`인 n-튜플 `<d1, d2, …, dn>`의 집합이다. 여기서 n이 차수, 튜플의 수가 카디널리티다.
 
+![DCL DOMAIN으로 DSNO·NAME·DYEAR·DEPT 도메인을 선언하고 STUDENT 릴레이션 애트리뷰트에 연결한 정의문](./images/db-relational-model-keys-note-02.jpg 'DCL DOMAIN으로 DSNO·NAME·DYEAR·DEPT 도메인을 선언하고 STUDENT 릴레이션 애트리뷰트에 연결한 정의문 (강의 자료)')
+
+![도메인 없이 INTEGER·CHAR 타입을 직접 지정한 DCL RELATION STUDENT 정의문](./images/db-relational-model-keys-note-03.jpg '도메인 없이 INTEGER·CHAR 타입을 직접 지정한 DCL RELATION STUDENT 정의문 (강의 자료)')
+
+![STUDENT 테이블에 도메인·애트리뷰트·릴레이션 스키마·튜플·인스턴스를 각각 주석으로 표시한 구조 설명도](./images/db-relational-model-keys-note-04.jpg 'STUDENT 테이블에 도메인·애트리뷰트·릴레이션 스키마·튜플·인스턴스를 각각 주석으로 표시한 구조 설명도 (강의 자료)')
+
+![학번{100,200}×과목번호{C412,C123,C312}=6개 순서쌍을 타원으로 그린 카티션 프로덕트 예시](./images/db-relational-model-keys-note-05.jpg '학번{100,200}×과목번호{C412,C123,C312}=6개 순서쌍을 타원으로 그린 카티션 프로덕트 예시 (강의 자료)')
+
 ## 릴레이션의 특성
 
 | 특성                  | 내용                                                                 | 테이블과의 차이                     |
@@ -91,6 +101,8 @@ R ⊆ D1 × D2 × … × Dn
 
 정규화는 [7장 글](/memo/db-normalization)에서 함수 종속과 함께 자세히 다룬다.
 
+![과목성적이 반복 그룹인 비정규 릴레이션 ENROL1과 이를 펼친 정규 릴레이션 ENROL 비교표](./images/db-relational-model-keys-note-06.jpg '과목성적이 반복 그룹인 비정규 릴레이션 ENROL1과 이를 펼친 정규 릴레이션 ENROL 비교표 (강의 자료)')
+
 ## 관계 데이터베이스와 스키마
 
 관계 데이터베이스(relational database)는 테이블의 집합이며, 시간에 따라 내용(상태)이 바뀌는 테이블로 데이터베이스를 표현한다.
@@ -106,6 +118,12 @@ R ⊆ D1 × D2 × … × Dn
 과목 (과목번호, 과목이름, 학점, 학과, 담당교수)
 등록 (학번, 과목번호, 성적, 중간성적, 기말성적)
 ```
+
+![대학 DB의 학생(STUDENT) 테이블(학번 밑줄, 5행)](./images/db-relational-model-keys-note-07.jpg '대학 DB의 학생(STUDENT) 테이블(학번 밑줄, 5행) (강의 자료)')
+
+![대학 DB의 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)](./images/db-relational-model-keys-note-08.jpg '대학 DB의 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행) (강의 자료)')
+
+![대학 DB의 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)](./images/db-relational-model-keys-note-09.jpg '대학 DB의 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행) (강의 자료)')
 
 ## 키
 

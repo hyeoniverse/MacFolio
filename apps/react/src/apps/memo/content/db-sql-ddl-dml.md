@@ -171,6 +171,12 @@ FROM   테이블_리스트
 
 SELECT의 결과도 테이블이므로, SQL은 결과가 다시 테이블이 되는 **폐쇄 시스템(closed system)** 이다. 이 성질이 중첩 질의(nested query)의 이론적 기초다.
 
+![SQL 예제용 학생(STUDENT) 테이블(학번·이름·학년·학과 5행)](./images/db-sql-ddl-dml-note-01.jpg 'SQL 예제용 학생(STUDENT) 테이블(학번·이름·학년·학과 5행) (강의 자료)')
+
+![SQL 예제용 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)](./images/db-sql-ddl-dml-note-02.jpg 'SQL 예제용 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행) (강의 자료)')
+
+![SQL 예제용 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)](./images/db-sql-ddl-dml-note-03.jpg 'SQL 예제용 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행) (강의 자료)')
+
 ### SQL 테이블과 릴레이션의 차이
 
 이론상 릴레이션은 튜플의 집합이지만, SQL 테이블은 다르다.
@@ -215,6 +221,8 @@ WHERE  Cno = 'C312';
 | 300  | 중간시험 = | 93   |
 | 400  | 중간시험 = | 93   |
 | 500  | 중간시험 = | 88   |
+
+![컴퓨터 학과 학생 검색 결과(Sname·Sno: 나수영 100, 정기태 300, 송병길 400)](./images/db-sql-ddl-dml-note-04.jpg '컴퓨터 학과 학생 검색 결과(Sname·Sno: 나수영 100, 정기태 300, 송병길 400) (강의 자료)')
 
 ### 조인
 
@@ -347,6 +355,10 @@ SELECT Sno, Sname FROM STUDENT WHERE Dept IS NULL;
 
 - ==NULL 검사는 `열_이름 IS [NOT] NULL` 형식만 허용한다.== `Dept = NULL`은 잘못된 문법이다.
 - 조건식에서 NULL을 비교 연산자와 쓰면 결과가 미정이 되고, WHERE 절은 참인 행만 반환하므로 그 행은 결과에서 제외된다.
+
+![NULL이 추가된 3값 논리(T·F·U)의 AND·OR·NOT 진리표](./images/db-sql-ddl-dml-note-05.jpg 'NULL이 추가된 3값 논리(T·F·U)의 AND·OR·NOT 진리표 (강의 자료)')
+
+![Year가 널이면 Year>3·Year≤3·Year=3·Year≠3은 모두 거짓이고 Year=NULL·Year≠NULL은 불법이라는 설명 박스](./images/db-sql-ddl-dml-note-06.jpg 'Year가 널이면 Year>3·Year≤3·Year=3·Year≠3은 모두 거짓이고 Year=NULL·Year≠NULL은 불법이라는 설명 박스 (강의 자료)')
 
 ### EXISTS
 
