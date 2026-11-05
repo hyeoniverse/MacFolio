@@ -1,6 +1,8 @@
 import ReactMarkdown, { type Components, type Options } from 'react-markdown';
 import { REMARK_PLUGINS } from '../markdownPlugins';
 import { rehypeHighlightCode } from '../highlight';
+import { rehypeMath } from '../math';
+import MemoMath from './MemoMath';
 import MarkdownImage from './MarkdownImage';
 import MarkdownLink from './MarkdownLink';
 import CodeBlock from './CodeBlock';
@@ -8,8 +10,8 @@ import MemoEmbed from './MemoEmbed';
 import MemoMedia from './MemoMedia';
 import { linkBlockOfParagraph } from '../embedBlock';
 
-/** 코드 블록 문법 강조 (highlight.ts) */
-const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeHighlightCode];
+/** 수식 자리 표시(math.ts)를 먼저 하고, 나머지 코드 블록의 문법을 강조한다 (highlight.ts) */
+const REHYPE_PLUGINS: Options['rehypePlugins'] = [rehypeMath, rehypeHighlightCode];
 
 /** 각주(`[^1]`)의 글 아래 목록 제목과 되돌아가기 링크 이름을 한국어로 (기본값은 영어 "Footnotes") */
 const REMARK_REHYPE_OPTIONS: Options['remarkRehypeOptions'] = {
@@ -41,6 +43,12 @@ const MARKDOWN_COMPONENTS: Components = {
 	img: ({ src, alt, title }) => (
 		<MarkdownImage src={typeof src === 'string' ? src : undefined} alt={alt} title={title} />
 	),
+	// ```math 블록과 `식{:math}` (math.ts가 표시한 자리). KaTeX는 이 글을 열 때 불러온다
+	...({
+		'memo-math': ({ node }: { node?: { properties?: Record<string, unknown> } }) => (
+			<MemoMath tex={String(node?.properties?.dataTex ?? '')} display={node?.properties?.dataDisplay === 'true'} />
+		),
+	} as Components),
 };
 
 /** 메모 본문을 그린다 (읽기 화면, 편집기의 미리 보기, 버전 기록이 같은 모양) */
