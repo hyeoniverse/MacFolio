@@ -182,7 +182,7 @@ importers:
         specifier: ^11.12.0
         version: 11.12.0
       katex:
-        specifier: ^0.18.10
+        specifier: ^0.18.2
         version: 0.18.10
       lowlight:
         specifier: ^3.3.0

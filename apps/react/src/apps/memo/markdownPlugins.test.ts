@@ -71,6 +71,10 @@ describe('REMARK_PLUGINS', () => {
 	});
 
 	it('공백을 낀 ==, 짝이 없는 ==, 코드 안의 ==는 글자 그대로다', () => {
+		// prettier가 줄 첫머리의 ==를 \\==로 이스케이프해도 형광펜이다
+		expect(render('> \\==**정의**==이다')).toBe(
+			'<blockquote>\n<p><mark class="memo-highlight"><strong>정의</strong></mark>이다</p>\n</blockquote>'
+		);
 		expect(render('a == b 이고 c == d')).toBe('<p>a == b 이고 c == d</p>');
 		expect(render('==닫히지 않음')).toBe('<p>==닫히지 않음</p>');
 		expect(render('`a == b`와 ====')).toBe('<p><code>a == b</code>와 ====</p>');
