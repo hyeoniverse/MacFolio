@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">파일 시스템과 DBMS에서 응용 프로그램이 데이터에 접근하는 구조</text>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <!-- 파일 시스템 -->
+  <text x="160" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#be123c">파일 시스템: 프로그램마다 파일</text>
+  <g font-size="12" text-anchor="middle" fill="#374151">
+    <rect x="30" y="80" width="110" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="85" y="103">인사 프로그램</text>
+    <rect x="180" y="80" width="110" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="235" y="103">급여 프로그램</text>
+    <rect x="30" y="180" width="110" height="52" rx="6" fill="#fff1f2" stroke="#be123c"/>
+    <text x="85" y="202">사원 파일 A</text>
+    <text x="85" y="220" font-size="11">사번·이름·부서</text>
+    <rect x="180" y="180" width="110" height="52" rx="6" fill="#fff1f2" stroke="#be123c"/>
+    <text x="235" y="202">사원 파일 B</text>
+    <text x="235" y="220" font-size="11">사번·이름·급여</text>
+  </g>
+  <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)">
+    <line x1="85" y1="116" x2="85" y2="176"/>
+    <line x1="235" y1="116" x2="235" y2="176"/>
+  </g>
+  <g font-size="11" fill="#be123c">
+    <text x="92" y="150">구조 정의·접근 방법을</text>
+    <text x="92" y="164">프로그램이 직접 구현</text>
+  </g>
+  <text x="160" y="262" text-anchor="middle" font-size="11" fill="#be123c">사번·이름이 두 파일에 중복 (중복성)</text>
+  <text x="160" y="280" text-anchor="middle" font-size="11" fill="#be123c">파일 구조를 바꾸면 프로그램도 수정 (종속성)</text>
+
+  <line x1="320" y1="50" x2="320" y2="300" stroke="#e5e7eb" stroke-dasharray="4 4"/>
+
+  <!-- DBMS -->
+  <text x="480" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#059669">DBMS: 중재자를 거쳐 공유</text>
+  <g font-size="12" text-anchor="middle" fill="#374151">
+    <rect x="350" y="80" width="110" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="405" y="103">인사 프로그램</text>
+    <rect x="500" y="80" width="110" height="36" rx="6" fill="#f3f4f6" stroke="#d1d5db"/>
+    <text x="555" y="103">급여 프로그램</text>
+    <rect x="380" y="150" width="200" height="40" rx="6" fill="#ecfdf5" stroke="#059669"/>
+    <text x="480" y="168" font-weight="600" fill="#059669">DBMS</text>
+    <text x="480" y="183" font-size="11">정의 · 조작 · 제어, 사상(mapping)</text>
+    <rect x="400" y="220" width="160" height="40" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="480" y="238">통합 데이터베이스</text>
+    <text x="480" y="253" font-size="11">사원(사번·이름·부서·급여)</text>
+  </g>
+  <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)">
+    <line x1="405" y1="116" x2="440" y2="148"/>
+    <line x1="555" y1="116" x2="520" y2="148"/>
+    <line x1="480" y1="190" x2="480" y2="218"/>
+  </g>
+  <text x="480" y="282" text-anchor="middle" font-size="11" fill="#059669">데이터는 한 곳에, 프로그램은 필요한 부분만 조회</text>
+</svg>

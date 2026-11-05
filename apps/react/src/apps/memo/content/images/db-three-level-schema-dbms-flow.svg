@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="430" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">사용자 유형별 요청이 DBMS 모듈을 지나는 경로</text>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <!-- 사용자 -->
+  <g font-size="12" text-anchor="middle" fill="#374151">
+    <rect x="40" y="50" width="140" height="34" rx="17" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="110" y="72">DBA (DDL)</text>
+    <rect x="250" y="50" width="140" height="34" rx="17" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="320" y="72">응용 프로그래머</text>
+    <rect x="460" y="50" width="140" height="34" rx="17" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="530" y="72">일반 사용자 (질의어)</text>
+  </g>
+
+  <!-- 모듈 -->
+  <g font-size="12" text-anchor="middle" fill="#1f2937">
+    <rect x="40" y="110" width="140" height="36" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="110" y="133">DDL 컴파일러</text>
+    <rect x="250" y="110" width="140" height="36" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="320" y="133">예비 컴파일러</text>
+    <rect x="250" y="170" width="140" height="36" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="320" y="193">DML 컴파일러</text>
+    <rect x="460" y="110" width="140" height="36" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="530" y="133">질의어 처리기</text>
+    <rect x="300" y="236" width="200" height="36" rx="6" fill="#ecfdf5" stroke="#059669"/>
+    <text x="400" y="259">런타임 데이터베이스 처리기</text>
+    <rect x="520" y="236" width="100" height="36" rx="6" fill="#ecfdf5" stroke="#059669"/>
+    <text x="570" y="259">트랜잭션 관리자</text>
+    <rect x="200" y="302" width="240" height="36" rx="6" fill="#fef3c7" stroke="#d97706"/>
+    <text x="320" y="325">저장 데이터 관리자</text>
+    <rect x="120" y="370" width="150" height="40" rx="6" fill="#f9fafb" stroke="#6b7280"/>
+    <text x="195" y="395">카탈로그 (메타데이터)</text>
+    <rect x="370" y="370" width="150" height="40" rx="6" fill="#f9fafb" stroke="#6b7280"/>
+    <text x="445" y="395">저장 데이터베이스</text>
+  </g>
+  <text x="252" y="220" font-size="10" fill="#6b7280">호스트 프로그램은 호스트 언어 컴파일러로</text>
+
+  <g stroke="#6b7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)">
+    <line x1="110" y1="84" x2="110" y2="108"/>
+    <line x1="320" y1="84" x2="320" y2="108"/>
+    <line x1="530" y1="84" x2="530" y2="108"/>
+    <line x1="320" y1="146" x2="320" y2="168"/>
+    <path d="M110 146 L110 320 L196 320"/>
+    <path d="M320 206 L360 234"/>
+    <path d="M530 146 L450 234"/>
+    <line x1="500" y1="254" x2="518" y2="254"/>
+    <line x1="400" y1="272" x2="360" y2="300"/>
+    <line x1="280" y1="338" x2="215" y2="368"/>
+    <line x1="360" y1="338" x2="425" y2="368"/>
+  </g>
+</svg>

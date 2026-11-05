@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="520" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">1NF에서 BCNF까지의 분해 과정</text>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <!-- 1NF -->
+  <text x="20" y="72" font-size="13" font-weight="700" fill="#4f46e5">1NF</text>
+  <rect x="80" y="50" width="360" height="40" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+  <text x="260" y="75" text-anchor="middle" font-size="12" fill="#1f2937">수강지도 (<tspan text-decoration="underline">학번</tspan>, 지도교수, 학과, <tspan text-decoration="underline">과목번호</tspan>, 성적)</text>
+  <text x="456" y="66" font-size="11" fill="#6b7280">원자 값만</text>
+  <text x="456" y="82" font-size="11" fill="#6b7280">지도교수·학과가 부분 종속</text>
+
+  <!-- 1 -> 2 -->
+  <rect x="140" y="104" width="240" height="26" rx="13" fill="#fef3c7" stroke="#d97706"/>
+  <text x="260" y="121" text-anchor="middle" font-size="11" fill="#92400e">부분 함수 종속 제거 (학번 → 지도교수, 학과)</text>
+  <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)">
+    <line x1="260" y1="90" x2="260" y2="102"/>
+    <line x1="200" y1="130" x2="160" y2="156"/>
+    <line x1="320" y1="130" x2="440" y2="156"/>
+  </g>
+
+  <!-- 2NF -->
+  <text x="20" y="182" font-size="13" font-weight="700" fill="#059669">2NF</text>
+  <rect x="60" y="160" width="220" height="40" rx="6" fill="#ecfdf5" stroke="#059669"/>
+  <text x="170" y="185" text-anchor="middle" font-size="12" fill="#1f2937">지도 (<tspan text-decoration="underline">학번</tspan>, 지도교수, 학과)</text>
+  <rect x="340" y="160" width="240" height="40" rx="6" fill="#f9fafb" stroke="#9ca3af"/>
+  <text x="460" y="185" text-anchor="middle" font-size="12" fill="#1f2937">수강 (<tspan text-decoration="underline">학번</tspan>, <tspan text-decoration="underline">과목번호</tspan>, 성적)</text>
+  <text x="460" y="216" text-anchor="middle" font-size="11" fill="#6b7280">이미 BCNF</text>
+
+  <!-- 2 -> 3 -->
+  <rect x="40" y="226" width="260" height="26" rx="13" fill="#fef3c7" stroke="#d97706"/>
+  <text x="170" y="243" text-anchor="middle" font-size="11" fill="#92400e">이행적 종속 제거 (학번 → 지도교수 → 학과)</text>
+  <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)">
+    <line x1="170" y1="200" x2="170" y2="224"/>
+    <line x1="120" y1="252" x2="110" y2="278"/>
+    <line x1="220" y1="252" x2="250" y2="278"/>
+  </g>
+
+  <!-- 3NF -->
+  <text x="20" y="304" font-size="13" font-weight="700" fill="#b45309">3NF</text>
+  <rect x="50" y="282" width="140" height="40" rx="6" fill="#fff7ed" stroke="#b45309"/>
+  <text x="120" y="300" text-anchor="middle" font-size="12" fill="#1f2937">학생지도</text>
+  <text x="120" y="315" text-anchor="middle" font-size="11" fill="#374151">(<tspan text-decoration="underline">학번</tspan>, 지도교수)</text>
+  <rect x="200" y="282" width="140" height="40" rx="6" fill="#fff7ed" stroke="#b45309"/>
+  <text x="270" y="300" text-anchor="middle" font-size="12" fill="#1f2937">지도교수학과</text>
+  <text x="270" y="315" text-anchor="middle" font-size="11" fill="#374151">(<tspan text-decoration="underline">지도교수</tspan>, 학과)</text>
+
+  <!-- 구분선 -->
+  <line x1="20" y1="350" x2="620" y2="350" stroke="#e5e7eb" stroke-dasharray="4 4"/>
+  <text x="20" y="374" font-size="12" font-weight="600" fill="#6b7280">3NF지만 이상이 남는 경우 (후보 키가 겹친다)</text>
+
+  <!-- 3NF 수강과목 -->
+  <text x="20" y="412" font-size="13" font-weight="700" fill="#b45309">3NF</text>
+  <rect x="80" y="390" width="300" height="40" rx="6" fill="#fff7ed" stroke="#b45309"/>
+  <text x="230" y="415" text-anchor="middle" font-size="12" fill="#1f2937">수강과목 (<tspan text-decoration="underline">학번</tspan>, <tspan text-decoration="underline">과목</tspan>, 교수)</text>
+  <text x="396" y="406" font-size="11" fill="#6b7280">후보 키 {학번, 과목}, {학번, 교수}</text>
+  <text x="396" y="422" font-size="11" fill="#6b7280">교수 → 과목, 교수는 후보 키 아님</text>
+
+  <!-- 3 -> BCNF -->
+  <rect x="110" y="440" width="240" height="26" rx="13" fill="#fef3c7" stroke="#d97706"/>
+  <text x="230" y="457" text-anchor="middle" font-size="11" fill="#92400e">후보 키가 아닌 결정자 제거 (교수 → 과목)</text>
+  <g stroke="#6b7280" stroke-width="1.5" marker-end="url(#arrow)">
+    <line x1="230" y1="430" x2="230" y2="438"/>
+    <line x1="180" y1="466" x2="160" y2="474"/>
+    <line x1="280" y1="466" x2="310" y2="474"/>
+  </g>
+
+  <!-- BCNF -->
+  <text x="20" y="498" font-size="13" font-weight="700" fill="#be123c">BCNF</text>
+  <rect x="80" y="476" width="150" height="36" rx="6" fill="#fff1f2" stroke="#be123c"/>
+  <text x="155" y="499" text-anchor="middle" font-size="12" fill="#1f2937">수강교수 (<tspan text-decoration="underline">학번</tspan>, <tspan text-decoration="underline">교수</tspan>)</text>
+  <rect x="240" y="476" width="150" height="36" rx="6" fill="#fff1f2" stroke="#be123c"/>
+  <text x="315" y="499" text-anchor="middle" font-size="12" fill="#1f2937">과목교수 (<tspan text-decoration="underline">교수</tspan>, 과목)</text>
+</svg>

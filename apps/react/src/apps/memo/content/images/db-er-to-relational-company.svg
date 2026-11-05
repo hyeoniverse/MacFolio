@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 540" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="540" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">회사 데이터베이스의 E-R 다이어그램 (애트리뷰트 생략)</text>
+
+  <!-- 연결선 -->
+  <g stroke="#6b7280" stroke-width="1.5" fill="none">
+    <line x1="130" y1="90" x2="165" y2="90"/>
+    <line x1="235" y1="90" x2="270" y2="90"/>
+    <line x1="370" y1="90" x2="415" y2="90"/>
+    <line x1="485" y1="87" x2="510" y2="87"/>
+    <line x1="485" y1="93" x2="510" y2="93"/>
+    <line x1="300" y1="110" x2="290" y2="165"/>
+    <line x1="290" y1="215" x2="300" y2="280"/>
+    <line x1="350" y1="110" x2="380" y2="165"/>
+    <line x1="377" y1="215" x2="347" y2="280"/>
+    <line x1="383" y1="215" x2="353" y2="280"/>
+    <line x1="320" y1="320" x2="320" y2="365"/>
+    <line x1="285" y1="390" x2="160" y2="390"/>
+    <line x1="355" y1="390" x2="480" y2="390"/>
+    <line x1="80" y1="410" x2="75" y2="470"/>
+    <line x1="140" y1="410" x2="145" y2="470"/>
+  </g>
+
+  <!-- 개체 타입 -->
+  <g font-size="13" font-weight="600" text-anchor="middle" fill="#1f2937">
+    <rect x="30" y="70" width="100" height="40" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="80" y="95">부서</text>
+    <rect x="270" y="70" width="100" height="40" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="320" y="95">사원</text>
+    <rect x="510" y="70" width="110" height="40" fill="#eef2ff" stroke="#4f46e5"/>
+    <rect x="514" y="74" width="102" height="32" fill="none" stroke="#4f46e5"/>
+    <text x="565" y="95">부양가족</text>
+    <rect x="270" y="280" width="100" height="40" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="320" y="305">프로젝트</text>
+    <rect x="60" y="370" width="100" height="40" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="110" y="395">부품</text>
+    <rect x="480" y="370" width="100" height="40" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="530" y="395">공급자</text>
+  </g>
+
+  <!-- 관계 타입 -->
+  <g font-size="12" text-anchor="middle" fill="#92400e">
+    <path d="M200 65 L235 90 L200 115 L165 90 Z" fill="#fef3c7" stroke="#d97706"/>
+    <text x="200" y="94">소속</text>
+    <path d="M450 65 L485 90 L450 115 L415 90 Z" fill="#fef3c7" stroke="#d97706"/>
+    <path d="M450 71 L477 90 L450 109 L423 90 Z" fill="none" stroke="#d97706"/>
+    <text x="450" y="94">부양</text>
+    <path d="M290 165 L325 190 L290 215 L255 190 Z" fill="#fef3c7" stroke="#d97706"/>
+    <text x="290" y="194">근무</text>
+    <path d="M380 165 L415 190 L380 215 L345 190 Z" fill="#fef3c7" stroke="#d97706"/>
+    <text x="380" y="194">관리</text>
+    <path d="M320 365 L355 390 L320 415 L285 390 Z" fill="#fef3c7" stroke="#d97706"/>
+    <text x="320" y="394">공급</text>
+    <path d="M110 445 L145 470 L110 495 L75 470 Z" fill="#fef3c7" stroke="#d97706"/>
+    <text x="110" y="474">포함</text>
+  </g>
+
+  <!-- 원소 수 -->
+  <g font-size="12" font-weight="600" fill="#be123c" text-anchor="middle">
+    <text x="146" y="82">1</text>
+    <text x="254" y="82">n</text>
+    <text x="392" y="82">1</text>
+    <text x="498" y="80">n</text>
+    <text x="284" y="140">m</text>
+    <text x="284" y="250">n</text>
+    <text x="374" y="140">1</text>
+    <text x="374" y="252">1</text>
+    <text x="330" y="346">n</text>
+    <text x="220" y="382">n</text>
+    <text x="420" y="382">n</text>
+    <text x="66" y="440">1</text>
+    <text x="154" y="440">n</text>
+  </g>
+
+  <!-- 관계 애트리뷰트 -->
+  <g font-size="11" fill="#6b7280">
+    <text x="196" y="190" text-anchor="end">역할, 근무 기간</text>
+    <text x="424" y="190">시작 날짜</text>
+    <text x="320" y="434" text-anchor="middle">공급량</text>
+  </g>
+
+  <!-- 범례 -->
+  <g font-size="11" fill="#374151">
+    <rect x="300" y="462" width="320" height="64" rx="6" fill="#f9fafb" stroke="#e5e7eb"/>
+    <text x="314" y="482">이중 사각형·이중 마름모: 약한 개체 타입과 식별 관계</text>
+    <text x="314" y="500">이중선: 전체 참여 (부양가족은 모두 사원에 속한다,</text>
+    <text x="314" y="516">프로젝트는 모두 관리자가 있다)</text>
+  </g>
+</svg>

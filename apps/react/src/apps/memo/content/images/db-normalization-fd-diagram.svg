@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 250" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="250" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1f2937">수강지도 릴레이션의 함수 종속 다이어그램</text>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <!-- 기본 키 묶음 -->
+  <rect x="40" y="110" width="250" height="56" rx="8" fill="none" stroke="#4f46e5" stroke-dasharray="5 4"/>
+  <text x="165" y="186" text-anchor="middle" font-size="11" fill="#4f46e5">기본 키 {학번, 과목번호}</text>
+
+  <g font-size="13" text-anchor="middle" fill="#1f2937">
+    <rect x="55" y="120" width="100" height="36" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="105" y="143">학번</text>
+    <rect x="175" y="120" width="100" height="36" rx="6" fill="#eef2ff" stroke="#4f46e5"/>
+    <text x="225" y="143">과목번호</text>
+    <rect x="340" y="200" width="100" height="36" rx="6" fill="#f3f4f6" stroke="#6b7280"/>
+    <text x="390" y="223">성적</text>
+    <rect x="340" y="56" width="100" height="36" rx="6" fill="#f3f4f6" stroke="#6b7280"/>
+    <text x="390" y="79">지도교수</text>
+    <rect x="510" y="56" width="100" height="36" rx="6" fill="#f3f4f6" stroke="#6b7280"/>
+    <text x="560" y="79">학과</text>
+  </g>
+
+  <g stroke-width="1.8" fill="none" marker-end="url(#arrow)">
+    <!-- 완전 함수 종속 -->
+    <path d="M290 150 L338 210" stroke="#059669"/>
+    <!-- 부분 함수 종속 (학번만) -->
+    <path d="M105 120 C 105 70, 250 74, 338 74" stroke="#be123c"/>
+    <path d="M105 120 C 110 30, 450 28, 556 54" stroke="#be123c"/>
+    <!-- 지도교수 → 학과 -->
+    <path d="M440 74 L508 74" stroke="#b45309"/>
+  </g>
+
+  <g font-size="11">
+    <text x="324" y="172" fill="#059669">완전 함수 종속</text>
+    <text x="180" y="62" fill="#be123c">학번 → 지도교수, 학과 (기본 키에 부분 함수 종속)</text>
+    <text x="474" y="110" text-anchor="middle" fill="#b45309">지도교수 → 학과</text>
+    <text x="474" y="124" text-anchor="middle" fill="#b45309">(이행적 종속의 원인)</text>
+  </g>
+</svg>
