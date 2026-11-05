@@ -426,7 +426,7 @@ WHERE  Final > ALL (SELECT Final FROM ENROL WHERE Sno = 500);
 | 400 | C324 | 90    |
 | 400 | C413 | 85    |
 
-==`IN` 부속 질의로 쓴 질의는 대부분 조인으로 바꿔 쓸 수 있다.== 첫 질의는 위 조인 절의 질의와 결과가 같다. 다만 조인은 바깥 테이블의 한 행이 안쪽 테이블의 여러 행과 맞으면 그 행을 여러 번 반환하므로, 학생 한 명이 조건에 맞는 등록 행을 여럿 가질 수 있으면 `DISTINCT`를 붙여야 같은 결과가 된다.
+==`IN` 부속 질의로 쓴 질의는 대부분 조인으로 바꿔 쓸 수 있다.== 첫 질의는 [조인](#조인) 절의 질의와 결과가 같다. 다만 조인은 바깥 테이블의 한 행이 안쪽 테이블의 여러 행과 맞으면 그 행을 여러 번 반환하므로, 학생 한 명이 조건에 맞는 등록 행을 여럿 가질 수 있으면 `DISTINCT`를 붙여야 같은 결과가 된다.
 
 ### LIKE
 
@@ -589,11 +589,12 @@ STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에
 
 ## 연습문제 풀이
 
-### 1. SQL 테이블과 릴레이션의 차이
+<details>
+<summary>1. SQL 테이블과 릴레이션의 차이</summary>
 
 > SQL에서 정의되는 테이블과 관계 데이터 모델에서 정의된 릴레이션의 차이점을 설명하라.
 
-릴레이션은 추상적 개념이고 테이블은 릴레이션을 기술하는 구체적 표현이다. 차이는 위 SQL 테이블과 릴레이션의 차이 절에서 다룬 중복 행 허용이 핵심이고, 순서와 키까지 비교하면 다음과 같다.
+릴레이션은 추상적 개념이고 테이블은 릴레이션을 기술하는 구체적 표현이다. 차이는 [SQL 테이블과 릴레이션의 차이](#sql-테이블과-릴레이션의-차이) 절에서 다룬 중복 행 허용이 핵심이고, 순서와 키까지 비교하면 다음과 같다.
 
 | 항목      | 릴레이션                       | SQL 테이블                                        |
 | --------- | ------------------------------ | ------------------------------------------------- |
@@ -603,7 +604,10 @@ STUDENT에서 행을 삭제하면 그 학생을 참조하는 ENROL 행 때문에
 | 열 순서   | 애트리뷰트 집합이라 순서 없음  | 정의한 순서가 있어 `SELECT *`와 `INSERT`가 따른다 |
 | 집합 결과 | 연산 결과도 항상 집합          | `DISTINCT`를 명세해야 중복이 제거된다             |
 
-### 5. 학생·과목·등록 질의를 SQL로 표현
+</details>
+
+<details>
+<summary>5. 학생·과목·등록 질의를 SQL로 표현 (정정)</summary>
 
 > 학생(학번, 이름, 학년), 과목(과목번호, 과목이름, 교수), 등록(과목번호, 학번, 점수) 릴레이션에서 다음 질의문을 SQL로 표현하라.
 
@@ -651,7 +655,10 @@ UPDATE 학생 SET 학년 = 4 WHERE 학번 = 12345;
 
 학번을 문자 타입으로 정의했다면 `학번 = '12345'`로 쓴다.
 
-### 6. 납품 데이터베이스 질의를 SQL로 표현
+</details>
+
+<details>
+<summary>6. 납품 데이터베이스 질의를 SQL로 표현 (정정)</summary>
 
 > S(Sno, Sname, Status, City), P(Pno, Pname, Colour, Weight), SP(Sno, Pno, Qty)에서 다음 질의문을 SQL로 표현하라.
 
@@ -676,7 +683,10 @@ WHERE  P.Pname = 'Nut';
 
 과제를 제출한 시각에는 (1)을 `SELECT Sname City FROM S`로 썼다. 쉼표가 빠지면 City가 Sname 열의 별칭이 되어, City 열 대신 Sname 값을 City라는 이름으로 출력한다. (4)는 Pname이 키가 아니라 Nut 제품이 여럿이면 같은 납품업자가 여러 번 나오므로 `DISTINCT`를 붙였다. (2)는 SP의 기본 키가 {Sno, Pno}라 Pno = 123인 발송 행이 납품업자마다 하나뿐이어서 중복이 생기지 않는다.
 
-### 실습 1. 예제 테이블을 DDL로 정의
+</details>
+
+<details>
+<summary>실습 1. 예제 테이블을 DDL로 정의 (정정)</summary>
 
 > 학생(STUDENT), 과목(COURSE), 등록(ENROL) 테이블을 CREATE TABLE 문으로 정의하라.
 
@@ -721,7 +731,7 @@ CREATE TABLE ENROL
 | `Sname CHAR`, `Dept CHAR` 등  | 길이를 생략하면 `CHAR(1)`이라 '컴퓨터'를 넣을 수 없다 | `CHAR(10)`처럼 길이 명시 |
 | 이름 없는 PRIMARY KEY·CHECK   | 오류는 아니지만 이름으로 제약조건을 삭제할 수 없다    | `CONSTRAINT 이름` 추가   |
 
-제약조건에 이름을 붙여 두면 `ALTER TABLE ENROL DROP CONSTRAINT ENROL_SCORE`처럼 이름으로 제거할 수 있다. 위 정의는 표준 SQL이고, 위 Oracle의 DDL 절의 규칙대로 Oracle에서 실행하려면 가변 길이 문자열을 VARCHAR2로, 정수를 NUMBER로 바꾸고 Oracle이 지원하지 않는 `ON UPDATE CASCADE`를 뺀다.
+제약조건에 이름을 붙여 두면 `ALTER TABLE ENROL DROP CONSTRAINT ENROL_SCORE`처럼 이름으로 제거할 수 있다. 위 정의는 표준 SQL이고, [Oracle의 DDL](#oracle의-ddl) 절의 규칙대로 Oracle에서 실행하려면 가변 길이 문자열을 VARCHAR2로, 정수를 NUMBER로 바꾸고 Oracle이 지원하지 않는 `ON UPDATE CASCADE`를 뺀다.
 
 ```sql
 -- Oracle 버전의 ENROL (STUDENT·COURSE도 같은 방식으로 바꾼다)
@@ -737,7 +747,10 @@ CREATE TABLE ENROL
    CONSTRAINT ENROL_SCORE CHECK (Midterm BETWEEN 0 AND 100 AND Final BETWEEN 0 AND 100));
 ```
 
-### 실습 2. 검색문 15개의 결과
+</details>
+
+<details>
+<summary>실습 2. 검색문 15개의 결과 (정정)</summary>
 
 > 본문의 검색문 15개를 예제 데이터에 적용한 결과를 구하라.
 
@@ -759,7 +772,9 @@ CREATE TABLE ENROL
 | 14   | C413 등록 학생 (`EXISTS`)   | 나수영, 정기태, 송병길                                             |
 | 15   | 3학년 `UNION` C324 등록     | 200, 300, 400                                                      |
 
-과제를 제출한 시각에는 9번에서 C324의 기말평균을 82로 적었다. (75 + 90) / 2 = 82.5이고, Oracle도 82.5를 반환한다. 정수로 버리는 DBMS가 있다는 점은 위 집계 함수 절에서 다뤘다. 13번의 600 김길동은 교재가 Dept가 NULL인 학생 (600, 김길동)을 STUDENT에 추가했다고 가정한 결과다. 위 예제 데이터 5행에는 학과가 NULL인 학생이 없어 결과는 공집합이다. 제출한 SQL에 있던 `COUND`, `SELCET` 오타는 각각 `COUNT`, `SELECT`로 읽었다.
+과제를 제출한 시각에는 9번에서 C324의 기말평균을 82로 적었다. (75 + 90) / 2 = 82.5이고, Oracle도 82.5를 반환한다. 정수로 버리는 DBMS가 있다는 점은 [집계 함수](#집계-함수-group-by-having) 절에서 다뤘다. 13번의 600 김길동은 교재가 Dept가 NULL인 학생 (600, 김길동)을 STUDENT에 추가했다고 가정한 결과다. 위 예제 데이터 5행에는 학과가 NULL인 학생이 없어 결과는 공집합이다. 제출한 SQL에 있던 `COUND`, `SELCET` 오타는 각각 `COUNT`, `SELECT`로 읽었다.
+
+</details>
 
 ## 정리
 
