@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 282" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="282" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">컴퓨터가 받는 입력은 픽셀 값의 배열이다</text>
+  <rect x="26" y="44" width="188" height="150" rx="4" fill="#fff" stroke="#d1d1d6" stroke-width="1"/>
+  <text x="46" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">202</text>
+  <text x="76" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">150</text>
+  <text x="106" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">130</text>
+  <text x="136" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">97</text>
+  <text x="166" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">178</text>
+  <text x="196" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">226</text>
+  <text x="46" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">18</text>
+  <text x="76" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">232</text>
+  <text x="106" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">176</text>
+  <text x="136" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">128</text>
+  <text x="166" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">179</text>
+  <text x="196" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">192</text>
+  <text x="46" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">71</text>
+  <text x="76" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">122</text>
+  <text x="106" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">77</text>
+  <text x="136" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">151</text>
+  <text x="166" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">232</text>
+  <text x="196" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">83</text>
+  <text x="46" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">131</text>
+  <text x="76" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">237</text>
+  <text x="106" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">115</text>
+  <text x="136" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">125</text>
+  <text x="166" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">60</text>
+  <text x="196" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">231</text>
+  <text x="46" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">87</text>
+  <text x="76" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">93</text>
+  <text x="106" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">53</text>
+  <text x="136" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">52</text>
+  <text x="166" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">78</text>
+  <text x="196" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">252</text>
+  <text x="46" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">24</text>
+  <text x="76" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">141</text>
+  <text x="106" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">108</text>
+  <text x="136" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">119</text>
+  <text x="166" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">100</text>
+  <text x="196" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">37</text>
+  <text x="46" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">110</text>
+  <text x="76" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">75</text>
+  <text x="106" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">247</text>
+  <text x="136" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">165</text>
+  <text x="166" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">106</text>
+  <text x="196" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">159</text>
+  <rect x="26" y="204" width="188" height="34" rx="4" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+  <text x="120" y="226" text-anchor="middle" font-size="12" fill="#1d1d1f">바나나 한 송이</text>
+  <rect x="226" y="44" width="188" height="150" rx="4" fill="#fff" stroke="#d1d1d6" stroke-width="1"/>
+  <text x="246" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">202</text>
+  <text x="276" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">135</text>
+  <text x="306" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">225</text>
+  <text x="336" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">240</text>
+  <text x="366" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">31</text>
+  <text x="396" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">249</text>
+  <text x="246" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">193</text>
+  <text x="276" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">128</text>
+  <text x="306" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">210</text>
+  <text x="336" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">67</text>
+  <text x="366" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">36</text>
+  <text x="396" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">135</text>
+  <text x="246" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">185</text>
+  <text x="276" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">91</text>
+  <text x="306" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">68</text>
+  <text x="336" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">103</text>
+  <text x="366" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">34</text>
+  <text x="396" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">253</text>
+  <text x="246" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">26</text>
+  <text x="276" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">130</text>
+  <text x="306" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">74</text>
+  <text x="336" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">71</text>
+  <text x="366" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">69</text>
+  <text x="396" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">180</text>
+  <text x="246" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">195</text>
+  <text x="276" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">155</text>
+  <text x="306" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">220</text>
+  <text x="336" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">205</text>
+  <text x="366" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">180</text>
+  <text x="396" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">23</text>
+  <text x="246" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">179</text>
+  <text x="276" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">0</text>
+  <text x="306" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">2</text>
+  <text x="336" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">53</text>
+  <text x="366" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">101</text>
+  <text x="396" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">98</text>
+  <text x="246" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">8</text>
+  <text x="276" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">167</text>
+  <text x="306" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">26</text>
+  <text x="336" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">12</text>
+  <text x="366" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">66</text>
+  <text x="396" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">143</text>
+  <rect x="226" y="204" width="188" height="34" rx="4" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+  <text x="320" y="226" text-anchor="middle" font-size="12" fill="#1d1d1f">빨간 풍선</text>
+  <rect x="426" y="44" width="188" height="150" rx="4" fill="#fff" stroke="#d1d1d6" stroke-width="1"/>
+  <text x="446" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">123</text>
+  <text x="476" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">180</text>
+  <text x="506" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">73</text>
+  <text x="536" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">88</text>
+  <text x="566" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">217</text>
+  <text x="596" y="66" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">117</text>
+  <text x="446" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">69</text>
+  <text x="476" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">133</text>
+  <text x="506" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">131</text>
+  <text x="536" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">251</text>
+  <text x="566" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">7</text>
+  <text x="596" y="85" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">217</text>
+  <text x="446" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">175</text>
+  <text x="476" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">68</text>
+  <text x="506" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">37</text>
+  <text x="536" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">251</text>
+  <text x="566" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">152</text>
+  <text x="596" y="104" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">64</text>
+  <text x="446" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">189</text>
+  <text x="476" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">48</text>
+  <text x="506" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">135</text>
+  <text x="536" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">117</text>
+  <text x="566" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">221</text>
+  <text x="596" y="123" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">46</text>
+  <text x="446" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">211</text>
+  <text x="476" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">56</text>
+  <text x="506" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">121</text>
+  <text x="536" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">90</text>
+  <text x="566" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">136</text>
+  <text x="596" y="142" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">76</text>
+  <text x="446" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">203</text>
+  <text x="476" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">247</text>
+  <text x="506" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">154</text>
+  <text x="536" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">147</text>
+  <text x="566" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">173</text>
+  <text x="596" y="161" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">8</text>
+  <text x="446" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">221</text>
+  <text x="476" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">3</text>
+  <text x="506" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">75</text>
+  <text x="536" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">41</text>
+  <text x="566" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">195</text>
+  <text x="596" y="180" text-anchor="middle" font-size="11" fill="#6e6e73" font-variant-numeric="tabular-nums">137</text>
+  <rect x="426" y="204" width="188" height="34" rx="4" fill="#f5f5f7" stroke="#d1d1d6" stroke-width="1"/>
+  <text x="520" y="226" text-anchor="middle" font-size="12" fill="#1d1d1f">스노우 글로브</text>
+  <text x="320" y="266" text-anchor="middle" font-size="11" fill="#6e6e73">숫자는 실제 픽셀 값이 아닌 예시다. 사람은 배열만 보고 캡션을 짝지을 수 없다</text>
+</svg>

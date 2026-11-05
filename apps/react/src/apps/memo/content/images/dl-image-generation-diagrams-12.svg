@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 204" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="204" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">디퓨전 모델: 잡음을 점진적으로 더한 뒤 되돌린다</text>
+  <rect x="40" y="70" width="70" height="90" rx="4" fill="#e3f6e8" stroke="#34c759" stroke-width="1.5"/>
+  <text x="75" y="120" text-anchor="middle" font-size="18" font-weight="600" fill="#1d1d1f">x<tspan font-size="70%" dy="4">0</tspan></text>
+  <rect x="160" y="70" width="70" height="90" rx="4" fill="#fffbe6" stroke="#ffcc00" stroke-width="1.5"/>
+  <text x="195" y="120" text-anchor="middle" font-size="18" font-weight="600" fill="#1d1d1f">x<tspan font-size="70%" dy="4">1</tspan></text>
+  <rect x="280" y="70" width="70" height="90" rx="4" fill="#fff1dc" stroke="#ff9f0a" stroke-width="1.5"/>
+  <text x="315" y="120" text-anchor="middle" font-size="18" font-weight="600" fill="#1d1d1f">x<tspan font-size="70%" dy="4">2</tspan></text>
+  <rect x="500" y="70" width="70" height="90" rx="4" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="535" y="120" text-anchor="middle" font-size="18" font-weight="600" fill="#1d1d1f">x<tspan font-size="70%" dy="4">T</tspan></text>
+  <text x="445" y="120" text-anchor="middle" font-size="18" fill="#6e6e73">…</text>
+  <line x1="112" y1="98" x2="158" y2="98" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+  <line x1="158" y1="134" x2="112" y2="134" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#b)"/>
+  <line x1="232" y1="98" x2="278" y2="98" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+  <line x1="278" y1="134" x2="232" y2="134" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#b)"/>
+  <line x1="352" y1="98" x2="418" y2="98" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+  <line x1="418" y1="134" x2="352" y2="134" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#b)"/>
+  <line x1="472" y1="98" x2="498" y2="98" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+  <line x1="498" y1="134" x2="472" y2="134" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#b)"/>
+  <text x="320" y="56" text-anchor="middle" font-size="12" fill="#1d1d1f">확산 과정 q: 가우시안 잡음 추가 (학습 없음)</text>
+  <text x="320" y="186" text-anchor="middle" font-size="12" fill="#0a84ff">역확산 과정 pθ: 잡음 제거 (신경망 학습)</text>
+</svg>

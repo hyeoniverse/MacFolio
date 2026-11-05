@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">둥근 정도를 추가한 2차원 공간</text>
+  <line x1="130" y1="280" x2="560" y2="280" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+  <line x1="130" y1="280" x2="130" y2="52" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+  <text x="345" y="306" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">노란 정도</text>
+  <text x="0" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f" transform="translate(100 166) rotate(-90)">둥근 정도</text>
+  <ellipse cx="200" cy="92" rx="12" ry="15" fill="#ff3b30" stroke="#1d1d1f" stroke-opacity="0.25"/>
+  <path d="M197 109L200 106L203 109z" fill="#ff3b30"/>
+  <path d="M200 109q-4 8 0 16" fill="none" stroke="#6e6e73" stroke-width="1"/>
+  <text x="200" y="144" text-anchor="middle" font-size="12" fill="#1d1d1f">빨간 풍선</text>
+  <ellipse cx="480" cy="92" rx="12" ry="15" fill="#ffcc00" stroke="#1d1d1f" stroke-opacity="0.25"/>
+  <path d="M477 109L480 106L483 109z" fill="#ffcc00"/>
+  <path d="M480 109q-4 8 0 16" fill="none" stroke="#6e6e73" stroke-width="1"/>
+  <text x="480" y="144" text-anchor="middle" font-size="12" fill="#1d1d1f">노란 풍선</text>
+  <path d="M460 218Q478 244 500 216Q482 232 460 218z" fill="#ffcc00" stroke="#c99a00" stroke-width="1"/>
+  <text x="480" y="258" text-anchor="middle" font-size="12" fill="#1d1d1f">바나나</text>
+  <line x1="130" y1="170" x2="556" y2="170" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="552" y="162" text-anchor="end" font-size="11" fill="#0a84ff">둥근 정도로 다시 분리된다</text>
+</svg>
