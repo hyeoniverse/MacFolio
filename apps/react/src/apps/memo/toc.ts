@@ -101,7 +101,7 @@ export function tocPosition(entries: readonly TocEntry[], items: readonly number
 
 /**
  * 제목 바로 아래 단계의 하위 제목들 (본문 제목 번호): 그 제목 뒤에서 같은 단계 이하의 제목이 나오기 전까지의 제목 가운데 가장 얕은 단계.
- * 예: ## 아래에 ###가 있으면 ###들, ### 없이 ####만 있으면 ####들. 목차 막대의 경로에 마우스를 올리면 펼치는 목록이다
+ * 예: ## 아래에 ###가 있으면 ###들, ### 없이 ####만 있으면 ####들 (tocSiblings가 부모의 이 목록을 쓴다)
  */
 export function tocChildren(entries: readonly TocEntry[], index: number): number[] {
 	const parent = entries[index];
@@ -120,7 +120,7 @@ function parentOf(entries: readonly TocEntry[], index: number): number {
 
 /**
  * 같은 계층의 제목들 (그 제목 자신을 포함, 본문 순서): 같은 부모 아래의 바로 아래 단계 제목들.
- * 부모가 없는 맨 위 단계(## 절)면 부모 없는 같은 단계의 제목들. 목차 막대에서 지금 읽는 제목에 마우스를 올리면 펼치는 목록이다
+ * 부모가 없는 맨 위 단계(## 절)면 부모 없는 같은 단계의 제목들. 목차 막대의 경로 제목에 마우스를 올리면 펼치는 목록이다
  */
 export function tocSiblings(entries: readonly TocEntry[], index: number): number[] {
 	if (!entries[index]) return [];

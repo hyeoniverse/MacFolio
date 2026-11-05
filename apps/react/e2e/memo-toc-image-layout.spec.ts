@@ -375,7 +375,7 @@ test.describe('메모 목차', () => {
 		await page.keyboard.press('Escape');
 	});
 
-	test('경로의 제목에 마우스를 올리면 그 하위 제목을, 맨 끝(지금 읽는) 제목은 같은 계층의 제목을 펼친다. 고르면 그 제목으로 간다', async ({
+	test('경로의 제목에 마우스를 올리면 그 제목과 같은 계층의 제목을 펼친다. 고르면 그 제목으로 간다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: false });
@@ -402,16 +402,17 @@ test.describe('메모 목차', () => {
 			await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
 		};
 
-		// 절 이름: 그 절의 ### 들
+		// 절 이름: 모든 절
 		await hover(section);
-		await expect(peek.locator('button')).toHaveText(['가', '나']);
+		await expect(peek.locator('button')).toHaveText(['하나', '둘']);
 		await expect(section).toHaveAttribute('aria-expanded', 'true');
 		// 경로에 있는 제목은 표시한다
-		await expect(peek.locator('[aria-current="location"]')).toHaveText('가');
-		// ### : 그 아래 #### 들
+		await expect(peek.locator('[aria-current="location"]')).toHaveText('하나');
+		// ### : 같은 절의 ### 들
 		await hover(sub.first());
-		await expect(peek.locator('button')).toHaveText(['가-1', '가-2']);
-		// 맨 끝 (지금 읽는 ####): 같은 계층의 #### 들, 들여 쓰지 않는다
+		await expect(peek.locator('button')).toHaveText(['가', '나']);
+		await expect(peek.locator('[aria-current="location"]')).toHaveText('가');
+		// 맨 끝 (지금 읽는 ####): 같은 ###의 #### 들, 들여 쓰지 않는다
 		await hover(sub.last());
 		await expect(peek.locator('button')).toHaveText(['가-1', '가-2']);
 		const pads = await peek.locator('button').evaluateAll((els) => els.map((el) => getComputedStyle(el).paddingLeft));
@@ -432,9 +433,6 @@ test.describe('메모 목차', () => {
 		await press(section);
 		await expect(body.locator(':scope > h2', { hasText: '하나' })).toBeInViewport();
 		await expect(sub).toHaveCount(0);
-		// 맨 위 절의 같은 계층: 모든 절
-		await hover(section);
-		await expect(peek.locator('button')).toHaveText(['하나', '둘']);
 	});
 
 	test('## 제목이 둘 미만이면 ### 제목까지 모두 절로 오간다', async ({ page }) => {

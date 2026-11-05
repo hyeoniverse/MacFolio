@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useId, useMemo, useRef, useState, type KeyboardEvent, type RefObject } from 'react';
 import { prefersReducedMotion } from '@/shared/lib/media';
 import { useDismiss } from '@/shared/ui/popover/useDismiss';
-import { activeHeading, showsToc, tocBarItems, tocChildren, tocPosition, tocSiblings, type TocEntry } from '../toc';
+import { activeHeading, showsToc, tocBarItems, tocPosition, tocSiblings, type TocEntry } from '../toc';
 import type { useTocHeadings } from '../useTocHeadings';
 import { useTocDisclosure } from '../useTocDisclosure';
 
@@ -98,14 +98,15 @@ const MemoToc = ({
 
 	useDismiss(open, () => setOpen(false), [nav]);
 
-	// 경로의 제목에 마우스를 올리면 펼치는 목록: 위 단계 제목은 그 하위 제목들, 맨 끝(지금 읽는) 제목은 같은 계층의 제목들
+	// 경로의 제목에 마우스를 올리면 펼치는 목록: 그 제목과 같은 계층의 제목들 (절이면 모든 절, ###이면 같은 절의 ###, ####이면 같은 ###의 ####)
 	const [peek, setPeek] = useState<{ owner: number; list: number[]; left: number } | null>(null);
 	const peekList = useRef<HTMLOListElement>(null);
 	const peekTimer = useRef(0);
 	const crumbs = section >= 0 ? [section, ...trail] : [];
 	const peekOf = (index: number) => {
-		const list = index === crumbs[crumbs.length - 1] ? tocSiblings(entries, index) : tocChildren(entries, index);
-		return list.length > (index === crumbs[crumbs.length - 1] ? 1 : 0) ? list : [];
+		const list = tocSiblings(entries, index);
+		// 자기 하나뿐이면 펼칠 것이 없다
+		return list.length > 1 ? list : [];
 	};
 	const keepPeek = () => window.clearTimeout(peekTimer.current);
 	const closePeek = () => {
