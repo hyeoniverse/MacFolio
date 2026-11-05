@@ -86,6 +86,17 @@ test.describe('메모: 휴대폰 화면이면 폭과 상관없이 한 칸씩', (
 				expect(Math.round(publish.height)).toBe(Math.round(top.height));
 				expect(publish.x + publish.width).toBeLessThan(top.x);
 			}
+			// 게시할 것이 없어 누를 수 없는 게시 버튼도 옆 알약의 공유 버튼과 같은 글자색이다
+			const publishButton = memo.locator('.memo-writer-actions > button').first();
+			await expect(publishButton).toBeDisabled();
+			const color = (selector: string) =>
+				page
+					.locator(selector)
+					.first()
+					.evaluate((el) => getComputedStyle(el).color);
+			expect(await publishButton.evaluate((el) => getComputedStyle(el).color)).toBe(
+				await color('[data-app="memo"] .memo-phone-top .ui-icon-button')
+			);
 			// 글자 크기 알약: 위 알약과 같은 높이, 새 메모 버튼과 오른쪽 끝을 맞추고 겹치지 않는다
 			const top = await box(page, '[data-app="memo"] .memo-phone-top');
 			const size = await box(page, '[data-app="memo"] .memo-text-size');

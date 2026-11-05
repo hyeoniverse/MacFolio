@@ -107,9 +107,10 @@
 	background-color: var(--memo-search-bg);
 }
 
+/* 게시할 것이 없어 누를 수 없는 동안에도 글자색은 옆 알약의 공유·••• 아이콘과 같은 기본 글자색 (흐린 글자는 혼자 옅어 보인다) */
 .container.mobile :where(.memo-shell[data-compact]) .memo-reader .memo-writer-actions > button:disabled {
 	background: none;
-	color: var(--memo-muted);
+	color: var(--memo-text);
 }
 
 /* 알약에는 버튼만 둔다 (글을 넣으면 알약이 길어져 좁은 화면에 맞지 않는다).
@@ -156,18 +157,20 @@
 	pointer-events: auto;
 }
 
+/* 서식 알약: 서식·형광펜·체크리스트·표·이미지·파일·문단 도구 7개. 버튼 36px·간격 2px·좌우 여백 6px이면 알약 폭이 약 287px로,
+   새 메모 버튼(50px)과 함께 폭 375px 화면(iPhone SE)의 좌우 16px 안에 6px 틈을 두고 들어간다 */
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format {
 	display: inline-flex;
-	gap: var(--space-4);
+	gap: var(--space-2);
 	height: 50px;
-	padding: 0 var(--space-10);
+	padding: 0 var(--space-6);
 	border-radius: var(--radius-full);
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--shadow-float);
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-format .ui-icon-button {
-	min-width: 40px;
+	min-width: 36px;
 	height: 40px;
 	color: var(--memo-text);
 	font-size: var(--text-title3);
@@ -181,7 +184,9 @@
 	font-size: var(--text-subhead);
 }
 
+/* 새 메모: 동그란 50px. 편집 화면에서는 왼쪽 서식 알약이 넓어 같은 줄에서 줄어들지 않게 한다 (flex-shrink 기본값 1이면 33px 폭의 납작한 타원이 된다) */
 .container.mobile :where(.memo-shell[data-compact]) .memo-phone-compose {
+	flex: none;
 	width: 50px;
 	height: 50px;
 	border-radius: 50%;

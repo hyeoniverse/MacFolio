@@ -2021,6 +2021,14 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 		const bottom = memo.locator('.memo-reader .memo-phone-bottom');
 		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
 		const resting = (await bottom.boundingBox())!;
+		// 새 메모 버튼은 넓은 서식 알약 옆에서도 줄어들지 않는 50px 동그라미다
+		const compose = (await bottom.getByRole('button', { name: '새 메모' }).boundingBox())!;
+		expect(Math.round(compose.width)).toBe(50);
+		expect(Math.round(compose.height)).toBe(50);
+		// 서식 알약과 겹치지 않고 화면 오른쪽 여백(16px) 안에 있다
+		const format = (await bottom.locator('.memo-phone-format').boundingBox())!;
+		expect(compose.x).toBeGreaterThanOrEqual(format.x + format.width);
+		expect(compose.x + compose.width).toBeLessThanOrEqual(page.viewportSize()!.width - 16 + 0.5);
 
 		await memo.locator('.ProseMirror p').first().tap();
 		const viewport = page.viewportSize()!;
