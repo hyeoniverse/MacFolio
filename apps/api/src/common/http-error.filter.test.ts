@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, NotFoundException } from '@nestjs/common';
 import { describe, expect, it } from 'vitest';
 import { toErrorBody } from './http-error.filter.js';
 
@@ -53,6 +53,20 @@ describe('toErrorBody', () => {
 		});
 		const upstream = Object.assign(new Error('db down'), { status: 503, expose: true });
 		expect(toErrorBody(upstream, '/posts', now)).toMatchObject({ statusCode: 500 });
+	});
+
+	it('NestJS가 HttpException으로 감싼 http-errors(cause)도 설명은 우리말로', () => {
+		const tooLarge = Object.assign(new Error('request entity too large'), {
+			status: 413,
+			expose: true,
+			type: 'entity.too.large',
+		});
+		const wrapped = new HttpException('request entity too large', 413, { cause: tooLarge });
+		expect(toErrorBody(wrapped, '/posts', now)).toMatchObject({
+			statusCode: 413,
+			error: 'Payload Too Large',
+			message: '요청이 너무 큽니다.',
+		});
 	});
 
 	it('예상하지 못한 에러는 내용을 감추고 500', () => {
