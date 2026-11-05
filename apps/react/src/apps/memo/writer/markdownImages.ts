@@ -43,7 +43,12 @@ export function unescapeTags(markdown: string): string {
 				return line;
 			}
 			if (fence !== null) return line;
-			return line.replace(/^((?:\s*(?:[-*+]|\d+[.)])\s+|\s*>\s*)*)\\#(?=[\p{L}\p{N}_-])/u, '$1#');
+			return (
+				line
+					.replace(/^((?:\s*(?:[-*+]|\d+[.)])\s+|\s*>\s*)*)\\#(?=[\p{L}\p{N}_-])/u, '$1#')
+					// 콜아웃 표시(> [!NOTE])도 \[ 로 이스케이프된다: 인용 블록 첫머리의 것만 되돌린다 (markdownPlugins.ts의 CALLOUT_MARK)
+					.replace(/^((?:\s*>\s*)+)\\\[!(note|tip|important|warning|caution)\]/i, '$1[!$2]')
+			);
 		})
 		.join('\n');
 }

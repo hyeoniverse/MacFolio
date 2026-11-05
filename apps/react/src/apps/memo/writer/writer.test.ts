@@ -63,6 +63,10 @@ describe('태그 이스케이프', () => {
 	it('줄 맨 앞의 \\#태그를 #태그로 되돌린다 (목록·인용 기호 뒤도). 뒤에 이어지는 태그는 원래 그대로', () => {
 		expect(unescapeTags('본문\n\n\\#프론트엔드 #CSS #Safari\n')).toBe('본문\n\n#프론트엔드 #CSS #Safari\n');
 		expect(unescapeTags('- \\#할일\n> \\#인용\n1. \\#번호\n')).toBe('- #할일\n> #인용\n1. #번호\n');
+		// 인용 블록 첫머리의 콜아웃 표시도 되돌린다. 본문 가운데의 \\[ 는 그대로
+		expect(unescapeTags('> \\[!NOTE]\n> 내용 \\[!TIP]\n> > \\[!warning] 제목\n')).toBe(
+			'> [!NOTE]\n> 내용 \\[!TIP]\n> > [!warning] 제목\n'
+		);
 	});
 
 	it('제목이 될 수 있는 \\#(뒤에 공백이나 #)와 코드 블록 안은 건드리지 않는다', () => {
