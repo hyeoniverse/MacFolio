@@ -35,7 +35,7 @@ const ReaderBody = ({
 	editing: boolean;
 	/** 글 아래 (이전·다음 글, 댓글). 최근 삭제된 메모는 없다 */
 	footer: ReactNode;
-	/** 한 칸씩 보는 좁은 화면 (목차를 접은 채 시작한다) */
+	/** 한 칸씩 보는 좁은 화면 (목차 막대 항목을 터치 크기로) */
 	compact: boolean;
 	/** 이 글이 속한 연재 (series 칸이 같은 글이 두 편 이상). 없으면 null */
 	series: Series | null;

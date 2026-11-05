@@ -1,4 +1,4 @@
-// 글의 목차: 본문의 ## · ### 제목. 순수 함수만 둔다 (그리기와 스크롤은 components/MemoToc.tsx)
+// 글의 목차: 본문의 ## · ### 제목. 순수 함수만 둔다 (그리기와 스크롤은 components/MemoToc.tsx의 한 줄 목차 막대)
 
 export interface TocEntry {
 	/** 2(##) 또는 3(###) */
@@ -27,4 +27,27 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 		else break;
 	}
 	return active;
+}
+
+/**
+ * 목차 막대에 놓을 항목: 본문 제목(entries) 가운데 ## 제목의 번호. ## 제목이 둘 미만이면(### 위주의 글) 모든 제목을 놓는다.
+ * 막대는 한 줄이라 ### 까지 늘어놓으면 대부분 화면 밖으로 밀리므로, 절의 큰 단위인 ##만 보인다
+ */
+export function tocBarItems(entries: readonly TocEntry[]): number[] {
+	const sections = entries.flatMap((entry, index) => (entry.level === 2 ? [index] : []));
+	return sections.length >= 2 ? sections : entries.map((_, index) => index);
+}
+
+/**
+ * 지금 읽는 제목(activeHeading의 결과)이 속한 막대 항목: 그 제목이거나 그보다 앞선 마지막 항목의 순번. 없으면 -1.
+ * @param items tocBarItems의 결과 (본문 제목 번호, 오름차순)
+ * @param active 지금 읽는 제목의 번호 (첫 제목보다 위면 -1)
+ */
+export function activeBarItem(items: readonly number[], active: number): number {
+	let current = -1;
+	for (let index = 0; index < items.length; index++) {
+		if (items[index] <= active) current = index;
+		else break;
+	}
+	return current;
 }
