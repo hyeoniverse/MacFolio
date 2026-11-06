@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>SAST는 직접 쓴 소스 코드를 규칙의 코드 패턴과 비교해 파일과 줄을 보고하고, SCA는 잠금 파일의 패키지 이름과 버전을 취약점 데이터베이스와 비교해 알려진 취약점 ID를 보고한다</title>
+<defs>
+<marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1d1d1f"/></marker>
+</defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">SAST는 직접 쓴 코드를, SCA는 가져온 패키지를 검사한다</text>
+<text x="24" y="66" font-size="13" font-weight="700" fill="#0a84ff">SAST (Semgrep)</text>
+<rect x="24" y="78" width="180" height="70" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="36" y="98" font-size="12" fill="#6e6e73">입력: 소스 코드</text>
+<text x="36" y="118" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">new RegExp(key)</text>
+<text x="36" y="136" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">obj[name] = …</text>
+<path d="M204 113 H240" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="242" y="78" width="160" height="70" rx="8" fill="#0a84ff" fill-opacity="0.1" stroke="#0a84ff"/>
+<text x="322" y="104" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">규칙의 코드 패턴과</text>
+<text x="322" y="122" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">비교</text>
+<text x="322" y="140" font-size="12" fill="#6e6e73" text-anchor="middle">규칙 112개·266개</text>
+<path d="M402 113 H438" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="440" y="78" width="176" height="70" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="452" y="98" font-size="12" fill="#6e6e73">출력</text>
+<text x="452" y="118" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">repo.ts:210</text>
+<text x="452" y="136" font-size="12" fill="#1d1d1f">규칙 ID + 위험 설명</text>
+<text x="24" y="182" font-size="12" fill="#6e6e73">값의 출처는 모른다. 상수로 만든 정규식도 "변수로 만든 정규식"으로 보고한다</text>
+<line x1="24" y1="200" x2="616" y2="200" stroke="#d1d1d6"/>
+<text x="24" y="228" font-size="13" font-weight="700" fill="#ff9f0a">SCA (pnpm audit, osv-scanner)</text>
+<rect x="24" y="240" width="180" height="70" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="36" y="260" font-size="12" fill="#6e6e73">입력: pnpm-lock.yaml</text>
+<text x="36" y="280" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">패키지@버전</text>
+<text x="36" y="298" font-size="12" fill="#1d1d1f">1,268개</text>
+<path d="M204 275 H240" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="242" y="240" width="160" height="70" rx="8" fill="#ff9f0a" fill-opacity="0.12" stroke="#ff9f0a"/>
+<text x="322" y="266" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">취약점 DB와 비교</text>
+<text x="322" y="284" font-size="12" fill="#6e6e73" text-anchor="middle">OSV, GitHub Advisory</text>
+<text x="322" y="302" font-size="12" fill="#6e6e73" text-anchor="middle">영향받는 버전 범위</text>
+<path d="M402 275 H438" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="440" y="240" width="176" height="70" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="452" y="260" font-size="12" fill="#6e6e73">출력</text>
+<text x="452" y="280" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">GHSA-… / CVE-…</text>
+<text x="452" y="298" font-size="12" fill="#1d1d1f">고친 버전</text>
+</svg>

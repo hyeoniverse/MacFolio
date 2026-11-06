@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>사이트가 브라우저에 남기는 세 저장소와 접근 주체</title>
+<defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">휴지통이 읽고 삭제할 수 있는 것과 없는 것</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">파란 화살표: 사이트 JavaScript의 읽기·삭제. 주황 화살표: HTTP 요청과 함께 오가는 쿠키</text>
+<rect x="20" y="66" width="440" height="318" rx="12" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="5 4"/>
+<text x="36" y="88" font-size="13" font-weight="700" fill="#6e6e73">브라우저 (macfolio.hyeoniverse.com 출처)</text>
+<rect x="36" y="102" width="150" height="266" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="111" y="130" font-size="14" font-weight="700" fill="#0a84ff" text-anchor="middle">사이트 JavaScript</text>
+<text x="111" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle">휴지통 앱</text>
+<text x="111" y="170" font-size="12" fill="#1d1d1f" text-anchor="middle">readBrowserData()</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="250" y="102" width="194" height="80" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="262" y="124" font-weight="700">localStorage</text>
+<text x="262" y="144">탭·브라우저를 닫아도 유지</text>
+<text x="262" y="164" font-family="ui-monospace, Menlo, monospace">macfolio:settings</text>
+<rect x="250" y="194" width="194" height="80" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="262" y="216" font-weight="700">sessionStorage</text>
+<text x="262" y="236">탭을 닫으면 삭제</text>
+<text x="262" y="256">로그인 이동 직전 열린 앱</text>
+<rect x="250" y="286" width="194" height="82" rx="8" fill="#fff8ec" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="262" y="308" font-weight="700">쿠키 (httpOnly)</text>
+<text x="262" y="328">document.cookie에 없다</text>
+<text x="262" y="348" font-family="ui-monospace, Menlo, monospace">macfolio_visitor</text>
+</g>
+<line x1="188" y1="142" x2="246" y2="142" stroke="#0a84ff" stroke-width="1.8" marker-start="url(#b)" marker-end="url(#b)"/>
+<line x1="188" y1="234" x2="246" y2="234" stroke="#0a84ff" stroke-width="1.8" marker-start="url(#b)" marker-end="url(#b)"/>
+<line x1="188" y1="327" x2="246" y2="327" stroke="#ff3b30" stroke-width="1.8" stroke-dasharray="4 3"/>
+<text x="217" y="321" font-size="14" fill="#ff3b30" text-anchor="middle" font-weight="700">✕</text>
+<rect x="490" y="250" width="130" height="134" rx="10" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="555" y="276" font-size="14" font-weight="700" fill="#1d1d1f" text-anchor="middle">API 서버</text>
+<text x="555" y="300" font-size="12" fill="#1d1d1f" text-anchor="middle">Set-Cookie로</text>
+<text x="555" y="318" font-size="12" fill="#1d1d1f" text-anchor="middle">발급</text>
+<text x="555" y="346" font-size="12" fill="#1d1d1f" text-anchor="middle">요청마다</text>
+<text x="555" y="364" font-size="12" fill="#1d1d1f" text-anchor="middle">Cookie로 수신</text>
+<line x1="446" y1="320" x2="486" y2="320" stroke="#ff9f0a" stroke-width="1.8" marker-start="url(#o)" marker-end="url(#o)"/>
+<text x="490" y="100" font-size="12" fill="#1d1d1f">휴지통의 처리</text>
+<text x="490" y="124" font-size="12" fill="#0a84ff">위 두 저장소:</text>
+<text x="490" y="142" font-size="12" fill="#1d1d1f">목록 표시, 비우기</text>
+<text x="490" y="170" font-size="12" fill="#ff9f0a">쿠키:</text>
+<text x="490" y="188" font-size="12" fill="#1d1d1f">용도와 삭제 방법만</text>
+<text x="490" y="206" font-size="12" fill="#1d1d1f">안내</text>
+</svg>

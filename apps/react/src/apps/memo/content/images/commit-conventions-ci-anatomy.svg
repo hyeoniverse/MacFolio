@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>커밋 메시지와 브랜치 이름을 구성 요소로 나누고, 각 요소에 대응하는 정규식 부분을 표시한 그림</title>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" font-weight="700" fill="#1d1d1f">커밋 메시지 (PR 제목도 같은 형식)</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15">
+<rect x="24" y="50" width="44" height="34" rx="6" fill="#0a84ff"/>
+<text x="46" y="72" text-anchor="middle" fill="#ffffff">fix</text>
+<rect x="74" y="50" width="70" height="34" rx="6" fill="#ff9f0a"/>
+<text x="109" y="72" text-anchor="middle" fill="#1d1d1f">(mail)</text>
+<rect x="150" y="50" width="34" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="167" y="72" text-anchor="middle" fill="#1d1d1f">:␣</text>
+<rect x="190" y="50" width="426" height="34" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+</g>
+<text x="403" y="72" text-anchor="middle" font-size="14" fill="#1d1d1f">휴대폰에서 오류 문구가 목록에 붙지 않게</text>
+<g font-size="13" fill="#6e6e73" text-anchor="middle">
+<text x="46" y="104">①</text><text x="109" y="104">②</text><text x="167" y="104">③</text><text x="403" y="104">④</text>
+</g>
+<g font-size="12" fill="#6e6e73">
+<text x="24" y="122">① 타입(필수, 9개 중 하나)  ② 범위(선택, 영문 소문자·숫자·-)  ③ 콜론과 공백</text>
+</g>
+<text x="24" y="140" font-size="12" fill="#6e6e73">④ 설명(한 글자 이상, 언어는 검사하지 않음)  · 범위 뒤 ! 는 호환성을 깨는 변경 표시(선택)</text>
+<rect x="24" y="154" width="592" height="34" rx="6" fill="#f2f2f7"/>
+<text x="36" y="176" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" fill="#1d1d1f">^(<tspan fill="#0a84ff">feat|fix|docs|…|ci</tspan>)(<tspan fill="#b36b00">\([a-z0-9-]+\)</tspan>)?!?<tspan fill="#6e6e73">: </tspan><tspan fill="#248a3d">.+</tspan></text>
+<line x1="24" y1="216" x2="616" y2="216" stroke="#d2d2d7"/>
+<text x="24" y="248" font-size="15" font-weight="700" fill="#1d1d1f">브랜치 이름</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="15">
+<rect x="24" y="264" width="44" height="34" rx="6" fill="#0a84ff"/>
+<text x="46" y="286" text-anchor="middle" fill="#ffffff">fix</text>
+<rect x="74" y="264" width="26" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="87" y="286" text-anchor="middle" fill="#1d1d1f">/</text>
+<rect x="106" y="264" width="190" height="34" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+<text x="201" y="286" text-anchor="middle" fill="#1d1d1f">mail-phone-spacing</text>
+</g>
+<g font-size="12" fill="#6e6e73">
+<text x="24" y="318">타입</text>
+<text x="74" y="318">구분</text>
+<text x="112" y="318">영문 소문자·숫자로 시작, 이후 - 허용</text>
+</g>
+<rect x="24" y="332" width="592" height="34" rx="6" fill="#f2f2f7"/>
+<text x="36" y="354" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="13" fill="#1d1d1f">^(<tspan fill="#0a84ff">feat|fix|docs|…|ci</tspan>)/<tspan fill="#248a3d">[a-z0-9][a-z0-9-]*</tspan>$</text>
+<g font-size="13">
+<text x="24" y="398" fill="#ff3b30">✕ Chore: npm install</text>
+<text x="190" y="398" fill="#6e6e73">타입이 대문자로 시작</text>
+<text x="340" y="398" fill="#ff3b30">✕ my-branch</text>
+<text x="440" y="398" fill="#6e6e73">타입/ 접두어가 없음</text>
+</g>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 312" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>API 이미지 태그 sha-5415d51은 main 커밋 5415d51a7을 가리키고, 그 커밋 메시지에 PR 번호 399가 있어 태그에서 PR까지 바로 이어진다. Rebase and merge로 들어간 구간에서는 main 끝 커밋이 브랜치 커밋이라 메시지에 PR 번호가 없다</title>
+<defs>
+<marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="312" fill="#ffffff"/>
+<text x="24" y="32" font-size="15" font-weight="700" fill="#1d1d1f">배포 태그에서 PR까지 (되돌릴 시점 찾기)</text>
+<text x="24" y="62" font-size="13" font-weight="700" fill="#0a84ff">Create a merge commit</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="24" y="76" width="150" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="99" y="98" text-anchor="middle" fill="#6e6e73">API 이미지 태그</text>
+<text x="99" y="120" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">sha-5415d51</text>
+<rect x="210" y="76" width="210" height="58" rx="8" fill="#e8f1ff" stroke="#0a84ff"/>
+<text x="315" y="98" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">5415d51a7</text>
+<text x="315" y="120" text-anchor="middle">Merge pull request #399</text>
+<rect x="456" y="76" width="160" height="58" rx="8" fill="#eaf7ee" stroke="#34c759"/>
+<text x="536" y="98" text-anchor="middle">PR #399</text>
+<text x="536" y="120" text-anchor="middle" fill="#6e6e73">project-app-toolbar</text>
+</g>
+<line x1="174" y1="105" x2="208" y2="105" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="420" y1="105" x2="454" y2="105" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="24" y="156" font-size="12" fill="#248a3d">태그 하나가 머지 커밋 하나, PR 하나에 대응한다.</text>
+<line x1="24" y1="174" x2="616" y2="174" stroke="#d2d2d7"/>
+<text x="24" y="202" font-size="13" font-weight="700" fill="#ff9f0a">Rebase and merge (#113~#182 구간)</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="24" y="216" width="150" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="99" y="238" text-anchor="middle" fill="#6e6e73">API 이미지 태그</text>
+<text x="99" y="260" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">sha-&lt;7자리&gt;</text>
+<rect x="210" y="216" width="210" height="58" rx="8" fill="#fff4e0" stroke="#ff9f0a"/>
+<text x="315" y="238" text-anchor="middle">브랜치 커밋을 다시 적용한 커밋</text>
+<text x="315" y="260" text-anchor="middle" fill="#6e6e73">메시지에 PR 번호 없음</text>
+<rect x="456" y="216" width="160" height="58" rx="8" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="536" y="238" text-anchor="middle">PR 번호를</text>
+<text x="536" y="260" text-anchor="middle">GitHub에서 따로 조회</text>
+</g>
+<line x1="174" y1="245" x2="208" y2="245" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<line x1="420" y1="245" x2="454" y2="245" stroke="#6e6e73" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ag)"/>
+<text x="24" y="294" font-size="12" fill="#6e6e73">main 끝 커밋이 PR 경계인지 기록만으로는 알 수 없다.</text>
+</svg>

@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>API 요청이 거치는 순서. 터널, Express 미들웨어, 가드, 파이프, 처리 함수 순서이고, 전역 예외 필터가 모든 단계의 오류를 같은 형식으로 바꾼다</title>
+<defs>
+<marker id="qa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="qr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="470" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">요청 하나가 거치는 순서 (NestJS 요청 수명 주기)</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">앞 단계에서 거절되면 뒤 단계는 실행되지 않는다. 오른쪽은 거절할 때의 상태 코드</text>
+
+<g font-size="12">
+<rect x="24" y="72" width="456" height="44" rx="8" fill="#f2f2f7"/>
+<text x="38" y="92" font-weight="700" fill="#1d1d1f">Cloudflare Tunnel → cloudflared</text>
+<text x="38" y="108" fill="#6e6e73">서버에 열린 인바운드 포트 없음</text>
+
+<rect x="24" y="128" width="456" height="56" rx="8" fill="#f2f2f7"/>
+<text x="38" y="148" font-weight="700" fill="#1d1d1f">Express 미들웨어: trust proxy, helmet, CORS</text>
+<text x="38" y="166" fill="#6e6e73">X-Forwarded-For에서 방문자 IP, 보안 헤더,</text>
+<text x="38" y="180" fill="#6e6e73">허용한 출처에만 쿠키 응답 허용</text>
+
+<rect x="24" y="196" width="456" height="84" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="38" y="216" font-weight="700" fill="#0a84ff">가드 (Guard), 관리자 쓰기 경로 기준</text>
+<text x="38" y="238" fill="#1d1d1f">ThrottlerGuard (@RateLimit): IP별 1분 단위 요청 제한</text>
+<text x="38" y="262" fill="#1d1d1f">AdminGuard: 허용하지 않은 출처 거절, 세션을 DB에서 확인</text>
+
+<rect x="24" y="292" width="456" height="44" rx="8" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="38" y="312" font-weight="700" fill="#c77700">파이프 (Pipe)</text>
+<text x="38" y="328" fill="#1d1d1f">ValidationPipe: 형식 검사, 정의하지 않은 필드 거절</text>
+
+<rect x="24" y="348" width="456" height="44" rx="8" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="38" y="368" font-weight="700" fill="#248a3d">처리 함수 → 서비스 → Prisma → PostgreSQL</text>
+<text x="38" y="384" fill="#1d1d1f">규칙은 rules.ts, 필수 항목은 DB CHECK 제약</text>
+</g>
+
+<g stroke="#6e6e73" stroke-width="1.5">
+<path d="M252 116 V126" marker-end="url(#qa)"/>
+<path d="M252 184 V194" marker-end="url(#qa)"/>
+<path d="M252 280 V290" marker-end="url(#qa)"/>
+<path d="M252 336 V346" marker-end="url(#qa)"/>
+</g>
+
+<g font-size="13" font-weight="700" fill="#ff3b30">
+<path d="M480 238 H532" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#qr)"/>
+<text x="540" y="243">429</text>
+<path d="M480 262 H532" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#qr)"/>
+<text x="540" y="267">403 · 401</text>
+<path d="M480 320 H532" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#qr)"/>
+<text x="540" y="325">400</text>
+<path d="M480 370 H532" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#qr)"/>
+<text x="540" y="375">500</text>
+</g>
+
+<rect x="24" y="406" width="592" height="52" rx="10" fill="#1d1d1f"/>
+<text x="38" y="428" font-size="12" font-weight="700" fill="#ffffff">전역 예외 필터 (HttpErrorFilter)</text>
+<text x="38" y="446" font-size="12" fill="#ffffff">모든 단계의 오류를 { statusCode, error, message, path, timestamp } 형식으로. 예상하지 못한 오류는 내용을 숨긴다</text>
+</svg>

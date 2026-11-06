@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>sandbox iframe의 srcdoc 문서가 할 수 있는 것과 없는 것</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker><marker id="agr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">Safari 파일 탭의 두 문서</text>
+<rect x="24" y="50" width="592" height="350" rx="12" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="40" y="76" font-size="13.5" font-weight="600" fill="#1d1d1f">사이트 문서 (MacFolio 출처)</text>
+<g font-size="12">
+<rect x="40" y="90" width="140" height="34" rx="6" fill="#ffffff" stroke="#d2d2d7"/><text x="52" y="112" fill="#1d1d1f">쿠키</text>
+<rect x="40" y="132" width="140" height="34" rx="6" fill="#ffffff" stroke="#d2d2d7"/><text x="52" y="154" fill="#1d1d1f">localStorage</text>
+<rect x="40" y="174" width="140" height="34" rx="6" fill="#ffffff" stroke="#d2d2d7"/><text x="52" y="196" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">window.hacked</text>
+<rect x="40" y="216" width="140" height="34" rx="6" fill="#ffffff" stroke="#d2d2d7"/><text x="52" y="238" fill="#1d1d1f">최상위 창 주소</text>
+</g>
+<rect x="250" y="90" width="350" height="294" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="264" y="114" font-size="12.5" font-weight="600" fill="#0a84ff" font-family="'SF Mono', Menlo, Consolas, monospace">&lt;iframe sandbox="allow-popups"</text>
+<text x="264" y="132" font-size="12.5" font-weight="600" fill="#0a84ff" font-family="'SF Mono', Menlo, Consolas, monospace">        srcDoc={text}&gt;</text>
+<text x="264" y="152" font-size="12" fill="#6e6e73">출처: 어느 출처와도 같지 않은 특수 출처</text>
+<g font-size="12">
+<line x1="264" y1="178" x2="186" y2="148" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<text x="272" y="182" fill="#ff3b30" font-weight="600">✕ 저장소·쿠키 접근</text>
+<text x="400" y="182" fill="#6e6e73">allow-same-origin 없음</text>
+<line x1="264" y1="210" x2="186" y2="192" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<text x="272" y="214" fill="#ff3b30" font-weight="600">✕ &lt;script&gt; 실행</text>
+<text x="400" y="214" fill="#6e6e73">allow-scripts 없음</text>
+<line x1="264" y1="242" x2="186" y2="236" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<text x="272" y="246" fill="#ff3b30" font-weight="600">✕ 최상위 창 이동</text>
+<text x="400" y="246" fill="#6e6e73">allow-top-navigation 없음</text>
+<text x="272" y="278" fill="#ff3b30" font-weight="600">✕ 양식 제출</text>
+<text x="400" y="278" fill="#6e6e73">allow-forms 없음</text>
+<line x1="264" y1="294" x2="590" y2="294" stroke="#d2d2d7"/>
+<text x="272" y="318" fill="#34c759" font-weight="600">✓ &lt;style&gt; 적용</text>
+<text x="400" y="318" fill="#6e6e73">사이트 CSP가 스타일 허용</text>
+<text x="272" y="346" fill="#34c759" font-weight="600">✓ 링크를 새 창으로</text>
+<text x="400" y="346" fill="#6e6e73">allow-popups</text>
+<text x="272" y="372" fill="#6e6e73">시험 파일: &lt;script&gt;parent.hacked = 1&lt;/script&gt;</text>
+</g>
+<text x="40" y="290" font-size="12" fill="#6e6e73">시험 후 사이트 창에</text>
+<text x="40" y="308" font-size="12" fill="#6e6e73">hacked가 생기지 않았는지</text>
+<text x="40" y="326" font-size="12" fill="#6e6e73">확인한다.</text>
+</svg>

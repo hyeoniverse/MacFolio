@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>ServerBattery 컴포넌트의 SVG 구조. 26×12 좌표계에 테두리, 단자, 안쪽 막대 세 도형이 있고 막대 폭은 19 × fill ÷ 100이다</title>
+<defs>
+<marker id="ba" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">배터리 SVG의 세 도형 (14배 확대)</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">ServerBattery.tsx, viewBox="0 0 26 12". 예시는 fill 56 (방문 추이 +12%)</text>
+
+<g transform="translate(32 84) scale(14)">
+<rect x="0.6" y="0.6" width="22.3" height="10.8" rx="3.2" fill="none" stroke="#1d1d1f" stroke-width="1.2" opacity="0.45"/>
+<path d="M24.2 4.1a1.6 1.6 0 0 1 1.3 1.6v0.6a1.6 1.6 0 0 1-1.3 1.6Z" fill="#1d1d1f" opacity="0.45"/>
+<rect x="2.2" y="2.2" width="10.64" height="7.6" rx="1.7" fill="#1d1d1f"/>
+</g>
+<line x1="62.8" y1="252" x2="62.8" y2="300" stroke="#6e6e73" stroke-width="1"/>
+<line x1="211.8" y1="252" x2="211.8" y2="268" stroke="#0a84ff" stroke-width="1.5"/>
+<line x1="328.8" y1="280" x2="328.8" y2="300" stroke="#6e6e73" stroke-width="1"/>
+<path d="M64 260 H210" stroke="#0a84ff" stroke-width="1.5" marker-start="url(#ba)" marker-end="url(#ba)"/>
+<text x="220" y="264" font-size="12" fill="#0a84ff" font-weight="600">19 × 56 ÷ 100 = 10.64</text>
+<path d="M64 292 H327" stroke="#6e6e73" stroke-width="1" stroke-dasharray="4 3" marker-start="url(#ba)" marker-end="url(#ba)"/>
+<text x="196" y="310" font-size="12" fill="#6e6e73" text-anchor="middle">fill 100이면 19 (안쪽 전체)</text>
+
+<g font-size="12" fill="#1d1d1f">
+<text x="420" y="96" font-weight="700">.shell (rect)</text>
+<text x="420" y="114" fill="#6e6e73">22.3 × 10.8, 모서리 3.2</text>
+<text x="420" y="132" fill="#6e6e73">채움 없음, 선 1.2, 투명도 0.45</text>
+<text x="420" y="168" font-weight="700">.cap (path)</text>
+<text x="420" y="186" fill="#6e6e73">오른쪽 단자, 투명도 0.45</text>
+<text x="420" y="222" font-weight="700">.level (rect)</text>
+<text x="420" y="240" fill="#6e6e73">x 2.2에서 시작, 높이 7.6</text>
+<text x="420" y="258" fill="#6e6e73">폭 = 19 × fill ÷ 100 (최소 1.6)</text>
+</g>
+<path d="M414 110 H384" stroke="#6e6e73" stroke-width="1" marker-end="url(#ba)"/>
+<path d="M414 182 H400" stroke="#6e6e73" stroke-width="1" marker-end="url(#ba)"/>
+<path d="M414 236 L206 196" stroke="#6e6e73" stroke-width="1" marker-end="url(#ba)"/>
+
+<line x1="24" y1="322" x2="616" y2="322" stroke="#e5e5ea"/>
+<text x="24" y="340" font-size="12" font-weight="700" fill="#1d1d1f">같은 컴포넌트, fill과 tone만 다르다 (3배 확대)</text>
+<g font-size="12" fill="#6e6e73" text-anchor="middle">
+<g transform="translate(40 356) scale(3)">
+<rect x="0.6" y="0.6" width="22.3" height="10.8" rx="3.2" fill="none" stroke="#1d1d1f" stroke-width="1.2" opacity="0.45"/>
+<path d="M24.2 4.1a1.6 1.6 0 0 1 1.3 1.6v0.6a1.6 1.6 0 0 1-1.3 1.6Z" fill="#1d1d1f" opacity="0.45"/>
+<rect x="2.2" y="2.2" width="1.9" height="7.6" rx="0.9" fill="#ff3b30"/>
+</g>
+<text x="79" y="412">10, 위험</text>
+<g transform="translate(190 356) scale(3)">
+<rect x="0.6" y="0.6" width="22.3" height="10.8" rx="3.2" fill="none" stroke="#1d1d1f" stroke-width="1.2" opacity="0.45"/>
+<path d="M24.2 4.1a1.6 1.6 0 0 1 1.3 1.6v0.6a1.6 1.6 0 0 1-1.3 1.6Z" fill="#1d1d1f" opacity="0.45"/>
+<rect x="2.2" y="2.2" width="4.75" height="7.6" rx="1.7" fill="#ff9f0a"/>
+</g>
+<text x="229" y="412">25, 주의</text>
+<g transform="translate(340 356) scale(3)">
+<rect x="0.6" y="0.6" width="22.3" height="10.8" rx="3.2" fill="none" stroke="#1d1d1f" stroke-width="1.2" opacity="0.45"/>
+<path d="M24.2 4.1a1.6 1.6 0 0 1 1.3 1.6v0.6a1.6 1.6 0 0 1-1.3 1.6Z" fill="#1d1d1f" opacity="0.45"/>
+<rect x="2.2" y="2.2" width="14.25" height="7.6" rx="1.7" fill="#1d1d1f"/>
+</g>
+<text x="379" y="412">75, 기본</text>
+<g transform="translate(490 356) scale(3)">
+<rect x="0.6" y="0.6" width="22.3" height="10.8" rx="3.2" fill="none" stroke="#1d1d1f" stroke-width="1.2" opacity="0.45"/>
+<path d="M24.2 4.1a1.6 1.6 0 0 1 1.3 1.6v0.6a1.6 1.6 0 0 1-1.3 1.6Z" fill="#1d1d1f" opacity="0.45"/>
+<rect x="2.2" y="2.2" width="19" height="7.6" rx="1.7" fill="#1d1d1f"/>
+</g>
+<text x="529" y="412">100, 안전</text>
+</g>
+</svg>

@@ -7,11 +7,36 @@ seriesOrder: 4
 summary: 휴대폰 상태 표시줄은 홈 화면에서 항상 흰색, 홈 인디케이터는 화면 모드의 글자색이라 밝은 배경화면·밤하늘에서 보이지 않았다. 배경 이미지의 픽셀까지 샘플링하고, 휘도 0.4 대신 흰색에 1.3배 가중치를 준 대비로 선택하고, 시계 쪽과 아이콘 쪽을 따로 결정했다.
 ---
 
-휴대폰 화면의 상태 표시줄(시각, 신호, Wi-Fi, 배터리)과 하단의 홈 인디케이터는 어떤 배경 위에서도 보여야 한다. 어두운 배경에서는 흰색, 밝은 배경에서는 검은색이다.
+휴대폰 화면의 상태 표시줄(시각, 신호, Wi-Fi, 배터리)과 하단의 홈 인디케이터는 어떤 배경 위에서도 보여야 한다. iOS는 뒤에 놓인 화면이 어두우면 흰색, 밝으면 검은색으로 이 요소들의 색을 바꾼다. MacFolio의 휴대폰 셸도 같은 규칙을 따르도록, 뒤의 화면을 조회해 흰색·검은색 중 하나를 선택한다.
 
 ![밝은 배경화면과 어두운 배경화면의 상태 표시줄](./images/mobile-bars-contrast-home.jpg '수정 후 화면. 밝은 배경화면에서는 시계·아이콘이 검은색, 어두운 배경화면에서는 흰색이다. 홈 인디케이터는 각자 하단 배경을 샘플링해 두 경우 모두 흰색이다')
 
 ## 배경
+
+### 상대 휘도와 대비율
+
+글자가 잘 보이는지는 글자색과 바탕색의 밝기 차이로 판단한다. 웹 접근성 지침 WCAG는 이 밝기를 **상대 휘도**[^luminance]로 정의한다. 상대 휘도는 0(검정)부터 1(흰색)까지의 값이고, 사람 눈이 초록에 민감하고 파랑에 둔감한 특성을 반영해 R·G·B에 서로 다른 가중치를 곱한다. 그래서 같은 RGB 합이라도 초록 계열은 밝게, 파랑 계열은 어둡게 계산된다.
+
+| 색                  | RGB           | 상대 휘도 |
+| ------------------- | ------------- | --------- |
+| 흰색 `#ffffff`      | 255, 255, 255 | 1.000     |
+| 회색 `#808080`      | 128, 128, 128 | 0.216     |
+| iOS 파랑 `#3b82f6`  | 59, 130, 246  | 0.235     |
+| 검은 글자 `#1c1c1e` | 28, 28, 30    | 0.0117    |
+
+두 색의 **대비율**[^contrast]은 두 휘도로 계산한 1~21 사이의 값이다. 흰 바탕의 검은 글자는 21에 가깝고, 같은 색끼리는 1이다. WCAG AA 기준은 본문 글자에 4.5 이상을 요구한다.
+
+```math
+\text{대비율} = \frac{L_{\text{밝은 쪽}} + 0.05}{L_{\text{어두운 쪽}} + 0.05}
+```
+
+예를 들어 회색 `#808080` 바탕에 흰 글자를 놓으면 대비율은 `(1 + 0.05) / (0.216 + 0.05) \approx  3.95{:math}`이고, 검은 글자 `#1c1c1e`를 놓으면 `(0.216 + 0.05) / (0.0117 + 0.05) \approx  4.31{:math}`이다. 중간 밝기 회색에서는 검은 글자가 근소하게 더 잘 보인다.
+
+### 화면에 그려진 색을 조회하는 방법
+
+자바스크립트는 CSS 속성값(`getComputedStyle`)은 조회할 수 있지만, 배경 이미지의 특정 위치에 어떤 색이 렌더링됐는지는 직접 조회할 수 없다. 이미지의 픽셀 값이 필요하면 이미지를 [캔버스](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)에 다시 그리고 `getImageData`로 픽셀 배열(RGBA 값)을 읽어야 한다. 이때 다른 출처의 이미지는 서버가 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) 헤더로 허락하지 않으면 읽을 수 없다. CORS는 브라우저가 다른 출처(도메인·포트·프로토콜이 다른 주소)의 응답을 페이지 코드에 넘겨도 되는지 서버의 허락을 확인하는 규칙이다.
+
+## 증상
 
 휴대폰 화면(390×844)에서 두 가지 경우를 재현했다.
 
@@ -55,6 +80,10 @@ export function imageRect(box, image, fit) {
 }
 ```
 
+![cover 배치에서 화면 좌표를 이미지 좌표로 바꾸는 계산](./images/mobile-bars-contrast-cover.svg '1000×1000 이미지를 390×844 화면에 cover로 배치하면 배율 0.844로 844×844가 되고 좌우가 227px씩 잘린다. 화면의 (100, 50)은 이미지의 약 (387, 59)에 해당한다')
+
+`cover`는 상자를 빈틈없이 채우도록 가로·세로 배율 중 큰 값을 사용하고, `contain`은 이미지 전체가 보이도록 작은 값을 사용한다. 위 예에서 정사각형 이미지를 세로로 긴 휴대폰 화면에 `cover`로 배치하면 세로가 기준이 되어 좌우가 잘린다. 화면 왼쪽 위 (100, 50)에 있는 시계 아래 지점은 잘린 227px를 더하고 배율로 나눠 이미지의 (387, 59) 근처 픽셀로 바뀐다.
+
 해당 위치 주변 3×3 픽셀의 평균을 그 점의 색으로 사용한다. 다른 출처의 이미지는 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) 헤더가 없으면 캔버스가 오염(tainted)되어 [`getImageData`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)가 예외를 던지므로[^tainted], 이 경우에는 이전처럼 화면 모드를 따른다. 홈 화면의 유리 위젯처럼 반투명한 바탕은 그 아래 색과 알파 합성해 계산한다.
 
 홈 인디케이터도 같은 함수로 자기 뒤의 색을 조회한다. 다른 앱에 가려진 앱의 인디케이터는 조회하지 않는다.
@@ -79,7 +108,7 @@ export function toneFor(colors: (string | null)[]): StatusBarTone | null {
 }
 ```
 
-이 글을 수정하면서 몇 가지 바탕에 대해 WCAG 대비를 다시 계산했다. 검은 글자는 `#1c1c1e`(휘도 0.0117)다.
+몇 가지 바탕에 대해 WCAG 대비를 계산하면 다음과 같다. 검은 글자는 `#1c1c1e`(휘도 0.0117)다.
 
 | 바탕                | 휘도  | 흰 글자 대비 | ×1.3  | 검은 글자 대비 | 선택되는 색                   |
 | ------------------- | ----- | ------------ | ----- | -------------- | ----------------------------- |
@@ -89,6 +118,21 @@ export function toneFor(colors: (string | null)[]): StatusBarTone | null {
 | 다크 바탕 `#1e1e1e` | 0.013 | 16.67        | 21.67 | 1.02           | 흰색                          |
 
 가중치가 없으면 두 대비가 같아지는 지점이 휘도 0.205, 가중치 1.3배면 0.240이다.
+
+![바탕 휘도에 따른 흰 글자·검은 글자 대비](./images/mobile-bars-contrast-curve.svg '흰 글자 대비는 휘도가 높을수록 떨어지고 검은 글자 대비는 올라간다. 두 곡선은 0.205에서, 1.3배 가중치를 준 곡선은 0.240에서 교차한다. 이전 기준 0.4는 교차점보다 오른쪽이라 0.2~0.4 구간에서 대비가 낮은 흰색을 선택했다')
+
+<details>
+<summary>교차 휘도 계산</summary>
+
+흰 글자 대비와 검은 글자(`L = 0.0117`) 대비가 같아지는 휘도 `L`은 다음 식으로 구한다.
+
+```math
+\frac{1.05}{L + 0.05} = \frac{L + 0.05}{0.0617} \;\Rightarrow\; (L + 0.05)^2 = 1.05 \times 0.0617 \;\Rightarrow\; L \approx 0.205
+```
+
+흰색 대비에 1.3을 곱하면 우변의 곱이 `1.3 \times  1.05 \times  0.0617 \approx  0.0842{:math}`가 되어 `L \approx  0.240{:math}`이다.
+
+</details>
 
 ## 시계 쪽과 아이콘 쪽을 분리
 
@@ -130,6 +174,22 @@ Sky 배경화면은 상단 왼쪽이 옅은 청록, 오른쪽이 짙은 남색�
 - [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 - [tabular-nums와 그리드 셀 겹치기로 가변 폭 텍스트의 칸 너비 고정하기](/memo/menubar-clock-width)
 - [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [W3C: WCAG 2.1, relative luminance](https://www.w3.org/TR/WCAG21/#dfn-relative-luminance)
+- [W3C: WCAG 2.1, contrast ratio](https://www.w3.org/TR/WCAG21/#dfn-contrast-ratio)
+- [MDN: Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+- [MDN: CanvasRenderingContext2D.getImageData()](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData)
+- [MDN: Allowing cross-origin use of images and canvas](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image)
+- [MDN: object-fit](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit)
+- [MDN: background-size](https://developer.mozilla.org/en-US/docs/Web/CSS/background-size)
+- [MDN: mix-blend-mode](https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode)
+
+</details>
+
+[^luminance]: 색의 밝기를 사람의 눈이 느끼는 정도에 맞춰 0(검정)~1(흰색)로 나타낸 값. sRGB 값을 선형화한 뒤 R·G·B에 각각 0.2126·0.7152·0.0722를 곱해 더한다. [WCAG 2.1: relative luminance](https://www.w3.org/TR/WCAG21/#dfn-relative-luminance)
 
 [^tainted]: 다른 출처의 이미지를 CORS 허용 없이 캔버스에 그리면 캔버스가 "오염(tainted)" 상태가 되고, 이후 픽셀 데이터를 읽는 `getImageData`·`toDataURL`이 `SecurityError`를 던진다. 다른 사이트 이미지의 내용을 스크립트로 읽지 못하게 하는 보안 정책이다. [MDN: Allowing cross-origin use of images and canvas](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image)
 

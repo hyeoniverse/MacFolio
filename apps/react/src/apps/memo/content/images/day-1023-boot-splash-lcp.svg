@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">LCP 후보가 기록되기 전에 삭제된 #boot-splash</text>
+
+  <!-- axis -->
+  <line x1="150" y1="276" x2="620" y2="276" stroke="#6e6e73" stroke-width="1.5"/>
+  <text x="620" y="294" font-size="12" text-anchor="end" fill="#6e6e73">시간 → (축척 없음)</text>
+
+  <!-- row A -->
+  <text x="20" y="70" font-size="13" font-weight="700" fill="#34c759">LCP 3.3초 회차</text>
+  <rect x="210" y="54" width="300" height="26" rx="5" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="222" y="72" font-size="12" fill="#1d1d1f">#boot-splash 시작 안내 표시</text>
+  <circle cx="300" cy="96" r="6" fill="#34c759"/>
+  <text x="312" y="100" font-size="12" fill="#34c759">LCP 후보로 기록 → 이 시각이 LCP</text>
+  <rect x="510" y="54" width="110" height="26" rx="5" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="565" y="72" font-size="12" text-anchor="middle" fill="#1d1d1f">App 마운트</text>
+
+  <!-- row B -->
+  <text x="20" y="150" font-size="13" font-weight="700" fill="#ff3b30">LCP 4.6초 회차</text>
+  <rect x="210" y="134" width="140" height="26" rx="5" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="222" y="152" font-size="12" fill="#1d1d1f">#boot-splash</text>
+  <rect x="350" y="134" width="120" height="26" rx="5" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="410" y="152" font-size="12" text-anchor="middle" fill="#ff3b30">App이 삭제</text>
+  <circle cx="600" cy="176" r="6" fill="#ff3b30"/>
+  <text x="590" y="180" font-size="12" text-anchor="end" fill="#ff3b30">기록 전에 사라져, 나중에 그린 다른 요소가 LCP</text>
+
+  <!-- row C -->
+  <text x="20" y="226" font-size="13" font-weight="700" fill="#0a84ff">수정 (#367)</text>
+  <rect x="210" y="210" width="410" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+  <text x="222" y="228" font-size="12" fill="#1d1d1f">#boot-splash를 로딩 화면을 누를 때까지 유지</text>
+  <text x="20" y="256" font-size="12" fill="#6e6e73">28회씩 번갈아 측정: LCP 4초 이상 3회 → 0회</text>
+</svg>

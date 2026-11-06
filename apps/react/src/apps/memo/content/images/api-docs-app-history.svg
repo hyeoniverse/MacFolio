@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>iframe의 pushState가 사이트의 방문 기록에 섞이는 과정</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">문서 목차를 세 번 눌렀을 때 탭의 방문 기록</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">예: 다른 사이트에서 링크로 들어온 탭. iframe 안의 이동도 같은 탭의 방문 기록 하나에 쌓인다. </text>
+<rect x="20" y="70" width="290" height="300" rx="10" fill="#f2f2f7"/>
+<text x="34" y="94" font-size="14" font-weight="700" fill="#ff3b30">Scalar 기본 동작 (pushState)</text>
+<text x="34" y="114" font-size="12" fill="#6e6e73">history.length +3</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<rect x="34" y="128" width="262" height="40" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="46" y="153" fill="#1d1d1f">③ iframe  #tag/posts</text>
+<rect x="34" y="176" width="262" height="40" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="46" y="201" fill="#1d1d1f">② iframe  #tag/auth</text>
+<rect x="34" y="224" width="262" height="40" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="46" y="249" fill="#1d1d1f">① iframe  #tag/health</text>
+<rect x="34" y="272" width="262" height="40" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="46" y="297" fill="#1d1d1f">macfolio.hyeoniverse.com</text>
+</g>
+<text x="34" y="336" font-size="12" fill="#1d1d1f">뒤로 가기 세 번은 문서 안에서만 움직인다</text>
+<text x="34" y="356" font-size="12" fill="#1d1d1f">네 번째에야 이전 사이트로 돌아간다</text>
+<rect x="330" y="70" width="290" height="300" rx="10" fill="#f2f2f7"/>
+<text x="344" y="94" font-size="14" font-weight="700" fill="#34c759">문서 페이지에서 교체 후</text>
+<text x="344" y="114" font-size="12" fill="#6e6e73">history.length 변화 없음</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<rect x="344" y="128" width="262" height="58" rx="6" fill="none" stroke="#34c759" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="356" y="152" fill="#1d1d1f">pushState = replaceState</text>
+<text x="356" y="172" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">새 항목 없이 현재 항목의 #만 바꾼다</text>
+<rect x="344" y="272" width="262" height="40" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="356" y="297" fill="#1d1d1f">macfolio.hyeoniverse.com</text>
+</g>
+<text x="475" y="236" font-size="12" fill="#6e6e73" text-anchor="middle">목차를 몇 번 눌러도 추가 항목 없음</text>
+<text x="344" y="336" font-size="12" fill="#1d1d1f">뒤로 가기 한 번이면 이전 사이트로 돌아간다</text>
+<text x="344" y="356" font-size="12" fill="#1d1d1f">E2E가 history.length 불변을 확인한다</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>모달 다이얼로그와 일반 창(모달리스)의 차이</title>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">모달 다이얼로그와 일반 창</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">가운데에 뜬다는 겉모양은 같아도, 뒤의 화면을 사용할 수 있는지가 다르다</text>
+
+  <!-- modal -->
+  <text x="24" y="86" font-size="13" font-weight="600" fill="#1d1d1f">모달: 키보드 단축키 창</text>
+  <rect x="24" y="98" width="284" height="180" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <rect x="40" y="114" width="110" height="70" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+  <rect x="176" y="130" width="116" height="80" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+  <rect x="24" y="98" width="284" height="180" rx="8" fill="#1d1d1f" opacity="0.35"/>
+  <rect x="94" y="140" width="144" height="96" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="166" y="170" font-size="12" text-anchor="middle" fill="#1d1d1f">키보드 단축키</text>
+  <text x="166" y="192" font-size="12" text-anchor="middle" fill="#0a84ff">포커스가 여기로</text>
+  <text x="166" y="212" font-size="12" text-anchor="middle" fill="#6e6e73">Esc → 닫힘</text>
+  <text x="40" y="266" font-size="12" fill="#ffffff">오버레이: 뒤를 누르면 닫힘</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="24" y="304">· 반투명 오버레이가 뒤의 화면을 덮는다</text>
+    <text x="24" y="322">· 응답하거나 닫기 전에는 뒤를 사용할 수 없다</text>
+    <text x="24" y="340">· role="dialog" + aria-modal="true"</text>
+  </g>
+
+  <!-- modeless -->
+  <text x="332" y="86" font-size="13" font-weight="600" fill="#1d1d1f">일반 창: 이 Mac에 관하여</text>
+  <rect x="332" y="98" width="284" height="180" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <rect x="348" y="114" width="110" height="70" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+  <text x="403" y="136" font-size="12" text-anchor="middle" fill="#248a3d">클릭 가능</text>
+  <rect x="484" y="130" width="116" height="80" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+  <rect x="402" y="160" width="144" height="96" rx="10" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.5"/>
+  <text x="474" y="196" font-size="12" text-anchor="middle" fill="#1d1d1f">이 Mac에 관하여</text>
+  <text x="474" y="218" font-size="12" text-anchor="middle" fill="#6e6e73">빈 곳을 끌어 이동</text>
+  <path d="M556 206 l14 0 m-5 -5 l5 5 l-5 5" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="332" y="304">· 오버레이가 없다</text>
+    <text x="332" y="322">· 뒤의 다른 창을 계속 사용할 수 있다</text>
+    <text x="332" y="340">· role="dialog"만 같고 모달이 아니다</text>
+  </g>
+  <text x="24" y="368" font-size="12" fill="#6e6e73">grep 집계에서는 둘 다 role="dialog"로 검색되었고, 코드를 열어 확인한 뒤 오른쪽을 Modal 대상에서 제외했다</text>
+</svg>

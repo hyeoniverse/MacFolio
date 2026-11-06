@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">메일 시트의 취소 버튼: 코드는 짧아지고 결과 DOM은 같다</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12">
+    <rect x="20" y="50" width="290" height="110" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="32" y="70" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="13" font-weight="600" fill="#ff9f0a">전: 직접 작성한 &lt;button&gt;</text>
+    <text x="32" y="92" fill="#1d1d1f">&lt;button className="mail-sheet-circle"</text>
+    <text x="32" y="108" fill="#ff3b30">  aria-label="취소"&gt;</text>
+    <text x="32" y="124" fill="#1d1d1f">  &lt;i className="fa-solid fa-xmark"</text>
+    <text x="32" y="140" fill="#1d1d1f">     aria-hidden="true" /&gt;</text>
+    <rect x="330" y="50" width="290" height="110" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+    <text x="342" y="70" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="13" font-weight="600" fill="#0a84ff">후: IconButton</text>
+    <text x="342" y="92" fill="#1d1d1f">&lt;IconButton variant="circle"</text>
+    <text x="342" y="108" fill="#1d1d1f">  className="mail-sheet-circle"</text>
+    <text x="342" y="124" fill="#0a84ff">  label="취소"</text>
+    <text x="342" y="140" fill="#1d1d1f">  icon="fa-solid fa-xmark" /&gt;</text>
+  </g>
+  <line x1="475" y1="162" x2="420" y2="192" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="440" y="186" font-size="12" fill="#6e6e73">IconButton이 만드는 DOM</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12">
+    <rect x="80" y="196" width="480" height="100" rx="8" fill="#fff" stroke="#c7c7cc"/>
+    <text x="96" y="218" fill="#1d1d1f">&lt;button type="button"</text>
+    <text x="96" y="234" fill="#1d1d1f">  class="ui-icon-button circle mail-sheet-circle"</text>
+    <text x="96" y="250" fill="#0a84ff">  aria-label="취소" title="취소"&gt;</text>
+    <text x="96" y="266" fill="#1d1d1f">  &lt;i class="fa-solid fa-xmark" aria-hidden="true"&gt;</text>
+    <text x="96" y="282" fill="#1d1d1f">&lt;/button&gt;</text>
+  </g>
+  <rect x="80" y="310" width="232" height="50" rx="8" fill="#eafaef" stroke="#34c759"/>
+  <text x="196" y="331" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">접근성 트리: button "취소"</text>
+  <text x="196" y="349" font-size="12" fill="#6e6e73" text-anchor="middle">getByRole('button', { name: '취소' })</text>
+  <rect x="328" y="310" width="232" height="50" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+  <text x="444" y="331" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">label 누락 → 타입 검사 실패</text>
+  <text x="444" y="349" font-size="12" fill="#6e6e73" text-anchor="middle">title은 label 값을 기본으로 사용</text>
+</svg>

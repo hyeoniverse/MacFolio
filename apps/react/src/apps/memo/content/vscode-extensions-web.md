@@ -1,11 +1,15 @@
 ---
-title: 웹 개발자를 위한 VS Code 확장 — 목적별 추천과 팀에 공유하는 설정
+title: 웹 개발자를 위한 VS Code 확장 32개와 팀에 공유하는 설정
 date: 2026-10-26
 category: 기술 노트/개발 환경
 summary: 웹 프론트엔드·풀스택 개발에 쓰는 VS Code 확장 32개를 일곱 묶음으로 정리했다. 확장마다 상세 화면, 하는 일, 저장소 설정과의 연결을 같은 순서로 적고, 확장 없이 내장 설정으로 대신하는 기능(괄호 색, 태그 이름 바꾸기 등)과 팀에 권하는 extensions.json을 덧붙였다.
 ---
 
-이 글은 VS Code로 웹 프론트엔드·풀스택 개발을 하는 개발자를 위한 확장 목록이다. 가장 효과가 큰 확장은 **프로젝트에 있는 설정 파일을 편집기가 읽게 해 주는 확장**이다. ESLint 확장은 `eslint.config.js`를, Playwright 확장은 `playwright.config.ts`를 읽어 터미널에서 돌리던 검사를 편집 중에 보여 준다. 각 확장이 저장소의 어떤 파일과 연결되는지는 MacFolio 저장소를 예로 적는다.
+VS Code는 Microsoft가 만든 무료 코드 편집기다. 기본 상태에서는 파일 편집, 검색, Git, 디버거 같은 공통 기능과 HTML·CSS·JavaScript·TypeScript 언어 지원만 들어 있고, 특정 도구와의 연결은 확장(extension)이 맡는다. 확장은 [Visual Studio Marketplace](https://marketplace.visualstudio.com/vscode)에 올라온 추가 기능 묶음으로, Extensions 보기(⇧⌘X)에서 검색해 설치한다. 예를 들어 ESLint 확장을 설치하기 전에는 `const total = 1`처럼 선언만 하고 쓰지 않는 변수가 있어도 편집기에 아무 표시가 없고, 설치한 뒤에는 그 줄에 빨간 물결줄과 `no-unused-vars` 경고가 나타난다.
+
+웹 프론트엔드·풀스택 개발에서 가장 효과가 큰 확장은 **프로젝트에 있는 설정 파일을 편집기가 읽게 해 주는 확장**이다. ESLint 확장은 `eslint.config.js`를, Playwright 확장은 `playwright.config.ts`를 읽어 터미널에서 돌리던 검사를 편집 중에 보여 준다. 아래 동작 화면은 React·NestJS·Prisma를 쓰는 pnpm 모노레포 하나를 예시 저장소로 삼아 찍었다.
+
+![VS Code의 ESLint 확장과 CI가 같은 eslint.config.js와 node_modules/eslint를 읽는 구조](./images/vscode-extensions-web-config-link.svg '확장이 저장소의 규칙 파일과 패키지를 그대로 쓰므로 편집기와 CI의 결과가 같다')
 
 ![목적별 확장 묶음](./images/vscode-extensions-map.svg '도식. 위 줄은 저장소 설정 파일과 바로 연결되는 확장, 아래 줄은 작업 환경을 넓히는 확장')
 
@@ -44,13 +48,13 @@ summary: 웹 프론트엔드·풀스택 개발에 쓰는 VS Code 확장 32개를
 |                 | [Better Comments](https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments)               | 주석을 종류(!, ?, TODO)별 색으로 구분      |
 |                 | [Import Cost](https://marketplace.visualstudio.com/items?itemName=wix.vscode-import-cost)                       | import한 패키지 크기를 줄 끝에 표시        |
 
-- **확인한 곳:** 확장 이름·게시자·ID·기능은 2026년 10월 26일 [Visual Studio Marketplace](https://marketplace.visualstudio.com/vscode)의 각 확장 페이지와 [VS Code 공식 문서](https://code.visualstudio.com/docs)에서 확인했다.
-- **ID로 찾기:** 확장 ID(`게시자.이름`)는 각 상세 화면 오른쪽 Installation 표의 Identifier와 글 끝 목록에 있다. Extensions 보기(⇧⌘X) 검색 칸에 넣으면 이름이 비슷한 다른 확장과 섞이지 않는다.
-- **화면:** 모든 화면은 VS Code 1.143.1의 웹 버전(`code serve-web`)에서 촬영했다. 상세 화면은 빈 확장 폴더에 새로 설치한 Marketplace 최신 버전이고, 동작 화면은 MacFolio 저장소에 촬영용 파일(`zzDemo.ts`, `zzDemo.css`, `zz-health.http`)을 만들어 찍었다.
-
-아래 절은 확장마다 **상세 화면 → 하는 일 → 이 저장소에서 쓰는 방식 → 동작 화면** 순서로 적는다.
+확장 이름·게시자·ID·기능은 2026년 10월 26일 Marketplace의 각 확장 페이지와 [VS Code 공식 문서](https://code.visualstudio.com/docs)를 기준으로 한다. 확장 ID(`게시자.이름`, 예: `dbaeumer.vscode-eslint`)는 상세 화면 오른쪽 Installation 표의 Identifier에 있고, Extensions 보기 검색 칸에 ID를 넣으면 이름이 비슷한 다른 확장과 섞이지 않는다. 화면은 VS Code 1.143.1 웹 버전(`code serve-web`)에서 찍었고, 동작 화면의 `zzDemo.ts`, `zzDemo.css`, `zz-health.http`는 촬영용으로 만든 파일이다.
 
 ## ① 코드 품질
+
+린터(linter)는 코드에서 버그로 이어질 수 있는 패턴(쓰지 않는 변수, 형 변환이 일어나는 `==` 비교 등)을 규칙으로 찾아 알려 주는 도구이고, 포매터(formatter)는 공백·줄바꿈·따옴표 같은 모양만 정해진 형식으로 통일하는 도구다. ESLint·Stylelint는 린터, Prettier는 포매터다.
+
+![같은 코드에서 ESLint는 쓰지 않는 변수와 == 비교를 지적하고, Prettier는 공백과 줄바꿈, 세미콜론만 바꾸는 비교](./images/vscode-extensions-web-lint-vs-format.svg '왼쪽 지적은 코드의 의미에 관한 것이고, 오른쪽 변경은 모양에 관한 것이다')
 
 > [!IMPORTANT]
 > 세 검사 도구(ESLint·Prettier·Stylelint)의 확장은 **확장에 들어 있는 규칙이 아니라 저장소에 설치된 패키지와 설정 파일**을 쓴다. 그래서 CI와 편집기의 결과가 같다.
@@ -59,13 +63,13 @@ summary: 웹 프론트엔드·풀스택 개발에 쓰는 VS Code 확장 32개를
 
 ![ESLint 상세 화면](./images/vscode-extensions-web-eslint.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-편집 중에 ESLint 규칙 위반을 표시하고, 저장할 때 자동 수정할 수 있는 항목을 고친다. ESLint 9 이상의 flat config(`eslint.config.js` 등)를 읽는다. 확장 페이지에 따르면 ESLint 10부터는 `eslint.useFlatConfig` 설정을 보지 않고 항상 flat config를 쓴다. MacFolio는 ESLint 10과 `eslint.config.js`를 쓰므로 따로 설정할 것이 없다.
+편집 중에 ESLint 규칙 위반을 표시하고, 저장할 때 자동 수정할 수 있는 항목을 고친다. ESLint 9 이상의 flat config(`eslint.config.js` 등)를 읽는다. 확장 페이지에 따르면 ESLint 10부터는 `eslint.useFlatConfig` 설정을 보지 않고 항상 flat config를 쓴다. ESLint 10과 `eslint.config.js`를 쓰는 저장소라면 따로 설정할 것이 없다.
 
 ### Prettier - Code formatter
 
 ![Prettier - Code formatter 상세 화면](./images/vscode-extensions-web-prettier.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-프로젝트 의존성에 설치된 Prettier로 파일을 포맷하고, 처음 불러올 때 사용자 확인을 받는다. MacFolio의 `.prettierrc`(탭, 작은따옴표, 줄 길이 120)가 그대로 적용된다. 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처럼 합쳐 쓰면 동작하지 않으니 언어마다 블록을 따로 두라고 안내한다.
+프로젝트 의존성에 설치된 Prettier로 파일을 포맷하고, 처음 불러올 때 사용자 확인을 받는다. 예를 들어 `.prettierrc`에 `{"useTabs": true, "singleQuote": true, "printWidth": 120}`을 적어 두면 저장할 때 탭 들여쓰기, 작은따옴표, 줄 길이 120이 그대로 적용된다. 확장 페이지는 언어별 설정을 `"[javascript][typescript]"`처럼 합쳐 쓰면 동작하지 않으니 언어마다 블록을 따로 두라고 안내한다.
 
 ### Stylelint
 
@@ -73,7 +77,7 @@ summary: 웹 프론트엔드·풀스택 개발에 쓰는 VS Code 확장 32개를
 
 CSS·PostCSS를 저장소의 Stylelint 규칙으로 검사한다. VS Code 내장 CSS 검사(`css.validate`)를 끄지 않으면 같은 오류가 두 번 표시된다고 확장 페이지가 안내한다.
 
-![Stylelint가 저장소 규칙으로 잡은 z-index](./images/vscode-extensions-stylelint.jpg 'zzDemo.css. z-index: 999를 MacFolio의 stylelint.config.mjs 규칙(declaration-property-value-allowed-list)이 거절하고, 규칙에 적어 둔 한국어 메시지를 Error Lens가 그 줄에 표시한다')
+![Stylelint가 저장소 규칙으로 잡은 z-index](./images/vscode-extensions-stylelint.jpg 'zzDemo.css. z-index: 999를 예시 저장소의 stylelint.config.mjs 규칙(declaration-property-value-allowed-list)이 거절하고, 규칙에 적어 둔 한국어 메시지를 Error Lens가 그 줄에 표시한다')
 
 ### Error Lens
 
@@ -124,16 +128,16 @@ TypeScript가 내는 타입 중심의 긴 오류 메시지를 다시 배치하�
 
 E2E 시험을 실행·디버그하고, 동작 녹화와 trace 보기를 지원한다. Playwright 1.38 이상이 필요하다.
 
-- **프로젝트 고르기:** `playwright.config.ts`의 projects를 읽어 어느 브라우저로 실행할지 고르게 한다. MacFolio는 desktop-chromium·mobile-iphone·mobile-android 세 프로젝트가 있어 휴대폰 시험만 골라 실행할 수 있다.
+- **프로젝트 고르기:** `playwright.config.ts`의 projects를 읽어 어느 브라우저로 실행할지 고르게 한다. 예를 들어 desktop-chromium·mobile-iphone·mobile-android 세 프로젝트를 정의한 저장소에서는 휴대폰 시험만 골라 실행할 수 있다.
 - **로케이터 고르기(Pick locator):** 브라우저에서 요소 위에 마우스를 올리면 `getByRole` 같은 로케이터를 만들어 준다. 접근성 이름으로 요소를 찾는 시험을 쓸 때 이름을 추측하지 않아도 된다.
 
 ### Vitest
 
 ![Vitest 상세 화면](./images/vscode-extensions-web-vitest.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-단위 시험을 실행·디버그하고, 커버리지와 파일 변경 시 다시 실행을 지원한다. Vitest 1.4 이상이 필요하다. `vitest.config.ts`의 projects를 그대로 쓰므로, MacFolio API처럼 단위(unit)와 E2E(e2e) 프로젝트를 나눈 설정도 탐색기에 따로 보인다.
+단위 시험을 실행·디버그하고, 커버리지와 파일 변경 시 다시 실행을 지원한다. Vitest 1.4 이상이 필요하다. `vitest.config.ts`의 projects를 그대로 쓰므로, 단위(unit)와 E2E(e2e) 프로젝트를 나눈 설정도 탐색기에 따로 보인다.
 
-![Testing 보기에 나열된 Playwright·Vitest 시험](./images/vscode-extensions-testing.jpg 'Testing 보기. Playwright 확장은 apps/react/playwright.config.ts의 프로젝트별 항목을, Vitest 확장은 apps/api의 e2e 프로젝트 시험 파일([e2e] 표시)을 나열한다. 아래 Playwright 판의 TOOLS에 Pick locator·Record new가 있다')
+![Testing 보기에 나열된 Playwright·Vitest 시험](./images/vscode-extensions-testing.jpg 'Testing 보기. Playwright 확장은 프런트엔드 패키지의 playwright.config.ts 프로젝트별 항목을, Vitest 확장은 API 패키지의 e2e 프로젝트 시험 파일([e2e] 표시)을 나열한다. 아래 Playwright 판의 TOOLS에 Pick locator·Record new가 있다')
 
 ## ③ API·데이터
 
@@ -143,15 +147,15 @@ E2E 시험을 실행·디버그하고, 동작 녹화와 trace 보기를 지원�
 
 `.http`·`.rest` 파일에 적은 HTTP 요청을 보내고 응답을 옆 창에 표시한다. 요청을 텍스트 파일로 저장하므로 저장소에 커밋해 팀이 같은 요청을 쓴다. 환경 변수(`rest-client.environmentVariables`), 파일 변수(`@name = value`), 앞 요청의 응답 값을 다음 요청에 쓰는 요청 변수를 지원한다. 세션 쿠키가 필요한 관리자 API를 시험할 때 로그인 요청의 응답을 다음 요청에 넘길 수 있다.
 
-![REST Client로 보낸 요청과 응답](./images/vscode-extensions-rest-client.jpg 'zz-health.http. 요청 줄 위의 Send Request를 누르면 오른쪽 창에 응답 헤더가 열린다. 배포된 MacFolio API의 /health 응답으로, CSP·HSTS 같은 보안 헤더를 한눈에 확인할 수 있다.')
+![REST Client로 보낸 요청과 응답](./images/vscode-extensions-rest-client.jpg 'zz-health.http. 요청 줄 위의 Send Request를 누르면 오른쪽 창에 응답 헤더가 열린다. 배포된 API 서버의 /health 응답으로, CSP·HSTS 같은 보안 헤더를 한눈에 확인할 수 있다.')
 
 ### Prisma
 
 ![Prisma 상세 화면](./images/vscode-extensions-web-prisma-detail.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-`schema.prisma`의 강조·포맷·자동 완성·린트·정의로 이동·이름 바꾸기를 지원한다. 모델 이름을 바꾸면 쓰는 곳을 모두 고치고, 필요하면 `@map`·`@@map`을 붙인다. MacFolio의 `apps/api/prisma/schema.prisma`를 편집할 때 오타가 저장 전에 드러난다.
+`schema.prisma`의 강조·포맷·자동 완성·린트·정의로 이동·이름 바꾸기를 지원한다. 모델 이름을 바꾸면 쓰는 곳을 모두 고치고, 필요하면 `@map`·`@@map`을 붙인다. 예를 들어 `String?`을 `Strng?`으로 잘못 적으면 저장하기 전에 그 줄에 오류가 표시된다.
 
-![Prisma 확장으로 연 schema.prisma](./images/vscode-extensions-prisma.jpg 'apps/api/prisma/schema.prisma. Prisma 확장이 model·datasource 같은 키워드를 구분해 칠하고, /// 문서 주석을 함께 보여 준다. 블록 위의 회색 글자는 GitLens의 CodeLens(마지막 수정 시각·작성자)다')
+![Prisma 확장으로 연 schema.prisma](./images/vscode-extensions-prisma.jpg 'schema.prisma. Prisma 확장이 model·datasource 같은 키워드를 구분해 칠하고, /// 문서 주석을 함께 보여 준다. 블록 위의 회색 글자는 GitLens의 CodeLens(마지막 수정 시각·작성자)다')
 
 ### Container Tools
 
@@ -194,7 +198,7 @@ HTML의 `id`·`class` 속성 값을 같은 파일의 스타일과 지정한 스�
 
 ![PostCSS Language Support 상세 화면](./images/vscode-extensions-web-postcss.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 강조를 더한다. 중첩 규칙(nesting), `@custom-media`, `@custom-selector`, `:is()`·`:where()`, CSS Modules의 `:global`·`composes` 등을 인식하고, `.pcss`·`.postcss` 파일에도 적용된다. 이런 문법을 쓰거나 PostCSS 플러그인으로 CSS를 변환하는 프로젝트에서 필요하다. MacFolio의 CSS는 중첩 규칙 없이 표준 문법만 써서 이 확장 없이도 강조가 맞다. 상세 화면 기준 마지막 배포가 6년 전이라는 점도 함께 본다.
+VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 강조를 더한다. 중첩 규칙(nesting), `@custom-media`, `@custom-selector`, `:is()`·`:where()`, CSS Modules의 `:global`·`composes` 등을 인식하고, `.pcss`·`.postcss` 파일에도 적용된다. 이런 문법을 쓰거나 PostCSS 플러그인으로 CSS를 변환하는 프로젝트에서 필요하다. 중첩 규칙 없이 표준 문법만 쓰는 CSS는 이 확장 없이도 강조가 맞다. 상세 화면 기준 마지막 배포가 6년 전이라는 점도 함께 본다.
 
 ### Live Server · Live Preview
 
@@ -218,9 +222,9 @@ VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 �
 
 ![Git Graph 상세 화면](./images/vscode-extensions-web-git-graph-detail.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-브랜치·병합 기록을 그래프로 보고, 그래프에서 Git 작업을 실행한다. 병합 커밋(merge commit)으로 PR을 합치는 저장소에서는 브랜치가 갈라지고 합쳐지는 모양을 그래프로 봐야 기록을 읽기 쉽다. 병합 방식의 차이는 [GitHub 병합 방식 세 가지](/memo/merge-strategies)에 정리했다.
+브랜치·병합 기록을 그래프로 보고, 그래프에서 Git 작업을 실행한다. 병합 커밋(merge commit)으로 PR을 합치는 저장소에서는 브랜치가 갈라지고 합쳐지는 모양을 그래프로 봐야 기록을 읽기 쉽다. 병합 방식의 차이는 [GitHub 병합 방식 세 가지](/memo/merge-strategies)에서 비교한다.
 
-![Git Graph로 본 MacFolio 브랜치 기록](./images/vscode-extensions-git-graph.jpg 'Git Graph. 색마다 한 브랜치이고, PR마다 갈라졌다 병합 커밋(Merge pull request …)으로 main에 합쳐지는 모양이 보인다. 맨 위 Uncommitted Changes는 촬영용 파일이다')
+![Git Graph로 본 브랜치 기록](./images/vscode-extensions-git-graph.jpg 'Git Graph. 색마다 한 브랜치이고, PR마다 갈라졌다 병합 커밋(Merge pull request …)으로 main에 합쳐지는 모양이 보인다. 맨 위 Uncommitted Changes는 촬영용 파일이다')
 
 ## ⑥ 원격·협업
 
@@ -232,9 +236,9 @@ VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 �
 
 ### Remote - SSH
 
-![Remote - SSH 상세 화면](./images/vscode-extensions-web-remote-ssh.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다 웹 버전에서 촬영해 "데스크톱 VS Code에서만 실행된다"는 안내가 함께 보인다')
+![Remote - SSH 상세 화면](./images/vscode-extensions-web-remote-ssh.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다. 웹 버전에서 촬영해 "데스크톱 VS Code에서만 실행된다"는 안내가 함께 보인다')
 
-SSH로 원격 서버의 폴더를 열고 편집한다. 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 서버 IP 대신 별칭으로 접속하는 SSH 설정은 [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)에 정리했다.
+SSH로 원격 서버의 폴더를 열고 편집한다. 접속할 호스트는 SSH config 형식의 파일에 저장하고, 쓸 파일은 `remote.SSH.configFile` 설정으로 정한다([공식 문서](https://code.visualstudio.com/docs/remote/ssh)). 예를 들어 `~/.ssh/config`에 `Host api-server`, `HostName 203.0.113.10`, `User ubuntu`를 적어 두면 Remote - SSH의 호스트 목록에 `api-server`가 나타나고, 고르면 그 서버의 폴더를 연다.
 
 ### Live Share
 
@@ -433,20 +437,30 @@ EOF
 
 확장을 설치해 둔 VS Code에서 프로필 편집기의 **Export...**로 프로필을 내보내면, 확장과 설정이 `.code-profile` 파일 하나(또는 비공개 GitHub gist 주소)로 저장된다. 다른 컴퓨터에서는 **New Profile** 옆 메뉴의 **Import Profile...**에 그 파일이나 주소를 넣으면 같은 확장 묶음이 새 프로필로 만들어진다([공식 문서](https://code.visualstudio.com/docs/configure/profiles)). 기존 프로필과 따로 있으므로, 써 보고 맞지 않으면 프로필만 지우면 된다.
 
-## 참고
+<details>
+<summary>참고 문헌</summary>
 
 추천 후보는 아래 글들에서 여러 번 꼽힌 확장을 골랐고, 각 확장의 이름·ID·기능은 Marketplace 페이지에서 다시 확인했다.
 
 - [20 Best VS Code Extensions for Web Development in 2026](https://www.syncfusion.com/blogs/post/best-visual-studio-code-extensions) (Syncfusion, 2026년 9월 수정)
 - [21 Best VS Code Extensions for 2026, by Category](https://www.testmuai.com/blog/best-vs-code-extensions/) (TestMu AI, 2026년 10월 수정)
 - [Best VS Code extensions to use in 2026](https://www.educative.io/blog/top-vscode-extensions) (Educative, 2026년 3월)
-- VS Code 공식 문서: [HTML](https://code.visualstudio.com/docs/languages/html), [CSS](https://code.visualstudio.com/docs/languages/css), [괄호 색 내장 블로그](https://code.visualstudio.com/blogs/2021/09/29/bracket-pair-colorization), [1.61 릴리스 노트](https://code.visualstudio.com/updates/v1_61)
+- VS Code 공식 문서: [Extension Marketplace](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace), [HTML](https://code.visualstudio.com/docs/languages/html), [CSS](https://code.visualstudio.com/docs/languages/css), [TypeScript](https://code.visualstudio.com/docs/languages/typescript), [Profiles](https://code.visualstudio.com/docs/configure/profiles), [Remote - SSH](https://code.visualstudio.com/docs/remote/ssh)
+- VS Code 블로그: [괄호 색 내장](https://code.visualstudio.com/blogs/2021/09/29/bracket-pair-colorization), [Extension Bisect](https://code.visualstudio.com/blogs/2021/02/16/extension-bisect), [1.61 릴리스 노트](https://code.visualstudio.com/updates/v1_61)
+- [ESLint: Core Concepts](https://eslint.org/docs/latest/use/core-concepts/), [Prettier: Configuration File](https://prettier.io/docs/configuration)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 확장 상세 화면 32장: 각 확장의 게시자, [Visual Studio Marketplace](https://marketplace.visualstudio.com/vscode)의 확장 정보를 VS Code 확장 보기에서 표시한 화면, 출처 표기 (2026년 10월 27일 촬영)
+
+</details>
 
 ## 관련 글
 
-- [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 편집기 검사와 같은 규칙을 CI에서도 확인하는 방법
-- [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion): Playwright 확장으로 실행하는 시험의 구성
-- [npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기](/memo/typescript-7-side-by-side): 편집기·컴파일러·린트가 서로 다른 TypeScript 버전을 쓰는 경우
+- [GitHub 병합 방식 세 가지](/memo/merge-strategies): Git Graph로 읽는 병합 커밋 기록의 배경
 - [Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup): 확장이 쓰는 Node·패키지 도구 설치
 
 #VSCode #개발환경 #도구

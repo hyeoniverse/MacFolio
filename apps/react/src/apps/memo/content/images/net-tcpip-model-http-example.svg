@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="430" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">GET 요청 41바이트가 99바이트 이더넷 프레임이 되는 과정</text>
+
+  <!-- 응용 -->
+  <text x="16" y="64" font-size="13" font-weight="700" fill="#1d1d1f">응용</text>
+  <text x="16" y="80" font-size="12" fill="#6e6e73">HTTP 메시지 41</text>
+  <rect x="432" y="48" width="164" height="40" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="514" y="65" text-anchor="middle" font-size="12" fill="#1d1d1f">GET / HTTP/1.1</text>
+  <text x="514" y="81" text-anchor="middle" font-size="12" fill="#1d1d1f">Host: www.example.com</text>
+
+  <!-- TCP -->
+  <text x="16" y="126" font-size="13" font-weight="700" fill="#1d1d1f">트랜스포트</text>
+  <text x="16" y="142" font-size="12" fill="#6e6e73">TCP 세그먼트 61</text>
+  <rect x="322" y="110" width="110" height="40" fill="#fff" stroke="#34c759" stroke-width="2"/>
+  <text x="377" y="127" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">TCP 헤더 20</text>
+  <text x="377" y="143" text-anchor="middle" font-size="12" fill="#1d1d1f">포트 49152 → 80</text>
+  <rect x="432" y="110" width="164" height="40" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="514" y="135" text-anchor="middle" font-size="12" fill="#6e6e73">HTTP 메시지 41</text>
+
+  <!-- IP -->
+  <text x="16" y="188" font-size="13" font-weight="700" fill="#1d1d1f">네트워크</text>
+  <text x="16" y="204" font-size="12" fill="#6e6e73">IP 데이터그램 81</text>
+  <rect x="222" y="172" width="100" height="40" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="272" y="189" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">IP 헤더 20</text>
+  <text x="272" y="205" text-anchor="middle" font-size="12" fill="#1d1d1f">protocol 6</text>
+  <rect x="322" y="172" width="274" height="40" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="459" y="197" text-anchor="middle" font-size="12" fill="#6e6e73">TCP 세그먼트 61</text>
+
+  <!-- 이더넷 -->
+  <text x="16" y="250" font-size="13" font-weight="700" fill="#1d1d1f">링크</text>
+  <text x="16" y="266" font-size="12" fill="#6e6e73">이더넷 프레임 99</text>
+  <rect x="132" y="234" width="90" height="40" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="177" y="251" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">이더넷 14</text>
+  <text x="177" y="267" text-anchor="middle" font-size="12" fill="#1d1d1f">type 0x0800</text>
+  <rect x="222" y="234" width="374" height="40" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="409" y="259" text-anchor="middle" font-size="12" fill="#6e6e73">IP 데이터그램 81</text>
+  <rect x="596" y="234" width="36" height="40" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="614" y="251" text-anchor="middle" font-size="12" fill="#1d1d1f">FCS</text>
+  <text x="614" y="267" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+
+  <!-- 수신 쪽 역다중화 -->
+  <line x1="16" y1="300" x2="624" y2="300" stroke="#6e6e73" stroke-dasharray="4 3"/>
+  <text x="16" y="326" font-size="13" font-weight="700" fill="#1d1d1f">수신 쪽 역다중화</text>
+  <text x="16" y="342" font-size="12" fill="#6e6e73">아래 계층부터 식별자를 확인</text>
+
+  <rect x="132" y="360" width="140" height="44" rx="6" fill="#f2f2f7" stroke="#0a84ff"/>
+  <text x="202" y="378" text-anchor="middle" font-size="12" fill="#1d1d1f">type 0x0800</text>
+  <text x="202" y="395" text-anchor="middle" font-size="12" font-weight="700" fill="#0a84ff">IP 모듈로</text>
+  <line x1="272" y1="382" x2="300" y2="382" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="302" y="360" width="140" height="44" rx="6" fill="#f2f2f7" stroke="#0a84ff"/>
+  <text x="372" y="378" text-anchor="middle" font-size="12" fill="#1d1d1f">protocol 6</text>
+  <text x="372" y="395" text-anchor="middle" font-size="12" font-weight="700" fill="#0a84ff">TCP 모듈로</text>
+  <line x1="442" y1="382" x2="470" y2="382" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+  <rect x="472" y="360" width="150" height="44" rx="6" fill="#f2f2f7" stroke="#0a84ff"/>
+  <text x="547" y="378" text-anchor="middle" font-size="12" fill="#1d1d1f">목적지 포트 80</text>
+  <text x="547" y="395" text-anchor="middle" font-size="12" font-weight="700" fill="#0a84ff">웹 서버 프로세스로</text>
+</svg>

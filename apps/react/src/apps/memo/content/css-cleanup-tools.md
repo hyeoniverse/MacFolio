@@ -7,13 +7,29 @@ seriesOrder: 4
 summary: 4,600줄 Memo.css를 구역 경계에서 열다섯 파일로 나눠 빌드 CSS md5로 동일성을 확인했다. Safari 페이지의 중복 규칙 103개와 미사용 클래스 9개의 규칙 24개는 PostCSS로 삭제하고 계산된 스타일 비교와 시험으로 검증했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에서 CSS를 정리한 작업 세 건의 기록이다. 세 작업 모두 화면을 바꾸지 않는 것이 조건이었고, 화면을 육안으로 비교하는 대신 작업마다 결과가 같다는 것을 기계적으로 검증하는 방법을 정했다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에서 CSS를 세 번 정리했다. 큰 파일 나누기, 파일 간 중복 규칙 삭제, 사용하지 않는 규칙 삭제다. 세 작업 모두 화면을 바꾸지 않는 것이 조건이었고, 화면을 육안으로 비교하는 대신 작업마다 결과가 같다는 것을 기계적으로 검증하는 방법을 정했다.
 
 | 작업                             | 대상                                 | 검증 방법                         | PR                                                       |
 | -------------------------------- | ------------------------------------ | --------------------------------- | -------------------------------------------------------- |
 | 큰 CSS 파일 분할                 | `Memo.css` 4,600줄                   | 분할 전후 빌드 CSS의 md5 비교     | [#238](https://github.com/hyeoniverse/MacFolio/pull/238) |
 | 파일 간 중복 규칙 삭제           | `HyeoniversePage.css`의 복사본 103개 | 요소 3,720개의 계산된 스타일 비교 | [#241](https://github.com/hyeoniverse/MacFolio/pull/241) |
 | 사용하지 않는 클래스의 규칙 삭제 | CSS 클래스 2,761개 중 9개            | 재검색, 단위 시험·E2E             | [#242](https://github.com/hyeoniverse/MacFolio/pull/242) |
+
+## 배경: 세 가지 검증 도구
+
+CSS 리팩터링(동작을 바꾸지 않고 코드 구조만 바꾸는 작업)은 결과가 같아야 성공이다. 이 글은 결과가 같은지를 세 가지 방법으로 확인한다.
+
+| 도구              | 무엇을 비교하나                                     | 예                                                                                                  |
+| ----------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **해시(md5)**     | 빌드한 CSS 파일의 바이트 전체                       | 문자열 `hello`의 md5는 `5d41402a…`, `world`는 `7d793037…`처럼 내용이 다르면 32자리 값이 전혀 다르다 |
+| **계산된 스타일** | 브라우저가 요소마다 최종 적용한 속성 값             | 같은 버튼에서 `color: rgb(43, 33, 0)`, `font-size: 11px`처럼 규칙이 모두 적용된 결과                |
+| **PostCSS**       | CSS를 트리 구조로 읽어 규칙·선택자·선언 단위로 편집 | `.a, .b { … }`를 "선택자 배열 `['.a', '.b']` + 선언 목록"으로 다룬다                                |
+
+**해시**는 임의 길이의 데이터를 고정 길이 값으로 바꾸는 함수의 결과다. 같은 입력은 항상 같은 값을 내고, 내용이 조금만 달라도 값이 완전히 달라진다. 빌드 결과 두 개의 md5가 같으면 두 파일은 내용이 같다고 판단할 수 있다.
+
+**계산된 스타일**(computed style)은 캐스케이드[^cascade]를 모두 거친 뒤 요소에 남는 값이다. 브라우저의 [`getComputedStyle(요소)`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)로 읽는다. CSS 파일 내용이 달라도 요소마다 계산된 스타일이 같으면 화면은 같다.
+
+**PostCSS**는 CSS를 AST(추상 구문 트리: 코드를 문법 단위의 노드로 나눈 트리)로 읽고, 노드를 수정한 뒤 다시 CSS 문자열로 출력하는 도구다. 문자열을 직접 자르고 붙이지 않으므로 중괄호나 쉼표를 잘못 남기는 실수가 생기지 않는다.
 
 ## Memo.css 분할: 선언 순서 유지
 
@@ -178,6 +194,10 @@ import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project
 | 브라우저 커버리지(개발자 도구)[^coverage] | 실제로 적용된 규칙을 확인한다  | 모든 앱·모든 상태를 열어야 한다. 휴대폰·다크 모드까지                         |
 | 한 번 직접 집계하고 사람이 확인           | 조합 규칙을 작성자가 알고 있다 | 자동화되지 않는다                                                             |
 
+![Chrome 개발자 도구의 Coverage 패널](./images/css-cleanup-tools-coverage.jpg '파일마다 전체 바이트와 사용하지 않은 바이트(Unused Bytes), 사용 비율 막대를 표시한다. 페이지를 조작한 동안 실행·적용된 부분만 사용한 것으로 집계한다')
+
+Coverage 패널은 기록하는 동안 실제로 적용된 규칙만 "사용함"으로 표시한다. 휴대폰 화면 전용 규칙이나 오류 상태의 규칙은 그 화면을 열지 않으면 "사용하지 않음"으로 남으므로, 이 결과만으로 삭제 대상을 정할 수 없다.
+
 자동화를 채택하지 않은 이유는 아래 그림 한 장으로 설명된다.
 
 ![CSS의 .sky-rain이 코드에서는 sky-와 값을 합쳐 만들어져, 문자열 검색이 놓치는 예](./images/unused-css-selectors-assembled.svg '조합한 이름은 문자열 검색으로 찾을 수 없다')
@@ -223,7 +243,9 @@ CSS의 모든 선택자에서 클래스 이름 2,761개를 추출하고, `.ts`·
 
 ### PostCSS로 선택자 목록에서 제거
 
-직접 편집하지 않고 CSS 파서(PostCSS)로 이 클래스만 사용하는 규칙 24개를 삭제하고, 다른 선택자와 함께 묶인 곳(`.minimized-container i, .dock-item i`)은 해당 선택자만 제거했다. `minimized-container`만 사용하던 배경 이미지(`imgs/minimize.JPG`, 58KB)도 삭제했다.
+직접 편집하지 않고 CSS 파서(PostCSS)로 이 클래스만 사용하는 규칙 24개를 삭제하고, 다른 선택자와 함께 묶인 곳(`.minimized-container i, .dock-item i`)은 해당 선택자만 제거했다.
+
+![PostCSS가 선택자 목록에서 항목 하나만 지우는 과정](./images/css-cleanup-tools-postcss-ast.svg '규칙의 선택자를 배열로 다루므로 쉼표를 직접 편집하지 않는다. 배열이 비면 규칙째 삭제한다') `minimized-container`만 사용하던 배경 이미지(`imgs/minimize.JPG`, 58KB)도 삭제했다.
 
 > [!WARNING] 선택자 목록의 쉼표
 > 직접 편집하지 않은 이유는 선택자 목록[^selector-list] 때문이다. `.minimized-container i, .dock-item i`에서 앞쪽만 삭제하다 쉼표 하나를 잘못 남기면 규칙 전체가 무효가 되어 `.dock-item i`까지 적용되지 않는다. 파서는 선택자 목록을 배열로 처리하므로 이런 실수가 발생하지 않는다.
@@ -252,7 +274,7 @@ CSS의 모든 선택자에서 클래스 이름 2,761개를 추출하고, `.ts`·
 - 단위 시험 642개와 브라우저 E2E 47개(`safari.spec`·`project-apps.spec`·`desktop.spec`)가 통과했다. 이 작업은 CSS만 삭제하므로, 시험이 실패한다면 그 클래스를 어딘가에서 사용하고 있었다는 뜻이다.
 - 공개 폴더에서 `imgs/minimize.JPG`(58,836바이트)가 삭제됐다.
 
-이 글을 쓰면서 같은 방식으로 다시 집계하니, 현재 CSS 클래스는 2,850개이고 문자열 검색으로 찾지 못하는 것이 169개다. 그사이 새 화면이 추가돼 수가 늘었다. 169개도 2단계의 조합 이름 제외를 거치지 않은 수라, 대부분 조합하는 이름으로 추정한다(2단계 이후 수는 집계하지 않았다). 1년에 한두 번은 같은 순서로 다시 집계할 계획이다.
+같은 방식으로 다시 집계하면, 현재 CSS 클래스는 2,850개이고 문자열 검색으로 찾지 못하는 것이 169개다. 그사이 새 화면이 추가돼 수가 늘었다. 169개도 2단계의 조합 이름 제외를 거치지 않은 수라, 대부분 조합하는 이름으로 추정한다(2단계 이후 수는 집계하지 않았다). 1년에 한두 번은 같은 순서로 다시 집계할 계획이다.
 
 ## 정리
 
@@ -278,6 +300,27 @@ CSS의 모든 선택자에서 클래스 이름 2,761개를 추출하고, `.ts`·
 - [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)
 
 PR: [#238](https://github.com/hyeoniverse/MacFolio/pull/238), [#241](https://github.com/hyeoniverse/MacFolio/pull/241), [#242](https://github.com/hyeoniverse/MacFolio/pull/242)
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
+- MDN, [@import](https://developer.mozilla.org/en-US/docs/Web/CSS/@import)
+- MDN, [Window: getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- MDN, [Selector list](https://developer.mozilla.org/en-US/docs/Web/CSS/Selector_list)
+- Vite, [Features: @import Inlining and Rebasing](https://vite.dev/guide/features#import-inlining-and-rebasing)
+- PostCSS, [PostCSS API](https://postcss.org/api/)
+- Chrome for Developers, [Coverage: Find unused JavaScript and CSS](https://developer.chrome.com/docs/devtools/coverage)
+- RFC 1321, [The MD5 Message-Digest Algorithm](https://www.rfc-editor.org/rfc/rfc1321)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Chrome 개발자 도구의 Coverage 패널: Chrome for Developers, [Coverage: Find unused JavaScript and CSS](https://developer.chrome.com/docs/devtools/coverage), CC BY 4.0
+
+</details>
 
 [^cascade]: CSS 캐스케이드는 출처·`!important`, 캐스케이드 레이어, 명시도, 선언 순서 차례로 비교한다. 앞 단계가 모두 같을 때만 선언 순서로 정해진다. [MDN: Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
 

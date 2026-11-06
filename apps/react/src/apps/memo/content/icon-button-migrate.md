@@ -7,7 +7,17 @@ seriesOrder: 6
 summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버튼 30곳을 Button으로 옮겼다. 공통 CSS가 더하는 값은 앱 규칙이나 명시도 0인 :where() 규칙으로 되돌리고, E2E 중 공통 클래스를 뺀 상태와 넣은 상태의 계산된 스타일을 비교해 화면 변화가 없음을 확인했다.
 ---
 
-[`docs/ui.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/ui.md)의 버튼 표에는 "`IconButton`으로 옮길 수 있음 약 60곳"과 "`Button`으로 옮길 수 있음 약 33곳"이 있었다. 앞의 것은 뒤로 가기 꺾쇠, ••• 더 보기, 메일 시트의 원형 취소·보내기, 음악의 재생 버튼처럼 `<button>`에 `aria-label`과 Font Awesome 아이콘을 직접 작성한 버튼이다. 뒤의 것은 휴지통 비우기, 찾기의 완료, 글쓰기의 게시처럼 `<button>`에 글자를 직접 작성한 버튼이다. 이 가운데 아이콘 버튼 45곳을 `IconButton`으로([#245](https://github.com/hyeoniverse/MacFolio/pull/245)), 글자 버튼 30곳을 `Button`으로([#246](https://github.com/hyeoniverse/MacFolio/pull/246)) 옮겼다. 목표는 하나다. **화면이 한 픽셀도 바뀌지 않아야 한다.**
+## 배경
+
+### 공통 버튼 컴포넌트와 접근 가능한 이름
+
+MacFolio에는 모든 앱이 함께 쓰는 버튼 컴포넌트가 두 개 있다. `IconButton`은 아이콘만 있는 버튼(뒤로 가기 꺾쇠, ••• 더 보기, 재생 버튼 등)이고, `Button`은 글자가 있는 버튼(휴지통 비우기, 완료, 게시 등)이다. 앱이 이 컴포넌트 대신 `<button>`을 직접 작성하면 모양과 동작이 앱마다 조금씩 달라지고, 공통 규칙을 바꿀 때 수정할 곳이 늘어난다.
+
+아이콘 버튼에서 특히 중요한 것은 접근 가능한 이름(accessible name)이다. 스크린 리더(화면의 내용을 음성으로 읽어 주는 보조 기술)는 버튼에 이름이 있어야 "취소, 버튼"처럼 읽을 수 있다. 글자 버튼은 글자가 이름이 되지만, ✕ 아이콘만 있는 버튼은 [`aria-label`](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA/Attributes/aria-label)로 이름을 따로 지정해야 한다. 이름이 없으면 스크린 리더는 "버튼"이라고만 읽는다.
+
+### 옮긴 범위
+
+[`docs/ui.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/ui.md)의 버튼 표에는 "`IconButton`으로 옮길 수 있음 약 60곳"과 "`Button`으로 옮길 수 있음 약 33곳"이 있었다. 앞의 것은 뒤로 가기 꺾쇠, ••• 더 보기, 메일 시트의 원형 취소·보내기, 음악의 재생 버튼처럼 `<button>`에 `aria-label`과 Font Awesome 아이콘을 직접 작성한 버튼이다. 뒤의 것은 휴지통 비우기, 찾기의 완료, 글쓰기의 게시처럼 `<button>`에 글자를 직접 작성한 버튼이다. 이 가운데 아이콘 버튼 45곳을 `IconButton`으로([#245](https://github.com/hyeoniverse/MacFolio/pull/245)), 글자 버튼 30곳을 `Button`으로([#246](https://github.com/hyeoniverse/MacFolio/pull/246)) 옮겼다. 목표는 ==화면이 한 픽셀도 바뀌지 않는 것==이다.
 
 ## 옮기는 이유
 
@@ -31,7 +41,7 @@ summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버
 | 메모 | 6   | 찾기 이전·다음, 댓글 삭제, 버전 목록으로, 휴대폰 뒤로 가기 2                                       |
 | 기타 | 10  | Safari 휴대폰 3, 메시지 3, 날씨 2, Finder 휴대폰 •••, 배경화면 지우기                              |
 
-`aria-label`은 `label`로, `<i>` 아이콘은 `icon`으로 옮긴다. 앱의 `className`과 `ref`, `aria-pressed`·`aria-expanded`, 이벤트 핸들러는 유지한다. `aria-label`과 `title`이 달랐던 댓글 삭제는 `title`을 별도로 지정했다.
+`aria-label`은 `label`로, `<i>` 아이콘은 `icon`으로 옮긴다. 앱의 `className`과 `ref`, `aria-pressed`·`aria-expanded`, 이벤트 핸들러는 유지한다. `aria-label`과 `title`이 달랐던 댓글 삭제는 `title`을 별도로 지정했다. 메일 시트의 취소 버튼을 예로 들면 다음과 같다.
 
 ```tsx
 // 전 (ComposeView.tsx)
@@ -42,6 +52,8 @@ summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버
 // 후
 <IconButton variant="circle" className="mail-sheet-circle" label="취소" icon="fa-solid fa-xmark" onClick={onCancel} />
 ```
+
+![IconButton으로 옮긴 취소 버튼의 코드와 결과 DOM](./images/icon-button-migrate-anatomy.svg 'label이 aria-label과 title로 함께 출력되고, 결과 DOM과 접근성 트리의 이름은 옮기기 전과 같다')
 
 날씨의 사이드바 열기·닫기 버튼은 `IconButton`을 직접 쓰지 않고, 메모·사진이 이미 쓰는 `SidebarToggle`로 옮겼다. 이름('사이드바 보기'·'사이드바 가리기')은 같고 [`aria-expanded`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-expanded)가 추가됐다.
 
@@ -118,6 +130,10 @@ summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버
 }
 ```
 
+명시도는 선택자에 들어 있는 ID, 클래스(속성·가상 클래스 포함), 요소 이름의 개수를 세 자리 수로 나타낸 값이다. 두 규칙이 같은 속성을 지정하면 명시도가 높은 규칙이 적용된다. 예를 들어 `.memo button`은 클래스 1개와 요소 1개라 0-1-1이고, `.bin-empty-button`(0-1-0)보다 높다.
+
+![명시도 계산 예](./images/icon-button-migrate-specificity.svg ':where()로 감싼 선택자는 같은 버튼을 고르면서도 명시도가 0-0-0이다')
+
 > [!IMPORTANT] 공통 CSS보다 우선하고 앱 규칙보다 낮은 규칙
 > [`:where()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:where) 안의 선택자는 [명시도(specificity)](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)가 0이다. 레이어 밖에 있으므로 공통 CSS보다 우선하고, 명시도가 0이므로 앱이 원래 작성한 규칙보다는 우선순위가 낮다. 앱의 규칙을 하나씩 수정하지 않고 공통 CSS가 추가한 값만 되돌릴 수 있다.
 
@@ -144,7 +160,7 @@ summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버
 | 스크린샷 비교 (전후 픽셀)                                  | 차이를 확실히 검출한다                                                              | 기준 스크린샷을 생성·관리해야 하고, 시계·애니메이션 같은 무관한 차이도 검출된다 |
 | **E2E 실행 중 클래스 제거·적용 상태의 계산된 스타일 비교** | 기존 시험이 거치는 모든 상태를 추가 작업 없이 확인하고, 다른 속성의 이름이 출력된다 | 별도 스크립트가 필요하고, 시험이 거치지 않는 화면은 확인할 수 없다              |
 
-세 번째를 선택했다. E2E 실행 시 페이지에 작은 스크립트를 삽입한다. 화면에 표시된 `.ui-icon-button`·`.ui-button`마다 [계산된 스타일](https://developer.mozilla.org/ko/docs/Web/API/Window/getComputedStyle)을 모두 읽고, 공통 클래스(`ui-icon-button`·`tool`·`circle`·`float`, `ui-button`)를 잠시 제거한 뒤 다시 읽어 비교한다. 클래스를 제거한 상태가 옮기기 전의 `<button>`과 같다. `:where()` 규칙도 `.ui-button`을 조건으로 하므로 함께 빠진다. 데스크톱과 휴대폰(iPhone·Android) 프로젝트에서, 시험이 거치는 기본·활성·비활성·hover 상태가 모두 기록된다.
+세 번째를 선택했다. E2E 실행 시 페이지에 작은 스크립트를 삽입한다. 화면에 표시된 `.ui-icon-button`·`.ui-button`마다 [계산된 스타일](https://developer.mozilla.org/ko/docs/Web/API/Window/getComputedStyle)을 모두 읽고(계산된 스타일은 모든 CSS 규칙을 적용한 뒤 요소에 최종 적용된 값이다. 예: `width: 30px`, `color: rgb(110, 110, 115)`), 공통 클래스(`ui-icon-button`·`tool`·`circle`·`float`, `ui-button`)를 잠시 제거한 뒤 다시 읽어 비교한다. 클래스를 제거한 상태가 옮기기 전의 `<button>`과 같다. `:where()` 규칙도 `.ui-button`을 조건으로 하므로 함께 빠진다. 데스크톱과 휴대폰(iPhone·Android) 프로젝트에서, 시험이 거치는 기본·활성·비활성·hover 상태가 모두 기록된다.
 
 ![공통 클래스를 제거·적용해 비교하는 방법](./images/icon-button-migrate-compare.svg '클래스를 제거한 상태가 옮기기 전의 버튼이다')
 
@@ -215,5 +231,16 @@ summary: 직접 작성한 아이콘 버튼 45곳을 IconButton으로, 글자 버
 - [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](/memo/ui-modal#공통-부품-집계): 옮길 버튼을 집계한 목록
 
 [^layer]: 캐스케이드 레이어: `@layer`로 CSS 규칙을 묶어 우선순위를 레이어 단위로 정하는 기능. 레이어가 다르면 명시도와 무관하게 나중에 선언된 레이어가 우선하고, 레이어 밖의 규칙은 모든 레이어보다 우선한다.
+
+<details><summary>참고 문헌</summary>
+
+- MDN, [aria-label](https://developer.mozilla.org/ko/docs/Web/Accessibility/ARIA/Attributes/aria-label)
+- MDN, [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)
+- MDN, [:where()](https://developer.mozilla.org/en-US/docs/Web/CSS/:where)
+- MDN, [@layer](https://developer.mozilla.org/ko/docs/Web/CSS/@layer)
+- MDN, [Window.getComputedStyle()](https://developer.mozilla.org/ko/docs/Web/API/Window/getComputedStyle)
+- W3C, [Accessible Name and Description Computation 1.2](https://www.w3.org/TR/accname-1.2/)
+
+</details>
 
 #MacFolio #React #CSS #리팩터링

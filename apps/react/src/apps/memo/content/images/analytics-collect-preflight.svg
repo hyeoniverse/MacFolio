@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>JSON으로 보내면 OPTIONS 사전 요청이 먼저 가서 왕복이 두 번, sendBeacon에 문자열을 넘기면 text/plain 단순 요청이라 한 번이다</title>
+<defs>
+<marker id="pb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="pg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="po" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+</defs>
+<rect width="640" height="410" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">본문 형식에 따른 CORS 사전 요청</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">사이트 macfolio.hyeoniverse.com → API macfolio-api.hyeoniverse.com (출처가 다르다)</text>
+
+<text x="24" y="86" font-size="13" font-weight="700" fill="#1d1d1f">fetch, Content-Type: application/json</text>
+<rect x="24" y="96" width="112" height="122" rx="10" fill="#f2f2f7"/>
+<text x="80" y="162" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">브라우저</text>
+<rect x="504" y="96" width="112" height="122" rx="10" fill="#f2f2f7"/>
+<text x="560" y="162" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">API 서버</text>
+<path d="M136 124 H504" stroke="#ff9f0a" stroke-width="1.8" marker-end="url(#po)"/>
+<text x="320" y="117" font-size="12" fill="#1d1d1f" text-anchor="middle">① OPTIONS /analytics/events (사전 요청)</text>
+<path d="M504 158 H136" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#pg)"/>
+<text x="320" y="151" font-size="12" fill="#6e6e73" text-anchor="middle">204 + Access-Control-Allow-Headers 등</text>
+<path d="M136 196 H504" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#pb)"/>
+<text x="320" y="189" font-size="12" fill="#1d1d1f" text-anchor="middle">② POST /analytics/events (이벤트 본문)</text>
+<text x="320" y="236" font-size="12" fill="#ff3b30" text-anchor="middle">왕복 2회. 탭을 닫는 중이면 ②가 전송되지 못할 수 있다</text>
+
+<text x="24" y="276" font-size="13" font-weight="700" fill="#1d1d1f">navigator.sendBeacon(url, 문자열)</text>
+<rect x="24" y="286" width="112" height="70" rx="10" fill="#f2f2f7"/>
+<text x="80" y="326" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">브라우저</text>
+<rect x="504" y="286" width="112" height="70" rx="10" fill="#f2f2f7"/>
+<text x="560" y="326" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">API 서버</text>
+<path d="M136 322 H504" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#pb)"/>
+<text x="320" y="315" font-size="12" fill="#1d1d1f" text-anchor="middle">POST /analytics/events</text>
+<text x="320" y="342" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">Content-Type: text/plain;charset=UTF-8</text>
+<text x="320" y="376" font-size="12" fill="#34c759" font-weight="600" text-anchor="middle">단순 요청: 사전 요청 없이 1회, 응답은 기다리지 않는다</text>
+<text x="320" y="398" font-size="12" fill="#6e6e73" text-anchor="middle">사전 요청이 없는 Content-Type: application/x-www-form-urlencoded, multipart/form-data, text/plain</text>
+</svg>

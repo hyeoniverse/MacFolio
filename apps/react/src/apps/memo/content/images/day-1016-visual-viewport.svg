@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>화면 키보드가 올라온 뒤의 레이아웃 뷰포트와 visualViewport</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="40" y="26" font-size="13" font-weight="700" fill="#ff3b30">수정 전</text>
+<rect x="40" y="36" width="180" height="340" rx="20" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="56" y="64" width="148" height="10" rx="3" fill="#c7c7cc"/>
+<rect x="56" y="84" width="120" height="10" rx="3" fill="#c7c7cc"/>
+<rect x="56" y="104" width="136" height="10" rx="3" fill="#c7c7cc"/>
+<rect x="41" y="230" width="178" height="145" fill="#6e6e73" opacity="0.85"/>
+<text x="130" y="290" font-size="13" fill="#ffffff" text-anchor="middle">화면 키보드</text>
+<rect x="41" y="342" width="178" height="30" fill="#ff3b30" opacity="0.35"/>
+<text x="130" y="362" font-size="12" fill="#ffffff" text-anchor="middle">서식 막대 (가려짐)</text>
+<text x="40" y="394" font-size="12" fill="#6e6e73">화면 맨 아래(bottom: 0)에 고정</text>
+<text x="300" y="26" font-size="13" font-weight="700" fill="#34c759">수정 후</text>
+<rect x="300" y="36" width="180" height="340" rx="20" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="316" y="64" width="148" height="10" rx="3" fill="#c7c7cc"/>
+<rect x="316" y="84" width="120" height="10" rx="3" fill="#c7c7cc"/>
+<rect x="316" y="104" width="136" height="10" rx="3" fill="#c7c7cc"/>
+<rect x="301" y="196" width="178" height="32" fill="#0a84ff"/>
+<text x="390" y="217" font-size="12" fill="#ffffff" text-anchor="middle">서식 막대</text>
+<rect x="301" y="230" width="178" height="145" fill="#6e6e73" opacity="0.85"/>
+<text x="390" y="290" font-size="13" fill="#ffffff" text-anchor="middle">화면 키보드</text>
+<line x1="604" y1="36" x2="604" y2="376" stroke="#1d1d1f" stroke-width="1.5"/>
+<line x1="598" y1="36" x2="610" y2="36" stroke="#1d1d1f" stroke-width="1.5"/>
+<line x1="598" y1="376" x2="610" y2="376" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="596" y="60" font-size="12" fill="#1d1d1f" text-anchor="end">innerHeight</text>
+<text x="596" y="76" font-size="12" fill="#6e6e73" text-anchor="end">변하지 않음</text>
+<line x1="496" y1="36" x2="496" y2="228" stroke="#0a84ff" stroke-width="1.5"/>
+<line x1="490" y1="36" x2="502" y2="36" stroke="#0a84ff" stroke-width="1.5"/>
+<line x1="490" y1="228" x2="502" y2="228" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="504" y="150" font-size="12" fill="#0a84ff">visualViewport</text>
+<text x="504" y="166" font-size="12" fill="#0a84ff">.height</text>
+<line x1="496" y1="230" x2="496" y2="376" stroke="#ff9f0a" stroke-width="1.5"/>
+<line x1="490" y1="376" x2="502" y2="376" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="504" y="300" font-size="12" fill="#ff9f0a">차이 =</text>
+<text x="504" y="316" font-size="12" fill="#ff9f0a">키보드 높이</text>
+<text x="300" y="394" font-size="12" fill="#6e6e73">차이만큼 위로 올려 키보드 바로 위에 배치</text>
+</svg>

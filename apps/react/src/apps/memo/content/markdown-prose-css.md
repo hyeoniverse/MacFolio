@@ -7,7 +7,20 @@ seriesOrder: 5
 summary: 텍스트 편집기 창에서 연 저장소 문서의 코드 블록이 문법 강조 없이 본문 색으로 표시되었다. 강조 색 변수를 메모·Finder 창에만 정의한 것이 원인이었다. 블로그와 문서 보기가 따로 정의하던 코드·목록·구분선·접기 블록 규칙을 styles/prose.css 하나로 옮기고, 화면마다 다른 값은 --prose-* 변수로 분리했다.
 ---
 
-Finder › 문서에서 `deployment.md`를 열면 텍스트 편집기 창이 문서를 렌더링한다. 이 창에서 코드 블록의 문법 강조가 적용되지 않고 모든 토큰이 본문 색(`rgba(0, 0, 0, 0.85)`)으로 표시되었다. 같은 문서를 휴대폰 파일 앱에서 열면 강조 색이 정상으로 표시되었다. 이번 작업([#364](https://github.com/hyeoniverse/MacFolio/pull/364))은 원인을 고치면서, 블로그와 문서 보기가 각각 정의하던 Markdown 본문 규칙을 `styles/prose.css` 한 파일로 옮겼다.
+Finder › 문서에서 `deployment.md`를 열면 텍스트 편집기 창이 문서를 렌더링한다. 이 창에서 코드 블록의 문법 강조가 적용되지 않고 모든 토큰이 본문 색(`rgba(0, 0, 0, 0.85)`)으로 표시되었다. 같은 문서를 휴대폰 파일 앱에서 열면 강조 색이 정상으로 표시되었다. [#364](https://github.com/hyeoniverse/MacFolio/pull/364)에서 원인을 고치고, 블로그와 문서 보기가 각각 정의하던 Markdown 본문 규칙을 `styles/prose.css` 한 파일로 옮겼다.
+
+## 배경: Markdown 본문과 CSS 변수
+
+Markdown은 `#`, `-`, ` ``` ` 같은 기호로 문서 구조를 적는 글 형식이다. 사이트는 Markdown을 HTML 요소로 바꿔 화면에 그린다. `## 제목`은 `<h2>`, `- 항목`은 `<ul><li>`, ` ``` ` 코드 블록은 `<pre><code>`, `---`는 `<hr>`가 된다. 이렇게 만들어진 요소 묶음을 이 글에서는 **본문**(prose)이라고 부르고, 본문 요소의 글꼴·간격·색은 CSS 규칙으로 정한다.
+
+코드 블록의 색은 **문법 강조**(syntax highlighting) 라이브러리가 붙인 클래스로 정한다. 사이트는 highlight.js 규칙을 쓰는 lowlight로 코드를 토큰 단위로 나누고, 토큰 종류마다 `hljs-*` 클래스를 붙인다.
+
+```html
+<!-- 입력: { "port": 4000 } -->
+<span class="hljs-attr">"port"</span>: <span class="hljs-number">4000</span>
+```
+
+CSS가 `.hljs-attr`과 `.hljs-number`에 색을 지정해야 키와 숫자가 본문 글자와 다른 색(이 사이트는 둘 다 파랑)으로 보인다. 이 사이트는 그 색을 직접 적지 않고 **CSS 사용자 지정 속성**(custom property, 흔히 CSS 변수라고 부른다)으로 지정한다. `--color-code-number: var(--palette-code-blue-light)`처럼 `--`로 시작하는 이름에 값을 저장해 두고, 쓰는 곳에서 `color: var(--color-code-number)`로 읽는다. 변수는 정의한 요소와 그 자손에서만 읽을 수 있다. 다크 모드에서는 변수 값만 바꾸면 그 변수를 읽는 모든 규칙의 색이 함께 바뀐다.
 
 ## 증상
 
@@ -33,7 +46,7 @@ Finder › 문서에서 `deployment.md`를 열면 텍스트 편집기 창이 문
 }
 ```
 
-`--hl-*`는 메모 창(`[data-app='memo']`, `memo/styles/highlight.css`)과 Finder 창(`[data-app='finder']`, `Finder.css`)에만 정의되어 있었다. 휴대폰 파일 앱은 Finder 창 안에서 문서를 렌더링하므로 변수를 상속받는다. 텍스트 편집기 창은 `data-app='textedit'`이라 변수가 없다.
+이 변수는 어디에 정의하느냐에 따라 읽을 수 있는 범위가 달라진다. `--hl-*`는 메모 창(`[data-app='memo']`, `memo/styles/highlight.css`)과 Finder 창(`[data-app='finder']`, `Finder.css`)에만 정의되어 있었다. 휴대폰 파일 앱은 Finder 창 안에서 문서를 렌더링하므로 변수를 상속받는다. 텍스트 편집기 창은 `data-app='textedit'`이라 변수가 없다. 같은 `DocView.css` 규칙이라도 Finder 창 안에서는 `var(--hl-string)`이 색 값으로 바뀌고, 텍스트 편집기 창 안에서는 빈 값이 된다.
 
 > [!WARNING] 오류 없이 무효가 되는 var()
 > [CSS 사용자 지정 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)은 정의되지 않은 변수를 `var()`로 참조하면 오류를 내지 않는다. 그 선언은 계산값 시점에 무효[^invalid]가 되고, `color`는 상속 속성이므로 부모의 본문 색이 그대로 적용된다. 그래서 개발 중에 경고 없이 지나갔다.
@@ -69,7 +82,9 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 
 처음에는 공통 규칙의 선택자를 `:where(.memo-markdown, .finder-doc) pre`처럼 적용할 화면을 나열해 작성했다. 이 방식은 Markdown을 렌더링하는 화면이 하나 늘 때마다 `prose.css`의 모든 선택자를 수정해야 하고, ==공통 파일이 각 화면의 클래스 이름을 알아야 한다==.
 
-그래서 [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography)의 `.prose` 관례를 따랐다. Markdown 본문 요소에 공통 클래스 `prose`와 화면 클래스를 함께 붙이고, `prose.css`는 `.prose`만 참조한다.
+그래서 [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography)의 `.prose` 관례를 따랐다. Tailwind Typography는 Markdown이나 CMS에서 받은 HTML처럼 클래스를 하나하나 붙일 수 없는 본문에 `prose` 클래스 하나만 붙이면 제목·목록·코드 블록 스타일을 한꺼번에 적용하는 플러그인이다. 같은 방식으로 Markdown 본문 요소에 공통 클래스 `prose`와 화면 클래스를 함께 붙이고, `prose.css`는 `.prose`만 참조한다.
+
+![클래스와 스타일 파일의 관계](./images/markdown-prose-css-class-map.svg '도식. 본문 요소는 prose 클래스로 prose.css의 구조와 기본값을, 화면 클래스(memo-markdown·finder-doc)로 그 화면의 변수 값을 가져온다')
 
 | 요소                                                    | 클래스                                   |
 | ------------------------------------------------------- | ---------------------------------------- |
@@ -100,6 +115,8 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 
 모든 선택자는 [`:where(.prose)`](https://developer.mozilla.org/en-US/docs/Web/CSS/:where)로 시작한다. `:where()` 안의 선택자는 명시도[^specificity]에 더해지지 않으므로 `:where(.prose) pre`의 명시도는 `pre` 하나와 같은 (0,0,1)이고, 화면 클래스로 작성한 규칙(`.memo-markdown h2`, (0,1,1))이 항상 우선한다. 변수 기본값도 `:where(.prose)`(명시도 0)에 정의해, `.memo-markdown`·`.finder-doc`에서 정의한 값이 CSS 파일 로드 순서와 상관없이 적용된다. `.prose` 밖에는 적용되지 않으므로 `<blockquote>`·`<details>`를 UI 부품으로 쓰는 위젯·메일·Safari 템플릿은 영향이 없다.
 
+![:where()와 @layer로 정한 우선순위](./images/markdown-prose-css-specificity.svg '도식. 위: 같은 pre 요소에서 화면별 규칙 (0,1,1)이 공통 규칙 (0,0,1)보다 우선한다. 아래: 명시도로 이기던 .memo ul은 @layer reset으로 내려 공통 규칙에 진다')
+
 변수의 기본값은 문서 보기의 값이고, 블로그는 `.memo-markdown`에서 차이만 바꾼다.
 
 | 변수                      | 기본값 (문서 보기)                                 | 블로그             |
@@ -129,6 +146,8 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 
 블로그 규칙은 명시도가 (0,1,0)이라 공통 규칙인 구분선(1.8em)·접기 블록(1.2em)의 위 여백을 덮었다. 그래서 두 요소의 `margin`만 `markdown.css`에 한 번 더 작성한 예외가 있었다.
 
+블로그의 `> * + *`는 **인접 형제 결합자**(`+`)를 쓴 선택자로, "본문 바로 아래 블록 중 앞에 다른 블록이 있는 것"을 고른다. 첫 블록에는 위 여백이 붙지 않고, 두 번째 블록부터 위 여백이 붙어 블록 사이에만 간격이 생긴다. 이 방식을 흔히 흐름 간격(flow spacing) 또는 '부엉이 선택자'(`* + *`)라고 부른다.
+
 흐름 간격을 `prose.css`로 옮기고 값은 변수로 분리했다.
 
 ```css
@@ -147,6 +166,8 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 
 문서 보기는 방식이 달라 결과가 같도록 세 가지를 맞췄다.
 
+![블록 간격 방식 비교](./images/markdown-prose-css-flow-gap.svg '도식. 왼쪽: 블록마다 아래 여백을 붙여 마지막 블록 아래에도 1em이 남는다. 오른쪽: 다음 블록의 위 여백으로 같은 간격을 만들고, 끝의 1em은 본문 패딩으로 옮겼다')
+
 - **본문 바로 아래 블록**: 아래 여백 1em 대신 흐름 간격(위 여백 1em). 두 블록 사이 간격은 같다.
 - **제목 다음 블록**: 제목의 아래 여백이 0.6em이고 다음 블록의 위 여백이 0이라 간격이 0.6em이었다. `--prose-heading-gap: 0.6em`으로 맞췄다.
 - **인용·목록·접기 블록 안의 블록**: GitHub처럼 아래 여백 1em을 유지했다(`.finder-doc :where(:not(.ProseMirror)) > :is(p, …)`).
@@ -155,7 +176,7 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 
 ### 명시도 0이라 바꾼 규칙
 
-`theme.css`의 `.memo ul { list-style: none }`(0,1,1)은 폴더·글 목록의 글머리표를 없애는 규칙이다. 예전에는 `.memo-markdown ul`(0,1,1)이 뒤에 선언되어 이겼지만, `:where(.prose) ul`(0,0,1)은 진다. 이 규칙은 앱 기본값이므로 `@layer reset`으로 옮겼다. 레이어에 넣은 규칙은 명시도와 상관없이 레이어 밖의 규칙에 진다([앱 기본값을 CSS 층으로 내리기](/memo/css-layer-reset)).
+`theme.css`의 `.memo ul { list-style: none }`(0,1,1)은 폴더·글 목록의 글머리표를 없애는 규칙이다. 예전에는 `.memo-markdown ul`(0,1,1)이 뒤에 선언되어 이겼지만, `:where(.prose) ul`(0,0,1)은 진다. 이 규칙을 그대로 두면 블로그 본문의 목록에서 글머리표(•, 1.)가 사라진다. 이 규칙은 앱 기본값이므로 `@layer reset`으로 옮겼다. [`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)는 규칙을 이름 붙인 층으로 묶는 문법이다. 브라우저는 같은 요소에 걸린 규칙 중 적용할 규칙을 정하면서 층의 순서를 명시도보다 먼저 비교하고, 층에 넣지 않은 규칙은 모든 층보다 우선한다. 그래서 층에 넣은 규칙은 명시도와 상관없이 층 밖의 규칙에 진다([선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)).
 
 ## 함께 고친 구분선과 접기 블록
 
@@ -175,7 +196,9 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 
 ## 계산된 스타일로 비교
 
-규칙을 옮기는 작업이라, 의도한 변경 외에는 화면이 같아야 한다. 변경 전후 빌드를 각각 띄우고 Playwright로 요소 28종의 계산된 스타일 31개 속성을 수집해 비교했다.
+규칙을 옮기는 작업이라, 의도한 변경 외에는 화면이 같아야 한다. 눈으로 캡처를 비교하면 1px 차이를 놓치기 쉬워서, 브라우저가 최종적으로 적용한 값을 숫자로 비교했다. [`getComputedStyle()`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)은 여러 규칙과 상속을 모두 반영한 뒤의 속성 값(계산된 스타일)을 반환한다. 예를 들어 `getComputedStyle(hr).borderTopWidth`는 `'1px'`처럼 실제로 그려지는 값을 준다.
+
+변경 전후 빌드를 각각 띄우고 Playwright로 요소 28종의 계산된 스타일 31개 속성을 수집해 비교했다.
 
 | 화면                                        | 다른 값                                                           |
 | ------------------------------------------- | ----------------------------------------------------------------- |
@@ -213,7 +236,7 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 
 ## 관련 글
 
-- [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset): `@layer reset`을 도입한 작업
+- [선택자 명시도 경쟁을 CSS @layer reset으로 끝내고 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset): `@layer reset`을 도입한 작업
 - [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/css-cleanup-tools#중복-규칙-삭제-creativepartscss와-hyeoniversepagecss): 같은 방식으로 계산된 스타일을 비교한 작업
 - [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249): `--color-code-*` 토큰을 만든 작업
 - [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 편집기의 접기 블록(`div.memo-details`)
@@ -223,5 +246,19 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 [^invalid]: 사용자 지정 속성 값을 대입한 결과가 그 속성에 맞지 않거나 변수가 없으면, 선언 전체가 `unset`처럼 처리된다. `color`처럼 상속되는 속성은 부모 값을, 상속되지 않는 속성은 초기값을 쓴다. MDN의 [Invalid custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties#invalid_custom_properties) 절에 정리되어 있다.
 
 [^specificity]: 같은 요소에 여러 규칙이 겹칠 때 어느 규칙을 적용할지 정하는 점수. (ID, 클래스·속성·의사 클래스, 요소) 순으로 비교한다. MDN의 [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity) 문서 참고.
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [Using CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- MDN, [:where()](https://developer.mozilla.org/en-US/docs/Web/CSS/:where)
+- MDN, [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)
+- MDN, [@layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
+- MDN, [Next-sibling combinator](https://developer.mozilla.org/en-US/docs/Web/CSS/Next-sibling_combinator)
+- MDN, [Window.getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- Tailwind Labs, [tailwindcss-typography](https://github.com/tailwindlabs/tailwindcss-typography)
+- highlight.js, [CSS classes reference](https://highlightjs.readthedocs.io/en/latest/css-classes-reference.html)
+
+</details>
 
 #MacFolio #CSS #리팩터링

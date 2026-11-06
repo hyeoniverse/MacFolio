@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>동시에 도착한 요청 다섯 개가 결과 값 캐시에서는 첫 응답 전까지 모두 DB를 조회하고, Promise 캐시에서는 첫 요청이 만든 Promise 하나를 공유해 DB 조회가 한 번인 비교</title>
+<defs><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+<marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">서버 시작 직후 GET /site 요청이 동시에 도착할 때</text>
+<text x="24" y="66" font-size="13" font-weight="700" fill="#ff3b30">결과 값을 캐시</text>
+<text x="24" y="84" font-size="12" fill="#6e6e73">값은 DB 응답이 와야 생긴다</text>
+<text x="336" y="66" font-size="13" font-weight="700" fill="#34c759">Promise를 캐시 (채택)</text>
+<text x="336" y="84" font-size="12" fill="#6e6e73">Promise는 첫 요청 시각에 바로 생긴다</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="24" y="118">요청 1</text><text x="24" y="148">요청 2</text><text x="24" y="178">요청 3</text><text x="24" y="208">요청 4</text><text x="24" y="238">요청 5</text>
+<text x="336" y="118">요청 1</text><text x="336" y="148">요청 2</text><text x="336" y="178">요청 3</text><text x="336" y="208">요청 4</text><text x="336" y="238">요청 5</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)">
+<line x1="72" y1="114" x2="196" y2="114"/><line x1="72" y1="144" x2="196" y2="144"/><line x1="72" y1="174" x2="196" y2="174"/><line x1="72" y1="204" x2="196" y2="204"/><line x1="72" y1="234" x2="196" y2="234"/>
+</g>
+<g fill="#ffffff" stroke="#ff3b30" stroke-width="1.5">
+<rect x="200" y="102" width="96" height="24" rx="6"/><rect x="200" y="132" width="96" height="24" rx="6"/><rect x="200" y="162" width="96" height="24" rx="6"/><rect x="200" y="192" width="96" height="24" rx="6"/><rect x="200" y="222" width="96" height="24" rx="6"/>
+</g>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<text x="248" y="119">DB 조회</text><text x="248" y="149">DB 조회</text><text x="248" y="179">DB 조회</text><text x="248" y="209">DB 조회</text><text x="248" y="239">DB 조회</text>
+</g>
+<g stroke="#0a84ff" stroke-width="1.5" fill="none">
+<path d="M384 114 L456 174" marker-end="url(#mb)"/><path d="M384 144 L456 174" marker-end="url(#mb)"/><path d="M384 174 L456 174" marker-end="url(#mb)"/><path d="M384 204 L456 174" marker-end="url(#mb)"/><path d="M384 234 L456 174" marker-end="url(#mb)"/>
+</g>
+<rect x="460" y="150" width="78" height="48" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="499" y="170" font-size="12" fill="#1d1d1f" text-anchor="middle">this.cache</text>
+<text x="499" y="188" font-size="12" fill="#6e6e73" text-anchor="middle">Promise 1개</text>
+<line x1="538" y1="174" x2="556" y2="174" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+<rect x="560" y="162" width="56" height="24" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="588" y="179" font-size="12" fill="#1d1d1f" text-anchor="middle">DB 1회</text>
+<line x1="24" y1="270" x2="616" y2="270" stroke="#d1d1d6"/>
+<text x="24" y="296" font-size="13" fill="#1d1d1f">DB 조회 횟수: <tspan fill="#ff3b30" font-weight="700">5회</tspan> (첫 응답 전에 온 요청 수만큼)</text>
+<text x="336" y="296" font-size="13" fill="#1d1d1f">DB 조회 횟수: <tspan fill="#34c759" font-weight="700">1회</tspan></text>
+<text x="336" y="322" font-size="12" fill="#6e6e73">조회가 실패하면 catch에서 cache = null</text>
+<text x="336" y="340" font-size="12" fill="#6e6e73">→ 다음 요청이 다시 조회</text>
+</svg>

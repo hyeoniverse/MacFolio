@@ -7,25 +7,45 @@ seriesOrder: 2
 summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더가 하나도 없었다. CSP 출처 목록을 직접 작성하지 않고 빌드 환경 변수와 PROJECTS에서 생성하고, E2E가 같은 CSP로 실행되어 차단된 요청이 있으면 실패하게 했다. 이후 출처가 네 차례 추가된 기록도 정리한다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목을 점검한 결과, API 서버 응답에는 [helmet](https://helmetjs.github.io/)이 보안 헤더를 붙이지만 사이트(`macfolio.hyeoniverse.com`) 응답에는 보안 헤더가 없었다. `public/_headers`에는 캐시 설정만 있었다.
+웹 서버는 HTML이나 JavaScript 파일을 보낼 때 본문 앞에 **응답 헤더**를 붙인다. `Content-Type: text/html`처럼 파일 형식을 알리는 헤더도 있고, 브라우저에게 "이 페이지에서는 이런 동작을 허용하지 말라"고 지시하는 헤더도 있다. 후자를 보안 헤더라고 부른다. 보안 헤더는 서버 코드의 결함을 직접 고치지는 않지만, 결함이 있더라도 브라우저가 그 결함을 이용한 동작을 실행하지 않게 한다.
+
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목을 점검한 결과, API 서버 응답에는 Express용 보안 헤더 미들웨어인 [helmet](https://helmetjs.github.io/)이 보안 헤더를 붙이고 있었지만 사이트(`macfolio.hyeoniverse.com`) 응답에는 보안 헤더가 없었다. 정적 파일 응답의 헤더를 지정하는 `public/_headers`에는 캐시 설정만 있었다. 변경은 [PR #156](https://github.com/hyeoniverse/MacFolio/pull/156)이다.
+
+## 보안 헤더가 없어서 막지 못한 것
 
 사이트 응답의 헤더는 `Content-Type`과 캐시 설정뿐이었다. 그래서 다음 세 가지를 막지 못했다.
 
-- 다른 사이트가 이 사이트를 iframe에 넣고 위에 투명한 버튼을 겹치는 클릭재킹[^clickjacking]
-- 글이나 README의 Markdown 처리에 결함이 생긴 경우, 삽입된 스크립트가 임의의 서버로 요청을 보내는 것
-- 외부 링크를 누르는 시각에 `/memo/<글 주소>` 같은 전체 경로가 `Referer` 헤더로 전달되는 것
+| 위협                        | 예                                                                                                               |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 클릭재킹[^clickjacking]     | 다른 사이트가 MacFolio를 투명한 iframe으로 겹쳐 놓고, 사용자가 그 사이트의 버튼을 누르게 유도한다                |
+| 삽입된 스크립트의 외부 요청 | 글이나 README의 Markdown 처리에 결함이 생겨 `<script>`가 페이지에 들어가면, 그 스크립트가 임의의 서버로 요청한다 |
+| 전체 주소 노출              | 글 안의 외부 링크를 누르는 시각에 `/memo/<글 주소>` 같은 전체 경로가 `Referer` 헤더로 상대 사이트에 전달된다     |
+
+![헤더가 없으면 공격 사이트 위에 투명하게 겹친 MacFolio iframe의 버튼이 눌리고, frame-ancestors 'self'가 있으면 브라우저가 iframe에 MacFolio를 그리지 않는 비교](./images/security-headers-clickjacking.svg '사용자가 누른 위치에 실제로 있는 것은 투명한 iframe 안의 MacFolio 버튼이다')
+
+클릭재킹이 위험한 이유는 iframe 안의 MacFolio가 사용자의 쿠키로 로그인된 상태로 열리기 때문이다. 관리자가 공격 사이트에서 "경품 받기"를 누르면, 같은 위치에 겹쳐 둔 MacFolio의 버튼이 관리자 권한으로 눌린다.
 
 Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)). CSP는 ==그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층==이다.
 
-<details>
-<summary>용어 정리</summary>
+## CSP의 동작
 
-- **CSP(Content Security Policy)**: 페이지가 스크립트·스타일·이미지·연결·iframe을 어느 출처에서 불러와도 되는지 브라우저에 알리는 응답 헤더. 목록에 없는 출처의 요청은 브라우저가 차단하고 콘솔에 위반 메시지를 출력한다. ([MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP))
-- **출처(origin)**: `https://host:port`까지의 주소. 경로는 포함하지 않는다.
-- **지시어(directive)**: CSP 안의 항목 하나. `script-src`, `connect-src`, `frame-src`처럼 리소스 종류별로 허용 출처를 적는다.
-- **nonce**: 응답마다 새로 생성하는 임의의 값. 인라인 스크립트에 같은 값을 붙여 그 스크립트만 허용한다. 정적 파일 헤더에는 응답마다 다른 값을 넣을 수 없다.
+CSP(Content Security Policy)는 페이지가 스크립트·스타일·이미지·연결·iframe을 어느 출처에서 불러와도 되는지 브라우저에 알리는 응답 헤더다([MDN: CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)). 몇 가지 용어를 먼저 정리한다.
 
-</details>
+- **출처(origin)**: 주소의 `scheme://host:port` 부분. `https://macfolio.hyeoniverse.com/memo/a`와 `https://macfolio.hyeoniverse.com/files/b`는 출처가 같고, `https://api.macfolio…`는 호스트가 달라 다른 출처다. 경로는 출처에 포함하지 않는다.
+- **지시어(directive)**: CSP 안의 항목 하나. `script-src`(스크립트), `connect-src`(`fetch` 같은 연결), `frame-src`(iframe)처럼 리소스 종류마다 허용 출처 목록을 적는다. 해당 종류의 지시어가 없으면 `default-src`를 사용한다.
+- **`'self'`**: 페이지 자신의 출처.
+- **해시와 nonce**: HTML 안에 직접 쓴 인라인 `<script>`는 기본적으로 차단된다. 그 스크립트 내용의 SHA-256 해시를 CSP에 적거나, 응답마다 새로 만든 임의의 값(nonce)을 CSP와 `<script nonce="…">`에 함께 적으면 그 스크립트만 허용된다. 정적 파일의 헤더에는 응답마다 다른 값을 넣을 수 없으므로 nonce를 쓸 수 없다.
+
+예를 들어 응답에 `script-src 'self' https://challenges.cloudflare.com`이 있으면 브라우저는 다음과 같이 판정한다.
+
+![브라우저가 같은 출처의 스크립트는 실행하고, 목록에 없는 출처와 인라인 스크립트는 차단하며 콘솔에 위반 메시지를 출력하는 흐름](./images/security-headers-csp-check.svg '차단된 스크립트는 요청 자체가 나가지 않고, 개발자 도구 콘솔에 Refused to load 메시지만 남는다')
+
+| 페이지가 시도하는 것                       | 결과                                        |
+| ------------------------------------------ | ------------------------------------------- |
+| `<script src="/assets/index.js">`          | 실행. `'self'`에 해당한다                   |
+| `<script src="https://evil.example/x.js">` | 차단. 목록에 없는 출처다                    |
+| `<script>alert(1)</script>`                | 차단. `'unsafe-inline'`도, 맞는 해시도 없다 |
+| `eval('1 + 1')`                            | 차단. `'unsafe-eval'`이 없다                |
 
 ## 검토한 방법
 
@@ -46,6 +66,16 @@ Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로
 | `Permissions-Policy`         | `camera=(), microphone=(), geolocation=()` 등 | 사용하지 않는 기기 권한 (iframe 안의 사이트 포함)      |
 | `Cross-Origin-Opener-Policy` | `same-origin-allow-popups`                    | 다른 출처의 창이 `window.opener`로 이 창을 조작하는 것 |
 
+`X-Content-Type-Options: nosniff`가 없으면, 브라우저는 `Content-Type`이 `text/plain`인 파일도 내용이 JavaScript처럼 보이면 스크립트로 실행할 수 있다. `nosniff`는 선언된 형식이 스크립트 형식이 아니면 `<script>`로 불러와도 실행하지 않게 한다.
+
+`Referrer-Policy: strict-origin-when-cross-origin`은 링크를 따라 다른 사이트로 이동할 때 출처만 전달한다. 글 `/memo/security-headers` 안의 GitHub 링크를 누른 경우를 비교하면 다음과 같다.
+
+| 이동한 곳                           | 전달되는 `Referer`                                       |
+| ----------------------------------- | -------------------------------------------------------- |
+| 같은 사이트의 다른 글               | `https://macfolio.hyeoniverse.com/memo/security-headers` |
+| 다른 사이트(`https://github.com/…`) | `https://macfolio.hyeoniverse.com/` (경로 제외)          |
+| HTTPS에서 HTTP 사이트로             | 보내지 않는다                                            |
+
 각 헤더의 정의는 MDN의 [X-Content-Type-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options), [Referrer-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy), [Permissions-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy), [Cross-Origin-Opener-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy) 문서에 있다.
 
 ## CSP가 허용하는 출처
@@ -59,10 +89,15 @@ Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로
 | iframe              | `frame-src`              | 자기 사이트(API 문서 앱), Turnstile, 프로젝트 데모 사이트 5곳 | 프로젝트 앱이 데모 사이트를 iframe으로 표시한다                                                |
 | 이미지              | `img-src`                | `https:` 전체                                                 | GitHub README와 글의 외부 이미지는 주소를 미리 알 수 없다. 이미지는 스크립트를 실행하지 못한다 |
 | 스타일              | `style-src`              | 자기 사이트, 인라인 스타일                                    | React의 `style` 속성과 Mermaid·Scalar가 생성하는 `<style>`                                     |
-| 플러그인·기준 주소  | `object-src`, `base-uri` | `'none'`, `'self'`                                            |                                                                                                |
+| 플러그인·기준 주소  | `object-src`, `base-uri` | `'none'`, `'self'`                                            | `<object>` 플러그인 차단, `<base>`로 상대 주소의 기준을 바꾸는 것 차단                         |
 | 이 사이트를 넣는 쪽 | `frame-ancestors`        | `'self'`                                                      | 다른 사이트가 이 사이트를 iframe에 넣는 클릭재킹 차단                                          |
 
+`frame-src`와 `frame-ancestors`는 방향이 반대다. `frame-src`는 "MacFolio 안에 넣을 수 있는 iframe"을, `frame-ancestors`는 "MacFolio를 iframe으로 넣을 수 있는 바깥 페이지"를 제한한다.
+
 인라인 스크립트는 하나 있었다. `index.html`에서 첫 화면을 렌더링하기 전에 다크 모드를 적용하는 스크립트다. 해시를 CSP에 넣는 방법도 있지만, 내용을 수정할 때마다 해시를 다시 계산해야 해서 `public/theme-boot.js` 파일로 분리했다. `<head>`의 일반 `<script src>`라 렌더링 전에 실행되는 점은 같다.
+
+> [!NOTE] 이후 해시 방식으로 바꿨다
+> 파일로 분리한 테마 스크립트는 렌더링을 멈추는 요청을 하나 추가했다. 휴대폰 Lighthouse에서 첫 화면 표시(FCP)가 약 0.5초 늦어, 10월 31일 [#409](https://github.com/hyeoniverse/MacFolio/pull/409)에서 스크립트를 다시 `index.html`에 인라인으로 넣고 CSP `script-src`에는 그 내용의 SHA-256 해시만 추가했다. 내용이 바뀌면 `worker/themeBoot.test.ts`가 새 해시 값을 알려 준다.
 
 ## 출처 목록을 코드에서 생성
 
@@ -78,7 +113,7 @@ securityHeaders({
 `worker/securityHeaders.ts`가 헤더 값을 생성한다. 지시어마다 그 출처를 허용하는 이유를 주석으로 남겼다.
 
 ```ts
-// apps/react/worker/securityHeaders.ts
+// apps/react/worker/securityHeaders.ts (PR #156 시점)
 const directives: Record<string, string[]> = {
 	'default-src': ["'self'"],
 	// 인라인 스크립트는 없다 (테마 적용 스크립트도 public/theme-boot.js 파일이다)
@@ -93,7 +128,16 @@ const directives: Record<string, string[]> = {
 };
 ```
 
-그리고 Vite 플러그인이 빌드 시각에 `dist/_headers` 끝에 모든 경로(`/*`) 블록으로 추가한다. 주소는 출처(`https://host`)만 남기고, `http(s)`가 아닌 값은 제외한다. `_headers` 파일 형식은 [Cloudflare Workers 정적 자산 헤더 문서](https://developers.cloudflare.com/workers/static-assets/headers/)를 따른다.
+`origins()`는 주소에서 출처(`https://host`)만 남기고, `http(s)`가 아닌 값은 제외한다. 예를 들어 데모 주소 뒤에 경로나 쿼리가 붙어 있어도 `https://qryou-app.web.app`처럼 출처만 남고, `javascript:alert(1)` 같은 값은 목록에 들어가지 않는다.
+
+Vite 플러그인이 빌드 시각에 이 헤더를 `dist/_headers` 끝에 모든 경로(`/*`) 블록으로 추가한다. `_headers` 파일 형식은 [Cloudflare Workers 정적 자산 헤더 문서](https://developers.cloudflare.com/workers/static-assets/headers/)를 따른다.
+
+```text
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; …
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+```
 
 `/memo/<글>` 같은 앱 주소는 파일이 아니라 Worker가 `index.html`을 대신 응답한다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)). 이 응답에도 헤더가 붙는지 `wrangler dev`로 확인했다. Worker가 정적 자산 바인딩에서 수신한 응답의 헤더를 그대로 전달하므로 같은 헤더가 붙는다.
 
@@ -102,7 +146,7 @@ const directives: Record<string, string[]> = {
 ## CSP를 적용한 상태로 E2E 실행
 
 > [!WARNING] 누락된 출처는 오류 화면 없이 실패한다
-> CSP에서 출처 하나를 누락하면 그 기능만 오류 화면 없이 동작을 멈춘다.
+> CSP에서 출처 하나를 누락하면 그 기능만 오류 화면 없이 동작을 멈춘다. 예를 들어 `connect-src`에 날씨 API 출처가 없으면 날씨 데이터 요청이 차단되고, 그 원인은 개발자 도구 콘솔에만 출력된다.
 
 그래서 E2E가 배포와 같은 CSP를 적용한 상태로 실행되게 했다.
 
@@ -125,9 +169,9 @@ cspViolations: [
 ],
 ```
 
-이후 새 외부 서비스를 연결하면서 CSP 추가를 누락하면, 그 기능의 E2E가 CSP 위반으로 실패한다.
+Playwright의 fixture는 시험 함수에 넘겨주는 준비물이다. `{ auto: true }`는 시험이 이 fixture를 사용하지 않아도 모든 시험에 자동으로 적용하라는 옵션이다. `use()` 앞은 시험 전에, 뒤는 시험이 끝난 뒤에 실행되므로 시험 도중 출력된 위반 메시지를 모두 모아 마지막에 검사한다. 이후 새 외부 서비스를 연결하면서 CSP 추가를 누락하면, 그 기능의 E2E가 CSP 위반으로 실패한다.
 
-`theme-boot.js`로 분리한 뒤 시험 하나가 불안정해졌다. 로딩 전 화면을 확인하는 시험이 모든 스크립트 요청을 지연시켰는데, `<head>`의 일반 `<script src>`는 ==내려받기가 끝날 때까지 HTML 파싱을 멈춘다==. 그래서 시험이 앱 스크립트 요청만 지연시키도록 수정했다.
+`theme-boot.js`로 분리한 뒤 시험 하나가 불안정해졌다. 로딩 전 화면을 확인하는 시험이 모든 스크립트 요청을 지연시켰는데, `<head>`의 일반 `<script src>`는 ==내려받기가 끝날 때까지 HTML 파싱을 멈춘다==. 모든 스크립트를 지연시키면 `theme-boot.js`도 지연되고 그동안 HTML 파싱 전체가 멈추므로, 시험이 앱 스크립트 요청만 지연시키도록 수정했다.
 
 ## 확인
 
@@ -137,7 +181,7 @@ cspViolations: [
   3. 인라인·`eval` 스크립트와 플러그인 차단
   4. `_headers`의 모든 경로 블록 생성
 - E2E: 전체 E2E가 CSP 위반 0건으로 통과
-- 응답: 미리보기 서버에 `curl -I`로 요청한 현재 응답은 아래와 같다. CSP 지시어는 14개다.
+- 응답: 미리보기 서버에 `curl -I`로 요청한 응답은 아래와 같다. 당시 CSP 지시어는 14개였다.
 
 <details>
 <summary>curl -I 응답 헤더</summary>
@@ -165,7 +209,7 @@ Cross-Origin-Opener-Policy: same-origin-allow-popups
 | 관리자 문서 업로드                              | R2 업로드 주소       | [#255](https://github.com/hyeoniverse/MacFolio/pull/255)                  |
 | 방문자가 끌어다 놓은 PDF를 pdf.js로 읽기        | `blob:`              | [#263](https://github.com/hyeoniverse/MacFolio/pull/263) (별도 수정 커밋) |
 
-이 밖에 HYEONIVERSE 창에서 블로그로 이동하면 차단되던 문제는 `frame-src`에 블로그 출처를 추가해 해결했다([#328](https://github.com/hyeoniverse/MacFolio/pull/328)).
+이 밖에 HYEONIVERSE 창에서 블로그로 이동하면 차단되던 문제는 `frame-src`에 블로그 출처를 추가해 해결했다([#328](https://github.com/hyeoniverse/MacFolio/pull/328)). 데모 사이트 `https://www.hyeoniverse.com`의 메뉴가 iframe 안에서 `https://blog.hyeoniverse.com`으로 이동하는데, 이 출처가 `frame-src`에 없어 창이 `ERR_BLOCKED_BY_CSP`로 막혔다.
 
 ## 직접 확인하는 방법
 
@@ -177,13 +221,11 @@ grep -A3 '^/\*' dist/_headers | head
 curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|strict-transport|x-content-type'
 ```
 
-브라우저에서는 개발자 도구 Console에 `Refused to load …` 메시지가 없는지 확인한다. 새 외부 출처를 쓰게 되면 [apps/react/worker/securityHeaders.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.ts)의 목록에 추가하고 [apps/react/worker/securityHeaders.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.test.ts)로 확인한다. E2E는 CSP를 적용한 상태로 실행된다(`playwright.config.ts`의 `CSP_TEST_API_URL`).
-
-참고 문서: [MDN CSP](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), [Cloudflare Workers 정적 자산 헤더(\_headers)](https://developers.cloudflare.com/workers/static-assets/headers/), [CSP Evaluator](https://csp-evaluator.withgoogle.com/).
+브라우저에서는 개발자 도구 Console에 `Refused to load …` 메시지가 없는지 확인한다. 새 외부 출처를 쓰게 되면 [apps/react/worker/securityHeaders.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.ts)의 목록에 추가하고 [apps/react/worker/securityHeaders.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/worker/securityHeaders.test.ts)로 확인한다. E2E는 CSP를 적용한 상태로 실행된다(`playwright.config.ts`의 `CSP_TEST_API_URL`). 작성한 CSP의 약점은 Google의 [CSP Evaluator](https://csp-evaluator.withgoogle.com/)에 붙여 넣어 점검할 수 있다.
 
 ## 남은 과제
 
-- **`style-src 'unsafe-inline'`은 유지했다.** React의 `style` 속성과 Mermaid·Scalar가 생성하는 `<style>` 때문이다. 스타일 주입은 스크립트보다 위험이 작지만, 라이브러리가 nonce를 지원하면 제거할 수 있다.
+- **`style-src 'unsafe-inline'`은 유지했다.** React의 `style` 속성과 Mermaid·Scalar가 생성하는 `<style>` 때문이다. 스타일 주입은 스크립트를 실행하지 못해 스크립트 주입보다 위험이 작지만, 라이브러리가 nonce를 지원하면 제거할 수 있다.
 - **`img-src https:`는 범위가 넓다.** 글에 외부 이미지를 넣는 블로그라 범위를 좁히기 어렵다.
 
 > [!IMPORTANT] 시험이 배포와 같은 값을 쓰는 구성이 핵심이다
@@ -196,8 +238,23 @@ curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|s
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
 - [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 
-PR: [#156](https://github.com/hyeoniverse/MacFolio/pull/156)
+[^clickjacking]: 사용자가 보이는 버튼을 누른다고 생각하지만 실제로는 위에 겹친 다른 사이트의 요소를 누르게 만드는 공격. `frame-ancestors` 지시어로 이 사이트를 iframe에 넣을 수 있는 출처를 제한해 차단한다. [OWASP: Clickjacking](https://owasp.org/www-community/attacks/Clickjacking)
 
-[^clickjacking]: 사용자가 보이는 버튼을 누른다고 생각하지만 실제로는 위에 겹친 다른 사이트의 요소를 누르게 만드는 공격. `frame-ancestors` 지시어로 이 사이트를 iframe에 넣을 수 있는 출처를 제한해 차단한다.
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: Content Security Policy (CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)
+- [MDN: CSP frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)
+- [MDN: X-Content-Type-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options)
+- [MDN: Referrer-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy)
+- [MDN: Permissions-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy)
+- [MDN: Cross-Origin-Opener-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy)
+- [OWASP: Clickjacking](https://owasp.org/www-community/attacks/Clickjacking)
+- [Cloudflare Workers: Static assets headers (\_headers)](https://developers.cloudflare.com/workers/static-assets/headers/)
+- [Playwright: Fixtures](https://playwright.dev/docs/test-fixtures)
+- [helmet](https://helmetjs.github.io/)
+- [CSP Evaluator](https://csp-evaluator.withgoogle.com/)
+
+</details>
 
 #MacFolio #보안 #CSP #Cloudflare #Vite

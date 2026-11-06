@@ -5,9 +5,21 @@ category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 첫 방문자에게 화면을 어둡게 덮고 한 곳만 비추는 둘러보기와 macOS 팁 앱을 추가했다. 덮개는 pointer-events none으로 클릭을 통과시키고, 비춘 곳의 클릭은 캡처 단계에서 감지해 원래 동작 뒤 다음 단계로 넘긴다. 이후 팁 앱의 위쪽 막대가 제목 표시줄을 덮어 창을 끌 수 없던 문제를 수정했다.
 ---
 
-MacFolio의 첫 화면은 macOS 바탕화면이다. Dock에 아이콘이 스무 개 가까이 있고 메뉴 막대·바탕화면 폴더·위젯까지 있어, 처음 온 사람은 이력서와 블로그가 어디에 있는지 바로 알기 어렵다. 그래서 화면의 한 곳씩 비추며 "여기를 눌러 보세요"라고 안내하는 둘러보기와, 앱 사용법을 모은 팁 앱을 추가했다([#313](https://github.com/hyeoniverse/MacFolio/pull/313)). 이후 팁 앱 창을 끌 수 없는 문제를 수정했다([#325](https://github.com/hyeoniverse/MacFolio/pull/325)).
+## 배경
+
+MacFolio의 첫 화면은 macOS 바탕화면이다. Dock에 아이콘이 스무 개 가까이 있고 메뉴 막대·바탕화면 폴더·위젯까지 있어, 처음 온 사람은 이력서와 블로그가 어디에 있는지 바로 찾기 어렵다.
+
+이런 화면에 흔히 붙이는 것이 **온보딩 둘러보기**(product tour)다. 화면 전체를 반투명한 검은 막으로 덮고 한 요소만 밝게 남긴 뒤, 옆에 "여기를 눌러 보세요" 같은 설명 카드를 띄운다. 사용자가 다음을 누르면 밝은 자리가 다음 요소로 이동한다. MacFolio에도 이 둘러보기와, 앱 사용법을 모은 팁 앱을 추가했다([#313](https://github.com/hyeoniverse/MacFolio/pull/313)). 이후 팁 앱 창을 끌 수 없는 문제를 수정했다([#325](https://github.com/hyeoniverse/MacFolio/pull/325)).
 
 ![처음 방문하면 표시되는 환영 카드](./images/first-visit-tour-welcome.jpg '처음 방문하면 로딩 화면이 사라지고 600ms 뒤 화면 가운데에 환영 카드가 표시된다. 다음에 할게요를 누르면 이 브라우저에서는 다시 표시하지 않는다')
+
+구현에는 브라우저 기능 세 가지를 사용했다.
+
+| 기능                     | 뜻                                                                                            | 이 글에서의 쓰임                      |
+| ------------------------ | --------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `box-shadow`의 퍼짐 반경 | 요소 둘레에 그림자를 그리고, 퍼짐 반경만큼 그림자 영역을 넓힌다                               | 상자 바깥을 모두 어둡게 칠한다        |
+| `pointer-events: none`   | 요소가 마우스·터치 입력의 대상이 되지 않게 한다. 입력은 그 아래에 있는 요소로 전달된다        | 덮개가 클릭을 가로채지 않게 한다      |
+| 이벤트 캡처 단계         | 클릭 이벤트가 `window`에서 클릭한 요소까지 내려가는 첫 단계. 이 단계의 리스너가 먼저 호출된다 | 비춘 곳의 클릭을 감지해 단계를 넘긴다 |
 
 ## 요구 사항
 
@@ -43,13 +55,31 @@ MacFolio의 첫 화면은 macOS 바탕화면이다. Dock에 아이콘이 스무 
 }
 ```
 
-- **구멍은 그림자로 만든다.** 상자 자체는 투명하고, 퍼짐 반경 9999px의 `box-shadow`[^box-shadow]가 상자 바깥 전체를 칠한다. `clip-path`나 SVG 마스크로 구멍을 뚫는 방법보다 요소가 하나 적고, 상자의 `top`·`left`·`width`·`height`에 `transition`을 지정하면 다음 단계로 이동하는 모습이 그대로 애니메이션된다.
-- **덮개는 클릭을 받지 않는다.** `.tour`에 [`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)을 지정해 어두운 영역과 구멍 모두 클릭이 아래 요소에 도달한다. 카드만 `pointer-events: auto`로 되돌려 건너뛰기·이전·다음 단추를 누를 수 있게 했다.
-- **z-index는 전역 층 토큰.** 알림보다 위, 펼친 메뉴보다 아래인 `--z-tour: 9500`을 [전역 층 목록](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)에 추가했다. 둘러보기 중에도 Apple 메뉴를 펼치면 메뉴가 덮개 위에 표시된다.
+### 구멍은 그림자로 만든다
+
+상자 `.tour-spotlight` 자체는 투명하다. 어두운 영역은 상자의 `box-shadow`[^box-shadow]가 그린다. `box-shadow: 0 0 0 9999px …`의 네 숫자는 차례로 가로 오프셋, 세로 오프셋, 흐림 반경, 퍼짐 반경이다. 오프셋과 흐림이 0이고 퍼짐이 9999px이면 상자 둘레 9999px까지 같은 색으로 칠한다. 화면 크기가 9999px보다 작으므로 상자 바깥 전체가 어두워진다. 그림자는 상자 안쪽을 칠하지 않으므로 상자 자리만 원래 밝기로 남는다.
+
+![box-shadow 값 다섯 개의 뜻과, 퍼짐 반경으로 상자 바깥을 어둡게 칠한 결과](./images/first-visit-tour-box-shadow.svg '퍼짐 반경 9999px의 그림자가 상자 바깥을 칠하고 상자 안쪽은 비워 둔다. 상자를 옮기면 구멍도 함께 옮겨진다')
+
+`clip-path`나 SVG 마스크로 덮개에 구멍을 뚫는 방법보다 요소가 하나 적다. 또 상자의 `top`·`left`·`width`·`height`에 `transition`을 지정하면, 1단계의 이력서 폴더에서 2단계의 Dock 아이콘으로 상자가 이동하는 모습이 그대로 애니메이션된다.
+
+### 덮개는 클릭을 받지 않는다
+
+덮개 `.tour`는 화면 전체를 덮는 `position: fixed` 요소다. 기본값대로 두면 덮개가 모든 클릭을 받아, 그 아래의 Dock 아이콘을 누를 수 없다. 그래서 `.tour`에 [`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)을 지정했다. 이 값을 받은 요소는 마우스 입력의 대상에서 제외되고, 클릭은 같은 좌표에서 그 아래에 있는 요소로 전달된다. 어두운 영역과 구멍 모두 클릭이 아래 요소에 도달한다.
+
+카드만 `pointer-events: auto`로 되돌려 건너뛰기·이전·다음 단추를 누를 수 있게 했다. `pointer-events`는 자식 요소에 상속되므로, 되돌리지 않으면 카드 단추도 눌리지 않는다.
+
+### 덮개의 겹침 순서
+
+`z-index`는 겹친 요소 중 어느 것이 위에 그려지는지 정하는 숫자이고, 클수록 위에 그려진다. 알림(9000)보다 위, 펼친 메뉴(10000)보다 아래인 `--z-tour: 9500`을 [전역 층 목록](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)에 추가했다. 그래서 둘러보기 중에도 Apple 메뉴를 펼치면 메뉴가 덮개 위에 표시된다.
 
 ### 비춘 곳을 누르면 다음 단계로
 
-클릭이 덮개를 통과하므로 Dock 아이콘을 누르면 앱이 그대로 열린다. 둘러보기는 그 클릭을 `document`의 캡처 단계에서 감지한다.
+클릭이 덮개를 통과하므로 Dock 아이콘을 누르면 앱이 그대로 열린다. 둘러보기는 그 클릭을 `document`의 캡처 단계에서 감지해 다음 단계로 넘어간다.
+
+DOM 이벤트는 세 단계로 전달된다[^capture]. 표를 클릭하면 이벤트가 `Window` → `Document` → `<html>` → `<body>` → … 순서로 내려가며 각 요소의 캡처 리스너를 호출하고(캡처 단계), 클릭한 요소에 도착한 뒤(대상 단계), 다시 같은 길을 거슬러 올라가며 일반 리스너를 호출한다(버블 단계).
+
+![W3C UI Events 명세의 이벤트 흐름 도식. Window에서 td까지 내려가는 캡처 단계, td의 대상 단계, 다시 Window로 올라가는 버블 단계](./images/first-visit-tour-eventflow.png '표의 셀(td)을 클릭했을 때의 이벤트 흐름. 빨간 점선이 캡처 단계(1), 파란 칸이 대상 단계(2), 초록 점선이 버블 단계(3)다. document의 캡처 리스너는 대상 요소의 리스너보다 먼저 호출된다')
 
 ```ts
 // desktop/tour/Tour.tsx
@@ -64,9 +94,12 @@ useEffect(() => {
 }, [target, single]);
 ```
 
-- 캡처 단계(`addEventListener`의 세 번째 인자 `true`)[^capture]에 등록해, 대상 요소의 핸들러가 `stopPropagation`을 호출해도 감지된다.
-- `preventDefault`를 호출하지 않으므로 원래 동작(앱 열기, 폴더 열기)은 막지 않는다.
-- 단계 전환은 `setTimeout(…, 0)`으로 미룬다. 같은 클릭으로 창이 열리는 상태 변경이 먼저 반영되고, 다음 단계의 대상 위치는 그 뒤에 계산된다.
+| 코드의 선택                              | 이유                                                                                                                             |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `addEventListener`의 세 번째 인자 `true` | 캡처 단계에 등록한다. 대상 요소의 핸들러가 `stopPropagation`으로 버블 단계를 멈춰도, 그보다 먼저 호출되므로 클릭을 놓치지 않는다 |
+| `preventDefault`를 호출하지 않음         | 원래 동작(앱 열기, 폴더 열기)을 막지 않는다                                                                                      |
+| `el.contains(event.target)`              | Dock 아이콘 안의 그림이나 글자를 눌러도 대상 요소 안의 클릭으로 판단한다                                                         |
+| `setTimeout(…, 0)`으로 단계 전환을 미룸  | 같은 클릭으로 창이 열리는 상태 변경이 먼저 반영되고, 다음 단계의 대상 위치는 그 뒤에 계산한다                                    |
 
 ### 카드 위치
 
@@ -81,6 +114,8 @@ function cardPosition(box: Box, cardHeight: number) {
 	return { top, left, width };
 }
 ```
+
+예를 들어 화면 오른쪽 위의 이력서 폴더를 비추면 아래 공간이 넉넉하므로 카드는 폴더 아래에 놓이고, 폴더 중앙에 맞추면 오른쪽 끝을 넘으므로 왼쪽으로 밀려 오른쪽 가장자리에서 16px 떨어진다. 화면 맨 아래의 Dock 아이콘을 비추면 아래 공간이 없으므로 카드가 아이콘 위로 올라간다.
 
 | 바탕화면 아이콘 (1단계)                                                                                                                                                      | Dock 아이콘 (7단계)                                                                                                                                     |
 | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -110,11 +145,11 @@ if (!visible) {
 }
 ```
 
-`querySelector`의 결과만 확인하면 부족했다. 휴대폰 홈 화면은 여러 쪽을 가로로 배치하므로 ==다른 쪽의 아이콘은 문서에는 있지만 화면 밖==(`left ≥ innerWidth`)에 있다. 너비·높이 0도 함께 확인해 `display: none`인 요소를 제외한다.
+`getBoundingClientRect()`는 요소가 화면(뷰포트)의 어느 좌표에 몇 픽셀 크기로 그려져 있는지 반환한다. `querySelector`의 결과만 확인하면 부족했다. 휴대폰 홈 화면은 여러 쪽을 가로로 배치하므로 ==다른 쪽의 아이콘은 문서에는 있지만 화면 밖==에 있다. 예를 들어 화면 폭이 390px이면 두 번째 쪽 아이콘의 `left`는 390 이상이라 `left < innerWidth` 조건에서 걸러진다. 너비·높이 0도 함께 확인해 `display: none`인 요소를 제외한다.
 
 ## 창 열림·크기 변경 시 위치 다시 계산
 
-==대상의 위치는 단계가 바뀐 시각 한 번만 계산하면 어긋난다.== 이력서 폴더를 누르면 Finder 창이 열리며 확대 애니메이션이 진행되고, 화면 크기를 바꾸면 Dock 아이콘이 이동한다. 그래서 단계가 유지되는 동안 [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)으로 매 프레임 위치를 다시 읽는다.
+==대상의 위치는 단계가 바뀐 시각 한 번만 계산하면 어긋난다.== 이력서 폴더를 누르면 Finder 창이 열리며 확대 애니메이션이 진행되고, 화면 크기를 바꾸면 Dock 아이콘이 이동한다. 그래서 단계가 유지되는 동안 [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)으로 매 프레임 위치를 다시 읽는다. `requestAnimationFrame(콜백)`은 브라우저가 다음 화면을 그리기 직전에 콜백을 한 번 호출한다. 호출 횟수는 보통 화면 주사율을 따르므로 60Hz 모니터에서는 초당 약 60번이다.
 
 ```ts
 let frame = 0;
@@ -128,7 +163,13 @@ frame = requestAnimationFrame(follow);
 return () => cancelAnimationFrame(frame);
 ```
 
-- `ResizeObserver`는 대상의 크기 변화만 알려 주고 위치 이동(창 열림으로 인한 재배치, 애니메이션 중 `transform`)은 알려 주지 않는다. `resize` 이벤트도 창 열림을 감지하지 못한다. 매 프레임 읽기가 세 경우를 모두 처리하는 가장 단순한 방법이었다.
+| 감지 방법                         | 크기 변화   | 창 열림으로 인한 이동 | 애니메이션 중 `transform` |
+| --------------------------------- | ----------- | --------------------- | ------------------------- |
+| `ResizeObserver`                  | 감지        | 감지 못 함            | 감지 못 함                |
+| `window`의 `resize`               | 화면 크기만 | 감지 못 함            | 감지 못 함                |
+| 매 프레임 `getBoundingClientRect` | 감지        | 감지                  | 감지                      |
+
+- `ResizeObserver`는 관찰하는 요소의 크기가 바뀌면 콜백을 호출하는 API다. 위치 이동은 알려 주지 않는다. 매 프레임 읽기가 세 경우를 모두 처리하는 가장 단순한 방법이었다.
 - 비용은 프레임마다 `getBoundingClientRect` 한 번이다. 값이 같으면 `setBox`가 기존 객체를 그대로 반환해 React가 다시 렌더링하지 않는다.
 - 메뉴 막대처럼 화면 맨 위에 붙은 대상은 여유 6px을 더하면 테두리가 화면 밖으로 잘린다. `boxOf`에서 상자를 화면 안 2px로 제한했다.
 
@@ -151,6 +192,8 @@ const dock = (app: string) => `.dock .dock-item[aria-label="${app}"]`;
 const phoneApp = (app: string) => `.mobile-app[data-launch="${app}"]`;
 ```
 
+예를 들어 `dock('메시지')`는 `.dock .dock-item[aria-label="메시지"]`라는 선택자가 되어 Dock의 메시지 아이콘을 가리킨다.
+
 | 화면     | 비추는 단계                                                                                                                                              |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 데스크톱 | 15단계: 이력서 → Finder → Safari → 프로젝트 앱 → 메모 → 사진 → 메시지 → 메일 → GitHub → 터미널 → 음악 → 시스템 설정 → Launchpad → 서버 상태 → Apple 메뉴 |
@@ -166,7 +209,7 @@ const phoneApp = (app: string) => `.mobile-app[data-launch="${app}"]`;
 - 휴지통 › 내 브라우저 데이터에 "둘러보기를 본 기록"으로 표시되어 삭제할 수 있다. 거의 모든 방문자가 갖는 값이라 휴지통 아이콘을 채운 그림으로 바꾸지는 않는다(`fillsTrash: false`).
 - `localStorage` 접근이 예외를 던지는 환경에서는 둘러보기를 표시하지 않는다(`hasSeenTour()`가 `true` 반환). 기록을 저장할 수 없으면 매 방문마다 표시되기 때문이다.
 - 메뉴 막대의 도움말 › MacFolio 둘러보기, 팁 앱의 둘러보기 카드로 언제든 다시 시작한다.
-- `prefers-reduced-motion: reduce`이면 상자 이동과 테두리 애니메이션을 끈다.
+- `prefers-reduced-motion: reduce`이면 상자 이동과 테두리 애니메이션을 끈다. 이 미디어 특성은 운영체제에서 "동작 줄이기"를 켠 사용자를 가리킨다.
 
 > [!NOTE] E2E 시험의 둘러보기 기록
 > E2E 시험이 둘러보기 덮개에 가려지지 않도록, 공통 fixture는 시작 시각에 `macfolio:tour`를 `done`으로 설정한다. 둘러보기 시험만 `firstVisit(page)`로 이 값을 삭제한다.
@@ -189,7 +232,7 @@ macOS 팁 앱의 구성을 따랐다. 첫 화면에 찾기 칸, 둘러보기 카
 
 ### 원인
 
-팁 앱은 통합형 창(`chrome="unified"`)이다. 통합형 창에서는 투명한 제목 표시줄 `.macos-titlebar`(z-index 3)가 앱 내용 위에 놓여 끌기와 두 번 눌러 확대를 처리한다. 팁 앱의 위쪽 막대 `.tips-bar`는 뒤로·앞으로·홈 단추를 누를 수 있게 막대 **전체**를 z-index 4로 올렸다. 그 결과 ==막대가 제목 표시줄을 통째로 덮어, 빈 곳의 클릭이 제목 표시줄에 도달하지 않았다.==
+팁 앱은 통합형 창(`chrome="unified"`)이다. macOS의 통합형 창처럼 제목 표시줄과 도구 막대를 한 줄로 합친 모양이고, 투명한 제목 표시줄 `.macos-titlebar`(z-index 3)가 앱 내용 위에 놓여 끌기와 두 번 눌러 확대를 처리한다. 팁 앱의 위쪽 막대 `.tips-bar`는 뒤로·앞으로·홈 단추를 누를 수 있게 막대 **전체**를 z-index 4로 올렸다. 그 결과 ==막대가 제목 표시줄을 통째로 덮어, 빈 곳의 클릭이 제목 표시줄에 도달하지 않았다.==
 
 ![팁 앱 위쪽 막대 수정 전후의 클릭 경로](./images/first-visit-tour-tips-bar.svg '전: z-index 4인 막대 전체가 클릭을 받는다. 후: 막대는 그대로 위에 있지만 단추만 클릭을 받고 나머지는 아래 제목 표시줄로 통과한다')
 
@@ -246,8 +289,29 @@ macOS 팁 앱의 구성을 따랐다. 첫 화면에 찾기 칸, 둘러보기 카
 - [Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values): 같은 날 넓힌 Stylelint 규칙. 둘러보기 카드에서 존재하지 않는 토큰을 사용한 사례도 기록했다
 - [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021)
 
-[^box-shadow]: [`box-shadow`](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow)의 네 번째 길이 값은 퍼짐 반경(spread)이다. 흐림 0, 퍼짐 9999px이면 상자 둘레로 9999px까지 같은 색을 칠해 사실상 화면 전체를 덮는다. 그림자는 상자 안쪽을 칠하지 않으므로 상자 자리만 밝게 남는다.
+[^box-shadow]: [`box-shadow`](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow)의 네 번째 길이 값은 퍼짐 반경(spread)이다. 양수면 그림자가 그만큼 커진다. 흐림 0, 퍼짐 9999px이면 상자 둘레로 9999px까지 같은 색을 칠해 사실상 화면 전체를 덮는다. 바깥 그림자는 상자 안쪽에 그려지지 않으므로 상자 자리만 밝게 남는다.
 
-[^capture]: DOM 이벤트는 `window`에서 대상까지 내려가는 캡처 단계, 대상, 다시 올라가는 버블 단계 순서로 전달된다. [`addEventListener`의 `useCapture`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture)를 `true`로 지정하면 캡처 단계에서 호출된다.
+[^capture]: DOM 이벤트는 `window`에서 대상까지 내려가는 캡처 단계, 대상 단계, 다시 올라가는 버블 단계 순서로 전달된다. [`addEventListener`의 `useCapture`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#usecapture)를 `true`로 지정하면 캡처 단계에서 호출된다. [W3C UI Events: Event dispatch and DOM event flow](https://w3c.github.io/uievents/#event-flow)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow)
+- [MDN: pointer-events](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)
+- [MDN: EventTarget.addEventListener()](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener)
+- [W3C UI Events: Event dispatch and DOM event flow](https://w3c.github.io/uievents/#event-flow)
+- [MDN: Element.getBoundingClientRect()](https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect)
+- [MDN: Window.requestAnimationFrame()](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)
+- [MDN: ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+- [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- DOM 이벤트 흐름 도식: W3C, [UI Events (Editor's Draft) 3.1 Event dispatch and DOM event flow, eventflow.svg](https://w3c.github.io/uievents/images/eventflow.svg), W3C Software and Document License, 출처 표기 (흰 바탕 PNG로 변환)
+
+</details>
 
 #MacFolio #온보딩 #CSS #pointer-events #Playwright

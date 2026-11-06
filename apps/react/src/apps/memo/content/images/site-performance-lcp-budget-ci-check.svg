@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>perf:budget는 빌드 결과 index.html에서 처음부터 요청하는 파일을 찾고, 파일마다 brotli로 압축한 크기를 합해 boot 55KB, 합계 265KB 상한과 비교한다. 넘으면 CI의 check 작업이 실패한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">CI 성능 예산 검사(perf:budget)의 순서</text>
+<rect x="24" y="56" width="132" height="92" rx="10" fill="#f2f2f7"/>
+<text x="90" y="82" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">① 빌드</text>
+<text x="90" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">vite build</text>
+<text x="90" y="124" font-size="12" fill="#6e6e73" text-anchor="middle">dist/index.html</text>
+<text x="90" y="140" font-size="12" fill="#6e6e73" text-anchor="middle">dist/assets/*</text>
+<path d="M158 102 L176 102" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="180" y="56" width="140" height="92" rx="10" fill="#f2f2f7"/>
+<text x="250" y="82" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">② 태그 수집</text>
+<text x="250" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">script type=module</text>
+<text x="250" y="122" font-size="12" fill="#1d1d1f" text-anchor="middle">modulepreload · preload</text>
+<text x="250" y="140" font-size="12" fill="#1d1d1f" text-anchor="middle">stylesheet</text>
+<path d="M322 102 L340 102" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="56" width="132" height="92" rx="10" fill="#f2f2f7"/>
+<text x="410" y="82" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">③ 압축 크기</text>
+<text x="410" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">파일마다 brotli</text>
+<text x="410" y="122" font-size="12" fill="#1d1d1f" text-anchor="middle">41개 합계</text>
+<text x="410" y="140" font-size="12" fill="#6e6e73" text-anchor="middle">boot 따로 집계</text>
+<path d="M478 102 L496 102" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="500" y="56" width="116" height="92" rx="10" fill="#f2f2f7"/>
+<text x="558" y="82" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">④ 상한 비교</text>
+<text x="558" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">boot ≤ 55KB</text>
+<text x="558" y="122" font-size="12" fill="#1d1d1f" text-anchor="middle">합계 ≤ 265KB</text>
+<text x="24" y="186" font-size="13" font-weight="700" fill="#1d1d1f">측정값과 상한 (brotli 압축 크기)</text>
+<text x="24" y="218" font-size="12" fill="#1d1d1f">boot</text>
+<rect x="110" y="204" width="480" height="20" rx="4" fill="#f2f2f7"/>
+<rect x="110" y="204" width="431" height="20" rx="4" fill="#0a84ff"/>
+<line x1="590" y1="198" x2="590" y2="230" stroke="#ff3b30" stroke-width="2"/>
+<text x="120" y="219" font-size="12" fill="#ffffff">49.4KB</text>
+<text x="586" y="244" font-size="12" fill="#ff3b30" text-anchor="end">상한 55KB</text>
+<text x="24" y="276" font-size="12" fill="#1d1d1f">첫 방문 합계</text>
+<rect x="110" y="262" width="480" height="20" rx="4" fill="#f2f2f7"/>
+<rect x="110" y="262" width="456" height="20" rx="4" fill="#0a84ff"/>
+<line x1="590" y1="256" x2="590" y2="288" stroke="#ff3b30" stroke-width="2"/>
+<text x="120" y="277" font-size="12" fill="#ffffff">251.6KB</text>
+<text x="586" y="302" font-size="12" fill="#ff3b30" text-anchor="end">상한 265KB</text>
+<text x="24" y="320" font-size="12" fill="#6e6e73">막대는 상한 대비 비율이다. 넘으면 check 작업이 실패하고 큰 파일 목록을 출력한다</text>
+</svg>

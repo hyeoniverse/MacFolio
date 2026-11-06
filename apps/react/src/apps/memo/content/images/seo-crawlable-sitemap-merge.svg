@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Worker가 빌드 결과의 저장소 글과 API의 서버 글을 화면과 같은 규칙으로 합쳐 sitemap.xml을 생성하는 과정</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">sitemap.xml을 요청 시각에 합쳐 만드는 과정</text>
+
+<rect x="20" y="52" width="180" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="32" y="74" font-size="13" font-weight="700" fill="#1d1d1f">저장소 글</text>
+<text x="32" y="93" font-size="12" fill="#6e6e73">빌드 결과 seo/posts.json</text>
+<text x="32" y="110" font-size="12" fill="#6e6e73">a, b, c</text>
+<rect x="20" y="138" width="180" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="32" y="160" font-size="13" font-weight="700" fill="#1d1d1f">서버 글</text>
+<text x="32" y="179" font-size="12" fill="#6e6e73">API GET /posts (1분 캐시)</text>
+<text x="32" y="196" font-size="12" fill="#6e6e73">b(수정본), c(삭제), d</text>
+
+<path d="M200 87 H236 V130 H252" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M200 173 H236 V130" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+
+<rect x="256" y="52" width="210" height="156" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="268" y="74" font-size="13" font-weight="700" fill="#0a84ff">화면과 같은 합치기 규칙</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="268" y="98">같은 주소: 서버 글이 대체 (b)</text>
+<text x="268" y="122">삭제·예약 글: 제외 (c)</text>
+<text x="268" y="146">서버에만 있는 글: 추가 (d)</text>
+<text x="268" y="170" fill="#ff9f0a">API 연결 실패: 저장소 글만</text>
+<text x="268" y="194" fill="#6e6e73">결과: a, b(수정본), d</text>
+</g>
+<line x1="466" y1="130" x2="490" y2="130" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="494" y="52" width="126" height="156" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="506" y="74" font-size="13" font-weight="700" fill="#1d1d1f">sitemap.xml</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="506" y="98">/</text>
+<text x="506" y="118">/memo/a</text>
+<text x="506" y="138">/memo/b</text>
+<text x="506" y="158">/memo/d</text>
+<text x="506" y="178">/safari/…</text>
+</g>
+
+<rect x="20" y="228" width="600" height="86" rx="8" fill="#f2f2f7"/>
+<text x="32" y="250" font-size="13" font-weight="700" fill="#1d1d1f">sitemap.xml의 한 항목</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="32" y="272">&lt;url&gt;&lt;loc&gt;https://macfolio.hyeoniverse.com/memo/d&lt;/loc&gt;</text>
+<text x="74" y="292">&lt;lastmod&gt;2026-10-20&lt;/lastmod&gt;&lt;/url&gt;</text>
+</g>
+<text x="608" y="302" font-size="12" text-anchor="end" fill="#6e6e73">lastmod는 글 날짜</text>
+</svg>

@@ -13,7 +13,7 @@ summary: 컨볼루션 신경망의 컨볼루션·패딩·스트라이드·풀링
 
 컨볼루션 신경망(CNN; convolutional neural network)은 영상을 펼치지 않고 가로, 세로, 채널의 구조 그대로 받는다. 작은 필터 하나를 영상 전체에 옮겨 가며 같은 가중치로 특징을 뽑으므로 이웃 화소의 관계가 필터 안에서 유지되고, 학습할 가중치는 필터 크기만큼으로 줄어든다. 2012년 AlexNet 이후 영상 인식의 기본 구조가 된 것도 이 두 성질 덕분이다.
 
-이 글이 답하려는 질문은 두 가지다. 컨볼루션층과 풀링층은 어떤 계산으로 공간 구조를 유지하면서 가중치 수를 줄이는가. 그리고 ImageNet 같은 대규모 데이터로 학습한 모델을 데이터가 적은 새 문제에 어떻게 옮겨 쓰는가.
+핵심 질문은 두 가지다. 컨볼루션층과 풀링층은 어떤 계산으로 공간 구조를 유지하면서 가중치 수를 줄이는가. 그리고 ImageNet 같은 대규모 데이터로 학습한 모델을 데이터가 적은 새 문제에 어떻게 옮겨 쓰는가.
 
 | 순서 | 내용                                                                              |
 | ---- | --------------------------------------------------------------------------------- |
@@ -762,6 +762,8 @@ f.close()
 > [!IMPORTANT] 미세 조정
 > ==미세 조정(fine-tuning) 방식의 전이 학습은 사전 학습 가중치에서 출발해 전체 신경망을 아주 작은 학습률로 다시 학습한다.== 백본을 동결(`trainable=False`)하고 새 분류층만 학습하는 특징 추출 방식과 달리, 백본도 새 도메인에 맞게 조금씩 바뀐다.
 
+![처음부터 학습은 모든 층을 무작위 가중치에서 학습하고, 특징 추출은 백본을 동결해 새 분류층만 학습하며, 미세 조정은 백본까지 아주 작은 학습률로 함께 학습하는 비교](./images/dl-cnn-transfer-learning-transfer-modes.svg '견종 인식 코드는 백본을 동결하지 않고 학습률 0.000001로 전체를 학습하는 미세 조정이다')
+
 16,464장으로 훈련하고 4,116장으로 검증한 결과 200세대 뒤 정확률은 82.73%다. 한 세대에 1,029번(16,464 / 16) 갱신하며, GPU가 있는 PC에서도 200세대 학습에 9시간 30분 정도가 걸렸다고 한다.
 
 ![Stanford dogs 미세 조정의 세대별 정확률·손실 그래프](./images/dl-cnn-transfer-learning-27.jpg '검증 정확률은 50세대 무렵 0.8을 넘은 뒤 거의 오르지 않는다')
@@ -878,3 +880,19 @@ cv2_imshow(superimposed_img)
 | 대표 모델 | AlexNet → ZFNet → VGG(3×3) → GoogLeNet(인셉션) → ResNet(잔차) → SENet(채널 재가중)    |
 | 전이 학습 | 사전 학습 백본 + 새 분류층, 작은 학습률로 미세 조정                                   |
 | 시각화    | Grad-CAM으로 판단 근거를 히트맵으로 확인                                              |
+
+<details>
+<summary>참고 문헌</summary>
+
+- Y. LeCun et al., [Gradient-Based Learning Applied to Document Recognition](http://yann.lecun.com/exdb/publis/pdf/lecun-01a.pdf), Proceedings of the IEEE, 1998
+- A. Krizhevsky et al., [ImageNet Classification with Deep Convolutional Neural Networks](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks), NIPS 2012
+- M. Zeiler, R. Fergus, [Visualizing and Understanding Convolutional Networks](https://arxiv.org/abs/1311.2901), 2013
+- K. Simonyan, A. Zisserman, [Very Deep Convolutional Networks for Large-Scale Image Recognition](https://arxiv.org/abs/1409.1556), 2014
+- C. Szegedy et al., [Going Deeper with Convolutions](https://arxiv.org/abs/1409.4842), 2014
+- K. He et al., [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385), 2015
+- J. Hu et al., [Squeeze-and-Excitation Networks](https://arxiv.org/abs/1709.01507), 2017
+- T.-Y. Lin et al., [Focal Loss for Dense Object Detection](https://arxiv.org/abs/1708.02002), 2017
+- R. Selvaraju et al., [Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization](https://arxiv.org/abs/1610.02391), 2016
+- Keras 문서, [Keras Applications](https://keras.io/api/applications/), [Transfer learning & fine-tuning](https://keras.io/guides/transfer_learning/)
+
+</details>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Content-Type이 application/json이면 브라우저가 OPTIONS 사전 요청을 먼저 보내고, text/plain이면 POST 한 번으로 끝나는 비교</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+<marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker>
+</defs>
+<rect width="640" height="400" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">본문 형식에 따라 달라지는 왕복 횟수</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">사이트 macfolio.hyeoniverse.com → API macfolio-api.hyeoniverse.com (출처가 다르다)</text>
+
+<!-- 왼쪽 -->
+<text x="24" y="86" font-size="13" font-weight="600" fill="#1d1d1f">Content-Type: application/json</text>
+<g font-size="12" text-anchor="middle">
+<text x="60" y="110" fill="#6e6e73">브라우저</text>
+<text x="270" y="110" fill="#6e6e73">API</text>
+</g>
+<line x1="60" y1="118" x2="60" y2="330" stroke="#6e6e73" stroke-dasharray="3 4"/>
+<line x1="270" y1="118" x2="270" y2="330" stroke="#6e6e73" stroke-dasharray="3 4"/>
+<line x1="60" y1="148" x2="266" y2="148" stroke="#ff9f0a" marker-end="url(#o)"/>
+<text x="165" y="142" font-size="12" fill="#ff9f0a" text-anchor="middle">① OPTIONS (사전 요청)</text>
+<line x1="270" y1="186" x2="64" y2="186" stroke="#ff9f0a" marker-end="url(#o)"/>
+<text x="165" y="180" font-size="12" fill="#ff9f0a" text-anchor="middle">② 204 + Allow-Headers</text>
+<line x1="60" y1="234" x2="266" y2="234" stroke="#1d1d1f" marker-end="url(#a)"/>
+<text x="165" y="228" font-size="12" fill="#1d1d1f" text-anchor="middle">③ POST /analytics/events</text>
+<line x1="270" y1="272" x2="64" y2="272" stroke="#1d1d1f" marker-end="url(#a)"/>
+<text x="165" y="266" font-size="12" fill="#1d1d1f" text-anchor="middle">④ 204</text>
+<text x="165" y="356" font-size="12" fill="#ff3b30" text-anchor="middle">왕복 2번. 서버가 OPTIONS에</text>
+<text x="165" y="374" font-size="12" fill="#ff3b30" text-anchor="middle">허용 헤더를 답해야 본 요청이 나간다</text>
+
+<line x1="320" y1="76" x2="320" y2="384" stroke="#f2f2f7" stroke-width="2"/>
+
+<!-- 오른쪽 -->
+<text x="340" y="86" font-size="13" font-weight="600" fill="#1d1d1f">Content-Type: text/plain (사용)</text>
+<g font-size="12" text-anchor="middle">
+<text x="376" y="110" fill="#6e6e73">브라우저</text>
+<text x="586" y="110" fill="#6e6e73">API</text>
+</g>
+<line x1="376" y1="118" x2="376" y2="330" stroke="#6e6e73" stroke-dasharray="3 4"/>
+<line x1="586" y1="118" x2="586" y2="330" stroke="#6e6e73" stroke-dasharray="3 4"/>
+<line x1="376" y1="148" x2="582" y2="148" stroke="#1d1d1f" marker-end="url(#a)"/>
+<text x="481" y="142" font-size="12" fill="#1d1d1f" text-anchor="middle">① POST /analytics/events</text>
+<rect x="470" y="160" width="160" height="62" rx="6" fill="#f2f2f7"/>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<text x="550" y="180">useBodyParser('text')</text>
+<text x="550" y="197">→ 문자열 본문</text>
+<text x="550" y="214">→ parseBatch가 JSON 해석</text>
+</g>
+<line x1="586" y1="252" x2="380" y2="252" stroke="#1d1d1f" marker-end="url(#a)"/>
+<text x="481" y="246" font-size="12" fill="#1d1d1f" text-anchor="middle">② 204</text>
+<text x="481" y="356" font-size="12" fill="#248a3d" text-anchor="middle">왕복 1번. 단순 요청이라</text>
+<text x="481" y="374" font-size="12" fill="#248a3d" text-anchor="middle">사전 요청이 없다</text>
+</svg>

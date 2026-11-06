@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>PROJECTS 항목 하나가 고정 저장소 카드가 되는 과정</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">PROJECTS 항목 하나 → 스냅샷의 고정 저장소 카드 하나</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">projectRepo() 함수가 필드를 옮긴다 (MacFolio 항목 예시)</text>
+  <rect x="24" y="76" width="262" height="220" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="40" y="100" font-size="13" font-weight="700" fill="#1d1d1f">Project (shared/profile)</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <text x="40" y="132">url:</text>
+    <text x="56" y="150" fill="#0a84ff">github.com/hyeoniverse/MacFolio</text>
+    <text x="40" y="182">description:</text>
+    <text x="56" y="200" fill="#0a84ff">'macOS 데스크톱을 웹으로…'</text>
+    <text x="40" y="232">demo: (없음)</text>
+    <text x="40" y="264">language: 'TypeScript'</text>
+  </g>
+  <rect x="354" y="76" width="262" height="220" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="370" y="100" font-size="13" font-weight="700" fill="#1d1d1f">RepoCard (GitHub 앱)</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <text x="370" y="132">fullName: 'hyeoniverse/MacFolio'</text>
+    <text x="370" y="150">owner: 'hyeoniverse'</text>
+    <text x="370" y="168">name: 'MacFolio'</text>
+    <text x="370" y="200">description: (같은 문장)</text>
+    <text x="370" y="232">homepage: null</text>
+    <text x="370" y="264">language: 'TypeScript'</text>
+  </g>
+  <g stroke="#ff9f0a" stroke-width="2" fill="none">
+    <path d="M286 142 L354 142"/><path d="M286 196 L354 196"/><path d="M286 228 L354 228"/><path d="M286 260 L354 260"/>
+  </g>
+  <g fill="#ff9f0a"><path d="M354 142 l-8 -4 v8z"/><path d="M354 196 l-8 -4 v8z"/><path d="M354 228 l-8 -4 v8z"/><path d="M354 260 l-8 -4 v8z"/></g>
+  <text x="320" y="132" font-size="12" text-anchor="middle" fill="#6e6e73">'/'로 분리</text>
+  <rect x="24" y="312" width="592" height="34" rx="8" fill="#f2f2f7"/>
+  <text x="40" y="334" font-size="12" fill="#1d1d1f">GITHUB_SNAPSHOT.repos = PROJECTS.slice(0, 6).map(projectRepo) · 순서는 PROJECTS 순서 그대로</text>
+</svg>

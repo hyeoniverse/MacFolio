@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>세션 토큰 원문은 쿠키에만 있고 DB에는 SHA-256 해시만 있다. 요청마다 쿠키 값을 해시해 DB에서 찾는다</title>
+<defs>
+<marker id="sa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="sr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">세션 토큰은 쿠키에, 해시는 DB에</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">auth/session.ts: randomToken(32바이트, base64url), hashToken = SHA-256(hex)</text>
+
+<rect x="24" y="74" width="180" height="96" rx="10" fill="#f2f2f7"/>
+<text x="114" y="98" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">브라우저 쿠키</text>
+<text x="38" y="122" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">macfolio_session=</text>
+<text x="38" y="140" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">k3V9…(43자)</text>
+<text x="38" y="160" font-size="12" fill="#6e6e73">httpOnly, Lax, 12시간</text>
+
+<rect x="244" y="96" width="152" height="52" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320" y="118" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">SHA-256</text>
+<text x="320" y="138" font-size="12" fill="#6e6e73" text-anchor="middle">요청마다 계산</text>
+
+<rect x="436" y="74" width="180" height="96" rx="10" fill="#f2f2f7"/>
+<text x="526" y="98" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">DB AdminSession</text>
+<text x="450" y="122" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">tokenHash =</text>
+<text x="450" y="140" font-size="12" fill="#ff9f0a" font-family="ui-monospace, Menlo, monospace">9f2c…(64자 hex)</text>
+<text x="450" y="160" font-size="12" fill="#6e6e73">githubId, expiresAt</text>
+
+<path d="M204 122 H240" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#sa)"/>
+<path d="M396 122 H432" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#sa)"/>
+<text x="320" y="194" font-size="12" fill="#1d1d1f" text-anchor="middle">해시가 일치하고, 만료 전이고, githubId가 ADMIN_GITHUB_ID와 같으면 관리자</text>
+
+<line x1="24" y1="214" x2="616" y2="214" stroke="#e5e5ea"/>
+<text x="24" y="242" font-size="13" font-weight="700" fill="#1d1d1f">DB 내용이 유출된 경우</text>
+<rect x="24" y="256" width="284" height="98" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="38" y="280" font-size="12" font-weight="700" fill="#ff3b30">토큰 원문을 저장했다면</text>
+<text x="38" y="302" font-size="12" fill="#1d1d1f">유출된 값을 쿠키에 넣으면</text>
+<text x="38" y="320" font-size="12" fill="#1d1d1f">그대로 관리자 요청이 된다</text>
+<text x="38" y="342" font-size="12" fill="#6e6e73">만료 전까지 세션 탈취</text>
+<rect x="332" y="256" width="284" height="98" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="346" y="280" font-size="12" font-weight="700" fill="#248a3d">해시만 저장했으므로</text>
+<text x="346" y="302" font-size="12" fill="#1d1d1f">해시를 쿠키에 넣으면 서버가 한 번 더</text>
+<text x="346" y="320" font-size="12" fill="#1d1d1f">해시해 비교하므로 일치하지 않는다</text>
+<text x="346" y="342" font-size="12" fill="#6e6e73">원문은 2^256개 후보라 역산 불가</text>
+<text x="24" y="384" font-size="12" fill="#6e6e73">로그아웃하면 그 해시의 행을 삭제한다. 쿠키를 복사해 간 사람이 있어도 다음 요청부터 401이다</text>
+<text x="24" y="404" font-size="12" fill="#6e6e73">토큰이 무작위 32바이트라 비밀번호와 달리 솔트나 느린 해시 없이 SHA-256 한 번으로 충분하다</text>
+</svg>

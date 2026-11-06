@@ -11,9 +11,9 @@ summary: 종량제 Oracle 계정의 이번 달 요금과 예산을 서버 탭에
 
 ## 배경
 
-API 서버는 Oracle Cloud의 Always Free `VM.Standard.E2.1.Micro`(메모리 1GB) 한 대다. 무료 계정은 7일 동안 사용률이 낮으면 회수될 수 있으므로, 종량제로 전환하는 것이 회수를 피하는 가장 확실한 방법이다. 대신 종량제에서는 무료 한도 밖의 자원을 실수로 생성하면 즉시 과금된다. 요금을 콘솔에서만 조회할 수 있으면 이런 실수는 ==다음 달 청구서를 받는 시각에야 발견된다==.
+API 서버는 Oracle Cloud의 Always Free `VM.Standard.E2.1.Micro`(메모리 1GB) 한 대다. 무료 계정은 7일 동안 사용률이 낮으면 회수될 수 있으므로, 종량제로 전환하는 것이 회수를 피하는 가장 확실한 방법이다. 대신 종량제에서는 무료 한도 밖의 자원을 실수로 생성하면 즉시 과금된다. 예를 들어 VM을 하나 더 만들면서 유료 shape인 `E4.Flex`를 선택하면, 그 시각부터 사용 시간만큼 요금이 집계된다. 요금을 콘솔에서만 조회할 수 있으면 이런 실수는 ==다음 달 청구서를 받는 시각에야 발견된다==.
 
-Oracle 콘솔에도 예산 알림 기능이 있다. 하지만 이 사이트는 이미 [서버 자원 감시](/memo/resource-monitor)에서 Resend로 경고 메일을 보내고 활동 상태 보기 앱의 서버 탭에 상태를 표시하고 있었다. 요금도 같은 화면과 같은 메일 경로로 확인하도록 구성했다.
+Oracle 콘솔에도 예산 알림 기능이 있다. **예산**(Budget)은 "이 계정에서 한 달에 1달러까지"처럼 금액 한도를 정해 두면 Oracle이 실제 사용액(`actualSpend`)과 이번 기간 예상액(`forecastedSpend`)을 함께 계산해 주는 기능이다([OCI 예산](https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm)). 하지만 이 사이트는 이미 [서버 자원 감시](/memo/resource-monitor)에서 Resend로 경고 메일을 보내고 활동 상태 보기 앱의 서버 탭에 상태를 표시하고 있었다. 요금도 같은 화면과 같은 메일 경로로 확인하도록 구성했다.
 
 ## 사용하는 API 두 개
 
@@ -24,11 +24,27 @@ Oracle 콘솔에도 예산 알림 기능이 있다. 하지만 이 사이트는 �
 | 예산         | `GET https://usage.{region}.oci.oraclecloud.com/20190111/budgets`   | `amount`, `actualSpend`, `forecastedSpend` |
 | 이번 달 요금 | `POST https://usageapi.{region}.oci.oraclecloud.com/20200107/usage` | `items[].computedAmount`, `currency`       |
 
+주소의 `{region}`은 계정의 홈 리전(예: `ap-chuncheon-1`)이고, `20190111`·`20200107`은 API 버전을 나타내는 날짜다.
+
 요금은 일 단위(`DAILY`)로 조회하며, 이때 ==시작 시각과 종료 시각이 모두 0시여야 한다==. 이번 달 1일 0시부터 내일 0시까지(UTC)를 조회해 `computedAmount`를 합산한다. 예를 들어 10월 10일 05:00(UTC)에 조회하면 `timeUsageStarted`는 `2026-10-01T00:00:00.000Z`, `timeUsageEnded`는 `2026-10-11T00:00:00.000Z`다.
+
+![10월 1일 0시부터 10월 11일 0시까지 하루 단위 10칸, 10일은 진행 중](./images/oci-billing-usage-window.svg '끝을 내일 0시로 잡아 진행 중인 오늘 사용분까지 포함한다')
 
 ## 요청 서명
 
-Oracle API는 요청마다 `Authorization` 헤더에 RSA-SHA256 서명[^httpsig]을 포함해야 한다. 구현 방법은 세 가지였다.
+### 왜 서명인가
+
+API 인증에는 두 가지 방식이 많이 쓰인다. **토큰 방식**은 비밀 문자열을 `Authorization: Bearer <토큰>`처럼 요청마다 그대로 보낸다. **서명 방식**은 비밀 키 자체는 보내지 않고, 요청 내용으로 계산한 서명만 보낸다. Oracle API는 서명 방식을 사용한다.
+
+서명은 공개 키 암호를 이용한다. 사용자는 **개인 키**(본인만 보관)와 **공개 키**(Oracle 콘솔에 등록)를 한 쌍으로 만든다. 요청을 보낼 때 개인 키로 요청 내용의 서명을 만들고, Oracle은 등록된 공개 키로 그 서명이 해당 요청 내용과 맞는지 검증한다. 개인 키가 없으면 올바른 서명을 만들 수 없고, 요청 내용이 전송 중에 1바이트라도 바뀌면 검증에 실패한다.
+
+![왼쪽은 데이터의 해시를 개인 키로 서명해 데이터에 붙이는 과정, 오른쪽은 데이터의 해시와 공개 키로 복원한 해시를 비교해 같으면 유효로 판단하는 과정](./images/oci-billing-digital-signature.jpg '디지털 서명의 생성(왼쪽)과 검증(오른쪽). 출처: Wikimedia Commons')
+
+그림의 "Data"가 Oracle 요청에서는 아래의 **서명 대상 문자열**이고, "Hash function"과 "private key" 단계가 RSA-SHA256 서명[^httpsig]이다.
+
+### 구현 방법 비교
+
+Oracle API는 요청마다 `Authorization` 헤더에 RSA-SHA256 서명을 포함해야 한다. 구현 방법은 세 가지였다.
 
 | 방법                                        | 장점                                  | 단점                                                                    |
 | ------------------------------------------- | ------------------------------------- | ----------------------------------------------------------------------- |
@@ -36,13 +52,19 @@ Oracle API는 요청마다 `Authorization` 헤더에 RSA-SHA256 서명[^httpsig]
 | 서버에 OCI CLI를 설치해 호출                | 코드가 거의 없다                      | 컨테이너에 Python과 CLI가 추가된다. 출력 파싱이 필요하다                |
 | **`node:crypto`로 서명을 직접 생성** (채택) | 의존성이 없다. `oci.ts` 158줄         | 서명이 올바른지 직접 검증해야 한다                                      |
 
-서명 대상 문자열(signing string)은 다음과 같다.
+`node:crypto`는 Node.js에 내장된 암호 모듈로, 해시(`createHash`)와 서명(`createSign`)·검증(`verify`) 함수를 별도 설치 없이 제공한다.
 
-```
+### 서명 대상 문자열
+
+서명 대상 문자열(signing string)은 정해진 헤더의 이름과 값을 `이름: 값` 형식으로 한 줄씩 이어 붙인 문자열이다. Oracle 문서의 GET 예시는 다음과 같다.
+
+```text
 date: Thu, 05 Jan 2014 21:31:40 GMT
 (request-target): get /20160918/instances?availabilityDomain=...
 host: iaas.us-phoenix-1.oraclecloud.com
 ```
+
+`(request-target)`은 실제 헤더가 아니라 "소문자 메서드 + 공백 + 경로와 쿼리"를 뜻하는 가상 헤더다. 이 줄이 서명에 포함되므로, 같은 서명을 다른 경로의 요청에 재사용할 수 없다. `date`도 서명에 포함되고 Oracle은 요청 시각이 현재와 5분 넘게 차이 나면 `401 NotAuthenticated`를 반환하므로, 가로챈 요청을 나중에 그대로 다시 보내도 거부된다.
 
 POST에는 `content-length`, `content-type`, `x-content-sha256`(본문 SHA-256의 base64 인코딩)이 추가된다. 이 문자열을 개인 키로 서명하고, 서명한 헤더 이름과 순서(`headers`)를 함께 전송한다.
 
@@ -51,9 +73,11 @@ POST에는 `content-length`, `content-type`, `x-content-sha256`(본문 SHA-256�
 | GET            | `date`, `(request-target)`, `host`                                                       |
 | POST·PUT·PATCH | `date`, `(request-target)`, `host`, `content-length`, `content-type`, `x-content-sha256` |
 
-```
+```text
 Signature version="1",keyId="<테넌시>/<사용자>/<지문>",algorithm="rsa-sha256",headers="date (request-target) host",signature="..."
 ```
+
+`keyId`의 테넌시는 Oracle 계정 전체를, 사용자는 키를 등록한 사용자를, 지문(fingerprint)은 등록한 공개 키를 식별하는 값이다. Oracle은 이 세 값으로 검증에 사용할 공개 키를 찾는다.
 
 구현은 다음과 같다(`apps/api/src/resources/oci.ts`).
 
@@ -81,11 +105,15 @@ export function signingString({ method, url, date, body, contentType = 'applicat
 > [!WARNING] content-length는 바이트 수
 > `content-length`는 `body.length`가 아니라 [`Buffer.byteLength`](https://nodejs.org/api/buffer.html#static-method-bufferbytelengthstring-encoding)로 계산한다. 본문에 한글(예산 이름)이 있으면 문자 수와 UTF-8 바이트 수가 다르기 때문이다. 예를 들어 `"예산"`은 `length`가 2지만 바이트 수는 6이다.
 
+![예와 산 두 글자가 UTF-8로 EC 98 88, EC 82 B0 여섯 바이트가 된다](./images/oci-billing-utf8-bytes.svg 'JavaScript 문자열의 length와 HTTP 본문의 바이트 수는 다르다')
+
+JavaScript의 `length`는 UTF-16 코드 단위 수이고, 한글 한 글자는 UTF-8에서 3바이트다. `body.length`로 서명하면 서명 문자열의 `content-length: 2`와 실제로 전송되는 6바이트가 어긋나 Oracle이 서명 불일치로 거부한다.
+
 ![요청 서명과 예산 알림 단계](./images/oci-billing-signing.svg '서명 문자열을 개인 키로 서명해 Authorization 머리글에 담는다')
 
 ## 실제 키 없이 서명 검증하기
 
-개발 시점에는 실제 계정 키로 호출할 수 없었으므로, [Oracle 요청 서명 문서](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/signingrequests.htm)의 시험 값으로 검증했다. 문서에는 시험용 개인 키·공개 키와, GET·POST 요청별 서명 대상 문자열이 그대로 실려 있다.
+개발 시점에는 실제 계정 키로 호출할 수 없었으므로, [Oracle 요청 서명 문서](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/signingrequests.htm)의 시험 값으로 검증했다. 문서에는 시험용 개인 키·공개 키와, GET·POST 요청별 서명 대상 문자열이 그대로 실려 있다. 이렇게 입력과 기대 출력을 함께 공개한 값을 **시험 벡터**(test vector)라고 한다.
 
 | 검증 항목       | 방법                                                                                                                                                   |
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -93,7 +121,9 @@ export function signingString({ method, url, date, body, contentType = 'applicat
 | POST 헤더       | 문서와 같은 헤더 순서인지, 빈 본문의 SHA-256이 알려진 값(`47DEQpj8...`)인지                                                                            |
 | 서명 값         | 생성한 서명이 문서의 **공개 키로 검증되는지**([`crypto.verify`](https://nodejs.org/api/crypto.html#cryptoverifyalgorithm-data-key-signature-callback)) |
 
-세 항목을 단위 시험으로 작성했다. 환경 변수에는 PEM을 한 줄로 입력해야 하므로 줄바꿈을 `\n`으로 표기하는데, 시험도 같은 형식의 키로 서명한다.
+빈 문자열의 SHA-256을 base64로 인코딩한 값은 항상 `47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=`다. 해시 함수는 같은 입력에 항상 같은 출력을 내므로, 이 값과 다르면 해시 계산이나 인코딩 단계에 오류가 있다는 뜻이다.
+
+세 항목을 단위 시험으로 작성했다. 환경 변수에는 PEM을 한 줄로 입력해야 하므로 줄바꿈을 `\n`으로 표기하는데, 시험도 같은 형식의 키로 서명한다. PEM은 `-----BEGIN PRIVATE KEY-----`로 시작하고 64자마다 줄을 바꾸는 키 파일 형식이다.
 
 ## 예산 알림
 
@@ -109,6 +139,8 @@ export function budgetLevel(budget: Budget): 'over' | 'near' | 'ok' {
 	return spent >= budget.amount * 0.8 ? 'near' : 'ok';
 }
 ```
+
+예를 들어 예산이 1달러이면 0.79달러는 `ok`, 0.80달러는 `near`, 1.00달러는 `over`다.
 
 발송 기록은 `ResourceAlert` 테이블에 `budget-near:2026-10:월 1달러`처럼 `단계:연월:예산 이름` 형식의 키로 저장한다. 같은 달에는 같은 키가 이미 있으므로 다시 발송하지 않고, 다음 달에는 키가 달라져 새로 발송한다.
 
@@ -128,7 +160,7 @@ export function budgetLevel(budget: Budget): 'over' | 'near' | 'ok' {
 | 키가 없음                 | 설정 위치와 필요한 값 안내                              |
 | 키가 틀리거나 권한이 없음 | Oracle이 반환한 오류 그대로(예: `401 NotAuthenticated`) |
 
-종량제에서는 회수 기준선이 없어 네트워크 그래프의 세로축이 최댓값에 맞춰 확대됐고, 0.9% 수준의 작은 변동이 큰 파형처럼 표시됐다. 기준선이 없는 그래프는 세로축 상한을 최소 10%로 고정해 작은 변동이 과장되지 않게 했다.
+종량제에서는 회수 기준선이 없어 네트워크 그래프의 세로축이 최댓값에 맞춰 확대됐고, 0.9% 수준의 작은 변동이 큰 파형처럼 표시됐다. 기준선이 없는 그래프는 세로축 상한을 최소 10%로 고정해 작은 변동이 과장되지 않게 했다. 0.9%의 변동은 상한 10% 그래프에서 높이의 9%만 차지한다.
 
 ## 시험
 
@@ -162,7 +194,7 @@ export function budgetLevel(budget: Budget): 'over' | 'near' | 'ok' {
 - 이 글을 작성한 시각에는 실제 계정 키로 호출하지 않았다. 서명은 문서의 시험 값과 일치하고 응답 구조는 공식 SDK에 맞췄지만, 키를 설정한 뒤 서버 탭에 요금이 표시되는지 확인하는 단계가 남아 있다.
 - API 문서 페이지가 JavaScript로 렌더링되어 읽기 어려운 경우, 공식 SDK 소스가 가장 정확한 명세였다. 주소, 버전 경로(`20190111`, `20200107`), 응답 필드 이름을 SDK 소스에서 확인했다.
 - 서명처럼 "맞으면 응답이 정상이고 틀리면 401만 반환되는" 코드는 공개된 시험 벡터와 문자 단위로 비교하는 방법이 가장 빠르다. 실제 키가 시험에 필요 없으므로 CI에서도 실행된다.
-- `docs/deployment.md`에서는 키 전용 사용자를 별도로 만들고 `read usage-budgets`, `read usage-report` 정책만 부여하도록 안내한다. 이 키로는 요금·예산 조회만 가능하다([OCI 정책 문서](https://docs.oracle.com/en-us/iaas/Content/Identity/policieshow/how-policies-work.htm)).
+- `docs/deployment.md`에서는 키 전용 사용자를 별도로 만들고 `read usage-budgets`, `read usage-report` 정책만 부여하도록 안내한다. 이 키로는 요금·예산 조회만 가능하다([OCI 정책 문서](https://docs.oracle.com/en-us/iaas/Content/Identity/policieshow/how-policies-work.htm)). 키가 유출되어도 자원을 생성하거나 삭제할 수 없다.
 
 ## 따라 하는 방법
 
@@ -184,14 +216,35 @@ docker compose logs --tail 50 api            # 서명 오류가 없는지
 
 관리자로 로그인해 활동 상태 앱의 서버 탭에서 이번 달 요금과 예산이 표시되는지 확인한다. 값을 비워 두면 요금 영역만 숨겨진다. 되돌릴 때는 다섯 줄을 삭제하고 같은 명령으로 컨테이너를 다시 생성한 뒤, Oracle 콘솔에서 해당 API 키를 삭제한다. 서명 코드와 시험은 [apps/api/src/resources/oci.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/resources/oci.ts), [apps/api/src/resources/oci.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/resources/oci.test.ts).
 
-참고 문서: [OCI 요청 서명](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/signingrequests.htm), [OCI API 키 만들기](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm), [OCI 예산](https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm).
-
 ## 관련 글
 
 - [무료 서버가 회수되기 전에 - 사용률을 측정하고 위험하면 메일로](/memo/resource-monitor)
 - [Always Free 유휴 회수 기준을 충전량으로 환산한 메뉴 막대 배터리](/memo/battery-server-resources)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 
-[^httpsig]: Oracle API는 IETF 초안 "HTTP Signatures"(draft-cavage-http-signatures)의 방식을 사용한다. 지정한 헤더 값을 정해진 순서로 이어 붙인 문자열에 개인 키로 서명하고, 서버는 등록된 공개 키로 같은 문자열을 재구성해 검증한다. 본문이나 헤더가 전송 중에 바뀌면 검증에 실패한다.
+[^httpsig]: Oracle API는 IETF 초안 "HTTP Signatures"(draft-cavage-http-signatures)의 방식을 사용한다. 지정한 헤더 값을 정해진 순서로 이어 붙인 문자열에 개인 키로 서명하고, 서버는 등록된 공개 키로 같은 문자열을 재구성해 검증한다. 본문이나 헤더가 전송 중에 바뀌면 검증에 실패한다. [draft-cavage-http-signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Oracle 문서: Request Signatures](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/signingrequests.htm)
+- [Oracle 문서: Required Keys and OCIDs (API 키 만들기)](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm)
+- [Oracle 문서: Budgets Overview](https://docs.oracle.com/en-us/iaas/Content/Billing/Concepts/budgetsoverview.htm)
+- [Oracle 문서: How Policies Work](https://docs.oracle.com/en-us/iaas/Content/Identity/policieshow/how-policies-work.htm)
+- [Oracle 문서: Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
+- [oracle/oci-python-sdk](https://github.com/oracle/oci-python-sdk)
+- [IETF: draft-cavage-http-signatures](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures)
+- [Node.js 문서: crypto](https://nodejs.org/api/crypto.html)
+- [Node.js 문서: Buffer.byteLength](https://nodejs.org/api/buffer.html#static-method-bufferbytelengthstring-encoding)
+- [MDN: String.length](https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/String/length)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 디지털 서명 생성·검증 그림: Acdx, Wikimedia Commons, [Digital Signature diagram.svg](https://commons.wikimedia.org/wiki/File:Digital_Signature_diagram.svg), CC BY-SA 3.0. 흰 배경 PNG로 변환
+
+</details>
 
 #MacFolio #백엔드 #Oracle #보안

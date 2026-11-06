@@ -13,7 +13,7 @@ summary: 인식의 세부 문제와 데이터셋, CAM·Grad-CAM으로 분류 근
 
 분류기를 그대로 쓰는 가장 단순한 방법은 여러 크기의 윈도우를 영상 전체에 옮기며 윈도우마다 분류하는 것이다. 위치와 크기의 조합이 수만 개가 되어 느리고, 겹친 윈도우마다 같은 물체를 여러 번 찾는다. 채점도 분류보다 복잡하다. 예측 박스가 참값 박스와 얼마나 겹쳐야 맞힌 것으로 볼지, 신뢰도 임계값에 따라 달라지는 정밀도와 재현율을 어떻게 하나의 수로 합칠지 정해야 한다.
 
-이 글이 답하려는 질문은 두 가지다. 검출 결과는 어떤 절차로 채점하는가. 그리고 후보 영역을 먼저 만드는 두 단계 방법과 위치와 부류를 한 번에 회귀하는 한 단계 방법은 속도와 정확률을 어떻게 맞바꾸는가. 검출에 앞서 분류 모델이 영상의 어디를 보고 판단했는지 설명하는 CAM과 Grad-CAM도 함께 다룬다.
+검출 모델은 두 계열로 나뉜다. 물체가 있을 만한 후보 영역을 먼저 만들고 영역마다 분류하는 두 단계 방법(RCNN 계열)은 정확하지만 느리고, 영상을 신경망에 한 번만 통과시켜 위치와 부류를 함께 회귀하는 한 단계 방법(YOLO 계열)은 정확률을 일부 내주는 대신 빠르다. 분류 모델이 영상의 어느 영역을 근거로 판단했는지 보여 주는 CAM과 Grad-CAM은 검출의 바탕이 되는 위치 정보를 다루므로 검출보다 먼저 설명한다.
 
 | 순서 | 내용                                                            |
 | ---- | --------------------------------------------------------------- |
@@ -326,7 +326,9 @@ RCNN(Regions with CNN features, [Girshick 외, 2014](https://arxiv.org/abs/1311.
 | 1    | A (0.9)   | B 0.7, C 0.1      | B 삭제    | C         |
 | 2    | C (0.7)   | 없음              | 그대로 둠 | 없음      |
 
-결과는 A와 C 두 박스다. B는 A와 같은 물체를 가리키는 중복 박스로 판단되어 지워지고, C는 A와 거의 겹치지 않으므로 다른 물체로 남는다.
+결과는 A와 C 두 박스다. B는 A와 같은 물체를 가리키는 중복 박스로 판단되어 삭제되고, C는 A와 거의 겹치지 않으므로 다른 물체로 남는다.
+
+![신뢰도 0.9인 A, A와 크게 겹치는 0.8인 B, 떨어져 있는 0.7인 C 세 박스가 NMS 뒤 A와 C만 남는 그림](./images/dl-object-detection-nms.svg 'IoU 임계값 0.5로 NMS를 적용한 결과. A와 IoU 0.7인 B만 삭제된다')
 
 ### RCNN의 한계
 
@@ -366,6 +368,8 @@ YOLO(You Only Look Once, [Redmon 외, 2016](https://arxiv.org/abs/1506.02640))�
 ```math
 \underbrace{2 \times (4 + 1)}_{\text{박스 2개}} + \underbrace{80}_{\text{부류 확률}} = 90, \qquad 7 \times 7 \times 90
 ```
+
+![7×7 격자에서 물체 중심이 놓인 칸 하나가 박스 두 개의 x, y, w, h, 신뢰도 o와 부류 확률 80개를 이어 붙인 90차원 벡터를 출력하는 그림](./images/dl-object-detection-yolo-vector.svg '칸마다 박스 2개 × 5값 + 부류 확률 80개 = 90차원')
 
 > [!NOTE]
 > 원 논문은 PASCAL VOC의 20부류로 실험해 칸마다 2 × 5 + 20 = 30차원, 출력 7×7×30을 썼다. 위 계산은 COCO의 80부류를 기준으로 한 값이다.
@@ -508,3 +512,22 @@ cv2_imshow(img)
 | 한 단계     | YOLO: s×s 격자 회귀로 위치와 부류를 동시에, v3는 세 스케일 격자           |
 
 검출의 박스를 화소 단위로 세분한 분할은 [의미 분할의 성능 평가와 FCN·DeconvNet·U-Net](/memo/dl-segmentation)에서 다룬다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- Everingham et al., [「The PASCAL Visual Object Classes (VOC) Challenge」](https://doi.org/10.1007/s11263-009-0275-4), IJCV, 2010
+- Russakovsky et al., [「ImageNet Large Scale Visual Recognition Challenge」](https://arxiv.org/abs/1409.0575), IJCV, 2015
+- Lin et al., [「Microsoft COCO: Common Objects in Context」](https://arxiv.org/abs/1405.0312), ECCV 2014
+- Zhou et al., [「Learning Deep Features for Discriminative Localization」](https://arxiv.org/abs/1512.04150), CVPR 2016
+- Selvaraju et al., [「Grad-CAM: Visual Explanations from Deep Networks via Gradient-based Localization」](https://arxiv.org/abs/1610.02391), ICCV 2017
+- Szegedy et al., [「Intriguing properties of neural networks」](https://arxiv.org/abs/1312.6199), ICLR 2014
+- Uijlings et al., [「Selective Search for Object Recognition」](https://doi.org/10.1007/s11263-013-0620-5), IJCV, 2013
+- Girshick et al., [「Rich feature hierarchies for accurate object detection and semantic segmentation」](https://arxiv.org/abs/1311.2524), CVPR 2014
+- Girshick, [「Fast R-CNN」](https://arxiv.org/abs/1504.08083), ICCV 2015
+- Ren et al., [「Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks」](https://arxiv.org/abs/1506.01497), NeurIPS 2015
+- Redmon et al., [「You Only Look Once: Unified, Real-Time Object Detection」](https://arxiv.org/abs/1506.02640), CVPR 2016
+- Redmon, Farhadi, [「YOLOv3: An Incremental Improvement」](https://arxiv.org/abs/1804.02767), 2018
+- OpenCV 문서, [cv::dnn::NMSBoxes](https://docs.opencv.org/4.x/d6/d0f/group__dnn.html)
+
+</details>

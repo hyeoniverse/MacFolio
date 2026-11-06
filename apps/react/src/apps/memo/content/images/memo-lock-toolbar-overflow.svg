@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>도구 막대에 자물쇠 버튼을 더하면 검색 칸이 밀리는 구조</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">자물쇠 버튼 하나가 도구 막대 폭을 넘긴 경우</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">버튼 개수와 위치를 단순화한 도식. 점선은 편집 칸의 오른쪽 끝</text>
+<line x1="560" y1="64" x2="560" y2="260" stroke="#ff3b30" stroke-dasharray="4 4"/>
+<text x="20" y="84" font-size="13" font-weight="700" fill="#1d1d1f">추가 전: 버튼 10개 + 검색 칸</text>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<rect x="20" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="38" y="113">가가</text>
+<rect x="60" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="78" y="113">체크</text>
+<rect x="100" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="118" y="113">표</text>
+<rect x="140" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="158" y="113">사진</text>
+<rect x="180" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="198" y="113">첨부</text>
+<rect x="228" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="246" y="113">버전</text>
+<rect x="268" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="286" y="113">삭제</text>
+<rect x="308" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="326" y="113">고정</text>
+<rect x="348" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="366" y="113">정렬</text>
+<rect x="388" y="94" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="406" y="113">보기</text>
+</g>
+<rect x="436" y="94" width="124" height="28" rx="14" fill="#ffffff" stroke="#6e6e73"/>
+<text x="452" y="113" font-size="12" fill="#6e6e73">검색</text>
+<text x="20" y="146" font-size="12" fill="#34c759">검색 칸 오른쪽 끝 = 편집 칸 오른쪽 끝</text>
+<text x="20" y="186" font-size="13" font-weight="700" fill="#1d1d1f">추가 후: 버튼 11개 + 검색 칸</text>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<rect x="20" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="38" y="215">가가</text>
+<rect x="60" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="78" y="215">체크</text>
+<rect x="100" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="118" y="215">표</text>
+<rect x="140" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="158" y="215">사진</text>
+<rect x="180" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="198" y="215">첨부</text>
+<rect x="228" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="246" y="215">버전</text>
+<rect x="268" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="286" y="215">삭제</text>
+<rect x="308" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="326" y="215">고정</text>
+<rect x="348" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="366" y="215">정렬</text>
+<rect x="388" y="196" width="36" height="28" rx="6" fill="#f2f2f7"/><text x="406" y="215">보기</text>
+<rect x="428" y="196" width="36" height="28" rx="6" fill="#fff8ec" stroke="#ff9f0a" stroke-width="1.5"/><text x="446" y="215">잠금</text>
+</g>
+<rect x="471" y="196" width="100" height="28" rx="14" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="487" y="215" font-size="12" fill="#6e6e73">검색</text>
+<line x1="560" y1="238" x2="571" y2="238" stroke="#ff3b30" stroke-width="2"/>
+<text x="580" y="243" font-size="12" font-weight="700" fill="#ff3b30">11px</text>
+<text x="20" y="250" font-size="12" fill="#ff3b30">남는 폭이 없어 검색 칸 위치가 11px 어긋난다</text>
+<rect x="20" y="268" width="600" height="48" rx="10" fill="#f2f2f7"/>
+<text x="36" y="288" font-size="12" fill="#1d1d1f">E2E 시험은 검색 칸에 포커스가 가서 도구가 접히기 전후의 오른쪽 끝 좌표를 비교한다.</text>
+<text x="36" y="306" font-size="12" fill="#1d1d1f">추가 후에는 두 좌표가 11px 달라 실패했고, 잠그기를 메뉴로 옮겨 버튼 수를 원래대로 되돌렸다</text>
+</svg>

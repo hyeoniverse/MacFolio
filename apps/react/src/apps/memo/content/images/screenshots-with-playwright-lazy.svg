@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>loading="lazy" 이미지는 뷰포트 근처에 온 것만 내려받는다. 첫 이미지는 naturalWidth가 0보다 크고 화면 아래 이미지는 0이다. scrollIntoViewIfNeeded로 하나씩 화면에 가져오면 모두 실제 폭이 나온다</title>
+<rect width="640" height="370" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">loading="lazy": 화면 근처에 온 이미지만 내려받는다</text>
+<text x="24" y="70" font-size="13" font-weight="700" fill="#1d1d1f">스크롤 전</text>
+<rect x="24" y="84" width="180" height="252" rx="6" fill="#ffffff" stroke="#d1d1d6"/>
+<rect x="24" y="84" width="180" height="120" rx="6" fill="none" stroke="#0a84ff" stroke-width="2"/>
+<text x="212" y="98" font-size="12" fill="#0a84ff">뷰포트</text>
+<rect x="38" y="96" width="152" height="60" rx="4" fill="#0a84ff" fill-opacity="0.2" stroke="#0a84ff"/>
+<text x="114" y="131" font-size="12" fill="#1d1d1f" text-anchor="middle">이미지 1 (로드됨)</text>
+<rect x="38" y="172" width="152" height="10" rx="2" fill="#f2f2f7"/>
+<rect x="38" y="188" width="124" height="10" rx="2" fill="#f2f2f7"/>
+<rect x="38" y="222" width="152" height="44" rx="4" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<text x="114" y="249" font-size="12" fill="#6e6e73" text-anchor="middle">이미지 2 (요청 전)</text>
+<rect x="38" y="280" width="152" height="44" rx="4" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<text x="114" y="307" font-size="12" fill="#6e6e73" text-anchor="middle">이미지 3 (요청 전)</text>
+<text x="212" y="130" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">naturalWidth &gt; 0</text>
+<text x="212" y="249" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">naturalWidth 0</text>
+<text x="212" y="307" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">naturalWidth 0</text>
+<line x1="344" y1="60" x2="344" y2="336" stroke="#d1d1d6"/>
+<text x="358" y="70" font-size="13" font-weight="700" fill="#1d1d1f">이미지마다 스크롤한 뒤</text>
+<rect x="358" y="84" width="258" height="44" rx="6" fill="#f2f2f7"/>
+<text x="366" y="102" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">for (const img of imgs)</text>
+<text x="366" y="119" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace"> await img.scrollIntoViewIfNeeded()</text>
+<rect x="358" y="150" width="258" height="44" rx="4" fill="#34c759" fill-opacity="0.15" stroke="#34c759"/>
+<text x="487" y="177" font-size="12" fill="#1d1d1f" text-anchor="middle">이미지 1: naturalWidth &gt; 0</text>
+<rect x="358" y="210" width="258" height="44" rx="4" fill="#34c759" fill-opacity="0.15" stroke="#34c759"/>
+<text x="487" y="237" font-size="12" fill="#1d1d1f" text-anchor="middle">이미지 2: naturalWidth &gt; 0</text>
+<rect x="358" y="270" width="258" height="44" rx="4" fill="#34c759" fill-opacity="0.15" stroke="#34c759"/>
+<text x="487" y="297" font-size="12" fill="#1d1d1f" text-anchor="middle">이미지 3: naturalWidth &gt; 0</text>
+<text x="24" y="360" font-size="12" fill="#6e6e73">naturalWidth 0은 깨진 이미지가 아니라 아직 요청하지 않은 상태다</text>
+</svg>

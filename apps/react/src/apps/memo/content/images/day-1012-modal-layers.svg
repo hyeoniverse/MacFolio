@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>공통 Modal이 맡는 동작과 각 다이얼로그에 남는 부분</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">Modal이 맡는 부분과 다이얼로그에 남는 부분</text>
+<rect x="20" y="48" width="330" height="270" rx="10" fill="#6e6e73" opacity="0.18"/>
+<text x="36" y="72" font-size="12" fill="#1d1d1f">오버레이: 뒤 화면을 덮는 반투명 층</text>
+<rect x="70" y="96" width="230" height="170" rx="12" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+<rect x="86" y="112" width="198" height="104" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+<text x="185" y="140" font-size="13" font-weight="600" fill="#b25d00" text-anchor="middle">각 다이얼로그의 내용</text>
+<text x="185" y="162" font-size="12" fill="#1d1d1f" text-anchor="middle">예: 배경화면 이름 입력 칸</text>
+<text x="185" y="182" font-size="12" fill="#1d1d1f" text-anchor="middle">패널 모양·스타일</text>
+<rect x="196" y="228" width="88" height="26" rx="6" fill="#0a84ff"/><text x="240" y="245" font-size="12" fill="#ffffff" text-anchor="middle">확인</text>
+<rect x="100" y="228" width="88" height="26" rx="6" fill="#f2f2f7"/><text x="144" y="245" font-size="12" fill="#1d1d1f" text-anchor="middle">취소</text>
+<text x="36" y="300" font-size="12" fill="#1d1d1f">바깥(회색 영역) 클릭 → 닫기</text>
+<text x="370" y="64" font-size="13" font-weight="700" fill="#0a84ff">Modal 하나가 처리</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="370" y="92">1. 오버레이를 그린다</text>
+<text x="370" y="118">2. 포커스 트랩: Tab을 눌러도 초점이</text>
+<text x="386" y="136">패널 안의 요소 사이에서만 돈다</text>
+<text x="370" y="162">3. Esc를 누르면 닫는다</text>
+<text x="370" y="188">4. 바깥을 클릭하면 닫는다</text>
+<text x="370" y="214">5. 닫힘 애니메이션이 끝난 뒤 제거</text>
+</g>
+<text x="370" y="252" font-size="13" font-weight="700" fill="#b25d00">다이얼로그마다 다른 것</text>
+<text x="370" y="278" font-size="12" fill="#1d1d1f">내용과 패널 스타일 (그대로 유지)</text>
+<text x="370" y="304" font-size="12" fill="#6e6e73">적용: 경고창, 배경화면 이름 변경, 단축키,</text>
+<text x="370" y="322" font-size="12" fill="#6e6e73">로그인 결과, Launchpad</text>
+</svg>

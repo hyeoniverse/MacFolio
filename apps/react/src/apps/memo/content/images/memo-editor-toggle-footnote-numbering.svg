@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">저장한 각주 식별자와 화면에 보이는 번호</text>
+<text x="320" y="48" font-size="12" fill="#6e6e73" text-anchor="middle">번호는 본문에 처음 나온 순서로 매기고, 식별자와 각주 내용의 위치는 번호에 영향을 주지 않는다</text>
+<text x="20" y="82" font-size="13" font-weight="600" fill="#6e6e73">Markdown (저장값)</text>
+<rect x="20" y="92" width="290" height="220" rx="8" fill="#f2f2f7"/>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12.5" fill="#1d1d1f">
+<text x="34" y="118">병합 커밋을 남기는 옵션</text>
+<text x="34" y="138"><tspan fill="#0a84ff">[^no-ff]</tspan>이 있다.</text>
+<text x="34" y="164">범위를 반씩 줄여 찾는 명령</text>
+<text x="34" y="184"><tspan fill="#ff9f0a">[^bisect]</tspan>도 있다.</text>
+<text x="34" y="222"><tspan fill="#ff9f0a">[^bisect]</tspan>: git bisect …</text>
+<text x="34" y="246"><tspan fill="#0a84ff">[^no-ff]</tspan>: --no-ff 옵션 …</text>
+</g>
+<text x="34" y="290" font-size="12" fill="#6e6e73">내용은 bisect가 먼저 적혀 있다</text>
+<line x1="318" y1="200" x2="352" y2="200" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="350" y="82" font-size="13" font-weight="600" fill="#6e6e73">화면 (읽기 화면 · 편집기)</text>
+<rect x="350" y="92" width="270" height="220" rx="8" fill="#fff" stroke="#6e6e73"/>
+<g font-size="13" fill="#1d1d1f">
+<text x="364" y="128">병합 커밋을 남기는 옵션<tspan fill="#0a84ff" font-size="11" dy="-5">1</tspan><tspan dy="5">이 있다.</tspan></text>
+<text x="364" y="174">범위를 반씩 줄여 찾는 명령<tspan fill="#ff9f0a" font-size="11" dy="-5">2</tspan><tspan dy="5">도</tspan></text>
+<text x="364" y="194">있다.</text>
+<line x1="364" y1="204" x2="606" y2="204" stroke="#6e6e73" stroke-width="0.8"/>
+<text x="364" y="228"><tspan fill="#0a84ff">1.</tspan> --no-ff 옵션 … ↩</text>
+<text x="364" y="252"><tspan fill="#ff9f0a">2.</tspan> git bisect … ↩</text>
+</g>
+<text x="364" y="290" font-size="12" fill="#6e6e73">↩는 본문의 참조 위치로 이동</text>
+</svg>

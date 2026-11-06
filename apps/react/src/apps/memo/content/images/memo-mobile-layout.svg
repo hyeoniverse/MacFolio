@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="470" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">휴대폰 메모 본문의 배치: 제목 막대 없이 위아래에 떠 있는 버튼</text>
+  <rect x="220" y="48" width="200" height="404" rx="28" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.5"/>
+  <circle cx="246" cy="84" r="14" fill="#fff" stroke="#6e6e73"/>
+  <text x="246" y="89" text-anchor="middle" font-size="13" fill="#ff9f0a">‹</text>
+  <rect x="306" y="72" width="40" height="24" rx="12" fill="#fff" stroke="#6e6e73"/>
+  <text x="326" y="89" text-anchor="middle" font-size="12" fill="#6e6e73">게시</text>
+  <rect x="350" y="72" width="58" height="24" rx="12" fill="#fff" stroke="#6e6e73"/>
+  <text x="379" y="89" text-anchor="middle" font-size="12" fill="#ff9f0a">⇪ •••</text>
+  <text x="320" y="122" text-anchor="middle" font-size="12" fill="#6e6e73">2026. 10. 1. · 폴더</text>
+  <rect x="236" y="136" width="168" height="16" rx="3" fill="#d1d1d6"/>
+  <rect x="236" y="162" width="150" height="10" rx="3" fill="#e5e5ea"/>
+  <rect x="236" y="180" width="160" height="10" rx="3" fill="#e5e5ea"/>
+  <rect x="236" y="198" width="120" height="10" rx="3" fill="#e5e5ea"/>
+  <rect x="236" y="216" width="155" height="10" rx="3" fill="#e5e5ea"/>
+  <rect x="236" y="234" width="140" height="10" rx="3" fill="#e5e5ea"/>
+  <text x="320" y="290" text-anchor="middle" font-size="12" fill="#6e6e73">본문 (스크롤)</text>
+  <rect x="234" y="396" width="128" height="30" rx="15" fill="#fff" stroke="#6e6e73"/>
+  <text x="298" y="416" text-anchor="middle" font-size="12" fill="#ff9f0a">가가 ☑ ▦ ▨ 📎</text>
+  <circle cx="390" cy="411" r="15" fill="#fff" stroke="#6e6e73"/>
+  <text x="390" y="416" text-anchor="middle" font-size="13" fill="#ff9f0a">✎</text>
+  <g font-size="12" fill="#1d1d1f">
+    <line x1="232" y1="84" x2="170" y2="84" stroke="#0a84ff"/>
+    <text x="164" y="80" text-anchor="end">원형 뒤로 가기</text>
+    <text x="164" y="96" text-anchor="end" fill="#6e6e73">문구는 스크린 리더용</text>
+    <line x1="326" y1="72" x2="326" y2="58" stroke="#0a84ff"/>
+    <line x1="326" y1="58" x2="460" y2="58" stroke="#0a84ff"/>
+    <text x="466" y="62">게시 알약 (글자 버튼)</text>
+    <line x1="408" y1="84" x2="460" y2="84" stroke="#0a84ff"/>
+    <text x="466" y="88">공유·••• 알약</text>
+    <line x1="380" y1="122" x2="460" y2="122" stroke="#0a84ff"/>
+    <text x="466" y="118">날짜·폴더 줄</text>
+    <text x="466" y="134" fill="#6e6e73">버튼 아래 가운데, 14px</text>
+    <line x1="234" y1="411" x2="170" y2="411" stroke="#0a84ff"/>
+    <text x="164" y="407" text-anchor="end">서식 알약</text>
+    <text x="164" y="423" text-anchor="end" fill="#6e6e73">가가·체크리스트·표·이미지·첨부</text>
+    <line x1="405" y1="411" x2="460" y2="411" stroke="#0a84ff"/>
+    <text x="466" y="407">새 메모</text>
+    <text x="466" y="423" fill="#6e6e73">관리자만</text>
+  </g>
+  <text x="320" y="464" text-anchor="middle" font-size="12" fill="#6e6e73">위쪽 버튼은 셸의 막대(MobileNavigation floating), 아래쪽 버튼은 메모 앱이 스크롤 컨테이너 밖에 그린다</text>
+</svg>

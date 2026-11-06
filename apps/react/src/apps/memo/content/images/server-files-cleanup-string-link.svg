@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>글 본문의 /files/id 문자열과 Upload 행의 id가 같은 문자열일 뿐 외래 키가 없어서, 본문에서 줄을 지우거나 글을 지워도 Upload 행이 남는 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">글과 파일은 주소 문자열로만 이어진다</text>
+<rect x="24" y="56" width="272" height="132" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="40" y="80" font-size="13" font-weight="700" fill="#1d1d1f">Post 행 (글)</text>
+<g font-family="SFMono-Regular, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<text x="40" y="104">slug: "example-post"</text>
+<text x="40" y="124">body: "… 화면은 다음과 같다.</text>
+<text x="40" y="144">![](https://api…/files/</text>
+<text x="40" y="164"><tspan fill="#0a84ff" font-weight="700">Xq3k9Lm2Pz0aB7cD</tspan>)"</text>
+</g>
+<rect x="344" y="56" width="272" height="132" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="360" y="80" font-size="13" font-weight="700" fill="#1d1d1f">Upload 행 (파일)</text>
+<g font-family="SFMono-Regular, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<text x="360" y="104">id: "<tspan fill="#0a84ff" font-weight="700">Xq3k9Lm2Pz0aB7cD</tspan>"</text>
+<text x="360" y="124">name: "screen.png"</text>
+<text x="360" y="144">size: 184320</text>
+<text x="360" y="164">data: bytea (파일 바이트)</text>
+</g>
+<line x1="296" y1="122" x2="342" y2="122" stroke="#0a84ff" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="320" y="210" font-size="12" fill="#0a84ff" text-anchor="middle">같은 16자 문자열일 뿐, 외래 키는 없다</text>
+<text x="320" y="228" font-size="12" fill="#6e6e73" text-anchor="middle">DB는 이 글이 이 파일을 쓴다는 사실을 모른다</text>
+<rect x="24" y="248" width="288" height="60" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="168" y="272" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">본문에서 그림 줄을 삭제</text>
+<text x="168" y="292" font-size="12" fill="#6e6e73" text-anchor="middle">→ Upload 행은 그대로 남는다</text>
+<rect x="328" y="248" width="288" height="60" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="472" y="272" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">글을 영구 삭제</text>
+<text x="472" y="292" font-size="12" fill="#6e6e73" text-anchor="middle">→ Upload 행은 그대로 남는다</text>
+</svg>

@@ -7,7 +7,30 @@ seriesOrder: 7
 summary: Mac 초기화로 서버 SSH 키를 잃었다. 부트 볼륨을 임시 VM에 연결해 authorized_keys에 새 키를 넣는 순서와 시행착오를 정리했다. 복구 사흘 뒤의 SSH 시간 초과는 임시 VM의 공인 IP를 서버 주소로 기억한 탓이었고, ~/.ssh/config 별칭과 예약 IP로 재발을 막았다.
 ---
 
-Mac의 시스템 데이터 용량이 커져 초기화하자 로컬 API의 `.env`가 삭제되었다. 서버의 `~/deploy/api.env`에 배포 값이 모두 있으므로, 내려받아 로컬용 값만 수정하면 된다. 그런데 서버에 접속할 SSH 키도 `~/.ssh` 폴더와 함께 삭제된 상태였다. 이 글은 키 없이 Oracle 서버에 다시 접속하기까지의 **실제 작업 순서**와 그 과정의 시행착오를 기록한 것이다.
+Mac의 시스템 데이터 용량이 커져 초기화하자 로컬 API의 `.env`가 삭제되었다. 서버의 `~/deploy/api.env`에 배포 값이 모두 있으므로, 내려받아 로컬용 값만 수정하면 된다. 그런데 서버에 접속할 SSH 키도 `~/.ssh` 폴더와 함께 삭제된 상태였다. 키 없이 Oracle 서버에 다시 접속하기까지의 **실제 작업 순서**와 그 과정의 시행착오를 순서대로 적는다.
+
+## 배경: SSH 키 인증과 부트 볼륨
+
+### SSH 공개 키 인증
+
+SSH는 원격 서버에 암호화된 연결로 접속해 명령을 실행하는 프로토콜이다. 이 서버는 비밀번호 로그인을 막고 **공개 키 인증**만 허용한다. 공개 키 인증은 수학적으로 짝을 이루는 두 파일을 사용한다.
+
+| 파일                 | 보관 위치                       | 성질                                                                     |
+| -------------------- | ------------------------------- | ------------------------------------------------------------------------ |
+| 비밀 키(private key) | 접속하는 컴퓨터(Mac)            | 이 파일로만 서명을 만들 수 있다. 다른 곳에 복사하거나 전송하지 않는다    |
+| 공개 키(public key)  | 서버의 `~/.ssh/authorized_keys` | 서명이 짝이 되는 비밀 키로 만들어졌는지 검증만 할 수 있다. 공개해도 된다 |
+
+`authorized_keys`는 "이 계정에 접속할 수 있는 공개 키 목록"이고, 한 줄에 키 하나씩 `ssh-ed25519 AAAAC3Nz… macfolio-admin` 같은 형식으로 저장된다. 접속할 때 서버는 클라이언트에게 그 목록에 있는 공개 키의 짝인 비밀 키로 서명하라고 요구하고, 받은 서명을 공개 키로 검증한다.
+
+![Mac의 비밀 키와 공개 키 파일, 서버 authorized_keys의 세 줄, 그리고 키 잠금 해제부터 공개 키로 서명을 검증하기까지의 네 단계](./images/oracle-ssh-key-recovery-keypair.svg '비밀 키가 없으면 서명을 만들 수 없으므로, 서버에 새 공개 키를 등록해야 한다')
+
+따라서 비밀 키를 잃으면 그 키로는 다시 접속할 수 없다. 공개 키만으로 비밀 키를 계산할 수 없도록 설계된 방식이기 때문이다. 복구 방법은 **새 키 쌍을 만들어 새 공개 키를 `authorized_keys`에 추가하는 것** 하나뿐이고, 문제는 접속할 수 없는 서버의 파일을 어떻게 수정하느냐다.
+
+### 부트 볼륨과 데이터 볼륨
+
+Oracle Cloud의 VM은 디스크를 **블록 볼륨**이라는 네트워크 저장 장치로 제공한다. 그중 OS가 설치되어 부팅에 쓰이는 볼륨이 **부트 볼륨**이고, 추가로 연결한 볼륨이 **데이터 볼륨**이다. 부트 볼륨은 VM과 별개의 리소스라, VM을 중지한 뒤 분리해 다른 VM에 데이터 볼륨으로 연결할 수 있다. 연결하면 다른 VM에서는 그 디스크가 `/dev/sdb` 같은 두 번째 디스크로 보이고, 마운트해 파일을 읽고 쓸 수 있다.
+
+이번 복구는 이 성질을 이용했다. 원래 서버의 부트 볼륨을 새로 만든 임시 VM에 연결하고, 그 안의 `/home/ubuntu/.ssh/authorized_keys`에 새 공개 키 한 줄을 추가한 뒤 원래 서버로 되돌린다.
 
 ![부트 볼륨을 옮겨 SSH 키를 복구하는 계획](./images/oracle-ssh-key-recovery-plan.svg '원래 서버 디스크를 임시 VM에 데이터 볼륨으로 연결해 authorized_keys를 수정하고 다시 원래 서버에 연결한다')
 
@@ -28,6 +51,8 @@ Mac의 시스템 데이터 용량이 커져 초기화하자 로컬 API의 `.env`
 | 10   | 복구 뒤 시간 초과: 접속 주소 확인, 재발 방지 | Mac, Cloud Shell             |           |
 
 터미널 창이 세 개(Mac 터미널, Oracle Cloud Shell, 임시 VM에 SSH로 접속한 터미널)이므로, 단계마다 **명령을 실행할 창**을 먼저 표시했다. 이 구분을 놓쳐 생긴 시행착오가 가장 많았다.
+
+![Mac 터미널, Oracle Cloud Shell, 임시 VM에 SSH로 접속한 창의 프롬프트와 각 창에서 실행하는 명령, Cloud Shell에서 lsblk를 실행한 실수와 임시 VM에서 scp를 실행한 실수](./images/oracle-ssh-key-recovery-terminals.svg '명령을 입력하기 전에 프롬프트 앞부분으로 어느 창인지 확인한다')
 
 ### Oracle 콘솔 화면 경로
 
@@ -80,7 +105,7 @@ Spotlight로 파일 이름(`oracle-macfolio`, Oracle이 내려받기 시 지정�
 
 ## 1. 복구 방법 선택
 
-**비밀 키는 다시 내려받을 수 없다.** Oracle에서 VM을 생성할 때 **Download private key**로 받은 비밀 키는 그 화면에서 한 번만 내려받을 수 있고, Oracle도 사본을 보관하지 않는다. 가능한 방법은 **새 키를 생성해 서버의 `~/.ssh/authorized_keys`에 추가하는** 것뿐이다. 문제는 접속할 수 없는 서버에 그 한 줄을 추가하는 방법이다.
+**비밀 키는 다시 내려받을 수 없다.** Oracle에서 VM을 생성할 때 **Download private key**로 받은 비밀 키는 그 화면에서 한 번만 내려받을 수 있고, ==Oracle도 사본을 보관하지 않는다==. 가능한 방법은 **새 키를 생성해 서버의 `~/.ssh/authorized_keys`에 추가하는** 것뿐이다. 문제는 접속할 수 없는 서버에 그 한 줄을 추가하는 방법이다.
 
 | 방법                                       | 이 서버에서                                                                                                                                                          |
 | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -124,7 +149,7 @@ Enter passphrase for key '~/.ssh/oracle-macfolio.key':
 ubuntu@<임시 VM IP>: Permission denied (publickey).
 ```
 
-정리하면 다음과 같다.
+확인한 사실은 다음과 같다.
 
 - `Enter passphrase`가 요구하는 값은 **2단계에서 지정한 암호**다. 공개 키가 아니다
 - 터미널은 암호를 입력하든 붙여 넣든 **화면에 아무것도 표시하지 않는다**. 별표도 표시되지 않는다. 입력을 마치고 Enter를 누른다
@@ -170,7 +195,7 @@ Warning: Permanently added '<임시 VM IP>' (ED25519) to the list of known hosts
 Connection closed by <임시 VM IP> port 22
 ```
 
-Ubuntu는 부팅이 끝날 때까지 일반 사용자 로그인을 차단한다(`pam_nologin`). 두 출력 모두 **부팅이 완료되지 않은 상태**가 원인이었고, 1~2분 뒤 접속에 성공했다. 프롬프트가 `ubuntu@…:~$`로 바뀌면 준비가 끝난 것이다.
+Ubuntu는 부팅이 끝날 때까지 일반 사용자 로그인을 차단한다(`pam_nologin`). 두 출력 모두 **부팅이 완료되지 않은 상태**가 원인이었고, 1~2분 뒤 접속에 성공했다. 프롬프트가 `ubuntu@…:~$`로 바뀌면 준비가 끝난 상태다.
 
 ## 4. 원래 서버 중지, 부트 볼륨 분리 (Oracle 콘솔)
 
@@ -186,13 +211,16 @@ Ubuntu는 부팅이 끝날 때까지 일반 사용자 로그인을 차단한다(
 Unable to start instance: Operation cannot be performed. Boot volume is not currently attached to the instance.
 ```
 
-부트 볼륨을 분리한 인스턴스는 시작할 수 없다. 작업을 중단하려면 **역순**으로 진행한다. 임시 VM에 연결했다면 먼저 분리하고, 부트 볼륨 상세 → **Attached instances**에서 원래 서버에 다시 연결한 뒤(상태가 **Attached**가 된 뒤) Start한다. 중단 가능성이 있다면 4~7단계를 연속으로 진행할 수 있는 시간을 확보하는 편이 좋다.
+==부트 볼륨을 분리한 인스턴스는 시작할 수 없다==. 작업을 중단하려면 **역순**으로 진행한다. 임시 VM에 연결했다면 먼저 분리하고, 부트 볼륨 상세 → **Attached instances**에서 원래 서버에 다시 연결한 뒤(상태가 **Attached**가 된 뒤) Start한다. 중단 가능성이 있다면 4~7단계를 연속으로 진행할 수 있는 시간을 확보하는 편이 좋다.
 
 ## 5. 분리한 볼륨을 임시 VM에 연결 (Cloud Shell)
 
 ### 시행착오: 콘솔 버튼 비활성
 
-임시 VM 화면에서 연결하려 했지만 **Attach block volume** 버튼이 비활성(disabled) 상태였고, 마우스를 올려도 이유를 알려 주는 툴팁이 없었다. 활성 상태인 버튼은 **Replace boot volume**이었다. **이 버튼은 사용하면 안 된다.** 임시 VM의 부트 디스크 자체를 원래 서버 디스크로 교체하는 기능이므로, 필요한 동작(두 번째 디스크로 연결)이 아니다.
+임시 VM 화면에서 연결하려 했지만 **Attach block volume** 버튼이 비활성(disabled) 상태였고, 마우스를 올려도 이유를 알려 주는 툴팁이 없었다. 활성 상태인 버튼은 **Replace boot volume**이었다.
+
+> [!CAUTION] Replace boot volume은 사용하지 않는다
+> 임시 VM의 부트 디스크 자체를 원래 서버 디스크로 교체하는 기능이므로, 필요한 동작(두 번째 디스크로 연결)이 아니다.
 
 화면 대신 콘솔 안의 터미널인 **Cloud Shell**에서 OCI CLI로 연결했다. Cloud Shell은 별도 설치나 로그인이 필요 없다. 콘솔에 로그인한 계정 권한으로 `oci` 명령을 바로 실행할 수 있다.
 
@@ -238,12 +266,12 @@ oci compute volume-attachment attach --type paravirtualized \
 
 ### 시행착오: 오류 네 가지
 
-| 증상                                                 | 원인과 해결                                                                                                                                |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 부트 볼륨 목록에서 둘 다 `AVAILABLE`                 | `AVAILABLE`은 "볼륨이 정상"이라는 뜻이지 "연결되지 않음"이 아니다. 연결 여부는 `boot-volume-attachment list --boot-volume-id`로 확인한다   |
-| `MissingParameter` (400)                             | 변수가 비어 빈 값이 전송되었다. `echo "[$OLDVOL]"`처럼 괄호로 감싸 출력해 확인하고 다시 저장했다                                           |
-| `volumeId is invalid or incorrectly formatted` (400) | 수동 복사한 OCID가 잘못되었다. 위처럼 `--query`로 추출해 저장하자 해결되었다                                                               |
-| `Conflict: Volume … currently attached` (409)        | 이미 연결되어 있었다. 앞선 시도 중 하나가 실제로 처리된 것이다. `volume-attachment list --instance-id "$RESCUE"`에 `ATTACHED`로 표시되었다 |
+| 증상                                                 | 원인과 해결                                                                                                                              |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 부트 볼륨 목록에서 둘 다 `AVAILABLE`                 | `AVAILABLE`은 "볼륨이 정상"이라는 뜻이지 "연결되지 않음"이 아니다. 연결 여부는 `boot-volume-attachment list --boot-volume-id`로 확인한다 |
+| `MissingParameter` (400)                             | 변수가 비어 빈 값이 전송되었다. `echo "[$OLDVOL]"`처럼 괄호로 감싸 출력해 확인하고 다시 저장했다                                         |
+| `volumeId is invalid or incorrectly formatted` (400) | 수동 복사한 OCID가 잘못되었다. 위처럼 `--query`로 추출해 저장하자 해결되었다                                                             |
+| `Conflict: Volume … currently attached` (409)        | 이미 연결되어 있었다. 앞선 시도 중 하나가 실제로 처리되었다. `volume-attachment list --instance-id "$RESCUE"`에 `ATTACHED`로 표시되었다  |
 
 `attachment list`가 아무것도 출력하지 않을 때도 "연결된 것이 없음"과 "변수가 비어 있음" 두 경우가 있다. 결과가 비어 있으면 변수 값부터 출력해 확인한다.
 
@@ -269,7 +297,7 @@ sdb      8:16   0    50G  0 disk
 └─sdb1   8:17   0     5G  0 part /home/<계정>
 ```
 
-`sdb`가 표시되어 대상 디스크로 판단했지만, 프롬프트가 `…@cloudshell`이었다. Cloud Shell 자체의 디스크다. 여기서 `mount`나 `tee`를 실행했다면 다른 디스크를 변경했을 것이다. 디스크 작업은 **Mac에서 임시 VM에 SSH로 접속한 창**에서 실행한다.
+`sdb`가 표시되어 대상 디스크로 판단했지만, 프롬프트가 `…@cloudshell`이었다. Cloud Shell 자체의 디스크다. 여기서 `mount`나 `tee`를 실행하면 원래 서버가 아니라 Cloud Shell의 디스크를 대상으로 동작한다. 디스크 작업은 **Mac에서 임시 VM에 SSH로 접속한 창**에서 실행한다.
 
 ### 예상하지 못한 결과: 임시 VM의 호스트 키 변경
 
@@ -313,7 +341,10 @@ sdb     46.6G
 
 ![임시 VM이 원래 서버 디스크로 부팅된 과정](./images/oracle-ssh-key-recovery-boot.svg '두 디스크의 루트 이름표(cloudimg-rootfs)가 같아 sdb1이 /로 잡혔고, cloud-init이 이를 새 VM의 첫 부팅으로 처리했다')
 
-두 디스크가 같은 Ubuntu 이미지에서 생성되어 루트 파티션의 레이블(`LABEL=cloudimg-rootfs`)이 같다. 부팅 시 이 레이블로 루트를 찾으면 어느 디스크가 선택될지 보장되지 않는다. 그래서 **디스크를 연결한 뒤에는 임시 VM을 재부팅하지 않는다.**
+두 디스크가 같은 Ubuntu 이미지에서 생성되어 루트 파티션의 레이블(`LABEL=cloudimg-rootfs`)이 같다. 부팅 시 이 레이블로 루트를 찾으면 어느 디스크가 선택될지 보장되지 않는다.
+
+> [!WARNING] 디스크를 연결한 뒤에는 임시 VM을 재부팅하지 않는다
+> 같은 이미지에서 만든 디스크 두 개가 연결된 상태로 재부팅하면, 연결한 원래 서버 디스크가 `/`로 마운트될 수 있다. 작업 전에 `findmnt -n -o SOURCE /`로 루트가 임시 VM 자체 디스크(`sda1`)인지 확인한다.
 
 원래 서버의 OS인지 확인했다.
 
@@ -350,7 +381,7 @@ Warning: Identity file /home/ubuntu/.ssh/oracle-macfolio.key not accessible: No 
 ubuntu@<임시 VM IP>: Permission denied (publickey).
 ```
 
-서버가 자기 자신에게 접속하려다 실패한 것이다. Mac 터미널에서 새 탭(⌘T)을 열어 다시 실행했다. 프롬프트 앞부분이 `ubuntu@`인지 로컬 Mac 이름인지로 구분한다.
+서버가 자기 자신에게 접속하려다 실패했다. Mac 터미널에서 새 탭(⌘T)을 열어 다시 실행했다. 프롬프트 앞부분이 `ubuntu@`인지 로컬 Mac 이름인지로 구분한다.
 
 ## 7. 원상 복구, 원래 서버 시작 (Cloud Shell)
 
@@ -467,7 +498,7 @@ ssh: connect to host 198.51.100.10 port 22: Operation timed out
 | 6    | Oracle Cloud Shell에서 같은 주소 | 시간 초과                          | 한국에서 Oracle까지의 경로     |
 | 7    | Cloud Shell에서 VNIC 조회        | 공인 IP가 다른 주소                | **원인: 접속 주소**            |
 
-3번이 단서였다. GitHub Actions는 Secrets의 `DEPLOY_HOST`로 SSH 접속해 배포하고, 이 배포가 같은 날 성공했다. 따라서 sshd와 22번 포트는 정상이고 인터넷에서 접근할 수 있다. 그런데 6번에서 Oracle 네트워크 안(같은 도쿄 리전의 Cloud Shell)에서도 실패했다. 경로 문제라면 Oracle 내부에서는 연결되어야 하므로, 남는 차이는 **Actions와 Mac이 접속한 주소가 다르다**는 것뿐이었다.
+3번이 단서였다. GitHub Actions는 Secrets의 `DEPLOY_HOST`로 SSH 접속해 배포하고, 이 배포가 같은 날 성공했다. 따라서 sshd와 22번 포트는 정상이고 인터넷에서 접근할 수 있다. 그런데 6번에서 Oracle 네트워크 안(같은 도쿄 리전의 Cloud Shell)에서도 실패했다. 경로 문제라면 Oracle 내부에서는 연결되어야 하므로, 남는 차이는 ==Actions와 Mac이 접속한 주소가 다르다==는 점뿐이었다.
 
 <details>
 <summary>중간에 의심했다가 배제한 것</summary>
@@ -550,12 +581,17 @@ Host macfolio
 
 배포 문서의 키 복구 절차도 이번 실제 작업 순서로 수정했다.
 
-## 참고한 공식 문서
+## 관련 글
 
-영어 문서는 이 글과 관련된 부분만 번역해 인용했다.
+- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
+- [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
+- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
 
 <details>
-<summary>공식 문서와 인용 내용</summary>
+<summary>참고 문헌</summary>
+
+영어 문서는 이 글과 관련된 부분만 번역해 인용했다.
 
 - [Connecting to a Linux Instance](https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/connect-to-linux-instance.htm) (Oracle)
   - "SSH 키를 잃어버렸으면 인스턴스를 종료하고, 제공된 SSH 키나 직접 만든 SSH 키로 새 인스턴스를 만든다."
@@ -596,14 +632,12 @@ Host macfolio
   - 530: "Cloudflare가 원본 호스트 이름을 확인하지 못한다는 뜻이다." 자세한 원인은 함께 오는 1XXX 오류를 본다.
   - 1033: "터널이 Cloudflare 네트워크에 연결되어 있지 않다. 트래픽을 받을 정상 `cloudflared` 인스턴스를 찾지 못했기 때문이다."
 
+- [ssh-keygen(1)](https://man.openbsd.org/ssh-keygen.1), [sshd(8): AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT) (OpenBSD)
+  - `-y`: 비밀 키 파일을 읽어 공개 키를 출력한다. 암호가 걸린 키면 암호를 요구한다.
+- [Overview of Block Volume](https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/overview.htm), [Boot Volumes](https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/bootvolumes.htm) (Oracle)
+  - 부트 볼륨은 인스턴스의 OS 이미지가 들어 있는 블록 볼륨이고, 인스턴스와 별개로 분리·연결할 수 있다.
+
 </details>
-
-## 관련 글
-
-- [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
-- [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
-- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
 
 [^ocid]: Oracle Cloud Identifier. OCI의 모든 리소스에 부여되는 고유 ID로, `ocid1.instance.oc1.…` 형식의 긴 문자열이다. [Oracle 문서: Resource Identifiers](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/identifiers.htm)
 

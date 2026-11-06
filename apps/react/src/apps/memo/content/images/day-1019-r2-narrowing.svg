@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>업로드 오류의 원인을 요청 단계별로 좁힌 순서</title>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="28" font-size="14" font-weight="700" fill="#1d1d1f">브라우저에서 R2로 올리는 PUT 한 번이 거치는 검사</text>
+<g font-size="12">
+<rect x="20" y="48" width="140" height="120" rx="10" fill="#ecfaef" stroke="#34c759"/>
+<text x="90" y="72" font-weight="700" fill="#1d1d1f" text-anchor="middle">① CORS 사전 요청</text>
+<text x="90" y="94" fill="#1d1d1f" text-anchor="middle">OPTIONS</text>
+<text x="90" y="116" fill="#34c759" text-anchor="middle">204 +</text>
+<text x="90" y="134" fill="#34c759" text-anchor="middle">Allow-Origin 정상</text>
+<rect x="176" y="48" width="140" height="120" rx="10" fill="#ecfaef" stroke="#34c759"/>
+<text x="246" y="72" font-weight="700" fill="#1d1d1f" text-anchor="middle">② 서명 시각</text>
+<text x="246" y="94" fill="#1d1d1f" text-anchor="middle">서버 시각 확인</text>
+<text x="246" y="116" fill="#34c759" text-anchor="middle">정상</text>
+<text x="246" y="134" fill="#34c759" text-anchor="middle">(만료 아님)</text>
+<rect x="332" y="48" width="140" height="120" rx="10" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="402" y="72" font-weight="700" fill="#1d1d1f" text-anchor="middle">③ 서명 검증</text>
+<text x="402" y="94" fill="#1d1d1f" text-anchor="middle">서명한 PUT 직접 전송</text>
+<text x="402" y="116" fill="#ff3b30" text-anchor="middle">SignatureDoes</text>
+<text x="402" y="134" fill="#ff3b30" text-anchor="middle">NotMatch</text>
+<rect x="488" y="48" width="132" height="120" rx="10" fill="#f2f2f7"/>
+<text x="554" y="72" font-weight="700" fill="#6e6e73" text-anchor="middle">④ 저장</text>
+<text x="554" y="94" fill="#6e6e73" text-anchor="middle">도달하지 못함</text>
+</g>
+<rect x="20" y="196" width="600" height="56" rx="10" fill="#fff8eb" stroke="#ff9f0a"/>
+<text x="36" y="220" font-size="12" fill="#1d1d1f">화면의 오류 문구: "저장소에 연결하지 못했습니다. 버킷의 CORS 설정을 확인해 주세요"</text>
+<text x="36" y="240" font-size="12" fill="#6e6e73">응답을 읽지 못한 업로드 요청(XMLHttpRequest의 onerror)에 표시하는 문구라 CORS를 안내했다</text>
+<rect x="20" y="268" width="600" height="56" rx="10" fill="#ffffff" stroke="#0a84ff"/>
+<text x="36" y="292" font-size="12" fill="#1d1d1f">실제 원인: 서버에 입력한 R2 키 값. 서명이 다른 키로 만들어져 R2가 거부했다</text>
+<text x="36" y="312" font-size="12" fill="#6e6e73">요청을 단계별로 직접 보내 ①②를 제외하고 ③에서 원인을 찾았다</text>
+</svg>

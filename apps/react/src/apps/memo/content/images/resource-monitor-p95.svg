@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>CPU 사용률 표본 20개를 작은 순서로 세운 막대에서 95퍼센타일과 평균, 회수 기준 20%를 비교한 예시</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">95퍼센타일: 순간 최댓값을 제외한 상한 (예시 표본 20개)</text>
+<text x="58" y="254" font-size="12" text-anchor="end" fill="#6e6e73">0%</text><line x1="64" y1="250" x2="600" y2="250" stroke="#e5e5ea"/>
+<text x="58" y="194" font-size="12" text-anchor="end" fill="#6e6e73">20%</text><line x1="64" y1="190" x2="600" y2="190" stroke="#e5e5ea"/>
+<text x="58" y="134" font-size="12" text-anchor="end" fill="#6e6e73">40%</text><line x1="64" y1="130" x2="600" y2="130" stroke="#e5e5ea"/>
+<text x="58" y="74" font-size="12" text-anchor="end" fill="#6e6e73">60%</text><line x1="64" y1="70" x2="600" y2="70" stroke="#e5e5ea"/>
+<rect x="70" y="244" width="18" height="6" rx="2" fill="#c7c7cc"/>
+<rect x="96" y="244" width="18" height="6" rx="2" fill="#c7c7cc"/>
+<rect x="122" y="241" width="18" height="9" rx="2" fill="#c7c7cc"/>
+<rect x="148" y="241" width="18" height="9" rx="2" fill="#c7c7cc"/>
+<rect x="174" y="241" width="18" height="9" rx="2" fill="#c7c7cc"/>
+<rect x="200" y="241" width="18" height="9" rx="2" fill="#c7c7cc"/>
+<rect x="226" y="238" width="18" height="12" rx="2" fill="#c7c7cc"/>
+<rect x="252" y="238" width="18" height="12" rx="2" fill="#c7c7cc"/>
+<rect x="278" y="238" width="18" height="12" rx="2" fill="#c7c7cc"/>
+<rect x="304" y="238" width="18" height="12" rx="2" fill="#c7c7cc"/>
+<rect x="330" y="238" width="18" height="12" rx="2" fill="#c7c7cc"/>
+<rect x="356" y="235" width="18" height="15" rx="2" fill="#c7c7cc"/>
+<rect x="382" y="235" width="18" height="15" rx="2" fill="#c7c7cc"/>
+<rect x="408" y="235" width="18" height="15" rx="2" fill="#c7c7cc"/>
+<rect x="434" y="232" width="18" height="18" rx="2" fill="#c7c7cc"/>
+<rect x="460" y="232" width="18" height="18" rx="2" fill="#c7c7cc"/>
+<rect x="486" y="229" width="18" height="21" rx="2" fill="#c7c7cc"/>
+<rect x="512" y="226" width="18" height="24" rx="2" fill="#c7c7cc"/>
+<rect x="538" y="223" width="18" height="27" rx="2" fill="#0a84ff"/>
+<rect x="564" y="70" width="18" height="180" rx="2" fill="#ff9f0a"/>
+<line x1="64" y1="190" x2="600" y2="190" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="80" y="184" font-size="12" fill="#ff3b30">회수 기준 20%</text>
+<line x1="64" y1="227.9" x2="600" y2="227.9" stroke="#34c759" stroke-width="1.5" stroke-dasharray="3 3"/>
+<text x="80" y="221.9" font-size="12" fill="#248a3d">평균 7.4%</text>
+<line x1="547" y1="219" x2="507" y2="150" stroke="#0a84ff"/><text x="503" y="146" font-size="12" text-anchor="end" fill="#0a84ff" font-weight="700">p95 = 9% (19번째 값)</text>
+<text x="573" y="62" font-size="12" text-anchor="end" fill="#c46c00">1분 급등 60%</text>
+<text x="20" y="280" font-size="13" fill="#1d1d1f">위치 = ⌈0.95 × 20⌉ = 19번째. 가장 큰 1개(상위 5%)는 결과에 들어가지 않는다</text>
+<text x="20" y="302" font-size="13" fill="#1d1d1f">60%로 한 번 치솟아도 p95는 9%라 CPU 기준(20% 미만)에 <tspan fill="#ff3b30" font-weight="700">그대로 걸린다</tspan></text>
+</svg>

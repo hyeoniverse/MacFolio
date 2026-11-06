@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>모두 대치를 문서 끝부터 하는 이유</title>
+  <rect width="640" height="340" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">"cat"을 모두 "tiger"로: 찾은 위치는 [0,3] [4,7] [8,11]</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="14">
+    <text x="24" y="72" fill="#1d1d1f">원문:  cat cat cat</text>
+  </g>
+  <!-- front first -->
+  <text x="24" y="110" font-size="13" font-weight="600" fill="#ff3b30">앞에서부터 바꾸면</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#1d1d1f">
+    <text x="24" y="136">1) [0,3] 바꿈  → tiger cat cat     (뒤 글자가 2칸 밀림)</text>
+    <text x="24" y="158">2) [4,7] 바꿈  → tigetigerat cat    ← "r c"를 바꿈</text>
+    <text x="24" y="180">3) [8,11] 바꿈 → tigetigetiger cat  ← 결과가 깨짐</text>
+  </g>
+  <!-- end first -->
+  <text x="24" y="222" font-size="13" font-weight="600" fill="#34c759">끝에서부터 바꾸면</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#1d1d1f">
+    <text x="24" y="248">1) [8,11] 바꿈 → cat cat tiger</text>
+    <text x="24" y="270">2) [4,7] 바꿈  → cat tiger tiger   (앞쪽 위치는 그대로)</text>
+    <text x="24" y="292">3) [0,3] 바꿈  → tiger tiger tiger</text>
+  </g>
+  <text x="24" y="324" font-size="12" fill="#6e6e73">뒤쪽을 바꿔도 그보다 앞의 위치 값은 변하지 않으므로, 처음 계산한 위치 목록을 그대로 쓸 수 있다</text>
+</svg>

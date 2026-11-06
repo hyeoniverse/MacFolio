@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>PostCSS가 CSS를 트리로 읽어 선택자 목록에서 항목 하나만 지우는 과정</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="320" y="30" font-size="16" font-weight="700" fill="#1d1d1f" text-anchor="middle">문자열이 아니라 트리(AST)에서 지운다</text>
+
+  <!-- 입력 -->
+  <text x="20" y="62" font-size="13" font-weight="700" fill="#6e6e73">① CSS 문자열</text>
+  <rect x="20" y="72" width="190" height="88" rx="10" fill="#f2f2f7"/>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <text x="32" y="96">.minimized-container i,</text>
+    <text x="32" y="116">.dock-item i {</text>
+    <text x="44" y="136">color: …;</text>
+    <text x="32" y="152">}</text>
+  </g>
+  <line x1="214" y1="116" x2="246" y2="116" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 트리 -->
+  <text x="252" y="62" font-size="13" font-weight="700" fill="#6e6e73">② postcss.parse()</text>
+  <g font-size="12">
+    <rect x="300" y="72" width="80" height="26" rx="6" fill="#ffffff" stroke="#1d1d1f"/>
+    <text x="340" y="90" text-anchor="middle" fill="#1d1d1f">Root</text>
+    <line x1="340" y1="98" x2="340" y2="114" stroke="#6e6e73"/>
+    <rect x="290" y="114" width="100" height="26" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+    <text x="340" y="132" text-anchor="middle" fill="#0a84ff">Rule</text>
+    <line x1="320" y1="140" x2="290" y2="170" stroke="#6e6e73"/>
+    <line x1="360" y1="140" x2="420" y2="170" stroke="#6e6e73"/>
+    <rect x="250" y="170" width="140" height="74" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+    <text x="260" y="188" fill="#6e6e73">rule.selectors (배열)</text>
+    <text x="260" y="210" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace" text-decoration="line-through">[0] .minimized-…</text>
+    <text x="260" y="232" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">[1] .dock-item i</text>
+    <rect x="400" y="170" width="80" height="26" rx="6" fill="#ffffff" stroke="#34c759"/>
+    <text x="440" y="188" text-anchor="middle" fill="#34c759">Decl</text>
+  </g>
+  <line x1="484" y1="116" x2="502" y2="116" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- 출력 -->
+  <text x="506" y="62" font-size="13" font-weight="700" fill="#6e6e73">③ toString()</text>
+  <rect x="506" y="72" width="118" height="88" rx="10" fill="#f2f2f7"/>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <text x="514" y="100">.dock-item i {</text>
+    <text x="526" y="122">color: …;</text>
+    <text x="514" y="142">}</text>
+  </g>
+
+  <rect x="20" y="268" width="604" height="76" rx="10" fill="#ffffff" stroke="#ff9f0a"/>
+  <text x="36" y="292" font-size="13" fill="#1d1d1f">문자열로 지우다 쉼표가 남으면 <tspan font-family="ui-monospace, Menlo, monospace">, .dock-item i {</tspan>처럼 선택자 목록이 깨지고</text>
+  <text x="36" y="312" font-size="13" fill="#1d1d1f">규칙 전체가 무효가 된다. 파서는 선택자를 배열 원소로 다루므로 쉼표를 직접 편집하지 않는다.</text>
+  <text x="36" y="332" font-size="12" fill="#6e6e73">배열이 비면 rule.remove()로 규칙째 삭제한다 (이번 작업에서 24개)</text>
+</svg>

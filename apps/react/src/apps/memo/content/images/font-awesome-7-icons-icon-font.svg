@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">아이콘 글꼴이 문자 U+F0AC를 그리는 과정</text>
+
+  <text x="20" y="64" font-size="13" font-weight="600" fill="#0a84ff">글꼴 이름이 맞을 때 (7.3.1에서 'Font Awesome 7 Free')</text>
+  <rect x="20" y="76" width="134" height="84" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="87" y="102" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">문자 U+F0AC</text>
+  <text x="87" y="122" font-size="12" fill="#6e6e73" text-anchor="middle">사용자 정의 영역</text>
+  <text x="87" y="140" font-size="12" fill="#6e6e73" text-anchor="middle">(표준 글자 없음)</text>
+  <line x1="156" y1="118" x2="172" y2="118" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="176" y="76" width="134" height="84" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="243" y="100" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">font-family</text>
+  <text x="243" y="118" font-size="12" fill="#0a84ff" text-anchor="middle">'Font Awesome 7 Free'</text>
+  <text x="243" y="140" font-size="12" fill="#6e6e73" text-anchor="middle">font-weight: 900</text>
+  <line x1="312" y1="118" x2="328" y2="118" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="332" y="76" width="134" height="84" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="399" y="100" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">같은 이름의 @font-face</text>
+  <text x="399" y="120" font-size="12" fill="#1d1d1f" text-anchor="middle">src: fa-solid-900</text>
+  <text x="399" y="138" font-size="12" fill="#1d1d1f" text-anchor="middle">.woff2 내려받기</text>
+  <line x1="468" y1="118" x2="484" y2="118" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="488" y="76" width="134" height="84" rx="8" fill="#eafaef" stroke="#34c759"/>
+  <g transform="translate(555 106)" fill="none" stroke="#1d1d1f" stroke-width="2">
+    <circle r="16"/><ellipse rx="7" ry="16"/><line x1="-16" y1="0" x2="16" y2="0"/>
+  </g>
+  <text x="555" y="146" font-size="12" fill="#1d1d1f" text-anchor="middle">글꼴 속 지구 모양</text>
+
+  <text x="20" y="206" font-size="13" font-weight="600" fill="#ff3b30">글꼴 이름이 틀릴 때 (7.3.1에서 'Font Awesome 6 Free')</text>
+  <rect x="20" y="218" width="134" height="84" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="87" y="244" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">문자 U+F0AC</text>
+  <text x="87" y="264" font-size="12" fill="#6e6e73" text-anchor="middle">데이터는 그대로</text>
+  <line x1="156" y1="260" x2="172" y2="260" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="176" y="218" width="134" height="84" rx="8" fill="#fff0ef" stroke="#ff3b30"/>
+  <text x="243" y="242" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">font-family</text>
+  <text x="243" y="260" font-size="12" fill="#ff3b30" text-anchor="middle">'Font Awesome 6 Free'</text>
+  <text x="243" y="282" font-size="12" fill="#6e6e73" text-anchor="middle">선언된 곳 없음</text>
+  <line x1="312" y1="260" x2="328" y2="260" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="332" y="218" width="134" height="84" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+  <text x="399" y="242" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">기본 글꼴로 대체</text>
+  <text x="399" y="262" font-size="12" fill="#1d1d1f" text-anchor="middle">예: Apple SD Gothic</text>
+  <text x="399" y="280" font-size="12" fill="#1d1d1f" text-anchor="middle">Neo, Arial</text>
+  <line x1="468" y1="260" x2="484" y2="260" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="488" y="218" width="134" height="84" rx="8" fill="#fff0ef" stroke="#ff3b30"/>
+  <rect x="543" y="234" width="24" height="28" fill="none" stroke="#ff3b30" stroke-width="2"/>
+  <text x="555" y="284" font-size="12" fill="#1d1d1f" text-anchor="middle">U+F0AC 자리 비어 있음</text>
+  <text x="555" y="298" font-size="12" fill="#6e6e73" text-anchor="middle">빈칸 또는 사각형</text>
+
+  <text x="320" y="338" font-size="12" fill="#6e6e73" text-anchor="middle">같은 문자라도 어떤 글꼴 파일에서 모양을 찾느냐에 따라 아이콘이 되거나 빈칸이 된다</text>
+</svg>

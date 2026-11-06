@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">48비트 MAC 주소의 구성: 00:00:c0:6f:2d:40</text>
+  <g font-family="Menlo, monospace" font-size="16" text-anchor="middle" fill="#1d1d1f">
+    <rect x="40" y="56" width="90" height="44" fill="#e8f2ff" stroke="#0a84ff"/><text x="85" y="84">00</text>
+    <rect x="130" y="56" width="90" height="44" fill="#e8f2ff" stroke="#0a84ff"/><text x="175" y="84">00</text>
+    <rect x="220" y="56" width="90" height="44" fill="#e8f2ff" stroke="#0a84ff"/><text x="265" y="84">c0</text>
+    <rect x="330" y="56" width="90" height="44" fill="#fff4e0" stroke="#ff9f0a"/><text x="375" y="84">6f</text>
+    <rect x="420" y="56" width="90" height="44" fill="#fff4e0" stroke="#ff9f0a"/><text x="465" y="84">2d</text>
+    <rect x="510" y="56" width="90" height="44" fill="#fff4e0" stroke="#ff9f0a"/><text x="555" y="84">40</text>
+  </g>
+  <text x="175" y="122" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">OUI 24비트</text>
+  <text x="175" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">IEEE가 제조사에 할당</text>
+  <text x="465" y="122" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">장치 고유 번호 24비트</text>
+  <text x="465" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">제조사가 기기마다 부여</text>
+  <!-- first octet bits -->
+  <text x="40" y="178" font-size="13" font-weight="600" fill="#1d1d1f">첫 옥텟의 하위 두 비트</text>
+  <g font-family="Menlo, monospace" font-size="14" text-anchor="middle" fill="#1d1d1f">
+    <rect x="40" y="190" width="34" height="34" fill="#fff" stroke="#6e6e73"/><text x="57" y="212">0</text>
+    <rect x="74" y="190" width="34" height="34" fill="#fff" stroke="#6e6e73"/><text x="91" y="212">0</text>
+    <rect x="108" y="190" width="34" height="34" fill="#fff" stroke="#6e6e73"/><text x="125" y="212">0</text>
+    <rect x="142" y="190" width="34" height="34" fill="#fff" stroke="#6e6e73"/><text x="159" y="212">0</text>
+    <rect x="176" y="190" width="34" height="34" fill="#fff" stroke="#6e6e73"/><text x="193" y="212">0</text>
+    <rect x="210" y="190" width="34" height="34" fill="#fff" stroke="#6e6e73"/><text x="227" y="212">0</text>
+    <rect x="244" y="190" width="34" height="34" fill="#fff4e0" stroke="#ff9f0a"/><text x="261" y="212">0</text>
+    <rect x="278" y="190" width="34" height="34" fill="#e8f2ff" stroke="#0a84ff"/><text x="295" y="212">0</text>
+  </g>
+  <text x="261" y="244" text-anchor="middle" font-size="12" fill="#ff9f0a">U/L</text>
+  <text x="295" y="244" text-anchor="middle" font-size="12" fill="#0a84ff">I/G</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="340" y="200">I/G = 0 개별(유니캐스트), 1 그룹(멀티캐스트)</text>
+    <text x="340" y="220">U/L = 0 제조사 할당, 1 로컬 관리 주소</text>
+    <text x="340" y="244" fill="#6e6e73">브로드캐스트 ff:ff:ff:ff:ff:ff는</text>
+    <text x="340" y="262" fill="#6e6e73">I/G가 1인 그룹 주소의 특수한 경우</text>
+  </g>
+  <text x="40" y="288" font-size="12" fill="#6e6e73">0x00 = 00000000₂. 전송 시 바이트마다 최하위 비트(I/G)가 먼저 나간다.</text>
+</svg>

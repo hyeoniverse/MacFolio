@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>check 작업 하나의 실패가 deploy를 막는 CI 의존 관계</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">main에 머지한 커밋이 배포되기까지 (ci.yml)</text>
+<rect x="24" y="130" width="120" height="56" rx="10" fill="#f2f2f7"/>
+<text x="84" y="154" font-size="13" text-anchor="middle" fill="#1d1d1f">#412 머지</text>
+<text x="84" y="173" font-size="12" text-anchor="middle" fill="#6e6e73">main에 push</text>
+<rect x="196" y="62" width="200" height="74" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="296" y="86" font-size="13.5" font-weight="700" text-anchor="middle" fill="#1d1d1f">check  ✕ 실패</text>
+<text x="296" y="106" font-size="12" text-anchor="middle" fill="#6e6e73">형식·린트·타입·단위 시험·빌드</text>
+<text x="296" y="125" font-size="12" text-anchor="middle" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">search.test.ts 1건</text>
+<rect x="196" y="156" width="200" height="40" rx="10" fill="#f2f2f7"/>
+<text x="296" y="181" font-size="13" text-anchor="middle" fill="#1d1d1f">e2e (Playwright)</text>
+<rect x="196" y="210" width="200" height="40" rx="10" fill="#f2f2f7"/>
+<text x="296" y="235" font-size="13" text-anchor="middle" fill="#1d1d1f">api-image · api-deploy</text>
+<rect x="452" y="130" width="164" height="56" rx="10" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="5 4"/>
+<text x="534" y="154" font-size="13.5" font-weight="700" text-anchor="middle" fill="#6e6e73">deploy</text>
+<text x="534" y="173" font-size="12" text-anchor="middle" fill="#6e6e73">실행되지 않음</text>
+<g stroke="#6e6e73" stroke-width="1.6" fill="none" marker-end="url(#a)">
+<path d="M146 150 C170 140 172 100 192 99"/><path d="M146 160 H192 V176"/><path d="M146 170 C170 180 172 230 192 230"/>
+<path d="M398 176 H448"/><path d="M398 230 C430 230 430 172 448 170"/>
+</g>
+<path d="M398 99 C430 99 430 146 448 150" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="24" y="282" font-size="12.5" fill="#1d1d1f">deploy의 조건: needs.check.result == 'success'. 검색 코드와 무관한 시험 1건의 실패로</text>
+<text x="24" y="302" font-size="12.5" fill="#1d1d1f">그날 머지한 기능 전체가 사이트에 올라가지 않았다. 같은 커밋을 다시 실행하면 통과했다.</text>
+</svg>

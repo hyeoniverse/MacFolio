@@ -7,7 +7,20 @@ seriesOrder: 2
 summary: Finder 문서 아래에 이력서·포트폴리오·자격증 폴더를 만들고, PDF와 그림은 macOS처럼 별도 창의 미리보기 앱에서 연다. 파일은 저장소가 아니라 Cloudflare R2에 보관하고 사이트 Worker가 같은 출처(/files/)로 제공한다. 관리자는 끌어다 놓아 R2에 바로 업로드한다.
 ---
 
-Finder는 사이트의 데이터(저장소 문서, 프로젝트, 블로그 글, 앱)를 파일 형태로 표시한다. 그런데 포트폴리오 사이트에서 가장 먼저 찾는 파일인 이력서가 없었다. 빈 이력서 폴더에 "준비하고 있습니다"라는 안내만 있었다. 이번에 PDF와 그림을 여는 기능을 만들었다. PR은 [#255](https://github.com/hyeoniverse/MacFolio/pull/255)이고, 커밋 18개, 파일 60개, +4,897/−111이다.
+Finder는 사이트의 데이터(저장소 문서, 프로젝트, 블로그 글, 앱)를 파일 형태로 표시한다. 그런데 포트폴리오 사이트에서 가장 먼저 찾는 파일인 이력서가 없었다. 빈 이력서 폴더에 "준비하고 있습니다"라는 안내만 있었다. 그래서 PDF와 그림을 보관하고 여는 기능을 만들었다. PR은 [#255](https://github.com/hyeoniverse/MacFolio/pull/255)이고, 커밋 18개, 파일 60개, +4,897/−111이다.
+
+## 배경: 정적 파일, 오브젝트 스토리지, Worker
+
+이 사이트의 화면은 빌드한 HTML·JavaScript·이미지 파일(정적 파일)로 구성되고, Cloudflare Workers가 이 파일을 제공한다. Worker는 Cloudflare의 서버에서 실행되는 JavaScript 코드로, 요청 주소를 보고 정적 파일을 그대로 내주거나 응답을 직접 만들 수 있다.
+
+이력서 PDF처럼 코드와 별개로 바뀌는 파일은 오브젝트 스토리지에 보관하는 방법이 일반적이다. 오브젝트 스토리지는 파일을 "버킷(bucket)" 안에 "키(key)"라는 이름으로 저장하는 저장소다. 키는 `resume/a1b2c3.pdf`처럼 폴더 경로 모양의 문자열이지만 실제 폴더 구조는 없고, 키 하나에 파일 하나가 대응한다. [Cloudflare R2](https://developers.cloudflare.com/r2/)는 Amazon S3와 같은 API를 제공하는 오브젝트 스토리지이고, 같은 Cloudflare 계정의 Worker에서 바인딩[^binding]으로 바로 읽을 수 있다.
+
+| 용어     | 뜻                                                         | 이 사이트의 예                   |
+| -------- | ---------------------------------------------------------- | -------------------------------- |
+| 버킷     | 오브젝트를 담는 최상위 저장 단위                           | `macfolio-files`                 |
+| 키       | 버킷 안에서 오브젝트를 찾는 이름                           | `resume/<무작위>.pdf`            |
+| 바인딩   | Worker 코드가 버킷을 변수로 접근하게 하는 설정             | `env.FILES.get(key)`             |
+| 서명 URL | 비밀 키 없이 정해진 시간 동안 한 가지 작업을 허용하는 주소 | 관리자 브라우저가 R2에 PDF를 PUT |
 
 ## 파일 보관 위치
 
@@ -21,7 +34,11 @@ Finder는 사이트의 데이터(저장소 문서, 프로젝트, 블로그 글, 
 
 ## 같은 출처로 제공하기
 
-PDF를 iframe에 표시하려면 [CSP](https://developer.mozilla.org/ko/docs/Web/HTTP/CSP)의 [`frame-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)가 그 주소를 허용해야 한다. R2의 공개 주소(`*.r2.dev`)를 쓰면 허용할 출처가 하나 늘어난다. 대신 사이트 Worker가 `/files/<키>` 요청을 받아 R2에서 읽어 응답하게 했다. 같은 출처라 `frame-src 'self'`를 그대로 쓴다.
+출처(origin)는 주소의 스킴(`https`)·호스트(`macfolio.hyeoniverse.com`)·포트(`443`) 세 값의 조합이다. 세 값이 모두 같으면 같은 출처다. 브라우저의 보안 규칙 상당수가 이 출처 단위로 동작한다.
+
+CSP(Content Security Policy)는 페이지가 어떤 출처의 스크립트·이미지·iframe을 불러올 수 있는지 서버가 응답 헤더로 지정하는 규칙이다. PDF를 iframe에 표시하려면 [CSP](https://developer.mozilla.org/ko/docs/Web/HTTP/CSP)의 [`frame-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)가 그 주소를 허용해야 한다. R2의 공개 주소(`*.r2.dev`)를 쓰면 허용할 출처가 하나 늘어난다. 대신 사이트 Worker가 `/files/<키>` 요청을 받아 R2에서 읽어 응답하게 했다. 같은 출처라 `frame-src 'self'`를 그대로 쓴다.
+
+![사이트와 /files/는 출처가 같고 r2.dev는 출처가 다르다](./images/finder-files-same-origin.svg '같은 출처의 /files/는 frame-src의 self에 포함된다')
 
 Worker의 검사 규칙은 다음과 같다.
 
@@ -35,6 +52,12 @@ Worker의 검사 규칙은 다음과 같다.
 | 바인딩 없음           | R2 바인딩이 없는 환경(로컬 개발)에서는 오류 대신 404                                                                                                      |
 
 ![/files/<키> 요청을 Worker가 검사하는 순서: 메서드 → 키 형식 → 버킷 → ETag → Range](./images/finder-files-worker-checks.svg '키 형식이 잘못되면 버킷을 읽기 전에 응답을 끝낸다')
+
+키 검사는 경로 조작(path traversal)을 막기 위한 것이다. 예를 들어 슬래시를 `%2F`로 인코딩한 `/files/resume%2F..%2Fsecret.pdf` 요청은 디코딩하면 키가 `resume/../secret.pdf`가 되고, 경로 조각에 `..`이 있어 버킷을 읽기 전에 404로 끝난다. `/files/resume/a.html`은 허용한 확장자가 아니라 404다.
+
+캐시 규칙은 두 단계로 동작한다. `Cache-Control: public, max-age=300`은 브라우저가 응답을 5분(300초) 동안 다시 요청하지 않고 재사용하게 한다. 5분이 지나면 브라우저는 처음 받은 `ETag` 값을 `If-None-Match` 헤더에 담아 다시 묻고, 파일이 바뀌지 않았으면 Worker는 본문 없이 `304 Not Modified`만 응답한다.
+
+![첫 요청은 200과 ETag, 5분 안에는 캐시, 그 뒤에는 304](./images/finder-files-etag.svg 'ETag가 같으면 본문 없이 304만 오간다')
 
 ```ts
 // apps/react/worker/files.ts (키 검사 일부)
@@ -112,11 +135,15 @@ PDF는 [PDF.js](https://mozilla.github.io/pdf.js/)로 페이지를 직접 렌더
 
 뒤쪽을 선택했다. 흐름은 다음과 같다.
 
+서명 URL(presigned URL)은 오브젝트 스토리지의 비밀 키를 가진 서버가 "이 키에, 이 크기의 파일을, 5분 안에 PUT해도 된다"는 허가를 URL 하나에 담아 발급하는 방식이다. URL에는 비밀 키가 아니라 그 키로 계산한 서명만 들어가므로, 브라우저에 전달해도 다른 키에 쓰거나 기한이 지난 뒤 다시 쓸 수 없다.
+
 1. 브라우저가 API에 "이 폴더, 이 이름, 이 크기"로 업로드를 요청한다. API는 관리자 세션, 파일 종류, 20MB 이하를 확인하고 R2에 직접 PUT할 **서명 URL**(presigned URL)을 유효 시간 5분으로 발급한다
 2. 브라우저가 그 URL로 R2에 업로드한다. `XMLHttpRequest`의 [`upload.onprogress`](https://developer.mozilla.org/ko/docs/Web/API/XMLHttpRequest/upload)로 Finder 아래에 진행률을 표시한다 (fetch는 업로드 진행률을 제공하지 않는다)
 3. 업로드가 끝나면 API가 R2에 HEAD 요청을 보내 파일이 실제로 있는지, 크기가 일치하는지 확인하고 목록(DB의 `Document` 테이블)에 추가한다
 
 ![서명 URL로 R2에 직접 업로드하는 흐름](./images/finder-files-upload.svg 'API는 검사와 서명만 하고, 파일은 브라우저에서 R2로 직접 전송된다')
+
+![서명 URL의 매개변수: 알고리즘, 자격 증명 범위, 시각, 유효 시간 300초, 서명한 헤더, 서명](./images/finder-files-presigned-url.svg 'content-length를 서명에 넣어 요청한 크기의 파일만 올라간다')
 
 서명 URL은 [AWS 서명 버전 4](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html)를 `node:crypto`로 직접 구현했다. ==서명 하나 때문에 SDK를 의존성에 추가하지 않았다.== AWS 문서의 예시 값으로 같은 서명이 나오는지 시험으로 확인했다. 서명에 `content-length`를 포함해서, 요청한 크기와 다른 파일은 R2가 거부한다. 키는 서버가 `resume/<무작위>.pdf`처럼 생성하므로 브라우저가 경로를 지정할 수 없다.
 
@@ -216,5 +243,20 @@ curl -si -X OPTIONS "https://$A.r2.cloudflarestorage.com/$B/desktop/test.gif" \
 - [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem): 업로드한 파일을 폴더로 정리하기
 - [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205): 업로드 규칙을 contracts로 옮긴 작업
 - [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist): 동영상과 QuickTime 열기 창
+
+<details>
+<summary>참고 문헌</summary>
+
+- Cloudflare, [R2 documentation](https://developers.cloudflare.com/r2/), [Use R2 from Workers](https://developers.cloudflare.com/r2/api/workers/workers-api-usage/), [Presigned URLs](https://developers.cloudflare.com/r2/api/s3/presigned-urls/)
+- AWS, [Signature Version 4 for API requests](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html)
+- MDN, [Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy), [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP), [CSP: frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)
+- MDN, [HTTP caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching), [ETag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag), [304 Not Modified](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/304)
+- MDN, [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition), [XMLHttpRequest: upload](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/upload)
+- OWASP, [Path Traversal](https://owasp.org/www-community/attacks/Path_Traversal)
+- Mozilla, [PDF.js](https://mozilla.github.io/pdf.js/)
+
+</details>
+
+[^binding]: Worker 설정 파일(`wrangler.jsonc`)에 버킷 이름과 변수 이름을 적으면, 코드에서 그 변수로 버킷을 읽고 쓸 수 있다. 별도 인증 키가 필요 없다.
 
 #MacFolio #프론트엔드 #Finder #미리보기 #pdfjs #CloudflareR2 #CSP #업로드

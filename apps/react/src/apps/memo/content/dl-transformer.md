@@ -15,7 +15,9 @@ summary: 순환 신경망 없이 어텐션만으로 만든 트랜스포머의 �
 
 트랜스포머는 순환 구조를 없애고 문장 전체를 행렬 하나로 넣는다. ==셀프 어텐션은 문장 안의 모든 단어 쌍이 서로 얼마나 주목할지를 행렬 곱 한 번으로 계산한다.== 어떤 두 단어든 한 층 안에서 직접 연결되고, 모든 위치를 병렬로 계산한다. 대신 RNN이 구조로 담고 있던 순서 정보가 사라지므로 이를 입력에 따로 더해야 한다.
 
-이 글이 답하려는 질문은 세 가지다. 순환 없이 단어의 순서를 어떻게 표현하는가. 셀프 어텐션과 멀티 헤드 어텐션은 행렬로 어떻게 계산되는가. 디코더는 학습 단계에서 정답 문장을 한꺼번에 받으면서도 아직 생성하지 않은 뒤쪽 단어를 어떻게 보지 않는가. 작은 수치 예제로 계산을 따라가고, 학습할 가중치 수까지 계산한다.
+![위쪽은 RNN이 저게, 저절로, 붉어질, 리, 없다를 h1부터 h5까지 차례로 계산하는 사슬이고, 아래쪽은 다섯 단어가 다섯 출력 c1~c5에 모두 선으로 연결된 셀프 어텐션](./images/dl-transformer-rnn-vs-self-attention.svg 'RNN에서 첫 단어의 정보는 4단계를 거쳐 h5에 닿고, 셀프 어텐션에서는 한 층 안에서 바로 닿는다')
+
+핵심 질문은 세 가지다. 순환 없이 단어의 순서를 어떻게 표현하는가. 셀프 어텐션과 멀티 헤드 어텐션은 행렬로 어떻게 계산되는가. 디코더는 학습 단계에서 정답 문장을 한꺼번에 받으면서도 아직 생성하지 않은 뒤쪽 단어를 어떻게 보지 않는가. 계산마다 작은 수치 예제로 값을 확인하고, 학습할 가중치 수까지 구한다.
 
 | 순서 | 내용                                                      |
 | ---- | --------------------------------------------------------- |
@@ -24,6 +26,18 @@ summary: 순환 신경망 없이 어텐션만으로 만든 트랜스포머의 �
 | 3    | 셀프 어텐션과 멀티 헤드 어텐션의 계산 예제                |
 | 4    | Add & Norm, 위치별 FF 층, 인코더 블록의 가중치 수         |
 | 5    | 디코더의 Masked MHA와 인코더-디코더 MHA, 전체 동작        |
+
+본문에 자주 나오는 용어의 뜻은 다음과 같다.
+
+| 용어           | 뜻                                                                                         | 예                                                      |
+| -------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| 토큰(token)    | 모델이 한 번에 다루는 텍스트 단위. 여기서는 단어 하나                                      | "I am a student"는 토큰 4개                             |
+| 임베딩 벡터    | 토큰을 고정된 길이의 실수 벡터로 바꾼 값. 뜻이 비슷한 단어는 비슷한 벡터가 되도록 학습한다 | 논문은 단어 하나를 512개의 실수로 표현한다              |
+| 행렬           | 벡터를 행으로 쌓은 표. 문장 전체를 한꺼번에 계산하려고 단어 벡터를 쌓는다                  | 단어 4개 × 512차원이면 4×512 행렬                       |
+| softmax        | 실수 여러 개를 0과 1 사이의 값으로 바꾸고 합을 1로 맞추는 함수. 점수를 비율로 바꿀 때 쓴다 | `(1, 2, 3){:math}` → `(0.090, 0.245, 0.665){:math}`     |
+| 가중치(학습값) | 학습 데이터로 조정하는 행렬의 원소. 학습이 끝나면 고정해 추론에 쓴다                       | 뒤에서 계산하는 인코더 블록 하나의 가중치는 약 315만 개 |
+
+softmax 예의 값은 `e^1 = 2.718{:math}`, `e^2 = 7.389{:math}`, `e^3 = 20.086{:math}`을 합 30.193으로 나눈 결과다. 큰 점수일수록 지수 함수 때문에 비율이 더 커진다.
 
 seq2seq, 교사 강요, query-key-value 어텐션은 [단어 임베딩과 seq2seq, 어텐션](/memo/dl-word-embedding-attention)에서 다뤘고, Add & Norm의 잔차 연결은 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)의 ResNet과 같은 구조다. 행렬 곱과 softmax 계산에 익숙하면 수치 예제를 손으로 검산할 수 있다.
 
@@ -280,6 +294,10 @@ Q, K, V, A, C = self_attention(X, Wq, Wk, Wv, 2)
 
 멀티 헤드 어텐션(Multi-head Attention, MHA)은 헤드를 여러 개 갖는다. 논문 기준으로는 512차원의 단어 벡터를 8로 나눈 64차원의 Q, K, V로 바꿔 어텐션을 수행한다. 각 헤드는 고유한 변환 행렬 `\mathbf{W}_i^Q, \mathbf{W}_i^K, \mathbf{W}_i^V{:math}`로 셀프 어텐션을 독립적으로 수행하고, ==헤드끼리 서로 다른 관계를 포착해 상호 보완하므로 헤드 하나보다 성능이 좋다.==
 
+예를 들어 한 헤드는 동사와 목적어의 관계에, 다른 헤드는 바로 앞뒤 단어에 주목하도록 학습될 수 있다. 논문은 학습을 마친 번역 모델에서 헤드마다 주목하는 위치가 다르다는 것을 그림으로 보여 준다.
+
+![논문 그림 3: 영어 문장의 단어 making에서 위 줄의 여러 단어로 색이 다른 선이 이어지고, 굵은 선 여러 개가 멀리 떨어진 more와 difficult로 향한다](./images/dl-transformer-long-distance.png '인코더 6층 중 5층의 셀프 어텐션에서 making이 주목하는 위치. 선의 색은 헤드를, 굵기는 주목 값을 나타내고, 여러 헤드가 making…more difficult라는 먼 거리의 관계를 잡는다')
+
 ![멀티 헤드 어텐션 구조도: V, K, Q가 각각 선형 변환을 거쳐 h개의 스케일드 점곱 어텐션으로 들어가고, 결과를 이어 붙인 뒤 선형 변환을 지난다](./images/dl-transformer-multi-head.svg 'h개의 헤드가 각자 어텐션을 계산하고 결과를 이어 붙인 뒤 선형 변환한다')
 
 헤드 번호 `i{:math}`를 붙여 식을 다시 쓰면 다음과 같다.
@@ -307,7 +325,7 @@ Q, K, V, A, C = self_attention(X, Wq, Wk, Wv, 2)
 
 ### Add & Norm 층
 
-Add는 잔차 연결이고 Norm은 층 정규화다. MHA의 입력 `\mathbf{X}{:math}`와 출력 `\mathbf{C}{:math}`를 더한 뒤 정규화한다.
+Add는 잔차 연결이고 Norm은 층 정규화다. MHA의 입력 `\mathbf{X}{:math}`와 출력 `\mathbf{C}{:math}`를 더한 뒤 정규화한다. 잔차 연결(residual connection)은 층의 입력을 출력에 그대로 더하는 연결로, 블록을 여러 개 쌓아도 역전파의 기울기가 덧셈 경로를 따라 입력 쪽까지 줄지 않고 전달된다. 층 정규화는 한 단어 벡터의 원소들로 평균과 표준편차를 구해 평균 0, 표준편차 1로 맞춘다.
 
 ```math
 \mathbf{X}' = \mathrm{Norm}(\mathbf{X} + \mathbf{C}) = \mathrm{Norm}(\mathbf{X} + \mathrm{MHA}(\mathbf{X}))
@@ -319,6 +337,15 @@ Add는 잔차 연결이고 Norm은 층 정규화다. MHA의 입력 `\mathbf{X}{:
 | -------------------------------- | -------------------------------- | ------------------------------------------------ |
 | 배치 정규화(batch normalization) | 특징 하나를 미니 배치 N개에 걸쳐 | 미니 배치 크기에 영향을 받는다                   |
 | 층 정규화(layer normalization)   | 샘플 하나의 모든 특징에 걸쳐     | 샘플마다 독립이라 문장 길이·배치 크기와 무관하다 |
+
+예를 들어 단어 벡터 `(1, 2, 3, 6){:math}`을 층 정규화하면 다음 순서로 계산한다. 실제 층 정규화는 이 결과에 학습값 `\gamma{:math}`를 곱하고 `\beta{:math}`를 더한다.
+
+| 단계          | 값                                             |
+| ------------- | ---------------------------------------------- |
+| 평균          | `(1 + 2 + 3 + 6)/4 = 3{:math}`                 |
+| 분산          | `((-2)^2 + (-1)^2 + 0^2 + 3^2)/4 = 3.5{:math}` |
+| 표준편차      | `\sqrt{3.5} \approx 1.871{:math}`              |
+| 정규화한 벡터 | `(-1.069,\ -0.535,\ 0,\ 1.604){:math}`         |
 
 ### 위치별 FF 층
 
@@ -379,6 +406,8 @@ MHA의 행렬은 `3h + 1 = 25{:math}`개이고, FF의 `(2048 + 1){:math}`과 `(5
 \end{cases}
 ```
 
+![query 단어 sos, That, can't, turn, red를 행으로, key 단어를 열로 둔 5×5 격자에서 대각선과 그 아래 칸은 계산, 대각선 위 칸은 −10⁹로 바뀐 마스크](./images/dl-transformer-causal-mask.svg '행은 주목하는 단어, 열은 주목받는 단어다. can′t 행(주황 테두리)은 자기 자신과 앞의 두 단어만 참조한다')
+
 예를 들어 출력 문장 `<SOS> That can't turn red by itself <EOS>`가 디코더에 입력되고(`T = 8{:math}`), `\mathbf{Q}\mathbf{K}^\mathsf{T}{:math}`가 아래와 같으며 `d_{key} = 2{:math}`라고 가정한다. 마스킹한 행렬의 −는 아주 큰 음수다.
 
 ![8×8 QK^T 행렬, 대각선 위를 −로 가린 masking(QK^T), softmax 결과 하삼각 주목 행렬](./images/dl-transformer-14.jpg 'i번째 단어는 자기 자신과 그 앞의 단어에만 주목한다')
@@ -427,5 +456,23 @@ MHA의 행렬은 `3h + 1 = 25{:math}`개이고, FF의 `(2048 + 1){:math}`과 `(5
 > 트랜스포머는 RNN의 순차 처리를 없애고 문장 전체를 행렬 하나로 넣어 셀프 어텐션으로 단어 사이 관계를 계산한다. 순서 정보는 위치 인코딩이, 여러 관점의 관계는 멀티 헤드가, 학습과 추론의 차이는 마스크가 맡는다.
 
 다음 글 [비전 트랜스포머(ViT)의 패치 임베딩과 분류 구조](/memo/dl-vision-transformer)에서는 이 트랜스포머의 인코더를 영상 분류에 그대로 옮긴 비전 트랜스포머(ViT)를 다룬다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- A. Vaswani et al., [Attention Is All You Need](https://arxiv.org/abs/1706.03762), NeurIPS 2017
+- J. L. Ba, J. R. Kiros, G. E. Hinton, [Layer Normalization](https://arxiv.org/abs/1607.06450), 2016
+- Harvard NLP, [The Annotated Transformer](https://nlp.seas.harvard.edu/annotated-transformer/)
+- Google Research, [Transformer: A Novel Neural Network Architecture for Language Understanding](https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/), 2017
+- SciPy, [scipy.special.softmax](https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.softmax.html)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 인코더 셀프 어텐션의 먼 거리 관계: Google(Vaswani et al.), [Attention Is All You Need - long-distance attention, encoder self-attention in layer 5 of 6](https://commons.wikimedia.org/wiki/File:Attention_Is_All_You_Need_-_long-distance_attention,_encoder_self-attention_in_layer_5_of_6.png), Wikimedia Commons, CC BY-SA 4.0
+
+</details>
 
 [^vaswani]: A. Vaswani et al., ["Attention Is All You Need"](https://arxiv.org/abs/1706.03762), NeurIPS 2017.

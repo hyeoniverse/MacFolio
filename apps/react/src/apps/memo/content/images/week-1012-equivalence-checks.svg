@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>화면을 바꾸지 않는 리팩터링 PR에서 쓴 세 가지 동일성 확인 방법과 각각 비교하는 대상</title>
+<rect width="640" height="290" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">화면이 바뀌지 않았음을 확인하는 세 가지 방법</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73">PR의 종류에 따라 무엇이 같아야 하는지를 먼저 정했다</text>
+<rect x="20" y="66" width="190" height="206" rx="12" fill="#f2f2f7"/>
+<text x="36" y="92" font-size="14" font-weight="700" fill="#0a84ff">1. 값 그대로 옮기기</text>
+<text x="36" y="118" font-size="12" fill="#1d1d1f">대상: 토큰으로 바꾸는 PR</text>
+<text x="36" y="148" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">border-radius: 8px</text>
+<text x="36" y="168" font-size="12" fill="#6e6e73">↓</text>
+<text x="36" y="188" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">var(--radius-md)</text>
+<text x="36" y="216" font-size="12" fill="#6e6e73">토큰 값이 원래 값과</text>
+<text x="36" y="234" font-size="12" fill="#6e6e73">같으면 계산 결과도 같다</text>
+<rect x="225" y="66" width="190" height="206" rx="12" fill="#f2f2f7"/>
+<text x="241" y="92" font-size="14" font-weight="700" fill="#ff9f0a">2. 빌드 CSS 바이트 비교</text>
+<text x="241" y="118" font-size="12" fill="#1d1d1f">대상: 파일 분할 PR</text>
+<text x="241" y="148" font-size="12" fill="#1d1d1f">Memo.css 4,600줄</text>
+<text x="241" y="168" font-size="12" fill="#6e6e73">↓ 15개 파일로 분할</text>
+<text x="241" y="188" font-size="12" fill="#1d1d1f">빌드한 CSS 전후 비교</text>
+<text x="241" y="216" font-size="12" fill="#6e6e73">규칙 순서까지 같아야</text>
+<text x="241" y="234" font-size="12" fill="#6e6e73">바이트가 일치한다</text>
+<rect x="430" y="66" width="190" height="206" rx="12" fill="#f2f2f7"/>
+<text x="446" y="92" font-size="14" font-weight="700" fill="#34c759">3. 계산된 스타일 비교</text>
+<text x="446" y="118" font-size="12" fill="#1d1d1f">대상: 규칙 삭제 PR</text>
+<text x="446" y="148" font-size="12" fill="#1d1d1f">중복 규칙 103개 삭제</text>
+<text x="446" y="168" font-size="12" fill="#6e6e73">↓</text>
+<text x="446" y="188" font-size="12" fill="#1d1d1f">요소 3,720개의</text>
+<text x="446" y="206" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">getComputedStyle</text>
+<text x="446" y="234" font-size="12" fill="#6e6e73">CSS가 달라도 결과가</text>
+<text x="446" y="252" font-size="12" fill="#6e6e73">같은지 확인한다</text>
+</svg>

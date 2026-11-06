@@ -5,7 +5,17 @@ category: 개발 기록/MacFolio/화면·스타일
 summary: 메뉴·경고창·팝업은 닫힐 때 애니메이션 없이 즉시 사라졌다. 여는 쪽 코드를 수정하지 않고, React가 요소를 제거하기 직전 ref 정리 함수에서 DOM을 복제해 그 복제본에 퇴장 애니메이션을 적용했다. 내용이 교체되는 영역, 동작별 애니메이션, 버튼 색 전환도 공통 규칙으로 맞췄다.
 ---
 
-메뉴, 경고창, 단축키 창, 편집기의 서식 창은 열 때 `pop-in` 애니메이션으로 약간 확대되며 나타났다. 닫을 때는 애니메이션 없이 즉시 사라졌다. 등장 애니메이션이 있어서 퇴장 시각의 즉시 제거가 더 두드러졌다. 실제 macOS는 메뉴와 경고창 모두 닫힐 때 짧게 페이드 아웃된다.
+## 배경
+
+### 등장과 퇴장 애니메이션
+
+화면 요소가 나타나거나 사라질 때 짧게 크기·투명도를 바꾸는 효과를 각각 등장(enter) 애니메이션, 퇴장(exit) 애니메이션이라고 한다. macOS에서 메뉴 막대의 메뉴를 닫으면 메뉴가 약 0.1~0.2초 동안 흐려지며 사라지고, 경고창도 같은 방식으로 닫힌다. 이 짧은 변화가 있으면 사용자는 "무엇이 어디로 사라졌는지"를 확인할 수 있다.
+
+MacFolio의 메뉴, 경고창, 단축키 창, 편집기의 서식 창은 열 때 `pop-in` 애니메이션으로 약간 확대되며 나타났다. 닫을 때는 애니메이션 없이 즉시 사라졌다. 등장 애니메이션이 있어서 퇴장 시각의 즉시 제거가 더 두드러졌다.
+
+CSS 애니메이션은 [`@keyframes`](https://developer.mozilla.org/ko/docs/Web/CSS/@keyframes)로 시작·끝 상태를 정의하고 `animation` 속성으로 요소에 적용한다. 예를 들어 `motion.css`의 `pop-out`은 끝 상태만 `to { opacity: 0; transform: scale(0.96) }`으로 정의한 키프레임이고, `animation: pop-out 140ms`를 지정하면 현재 모양에서 출발해 140ms 동안 4% 축소되며 투명해진다. 문제는 ==애니메이션을 재생하려면 요소가 문서에 남아 있어야 한다==는 점이다. React가 요소를 문서에서 제거하면 재생할 대상이 없다.
+
+### 수정 범위
 
 작업은 10월 8일 [#134](https://github.com/hyeoniverse/MacFolio/pull/134)(휴대폰 화면 전환을 다룬 [#130](https://github.com/hyeoniverse/MacFolio/pull/130)의 후속)의 두 커밋으로 병합했다. 첫 커밋은 퇴장 애니메이션 공통 hook(`shared/ui/motion/useExitMotion.ts`)과 내용 교체 영역·버튼 규칙이고, 둘째 커밋은 앱별 동작마다 애니메이션을 추가한 것이다.
 
@@ -17,7 +27,7 @@ summary: 메뉴·경고창·팝업은 닫힐 때 애니메이션 없이 즉시 �
 {menu && <Menu onClose={() => setMenu(null)} … />}
 ```
 
-`menu`가 `null`이 되면 React는 즉시 `<Menu>`를 DOM에서 제거한다. 퇴장 애니메이션을 표시하려면 제거를 지연해야 하는데, 검토한 방법은 세 가지였다.
+이 형태를 조건부 렌더링이라고 한다. `menu`가 `null`이 되면 React는 즉시 `<Menu>`를 DOM에서 제거한다. 퇴장 애니메이션을 표시하려면 제거를 지연해야 하는데, 검토한 방법은 세 가지였다.
 
 | 방법                                                                                                          | 문제                                                                                                                    |
 | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -29,7 +39,7 @@ summary: 메뉴·경고창·팝업은 닫힐 때 애니메이션 없이 즉시 �
 
 ## 제거 직전에 DOM을 복제
 
-React 19의 [ref 콜백은 정리 함수를 반환](https://react.dev/reference/react-dom/components/common#ref-callback)할 수 있고, 이 함수는 요소가 분리되는 시각에 호출된다. ==이 시각에는 요소가 아직 문서에 연결되어 있다==. 이때 요소를 [`cloneNode`](https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode)로 복제해 바로 옆에 삽입하고, 복제본에 퇴장 애니메이션을 적용한다. React는 원래 요소를 제거하고, 복제본은 애니메이션이 끝나면 스스로 제거된다.
+ref는 React가 실제 DOM 요소를 컴포넌트 코드에 넘겨주는 통로다. `ref`에 함수(ref 콜백)를 지정하면, React는 요소를 문서에 붙인 직후 그 함수를 요소와 함께 호출한다. React 19부터 [ref 콜백은 정리 함수를 반환](https://react.dev/reference/react-dom/components/common#ref-callback)할 수 있고, 이 정리 함수는 요소가 분리되는 시각에 호출된다. ==이 시각에는 요소가 아직 문서에 연결되어 있다==. 이때 요소를 [`cloneNode`](https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode)로 복제해 바로 옆에 삽입하고, 복제본에 퇴장 애니메이션을 적용한다. React는 원래 요소를 제거하고, 복제본은 애니메이션이 끝나면 스스로 제거된다.
 
 ```ts
 export function useExitMotion(motion = 'pop-out') {
@@ -84,7 +94,9 @@ export function playExit(element: HTMLElement, motion: ExitMotion) {
 
 ### 컴포넌트가 null을 반환하는 경우
 
-처음에는 언마운트 시각에 실행되는 effect(`useLayoutEffect`의 정리 함수)로 구현했다. 그런데 로그인 창은 컴포넌트가 마운트된 채로 `return null`로 사라진다. ==언마운트가 없으므로 정리 함수도 호출되지 않았다==. ref 콜백의 정리 함수는 요소가 분리될 때마다 호출되므로 두 경우를 모두 처리한다.
+처음에는 언마운트(컴포넌트가 React 트리에서 제거되는 것) 시각에 실행되는 effect(`useLayoutEffect`의 정리 함수)로 구현했다. 그런데 로그인 창은 컴포넌트가 마운트된 채로 `return null`로 사라진다. 컴포넌트는 남아 있고 그 컴포넌트가 그리던 `<div>`만 사라지는 경우다. ==언마운트가 없으므로 정리 함수도 호출되지 않았다==. ref 콜백의 정리 함수는 요소가 분리될 때마다 호출되므로 두 경우를 모두 처리한다.
+
+![요소가 사라지는 두 경우와 정리 함수](./images/global-motion-ref-cleanup.svg 'effect 정리 함수는 컴포넌트가 제거될 때만 호출된다. ref 정리 함수는 요소가 분리될 때마다 호출되어 null 반환도 처리한다')
 
 ## 적용 위치
 
@@ -133,6 +145,8 @@ export function playExit(element: HTMLElement, motion: ExitMotion) {
 
 "다음 사진은 오른쪽에서"를 구현하려면 이동 방향을 알아야 한다. 이동 경로가 여러 가지라(키, 화살표 버튼, 트랙패드, 스와이프, 사진 띠, 메뉴 막대), 입력 위치마다 방향을 기록하는 대신 **표시 중인 인덱스가 바뀐 방향**을 렌더링 중에 판별한다(`useMoveDirection`). 이전 인덱스를 상태로 보관하다가 인덱스가 바뀌면 비교하고, 결과를 컨테이너의 `data-direction` 속성에 지정한다. 마지막에서 처음으로 순환하는 이동은 "다음"으로 처리한다(사진). 방문 기록처럼 순환하지 않는 목록(Finder)은 인덱스 비교 결과를 그대로 쓴다.
 
+![인덱스 변화로 넘긴 방향 판별](./images/global-motion-direction.svg '이전 인덱스와 새 인덱스를 비교해 next·prev를 정한다. 끝에서 처음으로 넘어가는 순환은 next, 인덱스가 같고 보기 모드만 바뀌면 방향을 지운다')
+
 Finder에서는 처음에 이전 방향 값이 남아 있어서, 보기 모드(아이콘·목록)를 바꿔도 옆에서 슬라이드되어 들어왔다. 인덱스와 무관하게 영역이 다시 렌더링되는 변경(보기 모드, 검색)을 함께 전달해, 그 값만 바뀌면 방향을 초기화하고 페이드 인으로 전환하게 했다.
 
 ### 일반 흐름 안의 패널이 사라질 때
@@ -152,7 +166,7 @@ Finder에서는 처음에 이전 방향 값이 남아 있어서, 보기 모드(�
 
 ## 시험
 
-E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.config.ts`의 [`reducedMotion`](https://playwright.dev/docs/api/class-testoptions#test-options-reduced-motion)). 그래서 복제본은 다른 시험에 나타나지 않는다. 애니메이션 시험만 움직임을 켜고 확인한다.
+운영체제에는 화면 움직임을 줄이는 접근성 설정(macOS의 "동작 줄이기")이 있고, 웹 페이지는 `prefers-reduced-motion` 미디어 쿼리로 이 설정을 읽는다. E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.config.ts`의 [`reducedMotion`](https://playwright.dev/docs/api/class-testoptions#test-options-reduced-motion)). 그래서 복제본은 다른 시험에 나타나지 않는다. 애니메이션 시험만 움직임을 켜고 확인한다.
 
 - 메뉴를 닫으면 `getByRole('menu')`는 즉시 0개이고, 복제본(`pop-out`)이 한 번 생성됐다가 제거된다
 - 움직임 줄이기를 켜면 복제본이 생성되지 않는다
@@ -183,5 +197,17 @@ E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.c
 - [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
 - [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
 - [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+
+<details><summary>참고 문헌</summary>
+
+- React, [Common components: ref callback function](https://react.dev/reference/react-dom/components/common#ref-callback)
+- MDN, [Node: cloneNode() method](https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode)
+- MDN, [HTMLElement: inert property](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/inert)
+- MDN, [@keyframes](https://developer.mozilla.org/ko/docs/Web/CSS/@keyframes)
+- MDN, [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+- Motion, [AnimatePresence](https://motion.dev/docs/react-animate-presence)
+- Playwright, [TestOptions: reducedMotion](https://playwright.dev/docs/api/class-testoptions#test-options-reduced-motion)
+
+</details>
 
 #MacFolio #공통컴포넌트 #애니메이션

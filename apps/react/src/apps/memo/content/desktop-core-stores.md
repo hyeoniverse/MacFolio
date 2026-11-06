@@ -7,7 +7,11 @@ seriesOrder: 1
 summary: React Context·hook 안에 있던 창 쌓임 순서, 메모 목록 계산, 음악 재생 대기열을 packages/desktop-core로 옮겼다. React는 useSyncExternalStore로 구독하고, localStorage 읽기와 audio 제어만 앱에 남겼다. core가 react나 window를 쓰면 세 곳에서 오류가 난다.
 ---
 
-desktop-core 분리 계획([#16](https://github.com/hyeoniverse/MacFolio/issues/16))은 React 컴포넌트 안에 있던 규칙을 프레임워크와 무관한 패키지 `packages/desktop-core`로 옮기는 작업이다. 같은 데스크톱을 Vue로 만들 계획([#6](https://github.com/hyeoniverse/MacFolio/issues/6))을 진행하면 이 규칙을 Vue로 다시 작성해야 하고, 규칙이 컴포넌트 안에 있으면 시험하려 해도 컴포넌트를 렌더링해야 한다. 이 글은 같은 날 진행한 세 단계를 다룬다.
+MacFolio의 화면에는 화면 모양과 무관한 규칙이 많다. "창을 열면 그 창이 맨 앞에 온다", "고정된 글은 목록 맨 위에 온다", "목록 끝에서 반복이 꺼져 있으면 재생을 멈춘다" 같은 규칙이다. 이 규칙들은 입력(현재 창 순서, 글 목록, 재생 목록)을 받아 결과를 계산할 뿐이므로, React든 Vue든 같은 답을 내야 한다.
+
+그런데 처음에는 이 규칙들이 React 컴포넌트와 hook 안에 `useState`·`useCallback`·`useMemo`와 섞여 있었다. 그러면 두 가지가 어렵다. 같은 데스크톱을 Vue로 만들 계획([#6](https://github.com/hyeoniverse/MacFolio/issues/6))을 진행하면 규칙을 Vue로 다시 작성해야 하고, 규칙 하나를 시험하려 해도 컴포넌트를 렌더링해야 한다.
+
+desktop-core 분리 계획([#16](https://github.com/hyeoniverse/MacFolio/issues/16))은 이 규칙을 UI 프레임워크(React, Vue처럼 화면을 그리는 라이브러리)에 의존하지 않는 패키지 `packages/desktop-core`로 옮기는 작업이다. 같은 날 세 단계로 진행했다.
 
 | 단계 | 대상    | 옮긴 것                                     | 앱에 남긴 것                               | PR                                                       |
 | ---- | ------- | ------------------------------------------- | ------------------------------------------ | -------------------------------------------------------- |
@@ -21,7 +25,7 @@ desktop-core 분리 계획([#16](https://github.com/hyeoniverse/MacFolio/issues/
 
 ### AppStateContext의 useCallback 열 개
 
-MacFolio의 창 상태는 `AppStateContext` 하나가 관리했다. 앱마다 실행 여부, 최소화 여부, 쌓임 순서를 `useState`에 보관하고, 열기·닫기·최소화·맨 앞으로 가져오기를 `useCallback` 열 개로 만들어 Context로 전달하는 구조였다.
+MacFolio의 창 상태는 `AppStateContext` 하나가 관리했다. [Context](https://react.dev/learn/passing-data-deeply-with-context)는 React가 제공하는 기능으로, 상위 컴포넌트가 넣은 값을 하위 컴포넌트가 props를 거치지 않고 바로 읽게 한다. Dock, 메뉴 막대, 창 테두리가 모두 같은 창 상태를 읽어야 하므로 Context를 사용했다. 앱마다 실행 여부, 최소화 여부, 쌓임 순서를 `useState`에 보관하고, 열기·닫기·최소화·맨 앞으로 가져오기를 `useCallback` 열 개로 만들어 Context로 전달하는 구조였다.
 
 ![메뉴 막대에는 맨 앞 창의 앱 이름(시스템 설정)이 표시되고, 뒤로 메모·음악 창이 쌓여 있다](./images/desktop-core-windows-stack.jpg '창 세 개를 차례로 연 모습. 맨 앞 창과 메뉴 막대의 앱 이름은 쌓임 순서에서 계산한다')
 
@@ -33,7 +37,17 @@ MacFolio의 창 상태는 `AppStateContext` 하나가 관리했다. 앱마다 �
 | zustand 같은 상태 라이브러리                    | 구독·선택자를 제공한다                   | 라이브러리 하나가 core의 의존성이 된다. Vue 쪽 바인딩도 따로 필요 |
 | **직접 만든 작은 store + useSyncExternalStore** | 의존성 없음. React 18 기본 API로 구독    | 선택자·메모이즈가 없다(상태가 작아서 필요 없었다)                 |
 
-store는 이미 `createStore`(getState·setState·subscribe 세 함수)로 설정·로그인 상태에 쓰고 있었다. 같은 형태로 창 store를 만들면 React는 [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)[^usese] 한 줄로 구독하고, 다른 프레임워크도 `subscribe`만 호출하면 된다.
+여기서 **store**는 상태 값 하나와 그 값을 읽고(`getState`), 바꾸고(`setState`), 바뀔 때 알림을 받는(`subscribe`) 함수 세 개를 묶은 객체다. MacFolio는 이미 `createStore`로 이런 store를 만들어 설정·로그인 상태에 쓰고 있었다. `setState`는 새 상태 객체를 만들고, 이전 객체와 같으면(`Object.is`) 알림을 보내지 않는다.
+
+```ts
+const counter = createStore({ count: 0 });
+const unsubscribe = counter.subscribe((state) => console.log(state.count));
+counter.setState({ count: 1 }); // 1 출력
+counter.setState((state) => state); // 같은 객체라 출력 없음
+unsubscribe();
+```
+
+같은 형태로 창 store를 만들면 React는 [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)[^usese] 한 줄로 구독하고, 다른 프레임워크도 `subscribe`만 호출하면 된다.
 
 ### core로 옮긴 창 관리 파일
 
@@ -66,6 +80,10 @@ const [store] = useState(createAppWindowStore);
 const state = useSyncExternalStore(store.subscribe, store.getState);
 ```
 
+React는 렌더링 중에 `getState()`로 현재 상태를 읽고, 화면에 반영한 뒤 `subscribe`로 변경 알림을 등록한다. Dock에서 메모 아이콘을 누르면 store의 `open('memo')`가 새 상태 객체를 만들고 알림을 보낸다. React는 `getState()`를 다시 호출해 이전 값과 `Object.is`로 비교하고, 다르면 다시 렌더링한다.
+
+![useSyncExternalStore가 getState와 subscribe로 창 store를 구독하고, open('memo') 뒤 새 상태를 읽어 다시 렌더링하는 순서](./images/desktop-core-stores-subscribe.svg '①② 처음 렌더링과 구독, ③④ Dock 클릭으로 store가 바뀌고 알림, ⑤⑥ 새 상태를 읽고 비교해 다시 렌더링')
+
 `useAppState()`의 반환 형태(`apps`, `openApp`, `closeApp` ...)는 유지했다. 이 hook을 쓰는 컴포넌트는 하나도 수정하지 않았다. `AppStateContext.tsx`는 206줄에서 130줄이 됐고, 그 안의 `useCallback` 열한 개가 사라졌다.
 
 React 쪽에 남긴 것은 브라우저 API를 쓰는 일이다.
@@ -84,7 +102,13 @@ React 쪽에 남긴 것은 브라우저 API를 쓰는 일이다.
 | `package.json`     | 의존성에 react가 없다. pnpm은 선언하지 않은 패키지를 해석하지 않는다[^pnpm]                                                    | `import ... from 'react'`         |
 | `eslint.config.js` | [`no-restricted-imports`](https://eslint.org/docs/latest/rules/no-restricted-imports)로 `react*`, `vue*`, `@/*`(React 앱 경로) | 위 두 검사를 통과하는 경로 import |
 
-실제로 `import { useState } from 'react'`와 `window.innerWidth`를 넣어 확인했다. `tsc`는 `Cannot find module 'react'`, `Cannot find name 'window'` 오류로 실패했고, lint도 react import를 오류로 보고했다. ==규칙을 도구로 검사하면 사람이 놓쳐도 CI가 잡는다.==
+둘째 장치는 pnpm의 `node_modules` 구조에서 나온다. npm은 모든 패키지를 루트 `node_modules`에 평평하게 펼치므로, 선언하지 않은 패키지도 우연히 import된다. pnpm은 각 패키지의 실제 파일을 `node_modules/.pnpm` 아래에 두고, 패키지 폴더에는 그 패키지가 선언한 의존성의 링크만 만든다.
+
+![pnpm의 node_modules 구조. 루트의 express는 .pnpm/express@4.17.3/node_modules/express로 가는 링크이고, express가 쓰는 cookie는 express 옆에만 링크된다](./images/desktop-core-stores-pnpm-node-modules.jpg#float-right 'pnpm 문서의 node_modules 구조 그림. 파란 글자가 링크다')
+
+그림에서 루트 `node_modules`에는 프로젝트가 선언한 `express`만 링크로 보인다. `express`가 내부에서 쓰는 `cookie`는 `.pnpm/express@4.17.3/node_modules/` 안에만 링크되어 있어, 프로젝트 코드에서 `import 'cookie'`를 쓰면 해석에 실패한다. desktop-core도 같은 방식이라, 같은 저장소의 React 앱이 react를 설치해도 desktop-core 폴더에서는 react를 찾을 수 없다.
+
+세 장치가 실제로 동작하는지 `import { useState } from 'react'`와 `window.innerWidth`를 core에 넣어 확인했다. `tsc`는 `Cannot find module 'react'`, `Cannot find name 'window'` 오류로 실패했고, lint도 react import를 오류로 보고했다. ==규칙을 도구로 검사하면 사람이 놓쳐도 CI가 잡는다.==
 
 ![desktop-core와 React의 나눔](./images/desktop-core-windows-layers.svg '창 규칙은 core에, 브라우저 API를 쓰는 일은 React에. core가 React를 쓰면 세 곳에서 오류가 난다')
 
@@ -156,6 +180,15 @@ export function loadArrangement(): Arrangement {
 
 - core: `parseArrangement(value: unknown)`. 어떤 값을 받아도 올바른 보기 설정을 반환한다
 - 앱: `memoStorage.ts`. `localStorage`에서 읽어 JSON으로 풀고 `parseArrangement`에 넘긴다
+
+`parseArrangement`는 저장소에 무엇이 남아 있든 올바른 설정을 반환한다. 예전 버전이 저장한 값이나 사용자가 개발자 도구에서 바꾼 값도 같은 규칙으로 처리된다.
+
+| 입력 (`unknown`)                         | 반환값                                                |
+| ---------------------------------------- | ----------------------------------------------------- |
+| `null` (저장한 적 없음)                  | `{ sort: 'date', order: 'desc', groupByDate: true }`  |
+| `{ sort: 'title', order: 'asc' }`        | `{ sort: 'title', order: 'asc', groupByDate: true }`  |
+| `{ sort: 'size', order: 1 }` (잘못된 값) | `{ sort: 'date', order: 'desc', groupByDate: true }`  |
+| `{ groupByDate: false }`                 | `{ sort: 'date', order: 'desc', groupByDate: false }` |
 
 | 방법                                 | 좋은 점                         | 나쁜 점                                                                |
 | ------------------------------------ | ------------------------------- | ---------------------------------------------------------------------- |
@@ -351,7 +384,7 @@ createPlayerStore({ trackIdsOf: (id) => findPlaylist(id).trackIds, playlistId: A
 
 메뉴 막대의 작은 플레이어(데스크톱 오른쪽 위의 이전·재생·다음 버튼)도 같은 `MusicContext`를 거치므로 이번 변경이 그대로 적용된다. 휴대폰 잠금 화면 같은 곳에 재생 정보를 표시하는 [Media Session API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API)는 아직 연결하지 않았다.
 
-## 남은 과제와 정리
+## 남은 과제와 배운 점
 
 이것으로 [#16](https://github.com/hyeoniverse/MacFolio/issues/16)에서 계획한 창 관리, 메모, 음악 세 가지를 모두 옮겼다. 서버(apps/api)도 폴더 정리 규칙을 별도로 구현해 같은 검사를 하고 있었고, 같은 날 [#142](https://github.com/hyeoniverse/MacFolio/pull/142)에서 [화면과 서버가 같은 규칙을 쓰게](/memo/desktop-core-shared-rules) 했다.
 
@@ -374,6 +407,26 @@ createPlayerStore({ trackIdsOf: (id) => findPlaylist(id).trackIds, playlistId: A
 - [CSS translate와 pointer-events로 레이아웃을 건드리지 않고 창 밀어내기](/memo/reveal-desktop): 창 store에 `desktopRevealed` 상태를 추가한 기능
 
 PR: [#139](https://github.com/hyeoniverse/MacFolio/pull/139), [#140](https://github.com/hyeoniverse/MacFolio/pull/140), [#141](https://github.com/hyeoniverse/MacFolio/pull/141)
+
+<details>
+<summary>참고 문헌</summary>
+
+- React 문서, [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)
+- React 문서, [Passing Data Deeply with Context](https://react.dev/learn/passing-data-deeply-with-context)
+- pnpm 문서, [Motivation: Creating a non-flat node_modules directory](https://pnpm.io/motivation#creating-a-non-flat-node_modules-directory)
+- ESLint 문서, [no-restricted-imports](https://eslint.org/docs/latest/rules/no-restricted-imports)
+- TypeScript 문서, [lib](https://www.typescriptlang.org/tsconfig/#lib)
+- MDN, [HTMLMediaElement: currentTime](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/currentTime)
+- Node.js 문서, [Packages: Subpath exports](https://nodejs.org/api/packages.html#subpath-exports)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- pnpm의 node_modules 구조: pnpm 문서, [Motivation](https://pnpm.io/motivation) ([isolated-node-modules.svg](https://pnpm.io/docs-assets/12.x/img/isolated-node-modules.svg)), 출처 표기
+
+</details>
 
 [^usese]: React 18에서 추가된 hook으로, React 바깥의 저장소를 구독한다. `subscribe`와 `getSnapshot` 두 함수를 받아, 저장소가 바뀌면 컴포넌트를 다시 렌더링한다.
 

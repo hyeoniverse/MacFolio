@@ -5,9 +5,18 @@ category: 개발 기록/MacFolio/구조·상태 관리
 summary: 단일 페이지 위에 창을 표시하는 사이트라 글 하나를 가리키는 링크가 없었다. /memo/<글>, /safari/<프로젝트>로 접속하면 해당 화면이 열리게 하고, 주소 막대가 맨 앞 창을 따르게 하고, 공유 버튼과 글 사이 링크를 추가했다.
 ---
 
-블로그 글에 공유 버튼을 추가하려고 확인해 보니, 공유할 주소가 없었다.
+## 배경: SPA에는 화면마다 주소가 없다
 
-MacFolio는 macOS 데스크톱을 재현한 **단일 페이지 애플리케이션(SPA)**이다. 메모 앱에서 어떤 글을 열든, Safari에서 어떤 탭을 보든 주소 막대에는 항상 `macfolio.hyeoniverse.com`만 표시됐다. 이 주소를 전달받은 사람은 로딩 화면 → 데스크톱에서 시작해 메모 앱을 열고 해당 글을 직접 찾아야 했다.
+**단일 페이지 애플리케이션(SPA)**은 처음에 HTML 문서 하나를 내려받고, 이후의 화면 전환은 JavaScript가 그 문서 안의 요소를 바꿔서 처리하는 웹 앱이다. 일반 웹사이트는 글마다 별도의 HTML 파일(또는 서버 응답)이 있어서 주소도 글마다 다르다. SPA는 화면이 바뀌어도 페이지를 새로 요청하지 않으므로, 코드가 직접 주소를 바꾸지 않으면 주소 막대는 처음 주소 그대로 남는다.
+
+브라우저는 이를 위해 **History API**를 제공한다[^history]. 주요 메서드는 두 가지다.
+
+| 메서드                                 | 동작                                                                   | 예                                                            |
+| -------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `history.pushState(state, '', url)`    | 페이지를 다시 불러오지 않고 주소를 바꾸며, 방문 기록에 항목을 추가한다 | 글 5개를 차례로 열면 뒤로 가기를 5번 눌러야 처음으로 돌아간다 |
+| `history.replaceState(state, '', url)` | 주소를 바꾸되 현재 방문 기록 항목을 교체한다                           | 글 5개를 열어도 뒤로 가기 1번이면 이전 사이트로 돌아간다      |
+
+MacFolio는 macOS 데스크톱을 재현한 SPA다. 메모 앱에서 어떤 글을 열든, Safari에서 어떤 탭을 보든 주소 막대에는 항상 `macfolio.hyeoniverse.com`만 표시됐다. 블로그 글에 공유 버튼을 추가하려고 확인해 보니 공유할 주소가 없었다. 이 주소를 전달받은 사람은 로딩 화면 → 데스크톱에서 시작해 메모 앱을 열고 해당 글을 직접 찾아야 했다.
 
 작업은 PR [#56](https://github.com/hyeoniverse/MacFolio/pull/56)이다. 주소를 생성하고 해석하는 함수는 `src/shared/lib/appLink.ts`(현재 98줄)에 모았다.
 
@@ -18,9 +27,19 @@ MacFolio는 macOS 데스크톱을 재현한 **단일 페이지 애플리케이�
 /safari/<프로젝트 id>  예: /safari/sproutfarm
 ```
 
-글 주소(slug)는 메모 앱이 글을 식별하는 데 기존에 사용하던 값이다. 저장소의 글은 파일 이름이 그대로 주소다. 프로젝트 id도 Safari 탭이 기존에 사용하던 값이다. 한글처럼 주소에 그대로 쓸 수 없는 문자는 [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)로 인코딩하고, 해석할 때 디코딩한다. 잘못된 인코딩(`%E0%A4%A`)은 주소가 없는 것으로 처리한다.
+글 주소(slug)는 메모 앱이 글을 식별하는 데 기존에 사용하던 값이다. 저장소의 글은 파일 이름이 그대로 주소다(`cra-to-vite.md` → `cra-to-vite`). 프로젝트 id도 Safari 탭이 기존에 사용하던 값이다.
 
-주소 형식은 세 가지를 비교해 정했다.
+주소에는 영문자, 숫자, 일부 기호만 그대로 쓸 수 있다. 한글이나 공백은 [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)로 UTF-8 바이트를 `%XX` 형태로 바꿔(퍼센트 인코딩) 넣고, 해석할 때 `decodeURIComponent`로 되돌린다.
+
+| 입력                       | 주소에 들어가는 값                    |
+| -------------------------- | ------------------------------------- |
+| `cra-to-vite`              | `cra-to-vite` (그대로)                |
+| `한글 글`                  | `%ED%95%9C%EA%B8%80%20%EA%B8%80`      |
+| `%E0%A4%A` (잘못된 인코딩) | 디코딩 오류 → 주소가 없는 것으로 처리 |
+
+주소 형식은 세 가지를 비교해 정했다. 비교의 기준은 서버가 그 주소를 받을 수 있는가였다. 주소에서 `#` 뒷부분(프래그먼트)은 브라우저 안에서만 사용되고 서버로 보내는 요청에는 포함되지 않는다[^fragment]. 링크를 붙였을 때 표시되는 공유 미리 보기는 서버가 주소를 읽어 생성하므로, 서버가 글 주소를 받아야 한다.
+
+![주소의 구성 요소](./images/app-links-url-parts.svg '해시 형식은 서버가 GET /만 받는다. 경로 형식은 글 주소가 요청에 그대로 들어간다')
 
 | 형식                                 | 장점                          | 단점                                                                       |
 | ------------------------------------ | ----------------------------- | -------------------------------------------------------------------------- |
@@ -30,7 +49,7 @@ MacFolio는 macOS 데스크톱을 재현한 **단일 페이지 애플리케이�
 
 ## 존재하지 않는 경로 요청
 
-프론트엔드는 Cloudflare Workers에서 정적 파일로만 서빙한다. `/memo/cra-to-vite`라는 파일은 없다. 그런데 `wrangler.jsonc`에 처음부터 다음 설정이 있었다.
+프론트엔드는 Cloudflare Workers에서 빌드 결과(`dist/`)를 정적 파일로 서빙한다. `dist/`에는 `index.html`과 `assets/` 아래 JavaScript·CSS 파일만 있고, `/memo/cra-to-vite`라는 파일은 없다. 그런데 `wrangler.jsonc`에 처음부터 다음 설정이 있었다.
 
 ```jsonc
 "assets": {
@@ -39,9 +58,9 @@ MacFolio는 macOS 데스크톱을 재현한 **단일 페이지 애플리케이�
 }
 ```
 
-존재하지 않는 경로를 요청하면 404 대신 `index.html`을 응답한다([Cloudflare 문서: Single Page Application](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)). 그래서 서버는 수정할 것이 없고, **앱이 시작 시각에 경로를 읽기만** 하면 된다.
+이 설정이 있으면 존재하지 않는 경로를 요청했을 때 404 대신 `index.html`을 `200`으로 응답한다([Cloudflare 문서: Single Page Application](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)). 그래서 서버는 수정할 것이 없고, **앱이 시작 시각에 경로를 읽기만** 하면 된다.
 
-![글 주소로 들어와서 그 글이 열리기까지](./images/app-links-flow.svg '서버는 index.html만 주고, 나머지는 앱이 시작할 때 처리한다')
+![글 주소로 들어와서 그 글이 열리기까지](./images/app-links-flow.svg '서버는 index.html만 응답하고, 나머지는 앱이 시작할 때 처리한다')
 
 ## 초기값으로 열기
 
@@ -52,7 +71,9 @@ const initial = parseAppPath(window.location.pathname); // { app: 'memo', id: 'c
 export const linkedId = (app: LinkedApp) => (initial?.app === app ? initial.id : null);
 ```
 
-이 값을 상태의 **초기값**으로 사용한다. 마운트 후 이펙트에서 반영하면 첫 화면이 한 번 렌더링된 뒤 다시 바뀐다.
+`parseAppPath`는 `/memo/cra-to-vite` 같은 경로를 `{ app: 'memo', id: 'cra-to-vite' }`로 바꾸고, `/`나 `/unknown/x`처럼 연결된 앱이 아닌 경로에는 `null`을 반환한다.
+
+이 값을 상태의 **초기값**으로 사용한다. 마운트 후 이펙트(`useEffect`)에서 반영하면 첫 화면이 기본 상태로 한 번 렌더링된 뒤 다시 바뀌어, 다른 글이 잠깐 표시됐다가 바뀌는 현상이 생긴다.
 
 | 대상    | 초기 상태                                                                                                                   |
 | ------- | --------------------------------------------------------------------------------------------------------------------------- |
@@ -60,15 +81,15 @@ export const linkedId = (app: LinkedApp) => (initial?.app === app ? initial.id :
 | 메모    | `useState(() => linkedId('memo'))`로 해당 글을 선택한 상태로 시작한다. 좁은 화면(폴더 → 목록 → 본문)은 본문 칸부터 표시한다 |
 | Safari  | 해당 프로젝트 탭을 선택한 상태로 시작한다. 존재하지 않는 id면 기존대로 첫 탭                                                |
 
-서버에만 있는 글(관리자가 작성한 글)은 저장소 글보다 늦게 도착한다. 그래서 선택한 글 주소를 상태로 보관하다가, 서버 글이 도착하면 그 시각에 해당 글을 표시한다.
+서버에만 있는 글(관리자가 작성한 글)은 저장소 글보다 늦게 도착한다. 저장소 글은 빌드에 포함되어 즉시 사용할 수 있지만, 서버 글은 API 응답을 기다려야 하기 때문이다. 그래서 선택한 글 주소를 상태로 보관하다가, 서버 글이 도착하면 그 시각에 해당 글을 표시한다.
 
-![휴대폰에서 글 주소로 들어왔을 때](./images/app-links-mobile.jpg '홈 화면 대신 메모 앱의 본문부터. 오른쪽 위가 공유 버튼')
+![휴대폰에서 글 주소로 들어왔을 때](./images/app-links-mobile.jpg '홈 화면 대신 메모 앱의 본문부터 표시된다. 오른쪽 위가 공유 버튼')
 
 ## 주소 막대는 맨 앞 창을 따른다
 
 링크로 접속하는 것만큼, **현재 보고 있는 화면의 주소가 주소 막대에 표시되는 것**도 중요하다. 새로 고침해도 같은 글이 유지되고, 주소 막대를 복사해 공유할 수 있다.
 
-처음에는 메모 앱이 선택한 글이 바뀔 때마다 직접 `history.replaceState`를 호출했다. Safari도 같은 처리를 하게 되자 ==두 앱이 서로의 주소를 덮어썼다==. 메모를 보고 있는데 뒤에 있는 Safari의 탭 주소가 남는 식이었다.
+처음에는 메모 앱이 선택한 글이 바뀔 때마다 직접 `history.replaceState`를 호출했다. Safari도 같은 처리를 하게 되자 ==두 앱이 서로의 주소를 덮어썼다==. 메모를 보고 있는데 주소 막대에는 뒤에 있는 Safari의 탭 주소가 남는 식이었다.
 
 그래서 주소를 변경하는 위치를 하나로 통합했다.
 
@@ -87,7 +108,13 @@ useEffect(() => {
 
 창을 앞으로 가져오거나 닫으면 `apps`가 바뀌고, 앱이 항목을 바꾸면 저장소가 구독자에게 알린다. 두 경우 모두 같은 함수로 주소를 결정한다.
 
-`pushState`가 아니라 [`replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)를 사용했다. 글을 선택할 때마다 방문 기록이 추가되면, ==뒤로 가기를 수십 번 눌러야 사이트를 벗어날 수 있다==. 이 사이트에서 뒤로 가기는 "사이트 밖으로 이동"이 자연스럽다.
+| 조작                            | `appAddresses` 값                               | 주소 막대                             |
+| ------------------------------- | ----------------------------------------------- | ------------------------------------- |
+| 메모에서 `cra-to-vite` 선택     | `{ memo: 'cra-to-vite' }`                       | `/memo/cra-to-vite`                   |
+| Safari 탭에서 `sproutfarm` 선택 | `{ memo: 'cra-to-vite', safari: 'sproutfarm' }` | `/safari/sproutfarm` (Safari가 맨 앞) |
+| 메모 창을 클릭해 앞으로         | 변화 없음                                       | `/memo/cra-to-vite`                   |
+
+`pushState`가 아니라 [`replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)를 사용했다. 글을 선택할 때마다 방문 기록이 추가되면, ==뒤로 가기를 수십 번 눌러야 사이트를 벗어날 수 있다==. 이 사이트에서 뒤로 가기는 "사이트 밖으로 이동"으로 동작해야 한다.
 
 ### 처음 표시되는 창은 주소를 덮어쓰지 않는다
 
@@ -113,16 +140,18 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 }
 ```
 
-아이콘은 iOS·macOS의 공유 아이콘(위가 열린 둥근 사각형에서 화살표가 올라오는 형태)으로 했다. Font Awesome 무료 아이콘에는 이 형태가 없다. 유사한 `arrow-up-from-bracket`은 아래가 받침대 형태라, SVG로 직접 작성해 공용 컴포넌트(`ShareIcon`)로 만들었다. 글자 크기(`1em`)와 글자색(`currentColor`)을 상속하므로 도구 막대, ••• 메뉴, Safari 어디에 배치해도 옆 아이콘과 크기·색이 일치한다.
+[`navigator.share`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)(Web Share API)는 운영체제의 공유 창을 열어 메시지·메일·메신저 앱으로 제목과 주소를 넘기는 브라우저 API다. `(pointer: coarse)`는 주 입력 장치가 손가락처럼 정밀하지 않은 포인터인지 확인하는 미디어 쿼리다[^pointer].
 
-데스크톱 Chrome·Safari에도 [`navigator.share`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)가 있다. 하지만 마우스를 쓰는 환경에서는 운영체제 공유 창보다 "복사됨" 알림이 빠르다. 그래서 터치 입력 환경(`pointer: coarse`)에서만 공유 시트를 연다. 사용자가 공유 시트를 취소하면(`AbortError`) 아무 처리도 하지 않는다.
+데스크톱 Chrome·Safari에도 `navigator.share`가 있다. 하지만 마우스를 쓰는 환경에서는 운영체제 공유 창을 거치는 것보다 "복사됨" 알림이 빠르다. 그래서 터치 입력 환경에서만 공유 시트를 연다. 사용자가 공유 시트를 취소하면(`AbortError`) 아무 처리도 하지 않는다.
 
 | 환경                               | 동작                                    |
 | ---------------------------------- | --------------------------------------- |
 | 터치 입력 + `navigator.share` 지원 | 운영체제 공유 시트 (메시지·카카오톡 등) |
 | 그 외                              | 클립보드에 복사 후 "링크 복사됨" 알림   |
 
-![메모의 공유 버튼과 알림](./images/app-links-memo-share.jpg '도구 막대의 공유 버튼을 누르면 macOS 알림처럼 "링크 복사됨"')
+아이콘은 iOS·macOS의 공유 아이콘(위가 열린 둥근 사각형에서 화살표가 올라오는 형태)으로 했다. Font Awesome 무료 아이콘에는 이 형태가 없다. 유사한 `arrow-up-from-bracket`은 아래가 받침대 형태라, SVG로 직접 작성해 공용 컴포넌트(`ShareIcon`)로 만들었다. 글자 크기(`1em`)와 글자색(`currentColor`)을 상속하므로 도구 막대, ••• 메뉴, Safari 어디에 배치해도 옆 아이콘과 크기·색이 일치한다.
+
+![메모의 공유 버튼과 알림](./images/app-links-memo-share.jpg '도구 막대의 공유 버튼을 누르면 macOS 알림처럼 "링크 복사됨"이 표시된다')
 
 ![Safari의 공유 버튼](./images/app-links-safari-share.jpg '주소창은 데모를 열고, 옆의 공유 버튼은 이 프로젝트 페이지 주소를 복사한다')
 
@@ -133,7 +162,7 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 
 전체 E2E를 실행하자, 이 기능과 무관해 보이는 검색 칸 시험이 실패했다. "검색 칸에 초점이 가면 도구가 접히고, 검색 칸은 **오른쪽 끝을 지킨 채** 왼쪽으로 넓어진다"를 확인하는 시험이다. 검색 칸의 오른쪽 끝이 11.5px 이동했다.
 
-관리자로 글을 편집하는 중에는 도구 막대에 서식 도구가 함께 표시된다. 창의 기본 폭(900px)에서 공유 버튼 하나(30px + 간격)가 추가되자 도구 막대가 넘쳐, 검색 칸이 오른쪽으로 밀려나 있었다. 도구가 접히면 공간이 생겨 원래 위치로 돌아오므로, 그 차이가 "이동"으로 검출된 것이다.
+관리자로 글을 편집하는 중에는 도구 막대에 서식 도구가 함께 표시된다. 창의 기본 폭(900px)에서 공유 버튼 하나(30px + 간격)가 추가되자 도구 막대가 넘쳐, 검색 칸이 오른쪽으로 밀려나 있었다. 도구가 접히면 공간이 생겨 원래 위치로 돌아오므로, 그 차이가 "이동"으로 검출됐다.
 
 관리자는 이 화면에서 주로 글을 편집한다. 그래서 편집 중에는 공유 버튼을 도구 막대에서 제외하고 ••• 메뉴에만 배치했다. 방문자의 도구 막대에는 서식 도구가 없어 그대로 유지한다.
 
@@ -158,6 +187,8 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 
 링크를 렌더링하는 컴포넌트(`MarkdownLink`)가 주소를 먼저 검사한다.
 
+![링크 클릭 판단](./images/app-links-link-click.svg '같은 출처의 /memo·/safari 경로이고 수정 키 없이 눌렀을 때만 사이트 안에서 연다')
+
 | 링크 종류                                                 | 동작                                                                                                                      |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | 같은 사이트의 앱 항목(`/memo/<글>`, `/safari/<프로젝트>`) | Finder가 글을 열 때와 같은 경로(`openRequest`)로 해당 앱에 열기를 요청한다. 메모 앱이 그 글로 바뀌고 주소 막대도 갱신된다 |
@@ -167,18 +198,18 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 `href`는 그대로 `/memo/db-backup`이라 링크 주소 복사도 동작한다.
 
 > [!WARNING] 경로만 같은 외부 주소
-> 같은 사이트인지는 주소를 `new URL(href, 사이트 주소)`로 해석해 출처(origin)를 비교한다. `https://evil.example/memo/db-backup`처럼 경로만 같은 외부 주소는 외부 링크로 처리한다.
+> 같은 사이트인지는 주소를 `new URL(href, 사이트 주소)`로 해석해 출처(origin, 프로토콜·호스트·포트의 조합)를 비교한다. `https://evil.example/memo/db-backup`처럼 경로만 같은 외부 주소는 외부 링크로 처리한다.
 
 ## 이후 이 주소를 사용한 기능
 
 - **방문 분석**: 앱마다 "현재 표시 중인 항목"을 알리는 `appAddresses` 저장소를 분석 모듈이 그대로 구독해, 어느 글을 조회했는지(`item` 이벤트)를 별도 구현 없이 집계했다([sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)).
 - **존재하지 않는 파일과 앱 주소 구분**: 나흘 뒤, 위의 `single-page-application` 설정이 존재하지 않는 코드 파일 요청에도 `index.html`을 응답한다는 것을 발견했다. 존재하지 않는 주소만 처리하는 작은 Worker를 두어 앱 주소는 첫 화면, 확장자가 있는 주소는 404로 구분했다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)). 앱 주소를 "마지막 경로 조각에 점이 없는 주소"로 정의할 수 있었던 것은, 글 주소와 프로젝트 id에 점을 사용하지 않았기 때문이다.
-- **글마다 다른 공유 미리 보기**: 이 글을 작성한 시각에는 카카오톡이나 Slack에 링크를 붙이면 표시되는 **미리 보기(제목·설명·이미지)**가 사이트 전체에 대해 하나였다. 미리 보기는 링크를 수신한 서버가 HTML의 `<meta property="og:…">`를 읽어 생성하는데, 모든 경로에 같은 `index.html`이 응답되고 글은 JavaScript가 실행된 뒤에야 결정되기 때문이다. 이후 Worker가 주소마다 글의 제목·요약·Open Graph 태그를 HTML에 삽입하도록 구현했다([Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable), [#269](https://github.com/hyeoniverse/MacFolio/pull/269)).
+- **글마다 다른 공유 미리 보기**: 이 기능을 구현한 시각에는 카카오톡이나 Slack에 링크를 붙이면 표시되는 **미리 보기(제목·설명·이미지)**가 사이트 전체에 대해 하나였다. 미리 보기는 링크를 수신한 서버가 HTML의 `<meta property="og:…">`(Open Graph 태그[^ogp])를 읽어 생성하는데, 모든 경로에 같은 `index.html`이 응답되고 글은 JavaScript가 실행된 뒤에야 결정되기 때문이다. 이후 Worker가 주소마다 글의 제목·요약·Open Graph 태그를 HTML에 삽입하도록 구현했다([Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable), [#269](https://github.com/hyeoniverse/MacFolio/pull/269)).
 
 ## 정리
 
 > [!IMPORTANT]
-> 주소 변경처럼 "화면 전체에 하나뿐인 자원"은 여러 컴포넌트가 직접 변경하게 두면 서로 덮어쓴다. 각 컴포넌트는 원하는 값만 알리고, 최종 값을 결정하는 위치는 하나로 둔다.
+> 주소 막대처럼 ==화면 전체에 하나뿐인 자원==은 여러 컴포넌트가 직접 변경하게 두면 서로 덮어쓴다. 각 컴포넌트는 원하는 값만 알리고, 최종 값을 결정하는 위치는 하나로 둔다.
 
 ## 관련 글
 
@@ -187,5 +218,28 @@ if (navigator.share && matchMedia('(pointer: coarse)').matches) {
 - [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
 - [Vite 두 번째 진입점과 iframe으로 Scalar API 문서 격리하기](/memo/api-docs-app)
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable)
+
+[^history]: History API는 브라우저 세션 기록에 접근하고, `pushState`·`replaceState`로 페이지를 다시 불러오지 않고 주소와 기록 항목을 변경한다. [MDN: History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+
+[^fragment]: URI 문법을 정의한 RFC 3986 3.5절에 따르면 프래그먼트는 사용자 에이전트(브라우저)가 문서를 받은 뒤 사용하는 부분이고, 요청을 보낼 때는 나머지 주소와 분리된다. [RFC 3986 §3.5 Fragment](https://www.rfc-editor.org/rfc/rfc3986#section-3.5)
+
+[^pointer]: `pointer` 미디어 특성은 주 입력 장치의 정밀도를 `none`·`coarse`·`fine`으로 구분한다. 터치스크린은 `coarse`, 마우스는 `fine`이다. [MDN: pointer](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/pointer)
+
+[^ogp]: Open Graph는 웹 페이지의 제목·설명·대표 이미지를 `<meta property="og:…">` 태그로 기술하는 규약이다. [The Open Graph protocol](https://ogp.me/)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
+- [MDN: History.replaceState()](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)
+- [MDN: encodeURIComponent()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
+- [RFC 3986: Uniform Resource Identifier (URI): Generic Syntax](https://www.rfc-editor.org/rfc/rfc3986)
+- [Cloudflare Workers: Single Page Application](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/)
+- [MDN: Navigator.share()](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/share)
+- [MDN: @media pointer](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/pointer)
+- [MDN: URL.origin](https://developer.mozilla.org/en-US/docs/Web/API/URL/origin)
+- [The Open Graph protocol](https://ogp.me/)
+
+</details>
 
 #MacFolio #데스크톱 #공유링크

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>주소 클릭부터 알림까지의 순서</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker><marker id="agr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">주소 버튼을 누른 뒤 일어나는 일</text>
+<rect x="24" y="56" width="150" height="62" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="38" y="82" font-size="13" font-weight="600" fill="#1d1d1f">① 클릭</text>
+<text x="38" y="102" font-size="12" fill="#6e6e73">사용자 동작 직후</text>
+<line x1="174" y1="87" x2="220" y2="87" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<rect x="226" y="56" width="390" height="62" rx="10" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="240" y="82" font-size="13" font-weight="600" fill="#0a84ff">② navigator.clipboard.writeText(email)</text>
+<text x="240" y="102" font-size="12" fill="#1d1d1f">Promise를 반환한다. 브라우저가 쓰기 조건을 확인한다</text>
+<rect x="226" y="132" width="390" height="70" rx="8" fill="#ffffff" stroke="#d2d2d7"/>
+<text x="240" y="154" font-size="12.5" font-weight="600" fill="#1d1d1f">브라우저가 확인하는 조건</text>
+<text x="240" y="174" font-size="12" fill="#1d1d1f">· 보안 컨텍스트(HTTPS 또는 localhost)인가</text>
+<text x="240" y="192" font-size="12" fill="#1d1d1f">· 방금 사용자 동작이 있었는가 (Firefox·Safari 필수)</text>
+<line x1="300" y1="202" x2="170" y2="244" stroke="#34c759" stroke-width="1.5" marker-end="url(#agr)"/>
+<line x1="540" y1="202" x2="470" y2="244" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="222" y="224" font-size="12" font-weight="600" fill="#34c759" text-anchor="end">이행(resolve)</text>
+<text x="494" y="228" font-size="12" font-weight="600" fill="#ff3b30" text-anchor="end">거부(NotAllowedError 등)</text>
+<rect x="24" y="250" width="290" height="104" rx="10" fill="#effaf2" stroke="#34c759"/>
+<text x="38" y="274" font-size="13" font-weight="600" fill="#1d1d1f">③ 성공 알림</text>
+<rect x="38" y="286" width="262" height="54" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
+<text x="50" y="308" font-size="12.5" font-weight="600" fill="#1d1d1f">이메일 주소 복사됨</text>
+<text x="50" y="328" font-size="12" fill="#6e6e73">hyeoniverse.dev@gmail.com</text>
+<rect x="326" y="250" width="290" height="104" rx="10" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="340" y="274" font-size="13" font-weight="600" fill="#1d1d1f">③ 실패 알림 (catch)</text>
+<rect x="340" y="286" width="262" height="54" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
+<text x="352" y="308" font-size="12.5" font-weight="600" fill="#1d1d1f">이메일 주소를 복사하지 못했습니다</text>
+<text x="352" y="328" font-size="12" fill="#6e6e73">hyeoniverse.dev@gmail.com</text>
+<text x="24" y="374" font-size="12" fill="#6e6e73">두 경우 모두 알림 본문에 주소를 표시해, 복사에 실패해도 주소를 보고 직접 입력할 수 있다.</text>
+</svg>

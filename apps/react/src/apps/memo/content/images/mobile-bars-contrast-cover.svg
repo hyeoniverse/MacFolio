@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>background-size: cover에서 화면 좌표를 이미지 픽셀 좌표로 바꾸기</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="24" y="30" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">예: 1000×1000 이미지를 390×844 화면에 cover로 배치</text>
+<rect x="351.9" y="60" width="253.2" height="253.2" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<rect x="420" y="60" width="117.0" height="253.2" fill="#e5f0ff" stroke="#0a84ff" stroke-width="2" rx="6"/>
+<text x="357.9" y="331.2" font-size="12" fill="#6e6e73" text-anchor="start">축소한 이미지 844×844</text>
+<text x="478.5" y="186.6" font-size="12" fill="#0a84ff" text-anchor="middle" font-weight="700">화면</text>
+<text x="478.5" y="202.6" font-size="12" fill="#0a84ff" text-anchor="middle" font-weight="700">390×844</text>
+<text x="381.9" y="186.6" font-size="12" fill="#6e6e73" text-anchor="middle">잘림</text>
+<text x="575.0999999999999" y="186.6" font-size="12" fill="#6e6e73" text-anchor="middle">잘림</text>
+<circle cx="450.0" cy="75.0" r="5" fill="#ff3b30"/>
+<text x="458.0" y="79.0" font-size="12" fill="#ff3b30" text-anchor="start">(100, 50)</text>
+<text x="24" y="76" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">1. 배율</text>
+<text x="24" y="96" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">max(390/1000, 844/1000)</text>
+<text x="24" y="114" font-size="12" fill="#0a84ff" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">= 0.844</text>
+<text x="24" y="146" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">2. 그린 크기와 위치</text>
+<text x="24" y="166" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">844×844, x = (390−844)/2</text>
+<text x="24" y="184" font-size="12" fill="#0a84ff" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">= −227</text>
+<text x="24" y="216" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">3. 화면 점 (100, 50)</text>
+<text x="24" y="236" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">((100+227)/0.844, 50/0.844)</text>
+<text x="24" y="254" font-size="12" fill="#0a84ff" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">≈ 이미지 (387, 59)</text>
+<text x="24" y="286" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">4. 64px 폭 축소본의 해당 픽셀</text>
+<text x="24" y="306" font-size="12" fill="#6e6e73" text-anchor="start">주변 3×3 평균을 그 점의 색으로 사용</text>
+<text x="24" y="368" font-size="12" fill="#6e6e73" text-anchor="start">contain은 min(...)을 배율로 쓰고, 그 밖의 값은 상자 전체에 늘린 것으로 계산한다.</text>
+</svg>

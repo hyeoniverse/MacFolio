@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Vite는 VITE_ 접두사 변수만 빌드 결과에 문자열로 넣고, REACT_APP_ 변수는 undefined가 된다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">환경 변수는 빌드할 때 문자열로 치환된다</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">vite build가 소스의 import.meta.env.* 표현식을 값으로 바꾼다</text>
+<text x="24" y="86" font-size="13" font-weight="600" fill="#1d1d1f">.env 파일</text>
+<rect x="24" y="96" width="180" height="70" rx="8" fill="#f2f2f7"/>
+<text x="36" y="122" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">VITE_APP_IMAGE_URL=</text>
+<text x="36" y="140" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">  https://…</text>
+<text x="36" y="158" font-size="12" fill="#6e6e73">(값은 하나만 정의)</text>
+<text x="230" y="86" font-size="13" font-weight="600" fill="#1d1d1f">소스 코드 (Github.tsx)</text>
+<text x="452" y="86" font-size="13" font-weight="600" fill="#1d1d1f">빌드된 JS</text>
+<rect x="230" y="96" width="196" height="52" rx="8" fill="#f2f2f7" stroke="#34c759" stroke-width="1.5"/>
+<text x="242" y="118" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">import.meta.env.</text>
+<text x="242" y="136" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">VITE_APP_IMAGE_URL</text>
+<line x1="428" y1="122" x2="448" y2="122" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="452" y="96" width="164" height="52" rx="8" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="464" y="127" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">"https://…"</text>
+<rect x="230" y="170" width="196" height="52" rx="8" fill="#f2f2f7" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="242" y="192" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">import.meta.env.</text>
+<text x="242" y="210" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">REACT_APP_IMAGE_URL</text>
+<line x1="428" y1="196" x2="448" y2="196" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="452" y="170" width="164" height="52" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="464" y="201" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#ff3b30">undefined</text>
+<line x1="204" y1="131" x2="226" y2="122" stroke="#34c759" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="24" y="196" font-size="12" fill="#6e6e73">VITE_ 접두사가 붙은 변수만</text>
+<text x="24" y="213" font-size="12" fill="#6e6e73">클라이언트 코드에 노출된다</text>
+<rect x="24" y="244" width="592" height="66" rx="8" fill="#fff7eb" stroke="#ff9f0a" stroke-width="1"/>
+<text x="38" y="268" font-size="12.5" fill="#1d1d1f">REACT_APP_ 이름은 빌드 오류도 경고도 내지 않고, 값만 undefined가 되어 이미지가 표시되지 않는다.</text>
+<text x="38" y="290" font-size="12.5" fill="#1d1d1f">접두사 규칙은 DB 비밀번호 같은 서버용 변수가 브라우저 번들에 포함되는 것을 막는다.</text>
+</svg>

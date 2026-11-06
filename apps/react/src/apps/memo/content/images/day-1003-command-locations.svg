@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>로컬 Mac, 서버 호스트, 컨테이너의 명령 실행 위치</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">같은 명령도 실행하는 위치에 따라 결과가 다르다</text>
+<rect x="24" y="56" width="150" height="300" rx="10" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="99" y="82" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">로컬 Mac</text>
+<text x="99" y="104" font-size="12" fill="#ff3b30" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">~/deploy 없음</text>
+<text x="99" y="124" font-size="12" fill="#ff3b30" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">→ no such file</text>
+<text x="99" y="144" font-size="12" fill="#ff3b30" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">or directory</text>
+<text x="40" y="240" font-size="12" fill="#6e6e73" text-anchor="start">10월 2일:</text>
+<text x="40" y="260" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">cd ~/deploy &amp;&amp;</text>
+<text x="40" y="280" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">docker compose</text>
+<text x="40" y="300" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">exec … pg_dump</text>
+<text x="40" y="324" font-size="12" fill="#ff3b30" text-anchor="start">SSH 접속 전에 실행</text>
+<line x1="174" y1="200" x2="202" y2="200" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="188" y="190" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">ssh</text>
+<rect x="204" y="56" width="412" height="300" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="220" y="82" font-size="14" fill="#0a84ff" text-anchor="start" font-weight="700">Oracle VM 호스트 (ubuntu)</text>
+<text x="220" y="104" font-size="12" fill="#ff3b30" text-anchor="start">~ 에서 pg_dump → command not found (호스트에는 미설치)</text>
+<rect x="220" y="120" width="180" height="92" rx="8" fill="#e5f1ff" stroke="none" stroke-width="1.2"/>
+<text x="232" y="144" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">~/macfolio</text>
+<text x="232" y="166" font-size="12" fill="#1d1d1f" text-anchor="start">Git 저장소</text>
+<text x="232" y="188" font-size="12" fill="#248a3d" text-anchor="start">git pull 실행 위치</text>
+<rect x="420" y="120" width="180" height="92" rx="8" fill="#fff4e5" stroke="none" stroke-width="1.2"/>
+<text x="432" y="144" font-size="13" fill="#c27400" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">~/deploy</text>
+<text x="432" y="166" font-size="12" fill="#1d1d1f" text-anchor="start">compose 파일·비밀 값</text>
+<text x="432" y="188" font-size="12" fill="#248a3d" text-anchor="start">docker compose 실행 위치</text>
+<rect x="220" y="232" width="380" height="108" rx="8" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="232" y="254" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">Docker 컨테이너</text>
+<rect x="232" y="266" width="170" height="62" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.2"/>
+<text x="244" y="288" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">db (Postgres)</text>
+<text x="244" y="310" font-size="12" fill="#248a3d" text-anchor="start">pg_dump는 여기에만</text>
+<rect x="418" y="266" width="170" height="62" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="430" y="288" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">api (Nest)</text>
+<text x="430" y="310" font-size="12" fill="#6e6e73" text-anchor="start">시작 시 migrate deploy</text>
+<path d="M510 212 L510 232" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="24" y="384" font-size="12" fill="#6e6e73" text-anchor="start">docker compose exec -T db pg_dump …는 ~/deploy에서 실행해 db 컨테이너 안의 pg_dump를 호출한다.</text>
+</svg>

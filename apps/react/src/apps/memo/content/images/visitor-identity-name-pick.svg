@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>해시 앞 8자리를 16진수로 읽어 30으로 나눈 나머지로 수식어를, 다음 8자리를 24로 나눈 나머지로 동물을 고른다</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="360" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">해시 16자리로 이름 고르기</text>
+<text x="24" y="58" font-size="12" fill="#6e6e73">visitorHash (64자 16진수, 앞부분)</text>
+<rect x="24" y="68" width="592" height="40" rx="8" fill="#f2f2f7"/>
+<text x="40" y="94" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f"><tspan fill="#0a84ff" font-weight="700">0ce1f996</tspan><tspan fill="#ff9f0a" font-weight="700">aa01ac52</tspan>bb655671581f185d87817de4…</text>
+<line x1="80" y1="110" x2="160" y2="150" stroke="#6e6e73" stroke-width="1.4" marker-end="url(#a)"/>
+<line x1="160" y1="110" x2="460" y2="150" stroke="#6e6e73" stroke-width="1.4" marker-end="url(#a)"/>
+<!-- left -->
+<rect x="24" y="154" width="284" height="132" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="40" y="178" font-size="13" font-weight="700" fill="#0a84ff">수식어 (30개)</text>
+<text x="40" y="202" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">parseInt("0ce1f996", 16)</text>
+<text x="40" y="222" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">= 216,136,086</text>
+<text x="40" y="242" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">216,136,086 % 30 = 6</text>
+<text x="40" y="270" font-size="13" fill="#1d1d1f">ADJECTIVES[6] = <tspan font-weight="700">다정한</tspan></text>
+<!-- right -->
+<rect x="332" y="154" width="284" height="132" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="348" y="178" font-size="13" font-weight="700" fill="#ff9f0a">동물 (24개)</text>
+<text x="348" y="202" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">parseInt("aa01ac52", 16)</text>
+<text x="348" y="222" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">= 2,852,236,370</text>
+<text x="348" y="242" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">2,852,236,370 % 24 = 2</text>
+<text x="348" y="270" font-size="13" fill="#1d1d1f">ANIMALS[2] = <tspan font-weight="700">🐰 토끼</tspan></text>
+<rect x="170" y="304" width="300" height="40" rx="20" fill="#f2f2f7" stroke="#34c759" stroke-width="1.5"/>
+<text x="320" y="330" font-size="16" font-weight="700" fill="#1d1d1f" text-anchor="middle">🐰 다정한 토끼</text>
+<text x="24" y="330" font-size="12" fill="#6e6e73">결과</text>
+<text x="616" y="330" font-size="12" fill="#6e6e73" text-anchor="end">30 × 24 = 720가지</text>
+</svg>

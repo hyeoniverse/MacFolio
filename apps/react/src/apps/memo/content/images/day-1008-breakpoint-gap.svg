@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>휴대폰 셸 기준과 메모 휴대폰 모양 기준의 차이</title>
+<rect width="640" height="230" fill="#ffffff"/>
+<text x="20" y="28" font-size="13" font-weight="700" fill="#1d1d1f">화면 폭에 따른 렌더링 (메모가 화면 전체를 쓰는 휴대폰 셸 기준)</text>
+<line x1="40" y1="120" x2="610" y2="120" stroke="#6e6e73" stroke-width="1.5"/>
+<rect x="40" y="56" width="420" height="28" rx="4" fill="#0a84ff" opacity="0.2"/>
+<text x="250" y="75" font-size="12" fill="#1d1d1f" text-anchor="middle">휴대폰 셸: 화면 폭 767px 이하</text>
+<rect x="40" y="88" width="384" height="24" rx="4" fill="#34c759" opacity="0.25"/>
+<text x="232" y="105" font-size="12" fill="#1d1d1f" text-anchor="middle">메모 휴대폰 모양: 메모 칸 폭 700px 이하</text>
+<rect x="424" y="88" width="36" height="24" fill="#ff3b30" opacity="0.3"/>
+<line x1="424" y1="114" x2="424" y2="128" stroke="#6e6e73"/><text x="424" y="144" font-size="12" fill="#6e6e73" text-anchor="middle">700</text>
+<line x1="460" y1="114" x2="460" y2="128" stroke="#6e6e73"/><text x="462" y="144" font-size="12" fill="#6e6e73" text-anchor="start">767</text>
+<text x="40" y="144" font-size="12" fill="#6e6e73">0</text>
+<text x="610" y="144" font-size="12" fill="#6e6e73" text-anchor="end">px</text>
+<rect x="20" y="160" width="600" height="56" rx="8" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="36" y="182" font-size="12" fill="#1d1d1f">701~767px: 휴대폰 셸 안인데 메모는 넓은 창 모양 → 도구 막대가 상태 표시줄에 가려짐</text>
+<text x="36" y="203" font-size="12" fill="#34c759">#135: 휴대폰 셸 안이면 폭과 관계없이 휴대폰 모양</text>
+</svg>

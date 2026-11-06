@@ -9,7 +9,23 @@ summary: Lighthouse로 첫 방문을 측정하니 휴대폰 LCP 25.7초, 전송�
 
 바탕화면 위젯을 추가한 뒤, 휴대폰으로 사이트에 처음 접속하면 로딩 화면이 표시되기 전까지 검은 화면이 오래 유지되었다. 이 지연을 수치로 확인하려고 [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview)로 첫 방문 성능을 측정했다.
 
-결론부터 적는다. 휴대폰은 Lighthouse 55점에 LCP(최대 콘텐츠가 렌더링되기까지)가 25.7초, 데스크톱은 62점에 5.8초였다. 첫 방문마다 휴대폰은 4.9MB, 데스크톱은 9MB를 전송했다. 원인은 3.8MB 글꼴, 첫 번들에 들어 있던 블로그 원문과 모든 앱의 코드, 큰 이미지와 영상, JS가 렌더링하던 로딩 화면이었다. 이것들을 세 차례에 걸쳐 개선했고(1차 [#319](https://github.com/hyeoniverse/MacFolio/pull/319), 2·3차 [#323](https://github.com/hyeoniverse/MacFolio/pull/323)), 같은 조건으로 다시 측정하니 휴대폰 78~87점(LCP 3.2초, 483KB), 데스크톱 98점(LCP 1.1초, 771KB)이 되었다. 3차까지 배포된 운영 사이트의 재측정은 [성능 재측정](/memo/site-performance-lcp-budget#운영-사이트-재측정)에 따로 정리했다.
+측정 결과 휴대폰은 Lighthouse 55점에 LCP(최대 콘텐츠가 렌더링되기까지)가 25.7초, 데스크톱은 62점에 5.8초였다. 첫 방문마다 휴대폰은 4.9MB, 데스크톱은 9MB를 전송했다. 원인은 3.8MB 글꼴, 첫 번들에 들어 있던 블로그 원문과 모든 앱의 코드, 큰 이미지와 영상, JS가 렌더링하던 로딩 화면이었다. 이것들을 세 차례에 걸쳐 개선했고(1차 [#319](https://github.com/hyeoniverse/MacFolio/pull/319), 2·3차 [#323](https://github.com/hyeoniverse/MacFolio/pull/323)), 같은 조건으로 다시 측정하니 휴대폰 78~87점(LCP 3.2초, 483KB), 데스크톱 98점(LCP 1.1초, 771KB)이 되었다. 3차까지 배포된 운영 사이트의 재측정은 [성능 재측정](/memo/site-performance-lcp-budget#운영-사이트-재측정)에 따로 정리했다.
+
+## 배경
+
+### 첫 방문에서 브라우저가 하는 일
+
+사용자가 주소를 입력하면 브라우저는 먼저 HTML을 내려받고, HTML이 가리키는 CSS·JavaScript·글꼴·이미지를 이어서 요청한다. 이 사이트처럼 React로 만든 SPA(단일 페이지 애플리케이션)는 HTML이 거의 비어 있고, 화면 대부분을 JavaScript가 실행되면서 만든다. 따라서 첫 화면이 표시되는 시각은 다음 세 가지에 달려 있다.
+
+1. **전송량**: 첫 화면 전에 내려받아야 하는 파일의 총 바이트 수. 느린 4G(1.6Mbps)에서 1MB는 계산상 약 5초다.
+2. **요청 순서**: 파일 A를 실행해야 파일 B가 필요하다는 것을 알 수 있으면, B는 A가 끝난 뒤에야 요청된다. 요청 한 번마다 왕복 시간(느린 4G 가정 150ms)이 더해진다.
+3. **렌더링 코드**: 화면을 그리는 코드가 JavaScript 안에 있으면, 그 파일을 모두 받고 실행할 때까지 화면이 비어 있다.
+
+### Lighthouse 점수와 지표
+
+[Lighthouse](https://developer.chrome.com/docs/lighthouse/overview)는 Chrome 팀이 만든 웹 페이지 검사 도구다. 페이지를 한 번 불러오면서 렌더링 시각과 내려받은 파일을 기록하고, 아래 표의 지표를 가중 평균해 0~100점의 성능 점수를 계산한다. 0~49는 빨강, 50~89는 주황, 90~100은 초록으로 표시된다.
+
+![Lighthouse 보고서 화면. Performance 97점 원과 First Contentful Paint 1.8초, Largest Contentful Paint 2.1초, Total Blocking Time 30ms, Cumulative Layout Shift 0 같은 지표 목록](./images/site-performance-diet-lighthouse-report.jpg 'Lighthouse 보고서의 예. 위쪽 원이 성능 점수이고, 아래 METRICS가 점수 계산에 쓰이는 지표다')
 
 <details>
 <summary>용어 정리: FCP, LCP, TBT, CLS, 첫 방문 전송량</summary>
@@ -25,6 +41,10 @@ summary: Lighthouse로 첫 방문을 측정하니 휴대폰 LCP 25.7초, 전송�
 Lighthouse 성능 점수는 이 지표들을 가중 평균한 0~100점 값이다.
 
 </details>
+
+이 글에서 가장 많이 다루는 지표는 LCP다. LCP는 사용자가 "페이지의 주요 내용이 보인다"고 느끼는 시각에 가깝게 설계된 지표로, web.dev는 2.5초 이하를 좋음, 4초 초과를 나쁨으로 분류한다. 개선 전 휴대폰의 25.7초는 기준의 10배를 넘는 값이었다.
+
+![LCP 기준. 2.5초 이하는 GOOD, 2.5초에서 4.0초는 NEEDS IMPROVEMENT, 4.0초 초과는 POOR](./images/site-performance-diet-lcp-thresholds.svg 'web.dev의 LCP 기준. 2.5초 이하가 좋음, 4초 초과가 나쁨이다')
 
 ![느린 휴대폰에서 개선 전·후](./images/site-performance-diet-filmstrip.jpg '느린 4G·4배 느린 CPU의 휴대폰에서 0.5초마다 찍은 화면. 개선 전에는 7초 동안 검은 화면, 개선한 뒤에는 1초에 사과가, 2초에 시작 안내가 뜬다')
 
@@ -65,7 +85,7 @@ LCP가 늦은 원인도 둘로 나뉘었다.
 
 TBT는 개선 전에도 115ms(휴대폰)·9ms(데스크톱)로 낮았고 CLS는 0이었다. 이 사이트는 ==렌더링이 아니라 네트워크 전송에 오래 걸렸다==.
 
-아래 1~8절은 이 병목을 하나씩 개선한 기록이다. 항목마다 **문제 → 탐지 방법 → 개선 방법(코드 전후) → 효과 → 시행착오** 순서로 정리했고, 효과가 큰 항목부터 배치했다. 휴대폰이 로딩 화면을 탭하기 전까지 수신하는 리소스의 구성과, 개선 후 각 리소스를 수신하는 시점은 다음과 같다.
+1~8절에서 이 병목을 효과가 큰 순서로 하나씩 개선한다. 각 절은 문제, 탐지 방법, 개선 방법(코드 전후), 효과, 시행착오 순서다. 휴대폰이 로딩 화면을 탭하기 전까지 수신하는 리소스의 구성과, 개선 후 각 리소스를 수신하는 시점은 다음과 같다.
 
 ![휴대폰 첫 방문 전송량의 전후](./images/site-performance-diet-bundles.svg '개선 전 4,893KB는 글꼴, 글 원문, 앱 코드, 이미지가 대부분이었다. 3차 뒤 483KB. 줄인 것은 삭제한 것이 아니라 필요한 시점으로 옮겼다')
 
@@ -247,7 +267,11 @@ export const DOC_PATHS = Object.keys(lazySources).map(repoPath);
 
 **탐지 방법.** 요청 목록 5위가 `boot-….js`(압축 250KB)였다. 첫 화면에 필요한 것은 바탕화면, Dock, 메뉴 막대뿐이다.
 
-**개선 방법.** 모두 `lazy`로 바꿨다. 앱들은 이미 셸(`Desktop.tsx`)의 `Suspense` 안에서 렌더링되고 있어서, 호출하는 쪽은 수정할 필요가 없었다.
+**개선 방법.** 번들러는 정적 `import` 문으로 연결된 모듈을 같은 파일(번들)에 넣고, 동적 `import()` 호출을 만나면 그 모듈을 별도 파일(청크)로 분리한다. [`React.lazy`](https://react.dev/reference/react/lazy)는 동적 `import()`로 컴포넌트를 불러오는 함수라, 앱을 `lazy`로 감싸면 앱마다 청크가 생기고 그 앱을 처음 렌더링할 때 내려받는다.
+
+![정적 import일 때는 바탕화면과 모든 앱 코드가 boot.js 한 파일(250KB)에 들어가고, 동적 import()일 때는 boot.js(47KB)와 앱별 청크로 나뉘는 모습](./images/site-performance-diet-code-splitting.svg '정적 import는 한 번들로, 동적 import()는 앱별 청크로')
+
+앱 17개를 모두 `lazy`로 바꿨다. 앱들은 이미 셸(`Desktop.tsx`)의 `Suspense` 안에서 렌더링되고 있어서, 호출하는 쪽은 수정할 필요가 없었다.
 
 ```ts
 // 전
@@ -603,7 +627,7 @@ Lighthouse의 기본값(simulate)은 빠른 네트워크에서 한 번 수신한
 
 ## 남은 과제
 
-- **휴대폰 점수가 78과 87로 갈린다:** 5회 중 87이 세 번, 78이 두 번이었다. 78일 때는 React가 다시 렌더링한 시작 안내가 LCP(4.5초)로 다시 집계되었는데, 간헐적으로만 발생하는 원인은 아직 확인하지 못했다
+- **휴대폰 점수가 78과 87로 갈린다:** 5회 중 87이 세 번, 78이 두 번이었다. 78일 때는 React가 다시 렌더링한 시작 안내가 LCP(4.5초)로 다시 집계되었다. 원인과 해결은 [휴대폰 LCP 편차](/memo/site-performance-lcp-budget#휴대폰-lcp-편차)에 정리했다
 - **진입 후:** 전송량 768KB(휴대폰)는 그대로다. 첫 번들 33개와 Font Awesome solid 글꼴(117KB)이 남았다. 사용하는 글리프만 남기면 줄일 수 있지만, 프로젝트 내용(서버)에서 아이콘 이름을 선택할 수 있어 빌드 시각에 사용할 글리프를 모두 알 수 없다
 - **CI 성능 예산:** 지금은 수동으로 측정한다. 첫 방문 전송량 같은 상한을 CI에서 검사하면 전송량이 다시 늘어나는 회귀를 PR 단계에서 발견할 수 있다. 재측정에서 실제로 첫 번들이 22KB 늘어난 회귀를 발견했다([성능 재측정](/memo/site-performance-lcp-budget#운영-사이트-재측정), [#338](https://github.com/hyeoniverse/MacFolio/pull/338))
 
@@ -617,8 +641,33 @@ Lighthouse의 기본값(simulate)은 빠른 네트워크에서 한 번 수신한
 
 ## 관련 글
 
-- [Lighthouse 재측정과 lazy 분리로 첫 번들에서 명언 데이터 66KB 빼기](/memo/site-performance-lcp-budget#운영-사이트-재측정): 3차까지 배포한 운영 사이트의 재측정과 4차 개선
-- [상태 표시줄과 홈 인디케이터를 어떤 배경에서도 보이게 — 그림을 읽고, 대비로 고르고, 양쪽을 따로](/memo/mobile-bars-contrast)
+- [Lighthouse 운영 재측정, 명언 데이터 lazy 분리, #boot-splash 삭제 시각으로 휴대폰 LCP 편차 해결과 CI 성능 예산](/memo/site-performance-lcp-budget#운영-사이트-재측정): 3차까지 배포한 운영 사이트의 재측정과 4·5차 개선
+- [배경 이미지 픽셀 샘플링과 대비 계산으로 상태 표시줄 글자색 정하기](/memo/mobile-bars-contrast)
 - [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets)
+
+<details>
+<summary>참고 문헌</summary>
+
+- Chrome for Developers, [Lighthouse overview](https://developer.chrome.com/docs/lighthouse/overview)
+- Chrome for Developers, [Lighthouse performance scoring](https://developer.chrome.com/docs/lighthouse/performance/performance-scoring)
+- web.dev, [Largest Contentful Paint (LCP)](https://web.dev/articles/lcp), [First Contentful Paint (FCP)](https://web.dev/articles/fcp), [Total Blocking Time (TBT)](https://web.dev/articles/tbt), [Cumulative Layout Shift (CLS)](https://web.dev/articles/cls)
+- web.dev, [Critical rendering path](https://web.dev/articles/critical-rendering-path)
+- MDN, [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@font-face/font-display), [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range)
+- MDN, [import()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import), [rel=modulepreload](https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/modulepreload)
+- MDN, [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API), [HTTP/2](https://developer.mozilla.org/en-US/docs/Glossary/HTTP_2)
+- Vite 문서, [Glob Import](https://vite.dev/guide/features.html#glob-import), [transformIndexHtml](https://vite.dev/guide/api-plugin.html#transformindexhtml)
+- React 문서, [lazy](https://react.dev/reference/react/lazy)
+- fontTools 문서, [subset](https://fonttools.readthedocs.io/en/latest/subset/)
+- Google, [WebP](https://developers.google.com/speed/webp)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Lighthouse 보고서 화면: Chrome for Developers, [Introduction to Lighthouse](https://developer.chrome.com/docs/lighthouse/overview), CC BY 4.0
+- LCP 기준 그림: Philip Walton, Barry Pollard / web.dev, [Largest Contentful Paint (LCP)](https://web.dev/articles/lcp), CC BY 4.0
+
+</details>
 
 #MacFolio #성능 #Lighthouse #웹폰트 #코드분할 #Vite #WebP

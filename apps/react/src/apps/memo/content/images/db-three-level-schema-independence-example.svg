@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">스키마 변경이 사상에서 멈추는 두 경우</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="165" y="54" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">논리적 독립성: Email 열 추가</text>
+    <text x="475" y="54" text-anchor="middle" font-size="13" font-weight="600" fill="#34c759">물리적 독립성: Dept 인덱스 추가</text>
+    <!-- 왼쪽 -->
+    <rect x="20" y="68" width="290" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="32" y="88" font-weight="600">외부 스키마 (성적 처리)</text>
+    <text x="32" y="110">(Sno, Sname) 그대로 → 프로그램 수정 없음</text>
+    <rect x="20" y="138" width="290" height="34" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-dasharray="4 3"/>
+    <text x="165" y="160" text-anchor="middle" fill="#0a84ff">외부/개념 사상: 새 열을 외부에 내보내지 않음</text>
+    <rect x="20" y="184" width="290" height="58" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+    <text x="32" y="204" font-weight="600">개념 스키마 (변경)</text>
+    <text x="32" y="226">STUDENT(Sno, Sname, Year, Dept, <tspan fill="#0a84ff" font-weight="600">Email</tspan>)</text>
+    <rect x="20" y="254" width="290" height="34" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="165" y="276" text-anchor="middle">개념/내부 사상: 새 필드 위치 추가</text>
+    <rect x="20" y="300" width="290" height="58" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="32" y="320" font-weight="600">내부 스키마</text>
+    <text x="32" y="342">레코드에 Email 필드 바이트 추가</text>
+    <!-- 오른쪽 -->
+    <rect x="330" y="68" width="290" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="342" y="88" font-weight="600">외부 스키마</text>
+    <text x="342" y="110">변경 없음</text>
+    <rect x="330" y="138" width="290" height="34" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="475" y="160" text-anchor="middle">외부/개념 사상: 변경 없음</text>
+    <rect x="330" y="184" width="290" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="342" y="204" font-weight="600">개념 스키마</text>
+    <text x="342" y="226">STUDENT(Sno, Sname, Year, Dept) 그대로</text>
+    <rect x="330" y="254" width="290" height="34" rx="8" fill="#eaf8ee" stroke="#34c759" stroke-dasharray="4 3"/>
+    <text x="475" y="276" text-anchor="middle" fill="#248a3d">개념/내부 사상: 인덱스 경로 연결</text>
+    <rect x="330" y="300" width="290" height="58" rx="8" fill="#fff" stroke="#34c759" stroke-width="2"/>
+    <text x="342" y="320" font-weight="600">내부 스키마 (변경)</text>
+    <text x="342" y="342">Dept 열에 B-트리 인덱스 생성</text>
+  </g>
+</svg>

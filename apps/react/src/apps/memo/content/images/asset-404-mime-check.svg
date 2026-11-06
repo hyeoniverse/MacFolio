@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>배포 전에 연 탭이 삭제된 Memo 코드 파일을 요청하면 정적 자산이 index.html을 200 text/html과 1년 캐시 헤더로 응답하고, 브라우저는 모듈 스크립트의 MIME 검사에서 실행을 거부한다</title>
+<defs>
+<marker id="ah-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="ah-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="ah-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">없는 코드 파일 요청이 실패하는 순서 (수정 전)</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">정적 자산은 200으로 응답했지만, 브라우저가 내용 형식을 보고 실행을 거부한다</text>
+
+<rect x="24" y="76" width="170" height="118" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="109" y="100" font-size="14" font-weight="700" fill="#1d1d1f" text-anchor="middle">브라우저 탭</text>
+<text x="109" y="122" font-size="12" fill="#6e6e73" text-anchor="middle">배포 전에 연 페이지</text>
+<text x="109" y="146" font-size="12" fill="#1d1d1f" text-anchor="middle">메모 아이콘 클릭</text>
+<text x="109" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">→ import()로</text>
+<text x="109" y="182" font-size="12" fill="#1d1d1f" text-anchor="middle">옛 파일 이름 요청</text>
+
+<rect x="446" y="76" width="170" height="118" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="531" y="100" font-size="14" font-weight="700" fill="#1d1d1f" text-anchor="middle">Cloudflare</text>
+<text x="531" y="118" font-size="14" font-weight="700" fill="#1d1d1f" text-anchor="middle">정적 자산</text>
+<text x="531" y="142" font-size="12" fill="#6e6e73" text-anchor="middle">dist/에 파일 없음</text>
+<text x="531" y="162" font-size="12" fill="#1d1d1f" text-anchor="middle">SPA 설정이</text>
+<text x="531" y="180" font-size="12" fill="#1d1d1f" text-anchor="middle">index.html을 대신 응답</text>
+
+<path d="M198 106 H440" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#ah-b)"/>
+<text x="320" y="94" font-size="12" fill="#0a84ff" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">① GET /assets/Memo-옛해시.js</text>
+<text x="320" y="124" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">Sec-Fetch-Dest: script</text>
+
+<path d="M442 166 H202" stroke="#ff9f0a" stroke-width="2" fill="none" marker-end="url(#ah-o)"/>
+<text x="320" y="154" font-size="12" fill="#c46f00" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">② 200 OK, text/html</text>
+<text x="320" y="186" font-size="12" fill="#c46f00" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">max-age=31536000, immutable</text>
+
+<path d="M109 198 V226" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#ah-r)"/>
+<rect x="24" y="230" width="592" height="90" rx="10" fill="#fff5f4" stroke="#ff3b30"/>
+<text x="40" y="254" font-size="13" font-weight="700" fill="#ff3b30">③ 브라우저의 MIME 검사: 모듈 스크립트는 JavaScript 형식만 실행한다</text>
+<text x="40" y="276" font-size="12" fill="#1d1d1f">응답 본문은 HTML이므로 실행하지 않고 import()가 실패한다. 콘솔에는 다음 오류가 남는다</text>
+<text x="40" y="300" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">Expected a JavaScript module script but the server responded</text>
+<text x="40" y="314" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">with a MIME type of "text/html".</text>
+</svg>

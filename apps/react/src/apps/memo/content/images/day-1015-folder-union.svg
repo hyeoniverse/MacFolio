@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>폴더 목록을 만드는 방식과 keepFolder 전후</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="14" font-weight="700" fill="#1d1d1f">폴더 목록 = 저장된 폴더 ∪ 글에 지정된 폴더</text>
+<rect x="20" y="46" width="290" height="300" rx="12" fill="#f2f2f7"/>
+<text x="36" y="70" font-size="13" font-weight="700" fill="#ff3b30">수정 전</text>
+<rect x="36" y="82" width="120" height="58" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="46" y="102" font-size="12" fill="#6e6e73">저장된 폴더</text>
+<text x="46" y="124" font-size="12" fill="#1d1d1f">개발 기록</text>
+<rect x="170" y="82" width="124" height="58" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="180" y="102" font-size="12" fill="#6e6e73">글의 category</text>
+<text x="180" y="124" font-size="12" fill="#1d1d1f">메모 A → 실험</text>
+<line x1="165" y1="146" x2="165" y2="176" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="36" y="196" font-size="12" fill="#1d1d1f">목록: 개발 기록, 실험</text>
+<text x="36" y="226" font-size="12" fill="#6e6e73">메모 A를 「개발 기록」으로 이동</text>
+<line x1="165" y1="236" x2="165" y2="266" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="36" y="290" font-size="12" fill="#1d1d1f">목록: 개발 기록</text>
+<text x="36" y="314" font-size="12" fill="#ff3b30">「실험」은 어디에도 남지 않아 사라진다</text>
+<rect x="330" y="46" width="290" height="300" rx="12" fill="#f2f2f7"/>
+<text x="346" y="70" font-size="13" font-weight="700" fill="#34c759">수정 후 (keepFolder)</text>
+<rect x="346" y="82" width="258" height="58" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="356" y="102" font-size="12" fill="#6e6e73">글이 폴더를 떠나기 직전</text>
+<text x="356" y="124" font-size="12" fill="#1d1d1f">원래 폴더 「실험」을 저장된 폴더에 추가</text>
+<line x1="475" y1="146" x2="475" y2="176" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="346" y="196" font-size="12" fill="#1d1d1f">저장된 폴더: 개발 기록, 실험</text>
+<text x="346" y="226" font-size="12" fill="#6e6e73">메모 A를 「개발 기록」으로 이동</text>
+<line x1="475" y1="236" x2="475" y2="266" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="346" y="290" font-size="12" fill="#1d1d1f">목록: 개발 기록, 실험(빈 폴더)</text>
+<text x="346" y="314" font-size="12" fill="#34c759">이동·여러 개 이동·삭제·편집 화면 변경</text>
+<text x="346" y="332" font-size="12" fill="#34c759">네 경로 모두 같은 처리</text>
+</svg>

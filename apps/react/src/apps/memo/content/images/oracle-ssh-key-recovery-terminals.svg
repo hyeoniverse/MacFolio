@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>복구 작업에 쓴 세 터미널 창(Mac, Oracle Cloud Shell, 임시 VM)의 프롬프트와 각 창에서 실행할 명령</title>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">세 터미널 창: 프롬프트로 구분한다</text>
+<g font-size="12">
+<!-- Mac -->
+<rect x="20" y="48" width="192" height="270" rx="10" fill="#ffffff" stroke="#c7c7cc"/>
+<rect x="20" y="48" width="192" height="26" rx="10" fill="#f2f2f7"/><rect x="20" y="64" width="192" height="10" fill="#f2f2f7"/>
+
+<text x="32" y="65" font-weight="700" fill="#1d1d1f">① Mac 터미널</text>
+<rect x="30" y="84" width="172" height="40" rx="5" fill="#1d1d1f"/>
+<text x="38" y="102" font-family="SFMono-Regular, Menlo, monospace" fill="#ffffff">&lt;사용자&gt;@&lt;Mac&gt;</text>
+<text x="38" y="117" font-family="SFMono-Regular, Menlo, monospace" fill="#ffffff">~ %</text>
+<text x="30" y="146" font-weight="700" fill="#1d1d1f">여기서 실행</text>
+<g font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="30" y="166">ssh-keygen</text><text x="30" y="184">ssh, scp</text><text x="30" y="202">curl /health, nc</text>
+</g>
+<text x="30" y="232" font-weight="700" fill="#6e6e73">용도</text>
+<text x="30" y="250" fill="#6e6e73">키 생성, 원격 접속,</text>
+<text x="30" y="266" fill="#6e6e73">파일 내려받기</text>
+
+<!-- Cloud Shell -->
+<rect x="224" y="48" width="192" height="270" rx="10" fill="#ffffff" stroke="#c7c7cc"/>
+<rect x="224" y="48" width="192" height="26" rx="10" fill="#f2f2f7"/><rect x="224" y="64" width="192" height="10" fill="#f2f2f7"/>
+<text x="236" y="65" font-weight="700" fill="#1d1d1f">② Oracle Cloud Shell</text>
+<rect x="234" y="84" width="172" height="40" rx="5" fill="#1d1d1f"/>
+<text x="242" y="102" font-family="SFMono-Regular, Menlo, monospace" fill="#ffffff">&lt;계정&gt;@cloudshell:~</text>
+<text x="242" y="117" font-family="SFMono-Regular, Menlo, monospace" fill="#ffffff">(&lt;리전&gt;)$</text>
+<text x="234" y="146" font-weight="700" fill="#1d1d1f">여기서 실행</text>
+<g font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="234" y="166">oci compute …</text><text x="234" y="184">oci bv …</text>
+</g>
+<rect x="234" y="226" width="172" height="80" rx="6" fill="#fff1f0"/>
+<text x="244" y="246" font-weight="700" fill="#ff3b30">실수</text>
+<text x="244" y="264" fill="#1d1d1f">lsblk를 여기서 실행</text>
+<text x="244" y="280" fill="#6e6e73">Cloud Shell 자신의</text>
+<text x="244" y="296" fill="#6e6e73">디스크(sdb)가 보였다</text>
+
+<!-- 임시 VM -->
+<rect x="428" y="48" width="192" height="270" rx="10" fill="#ffffff" stroke="#c7c7cc"/>
+<rect x="428" y="48" width="192" height="26" rx="10" fill="#f2f2f7"/><rect x="428" y="64" width="192" height="10" fill="#f2f2f7"/>
+<text x="440" y="65" font-weight="700" fill="#1d1d1f">③ 임시 VM (SSH 접속)</text>
+<rect x="438" y="84" width="172" height="40" rx="5" fill="#1d1d1f"/>
+<text x="446" y="102" font-family="SFMono-Regular, Menlo, monospace" fill="#ffffff">ubuntu@&lt;임시 VM&gt;</text>
+<text x="446" y="117" font-family="SFMono-Regular, Menlo, monospace" fill="#ffffff">:~$</text>
+<text x="438" y="146" font-weight="700" fill="#1d1d1f">여기서 실행</text>
+<g font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="438" y="166">lsblk, findmnt</text><text x="438" y="184">mount, tee</text>
+</g>
+<rect x="438" y="226" width="172" height="80" rx="6" fill="#fff1f0"/>
+<text x="448" y="246" font-weight="700" fill="#ff3b30">실수</text>
+<text x="448" y="264" fill="#1d1d1f">scp를 여기서 실행</text>
+<text x="448" y="280" fill="#6e6e73">서버가 자기 자신에게</text>
+<text x="448" y="296" fill="#6e6e73">접속하려다 실패</text>
+</g>
+</svg>

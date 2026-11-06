@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">작성 순서와 다른 SELECT의 논리적 처리 순서</text>
+  <text x="20" y="54" font-size="12" fill="#6e6e73">작성한 질의</text>
+  <rect x="20" y="62" width="250" height="118" rx="8" fill="#f2f2f7"/>
+  <g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+    <text x="32" y="86"><tspan fill="#0a84ff">⑤</tspan> SELECT   Cno, AVG(Final)</text>
+    <text x="32" y="108"><tspan fill="#0a84ff">①</tspan> FROM     ENROL</text>
+    <text x="32" y="130"><tspan fill="#0a84ff">②</tspan> WHERE    (없음)</text>
+    <text x="32" y="152"><tspan fill="#0a84ff">③</tspan> GROUP BY Cno</text>
+    <text x="32" y="174"><tspan fill="#0a84ff">④</tspan> HAVING   COUNT(*) &gt;= 3</text>
+  </g>
+  <text x="300" y="54" font-size="12" fill="#6e6e73">처리 단계별 중간 결과</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="300" y="62" width="320" height="40" rx="8" fill="#fff" stroke="#0a84ff"/>
+    <text x="312" y="80" font-weight="600" fill="#0a84ff">① FROM</text><text x="380" y="80">ENROL의 행 11개를 읽는다</text>
+    <text x="380" y="96" fill="#6e6e73">② WHERE 조건이 없어 11행 유지</text>
+    <rect x="300" y="116" width="320" height="140" rx="8" fill="#fff" stroke="#0a84ff"/>
+    <text x="312" y="134" font-weight="600" fill="#0a84ff">③ GROUP BY</text><text x="400" y="134">Cno 값으로 5그룹</text>
+    <g font-size="12">
+      <rect x="316" y="144" width="140" height="20" fill="#f2f2f7"/><text x="324" y="158">C123  1행</text>
+      <rect x="316" y="166" width="140" height="20" fill="#e8f2ff" stroke="#0a84ff"/><text x="324" y="180">C312  3행</text>
+      <rect x="316" y="188" width="140" height="20" fill="#f2f2f7"/><text x="324" y="202">C324  2행</text>
+      <rect x="316" y="210" width="140" height="20" fill="#e8f2ff" stroke="#0a84ff"/><text x="324" y="224">C413  3행</text>
+      <rect x="316" y="232" width="140" height="20" fill="#f2f2f7"/><text x="324" y="246">E412  2행</text>
+    </g>
+    <text x="470" y="184" font-weight="600" fill="#0a84ff">④ HAVING</text>
+    <text x="470" y="202">3행 이상인</text>
+    <text x="470" y="220">2그룹만 남긴다</text>
+    <rect x="300" y="270" width="320" height="58" rx="8" fill="#fff" stroke="#0a84ff"/>
+    <text x="312" y="290" font-weight="600" fill="#0a84ff">⑤ SELECT</text><text x="390" y="290">그룹마다 AVG(Final) 계산</text>
+    <text x="390" y="312">C312 → 90,  C413 → 90</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)">
+    <line x1="460" y1="102" x2="460" y2="114"/>
+    <line x1="460" y1="256" x2="460" y2="268"/>
+  </g>
+  <rect x="20" y="344" width="600" height="44" rx="8" fill="#fff5e6"/>
+  <text x="34" y="364" font-size="12" fill="#1d1d1f">WHERE는 그룹을 만들기 전의 행을, HAVING은 만들어진 그룹을 필터링한다.</text>
+  <text x="34" y="381" font-size="12" fill="#1d1d1f">ORDER BY가 있으면 ⑤ 다음 마지막 단계에서 결과 행을 정렬한다.</text>
+</svg>

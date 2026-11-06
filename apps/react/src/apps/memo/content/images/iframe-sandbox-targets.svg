@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>iframe 안 링크의 target 값마다 이동하는 브라우징 컨텍스트와 sandbox 적용 후의 결과. _self는 iframe 안에서, _blank는 새 탭으로 이동하고, _top은 차단된다</title>
+<defs>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker>
+<marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker>
+</defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<rect x="24" y="24" width="400" height="332" rx="12" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="40" y="50" font-size="14" font-weight="700" fill="#1d1d1f">최상위 창 (top)</text>
+<text x="40" y="68" font-size="12" fill="#6e6e73">macfolio.hyeoniverse.com · 주소창에 보이는 페이지</text>
+<rect x="48" y="86" width="352" height="250" rx="10" fill="#ffffff" stroke="#6e6e73"/>
+<text x="62" y="108" font-size="12" fill="#6e6e73">MacFolio의 NewPick 앱 창</text>
+<rect x="64" y="120" width="320" height="200" rx="8" fill="#e8f1ff" stroke="#0a84ff"/>
+<text x="78" y="142" font-size="13" font-weight="700" fill="#1d1d1f">iframe (sandbox 적용)</text>
+<text x="78" y="160" font-size="12" fill="#6e6e73">newpick 사이트 문서</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<rect x="78" y="180" width="200" height="30" rx="5" fill="#ffffff" stroke="#34c759"/>
+<text x="88" y="200">&lt;a target="_self"&gt;</text>
+<rect x="78" y="226" width="200" height="30" rx="5" fill="#ffffff" stroke="#34c759"/>
+<text x="88" y="246">&lt;a target="_blank"&gt;</text>
+<rect x="78" y="272" width="200" height="30" rx="5" fill="#ffffff" stroke="#ff3b30"/>
+<text x="88" y="292">&lt;a target="_top"&gt;</text>
+</g>
+<text x="288" y="200" font-size="12" fill="#248a3d">→ 이 iframe 안</text>
+<path d="M278 241 H500" fill="none" stroke="#34c759" stroke-width="1.5" marker-end="url(#ag)"/>
+<path d="M278 287 H412 V42 H190" fill="none" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#ar)"/>
+<rect x="402" y="152" width="20" height="24" fill="#f2f2f7"/>
+<text x="412" y="171" text-anchor="middle" font-size="18" font-weight="700" fill="#ff3b30">✕</text>
+<rect x="502" y="214" width="114" height="56" rx="10" fill="#eaf7ee" stroke="#34c759"/>
+<text x="559" y="238" text-anchor="middle" font-size="13" fill="#1d1d1f">새 탭</text>
+<text x="559" y="256" text-anchor="middle" font-size="12" fill="#6e6e73">sandbox 해제</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="440" y="60">_self: iframe 안에서 이동</text>
+<text x="440" y="78" fill="#6e6e73">권한 토큰 필요 없음</text>
+<text x="440" y="110">_blank: 새 탭으로 이동</text>
+<text x="440" y="128" fill="#6e6e73">allow-popups,</text>
+<text x="440" y="146" fill="#6e6e73">…-to-escape-sandbox</text>
+<text x="440" y="300" fill="#ff3b30">_top: 최상위 창 이동</text>
+<text x="440" y="318" fill="#6e6e73">allow-top-navigation이</text>
+<text x="440" y="336" fill="#6e6e73">없으므로 차단</text>
+</g>
+</svg>

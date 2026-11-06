@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 352" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="352" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">R = {100, 200, 300}, S = {300, 400}일 때 집합 연산의 결과</text>
+  <g font-size="12" text-anchor="middle">
+    <!-- union -->
+    <circle cx="75" cy="110" r="44" fill="#0a84ff" fill-opacity="0.25" stroke="#0a84ff"/>
+    <circle cx="125" cy="110" r="44" fill="#0a84ff" fill-opacity="0.25" stroke="#0a84ff"/>
+    <text x="60" y="114" fill="#1d1d1f">100·200</text><text x="100" y="114" fill="#1d1d1f">300</text><text x="140" y="114" fill="#1d1d1f">400</text>
+    <text x="40" y="62" fill="#6e6e73">R</text><text x="162" y="62" fill="#6e6e73">S</text>
+    <text x="100" y="180" font-weight="600" fill="#1d1d1f">R ∪ S</text>
+    <text x="100" y="198" fill="#1d1d1f">{100, 200, 300, 400}</text>
+    <!-- intersect -->
+    <circle cx="275" cy="110" r="44" fill="none" stroke="#6e6e73"/>
+    <circle cx="325" cy="110" r="44" fill="none" stroke="#6e6e73"/>
+    <path d="M300 73.6 A44 44 0 0 1 300 146.4 A44 44 0 0 1 300 73.6 Z" fill="#34c759" fill-opacity="0.45" stroke="#34c759"/>
+    <text x="260" y="114" fill="#1d1d1f">100·200</text><text x="300" y="114" fill="#1d1d1f">300</text><text x="340" y="114" fill="#1d1d1f">400</text>
+    <text x="300" y="180" font-weight="600" fill="#1d1d1f">R ∩ S</text>
+    <text x="300" y="198" fill="#1d1d1f">{300}</text>
+    <!-- difference -->
+    <path d="M475 66 A44 44 0 1 0 500 146.4 A44 44 0 0 1 500 73.6 A44 44 0 0 0 475 66 Z" fill="#ff9f0a" fill-opacity="0.35" stroke="none"/>
+    <circle cx="475" cy="110" r="44" fill="none" stroke="#6e6e73"/>
+    <circle cx="525" cy="110" r="44" fill="none" stroke="#6e6e73"/>
+    <text x="460" y="114" fill="#1d1d1f">100·200</text><text x="500" y="114" fill="#1d1d1f">300</text><text x="540" y="114" fill="#1d1d1f">400</text>
+    <text x="500" y="180" font-weight="600" fill="#1d1d1f">R − S</text>
+    <text x="500" y="198" fill="#1d1d1f">{100, 200}  (S − R = {400})</text>
+  </g>
+  <!-- product -->
+  <line x1="20" y1="222" x2="620" y2="222" stroke="#d2d2d7" stroke-dasharray="4 4"/>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <rect x="20" y="240" width="80" height="26" fill="#f2f2f7" stroke="#6e6e73"/><text x="60" y="258">R \ S</text>
+    <rect x="100" y="240" width="110" height="26" fill="#f2f2f7" stroke="#6e6e73"/><text x="155" y="258">300</text>
+    <rect x="210" y="240" width="110" height="26" fill="#f2f2f7" stroke="#6e6e73"/><text x="265" y="258">400</text>
+    <rect x="20" y="266" width="80" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="60" y="283">100</text>
+    <rect x="20" y="290" width="80" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="60" y="307">200</text>
+    <rect x="20" y="314" width="80" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="60" y="331">300</text>
+    <rect x="100" y="266" width="220" height="72" fill="#fff" stroke="#6e6e73"/>
+    <line x1="210" y1="266" x2="210" y2="338" stroke="#6e6e73"/>
+    <line x1="100" y1="290" x2="320" y2="290" stroke="#6e6e73"/><line x1="100" y1="314" x2="320" y2="314" stroke="#6e6e73"/>
+    <text x="155" y="283">&lt;100, 300&gt;</text><text x="265" y="283">&lt;100, 400&gt;</text>
+    <text x="155" y="307">&lt;200, 300&gt;</text><text x="265" y="307">&lt;200, 400&gt;</text>
+    <text x="155" y="331">&lt;300, 300&gt;</text><text x="265" y="331">&lt;300, 400&gt;</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="345" y="258" font-size="13" font-weight="600">R × S</text>
+    <text x="345" y="283">R의 튜플마다 S의 튜플을 모두 이어 붙인다</text>
+    <text x="345" y="307">카디널리티 |R × S| = 3 × 2 = 6</text>
+    <text x="345" y="331">차수 = 1 + 1 = 2 (합병 가능 조건 없음)</text>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Worker가 주소마다 head와 로봇용 본문을 넣는 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<rect x="16" y="16" width="296" height="160" rx="12" fill="#f2f2f7"/>
+<text x="32" y="40" font-size="13" font-weight="700" fill="#ff3b30">변경 전 /memo/day-1019 응답</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<text x="32" y="68">&lt;title&gt;사이트 공통 제목&lt;/title&gt;</text>
+<text x="32" y="90" fill="#6e6e73">(og 태그·JSON-LD 없음)</text>
+<text x="32" y="116">&lt;div id="root"&gt;&lt;/div&gt;</text>
+</g>
+<text x="32" y="146" font-size="12" fill="#ff3b30">스크립트를 실행하지 않는 로봇에게는</text>
+<text x="32" y="164" font-size="12" fill="#ff3b30">모든 주소가 같은 빈 페이지</text>
+<rect x="328" y="16" width="296" height="160" rx="12" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="344" y="40" font-size="13" font-weight="700" fill="#34c759">변경 후 (#269)</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<text x="344" y="68">&lt;title&gt;10월 19일 - …&lt;/title&gt;</text>
+<text x="344" y="88">&lt;meta property="og:title" …&gt;</text>
+<text x="344" y="108">&lt;script type="application/ld+json"&gt;</text>
+<text x="344" y="134">&lt;div id="root"&gt;</text>
+<text x="356" y="152" fill="#0a84ff">  숨긴 글 본문·링크</text>
+<text x="344" y="170">&lt;/div&gt;</text>
+</g>
+<rect x="16" y="200" width="180" height="56" rx="10" fill="#f2f2f7"/>
+<text x="106" y="224" font-size="12" fill="#1d1d1f" text-anchor="middle">빌드 시 생성한</text>
+<text x="106" y="242" font-size="12" fill="#1d1d1f" text-anchor="middle">글 목록 JSON</text>
+<rect x="16" y="272" width="180" height="56" rx="10" fill="#f2f2f7"/>
+<text x="106" y="296" font-size="12" fill="#1d1d1f" text-anchor="middle">API로 작성한 글</text>
+<text x="106" y="314" font-size="12" fill="#6e6e73" text-anchor="middle">Worker가 1분 캐시</text>
+<rect x="240" y="234" width="150" height="56" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="315" y="258" font-size="13" font-weight="700" fill="#0a84ff" text-anchor="middle">사이트 Worker</text>
+<text x="315" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">index.html에 삽입</text>
+<line x1="196" y1="228" x2="238" y2="252" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="196" y1="300" x2="238" y2="276" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="390" y1="250" x2="440" y2="226" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="390" y1="276" x2="440" y2="300" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="444" y="200" width="180" height="56" rx="10" fill="#ecfaef" stroke="#34c759"/>
+<text x="534" y="224" font-size="12" fill="#1d1d1f" text-anchor="middle">검색 로봇·공유 카드</text>
+<text x="534" y="242" font-size="12" fill="#6e6e73" text-anchor="middle">삽입된 HTML을 그대로 읽음</text>
+<rect x="444" y="272" width="180" height="56" rx="10" fill="#f2f2f7"/>
+<text x="534" y="296" font-size="12" fill="#1d1d1f" text-anchor="middle">방문자 브라우저</text>
+<text x="534" y="314" font-size="12" fill="#6e6e73" text-anchor="middle">React가 root 안을 교체</text>
+</svg>

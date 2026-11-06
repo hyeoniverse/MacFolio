@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>공인 서브넷과 사설 서브넷의 차이</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">OCI VCN 안의 두 종류 서브넷</text>
+<rect x="24" y="52" width="592" height="250" rx="12" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="40" y="76" font-size="13" fill="#6e6e73" text-anchor="start" font-weight="700">VCN (가상 클라우드 네트워크)</text>
+<rect x="40" y="92" width="268" height="190" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="1.6"/>
+<text x="56" y="116" font-size="14" fill="#248a3d" text-anchor="start" font-weight="700">공인 서브넷</text>
+<rect x="56" y="132" width="236" height="40" rx="6" fill="#eaf8ee" stroke="none" stroke-width="1.2"/>
+<text x="68" y="157" font-size="13" fill="#1d1d1f" text-anchor="start">VM: 사설 IP + 공인 IPv4 허용</text>
+<text x="56" y="196" font-size="12" fill="#1d1d1f" text-anchor="start">라우트: 인터넷 게이트웨이로</text>
+<text x="56" y="216" font-size="12" fill="#1d1d1f" text-anchor="start">"공인 IPv4 자동 할당" 체크박스</text>
+<text x="56" y="236" font-size="12" fill="#248a3d" text-anchor="start" font-weight="700">활성화</text>
+<text x="56" y="262" font-size="12" fill="#6e6e73" text-anchor="start">SSH(22) 접속 가능</text>
+<rect x="332" y="92" width="268" height="190" rx="10" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.6"/>
+<text x="348" y="116" font-size="14" fill="#6e6e73" text-anchor="start" font-weight="700">사설 서브넷</text>
+<rect x="348" y="132" width="236" height="40" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="360" y="157" font-size="13" fill="#1d1d1f" text-anchor="start">VM: 사설 IP만 (공인 IP 금지)</text>
+<text x="348" y="196" font-size="12" fill="#1d1d1f" text-anchor="start">외부에서 직접 접속할 수 없다</text>
+<text x="348" y="216" font-size="12" fill="#1d1d1f" text-anchor="start">"공인 IPv4 자동 할당" 체크박스</text>
+<text x="348" y="236" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">비활성</text>
+<text x="348" y="262" font-size="12" fill="#ff3b30" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">You must select a public subnet …</text>
+<rect x="220" y="318" width="200" height="36" rx="8" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="320" y="341" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">인터넷 게이트웨이</text>
+<path d="M174 282 L174 336 L218 336" fill="none" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<text x="24" y="384" font-size="12" fill="#6e6e73" text-anchor="start">공인 IP는 공인 서브넷에 놓인 VM에만 붙일 수 있다. 기존 서브넷이 사설이면 새 공인 서브넷을 만든다.</text>
+</svg>

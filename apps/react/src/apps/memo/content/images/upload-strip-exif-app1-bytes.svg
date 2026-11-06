@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 374" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Orientation 값 6만 담은 36바이트 APP1 세그먼트의 바이트 배치. 마커 2, 길이 2, Exif 머리 6, TIFF 머리 8, 엔트리 수 2, 엔트리 12, 다음 표 4바이트</title>
+<rect width="640" height="374" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">방향 값만 남긴 APP1 (Orientation 6일 때 36바이트)</text>
+<text x="24" y="58" font-size="12" fill="#6e6e73">구간</text><text x="128" y="58" font-size="12" fill="#6e6e73">바이트 (16진수)</text><text x="438" y="58" font-size="12" fill="#6e6e73">뜻</text>
+<rect x="16" y="74" width="608" height="34" rx="6" fill="#f2f2f7"/>
+<text x="24" y="95" font-size="12" font-weight="700" fill="#1d1d1f">APP1 마커</text>
+<rect x="128" y="80" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="139.0" y="95" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">FF</text>
+<rect x="153" y="80" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="164.0" y="95" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">E1</text>
+<text x="438" y="95" font-size="12" fill="#1d1d1f">세그먼트 종류 APP1</text>
+<text x="24" y="129" font-size="12" font-weight="700" fill="#1d1d1f">길이</text>
+<rect x="128" y="114" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="139.0" y="129" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="153" y="114" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="164.0" y="129" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">22</text>
+<text x="438" y="129" font-size="12" fill="#1d1d1f">34: 마커 뒤 전체 바이트 수</text>
+<rect x="16" y="142" width="608" height="34" rx="6" fill="#f2f2f7"/>
+<text x="24" y="163" font-size="12" font-weight="700" fill="#1d1d1f">Exif 머리</text>
+<rect x="128" y="148" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="139.0" y="163" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">45</text>
+<rect x="153" y="148" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="164.0" y="163" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">78</text>
+<rect x="178" y="148" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="189.0" y="163" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">69</text>
+<rect x="203" y="148" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="214.0" y="163" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">66</text>
+<rect x="228" y="148" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="239.0" y="163" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="253" y="148" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="264.0" y="163" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<text x="438" y="163" font-size="12" fill="#1d1d1f">"Exif\0\0" 문자열</text>
+<text x="24" y="197" font-size="12" font-weight="700" fill="#1d1d1f">TIFF 머리</text>
+<rect x="128" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="139.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">4D</text>
+<rect x="153" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="164.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">4D</text>
+<rect x="178" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="189.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="203" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="214.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">2A</text>
+<rect x="228" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="239.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="253" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="264.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="278" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="289.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="303" y="182" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="314.0" y="197" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">08</text>
+<text x="438" y="197" font-size="12" fill="#1d1d1f">MM(빅 엔디언), 42, 첫 표 위치 8</text>
+<rect x="16" y="210" width="608" height="34" rx="6" fill="#f2f2f7"/>
+<text x="24" y="231" font-size="12" font-weight="700" fill="#1d1d1f">엔트리 수</text>
+<rect x="128" y="216" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="139.0" y="231" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="153" y="216" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="164.0" y="231" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">01</text>
+<text x="438" y="231" font-size="12" fill="#1d1d1f">표에 항목 1개</text>
+<text x="24" y="265" font-size="12" font-weight="700" fill="#1d1d1f">엔트리</text>
+<rect x="128" y="250" width="22" height="22" rx="3" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="139.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">01</text>
+<rect x="153" y="250" width="22" height="22" rx="3" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="164.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">12</text>
+<rect x="178" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="189.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="203" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="214.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">03</text>
+<rect x="228" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="239.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="253" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="264.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="278" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="289.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="303" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="314.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">01</text>
+<rect x="328" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="339.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="353" y="250" width="22" height="22" rx="3" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="364.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">06</text>
+<rect x="378" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="389.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="403" y="250" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="414.0" y="265" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<text x="438" y="265" font-size="12" fill="#1d1d1f">태그 0x0112, SHORT, 개수 1, 값 6</text>
+<rect x="16" y="278" width="608" height="34" rx="6" fill="#f2f2f7"/>
+<text x="24" y="299" font-size="12" font-weight="700" fill="#1d1d1f">다음 표</text>
+<rect x="128" y="284" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="139.0" y="299" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="153" y="284" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="164.0" y="299" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="178" y="284" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="189.0" y="299" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<rect x="203" y="284" width="22" height="22" rx="3" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="214.0" y="299" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">00</text>
+<text x="438" y="299" font-size="12" fill="#1d1d1f">다음 표 없음</text>
+<text x="24" y="332" font-size="12" fill="#6e6e73">합계 2+2+6+8+2+12+4 = 36바이트. 파란 칸은 태그 번호(01 12)와 방향 값(06)이다</text>
+<text x="24" y="352" font-size="12" fill="#6e6e73">GPS·기기 이름이 들어 있던 다른 표(IFD)는 만들지 않는다</text>
+</svg>

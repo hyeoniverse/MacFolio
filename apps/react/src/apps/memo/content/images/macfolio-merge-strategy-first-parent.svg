@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>머지 커밋 c069c201d의 첫째 부모는 main 쪽 이전 커밋이고 둘째 부모는 PR 212 브랜치의 마지막 커밋이다. --first-parent는 첫째 부모만 따라가고, c069c201d^1..c069c201d^2는 브랜치 커밋 4개를 고른다</title>
+<defs>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+<marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker>
+</defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="24" y="32" font-size="15" font-weight="700" fill="#1d1d1f">머지 커밋의 두 부모와 --first-parent (PR #212)</text>
+<text x="24" y="84" font-size="12" fill="#0a84ff">main</text>
+<circle cx="110" cy="80" r="13" fill="#e8f1ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="110" y="52" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">7891cbd4e</text>
+<text x="60" y="118" font-size="12" fill="#6e6e73">Merge #210</text>
+<circle cx="560" cy="80" r="16" fill="#0a84ff"/>
+<text x="560" y="84" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">M</text>
+<text x="560" y="52" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">c069c201d</text>
+<text x="600" y="118" text-anchor="middle" font-size="12" fill="#6e6e73">Merge #212</text>
+<line x1="123" y1="80" x2="542" y2="80" stroke="#0a84ff" stroke-width="3" marker-start="none"/>
+<text x="330" y="72" text-anchor="middle" font-size="12" fill="#0a84ff">^1 (첫째 부모) · git log --first-parent가 따라가는 선</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f" text-anchor="middle">
+<circle cx="170" cy="200" r="12" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="170" y="230">5039684a0</text>
+<circle cx="270" cy="200" r="12" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="270" y="230">55589195c</text>
+<circle cx="370" cy="200" r="12" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="370" y="230">160590753</text>
+<circle cx="470" cy="200" r="12" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="470" y="230">0378d6f05</text>
+</g>
+<g font-size="12" fill="#6e6e73" text-anchor="middle">
+<text x="170" y="248">refactor(ui)</text>
+<text x="270" y="248">docs(ui)</text>
+<text x="370" y="248">docs(ui)</text>
+<text x="470" y="248">docs(memo)</text>
+</g>
+<g stroke="#ff9f0a" stroke-width="2" fill="none">
+<path d="M118 92 L160 190" marker-end="url(#ao)"/>
+<line x1="182" y1="200" x2="256" y2="200" marker-end="url(#ao)"/>
+<line x1="282" y1="200" x2="356" y2="200" marker-end="url(#ao)"/>
+<line x1="382" y1="200" x2="456" y2="200" marker-end="url(#ao)"/>
+<path d="M482 196 L548 94" marker-end="url(#ao)"/>
+</g>
+<text x="536" y="160" font-size="12" fill="#b36b00">^2 (둘째 부모)</text>
+<rect x="140" y="176" width="360" height="82" rx="10" fill="none" stroke="#ff9f0a" stroke-dasharray="5 4"/>
+<text x="24" y="296" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">git log c069c201d^1..c069c201d^2</text>
+<text x="24" y="316" font-size="12" fill="#6e6e73">^2에서 닿고 ^1에서는 닿지 않는 커밋, 곧 점선 안의 브랜치 커밋 4개를 출력한다.</text>
+<text x="24" y="340" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">git log --first-parent</text>
+<text x="200" y="340" font-size="12" fill="#6e6e73">파란 선만 따라가 PR 하나를 머지 커밋 한 줄로 출력한다.</text>
+</svg>

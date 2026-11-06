@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 334" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>점수 순서 결과를 날짜 묶음으로 나눌 때 생긴 중복 key</title>
+<rect width="640" height="334" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">전: 점수 순서 목록을 날짜 묶음으로 나눔</text>
+<text x="20" y="194" font-size="15" font-weight="700" fill="#1d1d1f">후: 인기글처럼 순위대로 한 줄 (useNoteView.ts의 ranked)</text>
+<g font-size="13">
+<rect x="20" y="46" width="290" height="120" rx="10" fill="#f2f2f7"/>
+<text x="36" y="70" font-weight="700" fill="#1d1d1f">점수 순서 결과</text>
+<text x="36" y="94" fill="#1d1d1f">1위 글 A · 오늘 작성</text>
+<text x="36" y="116" fill="#1d1d1f">2위 글 B · 어제 작성</text>
+<text x="36" y="138" fill="#1d1d1f">3위 글 C · 오늘 작성</text>
+<rect x="330" y="46" width="290" height="120" rx="10" fill="#ffffff" stroke="#ff3b30"/>
+<text x="346" y="70" font-weight="700" fill="#1d1d1f">묶음 제목 = React key</text>
+<text x="346" y="94" fill="#ff3b30" font-weight="700">key="오늘"</text><text x="436" y="94" fill="#1d1d1f">글 A</text>
+<text x="346" y="116" fill="#1d1d1f">key="어제"</text><text x="436" y="116" fill="#1d1d1f">글 B</text>
+<text x="346" y="138" fill="#ff3b30" font-weight="700">key="오늘"</text><text x="436" y="138" fill="#1d1d1f">글 C (중복 key)</text>
+<text x="346" y="158" font-size="12" fill="#6e6e73">결과 0개로 바뀌어도 노드 일부가 남는다</text>
+<rect x="20" y="210" width="600" height="104" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="36" y="236" fill="#1d1d1f">묶음 제목 없이 1위 글 A, 2위 글 B, 3위 글 C를 차례로 그린다</text>
+<text x="36" y="260" fill="#1d1d1f">결과가 0개면 목록 칸(휴대폰의 흰 카드)도 그리지 않는다</text>
+<text x="36" y="284" fill="#6e6e73">mobile-memo-search.spec.ts: 검색 결과의 묶음 제목 0개,</text>
+<text x="36" y="302" fill="#6e6e73">결과가 없어지면 목록 0개인지 확인</text>
+</g>
+</svg>

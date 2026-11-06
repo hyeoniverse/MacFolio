@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">두 기준이 다르면 그 사이에 "휴대폰 셸 + 나란히 배치" 구간이 생긴다</text>
+  <text x="20" y="70" font-size="12" fill="#6e6e73">사이트 셸</text>
+  <rect x="100" y="54" width="310" height="26" fill="#0a84ff" opacity="0.18"/>
+  <text x="255" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f">휴대폰 셸 (폭 ≤ 767px)</text>
+  <rect x="410" y="54" width="210" height="26" fill="#f2f2f7"/>
+  <text x="515" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f">데스크톱 창</text>
+  <text x="20" y="114" font-size="12" fill="#6e6e73">메시지 앱</text>
+  <rect x="100" y="98" width="256" height="26" fill="#34c759" opacity="0.2"/>
+  <text x="228" y="116" text-anchor="middle" font-size="12" fill="#1d1d1f">한 화면씩 (앱 폭 ≤ 640px)</text>
+  <rect x="356" y="98" width="264" height="26" fill="#ff9f0a" opacity="0.2"/>
+  <text x="488" y="116" text-anchor="middle" font-size="12" fill="#1d1d1f">목록·대화 나란히</text>
+  <rect x="356" y="140" width="54" height="40" fill="#ff3b30" opacity="0.15" stroke="#ff3b30"/>
+  <text x="383" y="196" text-anchor="middle" font-size="12" fill="#ff3b30">641~767px</text>
+  <line x1="100" y1="150" x2="620" y2="150" stroke="#6e6e73"/>
+  <line x1="356" y1="88" x2="356" y2="186" stroke="#1d1d1f" stroke-dasharray="3 3"/>
+  <line x1="410" y1="44" x2="410" y2="186" stroke="#1d1d1f" stroke-dasharray="3 3"/>
+  <text x="100" y="168" font-size="12" fill="#6e6e73">0</text>
+  <text x="350" y="168" text-anchor="end" font-size="12" fill="#6e6e73">640</text>
+  <text x="416" y="168" font-size="12" fill="#6e6e73">767</text>
+  <text x="620" y="168" text-anchor="end" font-size="12" fill="#6e6e73">화면 폭</text>
+  <text x="30" y="232" font-size="12" fill="#1d1d1f">예: iPad mini 세로 744×1133 → 휴대폰 셸이면서 목록·대화가 나란히 보인다</text>
+  <text x="30" y="254" font-size="12" fill="#1d1d1f">예: 가로로 눕힌 휴대폰 932×430 → 폭 ≤ 1023px이고 높이 ≤ 499px이라 휴대폰 셸, 앱 폭은 640px 초과</text>
+  <text x="30" y="282" font-size="12" fill="#6e6e73">수정: 검색 알약 폭과 "메시지" 뒤로 가기를 화면 폭이 아니라 앱 폭(640px) 기준으로 정한다</text>
+</svg>

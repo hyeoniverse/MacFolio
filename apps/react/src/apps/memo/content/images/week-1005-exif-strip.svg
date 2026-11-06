@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<title>휴대폰 사진 JPEG에 들어 있는 메타데이터 예와, 업로드할 때 방향만 남기고 삭제한 결과</title>
+<rect width="640" height="290" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">업로드한 사진의 메타데이터 처리</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73">휴대폰 카메라가 JPEG에 기록하는 항목의 예. 화면에 보이지 않지만 파일을 받으면 읽을 수 있다</text>
+<rect x="20" y="66" width="270" height="206" rx="12" fill="#f2f2f7"/>
+<text x="36" y="92" font-size="14" font-weight="700" fill="#1d1d1f">업로드 전</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<text x="36" y="120" fill="#1d1d1f">Orientation</text><text x="274" y="120" fill="#6e6e73" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">6 (90° 회전)</text>
+<text x="36" y="146" fill="#ff3b30">GPSLatitude</text><text x="274" y="146" fill="#ff3b30" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">37.xxxx</text>
+<text x="36" y="172" fill="#ff3b30">GPSLongitude</text><text x="274" y="172" fill="#ff3b30" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">127.xxxx</text>
+<text x="36" y="198" fill="#1d1d1f">Make / Model</text><text x="274" y="198" fill="#6e6e73" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">기기 이름</text>
+<text x="36" y="224" fill="#1d1d1f">DateTimeOriginal</text><text x="274" y="224" fill="#6e6e73" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">촬영 시각</text>
+<text x="36" y="250" fill="#1d1d1f">XMP</text><text x="274" y="250" fill="#6e6e73" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">편집 기록 등</text>
+</g>
+<line x1="296" y1="168" x2="342" y2="168" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="350" y="66" width="270" height="206" rx="12" fill="#f2f2f7" stroke="#34c759" stroke-width="2"/>
+<text x="366" y="92" font-size="14" font-weight="700" fill="#1d1d1f">저장되는 파일</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<text x="366" y="120" fill="#1d1d1f">Orientation</text><text x="604" y="120" fill="#34c759" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">유지</text>
+</g>
+<text x="366" y="156" font-size="12" fill="#1d1d1f">나머지 EXIF·XMP는 삭제한다.</text>
+<text x="366" y="180" font-size="12" fill="#1d1d1f">방향 값이 없으면 세로로 찍은 사진이</text>
+<text x="366" y="198" font-size="12" fill="#1d1d1f">가로로 누워 보이므로 이것만 남긴다.</text>
+<text x="366" y="234" font-size="12" fill="#ff3b30">이전에는 GPS 좌표가 공개 파일에</text>
+<text x="366" y="252" font-size="12" fill="#ff3b30">그대로 남아 있었다</text>
+</svg>

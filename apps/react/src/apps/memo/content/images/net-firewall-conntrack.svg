@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="420" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">연결 추적(conntrack)이 패킷마다 붙이는 상태</text>
+  <defs>
+    <marker id="b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0a84ff"/></marker>
+    <marker id="g" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#34c759"/></marker>
+    <marker id="r" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#ff3b30"/></marker>
+  </defs>
+  <!-- actors -->
+  <rect x="30" y="44" width="130" height="42" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="95" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">내부 호스트</text>
+  <text x="95" y="78" text-anchor="middle" font-size="12" fill="#6e6e73">192.168.3.7</text>
+  <rect x="255" y="44" width="130" height="42" rx="6" fill="#e8f2ff" stroke="#0a84ff"/>
+  <text x="320" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">방화벽</text>
+  <text x="320" y="78" text-anchor="middle" font-size="12" fill="#6e6e73">nf_conntrack</text>
+  <rect x="480" y="44" width="130" height="42" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="545" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">외부 웹 서버</text>
+  <text x="545" y="78" text-anchor="middle" font-size="12" fill="#6e6e73">203.0.113.80:80</text>
+  <g stroke="#c7c7cc" stroke-width="1.5"><line x1="95" y1="86" x2="95" y2="300"/><line x1="320" y1="86" x2="320" y2="300"/><line x1="545" y1="86" x2="545" y2="300"/></g>
+  <!-- 1 SYN -->
+  <line x1="95" y1="118" x2="537" y2="118" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <text x="200" y="111" text-anchor="middle" font-size="12" fill="#1d1d1f">① SYN</text>
+  <rect x="270" y="122" width="100" height="22" rx="11" fill="#0a84ff"/><text x="320" y="137" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">NEW</text>
+  <!-- 2 SYN+ACK -->
+  <line x1="545" y1="170" x2="103" y2="170" stroke="#34c759" stroke-width="2" marker-end="url(#g)"/>
+  <text x="440" y="163" text-anchor="middle" font-size="12" fill="#1d1d1f">② SYN+ACK</text>
+  <rect x="260" y="174" width="120" height="22" rx="11" fill="#34c759"/><text x="320" y="189" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">ESTABLISHED</text>
+  <!-- 3 ACK / data -->
+  <line x1="95" y1="222" x2="537" y2="222" stroke="#34c759" stroke-width="2" marker-end="url(#g)"/>
+  <text x="200" y="215" text-anchor="middle" font-size="12" fill="#1d1d1f">③ ACK, HTTP 요청</text>
+  <rect x="260" y="226" width="120" height="22" rx="11" fill="#34c759"/><text x="320" y="241" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">ESTABLISHED</text>
+  <!-- 4 external new SYN -->
+  <line x1="545" y1="276" x2="335" y2="276" stroke="#ff3b30" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#r)"/>
+  <text x="440" y="269" text-anchor="middle" font-size="12" fill="#1d1d1f">④ 외부에서 시작한 SYN → :23</text>
+  <rect x="200" y="265" width="110" height="22" rx="11" fill="#ff3b30"/><text x="255" y="280" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">NEW → DROP</text>
+  <!-- table -->
+  <rect x="30" y="316" width="580" height="88" rx="8" fill="#f2f2f7"/>
+  <text x="46" y="338" font-size="12" font-weight="600" fill="#1d1d1f">연결 상태 표 항목 (① 이후 생성, ② 이후 ESTABLISHED)</text>
+  <text x="46" y="358" font-size="12" font-family="Menlo, monospace" fill="#1d1d1f">tcp src=192.168.3.7 sport=51000 dst=203.0.113.80 dport=80</text>
+  <text x="46" y="378" font-size="12" fill="#6e6e73">규칙 "들어오는 패킷은 ESTABLISHED,RELATED만 ACCEPT, 나머지 DROP"이면</text>
+  <text x="46" y="396" font-size="12" fill="#6e6e73">응답 ②는 표의 항목에 속해 통과하고, 표에 없는 연결을 새로 여는 ④는 NEW라 폐기된다.</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>배터리 메뉴가 requestedTab 저장소에 탭 이름을 기록하고 앱을 열면, 활동 상태 보기가 값을 읽어 탭을 바꾸고 값을 비운다</title>
+<defs>
+<marker id="ra" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="rg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">메뉴에서 서버 탭으로 앱 열기</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">requestedTab = createStore({ tab: null }). 주소는 바꾸지 않는다</text>
+
+<rect x="24" y="72" width="172" height="40" rx="8" fill="#f2f2f7"/>
+<text x="110" y="97" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">BatteryMenu</text>
+<rect x="234" y="72" width="172" height="40" rx="8" fill="#0a84ff"/>
+<text x="320" y="97" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">requestedTab</text>
+<rect x="444" y="72" width="172" height="40" rx="8" fill="#f2f2f7"/>
+<text x="530" y="97" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">Activity (앱)</text>
+<line x1="110" y1="112" x2="110" y2="376" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="320" y1="112" x2="320" y2="376" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="530" y1="112" x2="530" y2="376" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+
+<g font-size="12" fill="#1d1d1f">
+<path d="M110 146 H316" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#ra)"/>
+<text x="122" y="138" font-family="ui-monospace, Menlo, monospace">① setState({tab:'server'})</text>
+<path d="M110 188 H526" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#rg)"/>
+<text x="122" y="180" font-family="ui-monospace, Menlo, monospace">② openApp('activity')</text>
+<path d="M530 230 H324" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#ra)"/>
+<text x="342" y="222" font-family="ui-monospace, Menlo, monospace">③ getState() → 'server'</text>
+<rect x="452" y="244" width="156" height="34" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="530" y="266" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">④ setTab('server')</text>
+<path d="M530 312 H324" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#ra)"/>
+<text x="342" y="304" font-family="ui-monospace, Menlo, monospace">⑤ setState({tab:null})</text>
+</g>
+<rect x="24" y="334" width="592" height="56" rx="10" fill="#f2f2f7"/>
+<text x="38" y="356" font-size="12" fill="#1d1d1f">앱이 처음 열리면 ③은 마운트 시점의 getState(), 이미 열려 있으면 subscribe 콜백이 같은 처리를 한다</text>
+<text x="38" y="376" font-size="12" fill="#1d1d1f">⑤로 값을 비워 두므로 다음에 Dock에서 열면 기본 탭(개요)으로 시작한다</text>
+</svg>

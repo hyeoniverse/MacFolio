@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>오른쪽 정렬 행에서 시계 폭이 바뀌면 왼쪽 아이콘이 이동한다</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="24" y="30" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">오른쪽 끝에 정렬된 메뉴 막대 오른쪽 그룹</text>
+<line x1="600" y1="44" x2="600" y2="250" stroke="#6e6e73" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="594" y="266" font-size="12" fill="#6e6e73" text-anchor="end">막대 오른쪽 끝(고정)</text>
+<text x="24" y="82" font-size="13" fill="#6e6e73" text-anchor="start">1:11 PM</text>
+<rect x="524" y="60" width="76" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="562.0" y="82" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">1:11 PM</text>
+<text x="562.0" y="112" font-size="12" fill="#6e6e73" text-anchor="middle">38px</text>
+<rect x="462" y="60" width="54" height="34" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="489.0" y="82" font-size="12" fill="#1d1d1f" text-anchor="middle">배터리</text>
+<rect x="408" y="60" width="46" height="34" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="431.0" y="82" font-size="12" fill="#1d1d1f" text-anchor="middle">Wi-Fi</text>
+<rect x="354" y="60" width="46" height="34" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="377.0" y="82" font-size="12" fill="#1d1d1f" text-anchor="middle">재생</text>
+<text x="24" y="172" font-size="13" fill="#6e6e73" text-anchor="start">10:00 AM</text>
+<rect x="493" y="150" width="107" height="34" rx="6" fill="#e5f0ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="546.5" y="172" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">10:00 AM</text>
+<text x="546.5" y="202" font-size="12" fill="#6e6e73" text-anchor="middle">54px</text>
+<rect x="431" y="150" width="54" height="34" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="458.0" y="172" font-size="12" fill="#1d1d1f" text-anchor="middle">배터리</text>
+<rect x="377" y="150" width="46" height="34" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="400.0" y="172" font-size="12" fill="#1d1d1f" text-anchor="middle">Wi-Fi</text>
+<rect x="323" y="150" width="46" height="34" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="346.0" y="172" font-size="12" fill="#1d1d1f" text-anchor="middle">재생</text>
+<line x1="354" y1="96" x2="354" y2="148" stroke="#ff9f0a" stroke-width="1.2" stroke-dasharray="3 3"/>
+<line x1="408" y1="96" x2="408" y2="148" stroke="#ff9f0a" stroke-width="1.2" stroke-dasharray="3 3"/>
+<line x1="408" y1="204" x2="379" y2="204" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="392.5" y="226" font-size="12" fill="#ff3b30" text-anchor="middle">시계가 15.7px 넓어진 만큼</text>
+<text x="392.5" y="242" font-size="12" fill="#ff3b30" text-anchor="middle">왼쪽 항목 전체가 왼쪽으로 이동</text>
+<text x="24" y="290" font-size="12" fill="#6e6e73" text-anchor="start">폭은 측정값(Liberation Sans)을 2배로 확대해 그렸다. 아이콘 폭은 예시다.</text>
+</svg>

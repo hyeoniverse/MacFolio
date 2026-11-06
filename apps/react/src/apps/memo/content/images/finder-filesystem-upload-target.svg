@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>관리자가 문서 › 포트폴리오 › 발표 자료(만든 폴더)에 PDF를 놓으면 상위로 올라가며 처음 만나는 문서 폴더인 포트폴리오로 R2에 업로드하고, Finder 구조에는 그 파일을 발표 자료에 표시하도록 기록한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">놓은 폴더에서 업로드할 문서 폴더 찾기</text>
+
+<g font-size="12">
+<rect x="20" y="50" width="150" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="34" y="72" fill="#1d1d1f">문서 (docs)</text>
+<rect x="60" y="100" width="190" height="34" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="74" y="122" fill="#1d1d1f" font-weight="700">포트폴리오 (docs:포트폴리오)</text>
+<rect x="100" y="150" width="190" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="114" y="172" fill="#1d1d1f">발표 자료 (folder:k3x9a1)</text>
+<rect x="140" y="200" width="150" height="34" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="154" y="222" fill="#1d1d1f">발표.pdf를 여기에 놓음</text>
+<line x1="40" y1="84" x2="40" y2="117" stroke="#c7c7cc"/><line x1="40" y1="117" x2="58" y2="117" stroke="#c7c7cc"/>
+<line x1="80" y1="134" x2="80" y2="167" stroke="#c7c7cc"/><line x1="80" y1="167" x2="98" y2="167" stroke="#c7c7cc"/>
+<line x1="120" y1="184" x2="120" y2="217" stroke="#c7c7cc"/><line x1="120" y1="217" x2="138" y2="217" stroke="#c7c7cc"/>
+
+<path d="M300 210 C330 200 330 180 300 170" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="336" y="194" fill="#0a84ff">① 만든 폴더: 문서 폴더 아님, 위로</text>
+<path d="M300 162 C330 150 300 125 262 120" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="336" y="140" fill="#0a84ff">② 포트폴리오: 문서 폴더, 여기서 멈춤</text>
+</g>
+
+<line x1="20" y1="252" x2="620" y2="252" stroke="#e5e5ea"/>
+<g font-size="12">
+<text x="20" y="276" font-weight="700" fill="#1d1d1f">결과</text>
+<text x="20" y="298" fill="#6e6e73">R2 키</text>
+<text x="170" y="298" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">portfolio/&lt;무작위&gt;.pdf</text>
+<text x="20" y="320" fill="#6e6e73">Finder 구조(layout)</text>
+<text x="170" y="320" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">files: { "file:portfolio/….pdf": "folder:k3x9a1" }</text>
+<text x="20" y="342" fill="#6e6e73">화면</text>
+<text x="170" y="342" fill="#1d1d1f">놓은 위치(발표 자료)에 바로 표시된다</text>
+</g>
+</svg>

@@ -13,7 +13,7 @@ summary: 텍스트를 신경망에 넣기 위한 원핫 코드와 단어 임베�
 
 번역은 또 다른 문제를 낳는다. "I am a student"는 네 단어, "je suis étudiant"는 세 단어이고, 출력 단어의 순서도 입력과 일대일로 맞지 않는다. seq2seq는 인코더 RNN이 입력 문장을 읽어 벡터 하나로 압축하고 디코더 RNN이 그 벡터에서 출력 문장을 만들어 길이 차이를 해결한다. 그러나 문장이 길어질수록 고정된 크기의 벡터 하나에 담을 수 있는 정보가 모자라고, 어텐션은 디코더가 단어를 하나 만드는 시각마다 입력 문장 전체를 다시 조회해 이 병목을 없앤다.
 
-이 글이 답하려는 질문은 두 가지다. 단어의 의미를 담은 벡터는 어떻게 학습하는가. 그리고 길이가 다른 두 문장을 잇는 인코더-디코더에서 어텐션은 어떤 계산으로 지금 필요한 입력 단어를 골라내는가.
+핵심 질문은 두 가지다. 단어의 의미를 담은 벡터는 어떻게 학습하는가. 그리고 길이가 다른 두 문장을 잇는 인코더-디코더에서 어텐션은 어떤 계산으로 지금 필요한 입력 단어를 골라내는가.
 
 | 순서 | 내용                                                          |
 | ---- | ------------------------------------------------------------- |
@@ -24,7 +24,7 @@ summary: 텍스트를 신경망에 넣기 위한 원핫 코드와 단어 임베�
 | 5    | query-key-value 어텐션과 바다나우 어텐션                      |
 | 6    | LSTM 인코더-디코더로 만든 영어-프랑스어 번역                  |
 
-RNN과 LSTM의 구조, many to one과 many to many 형태는 [순환 신경망과 LSTM으로 만든 시계열 예측](/memo/dl-rnn)에서 다뤘다. 이 글의 감정 분류는 many to one, 번역은 입력을 모두 읽은 뒤 출력을 시작하는 many to many 구조다.
+RNN과 LSTM의 구조, many to one과 many to many 형태는 [순환 신경망과 LSTM으로 만든 시계열 예측](/memo/dl-rnn)에서 다뤘다. 뒤의 감정 분류는 many to one, 번역은 입력을 모두 읽은 뒤 출력을 시작하는 many to many 구조다.
 
 ## 자연어 처리와 텍스트 데이터
 
@@ -77,6 +77,8 @@ How popular is Python?
 | ----------------------------- | ----------------------------------------------------------------------------------------- |
 | 메모리 낭비                   | 사전 크기가 크면 대부분이 0인 희소 벡터가 된다. 사전 10000개면 10000차원                  |
 | 단어 사이의 관계를 표현 못 함 | 모든 단어 벡터가 서로 직교하므로 king과 queen, bridegroom과 bride의 관계를 표현할 수 없다 |
+
+![왼쪽은 원핫 벡터 movie (1,0,0), film (0,1,0), banana (0,0,1)이 모든 쌍의 거리 √2인 정삼각형, 오른쪽은 movie와 film이 가깝고 apple과 banana가 멀리 떨어진 임베딩 공간 개념도](./images/dl-word-embedding-attention-onehot-distance.svg '원핫 코드에서는 어느 두 단어든 거리가 √2로 같고, 임베딩에서는 뜻이 가까운 단어끼리 거리가 짧다')
 
 ## 단어 임베딩
 
@@ -583,6 +585,8 @@ K = V = \begin{pmatrix} 0.1 & 0.0 & 0.8 \\ 0.1 & 0.9 & 0.0 \\ 0.0 & 0.1 & 0.8 \\
    \mathbf{c} = 0.151\,\mathbf{h}^1 + 0.340\,\mathbf{h}^2 + 0.162\,\mathbf{h}^3 + 0.169\,\mathbf{h}^4 + 0.178\,\mathbf{h}^5 = (0.243\ \ 0.339\ \ 0.370)
    ```
 
+![h¹ 저게 0.151, h² 저절로 0.340, h³ 붉어질 0.162, h⁴ 리 0.169, h⁵ 없다 0.178의 막대그래프에서 저절로만 파랗게 강조](./images/dl-word-embedding-attention-weights.svg '위 표의 주목 값을 막대로 그렸다. 다섯 값의 합은 1이다')
+
 주목 벡터는 기대대로 두 번째(`\mathbf{h}^2{:math}`, '저절로')에서 가장 크다. 이 문맥 벡터가 다음 시점의 디코더 `\mathbf{g}^6{:math}`에 입력된다.
 
 일반화하면 디코더 `i{:math}`번째 시점에서 query는 `\mathbf{g}^{i-1}{:math}`, key와 value는 `\mathbf{h}^1, \ldots, \mathbf{h}^T{:math}`이고, 주목 가중치 `a_1^i, \ldots, a_T^i{:math}`로 문맥 벡터 `\mathbf{c}^i{:math}`를 만든다. 기본 seq2seq 수식에 `\mathbf{c}^i{:math}` 항 하나가 추가된다.
@@ -985,3 +989,15 @@ for seq_index in [3, 50, 100, 300, 1001]:
 | 어텐션      | `\mathbf{c} = \mathrm{softmax}(\mathbf{q}K^{\top})V{:math}`. 디코더 시점마다 인코더 전체를 다시 조회 |
 
 ==어텐션은 RNN의 마지막 상태에 의존하던 seq2seq에 인코더 전체를 조회하는 경로를 추가했고, 다음 단계는 RNN 자체를 없애고 어텐션만으로 시퀀스를 처리하는 트랜스포머다.==
+
+<details>
+<summary>참고 문헌</summary>
+
+- T. Mikolov et al., [Efficient Estimation of Word Representations in Vector Space](https://arxiv.org/abs/1301.3781), 2013
+- J. Pennington, R. Socher, C. Manning, [GloVe: Global Vectors for Word Representation](https://aclanthology.org/D14-1162/), EMNLP 2014
+- I. Sutskever, O. Vinyals, Q. V. Le, [Sequence to Sequence Learning with Neural Networks](https://arxiv.org/abs/1409.3215), NeurIPS 2014
+- D. Bahdanau, K. Cho, Y. Bengio, [Neural Machine Translation by Jointly Learning to Align and Translate](https://arxiv.org/abs/1409.0473), ICLR 2015
+- M.-T. Luong, H. Pham, C. Manning, [Effective Approaches to Attention-based Neural Machine Translation](https://arxiv.org/abs/1508.04025), EMNLP 2015
+- Keras, [Embedding layer](https://keras.io/api/layers/core_layers/embedding/)
+
+</details>

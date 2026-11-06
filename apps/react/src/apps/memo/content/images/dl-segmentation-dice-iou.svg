@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="320" y="32" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">같은 예측의 IoU와 Dice: Dice = 2·IoU / (1 + IoU)</text>
+<line x1="90" y1="360.0" x2="410" y2="360.0" stroke="#f2f2f7"/><text x="82" y="364.0" text-anchor="end" font-size="12" fill="#6e6e73">0</text>
+<text x="90.0" y="380" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+<line x1="90" y1="300.0" x2="410" y2="300.0" stroke="#f2f2f7"/><text x="82" y="304.0" text-anchor="end" font-size="12" fill="#6e6e73">0.2</text>
+<text x="154.0" y="380" text-anchor="middle" font-size="12" fill="#6e6e73">0.2</text>
+<line x1="90" y1="240.0" x2="410" y2="240.0" stroke="#f2f2f7"/><text x="82" y="244.0" text-anchor="end" font-size="12" fill="#6e6e73">0.4</text>
+<text x="218.0" y="380" text-anchor="middle" font-size="12" fill="#6e6e73">0.4</text>
+<line x1="90" y1="180.0" x2="410" y2="180.0" stroke="#f2f2f7"/><text x="82" y="184.0" text-anchor="end" font-size="12" fill="#6e6e73">0.6</text>
+<text x="282.0" y="380" text-anchor="middle" font-size="12" fill="#6e6e73">0.6</text>
+<line x1="90" y1="120.0" x2="410" y2="120.0" stroke="#f2f2f7"/><text x="82" y="124.0" text-anchor="end" font-size="12" fill="#6e6e73">0.8</text>
+<text x="346.0" y="380" text-anchor="middle" font-size="12" fill="#6e6e73">0.8</text>
+<line x1="90" y1="60.0" x2="410" y2="60.0" stroke="#f2f2f7"/><text x="82" y="64.0" text-anchor="end" font-size="12" fill="#6e6e73">1</text>
+<text x="410.0" y="380" text-anchor="middle" font-size="12" fill="#6e6e73">1</text>
+<line x1="90" y1="360" x2="410" y2="360" stroke="#1d1d1f"/><line x1="90" y1="360" x2="90" y2="60" stroke="#1d1d1f"/>
+<text x="250.0" y="404" text-anchor="middle" font-size="13" fill="#1d1d1f">IoU</text><text x="40" y="210.0" font-size="13" fill="#1d1d1f" transform="rotate(-90 40 210.0)" text-anchor="middle">Dice</text>
+<line x1="90" y1="360" x2="410" y2="60" stroke="#6e6e73" stroke-dasharray="5 5"/>
+<path d="M90.0,360.0 L93.2,354.1 L96.4,348.2 L99.6,342.5 L102.8,336.9 L106.0,331.4 L109.2,326.0 L112.4,320.7 L115.6,315.6 L118.8,310.5 L122.0,305.5 L125.2,300.5 L128.4,295.7 L131.6,291.0 L134.8,286.3 L138.0,281.7 L141.2,277.2 L144.4,272.8 L147.6,268.5 L150.8,264.2 L154.0,260.0 L157.2,255.9 L160.4,251.8 L163.6,247.8 L166.8,243.9 L170.0,240.0 L173.2,236.2 L176.4,232.4 L179.6,228.7 L182.8,225.1 L186.0,221.5 L189.2,218.0 L192.4,214.5 L195.6,211.1 L198.8,207.8 L202.0,204.4 L205.2,201.2 L208.4,198.0 L211.6,194.8 L214.8,191.7 L218.0,188.6 L221.2,185.5 L224.4,182.5 L227.6,179.6 L230.8,176.7 L234.0,173.8 L237.2,171.0 L240.4,168.2 L243.6,165.4 L246.8,162.7 L250.0,160.0 L253.2,157.4 L256.4,154.7 L259.6,152.2 L262.8,149.6 L266.0,147.1 L269.2,144.6 L272.4,142.2 L275.6,139.7 L278.8,137.4 L282.0,135.0 L285.2,132.7 L288.4,130.4 L291.6,128.1 L294.8,125.9 L298.0,123.6 L301.2,121.4 L304.4,119.3 L307.6,117.1 L310.8,115.0 L314.0,112.9 L317.2,110.9 L320.4,108.8 L323.6,106.8 L326.8,104.8 L330.0,102.9 L333.2,100.9 L336.4,99.0 L339.6,97.1 L342.8,95.2 L346.0,93.3 L349.2,91.5 L352.4,89.7 L355.6,87.9 L358.8,86.1 L362.0,84.3 L365.2,82.6 L368.4,80.9 L371.6,79.1 L374.8,77.5 L378.0,75.8 L381.2,74.1 L384.4,72.5 L387.6,70.9 L390.8,69.3 L394.0,67.7 L397.2,66.1 L400.4,64.6 L403.6,63.0 L406.8,61.5 L410.0,60.0" fill="none" stroke="#0a84ff" stroke-width="3"/>
+<line x1="278.2" y1="137.8" x2="278.2" y2="360" stroke="#ff9f0a" stroke-dasharray="4 4"/><line x1="90" y1="137.8" x2="278.2" y2="137.8" stroke="#ff9f0a" stroke-dasharray="4 4"/>
+<circle cx="278.2" cy="137.8" r="6" fill="#ff9f0a"/>
+<rect x="440" y="80" width="180" height="150" rx="10" fill="#f2f2f7"/>
+<text x="452" y="104" font-size="13" font-weight="600" fill="#1d1d1f">예제 격자의 부류 2</text>
+<text x="452" y="130" font-size="12" fill="#1d1d1f">교집합 10화소</text>
+<text x="452" y="154" font-size="12" fill="#1d1d1f">합집합 17화소</text>
+<text x="452" y="178" font-size="12" fill="#ff9f0a">IoU = 10/17 = 0.588</text>
+<text x="452" y="202" font-size="12" fill="#ff9f0a">Dice = 20/27 = 0.741</text>
+<rect x="440" y="250" width="180" height="96" rx="10" fill="#ffffff" stroke="#f2f2f7" stroke-width="2"/>
+<line x1="452" y1="274" x2="476" y2="274" stroke="#0a84ff" stroke-width="3"/><text x="484" y="278" font-size="12" fill="#1d1d1f">Dice 곡선</text>
+<line x1="452" y1="300" x2="476" y2="300" stroke="#6e6e73" stroke-dasharray="5 5"/><text x="484" y="304" font-size="12" fill="#1d1d1f">Dice = IoU 기준선</text>
+<text x="452" y="330" font-size="12" fill="#6e6e73">0과 1에서만 두 값이 같다</text>
+</svg>

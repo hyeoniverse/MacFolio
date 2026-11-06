@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>10월 7일에 7일 요약을 요청하면 10월 1일부터 6일은 DailyStat에서 읽고 7일은 AnalyticsEvent를 바로 집계해 합치며, 직전 7일인 9월 24일부터 30일도 DailyStat에서 읽어 비교한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="380" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">요약 하나를 만드는 두 저장소</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">예: 10월 7일(오늘)에 GET /analytics/summary?from=2026-10-01&amp;to=2026-10-07</text>
+
+<!-- 날짜 칸: 14칸, 9/24~10/7. x 시작 24, 칸 너비 42 -->
+<g font-size="12" text-anchor="middle">
+<text x="171" y="84" fill="#6e6e73">직전 기간 9/24 ~ 9/30</text>
+<text x="465" y="84" fill="#1d1d1f" font-weight="600">요청 기간 10/1 ~ 10/7</text>
+</g>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<rect x="24" y="94" width="294" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="171" y="119">DailyStat 7일치</text>
+<rect x="324" y="94" width="246" height="40" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="447" y="119">DailyStat 6일치 (10/1 ~ 10/6)</text>
+<rect x="574" y="94" width="42" height="40" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+<text x="595" y="119">10/7</text>
+</g>
+
+<line x1="171" y1="134" x2="171" y2="176" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="447" y1="134" x2="447" y2="176" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="595" y1="134" x2="595" y2="176" stroke="#6e6e73" marker-end="url(#a)"/>
+
+<g font-size="12" fill="#1d1d1f">
+<rect x="24" y="180" width="294" height="64" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="40" y="202">이미 집계해 둔 행을 읽는다</text>
+<text x="40" y="222" fill="#6e6e73">(day, metric, key, value)</text>
+<rect x="324" y="180" width="200" height="64" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="340" y="202">이미 집계해 둔 행을 읽는다</text>
+<text x="340" y="222" fill="#6e6e73">하루 수십 행</text>
+<rect x="530" y="180" width="86" height="64" rx="8" fill="#ffffff" stroke="#34c759"/>
+<text x="540" y="202">이벤트를</text>
+<text x="540" y="222">aggregate</text>
+<text x="540" y="238" fill="#6e6e73">로 바로</text>
+</g>
+
+<line x1="447" y1="244" x2="480" y2="282" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="573" y1="244" x2="530" y2="282" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="171" y1="244" x2="171" y2="282" stroke="#6e6e73" marker-end="url(#a)"/>
+
+<g font-size="12" fill="#1d1d1f">
+<rect x="24" y="286" width="294" height="44" rx="8" fill="#f2f2f7"/>
+<text x="40" y="313">previous: 방문 37 (예시)</text>
+<rect x="324" y="286" width="292" height="44" rx="8" fill="#e5f1ff"/>
+<text x="340" y="313">합친 7일: 방문 42 (예시)</text>
+</g>
+<text x="24" y="360" font-size="12" fill="#6e6e73">화면은 두 값을 비교해 ▲ 13.5%를 표시한다. 하루치 집계 함수(aggregate)는 두 경로가 함께 쓴다</text>
+</svg>

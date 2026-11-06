@@ -7,7 +7,15 @@ seriesOrder: 1
 summary: 파일마다 직접 작성하던 서버 호출(22개 파일), localStorage 접근(7개 파일, try/catch 12개), matchMedia·innerWidth 조회(25곳)를 client.ts의 api()·apiFetch(), storage.ts의 readJson·writeJson, media.ts와 getViewport()로 통합했다.
 ---
 
-이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 3단계 "공통 기반 코드"([api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-retrospective#3단계-공통-기반-코드))의 세 항목을 처리한 기록이다. 세 항목은 대상이 다르지만 구조가 같다.
+MacFolio의 화면 코드(apps/react)는 브라우저가 제공하는 기본 API 세 가지를 자주 사용한다.
+
+- **[Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)**: `fetch('https://api…/posts')`처럼 서버에 HTTP 요청을 보내고 응답을 받는 함수다. 글 저장, 댓글 작성, 로그인 상태 확인이 모두 이 함수를 거친다.
+- **[Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)**: `localStorage.setItem('키', '값')`처럼 브라우저에 문자열을 저장한다. 서버로 전송되지 않고 그 브라우저에만 남으므로, 테마 설정이나 창 위치처럼 방문자 개인의 값을 보관한다.
+- **[`window.matchMedia`](https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia)**: CSS 미디어 쿼리 문자열(예: `'(prefers-color-scheme: dark)'`)이 현재 환경과 일치하는지 자바스크립트에서 확인한다. 운영체제가 다크 모드인지, 사용자가 움직임 줄이기를 켰는지 판단하는 데 사용한다.
+
+세 API 모두 한 줄로 호출할 수 있어서, 필요한 파일마다 직접 호출하는 코드가 늘었다. 그런데 실제로는 호출 앞뒤에 같은 처리가 붙는다. 서버 호출에는 쿠키 전송과 실패 문구가, 저장소 접근에는 예외 처리가, 미디어 쿼리에는 `matchMedia`가 없는 환경의 처리가 필요하다. 이 처리를 파일마다 새로 작성하면서 구현이 조금씩 달라졌고, 일부는 실제 버그였다.
+
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 3단계 "공통 기반 코드"([api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-retrospective#3단계-공통-기반-코드))에서 이 세 가지를 공통 모듈로 모았다. 세 항목은 대상이 다르지만 구조가 같다.
 
 | 항목            | 분산되어 있던 코드                                  | 통합한 모듈                             | PR                                                       |
 | --------------- | --------------------------------------------------- | --------------------------------------- | -------------------------------------------------------- |
@@ -15,13 +23,20 @@ summary: 파일마다 직접 작성하던 서버 호출(22개 파일), localStor
 | 브라우저 저장소 | `localStorage`를 직접 다루는 파일 7개               | `shared/lib/storage.ts`                 | [#198](https://github.com/hyeoniverse/MacFolio/pull/198) |
 | 화면 조건 조회  | `matchMedia`·`innerWidth`를 직접 조회하는 위치 25곳 | `shared/lib/media.ts`, `useViewport.ts` | [#199](https://github.com/hyeoniverse/MacFolio/pull/199) |
 
-세 경우 모두 같은 처리를 파일마다 조금씩 다르게 구현해 차이가 생겼고, 그 차이 중 일부는 실제 버그였다. 세 경우 모두 외부 라이브러리 대신 기존 API 위에 얇은 함수를 두는 방법을 채택했다.
+세 경우 모두 외부 라이브러리 대신 기존 API 위에 얇은 함수를 두는 방법을 채택했다. 얇은 함수는 브라우저 API를 그대로 호출하되, 반복되던 앞뒤 처리만 한 곳에 모은 함수를 뜻한다.
 
 ## 서버 호출: api()·apiFetch()
 
 ### 파일마다 달랐던 fetch 처리
 
-서버(apps/api)를 호출하는 파일을 집계하니 22개, `credentials: 'include'`가 33곳이었다. 각 호출은 짧지만, 같은 처리를 파일마다 조금씩 다르게 구현했다.
+서버(apps/api)를 호출하는 파일을 집계하니 22개, `credentials: 'include'`가 33곳이었다. 화면은 `macfolio.hyeoniverse.com`, API는 `macfolio-api.hyeoniverse.com`에서 응답하므로 브라우저 입장에서는 다른 출처(origin)로 보내는 요청이다. 출처는 프로토콜·호스트·포트의 조합이고, 호스트 이름이 하나라도 다르면 다른 출처다. `fetch`는 기본값(`credentials: 'same-origin'`)으로는 다른 출처 요청에 쿠키를 싣지 않는다. 관리자 세션 쿠키를 보내려면 호출마다 `credentials: 'include'`를 지정해야 했고, 이 한 줄을 빠뜨린 호출은 로그인한 관리자라도 401을 받는다.
+
+```ts
+// 전: 파일 삭제 요청 (#196 이전 코드)
+const response = await fetchImpl(`${apiUrl}/files/${id}`, { method: 'DELETE', credentials: 'include' });
+```
+
+각 호출은 짧지만, 앞뒤의 같은 처리를 파일마다 조금씩 다르게 구현했다.
 
 | 항목                | 파일마다 달랐던 구현                                                                                                         |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -60,11 +75,28 @@ summary: 파일마다 직접 작성하던 서버 호출(22개 파일), localStor
 | `timeout`  | 기본 15초, 0이면 시간 제한 없음                       |
 | `fallback` | 서버가 오류 사유를 주지 않은 경우의 문구              |
 
-주소는 `env.apiUrl`을 사용하고, 쿠키는 항상 함께 전송한다.
+주소는 `env.apiUrl`을 사용하고, 쿠키는 항상 함께 전송한다(`credentials: 'include'`). 시간 제한은 [`AbortSignal.timeout(15000)`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)으로 만든 신호를 `fetch`에 전달하는 방식이다. 15초 안에 응답이 오지 않으면 브라우저가 요청을 중단하고, `fetch`가 예외를 던지며, `apiFetch`는 이를 서버에 닿지 못한 경우와 같은 `ApiError(0)`으로 바꾼다.
+
+호출하는 쪽에서 보면 다음과 같다.
+
+```ts
+// 성공: JSON 본문을 객체로 받는다
+const post = await api<Post>('/posts/hello', { fallback: '글을 불러오지 못했습니다.' });
+
+// 실패: 서버가 { message: ['내용을 입력해주세요.'] }로 400을 반환하면
+// ApiError { status: 400, reasons: ['내용을 입력해주세요.'], message: '내용을 입력해주세요.' }
+```
 
 ![api()가 응답을 나누는 방식](./images/shared-api-client-flow.svg)
 
-실패 문구는 상수 세 개로 정했다. `UNREACHABLE`(연결 실패), `SIGNED_OUT`(401), `TOO_MANY`(429). 서버가 검증 오류를 배열로 반환하면 `ApiError.reasons`에 항목별로 저장되고, 화면은 `reasonsFrom(error)`로 그대로 표시한다.
+실패 문구는 상수 세 개로 정했다.
+
+| 상수                                                                                                                      | 상황             | 문구                                                   |
+| ------------------------------------------------------------------------------------------------------------------------- | ---------------- | ------------------------------------------------------ |
+| `UNREACHABLE`                                                                                                             | 서버에 연결 실패 | 서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요. |
+| `SIGNED_OUT`                                                                                                              | 401 (세션 만료)  | 관리자 로그인이 끝났습니다. 다시 로그인해 주세요.      |
+| `TOO_MANY`                                                                                                                | 429 (요청 제한)  | 잠시 뒤에 다시 써 주세요.                              |
+| 서버가 검증 오류를 배열로 반환하면 `ApiError.reasons`에 항목별로 저장되고, 화면은 `reasonsFrom(error)`로 그대로 표시한다. |
 
 <details>
 <summary>전후 코드 비교 (postsApi.ts)</summary>
@@ -101,9 +133,9 @@ async function send(fetchImpl, apiUrl, path, method, json) {
 
 ### 401 응답을 받으면 로그아웃 상태로 전환
 
-`onUnauthorized(handler)` 함수를 두고 `adminStore`가 핸들러를 등록한다. 어떤 요청이든 401을 받으면 `refreshAdmin()`을 호출해 `/auth/me`로 로그인 상태를 다시 조회하고, 화면이 로그아웃 상태로 전환된다. 이전에는 만료 시각 타이머만 있어서, 서버에서 세션을 삭제했거나 쿠키가 사라진 경우에는 저장이 실패한 뒤에도 관리자 메뉴가 그대로 표시됐다. 세션 만료를 타이머 하나로만 판단한 것은 실제 버그였고, =="401 응답 수신"이 가장 확실한 만료 신호==다.
+`onUnauthorized(handler)` 함수를 두고 `adminStore`가 핸들러를 등록한다. 어떤 요청이든 401(인증 실패)을 받으면 `refreshAdmin()`을 호출해 `/auth/me`로 로그인 상태를 다시 조회하고, 화면이 로그아웃 상태로 전환된다. 이전에는 만료 시각 타이머만 있어서, 서버에서 세션을 삭제했거나 쿠키가 사라진 경우에는 저장이 실패한 뒤에도 관리자 메뉴가 그대로 표시됐다. 세션 만료를 타이머 하나로만 판단한 것은 실제 버그였다. 타이머는 브라우저가 기억하는 만료 시각만 알고, 서버에서 세션 행이 삭제된 사실은 알지 못한다. 서버의 판단을 그대로 전달하는 =="401 응답 수신"이 가장 확실한 만료 신호==다.
 
-의존 방향은 `adminStore → client` 한 방향이다. client가 adminStore를 import하면 순환 의존이 생기므로, client는 등록된 핸들러 집합만 보관한다. 하위 모듈이 상위 모듈의 동작을 호출해야 하는 경우 상위 모듈에서 함수를 전달받는 방식이다.
+의존 방향은 `adminStore → client` 한 방향이다. `adminStore`는 `/auth/me`를 호출하려고 이미 `client`를 import한다. 여기서 `client`도 401 처리를 위해 `adminStore`를 import하면 두 파일이 서로를 import하는 순환 의존이 생기고, 모듈 초기화 순서에 따라 한쪽 값이 `undefined`로 읽힐 수 있다(이 저장소는 `pnpm cycles`로 순환을 검사해 CI를 실패시킨다). 그래서 `client`는 등록된 핸들러 집합(`Set`)만 보관하고, `adminStore` 모듈이 로드되면서 `onUnauthorized(...)`로 핸들러를 등록한다. 핸들러는 로그인 상태(`'signed-in'`)인 경우에만 `refreshAdmin()`을 호출한다. 하위 모듈이 상위 모듈의 동작을 호출해야 하는 경우 상위 모듈에서 함수를 전달받는 방식이다.
 
 ![adminStore가 client에 핸들러를 등록하고 client는 401에서 부르기만 하는 구조](./images/shared-api-client-unauthorized.svg '401 처리의 의존 방향')
 
@@ -115,7 +147,7 @@ async function send(fetchImpl, apiUrl, path, method, json) {
 | `/health` 확인(`serverStatus.ts`)                 | CORS 차단과 서버 중지를 구분하려고 `no-cors`로 한 번 더 요청하는 별도 흐름 ([no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-wifi#no-cors-요청으로-cors-차단과-서버-중지-구분)) |
 | 분석 이벤트 전송                                  | [`sendBeacon`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon)이 우선이고 fetch는 `keepalive` 대안이라, 클라이언트에 넣으면 오히려 복잡해진다                                 |
 
-규칙이 다른 호출을 한 함수에 넣으면 옵션만 늘어난다. 시험이 주입하던 `fetchImpl` 인자는 모듈 시그니처를 유지하고 옵션으로 전달한다. 이제 `signal`·`headers`가 항상 붙으므로, 시험 쪽은 요청 형태를 `objectContaining`으로 부분 일치 검사하도록 바꿨다.
+규칙이 다른 호출을 한 함수에 넣으면 옵션만 늘어난다. 시험이 주입하던 `fetchImpl` 인자는 모듈 시그니처를 유지하고 옵션으로 전달한다. 이제 `signal`·`headers`가 항상 붙으므로, 시험 쪽은 요청 형태를 `objectContaining`으로 부분 일치 검사하도록 바꿨다. 예를 들어 기존 시험의 `toHaveBeenCalledWith(url, { method: 'DELETE', credentials: 'include' })`는 `signal`이 추가된 실제 인자와 일치하지 않으므로, `expect.objectContaining({ method: 'DELETE', credentials: 'include' })`로 필요한 필드만 비교한다.
 
 ### client.ts 시험과 수치
 
@@ -146,7 +178,9 @@ async function send(fetchImpl, apiUrl, path, method, json) {
 
 ### 파일마다 반복되던 try/catch
 
-브라우저에 저장하는 값은 일곱 가지다.
+브라우저 저장소는 두 종류다. `localStorage`는 브라우저를 닫아도 남고, `sessionStorage`는 탭을 닫으면 삭제된다. 둘 다 키와 값이 모두 문자열이라, 객체를 저장하려면 `JSON.stringify`로 문자열로 바꾸고 읽을 때 `JSON.parse`로 되돌린다. 예를 들어 날씨 장소 목록은 `localStorage`의 `macfolio:weather:places` 키에 `'[{"name":"서울",…}]'` 같은 문자열로 저장된다.
+
+당시 브라우저에 저장하는 값은 일곱 가지였다.
 
 1. 설정
 2. 메모 보기 설정
@@ -259,7 +293,7 @@ export const settingsStore = createStore<Settings>(parseSettings(readJson(STORAG
 
 PR 전체로는 14개 파일, 322줄 추가와 134줄 삭제였다. 추가된 줄은 새 `storage.ts`와 시험이다.
 
-이 글을 작성하며 다시 검색하니 현재도 `localStorage`에 실제로 접근하는 파일은 `storage.ts` 하나다. 다른 파일의 `localStorage`는 모두 주석이다. 키 목록은 그사이 12개로 늘었고(바탕화면 아이콘 위치, 메모 사이드바·목록 폭 등), 새 키도 모두 이 객체에 추가됐다.
+2026-10-23 기준 main을 다시 검색해도 `localStorage`에 실제로 접근하는 파일은 `storage.ts` 하나다. 다른 파일의 `localStorage`는 모두 주석이다. 키 목록은 그사이 12개로 늘었고(바탕화면 아이콘 위치, 메모 사이드바·목록 폭 등), 새 키도 모두 이 객체에 추가됐다.
 
 ## 화면 조건 조회: media.ts와 getViewport()
 
@@ -320,7 +354,11 @@ export function useMediaQuery(query: string): boolean {
 }
 ```
 
-[`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)를 사용하면 구독과 값 읽기의 동기화를 React가 처리한다. `useEffect` 안에서 `addEventListener`를 호출하고 `useState`에 저장하는 방식보다 코드가 짧고, 첫 렌더링부터 올바른 값을 사용한다.
+[`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore)는 React 바깥에 있는 값(브라우저 API, 직접 만든 store)을 컴포넌트 상태처럼 읽게 해 주는 hook이다. 인자는 세 개다. `subscribe`는 값이 바뀌면 알려 줄 콜백을 등록하고 해제 함수를 반환하며, `getSnapshot`은 현재 값을 반환하고, 세 번째 인자는 서버 렌더링에서 사용할 값이다.
+
+![useSyncExternalStore의 동작](./images/shared-modules-sync-external-store.svg 'subscribe로 change 이벤트를 구독하고, 이벤트가 오면 getSnapshot으로 값을 다시 읽어 바뀐 경우에만 다시 렌더링한다')
+
+예를 들어 macOS 설정에서 화면 모드를 라이트에서 다크로 바꾸면, `MediaQueryList`가 `change` 이벤트를 발생시키고 React는 `mediaMatches(query)`를 다시 호출해 `false`에서 `true`로 바뀐 것을 확인한 뒤 컴포넌트를 다시 렌더링한다. `useEffect` 안에서 `addEventListener`를 호출하고 `useState`에 저장하는 방식보다 코드가 짧고, 첫 렌더링부터 `getSnapshot`의 실제 값을 사용한다. `useEffect` 방식은 첫 렌더링에 `useState`의 초기값을 쓰고 effect가 실행된 뒤에 값을 바로잡으므로, 한 프레임 동안 잘못된 값이 표시될 수 있다.
 
 **`shared/hooks/useViewport.ts`**: 훅만 있던 모듈에 `getViewport()`를 추가했다. 이벤트 처리나 스토어 초기화처럼 훅을 쓸 수 없는 위치에서 사용한다. 모바일 여부는 이전과 같이 `isMobileViewport(getViewport())` 한 줄이고, 분석 이벤트도 이 기준을 사용한다.
 
@@ -349,7 +387,7 @@ const dark = useResolvedTheme() === 'dark';
 
 ### 다시 늘어난 직접 조회
 
-이 글을 작성하며 다시 검색하니, 이후 추가된 파일 4개가 다시 직접 조회하고 있었다. 메모의 링크·목차 이동 두 곳이 `matchMedia('(prefers-reduced-motion: reduce)')`를, 슬라이드 보기와 바탕화면 아이콘이 `innerWidth`를 사용한다. ==공통 모듈을 만들어도 새 코드가 그 모듈을 쓰도록 강제하는 장치(린트 규칙 등)가 없으면 다시 분산==된다. ESLint [`no-restricted-properties`](https://eslint.org/docs/latest/rules/no-restricted-properties)로 `window.matchMedia`를 금지하는 규칙이 다음 후보다.
+2026-10-23 기준 main을 다시 검색하니, 이후 추가된 파일 4개가 다시 직접 조회하고 있었다. 메모의 링크·목차 이동 두 곳이 `matchMedia('(prefers-reduced-motion: reduce)')`를, 슬라이드 보기와 바탕화면 아이콘이 `innerWidth`를 사용한다. ==공통 모듈을 만들어도 새 코드가 그 모듈을 쓰도록 강제하는 장치(린트 규칙 등)가 없으면 다시 분산==된다. ESLint [`no-restricted-properties`](https://eslint.org/docs/latest/rules/no-restricted-properties)로 `window.matchMedia`를 금지하는 규칙이 다음 후보다. 이 규칙은 특정 객체의 특정 속성 접근을 린트 오류로 표시한다. 설정에 `{ object: 'window', property: 'matchMedia', message: 'shared/lib/media.ts를 사용한다' }`를 넣고 `media.ts`만 예외로 두면, 새 파일이 직접 조회하는 순간 `pnpm lint`가 실패한다.
 
 <details>
 <summary>2026-10-23 기준 main에서 직접 조회하는 파일</summary>
@@ -401,9 +439,9 @@ grep -rn "matchMedia" src | grep -v "shared/lib/media\|shared/hooks/useViewport\
 수동 확인 방법은 다음과 같다.
 
 - 저장소: 개발자 도구 Application → Local Storage에서 값을 삭제하거나 잘못된 JSON으로 바꾼 뒤 새로 고침해, 앱이 기본값으로 실행되는지 확인한다. 새 키를 추가하면 `STORAGE_KEYS`와 함께 `apps/bin/siteStorage.ts`의 `BROWSER_DATA`에도 추가해야 시험이 통과한다.
-- 화면 조건: 개발자 도구의 Rendering 탭에서 `prefers-reduced-motion`, `prefers-color-scheme` 값을 바꿔 확인한다.
+- 화면 조건: Chrome 개발자 도구의 Rendering 탭에서 `prefers-reduced-motion`, `prefers-color-scheme` 값을 바꿔 확인한다. Rendering 탭은 개발자 도구의 ⋮ 메뉴 › More tools › Rendering에서 연다. 운영체제 설정을 바꾸지 않고 그 탭에서만 미디어 쿼리 결과를 강제로 바꾸므로, 다크 모드를 지정하면 `useResolvedTheme()`가 바로 `'dark'`를 반환하는지 확인할 수 있다.
 
-참고 문서: [MDN Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), [credentials 옵션](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials), [MDN Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API), [MDN matchMedia](https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia), [Chrome DevTools 미디어 기능 에뮬레이션](https://developer.chrome.com/docs/devtools/rendering/emulate-css), [React useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore).
+![Chrome 개발자 도구의 Rendering 탭](./images/shared-modules-devtools-rendering.jpg 'Rendering 탭의 Emulate CSS media feature prefers-color-scheme에서 dark를 선택하면, 운영체제 설정과 관계없이 페이지가 다크 모드 미디어 쿼리를 적용한다')
 
 ## 관련 글
 
@@ -414,5 +452,26 @@ grep -rn "matchMedia" src | grep -v "shared/lib/media\|shared/hooks/useViewport\
 - [no-cors 요청으로 CORS 차단과 서버 중지 구분하기](/memo/server-status-wifi#no-cors-요청으로-cors-차단과-서버-중지-구분)
 
 PR: [#196](https://github.com/hyeoniverse/MacFolio/pull/196), [#198](https://github.com/hyeoniverse/MacFolio/pull/198), [#199](https://github.com/hyeoniverse/MacFolio/pull/199)
+
+<details><summary>참고 문헌</summary>
+
+- MDN, [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+- MDN, [RequestInit: credentials](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials)
+- MDN, [Origin](https://developer.mozilla.org/en-US/docs/Glossary/Origin)
+- MDN, [AbortSignal: timeout() static method](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)
+- MDN, [Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)
+- MDN, [Window: localStorage property, Exceptions](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage#exceptions)
+- MDN, [Window: matchMedia() method](https://developer.mozilla.org/en-US/docs/Web/API/Window/matchMedia)
+- React, [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)
+- ESLint, [no-restricted-properties](https://eslint.org/docs/latest/rules/no-restricted-properties)
+- Chrome for Developers, [Emulate CSS media features](https://developer.chrome.com/docs/devtools/rendering/emulate-css)
+
+</details>
+
+<details><summary>사진 출처</summary>
+
+- Chrome 개발자 도구의 Rendering 탭: Sofia Emelianova, Chrome for Developers, [Emulate CSS media features](https://developer.chrome.com/docs/devtools/rendering/emulate-css), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), 출처 표기
+
+</details>
 
 #MacFolio #리팩터링 #React #fetch #localStorage #matchMedia

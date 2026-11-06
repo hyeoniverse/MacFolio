@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>4000번 포트에서 응답하는 프로세스를 확인하는 명령과 결과</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">Cannot PUT이 나왔을 때 확인하는 순서</text>
+<g font-size="12">
+<rect x="20" y="50" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="36" y="72" font-weight="600" fill="#1d1d1f">1. 포트를 점유한 프로세스</text>
+<text x="36" y="94" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">$ lsof -i :4000   →  com.docker.backend (컨테이너의 포트 연결)</text>
+<rect x="20" y="122" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="36" y="144" font-weight="600" fill="#1d1d1f">2. 어느 컨테이너인지</text>
+<text x="36" y="166" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">$ docker ps   →  macfolio-api-1   0.0.0.0:4000-&gt;4000/tcp</text>
+<rect x="20" y="194" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="36" y="216" font-weight="600" fill="#1d1d1f">3. 개발 서버 로그</text>
+<text x="36" y="238" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">Error: listen EADDRINUSE: address already in use :::4000</text>
+<rect x="20" y="266" width="600" height="76" rx="8" fill="#effaf2" stroke="#34c759"/>
+<text x="36" y="288" font-weight="600" fill="#1f7a3a">4. 해결</text>
+<text x="36" y="310" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">$ docker stop macfolio-api-1 &amp;&amp; pnpm dev:all</text>
+<text x="36" y="330" fill="#6e6e73">DB 컨테이너는 개발 서버도 쓰므로 그대로 둔다</text>
+</g>
+</svg>

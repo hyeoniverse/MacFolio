@@ -5,6 +5,8 @@ category: 개발 기록/MacFolio/구조·상태 관리
 summary: MacFolio를 프로젝트로 추가하려다 GitHub 앱 스냅샷에만 별도로 작성된 목록을 발견했다. 스냅샷도 PROJECTS를 읽게 하고 순서를 시험으로 고정했다. Safari 프로젝트 페이지는 프로젝트마다 레이아웃을 따로 설계하고, 저장소 근거로 장을 채웠다.
 ---
 
+MacFolio는 macOS 데스크톱을 브라우저에 재현한 포트폴리오 사이트다. 지금까지 진행한 프로젝트는 여러 앱에서 동시에 보인다. Safari 창의 탭 하나가 프로젝트 소개 페이지 하나이고, Finder에는 프로젝트 폴더가 있으며, 터미널에서 `projects`를 입력하면 목록이 출력되고, GitHub 앱은 GitHub 프로필처럼 고정 저장소 카드를 보여 준다. GitHub의 고정 저장소(pinned repositories)는 프로필 맨 위에 직접 고른 저장소를 최대 6개까지 표시하는 기능이다.
+
 GitHub 앱의 고정 저장소에 MacFolio를 추가했더니, Safari 탭과 Finder의 프로젝트 폴더에는 MacFolio가 없었다. 같은 프로젝트 정보가 한쪽에만 반영된 것이다.
 
 ![Safari와 GitHub 앱](./images/projects-one-list.jpg '왼쪽: Safari의 HYEONIVERSE 페이지 / 오른쪽: 같은 목록에서 만든 GitHub 앱의 고정 저장소')
@@ -15,7 +17,7 @@ GitHub 앱의 고정 저장소에 MacFolio를 추가했더니, Safari 탭과 Fin
 
 프로젝트 정보는 `shared/profile.ts`의 `PROJECTS`에 모여 있다. Safari 탭, Finder의 프로젝트 폴더, 터미널의 `projects` 명령이 모두 이 목록을 읽는다. 그런데 GitHub 앱의 스냅샷(서버에 연결할 수 없을 때 표시하는 값)은 이 목록을 읽지 않고, 저장소 이름과 설명을 별도로 작성해 두고 있었다. GitHub 화면을 그대로 옮겨 적은 값이라 별도로 관리하는 것이 타당해 보였지만, 결과적으로 같은 프로젝트를 두 곳에 기록한 셈이었다.
 
-그래서 스냅샷의 고정 저장소를 `PROJECTS`에서 생성하도록 변경했다.
+이처럼 같은 정보가 두 곳에 따로 적혀 있으면, 한쪽만 수정하고 다른 쪽을 누락하기 쉽다. 정보마다 원본을 한 곳(단일 원본, single source of truth)에만 두고 나머지는 그 원본에서 계산해 만들면 이 문제가 사라진다. 그래서 스냅샷의 고정 저장소를 `PROJECTS`에서 생성하도록 변경했다.
 
 | 스냅샷 필드 | 출처 (`PROJECTS`)                            |
 | ----------- | -------------------------------------------- |
@@ -23,9 +25,13 @@ GitHub 앱의 고정 저장소에 MacFolio를 추가했더니, Safari 탭과 Fin
 | 설명        | 프로젝트 소개 한 줄                          |
 | 홈페이지    | 데모 주소                                    |
 
+![PROJECTS 항목에서 고정 저장소 카드로](./images/projects-one-list-snapshot-mapping.svg 'projectRepo()가 GitHub 주소를 owner와 name으로 나누고, 데모 주소가 없으면 homepage를 null로 둔다')
+
+변환은 `githubProfile.ts`의 `projectRepo()` 함수 하나가 담당한다. 예를 들어 MacFolio 항목의 `url`이 `https://github.com/hyeoniverse/MacFolio`이면, 앞부분을 떼어 낸 `hyeoniverse/MacFolio`가 `fullName`이 되고, 이를 `/`로 나눈 `hyeoniverse`와 `MacFolio`가 각각 `owner`와 `name`이 된다. MacFolio는 지금 보고 있는 사이트 자체라 데모 주소가 없으므로 `homepage`는 `null`이다. 스냅샷은 `PROJECTS.slice(0, 6).map(projectRepo)`로, GitHub처럼 앞 6개만 사용한다.
+
 이제 프로젝트를 추가하거나 삭제하는 위치는 `PROJECTS` 한 곳이고, ==순서도 모든 화면에서 같다==.
 
-이 규칙이 깨지지 않도록 시험도 추가했다. 스냅샷의 저장소 주소 목록이 `PROJECTS`의 주소 목록과 순서까지 같아야 통과한다. 현재는 `apps/react/src/apps/github/githubProfile.test.ts`의 "고정 저장소는 프로젝트 목록의 앞 6개를 같은 순서로 쓴다 (GitHub처럼 6개까지)"와 "모든 프로젝트가 GitHub 저장소 주소를 가진다 (owner/이름으로 나눌 수 있게)"가 이 규칙을 검사한다.
+이 규칙이 깨지지 않도록 시험도 추가했다. 스냅샷의 저장소 주소 목록이 `PROJECTS`의 주소 목록과 순서까지 같아야 통과한다. 누군가 스냅샷에 저장소를 직접 추가하거나 `PROJECTS`의 순서를 바꾸고 스냅샷만 고정해 두면, `toEqual` 비교가 실패한다. 현재는 `apps/react/src/apps/github/githubProfile.test.ts`의 "고정 저장소는 프로젝트 목록의 앞 6개를 같은 순서로 쓴다 (GitHub처럼 6개까지)"와 "모든 프로젝트가 GitHub 저장소 주소를 가진다 (owner/이름으로 나눌 수 있게)"가 이 규칙을 검사한다.
 
 ## 별도로 관리하는 값
 
@@ -45,7 +51,9 @@ Safari의 프로젝트 페이지는 프로젝트마다 디자인(look)이 다르
 
 ## 탭이 일곱 개가 되자
 
-프로젝트가 일곱 개가 되자 좁은 Safari 창에서 현재 탭의 제목까지 잘렸다. 탭 폭은 [`flex-grow`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow) 비율로 나누는데, 탭 수가 늘면 현재 탭에 큰 비율을 줘도 폭이 부족했다. 그래서 현재 탭은 제목 길이보다 작아지지 않게(`min-width: max-content`) 하고, 나머지 탭이 그만큼 더 줄어들게 했다.
+프로젝트가 일곱 개가 되자 좁은 Safari 창에서 현재 탭의 제목까지 잘렸다. 탭 막대는 CSS Flexbox로 배치하고, 탭 폭은 [`flex-grow`](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow) 비율로 나눈다. `flex-grow`는 남는 공간을 형제 요소끼리 어떤 비율로 나눠 가질지 정하는 값이다. 예를 들어 남는 폭이 300px이고 탭 세 개의 `flex-grow`가 2·1·1이면 각각 150px·75px·75px를 더 받는다.
+
+탭 수가 늘면 남는 폭 자체가 줄어들어, 현재 탭에 큰 비율을 줘도 제목이 들어갈 폭이 부족했다. 그래서 현재 탭은 제목 길이보다 작아지지 않게(`min-width: max-content`) 하고, 나머지 탭이 그만큼 더 줄어들게 했다. `max-content`는 내용을 줄바꿈 없이 한 줄로 놓았을 때의 폭이다. "HYEONIVERSE" 탭이 현재 탭이면 그 글자 전체가 들어가는 폭이 최소 폭이 되고, 부족한 폭은 다른 여섯 탭이 나눠서 줄어든다.
 
 ## 색만 다른 같은 페이지
 
@@ -71,7 +79,7 @@ Safari의 프로젝트 페이지는 프로젝트마다 디자인(look)이 다르
 
 ### 공통: 화면 진입 시 나타나는 요소
 
-화면에 들어오면 나타나고 벗어나면 사라지는 동작은 모든 페이지가 같은 훅(`useReveal`, [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) 기반)을 사용하고, 등장 효과만 페이지마다 다르다.
+화면에 들어오면 나타나고 벗어나면 사라지는 동작은 모든 페이지가 같은 훅(`useReveal`, [`IntersectionObserver`](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) 기반)을 사용하고, 등장 효과만 페이지마다 다르다. `IntersectionObserver`는 요소가 기준 영역(보통 스크롤 영역)과 얼마나 겹치는지 브라우저가 계산해, 지정한 비율(threshold)을 넘나들 때마다 콜백을 호출하는 API다. 스크롤 이벤트마다 위치를 직접 계산하지 않아도 되므로 요소가 많아도 부담이 적다.
 
 | 페이지            | 등장 효과                                                                                              |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
@@ -80,7 +88,9 @@ Safari의 프로젝트 페이지는 프로젝트마다 디자인(look)이 다르
 | 큐알유·포트폴리오 | 아래 또는 왼쪽에서 슬라이드인                                                                          |
 | 숫자 띠           | 화면에 들어올 때마다 숫자가 0부터 증가한다 (앞뒤 글자는 유지, 보조 기술에는 처음부터 최종 값을 읽힌다) |
 
-처음에는 나타나는 기준과 사라지는 기준을 같게 두었다. 숨은 요소는 약간 아래로 이동해 있으므로, 화면 경계에 걸린 WTD 숫자 띠가 나타남과 사라짐을 반복하며 떨렸다. 이제 12% 넘게 보이면 나타나고, 화면에서 완전히 벗어나야 사라진다.
+처음에는 나타나는 기준과 사라지는 기준을 같게 두었다. 숨은 요소는 약간 아래로 이동해 있으므로, 화면 경계에 걸린 WTD 숫자 띠가 나타남과 사라짐을 반복하며 떨렸다. 나타나면 위로 올라와 기준을 넘고, 사라지면 다시 아래로 내려가 기준 밖으로 나가므로, 스크롤을 멈춰도 상태가 계속 뒤집혔다. 이제 12% 넘게 보이면 나타나고, 화면에서 완전히 벗어나야 사라진다(`threshold: [0, 0.12]`).
+
+![나타나는 기준과 사라지는 기준](./images/projects-one-list-reveal-threshold.svg '기준이 하나면 경계에 걸린 요소가 표시와 숨김을 반복한다. 12%와 0% 두 기준 사이에서는 직전 상태를 유지한다')
 
 ### 새싹 농장: 게임 화면과 스크롤 지도
 
@@ -122,7 +132,11 @@ Safari의 프로젝트 페이지는 프로젝트마다 디자인(look)이 다르
 
 원래의 제품 페이지 흐름은 변화가 적었다. 그래서 Apple 제품 페이지가 실제로 쓰는 장면 세 개를 넣었다.
 
-**1. 확대되는 노트북.** 첫 화면은 높이를 창 높이의 두 배 정도로 잡고 그 안의 무대를 고정해([`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position)), 스크롤하는 동안 제목은 흐려지고 아래에 작게 있던 노트북이 무대 가운데로 올라오며 확대된다. 진행도는 스크롤 이벤트마다 프레임당 한 번 측정해 CSS 변수 `--p`(0~1)로 전달하고, 위치와 크기는 CSS가 그 값으로 계산한다. React는 다시 렌더링하지 않는다. 좁은 창이나 동작 줄이기 설정에서는 무대를 고정하지 않고 처음부터 모두 표시한다.
+**1. 확대되는 노트북.** 첫 화면은 높이를 창 높이의 두 배 정도로 잡고 그 안의 무대를 고정해([`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position)), 스크롤하는 동안 제목은 흐려지고 아래에 작게 있던 노트북이 무대 가운데로 올라오며 확대된다. `position: sticky; top: 0`인 요소는 평소에는 일반 요소처럼 흐르다가, 스크롤로 위 끝이 스크롤 영역의 위 끝에 닿으면 그 자리에 고정되고, 부모 요소의 아래 끝이 올라오면 함께 밀려 올라간다. 부모(트랙)가 창보다 한 화면 더 길면, 그 한 화면만큼 스크롤하는 동안 무대가 고정되어 있다.
+
+![sticky 무대와 진행도](./images/projects-one-list-sticky-progress.svg '트랙을 지나는 동안 무대는 창에 고정되고, 스크롤한 비율이 --p로 들어간다')
+
+진행도는 스크롤 이벤트마다 프레임당 한 번 측정해 CSS 변수 `--p`(0~1)로 전달하고, 위치와 크기는 CSS가 그 값으로 계산한다. 계산식은 `(창 위 − 트랙 위) ÷ (트랙 높이 − 창 높이)`다. 창 높이가 800px이고 트랙이 1,600px이면, 트랙 위 끝이 창 위 끝보다 400px 올라간 시각에 `--p`는 0.5다. React 상태를 바꾸지 않고 요소의 스타일 변수만 갱신하므로, React는 다시 렌더링하지 않는다. 좁은 창이나 동작 줄이기 설정에서는 무대를 고정하지 않고 처음부터 모두 표시한다.
 
 <details><summary>노트북 장면 수정 과정</summary>
 
@@ -397,7 +411,7 @@ GitHub 앱의 고정 저장소, Finder, 터미널의 `project` 번호도 같은 
 
 ## 확인
 
-- Safari 화면 시험은 `apps/react/e2e/safari.spec.ts`에 12개 있다. 이 글과 관련된 시험은 다음과 같다.
+- Safari 화면 시험은 `apps/react/e2e/safari.spec.ts`에 12개 있다. 프로젝트 목록과 페이지 구성에 관련된 시험은 다음과 같다.
   - "이 사이트(MacFolio)도 프로젝트 탭으로 있고, 데모 버튼 없이 저장소 주소를 보여준다"
   - "포트폴리오(HYEONIVERSE) 탭은 데모 주소를 보여준다"
   - "프로젝트마다 페이지 짜임이 다르다: 신문 1면, 칸반 보드, 명함, 게임 화면, 차례와 장, 터미널"
@@ -408,11 +422,11 @@ GitHub 앱의 고정 저장소, Finder, 터미널의 `project` 번호도 같은 
 ## 남은 것·배운 것
 
 > [!WARNING] sticky가 동작하지 않는 조건
-> `position: sticky`는 조상 요소에 `overflow: hidden`이나 `transform`이 있으면 적용되지 않는다. 스크롤 장면을 별도의 긴 트랙에 넣은 뒤에야 고정됐다.
+> `position: sticky`는 조상 요소에 `overflow: hidden`이나 `transform`이 있으면 적용되지 않았다. sticky 요소는 가장 가까운 "스크롤 기능이 있는" 조상을 기준으로 고정되는데, `overflow`가 `hidden`·`scroll`·`auto`인 조상은 실제로 스크롤되지 않아도 그 기준이 된다. 그 조상 자체가 스크롤되지 않으므로 고정 효과가 나타나지 않는다. 스크롤 장면을 별도의 긴 트랙에 넣은 뒤에야 고정됐다.
 
 - 같은 데이터를 "화면을 그대로 옮겨 적은 값"이라는 이유로 별도로 관리하면, 결국 한쪽에만 추가하는 일이 생긴다. 두 목록의 순서를 비교하는 시험 하나가 그 규칙을 유지한다.
 - 서버 DB의 고정 저장소처럼 "배포 없이 바꾸는 값"은 코드 목록과 연결하지 않았다. 연결 여부는 누가 언제 바꾸는 값인지로 결정했다.
-- 장이 늘면서 이 글도 길어졌다. 한 장에 데모·실제 화면·음성이 겹겹이 붙어, 화면을 수정할 때마다 읽는 순서가 바뀌었다. 장마다 레이아웃(`look`)을 나눈 것이 그 변동을 줄였다.
+- 한 장에 데모·실제 화면·음성이 겹겹이 붙으면서, 화면을 수정할 때마다 읽는 순서가 바뀌었다. 장마다 레이아웃(`look`)을 나눈 뒤에는 한 장의 수정이 다른 장의 배치에 영향을 주지 않았다.
 
 ## 관련 글
 
@@ -421,5 +435,18 @@ GitHub 앱의 고정 저장소, Finder, 터미널의 `project` 번호도 같은 
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
 - [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)
+
+<details><summary>참고 문헌</summary>
+
+- GitHub Docs, [Pinning items to your profile](https://docs.github.com/en/account-and-profile/how-tos/profile-customization/pinning-items-to-your-profile)
+- MDN, [flex-grow](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow)
+- MDN, [min-width](https://developer.mozilla.org/en-US/docs/Web/CSS/min-width)
+- MDN, [Intersection Observer API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)
+- MDN, [position](https://developer.mozilla.org/en-US/docs/Web/CSS/position)
+- MDN, [overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)
+- MDN, [Using CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- MDN, [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver), [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+
+</details>
 
 #MacFolio #Safari #프로젝트

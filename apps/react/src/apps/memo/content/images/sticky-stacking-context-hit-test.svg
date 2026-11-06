@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>포인터 좌표에서 맨 위 요소가 이벤트를 받는 순서</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="600">클릭은 그 좌표에서 맨 위에 그려진 요소가 받는다</text>
+<text x="24" y="50" font-size="12" fill="#6e6e73" text-anchor="start">그리기 순서를 위에서부터 나열했다. 위쪽 판일수록 나중에 그려지고 사용자에게 가깝다</text>
+<text x="24" y="84" font-size="14" fill="#ff3b30" text-anchor="start" font-weight="600">수정 전 (sticky 도구 막대)</text>
+<line x1="174" y1="100" x2="174" y2="124" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="184" y="114" font-size="12" fill="#6e6e73" text-anchor="start">클릭 좌표</text>
+<rect x="24" y="130" width="284" height="54" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.8"/>
+<text x="36" y="152" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">.macos-titlebar</text>
+<text x="36" y="172" font-size="12" fill="#6e6e73" text-anchor="start">끌기 영역 · z-index 3</text>
+<rect x="24" y="194" width="284" height="96" rx="6" fill="none" stroke="#ff9f0a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="34" y="212" font-size="12" fill="#ff9f0a" text-anchor="start" font-weight="600">도구 막대: 쌓임 맥락, 창 안에서는 auto</text>
+<rect x="40" y="224" width="252" height="54" rx="6" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="1.2"/>
+<text x="52" y="246" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">.memo-tool · z-index 4</text>
+<text x="52" y="266" font-size="12" fill="#6e6e73" text-anchor="start">도구 막대 안에서만 비교</text>
+<text x="24" y="368" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">elementFromPoint → .macos-titlebar</text>
+<text x="24" y="388" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="600">버튼은 이벤트를 받지 못하고 창이 끌린다</text>
+<text x="332" y="84" font-size="14" fill="#0a84ff" text-anchor="start" font-weight="600">수정 후 (보통 흐름의 도구 막대)</text>
+<line x1="482" y1="100" x2="482" y2="124" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<text x="492" y="114" font-size="12" fill="#6e6e73" text-anchor="start">클릭 좌표</text>
+<rect x="332" y="130" width="284" height="54" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.8"/>
+<text x="344" y="152" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">.memo-tool</text>
+<text x="344" y="172" font-size="12" fill="#6e6e73" text-anchor="start">버튼 · z-index 4</text>
+<rect x="332" y="194" width="284" height="54" rx="6" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="1.2"/>
+<text x="344" y="216" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">.macos-titlebar</text>
+<text x="344" y="236" font-size="12" fill="#6e6e73" text-anchor="start">끌기 영역 · z-index 3</text>
+<rect x="332" y="258" width="284" height="54" rx="6" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="1.2"/>
+<text x="344" y="280" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">도구 막대 배경</text>
+<text x="344" y="300" font-size="12" fill="#6e6e73" text-anchor="start">쌓임 맥락 없음 · 보통 흐름</text>
+<text x="332" y="368" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">elementFromPoint → .memo-tool</text>
+<text x="332" y="388" font-size="12" fill="#0a84ff" text-anchor="start" font-weight="600">버튼 클릭 동작, 빈 곳은 끌기 영역이 받는다</text>
+</svg>

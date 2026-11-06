@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>/proc/stat의 cpu 줄을 1분 간격으로 두 번 읽어 사용 시간과 유휴 시간의 차이로 CPU 사용률을 계산하는 예시</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">/proc/stat의 cpu 줄로 CPU 사용률 계산하기 (예시 값)</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73">단위는 부팅 후 누적된 USER_HZ 틱(보통 1/100초). 뒤의 guest·guest_nice는 user에 이미 포함되어 제외한다</text>
+<rect x="98" y="62" width="61" height="24" rx="5" fill="#e5f1ff"/><text x="128.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#0a84ff">user</text>
+<rect x="163" y="62" width="61" height="24" rx="5" fill="#e5f1ff"/><text x="193.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#0a84ff">nice</text>
+<rect x="228" y="62" width="61" height="24" rx="5" fill="#e5f1ff"/><text x="258.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#0a84ff">system</text>
+<rect x="293" y="62" width="61" height="24" rx="5" fill="#f2f2f7"/><text x="323.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#6e6e73">idle</text>
+<rect x="358" y="62" width="61" height="24" rx="5" fill="#f2f2f7"/><text x="388.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#6e6e73">iowait</text>
+<rect x="423" y="62" width="61" height="24" rx="5" fill="#e5f1ff"/><text x="453.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#0a84ff">irq</text>
+<rect x="488" y="62" width="61" height="24" rx="5" fill="#e5f1ff"/><text x="518.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#0a84ff">softirq</text>
+<rect x="553" y="62" width="61" height="24" rx="5" fill="#e5f1ff"/><text x="583.5" y="78" font-size="12" font-weight="700" text-anchor="middle" fill="#0a84ff">steal</text>
+<text x="20" y="110" font-size="13" font-weight="700" fill="#1d1d1f">0초</text>
+<text x="128.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">52000</text>
+<text x="193.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">10</text>
+<text x="258.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">18000</text>
+<text x="323.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">900000</text>
+<text x="388.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">2000</text>
+<text x="453.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">0</text>
+<text x="518.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">600</text>
+<text x="583.5" y="110" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">1500</text>
+<text x="20" y="140" font-size="13" font-weight="700" fill="#1d1d1f">60초</text>
+<text x="128.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">52300</text>
+<text x="193.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">10</text>
+<text x="258.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">18120</text>
+<text x="323.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">911480</text>
+<text x="388.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">2040</text>
+<text x="453.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">0</text>
+<text x="518.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">620</text>
+<text x="583.5" y="140" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">1520</text>
+<text x="20" y="170" font-size="13" font-weight="700" fill="#0a84ff">차이</text>
+<text x="128.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">300</text>
+<text x="193.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">0</text>
+<text x="258.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">120</text>
+<text x="323.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">11480</text>
+<text x="388.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">40</text>
+<text x="453.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">0</text>
+<text x="518.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">20</text>
+<text x="583.5" y="170" font-size="12" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">20</text>
+<line x1="20" y1="148" x2="620" y2="148" stroke="#e5e5ea"/>
+<rect x="20" y="194" width="295" height="70" rx="8" fill="#e5f1ff"/>
+<text x="32" y="216" font-size="13" font-weight="700" fill="#0a84ff">사용(busy) 시간의 차이</text>
+<text x="32" y="236" font-size="12" fill="#1d1d1f">user+nice+system+irq+softirq+steal</text>
+<text x="32" y="254" font-size="12" fill="#1d1d1f" font-family="SFMono-Regular, Menlo, monospace">300+0+120+0+20+20 = 460</text>
+<rect x="325" y="194" width="295" height="70" rx="8" fill="#f2f2f7"/>
+<text x="337" y="216" font-size="13" font-weight="700" fill="#6e6e73">유휴(idle) 시간의 차이</text>
+<text x="337" y="236" font-size="12" fill="#1d1d1f">idle+iowait</text>
+<text x="337" y="254" font-size="12" fill="#1d1d1f" font-family="SFMono-Regular, Menlo, monospace">11480+40 = 11520</text>
+<rect x="20" y="278" width="600" height="62" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="34" y="304" font-size="14" fill="#1d1d1f">CPU 사용률 = 460 ÷ (460 + 11520) × 100 = <tspan font-weight="700" fill="#0a84ff">3.8%</tspan></text>
+<text x="34" y="326" font-size="12" fill="#6e6e73">누적값 자체가 아니라 두 번 읽은 사이의 차이를 사용한다. 그래서 처음 읽은 값은 기준값으로만 쓴다</text>
+</svg>

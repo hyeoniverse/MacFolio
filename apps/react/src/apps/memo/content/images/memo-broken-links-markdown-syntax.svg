@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 424" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Markdown 원문이 HTML을 거쳐 화면에 표시되는 모습</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="424" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="600">Markdown 원문이 화면에 표시되기까지</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73" text-anchor="start">파서가 원문을 HTML로 바꾸고, 브라우저가 그 HTML을 화면에 그린다</text>
+<text x="24" y="84" font-size="12" fill="#6e6e73" text-anchor="start" font-weight="600">원문 (.md 파일)</text>
+<text x="240" y="84" font-size="12" fill="#6e6e73" text-anchor="start" font-weight="600">파서가 만든 HTML</text>
+<text x="480" y="84" font-size="12" fill="#6e6e73" text-anchor="start" font-weight="600">화면</text>
+<rect x="24" y="96" width="196" height="92" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<rect x="240" y="96" width="220" height="92" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<rect x="480" y="96" width="136" height="92" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="34" y="116" font-size="12" fill="#0a84ff" text-anchor="start" font-weight="600">링크</text>
+<text x="34" y="138" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">[이전 글](/memo/x)</text>
+<text x="250" y="120" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">&lt;a href="/memo/x"&gt;</text>
+<text x="250" y="140" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">  이전 글&lt;/a&gt;</text>
+<line x1="222" y1="142.0" x2="236" y2="142.0" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<line x1="462" y1="142.0" x2="476" y2="142.0" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="492" y="140" font-size="14" fill="#0a84ff" text-anchor="start">이전 글</text>
+<line x1="492" y1="144" x2="539" y2="144" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="492" y="168" font-size="12" fill="#34c759" text-anchor="start">누르면 /memo/x로 이동</text>
+<rect x="24" y="198" width="196" height="92" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<rect x="240" y="198" width="220" height="92" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<rect x="480" y="198" width="136" height="92" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="34" y="218" font-size="12" fill="#0a84ff" text-anchor="start" font-weight="600">각주</text>
+<text x="34" y="240" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">요청[^p]을</text>
+<text x="34" y="258" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace"></text>
+<text x="34" y="276" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">[^p]: 사전 요청</text>
+<text x="250" y="222" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">요청&lt;sup&gt;</text>
+<text x="250" y="242" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">  &lt;a href="#fn-p"&gt;1&lt;/a&gt;</text>
+<text x="250" y="262" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">&lt;/sup&gt;을</text>
+<line x1="222" y1="244.0" x2="236" y2="244.0" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<line x1="462" y1="244.0" x2="476" y2="244.0" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="492" y="234" font-size="14" fill="#1d1d1f">요청<tspan baseline-shift="super" font-size="12" fill="#0a84ff">1</tspan>을</text>
+<line x1="492" y1="250" x2="604" y2="250" stroke="#d1d1d6"/>
+<text x="492" y="272" font-size="12" fill="#6e6e73" text-anchor="start">1. 사전 요청 ↩</text>
+<rect x="24" y="300" width="196" height="92" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<rect x="240" y="300" width="220" height="92" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<rect x="480" y="300" width="136" height="92" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="34" y="320" font-size="12" fill="#0a84ff" text-anchor="start" font-weight="600">주소만</text>
+<text x="34" y="342" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">- 이전 글: /memo/x</text>
+<text x="250" y="324" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">&lt;li&gt;</text>
+<text x="250" y="344" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">  이전 글: /memo/x</text>
+<text x="250" y="364" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">&lt;/li&gt;</text>
+<line x1="222" y1="346.0" x2="236" y2="346.0" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<line x1="462" y1="346.0" x2="476" y2="346.0" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="492" y="344" font-size="13" fill="#1d1d1f" text-anchor="start">• 이전 글: /memo/x</text>
+<text x="492" y="372" font-size="12" fill="#ff3b30" text-anchor="start">누를 수 없는 글자</text>
+<text x="24" y="412" font-size="12" fill="#6e6e73" text-anchor="start">링크는 [글자](주소) 형식일 때만 만들어진다. 주소만 적은 /memo/x는 일반 글자로 남는다</text>
+</svg>

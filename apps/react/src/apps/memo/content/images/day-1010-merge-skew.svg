@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>각자 통과한 두 PR이 main에서 합쳐져 실패하는 과정</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">CI는 PR 브랜치를 검사한다. 두 변경의 조합은 검사하지 않는다</text>
+<line x1="40" y1="170" x2="610" y2="170" stroke="#1d1d1f" stroke-width="3"/>
+<text x="40" y="196" font-size="12" fill="#6e6e73">main</text>
+<circle cx="80" cy="170" r="8" fill="#1d1d1f"/><text x="20" y="150" font-size="12" fill="#1d1d1f">기준 커밋</text>
+<path d="M80 170 C120 90 160 90 220 90" stroke="#0a84ff" stroke-width="2" fill="none"/>
+<rect x="220" y="66" width="170" height="48" rx="8" fill="#eef5ff" stroke="#0a84ff"/><text x="305" y="86" font-size="12" font-weight="600" fill="#0a84ff" text-anchor="middle">#158 좋아요</text><text x="305" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">경로 6개 추가 · CI 통과</text>
+<path d="M80 170 C120 260 160 260 220 260" stroke="#ff9f0a" stroke-width="2" fill="none"/>
+<rect x="220" y="236" width="200" height="48" rx="8" fill="#fff6e8" stroke="#ff9f0a"/><text x="320" y="256" font-size="12" font-weight="600" fill="#b25d00" text-anchor="middle">#160 경로 표 시험</text><text x="320" y="274" font-size="12" fill="#1d1d1f" text-anchor="middle">좋아요 전 경로로 표 작성 · CI 통과</text>
+<path d="M390 90 C430 90 440 170 460 170" stroke="#0a84ff" stroke-width="2" fill="none"/><circle cx="460" cy="170" r="8" fill="#0a84ff"/><text x="460" y="196" font-size="12" fill="#0a84ff" text-anchor="middle">먼저 머지</text>
+<path d="M420 260 C470 260 520 170 540 170" stroke="#ff9f0a" stroke-width="2" fill="none"/><circle cx="540" cy="170" r="9" fill="#ff3b30"/>
+<rect x="470" y="40" width="160" height="68" rx="8" fill="#fff1f0" stroke="#ff3b30"/><text x="550" y="62" font-size="12" font-weight="700" fill="#ff3b30" text-anchor="middle">main CI 실패</text><text x="550" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">코드에는 좋아요 경로가 있고</text><text x="550" y="98" font-size="12" fill="#1d1d1f" text-anchor="middle">표에는 없다: "표에 없는 경로"</text>
+<path d="M545 110 L541 158" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="20" y="316" font-size="12" fill="#6e6e73">두 PR은 각자의 브랜치에서 통과했다. 실패는 두 변경이 처음 만난 main의 머지 커밋에서만 나타났다</text>
+</svg>

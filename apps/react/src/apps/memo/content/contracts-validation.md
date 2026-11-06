@@ -7,9 +7,18 @@ seriesOrder: 2
 summary: 연락 메일·배경화면·파일·사이트 프로필·관리자 설정·AI 데모의 검사 규칙을 "화면도 알아야 하는가"로 나눠 공유 값은 contracts의 zod 스키마로, Node API·비밀 키는 서버에 남겼다. 거절 문구와 검사 순서는 superRefine·when·pipe로 옛 if 문과 같게 유지했다.
 ---
 
-[@macfolio/contracts 패키지 글](/memo/contracts-package)에서 서버와 화면이 같은 요청·응답 모양을 쓰게 했다. 이 글은 그 뒤 **입력 검사 규칙**이 중심인 도메인을 다룬다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 연락 메일([#203](https://github.com/hyeoniverse/MacFolio/pull/203))·배경화면([#204](https://github.com/hyeoniverse/MacFolio/pull/204))·업로드 파일([#205](https://github.com/hyeoniverse/MacFolio/pull/205))·사이트 프로필([#207](https://github.com/hyeoniverse/MacFolio/pull/207))과, 6단계(서버)에서 옮긴 관리자 설정([#235](https://github.com/hyeoniverse/MacFolio/pull/235))·AI 데모 입력([#236](https://github.com/hyeoniverse/MacFolio/pull/236))이다.
+## 배경: 입력 검사를 화면과 서버가 함께 하는 이유
 
-`@macfolio/contracts`[^contracts]는 API 요청·응답의 데이터 구조를 [zod](https://zod.dev/) 스키마로 정의하는 패키지다. 서버(NestJS)는 공유 함수 `parse(스키마, 입력)`로 요청 본문을 검사하고, 화면(React)은 같은 스키마에서 타입과 상수를 가져온다. `parse`는 내부에서 `safeParse`를 실행해 `{ value } | { errors: string[] }`를 반환하고, `requestBody`는 객체가 아닌 본문을 빈 객체로 간주해 칸마다 문구를 내게 한다.
+입력 검사(validation)는 사용자가 보낸 값이 규칙에 맞는지 확인하는 작업이다. 예를 들어 연락 메일의 이름 칸은 "비어 있지 않고, 30자 이하이고, 한 줄"이어야 한다. 이 검사는 보통 두 번 한다.
+
+- **화면 검사**: 요청을 보내기 전에 칸 아래에 문구를 표시해 사용자가 바로 고치게 한다. 이름을 비우면 "이름을 입력해주세요."가 칸 아래에 표시된다.
+- **서버 검사**: 화면을 거치지 않은 요청(curl, 다른 클라이언트)도 거절한다. 같은 값을 curl로 보내면 400 응답에 같은 문구가 담긴다.
+
+화면 검사는 사용자 편의를 위한 것이고, 데이터를 지키는 검사는 서버 검사다. 두 검사의 규칙이 같아야 화면에서 통과한 값이 서버에서 거절되는 일이 없다.
+
+[@macfolio/contracts 패키지 글](/memo/contracts-package)에서 서버와 화면이 같은 요청·응답 모양을 쓰게 했다. 이어서 **입력 검사 규칙**이 중심인 도메인을 옮겼다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 연락 메일([#203](https://github.com/hyeoniverse/MacFolio/pull/203))·배경화면([#204](https://github.com/hyeoniverse/MacFolio/pull/204))·업로드 파일([#205](https://github.com/hyeoniverse/MacFolio/pull/205))·사이트 프로필([#207](https://github.com/hyeoniverse/MacFolio/pull/207))과, 6단계(서버)에서 옮긴 관리자 설정([#235](https://github.com/hyeoniverse/MacFolio/pull/235))·AI 데모 입력([#236](https://github.com/hyeoniverse/MacFolio/pull/236))이다.
+
+`@macfolio/contracts`[^contracts]는 API 요청·응답의 데이터 구조를 [zod](https://zod.dev/) 스키마로 정의하는 패키지다. zod는 `z.string().max(30)`처럼 규칙을 코드로 선언하고 실제 값이 그 규칙에 맞는지 실행 시에 검사하는 라이브러리다. 서버(NestJS)는 공유 함수 `parse(스키마, 입력)`로 요청 본문을 검사하고, 화면(React)은 같은 스키마에서 타입과 상수를 가져온다. `parse`는 내부에서 `safeParse`를 실행해 `{ value } | { errors: string[] }`를 반환하고, `requestBody`는 객체가 아닌 본문을 빈 객체로 간주해 칸마다 문구를 내게 한다.
 
 ## 주석으로만 맞추던 같은 규칙
 
@@ -71,6 +80,10 @@ Node API를 사용하는 코드가 하나라도 포함되면 그 패키지를 im
 | 제어 문자[^cc] | (검사하지 않음)                     | 읽을 수 없는 글자가 있습니다.    |
 
 화면이 먼저 필터링하므로 사이트에서 메일을 보내는 사용자가 서버 문구를 볼 일은 거의 없다. 그래서 차이가 드러나지 않았다.
+
+서버만 검사하던 두 규칙(한 줄, 제어 문자)은 메일 헤더를 보호하는 규칙이다. 메일 헤더는 `Subject: …`처럼 한 줄에 하나씩 적는 형식이라, 제목에 줄바꿈이 섞이면 그 뒤의 글자가 새 헤더로 해석될 수 있다.
+
+![제목에 줄바꿈과 Bcc 줄을 넣은 입력이 헤더 한 줄을 더 만드는 경우와, 스키마의 셋째 규칙에서 거절되는 경우](./images/contracts-validation-header-injection.svg '제목 칸의 줄바꿈은 셋째 규칙(한 줄)에서 거절된다')
 
 ![전: 화면 validateContact와 서버 parseContact가 같은 규칙을 다른 문구로 적었다. 후: contracts/contact.ts 하나를 화면과 서버가 함께 쓴다](./images/contracts-contact-rules.svg '전: 화면과 서버가 같은 규칙을 각자, 문구는 다르게. 후: contracts/contact.ts의 칸마다 규칙 목록을 화면은 칸 아래 문구로, 서버는 400 배열로')
 
@@ -149,11 +162,11 @@ export const ContactInput = requestBody({
 
 ![전: DB·서버·화면에 40이 각각. 후: contracts/wallpapers.ts의 WALLPAPER_NAME_MAX와 cleanWallpaperName을 서버와 화면이 쓴다](./images/contracts-wallpapers-name.svg)
 
-| 방법                                          | 좋은 점                                       | 나쁜 점                                                                                    |
-| --------------------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| 주석을 더 자세히 작성                         | 변경할 코드가 없다                            | 일치를 검사하는 코드가 없다는 문제가 그대로 남는다                                         |
-| 화면이 서버 `GET /wallpapers`에서 한도를 수신 | 서버 한 곳이 정한다                           | 이름 칸 하나를 렌더링하려고 요청이 하나 늘어난다. 서버가 응답하지 않으면 한도를 알 수 없다 |
-| contracts에 한도·정리 함수·타입을 정의 (채택) | 빌드 시각에 같은 값이 들어간다. 시험으로 고정 | 패키지를 하나 거친다 (앞 네 도메인에서 이미 쓰는 구조)                                     |
+검토한 방법은 세 가지다.
+
+- 주석을 더 자세히 작성: 변경할 코드는 없지만 일치를 검사하는 코드가 없다는 문제가 그대로 남는다.
+- 화면이 서버 `GET /wallpapers`에서 한도를 수신: 이름 칸 하나를 렌더링하려고 요청이 하나 늘고, 서버가 응답하지 않으면 한도를 알 수 없다.
+- **contracts에 한도·정리 함수·타입을 정의 (채택)**: 빌드 시각에 같은 값이 들어가고 시험으로 고정할 수 있다.
 
 한도는 실행 중에 바뀌지 않는 상수라 런타임에 조회할 이유가 없다.
 
@@ -180,13 +193,9 @@ export const Wallpaper = z.object({ id, name, image, thumbnail, createdAt });
 
 이름 정리 함수는 서버에 있던 코드를 그대로 옮겼다. 확장자를 제거한 뒤 다시 `trim`하는 이유는 "사진 .jpg"처럼 확장자 앞에 공백이 있는 이름 때문이다. 40자로 자르는 과정에서 문자열의 `slice` 대신 [`Array.from`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from)을 사용하는 이유는 ==이모지 같은 문자를 중간에서 자르지 않기 위해서==다. 문자열의 `slice`와 `length`는 [UTF-16 코드 단위](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#utf-16_characters_unicode_code_points_and_grapheme_clusters)로 동작해서, 40번째 위치에 이모지가 걸리면 서로게이트 쌍[^surrogate]의 절반만 남는다.
 
-| 식                        | 결과                   |
-| ------------------------- | ---------------------- |
-| `'🌊'.length`             | `2` (UTF-16 코드 단위) |
-| `Array.from('🌊').length` | `1` (코드 포인트)      |
-| `'🌊'.slice(0, 1)`        | `'\uD83C'` (깨진 문자) |
+![가😀는 코드 포인트 2개, UTF-16 코드 단위 3개. slice는 서로게이트 쌍을 가르고 Array.from은 문자 단위로 자른다](./images/contracts-validation-utf16.svg '문자열의 length·slice는 코드 단위, Array.from은 코드 포인트 단위')
 
-PostgreSQL의 [`char_length`](https://www.postgresql.org/docs/current/functions-string.html)도 문자(코드 포인트) 단위로 집계하므로 `Array.from` 방식과 기준이 같다.
+예를 들어 `'🌊'.length`는 `2`, `Array.from('🌊').length`는 `1`이고, `'🌊'.slice(0, 1)`은 깨진 문자 `'\uD83C'`를 반환한다. PostgreSQL의 [`char_length`](https://www.postgresql.org/docs/current/functions-string.html)도 문자(코드 포인트) 단위로 집계하므로 `Array.from` 방식과 기준이 같다.
 
 `WallpaperRename`은 [`z.preprocess`](https://zod.dev/api#preprocess)에서 이름을 정리하고, 정리한 결과가 `null`(빈 이름)이면 `z.string()`이 거절한다. 거절 문구는 서버가 기존에 반환하던 "이름을 입력해 주세요."다.
 
@@ -236,21 +245,17 @@ DB의 CHECK 제약은 유지했다. 그 값은 마이그레이션 SQL에 고정�
 
 첫째 묶음은 화면에도 같은 값이 있었다.
 
-| 화면 위치                    | 정의되어 있던 값                                                                                                                           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 편집기 `attachments.ts`      | 업로드 전 크기 검사용 `10 * 1024 * 1024`                                                                                                   |
-| 이미지 선택 `ImagePanel.tsx` | 파일 선택 창의 [`accept`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept) 문자열 `"image/png,image/jpeg,…"` |
-| 휴지통 `filesApi.ts`         | 응답 타입 `ServerFile` 인터페이스                                                                                                          |
+- 편집기 `attachments.ts`: 업로드 전 크기 검사용 `10 * 1024 * 1024`
+- 이미지 선택 `ImagePanel.tsx`: 파일 선택 창의 [`accept`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/accept) 문자열 `"image/png,image/jpeg,…"`
+- 휴지통 `filesApi.ts`: 응답 타입 `ServerFile` 인터페이스
 
 둘째 묶음은 화면이 알 필요가 없다. 파일 내용(매직 바이트[^magic])을 읽고, Node의 `crypto` 모듈을 사용하고, HTTP 헤더([`Content-Disposition`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition))를 생성한다.
 
 ![왼쪽 contracts/files.ts: 한도·주소·이미지 형식·uploadIdsIn·응답 모양. 오른쪽 api/files/rules.ts: sniffImage·cleanFileName·contentDisposition·newUploadId. 아래 서버와 화면이 왼쪽을 쓴다](./images/contracts-files-split.svg)
 
-| 방법                                           | 좋은 점                      | 나쁜 점                                                                                 |
-| ---------------------------------------------- | ---------------------------- | --------------------------------------------------------------------------------------- |
-| `rules.ts` 전체를 contracts로 이동             | 한 번에 끝난다               | `node:crypto`·`Buffer`가 함께 포함되어 브라우저 번들 빌드가 실패한다                    |
-| 화면이 서버 파일을 직접 import                 | 새 파일이 없다               | React 앱이 `apps/api`에 의존한다. 서버 의존성(Nest·Prisma)이 화면 번들에 포함될 수 있다 |
-| "화면도 알아야 하는가"로 나눠 첫째 묶음만 이동 | contracts에 순수 값만 남는다 | 서버 `rules.ts`가 re-export해야 한다                                                    |
+- `rules.ts` 전체를 contracts로 이동: `node:crypto`·`Buffer`가 함께 포함되어 브라우저 번들 빌드가 실패한다.
+- 화면이 서버 파일을 직접 import: React 앱이 `apps/api`에 의존하고, 서버 의존성(Nest·Prisma)이 화면 번들에 포함될 수 있다.
+- "화면도 알아야 하는가"로 나눠 첫째 묶음만 이동: contracts에 순수 값만 남는다. 서버 `rules.ts`는 옮긴 값을 re-export한다.
 
 세 번째를 선택했다.
 
@@ -294,6 +299,8 @@ export function sniffImage(data: Uint8Array): string | null {
 | JPEG | `FF D8 FF`                                       |
 | GIF  | `47 49 46 38` (`GIF8`)                           |
 | WebP | `52 49 46 46` (`RIFF`) + 8번째 바이트부터 `WEBP` |
+
+![PNG는 89 50 4E 47로, 이름만 바꾼 GIF는 GIF8로 판별되고 SVG는 어떤 서명과도 일치하지 않는다](./images/contracts-validation-magic-bytes.svg '이름을 사진.png로 바꾼 GIF도 내용의 앞부분으로 image/gif가 된다')
 
 > [!CAUTION] SVG를 이미지로 받지 않는 이유
 > SVG는 스크립트를 포함할 수 있어서 의도적으로 이미지로 판별하지 않는다. 이 판단은 서버가 저장하기 전에 하는 보안 검사라 화면에 배치할 이유가 없다.
@@ -540,7 +547,7 @@ export const SpeechInput = body({
 <summary>전후 코드 비교: apps/api/src/common/demo.ts → packages/contracts/src/demos.ts</summary>
 
 ```ts
-// 전: apps/api/src/common/demo.ts — 값 하나를 받아 검사하고, 틀리면 던진다
+// 전: apps/api/src/common/demo.ts: 값 하나를 받아 검사하고, 틀리면 던진다
 export function demoText(value: unknown, { max, empty, refused, lines = false }) {
 	const raw = typeof value === 'string' ? value : '';
 	const text = lines ? /* 줄바꿈은 남기고 빈 줄만 줄인다 */ : raw.replace(/\s+/g, ' ').trim();
@@ -551,7 +558,7 @@ export function demoText(value: unknown, { max, empty, refused, lines = false })
 	return text;
 }
 
-// 후: packages/contracts/src/demos.ts — 규칙을 받아 스키마를 만든다
+// 후: packages/contracts/src/demos.ts: 규칙을 받아 스키마를 만든다
 export const demoText = ({ max, empty, refused, tooLong, lines = false }: DemoTextRules) =>
 	z.unknown().optional().transform((value, ctx) => {
 		const text = tidy(typeof value === 'string' ? value : '', lines);
@@ -584,7 +591,7 @@ export const demoText = ({ max, empty, refused, tooLong, lines = false }: DemoTe
 
 ![데모 입력 스키마를 서버와 화면이 함께 쓰는 구조](./images/demo-input-schemas-shared.svg '규칙은 contracts 한 곳, 서버는 검사에, 화면은 상한과 이름에 쓴다')
 
-| 방법                                          | 좋은 점                                             | 걸린 점                                                                                |
+| 방법                                          | 좋은 점                                             | 단점                                                                                   |
 | --------------------------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | 주석을 유지하고 시험으로 일치 확인            | 코드를 옮기지 않는다                                | 서버와 화면 값이 같은지 확인하는 시험이 별도로 필요하고, 정규식은 비교하기 어렵다      |
 | 서버가 상한을 API 응답으로 제공               | 한 곳에서 수정한다                                  | 화면이 값을 쓰기 전에 요청이 하나 추가되고, 정규식 같은 함수는 응답으로 전달할 수 없다 |
@@ -669,22 +676,15 @@ texts: z
 - **화면 이름 칸의 `maxlength` 단위.** 브라우저는 [`maxlength`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/maxlength)를 UTF-16 코드 단위로 집계하고, 서버와 DB는 코드 포인트로 집계한다. 이모지 40개로 된 배경화면 이름은 서버와 DB 기준으로 40자라 허용되지만, 화면에서는 80 코드 단위라 이모지 20개까지만 입력된다. 화면이 더 엄격한 방향이라 저장 오류는 생기지 않는다.
 - **데모 입력의 화면 사전 검사.** 화면은 데모의 상한과 이름만 가져오고, 입력을 스키마로 사전 검사하지는 않는다. 방문자가 주소를 입력하면 서버 응답을 받은 뒤에야 거절 문구가 표시된다. 화면에서도 `parse(SpeechInput, …)`를 먼저 호출하면 불필요한 요청 하나를 줄일 수 있다.
 - **차단 단어 목록의 위치.** `BLOCKED`가 화면 번들에도 포함된다. 현재는 정규식 네 개라 번들 크기에 영향이 거의 없지만, 목록이 길어지면 서버에만 보관하는 편이 낫다.
-- **마이그레이션의 한도 값.** DB CHECK 제약의 값과 contracts 값의 일치는 시험으로 검사하지 못한다.
 
-정리하면 다음과 같다.
+작업에서 확인한 점은 네 가지다.
 
-1. 주석의 "같다"는 보장이 아니다. 연락 메일의 두 문구는 "화면이 먼저 필터링하므로 서버 문구는 아무도 보지 않는다"는 전제 때문에 어긋난 채 유지되었다. 같아야 하는 값은 한 곳에 정의하고 양쪽이 import해야 한다.
-2. ==작업량은 규칙이 아니라 검사 순서에 있었다==. 사용자에게 표시되는 첫 거절 이유가 바뀌면 동작이 바뀐 것이다. 오류 문구와 순서를 시험으로 먼저 고정한 뒤 옮겨야 "동작 변화 없음"을 시험 결과로 확인할 수 있다.
-3. 이미 정상 동작하는 코드도 배치 규칙에 맞추기 위해 옮길 가치가 있다. 여덟 도메인 중 하나만 다르면 다음 작업자가 그 예외 때문에 규칙 자체를 다시 확인해야 한다.
-4. 변경량이 작은 도메인(배경화면)을 먼저 처리하면 "모든 요청을 스키마로 바꿀 필요는 없다" 같은 판단 기준을 적은 비용으로 정할 수 있다.
+1. 주석의 "같다"는 보장이 아니다. 연락 메일의 두 문구는 "화면이 먼저 필터링하므로 서버 문구는 아무도 보지 않는다"는 전제 때문에 어긋난 채 유지되었다.
+2. ==작업량은 규칙이 아니라 검사 순서에 있었다==. 첫 거절 이유가 바뀌면 동작이 바뀐 것이므로, 문구와 순서를 시험으로 먼저 고정한 뒤 옮겼다.
+3. 이미 정상 동작하는 코드(사이트 프로필)도 배치 규칙에 맞추면 다음 작업자가 예외를 확인할 필요가 없다.
+4. 변경량이 작은 도메인(배경화면)에서 "모든 요청을 스키마로 바꿀 필요는 없다"는 기준을 먼저 정했다.
 
-### 같은 방식으로 옮기는 순서
-
-1. 현재 서버가 반환하는 오류 문구를 시험으로 먼저 고정한다. 화면은 이 문구를 그대로 표시하므로 문구가 바뀌면 사용자에게 보이는 안내가 달라진다.
-2. zod 스키마를 만들고 서버의 if 문을 `parse(스키마, 입력)`로 교체한다.
-3. 화면의 입력 검사와 상수도 같은 패키지에서 import하도록 교체한다.
-
-상한을 바꾸려면 `packages/contracts/src/demos.ts`나 `settings.ts`의 상수 하나만 수정한다. 서버의 검사와 화면의 글자 수 표시가 함께 바뀐다.
+같은 방식으로 옮기는 순서는 ① 서버의 오류 문구를 시험으로 고정, ② zod 스키마를 만들고 서버의 if 문을 `parse(스키마, 입력)`로 교체, ③ 화면의 입력 검사와 상수를 같은 패키지에서 import하도록 교체다. 상한을 바꾸려면 `packages/contracts/src/demos.ts`나 `settings.ts`의 상수 하나만 수정한다. 서버의 검사와 화면의 글자 수 표시가 함께 바뀐다.
 
 ## 직접 확인하는 방법
 
@@ -698,9 +698,7 @@ pnpm --filter @macfolio/api test:e2e            # DATABASE_URL의 PostgreSQL이 
 cd apps/react && npx playwright test e2e/mail.spec.ts e2e/wallpapers.spec.ts e2e/site-profile.spec.ts --project=desktop-chromium
 ```
 
-`ContactInput`의 필드 이름을 하나 바꿔 보면 `pnpm typecheck`가 서버와 화면에서 동시에 실패한다. 확인한 뒤에는 변경을 되돌린다. 서버가 실제로 거절하는지는 상한을 넘는 글을 보내 확인한다. 응답은 400이고, 어느 칸이 어떤 이유로 거절됐는지가 본문에 포함된다. 정확한 경로와 요청 본문 형식은 [Swagger](https://macfolio-api.hyeoniverse.com/docs)에 있다.
-
-참고 문서: [Zod API](https://zod.dev/api), [Zod 오류 문구 지정](https://zod.dev/error-customization), [NestJS 파이프와 검증](https://docs.nestjs.com/pipes), [PostgreSQL CHECK 제약](https://www.postgresql.org/docs/current/ddl-constraints.html).
+`ContactInput`의 필드 이름을 하나 바꾸면 `pnpm typecheck`가 서버와 화면에서 동시에 실패한다(확인 후 되돌린다). 상한을 넘는 글을 보내면 400 응답 본문에 거절 이유가 담긴다. 정확한 경로와 요청 본문 형식은 [Swagger](https://macfolio-api.hyeoniverse.com/docs)에 있다.
 
 ## 관련 글
 
@@ -716,6 +714,19 @@ cd apps/react && npx playwright test e2e/mail.spec.ts e2e/wallpapers.spec.ts e2e
 - [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)
 - [Turnstile 사람 확인을 requireHuman 하나로 묶고 설정 테이블로 켜고 끄기](/memo/privacy-security-settings)
 - [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes): 데모가 사용하는 유료 API의 호출 횟수를 제한하는 이유
+
+<details>
+<summary>참고 문헌</summary>
+
+- Zod, [Defining schemas](https://zod.dev/api), [Customizing errors](https://zod.dev/error-customization)
+- NestJS, [Pipes](https://docs.nestjs.com/pipes)
+- PostgreSQL, [5.5. Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html), [9.4. String Functions](https://www.postgresql.org/docs/current/functions-string.html)
+- MDN, [String: UTF-16 characters, Unicode code points, and grapheme clusters](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#utf-16_characters_unicode_code_points_and_grapheme_clusters)
+- W3C, [PNG Specification: PNG signature](https://www.w3.org/TR/png-3/#5PNG-file-signature)
+- Wikipedia, [List of file signatures](https://en.wikipedia.org/wiki/List_of_file_signatures), [Email injection](https://en.wikipedia.org/wiki/Email_injection)
+- RFC 5322, [Internet Message Format](https://www.rfc-editor.org/rfc/rfc5322): 헤더 필드는 한 줄(CRLF로 끝나는 줄)에 하나씩 적는다
+
+</details>
 
 [^contracts]: 서버(`apps/api`)와 화면(`apps/react`)이 함께 쓰는 요청·응답 스키마 패키지. 서버는 스키마로 검사하고, 화면은 타입과 상수를 import한다.
 

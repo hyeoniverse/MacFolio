@@ -7,7 +7,7 @@ seriesOrder: 2
 summary: 1,861줄 데모 파일, 600줄대 사이드바·사진 앱, 1,629줄 profile.ts를 분리했다. 둘 이상이 쓰는 코드만 공유 모듈로, 서로 쓰는 타입은 model 파일로 빼 순환을 막고, 폴더의 index.ts 재내보내기로 외부 import 27곳을 유지했다.
 ---
 
-이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에서 큰 파일을 분리한 작업 세 건의 기록이다. 2단계 "큰 파일 나누기"의 두 작업과, 1단계 세 번째 항목인 `shared/profile.ts` 분리를 함께 다룬다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에서 큰 파일을 분리한 작업 세 건이다. 2단계 "큰 파일 나누기"의 두 작업과, 1단계 세 번째 항목인 `shared/profile.ts` 분리를 함께 다룬다.
 
 | 대상                                    | 전              | 후                            | 핵심 방법                         | PR                                                       |
 | --------------------------------------- | --------------- | ----------------------------- | --------------------------------- | -------------------------------------------------------- |
@@ -15,7 +15,21 @@ summary: 1,861줄 데모 파일, 600줄대 사이드바·사진 앱, 1,629줄 pr
 | `FolderSidebar.tsx`, `PhotosMobile.tsx` | 697줄, 662줄    | 본체 345줄, 337줄             | 공유 타입을 model 파일로          | [#190](https://github.com/hyeoniverse/MacFolio/pull/190) |
 | `shared/profile.ts`                     | 1,629줄 한 파일 | 12개 파일, 가장 큰 파일 668줄 | 폴더 + `index.ts` 재내보내기      | 커밋 `8c429bda8`                                         |
 
-세 작업 모두 동작을 바꾸지 않는 코드 이동이다. ==목적은 줄 수 감소가 아니라 수정할 위치를 찾는 시간을 줄이는 것이다==. 실제로 세 작업 모두 전체 줄 수는 늘었다.
+세 작업 모두 동작을 바꾸지 않는 코드 이동이다. ==목적은 줄 수 감소가 아니라 수정할 위치를 찾는 시간을 줄이는 데 있다==. 실제로 세 작업 모두 전체 줄 수는 늘었다.
+
+## 배경: 모듈과 import
+
+JavaScript·TypeScript에서 파일 하나는 모듈 하나다. 모듈은 `export`로 바깥에 공개할 이름을 정하고, 다른 모듈은 `import`로 그 이름을 가져온다. 예를 들어 `color.ts`가 `export function contrast(…)`를 선언하면, `Themes.tsx`는 `import { contrast } from './color'`로 그 함수를 사용한다. `import`의 문자열(`'./color'`)은 모듈 지정자(module specifier)라고 하며, 번들러(Vite)와 TypeScript가 이 문자열을 실제 파일 경로로 해석한다.
+
+큰 파일을 여러 파일로 나누면 원래 한 파일 안에서 바로 참조하던 이름이 파일 경계를 넘게 된다. 그래서 분리 작업에는 세 가지 결정이 따른다.
+
+| 결정                                             | 예                                                               | 이 글의 절              |
+| ------------------------------------------------ | ---------------------------------------------------------------- | ----------------------- |
+| 여러 파일이 함께 쓰는 코드를 어디에 둘 것인가    | 발표 장 목록을 갤러리 데모와 변환 데모가 함께 사용               | CreativeDemos           |
+| 두 파일이 서로를 import하는 순환을 어떻게 피할까 | 사이드바와 폴더 줄이 같은 props 타입을 사용                      | 폴더 사이드바와 사진 앱 |
+| 바깥에서 쓰던 import 경로를 어떻게 유지할까      | 27개 파일이 `import { PROJECTS } from '@/shared/profile'`를 사용 | shared/profile          |
+
+순환 의존(circular dependency)은 A 모듈이 B를 import하고 B가 다시 A를 import하는 구조다. 모듈을 처음 실행할 때 한쪽이 아직 초기화되지 않은 값을 읽을 수 있고, 두 파일을 따로 이해하거나 시험하기 어려워진다. 이 저장소는 CI에서 [madge](https://github.com/pahen/madge)로 순환을 검사하고, 하나라도 있으면 실패한다.
 
 ## 분리 단위 선택
 
@@ -67,7 +81,7 @@ safari/project/creative/
 
 ### 분리 후 드러난 린트 규칙과 순수 함수
 
-- **react-refresh 규칙**: ESLint의 [`react-refresh/only-export-components`](https://github.com/ArnaudBarre/eslint-plugin-react-refresh)[^hmr] 규칙이 "컴포넌트와 훅을 한 파일에서 함께 export하지 말라"는 오류를 출력했다. 훅(`useLiveDemo`)과 칩 컴포넌트(`QuotaChip`)를 한 파일에 두었다가 두 파일로 분리했다. 한 파일에 모여 있을 때는 export 자체가 없어서 이 규칙이 적용되지 않았다. ==일부 린트 규칙은 파일 경계가 생긴 뒤에야 적용된다==.
+- **react-refresh 규칙**: 개발 서버는 파일을 저장하면 페이지 전체를 새로 고치지 않고 바뀐 모듈만 교체하며, React 컴포넌트의 상태(입력 중인 값, 열린 메뉴)도 유지한다. 이 기능을 React Fast Refresh라고 한다. ESLint의 [`react-refresh/only-export-components`](https://github.com/ArnaudBarre/eslint-plugin-react-refresh)[^hmr] 규칙이 "컴포넌트와 훅을 한 파일에서 함께 export하지 말라"는 오류를 출력했다. 훅(`useLiveDemo`)과 칩 컴포넌트(`QuotaChip`)를 한 파일에 두었다가 두 파일로 분리했다. 한 파일에 모여 있을 때는 export 자체가 없어서 이 규칙이 적용되지 않았다. ==일부 린트 규칙은 파일 경계가 생긴 뒤에야 적용된다==.
 - **순수 함수의 분리**: 색 계산(`contrast`, `readableAccent`, `textOnAccent`)은 DOM도 React도 필요 없지만 컴포넌트 파일 안에 있어서 시험 대상으로 인식되지 않았다. 별도 모듈로 분리한 직후 단위 시험 7개를 작성했다. 이전에는 테마 미리보기 화면에서 육안으로 확인하던 조건이 시험 코드로 남는다. 대비 기준은 [WCAG 2.1 대비(최소)](https://www.w3.org/TR/WCAG21/#contrast-minimum)의 4.5:1이고, 명도 조정은 [OKLab](https://bottosson.github.io/posts/oklab/) 색 공간에서 한다. 아래는 "연한 노랑을 흰 바탕 위에 올리면 어두워지되 여전히 노란 계열"을 확인하는 시험이다.
 
 ```ts
@@ -91,6 +105,10 @@ it('모자라면 바탕 반대쪽으로 명도를 옮겨 4.5를 넘기고, 색�
 | ----------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | Linux (CI)        | 대소문자 구분             | 두 파일을 별개로 인식, 시험 모두 통과                                                                                               |
 | macOS (개발 환경) | 대소문자 구분 안 함(기본) | `import { Slides } from './Slides'`가 `Slides.ts`를 먼저 찾다가 `slides.ts`를 선택. 그 파일에는 `Slides`가 없어 타입 검사·빌드 실패 |
+
+원인은 파일 시스템의 대소문자 처리 방식이다. Linux의 파일 시스템(ext4 등)은 `Slides.ts`와 `slides.ts`를 서로 다른 이름으로 저장한다. macOS의 기본 파일 시스템(APFS)은 대소문자를 보존해 표시하지만 이름을 비교할 때는 구분하지 않으므로, 두 이름을 같은 파일로 취급한다. 모듈 해석기는 `'./Slides'`에 확장자를 `.ts`, `.tsx` 순서로 붙여 파일을 찾는데, macOS에서는 첫 후보 `./Slides.ts`가 `slides.ts`와 일치해 그 파일을 선택한다.
+
+![대소문자만 다른 두 파일과 import 해석](./images/module-splitting-case-collision.svg 'Linux는 ./Slides.ts가 없어 Slides.tsx를 선택하고, macOS는 ./Slides.ts가 slides.ts와 일치해 Slides export가 없는 파일을 선택한다')
 
 목록 파일 이름을 `slideDeck.ts`로 바꿨다.
 
@@ -176,7 +194,7 @@ photos/
 ### 사이드바·사진 앱 분리 결과
 
 - 동작을 바꾸지 않는 코드 이동이라 새 시험을 작성하지 않고, 기존 시험이 그대로 통과하는지 확인했다. 메모 E2E(폴더 생성·이름 변경·끌어 옮기기·휴대폰 편집)와 휴대폰 사진 E2E(격자·크게 보기·검색)다.
-- CI의 순환 의존 검사(`pnpm cycles`, [madge](https://github.com/pahen/madge))가 `apps/react/src`에 순환이 없다고 출력했다. model 파일이 없었다면 이 단계에서 실패했을 것이다.
+- CI의 순환 의존 검사(`pnpm cycles`, [madge](https://github.com/pahen/madge))가 `apps/react/src`에 순환이 없다고 출력했다. model 파일 없이 두 파일로만 나누면 이 검사가 순환을 검출해 실패한다.
 - 변경은 11개 파일, 754줄 추가와 691줄 삭제다. 전체 줄 수가 63줄 늘어난 것은 분할한 파일마다 import와 export가 새로 생겼기 때문이다.
 
 ## import 경로를 유지하는 index.ts 재내보내기: shared/profile
@@ -219,7 +237,13 @@ shared/profile/
 
 ### 외부 import 27곳 유지
 
-파일 `shared/profile.ts`를 삭제하고 폴더 `shared/profile/`에 `index.ts`를 배치하면, `'@/shared/profile'`은 모듈 해석 규칙[^resolution]에 따라 그 `index.ts`로 해석된다. 외부에서 가져오는 27곳(`import { PROJECTS, type Project } from '@/shared/profile'`)과 `vite.config.ts`는 수정하지 않았다. 이슈에 기록한 "외부 import 경로는 유지" 조건 그대로다. 되돌릴 때도 폴더를 삭제하고 한 파일로 합치면 된다.
+재내보내기(re-export)는 다른 모듈의 이름을 가져와 그대로 다시 `export`하는 문법이다. `export { PROFILE } from './profile'` 한 줄은 `./profile`의 `PROFILE`을 import한 뒤 같은 이름으로 export하는 것과 같다. 폴더의 `index.ts`가 이 문법으로 하위 파일의 이름을 모아 두면, 바깥에서는 폴더 하나를 모듈 하나처럼 사용할 수 있다.
+
+파일 `shared/profile.ts`를 삭제하고 폴더 `shared/profile/`에 `index.ts`를 배치하면, `'@/shared/profile'`은 모듈 해석 규칙[^resolution]에 따라 그 `index.ts`로 해석된다.
+
+![같은 import 문자열이 가리키는 파일](./images/module-splitting-index-resolution.svg '분리 전에는 profile.ts로, 분리 후에는 profile.ts가 없으므로 profile/index.ts로 해석된다. index.ts는 하위 파일의 이름을 다시 내보내기만 한다')
+
+외부에서 가져오는 27곳(`import { PROJECTS, type Project } from '@/shared/profile'`)과 `vite.config.ts`는 수정하지 않았다. 이슈에 기록한 "외부 import 경로는 유지" 조건 그대로다. 되돌릴 때도 폴더를 삭제하고 한 파일로 합치면 된다.
 
 ### profile 분리 결과
 
@@ -276,8 +300,6 @@ cd ../.. && pnpm cycles      # madge로 model ↔ 컴포넌트 순환이 없는�
 
 `pnpm cycles`는 루트 [package.json](https://github.com/hyeoniverse/MacFolio/blob/main/package.json)의 스크립트다([madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles) 참고).
 
-참고 문서: [madge](https://github.com/pahen/madge), [git mv](https://git-scm.com/docs/git-mv), [eslint-plugin-react-refresh](https://github.com/ArnaudBarre/eslint-plugin-react-refresh), [React: 상태 로직을 리듀서로 옮기기](https://react.dev/learn/extracting-state-logic-into-a-reducer), [TypeScript 모듈 해석](https://www.typescriptlang.org/docs/handbook/modules/reference.html).
-
 ## 관련 글
 
 - [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles): 순환 import를 끊는 규칙
@@ -292,5 +314,21 @@ PR: [#189](https://github.com/hyeoniverse/MacFolio/pull/189), [#190](https://git
 [^hmr]: Vite의 React Fast Refresh는 컴포넌트만 export하는 파일에서만 상태를 유지한 채 모듈을 교체한다. 컴포넌트가 아닌 값을 함께 export하면 파일 전체를 다시 불러온다. 이 규칙은 그런 파일을 검출한다.
 
 [^resolution]: 디렉터리를 가리키는 import는 그 디렉터리의 `index.ts`(또는 `index.js`)로 해석된다. Vite와 TypeScript의 `bundler` 모듈 해석이 이 규칙을 따른다. [TypeScript 문서: Module resolution](https://www.typescriptlang.org/docs/handbook/modules/reference.html#directory-modules-index-file-resolution)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Modules Reference: Directory modules (index file resolution)](https://www.typescriptlang.org/docs/handbook/modules/reference.html#directory-modules-index-file-resolution), TypeScript 문서
+- [export: Re-exporting / Aggregating](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export#re-exporting_aggregating), MDN
+- [resolve.extensions](https://vite.dev/config/shared-options.html#resolve-extensions), Vite 문서
+- [madge](https://github.com/pahen/madge), GitHub
+- [eslint-plugin-react-refresh](https://github.com/ArnaudBarre/eslint-plugin-react-refresh), GitHub
+- [no-unused-vars](https://eslint.org/docs/latest/rules/no-unused-vars), ESLint 문서
+- [git mv](https://git-scm.com/docs/git-mv), Git 문서
+- [Understanding WCAG 2.1: Contrast (Minimum)](https://www.w3.org/TR/WCAG21/#contrast-minimum), W3C
+- [A perceptual color space for image processing (OKLab)](https://bottosson.github.io/posts/oklab/), Björn Ottosson
+- [Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer), React 문서
+
+</details>
 
 #MacFolio #리팩터링 #React #TypeScript

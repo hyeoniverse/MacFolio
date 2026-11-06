@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 390" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>iOS Safari에서 100vh는 도구 막대가 접힌 가장 큰 뷰포트 높이라 도구 막대가 보일 때 화면보다 길고, 100dvh는 지금 보이는 영역의 높이를 따른다</title>
+<rect width="640" height="390" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">100vh와 100dvh: 도구 막대가 보일 때의 높이</text>
+<rect x="60" y="64" width="150" height="290" rx="22" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="2"/>
+<rect x="72" y="80" width="126" height="20" rx="4" fill="#c7c7cc"/>
+<text x="135" y="94" font-size="12" fill="#1d1d1f" text-anchor="middle">주소 막대</text>
+<rect x="72" y="104" width="126" height="190" fill="#0a84ff" fill-opacity="0.18" stroke="#0a84ff" stroke-width="2"/>
+<rect x="72" y="298" width="126" height="40" rx="4" fill="#c7c7cc"/>
+<text x="135" y="322" font-size="12" fill="#1d1d1f" text-anchor="middle">도구 막대</text>
+<rect x="72" y="104" width="126" height="234" fill="none" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="135" y="196" font-size="13" font-weight="700" fill="#0a84ff" text-anchor="middle">100dvh</text>
+<text x="135" y="214" font-size="12" fill="#0a84ff" text-anchor="middle">보이는 영역</text>
+<text x="135" y="374" font-size="12" fill="#6e6e73" text-anchor="middle">도구 막대가 보이는 상태</text>
+<path d="M220 104 L220 338" stroke="#ff9f0a" stroke-width="2"/>
+<path d="M214 104 L226 104 M214 338 L226 338" stroke="#ff9f0a" stroke-width="2"/>
+<text x="230" y="226" font-size="12" fill="#ff9f0a">100vh</text>
+<text x="230" y="244" font-size="12" fill="#ff9f0a">(도구 막대 뒤까지)</text>
+<rect x="360" y="64" width="250" height="140" rx="10" fill="#f2f2f7"/>
+<text x="376" y="90" font-size="13" font-weight="700" fill="#1d1d1f">단위의 기준</text>
+<text x="376" y="114" font-size="12" fill="#1d1d1f">vh: 가장 큰 뷰포트(도구 막대 접힘)의 1%</text>
+<text x="376" y="136" font-size="12" fill="#1d1d1f">svh: 가장 작은 뷰포트의 1%</text>
+<text x="376" y="158" font-size="12" fill="#1d1d1f">dvh: 지금 보이는 뷰포트의 1%</text>
+<text x="376" y="186" font-size="12" fill="#6e6e73">도구 막대가 움직이면 dvh 값도 바뀐다</text>
+<rect x="360" y="220" width="250" height="134" rx="10" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="376" y="246" font-size="13" font-weight="700" fill="#1d1d1f">로딩 화면에 적용한 값</text>
+<text x="376" y="270" font-size="12" fill="#ff3b30">전: width 100vw · height 100vh</text>
+<text x="376" y="290" font-size="12" fill="#ff3b30">  홈 화면(100dvh)과 높이가 달랐다</text>
+<text x="376" y="316" font-size="12" fill="#34c759">후: inset 0 · height 100dvh</text>
+<text x="376" y="336" font-size="12" fill="#34c759">  홈 화면과 같은 상자</text>
+</svg>

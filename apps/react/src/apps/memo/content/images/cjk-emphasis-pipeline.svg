@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>remark가 Markdown을 읽고 쓰는 순서와 remark-cjk-friendly가 바꾸는 단계</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="24" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="600">remark가 Markdown을 읽고 쓰는 순서</text>
+<text x="24" y="50" font-size="12" fill="#6e6e73" text-anchor="start">remark-cjk-friendly는 읽기와 쓰기에서 구분자를 판정하는 두 단계에 규칙을 더한다</text>
+<text x="24" y="80" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">읽기: 읽기 화면·미리보기·버전 기록 (react-markdown)</text>
+<rect x="24" y="92" width="130" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.8"/>
+<text x="89" y="119" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">Markdown 원문</text>
+<text x="89" y="139" font-size="12" fill="#6e6e73" text-anchor="middle">**취소(…)**가</text>
+<line x1="156" y1="123" x2="176" y2="123" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="178" y="92" width="130" height="62" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.8"/>
+<text x="243" y="119" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">micromark</text>
+<text x="243" y="139" font-size="12" fill="#6e6e73" text-anchor="middle">토큰화·구분자 판정</text>
+<line x1="310" y1="123" x2="330" y2="123" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="332" y="92" width="130" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.8"/>
+<text x="397" y="119" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">mdast</text>
+<text x="397" y="139" font-size="12" fill="#6e6e73" text-anchor="middle">구문 트리</text>
+<line x1="464" y1="123" x2="484" y2="123" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="486" y="92" width="130" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.8"/>
+<text x="551" y="119" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">HTML</text>
+<text x="551" y="139" font-size="12" fill="#6e6e73" text-anchor="middle">&lt;strong&gt;…&lt;/strong&gt;</text>
+<text x="243" y="176" font-size="12" fill="#ff9f0a" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">+ micromark-extension-cjk-friendly</text>
+<text x="24" y="216" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">쓰기: 편집기 저장 (Milkdown)</text>
+<rect x="24" y="228" width="130" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.8"/>
+<text x="89" y="255" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">편집기 문서</text>
+<text x="89" y="275" font-size="12" fill="#6e6e73" text-anchor="middle">ProseMirror</text>
+<line x1="156" y1="259" x2="176" y2="259" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="178" y="228" width="130" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.8"/>
+<text x="243" y="255" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">mdast</text>
+<text x="243" y="275" font-size="12" fill="#6e6e73" text-anchor="middle">구문 트리</text>
+<line x1="310" y1="259" x2="330" y2="259" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="332" y="228" width="130" height="62" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.8"/>
+<text x="397" y="255" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">to-markdown</text>
+<text x="397" y="275" font-size="12" fill="#6e6e73" text-anchor="middle">구분자·문자 참조 판정</text>
+<line x1="464" y1="259" x2="484" y2="259" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="486" y="228" width="130" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.8"/>
+<text x="551" y="255" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">Markdown 원문</text>
+<text x="551" y="275" font-size="12" fill="#6e6e73" text-anchor="middle">저장할 글</text>
+<text x="397" y="312" font-size="12" fill="#ff9f0a" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">+ mdast-util-to-markdown-cjk-friendly</text>
+<text x="24" y="350" font-size="12" fill="#1d1d1f" text-anchor="start">두 단계가 같은 규칙을 써야 읽은 글을 다시 저장해도 원문이 바뀌지 않는다</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>npm 별칭으로 TypeScript 6과 7을 함께 설치한 구성</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">한 저장소에 TypeScript 두 개: 도구마다 다른 폴더를 읽는다</text>
+<rect x="20" y="56" width="170" height="52" rx="8" fill="#f2f2f7"/><text x="105" y="78" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">ESLint</text><text x="105" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">+ typescript-eslint</text>
+<rect x="20" y="170" width="170" height="52" rx="8" fill="#f2f2f7"/><text x="105" y="192" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">타입 검사·빌드</text><text x="105" y="210" font-size="12" fill="#6e6e73" text-anchor="middle">tsc 실행 파일</text>
+<rect x="250" y="56" width="370" height="52" rx="8" fill="#fff6e8" stroke="#ff9f0a"/><text x="266" y="78" font-size="13" font-weight="600" fill="#b25d00">node_modules/typescript</text><text x="266" y="96" font-size="12" fill="#1d1d1f">실제 내용: @typescript/typescript6 · JavaScript API 있음</text>
+<rect x="250" y="170" width="370" height="52" rx="8" fill="#eef5ff" stroke="#0a84ff"/><text x="266" y="192" font-size="13" font-weight="600" fill="#0a84ff">node_modules/@typescript/native</text><text x="266" y="210" font-size="12" fill="#1d1d1f">실제 내용: typescript 7.0 (Go) · JavaScript API 없음</text>
+<path d="M190 82 H246" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#a)"/><text x="218" y="74" font-size="12" fill="#6e6e73" text-anchor="middle">import</text>
+<path d="M190 196 H246" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/><text x="218" y="188" font-size="12" fill="#6e6e73" text-anchor="middle">실행</text>
+<path d="M105 108 L105 150" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/><text x="118" y="136" font-size="12" fill="#ff3b30">TS 7을 읽으면 "does not support TS 7.0"으로 중단</text>
+<rect x="20" y="244" width="600" height="40" rx="8" fill="#f2f2f7"/>
+<text x="36" y="269" font-size="12" fill="#1d1d1f">package.json: "typescript": "npm:@typescript/typescript6@^6.0.2", "@typescript/native": "npm:typescript@~7.0.2"</text>
+</svg>

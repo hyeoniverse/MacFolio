@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<title>API 배포 여부를 직전 push와 비교할 때와 서버에서 실행 중인 버전과 비교할 때의 차이</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">API 배포 여부를 정하는 기준</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73">커밋 A에서 API를 바꿨고 시험이 실패했다. 커밋 B는 화면만 바꿨다</text>
+<rect x="20" y="66" width="140" height="44" rx="8" fill="#f2f2f7" stroke="#ff3b30" stroke-width="2"/>
+<text x="90" y="86" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">실행 1: 커밋 A</text>
+<text x="90" y="102" font-size="12" fill="#ff3b30" text-anchor="middle">시험 실패, 배포 안 함</text>
+<line x1="160" y1="88" x2="196" y2="88" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="200" y="66" width="140" height="44" rx="8" fill="#f2f2f7" stroke="#34c759" stroke-width="2"/>
+<text x="270" y="86" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">실행 2: 커밋 B</text>
+<text x="270" y="102" font-size="12" fill="#34c759" text-anchor="middle">시험 통과</text>
+<text x="360" y="86" font-size="12" fill="#1d1d1f">서버의 API는 아직</text>
+<text x="360" y="102" font-size="12" fill="#1d1d1f">커밋 A 이전 버전</text>
+<rect x="20" y="128" width="290" height="186" rx="12" fill="#f2f2f7"/>
+<text x="36" y="154" font-size="14" font-weight="700" fill="#1d1d1f">전: 직전 push와 비교</text>
+<text x="36" y="182" font-size="12" fill="#1d1d1f">질문: A → B 사이에 API가 바뀌었나?</text>
+<text x="36" y="204" font-size="12" fill="#1d1d1f">답: 아니오 (B는 화면만 변경)</text>
+<rect x="36" y="222" width="258" height="34" rx="8" fill="#ff3b30"/>
+<text x="165" y="244" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">API 배포 생략</text>
+<text x="36" y="280" font-size="12" fill="#ff3b30">커밋 A의 API 변경이 서버에 반영되지</text>
+<text x="36" y="298" font-size="12" fill="#ff3b30">않은 채 남는다</text>
+<rect x="330" y="128" width="290" height="186" rx="12" fill="#f2f2f7"/>
+<text x="346" y="154" font-size="14" font-weight="700" fill="#1d1d1f">후: 서버 실행 버전과 비교</text>
+<text x="346" y="182" font-size="12" fill="#1d1d1f">질문: 서버의 버전 → B 사이에</text>
+<text x="346" y="204" font-size="12" fill="#1d1d1f">API가 바뀌었나? 답: 예 (A 포함)</text>
+<rect x="346" y="222" width="258" height="34" rx="8" fill="#0a84ff"/>
+<text x="475" y="244" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">API 배포</text>
+<text x="346" y="280" font-size="12" fill="#0a84ff">실패한 실행이 있어도 다음 성공한</text>
+<text x="346" y="298" font-size="12" fill="#0a84ff">실행이 서버를 최신으로 맞춘다</text>
+</svg>

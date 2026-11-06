@@ -7,7 +7,7 @@ seriesOrder: 3
 summary: 수집한 지표를 macOS의 활동 상태 보기 형태로 조회하는 앱을 만들었다. 탭 다섯 개, 정렬되는 표 하나, 라이브러리 없이 62줄로 렌더링한 SVG 그래프, 컨테이너 질의로 맞춘 좁은 창. 처음엔 관리자 전용이었다가 같은 날 공개 지표를 누구나 조회하게 바꿨다.
 ---
 
-[쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)에서 API를, [2](/memo/analytics-collect)에서 사이트의 수집을 만들었다. 마지막은 지표를 조회하는 화면이다. 하루 방문자 수와 많이 읽힌 글을 사이트 안에서 바로 확인하는 것이 목표였다.
+[쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)에서 지표를 계산하는 API를, [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)에서 사이트가 방문 이벤트를 수집하는 코드를 만들었다. 남은 부분은 그 지표를 사람이 읽는 화면이다. 하루 방문자 수와 많이 읽힌 글을 사이트 안에서 바로 확인하는 것이 목표였다.
 
 작업은 [#162](https://github.com/hyeoniverse/MacFolio/pull/162)다. 첫 커밋 하나에 14개 파일, 1,336줄이 추가됐다.
 
@@ -22,7 +22,11 @@ summary: 수집한 지표를 macOS의 활동 상태 보기 형태로 조회하�
 
 ## 왜 활동 상태 보기인가
 
-통계 화면은 보통 웹 대시보드 형태다. 이 사이트는 macOS 데스크톱이므로 그 안에 어울리는 앱 형태를 찾았다. macOS의 **활동 상태 보기(Activity Monitor)** 는 상단에 CPU·메모리·네트워크 탭이 있고, 가운데 표는 열 머리를 눌러 정렬하며, 하단에 작은 그래프가 있다. 통계를 표시하기에 적합한 구성이라 그대로 차용했다. 아이콘도 어두운 배경에 초록 선 그래프다.
+통계 화면은 보통 웹 대시보드 형태다. 이 사이트는 macOS 데스크톱을 재현하므로, 그 안에 어울리는 앱 형태를 찾았다. macOS의 **활동 상태 보기(Activity Monitor)** 는 Mac에서 실행 중인 프로세스의 CPU·메모리·에너지·디스크·네트워크 사용량을 보여 주는 기본 앱이다[^am]. 위쪽에 CPU·메모리·에너지·디스크·네트워크 탭이 있고, 가운데 표는 열 머리를 눌러 정렬하며, 아래쪽에 시간에 따른 사용량 그래프가 있다.
+
+![macOS 활동 상태 보기의 에너지 탭. 'Energy Impact' 열 머리에 정렬 화살표가 있고, 표 아래에 에너지 영향 그래프와 배터리 그래프가 있다](./images/analytics-activity-monitor-apple-energy.jpg 'macOS 활동 상태 보기의 에너지 탭: 정렬되는 표와 아래쪽 그래프 (Apple 사용 설명서)')
+
+"정렬되는 표 + 아래쪽 그래프 + 위쪽 탭" 구성은 방문 통계를 표시하기에도 적합하다. 탭은 지표 종류(개요, 유입 경로, 앱·글, 지역·기기, 실시간)로, 표는 항목별 방문 수로, 그래프는 일별 방문 추이로 바꾸면 된다. 그래서 구성을 그대로 차용했다. 아이콘도 어두운 배경에 초록 선 그래프다.
 
 ![활동 상태 보기 화면 구성](./images/analytics-activity-monitor-layout.svg '탭 다섯 개와 기간, 지표 칸 네 개, SVG 그래프, 정렬되는 표의 배치를 나타낸 도식')
 
@@ -42,8 +46,10 @@ summary: 수집한 지표를 macOS의 활동 상태 보기 형태로 조회하�
 
 기간은 오늘, 7일, 30일, 90일 중에서 선택한다. 메뉴 막대의 '보기' 메뉴에도 탭과 기간 항목을 배치했다.
 
+"직전 같은 길이 기간"은 고른 기간 바로 앞의 같은 일수다. 예를 들어 10월 1일~7일(7일)을 고르면 9월 24일~30일과 비교하고, 방문이 37에서 42로 늘었으면 "▲ 13.5%"를 표시한다.
+
 > [!NOTE] 순방문자 집계 방식
-> 순방문자 칸에는 "날마다 집계한 순방문자의 합"이라는 설명을 달았다. 쿠키 없이 하루 단위 해시로 집계하므로, 월요일과 화요일에 방문한 같은 사람은 두 명으로 집계된다([1편](/memo/analytics-api)).
+> 순방문자 칸에는 "날마다 집계한 순방문자의 합"이라는 설명을 달았다. 쿠키 없이 하루 단위 해시로 집계하므로, 월요일과 화요일에 방문한 같은 사람은 두 명으로 집계된다([분석 API](/memo/analytics-api)).
 
 ## 차트 라이브러리를 쓸까
 
@@ -57,7 +63,11 @@ summary: 수집한 지표를 macOS의 활동 상태 보기 형태로 조회하�
 
 ## 표: 정렬과 비율 막대
 
-표는 하나의 컴포넌트(`StatTable.tsx`)를 모든 탭이 공유한다. 열 머리(이름, 방문)를 누르면 그 열로 정렬하고, 다시 누르면 방향을 뒤집는다. 숫자 열은 내림차순, 이름 열은 가나다순으로 시작한다. 이름은 `localeCompare(…, 'ko')`로 비교하므로 한글이 영문보다 앞에 온다. 정렬 상태는 [`aria-sort`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-sort) 속성으로 보조 기술에 전달한다.
+표는 하나의 컴포넌트(`StatTable.tsx`)를 모든 탭이 공유한다. 열 머리(이름, 방문)를 누르면 그 열로 정렬하고, 다시 누르면 방향을 뒤집는다. 숫자 열은 내림차순, 이름 열은 가나다순으로 시작한다.
+
+이름은 `localeCompare(…, 'ko')`로 비교한다. `localeCompare`는 두 문자열을 지정한 언어의 사전 순서로 비교하는 함수다. 단순 비교(`a < b`)는 문자 코드 값으로 비교해 대문자가 소문자보다 앞에 오는 등 사람이 기대하는 순서와 다르다. 한국어 규칙으로 비교하면 `['메모', 'GitHub', '사진']`은 `메모, 사진, GitHub` 순서가 되어 한글이 영문보다 앞에 온다.
+
+정렬 상태는 [`aria-sort`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-sort) 속성으로 보조 기술에 전달한다. 스크린 리더는 열 머리를 읽을 때 "방문, 내림차순 정렬됨"처럼 정렬 방향을 함께 읽는다.
 
 ```ts
 const sorted = [...named].sort((a, b) => {
@@ -70,7 +80,7 @@ const sorted = [...named].sort((a, b) => {
 
 ![표의 정렬 순서](./images/analytics-activity-monitor-sort.svg '방문 열과 이름 열은 처음 정렬 방향이 다르다')
 
-행마다 전체에서 차지하는 비율을 막대로 렌더링한다. 이름은 화면 표시용으로 변환한다.
+행마다 전체에서 차지하는 비율을 막대로 렌더링한다. 예를 들어 앱 열기 합계가 200이고 메모가 80이면 메모 행의 막대는 칸 너비의 40%다. 이름은 화면 표시용으로 변환한다.
 
 | 원래 값            | 표시                                                                                                                                        |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -79,9 +89,15 @@ const sorted = [...named].sort((a, b) => {
 | 앱 이름 `memo`     | 앱 목록(`manifest.ts`)의 이름 "메모"                                                                                                        |
 | `memo/cra-to-vite` | "메모 › cra-to-vite"                                                                                                                        |
 
+`Intl.DisplayNames`는 브라우저에 내장된 다국어 데이터로 국가·언어 코드를 사람이 읽는 이름으로 바꾼다. `new Intl.DisplayNames(['ko'], { type: 'region' }).of('JP')`는 `'일본'`을 돌려준다. 국가 이름 표를 직접 만들 필요가 없다.
+
 "유입 경로"의 분류는 호스트를 규칙으로 나눈다. google·naver·daum 같은 검색 엔진은 '검색', linkedin·x·kakao·velog 같은 서비스는 '소셜', 빈 값은 '직접', 나머지는 '링크'다.
 
 ## 그래프: SVG 하나
+
+**SVG**(Scalable Vector Graphics)는 도형을 픽셀이 아니라 좌표와 명령으로 기술하는 이미지 형식이다. `viewBox="0 0 600 140"`은 그림 안의 좌표계를 가로 600, 세로 140으로 정한다는 뜻이고, `<path d="M0 120 L100 80 …">`는 (0, 120)에서 시작해 (100, 80)까지 직선을 긋는 명령이다. 화면에 표시하는 크기는 CSS로 따로 정하므로, 같은 좌표가 어떤 크기로든 확대·축소된다.
+
+그래서 그래프를 그리는 일은 "날짜별 숫자를 viewBox 안의 좌표로 바꾸는 일"이다.
 
 ![그래프를 그리는 순서](./images/analytics-activity-monitor-chart.svg '날짜 배열을 좌표로 바꾸고 path 세 개를 렌더링한다')
 
@@ -90,7 +106,22 @@ const x = (index: number) => (days.length === 1 ? WIDTH / 2 : (index / (days.len
 const y = (value: number) => HEIGHT - (value / max) * (HEIGHT - 12) - 2;
 ```
 
-`<svg>`에 선 두 개를 렌더링했다. 방문은 아래 영역을 옅게 채운 초록 선, 순방문자는 파란 점선이다. 창 폭에 맞춰 늘어나도록 [`preserveAspectRatio="none"`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio)을 지정했다. 이렇게 하면 선도 함께 늘어나 두꺼워지므로 [`vector-effect: non-scaling-stroke`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/vector-effect)로 두께를 유지한다. 스크린 리더에는 날짜별 숫자를 `aria-label`로 제공한다.
+`WIDTH = 600`, `HEIGHT = 140`에서 7일치 방문이 `[10, 30, 20, 40, 25, 35, 15]`라면 계산은 다음과 같다.
+
+| 날짜 순번 | 방문 | x = i/6 × 600 | y = 140 − v/40 × 128 − 2 |
+| --------- | ---- | ------------- | ------------------------ |
+| 0         | 10   | 0             | 106                      |
+| 1         | 30   | 100           | 42                       |
+| 3         | 40   | 300           | 10                       |
+| 6         | 15   | 600           | 90                       |
+
+SVG의 y축은 아래로 갈수록 커지므로 `HEIGHT`에서 빼서 큰 값을 위쪽에 둔다. 최댓값 40은 y = 10이 되어 위쪽 여백 12 안쪽에 닿는다.
+
+`<svg>`에 선 두 개를 렌더링했다. 방문은 아래 영역을 옅게 채운 초록 선, 순방문자는 파란 점선이다. 창 폭에 맞춰 늘어나도록 [`preserveAspectRatio="none"`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio)을 지정했다. 기본값은 가로세로 비율을 유지하며 남는 공간을 비워 두지만, `none`은 viewBox를 표시 영역에 맞춰 가로와 세로를 따로 늘린다. 이때 선도 함께 늘어나 가로로 두꺼워지므로 [`vector-effect: non-scaling-stroke`](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/vector-effect)로 화면에서의 두께를 유지한다.
+
+![같은 선을 가로로 3.6배 늘렸을 때 vector-effect가 없으면 가파른 구간이 두꺼워지고, non-scaling-stroke를 주면 두께가 일정하다](./images/analytics-activity-monitor-stroke.svg 'preserveAspectRatio="none"과 non-scaling-stroke (도식, 브라우저가 실제로 렌더링한 선)')
+
+스크린 리더에는 날짜별 숫자를 `aria-label`로 제공한다. 값은 `2026-10-01 10회, 2026-10-02 30회, …`처럼 날짜와 방문 수를 이어 붙인 문장이라, 그림을 볼 수 없는 사용자도 같은 정보를 받는다.
 
 ## 관리자에게만 (처음 설계)
 
@@ -107,13 +138,13 @@ const y = (value: number) => HEIGHT - (value / max) * (HEIGHT - 12) - 2;
 | 캠페인(`utm_*`)    | 잠김                       | 표시               |
 | 실시간             | 잠김 (이유와 로그인 버튼)  | 10초마다 다시 조회 |
 
-잠긴 영역에는 빈 칸 대신 "관리자만 볼 수 있습니다"와 이유, 관리자 로그인 버튼을 표시한다. 분류 규칙(검색·소셜·직접·링크)도 이때 화면에서 서버(`apps/api/src/analytics/rules.ts`의 `referrerGroup`)로 옮겼다. ==방문자에게 호스트를 보내지 않고 분류 결과만 보내려면 서버가 분류해야 한다==.
+잠긴 영역에는 빈 칸 대신 "관리자만 볼 수 있습니다"와 이유, 관리자 로그인 버튼을 표시한다. 분류 규칙(검색·소셜·직접·링크)도 이때 화면에서 서버(`apps/api/src/analytics/rules.ts`의 `referrerGroup`)로 옮겼다. ==방문자에게 호스트를 보내지 않고 분류 결과만 보내려면 서버가 분류해야 한다==. 예를 들어 서버가 `www.linkedin.com: 12`를 보내고 화면이 '소셜'로 바꿔 표시하면, 방문자는 개발자 도구의 네트워크 탭에서 원래 호스트를 그대로 확인할 수 있다.
 
 ## 다크 모드와 좁은 창
 
 색은 사이트의 테마 변수만 사용한다. 그래서 다크 모드는 별도 작업 없이 전환된다. 초록과 빨강(▲▼)만 앱 내부 변수로 정의했다.
 
-좁은 창과 휴대폰에서는 지표 칸이 두 줄로, 표가 한 열로 쌓인다. 화면 폭이 아니라 **창 폭**을 기준으로 해야 하므로, 미디어 질의 대신 컨테이너 질의([`@container`](https://developer.mozilla.org/en-US/docs/Web/CSS/@container))를 썼다. 데스크톱에서 창을 좁혀도 휴대폰과 같은 배치가 된다.
+좁은 창과 휴대폰에서는 지표 칸이 두 줄로, 표가 한 열로 쌓인다. 이 전환의 기준은 화면 폭이 아니라 **창 폭**이어야 한다. CSS의 **미디어 질의**(`@media`)는 브라우저 화면(뷰포트) 전체의 크기를 조건으로 쓰고, **컨테이너 질의**(`@container`)는 `container-type`을 지정한 조상 요소의 크기를 조건으로 쓴다[^container]. 이 사이트의 앱은 모두 화면보다 작은 창 안에 있으므로 컨테이너 질의를 썼다. 데스크톱에서 창을 좁혀도 휴대폰과 같은 배치가 된다.
 
 ```css
 .activity {
@@ -123,6 +154,8 @@ const y = (value: number) => HEIGHT - (value / max) * (HEIGHT - 12) - 2;
 	/* 지표 칸 두 줄, 표 한 열 */
 }
 ```
+
+![1440px 화면의 500px 창에서 미디어 질의는 화면 폭 1440px로 판단해 넓은 배치를 유지하고, 컨테이너 질의는 창 폭 500px로 판단해 지표 두 줄과 표 한 열로 바꾼다](./images/analytics-activity-monitor-container-query.svg '같은 500px 창에서 두 질의의 판단 (도식)')
 
 | 조건                     | `@media (max-width: 640px)` | `@container (max-width: 640px)` |
 | ------------------------ | --------------------------- | ------------------------------- |
@@ -182,5 +215,31 @@ curl -s "https://macfolio-api.hyeoniverse.com/analytics/summary?from=2026-10-01&
 - [트래픽 분석 서비스 나누기](/memo/analytics-service-split)
 - [서버 자원 보기](/memo/resource-monitor)
 - [UTM 분석](/memo/utm-analytics)
+
+[^am]: [Apple: 활동 상태 보기 사용 설명서](https://support.apple.com/ko-kr/guide/activity-monitor/welcome/mac).
+
+[^container]: [MDN: CSS container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries).
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Apple: 활동 상태 보기 사용 설명서](https://support.apple.com/ko-kr/guide/activity-monitor/welcome/mac)
+- [MDN: SVG viewBox](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/viewBox)
+- [MDN: SVG path의 d 속성](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/d)
+- [MDN: preserveAspectRatio](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/preserveAspectRatio)
+- [MDN: vector-effect](https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/vector-effect)
+- [MDN: CSS container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)
+- [MDN: String.prototype.localeCompare()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare)
+- [MDN: Intl.DisplayNames](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DisplayNames)
+- [MDN: aria-sort](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-sort)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- macOS 활동 상태 보기의 에너지 탭: Apple, [Mac용 활동 상태 보기 사용 설명서](https://support.apple.com/guide/activity-monitor/welcome/mac), 출처 표기
+
+</details>
 
 #MacFolio #트래픽분석 #데스크톱

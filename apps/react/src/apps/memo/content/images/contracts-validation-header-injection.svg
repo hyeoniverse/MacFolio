@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>제목 칸에 줄바꿈과 Bcc 줄을 넣으면 메일 헤더를 줄 단위로 해석하는 시스템에서 헤더가 하나 더 생기므로, 연락 메일 스키마는 이름과 제목에 줄바꿈을 허용하지 않는다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="350" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">제목 칸의 줄바꿈과 메일 헤더</text>
+
+<rect x="20" y="46" width="600" height="52" rx="8" fill="#f2f2f7"/>
+<text x="34" y="66" font-size="12" fill="#6e6e73">제목 칸에 입력한 값 (줄바꿈 포함)</text>
+<text x="34" y="86" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">"문의드립니다<tspan fill="#ff3b30" font-weight="700">\n</tspan>Bcc: someone@example.com"</text>
+
+<line x1="160" y1="98" x2="160" y2="126" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="480" y1="98" x2="480" y2="126" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+<text x="20" y="146" font-size="13" font-weight="700" fill="#ff3b30">검사하지 않고 헤더에 넣으면</text>
+<rect x="20" y="156" width="290" height="96" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace">
+<text x="32" y="180" fill="#1d1d1f">From: MacFolio &lt;…&gt;</text>
+<text x="32" y="200" fill="#1d1d1f">Subject: [MacFolio] 문의드립니다</text>
+<text x="32" y="220" fill="#ff3b30" font-weight="700">Bcc: someone@example.com</text>
+</g>
+<text x="32" y="242" font-size="12" fill="#6e6e73">줄 하나가 헤더 하나로 해석된다</text>
+
+<text x="340" y="146" font-size="13" font-weight="700" fill="#0a84ff">ContactInput의 subject 규칙</text>
+<rect x="340" y="156" width="280" height="96" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<g font-size="12">
+<text x="352" y="178" fill="#6e6e73">① 비어 있지 않은가: 통과</text>
+<text x="352" y="196" fill="#6e6e73">② 100자 이하인가: 통과</text>
+<text x="352" y="214" fill="#1d1d1f" font-weight="700">③ 한 줄인가: 실패, 여기서 멈춤</text>
+<text x="352" y="238" fill="#ff3b30">"이름과 제목은 한 줄로 써 주세요."</text>
+</g>
+
+<line x1="20" y1="276" x2="620" y2="276" stroke="#e5e5ea"/>
+<text x="20" y="298" font-size="12" fill="#6e6e73">제목은 Subject 헤더에, 이름은 본문 끝 "보낸 사람: 이름 &lt;이메일&gt;" 줄에 들어간다 (buildEmail)</text>
+<text x="20" y="316" font-size="12" fill="#6e6e73">그래서 이름·제목은 한 줄만 허용하고, 모든 칸에서 줄바꿈·탭 외의 제어 문자를 거부한다</text>
+<text x="20" y="334" font-size="12" fill="#6e6e73">이 규칙은 옮기기 전에는 서버에만 있었고, 지금은 화면도 같은 스키마로 먼저 검사한다</text>
+</svg>

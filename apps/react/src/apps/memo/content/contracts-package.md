@@ -7,13 +7,47 @@ seriesOrder: 1
 summary: 댓글·글·메시지·분석 이벤트의 요청·응답 모양을 서버와 화면이 각자 정의해 필드가 어긋나도 검출되지 않았다. packages/contracts에 zod 스키마를 정의해 서버는 parse로 검증하고 화면은 import type으로 타입만 가져오게 했다. desktop-core 타입에 고정하는 ZodType 선언과 도메인별 결과를 함께 기록한다.
 ---
 
+## 배경: 요청·응답의 모양과 계약
+
+웹 화면(React)과 API 서버(NestJS)는 HTTP로 JSON을 주고받는다. 예를 들어 방문자가 댓글을 작성하면 화면은 `POST /posts/<글 주소>/comments`에 다음 본문을 보내고, 서버는 저장한 댓글을 JSON으로 돌려준다(값은 예시).
+
+```text
+POST /posts/cra-to-vite/comments
+요청 본문  { "body": "좋은 글입니다", "turnstileToken": "<사람 확인 토큰>" }
+응답 본문  { "id": "…", "name": "…", "ipPrefix": "203.0", "isAdmin": false, "body": "좋은 글입니다",
+             "createdAt": "2026-10-11T03:00:00.000Z", "mine": true, "likes": 0, "liked": false }
+```
+
+이렇게 "어떤 필드가 어떤 타입으로 오가는가"를 요청·응답의 **모양**(shape)이라고 하고, 양쪽이 지키기로 한 모양을 **계약**(contract)이라고 부른다. 패키지 이름 `contracts`도 여기서 왔다. 계약을 지키려면 화면과 서버가 같은 정의를 읽어야 하는데, TypeScript 타입은 컴파일 시에만 존재하고 실행 시에는 사라진다. 그래서 서버가 실제로 들어온 JSON을 검사하려면 타입과 별도로 검사 코드(`if` 문)가 필요하고, 화면은 그 검사 규칙을 모른 채 타입만 따로 적게 된다.
+
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계 "타입과 데이터 구조"의 작업이다. 3단계에서 서버 요청을 [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch) 하나로 모았으므로, 다음 순서는 그 요청과 응답의 **모양**을 한 곳에 정의하는 것이다.
 
-이 글은 패키지를 만든 첫 PR([#200](https://github.com/hyeoniverse/MacFolio/pull/200), 댓글·좋아요)과, 같은 날 응답 모양을 옮긴 글([#201](https://github.com/hyeoniverse/MacFolio/pull/201))·메시지([#202](https://github.com/hyeoniverse/MacFolio/pull/202))·분석 이벤트([#206](https://github.com/hyeoniverse/MacFolio/pull/206)) 도메인을 다룬다. 입력 검사 규칙이 중심인 나머지 도메인(연락 메일·배경화면·파일·사이트 프로필·관리자 설정·데모)은 [검사 규칙 배치 글](/memo/contracts-validation)에 정리했다.
+패키지는 첫 PR([#200](https://github.com/hyeoniverse/MacFolio/pull/200), 댓글·좋아요)에서 만들었고, 같은 날 글([#201](https://github.com/hyeoniverse/MacFolio/pull/201))·메시지([#202](https://github.com/hyeoniverse/MacFolio/pull/202))·분석 이벤트([#206](https://github.com/hyeoniverse/MacFolio/pull/206))의 응답 모양을 옮겼다. 입력 검사 규칙이 중심인 나머지 도메인(연락 메일·배경화면·파일·사이트 프로필·관리자 설정·데모)은 [검사 규칙 배치 글](/memo/contracts-validation)에 있다.
 
 ## 서버와 화면이 같은 모양을 각자 정의했다
 
 댓글 하나의 모양은 서버 `comments.service.ts`의 `CommentView`와 화면 `commentsApi.ts`의 `Comment`에 각각 정의되어 있었다. 필드 열 개가 글자 그대로 같다. 서버에 `likes` 필드를 추가한 시각에 화면 쪽도 수정했는지는 사람이 기억해야 했다. 두 파일은 서로를 import하지 않으므로, ==둘이 어긋나도 타입 검사는 오류를 내지 않는다==.
+
+예를 들어 서버에서 `likes`의 이름을 `likeCount`로 바꾸고 화면 타입은 고치지 않았다고 하자.
+
+```ts
+// 예시: 서버 apps/api/src/comments/comments.service.ts만 수정한 경우
+interface CommentView {
+	id: string;
+	name: string;
+	body: string;
+	likeCount: number; /* … */
+}
+// 화면 apps/react/src/apps/memo/comments/commentsApi.ts는 그대로
+interface Comment {
+	id: string;
+	name: string;
+	body: string;
+	likes: number; /* … */
+}
+```
+
+두 파일이 각각 타입 검사를 통과하므로 `pnpm typecheck`는 성공한다. 실행하면 서버 응답에는 `likes`가 없어서 화면의 `comment.likes`는 `undefined`가 되고, 좋아요 수 자리에 빈 값이 표시된다.
 
 검증도 마찬가지다. "내용은 1~500자"라는 규칙과 "내용을 입력해주세요."라는 문구는 서버 `rules.ts`의 `if`문 안에만 있었다. 화면은 규칙을 모른 채 요청을 보내고, 400 응답이 오면 서버가 보낸 문구를 그대로 표시한다. 화면에서 글자 수를 안내하려면 `500`을 화면 코드에 한 번 더 적어야 한다.
 
@@ -30,7 +64,7 @@ summary: 댓글·글·메시지·분석 이벤트의 요청·응답 모양을 �
 
 ## @macfolio/contracts 패키지 구조
 
-`packages/contracts`(`@macfolio/contracts`)를 만들고 [zod](https://zod.dev/) 스키마를 정의했다. zod 스키마는 실행 시에 값을 검사하는 객체이면서, `z.infer`로 TypeScript 타입도 만들어 낸다. 그래서 스키마와 타입에 같은 이름을 붙인다.
+`packages/contracts`(`@macfolio/contracts`)를 만들고 [zod](https://zod.dev/) 스키마를 정의했다. zod는 "이 값은 1~500자 문자열이어야 한다" 같은 규칙을 `z.string().min(1).max(500)`처럼 코드로 선언하고, 실제 값이 그 규칙에 맞는지 실행 시에 검사하는 TypeScript 라이브러리다. zod 스키마는 실행 시에 값을 검사하는 객체이면서, `z.infer`로 TypeScript 타입도 만들어 낸다. 그래서 스키마와 타입에 같은 이름을 붙인다.
 
 ```ts
 // packages/contracts/src/comments.ts
@@ -57,7 +91,26 @@ export type Comment = z.infer<typeof Comment>;
 
 **화면**은 [`import type`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export)으로 타입만 가져온다. `import type`은 컴파일 후 제거되므로 ==화면 번들에 zod가 포함되지 않는다==(추가 크기 0바이트).
 
+같은 `CommentInput`에 실제 값을 넣으면 다음 결과가 나온다. 앞뒤 공백은 `.trim()`이 제거하고, 스키마에 없는 `name`·`password`는 `z.object`가 결과에서 제거한다.
+
+| 입력                                                            | `parse(CommentInput, 입력)`                            |
+| --------------------------------------------------------------- | ------------------------------------------------------ |
+| `{ body: '  좋은 글입니다  ', name: '익명', password: '1234' }` | `{ value: { body: '좋은 글입니다' } }`                 |
+| `{ body: '' }`                                                  | `{ errors: ['내용을 입력해주세요.'] }`                 |
+| `null`                                                          | `{ errors: ['내용을 입력해주세요.'] }`                 |
+| `{ body: 'a' × 501 }`                                           | `{ errors: ['내용은 500자까지 입력할 수 있습니다.'] }` |
+
+![zod 스키마 하나를 서버는 실행 시 검사에, 화면은 컴파일 시 타입에 쓴다](./images/contracts-package-schema-dual.svg '서버는 스키마 객체를 실행하고, 화면은 추론한 타입만 가져간다')
+
+### 패키지 해석: source 조건
+
 패키지 구조는 `desktop-core`와 같다. `package.json`의 [conditional exports](https://nodejs.org/api/packages.html#conditional-exports)에 `source` 조건을 지정해, 화면(Vite)은 `src`를 직접 읽고 서버는 빌드한 `dist`를 읽는다. Dockerfile은 `desktop-core`와 `contracts`를 함께 빌드한다.
+
+conditional exports는 `import '@macfolio/contracts'` 한 줄이 실행 환경에 따라 서로 다른 파일을 가리키게 하는 Node.js 패키지 기능이다. `exports` 객체의 조건을 위에서부터 확인해 처음 일치하는 경로를 사용한다. `source`는 Node.js가 정의한 조건이 아니라 이 저장소가 붙인 이름이라서, Vite 설정(`resolve.conditions`)과 화면의 `tsconfig.json`(`customConditions`)에서 지정한 도구만 이 조건을 사용한다.
+
+![exports 조건에 따라 화면 도구는 src를, 서버는 dist를 읽는다](./images/contracts-package-exports.svg '화면은 TypeScript 원본을 바로 읽고, Node로 실행하는 서버는 빌드한 JavaScript를 읽는다')
+
+이 구성의 결과로 화면에서는 스키마를 고치면 Vite 개발 서버가 바로 반영하고, 서버는 `pnpm --filter @macfolio/contracts build`로 `dist`를 다시 만든 뒤에야 바뀐 스키마를 사용한다.
 
 ### parse와 requestBody
 
@@ -466,14 +519,14 @@ export type Breakdown = (typeof BREAKDOWNS)[number]; // 화면의 유니언 타�
 
 첫날 여덟 PR로 화면 코드에서 직접 작성한 응답 타입은 모두 contracts 타입으로 교체되었다. 현재 `packages/contracts/src`에는 시험을 제외한 파일이 14개(도메인 스키마 12개, `parse.ts`, `index.ts`)다. `CONTRIBUTING.md`에도 "API 요청·응답의 모양은 `packages/contracts`의 zod 스키마에 정의한다"를 규칙으로 적었다.
 
-## 남은 과제와 정리
+## 남은 과제와 배운 점
 
 - **화면은 응답을 실행 시에 검증하지 않는다.** `parse(Comment, json)` 한 줄이면 되지만, 그러면 화면 번들에 zod가 포함된다. 서버가 잘못된 형식을 반환하면 화면에서 런타임 오류가 발생한다. 서버와 화면이 같은 저장소에서 함께 배포되므로 타입 검사만으로 충분하다고 판단했다.
 - **`ZodType<T>` 고정의 한계.** tsc는 스키마의 출력 값이 그 타입에 **할당 가능한지**만 검사한다. 타입에 선택 필드(`?:`)를 새로 추가하면, 스키마가 그 필드를 모른 채 버려도 컴파일은 통과한다. 그래서 타입에 필드를 추가하면 스키마도 함께 수정해야 한다.
 - **`MessageInput = CommentInput`은 제약이 아니다.** "현재 규칙이 같다"는 사실을 표현한 것이다. 메시지에 첨부 파일을 허용하거나 글자 수 한도를 늘리면 그 시점에 별도 스키마를 만든다.
 - **`hashIp`·`maskIp`의 위치.** 서버 메시지 모듈은 여전히 댓글 모듈에서 두 함수를 import한다. 방문자 식별용이라 이후 공용 모듈로 옮길 후보다(방문자 식별 방식은 [방문자 식별 글](/memo/visitor-identity)에 정리했다).
 
-정리하면 다음과 같다.
+작업에서 확인한 점은 네 가지다.
 
 1. 핵심은 ==스키마가 "값이면서 타입"==이라는 점이다. 타입만 공유하면 규칙이 서버에 남고, 규칙만 공유하면 타입이 따로 관리된다.
 2. 두 타입이 같다는 규칙을 주석으로만 유지하면 결국 차이가 생긴다. 메시지의 `mine`과 글의 `deletedAt`은 스키마를 한 곳에 정의한 뒤에야 발견되었다.
@@ -512,6 +565,20 @@ cd apps/react && npx playwright test e2e/messages.spec.ts --project=desktop-chro
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
 - [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
 - [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)
+
+<details>
+<summary>참고 문헌</summary>
+
+- Zod, [Intro](https://zod.dev/), [Basic usage](https://zod.dev/basics), [Defining schemas](https://zod.dev/api), [Customizing errors](https://zod.dev/error-customization)
+- TypeScript, [TypeScript 3.8 Release Notes: Type-Only Imports and Export](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-8.html#type-only-imports-and-export)
+- TypeScript, [TSConfig Reference: customConditions](https://www.typescriptlang.org/tsconfig/#customConditions)
+- Node.js, [Packages: Conditional exports](https://nodejs.org/api/packages.html#conditional-exports)
+- Vite, [Shared Options: resolve.conditions](https://vite.dev/config/shared-options.html#resolve-conditions)
+- Turborepo, [Configuring tasks: dependsOn](https://turborepo.com/docs/reference/configuration#dependson)
+- NestJS, [Validation](https://docs.nestjs.com/techniques/validation)
+- MDN, [Navigator.sendBeacon()](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon), [CORS: Simple requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS#simple_requests)
+
+</details>
 
 [^tsc]: TypeScript 컴파일러. 이 저장소에서는 `pnpm typecheck`가 패키지마다 `tsc`를 실행해 타입만 검사한다.
 

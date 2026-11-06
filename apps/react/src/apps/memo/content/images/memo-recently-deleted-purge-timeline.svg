@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>삭제 후 30일과 관리자 목록 조회 시각의 영구 삭제</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">10월 1일에 삭제한 글의 30일</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">예약 작업 없이, 관리자가 글 목록을 조회하는 요청에서 기한이 지난 글을 정리한다</text>
+<rect x="40" y="110" width="440" height="12" rx="6" fill="#0a84ff" opacity="0.25"/>
+<rect x="480" y="110" width="120" height="12" rx="6" fill="#ff3b30" opacity="0.25"/>
+<line x1="40" y1="100" x2="40" y2="132" stroke="#1d1d1f" stroke-width="2"/>
+<text x="40" y="90" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">0일</text>
+<text x="40" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle">10/1 삭제</text>
+<text x="40" y="170" font-size="12" fill="#0a84ff" text-anchor="middle">30일 남음</text>
+<line x1="216" y1="100" x2="216" y2="132" stroke="#0a84ff" stroke-width="2"/>
+<text x="216" y="90" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">12일</text>
+<text x="216" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle">10/13</text>
+<text x="216" y="170" font-size="12" fill="#0a84ff" text-anchor="middle">18일 남음</text>
+<line x1="480" y1="100" x2="480" y2="132" stroke="#ff9f0a" stroke-width="2"/>
+<text x="480" y="90" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">30일</text>
+<text x="480" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle">10/31 기한</text>
+<text x="480" y="170" font-size="12" fill="#ff9f0a" text-anchor="middle">목록에서 빠짐</text>
+<line x1="590" y1="100" x2="590" y2="132" stroke="#ff3b30" stroke-width="2"/>
+<text x="590" y="90" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">34일</text>
+<text x="590" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle">11/4</text>
+<text x="590" y="170" font-size="12" fill="#ff3b30" text-anchor="middle">관리자 접속</text>
+<rect x="20" y="196" width="290" height="118" rx="10" fill="#eaf3ff"/>
+<text x="36" y="220" font-size="13" font-weight="700" fill="#0a84ff">0~30일: 최근 삭제된 항목</text>
+<text x="36" y="244" font-size="12" fill="#1d1d1f">deleted = true, deletedAt = 10/1</text>
+<text x="36" y="266" font-size="12" fill="#1d1d1f">행마다 "30 − 지난 일수"일 남음</text>
+<text x="36" y="288" font-size="12" fill="#1d1d1f">되돌려 놓기·즉시 삭제 가능</text>
+<rect x="330" y="196" width="290" height="118" rx="10" fill="#fff1f0"/>
+<text x="346" y="220" font-size="13" font-weight="700" fill="#ff3b30">관리자 목록 조회: purgeExpired</text>
+<text x="346" y="244" font-size="12" fill="#1d1d1f">deletedAt &lt; 지금 − 30일인 행을 찾아</text>
+<text x="346" y="266" font-size="12" fill="#1d1d1f">본문·임시 저장·버전 삭제</text>
+<text x="346" y="288" font-size="12" fill="#1d1d1f">deleted = true, deletedAt = null만 남김</text>
+</svg>

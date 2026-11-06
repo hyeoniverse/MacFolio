@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>절대 시간 기준과 같은 실행 안의 상대 비교</title>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">전: 절대 시간 기준 (검색 한 번 평균 &lt; 5ms)</text>
+<g font-size="12.5" fill="#1d1d1f">
+<text x="24" y="76">Mac</text><rect x="150" y="62" width="17" height="20" rx="3" fill="#0a84ff"/><text x="174" y="77" fill="#6e6e73">0.2ms 통과</text>
+<text x="24" y="114">GitHub 러너</text><rect x="150" y="100" width="398" height="20" rx="3" fill="#ff3b30"/><text x="556" y="115" fill="#ff3b30">5.46ms 실패</text>
+</g>
+<line x1="514" y1="52" x2="514" y2="132" stroke="#1d1d1f" stroke-width="1.6" stroke-dasharray="5 3"/>
+<text x="514" y="148" font-size="12" text-anchor="middle" fill="#1d1d1f">기준 5ms</text>
+<text x="150" y="148" font-size="12" fill="#6e6e73">0ms</text>
+<text x="24" y="196" font-size="17" font-weight="700" fill="#1d1d1f">후: 같은 실행의 두 값 비교 (perQuery &lt; build / 5)</text>
+<text x="24" y="218" font-size="12" fill="#6e6e73">Mac에서 잰 값. 막대 길이는 0~14ms 눈금에 비례</text>
+<g font-size="12.5" fill="#1d1d1f">
+<text x="24" y="254">build</text><text x="24" y="270" font-size="12" fill="#6e6e73">240편 새로 생성</text>
+<rect x="150" y="244" width="341" height="20" rx="3" fill="#6e6e73"/><text x="498" y="259" fill="#6e6e73">10~14ms</text>
+<text x="24" y="304">perQuery</text><text x="24" y="320" font-size="12" fill="#6e6e73">검색 한 번 평균</text>
+<rect x="150" y="294" width="7" height="20" rx="2" fill="#34c759"/><text x="222" y="309" fill="#34c759">0.21~0.23ms 통과 (48~62배)</text>
+</g>
+<line x1="208" y1="234" x2="208" y2="330" stroke="#1d1d1f" stroke-width="1.6" stroke-dasharray="5 3"/>
+<text x="214" y="346" font-size="12" fill="#1d1d1f">기준 build / 5 ≈ 2.4ms</text>
+<rect x="24" y="364" width="592" height="50" rx="10" fill="#f2f2f7"/>
+<text x="40" y="386" font-size="12.5" fill="#1d1d1f">러너가 느리면 build와 perQuery가 함께 느려져 비율은 유지된다. 캐시가 깨져 검색마다</text>
+<text x="40" y="404" font-size="12.5" fill="#1d1d1f">검색용 글자를 다시 만들면 perQuery가 build와 비슷해져 비율이 1배 근처가 되고 실패한다.</text>
+</svg>

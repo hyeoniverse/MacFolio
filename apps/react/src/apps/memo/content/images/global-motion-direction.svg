@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker></defs>
+  <rect width="640" height="350" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">표시 중인 인덱스의 변화로 넘긴 방향 판별 (사진 5장, count = 5)</text>
+
+  <g font-size="13" text-anchor="middle">
+    <rect x="110" y="60" width="64" height="48" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="142" y="89" fill="#1d1d1f">0</text>
+    <rect x="194" y="60" width="64" height="48" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="226" y="89" fill="#1d1d1f">1</text>
+    <rect x="278" y="60" width="64" height="48" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="310" y="89" fill="#0a84ff">2</text>
+    <rect x="362" y="60" width="64" height="48" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="394" y="89" fill="#1d1d1f">3</text>
+    <rect x="446" y="60" width="64" height="48" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="478" y="89" fill="#1d1d1f">4</text>
+  </g>
+  <path d="M478,110 C478,150 142,150 142,112" fill="none" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#b)"/>
+  <text x="310" y="160" font-size="12" fill="#ff9f0a" text-anchor="middle">끝(4)에서 처음(0)으로: 순환하는 목록이면 "다음"</text>
+
+  <rect x="40" y="180" width="560" height="30" fill="#f2f2f7"/>
+  <text x="120" y="200" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">이전 → 새 인덱스</text>
+  <text x="300" y="200" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">moveDirection 결과</text>
+  <text x="490" y="200" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">적용되는 애니메이션</text>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <text x="120" y="232">2 → 3 (→ 키)</text><text x="300" y="232" fill="#0a84ff">next</text><text x="490" y="232">slide-from-right</text>
+    <text x="120" y="258">2 → 1 (← 키)</text><text x="300" y="258" fill="#0a84ff">prev</text><text x="490" y="258">slide-from-left</text>
+    <text x="120" y="284">4 → 0 (끝에서 →)</text><text x="300" y="284" fill="#0a84ff">next</text><text x="490" y="284">slide-from-right</text>
+    <text x="120" y="310">2 → 2, 보기 모드만 변경</text><text x="300" y="310" fill="#0a84ff">null (reset)</text><text x="490" y="310">fade-in</text>
+  </g>
+  <line x1="40" y1="242" x2="600" y2="242" stroke="#e5e5ea"/>
+  <line x1="40" y1="268" x2="600" y2="268" stroke="#e5e5ea"/>
+  <line x1="40" y1="294" x2="600" y2="294" stroke="#e5e5ea"/>
+  <text x="320" y="340" font-size="12" fill="#6e6e73" text-anchor="middle">입력 수단(키·버튼·스와이프·사진 띠)과 무관하게 인덱스만 비교해 data-direction에 기록한다</text>
+</svg>

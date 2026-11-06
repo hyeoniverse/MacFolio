@@ -9,7 +9,19 @@ summary: 새싹 농장만 창 안에서 실행할 수 있던 것을 HYEONIVERSE�
 
 ![프로젝트 앱 창](./images/project-apps.jpg '배포한 사이트를 창 안에 띄운다. 실행 중이면 Dock 끝에 아이콘이 나타난다')
 
-10월 3일 밤, 데스크톱 화면을 실제 Mac처럼 구성하는 작업 중에 배포한 사이트가 있는 프로젝트마다 [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe)으로 사이트를 표시하는 앱을 만들기로 했다. 다음 날 [#87](https://github.com/hyeoniverse/MacFolio/pull/87)을 정리하면서 앱 목록을 별도로 작성하지 않고 `PROJECTS`를 읽도록 변경했다. 프로젝트 앱의 Dock 고정도 Projects 목록에 있으면 자동으로 적용되어야 한다고 보고, 실제로 그렇게 동작하는지 확인했다.
+데스크톱 화면을 실제 Mac처럼 구성하는 작업 중에, 배포한 사이트가 있는 프로젝트마다 그 사이트를 창 안에 표시하는 앱을 만들기로 했다. 다음 날 [#87](https://github.com/hyeoniverse/MacFolio/pull/87)을 정리하면서 앱 목록을 별도로 작성하지 않고 `PROJECTS`를 읽도록 변경했다. 프로젝트 앱의 Dock 고정도 프로젝트 목록에 있으면 자동으로 적용되도록 했다.
+
+## 배경
+
+### iframe
+
+[iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe)은 웹 페이지 안에 다른 웹 페이지를 넣어 표시하는 HTML 요소다. `<iframe src="https://example.com">`처럼 주소를 지정하면, 그 영역 안에서 해당 페이지가 독립된 문서로 실행된다. 지도·동영상 플레이어를 블로그 글 안에 넣을 때 주로 사용한다.
+
+iframe 안의 페이지와 바깥 페이지의 출처(origin: 프로토콜·도메인·포트의 조합)가 다르면, 브라우저의 동일 출처 정책에 따라 두 문서는 서로의 내용을 읽거나 조작할 수 없다. 예를 들어 바깥의 MacFolio 코드는 iframe 안 NewPick 페이지의 DOM에 접근할 수 없고, 반대도 마찬가지다. 이 제약 때문에 아래의 창 앞으로 가져오기와 로드 실패 처리를 우회적인 방법으로 구현했다.
+
+### 이 사이트의 프로젝트 정보
+
+`shared/profile.ts`의 `PROJECTS`는 프로젝트 이름·설명·이미지·데모 주소를 담은 배열이다. Safari 앱의 프로젝트 탭, Finder의 프로젝트 폴더, 터미널의 `projects` 명령, GitHub 앱이 모두 이 배열을 읽는다. 하나의 데이터를 여러 화면이 함께 읽는 단일 출처(single source of truth) 구조다.
 
 ## 표시 방식 비교
 
@@ -29,11 +41,13 @@ summary: 새싹 농장만 창 안에서 실행할 수 있던 것을 HYEONIVERSE�
 export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" />;
 ```
 
-그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. ==앱 목록만 별도로 관리하면 프로젝트를 추가할 때 누락되기 쉽다==. 그래서 프로젝트에 `app` 필드(Dock·Launchpad에 표시할 이름, 아이콘, 창 크기, 게임 여부)를 추가하고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 생성하도록 했다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 작성하면 Dock, 터미널 `open`, Safari의 "여기서 열기"에 모두 반영된다.
+그런데 주소·이름·아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. ==앱 목록만 별도로 관리하면 프로젝트를 추가할 때 누락되기 쉽다==. 그래서 프로젝트에 `app` 필드(Dock·Launchpad에 표시할 이름, 아이콘, 창 크기, 게임 여부)를 추가하고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 생성하도록 했다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 작성하면 Dock, 터미널 `open`, Safari의 "여기서 열기"에 모두 반영된다.
 
 ![앱 목록은 PROJECTS에서 생성된다](./images/project-apps-source.svg 'PROJECTS → PROJECT_APPS → Dock·Launchpad·터미널·Safari, 창은 ProjectApp')
 
-앱 이름은 타입으로 고정한 목록(`'safari' | 'memo' | …`)이었다. 프로젝트 앱 이름은 런타임에 결정되므로, 프로젝트 id 문자열에 표시를 붙인 브랜드 타입(`ProjectAppName`)[^brand]으로 정의했다.
+### 앱 이름 타입
+
+앱 이름은 타입으로 고정한 목록(`'safari' | 'memo' | …`)이었다. 이런 문자열 리터럴 유니언 타입은 `openApp('safary')`처럼 오타가 있으면 컴파일 시점에 오류를 낸다. 그런데 프로젝트 앱 이름은 `PROJECTS` 배열을 읽은 뒤인 실행 시점에 결정되므로 목록에 미리 적을 수 없다. 그렇다고 `string`으로 넓히면 내장 앱 이름의 오타 검사도 사라진다. 그래서 프로젝트 id 문자열에 표시를 붙인 브랜드 타입(`ProjectAppName`)[^brand]으로 정의했다.
 
 ```ts
 declare const projectApp: unique symbol;
@@ -46,9 +60,13 @@ export const projectAppName = (id: string): ProjectAppName | null =>
 
 내장 앱 이름은 기존처럼 컴파일 시점에 오타를 검출하고, 프로젝트 앱은 `projectAppName(id)`를 거쳐야만 앱 이름이 된다. 이 사이트 자체인 MacFolio와 데모가 없는 DevCourse는 앱이 아니다.
 
+![앱 이름 값이 AppName 타입이 되는 두 경로](./images/project-apps-brand-type.svg '내장 앱 이름은 리터럴 유니언으로 컴파일 시점에, 프로젝트 앱 이름은 projectAppName이 PROJECT_APPS를 확인해 실행 시점에 검사한다. 검사를 거치지 않은 문자열은 대입할 수 없다')
+
+### ProjectApp 컴포넌트의 역할
+
 `ProjectApp`의 역할은 세 가지다.
 
-1. **창을 맨 앞으로 가져오기**: iframe 안을 클릭하면 클릭 이벤트가 바깥 문서로 전달되지 않는다. 대신 바깥 문서가 포커스를 잃고 [`blur`](https://developer.mozilla.org/en-US/docs/Web/API/Window/blur_event) 이벤트가 발생하므로, 그 시각에 포커스가 이 iframe으로 이동했으면 창을 맨 앞으로 올린다. 새싹 농장에서 쓰던 방식을 그대로 옮겼다.
+1. **창을 맨 앞으로 가져오기**: 이 사이트의 창은 평소에 바깥 문서의 클릭 이벤트로 맨 앞에 올라온다. 그런데 iframe 안을 클릭하면 클릭 이벤트가 iframe 안 문서에서만 발생하고 바깥 문서로 전달되지 않는다. 대신 키보드 포커스가 iframe으로 이동하면서 바깥 문서가 포커스를 잃고 [`blur`](https://developer.mozilla.org/en-US/docs/Web/API/Window/blur_event) 이벤트가 발생한다. 그 시각에 [`document.activeElement`](https://developer.mozilla.org/en-US/docs/Web/API/Document/activeElement)(현재 포커스를 가진 요소)가 이 iframe이면 창을 맨 앞으로 올린다. 새싹 농장에서 쓰던 방식을 그대로 옮겼다.
 
    ```ts
    const onBlur = () => {
@@ -57,12 +75,16 @@ export const projectAppName = (id: string): ProjectAppName | null =>
    window.addEventListener('blur', onBlur);
    ```
 
+   ![iframe 안을 클릭했을 때 창을 맨 앞으로 가져오는 순서](./images/project-apps-iframe-focus.svg 'click은 iframe 안에서만 발생하므로, 바깥 window의 blur와 activeElement로 iframe 클릭을 감지한다')
+
 2. **로딩 화면**: 사이트가 표시되기 전에는 프로젝트 아이콘과 "불러오는 중"을 표시한다. 게임은 검은 배경, 웹 서비스는 흰 배경이다.
-3. **로드 실패 처리**: 외부 사이트가 다른 사이트 안에 삽입되는 것을 차단하면([`X-Frame-Options`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)), iframe에는 빈 화면만 남는다. 바깥 문서에서는 그 원인을 읽을 수 없으므로, 8초(`SLOW_MS = 8000`)가 지나도 로드가 끝나지 않으면 "새 탭에서 열기" 링크를 표시한다.
+3. **로드 실패 처리**: 외부 사이트는 응답 헤더 [`X-Frame-Options`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options)(예: `X-Frame-Options: DENY`)로 다른 사이트 안에 삽입되는 것을 차단할 수 있다. 다른 사이트가 로그인 화면을 투명한 iframe으로 덮어 사용자의 클릭을 가로채는 클릭재킹 공격을 막기 위한 헤더다. 차단되면 iframe에는 빈 화면만 남고, 바깥 문서에서는 그 원인을 읽을 수 없다. 그래서 8초(`SLOW_MS = 8000`)가 지나도 로드가 끝나지 않으면 "새 탭에서 열기" 링크를 표시한다.
+
+   ![iframe 로딩 상태와 8초 안내](./images/project-apps-load-states.svg 'load 이벤트가 오면 로딩 화면을 숨기고, 8초 안에 오지 않으면 로딩 화면에 새 탭에서 열기 링크를 추가한다')
 
 ## Dock에 고정하기
 
-앱이 다섯 개 늘면 Dock 아이콘은 16개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 넘긴다(아이콘 하나에 100px, 양옆 여백 300px).
+Dock은 화면 아래의 앱 아이콘 막대이고, Launchpad는 설치된 모든 앱을 격자로 보여 주는 화면이다. 앱이 다섯 개 늘면 Dock 아이콘은 16개가 된다. 이 사이트의 Dock은 화면 폭에 들어가지 않는 앱을 Launchpad로 넘긴다(아이콘 하나에 100px, 양옆 여백 300px). 예를 들어 1,600px 창은 (1,600 − 300) ÷ 100 = 13칸이다.
 
 처음에는 macOS의 "Dock에 유지하지 않은 앱"처럼 새 앱을 Dock에 고정하지 않고 Launchpad에 배치했다가, 실행 중일 때만 Dock 끝에 표시했다. 그런데 프로젝트 앱은 이 사이트의 핵심 콘텐츠이므로 눈에 잘 띄는 Dock에 배치하는 편이 적합하다고 판단했다. 그래서 `PROJECTS`에서 앱이 된 프로젝트는 기본적으로 Dock에 고정한다. 제외할 프로젝트만 `app.inDock`을 `false`로 지정한다.
 
@@ -104,7 +126,7 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 - `ProjectApp`의 iframe 부분은 API 문서 앱과 공유하는 `shared/ui/web-frame/WebFrame.tsx`로 옮겼다.
 - 프로젝트와 프로젝트 앱은 이후 시스템 설정에서 코드 수정 없이 추가·수정할 수 있게 되었다([코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)). 서버에는 덮어쓸 값만 저장하고, 새 앱의 주소는 CSP에도 추가한다.
 
-## 남은 것·배운 것
+## 남은 것과 판단 근거
 
 > [!WARNING] iframe 삽입 차단에는 대응 수단이 없다
 > 외부 사이트가 `X-Frame-Options`나 CSP [`frame-ancestors`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)로 삽입을 차단하면, 8초 뒤 "새 탭에서 열기"를 표시하는 것 외에 대응할 방법이 없다. iframe 내부의 실패 원인은 바깥 문서에서 읽을 수 없다.
@@ -121,5 +143,19 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 - [PROJECTS 단일 원본으로 GitHub 스냅샷과 프로젝트 목록 합치기](/memo/projects-one-list)
 
 [^brand]: 브랜드 타입(branded type)은 `string` 같은 기본 타입에 실행 시점에는 존재하지 않는 표시 속성을 교차 타입으로 붙여, 검사 함수를 거친 값만 그 타입으로 인정하게 하는 TypeScript 기법이다. 이 저장소의 `PostSlug`·`FolderPath`도 같은 방식이다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [`<iframe>`: The Inline Frame element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), MDN
+- [Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy), MDN
+- [Window: blur event](https://developer.mozilla.org/en-US/docs/Web/API/Window/blur_event), MDN
+- [Document: activeElement property](https://developer.mozilla.org/en-US/docs/Web/API/Document/activeElement), MDN
+- [X-Frame-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options), MDN
+- [CSP: frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors), MDN
+- [Clickjacking](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/Clickjacking), MDN
+- [Network: Handle requests](https://playwright.dev/docs/network), Playwright 문서
+
+</details>
 
 #MacFolio #프로젝트앱 #Dock

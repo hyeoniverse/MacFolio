@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="28" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">전체 기록과 --depth 1 기록에서 git이 답하는 '파일을 추가한 커밋'</text>
+
+  <!-- 전체 -->
+  <rect x="12" y="46" width="300" height="250" rx="10" fill="#f2f2f7"/>
+  <text x="162" y="70" font-size="13" font-weight="700" fill="#34c759" text-anchor="middle">전체 기록 (fetch-depth: 0)</text>
+  <line x1="44" y1="104" x2="44" y2="240" stroke="#6e6e73" stroke-width="2"/>
+  <circle cx="44" cy="104" r="8" fill="#fff" stroke="#6e6e73" stroke-width="2"/>
+  <text x="62" y="100" font-size="12" fill="#1d1d1f">커밋 1 · 10월 1일 09:00</text>
+  <text x="62" y="118" font-size="12" fill="#0a84ff">a.md 추가</text>
+  <circle cx="44" cy="172" r="8" fill="#fff" stroke="#6e6e73" stroke-width="2"/>
+  <text x="62" y="168" font-size="12" fill="#1d1d1f">커밋 2 · 10월 22일 21:10</text>
+  <text x="62" y="186" font-size="12" fill="#0a84ff">b.md 추가</text>
+  <circle cx="44" cy="240" r="8" fill="#fff" stroke="#6e6e73" stroke-width="2"/>
+  <text x="62" y="236" font-size="12" fill="#1d1d1f">커밋 3 · 10월 22일 22:47 (최신)</text>
+  <text x="62" y="254" font-size="12" fill="#0a84ff">c.md 추가</text>
+  <text x="162" y="284" font-size="12" fill="#1d1d1f" text-anchor="middle">a, b, c의 시각이 모두 다르다</text>
+
+  <!-- shallow -->
+  <rect x="328" y="46" width="300" height="250" rx="10" fill="#f2f2f7"/>
+  <text x="478" y="70" font-size="13" font-weight="700" fill="#ff3b30" text-anchor="middle">shallow clone (--depth 1)</text>
+  <line x1="360" y1="104" x2="360" y2="200" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="4 4"/>
+  <circle cx="360" cy="104" r="8" fill="#fff" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="3 2"/>
+  <text x="378" y="108" font-size="12" fill="#6e6e73">커밋 1 (받지 않음)</text>
+  <circle cx="360" cy="172" r="8" fill="#fff" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="3 2"/>
+  <text x="378" y="176" font-size="12" fill="#6e6e73">커밋 2 (받지 않음)</text>
+  <circle cx="360" cy="240" r="8" fill="#fff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="378" y="236" font-size="12" fill="#1d1d1f">커밋 3 · 기록의 시작으로 보인다</text>
+  <text x="378" y="254" font-size="12" fill="#ff3b30">a.md · b.md · c.md 모두 추가</text>
+  <text x="478" y="284" font-size="12" fill="#1d1d1f" text-anchor="middle">세 글이 모두 22:47에 올린 글이 된다</text>
+
+  <rect x="12" y="308" width="616" height="44" rx="8" fill="#fff" stroke="#0a84ff"/>
+  <text x="320" y="335" font-size="12" fill="#1d1d1f" text-anchor="middle">is-shallow-repository가 false가 아니면 빈 객체 { }를 넘겨, 같은 날 글은 제목 순으로 둔다</text>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>재발 방지 시험의 순서: page.route로 편집기 청크 응답을 보류하고, 제목에서 Enter를 누른 뒤 보류를 해제한다</title>
+  <defs>
+    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="400" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">page.route로 느린 기기 재현하기</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">시험 코드가 편집기 청크 요청을 가로채 응답을 붙잡아 두고, 원하는 시각에 놓아준다</text>
+
+  <!-- 레인 -->
+  <g font-size="12" font-weight="600" fill="#1d1d1f">
+    <text x="24" y="104">시험 코드</text>
+    <text x="24" y="184">브라우저</text>
+    <text x="24" y="264">편집기 청크</text>
+  </g>
+  <g stroke="#e5e5ea" stroke-width="1.5">
+    <line x1="104" y1="100" x2="620" y2="100"/>
+    <line x1="104" y1="180" x2="620" y2="180"/>
+    <line x1="104" y1="260" x2="620" y2="260"/>
+  </g>
+
+  <g font-size="12" text-anchor="middle">
+    <!-- 1 -->
+    <rect x="108" y="84" width="96" height="32" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+    <text x="156" y="105" fill="#1d1d1f">① 보류 등록</text>
+    <!-- 2 -->
+    <rect x="212" y="164" width="96" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="260" y="185" fill="#1d1d1f">② 새 메모 열기</text>
+    <path d="M260 196 V244" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+    <rect x="212" y="246" width="96" height="30" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <text x="260" y="266" fill="#c27100">요청 보류됨</text>
+    <!-- 3 -->
+    <rect x="316" y="84" width="104" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="368" y="105" fill="#1d1d1f">③ 제목 입력, Enter</text>
+    <rect x="316" y="164" width="104" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="368" y="185" fill="#1d1d1f">.ProseMirror 0개</text>
+    <!-- 4 -->
+    <rect x="428" y="84" width="88" height="32" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+    <text x="472" y="105" fill="#1d1d1f">④ 보류 해제</text>
+    <path d="M472 116 V244" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#m)"/>
+    <rect x="428" y="246" width="88" height="30" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+    <text x="472" y="266" fill="#1d1d1f">응답 전달</text>
+    <!-- 5 -->
+    <rect x="524" y="164" width="92" height="32" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+    <text x="570" y="185" fill="#1d1d1f">⑤ onReady</text>
+    <rect x="524" y="84" width="92" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="570" y="105" fill="#1d1d1f">⑥ 본문 입력</text>
+  </g>
+
+  <rect x="24" y="300" width="592" height="84" rx="8" fill="#f2f2f7"/>
+  <text x="36" y="322" font-size="12" fill="#1d1d1f">③에서 Enter를 누른 시각에는 편집기가 없다. 수정한 코드는 이 Enter를 대기 상태로 기록했다가</text>
+  <text x="36" y="342" font-size="12" fill="#1d1d1f">⑤에서 본문으로 포커스를 옮긴다. 그래서 ⑥의 입력은 본문에 들어가고 제목은 '느린 기기' 그대로다.</text>
+  <text x="36" y="366" font-size="12" fill="#6e6e73">수정 전 코드로 같은 시험을 실행하면 ⑤의 포커스 이동이 없어 실패한다</text>
+</svg>

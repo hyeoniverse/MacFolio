@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">포인터 캡처가 없을 때와 있을 때, 빠르게 끈 포인터의 이벤트</text>
+  <g font-size="12">
+    <text x="30" y="62" font-weight="600" fill="#ff3b30">캡처 없음</text>
+    <rect x="30" y="74" width="280" height="120" rx="6" fill="#f2f2f7"/>
+    <rect x="120" y="74" width="12" height="120" fill="#ff9f0a" opacity="0.5"/>
+    <text x="126" y="210" text-anchor="middle" fill="#6e6e73">핸들 12px</text>
+    <circle cx="126" cy="110" r="5" fill="#1d1d1f"/>
+    <circle cx="190" cy="110" r="5" fill="#ff3b30"/>
+    <circle cx="250" cy="110" r="5" fill="#ff3b30"/>
+    <path d="M131 110 H245" stroke="#6e6e73" stroke-dasharray="4 3"/>
+    <text x="126" y="136" text-anchor="middle" fill="#1d1d1f">down</text>
+    <text x="220" y="136" text-anchor="middle" fill="#ff3b30">move → 본문이 받음</text>
+    <text x="220" y="160" text-anchor="middle" fill="#ff3b30">핸들은 놓친다</text>
+    <text x="330" y="62" font-weight="600" fill="#34c759">setPointerCapture</text>
+    <rect x="330" y="74" width="280" height="120" rx="6" fill="#f2f2f7"/>
+    <rect x="420" y="74" width="12" height="120" fill="#ff9f0a" opacity="0.5"/>
+    <text x="426" y="210" text-anchor="middle" fill="#6e6e73">핸들 12px</text>
+    <circle cx="426" cy="110" r="5" fill="#1d1d1f"/>
+    <circle cx="490" cy="110" r="5" fill="#34c759"/>
+    <circle cx="550" cy="110" r="5" fill="#34c759"/>
+    <path d="M431 110 H545" stroke="#6e6e73" stroke-dasharray="4 3"/>
+    <path d="M490 118 C480 150 440 150 430 130 M550 118 C540 170 445 170 432 136" stroke="#34c759" fill="none"/>
+    <text x="426" y="136" text-anchor="middle" fill="#1d1d1f">down</text>
+    <text x="520" y="180" text-anchor="middle" fill="#34c759">move·up 모두 핸들로 전달</text>
+  </g>
+  <text x="320" y="248" text-anchor="middle" font-size="12" fill="#1d1d1f">한 프레임 사이에 포인터가 핸들 폭(12px)보다 멀리 움직이면, 캡처가 없을 때는 이후 이벤트가 그 위치의 요소로 간다</text>
+  <text x="320" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">캡처는 pointerup 또는 pointercancel에서 자동으로 해제된다</text>
+</svg>

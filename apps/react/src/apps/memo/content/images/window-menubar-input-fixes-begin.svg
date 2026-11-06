@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>begin 분기</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">하나의 begin()이 받는 두 가지 끌기</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">제목 표시줄(옮기기)과 가장자리 8방향 핸들(크기 조절)이 같은 함수로 시작한다</text>
+<text x="225" y="84" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">일반 창</text>
+<text x="385" y="84" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">최대화한 창: 수정 전</text>
+<text x="545" y="84" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">최대화한 창: 수정 후</text>
+<text x="20" y="128" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">옮기기</text>
+<text x="20" y="146" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">kind: 'move'</text>
+<rect x="150" y="98" width="150" height="68" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="225" y="128" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">시작</text>
+<rect x="310" y="98" width="150" height="68" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.4"/>
+<text x="385" y="128" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">무시</text>
+<text x="385" y="148" font-size="12" fill="#6e6e73" text-anchor="middle">의도한 동작</text>
+<rect x="470" y="98" width="150" height="68" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.4"/>
+<text x="545" y="128" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">무시</text>
+<text x="545" y="148" font-size="12" fill="#6e6e73" text-anchor="middle">그대로 유지</text>
+<text x="20" y="208" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">크기 조절</text>
+<text x="20" y="226" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">kind: 'resize'</text>
+<rect x="150" y="178" width="150" height="68" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="225" y="208" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">시작</text>
+<rect x="310" y="178" width="150" height="68" rx="6" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.4"/>
+<text x="385" y="208" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700">무시</text>
+<text x="385" y="228" font-size="12" fill="#6e6e73" text-anchor="middle">커서만 바뀌고 안 끌림</text>
+<rect x="470" y="178" width="150" height="68" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="545" y="208" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">최대화 해제 후 시작</text>
+<text x="545" y="228" font-size="12" fill="#6e6e73" text-anchor="middle">꽉 찬 크기에서 조절</text>
+<rect x="20" y="262" width="600" height="56" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="34" y="284" font-size="12" fill="#ff3b30" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">수정 전: if (isMaximized || …) return;</text>
+<text x="34" y="304" font-size="12" fill="#34c759" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">수정 후: if ((isMaximized &amp;&amp; next.kind === 'move') || …) return;</text>
+</svg>

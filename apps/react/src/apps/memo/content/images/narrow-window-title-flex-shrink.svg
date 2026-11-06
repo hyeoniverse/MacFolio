@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>Safari 도구 막대의 flex-shrink 전후</title>
+  <rect width="640" height="300" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">창 폭이 모자랄 때 어느 항목이 줄어드는가</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">신호등 버튼은 창 왼쪽 위 0~64px 구간에 앱 위로 겹쳐 그려진다</text>
+  <!-- before -->
+  <text x="24" y="92" font-size="13" font-weight="600" fill="#ff3b30">전: 여백 요소가 기본값 flex-shrink: 1</text>
+  <rect x="24" y="102" width="592" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="24" y="102" width="64" height="40" fill="none" stroke="#ff9f0a" stroke-dasharray="4 3"/>
+  <rect x="28" y="108" width="28" height="28" rx="4" fill="#ffe1df" stroke="#ff3b30"/>
+  <text x="42" y="158" font-size="12" fill="#ff3b30" text-anchor="middle">여백</text>
+  <rect x="60" y="110" width="26" height="24" rx="5" fill="#ffffff" stroke="#ff3b30"/>
+  <text x="73" y="127" font-size="13" fill="#ff3b30" text-anchor="middle">‹</text>
+  <rect x="90" y="110" width="26" height="24" rx="5" fill="#ffffff" stroke="#6e6e73"/>
+  <text x="103" y="127" font-size="13" fill="#1d1d1f" text-anchor="middle">›</text>
+  <circle cx="40" cy="122" r="6" fill="#ff5f57"/><circle cx="58" cy="122" r="6" fill="#febc2e"/><circle cx="76" cy="122" r="6" fill="#28c840"/>
+  <rect x="124" y="110" width="480" height="24" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+  <text x="136" y="127" font-size="12" fill="#6e6e73">주소 막대 (min-width: auto, 줄지 않음)</text>
+  <text x="96" y="176" font-size="12" fill="#ff3b30">뒤로 버튼(‹)이 신호등 구간(점선) 안으로 들어가 클릭이 신호등에 먼저 닿는다</text>
+  <!-- after -->
+  <text x="24" y="212" font-size="13" font-weight="600" fill="#34c759">후: 여백 flex: none, 주소 막대 min-width: 0</text>
+  <rect x="24" y="222" width="592" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="24" y="222" width="64" height="40" fill="#e3f0ff" stroke="#0a84ff"/>
+  <circle cx="40" cy="242" r="6" fill="#ff5f57"/><circle cx="58" cy="242" r="6" fill="#febc2e"/><circle cx="76" cy="242" r="6" fill="#28c840"/>
+  <rect x="94" y="230" width="26" height="24" rx="5" fill="#ffffff" stroke="#34c759"/>
+  <text x="107" y="247" font-size="13" fill="#1d1d1f" text-anchor="middle">‹</text>
+  <rect x="124" y="230" width="26" height="24" rx="5" fill="#ffffff" stroke="#34c759"/>
+  <text x="137" y="247" font-size="13" fill="#1d1d1f" text-anchor="middle">›</text>
+  <rect x="158" y="230" width="446" height="24" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+  <text x="170" y="247" font-size="12" fill="#0a84ff">주소 막대가 대신 줄어든다</text>
+  <text x="56" y="282" font-size="12" fill="#0a84ff" text-anchor="middle">64px 고정</text>
+</svg>

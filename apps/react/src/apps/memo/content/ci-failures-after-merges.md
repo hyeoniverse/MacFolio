@@ -14,6 +14,24 @@ summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른
 | ③ 코드 변경 없이 `check`의 의존성 검사 실패       | body-parser·multer 등 새로 공개된 high 취약점                    | `pnpm-workspace.yaml`의 `overrides`로 수정판 고정             | API 서버                                |
 | ④ 새 답글이 와도 대화 칸이 아래로 따라가지 않는다 | `scrollTop` 변경 뒤 scroll 이벤트가 늦게 전달된다                | 시험에서 scroll 이벤트를 바로 보낸다                          | 시험만 (실제 사용자에게는 생기지 않음)  |
 
+## 배경
+
+### CI와 아티팩트
+
+**CI(Continuous Integration)**는 코드를 저장소에 올리거나 합칠 때마다 서버가 자동으로 빌드와 시험을 실행하는 방식이다. MacFolio는 GitHub Actions에서 CI를 실행한다. 작업은 `check`(형식 검사, 린트, 타입 검사, 단위 시험, 의존성 취약점 검사)와 E2E 시험(실제 브라우저로 화면을 조작하는 시험, 여러 칸으로 나눠 병렬 실행)으로 나뉜다. CI 러너는 Ubuntu Linux 가상 머신이고, 개발은 macOS에서 한다. 그래서 운영체제에 따라 결과가 달라지는 시험은 로컬에서 통과해도 CI에서 실패할 수 있다.
+
+**아티팩트(artifact)**는 CI 작업이 끝난 뒤 내려받을 수 있게 업로드한 파일이다. 로컬에서 재현되지 않는 실패는 CI가 남긴 실패 화면과 실행 기록을 내려받아 원인을 찾는다. Playwright는 실패한 시험마다 화면 캡처와 trace(동작별 DOM 스냅숏, 네트워크 요청, 로그를 담은 압축 파일)를 생성한다.
+
+### 줄 높이와 글꼴 메트릭
+
+글꼴 파일에는 글자가 기준선(baseline) 위로 올라가는 최대 높이(ascent)와 아래로 내려가는 최대 깊이(descent)가 기록되어 있다. 이 값을 **글꼴 메트릭**이라고 한다. CSS의 `line-height: normal`은 이 메트릭으로 줄 높이를 계산하므로, 같은 12px 글자라도 글꼴마다 줄 높이가 다르다. 반면 `line-height: 1.25`처럼 단위 없는 숫자를 지정하면 글꼴과 무관하게 `글자 크기 × 1.25`가 된다.
+
+![Sphinx라는 단어 위에 ascender height, cap height, median, baseline, descender height 선을 그어 글꼴의 세로 기준선을 나타낸 그림](./images/ci-failures-after-merges-font-metrics.png '글꼴의 세로 기준선. ascent와 descent 값이 글꼴마다 달라 line-height: normal의 결과도 달라진다 (Wikimedia Commons)')
+
+### 의존성 취약점 검사
+
+npm 패키지에 보안 취약점이 발견되면 GitHub Advisory Database 같은 곳에 권고(advisory)가 공개된다. `pnpm audit`는 설치된 패키지 버전을 npm 레지스트리의 취약점 정보와 대조해 해당하는 권고를 출력한다. MacFolio CI는 운영 의존성에 심각도 high 이상인 권고가 있으면 `check` 단계를 실패시킨다. 이 검사는 코드가 바뀌지 않아도 새 권고가 공개되면 결과가 바뀐다.
+
 ## 증상
 
 10월 24일 [#368](https://github.com/hyeoniverse/MacFolio/pull/368)을 머지한 뒤 main과 main을 합친 PR의 CI가 연달아 실패했다. 새벽에 두 건(①②)을 고쳐 머지했고, 아침에 남은 두 건(③④)이 드러났다. 실패 원인은 네 가지였고 서로 관계가 없었다. 세 건은 macOS에서 재현되지 않는 E2E 시험이었고, 한 건은 코드를 바꾸지 않았는데 새로 공개된 의존성 취약점 때문에 검사 단계가 막힌 경우였다.
@@ -67,12 +85,12 @@ unzip trace.zip -d trace && grep '"type":"log"' trace/1-trace.trace
 
 위젯 한 줄의 높이는 `MobileHome.tsx`가 첫 앱 아이콘(`.mobile-app`)의 `offsetHeight`를 측정해 `widgetRowHeight()`로 계산한다. 위젯 두 줄 아래에 아이콘 두 줄을 남기는 식이라 아이콘 높이가 2px 커지면 위젯 줄 높이는 2px 작아진다. 아이콘 높이는 이미지 60px, 간격 6px, 이름 줄 높이의 합이다.
 
-이름(`span`)에는 [`line-height`](https://developer.mozilla.org/ko/docs/Web/CSS/line-height)를 지정하지 않아 `normal`이었다. ==`normal`은 글꼴 파일에 기록된 ascent와 descent로 줄 높이를 정하므로==, 같은 12px이어도 글꼴마다 줄 높이가 다르다. 여기에 운영체제 차이가 겹친다.
+이름(`span`)에는 [`line-height`](https://developer.mozilla.org/ko/docs/Web/CSS/line-height)를 지정하지 않아 `normal`이었다. [배경](#줄-높이와-글꼴-메트릭)에서 설명했듯 ==`normal`은 글꼴 파일에 기록된 ascent와 descent로 줄 높이를 정하므로==, 같은 12px이어도 글꼴마다 줄 높이가 다르다. 여기에 운영체제 차이가 겹친다.
 
 - **macOS:** `font-family`의 첫 항목 `-apple-system`이 바로 적용된다. 웹 글꼴을 기다리지 않으므로 이름 줄은 처음부터 15px이다.
 - **Linux CI 러너:** `-apple-system`이 없다. 다음 항목인 웹 글꼴 `MacSystemFont`는 [`font-display: swap`](https://developer.mozilla.org/ko/docs/Web/CSS/@font-face/font-display)이라, 파일을 받기 전에는 다른 한글 글꼴로 그리고 받은 뒤 다시 그린다. 이 시각에 이름 줄 높이가 바뀐다.
 
-높이가 바뀌어도 위젯 줄 높이를 다시 계산하지 않은 것이 두 번째 원인이다. 측정을 다시 실행하는 [`ResizeObserver`](https://developer.mozilla.org/ko/docs/Web/API/ResizeObserver)는 페이지와 위젯 묶음만 관찰했고 아이콘은 관찰하지 않았다. 그래서 웹 글꼴 적용 전에 측정한 115px이 남아 있다가, 위젯을 옮겨 측정 effect가 다시 실행된 뒤에야 117px이 되었다.
+높이가 바뀌어도 위젯 줄 높이를 다시 계산하지 않은 것이 두 번째 원인이다. [`ResizeObserver`](https://developer.mozilla.org/ko/docs/Web/API/ResizeObserver)는 등록한 요소의 크기가 바뀔 때마다 콜백을 호출하는 브라우저 API다. 측정을 다시 실행하는 `ResizeObserver`는 페이지와 위젯 묶음만 관찰했고 아이콘은 관찰하지 않았다. 그래서 웹 글꼴 적용 전에 측정한 115px이 남아 있다가, 위젯을 옮겨 측정 effect가 다시 실행된 뒤에야 117px이 되었다.
 
 ![위젯 줄 높이 계산과 실패 순서](./images/ci-failures-after-merges-widget-row.svg '아이콘 높이에 이름 줄이 포함되고, 이름 줄 높이는 글꼴에 따라 다르다')
 
@@ -199,13 +217,17 @@ overrides:
   'fflate@0.7.3': '0.7.5'
 ```
 
+`overrides`는 직접 설치하지 않은 하위 의존성의 버전을 저장소 쪽에서 강제로 지정하는 pnpm 설정이다. 이름만 쓰면 그 패키지의 모든 사본에 범위를 적용하고, `이름@버전`으로 쓰면 그 버전 하나만 바꾼다.
+
+![왼쪽은 body-parser 이름 전체에 ^2.4.0 범위를 지정해 2.3.0을 2.4.0으로 올리는 방식, 오른쪽은 multer@2.4.0과 fflate@0.7.3처럼 고정된 버전 하나만 바꾸는 선택자 방식](./images/ci-failures-after-merges-overrides.svg 'overrides의 두 방식. 이번에는 상위 패키지가 범위로 받는 body-parser는 ①, 버전을 고정한 multer·fflate는 ②를 썼다')
+
 - **fflate:** satori가 `0.7.3`으로 고정해 두었다. `'fflate@0.7.3'` 선택자는 이 버전만 바꾸고, 다른 패키지가 쓰는 fflate 0.8.3은 그대로 둔다. moderate라 CI를 막지는 않았지만 같은 검사 결과에 나와 함께 올렸다.
 - **확인:** `pnpm audit --prod`가 `No known vulnerabilities found`를 출력하는 것을 확인했다. API 단위 시험 190개, OG 이미지 시험, CI의 API E2E(실제 PostgreSQL)가 통과했다.
 - **열린 PR:** 기능 PR(#366·#370)에 섞지 않고 별도 PR로 고친 뒤, 두 PR에 main을 다시 합쳤다.
 
 ### 같은 날 두 번째: multer
 
-#371을 머지하고 46분 뒤(08:38), 이 글의 PR([#373](https://github.com/hyeoniverse/MacFolio/pull/373))에 커밋을 올리자 같은 단계가 다시 실패했다. 이번에는 권고 다섯 건이 새로 공개되어 있었고, 그중 multer가 high였다.
+#371을 머지하고 46분 뒤(08:38), 다음 PR([#373](https://github.com/hyeoniverse/MacFolio/pull/373))에 커밋을 올리자 같은 단계가 다시 실패했다. 이번에는 권고 다섯 건이 새로 공개되어 있었고, 그중 multer가 high였다.
 
 | 패키지         | 수정   | 쓰는 곳             | 권고                                                                                              |
 | -------------- | ------ | ------------------- | ------------------------------------------------------------------------------------------------- |
@@ -307,7 +329,7 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 | 07:40 | #371                      | 통과, 07:52 머지                                   |
 | 07:57 | #366·#370, main 다시 합침 | 통과, 08:09 머지                                   |
 | 08:33 | main, #372 머지           | `check` 통과                                       |
-| 08:38 | #373 (이 글)              | 실패: `check` › 의존성 취약점 검사(③, multer)      |
+| 08:38 | #373                      | 실패: `check` › 의존성 취약점 검사(③, multer)      |
 | 08:46 | #374                      | multer·undici·fast-uri 수정                        |
 | 09:09 | main, #374 머지           | 통과, 09:25 API 배포                               |
 
@@ -322,5 +344,27 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 - [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci): E2E를 6칸으로 나눈 CI 구성
 
 [^trace]: `0-trace.trace`, `1-trace.trace`에는 브라우저 쪽 동작(`before`, `after`, `log`, `input`)이, `test.trace`에는 시험 코드의 단계가 기록된다. `page.evaluate`의 반환값은 `after` 기록의 `result`에 있다. [Playwright: Trace viewer](https://playwright.dev/docs/trace-viewer)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [GitHub Docs: Storing and sharing data from a workflow (artifacts)](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow)
+- [Playwright: Trace viewer](https://playwright.dev/docs/trace-viewer)
+- [MDN: line-height](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height)
+- [MDN: font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
+- [MDN: ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+- [MDN: Element scroll 이벤트](https://developer.mozilla.org/en-US/docs/Web/API/Element/scroll_event)
+- [pnpm: pnpm audit](https://pnpm.io/cli/audit)
+- [pnpm: overrides 설정](https://pnpm.io/settings#overrides)
+- [NestJS: Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 글꼴 세로 기준선 그림: Max Naylor, Wikimedia Commons, [Typography Line Terms.svg](https://commons.wikimedia.org/wiki/File:Typography_Line_Terms.svg), 퍼블릭 도메인
+
+</details>
 
 #MacFolio #CI #테스트 #Playwright #트러블슈팅

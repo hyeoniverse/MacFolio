@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>선택 방법 기록</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">같은 CellSelection, 다른 선택 방법</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">tableHandleSelection 플러그인이 "손잡이로 골랐는가"를 따로 보관해 행·열 손잡이 표시만 정한다</text>
+<rect x="20" y="80" width="200" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="106" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">손잡이 클릭 · 꼭짓점 끌기</text>
+<text x="32" y="126" font-size="12" fill="#0a84ff" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">tr.setMeta(key, true)</text>
+<line x1="222" y1="111" x2="262" y2="196" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="20" y="170" width="200" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="196" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">마우스로 칸 끌기</text>
+<text x="32" y="216" font-size="12" fill="#ff9f0a" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">tr.selectionSet → false</text>
+<line x1="222" y1="201" x2="262" y2="196" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="20" y="260" width="200" height="62" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="286" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">끌어 고른 범위의 꼭짓점 끌기</text>
+<text x="32" y="306" font-size="12" fill="#ff9f0a" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">byHandle 전달 → false 유지</text>
+<line x1="222" y1="291" x2="262" y2="196" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="266" y="150" width="130" height="92" rx="6" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.4"/>
+<text x="331" y="178" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">CellSelection</text>
+<text x="331" y="198" font-size="12" fill="#6e6e73" text-anchor="middle">+ 플러그인 값</text>
+<text x="331" y="220" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">true / false</text>
+<line x1="398" y1="180" x2="438" y2="120" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<line x1="398" y1="214" x2="438" y2="262" stroke="#ff9f0a" stroke-width="1.6" marker-end="url(#aro)"/>
+<rect x="442" y="76" width="178" height="110" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="456" y="98" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="700">true: 손잡이로 고름</text>
+<rect x="470" y="128" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="470" y="148" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="504" y="128" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="504" y="148" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="538" y="128" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="538" y="148" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="470" y="128" width="68" height="40" rx="0" fill="none" stroke="#ff9f0a" stroke-width="2.2"/>
+<circle cx="470" cy="128" r="4" fill="#fff" stroke="#ff9f0a" stroke-width="2"/><circle cx="538" cy="168" r="4" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+<rect x="470" y="114" width="68" height="7" rx="3" fill="#ff9f0a" stroke="none" stroke-width="1.2"/>
+<text x="456" y="182" font-size="12" fill="#1d1d1f" text-anchor="start">손잡이 + 테두리 + 꼭짓점</text>
+<rect x="442" y="210" width="178" height="110" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="456" y="232" font-size="13" fill="#ff9f0a" text-anchor="start" font-weight="700">false: 끌어서 고름</text>
+<rect x="470" y="254" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="470" y="274" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="504" y="254" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="504" y="274" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="538" y="254" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="538" y="274" width="34" height="20" rx="0" fill="#ffffff" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="470" y="254" width="68" height="40" rx="0" fill="none" stroke="#ff9f0a" stroke-width="2.2"/>
+<circle cx="470" cy="254" r="4" fill="#fff" stroke="#ff9f0a" stroke-width="2"/><circle cx="538" cy="294" r="4" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+<text x="456" y="312" font-size="12" fill="#1d1d1f" text-anchor="start">테두리 + 꼭짓점 (손잡이 없음)</text>
+<text x="20" y="346" font-size="12" fill="#6e6e73" text-anchor="start">칸 비우기처럼 선택을 바꾸지 않는 트랜잭션은 이전 값을 그대로 유지한다</text>
+</svg>

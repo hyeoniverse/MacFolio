@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>다른 출처 파일을 원래 이름으로 저장하는 순서</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker><marker id="agr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">downloadFile(href, 'notes.md')의 순서</text>
+<g font-size="12">
+<rect x="24" y="54" width="592" height="58" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="38" y="78" font-size="13" font-weight="600" fill="#1d1d1f">① 파일을 받는다</text>
+<text x="38" y="98" fill="#1d1d1f">API 서버(다른 출처)의 파일 주소에서 내용을 받아 Blob(메모리 속 파일 데이터)으로 만든다</text>
+<line x1="320" y1="112" x2="320" y2="128" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<rect x="24" y="134" width="592" height="74" rx="10" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="38" y="158" font-size="13" font-weight="600" fill="#1d1d1f">② URL.createObjectURL(blob)</text>
+<text x="38" y="178" fill="#1d1d1f">이 페이지에서만 쓰는 임시 주소를 만든다. 사이트와 같은 출처다</text>
+<text x="38" y="194" fill="#0a84ff" font-family="'SF Mono', Menlo, Consolas, monospace">blob:https://macfolio.hyeoniverse.com/1c7e…</text>
+<line x1="320" y1="208" x2="320" y2="220" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<rect x="24" y="226" width="592" height="58" rx="10" fill="#effaf2" stroke="#34c759"/>
+<text x="38" y="250" font-size="13" font-weight="600" fill="#1d1d1f">③ &lt;a href="blob:…" download="notes.md"&gt;를 만들어 클릭한다</text>
+<text x="38" y="270" fill="#1d1d1f">같은 출처라 download 속성이 적용되어 notes.md 이름으로 저장된다</text>
+<line x1="320" y1="284" x2="320" y2="298" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="24" y="304" width="592" height="40" rx="10" fill="#ffffff" stroke="#d2d2d7"/>
+<text x="38" y="329" fill="#1d1d1f">④ 1초 뒤 URL.revokeObjectURL로 임시 주소를 해제한다</text>
+<rect x="24" y="356" width="592" height="52" rx="10" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="38" y="378" fill="#ff3b30" font-weight="600">①에서 받지 못하면</text>
+<text x="38" y="396" fill="#1d1d1f">파일 주소를 새 탭에서 연다. API가 Content-Disposition: attachment로 내주므로 브라우저가 내려받는다</text>
+</g>
+</svg>

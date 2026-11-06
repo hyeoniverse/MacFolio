@@ -7,7 +7,17 @@ seriesOrder: 1
 summary: 하위 의존성 취약점 6건을 pnpm overrides로 수정하고 pnpm audit를 CI에 추가했다. 액션 9종을 커밋 SHA로 고정해 Dependabot이 업데이트하게 했고, gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값을 검사한다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 세 가지를 처리한 기록이다. 세 항목은 모두 소프트웨어 공급망[^supply-chain]의 위험을 다룬다. 내가 작성하지 않은 코드(하위 패키지, 외부 액션)와 저장소에 실수로 들어간 값(비밀 키)이 대상이다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 중 세 가지는 모두 소프트웨어 공급망[^supply-chain]의 위험이었다. 내가 작성하지 않은 코드(하위 패키지, 외부 액션)와 저장소에 실수로 들어간 값(비밀 키)이 대상이다. 세 PR로 하위 의존성 취약점을 `pnpm overrides`로 수정하고, CI의 외부 액션을 커밋 SHA로 고정하고, gitleaks로 커밋 기록 전체의 비밀 값을 검사하게 했다.
+
+## 배경: 소프트웨어 공급망
+
+웹 서비스의 코드 대부분은 직접 작성한 코드가 아니다. 이 저장소의 `package.json`에 직접 적은 패키지는 수십 개지만, 그 패키지들이 다시 의존하는 패키지까지 합치면 잠금 파일에는 수백 개가 설치된다. 예를 들어 API 서버는 Prisma를 직접 설치했을 뿐이지만, Prisma가 의존하는 `@prisma/config`가 다시 `deepmerge-ts`를 의존하므로 `deepmerge-ts`도 서버와 함께 배포된다. 이렇게 한 단계 이상 건너 설치되는 패키지를 **전이 의존성**[^transitive]이라고 한다.
+
+![여러 층으로 쌓인 블록 탑 그림. 맨 아래 한쪽을 가는 막대 하나가 받치고 있고, '2003년부터 네브래스카의 누군가가 혼자 유지보수해 온 프로젝트'라는 설명이 달려 있다](./images/supply-chain-security-xkcd-dependency.png 'xkcd 2347 "Dependency". 현대 소프트웨어가 눈에 잘 띄지 않는 작은 하위 패키지 위에 쌓여 있다는 것을 표현한 만화')
+
+코드가 사용자에게 도달하는 경로에는 직접 작성하지 않은 구성 요소가 세 군데 끼어 있다. npm 레지스트리에서 설치하는 패키지, CI에서 실행되는 다른 사람의 GitHub Actions 액션, 그리고 커밋 기록 자체다. 각각의 위험과 대응은 다음과 같다.
+
+![코드가 git 저장소, GitHub Actions를 거쳐 운영에 배포되는 경로와, 하위 패키지·외부 액션·비밀 값 세 위험이 각각 들어오는 위치, 그리고 pnpm overrides·커밋 SHA 고정·gitleaks 대응](./images/supply-chain-security-overview.svg '세 위험이 들어오는 위치와 각각의 대응')
 
 | 항목                                                         | 위험                                                | 대응                                          | PR                                                       |
 | ------------------------------------------------------------ | --------------------------------------------------- | --------------------------------------------- | -------------------------------------------------------- |
@@ -82,6 +92,8 @@ overrides:
 | ---------- | ---------------------------------------- | ---------------------------- |
 | `>=4.0.33` | 4.0.33 이상 전부 (5.x 포함)              | 5.x가 설치되어 메이저가 바뀜 |
 | `^4.0.33`  | 4.0.33 이상 5.0.0 미만                   | 4.x 안에서만 업데이트        |
+
+![버전 수직선 위에 >=4.0.33은 4.0.33부터 5.x까지, ^4.0.33은 4.0.33부터 5.0.0 직전까지 허용하는 범위를 막대로 표시한 그림](./images/supply-chain-security-caret-range.svg '하한만 지정하면 메이저 버전 경계(5.0.0)를 넘는다')
 
 업데이트 후 확인한 항목:
 
@@ -252,8 +264,6 @@ git ls-remote https://github.com/actions/checkout 'refs/tags/v7.0.1*'
 
 그다음 [.github/dependabot.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/dependabot.yml)에 `github-actions` 생태계를 추가하면 Dependabot이 새 버전의 SHA와 주석을 함께 수정하는 PR을 생성한다. 저장소의 Insights → Dependency graph → Dependabot에서 마지막 확인 시각을 조회하거나, `grep -rn "uses:" .github/workflows | grep -v "@[0-9a-f]\{40\}"`의 출력이 없는지로 확인한다. 되돌리려면 `uses:`를 태그로 바꾸면 되지만 권장하지 않는다.
 
-참고 문서: [GitHub Actions 보안 강화(SHA 고정)](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions), [dependabot.yml 옵션](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference), [GitHub 문서: Dependabot](https://docs.github.com/en/code-security/dependabot).
-
 ## gitleaks로 저장소 기록 전체의 비밀 값 검사
 
 세 번째 항목은 "비밀 값 스캔(gitleaks 또는 GitHub secret scanning) 켜기"다([#170](https://github.com/hyeoniverse/MacFolio/pull/170)).
@@ -385,8 +395,6 @@ gitleaks git --redact --verbose --exit-code 1 .
 
 설정 순서는 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md)의 '저장소 설정 › 비밀 값·의존성', CI는 [.github/workflows/secrets.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/secrets.yml), 규칙은 [.gitleaks.toml](https://github.com/hyeoniverse/MacFolio/blob/main/.gitleaks.toml)에 있다.
 
-참고 문서: [gitleaks](https://github.com/gitleaks/gitleaks), [GitHub Secret scanning](https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning), [Push protection](https://docs.github.com/en/code-security/secret-scanning/introduction/about-push-protection).
-
 ## 남은 과제와 정리
 
 | 영역       | 남은 과제·판단 기준                                                                                                                                                                                              |
@@ -419,5 +427,27 @@ gitleaks git --redact --verbose --exit-code 1 .
 [^caret]: `^4.0.33`은 4.0.33 이상, 5.0.0 미만을 뜻한다. 유의적 버전(SemVer)에서 메이저 번호가 바뀌지 않는 범위다. [유의적 버전 명세](https://semver.org/lang/ko/)
 
 [^entropy]: 섀넌 엔트로피. 문자열에 나타나는 각 문자의 빈도로 계산하는 무작위성 지표로, 같은 문자가 반복될수록 낮아진다. gitleaks는 규칙의 `entropy` 값보다 낮은 일치 항목을 검출에서 제외한다. [gitleaks README](https://github.com/gitleaks/gitleaks#configuration)
+
+<details>
+<summary>참고 문헌</summary>
+
+- pnpm 문서, [overrides](https://pnpm.io/settings/dependency-resolution#overrides), [pnpm audit](https://pnpm.io/cli/audit), [pnpm why](https://pnpm.io/cli/why)
+- [유의적 버전 2.0.0](https://semver.org/lang/ko/)
+- GitHub 문서, [Security hardening for GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions)
+- GitHub 문서, [Controlling permissions for GITHUB_TOKEN](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token)
+- GitHub 문서, [Dependabot options reference](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference)
+- GitHub Advisory Database, [CVE-2025-30066 (tj-actions/changed-files)](https://github.com/advisories/GHSA-mrrh-fwg8-r2c3)
+- GitHub 문서, [About secret scanning](https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning), [About push protection](https://docs.github.com/en/code-security/secret-scanning/introduction/about-push-protection)
+- [gitleaks](https://github.com/gitleaks/gitleaks)
+- [OSV-Scanner](https://google.github.io/osv-scanner/), [OSV 데이터베이스](https://osv.dev/)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 의존성 만화: Randall Munroe, xkcd, [Dependency (2347)](https://xkcd.com/2347/), CC BY-NC 2.5
+
+</details>
 
 #MacFolio #보안 #의존성 #pnpm #CI #GitHubActions #Dependabot #gitleaks

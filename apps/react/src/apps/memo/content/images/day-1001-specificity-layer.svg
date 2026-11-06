@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 490" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>명시도 비교와 @layer reset 이동 전후</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="490" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">같은 버튼에 일치하는 두 규칙의 비교</text>
+<rect x="16" y="50" width="608" height="218" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="74" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">변경 전: 모두 층 밖의 일반 규칙 → 명시도로 비교</text>
+<rect x="32" y="90" width="280" height="96" rx="8" fill="#ffffff" stroke="#34c759" stroke-width="1.6"/>
+<text x="48" y="118" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">.memo button</text>
+<text x="48" y="142" font-size="13" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">color: inherit;</text>
+<text x="48" y="170" font-size="13" fill="#34c759" text-anchor="start" font-weight="700">명시도 (0,1,1)</text>
+<text x="296" y="170" font-size="13" fill="#34c759" text-anchor="end" font-weight="700">적용</text>
+<rect x="328" y="90" width="280" height="96" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="344" y="118" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">.memo-copy-button</text>
+<text x="344" y="142" font-size="13" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">color: var(--ui-accent);</text>
+<text x="344" y="170" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="700">명시도 (0,1,0)</text>
+<text x="592" y="170" font-size="13" fill="#ff3b30" text-anchor="end" font-weight="700">밀림</text>
+<text x="32" y="236" font-size="12" fill="#6e6e73" text-anchor="start">(ID 수, 클래스 수, 태그 수)를 왼쪽부터 비교한다. 클래스 수가 1로 같아 태그 1개가 승부를 가른다.</text>
+<text x="32" y="254" font-size="12" fill="#6e6e73" text-anchor="start">그래서 버튼마다 color: var(--ui-accent) !important 를 붙여 덮어썼다.</text>
+<rect x="16" y="284" width="608" height="190" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="308" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">변경 후: 기본값을 @layer reset 안으로 이동 → 층이 먼저 비교된다</text>
+<rect x="32" y="322" width="280" height="96" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="48" y="346" font-size="13" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">@layer reset {</text>
+<text x="60" y="368" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">.memo button { … }</text>
+<text x="48" y="398" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="700">명시도 (0,1,1)</text>
+<text x="296" y="398" font-size="13" fill="#ff3b30" text-anchor="end" font-weight="700">밀림</text>
+<rect x="328" y="322" width="280" height="96" rx="8" fill="#ffffff" stroke="#34c759" stroke-width="1.6"/>
+<text x="344" y="350" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">.memo-copy-button</text>
+<text x="344" y="374" font-size="13" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">층 밖의 일반 규칙</text>
+<text x="344" y="402" font-size="13" fill="#34c759" text-anchor="start" font-weight="700">명시도 (0,1,0)</text>
+<text x="592" y="402" font-size="13" fill="#34c759" text-anchor="end" font-weight="700">적용</text>
+<text x="32" y="442" font-size="12" fill="#6e6e73" text-anchor="start">층 안의 규칙은 층 밖의 일반 규칙보다 항상 약하다. 명시도는 같은 층 안에서만 비교한다.</text>
+<text x="32" y="460" font-size="12" fill="#6e6e73" text-anchor="start">덮어쓰기용 !important 70개를 삭제할 수 있게 되었다.</text>
+</svg>

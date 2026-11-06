@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>번들 기반 개발 서버와 Vite의 네이티브 ESM 개발 서버</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">개발 서버가 첫 화면을 내기 전에 하는 일</text>
+<text x="24" y="70" font-size="14" font-weight="700" fill="#1d1d1f">CRA (react-scripts, webpack)</text>
+<g font-size="12.5" fill="#1d1d1f">
+<rect x="24" y="82" width="96" height="44" rx="8" fill="#f2f2f7"/><text x="72" y="109" text-anchor="middle">진입 파일</text>
+<rect x="140" y="82" width="190" height="44" rx="8" fill="#fff4e5" stroke="#ff9f0a"/><text x="235" y="101" text-anchor="middle">모든 모듈을 읽고</text><text x="235" y="118" text-anchor="middle">하나의 번들로 묶는다</text>
+<rect x="350" y="82" width="110" height="44" rx="8" fill="#f2f2f7"/><text x="405" y="109" text-anchor="middle">서버 준비</text>
+<rect x="480" y="82" width="136" height="44" rx="8" fill="#f2f2f7"/><text x="548" y="109" text-anchor="middle">브라우저</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M122 104 H136"/><path d="M332 104 H346"/><path d="M462 104 H476"/></g>
+<text x="24" y="150" font-size="12" fill="#6e6e73">앱 코드가 늘수록 묶는 시간이 늘어난다.</text>
+<text x="24" y="192" font-size="14" font-weight="700" fill="#1d1d1f">Vite</text>
+<g font-size="12.5" fill="#1d1d1f">
+<rect x="24" y="204" width="190" height="44" rx="8" fill="#e6f2ff" stroke="#0a84ff"/><text x="119" y="223" text-anchor="middle">의존성(node_modules)만</text><text x="119" y="240" text-anchor="middle">esbuild로 미리 묶는다</text>
+<rect x="234" y="204" width="110" height="44" rx="8" fill="#f2f2f7"/><text x="289" y="231" text-anchor="middle">서버 준비</text>
+<rect x="364" y="204" width="252" height="44" rx="8" fill="#e6f2ff" stroke="#0a84ff"/><text x="490" y="223" text-anchor="middle">브라우저가 import로 요청한 파일만</text><text x="490" y="240" text-anchor="middle">그때 변환해 ES 모듈로 보낸다</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M216 226 H230"/><path d="M346 226 H360"/></g>
+<text x="24" y="272" font-size="12" fill="#6e6e73">앱 코드는 서버 시작 전에 묶지 않는다. 프로덕션 빌드는 두 도구 모두 번들을 만든다.</text>
+<rect x="24" y="296" width="592" height="88" rx="10" fill="#f2f2f7"/>
+<text x="40" y="320" font-size="13" font-weight="700" fill="#1d1d1f">이 저장소에서 같은 조건으로 잰 값 (2026년 9월 28일)</text>
+<text x="40" y="346" font-size="12.5" fill="#1d1d1f">개발 서버 시작</text><text x="200" y="346" font-size="12.5" fill="#1d1d1f">CRA 5.05초 → Vite 0.58초</text>
+<text x="40" y="370" font-size="12.5" fill="#1d1d1f">프로덕션 빌드</text><text x="200" y="370" font-size="12.5" fill="#1d1d1f">CRA 6.33초 → Vite 1.88초</text>
+</svg>

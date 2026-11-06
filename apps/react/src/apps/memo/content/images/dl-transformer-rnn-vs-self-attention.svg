@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="440" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">RNN과 셀프 어텐션의 연결 방식</text>
+<text x="24" y="58" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">RNN: 은닉 상태를 앞에서부터 차례로 계산</text>
+<rect x="45" y="140" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="90" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">저게</text>
+<rect x="60" y="80" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="90" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">h1</text>
+<path d="M90 140 L90 112" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M93.0 118.3 L90 112 L87.0 118.3" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M120 95 L173 95" stroke="#ff9f0a" stroke-width="2" fill="none"/><path d="M166.7 98.0 L173 95 L166.7 92.0" stroke="#ff9f0a" stroke-width="2" fill="none"/>
+<rect x="160" y="140" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="205" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">저절로</text>
+<rect x="175" y="80" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="205" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">h2</text>
+<path d="M205 140 L205 112" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M208.0 118.3 L205 112 L202.0 118.3" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M235 95 L288 95" stroke="#ff9f0a" stroke-width="2" fill="none"/><path d="M281.7 98.0 L288 95 L281.7 92.0" stroke="#ff9f0a" stroke-width="2" fill="none"/>
+<rect x="275" y="140" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="320" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">붉어질</text>
+<rect x="290" y="80" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="320" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">h3</text>
+<path d="M320 140 L320 112" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M323.0 118.3 L320 112 L317.0 118.3" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M350 95 L403 95" stroke="#ff9f0a" stroke-width="2" fill="none"/><path d="M396.7 98.0 L403 95 L396.7 92.0" stroke="#ff9f0a" stroke-width="2" fill="none"/>
+<rect x="390" y="140" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="435" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">리</text>
+<rect x="405" y="80" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="435" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">h4</text>
+<path d="M435 140 L435 112" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M438.0 118.3 L435 112 L432.0 118.3" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M465 95 L518 95" stroke="#ff9f0a" stroke-width="2" fill="none"/><path d="M511.7 98.0 L518 95 L511.7 92.0" stroke="#ff9f0a" stroke-width="2" fill="none"/>
+<rect x="505" y="140" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="550" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">없다</text>
+<rect x="520" y="80" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="550" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">h5</text>
+<path d="M550 140 L550 112" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M553.0 118.3 L550 112 L547.0 118.3" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<text x="320" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">h5가 '저게'의 정보를 받으려면 h1→h2→h3→h4→h5, 4단계를 순서대로 거친다</text>
+<path d="M20 214 L620 214" stroke="#d1d1d6"/>
+<text x="24" y="240" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">셀프 어텐션: 한 층에서 모든 단어 쌍을 동시에 연결</text>
+<path d="M90 360 L90 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M90 360 L205 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M90 360 L320 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M90 360 L435 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M90 360 L550 300" stroke="#0a84ff" stroke-width="2.2"/>
+<path d="M205 360 L90 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M205 360 L205 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M205 360 L320 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M205 360 L435 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M205 360 L550 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M320 360 L90 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M320 360 L205 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M320 360 L320 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M320 360 L435 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M320 360 L550 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M435 360 L90 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M435 360 L205 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M435 360 L320 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M435 360 L435 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M435 360 L550 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M550 360 L90 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M550 360 L205 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M550 360 L320 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M550 360 L435 300" stroke="#c7c7cc" stroke-width="1"/>
+<path d="M550 360 L550 300" stroke="#c7c7cc" stroke-width="1"/>
+<rect x="45" y="360" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="90" y="380" text-anchor="middle" font-size="13" fill="#1d1d1f">저게</text>
+<rect x="60" y="270" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="90" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f">c1</text>
+<rect x="160" y="360" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="205" y="380" text-anchor="middle" font-size="13" fill="#1d1d1f">저절로</text>
+<rect x="175" y="270" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="205" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f">c2</text>
+<rect x="275" y="360" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="320" y="380" text-anchor="middle" font-size="13" fill="#1d1d1f">붉어질</text>
+<rect x="290" y="270" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="320" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f">c3</text>
+<rect x="390" y="360" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="435" y="380" text-anchor="middle" font-size="13" fill="#1d1d1f">리</text>
+<rect x="405" y="270" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="435" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f">c4</text>
+<rect x="505" y="360" width="90" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="550" y="380" text-anchor="middle" font-size="13" fill="#1d1d1f">없다</text>
+<rect x="520" y="270" width="60" height="30" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.12"/>
+<text x="550" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f">c5</text>
+<text x="320" y="418" text-anchor="middle" font-size="12" fill="#6e6e73">'없다'의 출력 c5는 '저게'를 선 하나(파란 선)로 직접 참조한다. 25개 연결을 행렬 곱 한 번으로 계산한다</text>
+</svg>

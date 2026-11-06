@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>패널 안에서 누르고 오버레이 위에서 놓을 때 pointerdown과 click의 대상</title>
+  <rect width="640" height="400" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">패널 안에서 글자를 끌어 선택하다 오버레이에서 놓으면</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">닫기 판별: event.target === event.currentTarget (오버레이 자신을 눌렀는가)</text>
+
+  <!-- scene -->
+  <rect x="24" y="76" width="300" height="200" rx="8" fill="#1d1d1f" opacity="0.3"/>
+  <text x="36" y="96" font-size="12" fill="#1d1d1f">오버레이 (.ui-modal-overlay)</text>
+  <rect x="64" y="112" width="200" height="120" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="80" y="134" font-size="12" fill="#1d1d1f">패널</text>
+  <text x="80" y="164" font-size="13" fill="#1d1d1f">⌘ C</text>
+  <rect x="146" y="149" width="90" height="22" fill="#0a84ff" opacity="0.15"/>
+  <text x="154" y="164" font-size="13" fill="#0a84ff">복사하기</text>
+  <circle cx="140" cy="160" r="5" fill="#0a84ff"/>
+  <text x="96" y="196" font-size="12" fill="#0a84ff">① 여기서 누름</text>
+  <path d="M236 162 C 260 170, 260 200, 292 250" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="292" cy="250" r="5" fill="#ff9f0a"/>
+  <text x="196" y="266" font-size="12" fill="#b25000">② 여기서 놓음</text>
+
+  <!-- results -->
+  <g font-size="12">
+    <rect x="348" y="76" width="268" height="92" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="362" y="98" font-weight="600" fill="#1d1d1f">pointerdown (Modal이 사용)</text>
+    <text x="362" y="120" fill="#1d1d1f">target = 패널 안의 글자</text>
+    <text x="362" y="138" fill="#1d1d1f">currentTarget = 오버레이</text>
+    <text x="362" y="158" fill="#0a84ff">다르므로 닫지 않는다 (의도대로)</text>
+
+    <rect x="348" y="184" width="268" height="92" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+    <text x="362" y="206" font-weight="600" fill="#1d1d1f">click을 썼다면</text>
+    <text x="362" y="228" fill="#1d1d1f">target = 누른 곳과 놓은 곳의</text>
+    <text x="362" y="246" fill="#1d1d1f">  가장 가까운 공통 조상 = 오버레이</text>
+    <text x="362" y="266" fill="#ff3b30">같으므로 닫힌다 (선택하다 창이 사라짐)</text>
+  </g>
+
+  <text x="24" y="312" font-size="12" fill="#1d1d1f">순서: pointerdown(패널) → pointerup(오버레이) → click(공통 조상 = 오버레이)</text>
+  <text x="24" y="336" font-size="12" fill="#6e6e73">pointerdown은 누르는 순간 손가락·마우스 아래의 요소가 대상이라, 놓는 위치에 영향을 받지 않는다</text>
+  <text x="24" y="360" font-size="12" fill="#6e6e73">click으로 같은 결과를 얻으려면 pointerdown 대상을 따로 저장해 두고 click에서 다시 확인해야 한다</text>
+</svg>

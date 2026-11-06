@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>글 안의 링크를 눌렀을 때 MarkdownLink의 판단</title>
+<defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">글 안의 링크를 눌렀을 때</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">href는 그대로 두고, 클릭 처리기에서만 열 곳을 정한다</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="70" width="270" height="70" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="34" y="92" font-weight="700">① 출처와 경로 비교</text>
+<text x="34" y="112" font-family="ui-monospace, Menlo, monospace">new URL(href, 사이트).origin</text>
+<text x="34" y="130">=== 사이트 출처 이고 /memo·/safari 경로?</text>
+<line x1="290" y1="105" x2="356" y2="105" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="323" y="97" text-anchor="middle" fill="#6e6e73">아니오</text>
+<rect x="360" y="79" width="260" height="52" rx="8" fill="#fff8ec" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="374" y="101" font-weight="700">외부 링크</text>
+<text x="374" y="120">새 탭으로 연다</text>
+<line x1="155" y1="140" x2="155" y2="164" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="163" y="157" fill="#6e6e73">예</text>
+<rect x="20" y="168" width="270" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="34" y="190" font-weight="700">② 누른 방식 확인</text>
+<text x="34" y="209">⌘ · Ctrl · Shift · Alt, 가운데 버튼인가?</text>
+<line x1="290" y1="194" x2="356" y2="194" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="323" y="186" text-anchor="middle" fill="#6e6e73">예</text>
+<rect x="360" y="168" width="260" height="52" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="374" y="190" font-weight="700">가로채지 않음</text>
+<text x="374" y="209">브라우저 기본 동작 (새 탭·새 창)</text>
+<line x1="155" y1="220" x2="155" y2="244" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="163" y="237" fill="#6e6e73">아니오</text>
+<rect x="20" y="248" width="270" height="52" rx="8" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="34" y="270" font-weight="700" fill="#0a84ff">③ 사이트 안에서 열기</text>
+<text x="34" y="289">preventDefault 후 openRequest로 요청</text>
+</g>
+<text x="20" y="332" font-size="14" font-weight="700" fill="#1d1d1f">예</text>
+<g font-size="12">
+<text x="20" y="356" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">/memo/db-backup</text>
+<text x="330" y="356" fill="#0a84ff">→ ③ 메모 앱이 그 글로 바뀐다</text>
+<text x="20" y="378" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://evil.example/memo/db-backup</text>
+<text x="330" y="378" fill="#ff9f0a">→ ① 출처가 달라 외부 링크, 새 탭</text>
+</g>
+</svg>

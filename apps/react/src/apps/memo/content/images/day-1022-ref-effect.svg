@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <!-- columns -->
+  <text x="150" y="30" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">열기</text>
+  <text x="330" y="30" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">최소화</text>
+  <text x="510" y="30" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">다시 열기</text>
+  <line x1="240" y1="40" x2="240" y2="340" stroke="#e5e5ea" stroke-width="2"/>
+  <line x1="420" y1="40" x2="420" y2="340" stroke="#e5e5ea" stroke-width="2"/>
+
+  <!-- row 1: before -->
+  <text x="20" y="62" font-size="13" font-weight="700" fill="#ff3b30">useEffect(…, [ref])</text>
+  <rect x="80" y="76" width="140" height="60" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+  <text x="150" y="100" font-size="12" text-anchor="middle" fill="#1d1d1f">칸 A 관찰</text>
+  <text x="150" y="120" font-size="12" text-anchor="middle" fill="#0a84ff">폭 898px</text>
+  <rect x="260" y="76" width="140" height="60" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="330" y="100" font-size="12" text-anchor="middle" fill="#1d1d1f">칸 A 제거, 관찰 유지</text>
+  <text x="330" y="120" font-size="12" text-anchor="middle" fill="#ff9f0a">폭 0 → compact</text>
+  <rect x="440" y="76" width="180" height="60" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="530" y="100" font-size="12" text-anchor="middle" fill="#1d1d1f">칸 B 생성, effect 재실행 없음</text>
+  <text x="530" y="120" font-size="12" text-anchor="middle" fill="#ff3b30">폭 0 유지 → 휴대폰 모양</text>
+  <text x="20" y="160" font-size="12" fill="#6e6e73">ref 객체는 렌더링이 바뀌어도 같은 객체라 의존성 배열이 변화를 감지하지 못한다</text>
+
+  <!-- row 2: after -->
+  <text x="20" y="206" font-size="13" font-weight="700" fill="#34c759">useElementWidth: attach(요소) → state</text>
+  <rect x="80" y="220" width="140" height="60" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+  <text x="150" y="244" font-size="12" text-anchor="middle" fill="#1d1d1f">attach(A) → 관찰</text>
+  <text x="150" y="264" font-size="12" text-anchor="middle" fill="#0a84ff">폭 898px</text>
+  <rect x="260" y="220" width="140" height="60" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="330" y="244" font-size="12" text-anchor="middle" fill="#1d1d1f">attach(null)</text>
+  <text x="330" y="264" font-size="12" text-anchor="middle" fill="#6e6e73">관찰 해제</text>
+  <rect x="440" y="220" width="180" height="60" rx="8" fill="#f2f2f7" stroke="#34c759" stroke-width="2"/>
+  <text x="530" y="244" font-size="12" text-anchor="middle" fill="#1d1d1f">attach(B) → state 변경</text>
+  <text x="530" y="264" font-size="12" text-anchor="middle" fill="#34c759">B 관찰, 폭 898px</text>
+  <text x="20" y="304" font-size="12" fill="#6e6e73">요소가 바뀌면 state가 바뀌고, 그 state를 의존성으로 둔 effect가 새 요소를 관찰한다</text>
+  <line x1="220" y1="106" x2="256" y2="106" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="400" y1="106" x2="436" y2="106" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="220" y1="250" x2="256" y2="250" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="400" y1="250" x2="436" y2="250" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>전역 층과 창 안의 z-index</title>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">z-index는 같은 쌓임 맥락 안에서만 비교된다</text>
+  <!-- global layers -->
+  <text x="24" y="66" font-size="13" font-weight="600" fill="#1d1d1f">전역 층 (--z-* 토큰)</text>
+  <g font-size="12">
+    <rect x="24" y="78" width="250" height="34" rx="6" fill="#ffe1df" stroke="#ff3b30"/>
+    <text x="36" y="99" fill="#1d1d1f">앱 오류 화면</text><text x="262" y="99" fill="#ff3b30" text-anchor="end">15000</text>
+    <rect x="24" y="118" width="250" height="34" rx="6" fill="#e3f0ff" stroke="#0a84ff" stroke-width="2"/>
+    <text x="36" y="139" fill="#1d1d1f">슬라이드쇼·그림 크게 보기 (새 층)</text><text x="262" y="139" fill="#0a84ff" text-anchor="end">12000</text>
+    <rect x="24" y="158" width="250" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="36" y="179" fill="#1d1d1f">펼친 메뉴·팝오버</text><text x="262" y="179" fill="#6e6e73" text-anchor="end">10000</text>
+    <rect x="24" y="198" width="250" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="36" y="219" fill="#1d1d1f">Dock</text><text x="262" y="219" fill="#6e6e73" text-anchor="end">1000</text>
+    <rect x="24" y="238" width="250" height="34" rx="6" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="36" y="259" fill="#1d1d1f">앱 창들 (창마다 z-index → 쌓임 맥락)</text>
+  </g>
+  <!-- window detail -->
+  <line x1="274" y1="255" x2="320" y2="120" stroke="#ff9f0a" stroke-dasharray="4 3"/>
+  <line x1="274" y1="255" x2="320" y2="340" stroke="#ff9f0a" stroke-dasharray="4 3"/>
+  <rect x="320" y="70" width="296" height="270" rx="10" fill="#fff4e5" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="334" y="94" font-size="13" font-weight="600" fill="#1d1d1f">설정 창 하나의 안쪽</text>
+  <text x="334" y="112" font-size="12" fill="#6e6e73">이 안의 숫자는 이 창 안에서만 비교된다</text>
+  <g font-size="12">
+    <rect x="340" y="126" width="256" height="34" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="352" y="147" fill="#1d1d1f">프로젝트 시트</text><text x="584" y="147" fill="#0a84ff" text-anchor="end">40 → 10</text>
+    <rect x="340" y="166" width="256" height="34" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="352" y="187" fill="#1d1d1f">창 안의 다른 겹침</text><text x="584" y="187" fill="#6e6e73" text-anchor="end">1~2</text>
+    <rect x="340" y="206" width="256" height="34" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="352" y="227" fill="#1d1d1f">일반 내용</text><text x="584" y="227" fill="#6e6e73" text-anchor="end">auto</text>
+  </g>
+  <text x="334" y="272" font-size="12" fill="#1d1d1f">창 안에서 z-index를 100000으로 올려도</text>
+  <text x="334" y="290" font-size="12" fill="#1d1d1f">창 자체가 Dock(1000) 아래 층이면</text>
+  <text x="334" y="308" font-size="12" fill="#1d1d1f">Dock 위로 올라가지 않는다 → -1~10이면 충분</text>
+  <text x="24" y="304" font-size="12" fill="#6e6e73">창 밖의 무엇과 겹칠지 정해야 하면</text>
+  <text x="24" y="322" font-size="12" fill="#6e6e73">창 안의 큰 숫자가 아니라 전역 층 토큰을 쓴다</text>
+</svg>

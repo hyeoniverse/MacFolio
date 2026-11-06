@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>fetch가 실패하는 두 경우</title>
+  <rect width="640" height="340" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">fetch가 실패하는 두 경우</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">apiConversationRepository.ts가 두 경우를 각각 한국어 문구의 Error로 바꾼다</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6e6e73"/></marker></defs>
+  <!-- row 1 -->
+  <text x="24" y="88" font-size="13" font-weight="700" fill="#ff3b30">① 서버에 닿지 못함</text>
+  <rect x="24" y="98" width="176" height="86" rx="10" fill="#f2f2f7"/>
+  <text x="38" y="122" font-size="13" font-weight="600" fill="#1d1d1f">원인</text>
+  <text x="38" y="142" font-size="12" fill="#1d1d1f">서버 꺼짐·배포 중</text>
+  <text x="38" y="160" font-size="12" fill="#1d1d1f">네트워크 끊김</text>
+  <text x="38" y="178" font-size="12" fill="#1d1d1f">VITE_API_URL 없음</text>
+  <rect x="226" y="98" width="190" height="86" rx="10" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="240" y="122" font-size="13" font-weight="600" fill="#1d1d1f">Promise 거부 (TypeError)</text>
+  <text x="240" y="142" font-size="12" fill="#6e6e73">Chrome: Failed to fetch</text>
+  <text x="240" y="160" font-size="12" fill="#6e6e73">Safari: Load failed</text>
+  <text x="240" y="178" font-size="12" fill="#6e6e73">브라우저마다 다른 영어 문구</text>
+  <rect x="442" y="98" width="174" height="86" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="456" y="122" font-size="13" font-weight="600" fill="#0a84ff">.catch()에서 변환</text>
+  <text x="456" y="142" font-size="12" fill="#1d1d1f">new Error(UNREACHABLE)</text>
+  <text x="456" y="160" font-size="12" fill="#1d1d1f">"서버에 연결할 수</text>
+  <text x="456" y="178" font-size="12" fill="#1d1d1f">없습니다. …"</text>
+  <path d="M200 141 H220" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <path d="M416 141 H436" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- row 2 -->
+  <text x="24" y="218" font-size="13" font-weight="700" fill="#ff9f0a">② 서버가 오류 상태 코드로 응답</text>
+  <rect x="24" y="228" width="176" height="68" rx="10" fill="#f2f2f7"/>
+  <text x="38" y="252" font-size="13" font-weight="600" fill="#1d1d1f">원인</text>
+  <text x="38" y="272" font-size="12" fill="#1d1d1f">입력 검사 실패 400</text>
+  <text x="38" y="289" font-size="12" fill="#1d1d1f">요청 제한 429, 서버 오류 500</text>
+  <rect x="226" y="228" width="190" height="68" rx="10" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+  <text x="240" y="252" font-size="13" font-weight="600" fill="#1d1d1f">Promise 이행 (Response)</text>
+  <text x="240" y="272" font-size="12" fill="#6e6e73">response.ok === false</text>
+  <text x="240" y="289" font-size="12" fill="#6e6e73">본문에 서버의 이유가 있다</text>
+  <rect x="442" y="228" width="174" height="68" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="456" y="252" font-size="13" font-weight="600" fill="#0a84ff">failure(response)</text>
+  <text x="456" y="272" font-size="12" fill="#1d1d1f">서버의 이유, 없으면</text>
+  <text x="456" y="289" font-size="12" fill="#1d1d1f">"보내지 못했습니다. …"</text>
+  <path d="M200 262 H220" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <path d="M416 262 H436" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="24" y="324" font-size="12" fill="#6e6e73">fetch는 응답을 받으면 상태 코드가 4xx·5xx여도 거부하지 않는다. 거부는 ①에서만 일어난다</text>
+</svg>

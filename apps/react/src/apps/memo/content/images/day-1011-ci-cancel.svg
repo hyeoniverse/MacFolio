@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>concurrency cancel-in-progress로 연속 머지의 CI가 취소되는 과정</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="290" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">main에 연속으로 머지할 때의 CI 실행 (group: ci-refs/heads/main)</text>
+<line x1="60" y1="70" x2="610" y2="70" stroke="#1d1d1f" stroke-width="3"/><text x="20" y="75" font-size="12" fill="#6e6e73">main</text>
+<g font-size="12" text-anchor="middle">
+<circle cx="110" cy="70" r="8" fill="#1d1d1f"/><text x="110" y="52" fill="#1d1d1f">머지 1</text>
+<circle cx="230" cy="70" r="8" fill="#1d1d1f"/><text x="230" y="52" fill="#1d1d1f">머지 2</text>
+<circle cx="350" cy="70" r="8" fill="#1d1d1f"/><text x="350" y="52" fill="#1d1d1f">머지 3</text>
+<circle cx="470" cy="70" r="8" fill="#0a84ff"/><text x="470" y="52" fill="#0a84ff">머지 4</text>
+</g>
+<rect x="110" y="96" width="120" height="26" rx="5" fill="#f2f2f7" stroke="#c7c7cc"/><text x="170" y="114" font-size="12" fill="#6e6e73" text-anchor="middle">CI 1 → 취소</text>
+<rect x="230" y="130" width="120" height="26" rx="5" fill="#f2f2f7" stroke="#c7c7cc"/><text x="290" y="148" font-size="12" fill="#6e6e73" text-anchor="middle">CI 2 → 취소</text>
+<rect x="350" y="164" width="120" height="26" rx="5" fill="#f2f2f7" stroke="#c7c7cc"/><text x="410" y="182" font-size="12" fill="#6e6e73" text-anchor="middle">CI 3 → 취소</text>
+<rect x="470" y="198" width="140" height="26" rx="5" fill="#eef5ff" stroke="#0a84ff"/><text x="540" y="216" font-size="12" fill="#0a84ff" text-anchor="middle">CI 4 → 끝까지 실행</text>
+<text x="20" y="254" font-size="12" fill="#1d1d1f">새 실행이 시작되면 같은 group의 이전 실행을 취소한다. 머지 1~3의 상태는 따로 검사되지 않고,</text>
+<text x="20" y="274" font-size="12" fill="#1d1d1f">실패가 있어도 머지 4의 결과에서만 드러난다. 이날 main의 CI 실행 28회 중 18회가 취소됐다</text>
+</svg>

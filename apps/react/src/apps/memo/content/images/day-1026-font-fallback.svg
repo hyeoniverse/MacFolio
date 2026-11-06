@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>font-family 목록을 기기마다 해석한 결과, 바꾸기 전과 후</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">바꾸기 전: font-family: -apple-system, 'Apple SD Gothic Neo', …</text>
+<g font-size="13">
+<rect x="20" y="46" width="290" height="132" rx="10" fill="#f2f2f7"/>
+<text x="36" y="72" font-weight="700" fill="#1d1d1f">macOS · iOS</text>
+<text x="36" y="96" fill="#1d1d1f">-apple-system을 알아듣는다</text>
+<text x="36" y="118" fill="#1d1d1f">→ 시스템 글꼴 SF Pro, Apple SD Gothic Neo</text>
+<text x="36" y="140" fill="#34c759" font-weight="700">굵은 글씨: 글꼴에 든 실제 Bold</text>
+<text x="36" y="162" fill="#6e6e73">내려받는 글꼴 없음</text>
+<rect x="330" y="46" width="290" height="132" rx="10" fill="#f2f2f7"/>
+<text x="346" y="72" font-weight="700" fill="#1d1d1f">Windows · Android · Linux</text>
+<text x="346" y="96" fill="#1d1d1f">-apple-system을 모른다 → 다음 이름</text>
+<text x="346" y="118" fill="#1d1d1f">→ public/fonts의 웹 글꼴 Regular 한 굵기</text>
+<text x="346" y="140" fill="#ff3b30" font-weight="700">굵은 글씨: 브라우저가 획을 덧칠한 합성</text>
+<text x="346" y="162" fill="#ff3b30">Apple 글꼴의 웹 배포 (허락 없음)</text>
+</g>
+<line x1="20" y1="202" x2="620" y2="202" stroke="#c7c7cc"/>
+<text x="20" y="232" font-size="15" font-weight="700" fill="#1d1d1f">바꾼 뒤: font-family: var(--font-sans)  →  'Pretendard Variable', …</text>
+<g font-size="13">
+<rect x="20" y="248" width="600" height="132" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="36" y="274" font-weight="700" fill="#0a84ff">모든 OS</text>
+<text x="36" y="298" fill="#1d1d1f">src/styles/fonts.css의 @font-face가 가리키는 같은 woff2 파일을 내려받는다</text>
+<text x="36" y="320" fill="#1d1d1f">가변 글꼴 한 파일에 굵기 45~920이 들어 있어, font-weight: 700도 실제 획 두께로 그린다</text>
+<text x="36" y="342" fill="#1d1d1f">고정폭은 --font-mono(JetBrains Mono), 명조는 --font-serif(Noto Serif KR)</text>
+<text x="36" y="364" fill="#34c759" font-weight="700">세 글꼴 모두 SIL OFL 1.1: 웹 글꼴로 재배포할 수 있다</text>
+</g>
+</svg>

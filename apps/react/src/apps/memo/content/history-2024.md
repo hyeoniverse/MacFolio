@@ -5,8 +5,7 @@ category: 개발 기록/MacFolio/회고
 summary: 2024년 8월 첫 커밋부터 12월 Firebase 이전까지의 회고. 세 파일 화면을 CRA 컴포넌트로 나누고, 창 상태를 AppContext에 모으고, 메모 저장소를 메모리·MySQL·Cloud SQL·Firebase 순으로 바꾸고, node_modules·캐시 커밋을 정리한 과정을 주제별로 돌아봤다.
 ---
 
-> [!NOTE] 근거는 커밋과 코드
-> 2026년 10월에 git 기록을 다시 읽으며 쓴 회고다. 이 기간에는 PR 없이 `main`에 직접 커밋했고 당시 남긴 메모도 없어서, 커밋과 그 코드만 근거로 삼았다. 당시 화면은 캡처할 수 없어 코드 구조를 도식으로 대신했다.
+2024년 8월부터 12월까지 MacFolio는 HTML 파일 세 개에서 시작해 React 앱, Express 서버, Firebase로 구조를 세 번 바꿨다. 이 기간에는 PR 없이 `main`에 직접 커밋했다.
 
 ## 연표
 
@@ -31,7 +30,7 @@ summary: 2024년 8월 첫 커밋부터 12월 Firebase 이전까지의 회고. �
 
 ![2024년 8월 27일 작업 흐름](./images/day-20240827-timeline.svg '빈 저장소 생성, 첫 파일 커밋, index.html 이름 변경')
 
-빌드 도구도 패키지 관리자도 없었다. 브라우저가 `index.html`을 열면 CDN에서 jQuery 3.6과 Font Awesome 6 베타를 내려받고, `script.js`와 `style.css`를 불러오는 것이 전부다.
+빌드 도구도 패키지 관리자도 없었다. 브라우저가 `index.html`을 열면 CDN에서 jQuery 3.6과 Font Awesome 6 베타를 내려받고, `script.js`와 `style.css`를 불러오는 것이 전부다. CDN(Content Delivery Network)은 여러 지역의 서버에 같은 파일을 복제해 두고 가까운 서버에서 내려주는 배포망이고, jQuery는 `$("#player-track")`처럼 선택자로 DOM 요소를 찾아 조작하는 라이브러리다.
 
 ![첫 커밋의 구조](./images/day-20240827-structure.svg '코드는 세 파일, 나머지 61MB는 글꼴·그림·음악')
 
@@ -48,7 +47,7 @@ Safari 창 안에는 프로젝트 카드 세 개(새싹 농장, 퍼펙데이, �
 
 ### 10월 11일 - CRA와 TypeScript로 이전
 
-10월 11일에 `index.html`·`script.js`·`style.css`를 삭제하고 `create-react-app`의 TypeScript 템플릿으로 옮겼다.
+10월 11일에 `index.html`·`script.js`·`style.css`를 삭제하고 `create-react-app`의 TypeScript 템플릿으로 옮겼다. Create React App(CRA)은 webpack·Babel 설정을 `react-scripts` 패키지 안에 숨겨 두고 명령 한 줄로 React 프로젝트를 만들어 주는 도구다. React는 화면을 컴포넌트 단위의 함수로 나누고, 상태(state)가 바뀌면 해당 컴포넌트를 다시 그리는 라이브러리다. jQuery처럼 DOM을 직접 고치는 대신 "상태가 이 값이면 화면은 이 모양"을 코드로 적는다.
 
 ![2024년 10월 11~12일 작업 흐름](./images/day-20241011-timeline.svg '11일에 CRA로 이전하고, 12일에 Dock과 음악 플레이어를 다시 썼다')
 
@@ -60,7 +59,7 @@ Safari 창 안에는 프로젝트 카드 세 개(새싹 농장, 퍼펙데이, �
 | 그 밖      | react-toastify, Tailwind 3.4(개발용) |
 | 시험       | CRA가 생성한 `App.test.tsx` 하나     |
 
-같은 커밋에서 `script.js` 455줄을 컴포넌트로 나눴다. 그림은 `public/imgs/`로 옮기고, 그림 주소는 `REACT_APP_IMAGE_URL` 환경 변수에서 읽게 했다.
+같은 커밋에서 `script.js` 455줄을 컴포넌트로 나눴다. 그림은 `public/imgs/`로 옮기고, 그림 주소는 `REACT_APP_IMAGE_URL` 환경 변수에서 읽게 했다. CRA는 빌드 시각에 `REACT_APP_`로 시작하는 환경 변수만 코드의 `process.env.REACT_APP_…` 자리에 문자열로 넣는다. 다른 이름의 변수는 서버 비밀 값일 수 있어 브라우저 코드에 넣지 않는다.
 
 | script.js의 역할     | 옮긴 컴포넌트         |
 | -------------------- | --------------------- |
@@ -96,7 +95,7 @@ Safari 창 안에는 프로젝트 카드 세 개(새싹 농장, 퍼펙데이, �
 
 ![2024년 10월 13일 작업 흐름](./images/day-20241013-timeline.svg '같은 커밋을 시간대별로 집계한 그림. 오전과 낮에 커밋이 몰렸다')
 
-첫 커밋 "Fix: music player"는 이름과 달리 이날의 기반을 만든 커밋이다.
+첫 커밋 "Fix: music player"는 이름과 달리 이날의 기반을 만든 커밋이다. React의 Context는 컴포넌트 트리 위쪽에서 만든 값을 중간 컴포넌트에 props로 넘기지 않고 아래의 어느 컴포넌트에서든 읽게 하는 기능이다. Dock, 창, 상태 막대가 모두 "어느 앱이 열려 있는가"를 알아야 해서 이 상태를 Context에 보관했다.
 
 - `AppContext`: 앱 13개마다 `{ isRunning, isMinimized, zIndex }`를 보관하고, 열기·닫기·최소화·최대화 함수를 제공한다
 - `Container`: 창 틀(제목 표시줄, 신호등, 끌기)을 한 컴포넌트가 렌더링한다. 앱마다 따로 있던 `MacOSTitlebar`를 삭제했다
@@ -114,7 +113,7 @@ Safari 창 안에는 프로젝트 카드 세 개(새싹 농장, 퍼펙데이, �
 
 ### 누른 창을 맨 앞으로
 
-맨 앞으로 올리는 방식은 이랬다. 모든 앱을 `zIndex` 순으로 정렬해 0부터 다시 번호를 매기고, 누른 앱에 가장 큰 번호를 부여한다.
+CSS의 `z-index`는 겹친 요소 중 어느 것을 앞에 그릴지 정하는 정수이고, 값이 클수록 앞에 그린다. 맨 앞으로 올리는 방식은 이랬다. 모든 앱을 `zIndex` 순으로 정렬해 0부터 다시 번호를 매기고, 누른 앱에 가장 큰 번호(앱 개수)를 부여한다.
 
 ```ts
 const bringAppToFront = useCallback(
@@ -133,11 +132,16 @@ const bringAppToFront = useCallback(
 );
 ```
 
-이 코드에는 두 가지 문제가 있다. 정렬은 `setApps` 밖의 `apps`로 하고, 바깥 객체만 복사한 채 안쪽 객체의 `zIndex`를 직접 변경한다. ==같은 렌더에서 두 번 호출하면 앞의 결과를 반영하지 못한다==.
+이 코드에는 두 가지 문제가 있다. `setApps`에 함수(updater)를 넘기면 React는 그 함수에 직전 상태(`prevState`)를 넣어 차례로 실행하는데, 정렬은 그 밖에서 렌더 시점의 `apps`로 한다. 또 `{ ...prevState }`는 바깥 객체만 복사하므로, 안쪽 객체의 `zIndex`를 대입하면 이전 상태의 앱 객체까지 바뀐다. React는 상태 객체를 직접 바꾸지 않고 새 객체로 교체한다고 가정하고 동작한다. ==같은 렌더에서 두 번 호출하면 앞의 결과를 반영하지 못한다==.
+
+![zIndex 번호 다시 매기기와 두 번 호출한 결과](./images/history-2024-zindex-renumber.svg '한 번 호출하면 A가 맨 앞이 된다. 같은 렌더에서 A, B를 연달아 올리면 둘째 호출이 옛 정렬 순서로 다시 번호를 매겨 A가 맨 뒤로 간다')
 
 ### 블로그 iframe이 클릭을 가져가는 문제
 
-블로그 앱은 따로 운영하던 블로그(`codingkirby.github.io`)를 창 안에 iframe으로 표시하는 앱이다. 그런데 블로그 창이 뒤에 있을 때 그 안을 눌러도 맨 앞으로 올라오지 않았다. iframe 안의 클릭은 다른 문서의 이벤트라 바깥 창의 `onClick`까지 전달되지 않기 때문이다. 이어진 "fix: bring app to front" 커밋에서, 블로그 창이 맨 앞이 아닐 때만 iframe 위에 투명한 `div`를 덮어 클릭을 받게 했다.
+블로그 앱은 따로 운영하던 블로그(`codingkirby.github.io`)를 창 안에 iframe으로 표시하는 앱이다. iframe은 페이지 안에 다른 HTML 문서를 통째로 넣는 요소이고, 그 안의 문서는 바깥 문서와 별도의 DOM 트리와 이벤트를 갖는다. 그런데 블로그 창이 뒤에 있을 때 그 안을 눌러도 맨 앞으로 올라오지 않았다. 클릭 이벤트는 눌린 요소에서 시작해 부모 요소로 차례로 전달(버블링)되는데, iframe 안의 클릭은 iframe 문서의 루트에서 전달이 끝나 바깥 창의 `onClick`까지 오지 않기 때문이다.
+
+![iframe 클릭과 투명 덮개](./images/history-2024-iframe-overlay.svg '덮개가 없으면 클릭이 iframe 문서 안에서 끝난다. 블로그 창이 맨 앞이 아닐 때만 바깥 문서의 투명 div가 클릭을 받는다')
+이어진 "fix: bring app to front" 커밋에서, 블로그 창이 맨 앞이 아닐 때만 iframe 위에 투명한 `div`를 덮어 클릭을 받게 했다.
 
 ```tsx
 // 현재 blog 앱이 가장 높은 zIndex인지 확인
@@ -156,7 +160,7 @@ const isTopApp = Object.values(apps).every((app) => app.zIndex <= apps.blog.zInd
 
 ![2024년 10월 14일 작업 흐름](./images/day-20241014-timeline.svg '커밋이 새벽에 몰렸다')
 
-최소화 애니메이션은 창의 중심을 기준으로 `translate`와 `scale(0)`을 0.5초 동안 적용하고, `setTimeout` 0.5초 뒤에 최소화 상태로 전환한다. 창 위치는 `containerPosition_<앱>` 키로 localStorage에 저장해, 다시 열면 같은 위치에 표시한다.
+최소화 애니메이션은 창의 중심을 기준으로 `translate`와 `scale(0)`을 0.5초 동안 적용하고, `setTimeout` 0.5초 뒤에 최소화 상태로 전환한다. 창 위치는 `containerPosition_<앱>` 키로 localStorage에 저장해, 다시 열면 같은 위치에 표시한다. localStorage는 브라우저가 사이트(출처)마다 문자열 키·값을 저장하는 공간이고, 탭을 닫거나 새로고침해도 값이 남는다.
 
 ```ts
 setIsMinimizing(true); // 애니메이션을 트리거
@@ -167,7 +171,7 @@ setTimeout(() => {
 }, 500); // 애니메이션 시간과 맞춰서
 ```
 
-CSS 전환 0.5초와 `setTimeout` 500ms를 각각 하드코딩해 일치시킨 구조다. 이어서 최대화를 구현했다. 최대화하면 창을 상태 막대(25px) 아래부터 화면 끝까지 확장하고, 이전 크기를 `containerSize_<앱>` 키로 저장해 복원할 때 사용한다. 화면 끝까지 확장했기 때문에 최대화한 창이 Dock을 가렸다.
+CSS 전환 0.5초와 `setTimeout` 500ms를 각각 하드코딩해 일치시킨 구조다. 한쪽 값만 바꾸면 애니메이션이 끝나기 전에 창이 사라지거나, 끝난 뒤에도 빈 자리가 남는다. 이어서 최대화를 구현했다. 최대화하면 창을 상태 막대(25px) 아래부터 화면 끝까지 확장하고, 이전 크기를 `containerSize_<앱>` 키로 저장해 복원할 때 사용한다. 화면 끝까지 확장했기 때문에 최대화한 창이 Dock을 가렸다.
 
 | localStorage 키          | 저장 값        | 사용 시점            |
 | ------------------------ | -------------- | -------------------- |
@@ -213,7 +217,7 @@ jQuery 선택자 대신 `useRef`로 audio 요소·재생 막대·앨범 표지�
 
 ### 10월 15일 - 첫 클릭에 재생, 곡 7개
 
-브라우저는 사용자가 페이지와 상호작용하기 전에는 소리가 있는 자동 재생을 차단한다. 그래서 `window`에 클릭 리스너를 한 번 등록하고, 첫 클릭에서 재생한 뒤 리스너를 제거한다.
+브라우저는 사용자가 페이지와 상호작용하기 전에는 소리가 있는 자동 재생을 차단한다(자동 재생 정책). 페이지를 열자마자 `audio.play()`를 호출하면 재생되지 않고 Promise가 거부된다. 그래서 `window`에 클릭 리스너를 한 번 등록하고, 첫 클릭에서 재생한 뒤 리스너를 제거한다.
 
 볼륨 창은 상태 막대 쪽 `VolumeModal`에서 음악 플레이어 쪽 `MusicPlayerVolume`으로 옮기고, 스타일도 `MusicPlayer.css`로 합쳤다. `MusicContext`의 곡 목록은 2개에서 7개로 늘렸다. 〈센과 치히로의 행방불명〉 두 곡에 〈하울의 움직이는 성〉, 이루마 두 곡 등 다섯 곡을 더하고, 곡 이름·앨범·표지 배열도 7개로 맞췄다. 음악 파일 4개(`4.mp3`~`7.mp3`, 약 12.8MB)와 앨범 그림 4장은 `client/public/`에 직접 커밋했다.
 
@@ -300,7 +304,7 @@ useEffect(() => {
 
 ![2024년 10월 21~22일 작업 흐름](./images/day-20241021-timeline.svg '21일 밤부터 22일 새벽까지, 그리고 22일 오전')
 
-21일의 "FEAT: Memo app" 커밋에서 서버를 Express 생성기의 JavaScript에서 TypeScript로 다시 썼다. `routes → controllers → models` 3계층으로 나누고, `mysql2`의 연결 풀로 MySQL에 연결했다. 테이블은 `folders`와 `memos` 두 개다.
+21일의 "FEAT: Memo app" 커밋에서 서버를 Express 생성기의 JavaScript에서 TypeScript로 다시 썼다. Express는 Node.js에서 주소와 HTTP 메서드별로 처리 함수를 연결하는 웹 서버 프레임워크이고, MySQL은 표 형태로 데이터를 저장하고 SQL로 조회하는 관계형 데이터베이스다. `routes → controllers → models` 3계층으로 나누고, `mysql2`의 연결 풀로 MySQL에 연결했다. 테이블은 `folders`와 `memos` 두 개다.
 
 | 계층        | 역할                                                                           |
 | ----------- | ------------------------------------------------------------------------------ |
@@ -321,7 +325,7 @@ router.put('/:id', validatePassword, updateMemoController);
 router.delete('/:id', validatePassword, deleteMemoController);
 ```
 
-`validatePassword`는 요청 본문의 `password`를 `bcrypt.compare`로 해당 메모의 해시와 비교한다.
+`validatePassword`는 요청 본문의 `password`를 `bcrypt.compare`로 해당 메모의 해시와 비교한다. bcrypt는 비밀번호를 되돌릴 수 없는 문자열(해시)로 바꾸는 함수다. 같은 비밀번호도 매번 다른 무작위 값(salt)을 섞어 `$2b$`로 시작하는 60자 문자열을 만들고, 저장한 해시와 입력값을 비교하는 함수(`compare`)만 제공한다. DB가 유출되어도 원래 비밀번호를 바로 알 수 없게 하는 것이 목적이다.
 
 | 경우                   | 응답                 |
 | ---------------------- | -------------------- |
@@ -353,7 +357,7 @@ router.delete('/:id', validatePassword, deleteMemoController);
 
 ![2024년 10월 26~27일 작업 흐름](./images/day-20241026-timeline.svg '26일에 Cloud SQL로 옮기고 .env를 추적에서 뺐고, 27일에는 npm install 커밋이 이어졌다')
 
-첫 커밋에서 DB 연결 대상을 Google Cloud SQL로 변경했다. 코드 변경은 적다. 연결 설정에 포트(`DB_PORT`, 기본값 3306)를 추가하고 주석을 작성했을 뿐, 주소·사용자·비밀번호는 이전과 같이 환경 변수에서 읽는다. 변경된 것은 환경 변수가 가리키는 DB 서버다. 마지막 커밋에서 `macbook.sql`에 테이블 정의를 기록했다.
+첫 커밋에서 DB 연결 대상을 Google Cloud SQL로 변경했다. Cloud SQL은 Google Cloud가 MySQL·PostgreSQL 서버의 설치·백업·패치를 대신 운영해 주는 관리형 데이터베이스다. 코드 변경은 적다. 연결 설정에 포트(`DB_PORT`, 기본값 3306)를 추가하고 주석을 작성했을 뿐, 주소·사용자·비밀번호는 이전과 같이 환경 변수에서 읽는다. 변경된 것은 환경 변수가 가리키는 DB 서버다. 마지막 커밋에서 `macbook.sql`에 테이블 정의를 기록했다.
 
 ```sql
 CREATE TABLE `memos` (
@@ -377,6 +381,8 @@ CREATE TABLE `memos` (
 1. `server/`를 삭제했다. Express, TypeScript 컨트롤러, MySQL 연결을 모두 제거했다.
 2. `client/` 안의 앱을 저장소 루트로 옮겼다. `client/src`가 `src`가 되었고, React를 18.3에서 19.0으로 업그레이드했다.
 3. Firebase를 연동했다. 호스팅은 `build` 폴더를 배포하고 모든 경로를 `index.html`로 재작성(rewrite)한다. 메모는 Realtime Database의 `memos/<폴더>/<id>` 경로에 저장한다.
+
+Firebase Realtime Database는 데이터를 하나의 큰 JSON 트리로 저장하고, 브라우저의 Firebase SDK가 서버 코드 없이 직접 읽고 쓰는 데이터베이스다. 중간에 서버가 없으므로 누가 어느 경로를 읽고 쓸 수 있는지는 데이터베이스에 등록한 보안 규칙(Security Rules)이 결정한다.
 
 ![Firebase 전후 구조](./images/day-20241222-structure.svg '서버를 제거하고 브라우저가 데이터베이스를 직접 읽고 쓴다')
 
@@ -420,7 +426,7 @@ CREATE TABLE `memos` (
 
 ### 10월 27일 - node_modules 6만 개 커밋
 
-`.env`를 삭제한 다음 날인 27일 아침에는 `.gitignore`에서 `node_modules` 한 줄을 삭제했다. 이어서 밤까지 "CHORE: npm install"이라는 같은 메시지로 일곱 번 커밋했다.
+`.gitignore`는 git이 추적하지 않을 파일 이름 규칙을 적는 파일이다. `node_modules`는 `npm install`이 `package.json`과 잠금 파일을 보고 언제든 다시 만들 수 있는 폴더라, 보통 이 파일에 적어 추적에서 제외한다. `.env`를 삭제한 다음 날인 27일 아침에는 `.gitignore`에서 `node_modules` 한 줄을 삭제했다. 이어서 밤까지 "CHORE: npm install"이라는 같은 메시지로 일곱 번 커밋했다.
 
 | 순서 | 변경 파일 |   추가 줄 |
 | ---: | --------: | --------: |
@@ -466,7 +472,7 @@ CREATE TABLE `memos` (
 
 ### 잘못 커밋한 파일의 영향
 
-삭제한 파일도 git 기록에는 남는다는 점은 비밀 값에만 해당하는 문제가 아니다.
+git은 커밋마다 그 시점의 모든 파일 내용을 기록에 보관하므로, 나중 커밋에서 파일을 삭제해도 이전 커밋을 checkout하면 파일이 그대로 나온다. 이 성질은 비밀 값에만 해당하는 문제가 아니다.
 
 | 잘못 커밋한 것               | 기록에 남은 영향                       | 대응                         |
 | ---------------------------- | -------------------------------------- | ---------------------------- |
@@ -476,7 +482,7 @@ CREATE TABLE `memos` (
 
 ### 커밋 메시지와 실제 변경의 불일치
 
-이 기간의 커밋 메시지는 실제 변경과 자주 달랐다. 메시지만으로 변경을 알 수 없어서, 이 회고를 쓰면서 모든 커밋을 코드와 직접 대조해야 했다.
+이 기간의 커밋 메시지는 실제 변경과 자주 달랐다. 메시지만으로는 어떤 변경인지 알 수 없어 코드를 직접 대조해야 한다.
 
 | 커밋 메시지 (날짜)                        | 실제 변경                                         |
 | ----------------------------------------- | ------------------------------------------------- |
@@ -519,5 +525,18 @@ CREATE TABLE `memos` (
 서버는 사용할 곳보다 먼저 생겼다. 10월 13일의 Express 서버와 메일 경로, 15일의 메모 경로는 화면이 호출하지 않았고, 메일 앱은 결국 `mailto:`로 갔다. 서버를 삭제할 때는 반대로 서버가 맡던 권한 확인을 옮길 곳을 정하지 않았다. 2026년에 다시 서버를 구축할 때는 먼저 데이터베이스를 차단하고 편집을 잠근 뒤, 서버에 로그인과 권한 확인을 구현하고 나서 편집을 허용했다.
 
 "무엇을 저장소에 보관하는가"에 대한 판단은 이틀 사이에 반대로 내려졌다. 10월 26일에는 있으면 안 되는 `.env`를 제외했고, 27일에는 없어도 되는 `node_modules`를 추가했다. 커밋 전에 `git status`로 변경 파일 목록을 확인했다면 11월 4일의 캐시 커밋도 생기지 않았을 것이다. 마지막으로, 변경을 확인할 시험이 없었다. CRA가 생성한 `App.test.tsx` 하나가 있었지만 `package.json`에 `test` 스크립트가 없었다. 2026년 9월에 작업을 재개했을 때 가장 먼저 한 일이 시험을 추가하는 것이었고, 그 과정에서 [한 번도 동작한 적 없던 기능](/memo/bugs-found-by-tests)이 나왔다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Adding Custom Environment Variables](https://create-react-app.dev/docs/adding-custom-environment-variables/), Create React App 문서
+- [Updating Objects in State](https://react.dev/learn/updating-objects-in-state), [Queueing a Series of State Updates](https://react.dev/learn/queueing-a-series-of-state-updates), React 문서
+- [&lt;iframe&gt;: The Inline Frame element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), MDN
+- [Autoplay guide for media and Web Audio APIs](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide), MDN
+- [node.bcrypt.js](https://github.com/kelektiv/node.bcrypt.js), GitHub
+- [Understand Firebase Realtime Database Security Rules](https://firebase.google.com/docs/database/security), Firebase 문서
+- [gitignore](https://git-scm.com/docs/gitignore), [git-diff](https://git-scm.com/docs/git-diff), Git 문서
+
+</details>
 
 #MacFolio #회고 #React #CRA #Express #MySQL #Firebase #창관리 #git

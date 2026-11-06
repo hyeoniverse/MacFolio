@@ -5,7 +5,7 @@ category: 개발 기록/MacFolio/서버·API
 summary: 삭제한 메모를 복구할 방법이 없어 macOS 메모처럼 '최근 삭제된 항목'을 추가했다. Post에 deletedAt 열과 CHECK 제약을 추가하고, 복구·영구 삭제·30일 정리 API와 드래그 앤 드롭을 구현했다. 저장소 Markdown 글을 숨기는 표시가 핵심이었다.
 ---
 
-메모를 삭제할 때마다 "지울까요?" 확인 창을 표시했다. 삭제를 되돌릴 수 없었기 때문이다. macOS 메모는 확인하지 않는다. 삭제한 메모는 '최근 삭제된 항목'으로 이동해 30일 동안 보관되고, 그 기간 안에 복구하거나 영구 삭제한다. 같은 방식으로 변경했다([#64](https://github.com/hyeoniverse/MacFolio/pull/64)).
+MacFolio의 블로그는 macOS 메모 앱 모양이고, 관리자는 이 화면에서 글을 쓰고 지운다. 메모를 삭제할 때마다 "지울까요?" 확인 창을 표시했다. 삭제를 되돌릴 수 없었기 때문이다. macOS 메모는 확인하지 않는다. 삭제한 메모는 '최근 삭제된 항목' 폴더로 이동해 30일 동안 보관되고, 그 기간 안에 복구하거나 영구 삭제한다. Finder의 휴지통과 같은 구조다. 같은 방식으로 변경했다([#64](https://github.com/hyeoniverse/MacFolio/pull/64)).
 
 ## 배경
 
@@ -25,7 +25,9 @@ summary: 삭제한 메모를 복구할 방법이 없어 macOS 메모처럼 '최�
 
 ## 삭제 시각
 
-이전에도 글을 삭제하면 행을 제거하지 않고 `deleted` 표시만 남겼다(소프트 삭제[^soft-delete]). 블로그 글의 상당수는 저장소의 Markdown 파일이라 서버가 파일을 삭제할 수 없어서, "이 주소의 글은 숨긴다"는 표시가 필요했기 때문이다. 다만 삭제하면서 임시 저장을 비웠고, 삭제 시각은 기록하지 않았다.
+DB에서 데이터를 삭제하는 방법은 두 가지다. 행 자체를 `DELETE`로 제거하는 하드 삭제(hard delete)와, 행은 남기고 "삭제됨" 표시 열만 바꾸는 소프트 삭제(soft delete)다. 이전에도 글을 삭제하면 행을 제거하지 않고 `deleted` 표시만 남겼다(소프트 삭제[^soft-delete]). 블로그 글의 상당수는 저장소의 Markdown 파일이라 서버가 파일을 삭제할 수 없어서, "이 주소의 글은 숨긴다"는 표시가 필요했기 때문이다. 다만 삭제하면서 임시 저장을 비웠고, 삭제 시각은 기록하지 않았다.
+
+![하드 삭제와 소프트 삭제](./images/memo-recently-deleted-hard-vs-soft.svg '저장소에 hello.md가 있는 글을 하드 삭제하면 행이 사라져 파일의 글이 다시 표시된다. 소프트 삭제는 행을 남겨 계속 숨긴다')
 
 그래서 `deletedAt`을 추가했다. 두 값의 조합에 따라 상태가 다음과 같이 나뉜다.
 
@@ -38,15 +40,30 @@ summary: 삭제한 메모를 복구할 방법이 없어 macOS 메모처럼 '최�
 
 ![세 상태와 상태 전이](./images/memo-recently-deleted-states.svg '일반 글 → 최근 삭제된 항목 → 영구 삭제한 글. 복구는 가운데 상태에서만 가능하다')
 
-마이그레이션(`20261001100000_post_deleted_at/migration.sql`)은 열을 추가하기만 했다. 이미 삭제한 글은 `deletedAt`이 비어 있으므로 영구 삭제한 글로 취급한다. 삭제 시각이 있는데 삭제 상태가 아닌 조합은 존재할 수 없으므로 DB의 [CHECK 제약](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)으로 차단했다. Prisma 스키마로는 CHECK 제약을 표현할 수 없어서 마이그레이션 SQL에 직접 작성했다.
+마이그레이션(`20261001100000_post_deleted_at/migration.sql`)은 열을 추가하기만 했다. 이미 삭제한 글은 `deletedAt`이 비어 있으므로 영구 삭제한 글로 취급한다. 삭제 시각이 있는데 삭제 상태가 아닌 조합은 존재할 수 없으므로 DB의 [CHECK 제약](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)으로 차단했다. CHECK 제약은 행을 추가하거나 수정할 때마다 DB가 조건식을 평가하고, 결과가 거짓이면 그 쓰기를 거절하는 규칙이다. 애플리케이션 코드에 버그가 있어도 잘못된 조합이 테이블에 저장되지 않는다. Prisma 스키마로는 CHECK 제약을 표현할 수 없어서 마이그레이션 SQL에 직접 작성했다.
 
 ```sql
 ALTER TABLE "Post" ADD COLUMN "deletedAt" TIMESTAMP(3);
 ALTER TABLE "Post" ADD CONSTRAINT "Post_deleted_at" CHECK ("deletedAt" IS NULL OR "deleted");
 ```
 
+조건식 `"deletedAt" IS NULL OR "deleted"`는 "삭제 시각이 비어 있거나, 삭제 상태다"라는 뜻이다. 위 상태 표의 네 조합에 대입하면 결과는 다음과 같다.
+
+| deleted | deletedAt | `"deletedAt" IS NULL` | `"deleted"` | 조건식 결과 |
+| ------- | --------- | --------------------- | ----------- | ----------- |
+| false   | 없음      | 참                    | 거짓        | 참 (허용)   |
+| true    | 있음      | 거짓                  | 참          | 참 (허용)   |
+| true    | 없음      | 참                    | 참          | 참 (허용)   |
+| false   | 있음      | 거짓                  | 거짓        | 거짓 (거절) |
+
+네 번째 조합을 만드는 쓰기는 PostgreSQL이 다음 오류로 거절한다.
+
+```text
+ERROR:  new row for relation "Post" violates check constraint "Post_deleted_at"
+```
+
 > [!WARNING] 다시 게시·임시 저장 경로의 누락
-> 제약을 작성하면서 누락된 코드 경로를 발견했다. 삭제한 글을 다시 게시하거나 임시 저장하면 `deleted`를 `false`로 되돌리는데, `deletedAt`은 그대로 유지하고 있었다. 수정하지 않았다면 제약 위반으로 저장이 실패했을 것이다. 두 경로 모두 `deletedAt: null`을 함께 설정했다.
+> 제약을 작성하면서 누락된 코드 경로를 발견했다. 삭제한 글을 다시 게시하거나 임시 저장하면 `deleted`를 `false`로 되돌리는데, `deletedAt`은 그대로 유지하고 있었다. 수정하지 않았다면 제약 위반으로 저장이 실패했다. 두 경로 모두 `deletedAt: null`을 함께 설정했다.
 
 ## 복구와 영구 삭제
 
@@ -71,7 +88,7 @@ async restore(slug: string): Promise<AdminPost | null> {
 }
 ```
 
-복구의 두 번째 분기가 저장소 글이다. 서버에서 수정한 적 없는 저장소 글을 삭제하면, 서버에는 "숨긴다"는 표시만 있고 내용은 파일에 있다. 이때 복구는 표시를 제거하는 것이다. 행이 삭제되면 파일의 글이 다시 표시된다.
+복구의 두 번째 분기가 저장소 글이다. 서버에서 수정한 적 없는 저장소 글을 삭제하면, 서버에는 "숨긴다"는 표시만 있고 내용은 파일에 있다. 이 경우 복구는 표시를 제거하는 동작이다. 행이 삭제되면 파일의 글이 다시 표시된다.
 
 > [!IMPORTANT] 영구 삭제 후에도 숨김 표시 보관
 > 영구 삭제에서 행을 삭제하지 않는 이유도 같다. 저장소에 같은 주소의 파일이 있다면, 행이 삭제되는 순간 그 글이 다시 표시된다. 서버는 저장소에 어떤 파일이 있는지 알 수 없으므로, 항상 숨김 표시를 남긴다.
@@ -89,7 +106,21 @@ private async purgeExpired(now = new Date()) {
 }
 ```
 
-예약 작업을 두지 않은 이유는 API 서버가 한 대뿐이고, 정리가 몇 시간 늦어져도 사용자에게 드러나는 차이가 없기 때문이다. 영구 삭제는 버전 삭제와 행 수정을 [트랜잭션](https://www.prisma.io/docs/orm/prisma-client/queries/transactions) 하나로 묶었다.
+![삭제 후 30일의 흐름](./images/memo-recently-deleted-purge-timeline.svg '10월 1일에 삭제한 글은 30일 동안 남은 일수가 표시되고, 기한이 지난 뒤 관리자가 목록을 조회하는 요청에서 영구 삭제된다')
+
+예약 작업(cron처럼 정해진 시각마다 실행하는 작업)을 두지 않은 이유는 API 서버가 한 대뿐이고, 정리가 몇 시간 늦어져도 사용자에게 드러나는 차이가 없기 때문이다. 화면도 삭제 후 30일이 지난 글은 최근 삭제된 항목 목록에서 제외하므로, 정리가 늦어져도 기한이 지난 글이 표시되지 않는다.
+
+영구 삭제는 버전 삭제와 행 수정을 [트랜잭션](https://www.prisma.io/docs/orm/prisma-client/queries/transactions) 하나로 묶었다. 트랜잭션은 여러 쿼리를 한 단위로 실행해, 모두 성공하거나 모두 취소되게 하는 DB 기능이다. 버전 삭제는 성공하고 행 수정이 실패하면 "버전 기록만 사라진 삭제 상태의 글"이 남는데, 트랜잭션으로 묶으면 이런 중간 상태가 저장되지 않는다.
+
+```ts
+await this.prisma.$transaction([
+	this.prisma.postRevision.deleteMany({ where: { postSlug: slug } }),
+	this.prisma.post.update({
+		where: { slug },
+		data: { ...NO_PUBLISHED, ...NO_DRAFT, deletedAt: null, updatedBy: admin },
+	}),
+]);
+```
 
 ## 화면
 
@@ -117,7 +148,7 @@ private async purgeExpired(now = new Date()) {
 
 ![macOS 메모의 영구 삭제 확인 창](./images/memo-recently-deleted-confirm-request.jpg '참고한 macOS 메모 화면. 즉시 삭제를 누르면 이 확인 창을 메모 창 가운데에 표시한다')
 
-안내 상자의 문구는 Finder의 휴지통에서 파일을 열 때 표시되는 안내를 따랐다.
+안내 상자의 문구는 Finder의 휴지통에서 파일을 열면 표시되는 안내를 따랐다.
 
 > 30일 뒤에 영구히 삭제됩니다. 원본 항목이 휴지통에 있기 때문에 수정할 수 없습니다.
 > 이 항목을 사용하려면 휴지통 밖으로 드래그하거나 복구하십시오.
@@ -143,7 +174,7 @@ private async purgeExpired(now = new Date()) {
 
 ## 드래그 앤 드롭으로 복구
 
-macOS 메모처럼 드래그 앤 드롭으로도 삭제하고 복구한다.
+macOS 메모처럼 드래그 앤 드롭으로도 삭제하고 복구한다. 목록의 글을 마우스로 누른 채 사이드바의 폴더 위로 끌어가 놓는 동작이다.
 
 | 드래그 대상   | 놓는 위치        | 결과                      |
 | ------------- | ---------------- | ------------------------- |
@@ -183,7 +214,7 @@ const canDrop = (target: string) => {
 
 </details>
 
-## 남은 것·정리
+## 남은 것
 
 - 화면의 안내 방식은 여러 번 바뀌었다. 안내 상자를 제거하고 도구 막대로만 안내했다가(`a3fd486a1`) 다시 상자를 복원했다(`7710ba20b`). 화면 요소를 줄이는 것보다 "수정할 수 없는 이유"를 표시하는 쪽이 사용자의 혼란이 적었다.
 - 30일 정리는 관리자가 목록을 조회해야 실행된다. 관리자가 오래 접속하지 않으면 삭제한 글이 30일보다 오래 보관되지만, 남은 글은 관리자에게만 표시되므로 문제가 되지 않는다.
@@ -199,5 +230,17 @@ const canDrop = (target: string) => {
 - [휴지통 앱](/memo/bin-app)
 
 [^soft-delete]: 행을 실제로 삭제하지 않고 삭제 여부를 나타내는 열만 바꾸는 방식. 데이터를 복구할 수 있지만, 일반 조회 쿼리마다 삭제된 행을 제외하는 조건이 필요하다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [PostgreSQL: Check Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-CHECK-CONSTRAINTS)
+- [Prisma: Transactions and batch queries](https://www.prisma.io/docs/orm/prisma-client/queries/transactions)
+- [Prisma: Customizing migrations](https://www.prisma.io/docs/orm/prisma-migrate/workflows/customizing-migrations)
+- [Playwright: locator.dragTo](https://playwright.dev/docs/api/class-locator#locator-drag-to)
+- [Playwright: Mouse](https://playwright.dev/docs/api/class-mouse)
+- [Apple 지원: Delete a note on Mac](https://support.apple.com/guide/notes/delete-a-note-not5585d71a8/mac)
+
+</details>
 
 #MacFolio #메모앱

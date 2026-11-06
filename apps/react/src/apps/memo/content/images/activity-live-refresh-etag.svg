@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>첫 응답의 ETag를 브라우저가 다음 요청의 If-None-Match에 붙이고, 값이 같으면 서버가 본문 없이 304를 보내는 순서</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+</defs>
+<rect width="640" height="400" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">말풍선 목록을 15초 뒤 다시 받을 때 (ETag)</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">화면 코드는 fetch만 부른다. 헤더는 브라우저 HTTP 캐시와 Express가 처리한다</text>
+
+<rect x="40" y="72" width="200" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="140" y="97" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">브라우저 (HTTP 캐시)</text>
+<rect x="400" y="72" width="200" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="500" y="97" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">API 서버 (Express)</text>
+<line x1="140" y1="112" x2="140" y2="380" stroke="#6e6e73" stroke-dasharray="3 4"/>
+<line x1="500" y1="112" x2="500" y2="380" stroke="#6e6e73" stroke-dasharray="3 4"/>
+
+<!-- 1 -->
+<line x1="140" y1="140" x2="496" y2="140" stroke="#1d1d1f" marker-end="url(#a)"/>
+<text x="320" y="134" font-size="12" fill="#1d1d1f" text-anchor="middle">① GET /messages/threads/:id</text>
+<line x1="500" y1="176" x2="144" y2="176" stroke="#1d1d1f" marker-end="url(#a)"/>
+<text x="320" y="170" font-size="12" fill="#1d1d1f" text-anchor="middle">② 200 OK · ETag: W/"2c-9f1e…" · 본문 JSON</text>
+<text x="150" y="196" font-size="12" fill="#6e6e73">본문과 ETag를 캐시에 저장</text>
+
+<!-- 2 -->
+<text x="24" y="224" font-size="12" fill="#ff9f0a" font-weight="600">15초 뒤</text>
+<line x1="140" y1="246" x2="496" y2="246" stroke="#0a84ff" marker-end="url(#b)"/>
+<text x="320" y="240" font-size="12" fill="#0a84ff" text-anchor="middle">③ GET + If-None-Match: W/"2c-9f1e…" (자동)</text>
+<rect x="386" y="258" width="228" height="44" rx="6" fill="#ffffff" stroke="#ff9f0a"/>
+<text x="500" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">DB 조회 → JSON 생성 → 해시 계산</text>
+<text x="500" y="294" font-size="12" fill="#1d1d1f" text-anchor="middle">요청의 ETag와 같다</text>
+<line x1="500" y1="322" x2="144" y2="322" stroke="#0a84ff" marker-end="url(#b)"/>
+<text x="320" y="316" font-size="12" fill="#0a84ff" text-anchor="middle">④ 304 Not Modified (본문 없음)</text>
+<text x="150" y="346" font-size="12" fill="#1d1d1f">⑤ 캐시한 본문으로 fetch 응답을 채운다</text>
+<text x="150" y="366" font-size="12" fill="#6e6e73">화면 코드에는 200과 같은 본문이 전달된다</text>
+</svg>

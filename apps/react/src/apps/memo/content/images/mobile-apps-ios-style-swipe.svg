@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>홈 화면 스와이프의 페이지 넘김 판정</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="350" fill="#ffffff"/>
+<text x="24" y="30" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">포인터를 놓는 시각에 pageAfterSwipe(current, count, dx, width, ms)가 결정한다</text>
+<rect x="24" y="50" width="180" height="60" rx="8" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="114.0" y="74" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">pointerdown 후 8px 이동</text>
+<text x="114.0" y="92" font-size="12" fill="#6e6e73" text-anchor="middle">가로·세로 방향 판별</text>
+<line x1="204" y1="80" x2="236" y2="80" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="240" y="50" width="170" height="60" rx="8" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="325.0" y="74" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">세로 방향</text>
+<text x="325.0" y="92" font-size="12" fill="#6e6e73" text-anchor="middle">제어 센터 스와이프로 넘김</text>
+<line x1="114" y1="110" x2="114" y2="136" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="24" y="140" width="180" height="60" rx="8" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="114.0" y="164" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">가로 방향</text>
+<text x="114.0" y="182" font-size="12" fill="#6e6e73" text-anchor="middle">트랙 translateX = dx</text>
+<line x1="204" y1="170" x2="236" y2="170" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="240" y="140" width="376" height="76" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="428.0" y="164" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">놓을 때 판정</text>
+<text x="428.0" y="182" font-size="12" fill="#0a84ff" text-anchor="middle">|dx| &gt; 폭 × 0.2  (먼 거리)</text>
+<text x="428.0" y="200" font-size="12" fill="#0a84ff" text-anchor="middle">또는 |dx| ≥ 16px 이고 |dx| ÷ ms &gt; 0.4  (빠른 플릭)</text>
+<line x1="330" y1="216" x2="330" y2="240" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<line x1="530" y1="216" x2="530" y2="240" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="240" y="244" width="180" height="50" rx="8" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="330.0" y="268" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">하나라도 참</text>
+<text x="330.0" y="286" font-size="12" fill="#6e6e73" text-anchor="middle">dx &lt; 0 이면 다음 페이지</text>
+<rect x="436" y="244" width="180" height="50" rx="8" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="526.0" y="268" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">둘 다 거짓</text>
+<text x="526.0" y="286" font-size="12" fill="#6e6e73" text-anchor="middle">현재 페이지로 복귀</text>
+<text x="24" y="240" font-size="12" fill="#1d1d1f" text-anchor="start" font-weight="700">예: 폭 390px 화면</text>
+<text x="24" y="262" font-size="12" fill="#34c759" text-anchor="start">100px 천천히: 넘김</text>
+<text x="24" y="278" font-size="12" fill="#6e6e73" text-anchor="start">(100 &gt; 390 × 0.2 = 78)</text>
+<text x="24" y="298" font-size="12" fill="#34c759" text-anchor="start">40px를 80ms에: 넘김</text>
+<text x="24" y="314" font-size="12" fill="#6e6e73" text-anchor="start">(0.5px/ms &gt; 0.4)</text>
+<text x="24" y="334" font-size="12" fill="#1d1d1f" text-anchor="start">40px를 400ms에: 복귀 (0.1px/ms)</text>
+<text x="240" y="318" font-size="12" fill="#6e6e73" text-anchor="start">첫·마지막 페이지 바깥으로 끌면 이동 거리의 1/3만 따라온다</text>
+</svg>

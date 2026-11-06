@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<text x="30" y="34" font-size="14" font-weight="600" fill="#1d1d1f">① 종가 365일 (2019-02-28부터 1년)</text>
+<rect x="30" y="46" width="580" height="30" rx="4" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="36" y="66" font-size="12" fill="#6e6e73">0일</text><text x="604" y="66" text-anchor="end" font-size="12" fill="#6e6e73">364일</text>
+<text x="30" y="112" font-size="14" font-weight="600" fill="#1d1d1f">② 윈도우 w = 7, 수평선 h = 1로 자르기 → 365 − 8 + 1 = 358개 샘플</text>
+<g font-size="12">
+<rect x="30" y="124" width="112" height="26" rx="3" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="86" y="141" text-anchor="middle" fill="#0a84ff">0~6일 (입력 7개)</text>
+<rect x="146" y="124" width="16" height="26" rx="3" fill="#ff9f0a"/><text x="170" y="141" fill="#1d1d1f">7일 (레이블) = 샘플 1</text>
+<rect x="46" y="156" width="112" height="26" rx="3" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="102" y="173" text-anchor="middle" fill="#0a84ff">1~7일</text>
+<rect x="162" y="156" width="16" height="26" rx="3" fill="#ff9f0a"/><text x="186" y="173" fill="#1d1d1f">8일 = 샘플 2 (한 칸씩 민다)</text>
+<text x="400" y="173" fill="#6e6e73">…</text>
+<rect x="382" y="188" width="112" height="26" rx="3" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="438" y="205" text-anchor="middle" fill="#0a84ff">357~363일</text>
+<rect x="498" y="188" width="16" height="26" rx="3" fill="#ff9f0a"/><text x="522" y="205" fill="#1d1d1f">364일 = 샘플 358</text>
+</g>
+<text x="30" y="250" font-size="14" font-weight="600" fill="#1d1d1f">③ 섞지 않고 시간순으로 70% : 30% 분할</text>
+<rect x="30" y="262" width="405" height="34" rx="4" fill="#0a84ff"/><text x="232" y="284" text-anchor="middle" font-size="13" fill="#ffffff">훈련 샘플 1~250 (int(358 × 0.7) = 250)</text>
+<rect x="435" y="262" width="175" height="34" rx="4" fill="#34c759"/><text x="522" y="284" text-anchor="middle" font-size="13" fill="#ffffff">테스트 251~358 (108개)</text>
+<text x="30" y="318" font-size="12" fill="#6e6e73">과거 구간으로 학습하고 그 뒤의 미래 구간을 예측하므로, 테스트 구간의 가격이 학습에 새어 들어가지 않는다</text>
+</svg>

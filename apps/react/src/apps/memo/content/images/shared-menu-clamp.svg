@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>placeAtPoint와 placeBelow가 화면 밖으로 넘치는 메뉴를 안쪽으로 옮기는 계산 예</title>
+  <rect width="640" height="520" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">넘치면 안쪽으로: placement.ts 계산 예 (EDGE = 8px)</text>
+
+  <!-- panel 1 -->
+  <text x="24" y="66" font-size="13" font-weight="600" fill="#1d1d1f">① placeAtPoint: 1440×900 화면 오른쪽 아래 (1350, 820)에서 우클릭</text>
+  <rect x="24" y="80" width="288" height="180" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="32" y="98" font-size="12" fill="#6e6e73">화면 1440×900 (1/5 축소)</text>
+  <rect x="294" y="244" width="44" height="36" fill="none" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <circle cx="294" cy="244" r="4" fill="#ff3b30"/>
+  <rect x="266.4" y="222.4" width="44" height="36" fill="#0a84ff" fill-opacity="0.15" stroke="#0a84ff" stroke-width="2"/>
+  <rect x="24" y="290" width="12" height="12" fill="none" stroke="#ff3b30" stroke-dasharray="3 2"/>
+  <text x="42" y="300" font-size="12" fill="#ff3b30">우클릭 위치 그대로 (오른쪽·아래로 넘침)</text>
+  <rect x="24" y="310" width="12" height="12" fill="#0a84ff" fill-opacity="0.15" stroke="#0a84ff"/>
+  <text x="42" y="320" font-size="12" fill="#0a84ff">계산 결과 (1212, 712)</text>
+  <text x="350" y="112" font-size="12" fill="#1d1d1f">메뉴 크기 220×180</text>
+  <text x="350" y="136" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">left = clamp(1350, 8, 1440−220−8)</text>
+  <text x="350" y="154" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">     = clamp(1350, 8, 1212) = 1212</text>
+  <text x="350" y="178" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">top  = clamp(820, 8, 900−180−8)</text>
+  <text x="350" y="196" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">     = clamp(820, 8, 712) = 712</text>
+  <text x="350" y="222" font-size="12" fill="#6e6e73">오른쪽·아래 끝에서 8px 떨어진</text>
+  <text x="350" y="238" font-size="12" fill="#6e6e73">자리로 옮겨진다</text>
+
+  <line x1="24" y1="334" x2="616" y2="334" stroke="#f2f2f7" stroke-width="2"/>
+
+  <!-- panel 2: phone -->
+  <text x="24" y="362" font-size="13" font-weight="600" fill="#1d1d1f">② placeBelow: 높이 844인 휴대폰, 아래 도구 막대 버튼 (top 780, bottom 812)</text>
+  <rect x="24" y="376" width="76" height="132" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <!-- scale 132/844 = 0.1564 ; button top 780 -> 326+122=448 -->
+  <rect x="44" y="498" width="18" height="5" fill="#1d1d1f"/>
+  <!-- above top 574 -> 326+89.8=415.8, height 200 -> 31.3 -->
+  <rect x="44" y="465" width="40" height="31" fill="#0a84ff" opacity="0.2" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="120" y="394" font-size="12" fill="#1d1d1f">메뉴 높이 200, gap 6</text>
+  <text x="120" y="418" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">아래: 812 + 6 = 818,  818 + 200 = 1018 &gt; 844 − 8</text>
+  <text x="120" y="436" font-size="12" fill="#ff3b30">  → 아래로 열면 화면 밖으로 넘친다</text>
+  <text x="120" y="460" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">위:   780 − 6 − 200 = 574 ≥ 8</text>
+  <text x="120" y="478" font-size="12" fill="#0a84ff">  → 위에 자리가 있으니 top = 574, 버튼 위로 연다</text>
+  <text x="120" y="502" font-size="12" fill="#6e6e73">가로는 ①과 같이 clamp로 화면 안쪽에 맞춘다</text>
+</svg>

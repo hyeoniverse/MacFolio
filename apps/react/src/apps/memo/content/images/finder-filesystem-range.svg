@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 390" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>video 요소는 Range 헤더로 파일의 구간을 요청하고, Worker는 R2에서 그 구간만 읽어 206과 Content-Range로 응답한다. 범위가 파일 밖이면 416을 응답한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="390" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">동영상의 Range 요청 (파일 크기 30,000,000바이트인 예)</text>
+
+<rect x="30" y="46" width="140" height="30" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="56" y="66" font-size="12" font-weight="700" fill="#1d1d1f">&lt;video&gt; 요소</text>
+<rect x="470" y="46" width="140" height="30" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="490" y="66" font-size="12" font-weight="700" fill="#1d1d1f">Worker → R2</text>
+<line x1="100" y1="76" x2="100" y2="300" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<line x1="540" y1="76" x2="540" y2="300" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+
+<g font-size="12">
+<text x="114" y="98" fill="#1d1d1f">① 재생 시작: <tspan font-family="SFMono-Regular, Menlo, monospace">Range: bytes=0-</tspan></text>
+<line x1="100" y1="106" x2="536" y2="106" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="114" y="134" fill="#1d1d1f"><tspan font-weight="700" fill="#0a84ff">206</tspan> <tspan font-family="SFMono-Regular, Menlo, monospace">Content-Range: bytes 0-29999999/30000000</tspan></text>
+<line x1="540" y1="142" x2="104" y2="142" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+
+<text x="114" y="176" fill="#1d1d1f">② 탐색 막대를 가운데로: <tspan font-family="SFMono-Regular, Menlo, monospace">Range: bytes=15000000-</tspan></text>
+<line x1="100" y1="184" x2="536" y2="184" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="114" y="212" fill="#1d1d1f"><tspan font-weight="700" fill="#0a84ff">206</tspan> <tspan font-family="SFMono-Regular, Menlo, monospace">Content-Range: bytes 15000000-29999999/30000000</tspan></text>
+<line x1="540" y1="220" x2="104" y2="220" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+
+<text x="114" y="254" fill="#1d1d1f">③ 파일 밖의 범위: <tspan font-family="SFMono-Regular, Menlo, monospace">Range: bytes=40000000-</tspan></text>
+<line x1="100" y1="262" x2="536" y2="262" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="114" y="288" fill="#1d1d1f"><tspan font-weight="700" fill="#ff3b30">416</tspan> <tspan font-family="SFMono-Regular, Menlo, monospace">Content-Range: bytes */30000000</tspan></text>
+<line x1="540" y1="296" x2="104" y2="296" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#a)"/>
+</g>
+
+<rect x="20" y="316" width="600" height="58" rx="8" fill="#f2f2f7"/>
+<text x="34" y="338" font-size="12" fill="#1d1d1f">Worker는 bucket.head(key)로 크기를 먼저 확인하고 bucket.get(key, { range })로 그 구간만 읽는다</text>
+<text x="34" y="358" font-size="12" fill="#6e6e73">Range를 무시하고 200으로 파일 전체를 주면 Safari는 재생하지 않고 Chrome은 탐색할 수 없다</text>
+</svg>

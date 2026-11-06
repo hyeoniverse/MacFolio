@@ -7,9 +7,19 @@ seriesOrder: 8
 summary: 활동 상태 보기, 메모 조회수·댓글, 메시지, 받은 편지함, 위젯이 앱을 연 시각의 값에 머물러 있었다. 탭이 보이고 창이 열린 동안만 다시 조회하는 usePolling 훅을 만들고, 위젯 여러 개의 같은 요청은 공유 폴러로 하나로 묶었다. SSE·WebSocket과 비용도 비교했다.
 ---
 
-'활동 상태 보기'를 열어 둔 채 방문을 기다리면 숫자가 바뀌지 않았다. 개요·유입 경로·앱·글 탭은 앱을 연 시각에 `GET /analytics/summary`를 한 번 호출하고, 그 뒤에는 기간을 바꾸거나 보기 메뉴의 '새로 고침'을 골라야만 다시 호출했다. 메뉴 안의 항목이라 이 기능이 있는지 알기 어려웠고, 결국 페이지 전체를 새로 고쳤다. 메모의 조회수·댓글 수·좋아요 수도 메모 앱을 처음 연 시각의 값에 머물렀다. 메시지 앱에서 답글을 기다리면 앱을 닫았다 열어야 했고, 바탕화면의 GitHub 기여 위젯은 페이지를 새로 고칠 때까지 같은 값을 보였다. 반대로 메뉴 막대와 날씨는 `setInterval`로 탭이 숨은 동안에도 요청을 보냈다.
+웹 페이지가 서버의 최신 값을 화면에 보이는 방법은 크게 두 가지다. 브라우저가 정해진 간격마다 서버에 다시 묻는 **폴링**(polling)과, 서버가 연결을 열어 둔 채 값이 바뀔 때 브라우저로 밀어 보내는 **푸시**(SSE, WebSocket)다. 폴링은 일반 HTTP 요청을 반복하므로 서버를 바꿀 필요가 없지만, 아무도 화면을 보지 않을 때에도 요청을 보내면 서버 자원과 사용자의 데이터 요금을 낭비한다.
 
-이번 변경으로 이 화면들이 모두 **브라우저 탭이 보이고 앱 창이 열려 있는 동안만** 같은 규칙으로 값을 다시 조회한다. '활동 상태 보기'의 도구 막대에는 마지막 갱신 시각과 새로 고침 버튼이 생겼다.
+MacFolio에는 이 두 문제가 함께 있었다. 한쪽 화면은 값을 다시 묻지 않았고, 다른 쪽 화면은 아무도 보지 않아도 계속 물었다.
+
+| 화면             | 이전 동작                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 활동 상태 보기   | 개요·유입 경로·앱·글 탭은 앱을 연 시각에 `GET /analytics/summary`를 한 번 호출하고, 기간을 바꾸거나 보기 메뉴의 '새로 고침'을 골라야만 다시 호출 |
+| 메모             | 조회수·댓글 수·좋아요 수가 메모 앱을 처음 연 시각의 값에 고정                                                                                    |
+| 메시지           | 답글을 기다리려면 앱을 닫았다 다시 열어야 함                                                                                                     |
+| GitHub 기여 위젯 | 페이지를 새로 고칠 때까지 같은 값                                                                                                                |
+| 메뉴 막대, 날씨  | `setInterval`로 브라우저 탭이 숨은 동안에도 요청                                                                                                 |
+
+'새로 고침'은 메뉴 안의 항목이라 있는지 알기 어려웠고, 숫자가 바뀌지 않으면 결국 페이지 전체를 새로 고쳤다. [#353](https://github.com/hyeoniverse/MacFolio/pull/353)부터 이 화면들은 모두 **브라우저 탭이 보이고 앱 창이 열려 있는 동안만** 같은 규칙으로 값을 다시 조회한다. '활동 상태 보기'의 도구 막대에는 마지막 갱신 시각과 새로 고침 버튼을 추가했다.
 
 ![활동 상태 보기의 도구 막대 오른쪽에 '14:03:24 갱신', 새로 고침 버튼, 기간 선택이 있다](./images/activity-live-refresh-window.jpg '도구 막대 오른쪽의 갱신 시각과 새로 고침 버튼 (가짜 데이터)')
 
@@ -23,20 +33,50 @@ summary: 활동 상태 보기, 메모 조회수·댓글, 메시지, 받은 편�
 | 앱 창이 화면에 있음  | 창 store의 `isRunning && !isMinimized`                                                            | 빨간 버튼으로 닫기, 노란 버튼으로 최소화 |
 | 그 값을 쓰는 탭을 봄 | `tab === 'live'` 등                                                                               | 실시간 탭에서 개요 탭으로 전환           |
 
-두 번째 조건이 필요한 이유가 있다. MacFolio의 앱 컴포넌트는 ==창을 닫아도 언마운트되지 않는다==. 처음 연 뒤로 계속 렌더링해 두어야 다시 열 때 입력 중인 글이나 스크롤 위치가 남기 때문이다(`hasOpened`). 그래서 이전 코드에서는 실시간 탭을 고른 채 창을 닫으면 `setInterval`이 그대로 남아 10초마다 `GET /analytics/live`를 호출했다. 이번에 만든 `useAppWindowShown('activity')`가 이 상태를 조회 조건에 넣는다.
+첫 번째 조건은 브라우저의 Page Visibility API로 확인한다. `document.visibilityState`는 페이지가 화면에 보이면 `'visible'`, 다른 탭으로 전환했거나 브라우저 창을 최소화했으면 `'hidden'`을 돌려주고, 값이 바뀔 때마다 `document`에 `visibilitychange` 이벤트가 발생한다[^visibility]. 예를 들어 사이트를 연 탭에서 다른 탭으로 옮기면 그 순간 `'hidden'`이 되고, 돌아오면 `'visible'`이 된다.
+
+두 번째 조건이 필요한 이유는 MacFolio의 창 구조에 있다. 앱 컴포넌트는 ==창을 닫아도 언마운트되지 않는다==. 처음 연 뒤로 계속 렌더링해 두어야 다시 열 때 입력 중인 글이나 스크롤 위치가 남기 때문이다(`hasOpened`). 그래서 이전 코드에서는 실시간 탭을 고른 채 창을 닫으면 `setInterval`이 그대로 남아 10초마다 `GET /analytics/live`를 호출했다. 이번에 만든 `useAppWindowShown('activity')`가 창이 열려 있고 최소화되지 않았는지를 조회 조건에 넣는다.
 
 ## 시간표
 
+아래 시간표는 개요 탭을 10분 동안 열어 둔 예다. 브라우저 탭을 숨긴 구간과 창을 최소화한 구간에는 요청이 없다.
+
 ![브라우저 탭이 숨은 동안과 창을 최소화한 뒤에는 요청이 없고, 다시 보이면 바로 요청하며, 실패하면 다음 요청까지 2분을 기다리는 시간표](./images/activity-live-refresh-timeline.svg '0~10분 동안의 요청 (도식)')
 
-- **간격은 응답이 끝난 시각부터 측정한다.** `setInterval`은 응답이 늦어도 다음 요청을 보내 요청이 겹칠 수 있다. `setTimeout`을 응답마다 다시 예약하면 한 번에 요청 하나만 진행한다.
-- **조건이 거짓이 되면 예약을 취소하고, 다시 참이 되면 원인에 따라 바로 또는 남은 시간 뒤에 조회한다.** 규칙은 [다시 보일 때의 규칙](#다시-보일-때의-규칙)에 정리했다.
-- **실패하면 간격을 2배씩 늘린다.** 60초 → 120초 → 240초 → … 최대 10분([지수 백오프](https://en.wikipedia.org/wiki/Exponential_backoff)). 성공하면 60초로 돌아온다. 서버가 재시작 중일 때 열린 화면들이 1분마다 요청을 보내지 않게 한다.
-- **수동 새로 고침은 진행 중인 요청과 합친다.** 버튼을 여러 번 눌러도 요청은 하나다.
+규칙은 네 가지다.
+
+1. **간격은 응답이 끝난 시각부터 측정한다.**
+2. **조건이 거짓이 되면 예약을 취소하고, 다시 참이 되면 원인에 따라 바로 또는 남은 시간 뒤에 조회한다.** 세부 규칙은 [다시 보일 때의 규칙](#다시-보일-때의-규칙)에 있다.
+3. **실패하면 간격을 2배씩 늘린다.**
+4. **수동 새로 고침은 진행 중인 요청과 합친다.** 버튼을 여러 번 눌러도 요청은 하나다.
+
+### setInterval 대신 setTimeout을 다시 예약한다
+
+`setInterval(fn, 60_000)`은 이전 호출의 응답이 왔는지와 관계없이 60초마다 `fn`을 실행한다[^timers]. 서버가 느려 응답에 70초가 걸리면, 첫 요청이 끝나기 전에 두 번째 요청이 출발한다. 반대로 응답이 도착할 때마다 `setTimeout(fn, 60_000)`으로 다음 실행을 한 번만 예약하면, 요청 사이에 언제나 60초의 빈 시간이 생기고 한 번에 요청 하나만 진행한다.
+
+![setInterval은 0, 60, 120, 180초에 요청을 보내 70초짜리 요청이 서로 겹치고, setTimeout 재예약은 0초 요청이 끝난 70초부터 60초를 기다려 130초에 다음 요청을 보낸다](./images/activity-live-refresh-interval-overlap.svg '응답 70초, 간격 60초일 때 두 방식의 요청 (도식)')
+
+### 실패하면 기다리는 시간을 늘린다: 지수 백오프
+
+**지수 백오프**(exponential backoff)는 요청이 실패할 때마다 다음 재시도까지의 대기 시간을 일정 배수로 늘리는 방법이다[^backoff]. 서버가 재시작 중이거나 과부하 상태일 때 열린 화면들이 일정한 간격으로 계속 요청하면 서버 회복을 늦춘다. 간격을 늘리면 실패가 길어질수록 요청 수가 줄어든다.
+
+`poller.ts`의 계산식은 아래와 같다. 성공하면 실패 횟수가 0으로 돌아가므로 다시 60초 간격이 된다.
+
+```ts
+export function nextDelay(intervalMs: number, failures: number, maxBackoffMs = DEFAULT_MAX_BACKOFF_MS): number {
+	return Math.min(intervalMs * 2 ** failures, Math.max(intervalMs, maxBackoffMs)); // 상한 10분
+}
+```
+
+![60초 간격 화면에서 실패 1번에 2분, 2번에 4분, 3번에 8분, 4번과 5번에 상한 10분을 기다리고, 성공하면 60초로 돌아온다](./images/activity-live-refresh-backoff.svg '실패 횟수별 다음 요청까지의 대기 시간 (도식)')
+
+예를 들어 API 서버가 배포 중이라 15분 동안 응답하지 않으면, 고정 60초 간격은 15번 요청한다. 백오프를 적용하면 1분, 3분(1+2), 7분(3+4), 15분(7+8) 시점의 4번으로 줄어든다.
 
 ## 공통 훅: 일정과 React를 분리
 
-일정 관리(간격·중복 방지·백오프)는 React 없이 `shared/lib/poller.ts`의 `createPoller`에 두고, `shared/hooks/usePolling.ts`가 visibility와 `active` 값을 연결한다. 이 저장소의 단위 시험은 DOM 없이 Node에서 실행하므로, 일정 로직을 순수 모듈로 분리해야 [Vitest의 가짜 타이머](https://vitest.dev/guide/mocking/timers)로 시간을 앞당겨 확인할 수 있다.
+일정 관리(간격·중복 방지·백오프)는 React 없이 `shared/lib/poller.ts`의 `createPoller`에 두고, `shared/hooks/usePolling.ts`가 visibility와 `active` 값을 연결한다. 이 저장소의 단위 시험은 DOM 없이 Node에서 실행하므로, 일정 로직을 순수 모듈로 분리해야 [Vitest의 가짜 타이머](https://vitest.dev/guide/mocking/timers)로 시간을 앞당겨 확인할 수 있다. 가짜 타이머는 `setTimeout`을 시험용 구현으로 바꿔 `vi.advanceTimersByTime(60_000)` 한 줄로 60초가 지난 상태를 만든다. 실제로 60초를 기다리지 않고 "60초 뒤에 두 번째 요청이 나가는지"를 확인할 수 있다.
+
+활동 상태 보기의 요약 탭은 이 훅을 아래처럼 쓴다.
 
 ```ts
 const summaryPolling = usePolling(
@@ -49,7 +89,7 @@ const summaryPolling = usePolling(
 // summaryPolling: { loading, updatedAt, failures, refresh }
 ```
 
-`resetKey`(기간, 로그인 여부)가 바뀌면 진행 중인 요청의 응답을 버리고 바로 다시 조회한다. 7일을 보다가 30일로 바꾼 직후 7일 응답이 늦게 도착해도 `isCurrent()`가 `false`라 화면에 반영하지 않는다.
+`resetKey`(기간, 로그인 여부)가 바뀌면 진행 중인 요청의 응답을 버리고 바로 다시 조회한다. 예를 들어 7일을 보다가 30일로 바꾼 직후 7일 응답이 늦게 도착해도, 그 요청의 `isCurrent()`가 `false`를 돌려주므로 화면에 반영하지 않는다. 이 검사가 없으면 30일 숫자가 표시된 뒤 늦게 온 7일 숫자가 그 위를 덮는다.
 
 <details>
 <summary>poller의 상태 전이</summary>
@@ -68,7 +108,7 @@ React 컴파일러 규칙(`react-hooks/refs`)은 렌더링 중에 ref를 함수�
 
 ## 다시 보일 때의 규칙
 
-처음 만든 `poller`는 조건이 다시 참이 되면 **언제나** 바로 조회했다. 탭을 오래 숨겨 두었다가 돌아왔을 때 최대 1분 지난 값을 보지 않게 하려는 규칙이었지만, ==탭을 잠깐 옮겼다 돌아올 때마다 요청이 하나씩 늘었다==. 그래서 원인에 따라 나눴다.
+처음 만든 `poller`는 조건이 다시 참이 되면 **언제나** 바로 조회했다. 탭을 오래 숨겨 두었다가 돌아왔을 때 최대 1분 지난 값을 보지 않게 하려는 규칙이었지만, ==탭을 잠깐 옮겼다 돌아올 때마다 요청이 하나씩 늘었다==. 다른 탭의 문서를 5초 확인하고 돌아오는 동작을 열 번 반복하면 요청도 열 번 추가된다. 그래서 조건이 참이 된 원인에 따라 동작을 나눴다.
 
 ![탭을 5초 숨겼다 보이면 35초에 묻지 않고 60초에 묻는다. 70초 숨겼다 100초에 보이면 바로 묻는다. 창을 닫고 10초 뒤 다시 열면 40초에 바로 묻는다](./images/live-refresh-more-resume.svg '간격 60초인 화면의 0~120초 (도식)')
 
@@ -89,7 +129,7 @@ React 컴파일러 규칙(`react-hooks/refs`)은 렌더링 중에 ref를 함수�
 | 활동 상태: 개요·유입 경로 등  | `GET /analytics/summary`               | 60초            | 열 때 1번                   | 60                    | 0           |
 | 활동 상태: 앱·글 (조회수)     | `GET /analytics/views`                 | 60초            | 열 때 1번                   | +60                   | 0           |
 | 활동 상태: 실시간 (관리자)    | `GET /analytics/live`                  | 10초 · 60초[^1] | 360 (창을 닫아도)           | 360 · 60              | 0           |
-| 활동 상태: 서버 (관리자)      | `GET /resources`                       | 60초            | —                           | 60                    | 0           |
+| 활동 상태: 서버 (관리자)      | `GET /resources`                       | 60초            | 없음                        | 60                    | 0           |
 | 메모 조회수·댓글 수·좋아요 수 | `GET /analytics/views`, `/posts/stats` | 60초            | 앱을 열 때 1번              | 120                   | 0           |
 | 메시지: 보고 있는 대화        | `GET /messages/threads/:id`            | 15초            | 열 때 1번                   | 240                   | 0           |
 | 메시지: 피드백 목록           | `GET /messages/threads`                | 60초            | 열 때 1번                   | 60                    | 0           |
@@ -105,7 +145,17 @@ React 컴파일러 규칙(`react-hooks/refs`)은 렌더링 중에 ref를 함수�
 
 [^1]: 실시간 기간이 30분 이하면 10초, 그보다 길면 60초. 이전 코드와 같은 간격이다.
 
-간격은 값이 바뀌는 빈도로 정했다. 활동 상태와 메모 조회수는 서버의 1분 캐시[^2]에 맞춰 60초, 메시지는 답글이 오가는 동안 기다리는 시간이 짧아야 하므로 15초, 댓글·피드백 목록은 1분, 연락 메일은 하루 몇 통 수준이라 2분, 글과 GitHub 기여는 하루 단위로 바뀌므로 10분이다. 메뉴 막대 두 곳과 날씨는 `setInterval`에서 `usePolling`으로 옮겨 ==숨김 상태의 요청이 0이 됐다==.
+간격은 값이 바뀌는 빈도로 정했다.
+
+| 간격 | 화면                   | 근거                                           |
+| ---- | ---------------------- | ---------------------------------------------- |
+| 15초 | 메시지 대화            | 답글이 오가는 동안 기다리는 시간이 짧아야 한다 |
+| 60초 | 활동 상태, 메모 조회수 | 서버의 1분 캐시[^2]보다 자주 물어도 값이 같다  |
+| 60초 | 댓글, 피드백 목록      | 새 글이 분 단위로 생긴다                       |
+| 2분  | 메일 받은 편지함       | 연락 메일은 하루 몇 통 수준이다                |
+| 10분 | 글 목록, GitHub 기여   | 하루 단위로 바뀐다                             |
+
+메뉴 막대 두 곳과 날씨는 `setInterval`에서 `usePolling`으로 옮겨 ==숨김 상태의 요청이 0이 됐다==.
 
 [^2]: 방문자가 몇 명이든 같은 기간의 요약은 1분에 한 번만 계산한다. 그래서 방문자 화면을 60초보다 자주 조회해도 값이 바뀌지 않는다.
 
@@ -125,7 +175,7 @@ React 컴파일러 규칙(`react-hooks/refs`)은 렌더링 중에 ref를 함수�
 
 ## 위젯 여러 개, 요청 하나
 
-바탕화면에는 같은 종류의 위젯을 여러 개 둘 수 있고, GitHub 기여 위젯과 GitHub 앱 창은 같은 `GET /github/activity`를 쓴다. 위젯마다 `usePolling`을 두면 위젯 수만큼 요청이 생긴다. 그래서 일정을 모듈에 하나 두고, 화면은 보이는 동안 그 일정을 '빌린다'.
+바탕화면에는 같은 종류의 위젯을 여러 개 배치할 수 있고, GitHub 기여 위젯과 GitHub 앱 창은 같은 `GET /github/activity`를 쓴다. 위젯마다 `usePolling`을 두면 위젯이 3개일 때 10분마다 요청도 3개가 나간다. 그래서 일정을 모듈에 하나만 만들고, 각 화면은 보이는 동안 그 일정에 등록한다.
 
 ![GitHub 기여 위젯 두 개와 GitHub 앱 창이 activityPolling 하나에 등록하고, 요청은 10분마다 한 번이다](./images/live-refresh-more-shared.svg 'createSharedPoller (도식)')
 
@@ -137,19 +187,19 @@ export const activityPolling = createSharedPoller({ intervalMs: 10 * 60_000, run
 const polling = useSharedPolling(activityPolling, useHomeScreenShown() && Boolean(env.apiUrl));
 ```
 
-`createSharedPoller`는 `acquire()`가 돌려준 반납 함수의 수를 집계한다. 하나 이상이면 켜고 0이면 끈다. 응답은 이미 있던 store(`activityStore`, `serverPostsStore`, `postIndexStore`)에 보관하므로 위젯은 `useSyncExternalStore`로 같은 값을 읽는다.
+`createSharedPoller`는 `acquire()`가 돌려준 반납 함수의 수를 집계한다. 하나 이상이면 일정을 켜고 0이면 끈다. 예를 들어 위젯 2개와 앱 창 1개가 등록하면 집계는 3이고, 앱 창을 닫아 2가 되어도 일정은 계속 돈다. 위젯까지 모두 사라져 0이 되면 예약을 취소한다. 응답은 이미 있던 store(`activityStore`, `serverPostsStore`, `postIndexStore`)에 보관하므로 위젯은 `useSyncExternalStore`로 같은 값을 읽는다.
 
-위젯이 보이는지는 `useHomeScreenShown()`으로 확인한다. 바탕화면은 늘 보이는 것으로 본다(창이 위젯을 덮었는지는 알 수 없다). 휴대폰은 앞에 앱이 없을 때(`foregroundApp(apps) === null`)만 홈 화면이 보인다. 앱을 쓰는 동안 홈 화면 위젯은 요청하지 않고, 홈으로 돌아왔을 때 10분이 지났으면 바로 조회한다.
+위젯이 보이는지는 `useHomeScreenShown()`으로 확인한다. 데스크톱의 바탕화면은 늘 보이는 것으로 판정한다(창이 위젯을 덮었는지는 알 수 없다). 휴대폰은 앞에 앱이 없을 때(`foregroundApp(apps) === null`)만 홈 화면이 보인다. 앱을 쓰는 동안 홈 화면 위젯은 요청하지 않고, 홈으로 돌아왔을 때 10분이 지났으면 바로 조회한다.
 
 ## 갱신해도 화면 상태는 유지
 
-값만 바꾸고 화면 상태는 유지한다.
+주기적으로 값을 바꾸면 사용자가 조작한 화면 상태(정렬, 펼침, 스크롤, 입력 중인 글)를 덮어쓸 위험이 있다. 갱신은 값만 바꾸고 화면 상태는 유지하도록 했다.
 
 ### 활동 상태 보기
 
 - **표 정렬**: 정렬 상태는 `StatTable` 안의 `useState`에 있다. 갱신은 `rows`만 바꾸고 표를 다시 마운트하지 않으므로, '조회' 오름차순으로 정렬한 표는 새 값으로 다시 정렬된다. 본문을 다시 마운트하는 `key`는 탭·기간이 바뀔 때만 바뀐다([앞 탭의 정렬을 물려받던 버그](/memo/analytics-api#요약을-방문자에게-공개한다-세션에-따라-응답-범위를-나눈다)를 고친 그 `key`다).
 - **실시간의 펼친 방문**: 펼침 상태는 `visitId`로 보관하므로 목록이 갱신돼도 같은 방문이 펼친 채로 남는다.
-- **스크롤**: 갱신 중에 '불러오는 중…'으로 바꾸지 않는다. 처음 불러올 때만 빈 상태를 보이고, 그 뒤에는 이전 값을 둔 채 응답을 기다린다.
+- **스크롤**: 갱신 중에 '불러오는 중…'으로 바꾸지 않는다. 처음 불러올 때만 빈 상태를 보이고, 그 뒤에는 이전 값을 표시한 채 응답을 기다린다. 본문 높이가 갑자기 줄지 않으므로 스크롤 위치도 그대로다.
 - **실패**: 이미 값이 있으면 본문을 오류 문구로 바꾸지 않고, 도구 막대에만 '갱신 실패 · 14:03:25 기준'을 표시한다.
 
 ![도구 막대 오른쪽에 주황색 글자로 '갱신 실패 · 14:03:25 기준'이 보인다](./images/activity-live-refresh-failed.jpg '요약 요청이 503으로 실패한 뒤의 도구 막대 (가짜 데이터)')
@@ -157,11 +207,11 @@ const polling = useSharedPolling(activityPolling, useHomeScreenShown() && Boolea
 > [!TIP] 새로 고침 단축키
 > 새로 고침 단축키는 ⌥R이다. ⌘R은 브라우저가 먼저 처리해 페이지가 막을 수 없으므로, 다른 앱의 단축키처럼 ⌥ 조합을 쓴다(프로젝트 앱 창의 새로 고침도 ⌥R이다).
 
-갱신 시각 글자에는 `aria-live`를 달지 않았다. 실시간 탭은 10초마다 시각이 바뀌어 스크린 리더가 계속 읽게 된다. 실패 문구만 `role="status"`로 알린다.
+갱신 시각 글자에는 `aria-live`를 달지 않았다. `aria-live`는 요소의 내용이 바뀔 때 스크린 리더가 그 내용을 읽도록 하는 속성인데, 실시간 탭은 10초마다 시각이 바뀌어 스크린 리더가 10초마다 시각을 읽게 된다. 실패 문구만 `role="status"`로 알린다.
 
 ### 메시지
 
-메시지 앱은 15초마다 말풍선을 다시 받으므로 화면 상태를 건드리지 않는 것이 중요하다.
+메시지 앱은 15초마다 말풍선을 다시 받으므로 화면 상태를 건드리지 않는 것이 특히 중요하다.
 
 ![메시지 창에 새 답글 '답글 기능은 언제 생겼나요?'가 나타나 있고, 입력 칸에는 쓰던 '감사합니다! 어떤 부분이'가 그대로 남아 있다](./images/live-refresh-more-messages.jpg '15초 안에 새 답글이 보이고 입력 중인 글은 남는다 (가짜 데이터)')
 
@@ -172,9 +222,19 @@ const polling = useSharedPolling(activityPolling, useHomeScreenShown() && Boolea
 
 로컬 저장소 모드(`VITE_MESSAGES_STORE=local`)는 이 브라우저만 쓰므로 값이 바뀌지 않는다. `usePolling`의 `repeat: false`로 처음 열 때와 대화를 바꿀 때만 읽는다.
 
-## 바뀌지 않은 응답의 전송량
+## 바뀌지 않은 응답의 전송량: ETag와 304
 
-메시지 API는 이미 응답에 [약한 ETag](https://developer.mozilla.org/docs/Web/HTTP/Reference/Headers/ETag)를 붙인다. NestJS가 쓰는 Express의 기본 설정(`etag: 'weak'`)이 JSON 응답 몸통의 해시로 만든다. 응답에 `Cache-Control`이 없으므로 브라우저 HTTP 캐시는 다음 `fetch`에 `If-None-Match`를 자동으로 붙이고, 값이 같으면 서버는 몸통 없이 `304 Not Modified`를 보낸다. 브라우저는 캐시한 몸통으로 `fetch`의 응답을 채우므로 화면 코드는 바꿀 것이 없다. 그래서 API는 바꾸지 않았고, API e2e 시험(`messages.e2e.test.ts`)에 304 응답을 확인하는 항목만 더했다.
+15초마다 같은 대화를 다시 받으면, 대부분의 응답은 직전 응답과 내용이 같다. HTTP에는 이런 경우 본문 전송을 생략하는 **조건부 요청**이 있다[^etag].
+
+1. 서버가 응답에 **ETag** 헤더를 붙인다. ETag는 응답 내용을 식별하는 짧은 문자열이다. 앞에 `W/`가 붙은 약한 ETag는 "의미상 같은 내용"이라는 표시다.
+2. 브라우저 HTTP 캐시는 다음 요청에 `If-None-Match: <받았던 ETag>`를 붙인다.
+3. 서버가 새로 만든 응답의 ETag가 요청 값과 같으면 본문 없이 `304 Not Modified`를 보낸다.
+
+메시지 API는 이미 응답에 [약한 ETag](https://developer.mozilla.org/docs/Web/HTTP/Reference/Headers/ETag)를 붙이고 있었다. NestJS가 쓰는 Express의 기본 설정(`etag: 'weak'`)이 JSON 응답 몸통의 해시로 만든다. 응답에 `Cache-Control`이 없으므로 브라우저 HTTP 캐시는 다음 `fetch`에 `If-None-Match`를 자동으로 붙이고, 값이 같으면 서버는 몸통 없이 `304 Not Modified`를 보낸다. 브라우저는 캐시한 몸통으로 `fetch`의 응답을 채우므로 화면 코드는 바꿀 것이 없다.
+
+![브라우저가 첫 GET에서 ETag W/"2c-9f1e…"를 받아 캐시에 저장하고, 15초 뒤 If-None-Match를 자동으로 붙여 보내면 서버가 같은 해시를 확인하고 본문 없는 304를 보내며, 브라우저는 캐시한 본문으로 fetch 응답을 채운다](./images/activity-live-refresh-etag.svg '같은 대화를 다시 받을 때의 요청과 응답 (도식, ETag 값은 예시)')
+
+그래서 API는 바꾸지 않았고, API e2e 시험(`messages.e2e.test.ts`)에 304 응답을 확인하는 항목만 추가했다.
 
 <details>
 <summary>ETag가 줄이지 못하는 것</summary>
@@ -196,7 +256,7 @@ ETag는 전송량만 줄인다. 서버는 304를 보낼 때도 DB를 조회하�
 | `GET /posts/stats`          | `groupBy` 2번 (댓글·좋아요 표를 글 수만큼의 행으로 묶는다)            |
 | `GET /messages/threads/:id` | 1번 (`(threadId, createdAt)` 인덱스), 대부분 304라 응답은 몇백 바이트 |
 
-늘어나는 부하는 두 가지다. 방문자 한 명이 메모를 띄워 두면 1분에 `/posts/stats`의 `groupBy` 2번이 실행되는데, 글 수만큼의 행이라 무시할 수 있는 수준이다. 메시지 앱을 1시간 띄워 두면 요청은 300번(말풍선 240 + 목록 60)이고, 요청마다 인덱스 조회 1~2번이다.
+늘어나는 부하는 두 가지다. 방문자 한 명이 메모를 띄워 두면 1분에 `/posts/stats`의 `groupBy` 2번이 실행되는데, 결과가 글 수만큼의 행이라 무시할 수 있는 수준이다. 메시지 앱을 1시간 띄워 두면 요청은 300번(말풍선 240 + 목록 60)이고, 요청마다 인덱스 조회 1~2번이다.
 
 줄어든 요청도 있다.
 
@@ -207,6 +267,13 @@ ETag는 전송량만 줄인다. 서버는 304를 보낼 때도 DB를 조회하�
 | 날씨 앱을 한 번 연 뒤 창을 닫음           | 도시마다 Open-Meteo 4번                              | 0번  |
 
 ## 폴링, SSE, WebSocket
+
+폴링 대신 서버가 값을 밀어 보내는 방법도 검토했다.
+
+- **SSE**(Server-Sent Events)는 브라우저가 `EventSource`로 HTTP 연결 하나를 열어 두고, 서버가 그 연결로 `data: …` 형식의 텍스트 이벤트를 계속 보내는 방식이다[^sse]. 서버에서 브라우저로 가는 한 방향만 있다.
+- **WebSocket**은 HTTP 요청으로 시작해 프로토콜을 전환한 뒤, 하나의 TCP 연결로 양쪽이 언제든 메시지를 주고받는 방식이다[^ws].
+
+두 방식 모두 열린 창마다 연결을 하나씩 유지한다는 점이 폴링과 다르다.
 
 | 항목                 | 폴링 (이번 방법)            | SSE                                                     | WebSocket                               |
 | -------------------- | --------------------------- | ------------------------------------------------------- | --------------------------------------- |
@@ -232,5 +299,35 @@ ETag는 전송량만 줄인다. 서버는 304를 보낼 때도 DB를 조회하�
 - [zod 스키마로 서버 저장소와 로컬 저장소의 메시지 타입 통합하기](/memo/contracts-package#메시지-스키마와-두-저장소-구현-202): 메시지 앱 API를 contracts 스키마로 옮긴 글
 - [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 바탕화면 위젯을 만든 글
 - [Open-Meteo 지오코딩 지연을 내장 도시 목록 우선 검색으로 줄이기](/memo/weather-app): 날씨 앱
+
+[^visibility]: [MDN: Page Visibility API](https://developer.mozilla.org/docs/Web/API/Page_Visibility_API). 숨은 탭에서 타이머 실행 빈도를 낮추는 브라우저 정책도 같은 문서에 있다.
+
+[^timers]: [MDN: setInterval()](https://developer.mozilla.org/docs/Web/API/Window/setInterval)의 "Ensure that execution duration is shorter than interval frequency" 절은 실행 시간이 간격보다 길어질 수 있으면 `setTimeout`을 재귀로 예약하라고 권한다.
+
+[^backoff]: [AWS Architecture Blog: Exponential Backoff And Jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)는 재시도 간격을 지수로 늘려 서버에 몰리는 요청을 줄이는 방법과 효과를 비교한다.
+
+[^etag]: [MDN: HTTP conditional requests](https://developer.mozilla.org/docs/Web/HTTP/Guides/Conditional_requests)와 [RFC 9110 §13.1.2 If-None-Match](https://www.rfc-editor.org/rfc/rfc9110#name-if-none-match).
+
+[^sse]: [MDN: Using server-sent events](https://developer.mozilla.org/docs/Web/API/Server-sent_events/Using_server-sent_events).
+
+[^ws]: [MDN: The WebSocket API](https://developer.mozilla.org/docs/Web/API/WebSockets_API), [RFC 6455](https://www.rfc-editor.org/rfc/rfc6455).
+
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: Page Visibility API](https://developer.mozilla.org/docs/Web/API/Page_Visibility_API)
+- [MDN: Document.visibilityState](https://developer.mozilla.org/docs/Web/API/Document/visibilityState)
+- [MDN: setInterval()](https://developer.mozilla.org/docs/Web/API/Window/setInterval)
+- [AWS Architecture Blog: Exponential Backoff And Jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
+- [Vitest: Timers](https://vitest.dev/guide/mocking/timers)
+- [MDN: ETag](https://developer.mozilla.org/docs/Web/HTTP/Reference/Headers/ETag)
+- [MDN: HTTP conditional requests](https://developer.mozilla.org/docs/Web/HTTP/Guides/Conditional_requests)
+- [RFC 9110: HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110)
+- [Express 4.x API: app settings (etag)](https://expressjs.com/en/4x/api.html#app.settings.table)
+- [MDN: Using server-sent events](https://developer.mozilla.org/docs/Web/API/Server-sent_events/Using_server-sent_events)
+- [MDN: The WebSocket API](https://developer.mozilla.org/docs/Web/API/WebSockets_API)
+- [Cloudflare: Error 524](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-5xx-errors/error-524/)
+
+</details>
 
 #MacFolio #React #폴링

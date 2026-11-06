@@ -7,7 +7,20 @@ seriesOrder: 6
 summary: 기본 테이블에서 유도되는 가상 테이블인 뷰의 생성·제거와 WITH CHECK OPTION, 열 부분 집합·행 부분 집합·조인·통계 요약 뷰의 갱신 가능 여부, 뷰의 장단점, 응용 프로그램에 삽입하는 SQL의 호스트 변수·SQLSTATE, 커서의 DECLARE·OPEN·FETCH·CLOSE, 동적 SQL의 PREPARE·EXECUTE를 정리했다.
 ---
 
-데이터베이스 기초 연재의 여섯 번째 글로, 6장(SQL) 뒷부분을 다룬다. [앞 글](/memo/db-sql-ddl-dml)의 STUDENT, COURSE, ENROL 테이블을 그대로 쓴다.
+## 들어가기 전에
+
+같은 STUDENT 테이블이라도 쓰는 사람마다 필요한 부분이 다르다. 컴퓨터학과 사무실은 컴퓨터학과 학생의 학번·이름·학년만 필요하고, 다른 학과 학생의 정보는 보여 주지 않는 편이 안전하다. 이때마다 테이블을 복사해 두면 원본이 바뀔 때마다 복사본도 고쳐야 한다. **뷰(view)** 는 데이터를 복사하지 않고 `SELECT{:sql}` 문 하나를 이름 붙여 저장해 두는 방법이다. 사용자는 뷰를 테이블처럼 조회하고, DBMS는 조회할 때마다 원본 테이블에서 결과를 계산한다.
+
+두 번째 주제는 C나 Java 같은 프로그램에서 SQL을 쓰는 방법이다. SQL의 `SELECT{:sql}`는 조건에 맞는 행을 한 번에 집합으로 돌려주지만, C의 변수 `char sname[21]`에는 이름 하나만 저장된다. 컴퓨터학과 학생 세 명의 이름을 받으려면 결과 집합에서 행을 하나씩 꺼내 줄 장치가 필요하다. 이 장치가 **커서(cursor)** 다. Java의 JDBC `ResultSet`에서 `next()`를 호출해 행을 하나씩 읽는 방식도 같은 원리다.
+
+| 주제     | 해결하는 문제                                  | 예                                             |
+| -------- | ---------------------------------------------- | ---------------------------------------------- |
+| 뷰       | 사용자마다 다른 범위의 데이터를 복사 없이 제공 | 컴퓨터학과 학생만 보이는 CSTUDENT              |
+| 삽입 SQL | 응용 프로그램 안에서 SQL 실행                  | C 프로그램의 `EXEC SQL SELECT …{:sql}`         |
+| 커서     | 행 집합을 한 번에 한 행씩 호스트 변수로 전달   | `FETCH C1 INTO :sno, :sname, :year{:sql}` 반복 |
+| 동적 SQL | 실행 시각에야 정해지는 SQL 문 실행             | 사용자가 입력한 과목번호로 만든 DELETE 문      |
+
+예제는 [SQL 정의·조작문 글](/memo/db-sql-ddl-dml)의 STUDENT, COURSE, ENROL 테이블을 그대로 쓴다.
 
 ## 뷰
 
@@ -55,7 +68,19 @@ CREATE VIEW COMHONOR
 
 열 이름을 생략하면 SELECT의 열 이름을 상속한다. 집계 함수나 산술식으로 만든 열, 조인으로 이름이 중복되는 열이 있으면 열 이름을 반드시 명세한다.
 
-![STUDENT 테이블에서 CSTUDENT 뷰에 해당하는 컴퓨터 학과 행과 Sno·Sname·Year 열만 밝게 남기고 나머지는 음영 처리한 그림](./images/db-sql-view-cursor-note-01.jpg 'STUDENT 테이블에서 CSTUDENT 뷰에 해당하는 컴퓨터 학과 행과 Sno·Sname·Year 열만 밝게 남기고 나머지는 음영 처리한 그림 (강의 자료)')
+CSTUDENT로 컴퓨터학과 학생 `('김철수', 2학년)`을 삽입하면 STUDENT에는 Dept가 NULL인 행이 들어가야 한다. 이 행은 `Dept = '컴퓨터'` 조건을 만족하지 않으므로 `WITH CHECK OPTION{:sql}`이 삽입을 거부한다. PostgreSQL 17에서 실행한 결과는 다음과 같다.
+
+```text
+=> INSERT INTO cstudent VALUES (700, '김철수', 2);
+ERROR:  new row violates check option for view "cstudent"
+DETAIL:  Failing row contains (700, 김철수, 2, null).
+```
+
+뷰를 조회하면 DBMS는 카탈로그에서 뷰 정의를 읽어 사용자의 조건과 합친 뒤 기본 테이블에서 실행한다. 이 과정을 질의 변경(query modification)이라 한다.
+
+![CSTUDENT에 대한 질의와 카탈로그의 뷰 정의를 합쳐 STUDENT에 대한 질의로 바꾸고, 나수영·송병길을 결과로 얻는 과정](./images/db-sql-view-cursor-view-resolution.svg '뷰의 조건 Dept = 컴퓨터와 질의의 조건 Year = 4가 AND로 결합된다')
+
+![STUDENT 테이블에서 CSTUDENT 뷰에 해당하는 컴퓨터 학과 행과 Sno·Sname·Year 열만 밝게 남기고 나머지는 음영 처리한 그림](./images/db-sql-view-cursor-note-01.jpg 'STUDENT 테이블에서 CSTUDENT 뷰에 해당하는 컴퓨터 학과 행과 Sno·Sname·Year 열만 밝게 남기고 나머지는 음영 처리한 그림')
 
 ### 뷰의 제거
 
@@ -83,6 +108,17 @@ RESTRICT는 다른 곳에서 참조하지 않을 때만 제거하고, CASCADE는
 
 `SELECT Sname, Dept{:sql}`로 만든 뷰에 행을 삽입하면 기본 테이블의 학번이 널이 되어 개체 무결성을 위반한다. 통계 요약 뷰의 평균값 하나는 여러 행에서 계산된 값이라, 그 값을 바꾸려면 어느 행을 바꿔야 할지 정할 수 없다.
 
+PostgreSQL 17에서 통계 요약 뷰 DEPTSIZE를 갱신하거나 조인 뷰 HONOR에서 행을 삭제하면 다음처럼 거부된다. 오류 메시지가 거부 이유(GROUP BY 포함, 둘 이상의 테이블)를 그대로 알려 준다.
+
+```text
+=> UPDATE deptsize SET size = 10 WHERE dept = '전기';
+ERROR:  cannot update view "deptsize"
+DETAIL:  Views containing GROUP BY are not automatically updatable.
+=> DELETE FROM honor;
+ERROR:  cannot delete from view "honor"
+DETAIL:  Views that do not select from a single table or view are not automatically updatable.
+```
+
 > [!WARNING]
 > ==이론적으로 변경할 수 있다고 해서 DBMS가 실제로 변경을 허용하는 것은 아니다.== 다음 경우에는 변경 연산이 허용되지 않는다.
 >
@@ -92,7 +128,7 @@ RESTRICT는 다른 곳에서 참조하지 않을 때만 제거하고, CASCADE는
 > 4. 두 개 이상의 테이블이 관련된 경우
 > 5. 변경할 수 없는 뷰를 기초로 정의된 경우
 
-![뷰 ⊃ 이론적으로 변경이 가능한 뷰 ⊃ 실제로 변경이 가능한 뷰 포함 관계를 겹친 사각형으로 그린 그림](./images/db-sql-view-cursor-note-02.jpg '뷰 ⊃ 이론적으로 변경이 가능한 뷰 ⊃ 실제로 변경이 가능한 뷰 포함 관계를 겹친 사각형으로 그린 그림 (강의 자료)')
+![뷰 ⊃ 이론적으로 변경이 가능한 뷰 ⊃ 실제로 변경이 가능한 뷰 포함 관계를 겹친 사각형으로 그린 그림](./images/db-sql-view-cursor-note-02.jpg '뷰 ⊃ 이론적으로 변경이 가능한 뷰 ⊃ 실제로 변경이 가능한 뷰 포함 관계를 겹친 사각형으로 그린 그림')
 
 ### 뷰의 장단점
 
@@ -209,7 +245,9 @@ EXEC SQL DELETE FROM STUDENT WHERE CURRENT OF C1;
 
 ## 동적 SQL
 
-삽입 SQL은 SQL 문이 프로그램을 작성하는 시각에 정해져 있어 예비 컴파일 단계에서 처리된다. 터미널로 데이터베이스 접근을 지원하는 온라인 응용 프로그램은 실행할 SQL 문을 실행 시각에야 알 수 있다. ==동적 SQL(dynamic SQL)은 SQL 문을 문자열로 구성해 실행 시각에 컴파일하고 실행하는 방식이다.==
+삽입 SQL은 SQL 문이 프로그램을 작성하는 시각에 정해져 있어 예비 컴파일(precompile) 단계에서 처리된다. 예비 컴파일러는 소스 코드에서 `EXEC SQL{:sql}` 문을 찾아 DBMS 라이브러리 함수 호출로 바꾸는 프로그램이며, Oracle의 Pro*C가 그 예다. 터미널로 데이터베이스 접근을 지원하는 온라인 응용 프로그램은 실행할 SQL 문을 실행 시각에야 알 수 있다. ==동적 SQL(dynamic SQL)은 SQL 문을 문자열로 구성해 실행 시각에 컴파일하고 실행하는 방식이다.==
+
+![삽입 SQL은 빌드 시각에 예비 컴파일러와 호스트 언어 컴파일러를 거치고, 동적 SQL은 실행 시각에 PREPARE로 컴파일한 뒤 EXECUTE로 실행하는 비교](./images/db-sql-view-cursor-static-dynamic.svg '동적 SQL은 컴파일 단계가 실행 시각으로 옮겨 간다')
 
 온라인 응용의 수행 과정은 다음과 같다.
 
@@ -246,9 +284,11 @@ EXEC SQL EXECUTE objSQL USING :cno, :grade;
 > [!TIP]
 > 한 번 PREPARE한 목적 코드는 USING의 값만 바꿔 여러 번 EXECUTE할 수 있다.
 
+`?` 매개변수는 성능뿐 아니라 보안에도 중요하다. 사용자가 입력한 과목번호를 문자열에 그대로 이어 붙이면, 입력값 `C413' OR '1'='1`이 조건을 `WHERE Cno = 'C413' OR '1'='1' AND Final < 60`으로 바꾼다. AND가 OR보다 먼저 결합하므로, 기말성적과 관계없이 C413의 모든 등록 행과 다른 과목의 60점 미만 행까지 삭제된다. 이런 공격을 SQL 삽입(SQL injection)이라 한다. `?` 자리의 값은 SQL 문의 일부가 아니라 데이터로만 전달되므로 이 공격이 성립하지 않는다. PostgreSQL의 `PREPARE`·`EXECUTE`, JDBC의 `PreparedStatement`가 같은 방식이다.
+
 ## 연습문제 풀이
 
-교재 6장 연습문제 가운데 뷰·삽입 SQL·커서를 다루는 2·3·4번을 풀었다. 번호는 교재 번호 그대로이고, 같은 장의 1·5·6번은 [SQL 정의·조작문 글](/memo/db-sql-ddl-dml)에서 푼다.
+SQL 단원 연습문제 가운데 뷰·삽입 SQL·커서를 다루는 2·3·4번을 풀었다. 같은 단원의 1·5·6번은 [SQL 정의·조작문 글](/memo/db-sql-ddl-dml)에서 푼다.
 
 <details>
 <summary>2. 커서의 정의와 삽입 SQL에서의 사용</summary>
@@ -360,6 +400,16 @@ WHERE  S1.Dept = S2.Dept AND S1.Sno < S2.Sno;
 
 - [SQL 데이터 정의문과 SELECT·INSERT·UPDATE 조작문](/memo/db-sql-ddl-dml): 앞 글
 - [3단계 스키마와 DBMS 구성 요소](/memo/db-three-level-schema): 뷰가 표현하는 외부 스키마와 예비 컴파일러
-- [함수 종속과 1NF·2NF·3NF·BCNF 정규화](/memo/db-normalization): 7장을 다룬 다음 글
+- [함수 종속과 1NF·2NF·3NF·BCNF 정규화](/memo/db-normalization): 릴레이션 설계를 다룬 다음 글
+
+<details>
+<summary>참고 문헌</summary>
+
+- PostgreSQL 문서, [CREATE VIEW](https://www.postgresql.org/docs/current/sql-createview.html): Updatable Views 절
+- PostgreSQL 문서, [PREPARE](https://www.postgresql.org/docs/current/sql-prepare.html)
+- PostgreSQL 문서, [ECPG: Embedded SQL in C](https://www.postgresql.org/docs/current/ecpg.html)
+- OWASP, [SQL Injection Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html)
+
+</details>
 
 #데이터베이스 #SQL #CS

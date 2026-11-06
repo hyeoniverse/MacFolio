@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>nginx 구성은 방화벽에 80·443을 열어 외부 요청을 받고, 터널 구성은 cloudflared가 바깥으로 연결을 먼저 만들어 그 연결로 요청을 받는다</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1d1d1f"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+</defs>
+<rect width="640" height="360" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">연결을 누가 먼저 여는가: 인바운드와 아웃바운드</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">방화벽은 바깥에서 먼저 들어오는 연결(인바운드)을 막고, 안에서 먼저 나간 연결(아웃바운드)의 응답은 통과시킨다</text>
+<text x="24" y="86" font-size="13" font-weight="600" fill="#1d1d1f">nginx + certbot</text>
+<rect x="24" y="98" width="86" height="40" rx="8" fill="#f2f2f7"/><text x="67" y="123" font-size="12" text-anchor="middle" fill="#1d1d1f">브라우저</text>
+<line x1="112" y1="118" x2="168" y2="118" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="140" y="110" font-size="12" text-anchor="middle" fill="#6e6e73">:443</text>
+<rect x="170" y="90" width="12" height="96" fill="#ff3b30" opacity="0.18"/>
+<rect x="174" y="112" width="4" height="12" fill="#ffffff"/>
+<text x="176" y="204" font-size="12" text-anchor="middle" fill="#ff3b30">80·443 열림</text>
+<rect x="190" y="90" width="110" height="96" rx="10" fill="#ffffff" stroke="#6e6e73" stroke-width="1"/>
+<text x="245" y="112" font-size="12" text-anchor="middle" fill="#1d1d1f">VM</text>
+<rect x="202" y="120" width="86" height="26" rx="6" fill="#f2f2f7"/><text x="245" y="138" font-size="12" text-anchor="middle" fill="#1d1d1f">nginx·인증서</text>
+<rect x="202" y="152" width="86" height="26" rx="6" fill="#f2f2f7"/><text x="245" y="170" font-size="12" text-anchor="middle" fill="#1d1d1f">api :4000</text>
+<text x="24" y="232" font-size="12" fill="#6e6e73">DNS A 레코드 = VM 공인 IP</text>
+<text x="24" y="250" font-size="12" fill="#6e6e73">인증서 발급·갱신을 서버가 직접 처리</text>
+<line x1="318" y1="78" x2="318" y2="300" stroke="#e5e5ea" stroke-width="1"/>
+<text x="336" y="86" font-size="13" font-weight="600" fill="#1d1d1f">Cloudflare Tunnel</text>
+<rect x="336" y="98" width="72" height="40" rx="8" fill="#f2f2f7"/><text x="372" y="123" font-size="12" text-anchor="middle" fill="#1d1d1f">브라우저</text>
+<line x1="410" y1="118" x2="436" y2="118" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="438" y="98" width="72" height="40" rx="8" fill="#fff7eb" stroke="#ff9f0a" stroke-width="1"/><text x="474" y="116" font-size="12" text-anchor="middle" fill="#1d1d1f">Cloudflare</text><text x="474" y="131" font-size="12" text-anchor="middle" fill="#6e6e73">엣지</text>
+<rect x="526" y="90" width="12" height="96" fill="#34c759" opacity="0.18"/>
+<text x="532" y="204" font-size="12" text-anchor="middle" fill="#34c759">인바운드 닫힘</text>
+<rect x="546" y="90" width="76" height="96" rx="10" fill="#ffffff" stroke="#6e6e73" stroke-width="1"/>
+<text x="584" y="108" font-size="12" text-anchor="middle" fill="#1d1d1f">VM</text>
+<rect x="552" y="116" width="64" height="30" rx="6" fill="#f2f2f7"/><text x="584" y="136" font-size="12" text-anchor="middle" fill="#1d1d1f">cloudflared</text>
+<rect x="552" y="152" width="64" height="26" rx="6" fill="#f2f2f7"/><text x="584" y="170" font-size="12" text-anchor="middle" fill="#1d1d1f">api</text>
+<path d="M552 132 C 520 150, 500 150, 486 140" fill="none" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+<text x="436" y="168" font-size="12" fill="#ff9f0a">① 아웃바운드</text>
+<text x="436" y="184" font-size="12" fill="#ff9f0a">연결을 먼저 생성</text>
+<path d="M500 108 C 520 96, 540 100, 556 118" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+<text x="484" y="88" font-size="12" fill="#0a84ff">② 그 연결로 요청 전달</text>
+<text x="336" y="232" font-size="12" fill="#6e6e73">DNS = Cloudflare 주소 (VM IP 노출 없음)</text>
+<text x="336" y="250" font-size="12" fill="#6e6e73">인증서는 Cloudflare 엣지가 관리</text>
+<rect x="24" y="276" width="592" height="62" rx="8" fill="#f2f2f7"/>
+<text x="38" y="300" font-size="12.5" fill="#1d1d1f">두 구성 모두 SSH 접속용 22번은 연다. 차이는 웹 요청용 80·443을 여는지 여부와,</text>
+<text x="38" y="321" font-size="12.5" fill="#1d1d1f">인증서 발급과 IP 노출 방지를 서버가 처리하는지, Cloudflare가 처리하는지다.</text>
+</svg>

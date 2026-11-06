@@ -5,11 +5,11 @@ category: 개발 기록/MacFolio/회고
 summary: 열흘간 기능 추가로 쌓인 중복 코드를 일곱 단계(타입, 구조, 기반 코드, 컴포넌트, 스타일, 서버, 보안)로 정리한 리팩터링 계획(#150)의 회고. 단계별 목표, 전후 수치, 설계 판단, 검증 방법, 남긴 항목을 기록했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 목적은 두 가지였다. 다음 기능을 추가할 때 수정할 곳이 한 군데가 되게 하는 것, 그리고 기능마다 따로 적용한 보안 설정을 하나의 기준으로 통일하는 것이다. PR마다의 세부 내용은 각 절에서 링크한 글에 적었다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 목적은 두 가지였다. 다음 기능을 추가할 때 수정할 곳이 한 군데가 되게 하는 것, 그리고 기능마다 따로 적용한 보안 설정을 하나의 기준으로 통일하는 것이다.
 
 ## 왜 계획이 필요했나
 
-9월 말부터 열흘 남짓 기능 추가 속도가 빨랐다. 메모 편집기, 관리자 API, 트래픽 분석, 휴대폰 화면, 프로젝트 앱을 차례로 추가하면서 같은 역할의 코드를 앱마다 중복으로 만들었다. 증상은 다음과 같았다.
+9월 말부터 열흘 남짓 메모 편집기, 관리자 API, 트래픽 분석, 휴대폰 화면, 프로젝트 앱을 차례로 추가하면서 같은 역할의 코드를 앱마다 중복으로 만들었다. 리팩터링은 외부에서 관찰되는 동작은 유지한 채 코드 구조만 바꾸는 작업이다. 이번 계획이 다룬 증상은 다음과 같다.
 
 - 서버가 응답에 필드를 추가해도 화면의 타입은 그대로라 컴파일러가 검출하지 못했다.
 - 관리자 세션이 만료되어 요청이 401로 실패해도, 그 요청을 보낸 화면 외에는 만료 사실을 알 수 없었다.
@@ -278,7 +278,9 @@ export type IconButtonProps = IconButtonBase &
 
 `label`은 [`aria-label`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-label)과 `title`에 함께 적용되고, 아이콘 `<i>`에는 `aria-hidden="true"`, 버튼에는 기본값 `type="button"`을 붙인다. `shared/ui/a11y.test.ts`가 버튼·대화상자·시트·검색 칸·날짜 선택기를 HTML 문자열로 렌더링해 이름과 역할을 검사한다.
 
-교체 과정에서는 모양을 바꾸지 않았다. E2E를 실행하며 공통 클래스를 제거한 상태(교체 전의 `<button>`)와 적용한 상태(교체 후)의 계산된 스타일([`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle))을 비교해, 같으면 교체해도 화면이 같다고 판단했다. 비교는 시험이 통과하는 화면(데스크톱·휴대폰, 켜짐·꺼짐, 비활성, 호버)마다 기록된다. 차이가 난 값은 공통 CSS가 추가하는 값이었고, 앱마다 명시도[^specificity]가 0인 규칙([`:where()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:where)) 하나로 원래 값을 복원해 ==75곳 모두 최종 차이가 없었다==.
+교체 과정에서는 모양을 바꾸지 않았다. 계산된 스타일은 여러 CSS 규칙의 우선순위를 모두 적용한 뒤 요소에 최종으로 적용되는 값(예: `padding-top: 6px`)이다. E2E를 실행하며 공통 클래스를 제거한 상태(교체 전의 `<button>`)와 적용한 상태(교체 후)의 계산된 스타일([`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle))을 비교해, 같으면 교체해도 화면이 같다고 판단했다. 비교는 시험이 통과하는 화면(데스크톱·휴대폰, 켜짐·꺼짐, 비활성, 호버)마다 기록된다. 차이가 난 값은 공통 CSS가 추가하는 값이었고, 앱마다 명시도[^specificity]가 0인 규칙([`:where()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:where)) 하나로 원래 값을 복원해 ==75곳 모두 최종 차이가 없었다==.
+
+![계산된 스타일 비교 순서](./images/refactor-retrospective-style-compare.svg '공통 클래스를 뺀 상태와 적용한 상태를 같은 화면에서 비교하고, 차이가 난 값은 :where() 규칙으로 되돌려 차이 0을 확인했다')
 
 교체 중 공통 버튼의 여백이 사라진 문제도 있었다. `@layer reset, components;`를 선언했지만 빌드한 `index.html`에서 components 레이어가 reset보다 먼저 등장해 `* { padding: 0 }`이 우선했다. 브라우저는 레이어 이름이 문서에 처음 등장한 순서로 [레이어 순서](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)를 정하므로, 선언을 `index.html`의 인라인 `<style>` 맨 앞으로 옮겼다(#221). 마지막 #250에서는 macOS·iOS 모양을 고르는 곳을 조사했고, `variant` prop이 적합한 곳은 Menu 하나였다(`className="touch"` → `variant="ios"`). 사진 보기, 메일 목록 같은 다른 짝은 DOM 구조 자체가 달랐다.
 
@@ -467,6 +469,8 @@ export function RateLimit(name: RateLimitName) {
 > [!WARNING] 데코레이터 위치
 > 관리자 경로에서는 `@UseGuards(AdminGuard)` **아래**에 적는다. 데코레이터는 아래부터 적용되므로 이 위치여야 요청 제한이 세션 조회보다 먼저 실행되고, 이 순서는 경로 표 시험(`test/routes.e2e.test.ts`)이 검사한다.
 
+![관리자 쓰기 경로의 가드 실행 순서](./images/refactor-retrospective-guard-order.svg '요청 제한 가드가 세션 조회보다 먼저 돌아, 한도를 넘은 요청은 DB에 닿기 전에 429로 끝난다')
+
 ![이름 7개의 1분당 기본 횟수](./images/refactor-step7-security-limits.svg '성격이 다른 경로는 다른 이름으로 집계한다')
 
 iframe의 `sandbox`는 스크립트·같은 출처·폼·새 탭만 허용하고 `allow-top-navigation`을 제외했다(`WebFrame.tsx`의 `FRAME_SANDBOX`).
@@ -573,5 +577,15 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 [^contracts]: API 요청·응답 형태를 zod 스키마로 정의한 패키지. 서버는 스키마로 검사하고, 화면은 같은 이름의 타입만 가져온다.
 
 [^zod]: TypeScript용 스키마 검증 라이브러리. 스키마 하나에서 런타임 검사와 정적 타입을 함께 얻는다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [zod](https://zod.dev), [madge](https://github.com/pahen/madge)
+- [Providers](https://docs.nestjs.com/providers), [Exception filters](https://docs.nestjs.com/exception-filters), NestJS 문서
+- [getComputedStyle](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle), [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), [Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), MDN
+- [pnpm overrides](https://pnpm.io/package_json), pnpm 문서
+
+</details>
 
 #MacFolio #리팩터링 #회고

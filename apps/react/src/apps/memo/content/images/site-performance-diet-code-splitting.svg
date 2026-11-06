@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>정적 import는 가져온 모듈을 같은 번들에 넣어 첫 방문에 함께 내려받게 하고, 동적 import()는 모듈을 별도 청크로 분리해 호출하는 시각에 내려받게 한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">정적 import와 동적 import()의 번들 구성</text>
+<text x="24" y="66" font-size="13" font-weight="700" fill="#1d1d1f">전: 정적 import</text>
+<text x="24" y="84" font-size="12" fill="#6e6e73">import Safari from '…/Safari'</text>
+<rect x="24" y="96" width="280" height="190" rx="10" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="2"/>
+<text x="40" y="120" font-size="13" font-weight="700" fill="#1d1d1f">boot.js 한 파일 (압축 250KB)</text>
+<rect x="40" y="132" width="248" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="52" y="151" font-size="12" fill="#1d1d1f">바탕화면 · Dock · 메뉴 막대</text>
+<rect x="40" y="166" width="120" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="52" y="185" font-size="12" fill="#1d1d1f">Safari</text>
+<rect x="168" y="166" width="120" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="180" y="185" font-size="12" fill="#1d1d1f">Music</text>
+<rect x="40" y="200" width="120" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="52" y="219" font-size="12" fill="#1d1d1f">설정</text>
+<rect x="168" y="200" width="120" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="180" y="219" font-size="12" fill="#1d1d1f">… 열일곱 앱</text>
+<text x="40" y="256" font-size="12" fill="#ff3b30">첫 방문에 모든 앱 코드를 내려받는다</text>
+<text x="40" y="274" font-size="12" fill="#6e6e73">열지 않은 앱의 코드도 포함</text>
+<text x="336" y="66" font-size="13" font-weight="700" fill="#1d1d1f">후: 동적 import() · React.lazy</text>
+<text x="336" y="84" font-size="12" fill="#6e6e73">lazy(() =&gt; import('…/Safari'))</text>
+<rect x="336" y="96" width="140" height="64" rx="10" fill="#f2f2f7" stroke="#34c759" stroke-width="2"/>
+<text x="350" y="120" font-size="13" font-weight="700" fill="#1d1d1f">boot.js (47KB)</text>
+<text x="350" y="140" font-size="12" fill="#1d1d1f">바탕화면 · Dock</text>
+<text x="350" y="154" font-size="12" fill="#1d1d1f">메뉴 막대</text>
+<rect x="500" y="96" width="120" height="30" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<text x="512" y="116" font-size="12" fill="#1d1d1f">Safari-….js</text>
+<rect x="500" y="134" width="120" height="30" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<text x="512" y="154" font-size="12" fill="#1d1d1f">Music-….js</text>
+<rect x="500" y="172" width="120" height="30" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<text x="512" y="192" font-size="12" fill="#1d1d1f">설정-….js</text>
+<rect x="500" y="210" width="120" height="30" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<text x="512" y="230" font-size="12" fill="#1d1d1f">글 원문 청크</text>
+<path d="M476 120 L498 111" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<path d="M476 132 L498 149" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<path d="M476 146 L498 187" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<path d="M476 156 L498 225" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<text x="336" y="256" font-size="12" fill="#34c759">첫 방문에는 boot.js만 내려받는다</text>
+<text x="336" y="274" font-size="12" fill="#6e6e73">점선 청크는 그 앱을 처음 열 때 내려받는다</text>
+<text x="24" y="314" font-size="12" fill="#6e6e73">번들러(Vite)는 import() 한 곳을 경계로 모듈을 별도 파일(청크)로 분리한다</text>
+</svg>

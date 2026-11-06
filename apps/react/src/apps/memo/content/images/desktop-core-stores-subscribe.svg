@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>useSyncExternalStore가 창 store를 구독하는 순서</title>
+<defs>
+<marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+</defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">Dock에서 메모를 눌렀을 때</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">store는 React를 모르고, React는 subscribe·getState 두 함수만 안다</text>
+
+<rect x="40" y="70" width="150" height="40" rx="8" fill="#f2f2f7"/>
+<text x="115" y="95" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">Dock (클릭)</text>
+<rect x="245" y="70" width="150" height="40" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320" y="95" font-size="13" font-weight="700" fill="#0a84ff" text-anchor="middle">창 store (core)</text>
+<rect x="450" y="70" width="150" height="40" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="525" y="90" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">AppStateProvider</text>
+<text x="525" y="104" font-size="12" fill="#6e6e73" text-anchor="middle">useSyncExternalStore</text>
+
+<line x1="115" y1="110" x2="115" y2="400" stroke="#6e6e73" stroke-dasharray="4 4"/>
+<line x1="320" y1="110" x2="320" y2="400" stroke="#6e6e73" stroke-dasharray="4 4"/>
+<line x1="525" y1="110" x2="525" y2="400" stroke="#6e6e73" stroke-dasharray="4 4"/>
+
+<line x1="525" y1="142" x2="324" y2="142" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#ao)"/>
+<text x="422" y="136" font-size="12" fill="#1d1d1f" text-anchor="middle">① getState() → 상태 A (렌더링 중)</text>
+<line x1="525" y1="178" x2="324" y2="178" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#ao)"/>
+<text x="422" y="172" font-size="12" fill="#1d1d1f" text-anchor="middle">② subscribe(callback) (화면 반영 후)</text>
+
+<line x1="115" y1="220" x2="316" y2="220" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="217" y="214" font-size="12" fill="#1d1d1f" text-anchor="middle">③ open('memo')</text>
+<rect x="250" y="232" width="140" height="44" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+<text x="320" y="250" font-size="12" fill="#1d1d1f" text-anchor="middle">setState → 새 객체 B</text>
+<text x="320" y="268" font-size="12" fill="#6e6e73" text-anchor="middle">memo를 맨 앞에</text>
+
+<line x1="320" y1="296" x2="521" y2="296" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="422" y="290" font-size="12" fill="#1d1d1f" text-anchor="middle">④ callback()</text>
+<line x1="525" y1="330" x2="324" y2="330" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#ao)"/>
+<text x="422" y="324" font-size="12" fill="#1d1d1f" text-anchor="middle">⑤ getState() → 상태 B</text>
+<rect x="436" y="344" width="178" height="48" rx="6" fill="#ffffff" stroke="#34c759"/>
+<text x="525" y="364" font-size="12" fill="#1d1d1f" text-anchor="middle">Object.is(A, B) = false</text>
+<text x="525" y="382" font-size="12" font-weight="700" fill="#34c759" text-anchor="middle">⑥ 다시 렌더링</text>
+</svg>

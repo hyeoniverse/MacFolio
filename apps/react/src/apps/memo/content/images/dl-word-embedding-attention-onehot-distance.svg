@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">원핫 코드와 단어 임베딩에서 단어 사이 거리</text>
+<text x="160" y="60" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">원핫 코드 (사전 3단어)</text>
+<path d="M160 95 L70 250" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M160 95 L250 250" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M70 250 L250 250" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="100" y="168" text-anchor="middle" font-size="13" fill="#ff3b30" font-weight="600">√2</text>
+<text x="220" y="168" text-anchor="middle" font-size="13" fill="#ff3b30" font-weight="600">√2</text>
+<text x="160" y="268" text-anchor="middle" font-size="13" fill="#ff3b30" font-weight="600">√2</text>
+<circle cx="160" cy="95" r="6" fill="#1d1d1f"/>
+<circle cx="70" cy="250" r="6" fill="#1d1d1f"/>
+<circle cx="250" cy="250" r="6" fill="#1d1d1f"/>
+<text x="160" y="85" text-anchor="middle" font-size="12" fill="#1d1d1f">movie (1,0,0)</text>
+<text x="70" y="236" text-anchor="middle" font-size="12" fill="#1d1d1f">film (0,1,0)</text>
+<text x="250" y="236" text-anchor="middle" font-size="12" fill="#1d1d1f">banana (0,0,1)</text>
+<text x="160" y="300" text-anchor="middle" font-size="12" fill="#6e6e73">모든 쌍의 거리가 √2로 같다</text>
+<path d="M320 50 L320 310" stroke="#d1d1d6"/>
+<text x="480" y="60" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">학습된 임베딩 (개념도)</text>
+<rect x="355" y="75" width="250" height="195" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/>
+<circle cx="410" cy="120" r="6" fill="#0a84ff"/><text x="420" y="124" text-anchor="start" font-size="12" fill="#1d1d1f">movie</text>
+<circle cx="445" cy="140" r="6" fill="#0a84ff"/><text x="455" y="144" text-anchor="start" font-size="12" fill="#1d1d1f">film</text>
+<circle cx="525" cy="248" r="6" fill="#ff9f0a"/><text x="535" y="252" text-anchor="start" font-size="12" fill="#1d1d1f">banana</text>
+<circle cx="500" cy="222" r="6" fill="#ff9f0a"/><text x="510" y="226" text-anchor="start" font-size="12" fill="#1d1d1f">apple</text>
+<path d="M410 120 L445 140" stroke="#0a84ff" stroke-dasharray="3 3"/>
+<text x="480" y="300" text-anchor="middle" font-size="12" fill="#6e6e73">뜻이 가까운 단어끼리 거리가 짧다</text>
+</svg>

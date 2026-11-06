@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">목록 항목 '우유'에서 머리말을 골랐을 때 문서 트리</text>
+<text x="320" y="48" font-size="12" fill="#6e6e73" text-anchor="middle">list_item의 콘텐츠 표현식은 paragraph block* : 첫 자식은 반드시 문단</text>
+<text x="20" y="84" font-size="13" font-weight="600" fill="#ff3b30">수정 전 · 그 자리에서 바꾸기</text>
+<g font-size="13" fill="#1d1d1f">
+<rect x="20" y="96" width="290" height="30" rx="6" fill="#f2f2f7"/><text x="34" y="116">bullet_list</text>
+<rect x="44" y="134" width="266" height="30" rx="6" fill="#f2f2f7"/><text x="58" y="154">list_item</text>
+<rect x="68" y="172" width="242" height="30" rx="6" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/><text x="82" y="192">paragraph → <tspan fill="#ff3b30">heading?</tspan></text>
+<rect x="44" y="210" width="266" height="30" rx="6" fill="#f2f2f7"/><text x="58" y="230">list_item · 달걀</text>
+</g>
+<text x="20" y="268" font-size="12.5" fill="#ff3b30">첫 자식이 heading이면 paragraph block*에 맞지 않는다</text>
+<text x="20" y="288" font-size="12.5" fill="#ff3b30">→ 명령이 false를 돌려주고 문서는 그대로</text>
+<text x="340" y="84" font-size="13" font-weight="600" fill="#34c759">수정 후 · 목록에서 꺼낸 다음 바꾸기</text>
+<g font-size="13" fill="#1d1d1f">
+<rect x="340" y="96" width="280" height="30" rx="6" fill="#fff" stroke="#34c759" stroke-width="1.5"/><text x="354" y="116">heading (level 3) · 우유</text>
+<rect x="340" y="134" width="280" height="30" rx="6" fill="#f2f2f7"/><text x="354" y="154">bullet_list</text>
+<rect x="364" y="172" width="256" height="30" rx="6" fill="#f2f2f7"/><text x="378" y="192">list_item · 달걀</text>
+</g>
+<text x="340" y="232" font-size="12.5" fill="#1d1d1f">1. leaveList: '우유' 항목을 목록 밖 문단으로</text>
+<text x="340" y="252" font-size="12.5" fill="#1d1d1f">2. 그 문단을 머리말로 변환</text>
+<text x="20" y="330" font-size="13" font-weight="600" fill="#6e6e73">저장되는 Markdown</text>
+<rect x="20" y="340" width="290" height="50" rx="6" fill="#f2f2f7"/><text x="34" y="360" font-size="12.5" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">- 우유</text><text x="34" y="380" font-size="12" fill="#6e6e73">(변화 없음)</text>
+<rect x="340" y="340" width="280" height="50" rx="6" fill="#f2f2f7"/><text x="354" y="360" font-size="12.5" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">### 우유</text><text x="354" y="380" font-size="12.5" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">- 달걀</text>
+</svg>

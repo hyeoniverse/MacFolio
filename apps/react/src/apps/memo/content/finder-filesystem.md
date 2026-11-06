@@ -7,9 +7,15 @@ seriesOrder: 3
 summary: 관리자가 Finder에서 폴더를 만들고 파일을 옮기는 구조를 R2 키 대신 JSON 한 행(/finder/layout)에 기록하고, 블로그 폴더는 메모 정리 내용과 동기화했다. 이어서 가상본을 별도 kind로 분리하고 최상위 위치를 Macintosh HD 아래 한 트리로 통합했다.
 ---
 
+## 배경: 파일 시스템 트리와 가상본
+
+macOS의 Finder는 디스크의 파일 시스템을 트리(tree) 구조로 표시하는 앱이다. 트리는 맨 위의 루트(root) 폴더 하나에서 시작해, 폴더마다 하위 항목(children)을 갖는 구조다. 예를 들어 `/Users/hyeoniverse/Documents/이력서.pdf`는 루트(`/`) › 사용자 › 홈 › 문서를 차례로 거쳐 도달하는 파일이다.
+
+가상본(alias)은 다른 폴더나 파일을 가리키는 작은 참조 파일이다. 바탕화면에 문서 폴더의 가상본을 만들면 아이콘 왼쪽 아래에 화살표가 붙고, 더블 클릭하면 원래 폴더가 열린다. 가상본 자체에는 내용이 없고 "어디를 가리키는가"만 저장된다[^alias].
+
 Finder는 사이트의 데이터(문서, 프로젝트, 블로그 글, 앱)를 파일 형태로 표시하지만, 지금까지는 조회만 가능했다. 폴더를 만들거나 파일을 옮길 수 없었다. 바탕화면의 이력서·포트폴리오·자격증 아이콘도 코드에 고정된 목록이었다. 이번에 실제 Mac처럼 폴더를 편집할 수 있게 했다. 단, 편집은 관리자만 할 수 있고, 편집한 구조는 서버에 저장해 모든 방문자가 같은 구조를 조회한다. PR은 [#263](https://github.com/hyeoniverse/MacFolio/pull/263)이고, 커밋 22개, 파일 82개, +4,255/−386이다.
 
-다음 날 [#285](https://github.com/hyeoniverse/MacFolio/pull/285)에서는 열기 창에서 바탕화면의 포트폴리오가 빈 폴더로 열리는 버그를 계기로, 가상본을 별도 종류로 분리하고 서로 독립된 최상위 위치를 macOS처럼 Macintosh HD 아래 한 트리로 통합했다. 이 내용은 [가상본이 빈 폴더로 열린 원인](#가상본이-빈-폴더로-열린-원인) 절부터 다룬다.
+다음 날 [#285](https://github.com/hyeoniverse/MacFolio/pull/285)에서는 열기 창에서 바탕화면의 포트폴리오가 빈 폴더로 열리는 버그를 계기로, 가상본을 별도 종류로 분리하고 서로 독립된 최상위 위치를 macOS처럼 Macintosh HD 아래 한 트리로 통합했다. 가상본 수정 과정은 [가상본이 빈 폴더로 열린 원인](#가상본이-빈-폴더로-열린-원인) 절에 있다.
 
 ## 편집 가능한 항목
 
@@ -61,7 +67,9 @@ Finder는 사이트의 데이터(문서, 프로젝트, 블로그 글, 앱)를 �
 
 처음에는 이력서·포트폴리오·자격증과 프로젝트 폴더에만 파일을 놓아 업로드할 수 있었다. 새로 만든 폴더나 바탕화면에 놓으면 반응이 없어서 실제 폴더처럼 동작하지 않았다. 이제는 파일을 받을 수 있는 폴더라면 어디에 놓아도 업로드된다.
 
-R2에 업로드할 문서 폴더는 놓은 폴더에서 상위로 올라가며 처음 만나는 이력서·포트폴리오·자격증·프로젝트 폴더로 정한다.
+R2에 업로드할 문서 폴더는 놓은 폴더에서 상위로 올라가며 처음 만나는 이력서·포트폴리오·자격증·프로젝트 폴더로 정한다. R2 키의 접두사(`resume/`, `portfolio/` 등)와 문서 테이블의 폴더 값은 DB CHECK 제약으로 묶여 있어서, 관리자가 만든 폴더를 R2 키에 직접 쓸 수는 없다.
+
+![발표 자료 폴더에 놓은 PDF는 상위의 포트폴리오로 업로드되고, Finder 구조에 발표 자료 위치가 기록된다](./images/finder-filesystem-upload-target.svg '만든 폴더는 건너뛰고 가장 가까운 문서 폴더에서 멈춘다')
 
 | 놓은 위치                              | R2 문서 폴더                    | Finder 구조에 기록      |
 | -------------------------------------- | ------------------------------- | ----------------------- |
@@ -81,7 +89,7 @@ Finder 구조에 기록하는 방식은 끌어서 옮길 때와 같아서, 업�
 - SVG·HTML은 사이트 출처에서 스크립트가 실행될 수 있어 허용하지 않는다
 - 텍스트·영상·소리가 아닌 파일은 Worker가 항상 내려받기(`Content-Disposition: attachment`)로 응답한다
 
-관리자가 아닌 방문자가 파일을 놓으면 서버에 업로드하지 않는다. 대신 브라우저의 [blob URL](https://developer.mozilla.org/ko/docs/Web/API/URL/createObjectURL_static)로 그 폴더에 추가해, 실제 Finder처럼 놓은 위치에 표시되고 미리보기로 열린다. 처음 한 번 "내 화면에만 추가됨" 알림을 표시하고, 새로고침하면 사라진다.
+관리자가 아닌 방문자가 파일을 놓으면 서버에 업로드하지 않는다. 대신 브라우저의 [blob URL](https://developer.mozilla.org/ko/docs/Web/API/URL/createObjectURL_static)로 그 폴더에 추가한다. blob URL은 `URL.createObjectURL(file)`이 반환하는 `blob:https://macfolio.hyeoniverse.com/<무작위 id>` 형식의 주소로, 브라우저 메모리에 있는 파일을 현재 페이지 안에서만 가리킨다. 이 주소로 놓은 파일을 실제 Finder처럼 놓은 위치에 표시되고 미리보기로 열린다. 처음 한 번 "내 화면에만 추가됨" 알림을 표시하고, 새로고침하면 사라진다.
 
 그림은 오른쪽 클릭 › 데스크탑 사진 설정으로 바로 배경화면이 된다. 바탕화면에서 실행한 휴지통 경고창은 창 안이 아니라 화면 중앙, 모든 창 위에 표시된다(이전에는 바탕화면 레이어 안에 렌더링되어 Safari 같은 창 아래에 가려졌다).
 
@@ -105,6 +113,10 @@ mp4를 업로드해도 회색 문서 아이콘이었고, 열면 내려받기만 
 
 > [!WARNING] 동영상은 Range 요청으로 받는다
 > `<video>`는 파일을 구간 단위로 요청한다. 사이트 Worker의 `/files/*`가 [Range 요청](https://developer.mozilla.org/ko/docs/Web/HTTP/Range_requests)에 206(`content-range`)으로 응답하지 않으면 Safari는 재생하지 않고 Chrome도 탐색할 수 없어서, R2의 범위 읽기(`get(key, { range })`)로 요청한 구간만 응답한다.
+
+Range 요청은 `Range: bytes=시작-끝` 헤더로 파일의 일부만 요청하는 HTTP 기능이다. 서버는 `206 Partial Content`와 `Content-Range: bytes 시작-끝/전체 크기` 헤더로 그 구간만 응답한다. 탐색 막대를 영상 중간으로 옮기면 브라우저는 그 위치에 해당하는 바이트부터 다시 요청한다.
+
+![재생 시작은 bytes=0-, 탐색은 중간 바이트부터, 파일 밖 범위는 416](./images/finder-filesystem-range.svg 'Worker는 크기를 먼저 확인하고 요청한 구간만 R2에서 읽는다')
 
 ## 블로그 폴더는 메모와 같은 데이터
 
@@ -223,6 +235,8 @@ export interface AliasItem extends ItemBase {
 }
 ```
 
+`FinderItem`은 판별 유니언(discriminated union)이다. 판별 유니언은 여러 객체 타입을 `|`로 묶고, 공통 필드(여기서는 `kind`)의 문자열 값으로 어느 타입인지 구분하는 TypeScript 패턴이다. `if (item.kind === 'alias')` 안에서는 TypeScript가 `item`을 `AliasItem`으로 좁혀서 `item.target`을 읽을 수 있고, `item.children`을 읽으면 컴파일 오류가 난다.
+
 이제 `kind === 'folder'`로 필터링하는 코드에 가상본이 포함되지 않는다. 폴더처럼 다루려면 `resolveAlias`로 원래 폴더를 찾아야 하고, 찾지 않으면 "빈 폴더"가 아니라 폴더가 아닌 항목이 된다. 새 종류의 처리를 누락했을 때 컴파일러가 검출하는 지점도 만들었다([판별 유니언과 `never` 검사](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking)).
 
 - 목록 보기의 종류 라벨은 `Record<FinderItem['kind'], string>` 타입이라, 새 종류의 라벨이 없으면 컴파일 오류가 난다
@@ -236,6 +250,8 @@ default: {
 }
 ```
 
+![모든 kind를 처리하면 default의 item은 never, alias를 빠뜨리면 AliasItem이 남아 컴파일 오류](./images/finder-filesystem-exhaustive.svg 'never 변수에 대입할 수 없는 타입이 남으면 tsc가 TS2322 오류를 낸다')
+
 > [!WARNING] 컴파일러가 검출하지 못하는 누락
 > 모든 실수를 컴파일러가 검출하지는 않는다. `if (item.kind === 'folder')`만 쓰고 가상본 처리를 누락하면, 오류 없이 "클릭해도 반응이 없는" 방식으로 실패한다. 그래도 빈 폴더가 정상처럼 표시되던 이전 방식보다는 문제가 바로 드러난다.
 
@@ -243,7 +259,7 @@ default: {
 
 ## 실제 macOS는 루트가 하나다
 
-다음으로 실제 OS처럼 루트 아래에 폴더가 있는 구조를 검토했다. 실제 macOS의 Finder를 열면 홈 폴더 안에 데스크탑·문서·다운로드가 있고, 사이드바의 즐겨찾기는 그 폴더로 가는 바로가기다. 이 사이트의 Finder는 데스크탑·문서·블로그·응용 프로그램이 **서로 독립된 최상위 항목**이었고, 사이드바는 그 목록을 그대로 렌더링했다.
+다음으로 실제 OS처럼 루트 아래에 폴더가 있는 구조를 검토했다. 실제 macOS의 Finder를 열면 홈 폴더 안에 데스크탑·문서·다운로드가 있고, 사이드바의 즐겨찾기는 그 폴더로 가는 바로가기다(Apple 문서도 사이드바의 문서 항목을 홈 폴더 안 문서 폴더의 가상본으로 설명한다[^alias]). 이 사이트의 Finder는 데스크탑·문서·블로그·응용 프로그램이 **서로 독립된 최상위 항목**이었고, 사이드바는 그 목록을 그대로 렌더링했다.
 
 트리를 macOS와 같은 구조로 바꿨다.
 
@@ -338,6 +354,20 @@ macOS의 기본 폴더는 앞면에 음각 문양이 있다. 다운로드는 화
 - [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons): 바탕화면 아이콘의 칸 계산
 - [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리): 메모 정리 함수의 위치
 - [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 이후 홈 › 그림 폴더를 업로드 가능하게 바꾼 작업
+
+<details>
+<summary>참고 문헌</summary>
+
+- Apple, [Mac에서 가상본 생성 및 삭제하기](https://support.apple.com/ko-kr/guide/mac-help/mchlp1046/mac)
+- TypeScript, [Narrowing: Discriminated unions, Exhaustiveness checking](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions)
+- MDN, [HTTP range requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Range_requests), [206 Partial Content](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/206), [416 Range Not Satisfiable](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/416)
+- MDN, [URL.createObjectURL()](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static), [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API), [Document.elementsFromPoint()](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint)
+- MDN, [Media fragments](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Media_fragments)
+- Cloudflare, [R2 Workers API reference: get with range](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
+
+</details>
+
+[^alias]: Apple 지원 문서 [Mac에서 가상본 생성 및 삭제하기](https://support.apple.com/ko-kr/guide/mac-help/mchlp1046/mac)는 "가상본을 열면 원본이 열립니다"라고 설명하고, Finder 사이드바와 Dock의 항목도 원본으로 연결되는 가상본이라고 적는다. 예로 든 것이 "사이드바에 있는 문서는 홈 폴더 안에 있는 문서 폴더를 열어 줍니다"이다.
 
 [^desktop]: 처음에는 포트폴리오에 업로드하고 위치만 바탕화면으로 기록했다. 본문 "macOS와 같은 휴지통" 절의 문제로 `desktop/…` 키를 추가했다.
 

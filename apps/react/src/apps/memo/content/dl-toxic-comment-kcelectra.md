@@ -9,7 +9,7 @@ summary: KcELECTRA로 악성 댓글 분류 모델을 만든 과정을 정리한�
 
 ## 들어가기 전에
 
-이 글은 KcELECTRA로 악성 댓글 분류 모델을 만든 과정을 다룬다. 국가인권위원회가 2021년 실시한 「온라인 혐오표현 인식조사」에서 응답자 10명 중 8명이 온라인 혐오 표현이 심각하다고 답했다. 댓글은 사람이 하나씩 검토할 수 없을 만큼 빠르게 쌓이므로, 댓글을 악성 댓글과 정상 댓글로 자동 분류해 혐오 표현을 걸러 내는 모델을 만들고 결과를 분석하는 것이 목표다.
+국가인권위원회가 2021년 실시한 「온라인 혐오표현 인식조사」에서 응답자 10명 중 8명이 온라인 혐오 표현이 심각하다고 답했다. 댓글은 사람이 하나씩 검토할 수 없을 만큼 빠르게 쌓이므로, 댓글을 악성 댓글과 정상 댓글로 자동 분류해 혐오 표현을 걸러 내는 모델을 만들고 결과를 분석하는 것이 목표다.
 
 ![프로젝트 개요 슬라이드: 목표는 악성 댓글 분류 모델 제작, 장애물은 구어체와 신조어, 비속어, 오탈자로 이루어진 정제되지 않은 글, 모델은 KcELECTRA](./images/dl-toxic-comment-kcelectra-01.jpg '목표, 장애물, 모델 선택 (발표 자료)')
 
@@ -19,7 +19,7 @@ summary: KcELECTRA로 악성 댓글 분류 모델을 만든 과정을 정리한�
 
 ![프로젝트 구성 슬라이드: GitHub 데이터셋, KcELECTRA 모델, Hugging Face 토크나이저](./images/dl-toxic-comment-kcelectra-02.jpg '데이터셋, 모델, 토크나이저의 출처 (발표 자료)')
 
-이 글이 답하려는 질문은 두 가지다. 공개 데이터셋 두 개를 합쳐 미세 조정한 모델은 악의 있는 표현과 강조로 쓴 비속어를 구별하는가. 그리고 정확도 92.34%라는 수치 뒤에서 모델은 어디서 틀리고, 데이터 처리의 어떤 부분을 고쳐야 하는가. 작업은 Google Colab에서 PyTorch와 Hugging Face Transformers 4.35.2로 진행했다.
+모델이 판별해야 하는 핵심은 악의 있는 표현과 강조로 쓴 비속어의 차이다. 테스트 정확도 92.34%라는 수치만으로는 모델이 어떤 문장에서 틀리는지 알 수 없으므로, 혼동 행렬과 새 문장 분류 결과로 오류가 몰린 곳을 확인하고 데이터 처리에서 고칠 부분을 찾았다. 작업 환경은 Google Colab, PyTorch, Hugging Face Transformers 4.35.2다.
 
 | 순서 | 내용                                                            |
 | ---- | --------------------------------------------------------------- |
@@ -175,6 +175,10 @@ tokenized_test_sentences = tokenizer(
 | attention_mask | 1이 14개, 이후 0이 114개                                                           |
 
 ![토큰화 코드와 첫 문장의 토큰, id, 어텐션 마스크 출력](./images/dl-toxic-comment-kcelectra-07.jpg '토크나이저 출력 (발표 자료)')
+
+같은 결과를 토큰 단위로 나란히 놓으면 세 줄의 대응이 드러난다. '네장씩'은 어휘에 통째로 없으므로 `네`, `##장`, `##씩` 세 토큰으로 쪼개지고, 모델은 이렇게 미리 정한 54,343개 어휘의 조합으로 처음 보는 어절도 표현한다.
+
+![김포는 뭐 김 네장씩 싸먹는 새끼들이냐?를 [CLS]부터 [SEP]까지 14개 토큰으로 나누고, 토큰마다 input_ids 값과 attention_mask 1을, [PAD]에는 id 0과 마스크 0을 대응시킨 그림](./images/dl-toxic-comment-kcelectra-tokens.svg '토큰, input_ids, attention_mask의 대응. 주황 테두리가 ## 하위 단어다')
 
 토큰화한 결과와 라벨을 `torch.utils.data.Dataset`으로 감싸 Trainer가 배치를 만들 수 있게 한다.
 
@@ -454,7 +458,9 @@ def sentence_predict(sent):
 | 그중 악성                                | 430                            |
 | 테스트 악성 댓글 중 학습에서 본 비율     | 430 / 1,349 = 31.9%            |
 
-데이터셋 1이 데이터셋 2의 욕설 문장을 포함하므로, 겹치는 문장이 거의 모두 악성 쪽에 몰렸다. 테스트 악성 댓글의 31.9%를 모델이 학습 중에 정답과 함께 본 셈이고, 악성 클래스의 재현율 90.3%는 처음 보는 댓글에 대한 성능보다 높게 측정되었을 수 있다. 같은 본문에 서로 다른 라벨이 붙은 경우는 없었다.
+![테스트 세트의 실제 정상 1,760문장 중 1문장, 실제 악성 1,349문장 중 430문장(31.9%)이 학습 세트에도 있음을 나타낸 막대그래프](./images/dl-toxic-comment-kcelectra-leak.svg '학습·테스트 세트의 중복은 거의 모두 악성 클래스에 몰려 있다')
+
+데이터셋 1이 데이터셋 2의 욕설 문장을 포함하므로, 겹치는 문장이 거의 모두 악성 쪽에 몰렸다. 테스트 악성 댓글의 31.9%는 모델이 학습 중에 정답과 함께 이미 확인한 문장이고, 악성 클래스의 재현율 90.3%는 처음 보는 댓글에 대한 성능보다 높게 측정되었을 수 있다. 같은 본문에 서로 다른 라벨이 붙은 경우는 없었다.
 
 본문 앞뒤 공백만 다른 문장도 있어, 공백을 정리한 뒤 분할 전에 중복을 삭제한다.
 
@@ -469,3 +475,16 @@ test_data = df.drop(train_data.index)
 ### 확장 방향
 
 현재 모델은 문장 전체를 악성 또는 정상으로만 분류한다. 다음 단계로 모델의 어텐션 가중치나 토큰별 기여도를 이용해 문장 전체가 아니라 욕설에 해당하는 토큰만 가리는 마스킹으로 확장할 수 있다. 다만 어텐션 가중치가 곧 판단 근거라는 보장은 없으므로, [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서 다룬 Grad-CAM처럼 기울기 기반 기여도 방법과 함께 검증해야 한다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- Clark et al., [「ELECTRA: Pre-training Text Encoders as Discriminators Rather Than Generators」](https://arxiv.org/abs/2003.10555), ICLR 2020
+- Devlin et al., [「BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding」](https://arxiv.org/abs/1810.04805), NAACL 2019
+- Wu et al., [「Google's Neural Machine Translation System」](https://arxiv.org/abs/1609.08144), 2016 (WordPiece)
+- Guo et al., [「On Calibration of Modern Neural Networks」](https://arxiv.org/abs/1706.04599), ICML 2017 (온도 스케일링)
+- Beomi, [KcELECTRA](https://github.com/Beomi/KcELECTRA), GitHub
+- [ZIZUN/korean-malicious-comments-dataset](https://github.com/ZIZUN/korean-malicious-comments-dataset), [2runo/Curse-detection-data](https://github.com/2runo/Curse-detection-data), [kocohub/korean-hate-speech](https://github.com/kocohub/korean-hate-speech), GitHub
+- Hugging Face 문서, [Tokenizer](https://huggingface.co/docs/transformers/main_classes/tokenizer), [Trainer](https://huggingface.co/docs/transformers/main_classes/trainer)
+
+</details>

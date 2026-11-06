@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>유리 위젯을 이루는 네 겹</title>
+  <defs>
+    <linearGradient id="wp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff9f0a"/><stop offset="0.5" stop-color="#ff3b30"/><stop offset="1" stop-color="#0a84ff"/>
+    </linearGradient>
+    <filter id="bl"><feGaussianBlur stdDeviation="7"/></filter>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="340" fill="#ffffff"/>
+  <text x="320" y="30" font-size="16" font-weight="700" fill="#1d1d1f" text-anchor="middle">유리 위젯 = 배경화면 → 블러·채도 → 반투명 흰색 → 가장자리 하이라이트</text>
+
+  <!-- 1 -->
+  <g>
+    <rect x="20" y="60" width="130" height="130" rx="18" fill="url(#wp)"/>
+    <circle cx="60" cy="100" r="16" fill="#ffffff"/><rect x="80" y="130" width="50" height="10" fill="#1d1d1f"/>
+    <text x="85" y="214" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">① 배경화면</text>
+    <text x="85" y="234" font-size="12" fill="#6e6e73" text-anchor="middle">무늬가 그대로 보인다</text>
+  </g>
+  <line x1="152" y1="125" x2="170" y2="125" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- 2 -->
+  <g>
+    <clipPath id="c2"><rect x="176" y="60" width="130" height="130" rx="18"/></clipPath>
+    <g clip-path="url(#c2)" filter="url(#bl)">
+      <rect x="166" y="50" width="150" height="150" fill="url(#wp)"/>
+      <circle cx="216" cy="100" r="16" fill="#ffffff"/><rect x="236" y="130" width="50" height="10" fill="#1d1d1f"/>
+    </g>
+    <text x="241" y="214" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">② backdrop-filter</text>
+    <text x="241" y="234" font-size="12" fill="#6e6e73" text-anchor="middle">blur(28px) saturate(170%)</text>
+  </g>
+  <line x1="308" y1="125" x2="326" y2="125" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- 3 -->
+  <g>
+    <clipPath id="c3"><rect x="332" y="60" width="130" height="130" rx="18"/></clipPath>
+    <g clip-path="url(#c3)" filter="url(#bl)">
+      <rect x="322" y="50" width="150" height="150" fill="url(#wp)"/>
+    </g>
+    <rect x="332" y="60" width="130" height="130" rx="18" fill="#ffffff" fill-opacity="0.48"/>
+    <text x="397" y="214" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">③ 흰색 48%</text>
+    <text x="397" y="234" font-size="12" fill="#6e6e73" text-anchor="middle">--color-material-widget</text>
+  </g>
+  <line x1="464" y1="125" x2="482" y2="125" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <!-- 4 -->
+  <g>
+    <clipPath id="c4"><rect x="488" y="60" width="130" height="130" rx="18"/></clipPath>
+    <g clip-path="url(#c4)" filter="url(#bl)">
+      <rect x="478" y="50" width="150" height="150" fill="url(#wp)"/>
+    </g>
+    <rect x="488" y="60" width="130" height="130" rx="18" fill="#ffffff" fill-opacity="0.48" stroke="#ffffff" stroke-width="2"/>
+    <text x="553" y="118" font-size="22" fill="#1d1d1f" text-anchor="middle" font-weight="700">10:09</text>
+    <text x="553" y="142" font-size="12" fill="#1d1d1f" text-anchor="middle">서울</text>
+    <text x="553" y="214" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">④ inset 1px 테두리</text>
+    <text x="553" y="234" font-size="12" fill="#6e6e73" text-anchor="middle">판의 경계 + 내용</text>
+  </g>
+
+  <rect x="20" y="254" width="598" height="70" rx="10" fill="#f2f2f7"/>
+  <text x="36" y="280" font-size="13" fill="#1d1d1f">처음 반투명 판은 ②가 없어 배경 색이 그대로 섞였다 (분홍 배경화면 위에서 탁한 분홍).</text>
+  <text x="36" y="304" font-size="13" fill="#1d1d1f">다크 모드는 ③만 짙은 회색 45%로 바뀐다. 캘린더·최근 글은 ②·③ 대신 불투명한 판을 쓴다.</text>
+</svg>

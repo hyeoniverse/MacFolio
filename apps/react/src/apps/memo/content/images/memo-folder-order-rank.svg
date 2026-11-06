@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="420" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">order 목록으로 최상위 폴더 네 개를 정렬하는 예</text>
+<text x="20" y="64" font-size="13" font-weight="600" fill="#6e6e73">① 저장된 order</text>
+<rect x="20" y="74" width="600" height="36" rx="8" fill="#f2f2f7"/>
+<text x="34" y="97" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">['학습', '개발 기록', '개발 기록/MacFolio/회고']</text>
+<text x="20" y="144" font-size="13" font-weight="600" fill="#6e6e73">② 같은 계층(최상위)의 rank 계산과 정렬 결과</text>
+<g font-size="13">
+<rect x="20" y="154" width="290" height="32" fill="#f2f2f7"/>
+<text x="34" y="175" font-weight="600" fill="#1d1d1f">폴더</text><text x="200" y="175" font-weight="600" fill="#1d1d1f">rank</text>
+<text x="34" y="208" fill="#1d1d1f">개발 기록</text><text x="200" y="208" fill="#0a84ff">1</text>
+<text x="34" y="236" fill="#1d1d1f">기술 노트</text><text x="200" y="236" fill="#ff9f0a">Infinity</text>
+<text x="34" y="264" fill="#1d1d1f">인사이트</text><text x="200" y="264" fill="#ff9f0a">Infinity</text>
+<text x="34" y="292" fill="#1d1d1f">학습</text><text x="200" y="292" fill="#0a84ff">0</text>
+</g>
+<line x1="318" y1="230" x2="352" y2="230" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<g font-size="13">
+<rect x="360" y="154" width="260" height="32" fill="#f2f2f7"/>
+<text x="374" y="175" font-weight="600" fill="#1d1d1f">사이드바 순서</text>
+<text x="374" y="208" fill="#1d1d1f">1. 학습</text><text x="606" y="208" fill="#0a84ff" text-anchor="end">order 0번째</text>
+<text x="374" y="236" fill="#1d1d1f">2. 개발 기록</text><text x="606" y="236" fill="#0a84ff" text-anchor="end">order 1번째</text>
+<text x="374" y="264" fill="#1d1d1f">3. 기술 노트</text><text x="606" y="264" fill="#ff9f0a" text-anchor="end">없음 · 가나다순</text>
+<text x="374" y="292" fill="#1d1d1f">4. 인사이트</text><text x="606" y="292" fill="#ff9f0a" text-anchor="end">없음 · 가나다순</text>
+</g>
+<text x="20" y="334" font-size="13" font-weight="600" fill="#6e6e73">③ 개발 기록을 맨 위로 끌어 놓은 뒤 reorderFolders가 만든 order</text>
+<rect x="20" y="344" width="600" height="56" rx="8" fill="#fff" stroke="#0a84ff"/>
+<text x="34" y="366" font-size="12.5" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">['개발 기록/MacFolio/회고',  <tspan fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">← 다른 계층은 그대로</tspan></text>
+<text x="34" y="388" font-size="12.5" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace"> '개발 기록', '학습', '기술 노트', '인사이트']</text>
+</svg>

@@ -14,22 +14,45 @@ summary: 3차까지 배포한 운영 사이트를 재측정해 휴대폰 98점(L
 | 4차  | [#338](https://github.com/hyeoniverse/MacFolio/pull/338) | 운영·로컬 재측정, 명언 위젯 lazy 분리                                       |
 | 5차  | [#367](https://github.com/hyeoniverse/MacFolio/pull/367) | 휴대폰 LCP 편차 해결, 휴대폰 로딩 화면 밖으로 비치던 배경화면, CI 성능 예산 |
 
-결론부터 적는다.
+| 항목                | 결과                                                                                                                     |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| 운영 사이트         | 휴대폰 98점(LCP[^lcp] 1.9초, 첫 방문 전송량 602KB), 데스크톱 97점(LCP 1.0초, 889KB). 1차 배포 후보다 각각 25점, 8점 상승 |
+| 첫 번들 회귀(4차)   | 명언 365개가 첫 번들(`boot`)에 들어가 전송량이 22KB 증가. 위젯을 lazy로 분리해 3차 수준으로 복구                         |
+| LCP 편차(5차)       | 원인은 글꼴이 아니라 `#boot-splash` 삭제 시각. 번갈아 측정한 28회씩에서 4초대 회차가 3회에서 0회로                       |
+| 첫 방문 전송량(5차) | 휴대폰 487KB에서 278KB로. 본문 글꼴(149KB)과 배경화면을 누른 뒤로 지연. 진입 후까지의 전송량은 같다                      |
+| CI 성능 예산(5차)   | `boot` 번들 55KB, `index.html`이 처음부터 요청하는 번들 합계 265KB(brotli)를 넘으면 CI 실패                              |
 
-- **운영 사이트:** 휴대폰 98점(LCP[^lcp] 1.9초, 첫 방문 전송량 602KB), 데스크톱 97점(LCP 1.0초, 889KB). 1차 배포 후의 73점·89점에서 각각 25점, 8점 올랐다.
-- **첫 번들 회귀(4차):** 로컬 첫 방문 전송량이 3차보다 22KB 늘어 있었다. 원인은 명언 위젯의 명언 365개가 첫 번들(`boot`)에 들어간 것이었다. 위젯을 lazy로 분리해 3차 수준으로 되돌렸다.
-- **LCP 편차의 원인은 글꼴이 아니었다(5차).** React가 처음 렌더링하는 시각에 HTML의 첫 렌더링(`#boot-splash`)을 삭제했는데, 그 시각이 HTML 시작 안내가 LCP 후보로 기록되기 전이면 후보가 사라졌다. `#boot-splash`를 로딩 화면을 누를 때까지 남겨, 번갈아 측정한 28회씩에서 4초대 회차가 3회에서 0회가 되었다.
-- **첫 방문 전송량이 휴대폰 487KB에서 278KB로 줄었다(5차).** 본문 글꼴(149KB)과 배경화면을 누른 뒤로 지연했다. 진입 후까지의 전송량은 같다.
-- **CI 성능 예산(5차):** `boot` 번들 55KB, `index.html`이 처음부터 요청하는 번들 합계 265KB(brotli)를 넘으면 CI가 실패한다.
+## 배경
+
+### Lighthouse와 측정 방식
+
+[Lighthouse](https://developer.chrome.com/docs/lighthouse/overview)는 Chrome 팀이 만든 웹 페이지 검사 도구다. 페이지를 한 번 불러오면서 첫 렌더링 시각, 내려받은 파일, 메인 스레드가 막힌 시간 등을 기록하고, 이 값들로 0~100점의 성능 점수를 계산한다. 휴대폰 측정은 느린 4G 회선과 느린 CPU를 가정하는데, 기본 방식인 simulate[^simulate]는 실제로 회선을 느리게 하지 않고 빠른 회선에서 기록한 요청 목록으로 느린 회선의 시간을 **계산**한다. 이 계산 방식이 뒤에서 다룰 LCP 편차와 관련이 있다.
+
+### LCP 후보와 갱신 규칙
+
+LCP는 화면에 보이는 가장 큰 글자 블록이나 이미지가 렌더링된 시각이다. 브라우저는 페이지를 불러오는 동안 "지금까지 렌더링된 것 중 가장 큰 요소"를 **LCP 후보**로 기록하고, 더 큰 요소가 렌더링될 때마다 새 후보를 기록한다. 측정 도구는 마지막 후보의 시각을 LCP로 사용한다.
+
+![cnn.com 휴대폰 화면이 불러와지는 다섯 단계. 처음에는 작은 글자 블록이 FCP로, 다음에는 큰 제목이, 마지막에는 사진이 LCP 후보로 초록 점선 표시된다](./images/site-performance-lcp-budget-lcp-candidates.jpg 'web.dev가 예로 든 cnn.com의 LCP 후보 변화. 초록 점선이 각 시점의 가장 큰 요소이고, 맨 오른쪽 사진이 최종 LCP다')
+
+web.dev의 설명에 따르면 이 규칙에는 두 가지 세부 조건이 있다.
+
+- **이미 후보로 기록된 요소**는 DOM에서 삭제되어도 더 큰 요소가 나타나기 전까지 LCP로 남는다.
+- 사용자가 탭·스크롤·키 입력을 하면 브라우저는 새 후보 기록을 멈춘다.
+
+이 사이트의 첫 화면은 로딩 화면이다. 1차 개선에서 로딩 화면의 사과와 시작 안내("탭하여 로딩을 시작하세요")를 `index.html`에 직접 넣은 `#boot-splash`로 먼저 렌더링하고, React가 같은 위치에 로딩 화면을 다시 렌더링하면 `#boot-splash`를 삭제하게 했다. 따라서 정상적인 경우 ==HTML의 시작 안내가 LCP 후보==가 된다.
+
+### 성능 예산
+
+**성능 예산**(performance budget)은 번들 크기, 요청 수, LCP 같은 지표에 상한을 정하고, 상한을 넘는 변경을 빌드나 CI 단계에서 실패시키는 방식이다. 성능은 기능을 추가할 때마다 조금씩 나빠지기 쉬운데, 한 번에 수 KB씩 늘어나는 변화는 PR 리뷰에서 드러나지 않는다. 상한을 숫자로 정해 두면 그 변화가 PR의 CI 결과에 바로 표시된다.
 
 ## 측정 조건
 
 측정 조건은 1~3차와 같다.
 
-- **도구:** [Lighthouse](https://developer.chrome.com/docs/lighthouse/overview) 12.8.2(성능 항목만), Playwright 1.64(Chromium 156)
-- **휴대폰:** Lighthouse 기본값. 느린 4G(왕복 150ms, 1.6Mbps)와 4배 느린 CPU를 시뮬레이션한다(simulate[^simulate])
+- **도구:** Lighthouse 12.8.2(성능 항목만), Playwright 1.64(Chromium 156)
+- **휴대폰:** Lighthouse 기본값. 느린 4G(왕복 150ms, 1.6Mbps)와 4배 느린 CPU를 simulate로 계산한다
 - **데스크톱:** `--preset=desktop` (왕복 40ms, 10Mbps)
-- **로컬 서버:** 빌드 결과를 `apps/react/scripts/perf/serve.mjs`로 제공한다. 텍스트 파일은 brotli로 압축한다
+- **로컬 서버:** 빌드 결과를 `apps/react/scripts/perf/serve.mjs`로 제공한다. 텍스트 파일은 brotli[^brotli]로 압축한다
 - **횟수:** 5회씩 측정하고 중앙값을 쓴다. 한 번에 하나씩 실행하고, 빌드나 시험과 겹친 측정은 버렸다. 5차의 전후 비교는 main과 브랜치를 한 회씩 번갈아 28회씩 측정했다
 
 <details>
@@ -50,7 +73,7 @@ summary: 3차까지 배포한 운영 사이트를 재측정해 휴대폰 98점(L
 | LCP             | 31.5초         | 7.1초       | **1.9초**      | 5.8초            | 2.1초       | **1.0초**       |
 | 첫 방문 전송량  | 6,342KB        | 1,239KB     | **602KB**      | 7,134KB          | 3,229KB     | **889KB**       |
 
-3차 배포 후 운영에서는 FCP[^fcp]와 LCP가 같다. 3차에서 로딩 화면 뒤의 홈 화면을 누른 뒤에 렌더링하도록 바꿨다. 그래서 첫 렌더링(HTML의 사과와 "탭하여 로딩을 시작하세요")이 곧 최대 콘텐츠다.
+3차 배포 후 운영에서는 FCP[^fcp]와 LCP가 같다. 3차에서 로딩 화면 뒤의 홈 화면을 누른 뒤에 렌더링하도록 바꿨으므로, 첫 렌더링(HTML의 사과와 "탭하여 로딩을 시작하세요")이 곧 최대 콘텐츠다.
 
 휴대폰 점수는 5회 중 3회가 98점, 2회가 86~87점이었다. 86점인 회차는 LCP가 3.1~3.3초였다. 로컬에서도 같은 현상이 있었고, 원인은 [휴대폰 LCP 편차](#휴대폰-lcp-편차)에서 다룬다.
 
@@ -72,20 +95,33 @@ summary: 3차까지 배포한 운영 사이트를 재측정해 휴대폰 98점(L
 | 휴대폰 전송량   | 483KB | 505KB            | 485KB |
 | 데스크톱 전송량 | 771KB | 793KB            | 772KB |
 
-22KB는 작은 값이지만, ==성능 개선 뒤에 기능을 추가하면서 첫 번들이 다시 커지는 회귀==다. 기능을 계속 추가하면 같은 방식으로 누적되므로 원인을 추적했다.
+22KB는 작은 값이지만, ==성능 개선 뒤에 기능을 추가하면서 첫 번들이 다시 커지는 회귀==다. 회귀(regression)는 이전에 개선한 성질이 이후 변경으로 다시 나빠지는 현상을 말한다. 기능을 계속 추가하면 같은 방식으로 누적되므로 원인을 추적했다.
 
-**어떻게 찾았나.** 3차를 머지한 시점(`3e0c919ca`)과 현재 main을 각각 빌드했다. 두 빌드를 Playwright로 같은 휴대폰 조건에서 열고, CDP(Chrome DevTools Protocol)의 [`Network.loadingFinished`](https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFinished) 이벤트로 파일별 전송량을 수집해 비교했다. 파일 이름의 해시를 제거하고 같은 파일끼리 맞추니, 300B 넘게 달라진 파일은 하나뿐이었다.
+### 늘어난 파일 찾기
+
+3차를 머지한 시점(`3e0c919ca`)과 현재 main을 각각 빌드했다. 두 빌드를 Playwright로 같은 휴대폰 조건에서 열고, CDP(Chrome DevTools Protocol, Chrome을 외부 프로그램에서 제어·관찰하는 통신 규약)의 [`Network.loadingFinished`](https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFinished) 이벤트로 파일별 전송량을 수집해 비교했다. 빌드 파일 이름에는 내용에 따라 바뀌는 해시(`boot-wshPrf4V.js`의 `wshPrf4V`)가 붙으므로, 해시를 제거하고 같은 파일끼리 맞췄다. 300B 넘게 달라진 파일은 하나뿐이었다.
 
 ```text
 total r3 431KB → now 453KB
 +21KB  49KB → 70KB  /assets/boot.js
 ```
 
-`boot` 번들 안을 확인하니 명언 위젯([#330](https://github.com/hyeoniverse/MacFolio/pull/330))의 명언 365개가 들어 있었다. `desktop/widgets/quotes.ts`는 원문과 우리말, 말한 사람을 담은 66KB 파일이다. 위젯 목록(`Widget.tsx`)이 `QuoteWidget`을 정적으로 import하고, `QuoteWidget`이 `quotes.ts`를 import한다. 위젯 목록은 바탕화면과 홈 화면이 쓰므로 `boot`에 들어간다.
+`boot` 번들 안을 확인하니 명언 위젯([#330](https://github.com/hyeoniverse/MacFolio/pull/330))의 명언 365개가 들어 있었다. `desktop/widgets/quotes.ts`는 원문과 우리말, 말한 사람을 담은 66KB 파일이다. import 관계는 다음과 같다.
+
+```text
+바탕화면·홈 화면 (boot)
+└─ Widget.tsx          위젯 목록, 정적 import
+   └─ QuoteWidget.tsx  정적 import
+      └─ quotes.ts     명언 365개, 66KB
+```
+
+번들러는 정적 import로 연결된 모듈을 같은 번들에 넣는다. 위젯 목록은 바탕화면과 홈 화면이 쓰므로 `boot`에 들어가고, 그 아래의 명언 데이터도 함께 들어갔다.
 
 ![첫 번들(boot) 크기의 변화](./images/site-performance-remeasure-boot.svg '1차에서 250KB를 47KB로 줄인 boot 번들이 재측정에서 65KB로 늘어 있었다. 명언 위젯을 lazy로 분리해 47KB로 되돌렸다')
 
-**개선.** 명언 위젯을 [`React.lazy`](https://react.dev/reference/react/lazy)로 분리했다(커밋 `3f7c57dae`). `lazy`로 감싼 컴포넌트는 별도 청크로 빌드되고, 처음 렌더링하는 시각에 내려받는다.
+### lazy 분리
+
+명언 위젯을 [`React.lazy`](https://react.dev/reference/react/lazy)로 분리했다(커밋 `3f7c57dae`). `lazy`로 감싼 컴포넌트는 동적 `import()`를 통해 별도 청크로 빌드되고, 처음 렌더링하는 시각에 내려받는다. 내려받는 동안에는 `Suspense`의 `fallback`(여기서는 `null`, 즉 아무것도 표시하지 않음)을 렌더링한다.
 
 ```tsx
 // 전 (Widget.tsx)
@@ -103,13 +139,13 @@ case 'quote':
 	);
 ```
 
-명언 위젯은 로딩 화면을 누른 뒤 바탕화면과 함께 보인다. 그리고 3차부터 바탕화면은 누른 뒤에 렌더링한다. 그래서 명언 데이터는 첫 방문에서 미리 내려받을 필요가 없다. 누른 뒤 진행 막대가 차는 2.5초 동안 별도 청크(`QuoteWidget-*.js`)로 수신한다.
+명언 위젯은 로딩 화면을 누른 뒤 바탕화면과 함께 보이고, 3차부터 바탕화면은 누른 뒤에 렌더링한다. 그래서 명언 데이터는 첫 방문에서 미리 내려받을 필요가 없다. 누른 뒤 진행 막대가 차는 2.5초 동안 별도 청크(`QuoteWidget-*.js`)로 수신한다.
 
-**효과.** `boot`는 brotli 압축 65KB에서 47KB가 되었다. 첫 방문 전송량은 휴대폰 485KB, 데스크톱 772KB로 3차 수준이다. 명언 위젯과 홈 화면 시험(`widgets.spec.ts`, `mobile.spec.ts`, `finder.spec.ts`) 178개가 그대로 통과했다.
+`boot`는 brotli 압축 65KB에서 47KB가 되었다. 첫 방문 전송량은 휴대폰 485KB, 데스크톱 772KB로 3차 수준이다. 명언 위젯과 홈 화면 시험(`widgets.spec.ts`, `mobile.spec.ts`, `finder.spec.ts`) 178개가 그대로 통과했다.
 
 ### 실제로 느리게 한 휴대폰
 
-simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크의 시간을 계산한다. 브라우저를 실제로 느리게 하는 방식(`--throttling-method=devtools`)으로도 측정했다.
+simulate는 계산 값이므로, 브라우저를 실제로 느리게 하는 방식(`--throttling-method=devtools`)으로도 측정했다.
 
 | 항목    | 3차       | 4차              |
 | ------- | --------- | ---------------- |
@@ -125,11 +161,11 @@ simulate는 빠른 네트워크에서 수신한 기록으로 느린 네트워크
 | 점수 | 97    | 78    | 78    | 78    | 80    |
 | LCP  | 2.1초 | 4.5초 | 4.5초 | 4.5초 | 4.2초 |
 
-전송량은 다섯 회차 모두 485KB로 같다. 차이는 LCP 요소다. 4.5초인 회차는 React가 로딩 화면을 다시 렌더링한 시작 안내가 LCP로 다시 집계된다. HTML의 첫 렌더링과 같은 문구라 원래는 새 LCP 후보가 아니어야 한다. Chrome은 이전 후보보다 **큰** 요소가 렌더링될 때만 LCP를 갱신하므로, 처음에는 웹 글꼴로 바뀌며 글자 영역이 커지는 것을 원인 후보로 보았다. 이 가설은 Lighthouse의 trace로 검증했다.
+전송량은 다섯 회차 모두 485KB로 같다. 차이는 LCP 요소다. 4.5초인 회차는 React가 로딩 화면을 다시 렌더링한 시작 안내가 LCP로 집계된다. HTML의 첫 렌더링과 같은 문구라 원래는 새 LCP 후보가 아니어야 한다. Chrome은 이전 후보보다 **큰** 요소가 렌더링될 때만 LCP를 갱신하므로, 처음에는 웹 글꼴로 바뀌며 글자 영역이 커지는 것을 원인 후보로 보았다. 이 가설은 Lighthouse의 trace로 검증했다.
 
 ### 4초대 회차에서 일어난 일
 
-Lighthouse를 `-GA`(수집한 artifacts 저장) 옵션으로 실행하면 trace가 남는다. trace에서 다음 두 이벤트를 회차마다 추출했다.
+**trace**는 브라우저가 페이지를 불러오는 동안 발생한 이벤트(렌더링, 스크립트 실행, 네트워크 수신)를 시각과 함께 기록한 파일이다. Lighthouse를 `-GA`(수집한 artifacts 저장) 옵션으로 실행하면 trace가 남는다. trace에서 다음 두 이벤트를 회차마다 추출했다.
 
 - `PaintTimingVisualizer::LayoutObjectPainted`: 글자 블록이 처음 렌더링된 시각과 DOM 노드
 - `largestContentfulPaint::Candidate`: LCP 후보로 기록된 시각과 노드, 크기
@@ -141,11 +177,11 @@ main을 37회 측정해 분류한 결과다.
 | 정상 (30회) | 22~79ms               | HTML 시작 안내. 렌더링 9~28ms 뒤에 기록           | 2.6~3.3초    |
 | 4초대 (7회) | 29~55ms               | **React 시작 안내만**. HTML 시작 안내는 기록 없음 | 4.4~4.7초    |
 
-4초대 회차에도 HTML의 시작 안내는 렌더링되었다. 차이는 후보 기록의 유무다. 정상 회차의 후보 기록은 렌더링 뒤 9~28ms에 나타났다. 4초대 회차에서는 그 사이에 React가 렌더링을 시작했고, `App.tsx`가 마운트되는 시각에 `#boot-splash`를 삭제했다. ==후보로 기록되기 전에 노드가 삭제되면 그 후보는 남지 않았다.==
+4초대 회차에도 HTML의 시작 안내는 렌더링되었다. 차이는 후보 기록의 유무다. 정상 회차의 후보 기록은 렌더링 뒤 9~28ms에 나타났다. 4초대 회차에서는 그 사이에 React가 렌더링을 시작했고, `App.tsx`가 마운트되는 시각에 `#boot-splash`를 삭제했다. 앞의 규칙대로 이미 기록된 후보는 삭제되어도 남지만, ==후보로 기록되기 전에 노드가 삭제되면 그 후보는 남지 않았다.==
 
 ![LCP가 React의 시작 안내로 바뀌는 순서](./images/site-performance-lcp-budget-timeline.svg '전: HTML 시작 안내가 LCP로 기록되기 전에 React가 #boot-splash를 삭제해 React의 시작 안내가 LCP가 된다. 후: #boot-splash를 누를 때까지 남겨 HTML 시작 안내가 LCP로 기록된다')
 
-그러면 다음에 렌더링된 React의 시작 안내가 첫 LCP 후보가 된다. Lighthouse의 simulate[^simulate]는 LCP 시각 전에 실행된 스크립트와 수신한 요청을 LCP에 필요한 작업으로 계산한다. React의 안내는 앱 스크립트가 실행된 뒤에 렌더링되고, 그 사이 웹 글꼴(149KB)도 수신을 마친다. 그래서 같은 화면인데 LCP가 1.3초 늘었다.
+그러면 다음에 렌더링된 React의 시작 안내가 첫 LCP 후보가 된다. Lighthouse의 simulate는 LCP 시각 전에 실행된 스크립트와 수신한 요청을 LCP에 필요한 작업으로 계산한다. React의 안내는 앱 스크립트가 실행된 뒤에 렌더링되고, 그 사이 웹 글꼴(149KB)도 수신을 마친다. 그래서 같은 화면인데 LCP가 1.3초 늘었다.
 
 <details>
 <summary>글꼴 추정이 틀린 근거</summary>
@@ -158,7 +194,7 @@ main을 37회 측정해 분류한 결과다.
 
 ### `#boot-splash` 삭제 시각 조정
 
-**`#boot-splash`를 누르는 시각에 삭제한다.** React의 로딩 화면은 `#boot-splash`와 같은 위치·크기에, DOM 순서상 뒤에 렌더링되어 그 위를 덮는다. 따라서 `#boot-splash`를 바로 삭제하지 않아도 화면은 같다. ==사용자가 누르면 Chrome은 LCP 기록을 끝내므로==, 그 뒤의 삭제는 LCP에 영향이 없다.
+`#boot-splash`는 사용자가 로딩 화면을 누르는 시각에 삭제한다. React의 로딩 화면은 `#boot-splash`와 같은 위치·크기에, DOM 순서상 뒤에 렌더링되어 그 위를 덮는다. 따라서 `#boot-splash`를 바로 삭제하지 않아도 화면은 같다. 사용자가 누르면 Chrome은 LCP 기록을 끝내므로, 그 뒤의 삭제는 LCP에 영향이 없다.
 
 ```tsx
 // 전 (App.tsx)
@@ -172,9 +208,9 @@ useEffect(() => {
 }, [shellStarted]);
 ```
 
-**React의 시작 안내를 같은 글꼴로 렌더링한다.** `#boot-splash`는 웹 글꼴을 기다리지 않으려고 시스템 글꼴(`-apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`)을 쓴다. React의 안내(`.loading-text`)도 같은 글꼴을 지정해 글자 영역을 맞췄다. 웹 글꼴로 렌더링하면 플랫폼에 따라 HTML 안내보다 커져 새 후보가 될 수 있다. 덤으로 누르기 전에는 웹 글꼴을 수신하지 않는다.
+React의 시작 안내도 같은 글꼴로 렌더링한다. `#boot-splash`는 웹 글꼴을 기다리지 않으려고 시스템 글꼴(`-apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif`)을 쓴다. React의 안내(`.loading-text`)도 같은 글꼴을 지정해 글자 영역을 맞췄다. 웹 글꼴로 렌더링하면 플랫폼에 따라 HTML 안내보다 커져 새 후보가 될 수 있기 때문이다. 이 변경으로 누르기 전에는 웹 글꼴도 수신하지 않는다.
 
-두 화면의 상자와 글자 영역이 같은지는 `e2e/mobile-loading.spec.ts`가 확인한다. HTML 안내는 "탭"과 "클릭"을 `span`으로 나눠 둬서 폭이 소수점 아래에서 조금 다르므로, 0.5px 안의 차이는 같은 것으로 본다.
+두 화면의 상자와 글자 영역이 같은지는 `e2e/mobile-loading.spec.ts`가 확인한다. HTML 안내는 "탭"과 "클릭"을 `span`으로 나눠 두어 폭이 소수점 아래에서 조금 다르므로, 0.5px 안의 차이는 같은 것으로 판정한다.
 
 <details>
 <summary>시도했다가 버린 방법: 첫 프레임 뒤에 앱 실행</summary>
@@ -200,18 +236,22 @@ useEffect(() => {
 
 데스크톱도 5회 중 1회 LCP가 1.2초(React 안내)였고, 후에는 5회 모두 0.5~0.7초다. 첫 방문 전송량은 775KB에서 278KB가 되었다.
 
-남은 편차(1.7~3.4초)는 ==LCP 요소가 아니라 simulate의 계산에서 생긴다==. LCP 요소는 항상 HTML 안내지만, 그 렌더링 전에 수신을 마친 modulepreload 번들 수가 회차마다 달라 계산 결과가 달라진다.
+남은 편차(1.7~3.4초)는 LCP 요소가 아니라 simulate의 계산에서 생긴다. LCP 요소는 항상 HTML 안내지만, 그 렌더링 전에 수신을 마친 modulepreload 번들 수가 회차마다 달라 계산 결과가 달라진다.
 
 ## 휴대폰 로딩 화면 밖으로 비치던 배경화면
 
-5차와 같은 PR에서 로딩 화면의 다른 문제도 고쳤다. 휴대폰에서 로딩 화면이 화면을 다 덮지 않아 아래쪽에 홈 화면 배경이 비쳤다. Playwright의 휴대폰 흉내로는 재현되지 않아, 원인 후보 두 가지를 모두 처리했다.
+5차와 같은 PR에서 로딩 화면의 다른 문제도 고쳤다. 휴대폰에서 로딩 화면이 화면을 다 덮지 않아 아래쪽에 홈 화면 배경이 비쳤다. Playwright의 휴대폰 에뮬레이션으로는 재현되지 않아, 원인 후보 두 가지를 모두 처리했다.
 
 | 원인 후보      | 전                                                                          | 후                                                    |
 | -------------- | --------------------------------------------------------------------------- | ----------------------------------------------------- |
 | 상자 크기      | 로딩 화면 `width: 100vw; height: 100vh`, 홈 화면 `inset: 0; height: 100dvh` | 로딩 화면·`#boot-splash`도 `inset: 0; height: 100dvh` |
 | 상자 밖의 배경 | 로딩 화면이 표시되는 즉시 html·body 배경이 배경화면                         | 누르기 전까지 html·body는 검은색(`booting`)           |
 
-iOS Safari의 `vh`는 도구 막대가 접힌 상태(가장 큰 뷰포트) 기준이고, `dvh`는 지금 보이는 영역 기준이다([MDN: 뷰포트 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/length#relative_length_units_based_on_viewport)). 도구 막대가 나타나고 사라질 때 두 상자의 크기가 달라진다. 홈 화면과 같은 상자를 쓰면 홈 화면이 로딩 화면 밖으로 나올 수 없다. 그래도 도구 막대 뒤나 화면을 끌어 내린 영역처럼 상자 밖이 보이면 html·body 배경이 표시되므로, 그 배경을 누르기 전까지 검은색으로 유지한다.
+CSS의 뷰포트 단위는 브라우저 화면 크기를 기준으로 한 길이다. `1vh`는 뷰포트 높이의 1%인데, 휴대폰 브라우저는 주소 막대와 도구 막대가 나타나고 사라지면서 뷰포트 높이가 바뀐다. 그래서 CSS는 기준이 다른 단위를 따로 정의한다. iOS Safari의 `vh`는 도구 막대가 접힌 상태(가장 큰 뷰포트) 기준이고, `dvh`는 지금 보이는 영역 기준이다([MDN: 뷰포트 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/length#relative_length_units_based_on_viewport)).
+
+![iOS Safari에서 도구 막대가 보일 때 100dvh는 보이는 영역까지, 100vh는 도구 막대 뒤까지의 높이인 모습과 로딩 화면에 적용한 값의 전후](./images/site-performance-lcp-budget-viewport-units.svg '도구 막대가 보이는 동안 100vh 상자와 100dvh 상자의 높이가 다르다')
+
+도구 막대가 보이는 동안 `100vh` 상자(로딩 화면)와 `100dvh` 상자(홈 화면)의 높이가 다르므로, 홈 화면과 같은 상자를 쓰게 했다. 그러면 홈 화면이 로딩 화면 밖으로 나올 수 없다. 그래도 도구 막대 뒤나 화면을 끌어 내린 영역처럼 상자 밖이 보이면 html·body 배경이 표시되므로, 그 배경을 누르기 전까지 검은색으로 유지한다.
 
 ![휴대폰 크기 세 가지에서 로딩 화면과 그 밖에 비치는 배경](./images/site-performance-lcp-budget-coverage.jpg '로딩 화면을 숨겨 그 아래를 찍었다. 전에는 배경화면, 후에는 검은색이다')
 
@@ -221,12 +261,14 @@ iOS Safari의 `vh`는 도구 막대가 접힌 상태(가장 큰 뷰포트) 기�
 
 [4차의 회귀](#4차-첫-번들에서-명언-데이터-66kb-빼기)(명언 위젯이 `boot`에 포함, +19KB)는 재측정에서만 발견했다. 기능 PR에서 바로 드러나도록 CI의 `check` 작업에 성능 예산을 추가했다. `apps/react/scripts/perf/budget.mjs`가 빌드 결과의 `index.html`에서 처음부터 요청하는 파일(`<script type="module">`, `modulepreload`, `preload`, `stylesheet`)을 찾아 brotli로 압축한 크기를 측정한다.
 
+![빌드, index.html의 태그 수집, 파일별 brotli 압축 크기 합산, 상한 비교 네 단계와 boot 49.4KB/55KB, 첫 방문 합계 251.6KB/265KB 막대](./images/site-performance-lcp-budget-ci-check.svg 'perf:budget가 실행하는 네 단계와 현재 측정값')
+
 | 항목              | 측정값  | 상한      | 여유           |
 | ----------------- | ------- | --------- | -------------- |
 | `boot` 번들       | 49.4KB  | **55KB**  | 5.6KB (약 10%) |
 | 첫 방문 번들 합계 | 251.6KB | **265KB** | 13.4KB (약 5%) |
 
-==상한은 4차의 회귀(+19KB)가 두 항목 모두에서 실패하도록 정했다.== 합계는 번들이 41개라 작은 증가가 누적되므로 여유를 더 작게 두었다. 넘으면 무엇이 얼마나 넘었는지와 크기 상위 파일을 출력한다.
+==상한은 4차의 회귀(+19KB)가 두 항목 모두에서 실패하도록 정했다.== 합계는 번들이 41개라 작은 증가가 누적되므로 여유를 더 작게 두었다. 넘으면 무엇이 얼마나 넘었는지와 크기 상위 파일을 출력한다. 아래는 환경 변수로 상한을 낮춰 실패시킨 예다.
 
 ```text
 $ BUDGET_BOOT_KB=45 BUDGET_INITIAL_KB=240 pnpm --filter @macfolio/react perf:budget
@@ -240,8 +282,6 @@ boot 번들(assets/boot-wshPrf4V.js)이 49.4KB로, 상한 45.0KB보다 4.4KB 큽
     28.8KB  assets/preload-helper-qmxL7HwO.js
     ...
 ```
-
-위는 환경 변수로 상한을 낮춰 실패시킨 예다.
 
 > [!TIP] 예산을 넘었을 때의 대응
 > 넘었을 때의 대응(커진 번들 찾기, `React.lazy`로 분리, 꼭 필요하면 상한과 문서를 함께 올리기)은 저장소의 [`docs/performance.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/performance.md#성능-예산)에 정리했다.
@@ -261,10 +301,37 @@ boot 번들(assets/boot-wshPrf4V.js)이 49.4KB로, 상한 45.0KB보다 4.4KB 큽
 - [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 측정 조건, 병목 분석, `#boot-splash`와 시작 안내를 HTML로 옮긴 1~3차
 - [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 명언 위젯이 놓이는 바탕화면 위젯
 
+<details>
+<summary>참고 문헌</summary>
+
+- web.dev, [Largest Contentful Paint (LCP)](https://web.dev/articles/lcp)
+- web.dev, [Optimize Largest Contentful Paint](https://web.dev/articles/optimize-lcp)
+- web.dev, [First Contentful Paint (FCP)](https://web.dev/articles/fcp)
+- web.dev, [Performance budgets 101](https://web.dev/articles/performance-budgets-101)
+- MDN, [LargestContentfulPaint](https://developer.mozilla.org/en-US/docs/Web/API/LargestContentfulPaint)
+- MDN, [CSS length: Relative length units based on viewport](https://developer.mozilla.org/en-US/docs/Web/CSS/length#relative_length_units_based_on_viewport)
+- MDN, [Brotli compression](https://developer.mozilla.org/en-US/docs/Glossary/Brotli_compression)
+- Chrome for Developers, [Lighthouse overview](https://developer.chrome.com/docs/lighthouse/overview)
+- Lighthouse 저장소, [Network Throttling](https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md)
+- Chrome DevTools Protocol, [Network.loadingFinished](https://chromedevtools.github.io/devtools-protocol/tot/Network/#event-loadingFinished)
+- React 문서, [lazy](https://react.dev/reference/react/lazy)
+- Cloudflare 문서, [Content compression](https://developers.cloudflare.com/speed/optimization/content/compression/)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- cnn.com의 LCP 후보 변화: Philip Walton, Barry Pollard / web.dev, [Largest Contentful Paint (LCP)](https://web.dev/articles/lcp), CC BY 4.0
+
+</details>
+
 [^lcp]: Largest Contentful Paint. 화면에 보이는 가장 큰 글자 블록이나 이미지가 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/lcp)
 
 [^simulate]: Lighthouse의 기본 측정 방식. 페이지는 빠른 네트워크로 불러오고, 기록한 요청과 작업으로 느린 네트워크·CPU에서 걸릴 시간을 계산한다. [Lighthouse 문서](https://github.com/GoogleChrome/lighthouse/blob/main/docs/throttling.md)
 
 [^fcp]: First Contentful Paint. 글자나 이미지가 처음 렌더링된 시각이다. [web.dev 설명](https://web.dev/articles/fcp)
+
+[^brotli]: Google이 만든 무손실 압축 알고리즘. 브라우저가 요청 헤더 `Accept-Encoding: br`로 지원을 알리면 서버가 brotli로 압축한 응답을 보낸다. JS·CSS 같은 텍스트 파일은 gzip보다 작게 압축된다.
 
 #MacFolio #성능 #Lighthouse #LCP #코드분할 #회귀 #CI

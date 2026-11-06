@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>링크를 누르는 사이에 요소가 교체되면 링크에 click이 오지 않는다</title>
+<defs>
+<marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">문서 안 링크를 한 번 누르는 동안</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">mousedown → 창이 맨 앞으로 오며 다시 렌더링 → mouseup → click</text>
+
+<rect x="24" y="70" width="592" height="140" rx="10" fill="#f2f2f7" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="40" y="94" font-size="13" font-weight="700" fill="#1d1d1f">전: 렌더링마다 새 components 객체</text>
+<rect x="40" y="110" width="150" height="56" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="115" y="132" font-size="12" fill="#1d1d1f" text-anchor="middle">mousedown</text>
+<text x="115" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">&lt;a&gt; #1</text>
+<line x1="192" y1="138" x2="232" y2="138" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="236" y="110" width="170" height="56" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="321" y="132" font-size="12" fill="#1d1d1f" text-anchor="middle">a 컴포넌트 함수가 바뀜</text>
+<text x="321" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle">#1 제거, #2 생성</text>
+<line x1="408" y1="138" x2="448" y2="138" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="452" y="110" width="150" height="56" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="527" y="132" font-size="12" fill="#1d1d1f" text-anchor="middle">mouseup</text>
+<text x="527" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">&lt;a&gt; #2</text>
+<text x="40" y="196" font-size="12" font-weight="700" fill="#ff3b30">누른 요소와 뗀 요소가 달라 링크의 click 처리기가 실행되지 않는다</text>
+
+<rect x="24" y="226" width="592" height="140" rx="10" fill="#f2f2f7" stroke="#34c759" stroke-width="1.5"/>
+<text x="40" y="250" font-size="13" font-weight="700" fill="#1d1d1f">후: useMemo로 같은 components 유지</text>
+<rect x="40" y="266" width="150" height="56" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="115" y="288" font-size="12" fill="#1d1d1f" text-anchor="middle">mousedown</text>
+<text x="115" y="308" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">&lt;a&gt; #1</text>
+<line x1="192" y1="294" x2="232" y2="294" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="236" y="266" width="170" height="56" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="321" y="288" font-size="12" fill="#1d1d1f" text-anchor="middle">같은 컴포넌트 함수</text>
+<text x="321" y="308" font-size="12" fill="#1d1d1f" text-anchor="middle">#1의 속성만 갱신</text>
+<line x1="408" y1="294" x2="448" y2="294" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<rect x="452" y="266" width="150" height="56" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="527" y="288" font-size="12" fill="#1d1d1f" text-anchor="middle">mouseup</text>
+<text x="527" y="308" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">&lt;a&gt; #1</text>
+<text x="40" y="352" font-size="12" font-weight="700" fill="#34c759">같은 요소에서 click 발생 → Finder 안에서 문서가 열린다</text>
+</svg>

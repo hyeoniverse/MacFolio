@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>앱 이름 타임라인</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">Dock의 메모를 누르는 동안 메뉴 막대 앱 이름</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">Safari를 쓰던 중 Dock의 메모 아이콘을 누르고 200ms 뒤에 뗀다</text>
+<line x1="150" y1="72" x2="150" y2="300" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="150" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">pointerdown</text>
+<text x="150" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">(캡처 단계)</text>
+<line x1="270" y1="72" x2="270" y2="300" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="270" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">누르고 있는 중</text>
+<line x1="390" y1="72" x2="390" y2="300" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="390" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">pointerup</text>
+<line x1="510" y1="72" x2="510" y2="300" stroke="#d1d1d6" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="510" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">click</text>
+<text x="510" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">openApp(memo)</text>
+<text x="20" y="140" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="700">수정 전</text>
+<line x1="96" y1="134" x2="620" y2="134" stroke="#6e6e73" stroke-width="1.2"/>
+<rect x="99" y="116" width="48" height="36" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+<text x="123.0" y="139" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">Safari</text>
+<rect x="153" y="116" width="234" height="36" rx="6" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.4"/>
+<text x="270.0" y="139" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700">Finder</text>
+<rect x="393" y="116" width="114" height="36" rx="6" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.4"/>
+<text x="450.0" y="139" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700">Finder</text>
+<rect x="513" y="116" width="104" height="36" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="565.0" y="139" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">메모</text>
+<text x="156" y="172" font-size="12" fill="#ff3b30" text-anchor="start">DesktopSurface가 focusDesktop() 호출</text>
+<text x="20" y="220" font-size="13" fill="#34c759" text-anchor="start" font-weight="700">수정 후</text>
+<line x1="96" y1="214" x2="620" y2="214" stroke="#6e6e73" stroke-width="1.2"/>
+<rect x="99" y="196" width="48" height="36" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+<text x="123.0" y="219" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">Safari</text>
+<rect x="153" y="196" width="234" height="36" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+<text x="270.0" y="219" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">Safari</text>
+<rect x="393" y="196" width="114" height="36" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+<text x="450.0" y="219" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">Safari</text>
+<rect x="513" y="196" width="104" height="36" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="565.0" y="219" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">메모</text>
+<text x="156" y="252" font-size="12" fill="#34c759" text-anchor="start">.dock 안이라 예외 선택자에 걸려 건너뜀</text>
+<rect x="20" y="268" width="600" height="46" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="34" y="287" font-size="12" fill="#1d1d1f" text-anchor="start">시험은 MutationObserver로 앱 이름이 바뀐 값을 모두 기록하고, 그 목록에 "Finder"가 없는지 확인한다</text>
+<text x="34" y="305" font-size="12" fill="#6e6e73" text-anchor="start">시작(Safari)과 끝(메모)만 확인하는 시험은 중간의 Finder를 검출하지 못한다</text>
+</svg>

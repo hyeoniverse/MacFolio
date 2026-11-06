@@ -9,7 +9,27 @@ summary: z-index·border-radius·font-size·간격·그림자·색을 숫자와 
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 5단계(스타일)에서 "반복되는 숫자를 theme.css의 이름으로" 작업을 토큰 종류마다 PR 하나씩 진행했다. z-index([#231](https://github.com/hyeoniverse/MacFolio/pull/231)), 모서리 반경([#232](https://github.com/hyeoniverse/MacFolio/pull/232)), 글자 크기([#234](https://github.com/hyeoniverse/MacFolio/pull/234)), 그림자와 간격([#248](https://github.com/hyeoniverse/MacFolio/pull/248)), 색([#249](https://github.com/hyeoniverse/MacFolio/pull/249)) 순서다.
 
+## 배경: 디자인 토큰과 CSS 변수
+
 디자인 토큰[^token]은 색·간격·글자 크기처럼 디자인에서 반복되는 값에 용도를 나타내는 이름을 붙여 한 곳에서 관리하는 방식이다. 이 사이트에서는 `styles/theme.css`의 [CSS 사용자 지정 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)[^custom]으로 정의한다.
+
+예를 들어 버튼 모서리 반경 8px이 CSS 파일 마흔두 곳에 숫자로 적혀 있으면, 반경을 7px로 바꾸려면 마흔두 곳을 모두 찾아 고쳐야 한다. 그중 어느 8px이 "버튼"이고 어느 8px이 우연히 같은 값인지도 숫자만으로는 알 수 없다. 이름을 붙이면 정의는 한 곳, 사용처는 이름 참조가 된다.
+
+```css
+/* 정의: theme.css */
+:root {
+	--radius-md: 8px;
+}
+
+/* 사용: 앱 CSS */
+.memo-search {
+	border-radius: var(--radius-md); /* 전: border-radius: 8px; */
+}
+```
+
+브라우저는 화면을 그리기 전에 `var(--radius-md)`를 `8px`로 바꿔 계산한다. 그래서 개발자 도구나 [`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)로 읽는 계산된 값은 교체 전과 똑같이 `8px`이다. 이 성질 때문에 교체 전후의 계산된 값을 비교해 화면이 바뀌지 않았음을 확인할 수 있다.
+
+![토큰 정의, var() 참조, 계산된 값의 관계](./images/design-tokens-var-flow.svg '정의는 theme.css 한 곳, 사용처는 var() 참조, 계산된 값은 숫자. 다크 모드는 변수 값만 바꾼다')
 
 ## 토큰 체계
 
@@ -56,7 +76,11 @@ summary: z-index·border-radius·font-size·간격·그림자·색을 숫자와 
 
 MacFolio의 데스크톱 화면은 겹치는 계층이 많다. 바탕화면 위에 창이 있고, 그 위에 Dock과 메뉴 막대가, 다시 그 위에 펼친 메뉴, 알림, 로딩 화면, 로그인 화면이 놓인다. 휴대폰 화면에는 상태 막대, 제어 센터, 앱 전환기, 알림이 별도로 있다. 이 계층의 값은 각 컴포넌트의 CSS 파일에서 서로 다른 시각에 정해졌다.
 
-[`z-index`](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index)는 요소가 겹치면 어느 요소를 위에 렌더링할지 정하는 CSS 속성이다. 값이 클수록 위에 렌더링한다. 다만 비교는 같은 [쌓임 맥락(stacking context)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)[^stacking] 안에서만 일어난다. 같은 부모 안의 작은 겹침(목록 위 버튼 등)은 1~10이면 충분하지만, Dock·메뉴 막대·펼친 메뉴처럼 화면 전체에서 서로 겹치는 요소는 서로의 값을 알아야 순서를 정할 수 있다. 쌓임 맥락 때문에 z-index가 무시된 사례는 [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)에 정리했다.
+[`z-index`](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index)는 요소가 겹치면 어느 요소를 위에 렌더링할지 정하는 CSS 속성이다. 값이 클수록 위에 렌더링한다. 다만 비교는 같은 [쌓임 맥락(stacking context)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)[^stacking] 안에서만 일어난다. 같은 부모 안의 작은 겹침(목록 위 버튼 등)은 1~10이면 충분하지만, Dock·메뉴 막대·펼친 메뉴처럼 화면 전체에서 서로 겹치는 요소는 서로의 값을 알아야 순서를 정할 수 있다. 예를 들어 `z-index: 1`인 상자 A 안에 `z-index: 9999`인 메뉴가 있고, 그 옆에 `z-index: 2`인 상자 B가 있으면 메뉴는 B 아래에 그려진다. A가 쌓임 맥락을 만들어 메뉴의 9999는 A 안에서만 비교되고, 바깥에서는 A 전체가 1로 B와 비교되기 때문이다.
+
+![쌓임 맥락 안의 z-index는 바깥 요소와 비교되지 않는다](./images/design-tokens-stacking-context.svg '메뉴의 9999는 A 안에서만 의미가 있다. 바깥에서는 A(1)와 B(2)가 비교된다')
+
+쌓임 맥락 때문에 z-index가 무시된 사례는 [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)에 정리했다.
 
 ### 흩어져 있던 숫자
 
@@ -367,7 +391,7 @@ macOS 앱의 본문은 13px이라 데스크톱 창 안에서는 `--text-footnote
 
 PR 하나에서 70개 파일, 1,656줄을 추가하고 1,576줄을 삭제했다. 이 정도 변경량은 육안으로 확인할 수 없어서, 데스크톱·iPhone, 라이트·다크 조합으로 여러 앱 화면의 모든 요소의 계산된 스타일을 비교했다. 차이는 0이었다.
 
-글을 쓴 시각에 CSS에서 `--space-*`는 1,908곳에 사용됐다. 교체한 1,543곳보다 365곳 많다. 이후에 만든 화면도 숫자 대신 이름을 쓰고 있다는 의미다. 가장 많이 사용되는 것은 여전히 `--space-8`(333곳)이었다. 그림자 다섯 값은 19곳에서 21곳으로 늘었다.
+이후 다시 집계하자 CSS에서 `--space-*`는 1,908곳에 사용됐다. 교체한 1,543곳보다 365곳 많다. 이후에 만든 화면도 숫자 대신 이름을 쓰고 있다는 의미다. 가장 많이 사용되는 것은 여전히 `--space-8`(333곳)이었다. 그림자 다섯 값은 19곳에서 21곳으로 늘었다.
 
 ## 색: `--color-*` 토큰과 Apple 시스템 색 이름 (#249)
 
@@ -546,6 +570,21 @@ TS·TSX 안의 hex 403곳도 그대로 두었다. 프로젝트 소개 데이터�
 - [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context): sticky가 쌓임 맥락을 만들어 도구 막대 버튼이 가려진 일
 - [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes): 날씨 앱에서 backdrop-filter가 같은 문제를 만든 일
 - [box-shadow 스포트라이트와 pointer-events로 클릭을 통과시키는 온보딩 오버레이](/memo/first-visit-tour): `--z-tour`를 사용하는 둘러보기
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [Using CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- MDN, [var()](https://developer.mozilla.org/en-US/docs/Web/CSS/var)
+- MDN, [z-index](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index)
+- MDN, [Stacking context](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)
+- MDN, [border-radius](https://developer.mozilla.org/en-US/docs/Web/CSS/border-radius), [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow)
+- MDN, [Window: getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- Apple, Human Interface Guidelines: [Typography](https://developer.apple.com/design/human-interface-guidelines/typography), [Color](https://developer.apple.com/design/human-interface-guidelines/color)
+- W3C Design Tokens Community Group, [Design Tokens Format Module](https://www.designtokens.org/tr/drafts/format/)
+- Stylelint, [declaration-property-value-allowed-list](https://stylelint.io/user-guide/rules/declaration-property-value-allowed-list/)
+
+</details>
 
 [^token]: 이 사이트에서는 `styles/theme.css`(이후 `styles/tokens/`)의 CSS 사용자 정의 속성(`--color-*` 등)으로 정의한다.
 

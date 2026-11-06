@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 310" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>요청 제한을 경로마다 따로 집계하는 예</title>
+<rect width="640" height="310" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">like 제한 30회는 경로마다 따로 집계된다</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">한 IP(예: 203.0.113.7)가 1분 안에 보낸 요청. 막대 한 칸이 요청 3회</text>
+<text x="20" y="92" font-size="12" font-weight="700" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">PUT /posts/:slug/like</text>
+<g fill="#0a84ff">
+<rect x="210" y="78" width="30" height="20" rx="3"/><rect x="242" y="78" width="30" height="20" rx="3"/><rect x="274" y="78" width="30" height="20" rx="3"/><rect x="306" y="78" width="30" height="20" rx="3"/><rect x="338" y="78" width="30" height="20" rx="3"/><rect x="370" y="78" width="30" height="20" rx="3"/><rect x="402" y="78" width="30" height="20" rx="3"/><rect x="434" y="78" width="30" height="20" rx="3"/><rect x="466" y="78" width="30" height="20" rx="3"/><rect x="498" y="78" width="30" height="20" rx="3"/>
+</g>
+<rect x="536" y="78" width="84" height="20" rx="3" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="578" y="93" font-size="12" font-weight="700" fill="#ff3b30" text-anchor="middle">31번째 429</text>
+<text x="210" y="116" font-size="12" fill="#6e6e73">30/30</text>
+<text x="20" y="152" font-size="12" font-weight="700" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">DELETE /posts/:slug/like</text>
+<g fill="#ff9f0a">
+<rect x="210" y="138" width="30" height="20" rx="3"/><rect x="242" y="138" width="30" height="20" rx="3"/><rect x="274" y="138" width="30" height="20" rx="3"/><rect x="306" y="138" width="30" height="20" rx="3"/><rect x="338" y="138" width="30" height="20" rx="3"/><rect x="370" y="138" width="30" height="20" rx="3"/><rect x="402" y="138" width="30" height="20" rx="3"/><rect x="434" y="138" width="30" height="20" rx="3"/><rect x="466" y="138" width="30" height="20" rx="3"/><rect x="498" y="138" width="30" height="20" rx="3"/>
+</g>
+<text x="210" y="176" font-size="12" fill="#6e6e73">30/30 (PUT과 별개의 집계)</text>
+<rect x="20" y="198" width="600" height="92" rx="10" fill="#f2f2f7"/>
+<text x="36" y="222" font-size="13" font-weight="700" fill="#1d1d1f">처음 문서화한 내용과 실제 동작</text>
+<text x="36" y="246" font-size="12" fill="#1d1d1f">처음 가정: 누르기와 취소를 합쳐 30회, 31번째 요청부터 429</text>
+<text x="36" y="268" font-size="12" fill="#1d1d1f">실제 동작: 경로마다 30회씩, 1분에 최대 60회까지 200 응답 → 시험 기대값과 설명을 수정</text>
+</svg>

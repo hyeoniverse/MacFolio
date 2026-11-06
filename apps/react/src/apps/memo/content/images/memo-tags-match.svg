@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="420" fill="#fff"/>
+  <text x="320" y="28" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">칩을 누를 때마다 바뀌는 상태와, 그 선택으로 남는 글</text>
+
+  <!-- 순환 -->
+  <rect x="40" y="48" width="130" height="36" rx="18" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="105" y="71" font-size="13" fill="#1d1d1f" text-anchor="middle">#CSS 미선택</text>
+  <rect x="254" y="48" width="130" height="36" rx="18" fill="#0a84ff"/>
+  <text x="319" y="71" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">#CSS 포함</text>
+  <rect x="468" y="48" width="130" height="36" rx="18" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="533" y="71" font-size="13" fill="#0a84ff" text-anchor="middle" text-decoration="line-through">#CSS 제외</text>
+  <line x1="172" y1="66" x2="250" y2="66" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="211" y="58" font-size="12" fill="#6e6e73" text-anchor="middle">누름</text>
+  <line x1="386" y1="66" x2="464" y2="66" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="425" y="58" font-size="12" fill="#6e6e73" text-anchor="middle">누름</text>
+  <path d="M533,86 V104 H105 V88" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="319" y="120" font-size="12" fill="#6e6e73" text-anchor="middle">한 번 더 누르면 미선택으로 돌아간다</text>
+
+  <!-- 선택 -->
+  <text x="16" y="156" font-size="13" font-weight="700" fill="#1d1d1f">선택: #CSS 포함, #리팩터링 포함, #회고 제외</text>
+
+  <!-- 표 머리 -->
+  <rect x="16" y="168" width="608" height="32" fill="#f2f2f7"/>
+  <text x="28" y="189" font-size="12" font-weight="600" fill="#1d1d1f">글</text>
+  <text x="110" y="189" font-size="12" font-weight="600" fill="#1d1d1f">본문의 태그</text>
+  <text x="400" y="189" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">모두 포함 (AND)</text>
+  <text x="550" y="189" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">일부 포함 (OR)</text>
+
+  <g font-size="12.5" fill="#1d1d1f">
+    <text x="28" y="226">글 A</text><text x="110" y="226">#CSS #리팩터링</text>
+    <text x="400" y="226" text-anchor="middle" fill="#34c759" font-weight="700">표시</text>
+    <text x="550" y="226" text-anchor="middle" fill="#34c759" font-weight="700">표시</text>
+    <line x1="16" y1="240" x2="624" y2="240" stroke="#e5e5ea"/>
+    <text x="28" y="264">글 B</text><text x="110" y="264">#CSS</text>
+    <text x="400" y="264" text-anchor="middle" fill="#6e6e73">숨김 (#리팩터링 없음)</text>
+    <text x="550" y="264" text-anchor="middle" fill="#34c759" font-weight="700">표시</text>
+    <line x1="16" y1="278" x2="624" y2="278" stroke="#e5e5ea"/>
+    <text x="28" y="302">글 C</text><text x="110" y="302">#리팩터링 #회고</text>
+    <text x="400" y="302" text-anchor="middle" fill="#ff3b30">숨김 (#회고 제외)</text>
+    <text x="550" y="302" text-anchor="middle" fill="#ff3b30">숨김 (#회고 제외)</text>
+    <line x1="16" y1="316" x2="624" y2="316" stroke="#e5e5ea"/>
+    <text x="28" y="340">글 D</text><text x="110" y="340">#회고</text>
+    <text x="400" y="340" text-anchor="middle" fill="#ff3b30">숨김</text>
+    <text x="550" y="340" text-anchor="middle" fill="#ff3b30">숨김</text>
+    <line x1="16" y1="354" x2="624" y2="354" stroke="#e5e5ea"/>
+  </g>
+
+  <text x="320" y="384" font-size="12" fill="#6e6e73" text-anchor="middle">제외를 먼저 검사하고, 남은 글에 포함 조건(모두는 every, 일부는 some)을 적용한다</text>
+  <text x="320" y="404" font-size="12" fill="#6e6e73" text-anchor="middle">목록 위 안내: "3개의 선택된 태그와 모두 일치하는 메모를 표시합니다." (제외한 태그도 집계)</text>
+</svg>

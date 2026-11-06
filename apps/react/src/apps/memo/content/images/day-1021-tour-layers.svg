@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <rect width="640" height="340" fill="#ffffff"/>
+
+  <!-- front view -->
+  <text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">화면에 보이는 모습</text>
+  <rect x="20" y="44" width="280" height="200" rx="8" fill="#6e6e73"/>
+  <rect x="44" y="66" width="56" height="56" rx="12" fill="#f2f2f7" stroke="#0a84ff" stroke-width="3"/>
+  <rect x="60" y="78" width="24" height="20" rx="3" fill="#0a84ff"/>
+  <text x="72" y="114" font-size="12" text-anchor="middle" fill="#1d1d1f">이력서</text>
+  <rect x="130" y="130" width="150" height="96" rx="10" fill="#ffffff"/>
+  <text x="144" y="154" font-size="13" font-weight="700" fill="#1d1d1f">이력서부터 보세요</text>
+  <text x="144" y="174" font-size="12" fill="#6e6e73">두 번 누르면 이력서</text>
+  <text x="144" y="192" font-size="12" fill="#6e6e73">폴더가 열려요</text>
+  <rect x="234" y="200" width="36" height="18" rx="9" fill="#0a84ff"/>
+  <text x="252" y="213" font-size="12" text-anchor="middle" fill="#ffffff">다음</text>
+  <text x="20" y="266" font-size="12" fill="#6e6e73">비춘 칸 바깥은 box-shadow 0 0 0 9999px로</text>
+  <text x="20" y="284" font-size="12" fill="#6e6e73">어둡게 칠한다. 칸 안은 아무것도 덮지 않는다.</text>
+
+  <!-- side view -->
+  <text x="340" y="30" font-size="15" font-weight="700" fill="#1d1d1f">클릭이 지나가는 층</text>
+  <rect x="340" y="50" width="280" height="62" rx="8" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="6 4"/>
+  <text x="354" y="74" font-size="13" font-weight="700" fill="#1d1d1f">.tour 덮개 (위)</text>
+  <text x="354" y="96" font-size="12" fill="#1d1d1f" font-family="Menlo, monospace">pointer-events: none</text>
+
+  <rect x="500" y="124" width="120" height="50" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="560" y="145" font-size="12" text-anchor="middle" fill="#1d1d1f">.tour-card</text>
+  <text x="560" y="164" font-size="12" text-anchor="middle" fill="#1d1d1f" font-family="Menlo, monospace">auto</text>
+
+  <rect x="340" y="200" width="280" height="62" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="354" y="224" font-size="13" font-weight="700" fill="#1d1d1f">바탕화면 (아래)</text>
+  <text x="354" y="246" font-size="12" fill="#1d1d1f">이력서 폴더 아이콘 (.desktop-icon)</text>
+
+  <line x1="400" y1="42" x2="400" y2="196" stroke="#0a84ff" stroke-width="2.5" marker-end="url(#ab)"/>
+  <text x="408" y="140" font-size="12" fill="#0a84ff">더블클릭</text>
+  <text x="408" y="156" font-size="12" fill="#0a84ff">덮개를 통과</text>
+
+  <rect x="340" y="276" width="280" height="50" rx="8" fill="#f2f2f7"/>
+  <text x="354" y="297" font-size="12" fill="#1d1d1f">아이콘이 실제로 Finder를 열고,</text>
+  <text x="354" y="315" font-size="12" fill="#1d1d1f">캡처 단계 click 리스너가 대상을 확인해 다음 단계로</text>
+</svg>

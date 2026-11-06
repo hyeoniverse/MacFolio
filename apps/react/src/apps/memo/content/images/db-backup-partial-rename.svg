@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>덤프를 .partial 이름으로 쓰고 검사를 통과하면 mv로 최종 이름을 붙인다. 실패하면 trap이 .partial을 삭제한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">임시 이름으로 쓰고, 검사를 통과한 뒤에만 이름을 바꾼다</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">예: macfolio-2026-10-05.sql.gz.partial → macfolio-2026-10-05.sql.gz</text>
+<rect x="24" y="78" width="130" height="64" rx="10" fill="#f2f2f7"/>
+<text x="89" y="104" font-size="13" font-weight="600" text-anchor="middle" fill="#1d1d1f">1. 덤프 기록</text>
+<text x="89" y="124" font-size="12" text-anchor="middle" fill="#6e6e73">pg_dump | gzip</text>
+<text x="89" y="138" font-size="12" text-anchor="middle" fill="#6e6e73">→ *.partial</text>
+<line x1="156" y1="110" x2="178" y2="110" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="180" y="78" width="130" height="64" rx="10" fill="#f2f2f7"/>
+<text x="245" y="104" font-size="13" font-weight="600" text-anchor="middle" fill="#1d1d1f">2. 압축 검사</text>
+<text x="245" y="126" font-size="12" text-anchor="middle" fill="#6e6e73">gzip -t</text>
+<line x1="312" y1="110" x2="334" y2="110" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="336" y="78" width="130" height="64" rx="10" fill="#f2f2f7"/>
+<text x="401" y="104" font-size="13" font-weight="600" text-anchor="middle" fill="#1d1d1f">3. 끝 줄 검사</text>
+<text x="401" y="124" font-size="12" text-anchor="middle" fill="#6e6e73">dump complete</text>
+<text x="401" y="138" font-size="12" text-anchor="middle" fill="#6e6e73">문구가 있는가</text>
+<line x1="468" y1="110" x2="490" y2="110" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="492" y="78" width="124" height="64" rx="10" fill="#eafaef" stroke="#34c759" stroke-width="1.5"/>
+<text x="554" y="104" font-size="13" font-weight="600" text-anchor="middle" fill="#1d1d1f">4. 이름 변경</text>
+<text x="554" y="124" font-size="12" text-anchor="middle" fill="#6e6e73">mv *.partial</text>
+<text x="554" y="138" font-size="12" text-anchor="middle" fill="#6e6e73">→ *.sql.gz</text>
+<line x1="89" y1="144" x2="89" y2="184" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<line x1="245" y1="144" x2="245" y2="184" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<line x1="401" y1="144" x2="401" y2="184" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<line x1="89" y1="184" x2="401" y2="184" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<line x1="245" y1="184" x2="245" y2="200" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<rect x="120" y="202" width="250" height="50" rx="10" fill="#ffecea" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="245" y="224" font-size="12.5" font-weight="600" text-anchor="middle" fill="#1d1d1f">실패 → fail(), 종료 코드 1</text>
+<text x="245" y="242" font-size="12" text-anchor="middle" fill="#6e6e73">trap … EXIT 가 *.partial 삭제</text>
+<rect x="400" y="202" width="216" height="50" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="508" y="224" font-size="12.5" font-weight="600" text-anchor="middle" fill="#1d1d1f">~/backups 에 남는 파일</text>
+<text x="508" y="242" font-size="12" text-anchor="middle" fill="#6e6e73">*.sql.gz = 검사 통과한 것만</text>
+<line x1="554" y1="144" x2="554" y2="198" stroke="#34c759" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="24" y="284" font-size="12.5" fill="#1d1d1f">mv는 같은 파일 시스템 안에서 이름만 바꾸므로, 다른 프로세스는 반쯤 쓰인 .sql.gz를 볼 수 없다.</text>
+<text x="24" y="306" font-size="12.5" fill="#1d1d1f">디스크가 가득 차 덤프가 중간에 끊겨도 백업 폴더에는 직전까지의 온전한 파일만 있다.</text>
+</svg>

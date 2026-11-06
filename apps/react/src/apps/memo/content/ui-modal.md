@@ -7,7 +7,20 @@ seriesOrder: 3
 summary: shared/ui 부품 15개, 후보 9개, 직접 작성한 버튼 295곳을 집계해 docs/ui.md에 기록하고 추출 대상을 Sheet·Modal·SearchField로 줄였다. 다이얼로그 5개의 오버레이·포커스·Esc·닫기 애니메이션은 77줄 Modal로 추출하고, 이후 메모 이미지 크게 보기도 옮겼다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 "공통 컴포넌트 설계"의 첫 두 작업 기록이다. 첫 작업은 코드를 바꾸지 않고 현재 부품과 후보의 사용처를 집계해 [`docs/ui.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/ui.md)에 기록하는 일이었고([#210](https://github.com/hyeoniverse/MacFolio/pull/210)), 둘째 작업은 그 집계로 고른 세 부품 중 첫 번째인 `Modal`을 추출하는 일이었다([#212](https://github.com/hyeoniverse/MacFolio/pull/212)). 일주일 뒤 남은 시트·모달을 다시 조사해 메모 이미지 크게 보기를 `Modal`로 옮겼다([#247](https://github.com/hyeoniverse/MacFolio/pull/247)).
+## 배경: 공통 부품과 모달 다이얼로그
+
+MacFolio의 화면 코드는 앱마다 폴더가 나뉘어 있고, 여러 앱이 함께 사용하는 부품은 `apps/react/src/shared/ui`에 있다. 버튼(`Button`), 메뉴(`Menu`), 경고창(`AlertDialog`)처럼 모양과 동작이 정해진 부품을 한곳에 두면, 동작을 고칠 때 한 파일만 수정하면 되고 모든 앱이 같은 키보드·스크린 리더 동작을 갖는다. 반대로 겉모양만 비슷한 화면을 억지로 한 부품으로 합치면, 앱마다 다른 부분을 처리하는 옵션이 계속 늘어난다. 그래서 무엇을 공통 부품으로 만들지 결정하는 기준이 필요하다.
+
+**모달 다이얼로그**(modal dialog)는 화면 가운데에 떠서, 사용자가 응답하거나 닫기 전에는 뒤의 화면을 사용할 수 없게 하는 창이다. "이 메모를 영구적으로 삭제하겠습니까?" 같은 확인창이 대표적이다. 웹에서 모달 다이얼로그는 보통 다음 동작을 갖는다.
+
+| 동작        | 구현                                                             | 예                                                                      |
+| ----------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 뒤를 가림   | 반투명 **오버레이**(화면을 덮는 요소)를 깔고 그 위에 패널을 표시 | 메모 창이 어둡게 덮인다                                                 |
+| 역할 전달   | `role="dialog"`, `aria-modal="true"`, `aria-label`               | 스크린 리더가 창 이름과 대화상자 역할을 알리고, 뒤의 내용은 읽지 않는다 |
+| 포커스 이동 | 열릴 때 패널 안의 요소로 키보드 포커스를 옮김                    | 확인 버튼에 포커스가 있으면 Enter로 바로 확인한다                       |
+| 닫기        | Esc 키, 오버레이 클릭                                            | 바깥을 누르면 취소된다                                                  |
+
+이 동작을 다이얼로그마다 따로 구현하면 일부가 빠지기 쉽다. 이 작업은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 "공통 컴포넌트 설계"의 첫 두 항목이다. 첫 항목은 코드를 바꾸지 않고 현재 부품과 후보의 사용처를 집계해 [`docs/ui.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/ui.md)에 기록하는 일이었고([#210](https://github.com/hyeoniverse/MacFolio/pull/210)), 둘째 항목은 그 집계로 고른 세 부품 중 첫 번째인 `Modal`을 추출하는 일이었다([#212](https://github.com/hyeoniverse/MacFolio/pull/212)). 일주일 뒤 남은 시트·모달을 다시 조사해 메모 이미지 크게 보기를 `Modal`로 옮겼다([#247](https://github.com/hyeoniverse/MacFolio/pull/247)).
 
 ## 공통 부품 집계
 
@@ -25,7 +38,7 @@ summary: shared/ui 부품 15개, 후보 9개, 직접 작성한 버튼 295곳을 
 
 ### grep 집계 방법
 
-도구는 `grep`이다. 부품마다 그 부품을 import하는 줄이 있는 파일 수를 집계했다[^grep-l].
+도구는 `grep`이다. `grep`은 파일에서 지정한 문자열이 들어 있는 줄을 찾는 명령이다. 부품마다 그 부품을 import하는 줄이 있는 파일 수를 집계했다[^grep-l].
 
 ```sh
 grep -rln "from '@/shared/ui/menu/Menu'" --include=*.tsx apps/react/src | wc -l
@@ -77,7 +90,7 @@ grep -rln "from '@/shared/ui/menu/Menu'" --include=*.tsx apps/react/src | wc -l
 
 ### 직접 작성한 버튼 295곳
 
-10월 11일 새벽에 올린 문서의 첫 판에는 두 가지 지적이 있었다.
+10월 11일에 올린 문서의 첫 판에는 두 가지 지적이 있었다.
 
 1. "보류. 수가 많아도 모양·뜻이 다르다"로 기록한 후보는 모양을 통일하면 되는 것 아닌가.
 2. 버튼이 공통 컴포넌트의 기본인데 왜 후보에 없는가.
@@ -207,6 +220,8 @@ onPointerDown={(event) => {
 > [!NOTE] click 대신 pointerdown
 > [`pointerdown`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)은 누르는 순간의 대상을 기준으로 한다. 그래서 패널 안에서 글자를 드래그해 선택하다 오버레이 위에서 버튼을 놓아도 창이 닫히지 않는다. `click`은 누른 곳과 놓은 곳의 공통 조상에서 발생하므로, `click`을 썼다면 이 경우를 별도로 필터링해야 한다.
 
+![패널 안에서 누르고 오버레이에서 놓을 때 pointerdown과 click의 대상](./images/ui-modal-pointerdown.svg '누르는 순간의 대상으로 판단하는 pointerdown은 패널 안에서 시작한 드래그로 창을 닫지 않는다')
+
 `window` 범위가 필요해진 계기는 메모의 휴지통이다. 휴지통에 "즉시 삭제" 버튼을 추가하면서, 누르면 바로 삭제하지 않고 macOS 메모처럼 확인창을 표시하게 했다. 이 확인창은 화면 전체가 아니라 메모 앱 창의 가운데에 표시해야 했다. 다른 창은 계속 사용할 수 있어야 하기 때문이다. 현재 이 확인창은 `useTrash.tsx`가 `AlertDialog`로 표시하고, `AlertDialog`는 `scope="window"`인 `Modal`이다.
 
 ![macOS 메모의 영구 삭제 확인창](./images/ui-modal-macos-delete-confirm.jpg '참고한 macOS 메모 화면. "1개의 메모를 영구적으로 삭제하겠습니까?" 확인창이 메모 창 가운데에 뜬다')
@@ -227,7 +242,10 @@ onPointerDown={(event) => {
 
 ### Modal 대상에서 제외한 창
 
-**이 Mac에 관하여**는 가운데에 표시되지만 오버레이가 없고, 빈 영역을 드래그해 이동할 수 있으며, 뒤의 다른 창을 클릭할 수 있다. 모달이 아니라 일반 창이다. `role="dialog"`만 같아서 후보에 포함했다가 코드를 확인하고 제외했다. 포함하려면 "오버레이 없음"·"드래그 이동" 옵션이 필요해진다.
+**이 Mac에 관하여**는 가운데에 표시되지만 오버레이가 없고, 빈 영역을 드래그해 이동할 수 있으며, 뒤의 다른 창을 클릭할 수 있다. 모달이 아니라 일반 창(모달리스 창)이다.
+
+![왼쪽 키보드 단축키 창은 오버레이로 뒤를 덮는 모달이고, 오른쪽 이 Mac에 관하여는 오버레이 없이 뒤의 창을 클릭할 수 있는 일반 창](./images/ui-modal-modal-vs-window.svg '둘 다 role="dialog"라 grep 결과에 함께 나왔지만, 뒤의 화면을 사용할 수 있는지가 다르다')
+`role="dialog"`만 같아서 후보에 포함했다가 코드를 확인하고 제외했다. 포함하려면 "오버레이 없음"·"드래그 이동" 옵션이 필요해진다.
 
 **이름 바꾸기의 form**: Modal의 패널은 `div`이므로 `form`이 그 안에 들어간다. 그러자 패널의 `display: grid; gap`이 `form` 하나에만 적용되어 입력 칸과 버튼 사이 간격이 사라졌다. `form`에 같은 grid를 지정해 해결했다. Modal에 `as="form"` prop을 두는 방법도 있지만 호출처가 하나라 추가하지 않았다.
 
@@ -345,7 +363,7 @@ E2E에서 연 상태의 오버레이와 이미지의 계산된 스타일(위치,
 | `IconButton`·`Button`으로 93곳을 전환한다 | 아이콘 버튼([#245](https://github.com/hyeoniverse/MacFolio/pull/245))과 글자 버튼([#246](https://github.com/hyeoniverse/MacFolio/pull/246))을 PR 두 개로 전환했다  |
 | `variant="circle"`을 추가한다             | #245에서 추가했다                                                                                                                                                  |
 
-이 글을 쓰면서 다시 집계한 결과, `IconButton`을 사용하는 파일은 15개에서 34개로, `Button`은 10개에서 25개로 늘었다. 직접 작성한 `<button>`을 처음과 같은 방법으로 집계하면 현재 95파일 289곳이고, 그중 95곳이 Safari 프로젝트 데모 페이지다(그사이 데모 페이지가 늘었다). 데모 페이지를 제외하면 228곳에서 194곳으로 줄었다. 남은 곳은 대부분 표에서 "앱 고유"로 분류한 목록 행·탭·카드이고, 그사이 새로 추가된 화면의 버튼도 포함돼 있다.
+글을 쓴 시각에 같은 방법으로 다시 집계한 결과, `IconButton`을 사용하는 파일은 15개에서 34개로, `Button`은 10개에서 25개로 늘었다. 직접 작성한 `<button>`을 처음과 같은 방법으로 집계하면 현재 95파일 289곳이고, 그중 95곳이 Safari 프로젝트 데모 페이지다(그사이 데모 페이지가 늘었다). 데모 페이지를 제외하면 228곳에서 194곳으로 줄었다. 남은 곳은 대부분 표에서 "앱 고유"로 분류한 목록 행·탭·카드이고, 그사이 새로 추가된 화면의 버튼도 포함돼 있다.
 
 ## 남은 과제와 정리
 
@@ -373,5 +391,19 @@ PR: [#210](https://github.com/hyeoniverse/MacFolio/pull/210), [#212](https://git
 [^top-layer]: 최상위 층(top layer)은 문서의 z-index와 무관하게 모든 요소 위에 그려지는 별도 층이다. [MDN: Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)
 
 [^positioned]: `position`이 `static`이 아닌 요소. `absolute` 요소는 이 조상을 기준으로 배치된다. [MDN: position](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [W3C WAI-ARIA APG: Dialog (Modal) Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+- [MDN: `<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)
+- [MDN: HTMLDialogElement.showModal()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal)
+- [MDN: aria-modal](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-modal)
+- [MDN: Element: pointerdown event](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)
+- [MDN: Element: click event](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event)
+- [MDN: inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert)
+- [React: createPortal](https://react.dev/reference/react-dom/createPortal)
+
+</details>
 
 #MacFolio #React #CSS #공통컴포넌트 #리팩터링

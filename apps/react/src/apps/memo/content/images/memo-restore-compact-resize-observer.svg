@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>ResizeObserver가 보고하는 폭</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="600">ResizeObserver가 콜백에 보고하는 폭</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73" text-anchor="start">관찰 중인 요소의 크기가 바뀔 때마다 콜백이 contentRect.width를 받는다</text>
+<text x="24" y="86" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">① observe(칸) 직후</text>
+<rect x="24" y="98" width="180" height="110" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<rect x="38" y="112" width="104" height="82" rx="6" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="90.0" y="158" font-size="12" fill="#0a84ff" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">.memo-shell</text>
+<line x1="114" y1="210" x2="114" y2="232" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="24" y="236" width="180" height="50" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="36" y="258" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">contentRect.width</text>
+<text x="36" y="277" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600" font-family="SFMono-Regular, Menlo, monospace">= 898</text>
+<text x="24" y="306" font-size="12" fill="#6e6e73" text-anchor="start">처음 한 번 현재 크기를 보고</text>
+<text x="230" y="86" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">② 전체 화면으로 확대</text>
+<rect x="230" y="98" width="180" height="110" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<rect x="244" y="112" width="152" height="82" rx="6" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="320.0" y="158" font-size="12" fill="#0a84ff" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">.memo-shell</text>
+<line x1="320" y1="210" x2="320" y2="232" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="230" y="236" width="180" height="50" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="242" y="258" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">contentRect.width</text>
+<text x="242" y="277" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600" font-family="SFMono-Regular, Menlo, monospace">= 1278</text>
+<text x="230" y="306" font-size="12" fill="#6e6e73" text-anchor="start">크기가 바뀌어 다시 보고</text>
+<text x="436" y="86" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">③ 칸이 문서에서 빠짐</text>
+<rect x="436" y="98" width="180" height="110" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<rect x="450" y="112" width="150" height="82" rx="6" fill="none" stroke="#aeaeb2" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="525.0" y="158" font-size="12" fill="#6e6e73" text-anchor="middle">(문서에 없음)</text>
+<line x1="526" y1="210" x2="526" y2="232" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="436" y="236" width="180" height="50" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="448" y="258" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">contentRect.width</text>
+<text x="448" y="277" font-size="13" fill="#ff9f0a" text-anchor="start" font-weight="600" font-family="SFMono-Regular, Menlo, monospace">= 0</text>
+<text x="436" y="306" font-size="12" fill="#ff9f0a" text-anchor="start">렌더링되지 않는 요소는 0</text>
+</svg>

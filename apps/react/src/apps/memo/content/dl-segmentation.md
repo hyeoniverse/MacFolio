@@ -13,7 +13,7 @@ summary: 화소마다 부류를 지정하는 분할 문제의 정의와 PA·IoU�
 
 분류용 CNN은 이 요구와 반대 방향으로 설계되어 있다. 컨볼루션과 풀링을 거듭하며 특징 맵이 줄어 224×224 입력이 7×7까지 작아지고, 마지막 완전연결층은 그 맵을 일렬로 펼쳐 위치 정보를 버린다. 분할 신경망은 작아진 맵을 다시 입력 크기로 키우면서, 축소 과정에서 잃은 경계의 위치를 되살려야 한다.
 
-이 글이 답하려는 질문은 두 가지다. 줄어든 특징 맵을 어떤 연산으로 원래 크기로 되돌리는가. 그리고 물체의 경계를 정확하게 복원하려면 얕은 층의 정보를 어떤 방식으로 가져와야 하는가.
+예를 들어 224×224 영상을 7×7 맵까지 줄이면 맵의 한 칸이 원래 영상의 32×32 화소 영역을 대표한다. 이 맵을 그대로 32배 늘리면 고양이의 귀 끝이나 꼬리처럼 32화소보다 가는 부분은 칸 하나에 묻혀 사라진다. 분할 신경망의 구조는 두 가지 문제에 대한 답으로 구분된다. 줄어든 특징 맵을 어떤 연산으로 원래 크기로 되돌리는지, 그리고 경계를 복원하기 위해 위치 정보가 남아 있는 얕은 층의 맵을 어떤 방식으로 가져오는지다.
 
 | 순서 | 내용                                                |
 | ---- | --------------------------------------------------- |
@@ -24,7 +24,7 @@ summary: 화소마다 부류를 지정하는 분할 문제의 정의와 PA·IoU�
 | 5    | U-Net: 축소 경로, 확장 경로, 지름길 연결            |
 | 6    | U-Net으로 Oxford-IIIT Pet 분할                      |
 
-컨볼루션의 출력 크기 공식과 풀링은 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서, 박스에 적용하는 IoU와 검출 문제는 [물체 검출의 성능 평가와 RCNN·YOLO](/memo/dl-object-detection)에서 다뤘다. 이 글은 두 개념을 화소 단위로 확장한다.
+컨볼루션의 출력 크기 공식과 풀링은 [컨볼루션 신경망의 구조와 전이 학습](/memo/dl-cnn-transfer-learning)에서, 박스에 적용하는 IoU와 검출 문제는 [물체 검출의 성능 평가와 RCNN·YOLO](/memo/dl-object-detection)에서 다뤘다.
 
 ## 분할
 
@@ -94,6 +94,10 @@ Dice는 분자에서 교집합을 두 번 집계하고 분모에서 두 영역�
 ```
 
 같은 격자로 PA도 집계할 수 있다. 36화소 가운데 참값과 예측이 같은 화소는 행별로 6, 5, 3, 5, 6, 4개이므로 `\mathrm{PA} = 29/36 = 0.8056{:math}`이다. 배경(0)이 넓게 맞으면 PA는 높게 나오지만 부류 2의 IoU는 0.59에 그친다.
+
+예제에서 IoU는 0.59, Dice는 0.74다. 두 값이 0이나 1이 아니면 같은 예측이라도 Dice가 IoU보다 크게 나온다. 논문마다 쓰는 지표가 다르므로 수치를 비교하기 전에 어느 지표인지 먼저 확인해야 한다. 아래 그림은 IoU를 0부터 1까지 바꾸면서 Dice의 변화를 보여 준다.
+
+![가로축 IoU, 세로축 Dice인 그래프에서 Dice 곡선이 Dice = IoU 기준선보다 위에 있고, 예제의 IoU 0.588, Dice 0.741 지점이 표시된 그림](./images/dl-segmentation-dice-iou.svg 'Dice = 2·IoU / (1 + IoU). 두 지표는 0과 1에서만 같고 그 사이에서는 Dice가 크다')
 
 > [!TIP]
 > 배경이 화면 대부분을 차지하는 영상에서는 모든 화소를 배경으로 예측해도 PA가 높다. 그래서 분할 논문은 부류별 IoU를 평균한 mIoU(mean IoU)를 주 지표로 보고한다.
@@ -216,9 +220,9 @@ DeconvNet([Noh, Hong, Han, ICCV 2015](https://arxiv.org/abs/1505.04366))은 컨�
 
 ### 언풀링
 
-최대 풀링(max pooling)은 2×2 영역에서 최댓값만 남기므로 그 값이 원래 어느 위치에 있었는지 사라진다. ==언풀링(unpooling)은 풀링할 때 최댓값의 위치를 스위치 변수(switch variables)로 기억해 두었다가, 같은 위치로 값을 되돌려 놓고 나머지는 0으로 채운다.==
+최대 풀링(max pooling)은 2×2 영역에서 최댓값만 남기므로 그 값이 원래 어느 위치에 있었는지 사라진다. ==언풀링(unpooling)은 풀링 단계에서 최댓값의 위치를 스위치 변수(switch variables)로 기억해 두었다가, 같은 위치로 값을 되돌려 놓고 나머지는 0으로 채운다.==
 
-![4×4 입력을 최대 풀링해 2×2로 줄이고, 기억한 위치로 2×2 값을 되돌려 4×4를 만드는 언풀링 과정](./images/dl-segmentation-unpooling.svg '풀링 때 기억한 최댓값 위치(스위치 변수)로 값을 돌려놓는다')
+![4×4 입력을 최대 풀링해 2×2로 줄이고, 기억한 위치로 2×2 값을 되돌려 4×4를 만드는 언풀링 과정](./images/dl-segmentation-unpooling.svg '풀링 단계에서 기억한 최댓값 위치(스위치 변수)로 값을 돌려놓는다')
 
 | 단계          | 입력                                              | 출력                                                                                         |
 | ------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -363,6 +367,10 @@ class OxfordPets(keras.utils.Sequence):
 | `x`의 모양             | `(32, 160, 160, 3)`. 영상을 160×160으로 줄여 담는다                                        |
 | `y`의 모양             | `(32, 160, 160, 1)`. 마스크를 회색조로 읽고 채널 축을 하나 추가한다                        |
 | `y[j] -= 1`            | trimap의 1, 2, 3을 0, 1, 2로 바꾼다. sparse 교차 엔트로피는 0부터 시작하는 정수를 요구한다 |
+
+레이블 값이 학습과 시각화를 거치며 어떻게 바뀌는지 5×5 화소 예로 나타내면 다음과 같다. 가운데 동물 화소(1)를 경계 화소(3)가 둘러싸고, 바깥은 배경 화소(2)다.
+
+![5×5 trimap의 값 1, 2, 3이 1을 뺀 뒤 0, 1, 2가 되고, U-Net의 예측을 BGR로 표시하면 동물은 파랑, 배경은 초록, 경계는 빨강이 되는 그림](./images/dl-segmentation-trimap-labels.svg 'trimap 원본, 학습용 레이블, 예측 표시의 대응. 예측 표시 색은 뒤의 예측 결과 그림과 같다')
 
 ### U-Net 모델
 
@@ -516,7 +524,7 @@ print(preds[1].shape)
 | 8     | 0.3970 | 0.3929   |
 | 10    | 0.3646 | 0.3605   |
 
-첫 epoch의 경고는 `.h5`(HDF5) 형식으로 저장할 때 Keras가 출력하는 형식 안내다.
+첫 epoch의 경고는 `.h5`(HDF5) 형식으로 저장하면 Keras가 출력하는 형식 안내다.
 
 ![개 네 마리의 입력 영상, 참값 마스크, 파랑·초록·빨강으로 표시한 예측 결과](./images/dl-segmentation-22.jpg '예측 마스크는 개의 윤곽을 따라 경계(빨강)를 그린다 (발표 자료)')
 
@@ -531,3 +539,16 @@ print(preds[1].shape)
 | U-Net     | 3×3 컨볼루션 + 풀링 | 2×2 up-conv + 3×3 컨볼루션        | 특징 맵을 채널 방향으로 이어 붙임       |
 
 ==세 모델은 모두 인코더가 줄인 특징 맵을 디코더가 다시 키우는 구조이고, 차이는 업 샘플링을 얼마나 단계적으로 하는지와 얕은 층의 위치 정보를 어떻게 되살리는지에 있다.== 영상 대신 시간 순서가 있는 데이터를 다루는 신경망은 [순환 신경망과 LSTM으로 만든 시계열 예측](/memo/dl-rnn)에서 다룬다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- Long, Shelhamer, Darrell, [「Fully Convolutional Networks for Semantic Segmentation」](https://arxiv.org/abs/1411.4038), CVPR 2015
+- Noh, Hong, Han, [「Learning Deconvolution Network for Semantic Segmentation」](https://arxiv.org/abs/1505.04366), ICCV 2015
+- Ronneberger, Fischer, Brox, [「U-Net: Convolutional Networks for Biomedical Image Segmentation」](https://arxiv.org/abs/1505.04597), MICCAI 2015
+- Dumoulin, Visin, [「A guide to convolution arithmetic for deep learning」](https://arxiv.org/abs/1603.07285), 2016
+- Parkhi et al., [「Cats and Dogs」](https://www.robots.ox.ac.uk/~vgg/data/pets/), CVPR 2012 (Oxford-IIIT Pet 데이터셋)
+- Keras 문서, [Image segmentation with a U-Net-like architecture](https://keras.io/examples/vision/oxford_pets_image_segmentation/)
+- TensorFlow 문서, [tf.keras.layers.Conv2DTranspose](https://www.tensorflow.org/api_docs/python/tf/keras/layers/Conv2DTranspose)
+
+</details>

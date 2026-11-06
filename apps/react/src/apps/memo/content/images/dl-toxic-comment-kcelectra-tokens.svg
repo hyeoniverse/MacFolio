@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="14" font-weight="600" fill="#1d1d1f">원문: 김포는 뭐 김 네장씩 싸먹는 새끼들이냐?</text>
+<g font-size="12" fill="#6e6e73"><text x="20" y="54">tokens</text><text x="20" y="114">input_ids</text><text x="20" y="160">attention_mask</text></g>
+<g font-size="12" text-anchor="middle">
+<rect x="20" y="60" width="42" height="34" rx="4" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1.5"/><text x="41.0" y="82" fill="#1d1d1f">[CLS]</text>
+<text x="41.0" y="136" fill="#1d1d1f">2</text>
+<rect x="20" y="168" width="42" height="26" rx="4" fill="#34c759"/><text x="41.0" y="186" fill="#ffffff">1</text>
+<rect x="64" y="60" width="38" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="83.0" y="82" fill="#1d1d1f">김포</text>
+<text x="83.0" y="136" fill="#1d1d1f">13841</text>
+<rect x="64" y="168" width="38" height="26" rx="4" fill="#34c759"/><text x="83.0" y="186" fill="#ffffff">1</text>
+<rect x="104" y="60" width="34" height="34" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/><text x="121.0" y="82" fill="#1d1d1f">##는</text>
+<text x="121.0" y="136" fill="#1d1d1f">4027</text>
+<rect x="104" y="168" width="34" height="26" rx="4" fill="#34c759"/><text x="121.0" y="186" fill="#ffffff">1</text>
+<rect x="140" y="60" width="32" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="156.0" y="82" fill="#1d1d1f">뭐</text>
+<text x="156.0" y="136" fill="#1d1d1f">1867</text>
+<rect x="140" y="168" width="32" height="26" rx="4" fill="#34c759"/><text x="156.0" y="186" fill="#ffffff">1</text>
+<rect x="174" y="60" width="32" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="190.0" y="82" fill="#1d1d1f">김</text>
+<text x="190.0" y="136" fill="#1d1d1f">1048</text>
+<rect x="174" y="168" width="32" height="26" rx="4" fill="#34c759"/><text x="190.0" y="186" fill="#ffffff">1</text>
+<rect x="208" y="60" width="32" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="224.0" y="82" fill="#1d1d1f">네</text>
+<text x="224.0" y="136" fill="#1d1d1f">1242</text>
+<rect x="208" y="168" width="32" height="26" rx="4" fill="#34c759"/><text x="224.0" y="186" fill="#ffffff">1</text>
+<rect x="242" y="60" width="34" height="34" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/><text x="259.0" y="82" fill="#1d1d1f">##장</text>
+<text x="259.0" y="136" fill="#1d1d1f">4019</text>
+<rect x="242" y="168" width="34" height="26" rx="4" fill="#34c759"/><text x="259.0" y="186" fill="#ffffff">1</text>
+<rect x="278" y="60" width="34" height="34" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/><text x="295.0" y="82" fill="#1d1d1f">##씩</text>
+<text x="295.0" y="136" fill="#1d1d1f">4787</text>
+<rect x="278" y="168" width="34" height="26" rx="4" fill="#34c759"/><text x="295.0" y="186" fill="#ffffff">1</text>
+<rect x="314" y="60" width="32" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="330.0" y="82" fill="#1d1d1f">싸</text>
+<text x="330.0" y="136" fill="#1d1d1f">2360</text>
+<rect x="314" y="168" width="32" height="26" rx="4" fill="#34c759"/><text x="330.0" y="186" fill="#ffffff">1</text>
+<rect x="348" y="60" width="42" height="34" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/><text x="369.0" y="82" fill="#1d1d1f">##먹는</text>
+<text x="369.0" y="136" fill="#1d1d1f">9017</text>
+<rect x="348" y="168" width="42" height="26" rx="4" fill="#34c759"/><text x="369.0" y="186" fill="#ffffff">1</text>
+<rect x="392" y="60" width="54" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="419.0" y="82" fill="#1d1d1f">새끼들이</text>
+<text x="419.0" y="136" fill="#1d1d1f">17076</text>
+<rect x="392" y="168" width="54" height="26" rx="4" fill="#34c759"/><text x="419.0" y="186" fill="#ffffff">1</text>
+<rect x="448" y="60" width="34" height="34" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/><text x="465.0" y="82" fill="#1d1d1f">##냐</text>
+<text x="465.0" y="136" fill="#1d1d1f">4110</text>
+<rect x="448" y="168" width="34" height="26" rx="4" fill="#34c759"/><text x="465.0" y="186" fill="#ffffff">1</text>
+<rect x="484" y="60" width="22" height="34" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="495.0" y="82" fill="#1d1d1f">?</text>
+<text x="495.0" y="136" fill="#1d1d1f">33</text>
+<rect x="484" y="168" width="22" height="26" rx="4" fill="#34c759"/><text x="495.0" y="186" fill="#ffffff">1</text>
+<rect x="508" y="60" width="42" height="34" rx="4" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1.5"/><text x="529.0" y="82" fill="#1d1d1f">[SEP]</text>
+<text x="529.0" y="136" fill="#1d1d1f">3</text>
+<rect x="508" y="168" width="42" height="26" rx="4" fill="#34c759"/><text x="529.0" y="186" fill="#ffffff">1</text>
+<rect x="552" y="60" width="42" height="34" rx="4" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1.5"/><text x="573.0" y="82" fill="#1d1d1f">[PAD]</text>
+<text x="573.0" y="136" fill="#1d1d1f">0</text>
+<rect x="552" y="168" width="42" height="26" rx="4" fill="#f2f2f7"/><text x="573.0" y="186" fill="#6e6e73">0</text>
+</g>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="218" width="14" height="14" rx="3" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/><text x="40" y="230">단어의 시작 토큰</text>
+<rect x="170" y="218" width="14" height="14" rx="3" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/><text x="190" y="230">## 하위 단어 (앞 토큰에 이어 붙는다)</text>
+<rect x="420" y="218" width="14" height="14" rx="3" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1.5"/><text x="440" y="230">특수 토큰</text>
+<text x="20" y="264">실제 토큰 14개(마스크 1) 뒤에 [PAD](id 0)를 114개 채워 max_length 128을 맞춘다</text>
+<text x="20" y="286" fill="#6e6e73">'네장씩'처럼 어휘에 통째로 없는 어절은 네 + ##장 + ##씩으로 쪼개 어휘 54,343개 안에서 표현한다</text>
+<text x="20" y="308" fill="#6e6e73">[CLS]의 출력 벡터가 분류 헤드의 입력이 되고, 마스크가 0인 위치는 어텐션 계산에서 제외된다</text>
+</g>
+</svg>

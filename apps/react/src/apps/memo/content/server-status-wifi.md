@@ -7,7 +7,11 @@ seriesOrder: 2
 summary: 메뉴 막대의 Wi-Fi 아이콘이 /health를 30초마다 호출해 응답 시간과 DB 상태를 막대 수로 표시한다. PR 미리보기에서 항상 연결 불가로 표시되던 원인인 CORS 차단은 허용 목록의 * 규칙과 no-cors 재요청으로 서버 중지와 구분했다. 메뉴 잘림과 음량 창 위치도 수정했다.
 ---
 
-메뉴 막대 오른쪽의 Wi-Fi 아이콘은 macOS 외형을 재현하기 위한 장식이었다. 서버를 배포한 뒤에는 서버 동작 여부를 확인하려면 `/health`를 직접 열어야 했다. 그래서 Wi-Fi 막대가 **이 사이트 서버(API)의 상태**를 표시하게 했다([#90](https://github.com/hyeoniverse/MacFolio/pull/90)). 이틀 뒤에는 PR 미리보기 주소에서 서버가 정상인데도 "서버에 연결할 수 없음"으로 표시되는 문제를 CORS 차단 상태로 구분했다([CORS 차단과 서버 중지 구분](#no-cors-요청으로-cors-차단과-서버-중지-구분)).
+## 장식이던 Wi-Fi 아이콘을 서버 상태 표시로
+
+이 사이트는 화면(React 정적 파일)과 서버(API)가 나뉘어 있다. 화면은 Cloudflare에서 배포되고, 댓글·메시지·관리자 편집 같은 기능은 별도 VM에서 실행되는 API 서버(`macfolio-api.hyeoniverse.com`)를 호출한다. API가 중지되면 정적 화면은 그대로 열리지만, 댓글을 쓰거나 메시지를 보내는 시각에 비로소 오류가 난다.
+
+메뉴 막대 오른쪽의 Wi-Fi 아이콘은 macOS 외형을 재현하기 위한 장식이었다. 서버를 배포한 뒤에는 서버 동작 여부를 확인하려면 브라우저 주소창에 `/health`를 직접 입력해야 했다. 그래서 Wi-Fi 막대가 **이 사이트 서버(API)의 상태**를 표시하게 했다([#90](https://github.com/hyeoniverse/MacFolio/pull/90)). 이틀 뒤에는 PR 미리보기 주소에서 서버가 정상인데도 "서버에 연결할 수 없음"으로 표시되는 문제를 CORS 차단 상태로 구분했다([CORS 차단과 서버 중지 구분](#no-cors-요청으로-cors-차단과-서버-중지-구분)).
 
 ## 채택한 방법과 제외한 방법
 
@@ -17,7 +21,11 @@ summary: 메뉴 막대의 Wi-Fi 아이콘이 /health를 30초마다 호출해 �
 | 앱마다 실패 시에만 "서버 오류" 표시         | 추가 요청이 없다                        | 사용하기 전에는 서버 상태를 알 수 없다                            |
 | 메뉴 막대에서 `/health`를 주기적으로 (채택) | 사이트 어디서든 보이고, macOS 외형 유지 | 30초마다 요청이 하나씩 발생한다                                   |
 
-`/health`는 이미 있었다. 서버가 DB에 `SELECT 1`을 실행해 성공하면 `status`·`database`·`version`을, 실패하면 [503](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503)과 "DB에 연결할 수 없습니다."를 반환한다. 프론트엔드 로딩 화면이 서버를 미리 기동(웜업)하는 데 쓰던 경로라, 같은 경로를 주기적으로 호출하기만 하면 됐다.
+### 헬스 체크 경로 `/health`
+
+헬스 체크(health check)는 서버가 요청을 처리할 수 있는 상태인지 확인하기 위해 따로 두는 가벼운 경로다. 로드 밸런서나 배포 스크립트, 모니터링 도구가 이 경로를 주기적으로 호출해 응답 코드로 서버 상태를 판단한다.
+
+이 사이트의 `/health`는 이미 있었다. 서버가 DB에 `SELECT 1`을 실행해 성공하면 `status`·`database`·`version`을, 실패하면 [503 Service Unavailable](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503)과 "DB에 연결할 수 없습니다."를 반환한다. `SELECT 1`은 테이블을 읽지 않고 숫자 1만 돌려주는 쿼리라서, DB 연결이 살아 있는지만 확인한다.
 
 ```ts
 // apps/api/src/health/health.controller.ts
@@ -31,7 +39,21 @@ async check(): Promise<HealthResponse> {
 }
 ```
 
+두 경우의 응답은 예를 들어 다음과 같다.
+
+```text
+HTTP/1.1 200 OK
+{"status":"ok","database":"up","version":"…"}
+
+HTTP/1.1 503 Service Unavailable
+{"statusCode":503,"message":"DB에 연결할 수 없습니다.", …}
+```
+
+프론트엔드 로딩 화면이 서버를 미리 기동(웜업)하는 데 쓰던 경로라, 같은 경로를 주기적으로 호출하기만 하면 됐다.
+
 ## 막대 수의 의미
+
+실제 Wi-Fi 아이콘의 막대 수는 신호 세기를 나타낸다. 여기서는 신호 세기 대신 `/health` 요청을 보낸 시각부터 응답을 받은 시각까지의 시간(응답 시간)과 응답 내용을 막대 수로 환산한다.
 
 | 막대        | 상태                     | 기준                                                        |
 | ----------- | ------------------------ | ----------------------------------------------------------- |
@@ -42,13 +64,15 @@ async check(): Promise<HealthResponse> {
 | 없음 + 사선 | 서버에 연결할 수 없음    | 응답이 없거나 다른 오류 (터널이 서버에 닿지 못하면 502·530) |
 | 없음        | 이 주소에서는 쓸 수 없음 | 서버는 실행 중이지만 CORS가 이 페이지 주소를 허용하지 않음  |
 
+예를 들어 응답이 180ms 만에 오면 막대 셋, 650ms면 둘, 1,400ms면 "응답 느림"으로 하나다.
+
 ![Wi-Fi 막대 수와 색으로 나타내는 서버 상태 다섯 가지와 확인 주기](./images/server-status-wifi-bars.svg '막대 수는 응답 시간, 주황은 DB, 사선은 연결할 수 없음')
 
 막대를 누르면 macOS Wi-Fi 메뉴처럼 상태, 응답 시간, 마지막 확인 시각, 서버 주소가 표시되고, '지금 확인'과 'API 문서 열기' 항목이 있다.
 
 ![정상, DB 연결 안 됨, 서버에 연결할 수 없음의 세 메뉴](./images/server-status-wifi-menus.jpg '가짜 API로 세 상태를 만들어 찍었다. 막대 색과 사선, 메뉴 폭이 다르다')
 
-막대 수는 작은 순수 함수가 결정한다.
+막대 수는 작은 순수 함수가 결정한다. 순수 함수는 같은 입력에 항상 같은 결과를 반환하고 외부 상태를 바꾸지 않는 함수라서, 네트워크 없이 입력값만 바꿔 단위 시험을 작성할 수 있다.
 
 ```ts
 // apps/react/src/shared/server/serverStatus.ts
@@ -64,6 +88,8 @@ export function barsOf({ state, latency }: Pick<ServerStatus, 'state' | 'latency
 
 ## 확인 주기
 
+서버 상태를 계속 최신으로 유지하려면 일정 간격으로 요청을 보내 확인해야 한다. 이 방식을 폴링(polling)이라 한다. 폴링 간격이 짧으면 상태가 빨리 반영되지만 요청 수가 늘어난다. 30초(`POLL_MS`) 간격이면 한 방문자가 탭을 10분 동안 열어 둘 때 요청은 20회다.
+
 | 시점                                                                                                                                                                                                                        | 동작                                             |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
 | 상태를 표시하는 동안 30초마다                                                                                                                                                                                               | 확인. 탭이 숨겨져 있으면 건너뜀                  |
@@ -72,9 +98,9 @@ export function barsOf({ state, latency }: Pick<ServerStatus, 'state' | 'latency
 | 메뉴를 열 때                                                                                                                                                                                                                | 한 번 더 확인해 최신 상태 표시                   |
 
 - 요청은 한 번에 하나만 보낸다. 확인 중에 다시 호출하면 진행 중인 요청의 결과를 함께 기다린다.
-- 6초(`TIMEOUT_MS`) 안에 응답이 없으면 요청을 중단한다.
+- 6초(`TIMEOUT_MS`) 안에 응답이 없으면 [`AbortSignal.timeout`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)으로 요청을 중단한다.
 
-메뉴 막대와 휴대폰 상태 표시줄이 같은 상태를 구독한다. ==구독하는 화면이 몇 개든 타이머는 하나만 동작한다==. 구독자 수를 집계해 첫 구독자가 생길 때 타이머를 등록하고, 마지막 구독자가 사라질 때 해제한다.
+메뉴 막대와 휴대폰 상태 표시줄이 같은 상태를 구독한다. ==구독하는 화면이 몇 개든 타이머는 하나만 동작한다==. 구독자 수(`watchers`)를 집계해 첫 구독자가 생길 때 타이머를 등록하고, 마지막 구독자가 사라질 때 해제한다. 화면 두 개가 각자 타이머를 등록하면 30초마다 요청이 두 번 발생한다.
 
 ![감시하는 화면 수와 관계없이 타이머는 하나](./images/server-status-wifi-polling.svg 'watchers 집계가 0에서 1이 될 때만 타이머와 이벤트를 등록하고, checkServer는 진행 중인 요청을 공유한다')
 
@@ -90,11 +116,23 @@ MacFolio API · 서버에 연결할 수 없음
 
 같은 시각 배포한 사이트에서는 정상이었으므로 서버는 실행 중이었다.
 
+### 배경: 출처와 CORS
+
+브라우저는 페이지의 **출처**(origin)를 기준으로 보안 경계를 정한다. 출처는 주소의 스킴(`https`), 호스트(`macfolio.hyeoniverse.com`), 포트(`443`) 세 가지의 조합이고, 셋 중 하나라도 다르면 다른 출처다. 경로나 쿼리는 출처에 포함되지 않는다. 브라우저의 동일 출처 정책(same-origin policy)은 한 출처의 페이지 코드가 다른 출처에서 받은 응답을 기본적으로 읽지 못하게 한다. 다른 사이트에 로그인된 쿠키로 그 사이트의 데이터를 몰래 읽어 가는 공격을 막기 위해서다.
+
+[CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)[^cors]는 이 제한을 서버가 풀어 주는 규칙이다. 브라우저는 다른 출처로 보내는 요청에 `Origin: <페이지 출처>` 헤더를 붙이고, 서버가 응답에 `Access-Control-Allow-Origin: <그 출처>`를 담아 보내면 응답을 페이지 코드에 넘긴다. 헤더가 없거나 다른 출처가 적혀 있으면 브라우저는 응답을 받고도 페이지에 넘기지 않는다.
+
+![같은 출처의 index.html, styles.css, header.png 요청은 항상 허용되고, 다른 출처 bar.other의 이미지와 글꼴 요청은 CORS로 제어된다는 MDN 도식](./images/server-status-wifi-mdn-cors.png '문서와 같은 출처(foo.example)의 요청은 항상 허용되고, 다른 출처(bar.other)의 요청은 CORS가 제어한다 (MDN)')
+
+이 사이트는 화면(`macfolio.hyeoniverse.com`)과 API(`macfolio-api.hyeoniverse.com`)의 호스트가 달라서, 화면이 API를 호출하는 요청은 모두 다른 출처 요청이다. 그래서 API는 허용할 페이지 출처 목록(`CORS_ORIGINS` 환경 변수)을 갖고 있다.
+
+![출처를 이루는 스킴·호스트·포트와, 배포 사이트·PR 미리보기·로컬 개발 페이지가 API를 부를 때 응답을 읽는지 비교](./images/server-status-wifi-origin.svg '세 페이지 모두 API와 출처가 다르다. 허용 목록에 있는 출처만 응답을 읽는다')
+
 ### 원인: 서버가 미리보기 주소를 허용하지 않는다
 
-미리보기도 배포와 같은 빌드 설정이라 같은 API(`macfolio-api.hyeoniverse.com`)를 호출한다. 그런데 API는 [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)[^cors]로 `https://macfolio.hyeoniverse.com`에서 온 요청만 허용한다. 다른 주소의 페이지가 보낸 요청에는 `Access-Control-Allow-Origin` 헤더를 붙이지 않고, 브라우저는 그 응답을 페이지에 전달하지 않는다.
+미리보기도 배포와 같은 빌드 설정이라 같은 API(`macfolio-api.hyeoniverse.com`)를 호출한다. 그런데 API는 `https://macfolio.hyeoniverse.com`에서 온 요청만 허용했다. 미리보기 출처가 보낸 요청에는 `Access-Control-Allow-Origin` 헤더를 붙이지 않고, 브라우저는 그 응답을 페이지에 전달하지 않는다.
 
-문제는 페이지 입장에서 이 상황이 **서버가 중지된 경우와 구분되지 않는다**는 점이다. 두 경우 모두 `fetch`가 `TypeError: Failed to fetch`로 실패하고, 원인은 알려 주지 않는다. 브라우저는 원인을 알려 주면 다른 사이트의 내부 정보를 추정하는 데 악용될 수 있어 ==의도적으로 숨긴다==. 그래서 상태 표시는 "연결할 수 없음"만 출력했다.
+문제는 페이지 입장에서 이 상황이 **서버가 중지된 경우와 구분되지 않는다**는 점이다. 두 경우 모두 `fetch`가 `TypeError: Failed to fetch`로 실패하고, 원인은 알려 주지 않는다. 보안상의 이유로 CORS 요청이 무엇 때문에 실패했는지는 페이지의 JavaScript 코드에 제공되지 않는다. 원인을 알려 주면 다른 사이트의 내부 정보를 추정하는 데 악용될 수 있으므로, Fetch 표준은 ==CORS 실패를 네트워크 오류와 같은 형태로 보고한다==. 자세한 원인은 개발자 도구 콘솔에만 표시된다. 그래서 상태 표시는 "연결할 수 없음"만 출력했다.
 
 | 상황                      | 첫 요청(`cors`) 결과         | 페이지가 아는 것  |
 | ------------------------- | ---------------------------- | ----------------- |
@@ -117,7 +155,7 @@ MacFolio API · 서버에 연결할 수 없음
 CORS_ORIGINS=https://macfolio.hyeoniverse.com,https://*-macfolio.hyeoniverse.workers.dev
 ```
 
-`*`는 **점이 없는 이름 한 칸**(영소문자, 숫자, `-`)에만 일치한다. 점까지 일치하게 두면 `https://x.evil-macfolio.hyeoniverse.workers.dev`처럼 다른 사람의 하위 도메인을 끼워 넣을 수 있다. 나머지 문자는 정규식 메타 문자로 해석되지 않게 이스케이프한 뒤, 문자열 전체가 일치해야 한다. 시험에는 허용할 주소(브랜치 이름, 버전 ID)와 차단할 주소를 함께 적었다.
+`*`는 **점이 없는 이름 한 칸**(영소문자, 숫자, `-`)에만 일치한다. 도메인 이름은 점으로 구분된 이름 칸(레이블)의 나열이고, 점까지 일치하게 두면 `https://x.evil-macfolio.hyeoniverse.workers.dev`처럼 다른 사람이 만든 Workers 하위 도메인을 끼워 넣을 수 있다. 나머지 문자는 정규식 메타 문자로 해석되지 않게 이스케이프한 뒤, 문자열 전체가 일치해야 한다. 시험에는 허용할 주소(브랜치 이름, 버전 ID)와 차단할 주소를 함께 적었다.
 
 - 차단하는 주소: 다른 사이트, 점이 포함된 이름, 뒤에 문자를 더 붙인 주소, 경로를 끼운 주소, `http`, 앞의 이름이 없는 `macfolio.hyeoniverse.workers.dev`
 
@@ -130,7 +168,7 @@ const patterns = allowed
 	.map((entry) => new RegExp(`^${entry.split('*').map(escape).join('[a-z0-9-]+')}$`));
 ```
 
-`*`를 기준으로 분할해 각 조각의 메타 문자를 이스케이프하고, 그 사이에만 `[a-z0-9-]+`를 삽입한다. `^`와 `$`로 문자열 전체가 일치해야 한다. `-`를 허용한 이유는 브랜치 이름(`feat-app-menus`)에 `-`가 들어가기 때문이다.
+`*`를 기준으로 분할해 각 조각의 메타 문자를 이스케이프하고, 그 사이에만 `[a-z0-9-]+`를 삽입한다. `^`와 `$`로 문자열 전체가 일치해야 한다. `-`를 허용한 이유는 브랜치 이름(`feat-app-menus`)에 `-`가 들어가기 때문이다. 위 설정의 두 번째 항목은 `^https://[a-z0-9-]+-macfolio\.hyeoniverse\.workers\.dev$`가 된다. 이스케이프하지 않으면 `.`이 "아무 문자 하나"로 해석되어 `hyeoniverseXworkers` 같은 주소도 일치한다.
 
 ![*가 맞는 주소와 막는 주소](./images/server-status-blocked-origin-patterns.svg '이름 한 칸에만 맞고, 점·경로·http는 막는다')
 
@@ -147,7 +185,9 @@ reachable = await fetch(`${apiUrl}/health`, { mode: 'no-cors', … }).then(
 );
 ```
 
-[`no-cors` 요청](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode)은 응답 내용을 페이지에 제공하지 않는 대신 CORS 검사를 하지 않는다. 실제 코드는 `shared/server/serverStatus.ts`의 `checkServer()`에 있고, 결과를 상태로 분류하는 작업은 순수 함수 `classify()`가 담당한다.
+`fetch`의 [`mode` 옵션](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode)을 `no-cors`로 지정하면 브라우저는 CORS 검사를 하지 않는 대신, 응답을 내용이 비어 있는 **불투명 응답**(opaque response)으로 페이지에 넘긴다. 불투명 응답은 `status`가 0이고 본문과 헤더를 읽을 수 없다. 그래도 "서버가 무언가 응답했다"는 사실은 `fetch`가 성공(resolve)하는지로 알 수 있다. 서버가 중지됐거나 연결이 끊겼으면 `no-cors` 요청도 실패(reject)한다.
+
+실제 코드는 `shared/server/serverStatus.ts`의 `checkServer()`에 있고, 결과를 상태로 분류하는 작업은 순수 함수 `classify()`가 담당한다.
 
 ```ts
 export function classify(result: {
@@ -165,7 +205,7 @@ export function classify(result: {
 }
 ```
 
-서버가 응답하면 (내용은 읽을 수 없어도) 요청은 성공하고, 서버가 중지됐으면 마찬가지로 실패한다. 그래서 ==두 요청의 결과를 조합해 판정한다==.
+==두 요청의 결과를 조합해 판정한다==.
 
 | 첫 요청(`cors`) | 두 번째 요청(`no-cors`) | 판정                                        | 메뉴 문구                    |
 | --------------- | ----------------------- | ------------------------------------------- | ---------------------------- |
@@ -183,7 +223,7 @@ export function classify(result: {
 
 ### 가짜 API로 차단 상태를 재현하기
 
-화면 시험의 가짜 API에 '차단' 상태를 추가하면서, 허용 헤더를 빼고 응답하면 된다고 예상했다. 그러나 결과는 "정상"이었다. ==Playwright는 가로챈 요청에 응답을 생성할 때 허용 헤더가 없으면 자동으로 추가한다==. 그래서 헤더를 빼는 대신 **다른 주소만 허용한다고** 응답하게 했다. 브라우저는 그 응답을 차단하고, `no-cors` 요청만 성공한다. 실제 서버와 같은 결과다.
+화면 시험의 가짜 API에 '차단' 상태를 추가하면서, 허용 헤더를 빼고 응답하면 된다고 예상했다. 그러나 결과는 "정상"이었다. ==Playwright는 가로챈 요청에 응답을 생성할 때 허용 헤더가 없으면 자동으로 추가한다==. 그래서 헤더를 빼는 대신 **다른 주소만 허용한다고** 응답하게 했다(E2E 페이지 주소가 아닌 `Access-Control-Allow-Origin: https://macfolio.hyeoniverse.com`). 브라우저는 그 응답을 차단하고, `no-cors` 요청만 성공한다. 실제 서버와 같은 결과다.
 
 ### 배포 서버의 환경 변수 반영
 
@@ -196,7 +236,7 @@ cd ~/deploy && docker compose up -d api
 
 ### 로컬과 배포의 환경 변수 파일 분리
 
-배포 서버를 수정한 뒤 로컬(`pnpm dev:all`)에서 확인하자, 이번에는 로컬에서 연결에 실패했다. 로컬 API는 실행 중이었고 DB도 정상이었다. 허용 주소를 확인하니 `http://localhost:5173`은 없고 `https://macfolio.hyeoniverse.com`만 있었다. 서버에 넣을 값을 준비하는 과정에서 로컬 `apps/api/.env`의 `CORS_ORIGINS`가 배포 값으로 바뀌어 있었다.
+배포 서버를 수정한 뒤 로컬(`pnpm dev:all`)에서 확인하자, 이번에는 로컬에서 연결에 실패했다. 로컬 API는 실행 중이었고 DB도 정상이었다. 허용 주소를 확인하니 `http://localhost:5173`은 없고 `https://macfolio.hyeoniverse.com`만 있었다. 서버에 넣을 값을 준비하는 과정에서 로컬 `apps/api/.env`의 `CORS_ORIGINS`가 배포 값으로 바뀌어 있었다. 로컬 화면(`localhost:5173`)과 로컬 API(`localhost:4000`)는 포트가 달라 서로 다른 출처이므로, 로컬에서도 허용 목록이 필요하다.
 
 로컬 API는 `.env` 하나만 읽고, 배포 서버는 서버의 `~/deploy/api.env`만 읽는다. 파일은 이미 분리되어 있었지만, 배포용 값을 기록할 위치가 따로 없어서 로컬 파일에 섞였다. 그래서 파일별 용도를 정했다.
 
@@ -215,7 +255,7 @@ MacFolio API: http://localhost:4100 (문서: /docs)
 
 ### 이후 변경: 미리보기 주소에는 읽기만 허용
 
-미리보기 주소를 허용한 뒤 문제가 하나 남았다. 미리보기는 저장소에 브랜치를 올릴 수 있는 사람이면 누구나 생성할 수 있는 주소인데, CORS 설정의 `credentials: true`가 모든 허용 주소에 일괄 적용되어 그 주소에도 쿠키 송수신을 허용하고 있었다. 그래서 사흘 뒤([#182](https://github.com/hyeoniverse/MacFolio/pull/182)) 허용 범위를 둘로 나눴다.
+미리보기 주소를 허용한 뒤 문제가 하나 남았다. 미리보기는 저장소에 브랜치를 올릴 수 있는 사람이면 누구나 생성할 수 있는 주소인데, CORS 설정의 `credentials: true`가 모든 허용 주소에 일괄 적용되어 그 주소에도 쿠키 송수신을 허용하고 있었다. `credentials: true`는 응답에 `Access-Control-Allow-Credentials: true`를 붙여, 브라우저가 쿠키를 담은 요청의 응답을 페이지에 넘기게 하는 설정이다. 관리자 세션 쿠키가 있는 브라우저로 미리보기 페이지를 열면 그 페이지의 코드가 관리자 API를 호출할 수 있다는 뜻이다. 그래서 사흘 뒤([#182](https://github.com/hyeoniverse/MacFolio/pull/182)) 허용 범위를 둘로 나눴다.
 
 ```ts
 /** 허용 목록에 어떻게 맞았는지. exact: 그대로 적은 주소, pattern: *가 든 항목에 맞은 주소 */
@@ -232,7 +272,9 @@ export function cookiesAllowedFrom(classify: (origin: string | undefined) => Ori
 
 Wi-Fi 메뉴는 화면 오른쪽 끝에서 열린다. 메뉴는 열 때 크기를 측정해 화면 안쪽으로 위치를 보정하는데, 이 메뉴는 열면서 서버를 다시 확인한다. '정상'이던 텍스트가 '서버에 연결할 수 없음'으로 길어지면, ==이미 정한 위치에서 폭이 줄어 텍스트가 줄바꿈되고 끝이 잘렸다==. 처음 측정한 폭은 188px, 전체 폭은 252px였다.
 
-공통 메뉴가 [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)로 자기 크기를 감시하다가 커지면 위치를 다시 보정하게 했다.
+![처음 잰 폭 188px로 위치를 정한 뒤 문구가 길어지면 화면 끝에서 잘리고, 수정 후에는 252px로 다시 배치되는 비교](./images/server-status-wifi-menu-resize.svg '메뉴 위치는 측정한 폭으로 계산한다. 폭이 바뀌면 다시 계산해야 한다')
+
+공통 메뉴가 [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)로 자기 크기를 감시하다가 커지면 위치를 다시 보정하게 했다. `ResizeObserver`는 지정한 요소의 크기가 바뀔 때마다 콜백을 호출하는 브라우저 API다. 창 크기 변화만 알려 주는 `resize` 이벤트와 달리, 내용이 바뀌어 요소 하나의 폭이 달라지는 경우도 감지한다.
 
 ```ts
 // apps/react/src/shared/ui/menu/Menu.tsx
@@ -248,7 +290,7 @@ return () => resize.disconnect();
 | `getBoundingClientRect()` | 반영 (애니메이션 중 작게 측정) | 유지                  |
 | `offsetWidth`             | 미반영 (레이아웃 크기)         | 반올림 (252.25 → 252) |
 
-메뉴 등장 애니메이션(scale) 중에 측정하면 실제보다 작게 측정되므로 `offsetWidth`를 쓰고, 반올림으로 잘리는 폭을 보완하기 위해 1px를 더한다. Apple 메뉴, 컨텍스트 메뉴처럼 같은 메뉴 컴포넌트를 쓰는 곳이 모두 함께 수정됐다.
+메뉴 등장 애니메이션은 `scale`을 작은 값에서 1로 키운다. 그 도중에 `getBoundingClientRect()`로 측정하면 변형이 적용된 화면상 크기가 반환되어 실제보다 작게 측정된다. 그래서 변형을 반영하지 않는 `offsetWidth`를 쓰고, 반올림으로 잘리는 폭을 보완하기 위해 1px를 더한다. Apple 메뉴, 컨텍스트 메뉴처럼 같은 메뉴 컴포넌트를 쓰는 곳이 모두 함께 수정됐다.
 
 ## 음량 창 위치가 어긋난 문제
 
@@ -266,7 +308,7 @@ Wi-Fi 위치의 아이콘을 바꾸자 음량 창이 음량 아이콘에서 벗�
 
 ## macOS에서만 실패하던 타입 검사
 
-작업 중 타입 검사가 macOS에서만 실패했다. GitHub 앱이 `GithubActivity.tsx`(화면)와 `githubActivity.ts`(데이터)를 함께 사용하는데, 두 파일 이름이 대소문자만 다르다.
+작업 중 타입 검사가 macOS에서만 실패했다. GitHub 앱이 `GithubActivity.tsx`(화면)와 `githubActivity.ts`(데이터)를 함께 사용하는데, 두 파일 이름이 대소문자만 다르다. macOS의 기본 파일 시스템(APFS)은 대소문자를 구분하지 않으므로 `GithubActivity`와 `githubActivity`를 같은 이름으로 취급하고, Linux의 파일 시스템은 다른 이름으로 취급한다.
 
 | 환경              | 파일 시스템     | `'@/apps/github/GithubActivity'` 해석 결과 |
 | ----------------- | --------------- | ------------------------------------------ |
@@ -287,7 +329,7 @@ Wi-Fi 위치의 아이콘을 바꾸자 음량 창이 음량 아이콘에서 벗�
 
 ## 진단 방법
 
-메뉴 막대에 "서버에 연결할 수 없음"이 표시되면 먼저 서버가 실제로 중지됐는지, 주소가 차단됐는지를 구분한다.
+메뉴 막대에 "서버에 연결할 수 없음"이 표시되면 먼저 서버가 실제로 중지됐는지, 주소가 차단됐는지를 구분한다. `curl`은 브라우저가 아니므로 CORS 검사를 하지 않는다. 그래서 첫 명령은 서버 자체의 상태를, 두 번째 명령은 `Origin` 헤더를 직접 넣어 서버가 그 출처를 허용하는지를 확인한다.
 
 ```bash
 curl -s https://macfolio-api.hyeoniverse.com/health; echo            # 서버 자체
@@ -296,8 +338,6 @@ curl -s -o /dev/null -w '%{http_code}\n' -H "Origin: <사이트 주소>" \
 ```
 
 첫 줄이 `{"status":"ok",…}`인데 화면에 연결할 수 없다고 표시되면 CORS 문제다. 서버 `api.env`의 `CORS_ORIGINS`에 그 주소를 추가하고 `docker compose up -d api`를 실행한다. 로컬이면 `apps/api/.env`의 `CORS_ORIGINS`에 `http://localhost:5173`이 있는지 확인한다. 판정 코드는 [apps/react/src/shared/server/serverStatus.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/shared/server/serverStatus.ts), 시험은 `cd apps/react && npx playwright test e2e/server-status.spec.ts`.
-
-참고 문서: [MDN CORS 오류](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors).
 
 ## 남은 것과 배운 것
 
@@ -316,6 +356,29 @@ curl -s -o /dev/null -w '%{http_code}\n' -H "Origin: <사이트 주소>" \
 - [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu): 음량 창이 사용하는 공통 팝오버 모듈
 - [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch): 서버 호출 공통 함수
 - [Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검하기](/memo/security-scan): 같은 시기의 보안 점검
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+- MDN, [Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)
+- MDN, [CORS errors](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors)
+- MDN, [Request: mode property](https://developer.mozilla.org/en-US/docs/Web/API/Request/mode)
+- WHATWG, [Fetch Standard: CORS check](https://fetch.spec.whatwg.org/#cors-check)
+- MDN, [503 Service Unavailable](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/503)
+- MDN, [AbortSignal.timeout()](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static)
+- MDN, [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+- MDN, [HTMLElement.offsetWidth](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetWidth)
+- Apple, [File system formats available in Disk Utility on Mac](https://support.apple.com/guide/disk-utility/file-system-formats-dsku19ed921c/mac)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 같은 출처 요청과 다른 출처 요청 도식: MDN Web Docs, [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) (원본 [fetching-page-cors.svg](https://mdn.github.io/shared-assets/images/diagrams/http/cors/fetching-page-cors.svg)), CC BY-SA 2.5, PNG로 변환
+
+</details>
 
 [^cors]: Cross-Origin Resource Sharing. 브라우저가 다른 출처(origin)로 보낸 요청의 응답을 페이지에 넘겨도 되는지, 서버의 `Access-Control-Allow-Origin` 응답 헤더로 판단하는 규칙.
 

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">상환 번호만으로는 상환을 식별할 수 없는 이유</text>
+
+  <g font-size="12" fill="#1d1d1f">
+    <text x="20" y="64" font-weight="600">대출(강한 개체)</text>
+    <rect x="20" y="72" width="200" height="26" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="30" y="90" text-decoration="underline">대출번호</text><text x="120" y="90">대출금액</text>
+    <rect x="20" y="98" width="200" height="28" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="30" y="117">L-11</text><text x="120" y="117">3,000</text>
+    <rect x="20" y="126" width="200" height="28" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="30" y="145">L-23</text><text x="120" y="145">1,200</text>
+  </g>
+
+  <g font-size="12" fill="#1d1d1f">
+    <text x="300" y="64" font-weight="600">상환(약한 개체)</text>
+    <rect x="300" y="72" width="320" height="26" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="310" y="90">대출번호</text><text x="400" y="90" text-decoration="underline" text-decoration-style="dashed">상환번호</text><text x="480" y="90">상환일자</text><text x="560" y="90">금액</text>
+    <rect x="300" y="98" width="320" height="26" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="310" y="116">L-11</text><text x="400" y="116" fill="#ff3b30" font-weight="600">1</text><text x="480" y="116">2023-01-10</text><text x="560" y="116">1,000</text>
+    <rect x="300" y="124" width="320" height="26" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="310" y="142">L-11</text><text x="400" y="142" fill="#ff3b30" font-weight="600">2</text><text x="480" y="142">2023-02-10</text><text x="560" y="142">1,000</text>
+    <rect x="300" y="150" width="320" height="26" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="310" y="168">L-11</text><text x="400" y="168">3</text><text x="480" y="168">2023-03-10</text><text x="560" y="168">1,000</text>
+    <rect x="300" y="176" width="320" height="26" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="310" y="194">L-23</text><text x="400" y="194" fill="#ff3b30" font-weight="600">1</text><text x="480" y="194">2023-02-05</text><text x="560" y="194">600</text>
+    <rect x="300" y="202" width="320" height="26" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="310" y="220">L-23</text><text x="400" y="220" fill="#ff3b30" font-weight="600">2</text><text x="480" y="220">2023-03-05</text><text x="560" y="220">600</text>
+  </g>
+  <line x1="220" y1="112" x2="298" y2="138" stroke="#0a84ff"/>
+  <line x1="220" y1="140" x2="298" y2="202" stroke="#ff9f0a"/>
+
+  <rect x="20" y="248" width="600" height="66" rx="6" fill="#fff" stroke="#d2d2d7"/>
+  <text x="34" y="272" font-size="13" fill="#ff3b30" font-weight="600">상환번호 1과 2가 대출마다 다시 나온다: 상환번호만으로는 키가 될 수 없다</text>
+  <text x="34" y="298" font-size="13" fill="#0a84ff" font-weight="600">{대출번호, 상환번호} = 주 개체의 키 + 구별자(부분 키)로 식별한다</text>
+</svg>

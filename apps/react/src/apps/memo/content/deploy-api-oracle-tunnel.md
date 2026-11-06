@@ -9,11 +9,22 @@ summary: 로컬에서 동작하던 관리자 로그인을 배포 환경으로 �
 
 관리자 로그인, 글쓰기, 댓글은 로컬에서 모두 동작했다. 남은 작업은 API 서버를 실제로 배포해 `macfolio.hyeoniverse.com`에서 로그인하는 것이었다. 서버를 처음부터 다시 구축하는 순서는 `docs/deployment.md`(320줄)로 정리해 [#46](https://github.com/hyeoniverse/MacFolio/pull/46)에 포함했다.
 
+## 배경: 정적 사이트와 API 서버
+
+이 사이트는 두 부분으로 나뉜다. **프론트엔드**는 HTML·JS·CSS 파일 묶음이다. 한 번 빌드하면 내용이 바뀌지 않으므로 Cloudflare Workers 같은 정적 파일 호스팅에 올리면 된다. **API 서버**는 요청을 받아 DB를 읽고 쓰는 프로그램이다. "글 저장", "GitHub로 로그인" 같은 요청은 서버가 실행 중이어야 처리할 수 있고, 이 서버는 NestJS(Node.js 서버 프레임워크)와 PostgreSQL로 구성되어 있다.
+
+| 구분       | 예                                         | 실행 위치                   | 바뀌는 시각           |
+| ---------- | ------------------------------------------ | --------------------------- | --------------------- |
+| 프론트엔드 | `GET /assets/index-….js`                   | Cloudflare Workers          | 배포 시각에만         |
+| API 서버   | `POST /posts`, `GET /auth/github/callback` | Oracle VM의 Docker 컨테이너 | 요청마다 DB 조회·변경 |
+
+API 서버를 인터넷에 공개하려면 세 가지가 필요하다. 외부 요청이 서버에 도달하는 경로, https용 TLS 인증서(브라우저가 서버의 도메인 소유를 확인하는 전자 문서), 그리고 서버가 실행될 컴퓨터다.
+
 ![배포 구성](./images/deploy-architecture.svg '프론트엔드는 Cloudflare Workers, API는 Oracle VM. 서버는 Cloudflare로 향하는 아웃바운드 연결만 생성한다')
 
 ## 처음 계획과 변경한 구성
 
-처음 계획은 일반적인 구성이었다. VM에 nginx를 설치하고, Let's Encrypt로 인증서를 발급받고, 방화벽에서 80/443 포트를 연다. 구성 중에 비교해 보니 **Cloudflare Tunnel**이 관리 항목이 더 적었다.
+처음 계획은 일반적인 구성이었다. VM에 nginx를 설치하고, Let's Encrypt로 인증서를 발급받고, 방화벽에서 80/443 포트를 연다. nginx는 외부 요청을 받아 내부의 API(`localhost:4000`)로 넘겨 주는 리버스 프록시이고, Let's Encrypt는 무료 TLS 인증서를 발급하는 기관이며, certbot은 유효 기간이 90일인 그 인증서를 받아 만료 전에 자동으로 갱신하는 도구다. 구성 중에 비교해 보니 **Cloudflare Tunnel**이 관리 항목이 더 적었다.
 
 |                | nginx + certbot           | Cloudflare Tunnel                 |
 | -------------- | ------------------------- | --------------------------------- |
@@ -24,22 +35,32 @@ summary: 로컬에서 동작하던 관리자 로그인을 배포 환경으로 �
 
 프론트엔드처럼 API도 Cloudflare Workers에서 실행하는 방법이 있다. 하지만 이 API는 NestJS와 Prisma(PostgreSQL)로 구성되어 있고, 업로드한 파일을 DB에 `bytea`로 저장한다. Workers의 실행 모델(요청마다 생성되는 짧은 수명의 격리 환경)에 맞추려면 DB 연결 방식과 프레임워크를 바꿔야 하므로, 상시 실행되는 VM 한 대를 사용하기로 했다.
 
-터널은 서버 안의 `cloudflared`가 Cloudflare로 **아웃바운드** 연결을 먼저 생성하고, 외부 요청이 그 연결을 거쳐 서버로 전달되는 방식이다([Cloudflare 문서: Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)). 인바운드 포트가 없으므로 Oracle 보안 목록(Security List)에 추가할 규칙도 없다. 도메인이 이미 Cloudflare DNS에 있어 추가 비용도 없다.
+### 인바운드와 아웃바운드
+
+방화벽은 연결을 **누가 먼저 시작했는가**로 구분한다. 외부에서 서버로 먼저 들어오는 연결이 인바운드, 서버가 외부로 먼저 나가는 연결이 아웃바운드다. 웹 서버는 보통 443번 포트로 인바운드 연결을 받는다. 터널은 반대다. 서버 안의 `cloudflared`가 Cloudflare로 **아웃바운드** 연결을 먼저 생성하고, 외부 요청이 그 연결을 거쳐 서버로 전달된다([Cloudflare 문서: Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)).
+
+![nginx 구성은 80·443 인바운드를 열고, 터널 구성은 cloudflared가 아웃바운드 연결을 먼저 만들어 그 연결로 요청을 받는다](./images/deploy-api-oracle-tunnel-inbound-outbound.svg '두 구성의 연결 방향 비교')
+
+Cloudflare 문서의 그림은 요청 하나가 이동하는 순서를 보여 준다. 브라우저의 `https://macfolio-api.hyeoniverse.com/docs` 요청은 먼저 Cloudflare 엣지 서버에 도착한다. 엣지는 설정된 Public Hostname 표에서 이 도메인이 어느 터널에 연결되어 있는지 찾고, 그 터널의 `cloudflared`에게 요청을 넘긴다. `cloudflared`는 같은 서버의 `api:4000`에 요청을 전달한다.
+
+![브라우저의 HTTP 요청이 Cloudflare 엣지 서버를 거쳐, 호스트 이름과 터널의 대응 표를 확인한 뒤 서버의 cloudflared와 localhost 서비스로 전달되는 순서](./images/deploy-api-oracle-tunnel-cloudflare-request.jpg 'Cloudflare Tunnel로 요청이 서버의 서비스에 도달하는 순서. 출처: Cloudflare 문서')
+
+인바운드 포트가 없으므로 Oracle 보안 목록(Security List, Oracle Cloud의 방화벽 규칙 표)에 추가할 규칙도 없다. 도메인이 이미 Cloudflare DNS에 있어 추가 비용도 없다.
 
 ## 메모리 1GB 무료 서버
 
-Oracle Always Free에는 ARM(Ampere A1) 4 OCPU·메모리 24GB까지 무료인 shape가 있다. Dockerfile도 이를 기준으로 arm64에서 빌드되게 작성했다. 그런데 서버를 생성하고 접속하자 다음 메시지가 출력되었다.
+Oracle Always Free에는 ARM(Ampere A1) 4 OCPU·메모리 24GB까지 무료인 shape가 있다. shape는 Oracle Cloud에서 VM의 CPU 종류·개수와 메모리 크기를 묶은 사양 이름이다. Dockerfile도 A1을 기준으로 arm64에서 빌드되게 작성했다. 그런데 서버를 생성하고 접속하자 다음 메시지가 출력되었다.
 
 ```text
 Welcome to Ubuntu 24.04.5 LTS (GNU/Linux 6.17.0-1020-oracle x86_64)
 ```
 
-A1은 사용자가 많은 리전에서 용량 부족으로 생성되지 않는 경우가 많고, 선택할 수 있는 shape는 AMD `E2.1.Micro`뿐이었다. 이 shape도 Always Free지만 메모리가 1GB다.
+`x86_64`는 Intel·AMD 계열 CPU라는 뜻이다. A1은 사용자가 많은 리전에서 용량 부족으로 생성되지 않는 경우가 많고, 선택할 수 있는 shape는 AMD `E2.1.Micro`뿐이었다. 이 shape도 Always Free지만 메모리가 1GB다.
 
 > [!WARNING] 이름이 비슷한 유료 shape
 > 이름이 비슷한 `E4/E5.Flex`는 유료이므로, `nproc`와 `free -h`로 무료 shape인지 먼저 확인했다.
 
-Node 공식 이미지는 amd64·arm64를 모두 제공하므로 Dockerfile은 수정하지 않았다. 문제는 메모리였다. `pnpm install`과 `tsc`가 1GB 안에서 실행되다 메모리 부족(OOM)으로 종료될 수 있어, ==빌드 전에 swap을 4GB 할당했다.== 빌드 이후 실행 중에는 PostgreSQL, API, cloudflared를 합쳐도 수백 MB라 1GB로 충분하다.
+Node 공식 이미지는 amd64·arm64를 모두 제공하므로 Dockerfile은 수정하지 않았다. 문제는 메모리였다. `pnpm install`과 `tsc`가 1GB 안에서 실행되다 메모리 부족(OOM, Out Of Memory)으로 종료될 수 있어, ==빌드 전에 swap을 4GB 할당했다.== swap은 메모리가 부족할 때 디스크 일부를 메모리처럼 사용하는 영역이다. 디스크는 메모리보다 훨씬 느리므로 빌드 시간은 길어지지만, 프로세스가 강제 종료되지는 않는다. 빌드 이후 실행 중에는 PostgreSQL, API, cloudflared를 합쳐도 수백 MB라 1GB로 충분하다.
 
 ## 비밀 값은 저장소 밖에 보관
 
@@ -53,7 +74,7 @@ Node 공식 이미지는 amd64·arm64를 모두 제공하므로 Dockerfile은 �
   compose.yml db + api + tunnel
 ```
 
-코드와 설정을 분리하면 비밀 값이 실수로 커밋되지 않고, `git pull` 후에도 설정이 유지된다. `compose.yml`에는 `ports` 항목이 없다. api는 compose 내부 네트워크에서 `api:4000`으로만 접근할 수 있고, 터널의 Public Hostname이 이 주소를 가리킨다.
+코드와 설정을 분리하면 비밀 값이 실수로 커밋되지 않고, `git pull` 후에도 설정이 유지된다. `compose.yml`은 Docker Compose 설정 파일로, 컨테이너 여러 개(db, api, tunnel)와 그 사이의 내부 네트워크를 한 파일에 정의한다. 이 파일에는 `ports` 항목이 없다. `ports`는 컨테이너 포트를 서버의 외부 포트에 연결하는 설정이므로, 없으면 api는 compose 내부 네트워크에서 `api:4000`으로만 접근할 수 있다. 터널의 Public Hostname이 이 주소를 가리킨다.
 
 ## 터미널에 YAML을 붙여 넣은 결과
 
@@ -65,7 +86,7 @@ services:: command not found
 Command 'image:' not found ...
 ```
 
-셸은 붙여 넣은 줄을 하나씩 **명령으로** 실행한다.
+셸은 붙여 넣은 줄을 하나씩 **명령으로** 실행한다. `services:`라는 줄은 YAML 문법이지만, 셸은 이를 `services:`라는 이름의 프로그램 실행으로 해석했다.
 
 > [!TIP] heredoc 구분자의 따옴표
 > 파일로 저장하려면 heredoc[^heredoc]으로 감싸야 한다. 이때 구분자 `EOF`에 따옴표를 붙여야 한다.
@@ -81,9 +102,11 @@ EOF
 | `<<'EOF'` | 셸이 치환하지 않는다                                    | `${DB_PASSWORD}` 그대로 | `compose.yml` (실행 시각에 compose가 `.env`에서 채움)          |
 | `<<EOF`   | 셸이 입력 시각에 치환한다. 셸에 변수가 없으면 빈 문자열 | 빈 값                   | `.env` (`$(openssl rand -hex 24)`를 무작위 값으로 바꾸기 위해) |
 
+예를 들어 셸에 `DB_PASSWORD` 변수가 없는 상태에서 `compose.yml`을 `<<EOF`로 저장하면, 파일에는 `POSTGRES_PASSWORD:` 뒤가 비어 있는 줄이 기록된다. compose가 실행 시각에 `.env` 값으로 채워 넣을 `${DB_PASSWORD}` 자리가 파일에서 사라진 상태다.
+
 ## /docs는 열리는데 로그인 버튼이 비활성
 
-터널 상태가 HEALTHY가 되고 `https://macfolio-api.hyeoniverse.com/docs`에 Swagger 문서가 표시되었다. 서버와 터널이 정상 동작한다는 뜻이다.
+터널 상태가 HEALTHY가 되고 `https://macfolio-api.hyeoniverse.com/docs`에 Swagger 문서가 표시되었다. Swagger 문서는 API의 경로와 요청 형식을 자동으로 정리한 웹 페이지다. 이 페이지가 열린다는 것은 서버와 터널이 정상 동작한다는 뜻이다.
 
 ![Swagger 문서](./images/swagger.jpg '터널을 거쳐 API 문서가 표시된다. 서버와 터널은 정상')
 
@@ -100,7 +123,7 @@ export const adminStore = createStore<AdminState>({
 });
 ```
 
-`env.apiUrl`은 `import.meta.env.VITE_API_URL` 값이다. Vite는 이 값을 **빌드 시각에** 코드에 문자열 리터럴로 치환한다([Vite 문서: Env Variables and Modes](https://vite.dev/guide/env-and-mode)). ==배포된 JS는 정적 파일이므로 실행 중에 환경 변수를 읽을 수단이 없다.==
+`env.apiUrl`은 `import.meta.env.VITE_API_URL` 값이다. Vite는 이 값을 **빌드 시각에** 코드에 문자열 리터럴로 치환한다([Vite 문서: Env Variables and Modes](https://vite.dev/guide/env-and-mode)). 예를 들어 빌드할 때 `VITE_API_URL=https://macfolio-api.hyeoniverse.com`이면 번들에는 `status: "https://macfolio-api.hyeoniverse.com" ? 'checking' : 'disabled'`에 해당하는 코드가 들어가고, 값이 없으면 `undefined ? … : 'disabled'`가 들어간다. ==배포된 JS는 정적 파일이므로 실행 중에 환경 변수를 읽을 수단이 없다.==
 
 Cloudflare 대시보드에는 변수 입력란이 두 곳 있다.
 
@@ -125,9 +148,21 @@ curl -s https://macfolio.hyeoniverse.com/assets/index-….js | grep -o 'https://
 
 GitHub 인증을 거쳐 `?admin=signed-in`으로 돌아오고, 계정 화면에 서버 주소와 로그인 상태가 표시되었다. 로컬과 달라진 부분은 쿠키와 IP 처리 세 가지였다.
 
-- `NODE_ENV=production`이면 세션 쿠키에 `Secure` 속성이 붙는다. https가 아니면 브라우저가 이 쿠키를 저장하지 않는다. 터널이 https를 처리하므로 추가 설정은 없었다
-- 프론트엔드(`macfolio.`)와 API(`macfolio-api.`)는 같은 사이트(`hyeoniverse.com`)이므로 `SameSite=Lax` 쿠키가 `fetch(…, { credentials: 'include' })` 요청에 포함된다([MDN: SameSite](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value)). API를 `*.workers.dev`나 IP 주소에 배포했다면 교차 사이트 요청이 되어 쿠키가 전송되지 않는다
-- 요청 제한은 IP 단위로 집계한다. 터널 뒤에서는 모든 요청의 출발지가 `cloudflared`로 보이므로, `TRUST_PROXY=1`로 프록시 한 단계만 신뢰하고 `X-Forwarded-For`에서 실제 IP를 읽게 했다
+### Secure 쿠키
+
+`NODE_ENV=production`이면 세션 쿠키에 `Secure` 속성이 붙는다. `Secure` 쿠키는 https 연결에서만 저장·전송되므로, http 주소로 접속하면 브라우저가 이 쿠키를 저장하지 않는다. 터널이 https를 처리하므로 추가 설정은 없었다.
+
+### 같은 사이트와 SameSite=Lax
+
+쿠키의 `SameSite` 속성은 다른 사이트에서 시작된 요청에 쿠키를 붙일지 정한다. 여기서 "사이트"는 스킴(`https`)과 **등록 가능한 도메인**(공개 접미사 목록[^psl]에 있는 접미사 바로 아래 이름)의 조합이다. 프론트엔드(`macfolio.`)와 API(`macfolio-api.`)는 등록 가능한 도메인이 `hyeoniverse.com`으로 같으므로 같은 사이트이고, `SameSite=Lax` 쿠키가 `fetch(…, { credentials: 'include' })` 요청에 포함된다([MDN: SameSite](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value)).
+
+![macfolio-api.hyeoniverse.com은 같은 사이트라 쿠키가 전송되고, workers.dev나 IP 주소는 교차 사이트라 전송되지 않는다](./images/deploy-api-oracle-tunnel-same-site.svg 'API 주소에 따라 SameSite=Lax 쿠키가 전송되는지 여부')
+
+API를 `*.workers.dev`나 IP 주소에 배포했다면 교차 사이트 요청이 되어 쿠키가 전송되지 않는다. 그 경우 로그인 직후에도 `GET /auth/me` 같은 요청에 쿠키가 없어 매번 로그아웃 상태로 보인다.
+
+### TRUST_PROXY와 X-Forwarded-For
+
+요청 제한(rate limit)은 같은 IP가 짧은 시간에 너무 많은 요청을 보내지 못하게 하는 장치이고, IP 단위로 집계한다. 터널 뒤에서는 모든 요청의 출발지가 `cloudflared`로 보이므로, 그대로 두면 모든 방문자가 같은 IP 하나로 집계된다. 프록시는 원래 요청자의 IP를 `X-Forwarded-For`(XFF) 헤더에 덧붙여 전달한다. `TRUST_PROXY=1`로 프록시 한 단계만 신뢰하고 `X-Forwarded-For`에서 실제 IP를 읽게 했다.
 
 ```ts
 // apps/api/src/app.setup.ts
@@ -139,6 +174,8 @@ return { httpOnly: true, sameSite: 'lax', secure: this.config.auth.secureCookies
 
 > [!CAUTION] trust proxy를 true로 설정한 경우
 > `trust proxy`를 `true`(전체 신뢰)로 설정하지 않은 이유는 다음과 같다. `true`이면 요청자가 `X-Forwarded-For`에 임의의 IP를 적어 보내도 그 값을 클라이언트 IP로 사용한다. 요청마다 다른 IP를 적으면 요청 제한을 우회할 수 있다. 한 단계(바로 앞의 `cloudflared`)만 신뢰하면, Cloudflare가 덧붙인 실제 IP만 읽는다([Express 문서: Express behind proxies](https://expressjs.com/en/guide/behind-proxies.html)).
+
+예를 들어 요청자가 `X-Forwarded-For: 1.2.3.4`를 직접 넣어 보내면, 서버에 도착한 헤더는 `1.2.3.4, <요청자의 실제 IP>`가 된다. `true`는 가장 왼쪽의 `1.2.3.4`를, `1`은 오른쪽 끝의 실제 IP를 `req.ip`로 사용한다.
 
 ![요청자가 XFF에 위조 값을 넣어도 trust proxy 1은 Cloudflare가 덧붙인 실제 IP를 읽는다](./images/deploy-api-oracle-tunnel-trust-proxy.svg 'TRUST_PROXY=1은 오른쪽 끝 값, true는 왼쪽 끝 값을 req.ip로 쓴다')
 
@@ -214,8 +251,6 @@ cd ~/deploy && docker compose up -d && docker compose logs -f api
 
 되돌리는 방법: `docker compose down`을 실행하면 서비스가 중지되고 DB 볼륨은 유지된다. 터널을 삭제하면 외부 주소가 즉시 차단된다.
 
-공식 문서: [Oracle Always Free 자원](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm), [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/), [Docker 설치](https://docs.docker.com/engine/install/ubuntu/), [Vite 환경 변수](https://vite.dev/guide/env-and-mode).
-
 ## 관련 글
 
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
@@ -225,5 +260,30 @@ cd ~/deploy && docker compose up -d && docker compose logs -f api
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
 
 [^heredoc]: `명령 <<구분자`부터 구분자만 있는 줄까지를 그 명령의 표준 입력으로 전달하는 셸 문법. 구분자에 따옴표를 붙이면 본문의 변수·명령 치환이 일어나지 않는다. [Bash 매뉴얼: Here Documents](https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Here-Documents)
+
+[^psl]: Mozilla가 관리하는 도메인 접미사 목록. `com`, `co.kr`처럼 누구나 그 아래 이름을 등록할 수 있는 접미사와, `workers.dev`처럼 사용자마다 하위 도메인을 나눠 주는 서비스의 접미사가 실려 있다. 브라우저는 이 목록으로 사이트 경계를 판단한다. [Public Suffix List](https://publicsuffix.org/)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Cloudflare 문서: Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+- [Oracle 문서: Always Free Resources](https://docs.oracle.com/en-us/iaas/Content/FreeTier/freetier_topic-Always_Free_Resources.htm)
+- [Docker 문서: Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
+- [Docker 문서: Compose file reference - ports](https://docs.docker.com/reference/compose-file/services/#ports)
+- [Vite 문서: Env Variables and Modes](https://vite.dev/guide/env-and-mode)
+- [MDN: Set-Cookie - SameSite](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value)
+- [MDN: X-Forwarded-For](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Forwarded-For)
+- [Express 문서: Express behind proxies](https://expressjs.com/en/guide/behind-proxies.html)
+- [Let's Encrypt 문서: How It Works](https://letsencrypt.org/how-it-works/)
+- [Public Suffix List](https://publicsuffix.org/)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Cloudflare Tunnel 요청 순서 그림: Cloudflare, [Cloudflare Tunnel 문서](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/) ([원본 이미지](https://developers.cloudflare.com/_astro/handshake.eh3a-Ml1.jpg)), CC BY 4.0([cloudflare-docs 저장소 라이선스](https://github.com/cloudflare/cloudflare-docs/blob/production/LICENSE))
+
+</details>
 
 #MacFolio #배포 #서버 #Cloudflare

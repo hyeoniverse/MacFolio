@@ -7,9 +7,19 @@ seriesOrder: 2
 summary: 관리자가 시스템 설정에서 프로젝트와 프로젝트 앱을 수정하고, 순서를 바꾸고, 숨기고, 추가한다. 서버에는 코드 기본값에 덮어쓸 값만 저장하고, 앱 목록을 계산하기 전에 합치며, 새 데모 주소는 Worker가 CSP에 추가한다.
 ---
 
-프로필에 이어 프로젝트도 코드 밖에서 관리하게 했다([PR #187](https://github.com/hyeoniverse/MacFolio/pull/187)). 프로젝트는 Safari 탭, Finder의 프로젝트 폴더, 터미널 `projects`, 사진 앨범, 그리고 데모를 창 안의 iframe으로 표시하는 **프로젝트 앱**(Dock·Launchpad)이 함께 쓰는 목록이다. 이제 관리자가 **시스템 설정 › 프로젝트**에서 순서를 바꾸고, 숨기고, 수정하고, 새 프로젝트를 추가한다. 방문자에게는 이 항목이 보이지 않는다.
+## 코드 배열로 관리하던 프로젝트 목록
 
-이 글은 그 기능을 주제별로 정리한다. 데이터를 어떻게 저장하고 합치는지, 앱 모듈을 불러오기 전에 서버 값을 어떻게 합치는지, 편집 화면이 어떻게 생겼는지, 무엇을 검사하는지 차례로 적는다. 프로젝트 페이지의 모양(템플릿)을 다듬어 온 이야기는 길어서 [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)로 나눴다.
+이 사이트의 프로젝트 목록은 코드의 배열 `PROJECTS`(`shared/profile/projects`)다. 프로젝트 하나에는 이름, 저장소·데모 주소, 기간, 기술, 주요 기능, 화면 캡처, 출처 같은 필드가 있고, 이 배열 하나를 여러 화면이 함께 읽는다.
+
+| 화면                     | `PROJECTS`를 읽어 표시하는 것                      |
+| ------------------------ | -------------------------------------------------- |
+| Safari                   | 프로젝트마다 탭 하나, 탭 안의 프로젝트 소개 페이지 |
+| Finder                   | 프로젝트 폴더와 미리 보기                          |
+| 터미널                   | `projects` 명령의 출력                             |
+| 사진                     | 프로젝트별 앨범                                    |
+| Dock·Launchpad (앱 목록) | 데모를 창 안의 iframe으로 표시하는 **프로젝트 앱** |
+
+[사이트 프로필](/memo/site-profile-editing)과 마찬가지로, 프로젝트 하나를 추가하거나 데모 주소 하나를 고치려면 코드를 수정해 다시 빌드·배포해야 했다. 그래서 프로젝트도 코드 밖에서 관리하게 했다([PR #187](https://github.com/hyeoniverse/MacFolio/pull/187)). 이제 관리자가 **시스템 설정 › 프로젝트**에서 순서를 바꾸고, 숨기고, 수정하고, 새 프로젝트를 추가한다. 방문자에게는 이 항목이 보이지 않는다. Safari 프로젝트 페이지의 모양(템플릿)은 [공통 내용 모델 위에 템플릿을 얹는 Safari 프로젝트 페이지 재설계](/memo/site-projects-editing-templates)에서 따로 설명한다.
 
 ## 데이터 모델: 서버에는 덮어쓸 값만
 
@@ -31,6 +41,19 @@ interface ProjectEntry {
 - 코드에 없는 id는 새 프로젝트다. 빈 프로젝트에 덮어쓸 값을 채워 만든다.
 - 저장할 때는 기본값과 **다른 필드만** 남긴다(`overrideOf`). 이름 하나만 바꾸면 `{ id: 'macfolio', override: { name: '…' } }` 한 줄이다.
 
+예를 들어 코드에 `macfolio`, `newpick`, `qru` 세 프로젝트가 있고 서버에 다음 값이 저장되어 있다고 하자.
+
+```json
+[
+	{ "id": "newpick" },
+	{ "id": "macfolio", "override": { "name": "MacFolio 2" } },
+	{ "id": "qru", "hidden": true },
+	{ "id": "myapp", "override": { "name": "My App", "repo": "https://github.com/…" } }
+]
+```
+
+합친 결과는 `newpick`, `MacFolio 2`(이름만 바뀐 `macfolio`), `My App` 순서다. `qru`는 숨겨져 빠지고, 코드에 없는 `myapp`은 새 프로젝트로 추가된다. 이후 코드에 프로젝트 `next`를 추가하고 배포하면 서버 목록에 없으므로 맨 끝에 붙는다.
+
 ![코드의 프로젝트 목록과 서버의 덮어쓸 값을 합쳐 보이는 목록을 만드는 예](./images/site-projects-editing-merge.svg '서버 목록 순서대로, 숨긴 것은 빼고, 새 id는 새 프로젝트로')
 
 ### 왜 통째로 옮기지 않았나
@@ -45,7 +68,11 @@ interface ProjectEntry {
 
 ## 검증과 보안
 
-이 값은 링크(`<a href>`)와 iframe 주소, 그림 주소가 된다. 관리자만 저장할 수 있어도 ==잘못 입력한 값 하나가 방문자 화면의 XSS==[^xss]가 될 수 있으므로, 서버와 화면이 함께 쓰는 `parseProjects()`(desktop-core) 하나가 작은 스키마로 모든 필드를 검사한다. 화면은 저장 전에, 서버는 요청을 수신할 때 같은 함수를 호출하므로 둘의 거절 기준이 다를 수 없다.
+이 값은 링크(`<a href>`)와 iframe 주소, 그림 주소가 된다. 관리자만 저장할 수 있어도 ==잘못 입력한 값 하나가 방문자 화면의 XSS==[^xss]가 될 수 있다. 예를 들어 데모 주소 칸에 `javascript:alert(1)`이 저장되면 사이트는 `<a href="javascript:alert(1)">`을 렌더링하고, 방문자가 그 링크를 누르는 시각에 이 사이트의 출처로 스크립트가 실행된다. 그림 주소에 `/imgs/a.png" onerror="…`처럼 따옴표가 섞이면 HTML 속성을 닫고 이벤트 처리기를 추가하는 문자열이 된다.
+
+그래서 서버와 화면이 함께 쓰는 `parseProjects()`(desktop-core) 하나가 작은 스키마로 모든 필드를 검사한다. 화면은 저장 전에, 서버는 요청을 수신할 때 같은 함수를 호출하므로 둘의 거절 기준이 다를 수 없다.
+
+![링크 칸과 그림 칸에 넣은 값이 통과하거나 거절되는 일곱 가지 예](./images/site-projects-editing-url-check.svg 'https와 사이트 안 경로, 자기 API 출처만 통과한다')
 
 - 저장소·데모·출처·팀원·배포 결과물 링크는 `https:` 주소만 허용한다. `javascript:`나 `data:` 같은 주소는 여기서 거절된다.
 - 그림·영상은 사이트 안 경로(`/imgs/…`)나 https만 허용하고, 따옴표·괄호·공백이 들어간 주소는 거절한다.
@@ -58,11 +85,11 @@ interface ProjectEntry {
 
 규칙을 만들고 나서 코드의 프로젝트를 모두 이 검사에 넣어 보는 시험을 추가하자 곧바로 하나가 실패했다. 한 장의 테마 팔레트가 18개라 처음 정한 상한 12개를 넘었다. 코드의 값은 JSON 탭으로 그대로 저장할 수 있어야 하므로 상한을 30개로 올렸다.
 
-그림 업로드 기능을 추가하면서 규칙을 하나 더 넓혔다. 올린 그림의 주소는 `/files/<id>`인데, 운영에서는 https지만 로컬에서는 http다. 그래서 "자기 API 출처는 허용한다"를 추가했다. 기준은 서버가 `API_URL`, 화면이 `VITE_API_URL`이다.
+그림 업로드 기능을 추가하면서 규칙을 하나 더 넓혔다. 올린 그림의 주소는 `<API 주소>/files/<id>`인데, 운영에서는 `https://macfolio-api.hyeoniverse.com/files/…`이지만 로컬에서는 `http://localhost:4000/files/…`다. 그래서 "자기 API 출처는 허용한다"를 추가했다. 기준은 서버가 `API_URL`, 화면이 `VITE_API_URL`이다. 검사는 주소를 `new URL()`로 해석한 뒤 `protocol`이 `https:`이거나 `origin`이 허용 목록에 있는지 확인한다.
 
 ## 앱 모듈을 불러오기 전에 서버 값을 합친다
 
-구현이 까다로운 쪽은 서버가 아니라 화면이었다. 프로필은 컴포넌트가 `useProfile()`로 읽으면 충분했지만, 프로젝트는 여러 모듈이 **모듈을 평가하는 시각에** 한 번 계산한다.
+구현이 까다로운 쪽은 서버가 아니라 화면이었다. 자바스크립트 모듈은 처음 `import`되는 시각에 최상위 코드가 한 번 실행(평가)되고, 그때 계산한 상수는 이후 바뀌지 않는다. 프로필은 컴포넌트가 `useProfile()`로 읽으면 충분했지만, 프로젝트는 여러 모듈이 **모듈을 평가하는 시각에** 한 번 계산한다.
 
 ```ts
 // apps/manifest.ts: 모듈을 불러올 때 한 번
@@ -77,7 +104,11 @@ export const APP_NAMES = [...BUILTIN, ...PROJECT_APPS.map((project) => project.i
 void loadSiteContent().finally(() => import('./boot'));
 ```
 
-`main.tsx`는 사이트 콘텐츠만 읽고, 앱은 `boot.tsx`에서 [동적 `import()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)로 불러온다. `PROJECTS` 배열은 새 배열로 교체하지 않고 **기존 배열의 내용을 교체한다**([`splice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)). 먼저 `PROJECTS`를 import한 모듈이 있어도 같은 배열 객체를 참조하므로 변경된 내용을 읽는다.
+`main.tsx`는 사이트 콘텐츠만 읽고, 앱은 `boot.tsx`에서 [동적 `import()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)로 불러온다. 파일 맨 위의 정적 `import` 문은 모듈을 실행하기 전에 의존 모듈을 모두 평가하지만, 동적 `import()`는 호출하는 시각에 모듈을 불러와 평가하고 Promise를 반환한다. 그래서 `loadSiteContent()`가 끝난 뒤에 `boot`를 불러오면, `manifest.ts`가 `PROJECT_APPS`를 계산하는 시각에는 이미 서버 값이 합쳐져 있다.
+
+`PROJECTS` 배열은 새 배열로 교체하지 않고 **기존 배열의 내용을 교체한다**([`splice`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)). `PROJECTS`는 `export const`로 선언되어 있어 다른 모듈에서 다시 대입할 수 없고, 다시 대입할 수 있더라도 이미 그 배열을 변수에 담아 둔 모듈은 옛 배열을 계속 참조한다. `splice(0, PROJECTS.length, ...merged)`는 배열 객체는 그대로 두고 원소만 모두 바꾸므로, 먼저 `PROJECTS`를 import한 모듈도 같은 배열 객체에서 변경된 내용을 읽는다.
+
+![새 배열을 만들면 먼저 import한 모듈은 옛 배열을 읽고, splice로 내용을 바꾸면 모든 모듈이 같은 배열에서 새 내용을 읽는 비교](./images/site-projects-editing-splice.svg '배열 객체를 바꾸지 않고 원소만 바꾼다')
 
 ### Worker가 HTML에 넣는다
 
@@ -90,15 +121,19 @@ void loadSiteContent().finally(() => import('./boot'));
 ```
 
 - `type="application/json"`이라 실행되지 않는 데이터다. CSP가 인라인 스크립트를 막아도 상관없다.
-- 값 안의 `</script>`로 태그를 닫고 빠져나가지 못하게 `<`를 `\u003c`로 바꾼다.
+- 값 안의 `</script>`로 태그를 닫고 빠져나가지 못하게 `<`를 `\u003c`로 바꾼다. HTML 파서는 `<script>` 안의 내용을 JSON으로 해석하지 않고 처음 나오는 `</script>` 문자열에서 태그를 닫기 때문이다. `\u003c`는 JSON 문자열 안에서 `<`를 나타내는 이스케이프라서 `JSON.parse` 결과는 원래 값과 같다.
 - 화면은 이 태그가 있으면 바로 사용하고, 없으면(로컬·E2E) API에 요청해 2.5초까지 기다린다. 그래도 실패하면 코드의 기본값으로 시작한다.
 - Worker는 수신한 값을 1분 동안 캐시하고(실패 결과는 10초), API가 1.5초 안에 응답하지 않으면 콘텐츠 없이 HTML을 응답한다.
+
+![프로젝트 이름에 </script>가 들어 있을 때 그대로 넣은 경우와 \u003c로 바꾼 경우의 HTML 비교](./images/site-projects-editing-script-escape.svg '바꾸지 않으면 첫 </script>에서 데이터 태그가 닫히고 뒤의 script가 실행된다')
 
 첫 화면은 원래 Worker를 거치지 않는 정적 파일이었다. [`run_worker_first`](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/)에 `["/", "/index.html"]`을 지정해 첫 화면만 Worker를 먼저 거치게 했다(이후 `/sitemap.xml`, `/rss.xml`이 추가되었다). 그림·코드 같은 나머지 파일은 그대로 Worker를 거치지 않는다([not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404) 참고).
 
 ### 새 데모 주소와 CSP
 
-사이트의 CSP는 빌드 시각에 코드의 데모 주소로 [`frame-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)를 만들었다. ==관리자가 새 프로젝트 앱을 추가하면 그 데모 주소는 빌드 결과에 없으므로 iframe이 차단==된다.
+CSP(Content Security Policy)는 서버가 응답 헤더로 "이 페이지가 어느 출처의 스크립트·그림·iframe을 불러와도 되는지"를 브라우저에 알려 주는 규칙이다. 그중 [`frame-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)는 iframe으로 표시할 수 있는 출처 목록이고, 목록에 없는 주소를 iframe에 넣으면 브라우저가 불러오지 않고 콘솔에 CSP 위반을 기록한다.
+
+사이트의 CSP는 빌드 시각에 코드의 데모 주소로 `frame-src`를 만들었다. ==관리자가 새 프로젝트 앱을 추가하면 그 데모 주소는 빌드 결과에 없으므로 iframe이 차단==된다. 예를 들어 데모 주소가 `https://myapp.example.com`인 프로젝트 앱을 추가하면, 창은 열리지만 iframe 자리는 빈 화면으로 남는다.
 
 같은 Worker가 첫 화면을 응답할 때, 수신한 콘텐츠의 데모 주소를 추가해 CSP를 다시 만든다. CSP는 문서(HTML) 응답에 붙은 헤더가 그 페이지 전체에 적용되므로 첫 화면 응답만 수정하면 된다. `wrangler dev`에 가짜 API를 연결해 확인한 결과, 콘텐츠가 HTML에 삽입되고 가짜 데모 주소가 `frame-src`에 추가되었다.
 
@@ -241,9 +276,6 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 
 </details>
 
-> [!NOTE] 화면 캡처 방법
-> 이 글의 화면 캡처는 E2E와 같은 방법으로 촬영했다. 미리보기 서버에는 API가 없으므로 Playwright의 [`page.route`](https://playwright.dev/docs/network)로 가짜 API(`e2e/fakeApi.ts`, 관리자 로그인 상태)를 연결해 시스템 설정 › 프로젝트를 열었다.
-
 ## 남은 것과 배운 것
 
 - Dock·Launchpad·사진 앨범은 여전히 시작할 때 한 번 정해진다. 그래서 앱을 켜고 끄거나 숨기면 새로고침이 필요하다. 이것까지 반응형으로 바꾸려면 앱 목록을 사용하는 모듈을 모두 수정해야 한다.
@@ -258,9 +290,7 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 3. 주 언어·기술은 칩에서 검색해 선택하고, 아이콘·대표 화면을 업로드한다
 4. 목록의 **완료**를 눌러 저장한다
 
-시험은 `cd apps/react && npx playwright test e2e/site-projects.spec.ts`로 실행하며, API 서버 없이 가짜 API로 동작한다([apps/react/e2e/fakeApi.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/fakeApi.ts)).
-
-참고 문서: [MDN iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), [MDN CSP frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src), [MDN frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors), [Cloudflare Workers 정적 자산 라우팅](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/).
+시험은 `cd apps/react && npx playwright test e2e/site-projects.spec.ts`로 실행하며, API 서버 없이 가짜 API로 동작한다([apps/react/e2e/fakeApi.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/fakeApi.ts)). 이 글의 편집 화면 캡처도 같은 방법으로, Playwright의 [`page.route`](https://playwright.dev/docs/network)로 가짜 API(관리자 로그인 상태)를 연결해 촬영했다.
 
 ## 관련 글
 
@@ -271,6 +301,24 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404): 이 글의 Worker가 시작된 작업
 - [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers): `frame-src`를 처음 만든 작업
 - PR: [#187](https://github.com/hyeoniverse/MacFolio/pull/187), [#239](https://github.com/hyeoniverse/MacFolio/pull/239)
+
+<details>
+<summary>참고 문헌</summary>
+
+- OWASP, [Cross Site Scripting (XSS)](https://owasp.org/www-community/attacks/xss/)
+- OWASP Cheat Sheet Series, [Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)
+- MDN, [Content Security Policy (CSP)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+- MDN, [CSP: frame-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)
+- MDN, [CSP: frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)
+- MDN, [&lt;iframe&gt;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe)
+- MDN, [import()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)
+- MDN, [import: imported values are live bindings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+- MDN, [Array.prototype.splice()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
+- HTML Living Standard, [Restrictions for contents of script elements](https://html.spec.whatwg.org/multipage/scripting.html#restrictions-for-contents-of-script-elements)
+- Cloudflare 문서, [Workers static assets: run_worker_first](https://developers.cloudflare.com/workers/static-assets/routing/worker-script/)
+- Prisma 문서, [upsert](https://www.prisma.io/docs/orm/reference/prisma-client-reference#upsert)
+
+</details>
 
 [^upsert]: 행이 있으면 갱신(update)하고 없으면 생성(insert)하는 연산. 행 하나만 쓰는 설정 테이블에서 "처음 저장"과 "다시 저장"을 한 요청으로 처리한다.
 

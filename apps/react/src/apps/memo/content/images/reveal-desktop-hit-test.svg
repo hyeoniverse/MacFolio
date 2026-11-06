@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">밀려난 창의 40px을 누르면 이벤트 대상이 창 컨테이너가 된다</text>
+<rect x="20" y="50" width="220" height="200" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="130" y="72" font-size="12" fill="#6e6e73" text-anchor="middle">화면 왼쪽 끝</text>
+<rect x="20" y="90" width="40" height="140" fill="#e5f1ff" stroke="#0a84ff" stroke-width="2"/>
+<rect x="-160" y="90" width="180" height="140" fill="none"/>
+<rect x="24" y="96" width="32" height="20" rx="4" fill="#fff" stroke="#6e6e73" stroke-dasharray="3 2"/>
+<rect x="24" y="122" width="32" height="96" rx="4" fill="#fff" stroke="#6e6e73" stroke-dasharray="3 2"/>
+<text x="70" y="112" font-size="12" fill="#1d1d1f">툴바·버튼 (자식 요소)</text>
+<text x="70" y="128" font-size="12" fill="#6e6e73">pointer-events: none</text>
+<text x="70" y="176" font-size="12" fill="#0a84ff">.container.revealed</text>
+<text x="70" y="192" font-size="12" fill="#6e6e73">보이는 폭 40px</text>
+<circle cx="40" cy="160" r="9" fill="#ff9f0a" opacity="0.9"/>
+<text x="40" y="246" font-size="12" fill="#c46f00" text-anchor="middle">누른 곳</text>
+<rect x="290" y="56" width="330" height="40" rx="8" fill="#fff" stroke="#6e6e73"/>
+<text x="455" y="81" font-size="12" fill="#1d1d1f" text-anchor="middle">자식 요소를 건너뛰고 대상 = 창 컨테이너</text>
+<rect x="290" y="112" width="330" height="40" rx="8" fill="#fff" stroke="#6e6e73"/>
+<text x="455" y="137" font-size="12" fill="#1d1d1f" text-anchor="middle">onPointerDownCapture → bringAppToFront(앱)</text>
+<rect x="290" y="168" width="330" height="40" rx="8" fill="#fff" stroke="#6e6e73"/>
+<text x="455" y="193" font-size="12" fill="#1d1d1f" text-anchor="middle">update(…, desktopFocused: false)</text>
+<rect x="290" y="224" width="330" height="40" rx="8" fill="#eafaef" stroke="#34c759"/>
+<text x="455" y="249" font-size="12" fill="#1d1d1f" text-anchor="middle">desktopRevealed: false → 모든 창 복귀, 누른 창이 맨 앞</text>
+<line x1="455" y1="96" x2="455" y2="110" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="455" y1="152" x2="455" y2="166" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="455" y1="208" x2="455" y2="222" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<line x1="242" y1="150" x2="286" y2="80" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#ar)"/>
+<text x="320" y="300" font-size="12" fill="#6e6e73" text-anchor="middle">pointer-events: none이 없으면 같은 자리를 눌렀을 때 툴바 버튼이 실행된다</text>
+<text x="320" y="320" font-size="12" fill="#6e6e73" text-anchor="middle">새 이벤트 처리기 없이 기존 "창을 누르면 맨 앞" 경로를 그대로 사용한다</text>
+</svg>

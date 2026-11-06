@@ -7,7 +7,7 @@ seriesOrder: 5
 summary: iOS Safari는 키보드가 올라와도 레이아웃 뷰포트를 줄이지 않는다. visualViewport로 가려진 높이를 측정해 메모 서식 막대를 키보드 위에 붙이고, offsetTop과 높이로 메시지 앱 화면을 보이는 영역에 맞췄다. 메시지 앱의 넓은 휴대폰 화면 배치와 아이콘 잘림도 수정했다.
 ---
 
-휴대폰 화면에서 키보드가 올라오면 화면이 사용자가 보는 영역과 어긋나는 문제를 두 PR로 수정했다. 두 PR 모두 [`window.visualViewport`](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport)로 실제로 보이는 영역을 측정하는 방식이다.
+휴대폰 화면에서 키보드가 올라오면 사이트의 화면 배치가 사용자가 실제로 보는 영역과 어긋나는 문제를 두 PR로 수정했다. 두 PR 모두 [`window.visualViewport`](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport)로 실제로 보이는 영역을 측정해 배치를 맞춘다.
 
 | PR                                                       | 앱     | 증상                                                      | 수정 내용                                                        |
 | -------------------------------------------------------- | ------ | --------------------------------------------------------- | ---------------------------------------------------------------- |
@@ -16,17 +16,33 @@ summary: iOS Safari는 키보드가 올라와도 레이아웃 뷰포트를 줄�
 
 #230에서는 iOS 메모의 문단 도구(들여쓰기·이동·인용·목록)도 서식 막대에 추가했다. #363에서는 메시지 앱의 휴대폰 화면 문제 두 가지를 함께 수정했다. 넓은 휴대폰 화면에서 검색 알약이 입력 칸을 덮는 문제와 빈 목록의 말풍선 아이콘 윗부분이 잘리는 문제다.
 
-## 레이아웃 뷰포트와 비주얼 뷰포트
+## 배경: 화면 키보드와 뷰포트
 
-iOS Safari는 키보드가 올라와도 [레이아웃 뷰포트](https://developer.mozilla.org/en-US/docs/Glossary/Layout_viewport)(`window.innerHeight`, `100dvh`)를 줄이지 않는다. 줄어드는 것은 실제로 화면에 보이는 영역인 [비주얼 뷰포트](https://developer.mozilla.org/en-US/docs/Glossary/Visual_Viewport)뿐이다. 아래쪽 입력 칸에 초점이 가면 Safari는 비주얼 뷰포트를 아래로 이동해(`offsetTop`) 입력 칸을 키보드 위에 표시한다. 그래서 `position: fixed; bottom: 0`이나 화면 높이를 가득 채운 상자의 하단에 배치한 요소는 키보드 뒤로 들어가고, 상단에 배치한 요소는 보이는 영역 위로 밀려 나갈 수 있다. Android Chrome도 현재 기본 동작은 같다(비주얼 뷰포트만 줄인다).
+데스크톱 브라우저에서는 물리 키보드를 쓰므로 글자를 입력해도 화면 크기가 변하지 않는다. 휴대폰은 입력 칸을 누르면 화면 아래쪽에 소프트웨어 키보드(화면 키보드)가 올라와 화면의 40% 안팎을 덮는다. iPhone 13 세로 화면을 예로 들면 높이 844px 중 키보드가 336px를 차지하고, 실제로 내용이 보이는 높이는 508px로 줄어든다.
 
-| 값                                | 키보드가 내려간 상태 | 키보드가 올라온 상태 |
-| --------------------------------- | -------------------- | -------------------- |
-| `window.innerHeight`, `100dvh`    | 화면 높이            | 변화 없음            |
-| `visualViewport.height`           | 화면 높이            | 키보드 높이만큼 감소 |
-| `position: fixed; bottom: 0` 요소 | 화면 하단            | 키보드 뒤            |
+이때 "화면 크기"를 나타내는 값이 하나가 아니다. 웹 페이지의 배치 기준인 **뷰포트**(viewport, 브라우저가 페이지를 그리는 사각형 영역)는 두 종류로 나뉜다.
 
-키보드가 가린 높이는 레이아웃 뷰포트의 하단 좌표에서 비주얼 뷰포트의 하단 좌표를 뺀 값이다.
+| 용어                                                                                 | 뜻                                                                                                    | 대표 값                                             |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [레이아웃 뷰포트](https://developer.mozilla.org/en-US/docs/Glossary/Layout_viewport) | CSS가 배치를 계산하는 기준 사각형. `position: fixed` 요소와 `100vh`·`100dvh` 같은 단위가 이 값을 쓴다 | `window.innerHeight`                                |
+| [비주얼 뷰포트](https://developer.mozilla.org/en-US/docs/Glossary/Visual_Viewport)   | 사용자의 눈에 실제로 보이는 부분. 확대(핀치 줌)하거나 키보드가 올라오면 레이아웃 뷰포트보다 작아진다  | `visualViewport.height`, `visualViewport.offsetTop` |
+
+`offsetTop`은 비주얼 뷰포트의 위쪽 끝이 레이아웃 뷰포트의 위쪽 끝에서 몇 px 아래에 있는지를 나타낸다. 예를 들어 `offsetTop`이 336이면 레이아웃 뷰포트의 위쪽 336px는 화면 위로 밀려나 보이지 않는다.
+
+## 키보드가 올라와도 줄어들지 않는 레이아웃 뷰포트
+
+iOS Safari는 키보드가 올라와도 레이아웃 뷰포트(`window.innerHeight`, `100dvh`)를 줄이지 않는다. 줄어드는 것은 비주얼 뷰포트뿐이다. 아래쪽 입력 칸에 초점이 가면 Safari는 비주얼 뷰포트를 아래로 이동해(`offsetTop` 증가) 입력 칸을 키보드 위에 표시한다. Android Chrome도 기본 동작은 같다. Chrome 108부터 Android Chrome도 키보드가 올라오면 비주얼 뷰포트만 줄이는 동작으로 바뀌었다[^chrome108].
+
+이 동작 때문에 화면 높이를 기준으로 배치한 요소가 두 방향으로 어긋난다.
+
+| 값                                | 키보드가 내려간 상태 | 키보드가 올라온 상태             |
+| --------------------------------- | -------------------- | -------------------------------- |
+| `window.innerHeight`, `100dvh`    | 844px                | 844px (변화 없음)                |
+| `visualViewport.height`           | 844px                | 508px (키보드 높이만큼 감소)     |
+| `position: fixed; bottom: 0` 요소 | 화면 하단            | 키보드 뒤에 가려짐               |
+| `position: fixed; top: 0` 요소    | 화면 상단            | `offsetTop`만큼 화면 위로 밀려남 |
+
+키보드가 가린 높이는 레이아웃 뷰포트의 하단 좌표(`innerHeight`)에서 비주얼 뷰포트의 하단 좌표(`height + offsetTop`)를 뺀 값이다.
 
 ```ts
 export function keyboardInset(): number {
@@ -39,11 +55,20 @@ export function keyboardInset(): number {
 
 ![레이아웃 뷰포트와 비주얼 뷰포트, 키보드 높이](./images/memo-keyboard-toolbar-viewport.svg '키보드가 가린 높이를 CSS 변수로 전달해 서식 알약을 그만큼 올린다')
 
-`offsetTop`을 더하는 이유는 키보드가 올라올 때 Safari가 비주얼 뷰포트를 아래로 이동해 커서를 표시하는 경우가 있기 때문이다. 주소창이 접히고 펼쳐질 때도 비주얼 뷰포트의 높이가 바뀌므로, 120px(`MIN_KEYBOARD_PX`)보다 작은 차이는 키보드로 판단하지 않는다.
+`offsetTop`을 더하는 이유는 키보드가 올라올 때 Safari가 비주얼 뷰포트를 아래로 이동해 커서를 표시하는 경우가 있기 때문이다. 비주얼 뷰포트가 이동한 만큼은 키보드가 레이아웃 뷰포트 밖에 놓이므로 가려진 높이에서 뺀다. 주소창이 접히고 펼쳐질 때도 비주얼 뷰포트의 높이가 수십 px 바뀐다. 그래서 120px(`MIN_KEYBOARD_PX`)보다 작은 차이는 키보드로 판단하지 않는다.
 
-`visualViewport`의 `resize`·`scroll` 이벤트를 구독해 이 값을 다시 계산한다(`useKeyboardInset`). 편집기가 열려 있을 때만 구독한다.
+| 상황 (iPhone 13)                      | `innerHeight` | `height` | `offsetTop` | 가려진 높이 | `keyboardInset()` |
+| ------------------------------------- | ------------- | -------- | ----------- | ----------- | ----------------- |
+| 키보드 없음                           | 844           | 844      | 0           | 0           | 0                 |
+| 주소창이 펼쳐져 높이가 줄어든 상태    | 844           | 790      | 0           | 54          | 0 (120 미만)      |
+| 키보드가 올라오고 뷰포트는 이동 안 함 | 844           | 508      | 0           | 336         | 336               |
 
-키보드 높이를 구하는 방법은 세 가지를 비교했다.
+> [!NOTE]
+> 표의 주소창 높이(54px)는 120px 기준을 설명하기 위한 예시 값이다. 실제 주소창 높이는 기기와 iOS 버전에 따라 다르다.
+
+`visualViewport`의 `resize`·`scroll` 이벤트를 구독해 이 값을 다시 계산한다(`useKeyboardInset`). 키보드가 올라오거나 내려가면 `resize`가, 비주얼 뷰포트가 이동하면 `scroll`이 발생한다. 편집기가 열려 있을 때만 구독한다.
+
+키보드 높이를 구하는 방법은 세 가지를 비교했다. `interactive-widget`은 viewport `<meta>` 태그에 적는 값으로, 키보드 같은 화면 위 입력 도구가 올라오면 어느 뷰포트를 줄일지 브라우저에 지정한다. VirtualKeyboard API는 키보드가 차지한 사각형을 스크립트와 CSS 환경 변수(`env(keyboard-inset-height)`)로 알려 주는 API다.
 
 | 방법                                                                                                                      | 장점                                      | 단점                                                                                                              |
 | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -65,8 +90,12 @@ export function keyboardInset(): number {
 }
 ```
 
+예를 들어 키보드가 336px를 가리면 `--keyboard-inset`은 `336px`이고, 막대의 `bottom`은 `calc(336px + 8px)` = 344px가 된다. 막대의 아래 끝이 키보드 위쪽 끝에서 8px 위에 놓인다.
+
 > [!WARNING] 접두사가 두 번 붙은 변수 이름
 > 처음 구현에서는 막대가 화면 맨 위에 표시됐다. CSS 변수를 전달하는 `cssVars()`가 이름 앞에 `--`를 붙이는데, 이름을 `'--keyboard-inset'`로 전달해서 `----keyboard-inset`이 됐다. `var(--keyboard-inset)`이 정의되지 않았으므로 `bottom` 선언 전체가 계산 시점에 무효[^invalid-var]가 되어, `bottom`이 `auto`인 상자처럼 위쪽에 렌더링됐다.
+
+![cssVars() 이름 오류로 bottom 선언이 무효가 되는 과정](./images/ios-keyboard-viewport-invalid-var.svg "도식. 위: '--keyboard-inset'을 넘기면 style에 ----keyboard-inset이 생기고, var(--keyboard-inset)이 없어 bottom이 auto가 된다. 아래: 'keyboard-inset'을 넘기면 bottom이 344px로 계산된다")
 
 편집기는 커서가 있는 줄이 위아래의 플로팅 막대에 가려지지 않도록 스크롤 위치를 조정한다. 키보드가 올라와 있으면 화면에 보이는 하단은 키보드 위쪽이므로, 그 좌표를 하단 기준으로 사용한다.
 
@@ -96,7 +125,7 @@ iOS 메모는 서식 막대의 ¶ 버튼을 누르면 막대가 문단 도구로
 
 ### 키보드 높이 대신 비주얼 뷰포트의 위치를 반환한다
 
-`keyboardInset()`의 값은 "레이아웃 뷰포트 맨 아래 중 보이지 않는 높이"라서, iOS가 비주얼 뷰포트를 키보드 높이만큼 다 이동하면 0이 된다. 화면 아래에 붙인 막대를 올리는 데는 맞는 값이지만, ==머리를 고정하는 데는 키보드가 있는지조차 판정할 수 없다==. 그래서 같은 파일에 `keyboardViewport()`를 추가했다. 키보드 여부는 `innerHeight - visualViewport.height`(이동 거리와 무관한 키보드 높이)로 판정하고, 비주얼 뷰포트의 `offsetTop`과 높이를 그대로 반환한다.
+`keyboardInset()`의 값은 "레이아웃 뷰포트 맨 아래 중 보이지 않는 높이"라서, iOS가 비주얼 뷰포트를 키보드 높이만큼 모두 이동하면 0이 된다. 메시지 앱처럼 입력 칸이 화면 맨 아래에 있으면 Safari가 입력 칸을 보이게 하려고 비주얼 뷰포트를 끝까지 내리므로, 이 경우가 흔하다. 화면 아래에 붙인 막대를 올리는 데는 맞는 값이지만, ==머리를 고정하는 데는 키보드가 있는지조차 판정할 수 없다==. 그래서 같은 파일에 `keyboardViewport()`를 추가했다. 키보드 여부는 `innerHeight - visualViewport.height`(이동 거리와 무관한 키보드 높이)로 판정하고, 비주얼 뷰포트의 `offsetTop`과 높이를 그대로 반환한다.
 
 ```ts
 export function keyboardViewport(): KeyboardViewport | null {
@@ -106,6 +135,8 @@ export function keyboardViewport(): KeyboardViewport | null {
 	return { top: Math.round(viewport.offsetTop), height: Math.round(viewport.height) };
 }
 ```
+
+![두 함수의 반환값 비교](./images/ios-keyboard-viewport-values.svg '도식. 왼쪽: 비주얼 뷰포트가 이동하지 않으면 두 함수 모두 키보드를 찾는다. 오른쪽: 336px 이동하면 keyboardInset()은 0이 되고, keyboardViewport()는 { top: 336, height: 508 }을 반환한다')
 
 <details>
 <summary>두 값의 차이 (iPhone 13, 레이아웃 뷰포트 844px, 키보드 336px)</summary>
@@ -142,9 +173,11 @@ export function keyboardViewport(): KeyboardViewport | null {
 
 ## 넓은 휴대폰 화면에서 검색 알약이 입력 칸을 덮었다
 
-사이트는 화면 폭이 767px 이하이면 휴대폰 셸(iOS 홈 화면)을 쓴다(`isMobileViewport`). 메시지 앱은 이와 별개로 앱 폭이 640px 이하일 때만 목록과 대화를 한 화면씩 보여 준다(`@container (max-width: 640px)`). 그래서 iPad mini 세로(744px)나 가로로 눕힌 휴대폰(844~932px)에서는 **휴대폰 셸 안에 목록과 대화가 나란히** 렌더링된다. 사용자가 본 "태블릿 UI"가 이 화면이다.
+사이트는 화면 폭이 767px 이하이거나, 폭 1023px 이하이면서 높이 499px 이하(가로로 눕힌 휴대폰)이면 휴대폰 셸(iOS 홈 화면)을 쓴다(`isMobileViewport`). 메시지 앱은 이와 별개로 앱 폭이 640px 이하일 때만 목록과 대화를 한 화면씩 보여 준다(`@container (max-width: 640px)`). 그래서 iPad mini 세로(744px)나 가로로 눕힌 휴대폰(844~932px)에서는 **휴대폰 셸 안에 목록과 대화가 나란히** 렌더링된다. 사용자가 본 "태블릿 UI"가 이 화면이다.
 
-휴대폰 셸의 메시지 목록은 iOS처럼 아래에 검색 알약과 새 피드백 버튼을 띄운다. 이 줄은 `position: absolute; left: 16px; right: 16px`로 앱 폭 전체를 차지하고, 대화 화면(`.chat-open`)일 때만 숨는다. 한 화면씩 보는 휴대폰에서는 목록 화면에서만 보이므로 문제가 없었지만, 나란히 보는 화면에서는 대화가 열려 있어도 `.chat-open`이 아니므로 검색 알약이 오른쪽 대화의 입력 칸 위에 그려졌다. `document.elementFromPoint`로 입력 칸 가운데를 확인하면 `textarea`가 아니라 검색 칸의 `input`이 반환되었다. ==목록·대화 배치 기준(앱 폭 640px)과 검색 알약 배치 기준(대화 화면 여부)이 어긋난 것==이다.
+휴대폰 셸의 메시지 목록은 iOS처럼 아래에 검색 알약과 새 피드백 버튼을 띄운다. 이 줄은 `position: absolute; left: 16px; right: 16px`로 앱 폭 전체를 차지하고, 대화 화면(`.chat-open`)일 때만 숨는다. 한 화면씩 보는 휴대폰에서는 목록 화면에서만 보이므로 문제가 없었지만, 나란히 보는 화면에서는 대화가 열려 있어도 `.chat-open`이 아니므로 검색 알약이 오른쪽 대화의 입력 칸 위에 그려졌다. `document.elementFromPoint`(화면 좌표 한 점에서 가장 위에 그려진 요소를 반환하는 함수)로 입력 칸 가운데를 확인하면 `textarea`가 아니라 검색 칸의 `input`이 반환되었다. ==목록·대화 배치 기준(앱 폭 640px)과 검색 알약 배치 기준(대화 화면 여부)이 어긋난 것==이다.
+
+![두 기준 사이 구간](./images/ios-keyboard-viewport-breakpoints.svg '도식. 사이트는 767px까지 휴대폰 셸, 메시지 앱은 앱 폭 640px까지 한 화면씩 보여 준다. 641~767px와 가로로 눕힌 휴대폰에서는 휴대폰 셸 안에 목록과 대화가 나란히 그려진다')
 
 ![744×1133 화면의 수정 전후. 수정 전에는 화면 폭 가득한 검색 알약이 오른쪽 대화의 입력 칸을 덮고, 수정 후에는 검색 알약과 새 피드백 버튼이 왼쪽 목록 칸 안에 있다](./images/messages-layout-fixes-tablet-744.jpg 'iPad mini 세로 (744×1133)')
 
@@ -162,6 +195,8 @@ export function keyboardViewport(): KeyboardViewport | null {
 
 빈 목록에는 "아직 남겨진 피드백이 없어요." 위에 Font Awesome의 말풍선 아이콘(`fa-comments`, 40px)이 있다. 실제 iPhone Safari에서 이 아이콘의 윗부분이 약간 잘렸다.
 
+글자가 차지하는 높이는 두 가지로 나뉜다. **줄 상자**(line box)는 `line-height`로 정해지는 레이아웃 높이이고, **잉크 영역**은 글리프(글자 모양)가 실제로 칠해지는 범위다. 글꼴은 ascent(기준선 위 높이)와 descent(기준선 아래 깊이)라는 지표를 가지고 있지만, 개별 글리프는 이 지표 밖으로 그려질 수 있다.
+
 Font Awesome은 아이콘에 `line-height: 1`을 지정하므로 줄 상자는 40px이다. 그런데 캔버스의 [`measureText()`](https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/measureText)로 측정하면 이 글리프는 글꼴의 ascent(35px)·descent(5px)보다 위아래로 2.5px씩 더 그려진다.
 
 | 값                                    | 크기           |
@@ -178,7 +213,29 @@ Font Awesome은 아이콘에 `line-height: 1`을 지정하므로 줄 상자는 4
 
 ## 가짜 visualViewport로 키보드 재현하기
 
-시험 브라우저에서는 화면 키보드가 표시되지 않는다. 그래서 페이지를 열기 전에 `window.visualViewport`를 가짜 객체로 교체하고, 높이와 `offsetTop`을 바꿔 iOS Safari에서 키보드가 올라온 상태를 재현한다.
+시험 브라우저(Playwright의 Chromium·WebKit)에서는 화면 키보드가 표시되지 않는다. 그래서 페이지를 열기 전에 `window.visualViewport`를 가짜 객체로 교체하고, 높이와 `offsetTop`을 바꿔 iOS Safari에서 키보드가 올라온 상태를 재현한다. 메모 시험의 가짜 객체는 다음과 같다(일부 속성 생략).
+
+```ts
+page.addInitScript(() => {
+	const listeners = new Set<EventListener>();
+	let height = 0;
+	const viewport = {
+		get height() {
+			return window.innerHeight - height;
+		},
+		offsetTop: 0,
+		addEventListener: (_type: string, listener: EventListener) => listeners.add(listener),
+		removeEventListener: (_type: string, listener: EventListener) => listeners.delete(listener),
+	};
+	Object.defineProperty(window, 'visualViewport', { value: viewport, configurable: true });
+	window.__keyboard = (next) => {
+		height = next;
+		listeners.forEach((listener) => listener(new Event('resize')));
+	};
+});
+```
+
+시험이 `__keyboard(336)`을 호출하면 `visualViewport.height`가 `innerHeight − 336`이 되고 `resize` 이벤트가 발생한다. 앱은 실제 키보드가 올라온 것과 같은 경로로 값을 다시 계산한다.
 
 | 시험 파일                     | 상황                                 | 기대 결과                                                                     |
 | ----------------------------- | ------------------------------------ | ----------------------------------------------------------------------------- |
@@ -194,14 +251,14 @@ Font Awesome은 아이콘에 `line-height: 1`을 지정하므로 줄 상자는 4
 <details>
 <summary>가짜 visualViewport의 동작</summary>
 
-가짜 `visualViewport`는 높이를 바꾸는 함수(`__keyboard`)를 `window`에 등록하고, 이 함수를 호출하면 등록된 `resize` 이벤트 리스너를 모두 호출한다. 시험은 `setKeyboard(page, 높이)`로 키보드를 올리고 내린다. 가짜 객체는 Playwright의 [`page.addInitScript`](https://playwright.dev/docs/api/class-page#page-add-init-script)로 설치한다. 이 스크립트는 페이지의 스크립트보다 먼저 실행되므로 앱이 처음부터 가짜 객체를 사용한다.
+메시지 시험의 `__keyboard(높이, 이동 거리)`는 `offsetTop`도 함께 바꾼다. 시험은 `setKeyboard(page, 높이)`로 키보드를 올리고 내린다. 가짜 객체는 Playwright의 [`page.addInitScript`](https://playwright.dev/docs/api/class-page#page-add-init-script)로 설치한다. 이 스크립트는 페이지의 스크립트보다 먼저 실행되므로 앱이 처음부터 가짜 객체를 사용한다.
 
 </details>
 
 ## 남은 것·정리
 
 - 실제 iPhone에서의 확인은 시험으로 대체할 수 없다. 가짜 `visualViewport`는 알려진 iOS Safari의 동작을 재현할 뿐이다.
-- 휴대폰 웹에서 "화면 높이"는 하나가 아니다. 레이아웃 뷰포트, 비주얼 뷰포트, `dvh`가 서로 다르게 변한다. 하단에 붙이는 요소는 가려진 높이(`keyboardInset()`), 상단을 고정하는 화면은 비주얼 뷰포트의 위치와 높이(`keyboardViewport()`)처럼 ==어느 값을 기준으로 쓸지 먼저 정해야 한다==.
+- 휴대폰 웹에서 화면 높이 값은 하나가 아니다. 레이아웃 뷰포트, 비주얼 뷰포트, `dvh`가 서로 다르게 변한다. 하단에 붙이는 요소는 가려진 높이(`keyboardInset()`), 상단을 고정하는 화면은 비주얼 뷰포트의 위치와 높이(`keyboardViewport()`)처럼 ==어느 값을 기준으로 쓸지 먼저 정해야 한다==.
 - `cssVars()`에 `--`를 붙여 전달한 실수처럼, CSS 변수 이름 하나가 틀리면 그 선언 전체가 무효가 된다. 콘솔에 오류도 경고도 출력되지 않는다. 계산된 값을 조회하는 것이 가장 빠른 확인 방법이다.
 - 사이트의 휴대폰 기준(767px)과 앱의 배치 기준(640px)이 다르면 그 사이 구간을 앱마다 확인해야 한다.
 
@@ -212,11 +269,29 @@ Font Awesome은 아이콘에 `line-height: 1`을 지정하므로 줄 상자는 4
 - [상태 표시줄과 홈 인디케이터 대비](/memo/mobile-bars-contrast): 휴대폰 셸의 상태 표시줄과 홈 바
 - [Playwright로 휴대폰 화면과 움직임 시험](/memo/playwright-mobile-and-motion): 휴대폰 화면 E2E 시험 구성
 - [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes): 641~767px 구간의 같은 종류 문제
-- [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): iOS Safari에서만 보이는 다른 차이
+- [macOS Safari와 iOS Safari의 렌더링 차이](/memo/safari-macos-ios-rendering): iOS Safari에서만 보이는 다른 차이
 - [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline): 메시지 앱의 다른 수정
+
+[^chrome108]: Chrome 개발자 블로그의 [Prepare for viewport resize behavior changes coming to Chrome on Android](https://developer.chrome.com/blog/viewport-resize-behavior)에 바뀐 동작과 `interactive-widget` 값이 정리되어 있다.
 
 [^invalid-var]: 정의되지 않은 사용자 정의 속성을 `var()`로 참조하면 그 선언은 파싱 단계가 아니라 계산 단계에서 무효(invalid at computed-value time)가 된다. 이때 브라우저는 앞선 다른 `bottom` 선언으로 돌아가지 않고 속성의 초기값(`bottom`은 `auto`)을 사용한다. [MDN: Using CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
 
 [^ink]: 레이아웃이 계산하는 넘침(overflow) 영역에는 글꼴 지표(ascent·descent)까지만 들어가고, 실제 글리프가 그 밖으로 그려지는 부분은 포함되지 않을 수 있다. 합성 레이어의 크기를 이 영역으로 정하면 지표 밖의 잉크가 잘린다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [VisualViewport](https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport)
+- MDN, [Layout viewport](https://developer.mozilla.org/en-US/docs/Glossary/Layout_viewport), [Visual viewport](https://developer.mozilla.org/en-US/docs/Glossary/Visual_Viewport)
+- MDN, [VirtualKeyboard API](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API)
+- Chrome for Developers, [Prepare for viewport resize behavior changes coming to Chrome on Android](https://developer.chrome.com/blog/viewport-resize-behavior)
+- MDN, [Using CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
+- W3C, [CSS Custom Properties for Cascading Variables Module Level 1: invalid at computed-value time](https://www.w3.org/TR/css-variables-1/#invalid-at-computed-value-time)
+- W3C, [Filter Effects Module Level 2: Backdrop Root](https://drafts.fxtf.org/filter-effects-2/#BackdropRoot)
+- MDN, [TextMetrics](https://developer.mozilla.org/en-US/docs/Web/API/TextMetrics)
+- MDN, [Document.elementFromPoint()](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint)
+- Playwright, [page.addInitScript](https://playwright.dev/docs/api/class-page#page-add-init-script)
+
+</details>
 
 #MacFolio #TIL #메모앱 #프론트엔드 #CSS #Safari #iOS #트러블슈팅

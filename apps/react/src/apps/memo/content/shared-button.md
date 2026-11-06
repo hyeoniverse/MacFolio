@@ -7,7 +7,30 @@ seriesOrder: 2
 summary: 앱 기본값을 CSS 레이어로 내린 뒤 남은 !important 66개를 삭제하고, 스크린샷 58장과 계산된 스타일 약 1,200건 비교로 차이 세 건을 찾아 수정했다. 아이콘 버튼 4종은 IconButton, 텍스트 버튼 6종은 Button 하나로 통합했다.
 ---
 
-공통 컴포넌트로 전환하는 작업의 3단계([#60](https://github.com/hyeoniverse/MacFolio/pull/60))와 4단계([#61](https://github.com/hyeoniverse/MacFolio/pull/61)) 기록이다. [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)에서 앱 루트의 기본값(`.memo button`)을 `reset` [레이어](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)로 내렸다. 그때 [`!important`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important)는 의도적으로 유지했다. 버튼마다 다른 상태 규칙과 우선순위를 다투고 있을 수 있어 하나씩 확인해야 했기 때문이다. 3단계에서 그 확인을 진행하고 아이콘 버튼을 통합했고, 4단계에서 텍스트 버튼을 통합했다.
+## 배경: CSS가 규칙 하나를 고르는 방법
+
+### 캐스케이드와 명시도
+
+한 요소의 같은 속성(예: 버튼의 `color`)에 여러 CSS 규칙이 값을 지정하면, 브라우저는 **캐스케이드**(cascade)라는 정해진 순서로 하나를 고른다. 작성자 CSS 기준으로 줄이면 다음 네 단계이고, 위 단계에서 결정되면 아래 단계는 확인하지 않는다.
+
+![중요도, 캐스케이드 레이어, 명시도, 선언 순서의 네 단계와 이 글의 사례](./images/shared-button-cascade.svg '오른쪽 예시는 이 글에서 실제로 만난 경우다. 레이어 밖의 a 규칙이 레이어 안의 더 구체적인 .gh a 규칙을 이기는 것이 2단계의 결과다')
+
+**명시도**(specificity)는 선택자가 얼마나 구체적인지를 `(a, b, c)` 세 숫자로 나타낸 점수다. `a`는 ID 선택자 수, `b`는 클래스·속성 선택자·가상 클래스(`:hover` 등) 수, `c`는 태그 선택자 수이고, 왼쪽 숫자부터 비교한다.
+
+| 선택자                            | a   | b   | c   | 명시도    |
+| --------------------------------- | --- | --- | --- | --------- |
+| `a`                               | 0   | 0   | 1   | (0, 0, 1) |
+| `.gh a`                           | 0   | 1   | 1   | (0, 1, 1) |
+| `.memo-tool.on`                   | 0   | 2   | 0   | (0, 2, 0) |
+| `.memo-tool:hover:not(:disabled)` | 0   | 3   | 0   | (0, 3, 0) |
+
+[`!important`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important)를 붙인 선언은 1단계에서 일반 선언을 모두 이긴다. 명시도 경쟁에서 지는 규칙에 `!important`를 붙이면 당장은 원하는 값이 적용되지만, 왜 졌는지는 그대로 남는다. 나중에 `!important`를 삭제하면 가려져 있던 경쟁이 다시 드러난다.
+
+**캐스케이드 레이어**([`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer))는 규칙을 이름 붙은 묶음으로 나누고 묶음 사이의 우선순위를 미리 정하는 기능이다. 레이어 순서는 명시도보다 먼저 비교되므로, 낮은 레이어의 규칙은 명시도가 아무리 높아도 높은 레이어의 규칙에 진다. 레이어에 속하지 않은 규칙은 모든 레이어보다 우선한다.
+
+### 이 작업의 위치
+
+공통 컴포넌트로 전환하는 작업은 네 단계로 진행했고, 이 글은 그중 3단계([#60](https://github.com/hyeoniverse/MacFolio/pull/60))와 4단계([#61](https://github.com/hyeoniverse/MacFolio/pull/61))를 다룬다. 1단계([CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset))에서 앱 루트의 기본값(`.memo button`)을 `reset` 레이어로 내렸다. 그때 `!important`는 의도적으로 유지했다. 버튼마다 다른 상태 규칙과 우선순위를 다투고 있을 수 있어 하나씩 확인해야 했기 때문이다. 3단계에서 그 확인을 진행하고 아이콘 버튼을 통합했고, 4단계에서 텍스트 버튼을 통합했다.
 
 ## !important 일괄 삭제와 차이 탐지
 
@@ -25,11 +48,11 @@ summary: 앱 기본값을 CSS 레이어로 내린 뒤 남은 !important 66개를
 | Safari        | 4               |
 | 터미널 단축어 | 2               |
 
-이와 별도로 동작 줄이기 설정(`prefers-reduced-motion`)의 2개는 모든 애니메이션을 확실히 끄기 위한 것이라 유지했다.
+이와 별도로 동작 줄이기 설정의 2개는 유지했다. 동작 줄이기는 운영체제의 "동작 줄이기" 옵션을 켠 사용자에게 CSS 미디어 쿼리 `prefers-reduced-motion: reduce`가 일치하는 기능이고, 이 2개는 각 컴포넌트가 지정한 애니메이션을 명시도와 관계없이 모두 끄기 위한 선언이다.
 
 ### 스크린샷 비교와 계산된 스타일 비교
 
-먼저 66개를 한꺼번에 삭제했다. 그리고 변경된 부분을 두 가지 방법으로 탐지했다.
+먼저 66개를 한꺼번에 삭제했다. 그리고 변경된 부분을 두 가지 방법으로 탐지했다. **계산된 스타일**(computed style)은 캐스케이드와 상속을 모두 거쳐 요소에 최종 적용된 값이다. 예를 들어 CSS에 `color: var(--gh-link)`라고 적혀 있어도, 계산된 값은 `rgb(9, 105, 218)`처럼 실제 색으로 나온다.
 
 1. **스크린샷 비교**: 1단계에서 만든 58장 비교를 다시 실행한다
 2. **계산된 스타일 비교**: 앱을 하나씩 열고, 보이는 모든 버튼과 링크의 [`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle) 결과를 기록한다. 호버 상태도 기록한다
@@ -46,6 +69,8 @@ for (let i = 0; i < count; i++) {
 ```
 
 `main`과 이 브랜치에서 각각 JSON으로 저장하고 비교했다. 호버 상태까지 합쳐 약 1,200건이다.
+
+![main과 작업 브랜치에 같은 Playwright 스크립트를 실행해 JSON 두 개를 만들고 키별로 비교하는 절차](./images/shared-button-diff-flow.svg '키는 앱|순서|버튼 이름(|hover)이다. 같은 키의 값이 다르면 그 버튼의 그 상태에서 스타일이 바뀐 것이다')
 
 ### 발견한 차이 세 건
 
@@ -68,7 +93,7 @@ for (let i = 0; i < count; i++) {
 
 ![:not과 :where가 점수를 바꾸는 방식](./images/shared-button-specificity.svg '점수 비교')
 
-[`:not(:disabled)`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:not)는 괄호 안 선택자의 명시도를 그대로 더한다. 그래서 호버 규칙이 활성 규칙보다 명시도가 높았다. 그동안은 활성 규칙의 `!important`가 이 차이를 가리고 있었다. [`:where(:not(:disabled))`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:where)로 바꿔 명시도를 같게 하고, 뒤에 선언된 활성 규칙이 적용되게 했다.
+[`:not(:disabled)`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:not)는 괄호 안 선택자의 명시도를 그대로 더한다. 그래서 호버 규칙이 활성 규칙보다 명시도가 높았다. 그동안은 활성 규칙의 `!important`가 이 차이를 가리고 있었다. [`:where()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:where)는 괄호 안 선택자와 같은 요소를 고르지만 명시도를 0으로 계산하는 가상 클래스다. `:where(:not(:disabled))`로 바꿔 호버 규칙의 명시도를 (0,2,0)으로 낮추고, 같은 명시도에서 뒤에 선언된 활성 규칙이 적용되게 했다.
 
 #### GitHub 링크 색 변경
 
@@ -83,7 +108,7 @@ for (let i = 0; i < count; i++) {
 } /* (0,1,0): 탭도 a라서 !important로 이겼다 */
 ```
 
-처음에는 `.gh a`를 메모처럼 `reset` 레이어로 내렸다. 그런데 레이어 밖의 전역 규칙 `a { color: inherit }`(index.css)보다 우선순위가 낮아졌다. ==레이어 밖의 규칙은 명시도가 아무리 낮아도 레이어 안의 규칙보다 우선한다.== 그래서 전역 `a`와 `*` 규칙도 `reset` 레이어로 옮겼다. 그러자 `.gh a`는 레이어 안에서 전역 `a`보다 우선하고, 레이어 밖의 `.gh-tab`보다는 낮아졌다. 원래 의도대로다.
+`!important`를 삭제하면 `.gh-tab`(0,1,0)이 `.gh a`(0,1,1)에 지므로, 이 규칙의 우선순위를 낮춰야 했다. 처음에는 `.gh a`를 메모처럼 `reset` 레이어로 내렸다. 그런데 레이어 밖의 전역 규칙 `a { color: inherit }`(index.css)보다 우선순위가 낮아졌다. ==레이어 밖의 규칙은 명시도가 아무리 낮아도 레이어 안의 규칙보다 우선한다.== 그래서 전역 `a`와 `*` 규칙도 `reset` 레이어로 옮겼다. 그러자 `.gh a`는 레이어 안에서 전역 `a`보다 우선하고, 레이어 밖의 `.gh-tab`보다는 낮아졌다. 원래 의도대로다.
 
 음악의 곡 목록도 비슷했다. 홀수 행 배경(`li:nth-child(odd) .music-track`, (0,3,1))이 호버 배경(`.music-track:hover`, (0,2,0))보다 우선하고 있었다. 홀수 행 쪽을 `:where(:nth-child(odd))`로 감쌌다.
 
@@ -124,7 +149,7 @@ for (let i = 0; i < count; i++) {
 | 앱마다 클래스로 덮어쓰기(`.memo .ui-tool`) | 익숙한 방식이다            | 명시도 경쟁이 다시 시작되고, `!important`가 재발할 수 있다 |
 | 앱 루트에 CSS 변수(`--ui-tool-*`) (채택)   | 다크 모드는 앱 변수가 처리 | 변수 이름을 문서로 안내해야 한다                           |
 
-앱의 색은 이미 `--memo-muted`처럼 앱 변수로 정의되어 있고 다크 모드도 그 변수가 전환한다. 버튼은 그 변수를 한 번 더 참조하기만 하면 되므로 CSS 변수 방식을 선택했다. 활성 배경은 [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/color-mix)로 강조색에 투명도를 섞는다.
+**CSS 변수**(사용자 지정 속성, `--이름: 값`)는 다른 CSS 속성처럼 부모 요소에서 자식 요소로 상속된다. 앱 창의 최상위 요소에 `--ui-tool-color`를 정의하면 창 안의 모든 버튼이 `var(--ui-tool-color)`로 그 값을 읽는다. 앱의 색은 이미 `--memo-muted`처럼 앱 변수로 정의되어 있고 다크 모드도 그 변수가 전환한다. 버튼은 그 변수를 한 번 더 참조하기만 하면 되므로 CSS 변수 방식을 선택했다. 활성 배경은 [`color-mix()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/color-mix)로 강조색에 투명도를 섞는다.
 
 ```css
 [data-app='memo'] {
@@ -220,7 +245,9 @@ for (let i = 0; i < count; i++) {
 
 ### 포털 팝오버의 CSS 변수 상속
 
-메모의 서식·이미지 창은 2단계에서 만든 팝오버라 `body`에 렌더링한다([포털](https://react.dev/reference/react-dom/createPortal)). 그래서 메모 창(`[data-app='memo']`)에 정의한 변수가 상속되지 않는다. 변수 없이 렌더링하면 '넣기' 버튼이 기본 강조색인 파란색이 된다.
+메모의 서식·이미지 창은 2단계에서 만든 팝오버라 `body`에 렌더링한다([포털](https://react.dev/reference/react-dom/createPortal)). React 컴포넌트 트리에서는 메모 창의 자식이지만, 실제 DOM에서는 메모 창 밖에 있다. CSS 변수는 DOM 트리를 따라 상속되므로 메모 창(`[data-app='memo']`)에 정의한 변수가 상속되지 않는다. 변수 없이 렌더링하면 '넣기' 버튼이 기본 강조색인 파란색이 된다.
+
+![메모 창 안의 버튼은 변수를 상속해 노란색이고, body에 렌더링한 이미지 창의 버튼은 변수가 없어 파란색이 되는 구조와 수정](./images/shared-button-portal-vars.svg '이미지 창은 DOM에서 body의 직접 자식이라 메모 창의 --ui-accent를 받지 못한다. 패널 최상위 요소에 변수를 다시 정의해 해결했다')
 
 기존 CSS는 노란색(`#edbb4d`)을 직접 지정해 이 문제를 해결하고 있었다. 같은 방식으로, 이미지 창의 최상위 요소에 변수를 다시 정의했다.
 
@@ -308,5 +335,20 @@ for (let i = 0; i < count; i++) {
 - [계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
 
 PR: [#60](https://github.com/hyeoniverse/MacFolio/pull/60), [#61](https://github.com/hyeoniverse/MacFolio/pull/61)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction)
+- [MDN: Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Specificity)
+- [MDN: @layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
+- [MDN: !important](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/important)
+- [MDN: :where()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/:where)
+- [MDN: Window.getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- [MDN: Using CSS custom properties (variables)](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascading_variables/Using_custom_properties)
+- [MDN: prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion)
+- [W3C: CSS Cascading and Inheritance Level 5](https://www.w3.org/TR/css-cascade-5/)
+
+</details>
 
 #MacFolio #CSS #공통컴포넌트

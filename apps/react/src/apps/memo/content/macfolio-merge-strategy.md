@@ -5,7 +5,33 @@ category: 개발 기록/MacFolio/테스트·보안·성능
 summary: MacFolio는 PR을 Create a merge commit으로 병합한다. main 기록 1,940커밋을 집계해 선택 기준 세 가지에 적용하고, Rebase and merge가 섞인 PR 53개의 기록, CONTRIBUTING·conventions 검사·Ruleset으로 적용한 내용과 아직 켜지 않은 저장소 설정을 정리했다.
 ---
 
-MacFolio 저장소는 PR을 main에 **Create a merge commit**으로 병합한다. CONTRIBUTING의 '머지' 절에 규칙으로 적혀 있고, 2026-10-27 기준 main의 PR 머지 커밋은 297개다. 세 방식의 차이와 고르는 기준은 [GitHub 병합 방식 세 가지](/memo/merge-strategies)에 정리했다. 이 글은 그 기준을 이 저장소의 main 기록에 적용한 결과다.
+GitHub에서 PR(Pull Request)을 머지할 때는 Merge 버튼 옆 메뉴에서 병합 방식을 고른다. 선택지는 세 가지이고, 어느 방식을 고르느냐에 따라 main 브랜치에 남는 커밋의 개수·해시·메시지가 달라진다.
+
+![GitHub의 Merge pull request 버튼 메뉴](./images/macfolio-merge-strategy-merge-options.png '세 가지 병합 방식. 각 항목 아래에 브랜치 커밋이 base 브랜치에 어떻게 추가되는지 설명이 붙는다. GitHub Docs')
+
+| 방식                  | main에 남는 것                                            | 예: 커밋 4개짜리 PR          |
+| --------------------- | --------------------------------------------------------- | ---------------------------- |
+| Create a merge commit | 브랜치 커밋 전부(해시 그대로) + 부모가 둘인 머지 커밋 1개 | 커밋 4개 + 머지 커밋 1개     |
+| Squash and merge      | 브랜치 변경을 합친 새 커밋 1개                            | 새 커밋 1개 (`제목 (#N)` 꼴) |
+| Rebase and merge      | 브랜치 커밋을 main 끝에 다시 적용한 새 커밋들(해시 변경)  | 해시가 바뀐 커밋 4개         |
+
+MacFolio 저장소는 PR을 main에 **Create a merge commit**으로 병합한다. CONTRIBUTING의 '머지' 절에 규칙으로 적혀 있고, 2026-10-27 기준 main의 PR 머지 커밋은 297개다. 세 방식의 차이와 고르는 기준은 [GitHub 병합 방식 세 가지](/memo/merge-strategies)에 정리했고, 아래는 그 기준을 이 저장소의 main 기록에 적용한 결과다.
+
+<details>
+<summary>용어 정리</summary>
+
+- **머지 커밋**: 부모 커밋이 둘인 커밋. 첫째 부모(`^1`)는 병합하기 전의 main 끝 커밋, 둘째 부모(`^2`)는 병합한 브랜치의 끝 커밋이다.
+- **`--first-parent`**: `git log`가 머지 커밋을 만나면 첫째 부모만 따라가게 하는 옵션. main에서 실행하면 PR마다 머지 커밋 한 줄씩 출력된다.
+- **커밋 SHA**: 커밋 내용(트리, 부모, 작성자, 시각, 메시지)에서 계산한 해시. 줄여서 앞 7~9자리로 적는다(`5415d51a7`).
+- **`git rev-list --count`**: 조건에 맞는 커밋 수를 출력하는 명령. 아래 집계 표의 값은 모두 이 명령으로 구했다.
+
+</details>
+
+![Create a merge commit의 결과](./images/macfolio-merge-strategy-merge-commit-diagram.png 'Feature 브랜치의 D, E가 머지 커밋 F를 통해 Main에 추가된다. D, E는 해시가 그대로 남는다. GitHub Docs')
+
+위 그림처럼 Create a merge commit은 브랜치의 커밋(D, E)을 그대로 두고, 두 갈래를 잇는 머지 커밋(F)을 하나 추가한다. 머지 커밋의 두 부모 관계 때문에 `--first-parent`로 PR 단위 기록을 따로 조회할 수 있다.
+
+![머지 커밋의 두 부모와 --first-parent](./images/macfolio-merge-strategy-first-parent.svg 'PR #212의 머지 커밋 c069c201d. 파란 선(^1)만 따라가면 PR 하나가 한 줄이 되고, ^1..^2 범위는 브랜치 커밋 4개를 고른다')
 
 집계 기준 시각은 2026-10-27, main 끝 커밋은 `5415d51a7`(Merge pull request [#399](https://github.com/hyeoniverse/MacFolio/pull/399))다.
 
@@ -46,7 +72,7 @@ Squash로 병합했다면 main에는 `refactor(ui): …(#212)` 커밋 하나만 
 
 ### 2. 커밋 SHA를 바깥에서 가리키는가
 
-API 배포가 main 커밋 SHA를 기준으로 동작한다. `.github/workflows/ci.yml`의 `api-changes` job이 이미지 태그를 만들고, 서버에서 실행 중인 버전과 비교해 다시 배포할지 정한다.
+API 서버는 Docker 이미지로 배포한다. 이미지에는 버전을 구분하는 이름표(태그)를 붙이는데, MacFolio는 이 태그를 main 커밋 SHA로 만든다. `.github/workflows/ci.yml`의 `api-changes` job이 이미지 태그를 만들고, 서버에서 실행 중인 버전과 비교해 다시 배포할지 정한다.
 
 ```bash
 echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
@@ -58,6 +84,10 @@ git diff --quiet "$commit" "$GITHUB_SHA" -- apps/api packages/desktop-core packa
 ```
 
 main push에서 `GITHUB_SHA`는 main 끝 커밋이고, Merge commit 방식에서는 그 커밋이 항상 `Merge pull request #N`이다. `5415d51a7`에서 API 이미지를 만들면 태그는 `sha-5415d51`이고, 이 태그는 PR [#399](https://github.com/hyeoniverse/MacFolio/pull/399) 하나에 대응한다. 되돌릴 때는 `deploy-api.yml`을 수동 실행하며 예전 태그(`sha-1a2b3c4` 꼴)를 입력하는데, ==태그 → 머지 커밋 → PR 번호가 1:1로 이어져== 어느 PR 시점으로 돌아가는지 바로 확인된다.
+
+![배포 태그에서 PR까지의 대응](./images/macfolio-merge-strategy-tag-chain.svg 'Merge commit 방식에서는 태그 → 머지 커밋 → PR이 한 줄로 이어진다. Rebase and merge 구간에서는 커밋 메시지에 PR 번호가 없어 따로 조회해야 한다')
+
+Rebase and merge였다면 main 끝 커밋은 브랜치의 마지막 커밋을 다시 적용한 커밋이고, 메시지는 `fix(…): …` 같은 브랜치 커밋 메시지 그대로다. 태그에서 커밋까지는 찾을 수 있지만, 그 커밋이 어느 PR의 마지막 커밋인지는 GitHub에서 따로 조회해야 한다.
 
 ### 3. 브랜치 안에 머지 커밋이 있는가
 
@@ -144,11 +174,30 @@ gh repo edit hyeoniverse/MacFolio --enable-squash-merge=false --enable-rebase-me
 
 ## 관련 글
 
-- [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 세 방식의 차이와 고르는 기준 (일반론)
+- [GitHub 병합 방식 세 가지(Create a merge commit, Squash and merge, Rebase and merge)](/memo/merge-strategies): 세 방식의 차이와 고르는 기준 (일반론)
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 브랜치 커밋마다 메시지 형식을 검사하는 conventions 워크플로와 Ruleset
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
 - [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot): 머지 커밋으로 병합되는 Dependabot PR
 - [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
 - 병합 방식 글을 처음 작성한 날의 기록: [10월 12일 - 사용처를 집계한 뒤 추출한 Modal, TypeScript 7, 메모 각주와 접기 블록, 템플릿 재작업](/memo/day-1012), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
+
+<details>
+<summary>참고 문헌</summary>
+
+- GitHub Docs, [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github)
+- GitHub Docs, [About pull request merges](https://docs.github.com/en/pull-requests/reference/pull-request-merges)
+- GitHub Docs, [Merging a pull request](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request)
+- Git 문서, [git-log: --first-parent](https://git-scm.com/docs/git-log#Documentation/git-log.txt---first-parent), [gitrevisions: ^ 부모 지정과 두 점 범위](https://git-scm.com/docs/gitrevisions)
+- GitHub CLI, [gh repo edit](https://cli.github.com/manual/gh_repo_edit)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Merge pull request 버튼 메뉴: GitHub Docs, [Merging a pull request](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/merging-a-pull-request) (원본 [merge-pull-request-options.png](https://github.com/github/docs/blob/main/assets/images/help/pull_requests/merge-pull-request-options.png)), CC BY 4.0
+- Create a merge commit의 결과: GitHub Docs, [About pull request merges](https://docs.github.com/en/pull-requests/reference/pull-request-merges) (원본 [standard-merge-commit-diagram.png](https://github.com/github/docs/blob/main/assets/images/help/pull_requests/standard-merge-commit-diagram.png)), CC BY 4.0
+
+</details>
 
 #MacFolio #Git #GitHub

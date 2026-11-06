@@ -15,7 +15,24 @@ summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, �
 | 토글      | 내용을 고치지 않고 펼치기만 해도 '임시 저장됨' 표시 | 저장 요청 0회               |
 | 저장소 글 | 서버에서 고친 저장소 글을 원래 판으로 돌릴 수 없다  | '저장소 글로 되돌리기' 메뉴 |
 
-==세 문제 모두 같은 글을 두 경로(저장소 Markdown, 메모 편집기)로 다루는 구조에서 생겼다==. 편집기가 저장하는 Markdown이 원문과 달라지거나(태그, 토글), 서버 사본이 원문을 영구히 덮는다(저장소 글).
+## 배경: 한 글을 다루는 두 경로
+
+이 블로그의 글은 두 곳에서 만들어진다. 하나는 저장소의 Markdown 파일(`apps/react/src/apps/memo/content/*.md`)이고, 빌드 시각에 화면 번들에 포함된다. 다른 하나는 관리자가 사이트의 메모 편집기로 쓰거나 고친 글이고, API를 거쳐 PostgreSQL의 `Post` 행으로 저장된다. 글의 주소 끝부분인 slug(예: `/memo/memo-tags`의 `memo-tags`)가 두 경로에서 같으면, 화면은 목록을 병합하면서 서버 글을 사용한다.
+
+![같은 글이 화면에 도착하는 두 경로](./images/memo-editor-tags-toggle-revert-two-paths.svg '저장소 Markdown은 빌드 번들로, 편집기의 글은 Markdown 직렬화와 API를 거쳐 DB로 간다. 번호는 이 글에서 다루는 세 문제가 생긴 위치다')
+
+메모 편집기는 [ProseMirror](https://prosemirror.net/docs/guide/)를 감싼 [Milkdown](https://milkdown.dev/)이다. 이 편집기는 Markdown 문자열을 그대로 편집하지 않는다. 글을 열면 Markdown을 읽어 **문서**(문단, 제목, 목록 같은 노드의 트리)로 바꾸고, 사용자가 입력할 때마다 문서를 고친 새 상태를 만든다. 저장하면 문서를 다시 Markdown으로 바꾸는데, 이 변환을 **직렬화**(serialization)라 한다. 따라서 저장되는 Markdown은 원문을 그대로 보관한 값이 아니라, 문서에서 새로 만든 값이다.
+
+용어 몇 가지는 다음과 같다.
+
+| 용어                  | 뜻                                                                                                     | 이 글의 예                                  |
+| --------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------- |
+| 트랜잭션(transaction) | 편집기 상태를 바꾸는 단위. 문서 변경, 선택 영역 변경, 플러그인에 전달할 메타데이터를 담는다            | 글자 입력, › 클릭                           |
+| 플러그인 상태         | 문서와 별도로 플러그인이 보관하는 값. 트랜잭션마다 갱신되지만 Markdown으로 저장되지 않는다             | 화면에서만 펼친 토글의 위치 목록            |
+| 데코레이션            | 문서를 바꾸지 않고 화면(DOM)에만 클래스·속성·위젯을 더하는 기능                                        | 접힌 토글에 붙이는 `memo-details-collapsed` |
+| 토글                  | HTML [`<details>`·`<summary>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details) 표기 | `<details><summary>용어</summary>…`         |
+
+==세 문제 모두 같은 글을 두 경로로 다루는 구조에서 생겼다==. 편집기가 저장하는 Markdown이 원문과 달라지거나(태그, 토글), 서버 사본이 원문을 영구히 덮는다(저장소 글).
 
 ## 1. 저장하면 첫 태그가 `\#`로 이스케이프됐다
 
@@ -27,11 +44,29 @@ summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, �
 
 ### 원인
 
-편집기(Milkdown)는 ProseMirror 문서를 Markdown으로 직렬화할 때 [remark-stringify](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify)를 사용한다. 내부의 [mdast-util-to-markdown](https://github.com/syntax-tree/mdast-util-to-markdown)은 줄 맨 앞(`atBreak`)의 `#`를 제목 표기로 오인되지 않도록 뒤에 오는 글자와 관계없이 `\#`로 이스케이프한다.
+이스케이프(escape)는 Markdown에서 특별한 뜻을 가진 글자 앞에 `\`를 붙여 글자 그대로 읽히게 하는 표기다. 예를 들어 줄 맨 앞의 `# 제목`은 제목이 되지만 `\# 제목`은 "# 제목"이라는 문단이 된다.
 
-그런데 [CommonMark의 ATX 제목](https://spec.commonmark.org/0.31.2/#atx-headings)은 `#` 뒤에 공백·탭이나 줄 끝이 와야 한다. `#MacFolio`처럼 `#` 바로 뒤에 글자가 오면 처음부터 제목이 될 수 없으므로 이스케이프가 필요 없다. ==같은 줄의 둘째 태그부터는 줄 맨 앞이 아니어서 이스케이프되지 않았고, 그래서 첫 태그만 깨졌다==.
+편집기(Milkdown)는 ProseMirror 문서를 Markdown으로 직렬화하는 과정에서 [remark-stringify](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify)를 사용한다. 내부의 [mdast-util-to-markdown](https://github.com/syntax-tree/mdast-util-to-markdown)은 "이 위치의 이 글자는 이스케이프해야 한다"는 규칙 목록(`unsafe`)을 가지고 있고, `#`에 대한 규칙은 다음 한 줄이다.
+
+```js
+// A number sign could start an ATX heading if it starts a line.
+{atBreak: true, character: '#'},
+```
+
+`atBreak`는 줄 맨 앞이라는 뜻이다. 이 규칙은 뒤에 오는 글자를 확인하지 않으므로, 줄 맨 앞의 `#`는 `#MacFolio`든 `# 제목`이든 모두 `\#`가 된다.
+
+그런데 [CommonMark의 ATX 제목](https://spec.commonmark.org/0.31.2/#atx-headings) 규칙은 `#` 뒤에 공백·탭이나 줄 끝이 와야 제목으로 인정한다. `#MacFolio`처럼 `#` 바로 뒤에 글자가 오면 처음부터 제목이 될 수 없으므로 이스케이프가 필요 없다. 명세에도 이 경우가 예제로 실려 있다.
+
+![CommonMark 명세의 예제 64](./images/memo-editor-tags-toggle-revert-commonmark.jpg 'CommonMark 0.31.2 명세의 ATX 제목 절. #5 bolt와 #hashtag는 # 뒤에 공백이 없어 제목이 아니라 문단(<p>)으로 읽힌다')
+
+==같은 줄의 둘째 태그부터는 줄 맨 앞이 아니어서 이스케이프되지 않았고, 그래서 첫 태그만 깨졌다==.
 
 태그를 추출하는 `TAG_PATTERN`(`packages/desktop-core/src/memo/tags.ts`)은 줄 맨 앞이나 공백·여는 괄호 뒤의 `#`만 태그로 인식한다. `\#MacFolio`는 `#` 앞이 `\`라서 조건에 맞지 않는다.
+
+| 저장된 줄                        | `TAG_PATTERN`이 찾은 태그          |
+| -------------------------------- | ---------------------------------- |
+| `#MacFolio #테스트 #Playwright`  | `MacFolio`, `테스트`, `Playwright` |
+| `\#MacFolio #테스트 #Playwright` | `테스트`, `Playwright`             |
 
 ### 수정
 
@@ -63,6 +98,16 @@ export function unescapeTags(markdown: string): string {
 - 대상: 줄 맨 앞이나 목록·인용 기호(`- `, `* `, `1. `, `> `) 뒤의 `\#` 가운데 바로 뒤에 글자·숫자·`_`·`-`가 오는 것
 - 제외: `\# 제목`(되돌리면 제목이 된다), `\##`(`##`는 제목 기호), 펜스 코드 블록 안
 
+입력과 결과의 예는 다음과 같다.
+
+| 직렬화 결과             | `unescapeTags` 결과 | 이유                                |
+| ----------------------- | ------------------- | ----------------------------------- |
+| `\#MacFolio #테스트`    | `#MacFolio #테스트` | `#` 뒤가 글자라 제목이 될 수 없다   |
+| `- \#할일 정리`         | `- #할일 정리`      | 목록 기호 뒤도 줄 맨 앞과 같이 처리 |
+| `\# 제목처럼 보이는 줄` | 그대로              | 되돌리면 제목으로 읽힌다            |
+| `\##태그`               | 그대로              | `##`는 제목 기호의 시작이다         |
+| 코드 블록 안 `\#x`      | 그대로              | 코드는 원문 그대로 보관한다         |
+
 이미 `\#태그`로 저장된 서버 글은 다음에 편집기로 저장하는 시각에 수정된다.
 
 ## 2. 토글을 펼치기만 해도 임시 저장됐다
@@ -74,6 +119,8 @@ export function unescapeTags(markdown: string): string {
 ![토글을 펼치기만 한 뒤의 편집기 상단](./images/memo-editor-tags-toggle-revert-toggle.jpg '"Mac에서 Homebrew와 npm 설정하기" 글에서 "먼저 알아 둘 용어" 토글을 펼치기만 하고 1.8초 대기한 화면. 수정 전(왼쪽)은 임시 저장됨과 노란 게시 버튼이 표시되고 저장 요청이 1회 발생한다. 저장된 본문은 <details id="terms">가 <details id="terms" open>으로 바뀐 것뿐이다. 수정 후(오른쪽)는 회색 게시 버튼만 표시된다')
 
 ### 원인
+
+HTML의 `<details>`는 `open` 속성이 있으면 펼친 상태로, 없으면 접힌 상태로 표시된다. 예를 들어 `<details id="terms" open>`은 처음부터 펼쳐져 있다.
 
 ==펼침 여부가 문서의 일부였다==. [토글 목록을 추가한 시각](/memo/memo-editor-toggle-footnote)의 설계는 "접은 상태도 저장된다"였다. › 를 누르면 `setNodeMarkup`으로 `details_block` 노드의 `open` 속성을 반전했고, 이 속성은 Markdown에 `<details open>`으로 직렬화된다. 문서가 바뀌었으므로 편집기의 onChange가 호출되고 임시 저장이 실행됐다. 요약 줄에서 Enter로 펼치는 경로도 같았다.
 
@@ -97,11 +144,24 @@ export function isShownOpen(state: EditorState, pos: number, node: Node): boolea
 }
 ```
 
-[ProseMirror 트랜잭션](https://prosemirror.net/docs/ref/#state.Transaction)에 메타데이터(`setMeta`)만 실으면 문서는 이전과 같은 값이다. Milkdown의 listener 플러그인은 이전 문서와 새 문서가 같으면(`prevDoc.eq(doc)`) `markdownUpdated`를 호출하지 않으므로, 임시 저장 경로가 실행되지 않는다.
+저장값과 화면 상태의 조합은 네 가지다.
+
+| 저장값(`open`) | 플러그인 상태             | 화면 | 예                               |
+| -------------- | ------------------------- | ---- | -------------------------------- |
+| 없음           | 위치가 `revealed`에 없음  | 접힘 | 처음 연 "먼저 알아 둘 용어" 토글 |
+| 없음           | 위치가 `revealed`에 있음  | 펼침 | › 를 눌러 펼친 뒤                |
+| 있음           | 위치가 `collapsed`에 없음 | 펼침 | `<details open>`으로 저장된 토글 |
+| 있음           | 위치가 `collapsed`에 있음 | 접힘 | 그 토글을 › 로 접은 뒤           |
+
+[ProseMirror 트랜잭션](https://prosemirror.net/docs/ref/#state.Transaction)에 메타데이터(`setMeta`)만 실으면 문서는 이전과 같은 값이다. Milkdown의 [listener 플러그인](https://milkdown.dev/docs/api/plugin-listener)은 이전 문서와 새 문서가 같으면(`prevDoc.eq(doc)`) `markdownUpdated`를 호출하지 않으므로, 임시 저장 경로가 실행되지 않는다.
 
 ### 빠르게 다시 누르면 접히지 않던 문제
 
-시험 중에 › 를 펼친 직후 다시 누르면 접히지 않는 현상을 함께 발견했다. 두 번째 클릭이 브라우저의 더블클릭 간격 안에 들어오면 ProseMirror는 [`handleDoubleClickOn`](https://prosemirror.net/docs/ref/#view.EditorProps.handleDoubleClickOn)을 호출하고 `handleClickOn`은 호출하지 않는다. 클릭 처리를 `toggleOnClick` 함수로 분리하고 `handleClickOn`·`handleDoubleClickOn`·`handleTripleClickOn` 세 곳에 같은 함수를 연결했다.
+시험 중에 › 를 펼친 직후 다시 누르면 접히지 않는 현상을 함께 발견했다. ProseMirror는 직전 클릭과 500ms 안에, 가까운 위치에서 다시 누르면 그 클릭을 더블클릭으로 판정한다. 이 경우 [`handleDoubleClickOn`](https://prosemirror.net/docs/ref/#view.EditorProps.handleDoubleClickOn)을 호출하고 `handleClickOn`은 호출하지 않는다. 토글 처리기는 `handleClickOn`에만 있었으므로 두 번째 클릭은 아무 동작도 하지 않았다.
+
+![› 를 두 번 눌렀을 때 호출되는 처리기](./images/memo-editor-tags-toggle-revert-click-type.svg '첫 클릭(0ms)은 singleClick, 300ms 뒤의 두 번째 클릭은 doubleClick으로 판정된다. 수정 후에는 세 처리기가 같은 toggleOnClick을 호출한다')
+
+클릭 처리를 `toggleOnClick` 함수로 분리하고 `handleClickOn`·`handleDoubleClickOn`·`handleTripleClickOn` 세 곳에 같은 함수를 연결했다.
 
 > [!NOTE] 이미 저장된 펼침 상태
 > 이미 `<details open>`으로 저장된 토글은 그대로 남는다. 저장값을 바꾸려면 Markdown에서 `open`을 직접 추가하거나 삭제한다.
@@ -112,6 +172,8 @@ export function isShownOpen(state: EditorState, pos: number, node: Node): boolea
 
 저장소 글을 메모 편집기로 수정해 게시하면 DB에 같은 slug의 `Post` 행이 생기고, 목록을 병합하는 `mergeServerPosts`가 같은 slug의 저장소 글 대신 서버 글을 사용한다. 이후 저장소 파일을 수정해도 화면에 반영되지 않았다. 처음에 발견한 증상이 이것이다.
 
+예를 들어 저장소 글 하나를 편집기로 한 번 게시한 뒤 저장소 파일에 절을 추가해 배포해도, 화면은 게시한 시각의 DB 행을 계속 표시한다. 저장소 파일의 새 절은 빌드 번들에 들어 있지만 병합 단계에서 버려진다.
+
 원래 저장소 판으로 돌아갈 방법이 없었다. '메모 삭제'와 '영구 삭제'는 저장소 글을 가리는 `deleted` 표시를 남기므로(`mergeServerPosts`가 같은 slug를 목록에서 제거), 글이 저장소 판으로 돌아오지 않고 목록에서 사라진다.
 
 ![서버 글이 저장소 글을 가리는 구조와 되돌리기 경로](./images/memo-editor-tags-toggle-revert-revert.svg '되돌리기 전에는 DB의 Post 행이 같은 slug의 저장소 글을 가린다. DELETE /posts/:slug/server-copy가 트랜잭션 하나로 PostRevision과 Post 행을 삭제하면 저장소 글이 다시 표시된다. 메모 삭제는 deleted 표시를 남겨 저장소 글까지 숨긴다')
@@ -120,7 +182,7 @@ export function isShownOpen(state: EditorState, pos: number, node: Node): boolea
 
 - **API**: `DELETE /posts/:slug/server-copy`를 추가했다(`AdminGuard`, `@RateLimit('write')`). 잠긴 메모면 409, 서버에 행이 없으면 404를 반환한다. 행이 있으면 트랜잭션 하나로 그 글의 `PostRevision`과 `Post` 행을 삭제한다. `openapi.json`과 경로 권한 표(`routes.e2e.test.ts`)도 갱신했다
 - **desktop-core**: 관리자 목록을 병합하는 `mergeAdminPosts`가 같은 slug의 저장소 글이 있으면 글 상태에 `overridesRepo: true`를 기록한다
-- **메모 앱**: `overridesRepo`인 글에만 '저장소 글로 되돌리기'를 표시한다. 위치는 우클릭 메뉴, 도구 막대의 •••, 휴대폰의 ••• 세 곳이다. 취소할 수 없는 동작이라 경고창으로 먼저 확인한다. 되돌린 뒤에는 임시 저장을 버렸을 때와 같은 경로(`draft.onDiscarded(slug, null)`)로 편집기를 저장소 글로 다시 그린다
+- **메모 앱**: `overridesRepo`인 글에만 '저장소 글로 되돌리기'를 표시한다. 위치는 우클릭 메뉴, 도구 막대의 •••, 휴대폰의 ••• 세 곳이다. 취소할 수 없는 동작이라 경고창으로 먼저 확인한다. 되돌린 뒤에는 임시 저장을 버리는 동작과 같은 경로(`draft.onDiscarded(slug, null)`)로 편집기를 저장소 글로 다시 그린다
 
 ```ts
 async revertToRepository(slug: string) {
@@ -134,6 +196,15 @@ async revertToRepository(slug: string) {
 	]);
 }
 ```
+
+`$transaction`에 두 쿼리를 배열로 넘기면 Prisma는 두 쿼리를 한 DB 트랜잭션으로 실행한다. 버전 기록만 삭제되고 `Post` 행이 남는 중간 상태는 생기지 않는다.
+
+| 요청                       | 응답 | 조건                         |
+| -------------------------- | ---- | ---------------------------- |
+| 관리자 세션 없이 호출      | 401  | `AdminGuard`                 |
+| 서버에 행이 없는 slug      | 404  | 이미 저장소 판이거나 없는 글 |
+| 잠긴 메모                  | 409  | `checkUnlocked`              |
+| 서버에 행이 있는 저장소 글 | 성공 | 행과 버전 기록 삭제          |
 
 > [!CAUTION] 저장소에 없는 글에 호출하면 글이 사라진다
 > 서버는 빌드에 묶인 저장소 Markdown 목록을 알지 못한다. 저장소에 없는 글에 이 경로를 호출하면 글이 사라진다. 그래서 판정은 저장소 목록을 가진 프론트엔드(`overridesRepo`)가 하고, 메뉴도 그 글에만 표시한다.
@@ -166,8 +237,29 @@ DB 마이그레이션은 없다. API는 경로 하나만 추가하므로 API와 
 ## 관련 글
 
 - [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 토글 노드와 `revealed` 플러그인 상태를 처음 만든 글. 그 시점에는 › 로 접은 상태도 저장했다
-- [메모 태그](/memo/memo-tags): 본문의 `#태그`를 인식하는 규칙. 이 글의 첫 태그 문제는 그 규칙이 `\#`를 태그로 보지 않아서 드러났다
+- [저장하지 않고 본문에서 추출하는 #태그와 포함·제외·미선택 세 상태 필터](/memo/memo-tags): 본문의 `#태그`를 인식하는 규칙. 이 글의 첫 태그 문제는 그 규칙이 `\#`를 태그로 보지 않아서 드러났다
 - [한 줄 한 서식 규칙으로 ProseMirror 줄 서식 변환하기](/memo/memo-one-style-per-line): 같은 편집기의 줄 서식 변환 수정
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions): 되돌리기가 삭제하는 `Post`·`PostRevision`의 구조
+
+<details>
+<summary>참고 문헌</summary>
+
+- [CommonMark Spec 0.31.2: ATX headings](https://spec.commonmark.org/0.31.2/#atx-headings)
+- [mdast-util-to-markdown: unsafe.js](https://github.com/syntax-tree/mdast-util-to-markdown/blob/main/lib/unsafe.js)
+- [remark-stringify](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify)
+- [ProseMirror Guide](https://prosemirror.net/docs/guide/)
+- [ProseMirror Reference: Transaction](https://prosemirror.net/docs/ref/#state.Transaction), [EditorProps.handleDoubleClickOn](https://prosemirror.net/docs/ref/#view.EditorProps.handleDoubleClickOn)
+- [Milkdown: plugin-listener](https://milkdown.dev/docs/api/plugin-listener)
+- [MDN: \<details\>: The Details disclosure element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details)
+- [Prisma: Transactions and batch queries](https://www.prisma.io/docs/orm/prisma-client/queries/transactions)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- CommonMark 명세의 ATX 제목 예제: John MacFarlane, [CommonMark Spec 0.31.2, Example 64](https://spec.commonmark.org/0.31.2/#example-64), CC BY-SA 4.0
+
+</details>
 
 #MacFolio #메모앱 #프론트엔드 #트러블슈팅 #ProseMirror

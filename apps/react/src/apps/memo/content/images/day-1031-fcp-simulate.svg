@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>관찰한 첫 렌더링과 Lighthouse simulate가 계산한 FCP</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">같은 페이지, 두 가지 FCP (모바일, 고치기 전)</text>
+<g font-size="13">
+<text x="20" y="72" font-weight="700" fill="#1d1d1f">관찰한 값</text>
+<rect x="130" y="56" width="62" height="24" rx="4" fill="#0a84ff"/>
+<rect x="192" y="56" width="29" height="24" rx="4" fill="#34c759"/>
+<text x="230" y="73" fill="#1d1d1f">0.58초 = TTFB 394ms + 렌더링 지연 186ms</text>
+<text x="20" y="122" font-weight="700" fill="#1d1d1f">simulate</text>
+<rect x="130" y="106" width="448" height="24" rx="4" fill="#ff9f0a"/>
+<text x="586" y="123" fill="#1d1d1f">2.8초</text>
+<text x="130" y="152" font-size="12" fill="#6e6e73">0.58초 전에 수신을 마친 요청을 모두 첫 렌더링에 필요한 것으로 보고 느린 4G에서 다시 계산</text>
+</g>
+<text x="20" y="196" font-size="14" font-weight="700" fill="#1d1d1f">관찰한 첫 렌더링 전에 끝난 요청</text>
+<g font-size="12">
+<rect x="20" y="210" width="600" height="100" rx="10" fill="#f2f2f7"/>
+<rect x="36" y="224" width="60" height="16" rx="3" fill="#ff3b30"/>
+<text x="104" y="237" fill="#1d1d1f">theme-boot.js 2KB: 렌더링을 막는 스크립트. 받을 때까지 화면을 그리지 않는다</text>
+<g fill="#ff9f0a">
+<rect x="36" y="252" width="14" height="12" rx="2"/><rect x="54" y="252" width="14" height="12" rx="2"/><rect x="72" y="252" width="14" height="12" rx="2"/><rect x="90" y="252" width="14" height="12" rx="2"/><rect x="108" y="252" width="14" height="12" rx="2"/><rect x="126" y="252" width="14" height="12" rx="2"/><rect x="144" y="252" width="14" height="12" rx="2"/><rect x="162" y="252" width="14" height="12" rx="2"/>
+</g>
+<text x="186" y="263" fill="#1d1d1f">… modulepreload 번들 38개가 그사이 먼저 도착</text>
+<text x="36" y="294" fill="#1d1d1f" font-weight="700">→ 요청 39개 · 145KB가 FCP 계산에 들어갔다</text>
+</g>
+</svg>

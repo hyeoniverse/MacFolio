@@ -7,7 +7,9 @@ seriesOrder: 6
 summary: "SSH는 키로만, 열린 포트는 22뿐, 컨테이너는 root가 아닌 사용자로, 보안 업데이트는 자동으로." 이 네 가지를 문서에 적는 대신 ops/audit.sh가 서버 상태를 읽어 OK/확인을 출력하게 했다. 첫 실행에서 스크립트 쪽 오류 두 가지(루프백 DNS, distroless 사용자)를 수정했다.
 ---
 
-이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 마지막 보안 항목 "서버: SSH는 키만, 방화벽 포트 목록, 컨테이너를 root가 아닌 사용자로 실행하는지 확인하고 문서에 남기기"를 처리한 기록이다.
+서버 하드닝(hardening)은 서버가 외부에 내놓는 접근 경로와 권한을 필요한 만큼만 남기는 작업이다. 예를 들어 쓰지 않는 서비스가 111번 포트를 열어 두고 있으면, 그 서비스에 취약점이 발견되는 순간 서버 전체가 공격 대상이 된다. 그 포트를 닫아 두면 같은 취약점이 발견되어도 외부에서 도달할 방법이 없다. 하드닝은 한 번 설정하고 끝나는 작업이 아니다. 패키지 업데이트나 설정 파일 수정 한 줄로 닫아 둔 경로가 다시 열릴 수 있으므로, 현재 상태를 반복해서 확인할 수단이 필요하다.
+
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 마지막 보안 항목은 "서버: SSH는 키만, 방화벽 포트 목록, 컨테이너를 root가 아닌 사용자로 실행하는지 확인하고 문서에 남기기"였다. 이 항목을 문서 대신 점검 스크립트 `ops/audit.sh`로 처리했다([#183](https://github.com/hyeoniverse/MacFolio/pull/183), [#186](https://github.com/hyeoniverse/MacFolio/pull/186)).
 
 ## 서버의 외부 노출 범위
 
@@ -20,8 +22,20 @@ MacFolio의 API 서버는 Oracle 무료 VM 한 대다. 외부에서 접근할 �
 3. 컨테이너는 root가 아닌 사용자로 실행
 4. 보안 업데이트는 자동 설치
 
+### SSH는 키로만 접속
+
+SSH는 원격 서버에 암호화된 터미널로 접속하는 프로토콜이고, 서버 쪽 프로그램이 `sshd`다. 로그인 방식은 크게 두 가지다. 비밀번호 인증은 비밀번호를 서버로 보내 비교하므로, 22번 포트에 접속할 수 있는 누구나 `ubuntu / 123456` 같은 조합을 계속 시도할 수 있다(무작위 대입). 공개 키 인증은 사용자 컴퓨터에 개인 키를, 서버의 `~/.ssh/authorized_keys`에 짝이 되는 공개 키를 둔다. 접속할 때 클라이언트는 개인 키로 세션 데이터에 서명하고, 서버는 공개 키로 그 서명을 검증한다([RFC 4252, 7절](https://www.rfc-editor.org/rfc/rfc4252#section-7)). 개인 키는 네트워크로 나가지 않으므로 추측할 대상이 없다.
+
+![클라이언트가 개인 키로 서명하고 서버가 authorized_keys의 공개 키로 검증하는 순서와, 비밀번호 인증에서 추측한 비밀번호를 반복해 시도하는 모습의 비교](./images/server-hardening-audit-ssh-key.svg '공개 키 인증에서 네트워크를 지나는 것은 서명뿐이고, 서명을 만들 수 있는 개인 키는 노트북에만 있다')
+
+### 외부에서 수신 대기하는 포트
+
+서버의 프로그램은 특정 IP 주소와 포트에서 연결을 기다린다(수신 대기, listen). 어느 주소에서 기다리는지가 외부 노출 여부를 정한다. `0.0.0.0`(IPv6는 `[::]`)은 서버의 모든 네트워크 인터페이스를 뜻하므로 외부에서 접근할 수 있고, `127.0.0.1` 같은 루프백 주소는 서버 자신만 접근할 수 있다.
+
+![ss 출력의 각 줄을 수신 주소로 분류해, 0.0.0.0의 111번은 확인, 22번은 OK, 루프백과 docker 내부 주소는 제외하는 표](./images/server-hardening-audit-listen.svg '포트 번호가 아니라 수신 주소가 외부 노출 여부를 정한다')
+
 <details>
-<summary>용어 정리</summary>
+<summary>그 밖의 용어</summary>
 
 - **`sshd -T`**: SSH 서버가 실제로 적용 중인 설정을 모두 출력한다. `sshd_config`와 `sshd_config.d/*.conf`가 겹칠 때 어느 값이 적용되는지 파일만 읽어서는 판단하기 어려운데, 이 명령은 병합된 결과를 출력한다.
 - **`ss -lntu`**: 현재 수신 대기 중인 TCP·UDP 소켓 목록. `0.0.0.0`이나 `[::]`에서 수신 대기하면 외부에 열린 것이고, `127.0.0.1`은 서버 내부에서만 접근할 수 있다.
@@ -73,6 +87,8 @@ pw="$(sshd_value passwordauthentication)"
 [[ "$pw" == "no" ]] && ok "PasswordAuthentication no" || warn "PasswordAuthentication=${pw:-?} (no여야 한다)"
 ```
 
+예를 들어 `sshd_config`에는 `PasswordAuthentication no`가 있어도 `sshd_config.d/50-cloud-init.conf`에 `PasswordAuthentication yes`가 있으면, 먼저 읽힌 값이 적용되어 파일만 보고는 판단을 틀리기 쉽다[^sshd]. `sshd -T`는 이 병합 결과를 `passwordauthentication yes`처럼 소문자 한 줄로 출력하므로, `awk`로 첫 번째 열이 키와 같은 줄의 두 번째 값만 읽으면 된다.
+
 `ok`와 `warn`은 한 줄씩 출력하는 함수이고, `warn`은 종료 코드를 1로 만들 표시만 남긴다. 그래서 ==한 항목이 실패해도 나머지 항목을 끝까지 검사한다==. `set -e`를 쓰지 않은 이유도 같다.
 
 ## 첫 실행에서 수정한 두 곳
@@ -105,7 +121,7 @@ user="${user%%:*}"
 - 컨테이너가 `privileged`로 실행되지 않았는지, `docker.sock`을 마운트한 컨테이너가 없는지도 확인한다. 둘 다 컨테이너 안에서 호스트 root와 같은 권한을 얻게 한다([Docker 보안 문서](https://docs.docker.com/engine/security/)).
 
 > [!IMPORTANT] docker 그룹은 사실상 root다
-> `ubuntu` 계정이 `docker` 그룹에 속하면 그 계정은 사실상 root 권한을 가진다(컨테이너에 호스트 디스크를 마운트할 수 있다). 그래서 SSH 키가 서버 전체에 대한 접근 수단이고, 키 인증만 허용하는 설정이 가장 중요하다.
+> `ubuntu` 계정이 `docker` 그룹에 속하면 그 계정은 사실상 root 권한을 가진다. 예를 들어 `docker run -v /:/host alpine`처럼 호스트의 `/`를 컨테이너에 마운트하면 컨테이너 안의 root로 호스트의 모든 파일을 수정할 수 있다. 그래서 SSH 키가 서버 전체에 대한 접근 수단이고, 키 인증만 허용하는 설정이 가장 중요하다.
 
 ## 첫 실행 결과
 
@@ -144,5 +160,23 @@ ops/audit.sh             # 확인 항목이 있으면 1로 끝난다
 - [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
 
 PR: [#183](https://github.com/hyeoniverse/MacFolio/pull/183), [#186](https://github.com/hyeoniverse/MacFolio/pull/186)
+
+[^sshd]: `sshd_config(5)`: 대부분의 키워드는 처음 얻은 값을 사용한다. Ubuntu의 기본 `sshd_config`는 맨 앞에서 `Include /etc/ssh/sshd_config.d/*.conf`를 읽으므로 `sshd_config.d`의 값이 먼저 적용된다. [OpenBSD manual: sshd_config(5)](https://man.openbsd.org/sshd_config)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [RFC 4252: The Secure Shell (SSH) Authentication Protocol](https://www.rfc-editor.org/rfc/rfc4252)
+- [OpenBSD manual: sshd_config(5)](https://man.openbsd.org/sshd_config)
+- [OpenBSD manual: sshd(8), -T 옵션](https://man.openbsd.org/sshd)
+- [ss(8) manual](https://man7.org/linux/man-pages/man8/ss.8.html)
+- [Ubuntu Server: Automatic updates](https://documentation.ubuntu.com/server/how-to/software/automatic-updates/)
+- [Docker: Security](https://docs.docker.com/engine/security/)
+- [Docker: Linux post-installation, docker 그룹의 권한 경고](https://docs.docker.com/engine/install/linux-postinstall/)
+- [GoogleContainerTools: distroless](https://github.com/GoogleContainerTools/distroless)
+- [OCI: Security Lists](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm)
+- [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+
+</details>
 
 #MacFolio #보안 #서버 #SSH #Docker

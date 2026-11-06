@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>배포 전에 연 탭은 옛 빌드의 Memo-DJMDZtL5.js 이름을 보관하지만, 배포 후 서버에는 새 해시가 붙은 파일만 있어 요청이 실패하고, 새로고침해야 새 index.html과 새 이름을 받는다</title>
+<defs>
+<marker id="hn-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+<marker id="hn-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+</defs>
+<rect width="640" height="320" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">열린 탭이 보관한 파일 이름과 서버의 파일</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">파일 이름의 해시는 내용으로 계산하므로, 메모 코드가 바뀌면 이름도 바뀐다</text>
+
+<rect x="24" y="76" width="220" height="150" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="40" y="100" font-size="14" font-weight="700" fill="#1d1d1f">열린 탭 (배포 전에 로드)</text>
+<text x="40" y="124" font-size="12" fill="#6e6e73">실행 중인 코드</text>
+<text x="40" y="142" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">main-옛해시.js</text>
+<text x="40" y="168" font-size="12" fill="#6e6e73">코드 안에 적힌 메모 파일 이름</text>
+<rect x="36" y="178" width="180" height="26" rx="6" fill="#ffffff" stroke="#ff9f0a"/>
+<text x="46" y="196" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">Memo-DJMDZtL5.js</text>
+
+<rect x="396" y="76" width="220" height="150" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="412" y="100" font-size="14" font-weight="700" fill="#1d1d1f">서버 (배포 후 dist/)</text>
+<text x="412" y="126" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">index.html</text>
+<text x="412" y="146" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">assets/main-새해시.js</text>
+<text x="412" y="166" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">assets/Memo-새해시.js</text>
+<text x="412" y="194" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace" text-decoration="line-through">assets/Memo-DJMDZtL5.js</text>
+<text x="412" y="212" font-size="12" fill="#ff3b30">배포로 삭제됨</text>
+
+<path d="M220 191 C300 191 320 191 392 191" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#hn-r)"/>
+<text x="306" y="182" font-size="12" fill="#ff3b30" text-anchor="middle">메모를 처음 열 때</text>
+<text x="306" y="210" font-size="12" fill="#ff3b30" text-anchor="middle">import() 실패</text>
+
+<rect x="24" y="246" width="592" height="56" rx="10" fill="#f0faf2" stroke="#34c759"/>
+<text x="40" y="270" font-size="13" font-weight="700" fill="#248a3d">새로고침</text>
+<text x="110" y="270" font-size="12" fill="#1d1d1f">새 index.html을 받는다 → main-새해시.js → Memo-새해시.js를 요청한다</text>
+<text x="110" y="290" font-size="12" fill="#6e6e73">같은 탭에서 import()를 다시 실행해도 코드 안의 이름은 옛 이름 그대로다</text>
+</svg>

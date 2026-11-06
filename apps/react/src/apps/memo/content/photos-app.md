@@ -7,6 +7,18 @@ summary: Dock에 아이콘만 있던 사진 앱을 구현했다. 사진 목록�
 
 Dock의 사진 아이콘은 클릭해도 반응이 없었다. 이슈 [#21](https://github.com/hyeoniverse/MacFolio/issues/21)의 요구 사항은 "프로젝트 스크린샷을 갤러리로"였다. macOS 사진처럼 왼쪽에 보관함과 앨범, 가운데에 격자를 배치하고, 사진을 누르면 크게 보기로 전환하는 구조로 구현했다.
 
+## 배경
+
+macOS와 iOS의 사진 앱은 기기에 저장된 사진을 관리하는 기본 앱이다. 화면은 세 가지로 구성된다.
+
+| 화면      | 내용                                               | 이 사이트에서 대응하는 것                       |
+| --------- | -------------------------------------------------- | ----------------------------------------------- |
+| 보관함    | 모든 사진을 촬영 순서대로 나열한 격자              | 모든 프로젝트의 화면 이미지를 모은 격자         |
+| 앨범      | 사용자가 묶은 사진 모음                            | 프로젝트 하나 = 앨범 하나                       |
+| 크게 보기 | 사진 한 장을 화면 가득 표시하고 좌우로 넘기는 화면 | 같은 구성, 프로젝트 페이지로 이동하는 버튼 추가 |
+
+이 사이트는 포트폴리오라서 사진의 내용은 프로젝트 화면 캡처다. Safari 앱의 프로젝트 페이지가 이미 이 캡처를 사용하고 있었으므로, 사진 앱은 같은 이미지를 앨범 형태로 다시 보여 주는 앱이 된다.
+
 ## 사진 목록을 별도로 관리하지 않는다
 
 먼저 사진의 출처를 정해야 했다. 사진 목록을 새로 만들면 프로젝트 페이지를 수정할 때마다 두 곳을 함께 수정해야 한다. 한편 Safari의 프로젝트 페이지는 이미 많은 화면 이미지를 사용하고 있었다. 프로젝트 정보(`shared/profile.ts`)의 대표 화면, 화면 모음, 주요 기능·구현 방식·사용법 항목마다 붙은 그림과 영상, 각 장 끝의 그림이다.
@@ -18,7 +30,7 @@ Dock의 사진 아이콘은 클릭해도 반응이 없었다. 이슈 [#21](https
 | 사진 목록 파일(또는 DB 테이블)을 별도로 둔다 | 사진마다 설명·순서를 자유롭게 지정한다     | 프로젝트 페이지와 두 곳을 동기화해야 하고, 누락이 생기기 쉽다                            |
 | 프로젝트 정보를 순회해 앨범을 만든다 (채택)  | 페이지에 그림을 추가하면 자동으로 포함된다 | 설명이 페이지 문맥의 제목이라 사진만 볼 때 어색할 수 있다 (뒤의 캡션 수정 기능으로 해결) |
 
-사진 앱은 프로젝트 정보를 순회해 앨범을 만든다(`photosOf`, 현재 위치는 `apps/react/src/apps/photos/albums.ts`). 규칙은 다음과 같다.
+사진 앱은 프로젝트 정보를 순회(배열과 객체의 항목을 차례로 방문)해 앨범을 만든다(`photosOf`, 현재 위치는 `apps/react/src/apps/photos/albums.ts`). 규칙은 다음과 같다.
 
 1. 순서는 페이지를 읽는 순서다: 첫 화면 → 화면 모음 → 주요 기능·구현 방식·사용법 → 장의 그림
 2. 같은 파일은 한 번만 포함한다 (화면 모음과 본문이 같은 그림을 쓰는 경우가 있다)
@@ -26,11 +38,17 @@ Dock의 사진 아이콘은 클릭해도 반응이 없었다. 이슈 [#21](https
 4. 설명은 그 그림이 나온 위치의 제목이나 대체 텍스트를 사용한다
 5. 소리(`.mp3`)·데이터 파일은 제외한다. `.mp4`는 영상으로 분류해 크게 보기에서 재생한다
 
-==이제 프로젝트 페이지에 그림을 추가하면 사진 앱에도 자동으로 포함된다==. 글을 쓴 시점에는 일곱 프로젝트에서 사진 65장과 영상 5개가 수집됐다.
+![프로젝트 정보를 순회해 앨범을 만드는 순서](./images/photos-app-album-order.svg '가상의 프로젝트 예. 화면 모음에 이미 있는 list.jpg는 다시 넣지 않고, 다크 테마 그림은 바로 뒤에, 소리 파일은 제외한다')
+
+==이제 프로젝트 페이지에 그림을 추가하면 사진 앱에도 자동으로 포함된다==. 첫 구현 시각 기준으로 일곱 프로젝트에서 사진 65장과 영상 5개가 수집됐다.
 
 ## 섬네일은 만들지 않았다
 
+섬네일은 격자에 표시하려고 원본보다 작게 만든 이미지다. 원본이 폭 3,000px이어도 격자 칸은 폭 200px 안팎이므로, 작은 이미지를 따로 만들면 내려받는 용량이 줄어든다. WebP·AVIF는 JPEG·PNG보다 같은 화질에서 파일이 작은 이미지 형식이다.
+
 이슈에는 "WebP·AVIF 변환, 섬네일 분리"가 포함되어 있었다. 측정해 보니 그림은 167장, 합계 9.8MB였고 대부분 폭 960px 안팎이었다. ==섬네일을 별도로 생성해도 절감량이 작고, 빌드 단계와 파일 수는 두 배가 된다==. 대신 격자의 이미지에 `loading="lazy"`와 `decoding="async"`[^lazy]를 지정해 뷰포트에 들어오는 이미지만 내려받는다. 영상은 `preload="metadata"`로 길이·크기 같은 메타데이터만 내려받는다. 이미지 용량이 커지면 그 시각에 섬네일을 도입한다.
+
+![뷰포트 근처의 이미지만 요청하는 지연 로딩](./images/photos-app-lazy-loading.svg '격자 칸이 많아도 뷰포트 안과 그 근처의 이미지만 요청한다. 스크롤해 뷰포트에 가까워진 칸부터 차례로 요청이 시작된다')
 
 ![데스크톱 사진 앱의 보관함](./images/photos-app-desktop.jpg '사이드바에 보관함·비디오·프로젝트 앨범, 오른쪽은 비율을 지킨 격자')
 
@@ -40,7 +58,7 @@ Dock의 사진 아이콘은 클릭해도 반응이 없었다. 이슈 [#21](https
 - 위쪽에 "2 / 9" 같은 위치 표시와 해당 프로젝트의 Safari 페이지로 이동하는 버튼을 배치한다
 - 메뉴 막대의 '보기'에서 앨범을 선택하고, 크게 보기 중에는 '이동' 메뉴(이전 사진, 다음 사진, 돌아가기)가 추가된다
 
-휴대폰과 좁은 창에서는 사이드바 대신 위쪽에 앨범 버튼을 가로로 배치하고, 격자는 세 칸으로 바뀐다. 화면 폭이 아니라 창 폭을 기준으로 해야 하므로 [컨테이너 쿼리](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)를 사용했다.
+휴대폰과 좁은 창에서는 사이드바 대신 위쪽에 앨범 버튼을 가로로 배치하고, 격자는 세 칸으로 바뀐다. 화면 폭이 아니라 창 폭을 기준으로 해야 하므로 [컨테이너 쿼리](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)를 사용했다. 미디어 쿼리는 브라우저 화면 전체의 폭으로 조건을 판단하고, 컨테이너 쿼리는 지정한 부모 요소(여기서는 사진 앱 창)의 폭으로 판단한다. 예를 들어 1,440px 화면에서 사진 창을 500px로 줄이면, 미디어 쿼리 기준으로는 넓은 화면이지만 컨테이너 쿼리 기준으로는 좁은 창이다.
 
 ## 드래그 영역이 버튼을 가렸다
 
@@ -50,7 +68,7 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 .macos-titlebar intercepts pointer events
 ```
 
-메일·사진 같은 통합형 창은 제목 막대가 없는 대신, 위쪽 52px에 투명한 드래그 영역이 콘텐츠 위에 떠 있다(`z-index: 3`). ==그 아래의 버튼은 보이지만 클릭되지 않는다==. 메일 앱은 해당 위치의 버튼마다 `position: relative; z-index: 4`를 지정해 드래그 영역보다 위로 올리고 있었고, 사진 앱도 같은 규칙을 따랐다.
+메일·사진 같은 통합형 창은 제목 막대가 없는 대신, 위쪽 52px에 투명한 드래그 영역(눌러 끌면 창이 이동하는 영역)이 콘텐츠 위에 떠 있다(`z-index: 3`). `z-index`는 겹친 요소 중 어느 것을 위에 그릴지 정하는 CSS 속성으로, 값이 큰 요소가 위에 그려지고 클릭도 위의 요소가 받는다. 드래그 영역은 투명해서 ==그 아래의 버튼은 보이지만 클릭되지 않는다==. 메일 앱은 해당 위치의 버튼마다 `position: relative; z-index: 4`를 지정해 드래그 영역보다 위로 올리고 있었고, 사진 앱도 같은 규칙을 따랐다.
 
 ![쌓임 맥락 안에 갇힌 버튼](./images/photos-app-stacking.svg '안쪽 z-index는 바깥 맥락의 순서를 넘지 못한다')
 
@@ -60,6 +78,12 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 | ------------------------------- | -------------------------------- | -------------------------------- |
 | 수정 전: 크게 보기 `z-index: 1` | 맥락 1 안에 갇혀 3 아래로 가려짐 | 4로 크게 보기 위에 표시됨        |
 | 수정 후: `z-index` 제거         | 4로 드래그 영역 위에 표시됨      | 크게 보기 중에는 렌더링하지 않음 |
+
+MDN의 쌓임 맥락 예제가 같은 현상을 보여 준다. DIV #4는 `z-index: 10`이지만 `z-index: 1`인 DIV #3 안에 있어서, DIV #3의 쌓임 맥락 전체가 `z-index: 2`인 DIV #2 아래에 놓인다. 결과적으로 10인 DIV #4가 2인 DIV #2 아래에 그려진다.
+
+![MDN 쌓임 맥락 예제 2를 렌더링한 화면](./images/photos-app-mdn-stacking-example.jpg '오른쪽 DIV #2(z-index 2)가 왼쪽 아래 DIV #4(z-index 10)를 덮는다. DIV #4의 10은 DIV #3(z-index 1)이 만든 맥락 안에서만 비교된다')
+
+이 사이트에 대응하면 DIV #3이 크게 보기(1), DIV #4가 크게 보기 안의 버튼(4), DIV #2가 드래그 영역(3)이다.
 
 크게 보기의 `z-index`를 삭제해 쌓임 맥락을 만들지 않게 하고, 크게 보기 중에는 뒤쪽 버튼을 렌더링하지 않도록 수정했다.
 
@@ -81,7 +105,7 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 - **크게 보기는 막대 아래 영역을 모두 채운다.** 검은 배경 상자를 제거했다. 막대 왼쪽에 돌아가기와 확대 슬라이더(− ○ +, 최대 세 배, 넘치면 스크롤), 가운데에 설명과 "4/70", 오른쪽에 정보·공유 그룹과 프로젝트 페이지 버튼을 배치했다. 정보를 누르면 오른쪽에 앨범·종류·파일 이름 패널이 열린다. 이전·다음 화살표는 사진 위에 포인터를 올린 동안에만 표시된다
 
 > [!WARNING] backdrop-filter가 만드는 쌓임 맥락
-> 유리 그룹에서 드래그 영역 문제가 다시 발생했다. 막대의 버튼에 `z-index: 4`를 지정해도 클릭되지 않았다. `backdrop-filter`도 쌓임 맥락을 만들기 때문에, 그 안의 버튼은 그룹 밖으로 올라가지 못한다. 막대 자체의 `z-index`를 삭제하고, 버튼 대신 그룹 전체를 올렸다. 막대는 DOM에서 격자 뒤에 배치해 `z-index` 없이도 격자 위에 렌더링되게 했다(좁은 창에서는 `order`로 다시 맨 위에 배치).
+> 유리 그룹에서 드래그 영역 문제가 다시 발생했다. `backdrop-filter`는 요소 뒤쪽 영역에 흐림 같은 효과를 적용하는 속성으로, 반투명 유리 질감을 만들 때 사용한다. 막대의 버튼에 `z-index: 4`를 지정해도 클릭되지 않았다. `backdrop-filter`도 쌓임 맥락을 만들기 때문에, 그 안의 버튼은 그룹 밖으로 올라가지 못한다. 막대 자체의 `z-index`를 삭제하고, 버튼 대신 그룹 전체를 올렸다. 막대는 DOM에서 격자 뒤에 배치해 `z-index` 없이도 격자 위에 렌더링되게 했다(좁은 창에서는 `order`로 다시 맨 위에 배치).
 
 ## 휴대폰은 iOS 사진처럼
 
@@ -164,7 +188,7 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 
 첫 구현(`465fa2bd3`, 10월 7일)부터 macOS 사진 기준 재설계(`7a01e2ff5`), iOS 사진 기준 휴대폰 화면 분리(`495e7ea30`)까지 이틀이 걸렸다.
 
-## 남은 것·배운 것
+## 남은 것과 판단 근거
 
 - 섬네일은 여전히 생성하지 않는다. 그림이 167장, 9.8MB인 상태에서 내린 결정이므로 그림이 크게 늘면 다시 검토한다.
 - 사진에는 촬영 날짜가 없어서 정렬 기준을 프로젝트 기간의 시작일로 정한다. 같은 앨범 안의 순서는 페이지 순서다.
@@ -181,6 +205,27 @@ E2E 시험에서 크게 보기의 '프로젝트 페이지' 버튼이 클릭되�
 
 [^lazy]: `loading="lazy"`는 이미지가 뷰포트 근처에 올 때까지 요청을 미루고, `decoding="async"`는 이미지 디코딩이 다른 렌더링 작업을 막지 않게 한다. [MDN `<img>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img) 참고.
 
-[^stacking]: 쌓임 맥락(stacking context)은 자식 요소의 `z-index`가 비교되는 범위다. 쌓임 맥락 안의 요소는 `z-index` 값과 관계없이 그 맥락 전체의 순서를 넘어서지 못한다.
+[^stacking]: 쌓임 맥락(stacking context)은 자식 요소의 `z-index`가 비교되는 범위다. 쌓임 맥락 안의 요소는 `z-index` 값과 관계없이 그 맥락 전체의 순서를 넘어서지 못한다. MDN은 `z-index`가 지정된 위치 지정 요소, `opacity` 1 미만, `transform`·`filter`·`backdrop-filter`가 `none`이 아닌 요소 등을 쌓임 맥락을 만드는 조건으로 나열한다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Stacking context](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout/Stacking_context), MDN
+- [Stacking context example 2](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout/Stacking_context/Example_2), MDN
+- [`<img>`: loading, decoding](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img), MDN
+- [Lazy loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Guides/Lazy_loading), MDN
+- [CSS container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries), MDN
+- [backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter), MDN
+- [PerformanceResourceTiming: encodedBodySize](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceResourceTiming/encodedBodySize), MDN
+- [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion), MDN
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 쌓임 맥락 예제 화면: MDN Web Docs, [Stacking context example 2](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Positioned_layout/Stacking_context/Example_2)의 HTML·CSS를 Chromium에서 렌더링해 캡처, MDN 콘텐츠 CC BY-SA 2.5 (코드 예제는 CC0)
+
+</details>
 
 #MacFolio #데스크톱 #사진앱

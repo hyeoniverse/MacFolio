@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>휴대폰 화면의 mail 클래스가 데스크톱 세 칸 그리드 규칙과 충돌한 경우와 data-screen 속성으로 바꾼 뒤</title>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">같은 클래스 이름 mail이 두 가지 뜻으로 쓰였을 때</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">데스크톱 CSS의 .mail 규칙이 휴대폰 화면의 바깥 요소에도 적용되었다</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="70" width="290" height="330" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="34" y="94" font-size="14" font-weight="700" fill="#ff3b30">수정 전</text>
+<text x="34" y="118" font-family="ui-monospace, Menlo, monospace">&lt;div class="mail-phone mail"&gt;</text>
+<text x="34" y="140" fill="#6e6e73">화면 이름 'mail'을 클래스로 붙였다</text>
+<rect x="34" y="152" width="262" height="58" rx="6" fill="#ffffff"/>
+<text x="44" y="172" font-family="ui-monospace, Menlo, monospace">.mail { display: grid;</text>
+<text x="44" y="190" font-family="ui-monospace, Menlo, monospace">  grid-template-columns:</text>
+<text x="44" y="206" font-family="ui-monospace, Menlo, monospace">    200px 280px 1fr; }</text>
+<rect x="34" y="222" width="262" height="164" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<rect x="40" y="228" width="96" height="152" fill="#f2f2f7"/><text x="88" y="250" text-anchor="middle" fill="#6e6e73">200px</text>
+<rect x="140" y="228" width="134" height="152" fill="#f2f2f7"/><text x="207" y="250" text-anchor="middle" fill="#6e6e73">280px →</text>
+<rect x="278" y="228" width="14" height="152" fill="#fff8ec" stroke="#ff9f0a"/>
+<g font-size="12" fill="#ff3b30" text-anchor="middle"><text x="285" y="268">메</text><text x="285" y="284">일</text><text x="285" y="300">본</text><text x="285" y="316">문</text><text x="285" y="332">이</text><text x="285" y="348">…</text></g>
+<text x="88" y="300" text-anchor="middle" fill="#6e6e73">휴대폰</text><text x="88" y="316" text-anchor="middle" fill="#6e6e73">너비 안에서</text>
+<text x="207" y="300" text-anchor="middle" fill="#6e6e73">고정 칸이 먼저</text><text x="207" y="316" text-anchor="middle" fill="#6e6e73">자리를 차지</text>
+
+<rect x="330" y="70" width="290" height="330" rx="10" fill="#effaf2" stroke="#34c759"/>
+<text x="344" y="94" font-size="14" font-weight="700" fill="#1d1d1f">수정 후</text>
+<text x="344" y="118" font-family="ui-monospace, Menlo, monospace">&lt;div class="mail-phone"</text>
+<text x="344" y="136" font-family="ui-monospace, Menlo, monospace">     data-screen="mail"&gt;</text>
+<rect x="344" y="152" width="262" height="58" rx="6" fill="#ffffff"/>
+<text x="354" y="172" font-family="ui-monospace, Menlo, monospace">.mail-phone[data-screen=</text>
+<text x="354" y="190" font-family="ui-monospace, Menlo, monospace">  'mail'] { … }</text>
+<text x="354" y="206" fill="#6e6e73">.mail 규칙과 일치하지 않음</text>
+<rect x="400" y="222" width="150" height="164" rx="16" fill="#ffffff" stroke="#6e6e73"/>
+<text x="414" y="250" font-weight="700">‹ 받은 편지함</text>
+<text x="414" y="276" font-weight="700" font-size="13">포트폴리오 문의</text>
+<text x="414" y="300">안녕하세요, 사이트를</text>
+<text x="414" y="318">보고 연락드립니다.</text>
+<text x="414" y="336">메일 본문이 화면</text>
+<text x="414" y="354">너비만큼 줄바꿈된다</text>
+</g>
+</svg>

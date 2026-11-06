@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="340" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">떠 있는 버튼을 스크롤 컨테이너 안에서 밖으로 옮긴 구조</text>
+  <g font-size="12">
+    <text x="30" y="60" font-weight="600" fill="#ff3b30">처음: 스크롤 컨테이너 안</text>
+    <rect x="30" y="72" width="270" height="200" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="42" y="92" fill="#1d1d1f">section.memo-list</text>
+    <rect x="44" y="102" width="242" height="156" rx="6" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+    <text x="56" y="122" fill="#1d1d1f">div.memo-scroll</text>
+    <text x="278" y="122" text-anchor="end" fill="#ff9f0a">overflow: auto</text>
+    <rect x="58" y="134" width="214" height="54" rx="5" fill="#fff0ef" stroke="#ff3b30" stroke-dasharray="4 3"/>
+    <text x="70" y="154" fill="#1d1d1f">.memo-compact-tools</text>
+    <text x="70" y="174" fill="#ff3b30">display: contents + 버튼 absolute</text>
+    <text x="70" y="214" fill="#6e6e73">큰 제목, 카드 묶음 …</text>
+    <text x="30" y="296" fill="#ff3b30">데스크톱 Chrome: 보임 / 실제 휴대폰: 검색 알약 없음</text>
+    <text x="340" y="60" font-weight="600" fill="#34c759">수정: 목록 칸의 직계 자식</text>
+    <rect x="340" y="72" width="270" height="200" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="352" y="92" fill="#1d1d1f">section.memo-list</text>
+    <rect x="354" y="102" width="242" height="70" rx="6" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+    <text x="366" y="122" fill="#1d1d1f">div.memo-scroll</text>
+    <text x="588" y="122" text-anchor="end" fill="#ff9f0a">overflow: auto</text>
+    <text x="366" y="150" fill="#6e6e73">큰 제목, 카드 묶음 …</text>
+    <rect x="354" y="182" width="242" height="30" rx="6" fill="#effaf2" stroke="#34c759"/>
+    <text x="366" y="202" fill="#1d1d1f">.memo-phone-list-top (정렬)</text>
+    <rect x="354" y="222" width="242" height="38" rx="6" fill="#effaf2" stroke="#34c759"/>
+    <text x="366" y="246" fill="#1d1d1f">.memo-phone-bottom (검색·새 메모)</text>
+    <text x="340" y="296" fill="#34c759">스크롤과 무관하게 목록 칸 기준으로 배치</text>
+  </g>
+  <text x="320" y="326" text-anchor="middle" font-size="12" fill="#6e6e73">버튼은 phone &amp;&amp; compact일 때만 렌더링하고, 넓은 창에서는 기존 .memo-compact-tools 줄을 그대로 쓴다</text>
+</svg>
