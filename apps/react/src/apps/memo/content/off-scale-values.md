@@ -239,7 +239,7 @@ src/zz-lint-sample.css
 - [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234): 이번에 `title1`·`large-title`을 추가한 글자 단계
 - [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/design-tokens#모서리-반경---radius--여섯-값-232)
 - [10월 20일 - 디자인 토큰 세 층, 큰 파일 분리, 실제 OS 구조의 Finder, SSH 접속 복구](/memo/day-1020): #286·#289가 병합된 날의 회고
-- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/week-1019#markdown-이력서와-텍스트-편집기-21일): #296이 병합된 날의 회고
+- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021): #296이 병합된 날의 회고
 
 [^hig]: Apple Human Interface Guidelines의 [Typography](https://developer.apple.com/design/human-interface-guidelines/typography). iOS 기본 크기 기준으로 Title 1이 28pt, Large Title이 34pt이며, 기존 여덟 단계도 같은 iOS 크기를 사용한다.
 

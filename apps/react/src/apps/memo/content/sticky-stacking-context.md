@@ -153,7 +153,7 @@ z-index가 예상과 다르게 동작하면, 조상 요소 중 쌓임 맥락을 
 ## 관련 글
 
 - 화면 전체의 겹침 순서를 이름으로 정리한 작업: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)
-- 같은 날의 작업 기록: [9월 29일 - Safari 포트폴리오, 그리고 첫 API와 관리자 로그인](/memo/week-0928#api-서버와-관리자-로그인)
+- 같은 날의 작업 기록: [9월 29일 - Safari 포트폴리오, 그리고 첫 API와 관리자 로그인](/memo/day-0929)
 - 메모 CSS를 분할하면서 이 주석을 옮긴 작업: [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/css-cleanup-tools#memocss-분할-선언-순서-유지)
 - PR: [#33](https://github.com/hyeoniverse/MacFolio/pull/33)
 

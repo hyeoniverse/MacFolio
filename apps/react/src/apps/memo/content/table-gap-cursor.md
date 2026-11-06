@@ -322,7 +322,7 @@ return true;
 
 ## 관련 글
 
-- 같은 날의 작업 기록: [10월 1일 - 규칙과 공통 컴포넌트, 그리고 자정의 최근 삭제된 항목](/memo/week-0928#공통-컴포넌트-important-72개를-0개로)
+- 같은 날의 작업 기록: [10월 1일 - 규칙과 공통 컴포넌트, 그리고 자정의 최근 삭제된 항목](/memo/day-1001)
 - PR: [#55](https://github.com/hyeoniverse/MacFolio/pull/55), [#62](https://github.com/hyeoniverse/MacFolio/pull/62)
 - ProseMirror 문서: [prosemirror-gapcursor](https://prosemirror.net/docs/ref/#gapcursor)
 

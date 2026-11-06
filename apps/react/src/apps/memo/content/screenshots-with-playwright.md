@@ -172,7 +172,7 @@ await browser.close();
 ## 관련 글
 
 - [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
-- [9월 30일 - 편집기를 다듬고, 서버를 띄우고, 문서를 다시 쓰다](/memo/week-0928#api-서버-배포와-서버-반영)
+- [9월 30일 - 편집기를 다듬고, 서버를 띄우고, 문서를 다시 쓰다](/memo/day-0930)
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 - [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)

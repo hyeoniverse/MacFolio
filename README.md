@@ -35,7 +35,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
     <td align="center" width="25%"><h3>1인</h3>개발</td>
     <td align="center" width="25%"><h3>0원</h3>운영비</td>
     <td align="center" width="25%"><h3>0개</h3>열린 포트</td>
-    <td align="center" width="25%"><h3>170편+</h3>개발기</td>
+    <td align="center" width="25%"><h3>200편+</h3>개발기</td>
   </tr>
 </table>
 
