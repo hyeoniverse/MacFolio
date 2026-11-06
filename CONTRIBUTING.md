@@ -152,8 +152,10 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 헬스 체�
   - 앱 이름이 아니라 글이 푼 문제로 고른다. 앱 단위 묶음은 연재(`series`)가 맡는다. 예: 끌어서 순서 바꾸기는 인터랙션·브라우저 API, 휴대폰 키보드 높이에 화면 맞추기는 화면·스타일
   - `기술 노트/`: 프론트엔드 · 백엔드 · 인프라 · 보안 · 테스트 · Git · 개발 환경 (한 단계만 두고, 글이 쌓이면 나눈다)
   - `인사이트/`: 최신 동향과 그에 대한 고찰. 주제별 하위 폴더(보안 · 프론트엔드 …)를 두고, 글이 쌓이면 나눈다
+  - `학습/`: 공부한 내용의 정리. `학습/CS/<과목>`(데이터베이스 · 딥러닝 · 네트워크 보안 …), `학습/코딩 테스트/…`, `학습/언어/<언어>`. 한 과목을 여러 편으로 나누면 `series`·`seriesOrder`로 연재로 묶는다
 - 로그, 코드, 수치는 실제로 실행해 얻은 것만 쓴다
-- 머리말(frontmatter)에 `title`, `date`(YYYY-MM-DD), `category`(폴더, 최대 3단계), `summary`를 쓴다
+- 머리말(frontmatter)에 `title`, `date`(YYYY-MM-DD), `category`(폴더, 최대 3단계), `summary`를 쓴다. 연재 글이면 `series`(연재 이름)와 `seriesOrder`(1부터)를 더한다
+- 본문은 5만 자 이하다(`content.test.ts`가 검사한다). 넘으면 글을 나눈다
 
 ```markdown
 ---
@@ -210,6 +212,7 @@ summary: 목록과 검색에 보이는 한두 문장 요약
 - CI(`check`, `conventions`, `secrets`)가 통과해야 머지한다. `main`의 Ruleset이 세 검사를 필수로 지정해, 통과하기 전에는 Merge 버튼이 막힌다. `secrets`는 [gitleaks](https://github.com/gitleaks/gitleaks)로 API 키·토큰·개인 키 형식의 문자열이 커밋에 포함되었는지 전체 기록을 검사한다 (예외는 `.gitleaks.toml`)
 - **Merge commit**으로 머지한다. 브랜치의 커밋이 그대로 main에 남는다 ([병합 방식 비교 글](https://macfolio.hyeoniverse.com/memo/merge-strategies), [이 저장소가 Merge commit을 고른 근거](https://macfolio.hyeoniverse.com/memo/macfolio-merge-strategy), [GitHub 문서](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github))
 - 머지한 브랜치는 삭제한다 (PR 페이지의 Delete branch)
+- 다른 PR의 브랜치를 base로 연 PR은 머지하기 전에 base가 `main`인지 확인한다. 아래 PR을 머지하고 그 브랜치를 지우면 GitHub이 위 PR의 base를 `main`으로 바꾸지만, 브랜치가 남아 있으면 base가 그대로라 머지해도 `main`에 들어가지 않고 배포되지 않는다(#413 → #415). PR 페이지 제목 아래의 `into <브랜치>`로 확인하고, 다르면 Edit으로 base를 `main`으로 바꾼다
 - 아직 작업이 남았으면 draft로 열고, 완료되면 Ready for review로 변경한다
 
 ## 저장소 설정

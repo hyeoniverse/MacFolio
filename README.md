@@ -35,7 +35,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
     <td align="center" width="25%"><h3>1인</h3>개발</td>
     <td align="center" width="25%"><h3>0원</h3>운영비</td>
     <td align="center" width="25%"><h3>0개</h3>열린 포트</td>
-    <td align="center" width="25%"><h3>230편+</h3>개발기</td>
+    <td align="center" width="25%"><h3>240편+</h3>개발기</td>
   </tr>
 </table>
 
@@ -656,7 +656,7 @@ pnpm dev:all                                     # 프론트엔드 5173 + API 40
 
 두 가지 방법이 있습니다.
 
-- **사이트에서:** 관리자로 로그인해 메모 앱에서 바로 씁니다. 글은 서버(DB)에 저장되고, 저장소의 글을 수정하면 같은 주소에서 서버 글이 대신 표시됩니다.
+- **사이트에서:** 관리자로 로그인해 메모 앱에서 바로 씁니다. 글은 서버(DB)에 저장되고, 저장소의 글을 수정하면 같은 주소에서 서버 글이 대신 표시됩니다. 이후 저장소에서 같은 글을 고쳐도 서버 글이 계속 보이므로, 저장소 글을 다시 보이려면 글의 우클릭 메뉴에서 **저장소 글로 되돌리기**를 고릅니다(서버의 내용·임시 저장·버전 기록을 지운다). 일반 삭제는 저장소 글까지 목록에서 뺍니다.
 - **저장소에서:** `apps/react/src/apps/memo/content/`에 Markdown 파일을 추가합니다. 파일 이름이 글의 주소 이름이 됩니다(예: `my-first-post.md`). main에 머지하면 배포됩니다.
 
 <details>
@@ -666,8 +666,10 @@ pnpm dev:all                                     # 프론트엔드 5173 + API 40
 ---
 title: 글 제목
 date: 2026-09-28
-category: 개발 기록/MacFolio/기능
+category: 개발 기록/MacFolio/화면·스타일
 summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
+series: 보안 점검 # 연재 이름 (선택)
+seriesOrder: 3 # 연재 안의 순서, 1~999 (선택)
 pinned: true # 목록 맨 위에 고정 (선택)
 ---
 
@@ -677,7 +679,19 @@ pinned: true # 목록 맨 위에 고정 (선택)
 ```
 
 - `title`과 `date`(YYYY-MM-DD)는 필수입니다. 없거나 형식이 틀리면 목록에서 빠지고, 개발 서버 콘솔에 경고가 나옵니다.
-- `category`는 왼쪽 폴더가 됩니다. `/`로 하위 폴더를 만들 수 있고, 상위 폴더를 고르면 하위 폴더의 글까지 보입니다. 없으면 "기타"로 들어갑니다.
+- `category`는 왼쪽 폴더가 됩니다. `/`로 하위 폴더를 3단계까지 만들 수 있고, 상위 폴더를 고르면 하위 폴더의 글까지 보입니다. 없으면 "기타"로 들어갑니다. 관리자 화면에서 끌어 옮긴 폴더·글은 서버의 정리 데이터가 `category`보다 우선합니다.
+- 본문은 5만 자까지입니다. GFM(표·취소선·체크 목록) 외에 아래 표기를 씁니다.
+
+  | 표기                                                     | 결과                         |
+  | -------------------------------------------------------- | ---------------------------- |
+  | `==강조==`                                               | 형광펜                       |
+  | `> [!NOTE] 제목` (`TIP`·`IMPORTANT`·`WARNING`·`CAUTION`) | 콜아웃                       |
+  | ` ```math ` 블록, `` `식{:math}` ``                      | KaTeX 수식 (블록·문장 안)    |
+  | `<details><summary>제목</summary> … </details>`          | 접는 토글                    |
+  | 주소만 쓴 한 줄 (`https://youtu.be/…`, `.mp4`·`.mp3`)    | 영상·음악 임베드             |
+  | `![설명](./images/a.jpg#float-right)` (`#float-left`)    | 글 옆에 띄운 이미지          |
+  | `#태그`                                                  | 태그 (누르면 그 태그의 글만) |
+
 - 이미지는 `content/images/`에 넣고 글 파일 기준 상대 경로로 씁니다. 갤러리 보기에서는 본문의 첫 이미지가 카드 미리보기가 됩니다.
 - 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 생성한 카드입니다(`packages/og-card`). 사이트에서 쓴 글의 카드는 API가 생성합니다(`GET /posts/<글>/og.png`). sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
 
@@ -708,7 +722,7 @@ VM 만들기부터 OAuth App, 터널, 환경 변수, 문제 해결까지 [docs/d
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
 - [개인정보 처리](docs/privacy.md): 수집 항목, 저장 방식, 보관 기간
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
-- 개발기: 사이트의 메모 앱 → 개발기 폴더 (`apps/react/src/apps/memo/content/`). 처음 읽기 좋은 글:
+- 개발기: 사이트의 메모 앱 → 개발 기록 폴더 (`apps/react/src/apps/memo/content/`). CS 공부를 정리한 연재(데이터베이스·딥러닝·네트워크 보안)는 학습 › CS 폴더에 있습니다. 처음 읽기 좋은 글:
   - [MacFolio 백엔드 한 장으로 보기](https://macfolio.hyeoniverse.com/memo/backend-design)
   - [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
   - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
