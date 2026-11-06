@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { MOVED_POSTS } from '@macfolio/desktop-core/memo';
 import { DEFAULT_PROJECTS, PROFILE } from '../src/shared/profile';
 import worker from './index';
 import { applySeo, clearSeoPostsCache, escapeHtml, fetchSeoPosts, seoPage, siteDataOf, type SeoPost } from './seo';
@@ -177,6 +178,19 @@ describe('Worker', () => {
 			ASSETS: assets,
 		});
 		expect(response.headers.get('X-Robots-Tag')).toBe('noindex');
+	});
+
+	it('합친 글의 옛 주소는 지금 글의 그 절로 301 (쿼리는 유지)', async () => {
+		const [from, to] = Object.entries(MOVED_POSTS)[0];
+		const response = await worker.fetch(new Request(`https://macfolio.hyeoniverse.com/memo/${from}?utm_source=x`), {
+			ASSETS: assets,
+		});
+		expect(response.status).toBe(301);
+		const [slug, heading] = to.split('#');
+		// 한글 제목 id는 Location 헤더에서 퍼센트 인코딩된다
+		expect(response.headers.get('location')).toBe(
+			new URL(`/memo/${slug}?utm_source=x${heading ? `#${heading}` : ''}`, 'https://macfolio.hyeoniverse.com').href
+		);
 	});
 
 	it('없는 글·프로젝트 주소는 404 (첫 화면 HTML과 noindex는 그대로)', async () => {

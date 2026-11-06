@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { MOVED_POSTS } from '@macfolio/desktop-core/memo';
 import { appLinkOf, appPath, appUrl, parseAppPath } from './appLink';
 
 describe('앱 항목 주소', () => {
@@ -16,6 +17,12 @@ describe('앱 항목 주소', () => {
 		const path = appPath({ app: 'memo', id: '새 글 1' });
 		expect(path).toBe('/memo/%EC%83%88%20%EA%B8%80%201');
 		expect(parseAppPath(path)).toEqual({ app: 'memo', id: '새 글 1' });
+	});
+
+	it('합친 글의 옛 주소는 지금 글로 읽는다', () => {
+		const [from, to] = Object.entries(MOVED_POSTS)[0];
+		expect(parseAppPath(`/memo/${from}`)).toEqual({ app: 'memo', id: to.split('#')[0] });
+		expect(parseAppPath(`/safari/${from}`)).toEqual({ app: 'safari', id: from });
 	});
 
 	it('주소가 있는 앱의 항목이 아니면 null', () => {

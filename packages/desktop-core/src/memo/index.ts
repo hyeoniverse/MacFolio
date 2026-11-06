@@ -3,6 +3,7 @@ export * from './arrange.js';
 export * from './caption.js';
 export * from './embeds.js';
 export * from './media.js';
+export * from './movedPosts.js';
 export * from './find.js';
 export * from './imageLayout.js';
 export * from './organize.js';
