@@ -52,7 +52,8 @@ summary: 웹 프론트엔드·풀스택 개발에 쓰는 VS Code 확장 32개를
 
 ## ① 코드 품질
 
-세 검사 도구(ESLint·Prettier·Stylelint)의 확장은 **확장에 들어 있는 규칙이 아니라 저장소에 설치된 패키지와 설정 파일**을 쓴다. 그래서 CI와 편집기의 결과가 같다.
+> [!IMPORTANT]
+> 세 검사 도구(ESLint·Prettier·Stylelint)의 확장은 **확장에 들어 있는 규칙이 아니라 저장소에 설치된 패키지와 설정 파일**을 쓴다. 그래서 CI와 편집기의 결과가 같다.
 
 ### ESLint
 
@@ -160,7 +161,8 @@ Dockerfile·Compose 편집 지원, 컨테이너 관리, 컨테이너 안 디버�
 
 ## ④ HTML·CSS·언어
 
-TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문서](https://code.visualstudio.com/docs/languages/typescript)에 따르면 언어 지원은 포함되어 있지만 컴파일러(`tsc`)는 포함되어 있지 않다. 편집기는 기본적으로 VS Code에 들어 있는 TypeScript로 오류를 계산하므로, 프로젝트의 TypeScript와 버전이 다르면 편집기와 `tsc`의 결과가 어긋날 수 있다. 명령 팔레트의 **TypeScript: Select TypeScript Version**으로 작업 공간 버전을 고르면 같은 버전을 쓴다([공식 문서](https://code.visualstudio.com/docs/typescript/typescript-compiling)). Tailwind CSS·Vue 확장은 그 프레임워크를 쓸 때만 설치하고, 이어지는 네 확장은 HTML·CSS를 직접 다룰 때 쓴다.
+> [!WARNING] 편집기와 `tsc`의 TypeScript 버전
+> TypeScript 언어 지원은 VS Code에 기본으로 들어 있다. [공식 문서](https://code.visualstudio.com/docs/languages/typescript)에 따르면 언어 지원은 포함되어 있지만 컴파일러(`tsc`)는 포함되어 있지 않다. 편집기는 기본적으로 VS Code에 들어 있는 TypeScript로 오류를 계산하므로, 프로젝트의 TypeScript와 버전이 다르면 편집기와 `tsc`의 결과가 어긋날 수 있다. 명령 팔레트의 **TypeScript: Select TypeScript Version**으로 작업 공간 버전을 고르면 같은 버전을 쓴다([공식 문서](https://code.visualstudio.com/docs/typescript/typescript-compiling)). Tailwind CSS·Vue 확장은 그 프레임워크를 쓸 때만 설치하고, 이어지는 네 확장은 HTML·CSS를 직접 다룰 때 쓴다.
 
 ### Tailwind CSS IntelliSense
 
@@ -200,7 +202,7 @@ VS Code 내장 CSS 언어 지원에서 출발해 최신·실험 CSS 문법의 �
 
 ![Live Preview 상세 화면](./images/vscode-extensions-web-live-preview.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-빌드 도구 없이 HTML 파일을 로컬 서버로 띄워 보는 확장이다. Live Server는 상태 표시줄의 **Go Live**로 서버를 켜고, 파일을 저장할 때마다 브라우저를 새로 고친다. Microsoft의 Live Preview는 편집기 안 미리 보기를 제공하고, 기본값으로 저장하지 않아도 편집 내용을 반영한다(`livePreview.autoRefreshPreview`). Live Preview 페이지는 React·Angular 같은 앱에는 VS Code의 통합 브라우저를 권한다. Vite처럼 개발 서버가 있는 프로젝트는 그 서버를 쓰므로 두 확장이 필요 없다.
+빌드 도구 없이 HTML 파일을 로컬 서버로 띄워 보는 확장이다. Live Server는 상태 표시줄의 **Go Live**로 서버를 켜고, 파일을 저장할 때마다 브라우저를 새로 고친다. Microsoft의 Live Preview는 편집기 안 미리 보기를 제공하고, 기본값으로 저장하지 않아도 편집 내용을 반영한다(`livePreview.autoRefreshPreview`). Live Preview 페이지는 React·Angular 같은 앱에는 VS Code의 통합 브라우저를 권한다. ==Vite처럼 개발 서버가 있는 프로젝트는 그 서버를 쓰므로 두 확장이 필요 없다.==
 
 ## ⑤ Git
 
@@ -290,13 +292,14 @@ Markdown All in One은 단축키, 목차 생성, 표 정렬, 목록 이어 쓰�
 
 ![Import Cost 상세 화면](./images/vscode-extensions-web-import-cost.jpg 'VS Code 확장 보기의 상세 화면(2026년 10월 27일 촬영). 설치 수와 별점은 촬영 시각의 값이다')
 
-`import`·`require`한 패키지의 크기를 그 줄 끝에 표시한다. 크기는 webpack으로 측정한다. 두 라이브러리가 같은 의존성을 공유하면 그 크기가 양쪽에 따로 더해진다고 확장 페이지가 알려진 문제로 적는다. 실제 번들 크기는 빌드 결과로 확인한다.
+`import`·`require`한 패키지의 크기를 그 줄 끝에 표시한다. 크기는 webpack으로 측정한다. 두 라이브러리가 같은 의존성을 공유하면 그 크기가 양쪽에 따로 더해진다고 확장 페이지가 알려진 문제로 적는다. ==실제 번들 크기는 빌드 결과로 확인한다.==
 
-AI 코딩 보조 확장도 여러 종류가 있다. 회사 코드에 쓸 때는 기능보다 먼저 코드가 어디로 전송되고 학습에 쓰이는지, 조직 정책이 허용하는지를 확인한다.
+> [!CAUTION] AI 코딩 보조 확장
+> AI 코딩 보조 확장도 여러 종류가 있다. 회사 코드에 쓸 때는 기능보다 먼저 코드가 어디로 전송되고 학습에 쓰이는지, 조직 정책이 허용하는지를 확인한다.
 
 ## 확장 대신 쓰는 내장 설정
 
-추천 글에 자주 나오는 확장 중 일부는 VS Code에 기능이 들어와 확장 없이 설정으로 쓴다. 확장을 함께 켜 두면 같은 일을 두 번 하거나 서로 충돌한다.
+추천 글에 자주 나오는 확장 중 일부는 VS Code에 기능이 들어와 확장 없이 설정으로 쓴다. ==확장을 함께 켜 두면 같은 일을 두 번 하거나 서로 충돌한다.==
 
 | 확장                        | 내장 기능과 설정                                                        |
 | --------------------------- | ----------------------------------------------------------------------- |
@@ -353,7 +356,7 @@ AI 코딩 보조 확장도 여러 종류가 있다. 회사 코드에 쓸 때는 
 
 ## 한 번에 설치하기
 
-확장을 하나씩 검색해 설치하지 않고 목록으로 한 번에 설치하는 방법은 세 가지다. 32개를 모두 설치하면 시작이 느려지고 기능이 겹칠 수 있으므로, 필요한 묶음만 골라 목록을 줄이는 편이 낫다.
+확장을 하나씩 검색해 설치하지 않고 목록으로 한 번에 설치하는 방법은 세 가지다. 32개를 모두 설치하면 시작이 느려지고 기능이 겹칠 수 있으므로, ==필요한 묶음만 골라 목록을 줄이는 편이 낫다.==
 
 | 방법                      | 쓰는 곳                | 특징                                                        |
 | ------------------------- | ---------------------- | ----------------------------------------------------------- |

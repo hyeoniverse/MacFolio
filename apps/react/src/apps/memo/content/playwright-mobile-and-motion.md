@@ -35,7 +35,7 @@ projects: [
 ],
 ```
 
-Safari 엔진(WebKit)을 사용하지 않으므로 WebKit에서만 발생하는 문제는 검출하지 못한다. 대신 터치, 화면 크기, 레이아웃은 검증할 수 있다.
+Safari 엔진(WebKit)을 사용하지 않으므로 ==WebKit에서만 발생하는 문제는 검출하지 못한다==. 대신 터치, 화면 크기, 레이아웃은 검증할 수 있다.
 
 | 방법                                   | 장점                                             | 단점                                                               |
 | -------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------ |
@@ -56,7 +56,10 @@ devices['iPhone 13'].viewport; // { width: 390, height: 664 }
 devices['iPhone 13'].screen; // { width: 390, height: 844 }
 ```
 
-844는 화면 전체 높이이고, 페이지가 실제로 사용하는 뷰포트는 주소창과 도구 막대를 제외한 664다. 좌표를 844 기준으로 계산해 뷰포트 밖을 탭하고 있었다. 좌표는 상수로 고정하지 말고 `page.viewportSize()`에서 읽는다.
+844는 화면 전체 높이이고, ==페이지가 실제로 사용하는 뷰포트는 주소창과 도구 막대를 제외한 664==다. 좌표를 844 기준으로 계산해 뷰포트 밖을 탭하고 있었다.
+
+> [!TIP] 좌표의 기준
+> 좌표는 상수로 고정하지 말고 `page.viewportSize()`에서 읽는다.
 
 ![iPhone 13의 화면 높이와 뷰포트 높이](./images/viewport-844-664.svg '844는 화면 전체, 페이지가 쓰는 뷰포트는 664')
 
@@ -90,7 +93,7 @@ await expect.poll(() => github.evaluate((el) => el.getAnimations().length)).toBe
 }
 ```
 
-그러자 창 드래그 시험이 실패했다. [`transition-property`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-property)의 기본값이 `all`이므로, 원래 전환이 없던 요소에도 모든 속성에 1ms 전환이 적용되었다. 비활성화하려던 전환을 페이지 전체에 활성화한 결과다. 전환과 애니메이션을 완전히 제거하는 방식으로 변경했다.
+그러자 창 드래그 시험이 실패했다. [`transition-property`](https://developer.mozilla.org/en-US/docs/Web/CSS/transition-property)의 기본값이 `all`이므로, 원래 전환이 없던 요소에도 모든 속성에 1ms 전환이 적용되었다. ==비활성화하려던 전환을 페이지 전체에 활성화한 결과==다. 전환과 애니메이션을 완전히 제거하는 방식으로 변경했다.
 
 | 규칙                                  | 전환이 없던 요소(`transition-property: all`, `duration: 0s`) | 창 드래그 시험 |
 | ------------------------------------- | ------------------------------------------------------------ | -------------- |
@@ -108,11 +111,12 @@ await expect.poll(() => github.evaluate((el) => el.getAnimations().length)).toBe
 }
 ```
 
-JS로 실행하는 애니메이션(Web Animations API)은 CSS로 비활성화할 수 없으므로, 각 코드에서 이 설정을 확인해 건너뛴다.
+> [!NOTE] Web Animations API의 처리
+> JS로 실행하는 애니메이션(Web Animations API)은 CSS로 비활성화할 수 없으므로, 각 코드에서 이 설정을 확인해 건너뛴다.
 
 ## 병렬 실행에서만 발생하는 실패
 
-시험 90개를 프로젝트 3개에서 병렬로 실행하자, 단독 실행 시 통과하는 시험이 간헐적으로 실패했다. 로딩 화면이 10초 안에 사라지지 않았다. 서버 하나가 빌드 결과를 여러 브라우저에 동시에 제공하므로, 요청이 몰리는 시각에 로딩이 지연되었다.
+시험 90개를 프로젝트 3개에서 병렬로 실행하자, 단독 실행 시 통과하는 시험이 간헐적으로 실패했다. 로딩 화면이 10초 안에 사라지지 않았다. 서버 하나가 빌드 결과를 여러 브라우저에 동시에 제공하므로, ==요청이 몰리는 시각에 로딩이 지연되었다==.
 
 로딩 대기 코드는 `enterDesktop()` 한 곳에 모여 있으므로, 그 제한 시간만 20초로 늘렸다. 시험마다 개별로 대기했다면 여러 파일을 수정해야 했을 것이다.
 
@@ -148,7 +152,8 @@ npx playwright test e2e/motion.spec.ts e2e/mobile-motion.spec.ts
 npx playwright show-report               # 실패하면 스크린샷·trace를 본다
 ```
 
-Playwright를 업데이트한 뒤 `npx playwright install`을 실행하지 않으면 `browserType.launch: Executable doesn't exist`로 모든 시험이 실패한다. 로컬에서 Finder 업로드 시험을 실행하다 이 오류로 두 시험이 실패한 적이 있다. 실패한 시험 하나를 상세히 확인할 때는 `npx playwright show-trace test-results/…/trace.zip`을 실행한다.
+> [!WARNING] 브라우저 재설치 누락
+> Playwright를 업데이트한 뒤 `npx playwright install`을 실행하지 않으면 `browserType.launch: Executable doesn't exist`로 모든 시험이 실패한다. 로컬에서 Finder 업로드 시험을 실행하다 이 오류로 두 시험이 실패한 적이 있다. 실패한 시험 하나를 상세히 확인할 때는 `npx playwright show-trace test-results/…/trace.zip`을 실행한다.
 
 참고 문서: [Playwright 기기 에뮬레이션](https://playwright.dev/docs/emulation), [reducedMotion 옵션](https://playwright.dev/docs/api/class-testoptions#test-options-reduced-motion), [Trace viewer](https://playwright.dev/docs/trace-viewer).
 

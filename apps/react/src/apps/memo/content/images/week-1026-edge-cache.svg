@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 360" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>첫 화면 HTML의 엣지 캐시</title>
+<rect width="760" height="360" rx="16" fill="#ffffff"/>
+<text x="32" y="40" font-size="17" font-weight="700" fill="#1f2937">첫 화면 HTML의 엣지 캐시 (stale-while-revalidate)</text>
+<text x="32" y="60" font-size="12" fill="#6b7280">Worker가 caches.default에 HTML을 보관한다. 키는 경로 + index.html의 ETag, 검색 문자열은 뺀다</text>
+
+<rect x="32" y="92" width="150" height="56" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="107" y="116" font-size="13" font-weight="600" fill="#374151" text-anchor="middle">요청 /</text>
+<text x="107" y="135" font-size="11" fill="#6b7280" text-anchor="middle">또는 /memo/&lt;slug&gt;</text>
+<path d="M182 120 H222" stroke="#9ca3af" stroke-width="2"/><path d="M216 114 L224 120 L216 126" fill="none" stroke="#9ca3af" stroke-width="2"/>
+<rect x="226" y="92" width="170" height="56" rx="10" fill="#eff6ff" stroke="#93c5fd"/>
+<text x="311" y="116" font-size="13" font-weight="600" fill="#1e3a8a" text-anchor="middle">caches.default</text>
+<text x="311" y="135" font-size="11" fill="#1e40af" text-anchor="middle">키: 경로 + ETag</text>
+
+<path d="M396 120 C430 120 430 100 450 100" stroke="#16a34a" stroke-width="2" fill="none"/>
+<path d="M396 120 C430 120 430 185 450 185" stroke="#d97706" stroke-width="2" fill="none"/>
+<path d="M396 120 C430 120 430 270 450 270" stroke="#6b7280" stroke-width="2" fill="none"/>
+
+<rect x="452" y="76" width="276" height="50" rx="10" fill="#dcfce7" stroke="#86efac"/>
+<text x="466" y="97" font-size="12" font-weight="700" fill="#166534">있음, 보관 1분 이내</text>
+<text x="466" y="115" font-size="11" fill="#166534">보관본을 그대로 응답</text>
+
+<rect x="452" y="150" width="276" height="70" rx="10" fill="#fef3c7" stroke="#fcd34d"/>
+<text x="466" y="171" font-size="12" font-weight="700" fill="#92400e">있음, 1분 지남</text>
+<text x="466" y="189" font-size="11" fill="#92400e">보관본을 먼저 응답하고</text>
+<text x="466" y="206" font-size="11" fill="#92400e">waitUntil로 새로 만들어 교체</text>
+
+<rect x="452" y="244" width="276" height="56" rx="10" fill="#f3f4f6" stroke="#d1d5db"/>
+<text x="466" y="265" font-size="12" font-weight="700" fill="#374151">없음 (새 PoP, 새 배포)</text>
+<text x="466" y="283" font-size="11" fill="#4b5563">/site·/posts·seo/posts.json으로 만들어 응답·보관</text>
+
+<text x="32" y="190" font-size="12" font-weight="700" fill="#374151">보관 규칙</text>
+<text x="32" y="212" font-size="12" fill="#374151">· 200(첫 화면)과 404(없는 글)만, 하루 동안</text>
+<text x="32" y="232" font-size="12" fill="#374151">· 새로 배포하면 ETag가 바뀌어 지난 HTML을 주지 않는다</text>
+<text x="32" y="252" font-size="12" fill="#374151">· 브라우저에는 그대로 cache-control: no-cache</text>
+<text x="32" y="272" font-size="12" fill="#374151">· 시험·workers.dev는 캐시 없이 매번 만든다</text>
+
+<text x="32" y="330" font-size="12" fill="#15803d">결과: 첫 화면 서버 처리 시간 약 320ms → 52~82ms</text>
+</svg>

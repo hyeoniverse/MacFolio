@@ -34,9 +34,12 @@ Oracle Always Free에는 ARM(Ampere A1) 4 OCPU·메모리 24GB까지 무료인 s
 Welcome to Ubuntu 24.04.5 LTS (GNU/Linux 6.17.0-1020-oracle x86_64)
 ```
 
-A1은 사용자가 많은 리전에서 용량 부족으로 생성되지 않는 경우가 많고, 선택할 수 있는 shape는 AMD `E2.1.Micro`뿐이었다. 이 shape도 Always Free지만 메모리가 1GB다. 이름이 비슷한 `E4/E5.Flex`는 유료이므로, `nproc`와 `free -h`로 무료 shape인지 먼저 확인했다.
+A1은 사용자가 많은 리전에서 용량 부족으로 생성되지 않는 경우가 많고, 선택할 수 있는 shape는 AMD `E2.1.Micro`뿐이었다. 이 shape도 Always Free지만 메모리가 1GB다.
 
-Node 공식 이미지는 amd64·arm64를 모두 제공하므로 Dockerfile은 수정하지 않았다. 문제는 메모리였다. `pnpm install`과 `tsc`가 1GB 안에서 실행되다 메모리 부족(OOM)으로 종료될 수 있어, 빌드 전에 swap을 4GB 할당했다. 빌드 이후 실행 중에는 PostgreSQL, API, cloudflared를 합쳐도 수백 MB라 1GB로 충분하다.
+> [!WARNING] 이름이 비슷한 유료 shape
+> 이름이 비슷한 `E4/E5.Flex`는 유료이므로, `nproc`와 `free -h`로 무료 shape인지 먼저 확인했다.
+
+Node 공식 이미지는 amd64·arm64를 모두 제공하므로 Dockerfile은 수정하지 않았다. 문제는 메모리였다. `pnpm install`과 `tsc`가 1GB 안에서 실행되다 메모리 부족(OOM)으로 종료될 수 있어, ==빌드 전에 swap을 4GB 할당했다.== 빌드 이후 실행 중에는 PostgreSQL, API, cloudflared를 합쳐도 수백 MB라 1GB로 충분하다.
 
 ## 비밀 값은 저장소 밖에 보관
 
@@ -62,7 +65,10 @@ services:: command not found
 Command 'image:' not found ...
 ```
 
-셸은 붙여 넣은 줄을 하나씩 **명령으로** 실행한다. 파일로 저장하려면 heredoc[^heredoc]으로 감싸야 한다. 이때 구분자 `EOF`에 따옴표를 붙여야 한다.
+셸은 붙여 넣은 줄을 하나씩 **명령으로** 실행한다.
+
+> [!TIP] heredoc 구분자의 따옴표
+> 파일로 저장하려면 heredoc[^heredoc]으로 감싸야 한다. 이때 구분자 `EOF`에 따옴표를 붙여야 한다.
 
 ```bash
 cat > compose.yml <<'EOF'
@@ -94,7 +100,7 @@ export const adminStore = createStore<AdminState>({
 });
 ```
 
-`env.apiUrl`은 `import.meta.env.VITE_API_URL` 값이다. Vite는 이 값을 **빌드 시각에** 코드에 문자열 리터럴로 치환한다([Vite 문서: Env Variables and Modes](https://vite.dev/guide/env-and-mode)). 배포된 JS는 정적 파일이므로 실행 중에 환경 변수를 읽을 수단이 없다.
+`env.apiUrl`은 `import.meta.env.VITE_API_URL` 값이다. Vite는 이 값을 **빌드 시각에** 코드에 문자열 리터럴로 치환한다([Vite 문서: Env Variables and Modes](https://vite.dev/guide/env-and-mode)). ==배포된 JS는 정적 파일이므로 실행 중에 환경 변수를 읽을 수단이 없다.==
 
 Cloudflare 대시보드에는 변수 입력란이 두 곳 있다.
 
@@ -131,7 +137,8 @@ GitHub 인증을 거쳐 `?admin=signed-in`으로 돌아오고, 계정 화면에 
 return { httpOnly: true, sameSite: 'lax', secure: this.config.auth.secureCookies, maxAge, path };
 ```
 
-`trust proxy`를 `true`(전체 신뢰)로 설정하지 않은 이유는 다음과 같다. `true`이면 요청자가 `X-Forwarded-For`에 임의의 IP를 적어 보내도 그 값을 클라이언트 IP로 사용한다. 요청마다 다른 IP를 적으면 요청 제한을 우회할 수 있다. 한 단계(바로 앞의 `cloudflared`)만 신뢰하면, Cloudflare가 덧붙인 실제 IP만 읽는다([Express 문서: Express behind proxies](https://expressjs.com/en/guide/behind-proxies.html)).
+> [!CAUTION] trust proxy를 true로 설정한 경우
+> `trust proxy`를 `true`(전체 신뢰)로 설정하지 않은 이유는 다음과 같다. `true`이면 요청자가 `X-Forwarded-For`에 임의의 IP를 적어 보내도 그 값을 클라이언트 IP로 사용한다. 요청마다 다른 IP를 적으면 요청 제한을 우회할 수 있다. 한 단계(바로 앞의 `cloudflared`)만 신뢰하면, Cloudflare가 덧붙인 실제 IP만 읽는다([Express 문서: Express behind proxies](https://expressjs.com/en/guide/behind-proxies.html)).
 
 ![요청자가 XFF에 위조 값을 넣어도 trust proxy 1은 Cloudflare가 덧붙인 실제 IP를 읽는다](./images/deploy-api-oracle-tunnel-trust-proxy.svg 'TRUST_PROXY=1은 오른쪽 끝 값, true는 왼쪽 끝 값을 req.ip로 쓴다')
 
@@ -159,7 +166,7 @@ swap 4GB는 현재도 유지한다. 평소에는 GitHub Actions가 빌드하지�
 
 ## 정리
 
-- 인바운드 포트를 열지 않는 서버는 관리 항목이 적다. 인증서와 방화벽 규칙을 관리하지 않는다. 대신 터널 토큰 하나가 접근 권한 전체이므로, 이 토큰을 저장소 밖에 안전하게 보관한다.
+- 인바운드 포트를 열지 않는 서버는 관리 항목이 적다. 인증서와 방화벽 규칙을 관리하지 않는다. 대신 ==터널 토큰 하나가 접근 권한 전체==이므로, 이 토큰을 저장소 밖에 안전하게 보관한다.
 - 정적 사이트의 "환경 변수"는 실행 중에 읽는 값이 아니라 빌드 시각에 코드에 삽입되는 문자열이다. 대시보드에 변수 입력란이 두 곳이면, 어느 쪽이 빌드 단계에 적용되는지 먼저 확인한다.
 - 쿠키로 인증하는 API는 프론트엔드와 같은 사이트(등록 가능한 도메인)에 배포하는 것이 설정이 가장 적다. `SameSite` 제약과 서드파티 쿠키 차단의 영향을 받지 않는다.
 

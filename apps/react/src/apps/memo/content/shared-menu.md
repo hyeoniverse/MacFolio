@@ -17,7 +17,7 @@ summary: 컨텍스트 메뉴, Apple 메뉴, 서식 창, 달력 등 다섯 곳이
 | Apple 메뉴                | body        | 로고 아래, 보정 없음           | 같은 코드 복사                   |
 | 메시지 컨텍스트 메뉴      | **창 안**   | 대화 영역 기준 좌표, 보정 없음 | **window**의 pointerdown·keydown |
 
-"바깥을 클릭하거나 Esc를 누르면 닫는다"는 15줄 내외의 코드가 네 번 거의 그대로 복사되어 있었다. 메시지만 리스너를 window에 등록했다. 위치 보정은 다섯 곳이 모두 조금씩 달랐고, 일부는 화면 밖으로 넘쳐도 보정하지 않았다.
+"바깥을 클릭하거나 Esc를 누르면 닫는다"는 ==15줄 내외의 코드가 네 번 거의 그대로 복사==되어 있었다. 메시지만 리스너를 window에 등록했다. 위치 보정은 다섯 곳이 모두 조금씩 달랐고, 일부는 화면 밖으로 넘쳐도 보정하지 않았다.
 
 ## 채택한 방법과 제외한 방법
 
@@ -47,18 +47,19 @@ placeRight(rect, size); // 버튼 오른쪽 (표 핸들 메뉴)
 useDismiss(open, () => setOpen(false), [panelRef, buttonRef], { keepOpenInside: '.ProseMirror table' });
 ```
 
-여는 버튼을 안쪽 목록에 포함하는 것이 중요하다. 포함하지 않으면 열린 메뉴의 버튼을 다시 클릭했을 때 다음 순서로 처리된다.
-
-1. [`pointerdown`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)이 "바깥 클릭"으로 판단해 메뉴를 닫는다
-2. 이어지는 `click`이 다시 연다
-
-결과적으로 닫히지 않는 메뉴가 된다.
+> [!WARNING] 여는 버튼을 안쪽 목록에서 빠뜨린 경우
+> 여는 버튼을 안쪽 목록에 포함하는 것이 중요하다. 포함하지 않으면 열린 메뉴의 버튼을 다시 클릭했을 때 다음 순서로 처리된다.
+>
+> 1. [`pointerdown`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)이 "바깥 클릭"으로 판단해 메뉴를 닫는다
+> 2. 이어지는 `click`이 다시 연다
+>
+> 결과적으로 닫히지 않는 메뉴가 된다.
 
 ![여는 버튼이 바깥일 때와 안쪽일 때 다시 누르기의 차이](./images/shared-menu-reopen.svg 'pointerdown과 click의 순서')
 
 기존 코드는 여는 버튼마다 `onPointerDown`에서 [`stopPropagation`](https://developer.mozilla.org/en-US/docs/Web/API/Event/stopPropagation)을 각각 호출해 이를 막고 있었다. 공통 메뉴는 여는 버튼을 `trigger`로 받아 안쪽으로 취급한다. Apple 메뉴부터 이 방식으로 바꿨다.
 
-리스너는 열릴 때 한 번만 등록한다. 전달받는 `onDismiss`와 `inside` 배열은 렌더링마다 새로 생성된다. 이를 `useEffect` 의존성에 넣으면 렌더링마다 리스너를 해제하고 다시 등록한다. 그래서 최신 값만 [ref](https://react.dev/reference/react/useRef)에 저장하고 리스너 안에서 읽는다.
+리스너는 열릴 때 한 번만 등록한다. 전달받는 `onDismiss`와 `inside` 배열은 렌더링마다 새로 생성된다. 이를 `useEffect` 의존성에 넣으면 ==렌더링마다 리스너를 해제하고 다시 등록==한다. 그래서 최신 값만 [ref](https://react.dev/reference/react/useRef)에 저장하고 리스너 안에서 읽는다.
 
 ```ts
 // apps/react/src/shared/ui/popover/useDismiss.ts
@@ -105,7 +106,7 @@ E2E도 수정했다. 메시지와 팝업 시험이 메뉴를 메시지 창 안�
 
 메시지 메뉴는 열자마자 첫 항목에 포커스를 주었다. 키보드로 바로 선택할 수 있는 장점이 있다. 하지만 메모의 메뉴들은 그렇지 않았다. 공통 메뉴가 이를 기본 동작으로 하면, 메모 메뉴를 열 때마다 포커스가 이동하고, 메뉴를 닫은 뒤에는 포커스가 원래 위치(검색 칸 등)로 돌아오지 않는다.
 
-이번 단계의 목표는 모양과 동작을 바꾸지 않고 코드만 통합하는 것이다. 그래서 `autoFocus`는 기본값을 끄고, 원래 그렇게 동작하던 메시지 메뉴에서만 켰다. ↑·↓ 이동은 메뉴 안에 포커스가 있을 때만 동작하므로 모든 메뉴에서 활성화했다.
+이번 단계의 목표는 ==모양과 동작을 바꾸지 않고 코드만 통합==하는 것이다. 그래서 `autoFocus`는 기본값을 끄고, 원래 그렇게 동작하던 메시지 메뉴에서만 켰다. ↑·↓ 이동은 메뉴 안에 포커스가 있을 때만 동작하므로 모든 메뉴에서 활성화했다.
 
 ### 전후 스크린샷 비교
 
@@ -147,7 +148,7 @@ E2E도 수정했다. 메시지와 팝업 시험이 메뉴를 메시지 창 안�
 ## 관련 글
 
 - [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
-- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
+- [계산된 스타일 비교로 !important를 일괄 삭제하고 IconButton·Button 공통 버튼 추출하기](/memo/shared-button)
 - [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
 - [variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 고르기](/memo/ui-variant-pairs)
 

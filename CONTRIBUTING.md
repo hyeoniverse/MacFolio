@@ -148,7 +148,7 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 헬스 체�
 - **기술 글**은 구현과 트러블슈팅을 쓴다. 한 일을 늘어놓는 일지가 되지 않게 한다
 - 하루나 한 주를 돌아보는 글은 `개발 기록/MacFolio/회고` 폴더에 쓴다
 - 폴더는 아래 중에서 고른다 (3단계까지)
-  - `개발 기록/MacFolio/`: 화면·스타일(레이아웃, 반응형, 디자인 토큰, CSS, 공통 컴포넌트, Markdown 표시) · 인터랙션·브라우저 API(입력, 끌기, 편집기 동작, iframe, 오디오·동영상) · 구조·상태 관리(모듈 구조, desktop-core, store, 앱 사이 연결, 브라우저 저장소) · 서버·API(서버 API, DB, 분석) · 테스트·보안·성능 · 배포·운영 · 회고
+  - `개발 기록/MacFolio/`: 화면·스타일(레이아웃, 반응형, 디자인 토큰, CSS, 공통 컴포넌트, Markdown 표시) · 인터랙션·브라우저 API(입력, 끌기, 편집기 동작, iframe, 오디오·동영상) · 구조·상태 관리(모듈 구조, desktop-core, store, 앱 사이 연결, 브라우저 저장소) · 서버·API(서버 API, DB, 분석) · 테스트·보안·성능 · 배포·운영 · 트러블슈팅(버그·장애의 증상에서 출발해 원인을 찾아 고친 글. 증상 → 원인 추적 → 원인 → 해결 → 확인 → 재발 방지 순서로 쓴다) · 회고(주간 회고 `week-<첫날 MMDD>`, 큰 개편이 있던 날은 따로 `day-<MMDD>`)
   - 앱 이름이 아니라 글이 푼 문제로 고른다. 앱 단위 묶음은 연재(`series`)가 맡는다. 예: 끌어서 순서 바꾸기는 인터랙션·브라우저 API, 휴대폰 키보드 높이에 화면 맞추기는 화면·스타일
   - `기술 노트/`: 프론트엔드 · 백엔드 · 인프라 · 보안 · 테스트 · Git · 개발 환경 (한 단계만 두고, 글이 쌓이면 나눈다)
   - `인사이트/`: 최신 동향과 그에 대한 고찰. 주제별 하위 폴더(보안 · 프론트엔드 …)를 두고, 글이 쌓이면 나눈다
@@ -156,6 +156,7 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 헬스 체�
 - 로그, 코드, 수치는 실제로 실행해 얻은 것만 쓴다
 - 머리말(frontmatter)에 `title`, `date`(YYYY-MM-DD), `category`(폴더, 최대 3단계), `summary`를 쓴다. 연재 글이면 `series`(연재 이름)와 `seriesOrder`(1부터)를 더한다
 - 본문은 5만 자 이하다(`content.test.ts`가 검사한다). 넘으면 글을 나눈다
+- 글을 합치거나 주소(파일 이름)를 바꾸면 옛 주소를 `packages/desktop-core/src/memo/movedPosts.ts`의 `MOVED_POSTS`에 `옛 주소: '새 주소#절-id'`로 더한다. 배포 사이트의 Worker가 옛 주소를 301로 넘겨 검색 색인과 바깥 링크가 404가 되지 않는다. 저장소 글 안의 링크는 새 주소로 고친다(`content.test.ts`가 옛 주소 링크와 없는 절 링크를 검사한다)
 
 ```markdown
 ---
@@ -255,11 +256,11 @@ Settings → General → Pull Requests의 **Automatically delete head branches**
 - [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](https://macfolio.hyeoniverse.com/memo/macfolio-merge-strategy)
 - [폴더 대신 이름으로 — 앱 안의 파일 규칙](https://macfolio.hyeoniverse.com/memo/app-file-naming)
 - [서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게](https://macfolio.hyeoniverse.com/memo/break-import-cycles)
-- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](https://macfolio.hyeoniverse.com/memo/shared-api-client)
-- [try/catch 열두 개를 하나로 — 브라우저 저장소 모듈](https://macfolio.hyeoniverse.com/memo/shared-storage)
-- [matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈](https://macfolio.hyeoniverse.com/memo/shared-media)
+- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](https://macfolio.hyeoniverse.com/memo/shared-modules#서버-호출-apiapifetch)
+- [try/catch 열두 개를 하나로 — 브라우저 저장소 모듈](https://macfolio.hyeoniverse.com/memo/shared-modules#브라우저-저장소-readjsonwritejson)
+- [matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈](https://macfolio.hyeoniverse.com/memo/shared-modules#화면-조건-조회-mediats와-getviewport)
 - [문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입](https://macfolio.hyeoniverse.com/memo/branded-ids)
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](https://macfolio.hyeoniverse.com/memo/color-tokens)
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](https://macfolio.hyeoniverse.com/memo/z-index-layers)
-- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/secret-scanning)
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/pin-actions-dependabot)
+- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](https://macfolio.hyeoniverse.com/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)
+- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](https://macfolio.hyeoniverse.com/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)
+- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
+- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)

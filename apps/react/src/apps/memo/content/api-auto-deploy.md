@@ -44,7 +44,7 @@ restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… githu
 - `restrict`: 포트 포워딩, 에이전트 포워딩, 터미널 할당을 모두 차단한다.
 - `command=`: 이 키로 접속하면 클라이언트가 보낸 명령 대신 `ops/deploy.sh`가 실행된다. 클라이언트가 보낸 문자열은 환경 변수 `SSH_ORIGINAL_COMMAND`로 전달된다.
 
-스크립트는 이 문자열이 `sha-[0-9a-f]{7,40}` 형식일 때만 진행한다. `'sha-abc; rm -rf /'`를 보내면 "태그 모양이 아니다"를 출력하고 종료 코드 2로 끝난다. 키가 유출되어도 가능한 일은 "레지스트리에 이미 있는 이미지 태그로 배포"뿐이다. 서버의 호스트 키도 Secrets(`DEPLOY_KNOWN_HOSTS`)에 고정해서, 다른 서버가 같은 주소로 응답해도 접속하지 않는다.
+스크립트는 이 문자열이 `sha-[0-9a-f]{7,40}` 형식일 때만 진행한다. `'sha-abc; rm -rf /'`를 보내면 "태그 모양이 아니다"를 출력하고 종료 코드 2로 끝난다. ==키가 유출되어도 가능한 일은 "레지스트리에 이미 있는 이미지 태그로 배포"뿐이다==. 서버의 호스트 키도 Secrets(`DEPLOY_KNOWN_HOSTS`)에 고정해서, 다른 서버가 같은 주소로 응답해도 접속하지 않는다.
 
 서버가 새 이미지를 주기적으로 확인하는 방식(cron, [Watchtower](https://containrrr.dev/watchtower/))도 검토했다. 서버로 들어오는 경로가 필요 없지만, 배포가 끝났는지 Actions가 알 수 없어서 프론트엔드 배포를 API 배포 뒤에 배치할 수 없었다.
 
@@ -111,7 +111,7 @@ echo "등록된 배포 열쇠 수: $(grep -c github-actions-deploy ~/.ssh/author
 
 ![deploy.sh의 분기](./images/api-auto-deploy-script.svg '종료 경로마다 종료 코드가 정해져 있어서 Actions가 성공·실패를 구분한다')
 
-배포 성공의 조건은 두 가지다. 컨테이너의 Docker 헬스 상태([`HEALTHCHECK`](https://docs.docker.com/reference/dockerfile/#healthcheck))가 `healthy`이고, 컨테이너 안에서 호출한 `/health`의 `version`이 배포하려는 태그와 같아야 한다. 헬스 상태만 확인하면 이전 컨테이너가 아직 응답하는 시각을 성공으로 잘못 판정할 수 있다.
+배포 성공의 조건은 두 가지다. 컨테이너의 Docker 헬스 상태([`HEALTHCHECK`](https://docs.docker.com/reference/dockerfile/#healthcheck))가 `healthy`이고, 컨테이너 안에서 호출한 `/health`의 `version`이 배포하려는 태그와 같아야 한다. ==헬스 상태만 확인하면 이전 컨테이너가 아직 응답하는 시각을 성공으로 잘못 판정할 수 있다==.
 
 ```bash
 is_live() {
@@ -165,7 +165,7 @@ error while interpolating services.api.image: required variable API_TAG is missi
 배포 실패: 배포 직전 백업이 되지 않아 멈췄다
 ```
 
-서버의 `compose.yml`은 태그가 없으면 중단하도록 `${API_TAG:?…}`[^interp]로 작성했다. 첫 배포 시각에는 `.env`에 `API_TAG`가 아직 없다. 그런데 배포 직전 백업도 `docker compose exec db pg_dump`로 DB 컨테이너에 접속한다. compose는 서비스 하나만 다뤄도 파일 전체를 해석하므로, api 서비스의 태그가 없다는 이유로 db 백업까지 거부됐다. 로컬 시험의 compose 파일은 `${API_TAG}`로만 작성해서 이 경우를 재현하지 못했다.
+서버의 `compose.yml`은 태그가 없으면 중단하도록 `${API_TAG:?…}`[^interp]로 작성했다. 첫 배포 시각에는 `.env`에 `API_TAG`가 아직 없다. 그런데 배포 직전 백업도 `docker compose exec db pg_dump`로 DB 컨테이너에 접속한다. compose는 서비스 하나만 다뤄도 파일 전체를 해석하므로, ==api 서비스의 태그가 없다는 이유로 db 백업까지 거부됐다==. 로컬 시험의 compose 파일은 `${API_TAG}`로만 작성해서 이 경우를 재현하지 못했다.
 
 수정이 배포되기 전에는 환경 변수로 태그를 직접 넘겨 `API_TAG=sha-a38ac7e ops/deploy.sh sha-a38ac7e`로 첫 배포를 마쳤다. 수정([#107](https://github.com/hyeoniverse/MacFolio/pull/107))은 스크립트가 호출하는 compose가 항상 태그 값을 갖게 한 것이다. 교체 전에는 현재 태그(첫 배포면 새 태그)를, 교체 후에는 새 태그를 환경 변수로 전달한다(compose는 셸 환경 변수를 `.env`보다 우선한다). 첫 배포에서 이미지를 받지 못하면 `.env`에 `API_TAG` 줄을 남기지 않는다. 그 뒤 서버와 같은 `${API_TAG:?…}`를 쓴 compose 파일로 첫 배포, 첫 배포인데 받지 못하는 태그, 다음 배포, 되돌리기 네 경우를 다시 시험했다.
 
@@ -176,7 +176,8 @@ $ ~/macfolio/ops/deploy.sh sha-<태그>
 -bash: syntax error near unexpected token `newline'
 ```
 
-문서의 명령에 `sha-<커밋 7자리>` 같은 자리표시를 썼다. 그대로 붙여 넣으면 bash가 `<`와 `>`를 입출력 리디렉션[^redirect] 기호로 해석해 구문 오류로 끝난다. 백업 복원 안내의 `~/backups/<파일>`에서도 같은 오류가 났다. 명령 안의 자리표시를 실제 형식의 예(`sha-a38ac7e`)로 바꾸고, "예시 값이니 바꿔서 실행한다"는 안내를 명령 밖의 문장으로 적었다.
+> [!WARNING] 명령 안의 자리표시
+> 문서의 명령에 `sha-<커밋 7자리>` 같은 자리표시를 썼다. 그대로 붙여 넣으면 bash가 `<`와 `>`를 입출력 리디렉션[^redirect] 기호로 해석해 구문 오류로 끝난다. 백업 복원 안내의 `~/backups/<파일>`에서도 같은 오류가 났다. 명령 안의 자리표시를 실제 형식의 예(`sha-a38ac7e`)로 바꾸고, "예시 값이니 바꿔서 실행한다"는 안내를 명령 밖의 문장으로 적었다.
 
 ### Secrets보다 먼저 머지한 PR
 
@@ -186,7 +187,7 @@ $ ~/macfolio/ops/deploy.sh sha-<태그>
 
 며칠 뒤 CORS를 수정한 API 변경([#115](https://github.com/hyeoniverse/MacFolio/pull/115))을 머지했는데, 그 CI 실행이 메뉴 막대 E2E 시험 하나 때문에 실패했다. 시험을 수정한 PR([#116](https://github.com/hyeoniverse/MacFolio/pull/116))을 머지하자 CI는 통과했지만, API 이미지 빌드와 배포 단계가 모두 건너뛰어졌다. 서버는 여전히 `sha-a38ac7e`였다.
 
-API 변경 여부를 **직전 push와 비교**해서 판정했기 때문이다. #116의 push에는 API 변경이 없으므로 배포 대상이 없다고 판정했다. #115의 API 변경은 실패한 실행에만 포함되어 이후 어떤 실행에서도 배포되지 않았다. Secrets 등록 전에 머지한 변경이 배포되지 않은 것도 같은 원인이다.
+API 변경 여부를 **직전 push와 비교**해서 판정했기 때문이다. #116의 push에는 API 변경이 없으므로 배포 대상이 없다고 판정했다. ==#115의 API 변경은 실패한 실행에만 포함되어 이후 어떤 실행에서도 배포되지 않았다==. Secrets 등록 전에 머지한 변경이 배포되지 않은 것도 같은 원인이다.
 
 ![비교 대상 바꾸기](./images/api-auto-deploy-setup-compare.svg '직전 push와 비교하면 실패한 실행의 변경이 누락된다')
 
@@ -218,7 +219,8 @@ fi
 
 이전에는 비교 기준으로 `$BEFORE`(`github.event.before`, 직전 push의 커밋)를 썼다. 수정은 그 자리에 서버의 커밋을 넣은 것뿐이다. 비교 경로에는 지금 `packages/contracts`와 `packages/desktop-core`도 들어 있다. API가 이 패키지를 쓰게 된 뒤에 추가했다. 서버의 커밋이 몇 커밋 전이든 `git diff`할 수 있도록 `actions/checkout`에 `fetch-depth: 0`[^fetch-depth]을 지정한다.
 
-서버가 일시적으로 응답하지 않으면 항상 `api=true`가 되어 이미지를 다시 빌드한다. 같은 버전이면 `deploy.sh`가 "이미 이 버전이 떠 있다"를 출력하고 종료하므로 서버에는 영향이 없고, 빌드 시간만 추가된다.
+> [!NOTE]
+> 서버가 일시적으로 응답하지 않으면 항상 `api=true`가 되어 이미지를 다시 빌드한다. 같은 버전이면 `deploy.sh`가 "이미 이 버전이 떠 있다"를 출력하고 종료하므로 서버에는 영향이 없고, 빌드 시간만 추가된다.
 
 ## 연결이 끊겨도 끝까지, 동시에 하나만
 
@@ -230,7 +232,8 @@ CI 워크플로(`ci.yml`)는 같은 브랜치에 새 커밋이 오면 이전 실
 
 ## 되돌리기는 이미지만
 
-되돌리기는 **이미지만** 이전 버전으로 바꾼다. 이미 적용된 마이그레이션은 되돌리지 않는다. 그래서 마이그레이션은 이전 버전 코드에서도 동작하도록 나눠 작성한다는 규칙을 `CONTRIBUTING.md`의 '마이그레이션' 절에 적었다.
+> [!CAUTION] 마이그레이션은 되돌리지 않는다
+> 되돌리기는 **이미지만** 이전 버전으로 바꾼다. 이미 적용된 마이그레이션은 되돌리지 않는다. 그래서 마이그레이션은 이전 버전 코드에서도 동작하도록 나눠 작성한다는 규칙을 `CONTRIBUTING.md`의 '마이그레이션' 절에 적었다.
 
 - 열·표 추가: 새 열은 nullable로 만들거나 기본값을 지정한다. 이전 코드는 모르는 열을 무시한다.
 - 이름 변경·삭제: 한 번에 하지 않는다. ① 새 열을 추가하고 코드가 둘 다 쓰게 배포 → ② 다음 배포에서 옛 열을 삭제한다.

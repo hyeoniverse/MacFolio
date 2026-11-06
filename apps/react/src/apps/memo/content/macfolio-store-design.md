@@ -3,11 +3,12 @@ title: createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따
 date: 2026-10-26
 category: 개발 기록/MacFolio/구조·상태 관리
 series: desktop-core
-seriesOrder: 5
+seriesOrder: 3
 summary: MacFolio는 창·로그인·알림 상태를 desktop-core의 createStore로 만들고 React는 useSyncExternalStore로 구독한다. Flux·Redux에서 단방향 흐름과 불변 갱신은 따르고 Action·Dispatcher·단일 store는 뺀 이유, ESLint가 흐름을 강제하는 구조를 정리했다.
 ---
 
-Flux 패턴 자체(등장 배경, Action·Dispatcher·Store·View, Redux와 외부 store)는 [Flux 패턴](/memo/flux-pattern)에 정리했다. 이 글은 그 구조를 MacFolio의 상태 저장소에 어떻게 적용했는지, 무엇을 따르고 무엇을 뺐는지를 코드 기준으로 정리한다.
+> [!NOTE] Flux 패턴의 일반론
+> Flux 패턴 자체(등장 배경, Action·Dispatcher·Store·View, Redux와 외부 store)는 [Flux 패턴](/memo/flux-pattern)에 정리했다. 이 글은 그 구조를 MacFolio의 상태 저장소에 어떻게 적용했는지, 무엇을 따르고 무엇을 뺐는지를 코드 기준으로 정리한다.
 
 ## createStore와 창 store
 
@@ -66,29 +67,29 @@ const state = useSyncExternalStore(store.subscribe, store.getState);
 
 - **단방향 흐름:** View는 store 메서드를 호출할 뿐 상태 객체를 직접 수정하지 않는다. 바뀐 상태는 store → 구독자 한 방향으로만 나간다.
 - **불변 갱신:** 메서드는 기존 상태를 고치지 않고 새 객체를 만든다(`{ ...state, apps: … }`). `setState`가 `Object.is`로 같은 객체인지 비교해 바뀌지 않았으면 알리지 않는데, 이것은 `useSyncExternalStore`가 `getSnapshot`에 요구하는 조건("store가 바뀌지 않았으면 같은 값")과 같다.
-- **로직의 위치:** "창을 열면 맨 앞으로 온다" 같은 규칙은 Flux의 Store처럼 store 안에 있다. 그래서 React를 렌더링하지 않고 store를 만들어 메서드를 호출하는 것만으로 규칙을 시험할 수 있다(`windowStore.test.ts`, `stack.test.ts`).
+- **로직의 위치:** "창을 열면 맨 앞으로 온다" 같은 규칙은 Flux의 Store처럼 store 안에 있다. 그래서 ==React를 렌더링하지 않고 store를 만들어 메서드를 호출하는 것만으로 규칙을 시험할 수 있다==(`windowStore.test.ts`, `stack.test.ts`).
 
 ## 뺀 것과 이유
 
 - **Action 객체와 Dispatcher가 없다.** 창 store의 동작은 메서드 이름(`open`, `quit`, `keepAlive` …)이 곧 동작의 종류다. 동작 종류마다 `type` 문자열과 분기를 따로 두지 않아도 TypeScript가 메서드와 인자를 검사한다.
-- **store가 하나가 아니다.** Redux·Zustand가 권하는 단일 store 대신 관심사마다 store를 따로 둔다(창, 로그인, 알림, 음악 재생 등). 컴포넌트는 필요한 store만 `useSyncExternalStore`로 구독하므로, 알림 store가 바뀌어도 창 상태만 구독하는 Dock은 다시 렌더링되지 않는다. 단일 store였다면 선택자(selector)로 같은 효과를 내야 한다.
+- **store가 하나가 아니다.** Redux·Zustand가 권하는 단일 store 대신 관심사마다 store를 따로 둔다(창, 로그인, 알림, 음악 재생 등). 컴포넌트는 필요한 store만 `useSyncExternalStore`로 구독하므로, ==알림 store가 바뀌어도 창 상태만 구독하는 Dock은 다시 렌더링되지 않는다==. 단일 store였다면 선택자(selector)로 같은 효과를 내야 한다.
 - **store 사이의 순서를 관리하지 않는다.** 창·설정·로그인 store는 서로의 갱신 결과에 의존하지 않아 `waitFor`가 필요한 경우가 없었다.
 - **변경 기록이 없다.** Action이 없으니 Redux DevTools 같은 기록·재생은 할 수 없다. 상태가 작고, 동작은 메서드 단위 시험으로 확인한다.
 
-이 선택은 창 관리를 React 밖으로 옮긴 [#139](https://github.com/hyeoniverse/MacFolio/pull/139)에서 정했다. 당시 Context에 reducer만 분리하는 방법, zustand를 쓰는 방법, 직접 만든 작은 store를 비교했고, 의존성 없이 React 18 기본 API로 구독할 수 있는 마지막 방법을 골랐다([창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)). 형태가 Zustand의 vanilla store와 거의 같은 것은 같은 문제(React 밖에 상태를 두고 구독)를 같은 방식으로 풀었기 때문이다.
+이 선택은 창 관리를 React 밖으로 옮긴 [#139](https://github.com/hyeoniverse/MacFolio/pull/139)에서 정했다. 당시 Context에 reducer만 분리하는 방법, zustand를 쓰는 방법, 직접 만든 작은 store를 비교했고, 의존성 없이 React 18 기본 API로 구독할 수 있는 마지막 방법을 골랐다([창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore)). 형태가 Zustand의 vanilla store와 거의 같은 것은 같은 문제(React 밖에 상태를 두고 구독)를 같은 방식으로 풀었기 때문이다.
 
 ## 프레임워크 분리가 단방향 흐름을 강제한다
 
-`packages/desktop-core`는 ESLint의 `no-restricted-imports`로 `react`·`vue`·`@/*`(React 앱 경로) import를 막고, `tsconfig`에서 DOM 타입을 빼 두었다[^core-guard]. core가 View 쪽 코드를 import할 수 없으니, core 안의 store는 View에 직접 값을 넣을 방법이 없다. View는 `subscribe`로 알림을 받아 `getState`로 읽는 것밖에 할 수 없다. 단방향 흐름을 코드 리뷰가 아니라 빌드 단계의 검사가 강제하는 구조다.
+`packages/desktop-core`는 ESLint의 `no-restricted-imports`로 `react`·`vue`·`@/*`(React 앱 경로) import를 막고, `tsconfig`에서 DOM 타입을 빼 두었다[^core-guard]. core가 View 쪽 코드를 import할 수 없으니, core 안의 store는 View에 직접 값을 넣을 방법이 없다. View는 `subscribe`로 알림을 받아 `getState`로 읽는 것밖에 할 수 없다. ==단방향 흐름을 코드 리뷰가 아니라 빌드 단계의 검사가 강제하는 구조==다.
 
 ## 관련 글
 
 - [Flux의 Action·Dispatcher·Store 단방향 흐름에서 찾은 좋은 상태 관리 코드의 세 가지 조건](/memo/flux-pattern): 이 글이 비교하는 Flux·Redux·외부 store의 일반론
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정 ([#139](https://github.com/hyeoniverse/MacFolio/pull/139))
-- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 같은 store 구조를 메모 로직에 적용
-- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 재생 상태 store와 오디오 재생의 분리
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore): `createStore`와 `useSyncExternalStore`를 고른 과정 ([#139](https://github.com/hyeoniverse/MacFolio/pull/139))
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리): 같은 store 구조를 메모 로직에 적용
+- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store): 재생 상태 store와 오디오 재생의 분리
 - [package.json exports 조건으로 Vite에는 소스, Node에는 빌드한 JS 제공하기](/memo/desktop-core-shared-rules): core의 규칙을 API 서버도 쓰는 구조
 
-[^core-guard]: core에 `import { useState } from 'react'`나 `window.innerWidth`를 넣으면 `tsc`와 ESLint가 오류를 낸다. 세 가지 검사(타입 설정, 의존성 선언, lint)는 [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)의 "core의 React 의존을 막는 세 장치"에 정리했다.
+[^core-guard]: core에 `import { useState } from 'react'`나 `window.innerWidth`를 넣으면 `tsc`와 ESLint가 오류를 낸다. 세 가지 검사(타입 설정, 의존성 선언, lint)는 [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore)의 "core의 React 의존을 막는 세 장치"에 정리했다.
 
 #MacFolio #React #상태관리 #아키텍처

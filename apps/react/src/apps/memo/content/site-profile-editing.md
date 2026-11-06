@@ -54,7 +54,8 @@ view(): Promise<SiteView> {
 }
 ```
 
-핵심은 결과 값이 아니라 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)를 캐시한다는 점이다.
+> [!IMPORTANT]
+> 핵심은 결과 값이 아니라 [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)를 캐시한다는 점이다.
 
 | 상황                                   | 결과 값을 캐시하는 경우                | Promise를 캐시하는 경우 (채택)                |
 | -------------------------------------- | -------------------------------------- | --------------------------------------------- |
@@ -65,7 +66,7 @@ view(): Promise<SiteView> {
 
 ## 검사는 한 곳에서
 
-검사 규칙은 `parseProfile()` 하나로 정의하고 서버와 화면이 함께 호출한다. 이 시점에는 `desktop-core`에 있었고, 이후 [#207](https://github.com/hyeoniverse/MacFolio/pull/207)에서 `@macfolio/contracts`의 zod 스키마로 옮겼다([사이트 프로필로 1단계 마무리](/memo/contracts-site)).
+검사 규칙은 `parseProfile()` 하나로 정의하고 서버와 화면이 함께 호출한다. 이 시점에는 `desktop-core`에 있었고, 이후 [#207](https://github.com/hyeoniverse/MacFolio/pull/207)에서 `@macfolio/contracts`의 zod 스키마로 옮겼다([사이트 프로필로 1단계 마무리](/memo/contracts-validation#사이트-프로필-배치-규칙에-맞춰-desktop-core에서-옮기기-207)).
 
 | 항목                           | 규칙                                                                    |
 | ------------------------------ | ----------------------------------------------------------------------- |
@@ -77,7 +78,7 @@ view(): Promise<SiteView> {
 | 기술 목록                      | 20개 이하, 항목마다 40자 이하. 앞뒤 공백 제거, 빈 항목·중복 항목 제외   |
 | 정의되지 않은 필드             | 무시                                                                    |
 
-규칙을 여러 개 위반하면 첫 번째 이유만이 아니라 **모든** 이유를 수집해 반환한다. 화면은 저장하기 전에 같은 함수로 먼저 검사하므로, 규칙에 맞지 않는 값은 서버로 전송하지 않는다. 서버는 그래도 다시 검사한다.
+규칙을 여러 개 위반하면 첫 번째 이유만이 아니라 **모든** 이유를 수집해 반환한다. 화면은 저장하기 전에 같은 함수로 먼저 검사하므로, 규칙에 맞지 않는 값은 서버로 전송하지 않는다. ==서버는 그래도 다시 검사한다.==
 
 ## 서버에 하드코딩된 이름
 
@@ -97,7 +98,7 @@ view(): Promise<SiteView> {
 
 메시지 앱은 상수를 읽지 않고 `'김정현'`을 별도로 하드코딩하고 있었다(고정 안내의 제목과 첫인사).
 
-문제는 **모듈을 평가하는 시각에 한 번 계산되는 값**이었다.
+문제는 ==모듈을 평가하는 시각에 한 번 계산되는 값==이었다.
 
 ```ts
 // 전: 앱을 열기 전에 이미 값이 정해진다
@@ -152,7 +153,7 @@ export const PINNED_MESSAGES = [{ text: '안녕하세요, 김정현입니다 �
 ## 남은 것·배운 것
 
 - 화면은 처음에 코드의 기본값으로 렌더링한 뒤 서버의 프로필이 도착하면 갱신한다. 저장한 값이 기본값과 다르면 첫 렌더링 시각에 기본 이름이 잠시 표시될 수 있다.
-- 모듈 평가 시각에 계산하는 상수는 편하지만, 나중에 바뀔 수 있는 값과 섞이면 원인을 찾기 어려운 버그가 된다. 바뀔 수 있는 값은 상수 대신 함수로 정의하고 사용하는 시각에 읽는다.
+- 모듈 평가 시각에 계산하는 상수는 편하지만, 나중에 바뀔 수 있는 값과 섞이면 원인을 찾기 어려운 버그가 된다. ==바뀔 수 있는 값은 상수 대신 함수로 정의하고 사용하는 시각에 읽는다.==
 - 서버와 화면이 같은 검사 함수를 사용하므로, 화면은 전송 전에 서버와 같은 이유를 표시하고 서버는 같은 이유로 거절한다. 두 쪽의 규칙이 어긋나지 않는다.
 - 테이블 이름을 `SiteContent`로 넓게 정한 결정은 바로 다음 작업에서 쓰였다. 프로젝트 내용도 같은 테이블에 저장했다([코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)).
 
@@ -180,8 +181,8 @@ curl -s https://api.github.com/users/<로그인 이름> | grep '"id"'
 ## 관련 글
 
 - [코드 기본값 위에 서버의 덮어쓸 값만 합치는 프로젝트 편집](/memo/site-projects-editing)
-- [parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-site)
-- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [parseProfile의 if문 검증을 zod 스키마로 옮기기](/memo/contracts-validation#사이트-프로필-배치-규칙에-맞춰-desktop-core에서-옮기기-207)
+- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)
 - [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
 
 #MacFolio #백엔드 #프론트엔드 #NestJS #Prisma #상태관리

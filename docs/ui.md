@@ -6,7 +6,7 @@
 
 ## 원칙
 
-- **사용처가 셋 이상이고 모양과 동작이 같을 때** 추출한다. 한두 곳이거나 서로 다르면 그 차이를 처리하는 옵션이 생겨 부품의 분기가 오히려 늘어난다 ([글자 버튼 글](https://macfolio.hyeoniverse.com/memo/shared-text-button)의 '만들지 않은 것')
+- **사용처가 셋 이상이고 모양과 동작이 같을 때** 추출한다. 한두 곳이거나 서로 다르면 그 차이를 처리하는 옵션이 생겨 부품의 분기가 오히려 늘어난다 ([글자 버튼 글](https://macfolio.hyeoniverse.com/memo/shared-button#button-텍스트-버튼-6종-통합)의 '만들지 않은 것')
 - **모양은 변수로, 의미는 role로.** 부품의 CSS는 `components` [캐스케이드 레이어](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)에 있어 레이어 밖의 앱 CSS가 항상 우선 적용된다. 색·모서리·여백은 앱이 `--ui-*` 변수로 정한다. 모양이 같아도 스크린 리더에 전달되는 의미가 다르면(눌린 버튼 둘 vs 탭 목록) 한 부품으로 합치지 않는다
 - **body에 렌더링하는 창에는 앱 변수가 적용되지 않는다.** `Menu`·팝오버처럼 [`createPortal`](https://react.dev/reference/react-dom/createPortal)로 body에 렌더링하는 요소는 DOM 위치가 앱 루트 밖이라 앱의 재정의를 상속하지 않으므로, 바깥 요소에 `--ui-*`를 다시 정의한다
 - 부품의 파일은 `shared/ui/<종류>/<이름>.tsx`와 같은 이름의 `.css`. 순수 계산(위치 계산, 단축키 글자)은 `.ts`로 분리하고 같은 폴더에 시험 파일을 둔다
@@ -183,7 +183,7 @@ E2E를 실행하면서 옮긴 버튼마다 공통 클래스(`ui-icon-button`·`t
 
 ## 관련 글
 
-- [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](https://macfolio.hyeoniverse.com/memo/ui-inventory)
+- [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](https://macfolio.hyeoniverse.com/memo/ui-modal#공통-부품-집계)
 - [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](https://macfolio.hyeoniverse.com/memo/icon-button-migrate)
 - [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-modal)
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-sheet)

@@ -16,7 +16,7 @@ summary: 글·이미지가 모두 1GB 무료 서버의 DB에만 있었다. 매�
 | 10월 2일 | 로컬 Mac 터미널 | `cd: no such file or directory: /Users/…/deploy` | 서버가 아닌 로컬 터미널에서 실행했다                                                             |
 | 10월 3일 | 서버            | `Command 'pg_dump' not found`                    | PostgreSQL은 컨테이너 안에만 설치되어 있어 `docker compose exec`로 컨테이너 안에서 실행해야 한다 |
 
-두 실패 모두 명령을 실행할 위치를 사람이 기억해야 해서 발생했다. 그래서 기능 추가보다 백업 자동화를 먼저 진행했다. `ops/backup.sh`는 compose 파일 위치(`~/deploy/compose.yml`)를 기본값으로 갖고, 컨테이너 안의 `pg_dump`를 실행하며, 실행 자체를 cron이 담당한다. 스크립트는 [#94](https://github.com/hyeoniverse/MacFolio/pull/94), 저장 크기 상한은 [#98](https://github.com/hyeoniverse/MacFolio/pull/98), 연결 확인과 첫 결과는 [#99](https://github.com/hyeoniverse/MacFolio/pull/99)에서 추가했다.
+==두 실패 모두 명령을 실행할 위치를 사람이 기억해야 해서 발생했다.== 그래서 기능 추가보다 백업 자동화를 먼저 진행했다. `ops/backup.sh`는 compose 파일 위치(`~/deploy/compose.yml`)를 기본값으로 갖고, 컨테이너 안의 `pg_dump`를 실행하며, 실행 자체를 cron이 담당한다. 스크립트는 [#94](https://github.com/hyeoniverse/MacFolio/pull/94), 저장 크기 상한은 [#98](https://github.com/hyeoniverse/MacFolio/pull/98), 연결 확인과 첫 결과는 [#99](https://github.com/hyeoniverse/MacFolio/pull/99)에서 추가했다.
 
 ## 백업 방식 선택
 
@@ -77,17 +77,24 @@ Cloudflare 대시보드의 R2에서 `macfolio-backups` 버킷을 생성한다([C
 - **저장 클래스는 Standard.** 백업은 조회 빈도가 낮아 Infrequent Access가 적합해 보이지만, R2의 무료 한도(매달 저장 10GB, 쓰기 작업 100만 회, 읽기 작업 1,000만 회)는 Standard에만 적용된다([Cloudflare 문서: R2 pricing](https://developers.cloudflare.com/r2/pricing/))
 - **비공개로 유지한다.** 기본값이 비공개다. 공개하면 누구나 파일을 내려받아 읽기 작업 수를 늘릴 수 있다
 
-R2를 처음 활성화할 때 결제 수단 등록을 요구할 수 있다. 무료 한도 안이면 청구되지 않는다.
+> [!NOTE] 결제 수단 등록
+> R2를 처음 활성화할 때 결제 수단 등록을 요구할 수 있다. 무료 한도 안이면 청구되지 않는다.
 
 ### 키: 이 버킷 하나로 범위 제한
 
 R2 API 토큰을 생성할 때 권한은 **Object Read & Write**, 범위는 **이 버킷만**으로 선택한다([Cloudflare 문서: R2 API 토큰](https://developers.cloudflare.com/r2/api/tokens/)). 백업 스크립트는 업로드·목록 조회·삭제만 수행하므로 이 권한으로 충분하다. 키가 유출되어도 다른 버킷이나 Cloudflare의 다른 서비스에는 접근할 수 없다.
 
-생성하면 Access Key ID, Secret Access Key, S3 엔드포인트가 표시된다. Secret Access Key는 이 화면에서만 표시되므로, 서버 설정을 마칠 때까지만 임시로 보관한다.
+생성하면 Access Key ID, Secret Access Key, S3 엔드포인트가 표시된다.
+
+> [!WARNING] 한 번만 표시되는 Secret Access Key
+> Secret Access Key는 이 화면에서만 표시되므로, 서버 설정을 마칠 때까지만 임시로 보관한다.
 
 ### rclone 1.59 이상
 
-처음 문서에는 `sudo apt-get install rclone`으로 기록했다. 그런데 rclone이 R2를 `provider=Cloudflare`로 지원하는 것은 1.59부터이고, Ubuntu 22.04의 apt 저장소에 있는 rclone은 1.53이다. 그래서 공식 설치 스크립트로 설치하고 `rclone version`으로 버전을 확인하도록 수정했다([rclone 문서: Cloudflare R2](https://rclone.org/s3/#cloudflare-r2)).
+처음 문서에는 `sudo apt-get install rclone`으로 기록했다.
+
+> [!WARNING] apt 저장소의 rclone 버전
+> 그런데 rclone이 R2를 `provider=Cloudflare`로 지원하는 것은 1.59부터이고, Ubuntu 22.04의 apt 저장소에 있는 rclone은 1.53이다. 그래서 공식 설치 스크립트로 설치하고 `rclone version`으로 버전을 확인하도록 수정했다([rclone 문서: Cloudflare R2](https://rclone.org/s3/#cloudflare-r2)).
 
 rclone 설정은 `rclone config` 파일 대신 `RCLONE_CONFIG_R2_*` 환경 변수로 전달한다([rclone 문서: 환경 변수로 설정하기](https://rclone.org/docs/#environment-variables)). 키가 `backup.env` 한 파일에 모이고, 별도의 rclone 설정 파일이 없다.
 
@@ -107,13 +114,13 @@ rclone deletefile r2:macfolio-backups/connection-test.txt
 | `AccessDenied` | 토큰 권한 또는 범위 설정 오류 |
 | `no such host` | 엔드포인트 주소 오류          |
 
-처음에는 연결 확인 명령으로 `rclone lsd r2:`(버킷 목록)를 기록했다. 서버에서 실행하자 이 명령만 `403 AccessDenied`를 반환하고, 바로 다음의 `rclone size r2:macfolio-backups`는 0을 반환했다. 버킷 목록 조회는 계정 전체 범위의 요청인데, 키 범위를 이 버킷 하나로 제한했으므로 거부되는 것이 정상이다. 오류가 아니라 범위 제한이 의도대로 적용되었다는 뜻이다. 그래서 연결 확인은 버킷을 직접 지정하는 명령으로만 한다.
+처음에는 연결 확인 명령으로 `rclone lsd r2:`(버킷 목록)를 기록했다. 서버에서 실행하자 이 명령만 `403 AccessDenied`를 반환하고, 바로 다음의 `rclone size r2:macfolio-backups`는 0을 반환했다. 버킷 목록 조회는 계정 전체 범위의 요청인데, 키 범위를 이 버킷 하나로 제한했으므로 거부되는 것이 정상이다. ==오류가 아니라 범위 제한이 의도대로 적용되었다는 뜻이다.== 그래서 연결 확인은 버킷을 직접 지정하는 명령으로만 한다.
 
 ## 무료 한도 보호: 8GB 상한
 
 R2는 Standard 클래스에서 매달 저장 10GB, 쓰기 작업 100만 회, 읽기 작업 1,000만 회까지 무료이고, 외부 전송 요금은 없다. 하루 1회 업로드하고 30일치를 보관하므로 작업 횟수는 한 달에 수백 회로 한도와 거리가 멀다. 제약은 저장 크기다. 블로그 이미지가 DB에 저장되어 있어 DB가 커지면 백업 30개의 합이 10GB를 넘을 수 있다.
 
-R2에는 무료 한도를 넘기 전에 사용을 차단하는 설정이 없다. 그래서 스크립트가 직접 차단한다. 기간이 지난 백업을 삭제한 뒤 `rclone size`로 버킷 전체 크기를 측정하고, 오늘 백업 크기를 더한 값이 상한(`MAX_REMOTE_GB`, 기본 8GB)을 넘으면 업로드하지 않고 실패 알림을 보낸다. 이 경우에도 오늘 백업은 서버에 보관된다. 알림을 받으면 보관 일수를 줄이거나 상한을 조정한다.
+==R2에는 무료 한도를 넘기 전에 사용을 차단하는 설정이 없다.== 그래서 스크립트가 직접 차단한다. 기간이 지난 백업을 삭제한 뒤 `rclone size`로 버킷 전체 크기를 측정하고, 오늘 백업 크기를 더한 값이 상한(`MAX_REMOTE_GB`, 기본 8GB)을 넘으면 업로드하지 않고 실패 알림을 보낸다. 이 경우에도 오늘 백업은 서버에 보관된다. 알림을 받으면 보관 일수를 줄이거나 상한을 조정한다.
 
 ```bash
 remote_bytes="$(rclone size --json "$BACKUP_REMOTE" | grep -o '"bytes":[0-9]*' | cut -d: -f2)" ||
@@ -133,7 +140,7 @@ fi
 
 cron은 작업이 실패해도 알리지 않는다. 디스크가 가득 차거나, 키가 만료되거나, 서버가 중지되어 몇 주 동안 백업이 생성되지 않아도 알 수 없다.
 
-[healthchecks.io](https://healthchecks.io)에 Check를 하나 생성하고(주기 1일, 유예 1시간), Ping URL을 `BACKUP_PING_URL`에 지정한다. 스크립트는 성공하면 이 주소를, 실패하면 `주소/fail`을 요청한다. 주기와 유예 시간이 지나도 요청이 없으면 healthchecks.io가 메일을 보낸다. 실패뿐 아니라 "실행되지 않음"도 검출하는 것이 핵심이다.
+[healthchecks.io](https://healthchecks.io)에 Check를 하나 생성하고(주기 1일, 유예 1시간), Ping URL을 `BACKUP_PING_URL`에 지정한다. 스크립트는 성공하면 이 주소를, 실패하면 `주소/fail`을 요청한다. 주기와 유예 시간이 지나도 요청이 없으면 healthchecks.io가 메일을 보낸다. ==실패뿐 아니라 "실행되지 않음"도 검출하는 것==이 핵심이다.
 
 ![healthchecks.io가 알림을 보내는 세 경우](./images/r2-backup-setup-healthchecks.svg '성공은 알림 없음, 실패는 즉시, 실행되지 않으면 1일 + 1시간 후 알림')
 
@@ -221,7 +228,7 @@ docker compose exec -T db psql -U macfolio -d postgres    -c 'drop database rest
 - `rclone lsd`가 403을 반환한 것처럼, 권한을 제한한 키에는 실패가 정상인 명령이 있다. 문서의 확인 명령은 그 키로 성공해야 하는 명령만 기록해야 한다.
 - 문서에 `<파일>` 같은 자리표시를 두면 그대로 붙여 넣는 실수가 생긴다. 명령이 값을 직접 선택하게(`ls -t | head -1`) 하는 편이 안전하다.
 
-백업에서 가장 위험한 상태는 실패를 아무도 인지하지 못하는 상태다. cron은 실패를 알리지 않고, 중간에 끊긴 덤프도 파일로는 남는다. 그래서 덤프 완료 검사와 실패 알림 요청이 스크립트의 절반을 차지한다.
+==백업에서 가장 위험한 상태는 실패를 아무도 인지하지 못하는 상태다.== cron은 실패를 알리지 않고, 중간에 끊긴 덤프도 파일로는 남는다. 그래서 덤프 완료 검사와 실패 알림 요청이 스크립트의 절반을 차지한다.
 
 ## 적용 방법
 

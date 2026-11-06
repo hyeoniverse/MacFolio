@@ -13,7 +13,7 @@ summary: 사이트가 자바스크립트로만 렌더링되어 검색엔진에�
 | 네이버 검색 로봇                | 대부분 실행 안 함 | 빈 페이지                         |
 | 링크 미리보기(카카오톡·Slack·X) | 실행 안 함        | 모든 주소의 제목이 "김정현의 Mac" |
 
-글이 180편을 넘었지만 검색으로는 한 편도 찾을 수 없었다. 이 문제는 [#267](https://github.com/hyeoniverse/MacFolio/issues/267)로 정리했고 [#269](https://github.com/hyeoniverse/MacFolio/pull/269)에서 해결했다.
+==글이 180편을 넘었지만 검색으로는 한 편도 찾을 수 없었다==. 이 문제는 [#267](https://github.com/hyeoniverse/MacFolio/issues/267)로 정리했고 [#269](https://github.com/hyeoniverse/MacFolio/pull/269)에서 해결했다.
 
 <details>
 <summary>수정 전후의 HTML 비교</summary>
@@ -66,7 +66,7 @@ Vite 플러그인(`seoPlugin`)이 빌드 시각에 저장소의 Markdown 글을 
 | `/memo/<글>`         | 글 제목, 글 요약          | BlogPosting     | 제목, 날짜, 글 본문          |
 | `/safari/<프로젝트>` | 프로젝트 이름, 한 줄 소개 | CreativeWork    | 소개, 기술, 저장소·데모 링크 |
 
-구조화 데이터는 [JSON-LD](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data)[^jsonld] 형식으로 넣는다. `<head>`에는 canonical[^canonical], [Open Graph](https://ogp.me/)(`og:title`, `og:image` 등), Twitter 카드도 넣는다. 기존 `<title>`과 description은 추가하지 않고 교체한다. 같은 태그가 두 개 있으면 검색엔진이 어느 쪽을 사용할지 정할 수 없기 때문이다. 공유 카드의 이미지는 데스크톱 화면을 1200×630으로 캡처해 `og-image.jpg`로 저장했다.
+구조화 데이터는 [JSON-LD](https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data)[^jsonld] 형식으로 넣는다. `<head>`에는 canonical[^canonical], [Open Graph](https://ogp.me/)(`og:title`, `og:image` 등), Twitter 카드도 넣는다. 기존 `<title>`과 description은 추가하지 않고 교체한다. ==같은 태그가 두 개 있으면 검색엔진이 어느 쪽을 사용할지 정할 수 없기 때문이다==. 공유 카드의 이미지는 데스크톱 화면을 1200×630으로 캡처해 `og-image.jpg`로 저장했다.
 
 존재하지 않는 글이나 프로젝트 주소에는 `noindex`를 붙인다. PR 미리보기 주소(`*.workers.dev`)는 응답 헤더에 `X-Robots-Tag: noindex`를 붙여 실제 사이트와 중복 색인되지 않게 했다.
 
@@ -74,7 +74,10 @@ Vite 플러그인(`seoPlugin`)이 빌드 시각에 저장소의 Markdown 글을 
 
 본문을 `#root` 안에 넣으면 스크립트를 내려받는 동안 글자가 잠깐 표시될 수 있다. 그래서 index.html의 인라인 스타일로 1px 크기로 클리핑해 숨긴다. 화면 읽기 프로그램용 텍스트를 숨기는 방식과 같다. 앱이 렌더링을 시작하면 React가 `#root` 내부를 통째로 교체하므로 앱에는 영향이 없다.
 
-검색엔진에만 다른 내용을 보여 주는 것은 클로킹[^cloaking]이라 검색 순위에서 불이익을 받는다. 여기서 넣는 내용은 앱이 표시하는 글·프로젝트와 같은 데이터에서 나온다. 관리자가 시스템 설정에서 수정한 프로필과 프로젝트도, Worker가 이미 조회하던 사이트 콘텐츠를 합쳐서 사용한다(숨긴 프로젝트는 제외한다).
+> [!WARNING] 클로킹
+> 검색엔진에만 다른 내용을 보여 주는 것은 클로킹[^cloaking]이라 검색 순위에서 불이익을 받는다.
+
+여기서 넣는 내용은 앱이 표시하는 글·프로젝트와 같은 데이터에서 나온다. 관리자가 시스템 설정에서 수정한 프로필과 프로젝트도, Worker가 이미 조회하던 사이트 콘텐츠를 합쳐서 사용한다(숨긴 프로젝트는 제외한다).
 
 모든 문자열은 HTML로 이스케이프하고, JSON-LD 안의 `<`는 `<`로 바꿔 `</script>`로 스크립트 블록을 벗어나지 못하게 했다.
 
@@ -84,11 +87,13 @@ Vite 플러그인(`seoPlugin`)이 빌드 시각에 저장소의 Markdown 글을 
 - **빌드 시험**: 저장소의 모든 글과 프로젝트가 sitemap에 있는지, 본문의 HTML 태그가 실행되지 않고 문자열로 출력되는지
 - **빌드 결과**: `seo/posts.json`과 `sitemap.xml`이 생성되는지
 
-화면 E2E는 `vite preview`로 실행되어 Worker를 거치지 않는다. 그래서 이 부분은 단위 시험으로만 확인한다.
+> [!NOTE] Worker는 단위 시험으로만 확인한다
+> 화면 E2E는 `vite preview`로 실행되어 Worker를 거치지 않는다. 그래서 이 부분은 단위 시험으로만 확인한다.
 
 ## 배포 후 작업
 
-코드 배포만으로는 검색 결과에 바로 나타나지 않는다. 검색엔진에 사이트를 등록해야 한다.
+> [!IMPORTANT] 검색엔진 등록
+> 코드 배포만으로는 검색 결과에 바로 나타나지 않는다. 검색엔진에 사이트를 등록해야 한다.
 
 1. **[Google Search Console](https://search.google.com/search-console)**에 `https://macfolio.hyeoniverse.com`을 등록한다. 도메인 속성이면 Cloudflare DNS에 TXT 레코드를 추가해 소유권을 확인한다.
 2. Search Console의 Sitemaps에 `sitemap.xml`을 제출하고, URL 검사에 글 주소 하나를 입력해 "페이지 색인 생성 요청"을 누른다. "크롤링된 페이지 보기"의 HTML에 제목과 본문이 있으면 정상이다.
@@ -97,7 +102,7 @@ Vite 플러그인(`seoPlugin`)이 빌드 시각에 저장소의 Markdown 글을 
 
 ## 서버에 작성한 글도 sitemap에 포함
 
-관리자가 API로 작성한 글(저장소에 Markdown 파일이 없는 글)은 빌드 시각에 존재하지 않으므로 `posts.json`에 없다. 처음에는 그런 글의 주소에 `noindex`를 붙였는데, 그러면 서버에서 작성한 글은 검색 결과에 나타나지 않는다.
+관리자가 API로 작성한 글(저장소에 Markdown 파일이 없는 글)은 빌드 시각에 존재하지 않으므로 `posts.json`에 없다. 처음에는 그런 글의 주소에 `noindex`를 붙였는데, 그러면 ==서버에서 작성한 글은 검색 결과에 나타나지 않는다==.
 
 그래서 `sitemap.xml`을 빌드 결과 파일 대신 Worker가 생성하도록 바꿨다(`run_worker_first`에 `/sitemap.xml`을 추가했다). Worker는 API의 `GET /posts` 응답을 1분 동안 캐시하고, 화면과 같은 규칙으로 저장소 글과 합친다.
 

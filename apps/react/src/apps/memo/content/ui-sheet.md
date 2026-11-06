@@ -3,11 +3,11 @@ title: 오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 �
 date: 2026-10-12
 category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
-seriesOrder: 6
+seriesOrder: 4
 summary: 휴대폰 시트 3곳(메일 쓰기·메일 동작·음악 지금 재생 중)의 오버레이·애니메이션·닫기·role을 Sheet로 추출하고 모양은 variant 세 개로 나눴다. 닫기 타이머를 제거했고, 전환 중 발견한 343px 스크롤 튐과 가로 40px 스크롤도 수정했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 둘째 항목 "새로 뽑을 것"의 둘째 컴포넌트다. [Modal 추출](/memo/ui-modal)에 이어, [공통 UI 부품 목록](/memo/ui-inventory)에서 추출하기로 한 `Sheet`를 진행했다. 시트(sheet)는 화면 아래에서 올라와 현재 화면 위에 겹쳐 표시되는 패널로, iOS의 기본 UI 요소다([Apple HIG: Sheets](https://developer.apple.com/design/human-interface-guidelines/sheets)).
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 둘째 항목 "새로 뽑을 것"의 둘째 컴포넌트다. [Modal 추출](/memo/ui-modal)에 이어, [공통 UI 부품 목록](/memo/ui-modal#공통-부품-집계)에서 추출하기로 한 `Sheet`를 진행했다. 시트(sheet)는 화면 아래에서 올라와 현재 화면 위에 겹쳐 표시되는 패널로, iOS의 기본 UI 요소다([Apple HIG: Sheets](https://developer.apple.com/design/human-interface-guidelines/sheets)).
 
 ## 세 곳의 시트
 
@@ -67,13 +67,14 @@ summary: 휴대폰 시트 3곳(메일 쓰기·메일 동작·음악 지금 재�
 	))}
 ```
 
-`cover`는 `aria-modal`을 붙이지 않는다. 음악의 시트는 시트 바깥에 떠 있는 뒤로 가기 버튼으로 닫는데, [`aria-modal`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-modal)을 붙이면 스크린 리더가 다이얼로그 바깥 요소를 탐색 대상에서 제외해 그 버튼에 접근할 수 없기 때문이다.
+> [!NOTE] `cover`에 `aria-modal`을 붙이지 않는 이유
+> `cover`는 `aria-modal`을 붙이지 않는다. 음악의 시트는 시트 바깥에 떠 있는 뒤로 가기 버튼으로 닫는데, [`aria-modal`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-modal)을 붙이면 스크린 리더가 다이얼로그 바깥 요소를 탐색 대상에서 제외해 그 버튼에 접근할 수 없기 때문이다.
 
 ## 닫기 타이머를 없앤 방법
 
 닫히는 애니메이션을 표시하려면 요소가 애니메이션 동안 DOM에 남아 있어야 한다. 메일은 이것을 상태로 처리했다. 닫기를 누르면 `closing`을 켜고 240ms 뒤에 시트를 제거했다. 그 사이 시트는 아직 열린 상태라, 시험과 스크린 리더도 240ms 동안 열린 시트를 인식했다.
 
-`Sheet`는 `Modal`과 같이 `useExitMotion`을 사용한다. 호출하는 쪽이 `{sheet && <Sheet />}`로 제거하면, React가 요소를 DOM에서 분리하기 직전에 요소의 복제본을 같은 위치에 배치하고, 복제본에 사라지는 애니메이션을 적용한다. 실제 시트는 즉시 제거되므로 상태와 시험은 닫힌 이후를 기준으로 동작한다.
+`Sheet`는 `Modal`과 같이 `useExitMotion`을 사용한다. 호출하는 쪽이 `{sheet && <Sheet />}`로 제거하면, React가 요소를 DOM에서 분리하기 직전에 요소의 복제본을 같은 위치에 배치하고, 복제본에 사라지는 애니메이션을 적용한다. ==실제 시트는 즉시 제거되므로 상태와 시험은 닫힌 이후를 기준으로 동작==한다.
 
 - 오버레이 복제본에는 `dim-out`을 적용한다. 오버레이 전체의 투명도를 낮추는 `fade-out`을 쓰면 안의 시트까지 흐려지므로, 어두운 배경색만 사라지게 했다.
 - 복제본 안의 시트에는 `[data-exiting] .ui-sheet` 선택자로 `sheet-out`(아래로 내려감)을 적용한다.
@@ -85,7 +86,7 @@ summary: 휴대폰 시트 3곳(메일 쓰기·메일 동작·음악 지금 재�
 
 ## 열린 시각의 포커스가 화면을 스크롤한 문제
 
-처음 만든 `Sheet`를 미리보기에서 휴대폰으로 열어 보니, 음악 지금 재생 중이 올라올 때 화면이 위아래로 흔들렸다. 열리는 순간 시트에 포커스를 주는데, 이 시각에 시트는 아직 `translateY(100%)`에서 올라오는 중이었다. 브라우저는 포커스를 받은 요소를 화면에 표시하려고 앱 화면(`.music`)을 343px 스크롤했고, 애니메이션이 끝나며 다시 0으로 돌아왔다.
+처음 만든 `Sheet`를 미리보기에서 휴대폰으로 열어 보니, 음악 지금 재생 중이 올라올 때 화면이 위아래로 흔들렸다. 열리는 순간 시트에 포커스를 주는데, 이 시각에 시트는 아직 `translateY(100%)`에서 올라오는 중이었다. ==브라우저는 포커스를 받은 요소를 화면에 표시하려고== 앱 화면(`.music`)을 343px 스크롤했고, 애니메이션이 끝나며 다시 0으로 돌아왔다.
 
 ![시트가 올라오는 동안 앱 화면의 스크롤 위치](./images/ui-sheet-scroll.svg '수정 전에는 343px까지 스크롤됐다가 돌아오고, 수정 후에는 0에 머문다')
 
@@ -106,11 +107,12 @@ useEffect(() => {
 // Esc는 close.current()를 부른다. 키 효과의 의존성은 []
 ```
 
-같은 이유로 시트의 [ref 콜백](https://react.dev/reference/react-dom/components/common#ref-callback)도 [`useCallback`](https://react.dev/reference/react/useCallback)으로 한 번만 만든다. 렌더링마다 새 ref 함수를 넘기면 React가 이전 ref를 정리하면서 사라지는 애니메이션을 실행해, 재생 시간이 바뀔 때마다 시트 복제본이 내려가는 애니메이션이 계속 반복된다. 애니메이션을 켠 E2E에 "시트가 올라오는 동안 앱 화면이 스크롤되지 않는다" 시험을 추가했고, 수정 전 코드에서는 이 시험이 실패한다.
+> [!WARNING] 렌더링마다 새로 만든 ref 콜백
+> 같은 이유로 시트의 [ref 콜백](https://react.dev/reference/react-dom/components/common#ref-callback)도 [`useCallback`](https://react.dev/reference/react/useCallback)으로 한 번만 만든다. 렌더링마다 새 ref 함수를 넘기면 React가 이전 ref를 정리하면서 사라지는 애니메이션을 실행해, 재생 시간이 바뀔 때마다 시트 복제본이 내려가는 애니메이션이 계속 반복된다. 애니메이션을 켠 E2E에 "시트가 올라오는 동안 앱 화면이 스크롤되지 않는다" 시험을 추가했고, 수정 전 코드에서는 이 시험이 실패한다.
 
 ## 가로로 스와이프하면 왼쪽 여백이 사라지던 문제
 
-같은 미리보기에서 음악 지금 재생 중을 가로로 스와이프하자 왼쪽 여백이 사라져 제목과 재생 시간이 화면 끝에 닿았다. 시트 안의 블러 처리된 앨범 표지 배경(`::before`)은 가장자리가 비지 않도록 [`inset`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/inset)`: -40px`로 시트보다 사방 40px 크게 렌더링한다. 시트는 `overflow-y: auto`였는데, 한 축만 `auto`로 지정하면 다른 축도 `visible`이 아니라 `auto`로 계산된다[^1]. 그래서 넘친 배경 때문에 시트에 가로 스크롤 40px가 생겼고, 휴대폰에서 가로로 스와이프하면 내용이 왼쪽으로 밀렸다. 이 문제는 `Sheet`로 옮기기 전부터 있었다.
+같은 미리보기에서 음악 지금 재생 중을 가로로 스와이프하자 왼쪽 여백이 사라져 제목과 재생 시간이 화면 끝에 닿았다. 시트 안의 블러 처리된 앨범 표지 배경(`::before`)은 가장자리가 비지 않도록 [`inset`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/inset)`: -40px`로 시트보다 사방 40px 크게 렌더링한다. 시트는 `overflow-y: auto`였는데, 한 축만 `auto`로 지정하면 다른 축도 `visible`이 아니라 `auto`로 계산된다[^1]. 그래서 ==넘친 배경 때문에 시트에 가로 스크롤 40px가 생겼고==, 휴대폰에서 가로로 스와이프하면 내용이 왼쪽으로 밀렸다. 이 문제는 `Sheet`로 옮기기 전부터 있었다.
 
 ![overflow-y만 auto일 때 넘친 배경이 가로 스크롤을 만들고, overflow-x hidden을 추가하면 사라지는 모습](./images/ui-sheet-overflow.svg '수정 전에는 가로 스크롤 40px, 수정 후에는 0')
 
@@ -138,7 +140,7 @@ useEffect(() => {
 ## 관련 글
 
 - [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal): 데스크톱 가운데 창을 Modal로 추출한 일
-- [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
+- [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-modal#공통-부품-집계): 추출할 부품을 결정한 목록
 - PR: [#220](https://github.com/hyeoniverse/MacFolio/pull/220)
 
 [^1]: CSS 명세상 `overflow-x`와 `overflow-y` 중 하나가 `visible`이 아닌 값이면, 다른 축의 `visible`은 `auto`로 계산된다. [MDN: overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/overflow)

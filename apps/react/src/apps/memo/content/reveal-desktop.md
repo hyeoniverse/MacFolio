@@ -22,11 +22,12 @@ macOS Sonoma에는 "배경화면을 클릭하여 데스크탑 보기" 설정이 
 | 바탕화면을 끌어 아이콘 고르기  | 변화 없음 (⌘·⇧를 누른 채 누르기 포함) |
 | 떠 있는 창이 없음              | 변화 없음                             |
 
-휴대폰 화면은 바뀌지 않는다. 휴대폰의 앱은 화면 전체를 채우는 하나의 창이라 밀어 낼 대상이 없다.
+> [!NOTE] 휴대폰 화면
+> 휴대폰 화면은 바뀌지 않는다. 휴대폰의 앱은 화면 전체를 채우는 하나의 창이라 밀어 낼 대상이 없다.
 
 ## 상태: desktop-core 창 store의 desktopRevealed
 
-창 상태는 프레임워크와 무관한 `packages/desktop-core`의 창 store가 관리한다([창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)). 여기에 `desktopRevealed` 하나를 추가했다.
+창 상태는 프레임워크와 무관한 `packages/desktop-core`의 창 store가 관리한다([창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore)). 여기에 `desktopRevealed` 하나를 추가했다.
 
 ```ts
 export interface WindowState<Name extends string> {
@@ -39,7 +40,7 @@ export interface WindowState<Name extends string> {
 }
 ```
 
-"돌아오는 조건"은 별도 코드를 작성하지 않고 기존 상태에 연결했다. 창 store의 `update`는 창을 맨 앞으로 가져오는 `bringToFront`와 앱을 여는 `open`에서 `desktopFocused`를 `false`로 바꾼다. 같은 시각에 `desktopRevealed`도 `false`로 바꾸면, 창 누르기·Dock·Launchpad·바탕화면 아이콘으로 앱 열기가 모두 같은 경로를 탄다.
+"돌아오는 조건"은 별도 코드를 작성하지 않고 기존 상태에 연결했다. 창 store의 `update`는 창을 맨 앞으로 가져오는 `bringToFront`와 앱을 여는 `open`에서 `desktopFocused`를 `false`로 바꾼다. 같은 시각에 `desktopRevealed`도 `false`로 바꾸면, ==창 누르기·Dock·Launchpad·바탕화면 아이콘으로 앱 열기가 모두 같은 경로를 탄다==.
 
 ```ts
 const update = (change, desktopFocused?: boolean) =>
@@ -102,7 +103,7 @@ style={{
 - **저장된 자리**: 끌기와 크기 조절이 끝나면 `rect`를 `localStorage`에 저장한다. 밀어 낸 좌표가 섞이면 원래 자리를 따로 보관해야 한다.
 - **열기·닫기 애니메이션**: `windowMotion.ts`는 [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API)로 `transform`을 움직여 창이 Dock 아이콘에서 커지거나 줄어들게 한다.
 
-개별 변환 속성인 `translate`는 `transform`과 별개의 속성이고, 두 값은 `translate` → `rotate` → `scale` → `transform` 순서로 합성된다[^individual-transform]. 그래서 애니메이션의 `transform`을 덮어쓰지 않고, `rect` 계산에도 관여하지 않는다. 밀려난 상태에서 Dock으로 다른 앱을 열어도 열기 애니메이션은 그대로 재생된다.
+개별 변환 속성인 `translate`는 `transform`과 별개의 속성이고, 두 값은 `translate` → `rotate` → `scale` → `transform` 순서로 합성된다[^individual-transform]. 그래서 애니메이션의 `transform`을 덮어쓰지 않고, `rect` 계산에도 관여하지 않는다. 밀려난 상태에서 Dock으로 다른 앱을 열어도 ==열기 애니메이션은 그대로 재생된다==.
 
 전환은 `Window.css`에서 `translate`에만 지정했다. 끌기 중에는 `left`·`top`이 포인터를 즉시 따라가야 하므로 전환을 걸지 않는다.
 
@@ -116,7 +117,7 @@ style={{
 
 ## 밀려난 창의 누르기
 
-밀려난 창은 40px만 보인다. 이 영역에 신호등 버튼이나 앱 내용이 걸리면, 누른 결과가 "창을 되돌리기"가 아니라 "그 버튼 실행"이 된다. 창 안의 요소가 포인터를 받지 않게 했다.
+밀려난 창은 40px만 보인다. 이 영역에 신호등 버튼이나 앱 내용이 걸리면, ==누른 결과가 "창을 되돌리기"가 아니라 "그 버튼 실행"이 된다==. 창 안의 요소가 포인터를 받지 않게 했다.
 
 ```css
 .container.revealed > * {
@@ -173,7 +174,7 @@ for (let x = 40; x < window.innerWidth - 40; x += 40)
 
 ## 관련 글
 
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `desktopRevealed`를 추가한 창 store
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore): `desktopRevealed`를 추가한 창 store
 - [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name): `desktopFocused`와 바탕화면을 누르면 Finder가 되는 규칙
 - [callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기](/memo/memo-restore-compact): 같은 날 수정한 창 최소화 관련 결함
 

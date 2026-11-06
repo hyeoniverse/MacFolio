@@ -3,7 +3,7 @@ title: 토글 펼침 여부를 문서 대신 ProseMirror 플러그인 상태에 
 date: 2026-10-23
 category: 개발 기록/MacFolio/인터랙션·브라우저 API
 series: 메모 편집기
-seriesOrder: 8
+seriesOrder: 7
 summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, 토글을 펼치기만 해도 임시 저장되고, 서버 글이 같은 slug의 저장소 글을 가려 되돌릴 수 없었다. 저장 직전 unescapeTags, 화면 상태로 옮긴 펼침 여부, DELETE /posts/:slug/server-copy로 수정했다.
 ---
 
@@ -15,7 +15,7 @@ summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, �
 | 토글      | 내용을 고치지 않고 펼치기만 해도 '임시 저장됨' 표시 | 저장 요청 0회               |
 | 저장소 글 | 서버에서 고친 저장소 글을 원래 판으로 돌릴 수 없다  | '저장소 글로 되돌리기' 메뉴 |
 
-세 문제 모두 같은 글을 두 경로(저장소 Markdown, 메모 편집기)로 다루는 구조에서 생겼다. 편집기가 저장하는 Markdown이 원문과 달라지거나(태그, 토글), 서버 사본이 원문을 영구히 덮는다(저장소 글).
+==세 문제 모두 같은 글을 두 경로(저장소 Markdown, 메모 편집기)로 다루는 구조에서 생겼다==. 편집기가 저장하는 Markdown이 원문과 달라지거나(태그, 토글), 서버 사본이 원문을 영구히 덮는다(저장소 글).
 
 ## 1. 저장하면 첫 태그가 `\#`로 이스케이프됐다
 
@@ -29,7 +29,7 @@ summary: 편집기로 저장하면 첫 태그가 \#로 이스케이프되고, �
 
 편집기(Milkdown)는 ProseMirror 문서를 Markdown으로 직렬화할 때 [remark-stringify](https://github.com/remarkjs/remark/tree/main/packages/remark-stringify)를 사용한다. 내부의 [mdast-util-to-markdown](https://github.com/syntax-tree/mdast-util-to-markdown)은 줄 맨 앞(`atBreak`)의 `#`를 제목 표기로 오인되지 않도록 뒤에 오는 글자와 관계없이 `\#`로 이스케이프한다.
 
-그런데 [CommonMark의 ATX 제목](https://spec.commonmark.org/0.31.2/#atx-headings)은 `#` 뒤에 공백·탭이나 줄 끝이 와야 한다. `#MacFolio`처럼 `#` 바로 뒤에 글자가 오면 처음부터 제목이 될 수 없으므로 이스케이프가 필요 없다. 같은 줄의 둘째 태그부터는 줄 맨 앞이 아니어서 이스케이프되지 않았고, 그래서 첫 태그만 깨졌다.
+그런데 [CommonMark의 ATX 제목](https://spec.commonmark.org/0.31.2/#atx-headings)은 `#` 뒤에 공백·탭이나 줄 끝이 와야 한다. `#MacFolio`처럼 `#` 바로 뒤에 글자가 오면 처음부터 제목이 될 수 없으므로 이스케이프가 필요 없다. ==같은 줄의 둘째 태그부터는 줄 맨 앞이 아니어서 이스케이프되지 않았고, 그래서 첫 태그만 깨졌다==.
 
 태그를 추출하는 `TAG_PATTERN`(`packages/desktop-core/src/memo/tags.ts`)은 줄 맨 앞이나 공백·여는 괄호 뒤의 `#`만 태그로 인식한다. `\#MacFolio`는 `#` 앞이 `\`라서 조건에 맞지 않는다.
 
@@ -75,7 +75,7 @@ export function unescapeTags(markdown: string): string {
 
 ### 원인
 
-펼침 여부가 문서의 일부였다. [토글 목록을 추가한 시각](/memo/memo-editor-toggle-footnote)의 설계는 "접은 상태도 저장된다"였다. › 를 누르면 `setNodeMarkup`으로 `details_block` 노드의 `open` 속성을 반전했고, 이 속성은 Markdown에 `<details open>`으로 직렬화된다. 문서가 바뀌었으므로 편집기의 onChange가 호출되고 임시 저장이 실행됐다. 요약 줄에서 Enter로 펼치는 경로도 같았다.
+==펼침 여부가 문서의 일부였다==. [토글 목록을 추가한 시각](/memo/memo-editor-toggle-footnote)의 설계는 "접은 상태도 저장된다"였다. › 를 누르면 `setNodeMarkup`으로 `details_block` 노드의 `open` 속성을 반전했고, 이 속성은 Markdown에 `<details open>`으로 직렬화된다. 문서가 바뀌었으므로 편집기의 onChange가 호출되고 임시 저장이 실행됐다. 요약 줄에서 Enter로 펼치는 경로도 같았다.
 
 같은 글에서 목차 링크로 접힌 블록 안의 제목에 이동하는 경로는 이미 화면에서만 펼치고 있었다. 링크로 펼친 위치를 `anchors` 플러그인 상태(`revealed`)에 보관하고 Decoration으로 그리는 방식이다. 직접 › 를 누르는 경로만 문서를 바꾸고 있었다.
 
@@ -103,7 +103,8 @@ export function isShownOpen(state: EditorState, pos: number, node: Node): boolea
 
 시험 중에 › 를 펼친 직후 다시 누르면 접히지 않는 현상을 함께 발견했다. 두 번째 클릭이 브라우저의 더블클릭 간격 안에 들어오면 ProseMirror는 [`handleDoubleClickOn`](https://prosemirror.net/docs/ref/#view.EditorProps.handleDoubleClickOn)을 호출하고 `handleClickOn`은 호출하지 않는다. 클릭 처리를 `toggleOnClick` 함수로 분리하고 `handleClickOn`·`handleDoubleClickOn`·`handleTripleClickOn` 세 곳에 같은 함수를 연결했다.
 
-이미 `<details open>`으로 저장된 토글은 그대로 남는다. 저장값을 바꾸려면 Markdown에서 `open`을 직접 추가하거나 삭제한다.
+> [!NOTE] 이미 저장된 펼침 상태
+> 이미 `<details open>`으로 저장된 토글은 그대로 남는다. 저장값을 바꾸려면 Markdown에서 `open`을 직접 추가하거나 삭제한다.
 
 ## 3. 저장소 글로 되돌릴 수 없었다
 
@@ -134,7 +135,8 @@ async revertToRepository(slug: string) {
 }
 ```
 
-서버는 빌드에 묶인 저장소 Markdown 목록을 알지 못한다. 저장소에 없는 글에 이 경로를 호출하면 글이 사라진다. 그래서 판정은 저장소 목록을 가진 프론트엔드(`overridesRepo`)가 하고, 메뉴도 그 글에만 표시한다.
+> [!CAUTION] 저장소에 없는 글에 호출하면 글이 사라진다
+> 서버는 빌드에 묶인 저장소 Markdown 목록을 알지 못한다. 저장소에 없는 글에 이 경로를 호출하면 글이 사라진다. 그래서 판정은 저장소 목록을 가진 프론트엔드(`overridesRepo`)가 하고, 메뉴도 그 글에만 표시한다.
 
 ![되돌리기 메뉴와 확인창](./images/memo-editor-tags-toggle-revert-revert-ui.jpg '서버에서 제목을 고친 저장소 글을 우클릭한 메뉴의 "저장소 글로 되돌리기" 항목(왼쪽)과, 서버의 수정 내용·임시 저장·버전 기록이 모두 삭제된다고 알리는 확인창(오른쪽)')
 

@@ -9,7 +9,7 @@ summary: 블로그 글의 저장소 문서 링크(GitHub의 docs/*.md, README, C
 
 ## 배경
 
-블로그 글에 "따라 하기" 절을 넣으면서 `docs/rollback-drill.md` 같은 저장소 문서 링크를 많이 추가했다. 링크는 GitHub 주소(`https://github.com/hyeoniverse/MacFolio/blob/main/docs/…`)라서 누르면 새 탭에 GitHub가 열렸다. 그런데 이 문서들은 이미 사이트 빌드에 포함되어 있다. Finder의 '문서' 폴더는 빌드 시각에 README, CONTRIBUTING, `docs/*.md`를 번들에 넣어 표시하고, Apple 메뉴의 '개인정보 처리 방침'도 `docs/privacy.md`를 Finder에서 연다. 데스크톱 화면에서 글을 읽다가 외부 사이트로 이동할 필요가 없었다. 작업은 [#272](https://github.com/hyeoniverse/MacFolio/pull/272)에서 했다.
+블로그 글에 "따라 하기" 절을 넣으면서 `docs/rollback-drill.md` 같은 저장소 문서 링크를 많이 추가했다. 링크는 GitHub 주소(`https://github.com/hyeoniverse/MacFolio/blob/main/docs/…`)라서 누르면 새 탭에 GitHub가 열렸다. 그런데 ==이 문서들은 이미 사이트 빌드에 포함되어 있다.== Finder의 '문서' 폴더는 빌드 시각에 README, CONTRIBUTING, `docs/*.md`를 번들에 넣어 표시하고, Apple 메뉴의 '개인정보 처리 방침'도 `docs/privacy.md`를 Finder에서 연다. 데스크톱 화면에서 글을 읽다가 외부 사이트로 이동할 필요가 없었다. 작업은 [#272](https://github.com/hyeoniverse/MacFolio/pull/272)에서 했다.
 
 ## 구현
 
@@ -28,11 +28,14 @@ export function bundledDocOf(href: string | undefined): string | null {
 }
 ```
 
-글 본문의 링크 컴포넌트(`MarkdownLink`)는 이 경로가 있으면 [`preventDefault()`](https://developer.mozilla.org/ko/docs/Web/API/Event/preventDefault)로 기본 동작을 막고 `requestFinderDoc(경로)`와 `openApp('finder')`를 호출한다. Apple 메뉴의 개인정보 처리 방침과 같은 경로다. ⌘·Ctrl·Shift를 누른 채 클릭하거나 가운데 버튼으로 클릭하면 브라우저 기본 동작대로 GitHub를 새 탭에 연다.
+글 본문의 링크 컴포넌트(`MarkdownLink`)는 이 경로가 있으면 [`preventDefault()`](https://developer.mozilla.org/ko/docs/Web/API/Event/preventDefault)로 기본 동작을 막고 `requestFinderDoc(경로)`와 `openApp('finder')`를 호출한다. Apple 메뉴의 개인정보 처리 방침과 같은 경로다. ==⌘·Ctrl·Shift를 누른 채 클릭하거나 가운데 버튼으로 클릭하면 브라우저 기본 동작대로 GitHub를 새 탭에 연다.==
 
 ![링크 클릭 시 bundledDocOf가 경로를 반환하면 Finder에서 열고, null이면 GitHub 새 탭으로 연다](./images/doc-links-in-finder-flow.svg '보조 키를 누른 클릭과 번들에 없는 경로는 브라우저 기본 동작으로 처리한다')
 
-번들 문서 목록(`docsBundle.ts`)을 메모 앱에서 import하지 않고 경로 형식만 검사한 이유는, 그 목록이 문서 원문을 모두 포함하고 있어 메모 앱 번들 크기가 커지기 때문이다. 번들 규칙이 바뀌면 두 곳을 함께 수정해야 하므로, 정규식 옆에 `docsBundle.ts`의 [glob](https://vite.dev/guide/features#glob-import)과 같아야 한다는 주석을 남겼다.
+번들 문서 목록(`docsBundle.ts`)을 메모 앱에서 import하지 않고 경로 형식만 검사한 이유는, 그 목록이 문서 원문을 모두 포함하고 있어 메모 앱 번들 크기가 커지기 때문이다.
+
+> [!WARNING] 두 곳에 있는 번들 규칙
+> 번들 규칙이 바뀌면 두 곳을 함께 수정해야 하므로, 정규식 옆에 `docsBundle.ts`의 [glob](https://vite.dev/guide/features#glob-import)과 같아야 한다는 주석을 남겼다.
 
 ## 확인
 
@@ -53,6 +56,6 @@ export function bundledDocOf(href: string | undefined): string | null {
 
 - [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 저장소 문서를 표시하는 Finder 앱
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design): E2E 시험에서 링크를 누르는 글
-- [10월 21일 - 이력서를 Markdown 한 장으로, 텍스트 편집기, 위젯, 처음 온 사람을 위한 둘러보기](/memo/day-1021): 텍스트 편집기 앱을 만든 날의 기록
+- [10월 21일 - 이력서를 Markdown 한 장으로, 텍스트 편집기, 위젯, 처음 온 사람을 위한 둘러보기](/memo/week-1019#markdown-이력서와-텍스트-편집기-21일): 텍스트 편집기 앱을 만든 날의 기록
 
 #MacFolio #프론트엔드 #Finder #메모앱

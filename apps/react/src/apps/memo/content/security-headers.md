@@ -15,7 +15,7 @@ summary: API에는 helmet이 있었지만 사이트 응답에는 보안 헤더�
 - 글이나 README의 Markdown 처리에 결함이 생긴 경우, 삽입된 스크립트가 임의의 서버로 요청을 보내는 것
 - 외부 링크를 누르는 시각에 `/memo/<글 주소>` 같은 전체 경로가 `Referer` 헤더로 전달되는 것
 
-Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)). CSP는 그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층이다.
+Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로 고정했다([react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)). CSP는 ==그 시험이 놓친 경로까지 브라우저가 한 번 더 차단하는 방어 계층==이다.
 
 <details>
 <summary>용어 정리</summary>
@@ -66,7 +66,7 @@ Markdown이 스크립트로 실행되지 않는다는 점은 별도 시험으로
 
 ## 출처 목록을 코드에서 생성
 
-CSP를 직접 작성하면 새 프로젝트를 `PROJECTS`에 추가할 때마다 `_headers`도 수정해야 하고, 누락하면 프로젝트 앱이 빈 창으로 표시된다. 그래서 목록을 코드에서 생성한다.
+CSP를 직접 작성하면 새 프로젝트를 `PROJECTS`에 추가할 때마다 `_headers`도 수정해야 하고, 누락하면 ==프로젝트 앱이 빈 창으로 표시된다==. 그래서 목록을 코드에서 생성한다.
 
 ```ts
 securityHeaders({
@@ -101,7 +101,10 @@ const directives: Record<string, string[]> = {
 
 ## CSP를 적용한 상태로 E2E 실행
 
-CSP에서 출처 하나를 누락하면 그 기능만 오류 화면 없이 동작을 멈춘다. 그래서 E2E가 배포와 같은 CSP를 적용한 상태로 실행되게 했다.
+> [!WARNING] 누락된 출처는 오류 화면 없이 실패한다
+> CSP에서 출처 하나를 누락하면 그 기능만 오류 화면 없이 동작을 멈춘다.
+
+그래서 E2E가 배포와 같은 CSP를 적용한 상태로 실행되게 했다.
 
 1. 같은 Vite 플러그인이 `vite preview`(E2E가 실행하는 서버)에도 헤더를 추가한다.
 2. E2E의 가짜 API(`http://api.test`)는 시험에서만 `CSP_TEST_API_URL`로 API 주소 자리에 추가한다.
@@ -124,7 +127,7 @@ cspViolations: [
 
 이후 새 외부 서비스를 연결하면서 CSP 추가를 누락하면, 그 기능의 E2E가 CSP 위반으로 실패한다.
 
-`theme-boot.js`로 분리한 뒤 시험 하나가 불안정해졌다. 로딩 전 화면을 확인하는 시험이 모든 스크립트 요청을 지연시켰는데, `<head>`의 일반 `<script src>`는 내려받기가 끝날 때까지 HTML 파싱을 멈춘다. 그래서 시험이 앱 스크립트 요청만 지연시키도록 수정했다.
+`theme-boot.js`로 분리한 뒤 시험 하나가 불안정해졌다. 로딩 전 화면을 확인하는 시험이 모든 스크립트 요청을 지연시켰는데, `<head>`의 일반 `<script src>`는 ==내려받기가 끝날 때까지 HTML 파싱을 멈춘다==. 그래서 시험이 앱 스크립트 요청만 지연시키도록 수정했다.
 
 ## 확인
 
@@ -182,12 +185,14 @@ curl -sI https://macfolio.hyeoniverse.com/ | grep -iE 'content-security-policy|s
 
 - **`style-src 'unsafe-inline'`은 유지했다.** React의 `style` 속성과 Mermaid·Scalar가 생성하는 `<style>` 때문이다. 스타일 주입은 스크립트보다 위험이 작지만, 라이브러리가 nonce를 지원하면 제거할 수 있다.
 - **`img-src https:`는 범위가 넓다.** 글에 외부 이미지를 넣는 블로그라 범위를 좁히기 어렵다.
-- **시험이 배포와 같은 값을 쓰는 구성이 핵심이다.** 헤더는 추가한 뒤 관리 대상에서 빠지기 쉽다. E2E가 배포와 같은 CSP로 실행되므로, 새 기능이 CSP를 위반하면 PR 단계에서 실패한다.
+
+> [!IMPORTANT] 시험이 배포와 같은 값을 쓰는 구성이 핵심이다
+> 헤더는 추가한 뒤 관리 대상에서 빠지기 쉽다. E2E가 배포와 같은 CSP로 실행되므로, 새 기능이 CSP를 위반하면 PR 단계에서 실패한다.
 
 ## 관련 글
 
 - [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 - [not_found_handling 뒤 Worker 함수로 SPA 주소와 없는 자산의 404 나누기](/memo/asset-404)
 - [react-markdown 렌더링 경로마다 XSS 차단 설정을 시험으로 고정하기](/memo/markdown-xss-tests)
 

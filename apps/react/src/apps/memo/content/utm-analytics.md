@@ -3,7 +3,7 @@ title: 출처·매체·캠페인 조합 키로 집계하는 UTM 분석
 date: 2026-10-18
 category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
-seriesOrder: 7
+seriesOrder: 5
 summary: 어느 곳에 게시한 링크로 방문했는지 확인하려고 UTM 집계를 보강했다. 매체 표, 출처·매체·캠페인 조합 표와 일별 추이, term·content 열, 링크 생성기를 추가했고, 조합 키 구분자를 두 번 수정해 ' / '로 정했다.
 ---
 
@@ -43,7 +43,8 @@ UTM[^utm] 매개변수는 다섯 개다.
 
 변경한 파일은 27개(1,025줄 추가, 73줄 삭제)다. 가장 큰 파일은 분석 앱의 새 컴포넌트 `apps/react/src/apps/activity/Utm.tsx`(163줄)와 화면 E2E(`e2e/activity.spec.ts` 84줄)다.
 
-새 표는 모두 관리자 전용 목록(`ADMIN_ONLY_BREAKDOWNS`)에 넣었다. 방문자가 수신하는 요약에서는 빈 목록이고, 방문자가 `utm=`을 붙여 요청해도 추이를 응답하지 않는다.
+> [!NOTE] 방문자에게는 응답하지 않는 표
+> 새 표는 모두 관리자 전용 목록(`ADMIN_ONLY_BREAKDOWNS`)에 넣었다. 방문자가 수신하는 요약에서는 빈 목록이고, 방문자가 `utm=`을 붙여 요청해도 추이를 응답하지 않는다.
 
 ## 조합 키의 구분자
 
@@ -55,7 +56,8 @@ const cut = id.indexOf('\u0000');
 return { metric: id.slice(0, cut), key: id.slice(cut + 1), value };
 ```
 
-수정 후에는 API e2e 시험이 500을 반환했다. PostgreSQL의 문자열 열은 NUL 문자를 저장할 수 없다.[^nul] 메모리에서 결합하는 데는 문제가 없지만 `DailyStat`의 `key` 열에 저장할 수 없었다.
+> [!WARNING] PostgreSQL 문자열 열과 NUL 문자
+> 수정 후에는 API e2e 시험이 500을 반환했다. PostgreSQL의 문자열 열은 NUL 문자를 저장할 수 없다.[^nul] 메모리에서 결합하는 데는 문제가 없지만 `DailyStat`의 `key` 열에 저장할 수 없었다.
 
 그래서 구분자를 `' / '`로 바꿨다. utm 값은 저장하기 전에 `cleanUtm()`으로 정규화한다. 앞뒤 공백을 제거하고, 소문자로 바꾸고, 연속된 공백은 `-` 하나로 바꾼다. 정규화한 값에는 공백이 없으므로 `' / '`가 값 안에 나타날 수 없다. 키가 화면에 표시되는 형태와 같아져서, 표의 이름과 `utm=` 파라미터도 그대로 읽을 수 있다.
 
@@ -88,13 +90,13 @@ export const utmKey = (source?: string | null, medium?: string | null, campaign?
 2. 사이트의 `utmOf()`가 첫 주소를 읽을 때
 3. 서버의 `EventInput` 스키마가 이벤트를 수신할 때
 
-생성기에 `LinkedIn`을 입력하든, 주소에 `utm_source=LinkedIn`을 직접 붙이든 표에는 `linkedin` 한 행으로 집계된다. 이벤트 스키마 전체는 [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)에서 다룬다.
+생성기에 `LinkedIn`을 입력하든, 주소에 `utm_source=LinkedIn`을 직접 붙이든 표에는 `linkedin` 한 행으로 집계된다. 이벤트 스키마 전체는 [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206)에서 다룬다.
 
 ![링크 생성기와 사이트가 cleanUtm으로 값을 다듬고, 서버가 같은 함수로 받아 DailyStat에 조합 키로 저장한다](./images/utm-analytics-flow.svg '보내는 쪽과 받는 쪽이 같은 cleanUtm을 쓴다')
 
 ## 지난 날짜는 다시 집계하지 않는다
 
-지난 날짜의 수치는 `DailyStat`에 날짜별로 집계해 저장했고, 그 행에는 `medium`·`utm`·`term`·`content`가 없다. 보관 중인 이벤트 행(90일)으로 다시 집계하는 일회성 작업을 만들 수도 있었다. 그러나 이미 집계한 날짜의 행을 삭제하고 다시 넣는 작업은 집계 전체에 영향을 주고, 90일보다 오래된 날짜는 어차피 채울 수 없다. 그래서 배포한 날부터만 집계하기로 하고, 표 위에 다음 안내를 표시했다.
+지난 날짜의 수치는 `DailyStat`에 날짜별로 집계해 저장했고, 그 행에는 `medium`·`utm`·`term`·`content`가 없다. 보관 중인 이벤트 행(90일)으로 다시 집계하는 일회성 작업을 만들 수도 있었다. 그러나 이미 집계한 날짜의 행을 삭제하고 다시 넣는 작업은 집계 전체에 영향을 주고, 90일보다 오래된 날짜는 어차피 채울 수 없다. 그래서 ==배포한 날부터만 집계==하기로 하고, 표 위에 다음 안내를 표시했다.
 
 > 이 기능을 배포한 날부터 셉니다. 그 전 날의 집계에는 없습니다.
 
@@ -102,7 +104,7 @@ export const utmKey = (source?: string | null, medium?: string | null, campaign?
 
 ## 읽은 utm은 주소창에서 삭제한다
 
-utm이 붙은 주소를 그대로 두면, 방문자가 주소를 복사해 다른 사람에게 보낼 때 같은 캠페인 방문이 다시 집계된다. 링크를 게시한 위치도 함께 전달된다. 그래서 사이트가 첫 주소에서 utm을 읽은 뒤 [`history.replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)로 `utm_*`만 삭제한다.
+utm이 붙은 주소를 그대로 두면, 방문자가 주소를 복사해 다른 사람에게 보낼 때 ==같은 캠페인 방문이 다시 집계==된다. 링크를 게시한 위치도 함께 전달된다. 그래서 사이트가 첫 주소에서 utm을 읽은 뒤 [`history.replaceState`](https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState)로 `utm_*`만 삭제한다.
 
 | 주소창        | 주소                                                                 |
 | ------------- | -------------------------------------------------------------------- |
@@ -150,7 +152,7 @@ if (kept.length === parts.length) return null;
 
 - 지난 날짜의 매체·조합 집계는 비어 있다. 배포한 날부터 누적된다.
 - `utm_term`·`utm_content`는 별도로 집계한다. 이 둘까지 조합 키에 포함하면 조합 수가 크게 늘어 표가 길어진다. 필요해지면 조합 추이처럼 누르면 펼치는 방식으로 추가한다.
-- 보내는 쪽과 받는 쪽이 같은 규칙을 적용해야 하는 값은 한 패키지에 함수로 정의한다. 문서로 "소문자로 적는다"고 정하는 것보다 확실하다.
+- 보내는 쪽과 받는 쪽이 같은 규칙을 적용해야 하는 값은 한 패키지에 함수로 정의한다. ==문서로 "소문자로 적는다"고 정하는 것보다 확실하다.==
 - 메모리에서 쓰는 구분자와 DB에 저장하는 구분자는 별도로 검토해야 한다. NUL 문자는 메모리에서는 안전하지만 PostgreSQL 문자열 열에는 저장할 수 없다.
 
 <details>
@@ -172,11 +174,11 @@ if (kept.length === parts.length) return null;
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)
 - [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
-- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
-- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-analytics)
+- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-api#요약을-방문자에게-공개한다-세션에-따라-응답-범위를-나눈다)
+- [zod 스키마 하나로 분석 이벤트의 전송 형식과 서버 검증 통합하기](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206)
 
 PR: [#253](https://github.com/hyeoniverse/MacFolio/pull/253) · 이슈: [#211](https://github.com/hyeoniverse/MacFolio/issues/211)
 

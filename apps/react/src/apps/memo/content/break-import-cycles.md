@@ -20,7 +20,7 @@ summary: madge로 측정하니 순환 의존이 둘 있었다. 메일의 두 화
 
 ## 순환 의존이 문제가 되는 이유
 
-[ES 모듈](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)은 import한 파일을 먼저 평가하고, 파일 안의 코드는 위에서 아래로 실행한다. a.ts를 평가하다가 b.ts로 들어갔는데 b.ts가 a.ts의 값을 쓰면, 그 값은 아직 초기화되지 않은 상태다(`const`면 `ReferenceError`, 번들 결과에 따라 `undefined`). 타입만 가져오면 컴파일 시 import가 제거되어 문제가 없지만, 상수나 함수를 가져오면 import 순서만 바꿔도 실행이 실패하는 코드가 된다.
+[ES 모듈](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules)은 import한 파일을 먼저 평가하고, 파일 안의 코드는 위에서 아래로 실행한다. a.ts를 평가하다가 b.ts로 들어갔는데 b.ts가 a.ts의 값을 쓰면, 그 값은 아직 초기화되지 않은 상태다(`const`면 `ReferenceError`, 번들 결과에 따라 `undefined`). 타입만 가져오면 컴파일 시 import가 제거되어 문제가 없지만, ==상수나 함수를 가져오면 import 순서만 바꿔도 실행이 실패하는 코드==가 된다.
 
 ![순환 의존이 undefined를 만드는 순서](./images/break-import-cycles-init-order.svg 'a.ts를 평가하다 b.ts로 들어갔는데, b.ts가 아직 초기화되지 않은 a.ts의 값을 쓴다')
 
@@ -56,13 +56,14 @@ API는 Prisma가 생성한 코드(`generated/`)끼리만 순환이 있어서 그
 
 두 화면이 함께 쓰는 `Mailbox`, `ListMail`, `MAILBOX_LABEL`을 `mail/model.ts`로 옮기고 양쪽이 이 파일을 import하게 했다.
 
-> 규칙: 두 화면이 같은 타입을 쓰면 둘 중 하나가 아니라 셋째 파일(`model.ts`)에 정의한다.
+> [!IMPORTANT] 규칙
+> 두 화면이 같은 타입을 쓰면 둘 중 하나가 아니라 셋째 파일(`model.ts`)에 정의한다.
 
 ![메일 앱의 순환 의존: 전과 후](./images/break-import-cycles-mail.svg '전에는 두 파일이 서로를, 후에는 둘 다 model.ts를 import한다')
 
 ## Finder: 앱 이름 목록을 manifest로
 
-`registry.ts`는 앱 이름 → 컴포넌트 대응표이고, Finder를 `lazy()`로 불러온다. 그런데 Finder는 "창으로 열리는 앱 목록"을 표시하려고 `registry.ts`의 `WINDOW_APPS`를 다시 import했다. lazy 로딩이라 실행에는 문제가 없었지만, Finder에 필요한 값은 컴포넌트가 아니라 **앱 이름**뿐이다.
+`registry.ts`는 앱 이름 → 컴포넌트 대응표이고, Finder를 `lazy()`로 불러온다. 그런데 Finder는 "창으로 열리는 앱 목록"을 표시하려고 `registry.ts`의 `WINDOW_APPS`를 다시 import했다. lazy 로딩이라 실행에는 문제가 없었지만, ==Finder에 필요한 값은 컴포넌트가 아니라 **앱 이름**뿐이다==.
 
 ![registry와 Finder의 순환: 전과 후](./images/break-import-cycles-registry.svg 'Finder가 registry의 컴포넌트 표를 import하던 구조를, manifest의 이름 목록을 import하는 구조로')
 
@@ -99,7 +100,7 @@ export const WINDOW_APPS = WINDOW_APP_NAMES.map((name) => {
   run: pnpm cycles
 ```
 
-처음에는 `apps/react`, `apps/api`(`generated/` 제외), `packages/desktop-core` 세 묶음을 검사했다. 이후 `packages/contracts`([zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments))가 생기며 넷째 묶음이 되었고, 공유 카드 패키지 `packages/og-card`([#306](https://github.com/hyeoniverse/MacFolio/pull/306))가 다섯째 묶음이 되었다.
+처음에는 `apps/react`, `apps/api`(`generated/` 제외), `packages/desktop-core` 세 묶음을 검사했다. 이후 `packages/contracts`([zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200))가 생기며 넷째 묶음이 되었고, 공유 카드 패키지 `packages/og-card`([#306](https://github.com/hyeoniverse/MacFolio/pull/306))가 다섯째 묶음이 되었다.
 
 ![pnpm cycles가 검사하는 파일 수](./images/break-import-cycles-files.svg '2026-10-23 기준 다섯 묶음에서 862개 파일을 검사한다')
 
@@ -112,7 +113,8 @@ export const WINDOW_APPS = WINDOW_APP_NAMES.map((name) => {
 "cycles": "madge --circular --extensions ts,tsx --ts-config apps/react/tsconfig.json apps/react/src && madge --circular --extensions ts --ts-config apps/api/tsconfig.json --exclude 'generated/' apps/api/src && madge --circular --extensions ts --ts-config packages/desktop-core/tsconfig.json packages/desktop-core/src && madge --circular --extensions ts --ts-config packages/contracts/tsconfig.json packages/contracts/src && madge --circular --extensions ts --ts-config packages/og-card/tsconfig.json packages/og-card/src"
 ```
 
-`--ts-config`는 `@/` 같은 경로 별칭을 실제 파일 경로로 변환하는 데 필요하다. 생략하면 별칭 import를 따라가지 못해 그래프에서 빠진다.
+> [!WARNING]
+> `--ts-config`는 `@/` 같은 경로 별칭을 실제 파일 경로로 변환하는 데 필요하다. 생략하면 별칭 import를 따라가지 못해 그래프에서 빠진다.
 
 </details>
 
@@ -138,9 +140,9 @@ CI의 `check` 작업에도 같은 명령이 있어서([.github/workflows/ci.yml]
 
 ## 관련 글
 
-- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
+- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-retrospective#2단계-폴더-구조와-의존)
 - [폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)
 - [Resend API와 Turnstile로 서버에서 메일 발송하고 스팸 차단하기](/memo/contact-mail)
 - [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
 

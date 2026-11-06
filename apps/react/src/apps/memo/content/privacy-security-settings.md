@@ -5,7 +5,7 @@ category: 개발 기록/MacFolio/서버·API
 summary: 메일에만 있던 Cloudflare Turnstile 사람 확인을 댓글·메시지에도 걸 수 있게 하고, macOS '개인정보 보호 및 보안' 모양 화면에서 관리자가 곳마다 켜고 끄게 했다. 설정은 서버 DB의 한 행짜리 테이블에 저장하고, 확인은 requireHuman 함수 하나로 통합했다.
 ---
 
-메일 앱의 연락 메일에는 Cloudflare Turnstile[^turnstile]로 사람인지 확인하는 단계가 있었다. 댓글과 메시지에는 IP마다 1분당 요청 횟수를 제한하는 장치만 있었다. 사이트가 Cloudflare 프록시를 거쳐도, 스크립트가 API에 직접 보내는 정상 형식의 요청은 프록시가 차단하지 않는다. 이 요청을 차단하는 수단이 사람 확인이다.
+메일 앱의 연락 메일에는 Cloudflare Turnstile[^turnstile]로 사람인지 확인하는 단계가 있었다. 댓글과 메시지에는 IP마다 1분당 요청 횟수를 제한하는 장치만 있었다. 사이트가 Cloudflare 프록시를 거쳐도, ==스크립트가 API에 직접 보내는 정상 형식의 요청은 프록시가 차단하지 않는다==. 이 요청을 차단하는 수단이 사람 확인이다.
 
 다만 처음부터 모든 쓰기 경로에 적용하면 댓글을 작성할 때마다 확인 단계가 하나 추가된다. 그래서 적용 위치를 **설정으로 켜고 끄도록** 했다. 스팸이 들어오는 경로에만 켜면 된다([#168](https://github.com/hyeoniverse/MacFolio/pull/168)).
 
@@ -67,7 +67,7 @@ async requireHuman(check: HumanCheck, token: string | undefined, ip: string, adm
 }
 ```
 
-입력 검사 뒤에 호출하므로, 내용이 비었거나 너무 긴 요청은 Cloudflare에 조회하지 않고 400으로 종료된다.
+입력 검사 뒤에 호출하므로, 내용이 비었거나 너무 긴 요청은 ==Cloudflare에 조회하지 않고 400으로 종료된다==.
 
 | 조건                     | 결과                                                             |
 | ------------------------ | ---------------------------------------------------------------- |
@@ -102,7 +102,7 @@ E2E에서는 외부 Turnstile 스크립트 대신 가짜 스크립트를 사용�
 | 첫 댓글 전송이 "기다려 주세요"로 차단됨 | 가짜가 렌더링 즉시 '사람 확인 완료'를 표시하고, 토큰은 50ms 뒤에 전달했다       | 토큰을 전달한 **뒤에** 글자를 표시 |
 | 두 번째 댓글도 같은 증상                | 새 토큰을 받으려고 위젯을 다시 렌더링해도 이전 위젯의 '사람 확인 완료'가 남았다 | 가짜의 `remove()`가 글자를 삭제    |
 
-두 경우 모두 앱은 토큰이 없는 전송을 정상적으로 차단했고, 시험은 가짜가 표시한 글자만 보고 전송했다. 수정 뒤 6회 반복 실행해 36건 모두 통과했다.
+두 경우 모두 앱은 토큰이 없는 전송을 정상적으로 차단했고, ==시험은 가짜가 표시한 글자만 보고 전송했다==. 수정 뒤 6회 반복 실행해 36건 모두 통과했다.
 
 ## 시험
 
@@ -122,7 +122,9 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 
 ## 남은 과제와 정리
 
-- 서버에 Turnstile 키가 없으면 켜 두어도 확인하지 않는다. 쓰기는 차단되지 않지만 사람 확인도 없는 상태이므로, 관리자는 화면의 "켜도 확인하지 않는다" 안내를 확인해야 한다.
+> [!WARNING] 키가 없으면 켜도 확인하지 않는다
+> 서버에 Turnstile 키가 없으면 켜 두어도 확인하지 않는다. 쓰기는 차단되지 않지만 사람 확인도 없는 상태이므로, 관리자는 화면의 "켜도 확인하지 않는다" 안내를 확인해야 한다.
+
 - 설정은 메모리에 캐시하고 관리자가 바꿀 때만 다시 조회한다. API 서버가 한 대이기 때문에 가능한 방식이다. 서버가 여러 대가 되면 변경을 처리하지 않은 서버의 캐시는 갱신되지 않는다.
 - 시험용 가짜 스크립트도 실제 위젯과 같은 순서(토큰 전달 → 완료 표시)로 동작해야 시험 결과를 신뢰할 수 있다. 순서가 다르면 앱이 정상적으로 차단해도 시험이 실패한다.
 - 쓰기를 제한하는 장치는 사람 확인 외에 요청 제한이 있고, 두 장치를 함께 적용한다([@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)).
@@ -133,7 +135,12 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 2. 서버 `~/deploy/api.env`에 `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`를 추가하고 `docker compose up -d api`로 재시작한다
 3. 관리자로 로그인해 시스템 설정 → 개인정보 보호 및 보안에서 메일·댓글·메시지별로 켠다
 
-확인은 로그아웃한 창에서 댓글을 작성해 본다. 입력 칸 아래에 사람 확인 위젯이 표시되고, 확인이 끝나기 전에 전송하면 대기 안내가 나와야 한다. 되돌리려면 설정에서 끄거나, 두 키를 비워 서버가 확인 자체를 건너뛰게 한다. 서버 쪽은 [apps/api/src/common/turnstile.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/turnstile.ts), 시험은 `cd apps/react && npx playwright test e2e/privacy.spec.ts`와 [apps/api/test/security.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/security.e2e.test.ts). 수집하는 정보는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
+확인은 로그아웃한 창에서 댓글을 작성해 본다. 입력 칸 아래에 사람 확인 위젯이 표시되고, 확인이 끝나기 전에 전송하면 대기 안내가 나와야 한다.
+
+> [!TIP] 되돌리기
+> 되돌리려면 설정에서 끄거나, 두 키를 비워 서버가 확인 자체를 건너뛰게 한다.
+
+서버 쪽은 [apps/api/src/common/turnstile.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/turnstile.ts), 시험은 `cd apps/react && npx playwright test e2e/privacy.spec.ts`와 [apps/api/test/security.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/security.e2e.test.ts). 수집하는 정보는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
 
 참고 문서: [Cloudflare Turnstile 시작하기](https://developers.cloudflare.com/turnstile/get-started/), [서버 쪽 검증](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/), [Prisma 모델 정의](https://www.prisma.io/docs/orm/prisma-schema/data-model/models).
 

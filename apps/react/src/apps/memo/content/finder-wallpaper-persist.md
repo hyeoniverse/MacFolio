@@ -30,7 +30,7 @@ Finder에 업로드한 그림을 오른쪽 클릭하면 macOS처럼 '데스크�
 
 ## 원인: 서버 배경화면 검사에 함께 포함됨
 
-설정은 브라우저에 정상적으로 저장되어 있었다. 개발자 도구에서 `macfolio:settings`를 확인하면 새로고침 직후에도 `custom:finder-…` id가 들어 있었다. 설정을 기본값으로 바꾼 것은 앱 시작 시각에 실행되는 검사였다.
+설정은 브라우저에 정상적으로 저장되어 있었다. 개발자 도구에서 `macfolio:settings`를 확인하면 새로고침 직후에도 `custom:finder-…` id가 들어 있었다. ==설정을 기본값으로 바꾼 것은 앱 시작 시각에 실행되는 검사==였다.
 
 관리자가 시스템 설정에서 업로드한 배경화면([관리자가 추가한 배경화면](/memo/custom-wallpapers))은 id가 `custom:서버 id`다. 방문자가 이 배경화면을 선택한 뒤 관리자가 삭제할 수 있다. 그래서 `shared/settings/customWallpapers.ts`의 `checkChosenWallpapers()`는 선택한 id가 `custom:`으로 시작하면 서버 목록을 내려받아 대조하고, 없으면 기본값으로 되돌린다.
 
@@ -46,7 +46,7 @@ function reconcile(list: CustomWallpaper[]) {
 }
 ```
 
-Finder의 `setDesktopWallpaper()`도 id를 `custom:finder-<해시>`로 생성했다. 접두어가 같아 같은 검사 대상이 되었고, Finder에서 선택한 파일은 서버 배경화면 목록에 없으므로 매번 "삭제된 배경화면"으로 판정됐다. 두 기능을 다른 날 만들면서 같은 id 접두어를 사용한 것이 원인이었다.
+Finder의 `setDesktopWallpaper()`도 id를 `custom:finder-<해시>`로 생성했다. 접두어가 같아 같은 검사 대상이 되었고, Finder에서 선택한 파일은 서버 배경화면 목록에 없으므로 매번 "삭제된 배경화면"으로 판정됐다. ==두 기능을 다른 날 만들면서 같은 id 접두어를 사용한 것==이 원인이었다.
 
 ![배경화면 id 확인 순서](./images/finder-wallpaper-persist-check.svg 'custom:finder-를 먼저 제외해 서버 목록과 대조하지 않는다')
 
@@ -75,7 +75,7 @@ if (!isCustomWallpaperId(selected) || selected.startsWith(FINDER_WALLPAPER_PREFI
 const fromServer = (id: string) => isCustomWallpaperId(id) && !id.startsWith(FINDER_WALLPAPER_PREFIX);
 ```
 
-`apps/finder/setWallpaper.ts`도 문자열 리터럴 대신 이 상수로 id를 생성한다. 두 곳이 같은 상수를 참조하므로 한쪽만 바뀌는 일이 없다.
+`apps/finder/setWallpaper.ts`도 문자열 리터럴 대신 이 상수로 id를 생성한다. ==두 곳이 같은 상수를 참조하므로 한쪽만 바뀌는 일이 없다.==
 
 ### 2. MP4도 배경화면으로
 
@@ -93,7 +93,7 @@ poster={poster && poster !== src ? poster : undefined}
 
 파일 없이 QuickTime Player를 실행하면 "재생할 파일을 고르세요"라는 제목 아래 동영상·소리 파일 이름을 한 줄씩 나열했다. 실제 macOS에서는 미리보기와 같은 열기 창이 표시되고, 열 수 없는 파일은 비활성으로 표시된다. 미리보기에는 이미 그 열기 창(`apps/preview/OpenPanel.tsx`)이 있었다.
 
-![QuickTime Player의 열기 창](./images/finder-wallpaper-persist-quicktime.jpg '파일 없이 실행한 QuickTime Player. 미리보기와 같은 열기 창이고 맨 위 항목이 QuickTime Player 폴더다 (API 없는 미리보기 서버라 파일이 없다)')
+![QuickTime Player의 열기 창](./images/finder-wallpaper-persist-quicktime.jpg#float-right '파일 없이 실행한 QuickTime Player. 미리보기와 같은 열기 창이고 맨 위 항목이 QuickTime Player 폴더다 (API 없는 미리보기 서버라 파일이 없다)')
 
 `OpenPanel`이 호출한 앱 정보를 `app` prop으로 받게 했다. 이름·아이콘과 "열 수 있는 파일인가"를 판단하는 함수 하나다. 기본값은 미리보기라서 미리보기 쪽 코드는 변경하지 않았다.
 
@@ -137,6 +137,6 @@ const outbox = admin ? [...(sent ?? []), ...welcome] : (sent ?? []);
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
 - [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)
 - [방문자 쿠키의 HMAC으로 서버가 메일 조회 범위를 필터링하기](/memo/mail-mailboxes)
-- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): '데스크탑 사진 설정' 메뉴를 추가한 작업
+- [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem): '데스크탑 사진 설정' 메뉴를 추가한 작업
 
 #MacFolio #프론트엔드 #Finder #배경화면 #QuickTime

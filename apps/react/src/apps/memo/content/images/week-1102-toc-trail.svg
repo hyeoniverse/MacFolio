@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" font-family="-apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif">
+<title>목차 막대의 하위 제목 경로와 같은 계층의 제목</title>
+<rect width="760" height="400" rx="16" fill="#ffffff"/>
+<text x="32" y="40" font-size="17" font-weight="700" fill="#1f2937">목차 막대의 하위 제목 경로와 같은 계층의 제목</text>
+<text x="32" y="60" font-size="12" fill="#6b7280">tocPosition: 읽는 제목에서 거슬러 올라가며 더 얕은 단계만 모은다 · tocSiblings: 경로의 제목과 부모가 같은 제목</text>
+
+<text x="32" y="96" font-size="13" font-weight="700" fill="#374151">글의 제목 (위에서 아래로)</text>
+<g font-size="12">
+<rect x="32" y="108" width="300" height="24" rx="6" fill="#f3f4f6"/><text x="44" y="125" fill="#6b7280">## 관계 대수</text>
+<rect x="32" y="136" width="300" height="24" rx="6" fill="#fef3c7" stroke="#fcd34d"/><text x="44" y="153" fill="#92400e" font-weight="700">## 관계 해석</text>
+<rect x="56" y="164" width="276" height="24" rx="6" fill="#fef3c7" stroke="#fcd34d"/><text x="68" y="181" fill="#92400e" font-weight="700">### 튜플 관계 해석</text>
+<rect x="80" y="192" width="252" height="24" rx="6" fill="#f3f4f6"/><text x="92" y="209" fill="#6b7280">#### 앞 소제목</text>
+<rect x="80" y="220" width="252" height="24" rx="6" fill="#dbeafe" stroke="#93c5fd"/><text x="92" y="237" fill="#1e3a8a" font-weight="700">#### 구성 요소  ← 읽는 자리</text>
+<rect x="56" y="248" width="276" height="24" rx="6" fill="#f3f4f6"/><text x="68" y="265" fill="#6b7280">### 도메인 관계 해석</text>
+<rect x="56" y="276" width="276" height="24" rx="6" fill="#f3f4f6"/><text x="68" y="293" fill="#6b7280">### QBE</text>
+<rect x="32" y="304" width="300" height="24" rx="6" fill="#f3f4f6"/><text x="44" y="321" fill="#6b7280">## 연습문제 풀이</text>
+</g>
+
+<path d="M340 232 C380 232 380 128 410 128" stroke="#9ca3af" stroke-width="1.5" fill="none" stroke-dasharray="4 3"/>
+<text x="420" y="96" font-size="13" font-weight="700" fill="#374151">막대 가운데의 경로</text>
+<rect x="420" y="110" width="308" height="36" rx="8" fill="#f9fafb" stroke="#d1d5db"/>
+<text x="436" y="133" font-size="12" fill="#6b7280">관계 해석 › 튜플 관계 해석 › <tspan fill="#111827" font-weight="700">구성 요소</tspan></text>
+<text x="420" y="166" font-size="11" fill="#6b7280">같은 단계의 앞 제목(#### 앞 소제목)은 넣지 않는다</text>
+
+<text x="420" y="204" font-size="13" font-weight="700" fill="#374151">경로의 제목에 마우스를 올리면</text>
+<g font-size="12" fill="#374151">
+<text x="420" y="228">· 관계 해석 → 모든 ## 절</text>
+<text x="420" y="250">· 튜플 관계 해석 → 같은 절의 ###</text>
+<text x="436" y="268" font-size="11" fill="#6b7280">(튜플 관계 해석, 도메인 관계 해석, QBE)</text>
+<text x="420" y="290">· 구성 요소 → 같은 ###의 ####</text>
+<text x="420" y="312">· 자기 하나뿐이면 펼치지 않는다</text>
+</g>
+
+<text x="32" y="362" font-size="12" fill="#374151">절은 ##(##가 둘 미만이면 모든 제목). 첫 절보다 위면 가운데에 '목차 · 절 N개'</text>
+<text x="32" y="382" font-size="12" fill="#374151">목록은 마우스가 떠나고 180ms 뒤 닫혀 목록으로 옮겨 갈 수 있다. 키보드는 ↓로 펼치고 ↑·↓로 옮기며 Esc로 닫는다</text>
+</svg>

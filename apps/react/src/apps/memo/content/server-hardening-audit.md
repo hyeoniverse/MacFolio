@@ -41,7 +41,7 @@ MacFolio의 API 서버는 Oracle 무료 VM 한 대다. 외부에서 접근할 �
 | [Lynis](https://cisofy.com/lynis/) 같은 점검 도구 도입 | 점검 항목이 수백 개다                     | 이 서버에 맞지 않는 항목이 대부분이라 확인할 항목을 다시 선별해야 한다  |
 | 네 가지만 읽는 짧은 스크립트 (**채택**)                | 이 서버의 기준 그대로, 언제든 재실행 가능 | 네 가지 밖의 항목은 검사하지 않는다                                     |
 
-처음에는 "확인했다"고 문서에 기록하려 했다. 그러나 그 문장은 기록한 날짜에만 유효하다. 누군가 `compose.yml`에 `ports`를 추가하거나 Dockerfile의 `USER node`를 삭제해도 문서에는 반영되지 않는다. 그래서 `ops/audit.sh`를 작성했다. 서버에서 실행하면 네 가지를 읽어 항목마다 `OK`/`확인`을 출력하고, `확인`이 하나라도 있으면 종료 코드 1로 끝난다. 설정은 하나도 변경하지 않는다.
+처음에는 "확인했다"고 문서에 기록하려 했다. 그러나 ==그 문장은 기록한 날짜에만 유효하다==. 누군가 `compose.yml`에 `ports`를 추가하거나 Dockerfile의 `USER node`를 삭제해도 문서에는 반영되지 않는다. 그래서 `ops/audit.sh`를 작성했다. 서버에서 실행하면 네 가지를 읽어 항목마다 `OK`/`확인`을 출력하고, `확인`이 하나라도 있으면 종료 코드 1로 끝난다. 설정은 하나도 변경하지 않는다.
 
 ```
 [SSH] 키로만 접속
@@ -73,7 +73,7 @@ pw="$(sshd_value passwordauthentication)"
 [[ "$pw" == "no" ]] && ok "PasswordAuthentication no" || warn "PasswordAuthentication=${pw:-?} (no여야 한다)"
 ```
 
-`ok`와 `warn`은 한 줄씩 출력하는 함수이고, `warn`은 종료 코드를 1로 만들 표시만 남긴다. 그래서 한 항목이 실패해도 나머지 항목을 끝까지 검사한다. `set -e`를 쓰지 않은 이유도 같다.
+`ok`와 `warn`은 한 줄씩 출력하는 함수이고, `warn`은 종료 코드를 1로 만들 표시만 남긴다. 그래서 ==한 항목이 실패해도 나머지 항목을 끝까지 검사한다==. `set -e`를 쓰지 않은 이유도 같다.
 
 ## 첫 실행에서 수정한 두 곳
 
@@ -100,16 +100,18 @@ user="${user%%:*}"
 ## 점검에서 확인한 사실
 
 - `api`는 Dockerfile 끝의 `USER node`로 이미 root가 아니었다. `cloudflared` 이미지도 기본 사용자가 `nonroot`다. `postgres`는 시작 시각에만 root로 실행되고 이후 `postgres` 사용자로 전환되므로 `docker exec … id`가 root로 출력될 수 있어서, 두 경우 모두 OK로 처리한다.
-- `ubuntu` 계정이 `docker` 그룹에 속하면 그 계정은 사실상 root 권한을 가진다(컨테이너에 호스트 디스크를 마운트할 수 있다). 그래서 SSH 키가 서버 전체에 대한 접근 수단이고, 키 인증만 허용하는 설정이 가장 중요하다.
 - 비밀번호 입력 요청은 `PasswordAuthentication` 외에 `KbdInteractiveAuthentication`으로도 발생할 수 있어 둘 다 `no`인지 확인한다.
 - fail2ban 도입과 SSH 포트 변경은 적용하지 않았다. 키 인증만 허용하면 무작위 대입 시도는 로그에만 남는다.
 - 컨테이너가 `privileged`로 실행되지 않았는지, `docker.sock`을 마운트한 컨테이너가 없는지도 확인한다. 둘 다 컨테이너 안에서 호스트 root와 같은 권한을 얻게 한다([Docker 보안 문서](https://docs.docker.com/engine/security/)).
+
+> [!IMPORTANT] docker 그룹은 사실상 root다
+> `ubuntu` 계정이 `docker` 그룹에 속하면 그 계정은 사실상 root 권한을 가진다(컨테이너에 호스트 디스크를 마운트할 수 있다). 그래서 SSH 키가 서버 전체에 대한 접근 수단이고, 키 인증만 허용하는 설정이 가장 중요하다.
 
 ## 첫 실행 결과
 
 서버에서 `cd ~/macfolio && git pull && ops/audit.sh`를 처음 실행하자 두 항목이 `확인`으로 출력됐다.
 
-- **[포트]** 111번(rpcbind)이 외부에서 수신 대기하고 있었다. Oracle Ubuntu 이미지가 NFS용으로 활성화해 두는 서비스다. `sudo systemctl disable --now rpcbind.socket rpcbind.service`를 실행하자 "triggering units are still active" 경고가 출력되어 중지 여부를 판단하기 어려웠다. 그래서 `sudo reboot`로 재부팅한 뒤 `docker compose ps`로 컨테이너 3개가 다시 healthy 상태인지 확인했다.
+- **[포트]** ==111번(rpcbind)이 외부에서 수신 대기하고 있었다==. Oracle Ubuntu 이미지가 NFS용으로 활성화해 두는 서비스다. `sudo systemctl disable --now rpcbind.socket rpcbind.service`를 실행하자 "triggering units are still active" 경고가 출력되어 중지 여부를 판단하기 어려웠다. 그래서 `sudo reboot`로 재부팅한 뒤 `docker compose ps`로 컨테이너 3개가 다시 healthy 상태인지 확인했다.
 - **[컨테이너]** cloudflared의 사용자가 `?`로 출력되고 `exec: "sh": executable file not found`가 함께 출력됐다. 셸이 없는 distroless 이미지이기 때문이다. 위 '첫 실행에서 수정한 두 곳'의 두 번째 항목이다.
 
 방화벽은 `sudo iptables -S INPUT`으로 22번 허용 규칙이 있는지 함께 확인했다. 스크립트를 수정한 PR을 병합한 뒤 다시 실행해 **모두 OK**인 것을 확인했다.
@@ -121,7 +123,10 @@ cd ~/macfolio && git pull
 ops/audit.sh             # 확인 항목이 있으면 1로 끝난다
 ```
 
-`확인`이 출력되면 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '서버 하드닝 점검' 표에 따라 설정을 수정하고 다시 실행한다. 스크립트가 검사하지 못하는 Oracle 쪽 방화벽은 콘솔의 VCN → Subnet → Security Lists → Ingress Rules에서 `22/tcp` 하나만 열려 있는지 확인한다. 출력에는 계정 이름과 수신 대기 주소가 포함되므로 외부에 공개하지 않는다. 스크립트: [ops/audit.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/audit.sh).
+`확인`이 출력되면 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '서버 하드닝 점검' 표에 따라 설정을 수정하고 다시 실행한다. 스크립트가 검사하지 못하는 Oracle 쪽 방화벽은 콘솔의 VCN → Subnet → Security Lists → Ingress Rules에서 `22/tcp` 하나만 열려 있는지 확인한다. 스크립트: [ops/audit.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/audit.sh).
+
+> [!CAUTION] 출력은 공개하지 않는다
+> 출력에는 계정 이름과 수신 대기 주소가 포함되므로 외부에 공개하지 않는다.
 
 참고 문서: [OCI Security Lists](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm), [Ubuntu 자동 보안 업데이트](https://documentation.ubuntu.com/server/how-to/software/automatic-updates/), [Docker 보안](https://docs.docker.com/engine/security/).
 
@@ -134,7 +139,7 @@ ops/audit.sh             # 확인 항목이 있으면 1로 끝난다
 
 ## 관련 글
 
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 - [되돌리기 훈련](/memo/rollback-drill)
 - [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
 

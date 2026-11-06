@@ -45,7 +45,7 @@ interface ProjectEntry {
 
 ## 검증과 보안
 
-이 값은 링크(`<a href>`)와 iframe 주소, 그림 주소가 된다. 관리자만 저장할 수 있어도 잘못 입력한 값 하나가 방문자 화면의 XSS[^xss]가 될 수 있으므로, 서버와 화면이 함께 쓰는 `parseProjects()`(desktop-core) 하나가 작은 스키마로 모든 필드를 검사한다. 화면은 저장 전에, 서버는 요청을 수신할 때 같은 함수를 호출하므로 둘의 거절 기준이 다를 수 없다.
+이 값은 링크(`<a href>`)와 iframe 주소, 그림 주소가 된다. 관리자만 저장할 수 있어도 ==잘못 입력한 값 하나가 방문자 화면의 XSS==[^xss]가 될 수 있으므로, 서버와 화면이 함께 쓰는 `parseProjects()`(desktop-core) 하나가 작은 스키마로 모든 필드를 검사한다. 화면은 저장 전에, 서버는 요청을 수신할 때 같은 함수를 호출하므로 둘의 거절 기준이 다를 수 없다.
 
 - 저장소·데모·출처·팀원·배포 결과물 링크는 `https:` 주소만 허용한다. `javascript:`나 `data:` 같은 주소는 여기서 거절된다.
 - 그림·영상은 사이트 안 경로(`/imgs/…`)나 https만 허용하고, 따옴표·괄호·공백이 들어간 주소는 거절한다.
@@ -70,7 +70,7 @@ export const PROJECT_APPS = PROJECTS.filter((project) => project.app && project.
 export const APP_NAMES = [...BUILTIN, ...PROJECT_APPS.map((project) => project.id), ...];
 ```
 
-앱 목록, Dock, 창 컴포넌트 표, 사진 앨범이 모두 같은 구조다. 이 값을 모두 반응형(구독해서 다시 계산)으로 바꾸는 방법도 있었지만 수정할 모듈이 네 곳 이상이었다. 대신 **이 모듈들을 불러오기 전에** 서버 값을 합치게 했다.
+앱 목록, Dock, 창 컴포넌트 표, 사진 앨범이 모두 같은 구조다. 이 값을 모두 반응형(구독해서 다시 계산)으로 바꾸는 방법도 있었지만 수정할 모듈이 네 곳 이상이었다. 대신 ==이 모듈들을 불러오기 전에 서버 값을 합치게== 했다.
 
 ```ts
 // main.tsx
@@ -98,7 +98,7 @@ void loadSiteContent().finally(() => import('./boot'));
 
 ### 새 데모 주소와 CSP
 
-사이트의 CSP는 빌드 시각에 코드의 데모 주소로 [`frame-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)를 만들었다. 관리자가 새 프로젝트 앱을 추가하면 그 데모 주소는 빌드 결과에 없으므로 iframe이 차단된다.
+사이트의 CSP는 빌드 시각에 코드의 데모 주소로 [`frame-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src)를 만들었다. ==관리자가 새 프로젝트 앱을 추가하면 그 데모 주소는 빌드 결과에 없으므로 iframe이 차단==된다.
 
 같은 Worker가 첫 화면을 응답할 때, 수신한 콘텐츠의 데모 주소를 추가해 CSP를 다시 만든다. CSP는 문서(HTML) 응답에 붙은 헤더가 그 페이지 전체에 적용되므로 첫 화면 응답만 수정하면 된다. `wrangler dev`에 가짜 API를 연결해 확인한 결과, 콘텐츠가 HTML에 삽입되고 가짜 데모 주소가 `frame-src`에 추가되었다.
 
@@ -146,7 +146,7 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 
 ## 주 언어와 기술: 칩과 검색
 
-![기술 칸에 react를 입력하자 칸 위로 React Query, React 19, react-beautiful-dnd 같은 후보 목록이 뜨고, 아래에는 고른 기술 칩이 줄지어 있다](./images/site-projects-editing-stack-chips.jpg '고른 기술은 칩으로, 후보는 칸에 붙은 목록으로. 코드의 후보 뒤에 npm 검색 결과가 붙는다')
+![기술 칸에 react를 입력하자 칸 위로 React Query, React 19, react-beautiful-dnd 같은 후보 목록이 뜨고, 아래에는 고른 기술 칩이 줄지어 있다](./images/site-projects-editing-stack-chips.jpg#float-right '고른 기술은 칩으로, 후보는 칸에 붙은 목록으로. 코드의 후보 뒤에 npm 검색 결과가 붙는다')
 
 기술은 칩으로 선택한다. 선택한 칩이 한 줄로 나열되고 그 아래 검색 칸이 있다. 검색 칸에 초점을 두면 칸 바로 아래에 후보 목록이 표시된다. 후보 순서는 프로젝트들의 기술과 사이트 주인의 기술(많이 쓴 것부터), 그다음 자주 쓰는 기술 1,700여 개(프레임워크·라이브러리·클라우드·DB·도구·AI·게임·결제·국내 서비스·개념까지)다. 칸을 누르기만 해도 후보 전체가 목록에 있어 스크롤하며 고를 수 있고, 입력하면 일치하는 후보로 필터링되며 일치 개수를 표시한다. ↑·↓와 Enter로 선택하고, 쉼표나 Enter로 목록에 없는 기술도 추가한다.
 
@@ -241,7 +241,8 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 
 </details>
 
-이 글의 화면 캡처는 E2E와 같은 방법으로 촬영했다. 미리보기 서버에는 API가 없으므로 Playwright의 [`page.route`](https://playwright.dev/docs/network)로 가짜 API(`e2e/fakeApi.ts`, 관리자 로그인 상태)를 연결해 시스템 설정 › 프로젝트를 열었다.
+> [!NOTE] 화면 캡처 방법
+> 이 글의 화면 캡처는 E2E와 같은 방법으로 촬영했다. 미리보기 서버에는 API가 없으므로 Playwright의 [`page.route`](https://playwright.dev/docs/network)로 가짜 API(`e2e/fakeApi.ts`, 관리자 로그인 상태)를 연결해 시스템 설정 › 프로젝트를 열었다.
 
 ## 남은 것과 배운 것
 

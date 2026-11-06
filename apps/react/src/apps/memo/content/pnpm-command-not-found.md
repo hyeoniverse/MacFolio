@@ -75,7 +75,7 @@ Node.js에 포함된 패키지 관리자는 npm뿐이고, pnpm은 포함되지 �
 "packageManager": "pnpm@10.34.5"
 ```
 
-Node.js 25부터 corepack이 Node.js와 함께 배포되지 않는다. Homebrew의 `node`처럼 항상 최신 메이저 버전으로 업데이트되는 설치에서는 `corepack enable` 자체가 `command not found`로 실패한다. pnpm과 corepack이 모두 없으므로 `pnpm` 명령을 찾지 못한다.
+==Node.js 25부터 corepack이 Node.js와 함께 배포되지 않는다==. Homebrew의 `node`처럼 항상 최신 메이저 버전으로 업데이트되는 설치에서는 `corepack enable` 자체가 `command not found`로 실패한다. pnpm과 corepack이 모두 없으므로 `pnpm` 명령을 찾지 못한다.
 
 | Node.js 버전 | corepack | `corepack enable`   | 해결                                                 |
 | ------------ | -------- | ------------------- | ---------------------------------------------------- |
@@ -93,7 +93,7 @@ $ cd ~/projects/acme && pnpm -v
 10.34.5
 ```
 
-pnpm은 실행 시 `package.json`의 `packageManager`를 확인하고, 지정된 버전과 자신의 버전이 다르면 지정된 버전을 내려받아 대신 실행한다. corepack이 수행하던 기능을 pnpm이 직접 수행하는 방식이다. 따라서 전역에 설치한 버전과 관계없이 저장소 안에서는 저장소가 지정한 버전이 사용된다.
+pnpm은 실행 시 `package.json`의 `packageManager`를 확인하고, 지정된 버전과 자신의 버전이 다르면 지정된 버전을 내려받아 대신 실행한다. corepack이 수행하던 기능을 pnpm이 직접 수행하는 방식이다. 따라서 전역에 설치한 버전과 관계없이 ==저장소 안에서는 저장소가 지정한 버전이 사용된다==.
 
 | pnpm 버전 | 설정                           | 기본값     |
 | --------- | ------------------------------ | ---------- |
@@ -135,7 +135,7 @@ $ git status --short
 
 ![같은 저장소에서 npm install과 pnpm install의 설치 범위](./images/pnpm-command-not-found-install.svg '왼쪽: npm은 루트 package.json만 처리한다. 오른쪽: pnpm은 pnpm-workspace.yaml에 지정된 프로젝트를 모두 설치한다')
 
-pnpm workspace는 패키지 폴더 목록을 `pnpm-workspace.yaml`에 지정한다. npm은 이 파일을 읽지 않고, 루트 `package.json`에도 npm이 읽는 `workspaces` 필드가 없다. 그래서 npm은 루트 `package.json`의 devDependencies만 설치하고, pnpm이 사용하지 않는 `package-lock.json`을 새로 생성한다.
+pnpm workspace는 패키지 폴더 목록을 `pnpm-workspace.yaml`에 지정한다. ==npm은 이 파일을 읽지 않고==, 루트 `package.json`에도 npm이 읽는 `workspaces` 필드가 없다. 그래서 npm은 루트 `package.json`의 devDependencies만 설치하고, pnpm이 사용하지 않는 `package-lock.json`을 새로 생성한다.
 
 이 상태에서 빌드하면 하위 패키지에서 실패한다.
 
@@ -159,7 +159,8 @@ rm -rf package-lock.json node_modules
 pnpm install
 ```
 
-`pnpm install`은 npm이 생성한 `node_modules`가 남아 있어도 동작하지만, `package-lock.json`은 삭제하지 않는다. 남겨 두면 실수로 커밋되거나, 이후 `npm install` 실행 시 다시 갱신된다.
+> [!WARNING] package-lock.json은 직접 삭제한다
+> `pnpm install`은 npm이 생성한 `node_modules`가 남아 있어도 동작하지만, `package-lock.json`은 삭제하지 않는다. 남겨 두면 실수로 커밋되거나, 이후 `npm install` 실행 시 다시 갱신된다.
 
 ```text
 $ pnpm install
@@ -185,7 +186,8 @@ packages/contracts/node_modules/zod
 - [Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup)
 - [Mac에서 pip 설치하기](/memo/mac-pip-setup)
 
-## 참고한 공식 문서
+<details>
+<summary>참고한 공식 문서</summary>
 
 영어 문서는 이 글과 관련된 부분만 번역했다.
 
@@ -202,3 +204,5 @@ packages/contracts/node_modules/zod
   - `managePackageManagerVersions`·`packageManagerStrict`·`packageManagerStrictVersion` 설정을 제거하고 `pmOnFail`로 통합했다. `managePackageManagerVersions: true`는 `pmOnFail: download`(기본값)에 해당한다.
 - [Installation](https://pnpm.io/installation) (pnpm)
   - npm 기반 설치 방법은 `npx get-pnpm`이다. "이 설치 프로그램을 실행하려면 Node.js 22.13 이상이 필요하지만, 설치한 뒤 pnpm을 사용하는 데는 필요 없다."
+
+</details>

@@ -33,7 +33,8 @@ eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 brew install node
 ```
 
-2단계를 생략하면 새 터미널에서 `brew`를 찾지 못한다. Homebrew 공식 문서도 이 설정을 따르지 않으면 Homebrew가 동작하지 않는다고 명시한다.
+> [!WARNING]
+> 2단계를 생략하면 새 터미널에서 `brew`를 찾지 못한다. Homebrew 공식 문서도 이 설정을 따르지 않으면 Homebrew가 동작하지 않는다고 명시한다.
 
 ### 단계별 확인
 
@@ -63,7 +64,7 @@ brew install node
 
 ## 특정 Node 버전이 필요한 경우
 
-`brew install node`는 항상 최신 메이저 버전(현재 26)을 설치하고, `brew upgrade` 시 메이저 버전도 함께 올라간다. 프로젝트가 `.node-version`이나 `engines`로 22를 요구한다면 메이저 버전별 formula를 설치한다.
+`brew install node`는 항상 최신 메이저 버전(현재 26)을 설치하고, `brew upgrade` 시 ==메이저 버전도 함께 올라간다==. 프로젝트가 `.node-version`이나 `engines`로 22를 요구한다면 메이저 버전별 formula를 설치한다.
 
 ```bash
 brew install node@22
@@ -84,7 +85,8 @@ v22.23.3
 
 ## corepack (pnpm·yarn)
 
-Node 25부터 corepack이 Node에 포함되지 않는다. brew의 `node`(26)에서는 별도로 설치한다.
+> [!NOTE]
+> Node 25부터 corepack이 Node에 포함되지 않는다. brew의 `node`(26)에서는 별도로 설치한다.
 
 ```bash
 npm install -g corepack
@@ -109,7 +111,8 @@ $ corepack --version
 | `node@22`를 설치했는데 `node -v`가 26 | keg-only라 링크되지 않음, 또는 PATH 줄이 shellenv보다 위에 있음 | PATH 줄을 shellenv 아래로 이동                                                         |
 | `corepack: command not found`         | Node 25 이상에는 corepack이 없음                                | `npm install -g corepack`                                                              |
 
-`sudo npm install -g`는 root 소유 파일을 만들어 이후 설치에서 권한 오류를 일으킨다. brew로 설치한 npm은 전역 설치 경로가 사용자 계정 소유인 `/opt/homebrew`이므로 `sudo`가 필요 없다.
+> [!WARNING] sudo를 붙이지 않는다
+> `sudo npm install -g`는 root 소유 파일을 만들어 이후 설치에서 권한 오류를 일으킨다. brew로 설치한 npm은 전역 설치 경로가 사용자 계정 소유인 `/opt/homebrew`이므로 `sudo`가 필요 없다.
 
 ## 설치 상태 점검 명령
 
@@ -183,7 +186,7 @@ npm 설정은 여러 위치에서 읽고, 위쪽이 아래쪽을 덮어쓴다.
 5. 전역 설정 `/opt/homebrew/etc/npmrc` (globalconfig)
 6. npm 내장 `npmrc`
 
-`~/.npmrc`가 없어도 prefix가 `/opt/homebrew`인 이유는 6번, Homebrew가 npm 내장 설정에 기록한 값이기 때문이다.
+`~/.npmrc`가 없어도 prefix가 `/opt/homebrew`인 이유는 6번, ==Homebrew가 npm 내장 설정에 기록한 값==이기 때문이다.
 
 ```text
 $ npm config list
@@ -212,7 +215,8 @@ init-license = "MIT"
 | `fund`, `audit` | 설치 후 후원 안내, 취약점 검사 표시 여부 (기본 `true`)                           |
 | `registry`      | 패키지 레지스트리 주소. 사내 레지스트리를 사용할 때 변경                         |
 
-인증 토큰(`//registry.npmjs.org/:_authToken=…`)은 사용자 설정(`~/.npmrc`)에만 저장하고, 버전 관리에 포함되는 프로젝트 `.npmrc`에는 저장하지 않는다.
+> [!CAUTION]
+> 인증 토큰(`//registry.npmjs.org/:_authToken=…`)은 사용자 설정(`~/.npmrc`)에만 저장하고, 버전 관리에 포함되는 프로젝트 `.npmrc`에는 저장하지 않는다.
 
 ## 관련 글
 

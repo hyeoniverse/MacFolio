@@ -28,7 +28,7 @@ summary: 배경화면은 macOS 6장, iOS 6장이 코드에 포함되어 있었�
 
 처음에는 설정에 macOS 그룹과 iOS 그룹을 모두 표시했다. 그런데 데스크톱 방문자가 휴대폰 배경화면을 선택할 이유는 없다. 이제 데스크톱에는 macOS 배경화면만, 휴대폰에는 iOS 배경화면만 표시된다.
 
-그러면 관리자가 데스크톱에서 휴대폰 배경화면을 업로드할 수 없다. 두 종류를 한 장으로 통합하는 방법도 검토했지만, 가로(16:10)와 세로(9:19.5)의 비율 차이가 커서 기본 배경화면을 다른 쪽에 사용하면 크게 잘린다. 그래서 기본 배경화면은 화면 종류별로 분리하고, **추가한 배경화면은 구분 없이 양쪽에 모두 표시**했다. 데스크톱에서 한 번 업로드하면 휴대폰에서도 선택할 수 있다. 비율이 다르면 가운데 기준으로 잘리지만, 관리자가 직접 선택한 사진이라 허용 범위로 판단했다. 선택한 배경화면은 데스크톱용과 휴대폰용을 별도로 저장한다.
+그러면 관리자가 데스크톱에서 휴대폰 배경화면을 업로드할 수 없다. 두 종류를 한 장으로 통합하는 방법도 검토했지만, ==가로(16:10)와 세로(9:19.5)의 비율 차이가 커서 기본 배경화면을 다른 쪽에 사용하면 크게 잘린다.== 그래서 기본 배경화면은 화면 종류별로 분리하고, **추가한 배경화면은 구분 없이 양쪽에 모두 표시**했다. 데스크톱에서 한 번 업로드하면 휴대폰에서도 선택할 수 있다. 비율이 다르면 가운데 기준으로 잘리지만, 관리자가 직접 선택한 사진이라 허용 범위로 판단했다. 선택한 배경화면은 데스크톱용과 휴대폰용을 별도로 저장한다.
 
 | 항목            | 데스크톱                                                          | 휴대폰                  |
 | --------------- | ----------------------------------------------------------------- | ----------------------- |
@@ -40,7 +40,8 @@ summary: 배경화면은 macOS 6장, iOS 6장이 코드에 포함되어 있었�
 
 썸네일은 macOS 설정처럼 테두리 없이 둥근 사진만 표시하고, 선택한 항목에는 약간 떨어진 파란 테두리를 표시한다(`outline-offset`). 데스크톱의 한 줄 보기에서는 열자마자 선택한 배경화면이 보이는 위치로 스크롤해 둔다.
 
-칸 단위로 스크롤이 멈추게([`scroll-snap`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap)) 했더니 처음에 첫 칸이 8px 잘려 있었다. 왼쪽 위로 걸친 ×가 잘리지 않도록 한 줄에 안쪽 여백을 두었는데, 스냅 정렬 기준은 그 여백을 반영하지 않고 스크롤 컨테이너의 가장자리에 첫 칸을 정렬했기 때문이다. [`scroll-padding-inline`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-inline)으로 정렬 기준도 같은 만큼 안쪽으로 이동했다.
+> [!WARNING] scroll-snap 정렬 기준과 안쪽 여백
+> 칸 단위로 스크롤이 멈추게([`scroll-snap`](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_scroll_snap)) 했더니 처음에 첫 칸이 8px 잘려 있었다. 왼쪽 위로 걸친 ×가 잘리지 않도록 한 줄에 안쪽 여백을 두었는데, 스냅 정렬 기준은 그 여백을 반영하지 않고 스크롤 컨테이너의 가장자리에 첫 칸을 정렬했기 때문이다. [`scroll-padding-inline`](https://developer.mozilla.org/en-US/docs/Web/CSS/scroll-padding-inline)으로 정렬 기준도 같은 만큼 안쪽으로 이동했다.
 
 ## 서버: 기존 파일 저장소 활용
 
@@ -61,7 +62,7 @@ summary: 배경화면은 macOS 6장, iOS 6장이 코드에 포함되어 있었�
 
 ## 브라우저에서 축소해 전송
 
-휴대폰으로 촬영한 사진은 10MB를 넘기 쉽고, 업로드 한도도 10MB다. 서버에서 축소하려면 이미지 처리 라이브러리가 필요한데, 소형 서버(E2.1.Micro, RAM 1GB)에서 실행하기에는 부담이 크다. 그래서 브라우저가 캔버스로 축소한 뒤 JPEG 두 장을 전송한다([`createImageBitmap`](https://developer.mozilla.org/en-US/docs/Web/API/Window/createImageBitmap), [`canvas.toBlob`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob)).
+휴대폰으로 촬영한 사진은 10MB를 넘기 쉽고, 업로드 한도도 10MB다. 서버에서 축소하려면 이미지 처리 라이브러리가 필요한데, 소형 서버(E2.1.Micro, RAM 1GB)에서 실행하기에는 부담이 크다. 그래서 ==브라우저가 캔버스로 축소한 뒤 JPEG 두 장을 전송한다==([`createImageBitmap`](https://developer.mozilla.org/en-US/docs/Web/API/Window/createImageBitmap), [`canvas.toBlob`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob)).
 
 ```ts
 const bitmap = await createImageBitmap(file);
@@ -89,7 +90,8 @@ canvas.toBlob(resolve, 'image/jpeg', quality);
 
 설정은 현재도 브라우저(localStorage)에 저장한다. 기본 배경화면은 id(`sonoma`)만 저장하면 되지만, 추가한 배경화면은 id(`custom:…`)와 함께 이미지 주소도 저장한다. 그래야 다음 접속 시 서버에 목록을 요청하기 전에 즉시 렌더링할 수 있다.
 
-이 주소는 CSS `url('…')`에 삽입된다. 저장된 값이 변조되어도 CSS 구문을 깨뜨리지 못하도록, 따옴표·괄호·공백이 없는 `http(s)` 주소만 허용한다.
+> [!CAUTION] CSS에 삽입되는 주소
+> 이 주소는 CSS `url('…')`에 삽입된다. 저장된 값이 변조되어도 CSS 구문을 깨뜨리지 못하도록, 따옴표·괄호·공백이 없는 `http(s)` 주소만 허용한다.
 
 관리자가 배경화면을 삭제하면, 그 배경화면을 선택한 방문자는 다음 접속 시 목록을 조회한 뒤 기본 배경화면으로 돌아간다. 앱 시작 시각의 목록 요청은 추가한 배경화면을 선택한 방문자만 보낸다. 설정의 배경화면 화면을 열면 모든 방문자가 목록을 요청한다.
 
@@ -170,12 +172,12 @@ PR 안의 커밋 다섯 개가 구현 순서와 같다.
 - 데스크톱과 휴대폰에 같은 사진을 사용하면 비율 차이만큼 잘린다. 잘리는 위치를 선택하는 기능(초점 지정)은 아직 없다.
 - 이후 [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)에서 MP4와 GIF를 추가했다. 위 코드의 `shrink`는 GIF이면 원본을 그대로 두고 썸네일만 생성한다.
 
-"누가 보는가"를 먼저 정하자 저장 위치(브라우저 또는 서버)와 권한이 함께 결정됐다. 또 소형 서버에서는 이미지 처리를 브라우저에 맡기는 것이 비용이 가장 낮은 선택이었다. 브라우저에는 이미 이미지 디코더와 캔버스가 있다.
+"누가 보는가"를 먼저 정하자 저장 위치(브라우저 또는 서버)와 권한이 함께 결정됐다. 또 ==소형 서버에서는 이미지 처리를 브라우저에 맡기는 것이 비용이 가장 낮은 선택==이었다. 브라우저에는 이미 이미지 디코더와 캔버스가 있다.
 
 ## 관련 글
 
-- [DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기](/memo/contracts-wallpapers)
-- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [DB CHECK·서버·화면에 흩어진 이름 한도를 contracts 정리 함수로 통합하기](/memo/contracts-validation#배경화면-이름-한도-40과-정리-함수-204)
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205)
 - [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
 - [움직이는 배경화면 - MP4와 GIF를 바탕화면에 깔기](/memo/video-wallpaper)
 

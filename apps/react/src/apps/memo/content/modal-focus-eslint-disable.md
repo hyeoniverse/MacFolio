@@ -42,7 +42,7 @@ useEffect(() => {
 }, [onClose]);
 ```
 
-주석은 "초점은 열 때 한 번만"인데, 의존성 배열은 `[onClose]`다. [`useEffect`](https://react.dev/reference/react/useEffect)는 의존성 값이 `Object.is`로 달라지면 정리 함수를 실행하고 effect를 다시 실행한다. 인라인 화살표 함수는 렌더링마다 새 객체이므로, 부모가 렌더링될 때마다 effect 전체가 다시 실행되고 `focus()`도 다시 호출된다.
+주석은 "초점은 열 때 한 번만"인데, 의존성 배열은 `[onClose]`다. [`useEffect`](https://react.dev/reference/react/useEffect)는 의존성 값이 `Object.is`로 달라지면 정리 함수를 실행하고 effect를 다시 실행한다. ==인라인 화살표 함수는 렌더링마다 새 객체==이므로, 부모가 렌더링될 때마다 effect 전체가 다시 실행되고 `focus()`도 다시 호출된다.
 
 ![수정 전후의 실행 순서](./images/modal-focus-eslint-disable-sequence.svg '수정 전에는 부모가 새 onClose를 넘기면 effect 하나가 통째로 다시 실행되어 initialFocus(첫 칸)로 초점을 옮긴다. 수정 후에는 Esc effect만 리스너를 다시 등록하고, 초점 effect는 initialFocus가 같아 실행되지 않는다')
 
@@ -50,7 +50,7 @@ useEffect(() => {
 
 [`react-hooks/exhaustive-deps`](https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps) 규칙이 이 effect에서 보고한 경고는 "`initialFocus`가 의존성 배열에 없다"였다. `onClose`는 이미 배열에 있었으므로 규칙이 문제 삼은 대상은 `initialFocus` 하나다. 작성 시각의 의도는 "`initialFocus`가 바뀌어도 초점을 다시 옮기지 않는다"였고, 그 의도를 위해 규칙을 껐다. 그런데 실제로 초점 이동을 반복시키는 값은 배열에 남아 있던 `onClose`였다.
 
-이 저장소의 lint는 `--max-warnings 0`이라 경고 하나도 CI 실패다. 규칙을 끄지 않았다면 경고가 남아 "이 effect가 무엇에 의존하는가"를 다시 확인했을 것이다. 끈 주석 한 줄이 경고와 함께 effect가 두 가지 일을 섞고 있다는 신호를 숨겼다. 이유도 윗줄의 별도 주석에 있어서, 무엇을 의도하고 무엇을 생략했는지가 규칙 비활성화 지시문과 분리되어 읽혔다.
+이 저장소의 lint는 `--max-warnings 0`이라 경고 하나도 CI 실패다. 규칙을 끄지 않았다면 경고가 남아 "이 effect가 무엇에 의존하는가"를 다시 확인했을 것이다. ==끈 주석 한 줄이 경고와 함께 effect가 두 가지 일을 섞고 있다는 신호를 숨겼다==. 이유도 윗줄의 별도 주석에 있어서, 무엇을 의도하고 무엇을 생략했는지가 규칙 비활성화 지시문과 분리되어 읽혔다.
 
 ## 수정
 
@@ -103,7 +103,8 @@ useEffect(() => {
 }, [repo]);
 ```
 
-두 곳의 차이는 생략한 값이 effect의 반복 조건에 영향을 주는가였다. `DevCoursePage`는 생략한 `cwd`가 반복을 막는 의도 그대로였고, `Modal`은 생략한 `initialFocus`와 무관하게 남아 있는 `onClose`가 반복을 일으켰다.
+> [!IMPORTANT] 의도한 생략과 버그의 구분
+> 두 곳의 차이는 생략한 값이 effect의 반복 조건에 영향을 주는가였다. `DevCoursePage`는 생략한 `cwd`가 반복을 막는 의도 그대로였고, `Modal`은 생략한 `initialFocus`와 무관하게 남아 있는 `onClose`가 반복을 일으켰다.
 
 ## 확인
 

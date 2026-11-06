@@ -3,7 +3,7 @@ title: PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용�
 date: 2026-10-10
 category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
-seriesOrder: 11
+seriesOrder: 9
 summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하고 있었다. SameSite=Lax가 이미 차단하고 있었지만 서버에서도 차단하게 했다. 허용 목록을 exact·pattern으로 분류해 pattern에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다.
 ---
 
@@ -25,9 +25,9 @@ API의 `CORS_ORIGINS`는 `https://macfolio.hyeoniverse.com,https://*-macfolio.hy
 
 ## 브라우저 규칙이 이미 차단하고 있었다
 
-세션 쿠키가 `SameSite=Lax`이므로, 미리보기(`*.workers.dev`)에서 API(`hyeoniverse.com`)로 보내는 fetch에는 쿠키가 포함되지 않는다. 그래서 미리보기에서는 로그인해도 관리자로 인식되지 않는다. 와일드카드가 credentials를 허용했어도 브라우저 규칙이 먼저 차단하고 있었다.
+세션 쿠키가 `SameSite=Lax`이므로, 미리보기(`*.workers.dev`)에서 API(`hyeoniverse.com`)로 보내는 fetch에는 쿠키가 포함되지 않는다. 그래서 미리보기에서는 로그인해도 관리자로 인식되지 않는다. 와일드카드가 credentials를 허용했어도 ==브라우저 규칙이 먼저 차단하고 있었다==.
 
-그래도 수정했다. 방어가 브라우저의 쿠키 전송 규칙 하나뿐이면, 쿠키 속성을 바꾸거나 API 주소를 옮기는 시각에 경고 없이 허용 상태가 된다. 서버도 "이 출처에는 쿠키를 허용하지 않는다"는 규칙을 가져야 한다.
+그래도 수정했다. 방어가 브라우저의 쿠키 전송 규칙 하나뿐이면, 쿠키 속성을 바꾸거나 API 주소를 옮기는 시각에 경고 없이 허용 상태가 된다. ==서버도 "이 출처에는 쿠키를 허용하지 않는다"는 규칙을 가져야 한다==.
 
 ## 검토한 방법
 
@@ -80,7 +80,7 @@ export function originClassifier(allowed: string[]): (origin: string | undefined
 | `http://…`로 시작하는 주소                            | 스킴 변경                       |
 | `*` 자리가 빈 주소                                    | 빈 브랜치 이름                  |
 
-정규식 앞뒤를 `^…$`로 고정하고 메타 문자를 이스케이프하므로 이런 주소는 일치하지 않는다.
+정규식 앞뒤를 `^…$`로 고정하고 메타 문자를 이스케이프하므로 ==이런 주소는 일치하지 않는다==.
 
 ```ts
 // apps/api/src/auth/admin.guard.ts (더한 부분)
@@ -90,7 +90,8 @@ if (!this.cookiesAllowed(request.headers.origin))
 
 ![Origin을 exact, pattern, null로 나누고 CORS 응답과 관리자 가드가 각각 다르게 답하는 도식](./images/preview-cors-read-only-origin.svg 'exact만 쿠키를 허용하고 관리자 API를 통과한다. * 패턴에 일치한 미리보기는 읽기만 허용')
 
-미리보기 동작은 바뀌지 않는다. 이전에도 읽기만 가능했고 지금도 읽기만 가능하다. 관리자 기능은 로컬에서 확인한다.
+> [!NOTE] 미리보기는 읽기 전용
+> 미리보기 동작은 바뀌지 않는다. 이전에도 읽기만 가능했고 지금도 읽기만 가능하다. 관리자 기능은 로컬에서 확인한다.
 
 ## 확인
 
@@ -130,7 +131,10 @@ curl -s -o /dev/null -w '%{http_code}\n' -H 'Origin: https://feat-x-macfolio.hye
   https://macfolio-api.hyeoniverse.com/auth/me
 ```
 
-규칙은 [apps/api/src/common/cors.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/cors.ts)에 있고, 시험은 `pnpm --filter @macfolio/api test -- src/common/cors.test.ts`로 실행한다. 미리보기에서 관리자 화면이 필요하면 그 주소를 `*` 없이 명시해 추가하고, 확인 후 삭제한다.
+규칙은 [apps/api/src/common/cors.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/cors.ts)에 있고, 시험은 `pnpm --filter @macfolio/api test -- src/common/cors.test.ts`로 실행한다.
+
+> [!TIP] 미리보기에서 관리자 화면이 필요한 경우
+> 미리보기에서 관리자 화면이 필요하면 그 주소를 `*` 없이 명시해 추가하고, 확인 후 삭제한다.
 
 참고 문서: [MDN CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), [NestJS CORS](https://docs.nestjs.com/security/cors).
 
@@ -138,8 +142,8 @@ curl -s -o /dev/null -w '%{http_code}\n' -H 'Origin: https://feat-x-macfolio.hye
 
 - [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 
 #MacFolio #보안 #CORS #NestJS

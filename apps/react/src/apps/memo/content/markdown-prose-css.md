@@ -3,7 +3,7 @@ title: Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기
 date: 2026-10-23
 category: 개발 기록/MacFolio/화면·스타일
 series: CSS 정리
-seriesOrder: 7
+seriesOrder: 5
 summary: 텍스트 편집기 창에서 연 저장소 문서의 코드 블록이 문법 강조 없이 본문 색으로 표시되었다. 강조 색 변수를 메모·Finder 창에만 정의한 것이 원인이었다. 블로그와 문서 보기가 따로 정의하던 코드·목록·구분선·접기 블록 규칙을 styles/prose.css 하나로 옮기고, 화면마다 다른 값은 --prose-* 변수로 분리했다.
 ---
 
@@ -35,11 +35,12 @@ Finder › 문서에서 `deployment.md`를 열면 텍스트 편집기 창이 문
 
 `--hl-*`는 메모 창(`[data-app='memo']`, `memo/styles/highlight.css`)과 Finder 창(`[data-app='finder']`, `Finder.css`)에만 정의되어 있었다. 휴대폰 파일 앱은 Finder 창 안에서 문서를 렌더링하므로 변수를 상속받는다. 텍스트 편집기 창은 `data-app='textedit'`이라 변수가 없다.
 
-[CSS 사용자 지정 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)은 정의되지 않은 변수를 `var()`로 참조하면 오류를 내지 않는다. 그 선언은 계산값 시점에 무효[^invalid]가 되고, `color`는 상속 속성이므로 부모의 본문 색이 그대로 적용된다. 그래서 개발 중에 경고 없이 지나갔다.
+> [!WARNING] 오류 없이 무효가 되는 var()
+> [CSS 사용자 지정 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)은 정의되지 않은 변수를 `var()`로 참조하면 오류를 내지 않는다. 그 선언은 계산값 시점에 무효[^invalid]가 되고, `color`는 상속 속성이므로 부모의 본문 색이 그대로 적용된다. 그래서 개발 중에 경고 없이 지나갔다.
 
 ![변경 전에는 창(data-app)마다 --hl-*를 정의해 텍스트 편집기 창에서만 빠졌고, 변경 후에는 본문 컨테이너 규칙이 --color-code-*를 바로 참조한다](./images/markdown-prose-css-scope.svg '코드 강조 색 변수를 정의한 위치')
 
-`--hl-*`는 라이트·다크 모두 `--color-code-*`를 그대로 가리키는 별칭이었다. `--color-code-*`는 `:root`에 정의되어 화면 모드마다 값이 바뀌므로, 별칭을 거치지 않고 직접 참조하면 창 종류와 무관하게 같은 색이 된다.
+`--hl-*`는 라이트·다크 모두 `--color-code-*`를 그대로 가리키는 별칭이었다. `--color-code-*`는 `:root`에 정의되어 화면 모드마다 값이 바뀌므로, ==별칭을 거치지 않고 직접 참조하면 창 종류와 무관하게 같은 색이 된다==.
 
 ## 같은 규칙이 세 파일에 나뉘어 있었다
 
@@ -50,7 +51,7 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 | `.memo-markdown` | 블로그 읽기 화면, 메모 편집기(Milkdown), 게시 버전 미리 보기 | `memo/styles/markdown.css`, `highlight.css` |
 | `.finder-doc`    | 텍스트 편집기의 문서 보기·이력서 편집기, 휴대폰 파일 앱      | `finder/DocView.css`, `Finder.css`(색 변수) |
 
-두 컨테이너가 같은 요소를 따로 정의하면서 한쪽에만 있는 규칙이 생겼다.
+두 컨테이너가 같은 요소를 따로 정의하면서 ==한쪽에만 있는 규칙이 생겼다==.
 
 | 요소                     | 블로그                                                                      | 문서 보기 (변경 전)                       |
 | ------------------------ | --------------------------------------------------------------------------- | ----------------------------------------- |
@@ -66,7 +67,7 @@ Markdown 본문을 렌더링하는 컨테이너는 두 가지다.
 
 ### 화면 목록 대신 .prose 클래스
 
-처음에는 공통 규칙의 선택자를 `:where(.memo-markdown, .finder-doc) pre`처럼 적용할 화면을 나열해 작성했다. 이 방식은 Markdown을 렌더링하는 화면이 하나 늘 때마다 `prose.css`의 모든 선택자를 수정해야 하고, 공통 파일이 각 화면의 클래스 이름을 알아야 한다.
+처음에는 공통 규칙의 선택자를 `:where(.memo-markdown, .finder-doc) pre`처럼 적용할 화면을 나열해 작성했다. 이 방식은 Markdown을 렌더링하는 화면이 하나 늘 때마다 `prose.css`의 모든 선택자를 수정해야 하고, ==공통 파일이 각 화면의 클래스 이름을 알아야 한다==.
 
 그래서 [Tailwind Typography](https://github.com/tailwindlabs/tailwindcss-typography)의 `.prose` 관례를 따랐다. Markdown 본문 요소에 공통 클래스 `prose`와 화면 클래스를 함께 붙이고, `prose.css`는 `.prose`만 참조한다.
 
@@ -204,7 +205,7 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 
 ## 정리
 
-- 공통 규칙이 참조하는 변수는 규칙과 같은 범위(여기서는 `.prose`나 `:root`)에 정의한다. 창 단위로 정의하면 새 창에서 그 규칙을 쓸 때 조용히 빠진다.
+- 공통 규칙이 참조하는 변수는 규칙과 같은 범위(여기서는 `.prose`나 `:root`)에 정의한다. ==창 단위로 정의하면 새 창에서 그 규칙을 쓸 때 조용히 빠진다==.
 - 공통 스타일 파일은 적용할 화면을 나열하지 않고 공통 클래스(`.prose`) 하나만 참조한다. 화면이 늘면 그 요소에 클래스만 붙인다.
 - `:where()`로 공통 규칙의 명시도를 0으로 두면, 화면별 규칙이 별도 조정 없이 우선한다. 대신 명시도로 이기던 다른 규칙(`.memo ul`)은 레이어로 내려야 한다.
 - 문단 사이 간격처럼 화면마다 방식이 다른 규칙은 하나의 방식과 변수로 맞추고, 위치를 전후 비교해 결과가 같은지 확인한다.
@@ -213,8 +214,8 @@ README는 기술 스택 설명을 `<details>`로 접어 둔다. 문서 보기에
 ## 관련 글
 
 - [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset): `@layer reset`을 도입한 작업
-- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/creative-css-dedupe): 같은 방식으로 계산된 스타일을 비교한 작업
-- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens): `--color-code-*` 토큰을 만든 작업
+- [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/css-cleanup-tools#중복-규칙-삭제-creativepartscss와-hyeoniversepagecss): 같은 방식으로 계산된 스타일을 비교한 작업
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249): `--color-code-*` 토큰을 만든 작업
 - [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 편집기의 접기 블록(`div.memo-details`)
 - [클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기](/memo/doc-links-in-finder): 텍스트 편집기에서 저장소 문서를 여는 흐름
 - PR: [#364](https://github.com/hyeoniverse/MacFolio/pull/364), 인용을 먼저 옮긴 [#361](https://github.com/hyeoniverse/MacFolio/pull/361)

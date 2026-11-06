@@ -3,11 +3,11 @@ title: Stylelint declaration-property-value-allowed-list로 디자인 토큰 강
 date: 2026-10-21
 category: 개발 기록/MacFolio/화면·스타일
 series: 디자인 토큰
-seriesOrder: 6
+seriesOrder: 2
 summary: 간격 578곳·모서리 107곳·글자 48곳을 가까운 토큰으로 옮기고, z-index를 전역 층 토큰과 창 안의 -1~10으로, 색을 직접 쓴 그라데이션을 토큰으로 정리했다. Stylelint는 '이름 있는 값만 차단'에서 '토큰 단계 범위 안의 숫자는 모두 차단'으로 넓혀 위반 0곳에서 시작했다.
 ---
 
-[CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)에서는 값을 바꾸지 않고 이름만 붙였다. 그 결과 토큰과 값이 같은 숫자는 이름으로 바뀌었지만, 토큰 사이에 있는 숫자(5px·7px·18px 글자 등)는 그대로 남았다. 이후 [#280](https://github.com/hyeoniverse/MacFolio/pull/280)에서 Stylelint 규칙을 추가했는데, 이 규칙은 **토큰과 값이 같은 숫자만** 차단했다. 새 CSS에 `padding: 5px 7px`을 작성해도 `pnpm lint`가 통과했다.
+[CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-retrospective#5단계-스타일)에서는 값을 바꾸지 않고 이름만 붙였다. 그 결과 토큰과 값이 같은 숫자는 이름으로 바뀌었지만, 토큰 사이에 있는 숫자(5px·7px·18px 글자 등)는 그대로 남았다. 이후 [#280](https://github.com/hyeoniverse/MacFolio/pull/280)에서 Stylelint 규칙을 추가했는데, 이 규칙은 **토큰과 값이 같은 숫자만** 차단했다. 새 CSS에 `padding: 5px 7px`을 작성해도 `pnpm lint`가 통과했다.
 
 이 글은 그 뒤의 작업이다. 남은 숫자를 가까운 토큰으로 옮기고([#296](https://github.com/hyeoniverse/MacFolio/pull/296)), 공통 부품의 기본값을 토큰 파일로 모으고([#289](https://github.com/hyeoniverse/MacFolio/pull/289)), 규칙을 "토큰 단계 범위 안의 숫자는 모두 차단"으로 넓혔다.
 
@@ -32,7 +32,7 @@ const px = (values) => new RegExp(`^(${values.join('|')})px$`);
 'border-radius': [px([4, 6, 8, 10, 14, 22, 999])],
 ```
 
-`^…px$`는 선언 전체가 숫자 하나인 경우만 일치한다. 다음 세 가지는 모두 통과했다.
+`^…px$`는 ==선언 전체가 숫자 하나인 경우만 일치한다==. 다음 세 가지는 모두 통과했다.
 
 - 토큰 사이의 값: `border-radius: 7px`, `font-size: 18px`
 - 단축 속성: `padding: 5px 8px` (값이 둘이라 `^…$`에 일치하지 않는다)
@@ -40,7 +40,7 @@ const px = (values) => new RegExp(`^(${values.join('|')})px$`);
 
 ## 간격·모서리·글자를 가까운 토큰으로
 
-값을 바꾸는 작업이므로 규칙을 먼저 정했다. 4px 격자의 가장 가까운 단계로 옮기고, 거리가 같으면 작은 쪽을 선택했다.
+값을 바꾸는 작업이므로 규칙을 먼저 정했다. ==4px 격자의 가장 가까운 단계로 옮기고, 거리가 같으면 작은 쪽을 선택했다==.
 
 | 종류   | 변환                                                                 | 허용 범위로 유지                           |
 | ------ | -------------------------------------------------------------------- | ------------------------------------------ |
@@ -82,8 +82,8 @@ const px = (values) => new RegExp(`^(${values.join('|')})px$`);
 
 z-index는 두 종류로 나눴다.
 
-- **전역 층**: 메뉴·Dock·로그인처럼 화면 전체에서 비교하는 값. `--z-*` 토큰([흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers))만 사용한다.
-- **창 안의 겹침**: 앱 창마다 z-index가 지정되어 있어 창이 이미 쌓임 맥락[^stacking]을 만든다. 그 안의 값은 다른 창이나 Dock과 비교되지 않으므로 -1~10이면 충분하다.
+- **전역 층**: 메뉴·Dock·로그인처럼 화면 전체에서 비교하는 값. `--z-*` 토큰([흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231))만 사용한다.
+- **창 안의 겹침**: 앱 창마다 z-index가 지정되어 있어 창이 이미 쌓임 맥락[^stacking]을 만든다. ==그 안의 값은 다른 창이나 Dock과 비교되지 않으므로 -1~10이면 충분하다==.
 
 이 기준에서 벗어난 값은 다섯 곳이었다.
 
@@ -153,7 +153,8 @@ background-color: var(--ui-accent, var(--color-control-accent));
 | Modal·Sheet | `--ui-modal-z`·`--ui-modal-dim`·`--ui-sheet-dim`                                                               |
 | Switch      | `--ui-switch-off`·`--ui-switch-focus`                                                                          |
 
-부품 CSS에 대체값으로 남긴 변수도 있다. `:root`로 옮기면 의미가 바뀌는 값이다.
+> [!WARNING] :root로 옮기면 의미가 바뀌는 값
+> 부품 CSS에 대체값으로 남긴 변수도 있다. `:root`로 옮기면 의미가 바뀌는 값이다.
 
 - `--ui-button-color: inherit`, `--ui-float-color: inherit`: 사용자 정의 속성에 `inherit`을 지정하면 "부모 요소의 같은 변수를 상속"하는 뜻이 되어, "부모의 `color`를 상속"과 다르다.
 - `--ui-sheet-bg: var(--phone-card-bg)`: `--phone-card-bg`는 휴대폰 창 안에서만 정의된다. `:root`에서 계산하면 그 시각에 값이 없어 빈 값이 된다.
@@ -219,7 +220,7 @@ src/zz-lint-sample.css
 
 ## 확인
 
-- 규칙을 넓힌 시각에 앱 CSS의 위반은 0곳이었다. `stylelint-disable` 주석도 0개다. 이 상태에서 시작했으므로 이후의 위반은 모두 새로 작성한 CSS에서 발생한다.
+- ==규칙을 넓힌 시각에 앱 CSS의 위반은 0곳==이었다. `stylelint-disable` 주석도 0개다. 이 상태에서 시작했으므로 이후의 위반은 모두 새로 작성한 CSS에서 발생한다.
 - prettier·eslint·stylelint·tsc 통과, 단위 테스트 778개 통과.
 - E2E: 미리보기 슬라이드쇼·설정·프로젝트 앱·서버 상태 41개 통과. z-index를 바꾼 화면이 포함된 시험이다.
 - #296은 파일 74개(CSS 62개)에서 615줄 추가, 566줄 삭제.
@@ -232,13 +233,13 @@ src/zz-lint-sample.css
 
 ## 관련 글
 
-- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles): 값은 바꾸지 않고 이름만 붙인 단계. 이 글은 그 뒤의 값 정리와 강제
-- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers): 전역 층 `--z-*`의 시작
-- [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/shadow-space-tokens): 18px·28px처럼 이름을 붙이지 않고 남긴 간격 값
-- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens): 이번에 `title1`·`large-title`을 추가한 글자 단계
-- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/radius-tokens)
+- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-retrospective#5단계-스타일): 값은 바꾸지 않고 이름만 붙인 단계. 이 글은 그 뒤의 값 정리와 강제
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231): 전역 층 `--z-*`의 시작
+- [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/design-tokens#그림자와-간격---shadow---space--248): 18px·28px처럼 이름을 붙이지 않고 남긴 간격 값
+- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234): 이번에 `title1`·`large-title`을 추가한 글자 단계
+- [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/design-tokens#모서리-반경---radius--여섯-값-232)
 - [10월 20일 - 디자인 토큰 세 층, 큰 파일 분리, 실제 OS 구조의 Finder, SSH 접속 복구](/memo/day-1020): #286·#289가 병합된 날의 회고
-- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021): #296이 병합된 날의 회고
+- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/week-1019#markdown-이력서와-텍스트-편집기-21일): #296이 병합된 날의 회고
 
 [^hig]: Apple Human Interface Guidelines의 [Typography](https://developer.apple.com/design/human-interface-guidelines/typography). iOS 기본 크기 기준으로 Title 1이 28pt, Large Title이 34pt이며, 기존 여덟 단계도 같은 iOS 크기를 사용한다.
 

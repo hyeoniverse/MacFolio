@@ -19,7 +19,7 @@ Error: typescript-eslint does not support TS 7.0.
 
 ## 린트 실패 원인
 
-TypeScript 7은 컴파일러를 Go로 새로 작성한 버전이다. 같은 코드를 훨씬 빠르게 검사하지만, 5·6에 있던 JavaScript API(`import ts from 'typescript'`로 호출하던 컴파일러 함수)가 아직 없다. typescript-eslint는 타입 정보를 사용하는 규칙을 위해 이 API를 직접 호출하므로, `typescript` 패키지가 7이 되면 실행 자체가 불가능하다. typescript-eslint는 7.1 이후를 지원할 계획이다.
+TypeScript 7은 컴파일러를 Go로 새로 작성한 버전이다. 같은 코드를 훨씬 빠르게 검사하지만, 5·6에 있던 JavaScript API(`import ts from 'typescript'`로 호출하던 컴파일러 함수)가 아직 없다. typescript-eslint는 타입 정보를 사용하는 규칙을 위해 이 API를 직접 호출하므로, `typescript` 패키지가 7이 되면 ==실행 자체가 불가능==하다. typescript-eslint는 7.1 이후를 지원할 계획이다.
 
 | 단계      | 실패 원인                                                  |
 | --------- | ---------------------------------------------------------- |
@@ -40,7 +40,7 @@ tsconfig.json(18,3): error TS5102: Option 'baseUrl' has been removed.
 | 7로 올리고 린트를 일시 비활성화       | 패키지가 하나다                          | typescript-eslint가 7을 지원할 때까지 린트가 없다                |
 | 별칭으로 6과 7을 함께 설치 (**채택**) | 린트 규칙은 그대로, 타입 체크와 빌드는 7 | `package.json`마다 두 줄, 잠금 파일이 커진다                     |
 
-린트 비활성화는 채택하지 않았다. typescript-eslint는 타입 정보를 쓰는 규칙을 켜지 않아도 파서로 `typescript`를 불러온다. 그래서 일부 규칙만 끄는 방법은 없고 린트 전체를 꺼야 한다. 사용하지 않는 변수, React 훅 규칙, Fast Refresh 규칙 검사를 몇 달 동안 잃는 것보다 패키지 두 개를 관리하는 비용이 작다고 판단했다.
+린트 비활성화는 채택하지 않았다. typescript-eslint는 타입 정보를 쓰는 규칙을 켜지 않아도 파서로 `typescript`를 불러온다. 그래서 ==일부 규칙만 끄는 방법은 없고 린트 전체를 꺼야 한다.== 사용하지 않는 변수, React 훅 규칙, Fast Refresh 규칙 검사를 몇 달 동안 잃는 것보다 패키지 두 개를 관리하는 비용이 작다고 판단했다.
 
 ## 6과 7을 함께 설치
 
@@ -81,7 +81,8 @@ React 앱, API, `contracts`, `desktop-core` 네 패키지에 같은 두 줄을 �
  		}
 ```
 
-`@/` 별칭은 Vite 설정(`resolve.alias`)이 따로 처리하므로 빌드 결과는 바뀌지 않는다.
+> [!NOTE]
+> `@/` 별칭은 Vite 설정(`resolve.alias`)이 따로 처리하므로 빌드 결과는 바뀌지 않는다.
 
 ## 구현 순서
 
@@ -108,7 +109,7 @@ React 앱, API, `contracts`, `desktop-core` 네 패키지에 같은 두 줄을 �
 
 ![TS 7 tsc는 4~5초, TS 6 tsc6은 약 23초 걸린 막대 그림](./images/typescript-7-side-by-side-time.svg 'React 앱 타입 체크 시간')
 
-`npx` 시작 시간이 포함된 값이라 정밀한 벤치마크는 아니지만, 4~5배 차이는 명확하다. 자주 실행하는 `pnpm typecheck`의 대기 시간이 그만큼 줄었다.
+`npx` 시작 시간이 포함된 값이라 정밀한 벤치마크는 아니지만, ==4~5배 차이는 명확하다.== 자주 실행하는 `pnpm typecheck`의 대기 시간이 그만큼 줄었다.
 
 ## 남은 과제와 정리
 
@@ -139,7 +140,7 @@ typescript-eslint가 7을 지원하면 `typescript` 별칭을 7로 바꾸고 `@t
 
 - [main 커밋 기록 집계로 Merge commit 병합 전략 정하기](/memo/macfolio-merge-strategy): 같은 날 의존성 PR을 병합한 방식과, 브랜치에 main을 합친 머지 커밋을 유지하는 이유
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 세 방식의 차이와 고르는 기준
-- [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012): 그날의 작업 기록
+- [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/week-1012#공통-컴포넌트와-리팩터링-계획-완료): 그날의 작업 기록
 
 PR: [#215](https://github.com/hyeoniverse/MacFolio/pull/215)
 

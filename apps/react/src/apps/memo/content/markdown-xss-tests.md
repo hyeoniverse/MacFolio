@@ -18,7 +18,7 @@ summary: 메모 글과 GitHub README는 Markdown과 HTML을 렌더링한다. 위
 | GitHub 홈페이지·웹사이트   | GitHub API                 | `safeUrl`이 `http(s)`가 아닌 주소를 제외한다 (시험 있음)                                                             |
 | 사진 캡션의 링크           | 관리자가 작성한 캡션(서버) | `captionParts`가 `http(s)`가 아닌 주소를 제외한다 (시험 있음)                                                        |
 
-문제는 표의 위 네 행에 시험이 없었다는 점이다. 이번에는 외부 내용이 가장 많이 유입되는 메모 글과 README에 시험을 추가했다(Finder 문서와 Mermaid 도식은 이 저장소의 파일이라 후순위로 미뤘다). 예를 들어 메모 글에서 HTML(`<div align="center">`)을 사용하려고 `rehype-raw`를 추가하면, 그 시각부터 글에 넣은 `<img onerror>`가 실행된다. 현재는 안전하지만, 이후 설정을 변경할 때 이 위험을 모르고 변경할 수 있다.
+==문제는 표의 위 네 행에 시험이 없었다는 점==이다. 이번에는 외부 내용이 가장 많이 유입되는 메모 글과 README에 시험을 추가했다(Finder 문서와 Mermaid 도식은 이 저장소의 파일이라 후순위로 미뤘다). 예를 들어 메모 글에서 HTML(`<div align="center">`)을 사용하려고 `rehype-raw`를 추가하면, 그 시각부터 글에 넣은 `<img onerror>`가 실행된다. 현재는 안전하지만, 이후 설정을 변경할 때 이 위험을 모르고 변경할 수 있다.
 
 <details>
 <summary>용어 정리</summary>
@@ -38,7 +38,7 @@ summary: 메모 글과 GitHub README는 Markdown과 HTML을 렌더링한다. 위
 | 정적 분석 도구(Semgrep 등)에 맡긴다          | 저장소 전체를 검사한다                    | `dangerouslySetInnerHTML` 같은 코드 패턴은 검출해도, 라이브러리 설정 변경은 검출하지 못한다 |
 | **렌더링 결과를 직접 검사한다**              | 변경 원인과 관계없이 결과가 위험하면 실패 | 공격 목록을 직접 정해야 하고, 목록에 없는 공격은 검출하지 못한다                            |
 
-렌더링 결과를 검사하는 방법을 선택했다. 차단 방법이 아니라 차단 결과를 검사하므로, 차단 방법을 바꿔도 시험은 수정하지 않아도 된다.
+렌더링 결과를 검사하는 방법을 선택했다. ==차단 방법이 아니라 차단 결과를 검사==하므로, 차단 방법을 바꿔도 시험은 수정하지 않아도 된다.
 
 ## 시험
 
@@ -81,7 +81,7 @@ expect(found).toEqual({ scripts: 0, handlers: 0, badLinks: [] });
 
 ![공격 문자열이 거치는 두 경로와 시험](./images/markdown-xss-tests-paths.svg '메모 글은 E2E로, README는 단위 시험으로 검사한다')
 
-시험이 실제로 위험을 검출하는지 확인하려고 차단 설정을 의도적으로 제거했다.
+시험이 실제로 위험을 검출하는지 확인하려고 ==차단 설정을 의도적으로 제거했다==.
 
 | 변경                                            | 실패한 시험              |
 | ----------------------------------------------- | ------------------------ |
@@ -92,7 +92,7 @@ expect(found).toEqual({ scripts: 0, handlers: 0, badLinks: [] });
 
 ## 다층 방어
 
-방어는 렌더링 단계의 필터링만이 아니다. 배포한 사이트는 CSP의 `script-src`를 `'self'`와 Turnstile로만 제한한다([MDN: CSP script-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src)). 인라인 `<script>`와 `onerror` 같은 속성은 필터링이 실패해도 브라우저가 실행하지 않는다. E2E는 배포와 같은 CSP를 적용한 미리보기 서버에서 실행되고, CSP 위반이 하나라도 발생하면 시험이 실패한다(`e2e/fixtures.ts`의 `cspViolations`). 따라서 메모 E2E는 렌더링 단계와 브라우저 단계를 함께 검증한다.
+방어는 렌더링 단계의 필터링만이 아니다. 배포한 사이트는 CSP의 `script-src`를 `'self'`와 Turnstile로만 제한한다([MDN: CSP script-src](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src)). 인라인 `<script>`와 `onerror` 같은 속성은 ==필터링이 실패해도 브라우저가 실행하지 않는다==. E2E는 배포와 같은 CSP를 적용한 미리보기 서버에서 실행되고, CSP 위반이 하나라도 발생하면 시험이 실패한다(`e2e/fixtures.ts`의 `cspViolations`). 따라서 메모 E2E는 렌더링 단계와 브라우저 단계를 함께 검증한다.
 
 ![다층 방어 구조](./images/markdown-xss-tests-layers.svg '렌더링 단계에서 필터링하고, CSP가 한 번 더 차단하며, 시험이 두 단계를 모두 검증한다')
 
@@ -100,7 +100,7 @@ expect(found).toEqual({ scripts: 0, handlers: 0, badLinks: [] });
 
 - Finder 문서와 Mermaid 도식에는 아직 시험이 없다. 이 저장소의 파일이라 위험이 낮지만, 관리자가 업로드한 문서를 렌더링하게 되면 즉시 필요하다.
 - 공격 목록은 알려진 패턴만 포함한다. 목록을 늘리는 것보다, 필터링을 GitHub 기본 규칙 같은 검증된 허용 목록에 맡기는 편이 차단 범위가 넓다. 시험은 그 허용 목록이 적용되어 있는지를 검증한다.
-- 보안 설정은 현재 상태를 안전하게 만드는 것보다, 이후의 변경도 안전하게 유지하는 것이 어렵다. 차단 설정이 제거되면 실패하는 시험이 그 변경을 검출한다.
+- 보안 설정은 현재 상태를 안전하게 만드는 것보다, ==이후의 변경도 안전하게 유지하는 것이 어렵다==. 차단 설정이 제거되면 실패하는 시험이 그 변경을 검출한다.
 
 ## 직접 확인하는 방법
 
@@ -112,13 +112,14 @@ npx vitest run src/apps/github/readmeSafety.test.ts
 npx playwright test e2e/markdown-safety.spec.ts --project=desktop-chromium
 ```
 
-기대 결과는 모두 통과다. 새 위험 패턴(예: 다른 스킴의 링크)을 차단하려면 먼저 `markdown-safety.spec.ts`에 그 패턴을 추가해 실패를 확인하고, 그다음 규칙을 수정한다. 시험 파일: [apps/react/src/apps/github/readmeSafety.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/apps/github/readmeSafety.test.ts), [apps/react/e2e/markdown-safety.spec.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/markdown-safety.spec.ts).
+> [!TIP] 새 패턴은 실패하는 시험부터
+> 기대 결과는 모두 통과다. 새 위험 패턴(예: 다른 스킴의 링크)을 차단하려면 먼저 `markdown-safety.spec.ts`에 그 패턴을 추가해 실패를 확인하고, 그다음 규칙을 수정한다. 시험 파일: [apps/react/src/apps/github/readmeSafety.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/src/apps/github/readmeSafety.test.ts), [apps/react/e2e/markdown-safety.spec.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/react/e2e/markdown-safety.spec.ts).
 
 참고 문서: [OWASP XSS Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html), [Playwright 문서](https://playwright.dev/docs/intro).
 
 ## 관련 글
 
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 - [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
 - [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 - [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)

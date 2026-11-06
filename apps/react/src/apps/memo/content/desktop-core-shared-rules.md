@@ -3,11 +3,11 @@ title: package.json exports 조건으로 Vite에는 소스, Node에는 빌드한
 date: 2026-10-09
 category: 개발 기록/MacFolio/구조·상태 관리
 series: desktop-core
-seriesOrder: 4
+seriesOrder: 2
 summary: 폴더 3단·이름 30자·제목 100자 같은 규칙이 화면 코드와 서버 코드에 각각 정의되어 있었다. desktop-core 한 곳으로 옮겨 둘이 함께 사용하게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽도록 package.json exports 조건으로 분리했다.
 ---
 
-desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-windows), [메모](/memo/desktop-core-memo), [음악](/memo/desktop-core-music)을 옮긴 뒤 [이슈 #16](https://github.com/hyeoniverse/MacFolio/issues/16)에 항목 하나가 남았다. "백엔드와 함께 쓸 타입의 위치를 정한다."
+desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore), [메모](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리), [음악](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store)을 옮긴 뒤 [이슈 #16](https://github.com/hyeoniverse/MacFolio/issues/16)에 항목 하나가 남았다. "백엔드와 함께 쓸 타입의 위치를 정한다."
 
 ## 두 곳에 정의된 규칙
 
@@ -20,7 +20,7 @@ desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-windows), [메모
 | 글 길이                         | `{ title: 100, summary: 200, body: 50_000 }` | `{ title: { min: 1, max: 100 }, ... }`           |
 | 실제 날짜인지 (2026-02-30 거절) | `postRules.ts`의 `isDate`                    | `posts/rules.ts`의 `isDate` (코드가 완전히 동일) |
 
-주석에는 "서버와 같은 규칙"이라고 적혀 있었지만, 두 값이 같은지 검사하는 코드나 시험은 없었다. 폴더를 4단까지 허용하려면 두 파일을 함께 수정해야 하고, 한쪽만 수정하면 화면은 통과시키고 서버는 거절하는 상태가 된다.
+주석에는 "서버와 같은 규칙"이라고 적혀 있었지만, ==두 값이 같은지 검사하는 코드나 시험은 없었다.== 폴더를 4단까지 허용하려면 두 파일을 함께 수정해야 하고, 한쪽만 수정하면 화면은 통과시키고 서버는 거절하는 상태가 된다.
 
 ## 공유 방법 비교
 
@@ -45,7 +45,7 @@ import { folderPathError, isCalendarDate, POST_LIMITS, POST_SLUG } from '@macfol
 
 ## Vite는 소스를, Node는 JS를
 
-이 단계에서 핵심 문제가 드러났다. 기존 desktop-core는 빌드 단계가 없는 패키지였다. `package.json`의 진입점이 TypeScript 파일을 직접 가리켰다.
+이 단계에서 핵심 문제가 드러났다. ==기존 desktop-core는 빌드 단계가 없는 패키지==였다. `package.json`의 진입점이 TypeScript 파일을 직접 가리켰다.
 
 ```json
 "exports": { ".": "./src/index.ts" }
@@ -63,7 +63,8 @@ React 앱은 Vite가 TypeScript를 요청 시점에 변환하므로 문제가 �
 }
 ```
 
-`source`는 표준 조건이 아니라 이 저장소에서 정한 이름이다. React 앱만 이 조건을 활성화한다.
+> [!NOTE] 저장소에서 정한 조건 이름
+> `source`는 표준 조건이 아니라 이 저장소에서 정한 이름이다. React 앱만 이 조건을 활성화한다.
 
 | 설정 파일        | 설정                                                                                                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -100,7 +101,8 @@ when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './posts.js'?
 | API Dockerfile     | core의 `package.json`을 함께 복사해 설치하고, core를 빌드한 뒤 API를 빌드한다                                                |
 | CI의 API 변경 감지 | `packages/desktop-core`가 바뀌어도 API 이미지를 새로 빌드한다                                                                |
 
-마지막 행은 누락하기 쉬운 항목이다. CI는 서버에서 실행 중인 버전과 비교해 `apps/api`가 바뀌었을 때만 API를 배포한다. 이제 폴더 규칙을 core에서 수정하면 서버 동작도 바뀌는데, 감지 경로에 core가 없으면 화면만 새 규칙으로 배포되고 서버는 이전 규칙으로 남는다. 규칙을 한 곳에 모은 의미가 사라진다.
+> [!WARNING] CI의 변경 감지 경로
+> 마지막 행은 누락하기 쉬운 항목이다. CI는 서버에서 실행 중인 버전과 비교해 `apps/api`가 바뀌었을 때만 API를 배포한다. 이제 폴더 규칙을 core에서 수정하면 서버 동작도 바뀌는데, 감지 경로에 core가 없으면 화면만 새 규칙으로 배포되고 서버는 이전 규칙으로 남는다. 규칙을 한 곳에 모은 의미가 사라진다.
 
 ## 이미지에서 확인
 
@@ -120,11 +122,12 @@ app module ok [ 'AppModule' ]
 
 ## 남은 과제와 배운 점
 
-- 이후 [API 요청·응답 형식을 zod 스키마로 모은 contracts 패키지](/memo/contracts-posts)가 추가됐다. contracts도 같은 `source`/`dist` 조건을 사용한다. 이 글에서 정한 방식이 두 번째 공유 패키지의 기본 구조가 됐다.
+- 이후 [API 요청·응답 형식을 zod 스키마로 모은 contracts 패키지](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201)가 추가됐다. contracts도 같은 `source`/`dist` 조건을 사용한다. 이 글에서 정한 방식이 두 번째 공유 패키지의 기본 구조가 됐다.
 - `source`는 이 저장소에서 정의한 조건 이름이다. 새 도구(예: 다른 시험 도구)를 추가하면 그 도구에도 조건을 설정해야 한다. 설정하지 않으면 그 도구는 `dist`를 읽고, `dist`가 최신이 아니면 이전 규칙으로 실행된다.
 - 화면 쪽은 `dist`가 없어도 동작하는 것을 확인했지만, 서버 쪽은 `dist`가 갱신되지 않으면 오류 없이 이전 규칙을 사용한다. Turborepo의 `^build`가 이를 방지한다.
 
-배운 점: "규칙을 한 곳에"는 코드 이동으로 끝나지 않는다. 그 파일이 바뀌었을 때 사용하는 모든 패키지가 다시 빌드·배포되는지까지 확인해야 한다. CI의 변경 감지 경로 한 줄을 누락했다면, 규칙은 한 곳에 있지만 서버와 화면이 서로 다른 버전을 사용하는 상태가 됐을 것이다.
+> [!IMPORTANT] 배운 점
+> "규칙을 한 곳에"는 코드 이동으로 끝나지 않는다. 그 파일이 바뀌었을 때 사용하는 모든 패키지가 다시 빌드·배포되는지까지 확인해야 한다. CI의 변경 감지 경로 한 줄을 누락했다면, 규칙은 한 곳에 있지만 서버와 화면이 서로 다른 버전을 사용하는 상태가 됐을 것이다.
 
 ## 따라 해 보기
 
@@ -141,10 +144,10 @@ pnpm --filter @macfolio/api test:e2e test/posts.e2e.test.ts   # DB가 필요하�
 
 ## 관련 글
 
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)
-- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
-- [음악 플레이어를 둘로 나누기 - 무엇을 틀지와 어떻게 틀지](/memo/desktop-core-music)
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore)
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리)
+- [음악 플레이어를 둘로 나누기 - 무엇을 틀지와 어떻게 틀지](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store)
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201)
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
 
 [^desktop-core]: `packages/desktop-core`는 React·Vue 같은 UI 프레임워크에 의존하지 않는 로직(상태 저장소, 창 관리, 메모 규칙, 음악 재생 목록)을 모은 워크스페이스 패키지다. ESLint 규칙으로 React와 `@/*` import를 금지한다.

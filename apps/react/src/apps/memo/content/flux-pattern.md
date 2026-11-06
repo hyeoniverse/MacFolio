@@ -79,7 +79,7 @@ AppDispatcher.register((action) => {
 TodoStore.on('change', () => render(TodoStore.getAll()));
 ```
 
-View는 `todos` 배열에 직접 접근하지 않는다. 할 일 목록이 잘못 표시되면 `'todo/create'`를 처리하는 Store 콜백만 확인하면 되고, Dispatcher를 통과한 Action을 기록하면 어떤 상태가 어떤 순서로 바뀌었는지 재현할 수 있다. 상태를 바꾸는 경로가 정해져 있다는 조건이 주는 이점은 이 추적 가능성이다.
+View는 `todos` 배열에 직접 접근하지 않는다. 할 일 목록이 잘못 표시되면 `'todo/create'`를 처리하는 Store 콜백만 확인하면 되고, Dispatcher를 통과한 Action을 기록하면 어떤 상태가 어떤 순서로 바뀌었는지 재현할 수 있다. ==상태를 바꾸는 경로가 정해져 있다는 조건이 주는 이점은 이 추적 가능성이다.==
 
 Flux에도 비용이 있었다. Store가 여러 개이면 한 Store가 다른 Store의 갱신 결과에 의존한다. [Dispatcher 문서](https://facebookarchive.github.io/flux/docs/dispatcher)의 예에서는 나라를 바꾸면 도시 Store가 기본 도시를 선택하고, 가격 Store가 그 도시의 항공권 가격을 계산한다. 가격 Store가 도시 Store보다 먼저 실행되면 이전 도시의 가격이 남는다. Flux는 `waitFor()`로 Store 콜백의 실행 순서를 개발자가 직접 지정하게 했고, In-Depth Overview는 이 메서드가 "크고 복잡한 애플리케이션에서 필수"(becomes vital in a larger, more complex application)라고 설명한다.
 
@@ -136,7 +136,10 @@ function todosReducer(state = [], action) {
 store.dispatch({ type: 'todo/add', text: '장보기' });
 ```
 
-`state.push(...)`로 기존 배열을 직접 수정하고 같은 배열을 반환하면, Redux와 react-redux는 이전 상태와 다음 상태가 같은 객체라고 판단해 화면을 갱신하지 않는다. 불변 상태는 문법 규칙이 아니라 "무엇이 바뀌었는가"를 참조 비교 한 번으로 판단하기 위한 조건이다. 이 덕분에 Action마다 이전 상태와 다음 상태를 보존할 수 있고, Redux DevTools는 이 기록으로 time travel 디버깅을 제공한다.
+> [!WARNING] 기존 배열을 직접 수정한 reducer
+> `state.push(...)`로 기존 배열을 직접 수정하고 같은 배열을 반환하면, Redux와 react-redux는 이전 상태와 다음 상태가 같은 객체라고 판단해 화면을 갱신하지 않는다.
+
+==불변 상태는 문법 규칙이 아니라 "무엇이 바뀌었는가"를 참조 비교 한 번으로 판단하기 위한 조건==이다. 이 덕분에 Action마다 이전 상태와 다음 상태를 보존할 수 있고, Redux DevTools는 이 기록으로 time travel 디버깅을 제공한다.
 
 ![Redux DevTools 확장](./images/flux-pattern-redux-devtools.jpg 'Redux DevTools 확장의 공식 데모 화면(TodoMVC 예제). 가운데 Inspector는 @@INIT, ADD_TODO, COMPLETE_TODO 순으로 dispatch된 Action 목록과 선택한 Action의 내용을 보여 주고, 오른쪽 Diff 탭은 그 Action으로 completed가 false에서 true로 바뀐 것을 보여 준다. 아래 슬라이더를 움직이면 기록된 Action의 순서대로 앞뒤 상태로 이동한다. reduxjs/redux-devtools 저장소의 extension README에서 2026년 10월 30일 캡처')
 
@@ -164,7 +167,7 @@ const addTodo = useTodoStore((state) => state.addTodo);
 addTodo('장보기');
 ```
 
-같은 Zustand를 쓰더라도 조건 1을 어길 수 있다. store action 없이 컴포넌트마다 `useTodoStore.setState({ todos: [...] })`를 직접 호출하면, 할 일 목록을 바꾸는 코드가 컴포넌트 곳곳으로 흩어진다. 라이브러리는 조건을 지키기 쉽게 만들 뿐이고, 조건을 지키는 것은 코드를 작성하는 방식이다.
+같은 Zustand를 쓰더라도 조건 1을 어길 수 있다. store action 없이 컴포넌트마다 `useTodoStore.setState({ todos: [...] })`를 직접 호출하면, 할 일 목록을 바꾸는 코드가 컴포넌트 곳곳으로 흩어진다. ==라이브러리는 조건을 지키기 쉽게 만들 뿐이고, 조건을 지키는 것은 코드를 작성하는 방식이다.==
 
 2026년 npm 다운로드는 업계가 이 비용과 이점 사이에서 어떤 선택을 했는지 보여 준다. npm registry API로 최근 3년의 분기별 다운로드를 집계했다[^npm].
 
@@ -176,7 +179,10 @@ addTodo('장보기');
 | TanStack Query ÷ redux |         0.26 |         1.54 |
 | Redux Toolkit ÷ redux  |         0.33 |         0.66 |
 
-2026년에는 다섯 패키지의 다운로드가 모두 3~5배 증가했다. 개별 라이브러리의 사용 증가보다 CI·자동화 도구로 인한 npm 전체 설치량 증가의 영향이 크므로, 절대값 대신 redux 대비 배수를 비교했다. zustand는 2023년 4분기에 redux의 0.28배였고, 2026년 2분기에 처음 redux보다 많이 다운로드되었다(4.70억 회 대 4.24억 회). 같은 기간 Redux 안에서도 Redux Toolkit의 비중이 0.33배에서 0.66배로 늘었다. Redux Toolkit은 Action 타입과 reducer를 한 번에 정의하는 `createSlice`로 Redux의 작성량을 줄인 공식 도구다. 두 수치 모두 조건 1은 유지하면서 그에 드는 코드를 줄이는 쪽으로 이동했다는 근거다. 다운로드 수에는 의존성 설치와 CI 재설치가 포함되므로, 사용자 수가 아니라 증감 방향을 보는 지표로만 사용했다.
+2026년에는 다섯 패키지의 다운로드가 모두 3~5배 증가했다. 개별 라이브러리의 사용 증가보다 CI·자동화 도구로 인한 npm 전체 설치량 증가의 영향이 크므로, 절대값 대신 redux 대비 배수를 비교했다. zustand는 2023년 4분기에 redux의 0.28배였고, 2026년 2분기에 처음 redux보다 많이 다운로드되었다(4.70억 회 대 4.24억 회). 같은 기간 Redux 안에서도 Redux Toolkit의 비중이 0.33배에서 0.66배로 늘었다. Redux Toolkit은 Action 타입과 reducer를 한 번에 정의하는 `createSlice`로 Redux의 작성량을 줄인 공식 도구다. 두 수치 모두 조건 1은 유지하면서 그에 드는 코드를 줄이는 쪽으로 이동했다는 근거다.
+
+> [!NOTE] 다운로드 수의 해석
+> 다운로드 수에는 의존성 설치와 CI 재설치가 포함되므로, 사용자 수가 아니라 증감 방향을 보는 지표로만 사용했다.
 
 ## 조건 2. 상태를 원본이 있는 곳에 둔다
 
@@ -228,7 +234,7 @@ queryClient.invalidateQueries({ queryKey: ['posts'] });
 - Zustand는 사용률이 빠르게 증가했고 만족도가 가장 높았다.
 - 이번 설문은 예년보다 늦게 진행되어 응답 수가 적었다. 비율은 이 표본 안에서만 유효하다.
 
-조건 2를 지키면 "어떤 상태 관리 라이브러리를 쓸까"라는 질문의 상당 부분이 사라진다. 상태마다 원본이 어디인지 먼저 정하면 둘 곳이 정해진다. 블로그 앱을 예로 들면 다음과 같다.
+조건 2를 지키면 "어떤 상태 관리 라이브러리를 쓸까"라는 질문의 상당 부분이 사라진다. ==상태마다 원본이 어디인지 먼저 정하면 둘 곳이 정해진다.== 블로그 앱을 예로 들면 다음과 같다.
 
 | 상태의 원본             | 두는 곳                 | 예                                      |
 | ----------------------- | ----------------------- | --------------------------------------- |
@@ -325,7 +331,8 @@ const isOnline = useSyncExternalStore(subscribe, () => navigator.onLine);
 const snapshot = useSyncExternalStore(store.subscribe, () => ({ todos: store.todos }));
 ```
 
-두 번째 코드는 React가 렌더링을 반복하다 오류를 발생시킨다. `() => store.todos`처럼 store가 보관한 값을 그대로 반환해야 한다. "필요한 값만, 바뀌었을 때만 새 값으로" 반환하는 것이 구독 코드의 기본 규칙이다.
+> [!WARNING] 매번 새 객체를 반환하는 getSnapshot
+> 두 번째 코드는 React가 렌더링을 반복하다 오류를 발생시킨다. `() => store.todos`처럼 store가 보관한 값을 그대로 반환해야 한다. "필요한 값만, 바뀌었을 때만 새 값으로" 반환하는 것이 구독 코드의 기본 규칙이다.
 
 ## 마치며: 상태 관리 코드를 검토할 때 확인할 질문
 
@@ -343,7 +350,7 @@ Flux가 2014년에 제시한 핵심은 라이브러리보다 규칙이었다. 12
 ## 관련 글
 
 - [createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design): 세 가지 조건을 MacFolio의 창 관리 store에 적용한 개발기
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore): `createStore`와 `useSyncExternalStore`를 고른 과정
 
 [^npm]: [npm registry downloads API](https://github.com/npm/registry/blob/main/docs/download-counts.md). `https://api.npmjs.org/downloads/range/<기간>/<패키지>`로 일별 다운로드를 받아 분기별로 합산했다(2026년 10월 29일 조회).
 

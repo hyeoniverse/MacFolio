@@ -1,11 +1,17 @@
 ---
 title: 캡처 단계 이벤트와 pointer capture로 맞춘 화면과 입력 처리 영역
 date: 2026-10-22
-category: 개발 기록/MacFolio/인터랙션·브라우저 API
+category: 개발 기록/MacFolio/트러블슈팅
 summary: 최대화한 창은 크기 조절 커서만 표시되고 끌리지 않았고, Dock을 누르는 동안 메뉴 막대 앱 이름이 Finder로 깜빡였고, 음량 창은 맨 위를 눌러도 91%였다. 셋 다 화면에 보이는 것과 입력을 처리하는 조건·영역이 달랐던 곳이다.
 ---
 
-데스크톱 셸의 포인터 입력에서 나온 결함 세 가지를 정리한다. 각각 따로 수정했지만 구조는 같다. 화면에는 "누를 수 있다"고 표시되는데, 입력을 처리하는 코드는 다른 조건이나 다른 영역을 기준으로 판단하고 있었다.
+| 증상                                           | 원인                                                          | 해결                                                        | 영향 범위           |
+| ---------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------- | ------------------- |
+| 최대화한 창의 가장자리를 끌어도 크기 변화 없음 | 공통 `begin`이 최대화 중 옮기기와 크기 조절을 함께 무시       | 최대화 중에는 옮기기만 막고, 크기 조절은 최대화를 풀고 시작 | 최대화한 모든 창    |
+| Dock을 누르는 동안 앱 이름이 Finder로 깜빡임   | `pointerdown` 캡처 단계의 바탕화면 처리 예외 목록에 Dock 없음 | 예외 선택자에 `.dock`·`.launchpad-content` 추가             | 메뉴 막대 앱 이름   |
+| 음량 창 맨 위를 눌러도 91%                     | 보이는 칸 96px과 투명 range 144px의 길이·손잡이 크기 불일치   | 칸 전체가 pointer capture로 누른 높이를 음량으로 계산       | 메뉴 막대의 음량 창 |
+
+데스크톱 셸의 포인터 입력에서 나온 결함 세 가지를 정리한다. 각각 따로 수정했지만 구조는 같다. ==화면에는 "누를 수 있다"고 표시되는데, 입력을 처리하는 코드는 다른 조건이나 다른 영역을 기준으로 판단하고 있었다.==
 
 | PR                                                       | 증상                                           | 어긋난 두 기준                                  |
 | -------------------------------------------------------- | ---------------------------------------------- | ----------------------------------------------- |
@@ -31,9 +37,9 @@ const begin = (event: React.PointerEvent, next: GestureKind) => {
 };
 ```
 
-주석의 의도는 "옮기기 막기"였다. 하지만 `next.kind`를 확인하지 않아서 크기 조절(`kind: 'resize'`)도 함께 막혔다. 공통 함수의 첫 줄에 있는 예외 조건이, 호출하는 쪽 하나만을 기준으로 작성되어 있었다.
+주석의 의도는 "옮기기 막기"였다. 하지만 `next.kind`를 확인하지 않아서 크기 조절(`kind: 'resize'`)도 함께 막혔다. ==공통 함수의 첫 줄에 있는 예외 조건이, 호출하는 쪽 하나만을 기준으로 작성되어 있었다.==
 
-### 수정
+### 해결
 
 macOS처럼 최대화한 창의 가장자리를 끌면 **최대화가 풀리고, 화면을 채운 크기에서부터 조절**된다.
 
@@ -69,7 +75,7 @@ Safari를 사용하는 중에 Dock의 메모를 누르면 메뉴 막대 앱 이�
 
 메뉴 막대의 앱 이름은 "창 밖을 눌렀으면 Finder, 아니면 맨 앞 창의 앱"이다. 창 밖을 눌렀는지는 화면 전체를 덮는 바탕화면 레이어(`DesktopSurface`)가 `pointerdown` **캡처 단계**에서 `focusDesktop()`을 호출해 기록한다. 이 구조는 [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name)에 자세히 정리했다.
 
-메뉴 막대와 메뉴는 예외 목록으로 이 처리를 건너뛰는데, Dock은 목록에 없었다. 반면 Dock은 앱을 `click`에서 연다.
+메뉴 막대와 메뉴는 예외 목록으로 이 처리를 건너뛰는데, ==Dock은 목록에 없었다.== 반면 Dock은 앱을 `click`에서 연다.
 
 | 순서 | 이벤트                | 처리                                | 앱 이름 |
 | ---- | --------------------- | ----------------------------------- | ------- |
@@ -77,7 +83,7 @@ Safari를 사용하는 중에 Dock의 메모를 누르면 메뉴 막대 앱 이�
 | 2    | 누르고 있는 동안      | 없음                                | Finder  |
 | 3    | `pointerup` → `click` | Dock이 `openApp('memo')`            | 메모    |
 
-### 수정
+### 해결
 
 예외 선택자에 `.dock`과 `.launchpad-content`를 추가했다. Dock과 Launchpad 안을 누르는 동안에는 현재 앱이 유지되고, 클릭이 끝나 앱이 열리는 시각에 그 앱으로 바뀐다. macOS Dock도 마우스를 떼는 시각에 앱이 바뀐다. Launchpad 바깥의 어두운 영역은 계속 바탕화면으로 처리한다.
 
@@ -95,7 +101,10 @@ onPointerDownCapture={(event) => {
 
 ### 확인: 거쳐 간 값까지 기록하는 시험
 
-이 결함은 최종 상태만 확인하는 시험으로는 검출되지 않는다. 누르기 전 Safari, 뗀 뒤 메모로 시작과 끝은 정상이고, 중간의 Finder만 잘못되었다. 시험은 앱 이름 요소에 [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)를 등록해 거쳐 간 문자열을 모두 기록한 뒤, 그 목록에 'Finder'가 없는지 확인한다.
+> [!WARNING] 최종 상태만 확인하는 시험의 한계
+> 이 결함은 최종 상태만 확인하는 시험으로는 검출되지 않는다. 누르기 전 Safari, 뗀 뒤 메모로 시작과 끝은 정상이고, 중간의 Finder만 잘못되었다.
+
+시험은 앱 이름 요소에 [`MutationObserver`](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)를 등록해 거쳐 간 문자열을 모두 기록한 뒤, 그 목록에 'Finder'가 없는지 확인한다.
 
 ```ts
 await appName(page).evaluate((element) => {
@@ -138,10 +147,10 @@ expect(names).not.toContain('Finder');
 
 ![보이는 칸은 96px인데 투명 range는 144px이라 위아래 24px씩 칸 밖에 있고, 지름 60px 손잡이가 칸 높이의 62%를 차지한다. 수정 후에는 칸의 아래 끝에서 누른 높이까지의 비율이 음량이다](./images/window-menubar-input-fixes-volume.svg '왼쪽은 수정 전 range와 칸의 크기 차이, 오른쪽은 수정 후 계산')
 
-- **길이 불일치**: range는 144px, 보이는 칸은 96px이다. 칸은 `overflow: hidden`이라 range의 위아래 24px씩은 보이지 않고 누를 수도 없다. range의 값은 144px 길이를 기준으로 정해지므로, 보이는 칸의 맨 위가 range의 맨 위가 아니다. 측정한 결과 맨 위를 누르면 91%였다.
+- **길이 불일치**: range는 144px, 보이는 칸은 96px이다. 칸은 `overflow: hidden`이라 range의 위아래 24px씩은 보이지 않고 누를 수도 없다. range의 값은 144px 길이를 기준으로 정해지므로, ==보이는 칸의 맨 위가 range의 맨 위가 아니다.== 측정한 결과 맨 위를 누르면 91%였다.
 - **손잡이 크기**: 손잡이 지름 60px은 칸 높이 96px의 62%다. range는 손잡이 위를 누르면 값을 바꾸지 않고 손잡이 끌기를 시작하므로, 칸의 절반 이상이 "눌러도 그대로"인 영역이었다.
 
-### 수정
+### 해결
 
 range로 포인터를 처리하지 않고, 칸 전체가 포인터 이벤트를 받아 누른 높이로 음량을 계산한다.
 
@@ -168,7 +177,8 @@ const setFromPointer = (event: React.PointerEvent<HTMLDivElement>) => {
 - `pointermove`는 포인터를 캡처한 상태에서만 처리한다. 누르지 않고 칸 위를 지나가는 것으로는 음량이 바뀌지 않는다.
 - 칸에 `touch-action: none`과 `user-select: none`을 지정해 터치로 끄는 동안 화면이 스크롤되거나 글자가 선택되지 않게 했다.
 
-range는 삭제하지 않았다. 방향키 조작과 화면 읽기 프로그램의 "음량 슬라이더"로 필요하다. 회전과 손잡이 스타일을 삭제하고 칸 전체를 덮게(`position: absolute; inset: 0`) 한 뒤 [`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)으로 포인터만 받지 않게 했다.
+> [!NOTE] 접근성용 range 유지
+> range는 삭제하지 않았다. 방향키 조작과 화면 읽기 프로그램의 "음량 슬라이더"로 필요하다. 회전과 손잡이 스타일을 삭제하고 칸 전체를 덮게(`position: absolute; inset: 0`) 한 뒤 [`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)으로 포인터만 받지 않게 했다.
 
 ### 확인
 
@@ -194,7 +204,7 @@ range는 삭제하지 않았다. 방향키 조작과 화면 읽기 프로그램�
 ## 관련 글
 
 - [창 순서와 분리한 활성 앱 상태로 메뉴 막대 앱 이름 맞추기](/memo/menu-bar-app-name): 바탕화면 레이어의 캡처 핸들러와 예외 목록 전체
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): 창 순서와 최소화 상태를 관리하는 창 store
-- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi): 음량 창을 메뉴 막대 항목(`VolumeMenu`)으로 바꾼 일
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore): 창 순서와 최소화 상태를 관리하는 창 store
+- [/health 응답 시간을 막대 수로 환산하고 no-cors 요청으로 CORS 차단을 구분하는 서버 상태 표시](/memo/server-status-wifi): 음량 창을 메뉴 막대 항목(`VolumeMenu`)으로 바꾼 일
 
 #MacFolio #데스크톱 #PointerEvents #트러블슈팅

@@ -66,7 +66,7 @@ test('임시 저장·게시 상태', async ({ page }) => {
 
 ### Dock 아이콘 탐색 실패
 
-처음에는 Dock에서 `'메모'`라는 이름의 버튼을 찾았는데 30초 시간 초과로 실패했다. 화면에는 "메모"로 표시되지만, Dock 버튼의 접근성 이름은 앱 id(`memo`, `settings`)였다. 시험 헬퍼(`dockItem(page, 'memo')`)는 이미 id로 탐색하고 있었는데, 스크린샷 코드를 새로 작성하면서 화면 문자열로 탐색한 것이 원인이었다.
+처음에는 Dock에서 `'메모'`라는 이름의 버튼을 찾았는데 30초 시간 초과로 실패했다. 화면에는 "메모"로 표시되지만, Dock 버튼의 접근성 이름은 앱 id(`memo`, `settings`)였다. 시험 헬퍼(`dockItem(page, 'memo')`)는 이미 id로 탐색하고 있었는데, 스크린샷 코드를 새로 작성하면서 ==화면 문자열로 탐색한 것이 원인==이었다.
 
 ### 계정 화면의 아바타 이미지 오류
 
@@ -80,7 +80,7 @@ await page.route('https://github.com/*.png*', (route) =>
 
 ### 창 밖으로 잘린 메뉴
 
-표 핸들을 클릭해 메뉴를 연 화면을 캡처하자 메뉴 오른쪽이 잘려 있었다. 메모 창의 기본 크기(900×600)에서는 열 메뉴가 창 오른쪽 경계를 넘는다. 실제 사용 시에는 창을 키우면 되지만, 캡처에서는 잘린 메뉴가 버그로 보인다.
+표 핸들을 클릭해 메뉴를 연 화면을 캡처하자 메뉴 오른쪽이 잘려 있었다. 메모 창의 기본 크기(900×600)에서는 열 메뉴가 창 오른쪽 경계를 넘는다. 실제 사용 시에는 창을 키우면 되지만, ==캡처에서는 잘린 메뉴가 버그로 보인다==.
 
 캡처 전에 창 크기를 키우고, 창 전체 대신 **필요한 영역만** 캡처했다.
 
@@ -103,7 +103,7 @@ await shot(page, memo.locator('.memo-reader'), 'notes-table-handles.jpg', 300);
 
 ### 이미지 로드 확인
 
-캡처한 이미지를 글에 추가하고, 빌드한 사이트에서 그 글을 열어 모든 `<img>`의 [`naturalWidth`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/naturalWidth)를 읽었다. 첫 이미지만 값이 있고 나머지는 0이었다. 오류가 아니라 **지연 로딩**(`loading="lazy"`)이었다. 화면 밖 이미지는 스크롤로 뷰포트에 가까워져야 로드된다. 이미지마다 `scrollIntoViewIfNeeded()`로 로드한 뒤 다시 읽자 모두 실제 크기가 반환되었다.
+캡처한 이미지를 글에 추가하고, 빌드한 사이트에서 그 글을 열어 모든 `<img>`의 [`naturalWidth`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/naturalWidth)를 읽었다. 첫 이미지만 값이 있고 나머지는 0이었다. 오류가 아니라 **지연 로딩**(`loading="lazy"`)이었다. ==화면 밖 이미지는 스크롤로 뷰포트에 가까워져야 로드된다==. 이미지마다 `scrollIntoViewIfNeeded()`로 로드한 뒤 다시 읽자 모두 실제 크기가 반환되었다.
 
 ### 브라우저 버전 불일치
 
@@ -117,7 +117,8 @@ export default {
 };
 ```
 
-기존 설정은 그대로 두고 경로만 변경하므로, 캡처 후 이 파일만 삭제하면 된다.
+> [!TIP]
+> 기존 설정은 그대로 두고 경로만 변경하므로, 캡처 후 이 파일만 삭제하면 된다.
 
 ## 캡처 결과와 크기
 
@@ -125,7 +126,7 @@ export default {
 
 ![캡처 7장의 크기](./images/screenshots-with-playwright-sizes.svg '목록 전체를 캡처한 이미지가 크고, 메뉴 영역만 캡처한 이미지는 작다')
 
-`deviceScaleFactor: 2`이므로 픽셀 수가 2배다. 게시 상태 캡처(`drafts-status.jpg`)는 2800×1640, 표 핸들은 본문 영역만 캡처해 1836×600이다. 가장 큰 파일이 236KB라 글 한 편에 여러 장을 넣어도 전송량 부담이 작다.
+`deviceScaleFactor: 2`이므로 픽셀 수가 2배다. 게시 상태 캡처(`drafts-status.jpg`)는 2800×1640, 표 핸들은 본문 영역만 캡처해 1836×600이다. ==가장 큰 파일이 236KB==라 글 한 편에 여러 장을 넣어도 전송량 부담이 작다.
 
 README의 데스크톱 화면, 로그인 전후 계정 화면, Swagger, 그리고 기존 글 4편에 넣은 표 핸들·찾기 막대·확장되는 검색 칸·Safari 탭·게시 상태·폴더 메뉴·가가 메뉴까지 모두 같은 방법으로 캡처했다.
 
@@ -156,7 +157,8 @@ await page.screenshot({ path: 'shot.png' });
 await browser.close();
 ```
 
-휴대폰 화면은 `viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true`로 연다. 글에 넣을 때는 JPEG 품질 80, 가로 1200px 이하로 축소한다(블로그 규칙은 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md)의 '블로그 글 › 이미지').
+> [!TIP] 휴대폰 화면과 글 이미지 규격
+> 휴대폰 화면은 `viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true`로 연다. 글에 넣을 때는 JPEG 품질 80, 가로 1200px 이하로 축소한다(블로그 규칙은 [CONTRIBUTING.md](https://github.com/hyeoniverse/MacFolio/blob/main/CONTRIBUTING.md)의 '블로그 글 › 이미지').
 
 참고 문서: [Playwright 스크린샷](https://playwright.dev/docs/screenshots), [page.route로 응답 바꾸기](https://playwright.dev/docs/network#modify-responses).
 
@@ -170,7 +172,7 @@ await browser.close();
 ## 관련 글
 
 - [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
-- [9월 30일 - 편집기를 다듬고, 서버를 띄우고, 문서를 다시 쓰다](/memo/day-0930)
+- [9월 30일 - 편집기를 다듬고, 서버를 띄우고, 문서를 다시 쓰다](/memo/week-0928#api-서버-배포와-서버-반영)
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 - [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)

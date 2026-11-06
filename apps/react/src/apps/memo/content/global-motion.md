@@ -25,11 +25,11 @@ summary: 메뉴·경고창·팝업은 닫힐 때 애니메이션 없이 즉시 �
 | 여는 쪽마다 "닫히는 중" 상태 추가                                                                             | 메뉴를 여는 곳이 수십 곳이라 모두 수정해야 한다                                                                         |
 | 애니메이션 라이브러리(Framer Motion의 [`AnimatePresence`](https://motion.dev/docs/react-animate-presence) 등) | 제거되는 요소를 대신 유지하지만, 여는 쪽을 모두 그 컴포넌트로 감싸야 하고 번들에 라이브러리가 추가된다                  |
 
-세 방법 모두 요구 사항에 맞지 않았다. 닫기 상태는 즉시 반영되어야 하고, 여는 쪽 코드는 변경하지 않아야 했다.
+세 방법 모두 요구 사항에 맞지 않았다. ==닫기 상태는 즉시 반영되어야 하고, 여는 쪽 코드는 변경하지 않아야 했다==.
 
 ## 제거 직전에 DOM을 복제
 
-React 19의 [ref 콜백은 정리 함수를 반환](https://react.dev/reference/react-dom/components/common#ref-callback)할 수 있고, 이 함수는 요소가 분리되는 시각에 호출된다. 이 시각에는 요소가 아직 문서에 연결되어 있다. 이때 요소를 [`cloneNode`](https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode)로 복제해 바로 옆에 삽입하고, 복제본에 퇴장 애니메이션을 적용한다. React는 원래 요소를 제거하고, 복제본은 애니메이션이 끝나면 스스로 제거된다.
+React 19의 [ref 콜백은 정리 함수를 반환](https://react.dev/reference/react-dom/components/common#ref-callback)할 수 있고, 이 함수는 요소가 분리되는 시각에 호출된다. ==이 시각에는 요소가 아직 문서에 연결되어 있다==. 이때 요소를 [`cloneNode`](https://developer.mozilla.org/en-US/docs/Web/API/Node/cloneNode)로 복제해 바로 옆에 삽입하고, 복제본에 퇴장 애니메이션을 적용한다. React는 원래 요소를 제거하고, 복제본은 애니메이션이 끝나면 스스로 제거된다.
 
 ```ts
 export function useExitMotion(motion = 'pop-out') {
@@ -84,7 +84,7 @@ export function playExit(element: HTMLElement, motion: ExitMotion) {
 
 ### 컴포넌트가 null을 반환하는 경우
 
-처음에는 언마운트 시각에 실행되는 effect(`useLayoutEffect`의 정리 함수)로 구현했다. 그런데 로그인 창은 컴포넌트가 마운트된 채로 `return null`로 사라진다. 언마운트가 없으므로 정리 함수도 호출되지 않았다. ref 콜백의 정리 함수는 요소가 분리될 때마다 호출되므로 두 경우를 모두 처리한다.
+처음에는 언마운트 시각에 실행되는 effect(`useLayoutEffect`의 정리 함수)로 구현했다. 그런데 로그인 창은 컴포넌트가 마운트된 채로 `return null`로 사라진다. ==언마운트가 없으므로 정리 함수도 호출되지 않았다==. ref 콜백의 정리 함수는 요소가 분리될 때마다 호출되므로 두 경우를 모두 처리한다.
 
 ## 적용 위치
 
@@ -102,7 +102,7 @@ export function playExit(element: HTMLElement, motion: ExitMotion) {
 
 데스크톱 앱에서 목록이나 내용 전체가 교체되는 곳은 `key`를 바꿔 다시 마운트하고, 공통 클래스 `motion-swap`(160ms `fade-in`)을 지정했다. Finder의 폴더·문서, 메모의 폴더·태그·정렬, 메일의 사서함과 메일, 메시지의 대화, Safari의 탭, 사진의 앨범, 활동 상태 보기의 탭, 이미지 넣기 창의 탭이다.
 
-메모 목록은 감싸는 요소를 추가하지 않았다. 휴대폰 CSS에 `.memo-phone-title + .memo-items`처럼 [인접 형제 선택자](https://developer.mozilla.org/ko/docs/Web/CSS/Next-sibling_combinator)가 있어서, 감싸면 그 규칙이 적용되지 않는다. 대신 `key`를 지정한 `React.Fragment`로 목록을 다시 마운트했다. DOM 구조는 그대로이고 목록만 다시 생성된다.
+메모 목록은 감싸는 요소를 추가하지 않았다. 휴대폰 CSS에 `.memo-phone-title + .memo-items`처럼 [인접 형제 선택자](https://developer.mozilla.org/ko/docs/Web/CSS/Next-sibling_combinator)가 있어서, ==감싸면 그 규칙이 적용되지 않는다==. 대신 `key`를 지정한 `React.Fragment`로 목록을 다시 마운트했다. DOM 구조는 그대로이고 목록만 다시 생성된다.
 
 ## 동작별 애니메이션
 
@@ -137,9 +137,9 @@ Finder에서는 처음에 이전 방향 값이 남아 있어서, 보기 모드(�
 
 ### 일반 흐름 안의 패널이 사라질 때
 
-사진의 정보 패널은 레이아웃 공간을 차지하는 패널이다. 복제본을 그 옆에 그대로 삽입하면 복제본도 공간을 차지해서 사진이 한 번 밀린다. 그래서 일반 흐름 안의 요소는 복제본을 같은 위치·크기로 절대 배치한다(`position: absolute`, 원래 요소의 `offsetLeft`·`offsetTop`·크기).
+![휴대폰 정보 패널을 닫는 중](./images/global-motion-phone-info-close.jpg#float-right '정보를 닫는 중: 패널은 아래로 이동하며 페이드 아웃되고, 사진은 원래 위치로 돌아온다. 애니메이션을 정지한 상태로 캡처했다')
 
-![휴대폰 정보 패널을 닫는 중](./images/global-motion-phone-info-close.jpg '정보를 닫는 중: 패널은 아래로 이동하며 페이드 아웃되고, 사진은 원래 위치로 돌아온다. 애니메이션을 정지한 상태로 캡처했다')
+사진의 정보 패널은 레이아웃 공간을 차지하는 패널이다. 복제본을 그 옆에 그대로 삽입하면 복제본도 공간을 차지해서 사진이 한 번 밀린다. 그래서 일반 흐름 안의 요소는 복제본을 같은 위치·크기로 절대 배치한다(`position: absolute`, 원래 요소의 `offsetLeft`·`offsetTop`·크기).
 
 ### 배경화면
 
@@ -162,7 +162,8 @@ E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.c
 - 배경화면을 바꾸면 이전 배경 오버레이가 `fade-out`으로 사라진다
 - 메뉴 막대 버튼은 색이 전환되고, Dock 아이콘은 자체 전환(`transform`)을 그대로 쓴다
 
-움직임을 켠 상태로 전체 시험도 실행했다. 이번 변경 전의 main에서도 31개가 실패했다. 창 열림 애니메이션이 끝나기 전에 위치나 크기를 측정하는 시험이다. 이 시험들은 움직임 줄이기를 전제로 작성되어 이번에는 수정하지 않았다.
+> [!NOTE] 움직임을 켠 상태의 기존 실패
+> 움직임을 켠 상태로 전체 시험도 실행했다. 이번 변경 전의 main에서도 31개가 실패했다. 창 열림 애니메이션이 끝나기 전에 위치나 크기를 측정하는 시험이다. 이 시험들은 움직임 줄이기를 전제로 작성되어 이번에는 수정하지 않았다.
 
 애니메이션 시험은 `e2e/motion.spec.ts`와 `e2e/mobile-motion.spec.ts`에 있다. 첫 시험의 이름이 이 작업의 핵심을 요약한다. "메뉴는 닫히면 바로 닫히고(역할 없음), 겉모습만 잠깐 남아 작아지며 사라진다".
 
@@ -174,7 +175,7 @@ E2E 시험은 모두 움직임 줄이기 설정으로 실행된다(`playwright.c
 
 - 복제본은 DOM 구조만 복제한다. `<canvas>`나 재생 중인 `<video>`처럼 렌더링 결과가 DOM 밖에 있는 요소는 복제본에서 비어 보인다. 현재 적용한 곳에는 그런 요소가 없다.
 - 움직임을 켠 상태에서 실패하는 31개 시험은 그대로다. 시험이 움직임 줄이기 설정에 의존한다는 점을 인지하고 작성해야 한다.
-- "닫힌 상태"와 "퇴장 애니메이션"을 분리하면 구현이 단순해진다. 상태는 즉시 바뀌고, 시각적 표현은 별도로 늦게 사라져도 된다. 접근성 트리와 시험은 상태를 확인하고, 사용자는 시각적 표현을 확인한다.
+- "닫힌 상태"와 "퇴장 애니메이션"을 분리하면 구현이 단순해진다. ==상태는 즉시 바뀌고, 시각적 표현은 별도로 늦게 사라져도 된다==. 접근성 트리와 시험은 상태를 확인하고, 사용자는 시각적 표현을 확인한다.
 
 ## 관련 글
 

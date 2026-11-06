@@ -42,7 +42,7 @@ App Store 심사 지침은 iOS·iPadOS에서 웹 페이지를 보여 주는 앱�
 | 입력                   | 마우스. `:hover`가 의도대로 동작한다                                   | 터치. 탭한 뒤에도 `:hover` 상태가 남는다. 16px 미만 입력 칸에 포커스가 가면 화면이 확대된다   |
 | 미디어 재생            | 사용자 동작 없이는 소리를 재생할 수 없다                               | 같은 제한에 더해, `playsinline`이 없는 동영상은 전체 화면으로 재생된다                        |
 
-앞의 세 항목(하드웨어, 레이어 분리, `border-radius` 클리핑)은 레이어 합성 방식에서 생기는 차이라서 macOS에서 확인한 결과를 iOS에 그대로 적용할 수 없다. 나머지 네 항목(뷰포트 높이, 화면 키보드, 입력, 미디어 재생)은 모바일 기기의 특성이므로 Android 브라우저에서도 비슷한 문제가 생긴다.
+앞의 세 항목(하드웨어, 레이어 분리, `border-radius` 클리핑)은 레이어 합성 방식에서 생기는 차이라서 ==macOS에서 확인한 결과를 iOS에 그대로 적용할 수 없다==. 나머지 네 항목(뷰포트 높이, 화면 키보드, 입력, 미디어 재생)은 모바일 기기의 특성이므로 Android 브라우저에서도 비슷한 문제가 생긴다.
 
 ## 렌더링 엔진별 차이
 
@@ -57,7 +57,10 @@ App Store 심사 지침은 iOS·iPadOS에서 웹 페이지를 보여 주는 앱�
 | 동영상 자동 재생               | 음소거한 동영상은 자동 재생된다                                           | 음소거하면 자동 재생된다. iPhone에서는 `playsinline`이 있어야 페이지 안에서 재생된다 | 음소거한 동영상은 자동 재생된다       |
 | 개인정보 보호                  | 세 브라우저 중 제한이 가장 적다                                           | ITP[^itp]가 서드 파티 쿠키와 저장소를 강하게 제한한다                                | 쿠키를 사이트별로 분리해 저장한다     |
 
-같은 엔진이라도 버전마다 지원 범위가 다르다. 새 CSS 기능을 쓰기 전에는 [caniuse.com](https://caniuse.com)에서 Safari와 Safari on iOS 항목을 따로 확인한다. 두 항목의 지원 버전이 다른 경우가 있다.
+같은 엔진이라도 버전마다 지원 범위가 다르다.
+
+> [!TIP] Safari와 Safari on iOS는 따로 확인한다
+> 새 CSS 기능을 쓰기 전에는 [caniuse.com](https://caniuse.com)에서 Safari와 Safari on iOS 항목을 따로 확인한다. 두 항목의 지원 버전이 다른 경우가 있다.
 
 ## 기기 에뮬레이션 테스트가 놓치는 부분
 
@@ -69,7 +72,7 @@ App Store 심사 지침은 iOS·iPadOS에서 웹 페이지를 보여 주는 앱�
 | Xcode iOS 시뮬레이터                  | WebKit (iOS)      | iOS Safari 동작 대부분            | 실기기의 GPU와 메모리 조건에서만 생기는 일부 문제 |
 | 실제 iPhone                           | WebKit (iOS)      | 전부                              | —                                                 |
 
-[기기 에뮬레이션](https://playwright.dev/docs/emulation)은 화면 크기와 입력 방식만 바꾸고 렌더링 엔진은 바꾸지 않는다. MacFolio의 `apps/react/playwright.config.ts`도 CI에 Chromium만 설치하므로 `mobile-iphone` 프로젝트를 `devices['iPhone 13']` + `browserName: 'chromium'`으로 실행한다. 이 프로젝트가 통과했다는 결과는 화면 크기·터치 흐름에 대한 확인이고, WebKit 렌더링에 대해서는 아무것도 보장하지 않는다. 에뮬레이션은 레이아웃 회귀를 빠르게 검출하는 용도로 쓰고, 렌더링 결과는 iOS 시뮬레이터나 실기기에서 확인해야 한다.
+[기기 에뮬레이션](https://playwright.dev/docs/emulation)은 화면 크기와 입력 방식만 바꾸고 렌더링 엔진은 바꾸지 않는다. MacFolio의 `apps/react/playwright.config.ts`도 CI에 Chromium만 설치하므로 `mobile-iphone` 프로젝트를 `devices['iPhone 13']` + `browserName: 'chromium'`으로 실행한다. 이 프로젝트가 통과했다는 결과는 화면 크기·터치 흐름에 대한 확인이고, ==WebKit 렌더링에 대해서는 아무것도 보장하지 않는다==. 에뮬레이션은 레이아웃 회귀를 빠르게 검출하는 용도로 쓰고, 렌더링 결과는 iOS 시뮬레이터나 실기기에서 확인해야 한다.
 
 ```ts
 // apps/react/playwright.config.ts
@@ -82,11 +85,12 @@ App Store 심사 지침은 iOS·iPadOS에서 웹 페이지를 보여 주는 앱�
 
 ## 자주 생기는 문제와 대응 방법
 
-아래 그림은 각 문제의 증상과 수정 결과를 비교한 도식이다. 실제 기기의 스크린샷이 아니다.
+> [!NOTE]
+> 아래 그림은 각 문제의 증상과 수정 결과를 비교한 도식이다. 실제 기기의 스크린샷이 아니다.
 
 ### 효과가 걸린 자식 요소와 둥근 모서리
 
-iOS에서 `filter`, `backdrop-filter`, `transform`이 걸린 자식이나 동영상이 `overflow: hidden` + `border-radius` 안에 있으면 모서리가 각지게 렌더링될 수 있다. 자식이 별도 레이어로 분리되면서 부모의 둥근 클리핑이 적용되지 않기 때문이다.
+iOS에서 `filter`, `backdrop-filter`, `transform`이 걸린 자식이나 동영상이 `overflow: hidden` + `border-radius` 안에 있으면 모서리가 각지게 렌더링될 수 있다. ==자식이 별도 레이어로 분리되면서 부모의 둥근 클리핑이 적용되지 않기 때문이다==.
 
 ![둥근 클리핑을 벗어난 블러 레이어](./images/music-widget-ios-corners-layers.svg '블러 처리한 자식 레이어가 사각형으로 남는다 (왼쪽), clip-path를 더하면 둥글게 잘린다 (오른쪽)')
 
@@ -139,7 +143,10 @@ iOS Safari는 글자 크기가 16px 미만인 입력 칸에 포커스가 가면 
 
 ![입력 칸 글자 크기에 따른 확대](./images/safari-macos-ios-rendering-input-zoom.svg '14px 입력 칸은 포커스 시 화면이 확대되고, 16px은 배율이 유지된다')
 
-입력 칸의 글자 크기를 16px 이상으로 지정한다. `maximum-scale=1`로 확대를 막는 방법도 있지만, 사용자가 직접 확대하는 기능까지 막혀 접근성이 떨어진다.
+입력 칸의 글자 크기를 16px 이상으로 지정한다.
+
+> [!WARNING] maximum-scale=1은 쓰지 않는다
+> `maximum-scale=1`로 확대를 막는 방법도 있지만, 사용자가 직접 확대하는 기능까지 막혀 접근성이 떨어진다.
 
 ```css
 input,
@@ -181,7 +188,7 @@ viewport.addEventListener('resize', () => {
 });
 ```
 
-MacFolio는 같은 계산을 `apps/react/src/shared/hooks/useKeyboardInset.ts`에 두고, 120px보다 작은 변화는 키보드가 아니라 주소 표시줄이 접히고 펼쳐진 것으로 판단해 제외한다. 메모 편집기의 서식 막대가 이 값을 사용한다([휴대폰 키보드 위에 서식 막대 띄우기](/memo/memo-keyboard-toolbar)).
+MacFolio는 같은 계산을 `apps/react/src/shared/hooks/useKeyboardInset.ts`에 두고, 120px보다 작은 변화는 키보드가 아니라 주소 표시줄이 접히고 펼쳐진 것으로 판단해 제외한다. 메모 편집기의 서식 막대가 이 값을 사용한다([휴대폰 키보드 위에 서식 막대 띄우기](/memo/ios-keyboard-viewport#메모-서식-막대를-키보드-위에-붙이기)).
 
 ### 동영상 재생과 `playsinline`
 
@@ -193,7 +200,10 @@ iPhone Safari는 `playsinline` 속성이 없는 `<video>`를 재생하면 전체
 <video src="loop.mp4" autoplay muted loop playsinline></video>
 ```
 
-React의 `muted` prop은 HTML 속성으로 반영되지 않는 경우가 있어서 자동 재생이 차단될 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다. MacFolio의 배경화면 동영상(`apps/react/src/desktop/WallpaperVideo.tsx`)도 `element.muted = true`를 직접 지정한다([video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)).
+> [!WARNING] React의 muted prop
+> React의 `muted` prop은 HTML 속성으로 반영되지 않는 경우가 있어서 자동 재생이 차단될 수 있다. 이때는 ref로 요소의 `muted` 속성을 직접 설정한다.
+
+MacFolio의 배경화면 동영상(`apps/react/src/desktop/WallpaperVideo.tsx`)도 `element.muted = true`를 직접 지정한다([video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)).
 
 ### 서드 파티 쿠키와 교차 출처 요청
 
@@ -210,7 +220,8 @@ Safari의 ITP는 서드 파티 쿠키와 저장소를 다른 브라우저보다 
 7. **새 CSS 기능은 Safari와 Safari on iOS의 지원 범위를 따로 확인한다.** 지원하지 않는 환경은 `@supports`로 분기해 기존 스타일을 유지한다
 8. **개인정보 보호 정책도 브라우저 차이로 다룬다.** 쿠키, 저장소, 교차 출처 요청을 다루는 코드는 Safari에서 따로 테스트한다
 
-## 참고 문서
+<details>
+<summary>참고 문서</summary>
 
 - [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/) 2.5.6 (Apple)
   - "웹을 탐색하는 앱은 적절한 WebKit 프레임워크와 WebKit JavaScript를 사용해야 한다." 다른 브라우저 엔진을 쓰기 위한 권한은 EU와 일본에서 신청할 수 있다.
@@ -229,10 +240,12 @@ Safari의 ITP는 서드 파티 쿠키와 저장소를 다른 브라우저보다 
 - [hover](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/hover) (MDN)
   - `hover: none`은 주 입력 장치가 hover를 할 수 없거나 쉽게 할 수 없는 경우다. "많은 모바일 기기는 사용자가 길게 탭하면 hover를 흉내 낸다."
 
+</details>
+
 ## 관련 글
 
 - [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners)
-- [휴대폰 키보드 위에 서식 막대 띄우기 — visualViewport로 키보드 높이 재기](/memo/memo-keyboard-toolbar)
+- [휴대폰 키보드 위에 서식 막대 띄우기 — visualViewport로 키보드 높이 재기](/memo/ios-keyboard-viewport#메모-서식-막대를-키보드-위에-붙이기)
 - [video 요소와 canvas로 만든 포스터로 동영상 배경화면 적용하기](/memo/video-wallpaper)
 - [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
 

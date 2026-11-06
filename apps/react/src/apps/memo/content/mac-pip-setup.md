@@ -16,7 +16,7 @@ pip는 Python 패키지 관리자다. [PyPI](https://pypi.org/)(Python Package I
 | `pip list`                        | 설치된 패키지 목록                    |
 | `pip uninstall requests`          | 패키지 삭제                           |
 
-pip는 Python에 포함되어 배포된다. Mac에서 pip를 설치한다는 것은 곧 Python을 설치한다는 뜻이고, 개발용 Python은 Homebrew로 설치하는 것이 일반적이다.
+pip는 Python에 포함되어 배포된다. ==Mac에서 pip를 설치한다는 것은 곧 Python을 설치한다는 뜻==이고, 개발용 Python은 Homebrew로 설치하는 것이 일반적이다.
 
 ## 설치 순서
 
@@ -52,7 +52,8 @@ pipx ensurepath
 pipx install black
 ```
 
-Homebrew Python에서는 `pip3 install requests`를 직접 실행하면 아래 오류가 발생한다. 정상 동작이며, 위의 두 방법이 해결 방법이다.
+> [!IMPORTANT] 오류는 정상 동작
+> Homebrew Python에서는 `pip3 install requests`를 직접 실행하면 아래 오류가 발생한다. 정상 동작이며, 위의 두 방법이 해결 방법이다.
 
 ![Mac의 python3 두 종류와 패키지 설치 위치](./images/mac-pip-setup-pythons.svg '시스템 python3(CLT)는 개발용으로 사용하지 않고, Homebrew python3에는 직접 설치하지 않는다. 라이브러리는 venv, 명령줄 도구는 pipx에 설치한다')
 
@@ -92,7 +93,7 @@ $ ls "$(python3 -c 'import sysconfig; print(sysconfig.get_path("stdlib"))')/EXTE
 /opt/homebrew/opt/python@3.15/Frameworks/Python.framework/Versions/3.15/lib/python3.15/EXTERNALLY-MANAGED
 ```
 
-이 규칙이 필요한 이유는 Homebrew의 다른 formula가 같은 Python을 사용하기 때문이다. pip로 설치한 패키지가 brew가 설치한 패키지를 덮어쓰거나 버전을 바꾸면 그 formula가 동작하지 않을 수 있다. 또한 `brew upgrade`로 Python 마이너 버전이 올라가면(3.15 → 3.16) site-packages 경로가 바뀌어 pip로 설치한 패키지가 모두 사라진다.
+이 규칙이 필요한 이유는 Homebrew의 다른 formula가 같은 Python을 사용하기 때문이다. pip로 설치한 패키지가 brew가 설치한 패키지를 덮어쓰거나 버전을 바꾸면 그 formula가 동작하지 않을 수 있다. 또한 `brew upgrade`로 Python 마이너 버전이 올라가면(3.15 → 3.16) ==site-packages 경로가 바뀌어 pip로 설치한 패키지가 모두 사라진다==.
 
 ### 해결 방법 비교
 
@@ -105,7 +106,8 @@ $ ls "$(python3 -c 'import sysconfig; print(sysconfig.get_path("stdlib"))')/EXTE
 | `pip3 install --break-system-packages` | Homebrew Python에 직접 설치 | 비권장    | 오류를 무시한다. brew 패키지와 충돌, 업그레이드 시 패키지 유실                       |
 | `sudo pip3 install`                    | -                           | 사용 금지 | root 소유 파일이 생겨 이후 brew·pip 작업에서 권한 오류                               |
 
-오류 메시지도 `--break-system-packages`를 사용한다면 `--user`를 함께 지정하라고 안내한다. 그래도 Python 업그레이드 시 패키지가 유실되는 문제는 남는다.
+> [!WARNING] 오류를 무시해도 남는 문제
+> 오류 메시지도 `--break-system-packages`를 사용한다면 `--user`를 함께 지정하라고 안내한다. 그래도 Python 업그레이드 시 패키지가 유실되는 문제는 남는다.
 
 ### venv 사용 방법
 
@@ -171,7 +173,8 @@ idle  pip  pydoc  python  python-config
 - venv를 활성화하면 `python`, `pip`가 사용 가능해진다
 - 항상 필요하면 `~/.zprofile`의 `brew shellenv` 줄 아래에 `export PATH="/opt/homebrew/opt/python@3/libexec/bin:$PATH"`를 추가한다
 
-`pip3` 대신 `python3 -m pip`를 권장하는 이유는 실행하는 Python과 pip가 항상 일치하기 때문이다. `pip3`는 PATH에서 먼저 발견된 것이 실행되므로 `python3`와 다른 Python의 pip일 수 있다.
+> [!TIP] python3 -m pip로 실행
+> `pip3` 대신 `python3 -m pip`를 권장하는 이유는 실행하는 Python과 pip가 항상 일치하기 때문이다. `pip3`는 PATH에서 먼저 발견된 것이 실행되므로 `python3`와 다른 Python의 pip일 수 있다.
 
 ## 자주 발생하는 문제
 

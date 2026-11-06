@@ -1,17 +1,30 @@
 ---
 title: callback ref로 바뀐 요소에 ResizeObserver 다시 연결하기
 date: 2026-10-22
-category: 개발 기록/MacFolio/화면·스타일
+category: 개발 기록/MacFolio/트러블슈팅
 summary: 메모 창을 최소화했다가 Dock에서 다시 열면 898px 창에서도 휴대폰 모양이 됐다. 앱 컴포넌트는 마운트된 채 칸 요소만 새로 만들어지는데, ResizeObserver가 문서에서 빠진 이전 요소를 계속 관찰했다. 날씨·사진도 같은 구조라 useElementWidth 훅 하나로 수정했다.
 ---
 
-데스크톱에서 메모 앱이 가끔 휴대폰 모양(폴더 → 목록 → 본문을 한 칸씩)으로 렌더링되었다. 창 폭은 898px로, 한 칸씩 보이는 기준(700px)보다 넓었다. 재현 조건은 하나였다. **창을 최소화했다가 Dock에서 다시 열면** 항상 이 모양이 됐다. 수정은 [#324](https://github.com/hyeoniverse/MacFolio/pull/324)다.
+| 증상                                                             | 원인                                                                           | 해결                                                  | 영향 범위      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------- | -------------- |
+| 최소화 후 다시 열면 898px 창이 한 칸씩 보이는 휴대폰 모양이 된다 | ResizeObserver effect가 ref 객체에 의존해, 새로 만든 칸 요소를 관찰하지 않는다 | ref 콜백으로 요소를 state에 받는 `useElementWidth` 훅 | 메모·날씨·사진 |
+
+## 증상
+
+데스크톱에서 메모 앱이 가끔 휴대폰 모양(폴더 → 목록 → 본문을 한 칸씩)으로 렌더링되었다. 창 폭은 898px로, 한 칸씩 보이는 기준(700px)보다 넓었다. 재현 조건은 하나였다. **창을 최소화했다가 Dock에서 다시 열면** 항상 이 모양이 됐다.
+
+재현 절차는 다음과 같다.
+
+1. 1280px 화면에서 메모를 연다.
+2. 전체 화면으로 바꿨다가 되돌린다.
+3. 최소화한다.
+4. Dock에서 다시 연다. 칸 폭은 898px인데 `data-compact="true"`가 붙어 있다.
 
 ![폭 898px 창 안에 폴더 화면으로 돌아가는 버튼과 글 목록만 한 칸으로 표시된 메모](./images/memo-restore-compact-before.jpg '수정 전: 최소화 → 다시 열기. 898px 창인데 data-compact가 붙어 글 목록만 한 칸으로 보인다')
 
-![같은 898px 창에 폴더 사이드바·글 목록·본문이 나란히 표시된 메모](./images/memo-restore-compact-after.jpg '수정 후: 같은 절차를 거쳐도 폴더·목록·본문 3단')
+## 원인 추적
 
-## 폭을 재는 구조
+### 폭을 재는 구조
 
 메모는 칸(`.memo-shell`)의 폭을 [`ResizeObserver`](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)로 측정해, 700px(`COMPACT_WIDTH`) 이하이면 `data-compact` 속성을 붙이고 한 칸씩 보여 준다. 컨테이너 질의 대신 JS로 판단하는 이유는 [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes)에 정리했다. 수정 전 훅은 다음과 같았다.
 
@@ -29,18 +42,9 @@ export function useShellSize(ref: React.RefObject<HTMLElement | null>) {
 }
 ```
 
-이 코드는 "컴포넌트가 마운트되는 시각에 칸 요소가 생기고, 언마운트되는 시각에 사라진다"는 전제 위에 있다. 창 최소화는 이 전제를 깨뜨린다.
+이 코드는 "컴포넌트가 마운트되는 시각에 칸 요소가 생기고, 언마운트되는 시각에 사라진다"는 전제 위에 있다. ==창 최소화는 이 전제를 깨뜨린다.==
 
-## 원인: 컴포넌트는 남고 요소만 바뀐다
-
-`AppWindow`(`desktop/window/Window.tsx`)는 앱이 실행 중이 아니거나 최소화되어 있으면 `null`을 반환한다. 이 판단은 `AppWindow` 안에서만 하므로, `AppWindow`를 렌더링하는 `Memo` 컴포넌트와 그 안의 훅은 최소화 중에도 마운트된 상태로 남는다.
-
-```tsx
-// Window.tsx
-const visible = isRunning && !isMinimized;
-// …
-if (!visible && cardIndex < 0) return null;
-```
+### 단계별 관찰 대상
 
 | 단계                 | 칸 요소 | 관찰 대상 | 측정 폭    | data-compact |
 | -------------------- | ------- | --------- | ---------- | ------------ |
@@ -49,14 +53,6 @@ if (!visible && cardIndex < 0) return null;
 | 최소화               | 없음    | A (빠짐)  | **0**      | true         |
 | 다시 열기 (수정 전)  | B       | A (빠짐)  | **0** 유지 | **true**     |
 | 다시 열기 (수정 후)  | B       | **B**     | 898        | 없음         |
-
-1. 최소화하면 `AppWindow`가 `null`을 반환해 칸 A가 문서에서 빠진다. 관찰 중인 요소가 렌더링되지 않으므로 `ResizeObserver`는 폭 0을 보고하고, `width`가 0이 된다. 창이 보이지 않으므로 이 시각에는 영향이 없다.
-2. 다시 열면 `AppWindow`가 칸 B를 새로 만들고, React는 `shellRef.current`를 B로 교체한다.
-3. 그런데 effect의 의존성은 `[ref]`, 즉 ref **객체**다. [`useRef`](https://react.dev/reference/react/useRef)가 반환하는 객체는 컴포넌트가 마운트되어 있는 동안 동일하므로 effect가 다시 실행되지 않는다. B는 아무도 관찰하지 않고, `width`는 0으로 남아 898px 창에 `data-compact`가 붙는다.
-
-![수정 전에는 다시 연 뒤에도 ResizeObserver가 문서에서 빠진 칸 A를 관찰하고, 수정 후에는 attach로 받은 칸 B를 관찰하는 흐름](./images/memo-restore-compact-observer.svg '열기 → 최소화 → 다시 열기의 관찰 대상. 수정 전에는 effect가 다시 실행되지 않아 칸 A에 머문다')
-
-ref 객체를 의존성에 넣는 코드는 린트 규칙(`react-hooks/exhaustive-deps`)을 통과하고, 처음 마운트한 경우에는 정상 동작한다. 요소가 컴포넌트보다 먼저 교체되는 경우에만 드러나는 결함이다.
 
 ### 같은 구조를 쓰던 앱
 
@@ -68,9 +64,29 @@ ref 객체를 의존성에 넣는 코드는 린트 규칙(`react-hooks/exhaustiv
 | 날씨 | `useCompact(shell)`       | 640px        |
 | 사진 | `Photos.tsx`의 `useWidth` | 760px, 560px |
 
-## 수정: 요소를 붙이는 함수로 받는다
+## 원인
 
-`shared/hooks/useElementWidth.ts`를 새로 만들었다. 요소를 ref 객체가 아니라 [ref 콜백](https://react.dev/reference/react-dom/components/common#ref-callback)(`attach`)으로 받아 state에 저장한다. 요소가 바뀌면 state가 바뀌고, effect가 새 요소로 다시 실행된다.
+컴포넌트는 남고 요소만 바뀐다. `AppWindow`(`desktop/window/Window.tsx`)는 앱이 실행 중이 아니거나 최소화되어 있으면 `null`을 반환한다. 이 판단은 `AppWindow` 안에서만 하므로, `AppWindow`를 렌더링하는 `Memo` 컴포넌트와 그 안의 훅은 최소화 중에도 마운트된 상태로 남는다.
+
+```tsx
+// Window.tsx
+const visible = isRunning && !isMinimized;
+// …
+if (!visible && cardIndex < 0) return null;
+```
+
+1. 최소화하면 `AppWindow`가 `null`을 반환해 칸 A가 문서에서 빠진다. 관찰 중인 요소가 렌더링되지 않으므로 `ResizeObserver`는 폭 0을 보고하고, `width`가 0이 된다. 창이 보이지 않으므로 이 시각에는 영향이 없다.
+2. 다시 열면 `AppWindow`가 칸 B를 새로 만들고, React는 `shellRef.current`를 B로 교체한다.
+3. 그런데 effect의 의존성은 `[ref]`, 즉 ref **객체**다. [`useRef`](https://react.dev/reference/react/useRef)가 반환하는 객체는 컴포넌트가 마운트되어 있는 동안 동일하므로 effect가 다시 실행되지 않는다. ==B는 아무도 관찰하지 않고==, `width`는 0으로 남아 898px 창에 `data-compact`가 붙는다.
+
+![수정 전에는 다시 연 뒤에도 ResizeObserver가 문서에서 빠진 칸 A를 관찰하고, 수정 후에는 attach로 받은 칸 B를 관찰하는 흐름](./images/memo-restore-compact-observer.svg '열기 → 최소화 → 다시 열기의 관찰 대상. 수정 전에는 effect가 다시 실행되지 않아 칸 A에 머문다')
+
+> [!WARNING] 린트를 통과하는 결함
+> ref 객체를 의존성에 넣는 코드는 린트 규칙(`react-hooks/exhaustive-deps`)을 통과하고, 처음 마운트한 경우에는 정상 동작한다. 요소가 컴포넌트보다 먼저 교체되는 경우에만 드러나는 결함이다.
+
+## 해결
+
+수정은 [#324](https://github.com/hyeoniverse/MacFolio/pull/324)다. `shared/hooks/useElementWidth.ts`를 새로 만들었다. 요소를 ref 객체가 아니라 [ref 콜백](https://react.dev/reference/react-dom/components/common#ref-callback)(`attach`)으로 받아 state에 저장한다. ==요소가 바뀌면 state가 바뀌고, effect가 새 요소로 다시 실행된다.==
 
 ```ts
 export function useElementWidth<T extends HTMLElement>() {
@@ -108,22 +124,29 @@ export function useElementWidth<T extends HTMLElement>() {
 | 날씨 | `useCompact(shell)`, `ref={shell}`         | `useCompact()`가 `attach` 반환, `ref={attachShell}`         |
 | 사진 | 파일 안의 `useWidth(shell)`, `ref={shell}` | `useElementWidth()`, `useWidth` 삭제                        |
 
-이후 메시지 앱도 나란히 보기 판단에 이 훅을 사용한다([visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/messages-layout-fixes)).
+이후 메시지 앱도 나란히 보기 판단에 이 훅을 사용한다([visualViewport 높이와 offsetTop으로 iOS Safari 키보드 위에 앱 화면 맞추기](/memo/ios-keyboard-viewport#메시지-앱-화면을-비주얼-뷰포트에-맞추기)).
 
 ## 확인
 
-- 재현 절차: 1280px 화면에서 메모 열기 → 전체 화면 → 되돌리기 → 최소화 → Dock에서 다시 열기. 수정 전에는 다시 연 시각에 칸 폭 898px, `data-compact="true"`였고, 수정 후에는 898px, `data-compact` 없음이다.
-- `e2e/memo.spec.ts`에 "최소화했다가 다시 열어도 넓은 창 모양이고, 그 뒤에 창을 좁히면 한 칸씩 보인다"를 추가했다. 다시 연 뒤 `data-compact`가 없는지 확인하고, 이어서 오른쪽 아래 모서리를 왼쪽으로 400px 끌어 `data-compact="true"`가 붙는지 확인한다. 두 번째 확인은 "0을 무시해서 통과한 것"이 아니라 "새 칸 B를 실제로 관찰하고 있다"는 것을 검증한다.
+- 재현 절차를 그대로 거쳤을 때 수정 전에는 다시 연 시각에 칸 폭 898px, `data-compact="true"`였고, 수정 후에는 898px, `data-compact` 없음이다.
 - 메모·날씨·사진 단위 테스트 281개 통과.
+
+![같은 898px 창에 폴더 사이드바·글 목록·본문이 나란히 표시된 메모](./images/memo-restore-compact-after.jpg '수정 후: 같은 절차를 거쳐도 폴더·목록·본문 3단')
+
+## 재발 방지
+
+`e2e/memo.spec.ts`에 "최소화했다가 다시 열어도 넓은 창 모양이고, 그 뒤에 창을 좁히면 한 칸씩 보인다"를 추가했다. 다시 연 뒤 `data-compact`가 없는지 확인하고, 이어서 오른쪽 아래 모서리를 왼쪽으로 400px 끌어 `data-compact="true"`가 붙는지 확인한다. 두 번째 확인은 "0을 무시해서 통과한 것"이 아니라 "새 칸 B를 실제로 관찰하고 있다"는 것을 검증한다.
+
+> [!IMPORTANT] 컴포넌트 수명과 요소 수명이 다른 곳
+> 같은 구조의 결함은 "컴포넌트 수명 ≠ 요소 수명"인 곳 어디에서나 생긴다. 조건부로 렌더링되는 요소를 관찰하는 코드는 ref 객체를 의존성으로 쓰지 않고 `useElementWidth`처럼 ref 콜백으로 요소를 받는다.
 
 ## 남은 것
 
 - 날씨·사진의 최소화 → 다시 열기는 E2E로 별도 확인하지 않았다. 같은 훅을 사용하므로 메모의 시험으로 대신한다.
-- 같은 구조의 결함은 "컴포넌트 수명 ≠ 요소 수명"인 곳 어디에서나 생긴다. 조건부로 렌더링되는 요소를 관찰하는 코드는 ref 객체를 의존성으로 쓰지 않고 `useElementWidth`처럼 ref 콜백으로 요소를 받는다.
 
 ## 관련 글
 
 - [useIsMobile과 ResizeObserver로 정하는 data-compact 레이아웃 기준](/memo/weather-layout-fixes): 날씨 앱이 `useCompact`와 `data-compact`를 쓰게 된 경위
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): 최소화 상태(`isMinimized`)를 관리하는 창 store
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore): 최소화 상태(`isMinimized`)를 관리하는 창 store
 
 #MacFolio #React #ResizeObserver #트러블슈팅

@@ -3,7 +3,7 @@ title: 리퍼러 검색어와 Search Console API로 유입 검색어 수집하�
 date: 2026-10-22
 category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
-seriesOrder: 8
+seriesOrder: 6
 summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 리퍼러에 검색어가 있을 때만 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져온다. SDK 없이 서명한 서비스 계정 JWT, 설정 순서, 도메인 속성에서 이 사이트만 거르는 방법을 정리했다.
 ---
 
@@ -11,7 +11,7 @@ summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 �
 
 ## 검색어가 전달되지 않는 이유
 
-사이트가 유입 경로를 알 수 있는 수단은 `document.referrer`[^referrer] 하나다. 현재 브라우저는 다른 사이트로 이동할 때 기본으로 주소의 origin(스킴·호스트·포트)만 전달한다(Referrer-Policy 기본값 `strict-origin-when-cross-origin`). 그래서 구글 검색 결과에서 유입되면 `https://www.google.com/`만 전달된다. 구글과 빙은 검색 결과 페이지에서도 검색어를 전달하지 않도록 설정되어 있다.
+사이트가 유입 경로를 알 수 있는 수단은 `document.referrer`[^referrer] 하나다. 현재 브라우저는 다른 사이트로 이동할 때 기본으로 주소의 origin(스킴·호스트·포트)만 전달한다(Referrer-Policy 기본값 `strict-origin-when-cross-origin`). 그래서 구글 검색 결과에서 유입되면 `https://www.google.com/`만 전달된다. ==구글과 빙은 검색 결과 페이지에서도 검색어를 전달하지 않도록 설정되어 있다==.
 
 검색엔진이 전체 주소를 전달하도록 설정한 경우에는 주소의 검색어 파라미터(네이버의 `query`, 다음의 `q` 등)가 남으므로 사이트에서 바로 읽을 수 있다. 구글 검색어는 사이트에서 알 수 없고, 구글이 검색 결과 노출·클릭을 집계한 Google Search Console에서 가져와야 한다.
 
@@ -88,7 +88,7 @@ export function serviceAccountAssertion(credentials: SearchConsoleCredentials, n
 }
 ```
 
-범위(scope)는 읽기 전용(`webmasters.readonly`)이고, Search Console에도 서비스 계정을 "제한됨" 권한으로만 추가한다. 시험에서는 키 쌍을 새로 생성해 서명하고, 공개 키로 서명을 검증한다. 실제 키는 시험 코드에 포함하지 않는다.
+범위(scope)는 읽기 전용(`webmasters.readonly`)이고, Search Console에도 서비스 계정을 "제한됨" 권한으로만 추가한다. 시험에서는 키 쌍을 새로 생성해 서명하고, 공개 키로 서명을 검증한다. ==실제 키는 시험 코드에 포함하지 않는다==.
 
 ### 일별 저장과 기간 집계
 
@@ -102,7 +102,7 @@ export function serviceAccountAssertion(credentials: SearchConsoleCredentials, n
 
 ![첫 실행은 480일 전체, 이후 실행은 마지막 저장일 7일 전부터 어제까지를 삭제 후 다시 저장하는 구간 도식](./images/search-keywords-sync.svg '첫 실행과 이후 실행의 요청 구간')
 
-기간으로 집계할 때 클릭과 노출은 합산하면 되지만, 평균 순위를 단순 평균하면 값이 틀린다. 노출 1회에 1위인 날과 노출 100회에 9위인 날이 같은 가중치를 갖기 때문이다. 단순 평균은 5위, 노출 가중 평균은 약 8.9위다. 그래서 노출 수로 가중 평균한다.
+기간으로 집계할 때 클릭과 노출은 합산하면 되지만, 평균 순위를 단순 평균하면 값이 틀린다. 노출 1회에 1위인 날과 노출 100회에 9위인 날이 같은 가중치를 갖기 때문이다. 단순 평균은 5위, 노출 가중 평균은 약 8.9위다. 그래서 ==노출 수로 가중 평균한다==.
 
 ```sql
 SELECT "query", "page",
@@ -205,7 +205,8 @@ Search Console에서 **속성 추가**를 누르면 두 종류 중 하나를 고
 4. 다음 화면의 **프로젝트 액세스 권한(역할)**과 **사용자 액세스 권한**은 비워 두고 완료한다. Search Console 권한은 Google Cloud 역할이 아니라 4단계에서 준다
 5. 만든 계정 → **Keys → Add key → Create new key → JSON**. 이 파일은 다시 내려받을 수 없고, 비밀번호와 같으므로 저장소나 채팅에 붙여 넣지 않는다
 
-기존 프로젝트를 쓰더라도 서비스 계정은 MacFolio 전용으로 만든다. 키를 교체하거나 폐기할 때 다른 서비스에 영향이 없다.
+> [!TIP] 서비스 계정은 전용으로
+> 기존 프로젝트를 쓰더라도 서비스 계정은 MacFolio 전용으로 만든다. 키를 교체하거나 폐기할 때 다른 서비스에 영향이 없다.
 
 ### 4. Search Console에 서비스 계정 추가
 
@@ -223,7 +224,10 @@ Google Cloud가 아니라 **Search Console 사이트**에서 한다.
 
 ### 5. 서버에 넣기
 
-키 파일을 서버로 옮긴 뒤 필요한 두 값(`client_email`, `private_key`)과 속성 주소만 `~/deploy/api.env`에 넣고 파일은 삭제한다. 명령은 [배포 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md#검색어-google-search-console)의 "검색어 (Google Search Console)" 절에 있다.
+> [!CAUTION] 키 파일은 남기지 않는다
+> 키 파일을 서버로 옮긴 뒤 필요한 두 값(`client_email`, `private_key`)과 속성 주소만 `~/deploy/api.env`에 넣고 파일은 삭제한다.
+
+명령은 [배포 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md#검색어-google-search-console)의 "검색어 (Google Search Console)" 절에 있다.
 
 ```bash
 # Mac
@@ -244,7 +248,7 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 ## 도메인 속성에서 이 사이트 검색어만 받기
 
-처음 구현에서 서버는 Search Console API의 `searchAnalytics.query`를 속성 단위로 호출하고, 응답을 페이지 주소로 거르지 않았다. 그래서 `sc-domain:hyeoniverse.com` 같은 도메인 속성을 연결하면 `www`, `blog` 같은 다른 하위 도메인의 검색어도 MacFolio의 검색어 탭에 함께 표시되었다.
+처음 구현에서 서버는 Search Console API의 `searchAnalytics.query`를 속성 단위로 호출하고, 응답을 페이지 주소로 거르지 않았다. 그래서 `sc-domain:hyeoniverse.com` 같은 도메인 속성을 연결하면 `www`, `blog` 같은 ==다른 하위 도메인의 검색어도 MacFolio의 검색어 탭에 함께 표시==되었다.
 
 두 가지 해결 방법을 비교했다.
 
@@ -288,7 +292,7 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)
 - [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
 - [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)

@@ -15,7 +15,7 @@ summary: 노트북에서 고른 사진 위젯 폴더가 아이폰 Safari에서�
 
 위젯의 자리와 고른 값(사진 위젯의 앨범, 메모 위젯의 글 보기)은 [`localStorage`](https://developer.mozilla.org/ko/docs/Web/API/Window/localStorage)에 저장한다. 데스크톱은 `macfolio:desktop:widgets`, 휴대폰 홈 화면은 `macfolio:mobile:widgets` 키다. 같은 위젯의 고른 값은 한쪽에서 바꾸면 다른 쪽 키에도 적는다(`desktop/widgets/sharedOptions.ts`)[^share].
 
-`localStorage`는 출처(origin)마다, 그리고 브라우저마다 따로 있다. 노트북의 Chrome과 아이폰의 Safari는 같은 사이트라도 저장소를 공유하지 않는다.
+`localStorage`는 ==출처(origin)마다, 그리고 브라우저마다 따로 있다==. 노트북의 Chrome과 아이폰의 Safari는 같은 사이트라도 저장소를 공유하지 않는다.
 
 | 화면                           | 읽는 저장소               | 앨범 값   | 결과      |
 | ------------------------------ | ------------------------- | --------- | --------- |
@@ -32,7 +32,10 @@ summary: 노트북에서 고른 사진 위젯 폴더가 아이폰 Safari에서�
 - **사이트 주인의 선택:** "방문자에게 이 폴더의 사진을 보여 준다". 모든 기기, 모든 방문자에게 같아야 한다
 - **방문자의 선택:** 방문자가 위젯을 오른쪽 클릭하거나 편집 중 앨범 단추로 고른 값. 그 브라우저에만 있으면 된다
 
-그래서 관리자가 고른 값만 서버에 **사이트 기본값**으로 저장하고, 방문자가 고른 값은 지금처럼 `localStorage`에 둔다. 위젯이 보일 앨범은 다음 순서로 정한다.
+> [!IMPORTANT] 두 선택의 저장 위치
+> 그래서 관리자가 고른 값만 서버에 **사이트 기본값**으로 저장하고, 방문자가 고른 값은 지금처럼 `localStorage`에 둔다.
+
+위젯이 보일 앨범은 다음 순서로 정한다.
 
 | 값                            | 어디에                                  |
 | ----------------------------- | --------------------------------------- |
@@ -50,7 +53,7 @@ export const effectiveAlbum = (local: string | undefined, siteDefault: string | 
 
 ### '모든 앨범'을 고른 것과 고르지 않은 것
 
-예전에는 '모든 앨범'을 고르면 `album`을 비웠다(`undefined`). 이제 비어 있으면 "고르지 않았다"는 뜻이라 사이트 기본값을 따른다. 방문자가 '모든 앨범'을 직접 고르면 사이트 기본값보다 우선해야 하므로, 이 선택은 `'all'`(`ALL_ALBUMS`)로 저장한다. `'all'`은 앨범 id가 아니어서, 사진 목록을 만드는 `photosOf`는 기존 규칙대로 모든 앨범을 보인다. 메뉴와 편집 시트의 체크 표시도 같은 순서(`effectiveAlbum`)로 정한 앨범에 붙인다.
+예전에는 '모든 앨범'을 고르면 `album`을 비웠다(`undefined`). 이제 ==비어 있으면 "고르지 않았다"는 뜻이라 사이트 기본값을 따른다==. 방문자가 '모든 앨범'을 직접 고르면 사이트 기본값보다 우선해야 하므로, 이 선택은 `'all'`(`ALL_ALBUMS`)로 저장한다. `'all'`은 앨범 id가 아니어서, 사진 목록을 만드는 `photosOf`는 기존 규칙대로 모든 앨범을 보인다. 메뉴와 편집 시트의 체크 표시도 같은 순서(`effectiveAlbum`)로 정한 앨범에 붙인다.
 
 ## 서버: SiteContent에 칸 하나
 
@@ -69,7 +72,7 @@ ALTER TABLE "SiteContent" ADD COLUMN "widgets" JSONB;
 
 ## 화면: 첫 HTML에 실려 온다
 
-`GET /site`의 결과는 배포한 사이트에서 Cloudflare Worker가 첫 HTML(`index.html`)에 JSON으로 넣는다. 화면은 앱 코드를 불러오기 전에 이 값을 읽는다([프로젝트 관리 글](/memo/site-projects-editing)에서 만든 구조). `widgets`도 같은 응답에 들어 있으므로 별도 요청이 없고, 위젯이 처음 그려지는 시각에 이미 사이트 기본값이 있다. Worker는 받은 값을 1분 동안 캐시하므로, 관리자가 바꾼 앨범은 길어야 1분 뒤 다른 기기의 새로고침에 반영된다.
+`GET /site`의 결과는 배포한 사이트에서 Cloudflare Worker가 첫 HTML(`index.html`)에 JSON으로 넣는다. 화면은 앱 코드를 불러오기 전에 이 값을 읽는다([프로젝트 관리 글](/memo/site-projects-editing)에서 만든 구조). `widgets`도 같은 응답에 들어 있으므로 별도 요청이 없고, 위젯이 처음 그려지는 시각에 이미 사이트 기본값이 있다. Worker는 받은 값을 1분 동안 캐시하므로, 관리자가 바꾼 앨범은 ==길어야 1분 뒤 다른 기기의 새로고침에 반영된다==.
 
 화면 쪽 변경은 세 곳이다.
 
@@ -77,7 +80,8 @@ ALTER TABLE "SiteContent" ADD COLUMN "widgets" JSONB;
 2. **`desktop/widgets/Widget.tsx`:** 사진 위젯에 `effectiveAlbum(이 브라우저의 값, 사이트 기본값)`을 넘긴다. 바탕화면과 휴대폰 홈 화면이 같은 컴포넌트라 한 곳만 바꿨다
 3. **`desktop/widgets/useSiteAlbum.ts`:** 앨범을 고를 때 관리자로 로그인했으면 `PUT /site/widgets`도 보낸다. '모든 앨범'은 기본값 없음(`null`)으로 보낸다. 실패하면 "저장하지 못함" 알림을 띄우고, 이 브라우저에 고른 값은 그대로 둔다
 
-관리자가 고른 값도 관리자 브라우저의 `localStorage`에 함께 저장된다. 이 기능이 배포되기 전에 고른 앨범은 서버에 없으므로, 배포 뒤 관리자가 한 번 다시 골라야 다른 기기에 적용된다.
+> [!WARNING] 배포 전에 고른 앨범
+> 관리자가 고른 값도 관리자 브라우저의 `localStorage`에 함께 저장된다. 이 기능이 배포되기 전에 고른 앨범은 서버에 없으므로, 배포 뒤 관리자가 한 번 다시 골라야 다른 기기에 적용된다.
 
 <details>
 <summary>서버 기본값이 가리키는 폴더를 지우면</summary>

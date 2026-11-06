@@ -3,7 +3,7 @@ title: HMAC으로 IP 원문 없이 관리자 방문 식별하기
 date: 2026-10-23
 category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
-seriesOrder: 11
+seriesOrder: 9
 summary: 로그인하지 않은 기기에서 둘러본 관리자 방문이 집계에 섞였다. 관리자로 인증된 요청의 IP를 HMAC으로만 30일 보관해 그 IP의 방문을 제외한다. 실시간 탭은 30분에서 마스킹된 IP 보관 기간인 7일까지 넓히고 IP별 방문 표를 더했으며, 맥 Safari에서 정렬하면 이름이 사라지던 표를 고쳤다.
 ---
 
@@ -59,10 +59,10 @@ await this.recorder.record(body, {
 createHmac('sha256', this.config.ipHashSecret).update(`admin-ip:${ip}`).digest('hex');
 ```
 
-- **HMAC만 저장한다.** IPv4 주소는 약 43억 개라, 키 없는 SHA-256 해시는 모든 주소를 대입해 원문을 복원할 수 있다. 서버만 아는 `IP_HASH_SECRET`을 키로 쓰는 HMAC은 키 없이는 대입이 불가능하다. API e2e 시험이 `AdminIp`에 64자 16진수만 있고 IP 원문은 없는지 확인한다.
+- **HMAC만 저장한다.** IPv4 주소는 약 43억 개라, ==키 없는 SHA-256 해시는 모든 주소를 대입해 원문을 복원할 수 있다==. 서버만 아는 `IP_HASH_SECRET`을 키로 쓰는 HMAC은 키 없이는 대입이 불가능하다. API e2e 시험이 `AdminIp`에 64자 16진수만 있고 IP 원문은 없는지 확인한다.
 - **용도별 접두어.** 댓글·메시지의 요청 제한용 IP 해시와 같은 키를 쓰지만 `admin-ip:` 접두어를 붙인다. 같은 IP라도 표마다 해시 값이 달라 두 표를 IP로 연결할 수 없다.
 - **보관 기간은 마지막 관리자 요청 후 30일.** 관리자가 쓰던 IP가 바뀌거나 그 IP를 다른 사람이 받게 되어도 30일 뒤에는 다시 집계된다.
-- **방문 기록 쪽은 그대로다.** `AnalyticsEvent`에는 마지막 자리를 마스킹한 IP(`203.0.113.x`)만 7일 보관하고, 7일이 지나면 `null`로 바꾼다([쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)).
+- **방문 기록 쪽은 그대로다.** `AnalyticsEvent`에는 마지막 자리를 마스킹한 IP(`203.0.113.x`)만 7일 보관하고, 7일이 지나면 `null`로 바꾼다([쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)).
 
 규칙은 [개인정보 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)의 '집계에서 제외하는 방문'과 '보관 기간'에도 추가했다.
 
@@ -99,7 +99,7 @@ createHmac('sha256', this.config.ipHashSecret).update(`admin-ip:${ip}`).digest('
 | 조회 순서      | `createdAt asc`, 5,000개 | **`createdAt desc, id desc`**, 20,000개 → 뒤집어 시간 순 |
 | 응답 형식      | 변경 없음                | 변경 없음                                                |
 
-조회 순서를 바꾼 이유는 상한에 도달했을 때 잘리는 쪽이다. 오래된 것부터 읽으면 기간을 늘린 순간 상한을 넘는 쪽, 즉 가장 최근 방문이 빠진다. 최대 24시간에서는 이벤트가 5,000개에 도달하지 않아 드러나지 않았다. 최근 것부터 읽으면 상한을 넘어도 가장 오래된 쪽이 잘린다.
+조회 순서를 바꾼 이유는 상한에 도달했을 때 잘리는 쪽이다. 오래된 것부터 읽으면 기간을 늘린 순간 상한을 넘는 쪽, 즉 ==가장 최근 방문이 빠진다==. 최대 24시간에서는 이벤트가 5,000개에 도달하지 않아 드러나지 않았다. 최근 것부터 읽으면 상한을 넘어도 가장 오래된 쪽이 잘린다.
 
 ![전 방식으로 7일을 읽으면 오래된 5,000개만 읽고 최근 3,000개가 잘린다. 후에는 최근 것부터 20,000개까지 읽어 8,000개를 모두 읽는다](./images/analytics-admin-ip-live-read.svg '7일 이벤트 8,000개를 읽는 순서 (도식)')
 
@@ -115,7 +115,7 @@ const events = (
 ).reverse();
 ```
 
-`LIVE_MAX_MINUTES`는 `IP_RETENTION_DAYS * 24 * 60`으로 계산해 보관 기간과 함께 바뀐다. 응답 형식이 같아 API와 사이트 중 어느 쪽이 먼저 배포되어도 동작한다. 사이트만 먼저 배포되면 7일을 골라도 이전 서버가 24시간으로 제한하고, API만 먼저 배포되면 이전 화면이 30분을 조회한다. DB 마이그레이션은 없다.
+`LIVE_MAX_MINUTES`는 `IP_RETENTION_DAYS * 24 * 60`으로 계산해 보관 기간과 함께 바뀐다. ==응답 형식이 같아 API와 사이트 중 어느 쪽이 먼저 배포되어도 동작한다==. 사이트만 먼저 배포되면 7일을 골라도 이전 서버가 24시간으로 제한하고, API만 먼저 배포되면 이전 화면이 30분을 조회한다. DB 마이그레이션은 없다.
 
 ### 갱신 간격
 
@@ -141,7 +141,8 @@ resetKey: String(liveMinutes),
 
 ### 원인 (추정)
 
-맥 Safari에서만 발생했다. Chromium, Playwright WebKit, 휴대폰 화면에서는 가짜 데이터로 여러 차례 시도해도 재현되지 않았다. 그래서 아래 원인은 **추정**이다.
+> [!NOTE] 재현 범위
+> 맥 Safari에서만 발생했다. Chromium, Playwright WebKit, 휴대폰 화면에서는 가짜 데이터로 여러 차례 시도해도 재현되지 않았다. 그래서 아래 원인은 **추정**이다.
 
 다른 표와의 차이는 하나다. 이 표만 이름 칸이 **버튼**이다(누르면 그 조합의 일별 방문을 펼친다). 그리고 `StatTable`은 정렬이 바뀌면 `tbody`의 `key`를 바꿔 새로 만들고, 새 `tbody`에 `.motion-swap`(`animation: fade-in`, opacity 0 → 1)을 건다.
 
@@ -151,7 +152,7 @@ resetKey: String(liveMinutes),
 | 정렬 변경, 이름이 글자인 표 + 페이드 | 이름이 보인다 |
 | 정렬 변경, 이름이 버튼인 표 + 페이드 | **빈칸**      |
 
-이름 버튼에는 말줄임을 위한 `overflow: hidden`과 `text-overflow: ellipsis`가 적용되어 있다. 세 조건을 비교하면 '새로 만든 버튼 + 부모의 opacity 애니메이션' 조합에서 Safari가 버튼 안의 글자를 그리지 않는 것으로 판단했다.
+이름 버튼에는 말줄임을 위한 `overflow: hidden`과 `text-overflow: ellipsis`가 적용되어 있다. 세 조건을 비교하면 =='새로 만든 버튼 + 부모의 opacity 애니메이션' 조합==에서 Safari가 버튼 안의 글자를 그리지 않는 것으로 판단했다.
 
 ### 고친 방법
 
@@ -188,7 +189,7 @@ resetKey: String(liveMinutes),
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor): 실시간 탭과 StatTable을 만든 글
 - [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
 - [visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh): 실시간 탭의 usePolling

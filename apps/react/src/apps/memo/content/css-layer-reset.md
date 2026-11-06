@@ -60,7 +60,7 @@ for (const sheet of document.styleSheets)
 | `.memo button`         | 1      | 1    | **(0, 1, 1)** |
 | `.memo-writer-publish` | 1      | 0    | **(0, 1, 0)** |
 
-클래스 수가 같으면 태그가 하나 더 있는 `.memo button`이 우선한다. 파일 안의 선언 순서는 명시도가 같을 때만 비교한다. 그래서 갈색 대신 `inherit`이 적용되어 부모의 보조 글자색을 상속했다.
+클래스 수가 같으면 태그가 하나 더 있는 `.memo button`이 우선한다. ==파일 안의 선언 순서는 명시도가 같을 때만 비교한다.== 그래서 갈색 대신 `inherit`이 적용되어 부모의 보조 글자색을 상속했다.
 
 ![두 규칙의 명시도](./images/memo-button-specificity.svg '클래스 수가 같으면 태그 수로 우선순위가 정해진다')
 
@@ -94,11 +94,11 @@ for (const sheet of document.styleSheets)
 | ---- | ---- | ------ | ---- | ------ | ---- | ------ | ------ |
 | 개수 | 27   | 13     | 11   | 7      | 6    | 4      | 4      |
 
-대부분이 버튼·링크의 색과 글꼴이었다. 원인은 기본값 규칙 여섯 개이고, 이 규칙의 우선순위를 낮추지 않으면 `!important`는 계속 늘어난다.
+대부분이 버튼·링크의 색과 글꼴이었다. ==원인은 기본값 규칙 여섯 개==이고, 이 규칙의 우선순위를 낮추지 않으면 `!important`는 계속 늘어난다.
 
 ## 명시도 대신 층
 
-CSS 층([`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer))을 사용하면 규칙 간 비교 순서가 바뀐다. 브라우저는 **층을 먼저 비교하고**, 같은 층일 때만 명시도를 비교한다. 층 밖에 있는 일반 규칙은 어느 층의 규칙보다도 우선한다.
+CSS 층([`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer))을 사용하면 규칙 간 비교 순서가 바뀐다. 브라우저는 **층을 먼저 비교하고**, 같은 층일 때만 명시도를 비교한다. ==층 밖에 있는 일반 규칙은 어느 층의 규칙보다도 우선한다.==
 
 ![층 밖의 규칙이 층 안의 규칙을 이긴다](./images/css-layer-cascade.svg '기본값만 reset 층에 넣으면 점수가 높아도 진다')
 
@@ -138,7 +138,8 @@ import './styles/motion.css';
 import './index.css';
 ```
 
-이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
+> [!WARNING] 빌드 결과의 로드 순서
+> 이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
 
 이제 게시 버튼 규칙은 `.memo-writer-publish` 하나만으로도 `reset` 층의 `.memo button`보다 우선한다. 앞에서 추가한 `.memo-writer-actions .memo-writer-publish`는 명시도가 높아도 부작용이 없어 주석과 함께 남겨 두었다.
 
@@ -165,7 +166,7 @@ for (let i = 0; i < a.length; i += 4) {
 }
 ```
 
-먼저 **코드를 변경하지 않고** 두 번 캡처해 비교했다. 거의 모든 장면에서 0.03% 차이가 나왔다. 원인은 메뉴 막대의 시계였다. 캡처할 때마다 분이 바뀌거나 1초 단위로 다시 렌더링된다. Playwright의 [`page.clock.setFixedTime()`](https://playwright.dev/docs/clock)으로 시각을 고정하자 차이가 0.001%만 남았다. 이 기준선 이후의 차이는 모두 실제 변경으로 판단할 수 있다.
+먼저 **코드를 변경하지 않고** 두 번 캡처해 비교했다. 거의 모든 장면에서 0.03% 차이가 나왔다. ==원인은 메뉴 막대의 시계였다.== 캡처할 때마다 분이 바뀌거나 1초 단위로 다시 렌더링된다. Playwright의 [`page.clock.setFixedTime()`](https://playwright.dev/docs/clock)으로 시각을 고정하자 차이가 0.001%만 남았다. 이 기준선 이후의 차이는 모두 실제 변경으로 판단할 수 있다.
 
 ![같은 장면을 전후로 찍고, 시각을 고정하고, 픽셀 차이를 세는 순서](./images/css-layer-reset-compare-steps.svg '먼저 같은 코드로 두 번 찍어 잡음을 없앤 뒤 전후를 비교했다')
 
@@ -218,7 +219,10 @@ for (let i = 0; i < a.length; i += 4) {
 
 ## !important는 이 커밋에서 유지
 
-이제 `!important` 대부분은 불필요하다. 하지만 한꺼번에 삭제하지 않았다. `!important`는 기본값뿐 아니라 **같은 버튼의 다른 상태**(hover, active) 규칙과도 우선순위를 다투고 있을 수 있다. 하나씩 삭제하면서 해당 버튼의 모든 상태를 확인해야 한다.
+이제 `!important` 대부분은 불필요하다. 하지만 한꺼번에 삭제하지 않았다.
+
+> [!WARNING] 상태 규칙과의 우선순위
+> `!important`는 기본값뿐 아니라 **같은 버튼의 다른 상태**(hover, active) 규칙과도 우선순위를 다투고 있을 수 있다. 하나씩 삭제하면서 해당 버튼의 모든 상태를 확인해야 한다.
 
 다음 단계에서 공통 컴포넌트(`IconButton`, `Button`, `Menu`)를 구현하고 버튼을 이전한다. 그 과정에서 버튼 CSS를 새로 작성하며 `!important`를 제거한다. 전후 비교도 같은 방법으로 진행한다.
 
@@ -248,10 +252,10 @@ for (let i = 0; i < a.length; i += 4) {
 
 ## 관련 글
 
-- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
+- [계산된 스타일 비교로 !important를 일괄 삭제하고 IconButton·Button 공통 버튼 추출하기](/memo/shared-button)
 - [계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
 - [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
-- [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
+- [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/css-cleanup-tools#memocss-분할-선언-순서-유지)
 
 [^specificity]: 같은 요소에 여러 규칙이 일치할 때 어느 규칙을 적용할지 정하는 점수. (ID 수, 클래스·속성·의사 클래스 수, 태그·의사 요소 수) 세 자리를 앞자리부터 비교한다. 자세한 계산 방법은 [MDN의 Specificity 문서](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)에 있다.
 

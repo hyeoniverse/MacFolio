@@ -34,7 +34,7 @@ onPointerUp={(event) => {
 | 닫을 때 패널이 움직이지 않는다 | 이동 중 이벤트를 수신하지 않는다                                           |
 | 음량 막대가 제어 센터를 닫는다 | 시작 요소를 확인하지 않아 음량 막대 끌기도 닫기로 판정한다                 |
 
-세 증상 모두 "판정 로직을 개별 요소에 연결해 둔 구조"가 원인이었다.
+세 증상 모두 =="판정 로직을 개별 요소에 연결해 둔 구조"==가 원인이었다.
 
 ## 검토한 방법
 
@@ -124,13 +124,19 @@ const progress = leaving
 
 60px만 스와이프해도 열리지만, 그 시각에 패널은 4분의 1만 표시된다. 손을 떼면 남은 거리는 CSS 트랜지션으로 이어서 내려온다. 4배는 상태 표시줄 끌기 구현부터 사용하던 값을 유지했다. 판정 거리와 같게 두면 60px 안에 패널이 끝까지 내려와 손가락보다 훨씬 빠르게 움직인다. 이번 변경점은 닫을 때도 같은 계산식(`1 - travel(lift)`)으로 패널이 손가락을 따라 올라간다는 점이다. 스와이프 중에는 `dragging` 클래스로 CSS 트랜지션을 끄고, 손을 떼면 다시 켠다.
 
-스와이프 직후에는 click 이벤트가 이어서 발생한다. 연락하기 타일 위에서 위로 스와이프해 제어 센터를 닫았는데 메일 앱이 열리면 안 되므로, 스와이프 종료 후 500ms(`CLICK_AFTER_SWIPE_MS`) 안의 click 하나는 캡처 단계에서 무시한다.
+> [!NOTE] 스와이프 뒤의 click
+> 스와이프 직후에는 click 이벤트가 이어서 발생한다. 연락하기 타일 위에서 위로 스와이프해 제어 센터를 닫았는데 메일 앱이 열리면 안 되므로, 스와이프 종료 후 500ms(`CLICK_AFTER_SWIPE_MS`) 안의 click 하나는 캡처 단계에서 무시한다.
 
 ## 손가락 입력은 Touch Events로
 
-마우스로 확인할 때는 Pointer Events만으로 정상 동작했다. 휴대폰에서는 달랐다. 브라우저가 손가락 이동을 스크롤로 처리하는 순간 [`pointercancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event)이 발생하고, 그 이후로는 이동 이벤트가 전달되지 않는다.
+마우스로 확인할 때는 Pointer Events만으로 정상 동작했다. 휴대폰에서는 달랐다. 브라우저가 손가락 이동을 스크롤로 처리하는 순간 [`pointercancel`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointercancel_event)이 발생하고, ==그 이후로는 이동 이벤트가 전달되지 않는다==.
 
-그래서 손가락 입력은 [Touch Events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)로 수신한다. `touchmove`는 `passive: false`로 등록해야 `preventDefault()`로 스크롤을 막을 수 있다. 스크롤을 막는 것은 스와이프로 판정한 이후부터다. 판정 전에는 스크롤과 가로 스와이프를 그대로 허용한다.
+그래서 손가락 입력은 [Touch Events](https://developer.mozilla.org/en-US/docs/Web/API/Touch_events)로 수신한다.
+
+> [!WARNING]
+> `touchmove`는 `passive: false`로 등록해야 `preventDefault()`로 스크롤을 막을 수 있다.
+
+스크롤을 막는 것은 스와이프로 판정한 이후부터다. 판정 전에는 스크롤과 가로 스와이프를 그대로 허용한다.
 
 ```ts
 const touchMove = (event: TouchEvent) => {
@@ -186,7 +192,8 @@ E2E `apps/react/e2e/mobile.spec.ts`에 4개를 추가했다.
 - 손가락 두 개가 닿으면(`touches.length !== 1`) 즉시 취소한다. 확대(핀치) 동작과 충돌하지 않게 하기 위해서다.
 - 사진 앱에도 같은 이름의 `apps/photos/swipe.ts` 파일이 있다. 그쪽은 가로 스와이프라 규칙이 다르다. 두 모듈의 통합 여부는 사용처가 하나 더 생기면 결정한다.
 
-휴대폰 제스처는 마우스로 확인한 결과만으로 판단할 수 없다. Pointer Events가 데스크톱에서 정상 동작해도, 휴대폰 브라우저는 스크롤로 처리하는 순간 터치 추적을 중단한다. 실제 터치 이벤트를 보내는 시험이 있어야 이 차이를 검출할 수 있다. 또 판정을 순수 함수로 분리해 두면 "45도는 어느 쪽인가" 같은 경계 조건을 단위 시험으로 적은 비용에 고정할 수 있다.
+> [!IMPORTANT]
+> 휴대폰 제스처는 마우스로 확인한 결과만으로 판단할 수 없다. Pointer Events가 데스크톱에서 정상 동작해도, 휴대폰 브라우저는 스크롤로 처리하는 순간 터치 추적을 중단한다. 실제 터치 이벤트를 보내는 시험이 있어야 이 차이를 검출할 수 있다. 또 판정을 순수 함수로 분리해 두면 "45도는 어느 쪽인가" 같은 경계 조건을 단위 시험으로 적은 비용에 고정할 수 있다.
 
 ## 관련 글
 

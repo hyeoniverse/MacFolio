@@ -603,7 +603,7 @@ Host macfolio
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 - [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
-- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
 
 [^ocid]: Oracle Cloud Identifier. OCI의 모든 리소스에 부여되는 고유 ID로, `ocid1.instance.oc1.…` 형식의 긴 문자열이다. [Oracle 문서: Resource Identifiers](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/identifiers.htm)
 

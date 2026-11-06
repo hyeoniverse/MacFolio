@@ -7,7 +7,7 @@ summary: 관리자 세션은 12시간 유지되는데, 계정 화면에서는 �
 
 관리자 로그인 세션은 12시간 유지된다. 그런데 시스템 설정의 계정 화면에는 "GitHub로 로그인됨"만 표시되어, 로그인 시각과 재로그인이 필요한 시각을 알 수 없었다.
 
-남은 시간을 알면 긴 글을 수정하기 전에 미리 다시 로그인할 수 있다. 저장하는 시각에 세션이 만료되어 있으면 401을 받고 로그인부터 다시 해야 한다.
+남은 시간을 알면 긴 글을 수정하기 전에 미리 다시 로그인할 수 있다. ==저장하는 시각에 세션이 만료되어 있으면 401을 받고 로그인부터 다시 해야 한다==.
 
 10월 2일 저녁, GitHub 계정 연동을 마치고 계정 화면을 확인하다가 로그인 시각이 없는 것을 발견해 GitHub 앱 작업과 함께 추가했다([#78](https://github.com/hyeoniverse/MacFolio/pull/78)).
 
@@ -40,7 +40,7 @@ summary: 관리자 세션은 12시간 유지되는데, 계정 화면에서는 �
 return { login: session.githubLogin, signedInAt: session.createdAt, expiresAt: session.expiresAt };
 ```
 
-DB 기본값([`@default(now())`](https://www.prisma.io/docs/orm/reference/prisma-schema-reference))을 사용하면 DB 서버 시계 기준으로 기록되어, API 서버가 계산한 `expiresAt`과 몇 밀리초 차이가 날 수 있다.
+DB 기본값([`@default(now())`](https://www.prisma.io/docs/orm/reference/prisma-schema-reference))을 사용하면 DB 서버 시계 기준으로 기록되어, API 서버가 계산한 `expiresAt`과 ==몇 밀리초 차이가 날 수 있다==.
 
 | `createdAt` 기록 방식   | 기준 시계          | `expiresAt - createdAt` |
 | ----------------------- | ------------------ | ----------------------- |
@@ -51,7 +51,7 @@ DB 기본값([`@default(now())`](https://www.prisma.io/docs/orm/reference/prisma
 
 ## 화면
 
-받은 시각은 사용자의 시간대로 "2026년 10월 2일 오후 7:03"처럼 표시한다. 처음에는 [`Intl.DateTimeFormat('ko-KR')`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)을 사용했는데, Node에서 실행한 단위 시험에서 "오후" 대신 "PM"이 출력됐다. 한국어 출력은 런타임에 포함된 ICU[^icu] 데이터에 따라 달라지므로, 메시지 앱처럼 숫자만 가져와 문구를 직접 조합한다.
+받은 시각은 사용자의 시간대로 "2026년 10월 2일 오후 7:03"처럼 표시한다. 처음에는 [`Intl.DateTimeFormat('ko-KR')`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat)을 사용했는데, ==Node에서 실행한 단위 시험에서 "오후" 대신 "PM"이 출력됐다==. 한국어 출력은 런타임에 포함된 ICU[^icu] 데이터에 따라 달라지므로, 메시지 앱처럼 숫자만 가져와 문구를 직접 조합한다.
 
 ```ts
 // apps/react/src/shared/auth/admin.ts
@@ -83,7 +83,7 @@ function toDate(value: string | undefined): Date | null {
 
 ## 만료 시각 이후 처리
 
-화면은 로그인 상태를 앱을 열 때 한 번 조회한다. 그래서 창을 열어 둔 채로 만료 시각이 지나면, 서버는 이미 관리자로 인정하지 않는데 화면은 계속 "로그인됨"이었다. 이제 만료 시각을 받으면 그 시각에 다시 조회해 로그아웃 화면으로 전환한다.
+화면은 로그인 상태를 앱을 열 때 한 번 조회한다. 그래서 창을 열어 둔 채로 만료 시각이 지나면, ==서버는 이미 관리자로 인정하지 않는데 화면은 계속 "로그인됨"이었다==. 이제 만료 시각을 받으면 그 시각에 다시 조회해 로그아웃 화면으로 전환한다.
 
 ![세션 12시간과 화면의 타이머](./images/settings-signed-in-at-timeline.svg '만료 1초 뒤에 다시 물어 로그아웃 화면으로 바꾼다')
 
@@ -95,7 +95,12 @@ const left = state.expiresAt ? state.expiresAt.getTime() - Date.now() : null;
 if (left !== null && left < 2 ** 31 - 1) expiryTimer = setTimeout(() => void refreshAdmin(), Math.max(0, left) + 1000);
 ```
 
-1초를 더한 이유는 서버와 브라우저의 시계가 약간 어긋나도, 재조회 시각에 서버가 확실히 만료로 판단하게 하기 위해서다. 정확히 만료 시각에 조회하면 서버 기준으로는 아직 몇백 밀리초가 남아 "로그인됨"이 반환될 수 있다. [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout)의 최대 지연은 2^31 − 1밀리초(약 24.8일)이고 이를 넘으면 즉시 실행되므로, 그보다 긴 값은 타이머를 등록하지 않는다. E2E 시험에서는 첫 조회 후 몇 초 만에 만료되는 세션을 반환하고, 계정 화면이 "로그인하지 않음"으로 바뀌는지 확인한다.
+1초를 더한 이유는 서버와 브라우저의 시계가 약간 어긋나도, 재조회 시각에 서버가 확실히 만료로 판단하게 하기 위해서다. 정확히 만료 시각에 조회하면 서버 기준으로는 아직 몇백 밀리초가 남아 "로그인됨"이 반환될 수 있다.
+
+> [!WARNING] setTimeout의 최대 지연
+> [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout)의 최대 지연은 2^31 − 1밀리초(약 24.8일)이고 이를 넘으면 즉시 실행되므로, 그보다 긴 값은 타이머를 등록하지 않는다.
+
+E2E 시험에서는 첫 조회 후 몇 초 만에 만료되는 세션을 반환하고, 계정 화면이 "로그인하지 않음"으로 바뀌는지 확인한다.
 
 ## 확인
 
@@ -106,13 +111,13 @@ if (left !== null && left < 2 ** 31 - 1) expiryTimer = setTimeout(() => void ref
 ## 남은 것과 배운 것
 
 - **세션 연장 기능은 없다.** 12시간이 지나면 다시 GitHub로 로그인한다. 남은 시간을 표시하는 것까지가 이번 범위다.
-- **401 응답으로도 로그아웃된다.** 이후 공통 API 클라이언트가 추가되면서, 서버가 세션을 삭제했거나 쿠키가 사라져 401을 받은 경우에도 같은 함수(`refreshAdmin`)를 호출해 화면을 전환한다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)). 만료 타이머와 401, 두 경로가 같은 결과로 이어진다.
+- **401 응답으로도 로그아웃된다.** 이후 공통 API 클라이언트가 추가되면서, 서버가 세션을 삭제했거나 쿠키가 사라져 401을 받은 경우에도 같은 함수(`refreshAdmin`)를 호출해 화면을 전환한다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)). 만료 타이머와 401, 두 경로가 같은 결과로 이어진다.
 - **기존 필드를 먼저 확인한다.** `createdAt`과 `expiresAt`은 처음부터 테이블에 있었다. 새 필드를 추가하지 않고 조회만 했다.
 
 ## 관련 글
 
 - [img 로드 전까지 대체 아이콘을 깔아 두는 외부 프로필 사진 표시](/memo/settings-avatar-placeholder)
-- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 
 [^icu]: ICU(International Components for Unicode)는 날짜·숫자·언어별 형식을 제공하는 라이브러리다. 브라우저와 Node.js의 `Intl` API가 내부적으로 사용하며, 포함된 ICU 데이터 버전에 따라 같은 로케일의 출력이 달라질 수 있다.

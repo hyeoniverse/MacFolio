@@ -35,7 +35,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
     <td align="center" width="25%"><h3>1인</h3>개발</td>
     <td align="center" width="25%"><h3>0원</h3>운영비</td>
     <td align="center" width="25%"><h3>0개</h3>열린 포트</td>
-    <td align="center" width="25%"><h3>240편+</h3>개발기</td>
+    <td align="center" width="25%"><h3>170편+</h3>개발기</td>
   </tr>
 </table>
 
@@ -729,7 +729,7 @@ VM 만들기부터 OAuth App, 터널, 환경 변수, 문제 해결까지 [docs/d
   - [첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
   - [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
   - [PR을 머지하자 CI가 연달아 실패한 원인 네 가지](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges)
-  - [리팩터링 계획을 마치며 — 일곱 단계 전후](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
+  - [zod 계약 패키지·공통 기반 코드·디자인 토큰·보안 설정 통일로 진행한 일곱 단계 리팩터링](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
 
 ### 로드맵
 

@@ -38,7 +38,10 @@ bcrypt 대신 scrypt를 선택한 이유는 Node.js 내장 `crypto` 모듈에 �
 
 이름만으로는 작성자를 구분하기 어렵다. 그래서 이름 뒤에 IP 앞 두 자리를 붙인다(`민수(211.234)`). 같은 사람이 이름을 바꿔 가며 작성하는 경우를 어느 정도 식별할 수 있고, 이 정보만으로는 개인을 특정할 수 없다.
 
-IP 전체는 저장하지 않는다. 같은 사람이 작성한 댓글을 묶어 조회해야 하는 경우를 위해, 서버만 아는 키로 계산한 HMAC 값만 저장한다. 키를 모르면 HMAC 값에서 IP를 복원할 수 없다. 이 키(`IP_HASH_SECRET`)를 배포 환경에 설정하지 않으면 서버가 시작되지 않는다.
+IP 전체는 저장하지 않는다. 같은 사람이 작성한 댓글을 묶어 조회해야 하는 경우를 위해, 서버만 아는 키로 계산한 HMAC 값만 저장한다. ==키를 모르면 HMAC 값에서 IP를 복원할 수 없다==.
+
+> [!IMPORTANT] IP_HASH_SECRET 필수
+> 이 키(`IP_HASH_SECRET`)를 배포 환경에 설정하지 않으면 서버가 시작되지 않는다.
 
 ```ts
 export const hashIp = (ip: string, secret: string) => createHmac('sha256', secret).update(ip).digest('hex');
@@ -51,7 +54,7 @@ export const hashIp = (ip: string, secret: string) => createHmac('sha256', secre
 | IP `211.234.56.78` | `ipPrefix` `211.234`                    | 포함     |
 | IP `211.234.56.78` | `ipHash` (HMAC-SHA256)                  | 제외     |
 
-API 응답에는 IP 해시와 비밀번호 해시를 포함하지 않는다. Prisma 쿼리에서 필요한 필드만 지정해 조회하므로([`select`](https://www.prisma.io/docs/orm/prisma-client/queries/select-fields)) 실수로 노출될 경로가 없다. e2e 시험은 응답의 필드 목록이 정확히 `id, name, ipPrefix, isAdmin, body, createdAt`인지 확인한다.
+API 응답에는 IP 해시와 비밀번호 해시를 포함하지 않는다. ==Prisma 쿼리에서 필요한 필드만 지정해 조회하므로==([`select`](https://www.prisma.io/docs/orm/prisma-client/queries/select-fields)) 실수로 노출될 경로가 없다. e2e 시험은 응답의 필드 목록이 정확히 `id, name, ipPrefix, isAdmin, body, createdAt`인지 확인한다.
 
 ## 검사 규칙 공유
 
@@ -61,7 +64,7 @@ API 응답에는 IP 해시와 비밀번호 해시를 포함하지 않는다. Pri
 | 비밀번호 | 4~20자                                 |
 | 내용     | 1~500자                                |
 
-메시지 앱의 피드백과 같은 규칙이므로, 화면은 메시지 앱의 검사 함수를 그대로 재사용하고 서버는 같은 규칙을 다시 검사한다. 화면에서 막아도 요청은 직접 전송할 수 있기 때문이다.
+메시지 앱의 피드백과 같은 규칙이므로, 화면은 메시지 앱의 검사 함수를 그대로 재사용하고 서버는 같은 규칙을 다시 검사한다. ==화면에서 막아도 요청은 직접 전송할 수 있기 때문이다==.
 
 ## 도배와 무작위 대입 방지
 
@@ -106,7 +109,7 @@ ThrottlerModule.forRootAsync({
 | `passwordHash` | 새 댓글마다 저장  | 이전 댓글에만 남아 있다. 그 댓글은 관리자만 삭제한다 |
 | IP             | 앞 두 자리 + HMAC | 변경 없음                                            |
 
-원문을 저장하지 않는 원칙은 그대로 유지됐다. 쿠키 값도 원문이 아니라 HMAC으로만 DB에 저장한다.
+==원문을 저장하지 않는 원칙은 그대로 유지됐다==. 쿠키 값도 원문이 아니라 HMAC으로만 DB에 저장한다.
 
 ## 남은 것·배운 것
 

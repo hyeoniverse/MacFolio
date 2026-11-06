@@ -1,11 +1,20 @@
 ---
 title: CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기
 date: 2026-10-24
-category: 개발 기록/MacFolio/테스트·보안·성능
+category: 개발 기록/MacFolio/트러블슈팅
 series: E2E 시험
 seriesOrder: 6
 summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른 이유로 실패했다. macOS에서 재현되지 않는 E2E 세 건은 CI 아티팩트로 원인을 확인했고, 나머지 하나는 새로 공개된 의존성 취약점으로, 같은 날 body-parser와 multer 두 번 CI가 차단했다.
 ---
+
+| 증상                                              | 원인                                                             | 해결                                                          | 영향 범위                               |
+| ------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------------- |
+| ① 위젯 시험에서 위젯 높이가 115px에서 117px로     | 글꼴마다 다른 `line-height: normal`, 아이콘을 다시 측정하지 않음 | 이름 줄 `line-height: 1.25`, 아이콘도 `ResizeObserver`로 관찰 | 휴대폰 홈 위젯 (Apple 이외 기기 포함)   |
+| ② 메모 목록에서 누른 글과 다른 글이 열린다        | 늦게 도착하는 저장소 글 청크로 클릭 사이 목록 재정렬             | 저장소 글이 오기 전에는 목록을 그리지 않는다                  | 메모 목록 (느린 네트워크의 방문자 포함) |
+| ③ 코드 변경 없이 `check`의 의존성 검사 실패       | body-parser·multer 등 새로 공개된 high 취약점                    | `pnpm-workspace.yaml`의 `overrides`로 수정판 고정             | API 서버                                |
+| ④ 새 답글이 와도 대화 칸이 아래로 따라가지 않는다 | `scrollTop` 변경 뒤 scroll 이벤트가 늦게 전달된다                | 시험에서 scroll 이벤트를 바로 보낸다                          | 시험만 (실제 사용자에게는 생기지 않음)  |
+
+## 증상
 
 10월 24일 [#368](https://github.com/hyeoniverse/MacFolio/pull/368)을 머지한 뒤 main과 main을 합친 PR의 CI가 연달아 실패했다. 새벽에 두 건(①②)을 고쳐 머지했고, 아침에 남은 두 건(③④)이 드러났다. 실패 원인은 네 가지였고 서로 관계가 없었다. 세 건은 macOS에서 재현되지 않는 E2E 시험이었고, 한 건은 코드를 바꾸지 않았는데 새로 공개된 의존성 취약점 때문에 검사 단계가 막힌 경우였다.
 
@@ -18,7 +27,9 @@ summary: 10월 24일 PR을 머지할 때마다 main과 열린 PR의 CI가 다른
 
 ![CI가 연달아 실패한 순서](./images/ci-failures-after-merges-timeline.svg '한국 시각 기준. 머지 한 번마다 다른 원인이 드러났다')
 
-## 재현되지 않는 실패를 CI 아티팩트로 확인하기
+## 원인 추적
+
+### 재현되지 않는 실패를 CI 아티팩트로 확인하기
 
 처음 두 시험(①, ②)은 macOS에서 CI와 같은 조건으로 실행해도 통과했다. `CI=1`로 재시도와 작업자 수를 CI와 맞추고, `--repeat-each 6 --workers 6`으로 같은 시험을 여섯 번씩 동시에 실행해도 실패하지 않았다. 로컬에서 원인을 찾을 수 없으므로 CI가 남긴 결과물을 내려받아 확인했다.
 
@@ -56,7 +67,7 @@ unzip trace.zip -d trace && grep '"type":"log"' trace/1-trace.trace
 
 위젯 한 줄의 높이는 `MobileHome.tsx`가 첫 앱 아이콘(`.mobile-app`)의 `offsetHeight`를 측정해 `widgetRowHeight()`로 계산한다. 위젯 두 줄 아래에 아이콘 두 줄을 남기는 식이라 아이콘 높이가 2px 커지면 위젯 줄 높이는 2px 작아진다. 아이콘 높이는 이미지 60px, 간격 6px, 이름 줄 높이의 합이다.
 
-이름(`span`)에는 [`line-height`](https://developer.mozilla.org/ko/docs/Web/CSS/line-height)를 지정하지 않아 `normal`이었다. `normal`은 글꼴 파일에 기록된 ascent와 descent로 줄 높이를 정하므로, 같은 12px이어도 글꼴마다 줄 높이가 다르다. 여기에 운영체제 차이가 겹친다.
+이름(`span`)에는 [`line-height`](https://developer.mozilla.org/ko/docs/Web/CSS/line-height)를 지정하지 않아 `normal`이었다. ==`normal`은 글꼴 파일에 기록된 ascent와 descent로 줄 높이를 정하므로==, 같은 12px이어도 글꼴마다 줄 높이가 다르다. 여기에 운영체제 차이가 겹친다.
 
 - **macOS:** `font-family`의 첫 항목 `-apple-system`이 바로 적용된다. 웹 글꼴을 기다리지 않으므로 이름 줄은 처음부터 15px이다.
 - **Linux CI 러너:** `-apple-system`이 없다. 다음 항목인 웹 글꼴 `MacSystemFont`는 [`font-display: swap`](https://developer.mozilla.org/ko/docs/Web/CSS/@font-face/font-display)이라, 파일을 받기 전에는 다른 한글 글꼴로 그리고 받은 뒤 다시 그린다. 이 시각에 이름 줄 높이가 바뀐다.
@@ -76,7 +87,7 @@ Linux에서 쓰인 대체 글꼴은 macOS에 없어 같은 방법으로 측정�
 
 이 문제는 시험에서만 생기지 않는다. Windows·Android 같은 Apple 이외 기기에서도 웹 글꼴이 적용되는 시각에 아이콘 높이가 바뀌고, 위젯 크기는 다음 측정까지 그 이전 값으로 남는다.
 
-### 수정
+### 해결
 
 ```css
 .mobile-app span {
@@ -107,7 +118,7 @@ if (icon) observer.observe(icon);
 
 [첫 방문 전송량을 줄인 작업](/memo/site-performance-diet)([45735c60a](https://github.com/hyeoniverse/MacFolio/commit/45735c60a)) 이후 저장소 글 원문은 별도 청크(`contentFiles-*.js`, 약 2MB)로 분리되어 메모 창을 처음 여는 시각에 받는다. 서버 글은 `GET /posts` 응답 한 번으로 먼저 도착하고, 저장소 글은 청크를 받은 뒤 합쳐진다.
 
-그 사이 `useMemoLibrary`는 서버 글만으로 목록을 만들었다. 서버 글 1편이 첫 자리에 놓이고 본문에 열린다. 청크가 도착하면 230편이 날짜순으로 합쳐지고 첫 자리에는 최신 저장소 글이 놓인다. Playwright가 항목 좌표를 계산한 뒤 실제로 클릭하는 사이에 이 재정렬이 일어나면 그 좌표에는 다른 글이 있다. macOS에서는 청크가 로컬 디스크에서 바로 읽혀 재정렬이 항상 클릭보다 먼저 끝났다.
+그 사이 `useMemoLibrary`는 서버 글만으로 목록을 만들었다. 서버 글 1편이 첫 자리에 놓이고 본문에 열린다. 청크가 도착하면 230편이 날짜순으로 합쳐지고 첫 자리에는 최신 저장소 글이 놓인다. ==Playwright가 항목 좌표를 계산한 뒤 실제로 클릭하는 사이에 이 재정렬이 일어나면 그 좌표에는 다른 글이 있다.== macOS에서는 청크가 로컬 디스크에서 바로 읽혀 재정렬이 항상 클릭보다 먼저 끝났다.
 
 ![메모 목록이 그려지는 순서](./images/ci-failures-after-merges-memo-race.svg '고치기 전에는 저장소 글이 합쳐지는 시각에 목록 순서가 바뀐다')
 
@@ -120,7 +131,7 @@ E2E에서 `.memo-item`을 찾아 누르는 곳을 검색하니 15개 파일에 8
 - 방문자도 같은 문제를 겪는다. 느린 네트워크에서 메모를 연 직후 글을 누르면 누른 자리에 다른 글이 놓일 수 있다.
 - 재시도는 88곳에 같은 코드를 복사해야 하고, 새 시험을 쓸 때마다 같은 처리를 기억해야 한다.
 
-### 수정
+### 해결
 
 ```ts
 // useMemoLibrary.ts: 저장소 글이 오기 전에는 서버 글만으로 목록을 그리지 않는다
@@ -141,9 +152,15 @@ const posts = useMemo(
 
 ## ③ 코드를 바꾸지 않았는데 실패한 검사: 새로 공개된 의존성 취약점
 
-#369를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/dependency-vulnerabilities)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다. 이번 실패는 이 단계가 의도한 대로 동작한 경우다. 저장소의 코드와 잠금 파일은 바뀌지 않았고, 새로 공개된 권고가 검사 결과를 바꿨다.
+### 증상
 
-### 공개에서 운영 반영까지 (한국 시각)
+#369를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다.
+
+### 원인
+
+이번 실패는 이 단계가 의도한 대로 동작한 경우다. ==저장소의 코드와 잠금 파일은 바뀌지 않았고, 새로 공개된 권고가 검사 결과를 바꿨다.==
+
+#### 공개에서 운영 반영까지 (한국 시각)
 
 | 시각        | 내용                                                                                                                       |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
@@ -161,9 +178,11 @@ const posts = useMemo(
 | high     | body-parser 2.3.0 | `apps/api` › `@nestjs/platform-express` › `express` › `body-parser` | 2.4.0     | 압축된 요청 본문 뒤에 남은 바이트로 서비스 거부 |
 | moderate | fflate 0.7.3      | `packages/og-card` › `satori` › `fflate`                            | 0.7.5     | `unzipSync`가 무한 반복에 빠질 수 있음          |
 
-### API 서버에 미치는 영향
+#### API 서버에 미치는 영향
 
 body-parser는 express가 요청 본문을 해석할 때 쓰는 라이브러리다. MacFolio API는 NestJS 기본 설정으로 JSON·URL 인코딩 파서를 쓰고, `app.setup.ts`에서 분석 이벤트용 `text/plain` 파서를 하나 더 등록한다. 세 파서 모두 `inflate` 옵션의 기본값이 `true`라 `Content-Encoding: gzip`·`deflate` 본문을 풀어서 해석한다. 본문을 받는 경로는 댓글·메시지·좋아요·분석 이벤트처럼 로그인 없이 호출할 수 있는 것도 있으므로, 이 취약점은 운영 서버에서 실제로 도달할 수 있는 경로였다.
+
+### 해결
 
 <details>
 <summary>왜 express 업데이트를 기다리지 않았나</summary>
@@ -205,7 +224,10 @@ overrides:
 | 09:09 | #374 CI 통과(API E2E의 파일 업로드 시험 포함), 머지                   |
 | 09:25 | API 이미지 빌드·배포 완료                                             |
 
-`pnpm audit`는 npm 레지스트리의 취약점 조회 API에 질의하므로, GitHub에 권고가 공개된 시각과 audit 결과에 나타나는 시각이 다르다. 이번에는 07:08에 공개된 권고가 08:33에 끝난 검사에는 없었고 08:38에 끝난 검사에서 처음 나타나, 1시간 25분 이상 차이가 났다. 그래서 같은 커밋도 실행 시각에 따라 통과하거나 실패한다. CI가 처음 실패한 시각부터 운영 서버 반영까지는 47분, 권고 공개부터는 2시간 17분이 걸렸다.
+> [!WARNING] 같은 커밋도 실행 시각에 따라 통과하거나 실패한다
+> `pnpm audit`는 npm 레지스트리의 취약점 조회 API에 질의하므로, GitHub에 권고가 공개된 시각과 audit 결과에 나타나는 시각이 다르다. 이번에는 07:08에 공개된 권고가 08:33에 끝난 검사에는 없었고 08:38에 끝난 검사에서 처음 나타나, 1시간 25분 이상 차이가 났다.
+
+CI가 처음 실패한 시각부터 운영 서버 반영까지는 47분, 권고 공개부터는 2시간 17분이 걸렸다.
 
 multer는 `@nestjs/platform-express`가 `2.4.0`으로 고정해 가져오므로, `fflate`와 같은 방식으로 그 버전만 바꾸는 선택자를 썼다. undici도 scalar가 `7.29.1`로 고정해 같은 방식이고, fast-uri는 `ajv`의 범위(`^3.0.1`) 안이라 범위로 올렸다.
 
@@ -223,9 +245,13 @@ overrides:
 
 ## ④ 새 답글이 와도 아래로 따라가지 않은 원인: scroll 이벤트 전달 시각
 
+### 증상
+
 main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/activity-live-refresh)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
 
 ![새 답글을 따라 내려가지 않은 화면](./images/ci-failures-after-merges-live-refresh.jpg '맨 아래에서 받은 답글이 입력 칸 위에서 잘려 있다')
+
+### 원인
 
 #370은 새 피드백 화면만 바꾸고 대화 화면 코드는 바꾸지 않았다. 대화 화면은 맨 아래를 보고 있는지를 `onScroll`에서 기록하고, 새 답글이 오면 그 기록을 읽는다.
 
@@ -241,7 +267,9 @@ useEffect(() => {
 }, [last?.id, last?.mine]);
 ```
 
-시험은 `scrollTop`을 코드로 바꾼 직후 가짜 시계를 16초 앞당겨 새 답글을 받는다. 브라우저는 `scrollTop`이 바뀌어도 [scroll 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Element/scroll_event)를 즉시 보내지 않고 다음 렌더링 단계에서 보낸다. 그 전에 새 답글이 렌더링되면 effect는 직전 단계(맨 위로 올린 상태)에서 기록한 `atBottom = false`를 읽는다. 실제 사용자는 스크롤과 다음 조회(15초 간격) 사이에 시간이 충분해 이 순서가 뒤바뀌지 않는다. 그래서 앱이 아니라 시험을 고쳤다.
+시험은 `scrollTop`을 코드로 바꾼 직후 가짜 시계를 16초 앞당겨 새 답글을 받는다. 브라우저는 `scrollTop`이 바뀌어도 [scroll 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Element/scroll_event)를 ==즉시 보내지 않고 다음 렌더링 단계에서 보낸다.== 그 전에 새 답글이 렌더링되면 effect는 직전 단계(맨 위로 올린 상태)에서 기록한 `atBottom = false`를 읽는다. 실제 사용자는 스크롤과 다음 조회(15초 간격) 사이에 시간이 충분해 이 순서가 뒤바뀌지 않는다. 그래서 앱이 아니라 시험을 고쳤다.
+
+### 해결
 
 ```ts
 // live-refresh.spec.ts: scroll 이벤트를 바로 보내 순서를 고정한다
@@ -252,9 +280,13 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 	}, to);
 ```
 
+### 확인
+
 이 실패도 macOS에서 재현하지 못했다. 원인은 실패 화면과 코드로 추정한 것이었고, 수정한 뒤 CI에서 통과해 확인했다.
 
-## 이번에 정한 기준
+## 재발 방지
+
+이번에 정한 기준은 다음과 같다.
 
 - **macOS에서 통과해도 Linux 글꼴로 결과가 달라질 수 있다.** 측정값을 계산에 쓰는 요소(여기서는 아이콘 이름)는 `line-height`를 숫자로 지정해 글꼴 메트릭에 의존하지 않게 한다. 측정 effect는 계산에 쓰는 요소를 모두 `ResizeObserver`로 관찰한다.
 - **재현되지 않으면 추측으로 고치기 전에 아티팩트를 내려받는다.** 이번 네 건 중 세 건은 `trace.zip`의 반환값·요청 순서와 `test-failed-1.png`로 원인을 좁혔다.
@@ -284,8 +316,8 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 ## 관련 글
 
 - [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e): 레이아웃이 측정 뒤에 바뀌어 흔들린 다른 E2E 사례
-- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities): 이번에 실패한 의존성 취약점 검사를 추가한 기록
-- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 저장소 글 원문을 별도 청크로 분리하고 웹 글꼴을 `swap`으로 바꾼 작업
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides): 이번에 실패한 의존성 취약점 검사를 추가한 기록
+- [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 저장소 글 원문을 별도 청크로 분리하고 웹 글꼴을 `swap`으로 바꾼 작업
 - [Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 실패한 위젯 크기 시험을 추가한 작업
 - [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci): E2E를 6칸으로 나눈 CI 구성
 

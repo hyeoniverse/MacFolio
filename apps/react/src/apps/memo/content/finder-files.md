@@ -11,7 +11,7 @@ Finder는 사이트의 데이터(저장소 문서, 프로젝트, 블로그 글, 
 
 ## 파일 보관 위치
 
-저장소는 공개다. `public/`에 이력서를 넣으면 누구나 내려받을 수 있고, 나중에 파일을 교체해도 이전 파일이 git 기록에 남는다. 그래서 파일은 [Cloudflare R2](https://developers.cloudflare.com/r2/) 버킷에 보관하고, 저장소에는 "어느 폴더에 어떤 파일을 표시할지"만 기록한다(`finder/documents.ts`).
+저장소는 공개다. `public/`에 이력서를 넣으면 누구나 내려받을 수 있고, ==나중에 파일을 교체해도 이전 파일이 git 기록에 남는다.== 그래서 파일은 [Cloudflare R2](https://developers.cloudflare.com/r2/) 버킷에 보관하고, 저장소에는 "어느 폴더에 어떤 파일을 표시할지"만 기록한다(`finder/documents.ts`).
 
 | 항목         | 보관 위치                          |
 | ------------ | ---------------------------------- |
@@ -101,7 +101,7 @@ PDF는 [PDF.js](https://mozilla.github.io/pdf.js/)로 페이지를 직접 렌더
 
 ## 관리자 업로드: 끌어다 놓기
 
-처음에는 파일을 올릴 때마다 `wrangler r2 object put`으로 업로드하고, `documents.ts`에 한 줄을 추가해 PR을 열어야 했다. 이력서 한 장을 교체하는 데 배포가 한 번 필요했다. 그래서 관리자로 로그인하면 Finder의 이력서·포트폴리오·자격증 폴더에 파일을 끌어다 놓아 업로드하게 했다.
+처음에는 파일을 올릴 때마다 `wrangler r2 object put`으로 업로드하고, `documents.ts`에 한 줄을 추가해 PR을 열어야 했다. ==이력서 한 장을 교체하는 데 배포가 한 번 필요했다.== 그래서 관리자로 로그인하면 Finder의 이력서·포트폴리오·자격증 폴더에 파일을 끌어다 놓아 업로드하게 했다.
 
 업로드 경로는 두 방식을 비교했다.
 
@@ -118,7 +118,7 @@ PDF는 [PDF.js](https://mozilla.github.io/pdf.js/)로 페이지를 직접 렌더
 
 ![서명 URL로 R2에 직접 업로드하는 흐름](./images/finder-files-upload.svg 'API는 검사와 서명만 하고, 파일은 브라우저에서 R2로 직접 전송된다')
 
-서명 URL은 [AWS 서명 버전 4](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html)를 `node:crypto`로 직접 구현했다. 서명 하나 때문에 SDK를 의존성에 추가하지 않았다. AWS 문서의 예시 값으로 같은 서명이 나오는지 시험으로 확인했다. 서명에 `content-length`를 포함해서, 요청한 크기와 다른 파일은 R2가 거부한다. 키는 서버가 `resume/<무작위>.pdf`처럼 생성하므로 브라우저가 경로를 지정할 수 없다.
+서명 URL은 [AWS 서명 버전 4](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html)를 `node:crypto`로 직접 구현했다. ==서명 하나 때문에 SDK를 의존성에 추가하지 않았다.== AWS 문서의 예시 값으로 같은 서명이 나오는지 시험으로 확인했다. 서명에 `content-length`를 포함해서, 요청한 크기와 다른 파일은 R2가 거부한다. 키는 서버가 `resume/<무작위>.pdf`처럼 생성하므로 브라우저가 경로를 지정할 수 없다.
 
 파일 목록도 코드에서 서버로 옮겼다. Finder는 `GET /documents`를 조회하고, 시험에서는 기존처럼 가짜 목록을 넣는다. 이름 변경과 삭제는 파일을 선택하고 메뉴 막대의 파일 메뉴(⌘⌫)에서 한다. 삭제하면 R2 객체도 삭제한다.
 
@@ -204,15 +204,17 @@ curl -si -X OPTIONS "https://$A.r2.cloudflarestorage.com/$B/desktop/test.gif" \
 - R2 공개 주소를 쓰지 않으므로 파일 응답은 모두 Worker를 거친다. 현재는 파일 수가 적고 캐시(`max-age=300`, ETag 304)가 있어 문제가 없다. 큰 파일이 늘어나면 R2 사용자 지정 도메인을 별도로 두는 방법도 있다. 그 경우 CSP에 출처를 하나 추가해야 한다.
 - 서명 URL의 유효 시간은 5분이다. 매우 느린 연결에서 20MB를 업로드하면 시간이 부족할 수 있다. 아직 그런 사례는 없었다.
 
-배운 것: "공개 저장소에 무엇을 넣지 않을 것인가"를 먼저 정하자 파일 위치(R2)와 주소(같은 출처)가 함께 결정됐다. 같은 출처로 제공하면 CSP 허용 범위를 넓히지 않아도 된다. 그리고 큰 파일이 API 서버를 거치지 않게 하는 것이 메모리 1GB 서버에 맞는 방식이었다. 서버는 "누가, 어디에, 얼마나"만 검사하고 서명한다.
+> [!IMPORTANT] 배운 것
+> "공개 저장소에 무엇을 넣지 않을 것인가"를 먼저 정하자 파일 위치(R2)와 주소(같은 출처)가 함께 결정됐다. 같은 출처로 제공하면 CSP 허용 범위를 넓히지 않아도 된다. 그리고 큰 파일이 API 서버를 거치지 않게 하는 것이 메모리 1GB 서버에 맞는 방식이었다. 서버는 "누가, 어디에, 얼마나"만 검사하고 서명한다.
 
-업로드할 때는 전화번호, 주소, 생년월일, 신분 번호를 삭제한 공개용 파일만 올린다.
+> [!CAUTION] 공개용 파일만 업로드
+> 업로드할 때는 전화번호, 주소, 생년월일, 신분 번호를 삭제한 공개용 파일만 올린다.
 
 ## 관련 글
 
 - [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): Finder의 트리 구조
-- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 업로드한 파일을 폴더로 정리하기
-- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files): 업로드 규칙을 contracts로 옮긴 작업
+- [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem): 업로드한 파일을 폴더로 정리하기
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205): 업로드 규칙을 contracts로 옮긴 작업
 - [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist): 동영상과 QuickTime 열기 창
 
 #MacFolio #프론트엔드 #Finder #미리보기 #pdfjs #CloudflareR2 #CSP #업로드

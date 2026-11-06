@@ -20,7 +20,7 @@ summary: 관리자 API에 가드를 빠뜨려도 오류가 나지 않는다. 컨
 
 ## 무엇이 걱정이었나
 
-작업 당시 API 경로는 64개였다. 그중 29개는 관리자만 호출해야 한다(글 작성·삭제, 파일 업로드, 배경화면 관리 등). 관리자 확인은 경로마다 `@UseGuards(AdminGuard)`를 붙여서 한다. 그런데 새 경로를 만들면서 이 한 줄을 빠뜨리면, 빌드·린트·기존 시험 어디에서도 오류가 나지 않은 채 누구나 글을 삭제할 수 있는 경로가 생긴다. 그때까지는 PR 리뷰(혼자 작업하므로 작성자 본인)에만 의존하고 있었다.
+작업 당시 API 경로는 64개였다. 그중 29개는 관리자만 호출해야 한다(글 작성·삭제, 파일 업로드, 배경화면 관리 등). 관리자 확인은 경로마다 `@UseGuards(AdminGuard)`를 붙여서 한다. 그런데 새 경로를 만들면서 이 한 줄을 빠뜨리면, ==빌드·린트·기존 시험 어디에서도 오류가 나지 않은 채 누구나 글을 삭제할 수 있는 경로가 생긴다==. 그때까지는 PR 리뷰(혼자 작업하므로 작성자 본인)에만 의존하고 있었다.
 
 ## 막는 방법 세 가지
 
@@ -30,7 +30,7 @@ summary: 관리자 API에 가드를 빠뜨려도 오류가 나지 않는다. 컨
 | 린트 규칙 (컨트롤러 메서드에 가드가 없으면 경고)   | 편집기에서 바로 표시된다                       | "가드가 없어도 되는 경로"를 린트가 모른다. 실제로 401을 내는지도 모른다            |
 | 표 하나와 실제 서버 비교 (고른 방법)               | 권한을 한곳에서 조회한다. 실제로 호출해 본다   | 경로를 추가할 때마다 표를 수정해야 한다 (이것이 목적이다)                          |
 
-전역 가드는 가장 안전한 기본값이지만, 이미 있는 64개 경로를 모두 수정해야 했다. 표 방식은 서버 코드를 수정하지 않고 시험 파일 하나로 시작할 수 있었다.
+전역 가드는 가장 안전한 기본값이지만, 이미 있는 64개 경로를 모두 수정해야 했다. ==표 방식은 서버 코드를 수정하지 않고 시험 파일 하나로 시작할 수 있었다==.
 
 <details><summary>용어 정리: 가드, 데코레이터 메타데이터, 401·400·500</summary>
 
@@ -110,12 +110,13 @@ for (const { metatype, instance } of discovery.getControllers()) {
 ## 남은 것, 배운 것
 
 - 표는 "누가 호출할 수 있나"만 확인한다. 방문자가 다른 방문자의 댓글을 수정할 수 있는지 같은 세부 권한은 경로별 시험이 담당한다. `visitor` 경로가 본인 데이터만 다루는지는 이 표가 확인하지 않는다.
-- 요청 검증을 zod 스키마로 통합하는 작업은 공유 타입과 함께 할 때 의미가 있어서 미뤘다. 검사 코드가 세 가지 형태(`{ errors }` 반환, 예외 발생, 문자열 반환)로 흩어져 있던 것은 그 뒤 `packages/contracts`로 옮기며 하나로 맞췄다([분석 계약](/memo/contracts-analytics), [댓글 계약](/memo/contracts-comments)).
-- 당장 필요한 것은 "검사가 있다"를 고정하는 것이었고, 시험 파일 하나로 해결됐다. 규칙을 코드 전체에 강제하기 어려울 때는 규칙을 표로 적고 실제 상태와 비교하는 시험이 비용이 가장 적다. 결함을 일부러 넣어 시험이 실패하는지 확인한 단계도 필요했다. 결함이 있어도 통과하는 시험은 아무것도 보장하지 않는다.
+- 요청 검증을 zod 스키마로 통합하는 작업은 공유 타입과 함께 할 때 의미가 있어서 미뤘다. 검사 코드가 세 가지 형태(`{ errors }` 반환, 예외 발생, 문자열 반환)로 흩어져 있던 것은 그 뒤 `packages/contracts`로 옮기며 하나로 맞췄다([분석 계약](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206), [댓글 계약](/memo/contracts-package#댓글좋아요-스키마-200)).
+- 당장 필요한 것은 "검사가 있다"를 고정하는 것이었고, 시험 파일 하나로 해결됐다. 규칙을 코드 전체에 강제하기 어려울 때는 규칙을 표로 적고 실제 상태와 비교하는 시험이 비용이 가장 적다. 결함을 일부러 넣어 시험이 실패하는지 확인한 단계도 필요했다. ==결함이 있어도 통과하는 시험은 아무것도 보장하지 않는다==.
 
 ## 따라 해 보기
 
-경로를 하나 추가하면 이 시험이 먼저 실패한다. 의도한 동작이다.
+> [!NOTE]
+> 경로를 하나 추가하면 이 시험이 먼저 실패한다. 의도한 동작이다.
 
 ```bash
 cp apps/api/.env.example apps/api/.env       # 처음 한 번
@@ -129,7 +130,8 @@ pnpm --filter @macfolio/api test:e2e test/routes.e2e.test.ts
 2. 시험을 실행하면 "표에 없는 경로"로 실패한다. `test/routes.e2e.test.ts`의 표에 한 줄(메서드·경로·권한)을 추가한다
 3. 관리자 경로라면 로그인 없이 401이 나오는지, 본문 검사가 가드보다 먼저 실행되지 않는지까지 시험이 자동으로 확인한다
 
-시험이 실제로 잡아내는지는 가드 한 줄을 일부러 삭제하고 실행해 보면 확인할 수 있다. 아래는 `/resources`의 가드를 삭제하는 예다.
+> [!TIP] 결함을 넣어 시험 확인
+> 시험이 실제로 잡아내는지는 가드 한 줄을 일부러 삭제하고 실행해 보면 확인할 수 있다. 아래는 `/resources`의 가드를 삭제하는 예다.
 
 ```bash
 sed -i.bak '/@UseGuards(AdminGuard)/d' apps/api/src/resources/resources.controller.ts
@@ -143,9 +145,9 @@ mv apps/api/src/resources/resources.controller.ts.bak apps/api/src/resources/res
 
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 - [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 - [리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)
 
 [^dto]: Data Transfer Object. NestJS에서는 요청 본문의 모양을 클래스로 선언하고 `class-validator` 데코레이터로 검사하는 방식을 말한다. [NestJS Validation](https://docs.nestjs.com/techniques/validation)
 

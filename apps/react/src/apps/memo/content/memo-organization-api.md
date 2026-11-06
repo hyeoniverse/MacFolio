@@ -46,9 +46,10 @@ const organized = organizePosts(posts, organization);
 | `GET /memo/organization` | 누구나                  | 방문자도 관리자가 정리한 폴더 구조로 글 목록을 조회한다 |
 | `PUT /memo/organization` | 관리자만 (`AdminGuard`) | 정리 내용 전체를 교체한다                               |
 
-정리 내용은 한 행에 JSON으로 저장한다. 관리자가 한 명이라 동시 수정이 발생하지 않고, 전체를 교체하면 화면 상태와 서버 상태가 어긋나는 경우가 줄어든다.
+==정리 내용은 한 행에 JSON으로 저장한다==. 관리자가 한 명이라 동시 수정이 발생하지 않고, 전체를 교체하면 화면 상태와 서버 상태가 어긋나는 경우가 줄어든다.
 
-화면에서 막는 규칙은 서버에서 **한 번 더** 검사한다. 화면을 거치지 않고 요청을 직접 보낼 수 있기 때문이다.
+> [!IMPORTANT] 서버에서 다시 검사
+> 화면에서 막는 규칙은 서버에서 **한 번 더** 검사한다. 화면을 거치지 않고 요청을 직접 보낼 수 있기 때문이다.
 
 | 규칙          | 값                                                                                          |
 | ------------- | ------------------------------------------------------------------------------------------- |
@@ -67,9 +68,9 @@ const organized = organizePosts(posts, organization);
 
 처음에는 편집 후 0.4초 뒤에 저장했다(디바운스). 연속으로 편집하면 마지막 상태만 전송하려는 의도였다. 그런데 E2E 시험에서 편집 직후 새로고침하자 편집 내용이 사라졌다. 실제 사용자도 고정 버튼을 누른 직후 창을 닫을 수 있다.
 
-페이지를 떠나는 시각(`pagehide`)에 [`fetch(..., { keepalive: true })`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#keepalive)로 남은 편집을 전송해 보았지만 요청이 전송되지 않았다. JSON 본문을 보내는 교차 출처 PUT은 브라우저가 먼저 [CORS preflight](https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request) 요청(`OPTIONS`)을 보내야 하는데, 페이지를 떠나는 시각의 keepalive 요청은 이 preflight를 거칠 수 없다.
+페이지를 떠나는 시각(`pagehide`)에 [`fetch(..., { keepalive: true })`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#keepalive)로 남은 편집을 전송해 보았지만 요청이 전송되지 않았다. JSON 본문을 보내는 교차 출처 PUT은 브라우저가 먼저 [CORS preflight](https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request) 요청(`OPTIONS`)을 보내야 하는데, ==페이지를 떠나는 시각의 keepalive 요청은 이 preflight를 거칠 수 없다==.
 
-편집 내용을 묶어 전송할 이유도 없었다. 편집은 타이핑이 아니라 폴더 생성, 이동, 고정처럼 **한 번씩 클릭하는 동작**이다. 그래서 편집할 때마다 즉시 저장한다. 다만 연속으로 클릭하면 요청 도착 순서가 뒤바뀌어 이전 상태가 최신 상태를 덮어쓸 수 있으므로, 저장 요청은 대기열(`saveQueue`)에 넣어 앞 요청이 끝난 뒤 다음 요청을 보낸다.
+편집 내용을 묶어 전송할 이유도 없었다. 편집은 타이핑이 아니라 폴더 생성, 이동, 고정처럼 **한 번씩 클릭하는 동작**이다. 그래서 ==편집할 때마다 즉시 저장한다==. 다만 연속으로 클릭하면 요청 도착 순서가 뒤바뀌어 이전 상태가 최신 상태를 덮어쓸 수 있으므로, 저장 요청은 대기열(`saveQueue`)에 넣어 앞 요청이 끝난 뒤 다음 요청을 보낸다.
 
 ![정리 내용 저장 시점의 전후](./images/memo-organization-api-save-queue.svg '0.4초 지연 저장은 새로고침 시각에 편집을 잃었고, 즉시 저장 + 순차 전송으로 바꿨다')
 
@@ -81,7 +82,8 @@ saveQueue.current = saveQueue.current.then(async () => {
 });
 ```
 
-저장에 실패하면(세션 만료 또는 규칙 위반) 알림을 표시하고 서버의 정리 내용으로 되돌린다. 저장되지 않은 편집이 화면에만 남아 저장된 것처럼 보이는 상태를 막기 위해서다.
+> [!NOTE] 저장 실패 시각의 처리
+> 저장에 실패하면(세션 만료 또는 규칙 위반) 알림을 표시하고 서버의 정리 내용으로 되돌린다. 저장되지 않은 편집이 화면에만 남아 저장된 것처럼 보이는 상태를 막기 위해서다.
 
 ## 시험
 
@@ -95,7 +97,7 @@ saveQueue.current = saveQueue.current.then(async () => {
 
 ## 이후 변경
 
-정리 내용의 필드는 이후 두 개가 추가됐다. 다음 날 잠금(`locks`, [메모 잠그기](/memo/memo-lock)), 그다음 날 폴더 순서(`order`, [폴더 순서를 손잡이로 바꾸기](/memo/memo-folder-order))다. 필드를 추가할 때마다 "이전에 저장한 JSON에는 이 필드가 없다"는 경우를 세 곳(서버 검사, 서버 응답, 화면 수신)에서 빈 값으로 채웠다. 10월 9일에는 이 구조와 검사 규칙을 `packages/desktop-core/src/memo/rules.ts`로 옮겨 화면과 서버가 같은 코드를 사용한다([desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)).
+정리 내용의 필드는 이후 두 개가 추가됐다. 다음 날 잠금(`locks`, [메모 잠그기](/memo/memo-lock)), 그다음 날 폴더 순서(`order`, [폴더 순서를 손잡이로 바꾸기](/memo/memo-folder-order))다. 필드를 추가할 때마다 "이전에 저장한 JSON에는 이 필드가 없다"는 경우를 세 곳(서버 검사, 서버 응답, 화면 수신)에서 빈 값으로 채웠다. 10월 9일에는 이 구조와 검사 규칙을 `packages/desktop-core/src/memo/rules.ts`로 옮겨 화면과 서버가 같은 코드를 사용한다([desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리)).
 
 ```ts
 export const EMPTY_ORGANIZATION: Organization = { folders: [], posts: {}, moves: [], pins: {}, locks: {}, order: [] };
@@ -130,7 +132,7 @@ npx playwright test e2e/memo-admin.spec.ts --project=desktop-chromium
 - [GitHub OAuth와 토큰 해시만 저장하는 DB 세션으로 관리자 인증하기](/memo/admin-login-github-oauth)
 - [Markdown 블로그에 글쓰기 붙이기](/memo/post-editor)
 - [정적 사이트의 편집 권한을 useCanEditMemo 하나로 관리자에게만 열기](/memo/read-only-memo)
-- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리)
 - [메모 잠그기](/memo/memo-lock)
 - [폴더 순서를 손잡이로 바꾸기](/memo/memo-folder-order)
 

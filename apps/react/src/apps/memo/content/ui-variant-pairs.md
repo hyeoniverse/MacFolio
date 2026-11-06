@@ -3,7 +3,7 @@ title: variant prop과 별도 컴포넌트 중 macOS·iOS 모양 분기 방식 �
 date: 2026-10-18
 category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
-seriesOrder: 9
+seriesOrder: 7
 summary: 같은 부품이 macOS와 iOS 모양을 선택하는 곳을 모두 찾았다. variant가 적합한 곳은 Menu 하나라 className="touch"를 variant="ios"로 바꿨고(9파일), Sheet·Modal 등은 이유를 기록하고 별도 부품으로 유지했다.
 ---
 
@@ -13,7 +13,7 @@ summary: 같은 부품이 macOS와 iOS 모양을 선택하는 곳을 모두 찾�
 
 MacFolio는 하나의 코드로 데스크톱 화면(macOS 재현)과 휴대폰 화면(iOS 재현)을 함께 렌더링한다. 그래서 같은 부품이 두 모양을 가져야 하는 경우가 많다. 메뉴가 대표적이다. 데스크톱 메뉴는 마우스로 선택하므로 작고 촘촘해도 되지만, 휴대폰에서는 손가락으로 눌러야 하므로 iOS 메뉴처럼 터치 영역이 크고 모서리가 둥글어야 한다.
 
-문제는 모양을 선택하는 방법이 부품마다 달랐다는 점이다.
+문제는 ==모양을 선택하는 방법이 부품마다 달랐다==는 점이다.
 
 | 부품         | 휴대폰 모양 선택 방법                    |
 | ------------ | ---------------------------------------- |
@@ -44,7 +44,8 @@ className={['ui-menu', className].filter(Boolean).join(' ')}
 
 ![mac 메뉴와 ios 메뉴의 크기를 나란히 놓은 그림](./images/ui-variant-pairs-sizes.svg 'Menu.css가 정한 두 모양의 크기')
 
-`touch`라는 이름은 CSS와 호출하는 쪽 사이의 암묵적인 규칙이다. `className="tuoch"`라고 잘못 입력해도 타입 검사는 통과하고, 화면에서 메뉴가 작게 표시된 뒤에야 발견된다. 또 `className`은 위치를 미세 조정하는 용도로도 쓰여서, 이 값이 "모양"인지 "위치 조정"인지 코드만으로는 구별할 수 없었다.
+> [!WARNING] className으로 고르는 모양
+> `touch`라는 이름은 CSS와 호출하는 쪽 사이의 암묵적인 규칙이다. `className="tuoch"`라고 잘못 입력해도 타입 검사는 통과하고, 화면에서 메뉴가 작게 표시된 뒤에야 발견된다. 또 `className`은 위치를 미세 조정하는 용도로도 쓰여서, 이 값이 "모양"인지 "위치 조정"인지 코드만으로는 구별할 수 없었다.
 
 ## 검토한 방법
 
@@ -54,7 +55,7 @@ className={['ui-menu', className].filter(Boolean).join(' ')}
 | `variant`를 `useIsMobile`로 자동 선택          | 호출하는 쪽이 아무것도 지정하지 않아도 된다              | 휴대폰 화면 안에서 mac 모양을 쓰는 곳이 예외가 된다     |
 | `variant?: 'mac' \| 'ios'`, 호출하는 쪽이 명시 | 잘못된 값을 타입 검사가 막는다. `IconButton`과 같은 방식 | 아홉 파일을 수정해야 한다                               |
 
-자동 선택이 가장 간편해 보였지만 채택하지 않았다. 메모 앱의 폴더 행은 휴대폰 화면에서도 편집 모드에서만 iOS 메뉴를 쓰고, 그 밖에는 mac 메뉴를 쓴다. 자동으로 선택하면 이런 곳마다 "자동 선택을 끄는" prop이 추가로 필요하다. 호출하는 쪽이 값 하나를 명시하는 편이 더 단순하다.
+자동 선택이 가장 간편해 보였지만 채택하지 않았다. 메모 앱의 폴더 행은 휴대폰 화면에서도 편집 모드에서만 iOS 메뉴를 쓰고, 그 밖에는 mac 메뉴를 쓴다. 자동으로 선택하면 이런 곳마다 "자동 선택을 끄는" prop이 추가로 필요하다. ==호출하는 쪽이 값 하나를 명시하는 편이 더 단순하다.==
 
 ## 구현
 
@@ -75,7 +76,7 @@ variant = 'mac',
 className={['ui-menu', menuVariantClass(variant), className].filter(Boolean).join(' ')}
 ```
 
-CSS는 한 줄도 수정하지 않았다. `ios`가 기존 `touch` 클래스를 그대로 붙이므로 화면은 같아야 한다. 그다음 호출하는 쪽 아홉 파일을 수정했다.
+==CSS는 한 줄도 수정하지 않았다.== `ios`가 기존 `touch` 클래스를 그대로 붙이므로 화면은 같아야 한다. 그다음 호출하는 쪽 아홉 파일을 수정했다.
 
 - 메모: `PhoneListBars`, `PhoneReaderBars`, `FolderPickMenu`, `FolderRow`(두 곳)
 - Finder 휴대폰(`FinderMobile`), 음악(`Music`), 사진 휴대폰·크게 보기(`PhotosMobile`, `PhoneViewer`), Safari 휴대폰(`SafariMobile`)
@@ -114,20 +115,21 @@ variant={props.editing ? 'ios' : 'mac'}
 
 ## 남은 것·배운 것
 
-결과적으로 변경한 부품은 `Menu` 하나다. 조사해 보니 나머지는 이미 적합한 구조였다. 이번 작업의 결과물은 코드보다 판단 기준이다.
+결과적으로 변경한 부품은 `Menu` 하나다. 조사해 보니 나머지는 이미 적합한 구조였다. ==이번 작업의 결과물은 코드보다 판단 기준이다.==
 
 - 두 모양의 차이가 크기·간격 수준이면 `variant`가 적합하다. 나타나는 방식이나 구조가 다르면 부품을 분리하는 편이 낫다.
 - 기본값을 화면 크기로 자동 선택하면 처음에는 간편하지만, 예외가 하나만 생겨도 규칙이 두 개가 된다. 그래서 호출하는 쪽이 명시하게 했다.
 - 클래스 이름 규칙은 가능하면 타입으로 바꾼다. 오타가 화면이 아니라 편집기의 타입 검사에서 발견된다.
 
-다음에 휴대폰 전용 모양이 필요한 부품이 생기면 `className`이 아니라 `variant`부터 추가한다.
+> [!TIP]
+> 다음에 휴대폰 전용 모양이 필요한 부품이 생기면 `className`이 아니라 `variant`부터 추가한다.
 
 ## 관련 글
 
 - [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate): 버튼 모양을 variant로 선택하는 방식
-- [모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기](/memo/ui-modal): 휴대폰 시트와 데스크톱 모달을 분리한 이유
+- [shared/ui 사용처 집계로 공통 컴포넌트 후보를 고르고 모달 동작을 Modal 컴포넌트로 추출하기](/memo/ui-modal): 휴대폰 시트와 데스크톱 모달을 분리한 이유
 - [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet)
-- [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 4단계 정리
+- [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-retrospective#4단계-공통-컴포넌트): 4단계 정리
 - PR: [#250](https://github.com/hyeoniverse/MacFolio/pull/250)
 
 #MacFolio #React #리팩터링

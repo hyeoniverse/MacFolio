@@ -181,7 +181,7 @@ boot 번들(assets/boot-wshPrf4V.js)이 49.4KB로, 상한 45.0KB보다 4.4KB 큽
 | 데스크톱 첫 화면 (desktop-chromium)           | 568KB (6개)               | **600KB** |
 | 휴대폰 홈 화면 (mobile-iphone·mobile-android) | 382KB (3개)               | **410KB** |
 
-- 상한은 측정값에 약 30KB를 더했다. 작은 조각 하나는 들어가고, 한글 명조(약 440KB)나 Pretendard `ksx`(253KB)가 첫 화면에 다시 들어오면 실패한다
+- 상한은 측정값에 약 30KB를 더했다. 작은 조각 하나는 들어가고, 한글 명조(약 440KB)나 Pretendard `ksx`(244KB)가 첫 화면에 다시 들어오면 실패한다
 - 데스크톱 시험은 첫 화면에 한글 명조 조각이 없는지와, Safari 창을 누르면 명조를 받는지도 확인한다
 - 넘으면 실패 메시지에 글꼴 파일별 크기를 적는다. 상한을 올려야 하면 `fontBudget.ts`의 `FONT_BUDGET`과 이 표를 함께 고친다
 
@@ -348,9 +348,9 @@ OS마다 글꼴이 달랐고, 그 밖의 기기에 배포하던 Apple SD Gothic 
 
 ## 관련 글
 
-- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-report)
+- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-diet#병목-분석)
 - [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
-- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](https://macfolio.hyeoniverse.com/memo/site-performance-remeasure)
+- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget#운영-사이트-재측정)
 - [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
 
 [^fcp]: [First Contentful Paint](https://web.dev/articles/fcp): 페이지에서 텍스트·이미지 같은 첫 콘텐츠가 렌더링된 시각.

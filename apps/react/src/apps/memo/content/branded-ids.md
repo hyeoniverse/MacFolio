@@ -5,8 +5,9 @@ category: 개발 기록/MacFolio/구조·상태 관리
 summary: 글 주소와 폴더 경로가 어디서나 string이라 주소창 문자열을 그대로 movePost에 넘겨도 컴파일이 됐다. PostSlug·FolderPath 브랜드 타입을 두고 외부 문자열은 다섯 검사 지점을 통과해야 그 타입이 되게 했다. 다른 방법과의 비교, 브랜드를 붙이지 않은 값, 비용을 정리했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 마지막 항목 "`any`, 넓은 `string` 대신 쓸 수 있는 유니언·브랜드 타입 정리 (앱 이름, 폴더 경로, 슬러그)"를 다룬다. [프로필 나누기](/memo/profile-split) 다음 작업이다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 1단계의 마지막 항목 "`any`, 넓은 `string` 대신 쓸 수 있는 유니언·브랜드 타입 정리 (앱 이름, 폴더 경로, 슬러그)"를 다룬다. [프로필 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile) 다음 작업이다.
 
+> [!NOTE] 브랜드 타입
 > **브랜드 타입**(branded type)은 `string` 같은 기본 타입에 타입 수준의 표시만 덧붙여, 같은 문자열이라도 검사를 통과한 값과 그렇지 않은 값을 컴파일러가 구별하게 하는 기법이다. 실행 시에는 일반 문자열이다.
 
 ## 먼저 집계한 것
@@ -22,7 +23,7 @@ summary: 글 주소와 폴더 경로가 어디서나 string이라 주소창 문�
 | **글 주소(slug)** | 어디서나 `string`                                                                                                                                   |
 | **폴더 경로**     | 어디서나 `string`                                                                                                                                   |
 
-남은 것은 글 주소와 폴더 경로였다. `Post.slug: string`, `Organization.posts: Record<string, string>`, `movePost(org, slug: string, folder: string)`처럼 모두 `string`이었다. 그래서 주소창에서 온 문자열, 끌어 놓는 항목의 id, API 파라미터가 아무 검사 없이 그대로 전달될 수 있었다. 서버는 `SLUG.test()`로 검사했지만 화면은 검사 없이 값을 신뢰했다.
+남은 것은 글 주소와 폴더 경로였다. `Post.slug: string`, `Organization.posts: Record<string, string>`, `movePost(org, slug: string, folder: string)`처럼 모두 `string`이었다. 그래서 주소창에서 온 문자열, 끌어 놓는 항목의 id, API 파라미터가 ==아무 검사 없이 그대로 전달될 수 있었다==. 서버는 `SLUG.test()`로 검사했지만 화면은 검사 없이 값을 신뢰했다.
 
 ![외부 문자열 다섯 종류가 postSlug()·folderPath() 검사를 통과해야 PostSlug·FolderPath가 된다](./images/branded-ids-boundary.svg '주소창, API 파라미터, 파일 이름, 끌기 id, 요청 본문이 postSlug()·folderPath()를 통과해 PostSlug·FolderPath가 된다. 검사를 거치지 않은 문자열은 tsc 오류')
 
@@ -80,7 +81,7 @@ export const folderPath = (value: unknown): FolderPath | null => (isFolderPath(v
 
 ## 브랜드를 붙이지 않은 값
 
-`PostContent.category`는 `string`으로 유지했다. 처음에는 `FolderPath`로 바꿨다가 되돌렸다. 글 편집기의 입력 상태(`PostDraft`)가 `PostContent`와 같은 모양이라, 사용자가 입력하는 중간 값까지 `FolderPath`여야 했기 때문이다. 아직 폴더를 선택하지 않은 상태를 타입으로 표현할 수 없다. 브랜드는 검사가 끝난 값에 붙이는 표시이고, 입력 중인 값에는 맞지 않는다. category는 `postInput` 스키마가 저장 전에 `folderPathError`로 검사한다.
+`PostContent.category`는 `string`으로 유지했다. 처음에는 `FolderPath`로 바꿨다가 되돌렸다. 글 편집기의 입력 상태(`PostDraft`)가 `PostContent`와 같은 모양이라, 사용자가 입력하는 중간 값까지 `FolderPath`여야 했기 때문이다. 아직 폴더를 선택하지 않은 상태를 타입으로 표현할 수 없다. ==브랜드는 검사가 끝난 값에 붙이는 표시이고, 입력 중인 값에는 맞지 않는다==. category는 `postInput` 스키마가 저장 전에 `folderPathError`로 검사한다.
 
 ## 비용
 
@@ -105,7 +106,7 @@ export const folderPath = (value: unknown): FolderPath | null => (isFolderPath(v
 
 - 이후 Finder 폴더 편집 기능([#263](https://github.com/hyeoniverse/MacFolio/pull/263))에서 `apps/react/src/apps/finder/edit.ts`에 `as PostSlug`·`as FolderPath`가 추가되었다. 2026-10-23 기준 시험 파일에서 `as PostSlug`·`as FolderPath`가 있는 줄은 46줄이다. 픽스처를 만드는 도우미 함수(`slug('a')`)를 두면 `as`를 줄일 수 있지만, 시험이 "검사 없이 신뢰한다"는 사실을 숨기게 되어 그대로 두었다.
 - 검사 지점이 다섯 곳이면 다섯 곳에서 `null`을 처리해야 한다. 위 표의 "실패 시 처리"처럼 각 지점이 다르게 대응한다. 브랜드 타입 때문에 이 분기를 각 검사 지점에서 명시적으로 정하게 되었다.
-- 타입이 보장하는 것은 "검사를 거쳤는가"이지 "값이 올바른가"가 아니다. 검사 함수 자체가 틀리면 브랜드 타입도 틀린 값을 신뢰한다. 정규식이 맞는지는 API e2e(`posts.e2e.test.ts` 등)가 잘못된 주소를 실제로 보내 확인한다.
+- ==타입이 보장하는 것은 "검사를 거쳤는가"이지 "값이 올바른가"가 아니다==. 검사 함수 자체가 틀리면 브랜드 타입도 틀린 값을 신뢰한다. 정규식이 맞는지는 API e2e(`posts.e2e.test.ts` 등)가 잘못된 주소를 실제로 보내 확인한다.
 
 ## 따라 해 보기
 
@@ -116,15 +117,16 @@ pnpm typecheck                              # 브랜드 타입을 지키지 않�
 pnpm --filter @macfolio/desktop-core test   # postSlug()·folderPath() 검사 함수의 시험
 ```
 
-주소창 문자열을 `movePost`에 그대로 넘기는 줄을 추가해 보면 `Argument of type 'string' is not assignable to parameter of type 'PostSlug'` 같은 오류가 난다. 확인한 뒤 그 줄을 삭제한다.
+> [!TIP] 오류 직접 확인하기
+> 주소창 문자열을 `movePost`에 그대로 넘기는 줄을 추가해 보면 `Argument of type 'string' is not assignable to parameter of type 'PostSlug'` 같은 오류가 난다. 확인한 뒤 그 줄을 삭제한다.
 
 ## 관련 글
 
-- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
-- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-step1-types)
+- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)
+- [zod 스키마와 브랜드 타입으로 화면과 서버의 타입 통합하기](/memo/refactor-retrospective#1단계-타입과-데이터-구조)
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)
 - [Markdown 글은 두고 서버 JSON 한 행으로 겹치는 메모 폴더 정리](/memo/memo-organization-api)
-- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)
+- [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem)
 
 [^guard]: 반환 타입이 `value is PostSlug`인 함수. `true`를 반환한 분기 안에서 TypeScript가 값을 `PostSlug`로 좁혀 준다. [TypeScript 핸드북: Narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates)
 

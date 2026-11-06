@@ -24,7 +24,7 @@ summary: Dock의 Launchpad·휴지통은 절대 위치로 고정되어 있었고
 const maxItems = Math.floor((width - 300) / 100);
 ```
 
-이 근사식은 실제 아이콘 크기(64px)·간격(16px)과 관계가 없다. 아이콘 한 칸은 실제로 80px인데 100px로 계산했으므로, 넓은 화면일수록 빈 공간이 많이 남았다. 그리고 Dock에 고정하지 않은 앱이나 칸이 부족해 Launchpad로 옮겨진 앱을 실행하면, macOS처럼 Dock 끝에 아이콘이 하나 추가된다. 이 칸은 계산에 포함되지 않아서, 앱 줄이 길어지면 절대 위치의 Launchpad 아래로 겹쳤다.
+이 근사식은 실제 아이콘 크기(64px)·간격(16px)과 관계가 없다. ==아이콘 한 칸은 실제로 80px인데 100px로 계산==했으므로, 넓은 화면일수록 빈 공간이 많이 남았다. 그리고 Dock에 고정하지 않은 앱이나 칸이 부족해 Launchpad로 옮겨진 앱을 실행하면, macOS처럼 Dock 끝에 아이콘이 하나 추가된다. 이 칸은 계산에 포함되지 않아서, 앱 줄이 길어지면 절대 위치의 Launchpad 아래로 겹쳤다.
 
 숫자만 조정할 수도 있었지만, 앱이 늘어날 때마다 같은 문제가 반복된다. 구조상 겹칠 수 없는 방식으로 바꿨다.
 
@@ -36,7 +36,7 @@ const maxItems = Math.floor((width - 300) / 100);
 
 ## 내용 폭만큼 넓어지는 한 줄
 
-macOS Dock처럼 **내용 폭만큼 넓어지고 가운데 정렬되는 한 줄**로 바꿨다. 앱 → Launchpad → 구분선 → 휴지통이 모두 같은 [flex](https://developer.mozilla.org/ko/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox) 줄에 있다. 절대 위치가 없으므로 앞의 칸이 늘어나면 뒤의 칸은 뒤로 밀릴 뿐 겹치지 않는다.
+macOS Dock처럼 **내용 폭만큼 넓어지고 가운데 정렬되는 한 줄**로 바꿨다. 앱 → Launchpad → 구분선 → 휴지통이 모두 같은 [flex](https://developer.mozilla.org/ko/docs/Web/CSS/CSS_flexible_box_layout/Basic_concepts_of_flexbox) 줄에 있다. ==절대 위치가 없으므로 앞의 칸이 늘어나면 뒤의 칸은 뒤로 밀릴 뿐 겹치지 않는다.==
 
 ![Dock 구조 전후](./images/dock-layout-before-after.svg '전: 절대 위치의 Launchpad 아래로 실행 중인 앱이 겹침 / 후: 한 줄의 flex')
 
@@ -53,7 +53,7 @@ export function dockAppCapacity(viewportWidth: number): number {
 }
 ```
 
-같은 값을 Dock에 CSS 변수(`--dock-icon`, `--dock-gap` 등)로 전달해, CSS도 이 값으로 렌더링한다. 계산에 쓰는 크기와 렌더링 크기가 서로 달라질 수 없다.
+같은 값을 Dock에 CSS 변수(`--dock-icon`, `--dock-gap` 등)로 전달해, CSS도 이 값으로 렌더링한다. ==계산에 쓰는 크기와 렌더링 크기가 서로 달라질 수 없다.==
 
 ## 실행 중인 앱도 칸을 차지한다
 
@@ -86,7 +86,7 @@ while (shown > 0 && shown + runningOf(shown).length > capacity) shown -= 1;
 | 1600px  | 13                       | 17                          |
 | 1920px  | 16                       | 21                          |
 
-근사식이 칸 수를 적게 계산했기 때문에 대부분의 화면에서는 겹치지 않았다. 실행 중인 앱 아이콘이 하나 추가되는 경우에만 그 여유 공간을 넘었다.
+근사식이 칸 수를 적게 계산했기 때문에 대부분의 화면에서는 겹치지 않았다. ==실행 중인 앱 아이콘이 하나 추가되는 경우에만 그 여유 공간을 넘었다.==
 
 ## API 문서 아이콘
 
@@ -109,7 +109,8 @@ while (shown > 0 && shown + runningOf(shown).length > capacity) shown -= 1;
 - Dock 아이콘을 끌어 순서를 바꾸는 기능은 아직 없다. 고정 앱 순서는 코드의 목록 순서다.
 - 휴대폰 화면의 Dock(아래 네 칸)은 별도 컴포넌트로 렌더링한다. 이 계산은 데스크톱 Dock에만 적용된다.
 
-배운 것: 절대 위치는 작성 시각의 항목 개수에서만 올바르다. 항목 개수가 바뀌는 줄에서는 겹침을 레이아웃 구조로 막아야 한다. 그리고 칸 수를 계산하는 코드와 렌더링하는 CSS가 같은 숫자를 쓰게 하면(CSS 변수로 전달), 한쪽만 수정해 값이 어긋나는 문제가 생기지 않는다.
+> [!IMPORTANT] 배운 것
+> 절대 위치는 작성 시각의 항목 개수에서만 올바르다. 항목 개수가 바뀌는 줄에서는 겹침을 레이아웃 구조로 막아야 한다. 그리고 칸 수를 계산하는 코드와 렌더링하는 CSS가 같은 숫자를 쓰게 하면(CSS 변수로 전달), 한쪽만 수정해 값이 어긋나는 문제가 생기지 않는다.
 
 ## 관련 글
 

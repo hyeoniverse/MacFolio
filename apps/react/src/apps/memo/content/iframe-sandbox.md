@@ -11,7 +11,7 @@ summary: 프로젝트 앱의 iframe에 제한이 없어, 내장한 사이트의 
 
 ## 허용되어 있던 동작
 
-`sandbox`가 없는 iframe 안의 페이지는 최상위 창(top-level browsing context, 여기서는 MacFolio)을 다른 주소로 이동시킬 수 있다. 내장한 사이트는 모두 직접 만든 사이트라 의도적으로 이동시킬 일은 없지만, 그 사이트들도 외부 라이브러리를 사용하고, 도메인 소유권이 바뀔 가능성도 있다. 그 경우 MacFolio를 보던 방문자가 의도하지 않은 주소로 이동된다.
+`sandbox`가 없는 iframe 안의 페이지는 최상위 창(top-level browsing context, 여기서는 MacFolio)을 다른 주소로 이동시킬 수 있다. 내장한 사이트는 모두 직접 만든 사이트라 의도적으로 이동시킬 일은 없지만, 그 사이트들도 외부 라이브러리를 사용하고, 도메인 소유권이 바뀔 가능성도 있다. 그 경우 ==MacFolio를 보던 방문자가 의도하지 않은 주소로 이동된다==.
 
 먼저 최상위 창을 이동시키는 스크립트(`top.location = …`)를 가짜 사이트에 넣고 시험을 작성했는데, `sandbox`가 없어도 시험이 통과했다. Chrome은 사용자 활성화(클릭 등) 없이 다른 출처의 iframe이 최상위 창을 이동시키는 것을 기본으로 차단한다. 차단되지 않는 것은 **사용자가 클릭한 경우**였다. iframe 안의 `<a target="_top">`을 클릭하면 최상위 창이 그 주소로 이동한다. 시험을 이 경우로 바꾸자 `sandbox`가 없으면 실패하고, 있으면 통과했다.
 
@@ -62,9 +62,10 @@ await expect(appWindow(page, 'newpick')).toBeVisible();
 | `allow-downloads`, `allow-modals`  | 내려받기, `alert`·`confirm`                              |
 | ~~`allow-top-navigation`~~         | **부여하지 않는다.** 최상위 창 이동 권한                 |
 
-`allow-scripts`와 `allow-same-origin`을 함께 부여하면, 부모와 같은 출처의 페이지는 스크립트로 iframe의 `sandbox` 속성을 제거할 수 있다. 하지만 프로젝트 사이트는 모두 다른 출처라 MacFolio의 DOM에 접근할 수 없으므로 해당되지 않는다. 같은 출처인 API 문서 앱은 MacFolio 저장소의 코드다.
+> [!WARNING] 두 권한을 함께 부여할 때의 위험
+> `allow-scripts`와 `allow-same-origin`을 함께 부여하면, 부모와 같은 출처의 페이지는 스크립트로 iframe의 `sandbox` 속성을 제거할 수 있다. 하지만 프로젝트 사이트는 모두 다른 출처라 MacFolio의 DOM에 접근할 수 없으므로 해당되지 않는다. 같은 출처인 API 문서 앱은 MacFolio 저장소의 코드다.
 
-새 탭으로 여는 링크와 게임의 전체 화면(`allow="fullscreen"`)은 그대로 동작한다. 내장 사이트가 외부 주소로 안내하려면 새 탭으로 열면 된다.
+새 탭으로 여는 링크와 게임의 전체 화면(`allow="fullscreen"`)은 그대로 동작한다. ==내장 사이트가 외부 주소로 안내하려면 새 탭으로 열면 된다==.
 
 ## 구현
 
@@ -86,7 +87,7 @@ const FRAME_SANDBOX = [
 ].join(' ');
 ```
 
-공통 컴포넌트 한 곳에만 적용하면 되므로, 프로젝트 앱 5개(HYEONIVERSE·NewPick·QRU·WTD·새싹 농장)와 API 문서 앱이 동시에 같은 권한을 갖는다. [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe) 작업에서 iframe 코드를 공통 컴포넌트로 통합해 두었기 때문이다.
+공통 컴포넌트 한 곳에만 적용하면 되므로, ==프로젝트 앱 5개(HYEONIVERSE·NewPick·QRU·WTD·새싹 농장)와 API 문서 앱이 동시에 같은 권한을 갖는다==. [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe) 작업에서 iframe 코드를 공통 컴포넌트로 통합해 두었기 때문이다.
 
 `sandbox`는 다른 방어 수단과 함께 동작한다. iframe에 넣을 수 있는 주소는 CSP `frame-src`[^frame-src]가 결정하고(프로젝트 데모 주소만 허용), 내장된 사이트가 할 수 있는 동작은 `sandbox`와 `allow`(권한 정책)가 결정한다.
 
@@ -99,7 +100,9 @@ const FRAME_SANDBOX = [
 
 ## 남은 과제와 정리
 
-- 보안 시험은 방어를 제거한 상태에서 먼저 실패하는지 확인해야 한다. 처음 작성한 시험은 `sandbox`가 없어도 통과했다. 그대로 두었다면 아무것도 검증하지 않는 시험이 통과 상태로 남았을 것이다.
+> [!IMPORTANT] 보안 시험은 먼저 실패를 확인
+> 보안 시험은 방어를 제거한 상태에서 먼저 실패하는지 확인해야 한다. 처음 작성한 시험은 `sandbox`가 없어도 통과했다. 그대로 두었다면 아무것도 검증하지 않는 시험이 통과 상태로 남았을 것이다.
+
 - `allow-same-origin`은 내장 사이트가 부모와 같은 출처일 때 위험하다. 현재 프로젝트 사이트는 모두 다른 도메인이지만, 같은 도메인 아래로 옮기면 이 목록을 다시 검토해야 한다.
 - 고정 0.5초 대기는 느린 CI에서 이동이 늦게 발생하면 검출하지 못할 수 있다. 실패를 놓치는 방향의 오차라 시험이 불안정해지지는 않지만, 그만큼 검증이 느슨하다.
 
@@ -122,7 +125,7 @@ npx playwright test e2e/project-apps.spec.ts --project=desktop-chromium
 
 ## 관련 글
 
-- 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- 계획: [리팩터링 계획 #150](https://github.com/hyeoniverse/MacFolio/issues/150), [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - [iframe 안 클릭을 window blur 이벤트로 감지해 창을 맨 앞으로 가져오기](/memo/game-in-iframe)
 - [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)

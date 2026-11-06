@@ -22,7 +22,7 @@ macOS의 날씨 앱과 같은 모양의 **날씨** 앱을 추가했다. Launchpa
 | OpenWeatherMap 같은 상용 API | 필요      | 불가              | 키를 숨기려면 서버를 거쳐야 하고, 무료 호출 한도를 관리해야 한다 |
 | Open-Meteo                   | 필요 없음 | 가능              | 서버 코드가 필요 없다. 출처(CC BY 4.0)만 표시한다                |
 
-공개된 날씨 정보를 표시하기 위해 API 서버에 중계 코드를 추가하지 않는 것이 목표였다. API 서버 없이 정적 사이트만 실행한 경우(`pnpm dev`)에도 날씨 앱은 동작해야 한다. 키가 필요 없는 Open-Meteo는 이 조건을 만족한다.
+==공개된 날씨 정보를 표시하기 위해 API 서버에 중계 코드를 추가하지 않는 것==이 목표였다. API 서버 없이 정적 사이트만 실행한 경우(`pnpm dev`)에도 날씨 앱은 동작해야 한다. 키가 필요 없는 Open-Meteo는 이 조건을 만족한다.
 
 사이트의 CSP는 [`connect-src`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/connect-src)에 등록된 주소로만 요청을 허용한다. 그래서 두 주소를 `worker/securityHeaders.ts`에 추가하고, 보안 헤더 시험에도 추가했다. 화면 맨 아래에는 데이터 출처를 표시한다.
 
@@ -37,7 +37,7 @@ macOS의 날씨 앱과 같은 모양의 **날씨** 앱을 추가했다. Launchpa
 | `Busan` | 부산광역시 (행정 중심지, 인구 3,285,147)가 먼저 |
 | `Tokyo` | 도쿄 (수도)가 먼저, 그다음 파푸아뉴기니의 Tokyo |
 
-한국어로 검색하면 결과가 없거나 엉뚱한 장소가 먼저 나온다. 그래서 자주 검색할 도시 39곳(국내 17, 해외 22)을 한국어 이름과 영어 별칭과 함께 코드에 내장했다(`places.ts`의 `CITIES`). 검색 순서는 다음과 같다.
+==한국어로 검색하면 결과가 없거나 엉뚱한 장소가 먼저 나온다.== 그래서 자주 검색할 도시 39곳(국내 17, 해외 22)을 한국어 이름과 영어 별칭과 함께 코드에 내장했다(`places.ts`의 `CITIES`). 검색 순서는 다음과 같다.
 
 1. 내장 도시: 한국어·영어 이름에 검색어가 포함되면 즉시 표시한다 (`주` → 광주, 청주, 전주, 제주)
 2. Open-Meteo: 입력이 0.3초 멈춘 뒤 호출하고(디바운스), 결과를 수도(`PPLC`) → 행정 중심지(`PPLA`) → 인구 순으로 재정렬한다[^pplc]
@@ -45,7 +45,7 @@ macOS의 날씨 앱과 같은 모양의 **날씨** 앱을 추가했다. Launchpa
 
 ## 검색이 느린 문제
 
-실제로 사용해 보니 장소 검색 응답이 느렸다. 측정해 보니 Open-Meteo 지오코딩 응답 시간이 요청당 **1~10초**였다(같은 검색어도 요청마다 달랐고, 일기예보 API는 1초 남짓). 옵션(`language`, `count`)을 바꿔도 같았다. 여기에 입력이 멈출 때마다 0.3초 뒤 다시 요청했고, 한글은 조합 중인 글자('ㄴ', '노', '놘'…)마다 요청을 보냈다. 외부 서버의 응답 시간은 개선할 수 없으므로 **대기가 필요한 경우를 줄였다**(`2536320be`).
+실제로 사용해 보니 장소 검색 응답이 느렸다. 측정해 보니 Open-Meteo 지오코딩 응답 시간이 요청당 **1~10초**였다(같은 검색어도 요청마다 달랐고, 일기예보 API는 1초 남짓). 옵션(`language`, `count`)을 바꿔도 같았다. 여기에 입력이 멈출 때마다 0.3초 뒤 다시 요청했고, 한글은 조합 중인 글자('ㄴ', '노', '놘'…)마다 요청을 보냈다. 외부 서버의 응답 시간은 개선할 수 없으므로 ==대기가 필요한 경우를 줄였다==(`2536320be`).
 
 - **내장 도시를 39곳에서 211곳으로 확장.** 국내 시·군과 서울의 구 25개, 해외 주요 도시를 넣었다. 지오코딩은 '노원구'·'강남구' 같은 구 이름을 찾지 못하고 '성남'은 같은 이름의 마을을 먼저 반환해서, 국내 좌표는 직접 입력했다(도시는 중심, 구는 구청 근처. 날씨 격자 간격이 수 km라 이 정도 오차는 결과에 영향이 없다). 대부분의 검색은 이제 입력 즉시 결과가 나온다
 - **정렬 순서:** 이름이 검색어로 시작하는 장소 → 이름에 검색어가 포함된 장소 → 지역 이름에 포함된 장소. '서울'을 입력하면 서울 다음에 서울특별시의 구 25개가 나온다
@@ -69,7 +69,8 @@ const rank = (city: (typeof CITIES)[number]) => {
 
 ![글자를 치면 내장 도시를 바로 보여 주고, 조건이 맞을 때만 Open-Meteo에 묻는 흐름](./images/weather-app-search-flow.svg '장소 찾기 흐름')
 
-목록을 확장한 뒤 '서울'을 검색하니 종로구가 결과에서 빠져 있었다. 중복 표시를 막기 위해 약 1km 이내를 같은 장소로 판정했는데, 서울(시청)과 종로구(구청)가 1km 이내에 있었다. 기준을 약 500m(위도·경도 차 0.005도)로 좁히고 이 경우를 시험에 추가했다.
+> [!WARNING] 같은 장소로 판정하는 거리
+> 목록을 확장한 뒤 '서울'을 검색하니 종로구가 결과에서 빠져 있었다. 중복 표시를 막기 위해 약 1km 이내를 같은 장소로 판정했는데, 서울(시청)과 종로구(구청)가 1km 이내에 있었다. 기준을 약 500m(위도·경도 차 0.005도)로 좁히고 이 경우를 시험에 추가했다.
 
 ```ts
 /** 두 장소가 같은 곳인지 (약 500m 안). 1km로 두었더니 서울(시청)과 종로구(구청)가 같은 곳이 되어 종로구가 찾기에서 빠졌다 */
@@ -89,7 +90,8 @@ export const samePlace = (a: Place, b: Place) =>
 
 추가한 장소 목록은 브라우저의 localStorage에 저장한다. 기본값은 서울 하나다. 휴지통의 '내 브라우저 데이터'에도 '날씨 장소'로 표시되어 삭제할 수 있다(휴지통 시험이 코드가 사용하는 저장 키를 모두 등록했는지 검사하므로, 누락하면 시험이 실패한다).
 
-현재 위치 기능은 구현하지 않았다. 사이트의 [`Permissions-Policy`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy)가 위치 권한을 차단하고 있고, 위치 권한을 요청하기보다 방문자가 도시를 검색해 추가하는 방식이 개인정보 수집을 줄인다.
+> [!NOTE] 현재 위치 기능을 넣지 않은 이유
+> 현재 위치 기능은 구현하지 않았다. 사이트의 [`Permissions-Policy`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy)가 위치 권한을 차단하고 있고, 위치 권한을 요청하기보다 방문자가 도시를 검색해 추가하는 방식이 개인정보 수집을 줄인다.
 
 ![데스크톱 날씨 창: 왼쪽에 서울·도쿄·제주 카드, 오른쪽에 큰 기온과 시간별·10일 일기예보, 상세 칸](./images/weather-app-desktop.jpg '맥의 날씨 창 (Open-Meteo 응답은 시험용 가짜 데이터)')
 
@@ -105,7 +107,8 @@ export const samePlace = (a: Place, b: Place) =>
 - 시간별 일기예보 아래는 2단 배치: 왼쪽 10일 일기예보, 오른쪽 상세 칸
 - 밤에는 남색 하늘에 별을 배치하고, 칸 배경을 어둡고 투명하게 한다
 
-사이드바에 블러([`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter))를 적용하자 그 안의 사이드바 버튼이 클릭되지 않았다. `backdrop-filter`가 새 [쌓임 맥락(stacking context)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)을 만들어서, 버튼의 z-index를 올려도 창 상단의 끌기 영역(z-index 3) 아래에 놓였다. 사이드바 전체의 z-index를 올리면 이번에는 사이드바가 신호등 버튼을 덮는다. 그래서 사이드바 상자는 클릭을 통과시키고([`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)) 내부 요소만 클릭을 받게 했다. 신호등 클릭 시험을 추가해 이 문제를 검출했다. 같은 원리의 문제는 [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)에 자세히 정리했다.
+> [!WARNING] `backdrop-filter`가 만든 쌓임 맥락
+> 사이드바에 블러([`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter))를 적용하자 그 안의 사이드바 버튼이 클릭되지 않았다. `backdrop-filter`가 새 [쌓임 맥락(stacking context)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)을 만들어서, 버튼의 z-index를 올려도 창 상단의 끌기 영역(z-index 3) 아래에 놓였다. 사이드바 전체의 z-index를 올리면 이번에는 사이드바가 신호등 버튼을 덮는다. 그래서 사이드바 상자는 클릭을 통과시키고([`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)) 내부 요소만 클릭을 받게 했다. 신호등 클릭 시험을 추가해 이 문제를 검출했다. 같은 원리의 문제는 [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context)에 자세히 정리했다.
 
 **아이폰 (좁은 창)**
 

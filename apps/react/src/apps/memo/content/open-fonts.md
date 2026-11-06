@@ -3,7 +3,7 @@ title: 오픈 라이선스 글꼴로 바꾸고 첫 화면 글꼴을 1,187KB에�
 date: 2026-10-26
 category: 개발 기록/MacFolio/화면·스타일
 series: 성능 최적화
-seriesOrder: 5
+seriesOrder: 3
 summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -apple-system을 앞에 둔 글꼴 지정과 웹 배포 허락이 없는 Apple 웹 글꼴(Regular 하나)이었다. 오픈 라이선스 글꼴로 바꾸고, 첫 화면 글꼴을 1,187KB에서 568KB로 줄여 CI 예산을 걸었다.
 ---
 
@@ -25,7 +25,7 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 코드 (`ui-monospace, 'SF Mono', Menlo, …`)   | SF Mono                               | Consolas·DejaVu Sans Mono 등 OS마다 다름                    |
 | 명조 (`'Nanum Myeongjo', 'AppleMyungjo', …`) | AppleMyungjo                          | 기기에 있는 명조, 없으면 기본 serif                         |
 
-같은 웹 글꼴을 받은 기기끼리도 굵은 글씨는 합성이라 실제 굵은 글꼴과 모양이 다르다. 앞서 CI에서 휴대폰 위젯 높이가 2px 달라진 것도 이 차이였다([머지하자 CI가 연달아 실패한 원인](/memo/ci-failures-after-merges)).
+==같은 웹 글꼴을 받은 기기끼리도 굵은 글씨는 합성이라 실제 굵은 글꼴과 모양이 다르다==. 앞서 CI에서 휴대폰 위젯 높이가 2px 달라진 것도 이 차이였다([머지하자 CI가 연달아 실패한 원인](/memo/ci-failures-after-merges)).
 
 ## 라이선스: Apple 글꼴은 웹으로 배포할 수 없다
 
@@ -34,7 +34,7 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 - **SF Pro:** Apple이 [글꼴 페이지](https://developer.apple.com/fonts/)에서 배포하는 라이선스는 Apple 운영체제용 소프트웨어의 UI 시안(mock-up) 제작으로 쓰임을 한정한다. Apple 개발자 포럼의 답변도 웹 글꼴로 쓰지 말고 `-apple-system`·`system-ui`로 기기의 글꼴을 부르라고 안내한다([포럼 1](https://developer.apple.com/forums/thread/733267), [포럼 2](https://developer.apple.com/forums/thread/127350)). 상업·비상업으로 나뉘는 조건이 아니다.
 - **Apple SD Gothic Neo:** macOS·iOS에 들어 있는 글꼴이다. Apple의 라이선스 원문은 찾지 못했다. 웹 배포를 허락한다는 근거도 찾지 못했다. 기기 안에서 쓰는 것과 파일을 서버에 올려 다른 기기에 내려보내는 것은 다른 행위라, 배포를 멈추는 쪽으로 판단했다.
 
-그래서 화면 통일과 함께, 웹 배포가 허락된 글꼴로 바꾸는 것이 목표가 되었다.
+그래서 화면 통일과 함께, ==웹 배포가 허락된 글꼴로 바꾸는 것==이 목표가 되었다.
 
 ## 고른 글꼴
 
@@ -46,7 +46,8 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 고정폭 | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) Variable          | 라틴 조각이 39KB. 한글이 든 고정폭 글꼴(D2Coding 등)은 한글 글자 수만큼 파일이 커서, 코드 블록의 한글은 다음 글꼴인 Pretendard로 그린다                          |
 | 명조   | [Noto Serif KR](https://fonts.google.com/noto/specimen/Noto+Serif+KR) Variable | Safari 프로젝트 페이지의 명조 제목. [Fontsource](https://fontsource.org) 패키지가 `unicode-range` 조각으로 나눠 둔 것을 쓴다                                     |
 
-이모지는 범위에서 뺐다. 기기의 이모지 글꼴을 쓰고, 같게 하려면 이모지 글꼴(수 MB)을 받아야 한다.
+> [!NOTE] 이모지 제외
+> 이모지는 범위에서 뺐다. 기기의 이모지 글꼴을 쓰고, 같게 하려면 이모지 글꼴(수 MB)을 받아야 한다.
 
 ![휴대폰 홈](./images/open-fonts-iphone.jpg '휴대폰 홈(iPhone 15, WebKit). 고치기 전에는 Apple 기기라 시스템 글꼴, 고친 뒤에는 다른 기기와 같은 Pretendard')
 
@@ -82,7 +83,7 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 메모 앱 첫 화면(글 234편의 제목·요약)이 받는 Pretendard | 92조각 중 거의 전부, 약 1.7MB             | core 하나, 456KB           |
 | `@font-face` CSS (첫 방문 번들에 포함, brotli)          | 약 14.6KB → 성능 예산 265KB 초과(271.4KB) | 1KB 미만 → 259.7KB         |
 
-글 목록은 한 화면에 다양한 한글이 나와 빈도 순 조각이 거의 다 필요했다. 그래서 예전 Apple 글꼴과 같은 방식([글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet))으로 `scripts/subset-font.py`를 다시 썼다.
+==글 목록은 한 화면에 다양한 한글이 나와 빈도 순 조각이 거의 다 필요했다==. 그래서 예전 Apple 글꼴과 같은 방식([Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet))으로 `scripts/subset-font.py`를 다시 썼다.
 
 - **core:** 영문·숫자·라틴-1, 문장 부호, 화살표, 한글 자모, KS X 1001 완성형 2,350자. 가변 글꼴이라 굵기 전체를 포함해 456KB (아래 '전송량 줄이기'에서 다시 나눴다)
 - **ext-0\~7:** 나머지 한글 8,822자를 코드 순서로 8등분(각 170\~210KB). 저장소의 글과 화면 문구 전체에서 KS X 1001 밖 글자는 '긂·똠·햏' 세 글자, 글 2편뿐이었다
@@ -147,7 +148,7 @@ ext의 `unicode-range`는 코드 범위(예: `U+AC02-B1C1`)라 자주 쓰는 글
 
 ### 3. 첫 화면 글꼴에 예산을 건다
 
-첫 방문 번들 예산(`budget.mjs`)은 `index.html`이 처음부터 요청하는 스크립트·CSS만 집계해, 이번처럼 글꼴이 세 배로 늘어도 CI가 통과했다. 글꼴은 화면에 그린 글자에 따라 받으므로 빌드 결과만으로는 알 수 없어, 실제 브라우저로 재는 E2E 시험으로 넣었다(`e2e/fontBudget.ts`).
+첫 방문 번들 예산(`budget.mjs`)은 `index.html`이 처음부터 요청하는 스크립트·CSS만 집계해, ==이번처럼 글꼴이 세 배로 늘어도 CI가 통과했다==. 글꼴은 화면에 그린 글자에 따라 받으므로 빌드 결과만으로는 알 수 없어, 실제 브라우저로 재는 E2E 시험으로 넣었다(`e2e/fontBudget.ts`).
 
 - `perf-fonts.spec.ts` (데스크톱): 첫 화면 글꼴 합계 600KB 이하, 한글 명조 조각 없음. Safari 창을 누르면 명조를 받는지도 확인한다
 - `mobile-perf-fonts.spec.ts` (iPhone·Android): 홈 화면 글꼴 합계 410KB 이하
@@ -178,8 +179,8 @@ PDF 이력서와 공유 카드도 Pretendard로 바꿨다. 브라우저의 react
 
 ## 관련 글
 
-- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
-- [#boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
+- [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
+- [Lighthouse 운영 재측정, 명언 데이터 lazy 분리, #boot-splash 삭제 시각으로 휴대폰 LCP 편차 해결과 CI 성능 예산](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
 - [CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](/memo/ci-failures-after-merges): 글꼴마다 다른 줄 높이로 위젯 크기가 달라진 사례
 
 #MacFolio #글꼴 #웹폰트 #라이선스 #성능

@@ -28,7 +28,7 @@ summary: 메일 앱으로 보낸 메일을 서버에 1년 보관하고, 방문�
 
 보낸 편지함은 **본인 메일만** 표시해야 한다. 회원 가입이 없는 사이트에서 본인을 식별하는 방법은 이미 있었다. 메시지 앱과 댓글이 사용하는 방문자 쿠키다([httpOnly 방문자 쿠키의 HMAC 해시로 가입 없이 방문자 식별하기](/memo/visitor-identity)). 처음 요청한 브라우저에 무작위 토큰을 쿠키([`HttpOnly`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#httponly), 유효 기간 1년)로 발급하고, DB에는 그 토큰의 HMAC[^hmac]만 저장한다.
 
-메일을 보내는 시각에 이 HMAC을 메일과 함께 `visitorHash` 열에 저장하고, `GET /contact/mine`은 요청 쿠키의 HMAC과 같은 메일만 반환한다. 화면에서 숨기는 방식이 아니라 서버가 쿼리 조건으로 필터링하므로, 요청을 조작해도 다른 방문자의 메일은 받을 수 없다.
+메일을 보내는 시각에 이 HMAC을 메일과 함께 `visitorHash` 열에 저장하고, `GET /contact/mine`은 요청 쿠키의 HMAC과 같은 메일만 반환한다. 화면에서 숨기는 방식이 아니라 서버가 쿼리 조건으로 필터링하므로, ==요청을 조작해도 다른 방문자의 메일은 받을 수 없다==.
 
 ```ts
 // apps/api/src/contact/contact.service.ts
@@ -56,7 +56,8 @@ async mine(visitor: Visitor | null): Promise<ContactMailView[]> {
 
 ![방문자와 관리자가 메일을 읽고 쓰는 경로](./images/mail-mailboxes-flow.svg '방문자는 자기 HMAC의 메일만, 관리자는 모든 메일을 받는다')
 
-프런트엔드의 발송 요청에는 [`credentials: 'include'`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials)가 필요하다. 쿠키 없이 요청하면 서버가 요청마다 새 방문자로 판단하므로 보낸 편지함이 항상 비어 있다.
+> [!WARNING] 쿠키를 보내지 않는 요청
+> 프런트엔드의 발송 요청에는 [`credentials: 'include'`](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit#credentials)가 필요하다. 쿠키 없이 요청하면 서버가 요청마다 새 방문자로 판단하므로 보낸 편지함이 항상 비어 있다.
 
 ## 관리자 답장
 
@@ -65,7 +66,8 @@ async mine(visitor: Visitor | null): Promise<ContactMailView[]> {
 1. [Resend](https://resend.com/docs/api-reference/emails/send-email)로 **방문자의 주소**에 메일을 발송한다. 제목은 `Re: [MacFolio] 원래 제목`이고, 본문 아래에 수신한 메일을 `>`로 인용한다. Reply-To는 관리자 주소이므로 방문자가 메일 클라이언트에서 답장하면 관리자에게 도착한다.
 2. 답장을 원래 메일에 연결해 `ContactReply`에 저장한다. 방문자가 사이트의 보낸 편지함을 열면 이 답장이 함께 표시된다.
 
-발송이 먼저다. 발송에 실패하면 저장하지 않고 502 응답으로 실패 이유를 표시한다. 저장만 되고 메일이 발송되지 않으면 방문자는 답장이 있다는 사실을 알 수 없기 때문이다.
+> [!IMPORTANT] 발송이 먼저, 저장이 나중
+> 발송이 먼저다. 발송에 실패하면 저장하지 않고 502 응답으로 실패 이유를 표시한다. 저장만 되고 메일이 발송되지 않으면 방문자는 답장이 있다는 사실을 알 수 없기 때문이다.
 
 ```ts
 const { subject, text } = buildReply(mail, parsed.value.body);
@@ -82,7 +84,7 @@ await this.prisma.contactReply.create({ data: { mailId: id, body: parsed.value.b
 | 성공 | 성공       | 방문자는 메일함과 사이트의 보낸 편지함 양쪽에서 답장을 확인한다                 |
 | 성공 | 실패       | 방문자는 메일함에서만 답장을 확인한다. 사이트의 보낸 편지함에는 표시되지 않는다 |
 
-마지막 경우는 남아 있다. 둘 중 하나만 보장할 수 있다면 메일 발송을 보장하는 쪽을 택했다.
+마지막 경우는 남아 있다. 둘 중 하나만 보장할 수 있다면 ==메일 발송을 보장하는 쪽을 택했다==.
 
 목록의 안 읽음 표시는 사용자에 따라 기준이 다르다.
 
@@ -93,7 +95,7 @@ await this.prisma.contactReply.create({ data: { mailId: id, body: parsed.value.b
 
 ## 보관 기간 1년
 
-메일을 서버에 저장하게 되면서 개인정보 문서([docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md))를 수정했다. 수신한 메일과 답장은 1년이 지나면 삭제한다. 별도 예약 작업은 없고, 메일을 발송하는 시각과 관리자가 받은 편지함을 여는 시각에 기간이 지난 메일을 삭제한다(`purge()`). 방문자가 쿠키를 삭제하면 그 브라우저에서도 더는 조회되지 않는다.
+메일을 서버에 저장하게 되면서 개인정보 문서([docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md))를 수정했다. ==수신한 메일과 답장은 1년이 지나면 삭제한다==. 별도 예약 작업은 없고, 메일을 발송하는 시각과 관리자가 받은 편지함을 여는 시각에 기간이 지난 메일을 삭제한다(`purge()`). 방문자가 쿠키를 삭제하면 그 브라우저에서도 더는 조회되지 않는다.
 
 DB에는 테이블 두 개(`ContactMail`, `ContactReply`)를 추가했다.
 

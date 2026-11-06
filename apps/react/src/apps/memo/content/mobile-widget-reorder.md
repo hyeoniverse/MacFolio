@@ -30,11 +30,14 @@ summary: 휴대폰 홈 화면 편집 모드에서 위젯을 끌어 순서를 바
 
 위젯 영역은 2열 CSS 격자다. 작은 위젯은 한 칸, 중간 위젯은 한 줄 전체를 차지한다. 저장 형식은 페이지마다 위젯 배열이고 좌표는 없다. 순서만으로 자리가 정해진다.
 
-끌기를 구현하기 전에 확인해 보니 순서와 화면의 자리가 항상 일치하지는 않았다. CSS 격자의 기본 자동 배치(`grid-auto-flow: row`)는 커서를 앞으로만 옮긴다. `[작게, 중간, 작게]`는 첫 줄 오른쪽 칸을 비운 채 세 줄을 차지한다. 반면 페이지에 위젯을 더 놓을 수 있는지 계산하는 `widgetRows`는 "작은 위젯 둘이 한 줄"로 계산해 두 줄로 판단했다. 위젯 추가 순서에 따라 화면과 계산이 어긋날 수 있었다.
+끌기를 구현하기 전에 확인해 보니 ==순서와 화면의 자리가 항상 일치하지는 않았다==. CSS 격자의 기본 자동 배치(`grid-auto-flow: row`)는 커서를 앞으로만 옮긴다. `[작게, 중간, 작게]`는 첫 줄 오른쪽 칸을 비운 채 세 줄을 차지한다. 반면 페이지에 위젯을 더 놓을 수 있는지 계산하는 `widgetRows`는 "작은 위젯 둘이 한 줄"로 계산해 두 줄로 판단했다. 위젯 추가 순서에 따라 화면과 계산이 어긋날 수 있었다.
 
 ![sparse와 dense 배치](./images/mobile-widget-reorder-grid.svg '같은 순서를 sparse와 dense로 배치한 결과. dense는 뒤의 작은 위젯이 앞의 빈 칸을 채운다')
 
-[`grid-auto-flow: row dense`](https://developer.mozilla.org/ko/docs/Web/CSS/grid-auto-flow)로 바꾸면 뒤의 작은 위젯이 앞의 빈 칸을 채워 `widgetRows`와 일치한다. 다만 dense 배치는 DOM 순서와 화면 순서가 달라진다. 화면 읽기 프로그램과 키보드 초점은 DOM 순서를 따르므로, 저장할 때마다 순서를 화면 순서로 정규화한다(`normalizeOrder`). 정규화한 순서는 sparse와 dense 어느 쪽으로 배치해도 같은 자리에 놓인다.
+[`grid-auto-flow: row dense`](https://developer.mozilla.org/ko/docs/Web/CSS/grid-auto-flow)로 바꾸면 뒤의 작은 위젯이 앞의 빈 칸을 채워 `widgetRows`와 일치한다.
+
+> [!WARNING] dense 배치와 DOM 순서
+> 다만 dense 배치는 DOM 순서와 화면 순서가 달라진다. 화면 읽기 프로그램과 키보드 초점은 DOM 순서를 따르므로, 저장할 때마다 순서를 화면 순서로 정규화한다(`normalizeOrder`). 정규화한 순서는 sparse와 dense 어느 쪽으로 배치해도 같은 자리에 놓인다.
 
 배치 규칙은 React와 DOM에 의존하지 않는 순수 함수로 분리했다(`desktop/mobile/widgetOrder.ts`).
 
@@ -50,7 +53,7 @@ summary: 휴대폰 홈 화면 편집 모드에서 위젯을 끌어 순서를 바
 
 `orderForDrop`은 끄는 위젯을 나머지 위젯 사이의 모든 위치(0번째부터 n번째)에 넣어 본다. 후보마다 배치를 계산하고, 그 배치에서 끄는 위젯의 가운데가 실제로 끌고 있는 위젯의 가운데와 가장 가까운 순서를 선택한다. 좌표는 픽셀이 아니라 칸 단위(작은 위젯 한 칸이 1)로 변환해 화면 크기와 무관하게 계산한다.
 
-이 방식에서는 격자 규칙이 자동으로 지켜진다. `[작게 A, 작게 B, 중간 C]`에서 A를 중간 위젯 아래로 끌어도, A를 C 뒤에 넣은 후보는 dense 배치로 첫 줄 빈 칸에 다시 올라간다. 작은 위젯이 혼자 아래 줄로 내려가 위에 빈 칸을 남기는 순서는 후보에 존재하지 않는다.
+이 방식에서는 ==격자 규칙이 자동으로 지켜진다==. `[작게 A, 작게 B, 중간 C]`에서 A를 중간 위젯 아래로 끌어도, A를 C 뒤에 넣은 후보는 dense 배치로 첫 줄 빈 칸에 다시 올라간다. 작은 위젯이 혼자 아래 줄로 내려가 위에 빈 칸을 남기는 순서는 후보에 존재하지 않는다.
 
 두 후보의 거리가 비슷한 경계에서는 포인터가 1px만 움직여도 순서가 오가며 다른 위젯이 흔들린다. 지금 순서보다 0.15칸 이상 가까운 후보가 있을 때만 순서를 바꾸는 히스테리시스를 적용했다.
 
@@ -71,7 +74,7 @@ summary: 휴대폰 홈 화면 편집 모드에서 위젯을 끌어 순서를 바
 
 ## 끄는 위젯과 비켜 주는 위젯
 
-편집 중의 위젯은 `transform: rotate()` 키프레임으로 흔들린다. 같은 `transform`에 이동을 인라인으로 지정하면 CSS 애니메이션이 덮어쓴다[^cascade]. 그래서 이동은 개별 변형 속성인 [`translate`](https://developer.mozilla.org/ko/docs/Web/CSS/translate)와 [`scale`](https://developer.mozilla.org/ko/docs/Web/CSS/scale)로 처리했다. 두 속성은 `transform`과 따로 합성되므로 흔들림과 충돌하지 않는다.
+편집 중의 위젯은 `transform: rotate()` 키프레임으로 흔들린다. 같은 `transform`에 이동을 인라인으로 지정하면 CSS 애니메이션이 덮어쓴다[^cascade]. 그래서 이동은 개별 변형 속성인 [`translate`](https://developer.mozilla.org/ko/docs/Web/CSS/translate)와 [`scale`](https://developer.mozilla.org/ko/docs/Web/CSS/scale)로 처리했다. 두 속성은 `transform`과 따로 합성되므로 ==흔들림과 충돌하지 않는다==.
 
 - **끄는 위젯:** 흔들림을 멈추고 `scale: 1.06`과 그림자를 적용한다. 매 프레임(`requestAnimationFrame`) 위젯의 레이아웃 위치(`offsetLeft`·`offsetTop`, 변형의 영향을 받지 않는다)를 다시 측정하고, 포인터와의 차이를 `translate`로 지정한다. 순서가 바뀌어 위젯의 칸이 달라지거나 옆 페이지로 넘어가 트랙이 움직이는 중에도 위젯이 포인터 아래에 남는다.
 - **비켜 주는 위젯:** [FLIP](https://aerotwist.com/blog/flip-your-animations/) 기법을 쓴다. 렌더링 후(`useLayoutEffect`) 위젯마다 이전 위치와 새 위치의 차이를 계산하고, [Web Animations API](https://developer.mozilla.org/ko/docs/Web/API/Web_Animations_API)로 `translate`를 차이만큼에서 0까지 0.24초 동안 줄인다. 레이아웃은 한 번에 새 자리로 바뀌고, 화면에는 이전 자리에서 미끄러져 오는 것처럼 보인다.
@@ -83,7 +86,7 @@ summary: 휴대폰 홈 화면 편집 모드에서 위젯을 끌어 순서를 바
 
 ![위젯 크기 변경 전후](./images/mobile-widget-reorder-size.jpg 'iPhone 13 크기. 2쪽이 세 줄(날씨·캘린더, GitHub 잔디, 음악)인 구성. 수정 전에는 위젯 줄 높이가 117px에서 112px로 줄고 2쪽 아이콘 줄이 잘렸다. 수정 후에는 117px 그대로이고 2쪽에 들어가지 않는 앱은 다음 페이지로 간다')
 
-원인은 위젯 줄 높이 계산(`homePages.ts`의 `widgetRowHeight`)이다. 위젯 아래에 아이콘 두 줄이 들어가도록 줄 높이를 줄이는데, 기준이 "위젯 줄 수가 가장 많은 페이지"였다. 2쪽이 세 줄이 되면 1·3쪽까지 세 줄 기준으로 줄었다. 끌기 이전에도 갤러리에서 위젯을 추가해 세 줄을 만들면 같은 현상이 있었고, 끌기로 페이지를 옮길 수 있게 되면서 쉽게 재현됐다.
+원인은 위젯 줄 높이 계산(`homePages.ts`의 `widgetRowHeight`)이다. 위젯 아래에 아이콘 두 줄이 들어가도록 줄 높이를 줄이는데, ==기준이 "위젯 줄 수가 가장 많은 페이지"였다==. 2쪽이 세 줄이 되면 1·3쪽까지 세 줄 기준으로 줄었다. 끌기 이전에도 갤러리에서 위젯을 추가해 세 줄을 만들면 같은 현상이 있었고, 끌기로 페이지를 옮길 수 있게 되면서 쉽게 재현됐다.
 
 | 상황 (Playwright 측정)       | iPhone 13 줄 높이   | Pixel 7 줄 높이     | 아이콘 |
 | ---------------------------- | ------------------- | ------------------- | ------ |

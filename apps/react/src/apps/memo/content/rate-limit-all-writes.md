@@ -20,7 +20,7 @@ summary: 요청 제한 방식이 세 가지로 나뉘어 있었고 글 작성·�
 | 메일 발송                                                        | 서비스 내부의 일일 상한 (IP당 5회)              |
 | 글 작성·삭제, 폴더 정리, 설정, 파일·배경화면 업로드, 분석 이벤트 | **없음**                                        |
 
-일일 할당량은 비용 상한을, 1분 제한은 단시간 대량 요청(도배) 차단을 담당하므로 역할이 다르다. 데모는 하루 3회 제한만으로 충분하지만, 관리자 쓰기와 분석 이벤트에는 제한이 전혀 없었다. 관리자 경로는 로그인이 필요해 문제가 없다고 판단했지만, 로그인 확인(`AdminGuard`)은 요청마다 DB에서 세션을 조회한다. 쿠키 없이 `POST /posts`를 초당 수백 회 보내면 모두 401로 끝나지만, 그 횟수만큼 DB 조회가 발생한다.
+일일 할당량은 비용 상한을, 1분 제한은 단시간 대량 요청(도배) 차단을 담당하므로 역할이 다르다. 데모는 하루 3회 제한만으로 충분하지만, 관리자 쓰기와 분석 이벤트에는 제한이 전혀 없었다. 관리자 경로는 로그인이 필요해 문제가 없다고 판단했지만, 로그인 확인(`AdminGuard`)은 요청마다 DB에서 세션을 조회한다. 쿠키 없이 `POST /posts`를 초당 수백 회 보내면 모두 401로 끝나지만, ==그 횟수만큼 DB 조회가 발생한다==.
 
 <details>
 <summary>용어 정리</summary>
@@ -66,11 +66,14 @@ export function RateLimit(name: RateLimitName) {
 
 ## 가드 순서 오류
 
-처음에는 `@RateLimit`를 `@UseGuards(AdminGuard)` 위에 적었다. 그러자 로그인하지 않은 요청이 집계되지 않았다. 데코레이터는 아래부터 적용되므로 `AdminGuard`가 가드 목록에 먼저 등록되고, 401로 끝난 요청은 `ThrottlerGuard`까지 도달하지 않았다. 관리자 경로 16개에서 `@RateLimit`를 `@UseGuards(AdminGuard)` 아래로 옮겼다. 이제 쿠키 없는 요청도 집계하고, 제한을 넘으면 세션 조회 전에 차단한다.
+처음에는 `@RateLimit`를 `@UseGuards(AdminGuard)` 위에 적었다. 그러자 ==로그인하지 않은 요청이 집계되지 않았다==. 데코레이터는 아래부터 적용되므로 `AdminGuard`가 가드 목록에 먼저 등록되고, 401로 끝난 요청은 `ThrottlerGuard`까지 도달하지 않았다. 관리자 경로 16개에서 `@RateLimit`를 `@UseGuards(AdminGuard)` 아래로 옮겼다. 이제 쿠키 없는 요청도 집계하고, 제한을 넘으면 세션 조회 전에 차단한다.
 
 ![RateLimit 데코레이터 위치에 따라 AdminGuard와 ThrottlerGuard가 실행되는 순서가 바뀌는 비교](./images/rate-limit-all-writes-guard-order.svg '소스에서 아래에 적은 가드가 먼저 실행된다')
 
-이 순서는 코드 리뷰로 유지하기 어려운 규칙이므로 시험으로 검사한다. 경로 표 시험에 세 항목을 추가했다.
+> [!IMPORTANT] 가드 순서는 시험으로 검사한다
+> 이 순서는 코드 리뷰로 유지하기 어려운 규칙이므로 시험으로 검사한다.
+
+경로 표 시험에 세 항목을 추가했다.
 
 1. GET이 아닌 경로 33개에 모두 제한이 있다 (새 쓰기 경로에서 누락하면 이 시험이 실패한다)
 2. GET 중 제한이 있는 경로는 로그인 시작·콜백뿐이다 (읽기 요청을 잘못 차단하지 않도록)
@@ -87,7 +90,7 @@ export function RateLimit(name: RateLimitName) {
 
 ## 변경하지 않은 것
 
-데모와 메일의 일일 할당량은 유지했다. 일일 할당량은 비용 상한이고 1분 제한은 단시간 대량 요청 차단이므로 둘 다 필요하다. 경로별 집계 방식도 유지했다. 한 IP의 전체 쓰기 경로 합산 제한은 없지만, 경로별 제한만으로도 경로 하나의 최대 요청량이 제한되므로 현재 규모에서는 충분하다고 판단했다.
+데모와 메일의 일일 할당량은 유지했다. ==일일 할당량은 비용 상한이고 1분 제한은 단시간 대량 요청 차단이므로 둘 다 필요하다==. 경로별 집계 방식도 유지했다. 한 IP의 전체 쓰기 경로 합산 제한은 없지만, 경로별 제한만으로도 경로 하나의 최대 요청량이 제한되므로 현재 규모에서는 충분하다고 판단했다.
 
 ## 남은 과제와 정리
 
@@ -98,7 +101,10 @@ export function RateLimit(name: RateLimitName) {
 
 ## 서버 설정 확인
 
-요청 제한은 IP 단위로 집계한다. API 앞에 Cloudflare Tunnel이 있으므로, 서버가 `X-Forwarded-For`를 신뢰하지 않으면 모든 방문자가 터널의 IP 하나로 인식되어 한 사용자가 제한에 걸리면 전체가 차단된다. 이 PR을 머지하기 전에 환경 변수 수정이 필요한지 판단하려고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지 먼저 확인했다. 이 값은 이번 변경뿐 아니라 기존 로그인·댓글 제한에도 필요하다([Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)의 trust proxy 도식 참고).
+> [!WARNING] 프록시 뒤에서는 TRUST_PROXY가 필요하다
+> 요청 제한은 IP 단위로 집계한다. API 앞에 Cloudflare Tunnel이 있으므로, 서버가 `X-Forwarded-For`를 신뢰하지 않으면 모든 방문자가 터널의 IP 하나로 인식되어 한 사용자가 제한에 걸리면 전체가 차단된다.
+
+이 PR을 머지하기 전에 환경 변수 수정이 필요한지 판단하려고, 배포 서버의 `api.env`에 `TRUST_PROXY=1`이 있는지 먼저 확인했다. 이 값은 이번 변경뿐 아니라 기존 로그인·댓글 제한에도 필요하다([Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)의 trust proxy 도식 참고).
 
 ```bash
 grep '^TRUST_PROXY=' ~/deploy/api.env     # TRUST_PROXY=1
@@ -124,7 +130,7 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 - [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
 - [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 
 [^decorator]: 같은 대상에 데코레이터가 여러 개 있으면, 데코레이터 표현식은 위에서 아래로 평가되고 결과 함수는 아래(대상에 가까운 쪽)에서 위로 호출된다. [TypeScript 문서: Decorator Composition](https://www.typescriptlang.org/docs/handbook/decorators.html#decorator-composition)
 

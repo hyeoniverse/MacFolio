@@ -31,7 +31,7 @@ Build failed to initialize and was timed out
 
 ![Cloudflare Workers 사용량 화면. 이번 달 빌드 시간 150/3,000분, 오늘 요청 0/100,000](./images/deploy-github-actions-workers-usage.jpg '빌드가 실패한 날 확인한 Workers 사용량. 빌드 시간은 3,000분 중 150분만 썼다')
 
-빌드 시간은 한도 3,000분 중 150분만 사용했으므로 한도 초과가 원인이 아니었다. 미리보기 없이 PR을 머지하는 방안 대신, 빌드를 GitHub Actions로 옮기기로 했다.
+빌드 시간은 한도 3,000분 중 150분만 사용했으므로 ==한도 초과가 원인이 아니었다==. 미리보기 없이 PR을 머지하는 방안 대신, 빌드를 GitHub Actions로 옮기기로 했다.
 
 ## 기존 구조의 문제
 
@@ -73,7 +73,10 @@ preview:
   if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
 ```
 
-`preview`의 조건은 포크에서 생성한 PR을 제외한다. 포크의 PR에는 저장소 Secrets가 전달되지 않으며, 전달되어서도 안 된다([GitHub 문서: Using secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)). 브랜치 이름은 주소에 사용할 수 있는 형식(영문 소문자·숫자·`-`, 최대 40자)으로 변환해 별칭으로 사용한다.
+> [!CAUTION] 포크 PR과 Secrets
+> `preview`의 조건은 포크에서 생성한 PR을 제외한다. 포크의 PR에는 저장소 Secrets가 전달되지 않으며, 전달되어서도 안 된다([GitHub 문서: Using secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)).
+
+브랜치 이름은 주소에 사용할 수 있는 형식(영문 소문자·숫자·`-`, 최대 40자)으로 변환해 별칭으로 사용한다.
 
 ```bash
 alias=$(echo "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' | cut -c1-40 | sed -E 's/-+$//')
@@ -86,9 +89,10 @@ pnpm exec wrangler versions upload --preview-alias "$alias" | tee upload.log
 
 `VITE_API_URL`은 빌드 시각에 코드에 삽입되는 값이므로 배포 빌드에만 지정한다. `check`의 E2E는 가짜 API 주소를 사용하므로 빈 값으로 둔다. 비밀 값이 아니므로 워크플로 상단에 기록했다. 이전에는 Cloudflare 대시보드의 빌드 변수에 입력해야 했고, 실행 변수 칸에 잘못 입력하면 빌드에 반영되지 않았다([Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel) 참고). 워크플로로 옮기면서 이 문제도 없어졌다.
 
-Cloudflare 관련 값은 API 토큰(Workers 편집 권한)과 계정 ID만 GitHub Secrets에 저장한다. 토큰이 없으면 미리보기는 건너뛰고, 배포는 실패로 처리한다. 미리보기는 생략해도 되지만, main 배포가 알림 없이 생략되면 사이트 갱신이 중단된 사실을 발견할 수 없기 때문이다.
+Cloudflare 관련 값은 API 토큰(Workers 편집 권한)과 계정 ID만 GitHub Secrets에 저장한다. 토큰이 없으면 미리보기는 건너뛰고, 배포는 실패로 처리한다. 미리보기는 생략해도 되지만, ==main 배포가 알림 없이 생략되면 사이트 갱신이 중단된 사실을 발견할 수 없기== 때문이다.
 
-배포 문서에는 GitHub Actions 배포가 한 번 성공한 것을 확인한 뒤 Cloudflare의 Git 연결(Workers Builds)을 해제하는 순서를 기록했다. 두 경로가 모두 활성 상태이면 같은 커밋을 두 곳에서 배포하고, 나중에 끝난 배포가 적용된다.
+> [!WARNING] Workers Builds 연결 해제
+> 배포 문서에는 GitHub Actions 배포가 한 번 성공한 것을 확인한 뒤 Cloudflare의 Git 연결(Workers Builds)을 해제하는 순서를 기록했다. 두 경로가 모두 활성 상태이면 같은 커밋을 두 곳에서 배포하고, 나중에 끝난 배포가 적용된다.
 
 변경은 파일 4개, +154/−11줄이다. `ci.yml`에 90줄, 배포 문서에 Secrets 등록 순서 약 30줄을 추가했다.
 
@@ -107,7 +111,7 @@ Cloudflare 관련 값은 API 토큰(Workers 편집 권한)과 계정 ID만 GitHu
 - 미리보기 버전은 Cloudflare에 누적된다. PR을 닫아도 별칭이 남는다. 현재까지 문제는 없지만, 누적량이 늘면 정리 작업이 필요할 수 있다.
 - 배포 실패는 GitHub 알림으로만 확인한다. 사이트가 실제로 갱신되었는지(배포된 JS 파일의 해시)를 검사하는 단계는 없다.
 
-시험과 배포가 각각 다른 곳에서 빌드하면, 시험한 결과물과 배포된 결과물이 같다는 보장이 없다. 한 파이프라인에서 시험 통과 후에 배포하도록 연결해야 그 보장이 생긴다.
+시험과 배포가 각각 다른 곳에서 빌드하면, 시험한 결과물과 배포된 결과물이 같다는 보장이 없다. ==한 파이프라인에서 시험 통과 후에 배포하도록 연결해야 그 보장이 생긴다.==
 
 ## 적용 방법
 
@@ -135,7 +139,7 @@ CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=… pnpm exec wrangler versions u
 - [API 자동 배포 - 이미지는 Actions에서, 서버는 바꿔 끼우기만](/memo/api-auto-deploy)
 - [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci)
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)
 
 [^builds]: 저장소를 연결하면 push마다 Cloudflare가 직접 빌드·배포하는 기능. [Cloudflare 문서: Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/)
 

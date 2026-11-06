@@ -30,7 +30,7 @@ summary: 서버 메뉴의 'API 문서 열기'가 사이트 안의 앱을 연다.
 문서를 서버에서 불러오지 않고, **API 코드에서 생성한 [`openapi.json`](https://swagger.io/specification/)을 사이트에 포함해** 렌더링하기로 했다.
 
 1. API의 `createOpenApiDocument(app)`가 서버의 `/docs`와 같은 문서를 생성한다([NestJS OpenAPI](https://docs.nestjs.com/openapi/introduction)).
-2. 단위 시험 `openapi.test.ts`가 이 문서를 `apps/react/src/apps/apidocs/openapi.json`과 비교한다. Vitest의 [`toMatchFileSnapshot`](https://vitest.dev/guide/snapshot.html)을 사용하므로, 컨트롤러나 DTO를 수정하고 파일을 다시 생성하지 않으면 CI가 실패한다. 재생성 명령은 `pnpm --filter @macfolio/api openapi`다.
+2. 단위 시험 `openapi.test.ts`가 이 문서를 `apps/react/src/apps/apidocs/openapi.json`과 비교한다. Vitest의 [`toMatchFileSnapshot`](https://vitest.dev/guide/snapshot.html)을 사용하므로, ==컨트롤러나 DTO를 수정하고 파일을 다시 생성하지 않으면 CI가 실패한다==. 재생성 명령은 `pnpm --filter @macfolio/api openapi`다.
 3. 'API 문서' 앱이 이 파일을 [Scalar](https://github.com/scalar/scalar)로 렌더링한다.
 
 ![문서 구조](./images/api-docs-app-structure.svg 'API 코드 → 스냅숏 시험 → openapi.json → 따로 된 페이지 → iframe')
@@ -50,7 +50,8 @@ it('사이트의 API 문서 앱이 쓰는 openapi.json이 코드와 같다', asy
 
 현재 이 파일은 3,014줄이고, 경로 61개와 메서드 85개를 포함한다. 경로를 하나 추가하는 PR은 이 파일의 변경된 줄까지 함께 보여 주므로, 리뷰에서 API 형태의 변경 내용을 별도로 찾을 필요가 없다.
 
-문서 생성에는 DB가 필요 없다. `PrismaService`는 첫 쿼리 시각에 연결하므로, 앱 모듈만 생성하고 문서를 추출한 뒤 종료한다. 그래서 DB 없이 실행되는 단위 시험에 포함할 수 있었다.
+> [!NOTE]
+> 문서 생성에는 DB가 필요 없다. `PrismaService`는 첫 쿼리 시각에 연결하므로, 앱 모듈만 생성하고 문서를 추출한 뒤 종료한다. 그래서 DB 없이 실행되는 단위 시험에 포함할 수 있었다.
 
 서버 보안 헤더의 예외는 되돌렸다. 서버의 `/docs`는 새 탭으로 여는 용도로 유지한다.
 
@@ -67,7 +68,7 @@ Scalar의 'Test Request'는 문서 화면에서 서버로 요청을 보낸다. �
 
 ## Scalar를 사이트에서 격리
 
-처음에는 Scalar를 사이트 안의 컴포넌트로 렌더링했다. 화면에 표시하자마자 주소 막대가 `/#description/introduction`으로 바뀌었다. Scalar는 현재 위치를 주소의 `#`에 기록하고, 목차를 누르면 `pushState`로 방문 기록을 추가한다. 이 동작을 끄는 설정은 없었다.
+처음에는 Scalar를 사이트 안의 컴포넌트로 렌더링했다. 화면에 표시하자마자 주소 막대가 `/#description/introduction`으로 바뀌었다. Scalar는 현재 위치를 주소의 `#`에 기록하고, 목차를 누르면 `pushState`로 방문 기록을 추가한다. ==이 동작을 끄는 설정은 없었다==.
 
 이 사이트의 주소 막대는 **맨 앞 창만** 갱신한다. 여러 앱이 각자 주소를 쓰면 서로 덮어쓰기 때문에, 갱신 위치를 한 곳(`syncAddressBar`)으로 통합해 두었다. 또 Scalar의 CSS는 `body`에도 규칙을 적용하고, 사이트 창의 `text-align: center`를 상속받아 모든 글이 가운데 정렬됐다.
 
@@ -92,7 +93,7 @@ history.pushState = history.replaceState.bind(history);
 
 ## 창 틀이 위로 스크롤된 문제
 
-'Test Request'를 누르자 창의 제목 막대가 위로 잘려 보였다. 창 틀(`.container`)이 10px 스크롤되어 있었다. 창 틀은 `overflow: hidden`인데, hidden은 사용자의 스크롤만 막을 뿐 **스크립트나 브라우저는 스크롤할 수 있다**. iframe 안에서 초점이 이동하자 브라우저가 그 요소를 화면에 표시하려고 바깥의 창 틀까지 스크롤했다.
+'Test Request'를 누르자 창의 제목 막대가 위로 잘려 보였다. 창 틀(`.container`)이 10px 스크롤되어 있었다. 창 틀은 `overflow: hidden`인데, ==hidden은 사용자의 스크롤만 막을 뿐== **스크립트나 브라우저는 스크롤할 수 있다**. iframe 안에서 초점이 이동하자 브라우저가 그 요소를 화면에 표시하려고 바깥의 창 틀까지 스크롤했다.
 
 `overflow: clip`으로 변경했다. clip은 스크롤 컨테이너를 생성하지 않아 어떤 방법으로도 스크롤되지 않는다([MDN overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)). 모든 창이 같은 틀(`src/desktop/window/Window.css`)을 사용하므로 모든 창에 함께 적용됐다.
 
@@ -104,7 +105,7 @@ history.pushState = history.replaceState.bind(history);
 
 ## Wi-Fi 아이콘
 
-Wi-Fi 아이콘은 같은 두께의 반원 세 개로 렌더링되어 macOS 아이콘과 형태가 달랐다. 아래쪽 꼭짓점은 채워진 부채꼴로, 위쪽 두 줄은 끝이 둥근 호로 다시 그렸다. 막대 수(0~3)로 상태를 표시하는 방식과 '연결할 수 없음'의 사선은 그대로 유지했다([/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)).
+Wi-Fi 아이콘은 같은 두께의 반원 세 개로 렌더링되어 macOS 아이콘과 형태가 달랐다. 아래쪽 꼭짓점은 채워진 부채꼴로, 위쪽 두 줄은 끝이 둥근 호로 다시 그렸다. 막대 수(0~3)로 상태를 표시하는 방식과 '연결할 수 없음'의 사선은 그대로 유지했다([/health 응답 시간을 막대 수로 환산하고 no-cors 요청으로 CORS 차단을 구분하는 서버 상태 표시](/memo/server-status-wifi)).
 
 ## 확인
 
@@ -123,7 +124,7 @@ Wi-Fi 아이콘은 같은 두께의 반원 세 개로 렌더링되어 macOS 아�
 
 ## 관련 글
 
-- [/health 응답 시간과 DB 상태를 막대 수로 환산하는 서버 상태 표시](/memo/server-status-wifi)
+- [/health 응답 시간을 막대 수로 환산하고 no-cors 요청으로 CORS 차단을 구분하는 서버 상태 표시](/memo/server-status-wifi)
 - [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 - [PROJECTS 데이터에서 생성하는 iframe 앱과 ProjectAppName 브랜드 타입](/memo/project-apps)
 - [PR 미리보기 origin에는 credentials 없는 CORS로 읽기만 허용하기](/memo/preview-cors-read-only)

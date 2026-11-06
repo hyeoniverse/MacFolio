@@ -5,7 +5,7 @@ category: 개발 기록/MacFolio/화면·스타일
 summary: 시스템 설정의 계정 화면은 GitHub 프로필 사진을 github.com에서 내려받는데, 응답이 늦으면 사진 영역 전체가 비어 있었다. 로드 중에는 회색 사람 아이콘을 표시하고 로드가 끝나면 그 위에 사진을 표시한다. CSS 적용 순서 때문에 데스크톱에도 보이던 사이드바의 ›도 행 끝으로 옮겼다.
 ---
 
-시스템 설정의 계정 화면은 관리자로 로그인하면 GitHub 프로필 사진(`https://github.com/<아이디>.png`)을 표시한다. 이 사진은 github.com에서 내려받으므로 가끔 몇 초씩 걸린다. 10월 2일 오후 시스템 설정을 열었을 때, 그동안 사진 영역에는 아무것도 표시되지 않았다. `<img>`는 로드 전에는 아무것도 렌더링하지 않아서, 56px 영역이 빈 공간으로 남았다.
+시스템 설정의 계정 화면은 관리자로 로그인하면 GitHub 프로필 사진(`https://github.com/<아이디>.png`)을 표시한다. 이 사진은 github.com에서 내려받으므로 가끔 몇 초씩 걸린다. 10월 2일 오후 시스템 설정을 열었을 때, 그동안 사진 영역에는 아무것도 표시되지 않았다. `<img>`는 로드 전에는 아무것도 렌더링하지 않아서, ==56px 영역이 빈 공간으로 남았다==.
 
 ![데스크톱 전후](./images/settings-avatar-desktop.jpg '전: 사진 자리가 비어 있음 / 후: 받는 동안 회색 사람 아이콘')
 
@@ -30,7 +30,7 @@ summary: 시스템 설정의 계정 화면은 GitHub 프로필 사진을 github.
 </span>
 ```
 
-사진은 처음에 투명하고, [`load`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/load_event) 이벤트가 발생하면 페이드인된다. 로드에 실패하면(GitHub 접근이 차단되거나 아이디가 바뀌면) 깨진 이미지 아이콘 대신 사람 아이콘이 그대로 남는다.
+사진은 처음에 투명하고, [`load`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/load_event) 이벤트가 발생하면 페이드인된다. 로드에 실패하면(GitHub 접근이 차단되거나 아이디가 바뀌면) ==깨진 이미지 아이콘 대신 사람 아이콘이 그대로 남는다==.
 
 캐시에 있던 사진은 React가 이벤트 핸들러를 연결하기 전에 이미 로드가 끝나 `load` 이벤트를 놓칠 수 있다. 그래서 첫 렌더링 직후([`useLayoutEffect`](https://react.dev/reference/react/useLayoutEffect))에 [`complete`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/complete)와 [`naturalWidth`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement/naturalWidth)를 한 번 확인한다.
 
@@ -44,7 +44,8 @@ useLayoutEffect(() => {
 }, []);
 ```
 
-`complete`만으로는 판단할 수 없다. 로드에 실패한 이미지도 `complete`는 `true`이고, 그때 `naturalWidth`가 0이다.
+> [!WARNING] complete만으로는 판단할 수 없다
+> `complete`만으로는 판단할 수 없다. 로드에 실패한 이미지도 `complete`는 `true`이고, 그때 `naturalWidth`가 0이다.
 
 | 상태                  | `complete` | `naturalWidth` | 판단    |
 | --------------------- | ---------- | -------------- | ------- |
@@ -83,7 +84,7 @@ CSS는 두 레이어를 같은 원 안에 겹친다. 사진은 `position: absolu
 
 ![휴대폰 전후](./images/settings-avatar-mobile.jpg '설정 목록의 ›와 계정 화면의 사진 자리')
 
-데스크톱 사이드바의 ›는 항목 이름 바로 뒤에 붙어 있었다. 이 ›는 휴대폰 목록에만 표시되도록 `display: none`을 지정했는데, Font Awesome의 `.fa-solid { display: inline-block }`이 나중에 로드되어 데스크톱에도 표시되고 있었다. 둘 다 클래스 선택자 하나로 [명시도](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)가 같으므로 나중에 선언된 규칙이 적용된 것이다.
+데스크톱 사이드바의 ›는 항목 이름 바로 뒤에 붙어 있었다. 이 ›는 휴대폰 목록에만 표시되도록 `display: none`을 지정했는데, Font Awesome의 `.fa-solid { display: inline-block }`이 나중에 로드되어 데스크톱에도 표시되고 있었다. 둘 다 클래스 선택자 하나로 [명시도](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)가 같으므로 ==나중에 선언된 규칙이 적용된 것==이다.
 
 | 규칙                                         | 명시도  | 선언 순서 | 결과           |
 | -------------------------------------------- | ------- | --------- | -------------- |
@@ -121,7 +122,7 @@ const gaps = await items.evaluateAll((rows) =>
 expect(gaps).toEqual([0, 0, 0, 0]);
 ```
 
-"응답 보류"는 시험에서 `github.com/*.png` 요청을 가로채([`page.route`](https://playwright.dev/docs/network)) 즉시 응답하지 않는 방식이다(`e2e/admin-login.spec.ts`의 "GitHub 사진을 받는 동안에는 자리에 사람 아이콘이 보이고, 받으면 사진으로 바뀐다"). 느린 네트워크를 에뮬레이션하지 않아도 "로드 중" 상태를 원하는 만큼 유지할 수 있다.
+"응답 보류"는 시험에서 `github.com/*.png` 요청을 가로채([`page.route`](https://playwright.dev/docs/network)) 즉시 응답하지 않는 방식이다(`e2e/admin-login.spec.ts`의 "GitHub 사진을 받는 동안에는 자리에 사람 아이콘이 보이고, 받으면 사진으로 바뀐다"). ==느린 네트워크를 에뮬레이션하지 않아도 "로드 중" 상태를 원하는 만큼 유지할 수 있다==.
 
 ```ts
 let release = () => {};

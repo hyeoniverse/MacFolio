@@ -33,7 +33,7 @@ summary: 관리자가 MP4나 움직이는 GIF를 배경화면으로 올릴 수 �
 - `<video>`는 `muted`, `loop`, `autoplay`, `playsinline` 속성을 갖고 `object-fit: cover`로 화면 전체를 채운다. 브라우저는 [소리가 꺼진 동영상만 자동 재생을 허용](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide)하므로 소리는 항상 끈다.
 - 데스크톱에서는 `position: fixed`로 화면에 고정하고 창과 아이콘 아래(`z-index: -1`)에 배치한다. 휴대폰에서는 홈 화면 요소 안에 배치해서, 앱을 열면 홈 화면과 함께 축소 애니메이션을 따라간다.
 - 시스템의 '동작 줄이기'([`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion))를 켜면 `<video>`를 렌더링하지 않는다. 포스터만 남는다.
-- 탭이 가려지면([`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event)) 일시 정지하고, 다시 보이면 재생을 이어 간다. 보이지 않는 동영상을 계속 디코딩하면 CPU와 배터리만 소모한다.
+- 탭이 가려지면([`visibilitychange`](https://developer.mozilla.org/en-US/docs/Web/API/Document/visibilitychange_event)) 일시 정지하고, 다시 보이면 재생을 이어 간다. ==보이지 않는 동영상을 계속 디코딩하면 CPU와 배터리만 소모==한다.
 
 설정에는 `wallpaperVideo`(휴대폰은 `mobileWallpaperVideo`) 값이 새로 생겼다. 이 값이 브라우저에 저장되어 있어서, 다음에 사이트를 열면 서버에서 배경화면 목록을 조회하기 전에 동영상을 바로 표시한다. 서버에서 그 배경화면이 삭제되었으면 기존과 같이 기본 배경화면으로 되돌린다.
 
@@ -57,7 +57,8 @@ useEffect(() => {
 }, [show, src]);
 ```
 
-`element.muted = true`를 직접 설정한 이유가 있다. JSX에 `muted`를 써도 React는 이것을 HTML 속성으로 출력하지 않고 DOM 속성으로만 다룬다[^muted]. 브라우저의 자동 재생 규칙은 첫 재생 시각에 소리가 꺼져 있는지를 확인하므로, 효과(`useEffect`) 안에서 한 번 더 명시적으로 끈다. 재생이 실패하면(`onError`) 그 주소를 `failed`에 기록해 다시 렌더링하지 않는다. 그러면 포스터만 남는다.
+> [!WARNING] JSX의 `muted`만으로는 부족하다
+> `element.muted = true`를 직접 설정한 이유가 있다. JSX에 `muted`를 써도 React는 이것을 HTML 속성으로 출력하지 않고 DOM 속성으로만 다룬다[^muted]. 브라우저의 자동 재생 규칙은 첫 재생 시각에 소리가 꺼져 있는지를 확인하므로, 효과(`useEffect`) 안에서 한 번 더 명시적으로 끈다. 재생이 실패하면(`onError`) 그 주소를 `failed`에 기록해 다시 렌더링하지 않는다. 그러면 포스터만 남는다.
 
 ## 포스터를 브라우저에서 만드는 이유
 
@@ -70,7 +71,7 @@ useEffect(() => {
 | 관리자가 포스터 그림을 따로 업로드  | 서버·브라우저 모두 단순              | 업로드마다 파일을 두 번 선택한다                       |
 | 브라우저가 캔버스에 렌더링해 만들기 | 의존성 없음, 업로드 시각에 자동 생성 | 브라우저가 디코딩하지 못하는 코덱은 대체 그림을 쓴다   |
 
-관리자는 한 명이고, 그 관리자가 업로드하는 동영상은 업로드에 쓰는 브라우저가 이미 재생할 수 있는 형식이다. 따라서 브라우저에서 만드는 방식의 단점이 실제로 드러날 일이 거의 없다. 순서는 다음과 같다(`shared/settings/customWallpapers.ts`).
+관리자는 한 명이고, 그 관리자가 업로드하는 동영상은 업로드에 쓰는 브라우저가 이미 재생할 수 있는 형식이다. 따라서 ==브라우저에서 만드는 방식의 단점이 실제로 드러날 일이 거의 없다.== 순서는 다음과 같다(`shared/settings/customWallpapers.ts`).
 
 1. 고른 파일을 [`URL.createObjectURL`](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static)로 `<video>`에 연결한다.
 2. 첫 프레임을 수신하면(`loadeddata`) 재생 위치를 0.5초(`POSTER_AT`)로 이동한다. 첫 프레임이 검은 화면인 영상이 많기 때문이다.
@@ -105,9 +106,11 @@ ALTER TABLE "Upload" ADD CONSTRAINT "Upload_required_fields" CHECK (
 );
 ```
 
-이미 배포한 마이그레이션은 수정하지 않는다. 일반 업로드의 10MB 한도는 API 검증이 그대로 적용하고, 30MB까지는 배경화면 동영상만 허용한다.
+> [!IMPORTANT]
+> 이미 배포한 마이그레이션은 수정하지 않는다. 일반 업로드의 10MB 한도는 API 검증이 그대로 적용하고, 30MB까지는 배경화면 동영상만 허용한다.
 
-파일을 전송하는 `/files/:id`는 이제 [`Range` 요청](https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests)을 처리한다. `<video>`는 파일을 구간별로 나눠 요청하는데, Safari는 서버가 [`206 Partial Content`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206)로 응답하지 않으면 동영상을 재생하지 않는다. 동영상도 이미지처럼 `Content-Disposition: inline`으로 전송한다.
+> [!WARNING] Safari는 206 응답이 있어야 재생한다
+> 파일을 전송하는 `/files/:id`는 이제 [`Range` 요청](https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests)을 처리한다. `<video>`는 파일을 구간별로 나눠 요청하는데, Safari는 서버가 [`206 Partial Content`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206)로 응답하지 않으면 동영상을 재생하지 않는다. 동영상도 이미지처럼 `Content-Disposition: inline`으로 전송한다.
 
 `parseRange`(`apps/api/src/files/rules.ts`)는 `Range` 머리말의 `bytes=시작-끝` 한 구간만 해석한다. 단위 시험의 입력과 결과는 다음과 같다(파일 크기 100바이트).
 
@@ -133,7 +136,7 @@ ALTER TABLE "Upload" ADD CONSTRAINT "Upload_required_fields" CHECK (
 - 화면 단위 시험: 설정에서 동영상 주소를 읽고, 안전하지 않은 주소는 무시하기
 - Playwright: 아래 5개 시험
 
-시험용 Chromium은 H.264를 디코딩하지 못한다. 그래서 시험에서는 브라우저의 [`MediaRecorder`](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)로 색이 바뀌는 캔버스를 1초 녹화해 VP9 코덱을 담은 MP4를 생성했다. 시험 파일을 저장소에 커밋하지 않고 시험 안에서 생성하므로, 지원 코덱이 다른 브라우저에서도 그 브라우저가 인코딩할 수 있는 형식으로 시험한다.
+시험용 Chromium은 H.264를 디코딩하지 못한다. 그래서 시험에서는 브라우저의 [`MediaRecorder`](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)로 색이 바뀌는 캔버스를 1초 녹화해 VP9 코덱을 담은 MP4를 생성했다. ==시험 파일을 저장소에 커밋하지 않고 시험 안에서 생성==하므로, 지원 코덱이 다른 브라우저에서도 그 브라우저가 인코딩할 수 있는 형식으로 시험한다.
 
 <details>
 <summary>Playwright 시험 이름 (apps/react/e2e/wallpaper-video.spec.ts, 197줄)</summary>
@@ -160,7 +163,7 @@ ALTER TABLE "Upload" ADD CONSTRAINT "Upload_required_fields" CHECK (
 - 관리자가 배경화면을 추가하는 기능: [createImageBitmap과 canvas toBlob으로 브라우저에서 이미지 축소해 업로드하기](/memo/custom-wallpapers)
 - 고른 배경화면을 새로고침 뒤에도 유지하는 일: [id 접두어 상수로 서버 배경화면 검사에서 Finder 파일 제외하기](/memo/finder-wallpaper-persist)
 - 업로드한 사진의 EXIF 삭제: [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
-- 바탕화면 `z-index` 계층 정리: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- 바탕화면 `z-index` 계층 정리: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)
 - PR: [#264](https://github.com/hyeoniverse/MacFolio/pull/264)
 
 [^poster]: 동영상을 불러오는 동안이나 재생할 수 없는 경우에 대신 보여 주는 정지 이미지. `<video>`의 `poster` 속성과 같은 역할이다.

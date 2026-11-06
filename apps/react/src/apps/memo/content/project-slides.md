@@ -47,7 +47,7 @@ target.style.height = `${Math.floor(viewport.height)}px`;
 task = page.render({ canvas: target, viewport, transform: ratio === 1 ? undefined : [ratio, 0, 0, ratio, 0, 0] });
 ```
 
-페이지를 바꾸거나 화면 크기가 바뀌면 이전 렌더링 작업(`RenderTask`)을 `cancel()`한다. 그래서 빠르게 넘겨도 이전 페이지의 렌더링 결과가 새 페이지 위에 늦게 덮어쓰이지 않는다.
+페이지를 바꾸거나 화면 크기가 바뀌면 이전 렌더링 작업(`RenderTask`)을 `cancel()`한다. 그래서 빠르게 넘겨도 ==이전 페이지의 렌더링 결과가 새 페이지 위에 늦게 덮어쓰이지 않는다==.
 
 키 입력은 창 전체에서 캡처 단계로 먼저 수신한다(`window.addEventListener('keydown', onKey, true)`)[^capture]. 그렇지 않으면 뒤에 있는 미리보기 창의 ←→ 페이지 이동이나 메뉴 막대 단축키가 함께 실행된다.
 
@@ -57,7 +57,7 @@ task = page.render({ canvas: target, viewport, transform: ratio === 1 ? undefine
 
 처음에는 프로젝트 정보에 `slides` 필드를 추가하고, 시스템 설정에서 Finder 문서의 PDF를 선택해 연결하게 했다(`f7543ed50`). 그런데 [#261](https://github.com/hyeoniverse/MacFolio/pull/261)에서 Finder에 프로젝트마다 폴더(프로젝트 › MacFolio 등)가 생기면서 별도의 선택 단계가 필요 없어졌다. 실제 OS에서 프로젝트 폴더에 발표 자료를 보관하는 방식과 같다.
 
-관리자가 Finder의 프로젝트 폴더(또는 폴더 아이콘 위)에 PDF를 드래그 앤 드롭하면 그 프로젝트의 파일이 된다(폴더 값 `project:<id>`, R2 키 `projects/<id>/…`). 별도로 저장하는 필드가 없으므로, 파일을 삭제하면 버튼도 함께 사라진다.
+관리자가 Finder의 프로젝트 폴더(또는 폴더 아이콘 위)에 PDF를 드래그 앤 드롭하면 그 프로젝트의 파일이 된다(폴더 값 `project:<id>`, R2 키 `projects/<id>/…`). 별도로 저장하는 필드가 없으므로, ==파일을 삭제하면 버튼도 함께 사라진다==.
 
 |                 | `slides` 필드 (처음)                 | 프로젝트 폴더 (현재)                                                |
 | --------------- | ------------------------------------ | ------------------------------------------------------------------- |
@@ -82,7 +82,7 @@ export function firstProjectPdf(entries: DocumentEntry[], projectId: string): Do
 
 프로젝트 폴더에 PDF가 하나라도 있으면, 프로젝트 페이지의 링크 그룹(여기서 열기, 데모, GitHub) 끝에 "발표 자료 보기" 버튼이 추가된다. 직접 구현한 페이지와 템플릿 페이지(카드, 키노트, 벤토, 개발자 도구 등)가 모두 같은 버튼을 사용한다.
 
-버튼을 누르면 미리보기 앱이 맨 앞으로 오고 해당 PDF가 열린다. PDF가 여러 개이면 이름순([`localeCompare`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare), 한국어 정렬) 첫 파일을 연다. 그 상태에서 ⇧⌘F를 누르면 바로 슬라이드쇼가 시작된다. 휴대폰에서는 창이 없으므로 PDF를 새 탭으로 연다.
+버튼을 누르면 미리보기 앱이 맨 앞으로 오고 해당 PDF가 열린다. PDF가 여러 개이면 이름순([`localeCompare`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare), 한국어 정렬) 첫 파일을 연다. 그 상태에서 ==⇧⌘F를 누르면 바로 슬라이드쇼가 시작된다==. 휴대폰에서는 창이 없으므로 PDF를 새 탭으로 연다.
 
 ![Finder 프로젝트 폴더의 PDF가 프로젝트 페이지 버튼과 미리보기 슬라이드쇼로 이어지는 흐름과 슬라이드쇼 키](./images/project-slides-flow.svg 'PDF를 폴더에 넣는 것만으로 버튼이 생기고, ⇧⌘F로 발표 화면이 된다')
 

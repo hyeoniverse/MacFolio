@@ -16,7 +16,7 @@ summary: 머리말 date에는 시각이 없어 같은 날 글이 제목 순으�
 posts.sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title));
 ```
 
-같은 날 글을 구분할 시각 정보가 데이터 어디에도 없었다. 머리말에 시각을 추가하는 방법도 있지만, 이미 있는 글 210여 편을 모두 수정해야 하고 앞으로 글을 쓸 때마다 시각을 직접 입력해야 한다. 그래서 글이 이미 가진 기록에서 시각을 읽기로 했다.
+==같은 날 글을 구분할 시각 정보가 데이터 어디에도 없었다==. 머리말에 시각을 추가하는 방법도 있지만, 이미 있는 글 210여 편을 모두 수정해야 하고 앞으로 글을 쓸 때마다 시각을 직접 입력해야 한다. 그래서 글이 이미 가진 기록에서 시각을 읽기로 했다.
 
 ## 고친 방법: 날짜와 제목 사이에 '올린 시각'
 
@@ -69,7 +69,7 @@ export const files = import.meta.glob<string>('../content/*.md', { query: '?raw'
 
 #### shallow clone 빌드
 
-기록의 일부만 받은 저장소(`git clone --depth 1`)에서는 모든 파일이 마지막 커밋 하나에서 추가된 것으로 보인다. 이 값을 쓰면 모든 글의 올린 시각이 같아지고, 결과는 제목 순과 같지만 '시각을 안다'는 잘못된 전제가 남는다. 그래서 `git rev-parse --is-shallow-repository`가 `false`가 아니면 빈 객체를 반환한다. git이 없는 환경도 `try/catch`로 빈 객체다. 이 경우 같은 날 글은 기존처럼 제목 순이다. 배포 작업(`ci.yml`의 production)은 `actions/checkout`을 `fetch-depth: 0`으로 실행하므로 전체 기록을 읽는다.
+기록의 일부만 받은 저장소(`git clone --depth 1`)에서는 모든 파일이 마지막 커밋 하나에서 추가된 것으로 보인다. 이 값을 쓰면 모든 글의 올린 시각이 같아지고, 결과는 제목 순과 같지만 =='시각을 안다'는 잘못된 전제==가 남는다. 그래서 `git rev-parse --is-shallow-repository`가 `false`가 아니면 빈 객체를 반환한다. git이 없는 환경도 `try/catch`로 빈 객체다. 이 경우 같은 날 글은 기존처럼 제목 순이다. 배포 작업(`ci.yml`의 production)은 `actions/checkout`을 `fetch-depth: 0`으로 실행하므로 전체 기록을 읽는다.
 
 ### 서버 글: 처음 게시한 시각을 새 열에 기록한다
 
@@ -90,7 +90,7 @@ await tx.post.updateMany({
 });
 ```
 
-`update` 대신 `updateMany`를 쓴 이유는 조건에 맞는 행이 없을 때의 동작이다. Prisma의 `update`는 대상 행이 없으면 `P2025` 오류를 던지고, `updateMany`는 0건을 갱신하고 끝난다. 두 번째 게시부터는 조건에 맞는 행이 없는 것이 정상이다. 읽고 비교한 뒤 쓰는 두 단계가 아니라 SQL `UPDATE … WHERE "firstPublishedAt" IS NULL` 한 문장이므로 동시에 게시해도 값이 한 번만 기록된다.
+`update` 대신 `updateMany`를 쓴 이유는 조건에 맞는 행이 없을 때의 동작이다. Prisma의 `update`는 대상 행이 없으면 `P2025` 오류를 던지고, `updateMany`는 0건을 갱신하고 끝난다. 두 번째 게시부터는 조건에 맞는 행이 없는 것이 정상이다. 읽고 비교한 뒤 쓰는 두 단계가 아니라 SQL `UPDATE … WHERE "firstPublishedAt" IS NULL` 한 문장이므로 ==동시에 게시해도 값이 한 번만 기록된다==.
 
 API 응답에는 이 값을 `createdAt` 필드로 담는다. 프론트엔드의 `Post.createdAt`과 같은 이름이어서, 저장소 글과 서버 글이 같은 비교 함수를 지난다.
 
@@ -108,11 +108,14 @@ SET "firstPublishedAt" = LEAST(p."publishedAt", (SELECT MIN(r."createdAt") FROM 
 WHERE p."publishedAt" IS NOT NULL;
 ```
 
-PostgreSQL의 [`LEAST`](https://www.postgresql.org/docs/current/functions-conditional.html#FUNCTIONS-GREATEST-LEAST)는 NULL 인자를 무시하므로, 버전 기록이 없는 글은 `publishedAt`이 그대로 들어간다. 버전이 50개를 넘게 쌓인 글은 실제 첫 게시보다 늦은 시각이 들어갈 수 있다. 정확한 첫 게시 시각은 이미 삭제되어 복원할 방법이 없다.
+PostgreSQL의 [`LEAST`](https://www.postgresql.org/docs/current/functions-conditional.html#FUNCTIONS-GREATEST-LEAST)는 NULL 인자를 무시하므로, 버전 기록이 없는 글은 `publishedAt`이 그대로 들어간다.
+
+> [!WARNING] 버전이 50개를 넘은 글
+> 버전이 50개를 넘게 쌓인 글은 실제 첫 게시보다 늦은 시각이 들어갈 수 있다. 정확한 첫 게시 시각은 이미 삭제되어 복원할 방법이 없다.
 
 ### 저장소 글을 서버에서 고친 경우
 
-같은 slug의 서버 글은 저장소 글을 덮어쓴다. 관리자가 저장소 글을 편집기에서 고쳐 게시하면 서버에 같은 slug의 행이 생긴다. 이때 서버의 `firstPublishedAt`(방금 게시한 시각)을 쓰면 오래된 글이 그날 맨 위로 이동한다. 목록을 합칠 때 저장소 글의 시각을 우선한다.
+같은 slug의 서버 글은 저장소 글을 덮어쓴다. 관리자가 저장소 글을 편집기에서 고쳐 게시하면 서버에 같은 slug의 행이 생긴다. 이때 서버의 `firstPublishedAt`(방금 게시한 시각)을 쓰면 오래된 글이 그날 맨 위로 이동한다. ==목록을 합칠 때 저장소 글의 시각을 우선한다==.
 
 ```ts
 // 저장소 글을 서버에서 고쳐도 올린 시각은 저장소에 처음 들어온 시각
@@ -171,7 +174,7 @@ expect(again.body.createdAt).toBe(first.body.publishedAt);
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions): 같은 행에 게시본과 임시본을 보관하고 게시마다 버전을 남기는 구조
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable): 빌드 시각에 글 목록과 사이트맵을 만드는 `seo/posts.ts`
 - [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 최근 글 위젯
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts): `createdAt?`을 추가한 contracts의 글 응답 스키마
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201): `createdAt?`을 추가한 contracts의 글 응답 스키마
 - [pointer 이벤트와 translateY로 라이브러리 없이 구현한 순서 바꾸기 드래그](/memo/memo-folder-order): 메모 목록의 다른 정렬 규칙
 
 #MacFolio #메모앱 #git #Prisma #PostgreSQL

@@ -3,7 +3,7 @@ title: IconButton props 유니언 타입으로 아이콘 버튼의 접근 가능
 date: 2026-10-17
 category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
-seriesOrder: 7
+seriesOrder: 5
 summary: 공통 부품이 스크린 리더에 어떤 이름과 역할로 읽히는지 브라우저 없이 실행하는 시험 10개로 고정하고 규칙을 문서 표로 정리했다. 아이콘만 있는 버튼은 label을 생략하면 타입 검사에서 오류가 나도록 했다.
 ---
 
@@ -13,7 +13,7 @@ summary: 공통 부품이 스크린 리더에 어떤 이름과 역할로 읽히�
 
 MacFolio는 아이콘 버튼이 많은 사이트다. macOS와 iOS의 화면을 재현하므로 도구 막대, 창 제목 표시줄, 휴대폰 하단 막대가 대부분 글자 없는 아이콘 버튼으로 구성된다. 이 버튼들이 스크린 리더에서 어떤 이름으로 읽히는지는 E2E 시험이 간접적으로 검사해 왔다. Playwright 시험은 [`getByRole('button', { name: '사이드바 가리기' })`](https://playwright.dev/docs/locators#locate-by-role)처럼 이름으로 버튼을 찾으므로, 이름이 없으면 시험이 버튼을 찾지 못하고 실패한다.
 
-하지만 이 검사는 시험이 클릭하는 버튼에만 적용된다. [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components)에서 공통 부품(`shared/ui`)을 늘리고 앱마다 직접 작성한 버튼을 옮기기 시작하면서, 부품 자체가 이름을 올바르게 출력하는지 별도로 검사하기로 했다.
+하지만 이 검사는 시험이 클릭하는 버튼에만 적용된다. [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-retrospective#4단계-공통-컴포넌트)에서 공통 부품(`shared/ui`)을 늘리고 앱마다 직접 작성한 버튼을 옮기기 시작하면서, 부품 자체가 이름을 올바르게 출력하는지 별도로 검사하기로 했다.
 
 ## 변경 전 상태
 
@@ -28,7 +28,8 @@ export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>
 }
 ```
 
-`label?`이 선택 속성이라, 아이콘만 지정하고 이름을 생략해도 타입 검사·lint·시험 어디에서도 오류가 나지 않는다.
+> [!WARNING]
+> `label?`이 선택 속성이라, 아이콘만 지정하고 이름을 생략해도 타입 검사·lint·시험 어디에서도 오류가 나지 않는다.
 
 ## 아이콘만 있는 버튼은 이름이 있어야 한다
 
@@ -42,7 +43,8 @@ export type IconButtonProps = IconButtonBase &
 	);
 ```
 
-핵심은 `children`을 `ButtonHTMLAttributes`에서 제외하고(`Omit<..., 'children'>`) 두 분기에서 다시 정의한 것이다. 이렇게 해야 "label이 없으면 children이 반드시 있어야 한다"는 조건을 타입이 강제한다.
+> [!IMPORTANT]
+> 핵심은 `children`을 `ButtonHTMLAttributes`에서 제외하고(`Omit<..., 'children'>`) 두 분기에서 다시 정의한 것이다. 이렇게 해야 "label이 없으면 children이 반드시 있어야 한다"는 조건을 타입이 강제한다.
 
 이제 `<IconButton icon="fa-solid fa-xmark" />`처럼 이름도 글자도 없으면 타입 검사에서 오류가 난다. 당시 사이트 안의 사용처 44곳을 집계하니 `label`이 없는 곳은 '‹ 블로그'처럼 글자가 함께 있는 한 곳뿐이라 수정 없이 통과했다.
 
@@ -59,7 +61,7 @@ export type IconButtonProps = IconButtonBase &
 | [axe-core](https://github.com/dequelabs/axe-core)를 E2E에서 실행                                                 | 색 대비·구조까지 넓게 검사         | 느리고, 지금 고정하려는 "이름"보다 범위가 훨씬 넓다                                     |
 | [`renderToStaticMarkup`](https://react.dev/reference/react-dom/server/renderToStaticMarkup)으로 HTML 문자열 생성 | 의존성 0개(React에 포함), 빠르다   | 동작(클릭·포커스)은 검사하지 못한다. body에 렌더링하는 부품(포털[^2])은 출력되지 않는다 |
 
-React 앱의 단위 시험은 그때까지 Node 환경에서 순수 함수만 시험했다. jsdom을 도입하면 시험 환경이 하나 더 생긴다. 이번에 검사하려는 것은 "렌더링한 HTML에 이 속성이 있다"뿐이라 문자열 비교로 충분하다고 판단했다. 동작은 이미 E2E가 검사한다.
+React 앱의 단위 시험은 그때까지 Node 환경에서 순수 함수만 시험했다. jsdom을 도입하면 시험 환경이 하나 더 생긴다. 이번에 검사하려는 것은 "렌더링한 HTML에 이 속성이 있다"뿐이라 ==문자열 비교로 충분==하다고 판단했다. 동작은 이미 E2E가 검사한다.
 
 ## 렌더링 결과로 확인하기
 
@@ -86,7 +88,8 @@ it('아이콘 버튼: label이 이름(aria-label)과 마우스 설명(title)이 
 });
 ```
 
-타입 규칙도 시험 안에 기록했다. [`@ts-expect-error`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#-ts-expect-error-comments)는 다음 줄에 타입 오류가 **없으면** 오히려 오류를 낸다. 그래서 `label`을 다시 선택 속성으로 바꾸면 이 줄에서 타입 검사가 실패한다.
+> [!TIP] 타입 규칙을 시험에 기록하기
+> 타입 규칙도 시험 안에 기록했다. [`@ts-expect-error`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#-ts-expect-error-comments)는 다음 줄에 타입 오류가 **없으면** 오히려 오류를 낸다. 그래서 `label`을 다시 선택 속성으로 바꾸면 이 줄에서 타입 검사가 실패한다.
 
 ```ts
 // @ts-expect-error 아이콘만 있고 이름이 없다
@@ -104,7 +107,7 @@ html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 - 장식 아이콘은 `aria-hidden="true"`, 인라인 SVG는 `focusable="false"`도 지정한다
 - 이름은 동작을 나타낸다('삭제'). 켜짐·펼침 같은 상태는 이름에 넣지 않고 [`aria-pressed`](https://www.w3.org/TR/wai-aria-1.2/#aria-pressed)·[`aria-expanded`](https://www.w3.org/TR/wai-aria-1.2/#aria-expanded)로 전달한다
 
-두 번째 규칙의 예가 사이드바 여닫기다. 이름은 "사이드바 가리기"와 "사이드바 보기"로 바뀌지만, 열림 여부는 `aria-expanded`가 별도로 전달한다. 날짜 선택 버튼은 선택한 날짜를 이름에 함께 넣는다("게시일 2026. 10. 17., 바꾸기"). 버튼 이름만으로 현재 값과 동작을 함께 알 수 있도록 하기 위해서다.
+두 번째 규칙의 예가 사이드바 여닫기다. 이름은 "사이드바 가리기"와 "사이드바 보기"로 바뀌지만, 열림 여부는 `aria-expanded`가 별도로 전달한다. 날짜 선택 버튼은 선택한 날짜를 이름에 함께 넣는다("게시일 2026. 10. 17., 바꾸기"). ==버튼 이름만으로 현재 값과 동작을 함께 알 수 있도록== 하기 위해서다.
 
 | 부품            | 상태   | 접근 가능한 이름             | 상태 속성               |
 | --------------- | ------ | ---------------------------- | ----------------------- |
@@ -123,15 +126,15 @@ html(createElement(IconButton, { icon: 'fa-solid fa-xmark' }));
 
 바로 다음 작업은 앱마다 직접 작성한 아이콘 버튼을 `IconButton`으로 옮기는 작업([계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate))이었다. 옮긴 곳은 모두 이 타입 규칙을 거쳤다. 2026년 10월 23일 기준 `apps/react/src`의 `.tsx` 파일에서 `<IconButton`을 포함한 줄은 99개다.
 
-- 접근성 규칙은 문서로만 기록하면 지켜지지 않는다. 가능한 규칙은 타입으로, 그다음은 빠른 시험으로 강제한다.
+- ==접근성 규칙은 문서로만 기록하면 지켜지지 않는다.== 가능한 규칙은 타입으로, 그다음은 빠른 시험으로 강제한다.
 - 시험 도구를 선택할 때는 검사 범위를 먼저 정한다. 이번 범위는 "HTML에 이 속성이 있다"였고, 그래서 가장 가벼운 도구로 충분했다.
 - 색 대비나 키보드 포커스 순서를 자동으로 검사하는 시험은 아직 없다. E2E에서 axe-core를 실행하는 방식으로 별도로 검토할 작업이다.
 
 ## 관련 글
 
 - 앱마다 직접 작성한 아이콘 버튼을 IconButton으로 옮긴 작업: [계산된 스타일 비교로 화면 변화 없이 아이콘 버튼을 IconButton으로 옮기기](/memo/icon-button-migrate)
-- 공통 부품 목록을 작성한 작업: [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory)
-- 리팩터링 4단계 정리: [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components)
+- 공통 부품 목록을 작성한 작업: [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-modal#공통-부품-집계)
+- 리팩터링 4단계 정리: [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-retrospective#4단계-공통-컴포넌트)
 - 접근성 패턴 참고: [WAI-ARIA Authoring Practices Guide](https://www.w3.org/WAI/ARIA/apg/)
 - PR: [#243](https://github.com/hyeoniverse/MacFolio/pull/243)
 

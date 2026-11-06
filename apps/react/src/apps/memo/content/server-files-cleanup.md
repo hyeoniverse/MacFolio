@@ -7,7 +7,7 @@ summary: 메모 글에 넣은 이미지는 서버 DB에 별도로 저장되어, 
 
 메모 편집기에 이미지를 드래그 앤 드롭하면 파일은 서버의 `Upload` 테이블에 `bytea`[^bytea]로 저장되고, 글 본문에는 `![](https://<API 주소>/files/<id>)` 한 줄이 삽입된다. 글과 파일은 이 주소 문자열로만 연결된다. 외래 키는 없다.
 
-따라서 글에서 그 줄을 삭제해도 파일은 삭제되지 않는다. 글을 영구 삭제해도 같다. 편집 화면에서는 이미지가 사라졌지만, 파일은 서버 DB에 남아 저장 공간을 차지한다.
+따라서 ==글에서 그 줄을 삭제해도 파일은 삭제되지 않는다==. 글을 영구 삭제해도 같다. 편집 화면에서는 이미지가 사라졌지만, 파일은 서버 DB에 남아 저장 공간을 차지한다.
 
 ## 글 저장 시각에 파일도 함께 삭제하는 방안
 
@@ -28,7 +28,7 @@ summary: 메모 글에 넣은 이미지는 서버 DB에 별도로 저장되어, 
 
 ![저장할 때 빠진 그림을 바로 지우면 생기는 일](./images/server-files-cleanup-why.svg '버전 되돌리기와 최근 삭제 복구 시 이미지가 깨진다')
 
-즉시 삭제하면 이 두 기능이 깨진다. 그래서 자동으로 삭제하지 않고, 파일마다 **참조 위치**를 표시해 관리자가 선택하게 했다.
+==즉시 삭제하면 이 두 기능이 깨진다==. 그래서 자동으로 삭제하지 않고, 파일마다 **참조 위치**를 표시해 관리자가 선택하게 했다.
 
 ## 참조 위치 찾기
 
@@ -66,7 +66,7 @@ for (const revision of revisions)
 
 현재 글에서 참조하는 파일은 이전 버전 집합에서 제외한다. 그래야 "이전 버전에서만" 분류가 정확히 그 의미를 갖는다.
 
-`DELETE /files/:id`도 같은 규칙으로 거절한다. 화면에서 삭제 버튼을 숨기는 것만으로는 부족하다. 화면을 거치지 않는 직접 요청이 있을 수 있고, 화면이 목록을 조회한 뒤 그 파일이 다른 글에 삽입됐을 수도 있다.
+`DELETE /files/:id`도 같은 규칙으로 거절한다. ==화면에서 삭제 버튼을 숨기는 것만으로는 부족하다==. 화면을 거치지 않는 직접 요청이 있을 수 있고, 화면이 목록을 조회한 뒤 그 파일이 다른 글에 삽입됐을 수도 있다.
 
 ```ts
 if (row.wallpaperImage || row.wallpaperThumb) throw new ConflictException('배경화면에서 쓰는 파일입니다.');
@@ -80,7 +80,7 @@ if (posts?.size) throw new ConflictException(`글에서 쓰는 파일입니다: 
 
 ## 서버가 알 수 없는 글
 
-이 블로그의 글 대부분은 저장소의 Markdown 파일이고, 빌드 시각에 사이트 번들에 포함된다. 서버 DB에는 관리자가 편집한 글만 있다. 저장소 글이 서버의 이미지를 참조하면 서버는 그 참조를 알 수 없다.
+이 블로그의 글 대부분은 저장소의 Markdown 파일이고, 빌드 시각에 사이트 번들에 포함된다. 서버 DB에는 관리자가 편집한 글만 있다. ==저장소 글이 서버의 이미지를 참조하면 서버는 그 참조를 알 수 없다==.
 
 그래서 화면에서 한 번 더 검사한다. 휴지통(`apps/bin/filesApi.ts`의 `usageOf`)은 저장소 글 본문에 `/files/<id>` 문자열이 포함됐는지 검사하고, 하나라도 있으면 "글에서 쓰는 파일"로 분류해 삭제 버튼을 숨긴다.
 
@@ -95,7 +95,7 @@ if (posts?.size) throw new ConflictException(`글에서 쓰는 파일입니다: 
 
 ![관리자 휴지통의 서버 파일 목록](./images/server-files-cleanup-list.jpg '참조가 없는 파일에만 지우기 버튼이 표시되고, 글이 참조하는 파일에는 글 slug가 표시된다 (e2e/fakeApi.ts로 캡처)')
 
-처음 구현한 목록에는 블로그 이미지가 하나도 표시되지 않아, 조회 오류인지 먼저 확인해야 했다. 원인은 오류가 아니었다. 블로그 글 대부분은 저장소의 Markdown이고 그 이미지도 저장소 `content/images/`에 있어 사이트와 함께 배포된다. 서버에는 메모 편집기로 업로드한 파일과 배경화면만 저장된다. 같은 혼동을 막기 위해 목록 상단과 빈 화면에 이 목록에 표시되는 파일의 범위를 한 줄로 안내했다.
+처음 구현한 목록에는 블로그 이미지가 하나도 표시되지 않아, 조회 오류인지 먼저 확인해야 했다. 원인은 오류가 아니었다. 블로그 글 대부분은 저장소의 Markdown이고 그 이미지도 저장소 `content/images/`에 있어 사이트와 함께 배포된다. ==서버에는 메모 편집기로 업로드한 파일과 배경화면만 저장된다==. 같은 혼동을 막기 위해 목록 상단과 빈 화면에 이 목록에 표시되는 파일의 범위를 한 줄로 안내했다.
 
 [휴지통](/memo/bin-app)은 방문자에게는 "이 사이트가 내 브라우저에 저장한 데이터"를, 관리자에게는 "글에서 제거했지만 서버에 남은 파일"을 표시한다. 두 목록 모두 실제로 삭제할 수 있는 항목만 담는다.
 
@@ -127,7 +127,10 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 2. 삭제 전에 파일 이름으로 글을 검색해 참조 여부를 한 번 더 확인한다
 3. 삭제 후 관련 글을 열어 이미지가 깨지지 않았는지 확인한다
 
-삭제한 서버 파일은 복구할 수 없으므로, 삭제 전에 [R2 백업](/memo/db-backup)의 최근 실행 시각을 확인한다. 응답 모양은 [packages/contracts/src/files.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/files.ts), 시험은 [apps/api/test/files.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/files.e2e.test.ts).
+> [!CAUTION] 삭제한 서버 파일은 복구할 수 없다
+> 삭제한 서버 파일은 복구할 수 없으므로, 삭제 전에 [R2 백업](/memo/db-backup)의 최근 실행 시각을 확인한다.
+
+응답 모양은 [packages/contracts/src/files.ts](https://github.com/hyeoniverse/MacFolio/blob/main/packages/contracts/src/files.ts), 시험은 [apps/api/test/files.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/files.e2e.test.ts).
 
 참고 문서: [Prisma 문서](https://www.prisma.io/docs), [PostgreSQL 이진 데이터 타입(bytea)](https://www.postgresql.org/docs/current/datatype-binary.html), [MDN HTTP 409 Conflict](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/409).
 
@@ -140,11 +143,11 @@ cd apps/react && npx playwright test e2e/bin.spec.ts
 
 ## 관련 글
 
-- [사이트가 쓰는 localStorage·sessionStorage 키를 목록으로 표시하고 삭제하기](/memo/bin-app)
+- [localStorage 키 목록과 2초 주기 확인으로 구현한 휴지통 앱](/memo/bin-app)
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
 - [JPEG·PNG·WebP 세그먼트를 순회해 EXIF를 지우고 방향 값만 남기기](/memo/upload-strip-exif)
 - [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
-- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-files)
+- [화면이 알아야 하는가를 기준으로 파일 검사 규칙을 contracts와 서버로 나누기](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205)
 
 [^bytea]: PostgreSQL의 이진 데이터 열 타입. 이 사이트는 별도 객체 저장소 없이 업로드 파일을 DB에 직접 저장한다.
 

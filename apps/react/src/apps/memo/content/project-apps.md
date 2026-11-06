@@ -29,7 +29,7 @@ summary: 새싹 농장만 창 안에서 실행할 수 있던 것을 HYEONIVERSE�
 export const NewPick = () => <ProjectApp appName="newpick" projectId="newpick" />;
 ```
 
-그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. 앱 목록만 별도로 관리하면 프로젝트를 추가할 때 누락되기 쉽다. 그래서 프로젝트에 `app` 필드(Dock·Launchpad에 표시할 이름, 아이콘, 창 크기, 게임 여부)를 추가하고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 생성하도록 했다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 작성하면 Dock, 터미널 `open`, Safari의 "여기서 열기"에 모두 반영된다.
+그런데 주소, 이름, 아이콘은 이미 프로젝트 정보(`shared/profile.ts`의 `PROJECTS`)에 있고, Safari 탭·Finder·터미널·GitHub 앱도 모두 그 목록을 읽는다. ==앱 목록만 별도로 관리하면 프로젝트를 추가할 때 누락되기 쉽다==. 그래서 프로젝트에 `app` 필드(Dock·Launchpad에 표시할 이름, 아이콘, 창 크기, 게임 여부)를 추가하고, 앱 목록(`apps/manifest.ts`)이 데모 주소와 `app`이 있는 프로젝트를 읽어 앱을 생성하도록 했다. 새 프로젝트를 배포하면 그 프로젝트에 `app`만 작성하면 Dock, 터미널 `open`, Safari의 "여기서 열기"에 모두 반영된다.
 
 ![앱 목록은 PROJECTS에서 생성된다](./images/project-apps-source.svg 'PROJECTS → PROJECT_APPS → Dock·Launchpad·터미널·Safari, 창은 ProjectApp')
 
@@ -68,7 +68,7 @@ export const projectAppName = (id: string): ProjectAppName | null =>
 
 ![창 폭에 따라 Dock에 들어가는 앱](./images/project-apps-dock-capacity.svg '1600px이면 13칸이라 프로젝트 앱은 둘까지, 1920px이면 16칸이라 다섯 모두')
 
-처음에는 프로젝트 앱을 메일 다음에 배치했더니, 1600px 창에서도 공유·터미널·시스템 설정이 Launchpad로 넘어가 E2E 시험 20개가 실패했다. Dock에서 시스템 설정을 여는 시험들이다. 사용자도 마찬가지로 자주 쓰는 앱이 Dock에서 사라지면 찾기 어렵다. 그래서 프로젝트 앱을 시스템 설정 다음에 배치해, 창이 좁으면 프로젝트 앱이 먼저 Launchpad로 넘어가게 했다.
+처음에는 프로젝트 앱을 메일 다음에 배치했더니, 1600px 창에서도 공유·터미널·시스템 설정이 Launchpad로 넘어가 E2E 시험 20개가 실패했다. Dock에서 시스템 설정을 여는 시험들이다. 사용자도 마찬가지로 자주 쓰는 앱이 Dock에서 사라지면 찾기 어렵다. 그래서 프로젝트 앱을 시스템 설정 다음에 배치해, ==창이 좁으면 프로젝트 앱이 먼저 Launchpad로 넘어가게 했다==.
 
 | 창 폭  | Dock 칸 수 | Dock에 들어가는 프로젝트 앱 | Launchpad로 넘어가는 프로젝트 앱 |
 | ------ | ---------- | --------------------------- | -------------------------------- |
@@ -91,7 +91,7 @@ Safari 프로젝트 페이지에는 "여기서 열기" 버튼을 배치하고, �
 | 가장자리 하이라이트·음영 | 맨 위 몇 픽셀은 더 밝게, 맨 아래 띠는 약간 어둡게 처리해 볼록한 형태를 표현                           |
 | 로고 그림자              | 로고를 약간 위로 올리고, 그 아래에 블러 처리한 그림자를 배치                                          |
 
-Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프로젝트 아이콘(`icon.svg`)에 이미 그라데이션과 그림자가 있었지만, Dock에서는 별의 윤곽이 뭉개지고 흐리게 보였다. 별을 수치 없이 근사한 곡선으로 작성했기 때문이다. 원본 사이트의 로고를 측정하니 별의 네 변은 바깥 네 모서리를 중심으로 한 반지름 143.5px의 사분원이고, 점은 (358.5, 149.5)에 반지름 21px이었다. 이 치수대로 호 명령(`A`) 네 개로 다시 작성하고, Dock에서는 다른 앱처럼 512px PNG(`app-icon.png`)를 사용한다. Dock 아이콘은 포인터를 올리면 확대되는데, SVG를 그대로 쓰면 확대 시 흐리게 보였다.
+Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프로젝트 아이콘(`icon.svg`)에 이미 그라데이션과 그림자가 있었지만, Dock에서는 별의 윤곽이 뭉개지고 흐리게 보였다. ==별을 수치 없이 근사한 곡선으로 작성했기 때문이다==. 원본 사이트의 로고를 측정하니 별의 네 변은 바깥 네 모서리를 중심으로 한 반지름 143.5px의 사분원이고, 점은 (358.5, 149.5)에 반지름 21px이었다. 이 치수대로 호 명령(`A`) 네 개로 다시 작성하고, Dock에서는 다른 앱처럼 512px PNG(`app-icon.png`)를 사용한다. Dock 아이콘은 포인터를 올리면 확대되는데, SVG를 그대로 쓰면 확대 시 흐리게 보였다.
 
 ## 확인
 
@@ -106,7 +106,9 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 
 ## 남은 것·배운 것
 
-- 외부 사이트가 `X-Frame-Options`나 CSP [`frame-ancestors`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)로 삽입을 차단하면, 8초 뒤 "새 탭에서 열기"를 표시하는 것 외에 대응할 방법이 없다. iframe 내부의 실패 원인은 바깥 문서에서 읽을 수 없다.
+> [!WARNING] iframe 삽입 차단에는 대응 수단이 없다
+> 외부 사이트가 `X-Frame-Options`나 CSP [`frame-ancestors`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)로 삽입을 차단하면, 8초 뒤 "새 탭에서 열기"를 표시하는 것 외에 대응할 방법이 없다. iframe 내부의 실패 원인은 바깥 문서에서 읽을 수 없다.
+
 - 앱 목록을 프로젝트 목록에서 생성하니 프로젝트를 추가할 때 수정할 위치가 한 곳으로 줄었다. 대신 앱 이름이 런타임에 결정되므로, 브랜드 타입(`ProjectAppName`)으로 내장 앱 이름의 오타 검사를 유지했다.
 - Dock 순서를 바꿀 때는 시험이 Dock에서 어떤 앱을 클릭하는지까지 확인해야 했다. 시험이 실패한 지점이 곧 사용자가 앱을 찾지 못할 지점이었다.
 
@@ -115,7 +117,7 @@ Safari 탭에서는 원래 로고를 그대로 사용한다. HYEONIVERSE는 프�
 - [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 - [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout)
 - [별도 목록 없이 프로젝트 데이터를 순회해 생성하는 사진 앨범](/memo/photos-app)
-- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/profile-split)
+- [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)
 - [PROJECTS 단일 원본으로 GitHub 스냅샷과 프로젝트 목록 합치기](/memo/projects-one-list)
 
 [^brand]: 브랜드 타입(branded type)은 `string` 같은 기본 타입에 실행 시점에는 존재하지 않는 표시 속성을 교차 타입으로 붙여, 검사 함수를 거친 값만 그 타입으로 인정하게 하는 TypeScript 기법이다. 이 저장소의 `PostSlug`·`FolderPath`도 같은 방식이다.

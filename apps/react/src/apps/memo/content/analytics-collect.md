@@ -7,7 +7,7 @@ seriesOrder: 2
 summary: 사이트에서 페이지 열기, 앱 열기, 글 조회, 외부 링크 클릭, 체류 시간을 수집해 5초마다 sendBeacon으로 전송한다. 여러 곳의 window.open을 openExternal 하나로 통합하고, 로컬 주소와 Global Privacy Control에서는 수집을 끈다. 전송 방법 비교와 시험을 정리했다.
 ---
 
-[쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)에서 이벤트를 수신하는 API를 만들었다. 이번에는 사이트 쪽이다. 이 사이트는 페이지 하나 안에서 창을 여는 구조라, 서버가 받는 요청은 첫 페이지와 코드 파일뿐이다. 메모 앱을 열고 글 세 개를 읽은 뒤 GitHub 링크를 눌러도 새 페이지 요청은 발생하지 않는다. "어느 앱에서 무엇을 조회했는지"는 사이트가 직접 전송해야 한다.
+[쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)에서 이벤트를 수신하는 API를 만들었다. 이번에는 사이트 쪽이다. 이 사이트는 페이지 하나 안에서 창을 여는 구조라, 서버가 받는 요청은 첫 페이지와 코드 파일뿐이다. 메모 앱을 열고 글 세 개를 읽은 뒤 GitHub 링크를 눌러도 새 페이지 요청은 발생하지 않는다. "어느 앱에서 무엇을 조회했는지"는 사이트가 직접 전송해야 한다.
 
 작업은 [#162](https://github.com/hyeoniverse/MacFolio/pull/162)의 커밋 하나다. 14개 파일에 417줄을 추가했다. 핵심은 `src/shared/analytics/analytics.ts`(현재 205줄)와 `usage.ts`(25줄)다.
 
@@ -34,7 +34,7 @@ export function newlyOpened<Name extends string>(
 }
 ```
 
-창을 앞으로 가져오거나 최소화했다가 복원하는 동작은 집계하지 않는다. 알고 싶은 지표는 "앱을 연 횟수"이지 "창을 누른 횟수"가 아니다.
+창을 앞으로 가져오거나 최소화했다가 복원하는 동작은 집계하지 않는다. ==알고 싶은 지표는 "앱을 연 횟수"이지 "창을 누른 횟수"가 아니다==.
 
 외부 링크는 두 경로로 열렸다.
 
@@ -87,7 +87,8 @@ if (globalThis.__MACFOLIO_ANALYTICS__ !== undefined) return globalThis.__MACFOLI
 return !/^(localhost|127\.0\.0\.1|\[::1\])$|\.local$/.test(location.hostname);
 ```
 
-검사 순서가 곧 우선순위다. Global Privacy Control[^gpc]을 시험용 스위치보다 먼저 확인하므로, 시험이 스위치를 켜도 방문자의 거부가 우선한다.
+> [!IMPORTANT]
+> 검사 순서가 곧 우선순위다. Global Privacy Control[^gpc]을 시험용 스위치보다 먼저 확인하므로, 시험이 스위치를 켜도 방문자의 거부가 우선한다.
 
 ## 방문자에게 표시하는 것
 
@@ -112,8 +113,8 @@ Apple 메뉴 맨 위에 "오늘 방문자 N명"을 추가했다. 메뉴를 열 �
 
 ## 그 뒤에 바뀐 것
 
-- 서버 요청을 `shared/api/client.ts`의 `api()` 하나로 통합할 때([#196](https://github.com/hyeoniverse/MacFolio/pull/196), [공용 API 클라이언트](/memo/shared-api-client)) 오늘 방문자 수를 조회하는 코드도 옮겼다. `sendBeacon`은 응답을 읽지 않으므로 그대로 두었다.
-- UTM을 다섯 가지(`source`, `medium`, `campaign`, `term`, `content`)로 늘리고, 읽은 `utm_*`는 주소창에서 삭제한다([출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)). 삭제하지 않으면 새로 고칠 때마다 같은 캠페인이 다시 집계된다.
+- 서버 요청을 `shared/api/client.ts`의 `api()` 하나로 통합할 때([#196](https://github.com/hyeoniverse/MacFolio/pull/196), [공용 API 클라이언트](/memo/shared-modules#서버-호출-apiapifetch)) 오늘 방문자 수를 조회하는 코드도 옮겼다. `sendBeacon`은 응답을 읽지 않으므로 그대로 두었다.
+- UTM을 다섯 가지(`source`, `medium`, `campaign`, `term`, `content`)로 늘리고, 읽은 `utm_*`는 주소창에서 삭제한다([출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)). ==삭제하지 않으면 새로 고칠 때마다 같은 캠페인이 다시 집계된다==.
 
 ## 남은 것, 배운 것
 
@@ -133,16 +134,17 @@ npx vitest run src/shared/analytics           # 묶어 보내기·보내지 않�
 npx playwright test e2e/analytics.spec.ts --project=desktop-chromium
 ```
 
-`VITE_API_URL`이 없는 빌드와 로컬 주소에서는 전송하지 않는다. 그래서 로컬 컴퓨터에서 `pnpm dev`만 실행했을 때 요청이 보이지 않는 것이 정상이다. 관리자로 로그인한 브라우저의 요청은 전송되지만 서버가 저장하지 않는다. 수집 항목은 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
+> [!NOTE] 요청이 보이지 않는 경우
+> `VITE_API_URL`이 없는 빌드와 로컬 주소에서는 전송하지 않는다. 그래서 로컬 컴퓨터에서 `pnpm dev`만 실행했을 때 요청이 보이지 않는 것이 정상이다. 관리자로 로그인한 브라우저의 요청은 전송되지만 서버가 저장하지 않는다. 수집 항목은 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
-- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
+- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-api#요약을-방문자에게-공개한다-세션에-따라-응답-범위를-나눈다)
 - [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
 - [앱 링크와 주소 막대](/memo/app-links)
-- [공용 API 클라이언트](/memo/shared-api-client)
+- [공용 API 클라이언트](/memo/shared-modules#서버-호출-apiapifetch)
 
 [^gpc]: 브라우저가 웹사이트에 "내 데이터를 판매·공유하지 말라"는 의사를 전달하는 신호. 헤더 `Sec-GPC: 1`과 `navigator.globalPrivacyControl`로 전달된다([globalprivacycontrol.org](https://globalprivacycontrol.org/)).
 

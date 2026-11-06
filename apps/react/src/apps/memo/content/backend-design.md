@@ -25,7 +25,7 @@ MacFolio의 서버는 기능을 추가할 때마다 모듈이 늘었다. 관리�
 요청 경로는 두 가지다. 화면(HTML·JS)은 Cloudflare Workers가 정적 파일로 응답하고, API 요청은 Cloudflare Tunnel을 거쳐 VM 안의 NestJS로 전달된다. 구성도에서 중요한 지점은 세 곳이다.
 
 1. **서버에 열린 인바운드 포트가 없다.** VM 안의 `cloudflared`가 Cloudflare로 아웃바운드 연결을 먼저 맺고, 요청은 그 연결로만 들어온다. 방화벽에 80·443을 열지 않고, TLS 인증서 갱신도 Cloudflare가 처리한다. 운영 서버의 `compose.yml`에는 `ports` 항목이 없어서 DB는 컨테이너 네트워크 밖에서 접근할 수 없다([docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)).
-2. **프론트엔드와 API가 같은 사이트(site)다.** `macfolio.`와 `macfolio-api.`가 모두 `hyeoniverse.com` 아래에 있으므로 `SameSite=Lax`[^samesite] 세션 쿠키가 API 요청에 함께 전송된다. API를 `workers.dev`나 IP 주소에 배치했다면 쿠키가 전송되지 않아 로그인이 동작하지 않는다.
+2. **프론트엔드와 API가 같은 사이트(site)다.** `macfolio.`와 `macfolio-api.`가 모두 `hyeoniverse.com` 아래에 있으므로 `SameSite=Lax`[^samesite] 세션 쿠키가 API 요청에 함께 전송된다. API를 `workers.dev`나 IP 주소에 배치했다면 ==쿠키가 전송되지 않아 로그인이 동작하지 않는다==.
 3. **외부 서비스 앞에 서버 캐시가 있다.** GitHub REST API는 인증 없는 요청을 IP당 시간당 60회로 제한한다([GitHub Docs](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)). 방문자 요청마다 GitHub를 호출하면 이 한도를 바로 초과한다.
 
 ## 요청이 거치는 계층
@@ -43,7 +43,8 @@ API로 들어온 요청은 모두 같은 계층을 순서대로 거친다.
 
 ![요청이 거치는 계층](./images/backend-design-layers.svg '각 계층이 거절할 때 반환하는 상태 코드. 처리 함수까지 도달한 요청은 앞의 검사를 모두 통과한 것이다')
 
-화면에서 편집 버튼을 숨기는 것과 서버가 요청을 거절하는 것은 별개다. 버튼이 보이지 않아도 `curl`로 요청을 직접 보낼 수 있으므로, 권한 검사는 항상 서버가 수행한다.
+> [!IMPORTANT]
+> 화면에서 편집 버튼을 숨기는 것과 서버가 요청을 거절하는 것은 별개다. 버튼이 보이지 않아도 `curl`로 요청을 직접 보낼 수 있으므로, 권한 검사는 항상 서버가 수행한다.
 
 ## 설계 결정
 
@@ -63,7 +64,7 @@ API로 들어온 요청은 모두 같은 계층을 순서대로 거친다.
 | 서버 노출     | Cloudflare Tunnel, 인바운드 포트 없음                           | 열린 포트를 노린 공격, 인증서 만료                                     |
 | 배포          | `check` 작업을 통과한 커밋만 Workers에 배포                     | 시험을 건너뛴 배포                                                     |
 
-일부는 처음 설계와 다르다. 댓글은 처음에 이름과 비밀번호를 받고 비밀번호를 scrypt 해시로 저장했다([scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)). 방문자 쿠키 방식으로 바꿀 때 기존 댓글은 그대로 보관하고 새 댓글부터 새 방식을 적용했다. 데이터를 마이그레이션하지 않고 방식을 바꾸는 편이 1인 운영 서버에서는 장애 위험이 적다.
+일부는 처음 설계와 다르다. 댓글은 처음에 이름과 비밀번호를 받고 비밀번호를 scrypt 해시로 저장했다([scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)). 방문자 쿠키 방식으로 바꿀 때 기존 댓글은 그대로 보관하고 새 댓글부터 새 방식을 적용했다. ==데이터를 마이그레이션하지 않고 방식을 바꾸는 편이 1인 운영 서버에서는 장애 위험이 적다==.
 
 ## 파일을 DB에 저장한 이유
 
@@ -71,7 +72,7 @@ API로 들어온 요청은 모두 같은 계층을 순서대로 거친다.
 
 ![파일 저장 위치에 따른 백업 범위](./images/backend-design-files.svg '디스크에 저장하면 pg_dump와 디스크 복사 두 가지를 맞춰야 하고, DB에 저장하면 pg_dump 하나로 끝난다')
 
-그래서 파일도 PostgreSQL `bytea`[^bytea] 열에 저장했다. 파일 하나는 10MB로 제한하고, 배경화면은 브라우저에서 크기를 줄인 뒤 업로드한다. 그 결과 `pg_dump` 한 번으로 글과 이미지가 함께 백업된다. 사진이 수천 장 규모가 되면 다시 검토해야 하지만, 포트폴리오 블로그 규모에서는 백업·복원 절차가 하나인 쪽을 선택했다.
+그래서 파일도 PostgreSQL `bytea`[^bytea] 열에 저장했다. 파일 하나는 10MB로 제한하고, 배경화면은 브라우저에서 크기를 줄인 뒤 업로드한다. 그 결과 `pg_dump` 한 번으로 ==글과 이미지가 함께 백업된다==. 사진이 수천 장 규모가 되면 다시 검토해야 하지만, 포트폴리오 블로그 규모에서는 백업·복원 절차가 하나인 쪽을 선택했다.
 
 ## 시험
 
@@ -89,13 +90,13 @@ API로 들어온 요청은 모두 같은 계층을 순서대로 거친다.
 
 ![10월 3일과 지금](./images/backend-design-growth.svg '기능 모듈은 11개에서 24개로, API 시험은 120여 개에서 309개로')
 
-| 바뀐 곳        | 10월 3일                                      | 현재                                                                                                                                              |
-| -------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 요청 제한      | 로그인, 댓글·메시지 쓰기에만 `ThrottlerGuard` | 모든 쓰기 경로에 `@RateLimit` 데코레이터 하나로 적용 ([쓰기 경로에 요청 제한](/memo/rate-limit-all-writes))                                       |
-| 입력 형식      | 서버의 DTO와 화면의 타입을 따로 작성          | `packages/contracts`의 [zod](https://zod.dev/) 스키마를 서버·화면이 함께 사용 ([분석 이벤트 계약](/memo/contracts-analytics))                     |
-| 권한 확인      | 경로마다 `@UseGuards`를 사람이 검토           | 경로 85개를 표 하나와 비교하는 시험 ([API 경로를 표 하나로](/memo/api-route-table-test))                                                          |
-| 배포           | 서버에서 `git pull` 후 빌드                   | GitHub Actions가 이미지를 빌드하고 서버는 이미지만 교체 ([command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)) |
-| 새로 생긴 모듈 | —                                             | 트래픽 분석, 서버 자원, 문서 파일(R2), Finder 폴더, 사이트 프로필, 좋아요, 번역·요약 등                                                           |
+| 바뀐 곳        | 10월 3일                                      | 현재                                                                                                                                                            |
+| -------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 요청 제한      | 로그인, 댓글·메시지 쓰기에만 `ThrottlerGuard` | 모든 쓰기 경로에 `@RateLimit` 데코레이터 하나로 적용 ([쓰기 경로에 요청 제한](/memo/rate-limit-all-writes))                                                     |
+| 입력 형식      | 서버의 DTO와 화면의 타입을 따로 작성          | `packages/contracts`의 [zod](https://zod.dev/) 스키마를 서버·화면이 함께 사용 ([분석 이벤트 계약](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206)) |
+| 권한 확인      | 경로마다 `@UseGuards`를 사람이 검토           | 경로 85개를 표 하나와 비교하는 시험 ([API 경로를 표 하나로](/memo/api-route-table-test))                                                                        |
+| 배포           | 서버에서 `git pull` 후 빌드                   | GitHub Actions가 이미지를 빌드하고 서버는 이미지만 교체 ([command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy))               |
+| 새로 생긴 모듈 | —                                             | 트래픽 분석, 서버 자원, 문서 파일(R2), Finder 폴더, 사이트 프로필, 좋아요, 번역·요약 등                                                                         |
 
 현재 시험 수는 e2e 131개(파일 23개)와 단위 178개이고, DB 테이블(Prisma 모델)은 23개다.
 
@@ -142,7 +143,7 @@ pnpm --filter @macfolio/api test:e2e   # HTTP 경계 시험
 - [API 서버에서 GitHub API 응답을 캐시해 프로필을 실시간 조회하기](/memo/github-live-profile)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)
 - [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
 
 [^samesite]: `SameSite`는 다른 사이트에서 시작된 요청에 쿠키를 함께 보낼지 정하는 쿠키 속성이다. `Lax`이면 같은 사이트(등록 가능한 도메인이 같은 주소) 사이의 요청과 최상위 이동에만 쿠키를 보낸다.

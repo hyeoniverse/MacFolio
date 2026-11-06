@@ -52,7 +52,7 @@ export function cssVars(vars: Record<string, string | number | undefined>): CSSP
 }
 ```
 
-`undefined` 값은 제외하므로, 색 표에 없는 언어면 CSS 쪽 `var(--color, 기본값)`의 기본값이 적용된다. 타입 단언은 이 함수 안 한 곳에만 남는다.
+`undefined` 값은 제외하므로, 색 표에 없는 언어면 CSS 쪽 `var(--color, 기본값)`의 기본값이 적용된다. ==타입 단언은 이 함수 안 한 곳에만 남는다==.
 
 ```tsx
 <span className="gh-language-dot" style={cssVars({ color: LANGUAGE_COLORS[repo.language] })} />
@@ -74,7 +74,7 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 
 ## 로딩 화면의 lint 경고
 
-로딩 화면은 화면을 클릭한 뒤 안내 문구를 `visibility: hidden` 인라인 스타일로 숨겼는데, 클릭 여부를 렌더링 중에 `ref`에서 읽고 있어서 lint 경고 두 개가 계속 남아 있었다. [ref는 값이 바뀌어도 다시 렌더링을 일으키지 않으므로](https://react.dev/learn/referencing-values-with-refs), 다른 이유로 다시 렌더링되는 시각에야 문구가 사라지는 구조였다. `started` 상태를 추가하고 `.loading-text.started { visibility: hidden }`으로 바꾸자 경고가 6개에서 4개로 줄었다.
+로딩 화면은 화면을 클릭한 뒤 안내 문구를 `visibility: hidden` 인라인 스타일로 숨겼는데, 클릭 여부를 렌더링 중에 `ref`에서 읽고 있어서 lint 경고 두 개가 계속 남아 있었다. [ref는 값이 바뀌어도 다시 렌더링을 일으키지 않으므로](https://react.dev/learn/referencing-values-with-refs), ==다른 이유로 다시 렌더링되는 시각에야 문구가 사라지는 구조==였다. `started` 상태를 추가하고 `.loading-text.started { visibility: hidden }`으로 바꾸자 경고가 6개에서 4개로 줄었다.
 
 ## 구현 정리
 
@@ -94,7 +94,10 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 - 데스크톱 바탕화면, 메일·메시지·GitHub·사진 창, 사진 확대
 - 휴대폰 홈, 제어 센터, 단축어
 
-37장 모두 일치했다. 남은 인라인 `style`은 105곳이고, 그중 68곳이 `cssVars()`, 나머지는 모두 계산된 좌표다. 바이트 비교는 픽셀 하나만 달라도 실패하므로, 일치한다는 것은 글자 안티에일리어싱까지 같다는 의미다. 시각을 고정하지 않으면 메뉴 막대 시계가 달라져 모든 데스크톱 화면이 불일치한다.
+==37장 모두 일치했다==. 남은 인라인 `style`은 105곳이고, 그중 68곳이 `cssVars()`, 나머지는 모두 계산된 좌표다. 바이트 비교는 픽셀 하나만 달라도 실패하므로, 일치한다는 것은 글자 안티에일리어싱까지 같다는 의미다.
+
+> [!WARNING] 시각 고정
+> 시각을 고정하지 않으면 메뉴 막대 시계가 달라져 모든 데스크톱 화면이 불일치한다.
 
 ## 열하루 뒤 재집계
 
@@ -102,7 +105,7 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 
 ![인라인 스타일과 타입 단언 수](./images/inline-style-cleanup-counts.svg '정리 직후 타입 단언은 0이었지만, 이후 새로 작성한 코드에서 27곳이 다시 생겼다')
 
-증가한 116줄 중 92줄이 Safari 프로젝트 페이지(템플릿)다. 타입 단언은 QuickTime 재생 막대(`'--fill'`), 메모, PDF 미리보기, Safari 템플릿에서 다시 생겼다. 모두 `cssVars()`를 사용하지 않고 새로 작성한 코드다.
+==증가한 116줄 중 92줄이 Safari 프로젝트 페이지(템플릿)다==. 타입 단언은 QuickTime 재생 막대(`'--fill'`), 메모, PDF 미리보기, Safari 템플릿에서 다시 생겼다. 모두 `cssVars()`를 사용하지 않고 새로 작성한 코드다.
 
 ## 남은 것·배운 것
 
@@ -113,8 +116,8 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 ## 관련 글
 
 - [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
-- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
-- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
-- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)
+- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234)
+- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-retrospective#5단계-스타일)
 
 #MacFolio #CSS #리팩터링

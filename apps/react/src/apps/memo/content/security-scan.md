@@ -3,7 +3,7 @@ title: Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검�
 date: 2026-10-18
 category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
-seriesOrder: 12
+seriesOrder: 10
 summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다. Semgrep이 7건을 냈고 오탐 4, 영향 없음 3, 실제 취약점은 0이었다. 영향 없음 3건은 수정했고, 라이선스를 집계했고, ERROR만 차단하는 CI 작업을 추가했다.
 ---
 
@@ -20,7 +20,7 @@ summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다
 
 ## 판정 기준
 
-도구가 보고한 항목을 그대로 수정하면 작업은 빨리 끝나지만, 위험의 근거를 확인하지 않은 채 코드만 바뀐다. 그래서 먼저 판정을 세 가지로 나눴다.
+도구가 보고한 항목을 그대로 수정하면 작업은 빨리 끝나지만, ==위험의 근거를 확인하지 않은 채 코드만 바뀐다==. 그래서 먼저 판정을 세 가지로 나눴다.
 
 | 판정        | 뜻                                                                                   |
 | ----------- | ------------------------------------------------------------------------------------ |
@@ -76,13 +76,13 @@ exit=13
 
 </details>
 
-현재 버전(13.0.0)은 NVD API 2.0을 사용하며, API 키가 없으면 데이터를 내려받지 않는다. 키를 발급받아 다시 실행하는 방법도 있지만, Dependency-Check는 제품 이름(CPE[^cpe])을 대조하는 방식이라 npm 패키지에서 오탐이 많다. 그래서 잠금 파일의 정확한 버전을 [OSV](https://osv.dev/) 데이터베이스와 대조하는 osv-scanner로 대체했다. osv-scanner와 `pnpm audit`의 결과는 모두 0건으로 일치했다. 0건인 이유는 앞서 운영 의존성 취약점 6건을 `overrides`로 올리고([pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)) Dependabot을 매주 실행해 왔기 때문이다.
+현재 버전(13.0.0)은 NVD API 2.0을 사용하며, API 키가 없으면 데이터를 내려받지 않는다. 키를 발급받아 다시 실행하는 방법도 있지만, Dependency-Check는 제품 이름(CPE[^cpe])을 대조하는 방식이라 npm 패키지에서 오탐이 많다. 그래서 잠금 파일의 정확한 버전을 [OSV](https://osv.dev/) 데이터베이스와 대조하는 osv-scanner로 대체했다. osv-scanner와 `pnpm audit`의 결과는 모두 0건으로 일치했다. 0건인 이유는 앞서 운영 의존성 취약점 6건을 `overrides`로 올리고([pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)) Dependabot을 매주 실행해 왔기 때문이다.
 
 ![Semgrep 7건을 오탐 4건과 영향 없음 3건으로 판정하고 처리한 흐름](./images/security-scan-triage.svg '7건 모두 규칙을 끄지 않고 그 줄에 사유를 적어 억제했다')
 
 ## 오탐 4건: 값의 출처 추적
 
-네 건은 모두 "정규식이나 서식 문자열을 변수로 생성한다"는 패턴 규칙이었다. 규칙은 값의 형태만 검사하고 출처는 알지 못한다. 그래서 판정은 값의 출처를 추적하는 작업이 된다.
+네 건은 모두 "정규식이나 서식 문자열을 변수로 생성한다"는 패턴 규칙이었다. ==규칙은 값의 형태만 검사하고 출처는 알지 못한다==. 그래서 판정은 값의 출처를 추적하는 작업이 된다.
 
 | 위치                                | 변수로 만드는 값 | 값의 출처                                                                                                                                               |
 | ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -103,7 +103,7 @@ exit=13
 
 나머지 세 건은 `prototype-pollution-loop` 규칙으로, 이름을 객체 키로 써서 트리를 만드는 반복문이었다. 프로젝트 페이지의 "폴더 구조" 텍스트를 트리로 변환하는 함수에 `__proto__/` 줄을 입력하자 실제로 `Object.prototype`에 값이 기록됐다. 규칙이 가리킨 약점([프로토타입 오염](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/Prototype_pollution))은 실재했다.
 
-하지만 이 텍스트는 코드에 작성해 빌드에 포함하는 프로젝트 소개뿐이고, API나 방문자가 변경할 수 없다. 그래서 실제 취약점이 아니라 "영향 없음"으로 판정했다. 다만 수정 비용이 작아 수정했다. `__proto__`·`constructor`·`prototype` 이름과 그 하위 줄을 건너뛰고, 오염이 발생하지 않는지 확인하는 시험을 추가했다.
+하지만 이 텍스트는 코드에 작성해 빌드에 포함하는 프로젝트 소개뿐이고, ==API나 방문자가 변경할 수 없다==. 그래서 실제 취약점이 아니라 "영향 없음"으로 판정했다. 다만 수정 비용이 작아 수정했다. `__proto__`·`constructor`·`prototype` 이름과 그 하위 줄을 건너뛰고, 오염이 발생하지 않는지 확인하는 시험을 추가했다.
 
 ```ts
 // apps/react/src/apps/safari/project/templates/repo/repo.ts
@@ -132,7 +132,8 @@ if (parts.some((part) => UNSAFE_KEYS.has(part))) {
 
 ## 규칙이 검출하지 못한 위치
 
-0건이 안전을 보장하지는 않는다. HTML을 직접 삽입하는 `dangerouslySetInnerHTML`(Mermaid SVG)과 `innerHTML`(아이콘 상수) 두 곳은 어느 규칙 묶음에서도 검출되지 않았다. 두 곳 모두 이전에 출처를 주석과 시험으로 고정해 두었고, 이번에 코드를 직접 다시 확인했다.
+> [!IMPORTANT] 0건이 안전을 보장하지는 않는다
+> 0건이 안전을 보장하지는 않는다. HTML을 직접 삽입하는 `dangerouslySetInnerHTML`(Mermaid SVG)과 `innerHTML`(아이콘 상수) 두 곳은 어느 규칙 묶음에서도 검출되지 않았다. 두 곳 모두 이전에 출처를 주석과 시험으로 고정해 두었고, 이번에 코드를 직접 다시 확인했다.
 
 ## 라이선스
 
@@ -165,7 +166,8 @@ echo "Semgrep: 전체 $(jq '.results | length' semgrep.json)건, ERROR ${errors}
 [ "$errors" -eq 0 ]
 ```
 
-`--config auto`는 CI에 사용하지 않았다. 저장소 정보를 Semgrep에 전송해야 하고, 규칙 목록이 실행마다 달라질 수 있어 같은 커밋이 전날에는 통과하고 다음 날에는 실패할 수 있다. 사람이 판정하는 점검에서만 실행한다.
+> [!WARNING] --config auto는 CI에 쓰지 않는다
+> `--config auto`는 CI에 사용하지 않았다. 저장소 정보를 Semgrep에 전송해야 하고, 규칙 목록이 실행마다 달라질 수 있어 같은 커밋이 전날에는 통과하고 다음 날에는 실패할 수 있다. 사람이 판정하는 점검에서만 실행한다.
 
 ## Dependency-Check 재시도
 
@@ -194,9 +196,9 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 
 ## 관련 글
 
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
-- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
-- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)
 - [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 
 PR: [#252](https://github.com/hyeoniverse/MacFolio/pull/252)

@@ -11,7 +11,7 @@ summary: 종량제 Oracle 계정의 이번 달 요금과 예산을 서버 탭에
 
 ## 배경
 
-API 서버는 Oracle Cloud의 Always Free `VM.Standard.E2.1.Micro`(메모리 1GB) 한 대다. 무료 계정은 7일 동안 사용률이 낮으면 회수될 수 있으므로, 종량제로 전환하는 것이 회수를 피하는 가장 확실한 방법이다. 대신 종량제에서는 무료 한도 밖의 자원을 실수로 생성하면 즉시 과금된다. 요금을 콘솔에서만 조회할 수 있으면 이런 실수는 다음 달 청구서를 받는 시각에야 발견된다.
+API 서버는 Oracle Cloud의 Always Free `VM.Standard.E2.1.Micro`(메모리 1GB) 한 대다. 무료 계정은 7일 동안 사용률이 낮으면 회수될 수 있으므로, 종량제로 전환하는 것이 회수를 피하는 가장 확실한 방법이다. 대신 종량제에서는 무료 한도 밖의 자원을 실수로 생성하면 즉시 과금된다. 요금을 콘솔에서만 조회할 수 있으면 이런 실수는 ==다음 달 청구서를 받는 시각에야 발견된다==.
 
 Oracle 콘솔에도 예산 알림 기능이 있다. 하지만 이 사이트는 이미 [서버 자원 감시](/memo/resource-monitor)에서 Resend로 경고 메일을 보내고 활동 상태 보기 앱의 서버 탭에 상태를 표시하고 있었다. 요금도 같은 화면과 같은 메일 경로로 확인하도록 구성했다.
 
@@ -24,7 +24,7 @@ Oracle 콘솔에도 예산 알림 기능이 있다. 하지만 이 사이트는 �
 | 예산         | `GET https://usage.{region}.oci.oraclecloud.com/20190111/budgets`   | `amount`, `actualSpend`, `forecastedSpend` |
 | 이번 달 요금 | `POST https://usageapi.{region}.oci.oraclecloud.com/20200107/usage` | `items[].computedAmount`, `currency`       |
 
-요금은 일 단위(`DAILY`)로 조회하며, 이때 시작 시각과 종료 시각이 모두 0시여야 한다. 이번 달 1일 0시부터 내일 0시까지(UTC)를 조회해 `computedAmount`를 합산한다. 예를 들어 10월 10일 05:00(UTC)에 조회하면 `timeUsageStarted`는 `2026-10-01T00:00:00.000Z`, `timeUsageEnded`는 `2026-10-11T00:00:00.000Z`다.
+요금은 일 단위(`DAILY`)로 조회하며, 이때 ==시작 시각과 종료 시각이 모두 0시여야 한다==. 이번 달 1일 0시부터 내일 0시까지(UTC)를 조회해 `computedAmount`를 합산한다. 예를 들어 10월 10일 05:00(UTC)에 조회하면 `timeUsageStarted`는 `2026-10-01T00:00:00.000Z`, `timeUsageEnded`는 `2026-10-11T00:00:00.000Z`다.
 
 ## 요청 서명
 
@@ -78,7 +78,8 @@ export function signingString({ method, url, date, body, contentType = 'applicat
 }
 ```
 
-`content-length`는 `body.length`가 아니라 [`Buffer.byteLength`](https://nodejs.org/api/buffer.html#static-method-bufferbytelengthstring-encoding)로 계산한다. 본문에 한글(예산 이름)이 있으면 문자 수와 UTF-8 바이트 수가 다르기 때문이다. 예를 들어 `"예산"`은 `length`가 2지만 바이트 수는 6이다.
+> [!WARNING] content-length는 바이트 수
+> `content-length`는 `body.length`가 아니라 [`Buffer.byteLength`](https://nodejs.org/api/buffer.html#static-method-bufferbytelengthstring-encoding)로 계산한다. 본문에 한글(예산 이름)이 있으면 문자 수와 UTF-8 바이트 수가 다르기 때문이다. 예를 들어 `"예산"`은 `length`가 2지만 바이트 수는 6이다.
 
 ![요청 서명과 예산 알림 단계](./images/oci-billing-signing.svg '서명 문자열을 개인 키로 서명해 Authorization 머리글에 담는다')
 
@@ -165,7 +166,7 @@ export function budgetLevel(budget: Budget): 'over' | 'near' | 'ok' {
 
 ## 따라 하는 방법
 
-서버 탭에 요금을 표시하려면 Oracle 계정에 읽기 전용 API 키를 생성하고 서버의 `api.env`에 입력한다. 절차는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '종량제 요금·예산 보기 (OCI API 키)'에 있다. 입력하는 값은 다섯 개이고, 하나라도 비어 있으면 기능이 꺼진다.
+서버 탭에 요금을 표시하려면 Oracle 계정에 읽기 전용 API 키를 생성하고 서버의 `api.env`에 입력한다. 절차는 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 '종량제 요금·예산 보기 (OCI API 키)'에 있다. 입력하는 값은 다섯 개이고, ==하나라도 비어 있으면 기능이 꺼진다==.
 
 ```bash
 # ~/deploy/api.env

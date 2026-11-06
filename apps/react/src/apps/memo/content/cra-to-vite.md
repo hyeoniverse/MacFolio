@@ -5,7 +5,7 @@ category: 개발 기록/MacFolio/배포·운영
 summary: CRA로 만든 포트폴리오를 Vite로 옮겼다. dev 서버 시작 5.05초 → 0.58초, 빌드 6.33초 → 1.88초, 설치 패키지 1,438개 → 171개. 옮긴 이유, 같은 조건으로 잰 방법, 빌드는 되는데 조용히 깨져 있던 네 가지를 적었다.
 ---
 
-이 포트폴리오는 원래 Create React App(CRA)으로 만들었다. Vite로 옮겼더니 dev 서버 시작은 약 8배, 프로덕션 빌드는 약 3배 빨라졌고, 설치되는 패키지는 1,438개에서 171개로 줄었다.
+이 포트폴리오는 원래 Create React App(CRA)으로 만들었다. Vite로 옮겼더니 ==dev 서버 시작은 약 8배, 프로덕션 빌드는 약 3배 빨라졌고==, 설치되는 패키지는 1,438개에서 171개로 줄었다.
 
 ## 배경: 전환이 절반만 끝난 상태
 
@@ -81,7 +81,8 @@ Vite로 바꾼 첫 커밋은 2025년 3월의 "chore: vite로 변경"이다. `rea
 "dev": "vite", "build": "tsc && vite build", "preview": "vite preview", "typecheck": "tsc"
 ```
 
-`build` 앞에 `tsc`를 추가한 이유는 Vite가 타입 검사를 하지 않기 때문이다. Vite는 esbuild로 타입 표기를 제거만 하고, 타입 오류가 있어도 빌드를 통과시킨다([Vite 문서: TypeScript](https://vite.dev/guide/features.html#typescript)). CRA는 빌드 중에 타입 검사를 수행했으므로, 같은 검사를 유지하려면 `tsc`를 빌드 단계에 명시해야 했다.
+> [!WARNING] Vite는 타입 검사를 하지 않는다
+> `build` 앞에 `tsc`를 추가한 이유는 Vite가 타입 검사를 하지 않기 때문이다. Vite는 esbuild로 타입 표기를 제거만 하고, 타입 오류가 있어도 빌드를 통과시킨다([Vite 문서: TypeScript](https://vite.dev/guide/features.html#typescript)). CRA는 빌드 중에 타입 검사를 수행했으므로, 같은 검사를 유지하려면 `tsc`를 빌드 단계에 명시해야 했다.
 
 ## 오류 없이 깨져 있던 네 가지
 
@@ -98,9 +99,9 @@ Vite로 바꾼 첫 커밋은 2025년 3월의 "chore: vite로 변경"이다. `rea
 
 ## 남은 과제와 정리
 
-`vite-env.d.ts`에 `ImportMetaEnv`를 선언해 자동 완성을 지원했다. 하지만 Vite 기본 타입에 인덱스 시그니처가 있어서, 없는 이름을 써도 타입 오류가 나지 않는다. `REACT_APP_` 같은 실수를 타입이 잡아 주지 못한다는 뜻이다. 그래서 다음 단계(이슈 [#4](https://github.com/hyeoniverse/MacFolio/issues/4))에서 환경변수를 읽는 코드를 `shared/config/env.ts` 한 파일로 모았다.
+`vite-env.d.ts`에 `ImportMetaEnv`를 선언해 자동 완성을 지원했다. 하지만 Vite 기본 타입에 인덱스 시그니처가 있어서, ==없는 이름을 써도 타입 오류가 나지 않는다==. `REACT_APP_` 같은 실수를 타입이 잡아 주지 못한다는 뜻이다. 그래서 다음 단계(이슈 [#4](https://github.com/hyeoniverse/MacFolio/issues/4))에서 환경변수를 읽는 코드를 `shared/config/env.ts` 한 파일로 모았다.
 
-네 가지 모두 오류 메시지를 내지 않아 1년 반 동안 발견되지 않았다. 이후로는 빌드 성공으로 작업을 마치지 않고, 배포 결과를 직접 열어 확인하고 자동 시험으로 검증한다. 저장소에 `node_modules/`·`build/` 같은 설치·빌드 결과를 커밋하지 않는 규칙도 이 시각에 정했다. 빌드 결과가 저장소에 있으면 실제로 어느 빌드가 배포되는지 판단하기 어렵다.
+네 가지 모두 ==오류 메시지를 내지 않아 1년 반 동안 발견되지 않았다==. 이후로는 빌드 성공으로 작업을 마치지 않고, 배포 결과를 직접 열어 확인하고 자동 시험으로 검증한다. 저장소에 `node_modules/`·`build/` 같은 설치·빌드 결과를 커밋하지 않는 규칙도 이 시각에 정했다. 빌드 결과가 저장소에 있으면 실제로 어느 빌드가 배포되는지 판단하기 어렵다.
 
 ## 재현 방법
 
@@ -119,12 +120,13 @@ CRA에서 Vite로 전환할 때 수정하는 곳은 네 군데다.
 3. 환경 변수 `process.env.REACT_APP_*`를 `import.meta.env.VITE_*`로 바꾼다. 빌드할 때 문자열로 들어간다는 점은 같다([Vite 문서: Env Variables](https://vite.dev/guide/env-and-mode))
 4. Jest 시험은 [Vitest](https://vitest.dev/guide/)로 이전한다
 
-되돌리는 방법: 전환 PR을 revert한다. 다만 위의 "오류 없이 깨져 있던 네 가지"는 CRA 상태에서도 이미 어긋나 있던 것이라, revert해도 수정되지 않는다. 공식 안내는 [Vite 시작하기](https://vite.dev/guide/)에 있다.
+> [!NOTE] 되돌리는 방법
+> 전환 PR을 revert한다. 다만 위의 "오류 없이 깨져 있던 네 가지"는 CRA 상태에서도 이미 어긋나 있던 것이라, revert해도 수정되지 않는다. 공식 안내는 [Vite 시작하기](https://vite.dev/guide/)에 있다.
 
 ## 관련 글
 
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)
 - [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
 
 [^esm]: 브라우저가 `<script type="module">`과 `import` 문을 직접 해석하는 방식. 번들러가 파일을 하나로 합치지 않아도 브라우저가 모듈 단위로 요청한다. [MDN: JavaScript 모듈](https://developer.mozilla.org/ko/docs/Web/JavaScript/Guide/Modules)

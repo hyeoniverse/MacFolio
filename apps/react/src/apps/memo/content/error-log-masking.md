@@ -21,7 +21,7 @@ summary: 100KB를 넘는 요청 본문이 413이 아니라 500으로 응답되�
 | 없는 경로                     | 404     |
 | 있는 경로에 틀린 메서드       | 404     |
 
-본문이 큰 요청 두 건이 문제였다. 응답 메시지는 "서버에서 문제가 생겼습니다"였고, 로그에는 `PayloadTooLargeError`의 스택 트레이스 10줄이 ERROR 수준으로 기록되었다. 큰 요청이 반복되면 로그가 스택 트레이스로 채워져 실제 서버 오류를 찾기 어려워진다.
+본문이 큰 요청 두 건이 문제였다. 응답 메시지는 "서버에서 문제가 생겼습니다"였고, 로그에는 `PayloadTooLargeError`의 스택 트레이스 10줄이 ERROR 수준으로 기록되었다. ==큰 요청이 반복되면 로그가 스택 트레이스로 채워져 실제 서버 오류를 찾기 어려워진다.==
 
 <details>
 <summary>용어 정리</summary>
@@ -41,13 +41,13 @@ summary: 100KB를 넘는 요청 본문이 413이 아니라 500으로 응답되�
 | 필터에서 `PayloadTooLargeError` 이름만 판별한다           | 코드 한 줄                        | 다른 미들웨어 오류는 계속 500. 클래스 이름에 의존해 변경에 취약하다 |
 | **필터가 http-errors 형식(`status`·`expose`)을 신뢰한다** | 미들웨어 오류 전체를 한 번에 처리 | `expose`가 참인 4xx만 신뢰해야 한다(5xx는 숨긴다)                   |
 
-로그도 같은 방식으로 비교했다. 서비스마다 로그를 기록하기 전에 마스킹 함수를 호출하게 할 수도 있지만, 한 곳만 누락해도 비밀 값이 노출된다. 모든 로그가 거치는 로거 하나를 교체하면 누락 지점이 생기지 않는다.
+로그도 같은 방식으로 비교했다. 서비스마다 로그를 기록하기 전에 마스킹 함수를 호출하게 할 수도 있지만, 한 곳만 누락해도 비밀 값이 노출된다. ==모든 로그가 거치는 로거 하나를 교체하면 누락 지점이 생기지 않는다.==
 
 ## 필터: http-errors 식별
 
 ![오류 하나가 응답이 되기까지: HttpException이면 그대로, http-errors 4xx면 상태를 믿고, 나머지는 500으로 감추고 로그](./images/error-log-masking-filter.svg '로그는 500일 때만 기록한다. 4xx는 클라이언트 요청 오류라 기록하지 않는다')
 
-`HttpException`이 아니어도 `status`가 4xx이고 `expose`가 참이면 그 상태 코드를 사용한다. 메시지는 `type`에 따라 한국어로 변환한다(`entity.too.large` → "요청이 너무 큽니다.", `entity.parse.failed` → "요청 본문을 읽을 수 없습니다."). 5xx이거나 `expose`가 거짓이면 기존처럼 500으로 응답하고 내용을 숨긴다. 로그는 **500일 때만** 기록한다. 404·413 같은 4xx는 클라이언트 요청의 오류이지 서버 장애가 아니기 때문이다. 로그에는 `GET /posts → 500` 한 줄과 오류 내용을 함께 기록해 발생 경로를 확인할 수 있게 했다.
+`HttpException`이 아니어도 `status`가 4xx이고 `expose`가 참이면 그 상태 코드를 사용한다. 메시지는 `type`에 따라 한국어로 변환한다(`entity.too.large` → "요청이 너무 큽니다.", `entity.parse.failed` → "요청 본문을 읽을 수 없습니다."). 5xx이거나 `expose`가 거짓이면 기존처럼 500으로 응답하고 내용을 숨긴다. 로그는 **500일 때만** 기록한다. 404·413 같은 ==4xx는 클라이언트 요청의 오류이지 서버 장애가 아니기== 때문이다. 로그에는 `GET /posts → 500` 한 줄과 오류 내용을 함께 기록해 발생 경로를 확인할 수 있게 했다.
 
 ```ts
 // apps/api/src/common/http-error.filter.ts
@@ -90,7 +90,7 @@ export const redact = (text: string) =>
 	RULES.reduce((result, [pattern, replacement]) => result.replace(pattern, replacement), text);
 ```
 
-`(?<![\w-])`가 앞에서 말한 단어 경계 검사다(부정 후방 탐색[^lookbehind]). `statusCode=`의 `code=` 앞에는 `s`가 있으므로 일치하지 않는다. 규칙은 모두 8개이고 위에서부터 순서대로 적용한다. 형식을 아는 값만 마스킹하고, 그 밖의 값은 그대로 둔다. 모든 값을 마스킹하면 로그로 원인을 분석할 수 없기 때문이다.
+`(?<![\w-])`가 앞에서 말한 단어 경계 검사다(부정 후방 탐색[^lookbehind]). `statusCode=`의 `code=` 앞에는 `s`가 있으므로 일치하지 않는다. 규칙은 모두 8개이고 위에서부터 순서대로 적용한다. 형식을 아는 값만 마스킹하고, 그 밖의 값은 그대로 둔다. ==모든 값을 마스킹하면 로그로 원인을 분석할 수 없기== 때문이다.
 
 ![오류가 응답과 로그로 나가는 길](./images/error-log-masking-flow.svg '4xx는 그 상태 코드로 응답하고 로그를 기록하지 않는다. 500만 로그에 기록하며, 마스킹한 뒤 출력한다')
 
@@ -136,7 +136,7 @@ export const redact = (text: string) =>
 
 ## 적용하지 않은 것
 
-요청마다 기록하는 접근 로그(access log)는 기존에도 없었고 이번에도 추가하지 않았다. 기록하지 않는 것이 가장 확실한 마스킹이다. 접근 기록이 필요하면 Cloudflare 쪽 기록을 조회한다.
+요청마다 기록하는 접근 로그(access log)는 기존에도 없었고 이번에도 추가하지 않았다. ==기록하지 않는 것이 가장 확실한 마스킹이다.== 접근 기록이 필요하면 Cloudflare 쪽 기록을 조회한다.
 
 ## 남은 과제와 정리
 
@@ -171,7 +171,7 @@ pnpm --filter @macfolio/api test:e2e test/errors.e2e.test.ts
 - [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
 - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](/memo/deploy-api-oracle-tunnel)
 - [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
 
 [^lookbehind]: `(?<!X)`는 현재 위치 바로 앞에 X가 없을 때만 일치하는 정규식 문법. [MDN: Lookbehind assertion](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Lookbehind_assertion)
 

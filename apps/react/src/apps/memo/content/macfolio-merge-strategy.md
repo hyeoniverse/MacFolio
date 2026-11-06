@@ -24,7 +24,7 @@ MacFolio 저장소는 PR을 main에 **Create a merge commit**으로 병합한다
 | └ main을 브랜치에 합친 커밋                                                                                                                     | 65    | 메시지 `Merge remote-tracking branch 'origin/main'` 등        |
 | Squash 흔적 (`제목 (#N)` 꼴 커밋)                                                                                                               | 0     | `git log --first-parent --no-merges --format=%s \| grep '(#'` |
 
-GitHub에서 base가 main인 병합 PR은 350개다. 297개는 머지 커밋으로, 53개는 Rebase and merge로 들어갔다. Squash and merge로 병합한 PR은 없다.
+GitHub에서 base가 main인 병합 PR은 350개다. 297개는 머지 커밋으로, 53개는 Rebase and merge로 들어갔다. ==Squash and merge로 병합한 PR은 없다==.
 
 ## 선택 기준 세 가지에 적용
 
@@ -57,13 +57,13 @@ commit=${deployed#sha-}
 git diff --quiet "$commit" "$GITHUB_SHA" -- apps/api packages/desktop-core packages/contracts …
 ```
 
-main push에서 `GITHUB_SHA`는 main 끝 커밋이고, Merge commit 방식에서는 그 커밋이 항상 `Merge pull request #N`이다. `5415d51a7`에서 API 이미지를 만들면 태그는 `sha-5415d51`이고, 이 태그는 PR [#399](https://github.com/hyeoniverse/MacFolio/pull/399) 하나에 대응한다. 되돌릴 때는 `deploy-api.yml`을 수동 실행하며 예전 태그(`sha-1a2b3c4` 꼴)를 입력하는데, 태그 → 머지 커밋 → PR 번호가 1:1로 이어져 어느 PR 시점으로 돌아가는지 바로 확인된다.
+main push에서 `GITHUB_SHA`는 main 끝 커밋이고, Merge commit 방식에서는 그 커밋이 항상 `Merge pull request #N`이다. `5415d51a7`에서 API 이미지를 만들면 태그는 `sha-5415d51`이고, 이 태그는 PR [#399](https://github.com/hyeoniverse/MacFolio/pull/399) 하나에 대응한다. 되돌릴 때는 `deploy-api.yml`을 수동 실행하며 예전 태그(`sha-1a2b3c4` 꼴)를 입력하는데, ==태그 → 머지 커밋 → PR 번호가 1:1로 이어져== 어느 PR 시점으로 돌아가는지 바로 확인된다.
 
 ### 3. 브랜치 안에 머지 커밋이 있는가
 
 있다. 브랜치 작업 중 main을 합친 머지 커밋이 65개다(`Merge remote-tracking branch 'origin/main'` 53개, `Merge branch 'main'` 9개, `chore: main 반영` 3개). Rebase and merge는 이 머지 커밋을 제거하고 커밋을 일렬로 다시 적용하므로, 충돌을 해결한 내용이 앞뒤 커밋에 섞인다.
 
-세 질문 모두 Create a merge commit을 가리킨다. 단점인 긴 `git log`는 `--first-parent`로 1,940줄이 528줄로 줄고, PR마다 한 줄씩 출력된다.
+==세 질문 모두 Create a merge commit을 가리킨다==. 단점인 긴 `git log`는 `--first-parent`로 1,940줄이 528줄로 줄고, PR마다 한 줄씩 출력된다.
 
 ```text
 $ git log --oneline --first-parent -3 main
@@ -90,7 +90,8 @@ $ git log --oneline --first-parent -3 main
 
 이 구간은 `--first-parent`로 조회해도 PR 단위로 나뉘지 않는다. [#112](https://github.com/hyeoniverse/MacFolio/pull/112)와 [#183](https://github.com/hyeoniverse/MacFolio/pull/183)의 머지 커밋 사이 first-parent 기록은 162줄(머지 커밋 11 + 브랜치 커밋 151)이고, 모두 머지 커밋이었다면 64줄이다. `git log --first-parent --merges`로 PR 목록을 조회하면 이 53개는 출력되지 않는다.
 
-저장소 설정에서 세 방식이 모두 켜져 있어, Merge 버튼에서 고르는 방식이 PR마다 달라질 수 있었다. 문서 규칙은 이 선택을 막지 못한다(아래 '아직 적용하지 않은 것').
+> [!WARNING] 문서 규칙만으로는 고정되지 않는 병합 방식
+> 저장소 설정에서 세 방식이 모두 켜져 있어, Merge 버튼에서 고르는 방식이 PR마다 달라질 수 있었다. 문서 규칙은 이 선택을 막지 못한다(아래 '아직 적용하지 않은 것').
 
 ## 적용한 것
 
@@ -146,8 +147,8 @@ gh repo edit hyeoniverse/MacFolio --enable-squash-merge=false --enable-rebase-me
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 세 방식의 차이와 고르는 기준 (일반론)
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): 브랜치 커밋마다 메시지 형식을 검사하는 conventions 워크플로와 Ruleset
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): main push에서 실행되는 배포 흐름
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot): 머지 커밋으로 병합되는 Dependabot PR
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot): 머지 커밋으로 병합되는 Dependabot PR
 - [Milkdown 편집기에 <details> 토글 목록과 GFM 각주 노드 추가하기](/memo/memo-editor-toggle-footnote): 병합 방식 글의 용어 토글과 각주를 메모 편집기에서 지원한 과정
-- 병합 방식 글을 처음 작성한 날의 기록: [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/day-1012), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
+- 병합 방식 글을 처음 작성한 날의 기록: [10월 12일 - 세고 나서 뽑은 Modal, TypeScript 7, 글이 만든 기능, 다시 그린 템플릿](/memo/week-1012#공통-컴포넌트와-리팩터링-계획-완료), PR [#218](https://github.com/hyeoniverse/MacFolio/pull/218)
 
 #MacFolio #Git #GitHub

@@ -9,6 +9,7 @@ summary: 바탕화면에는 배경화면만 있었다. Finder의 문서 폴더�
 
 ![바탕화면 오른쪽 위의 폴더 아이콘과 사각형 고르기](./images/desktop-icons-select.jpg '빈 곳에서 끌면 반투명 사각형이 생기고, 사각형과 겹친 아이콘이 선택된다')
 
+> [!NOTE] 현재의 바탕화면 폴더
 > 이후 프로젝트 폴더는 문서 › 포트폴리오 안으로 합쳤다. 그래서 현재 바탕화면의 기본 폴더는 이력서·포트폴리오·자격증 세 개이고, 모두 원래 폴더를 여는 가상본(아이콘 왼쪽 아래의 작은 화살표)[^alias]이다.
 
 10월 18일, 미리보기 앱([#255](https://github.com/hyeoniverse/MacFolio/pull/255))을 마친 뒤 "바탕화면도 실제 Mac 바탕화면처럼 동작하게"를 다음 작업으로 정했다. 처음 구현에는 문서 폴더만 있어서 프로젝트 폴더도 바탕화면에 배치했다. 이후 사진이 별도 최상위 폴더로 표시되는 구조가 Mac과 달라 프로젝트 폴더의 하위 폴더로 옮겼고([#261](https://github.com/hyeoniverse/MacFolio/pull/261)), 실행하는 앱은 실제 Mac처럼 응용 프로그램 폴더에만 두고 프로젝트는 포트폴리오 폴더 하나로 합쳤다. 위 인용문의 "이후"가 이 과정이다.
@@ -31,7 +32,7 @@ export function cellToPoint({ col, row }: Cell, viewport: Viewport): Point {
 }
 ```
 
-칸 하나는 가로 96px, 세로 100px이고, 위 34px(메뉴 막대), 오른쪽 12px, 아래 96px(Dock)을 여백으로 확보한다. 그래서 1440×900 화면이면 한 열에 7줄이 들어간다(`(900 − 34 − 96) / 100`의 내림). 칸은 오른쪽 끝을 기준으로 계산하므로 창 크기가 바뀌어도 아이콘이 오른쪽 끝에 정렬된다. 끌어 옮긴 위치도 칸 단위로 `localStorage`에 저장한다. 저장한 칸이 화면 밖이거나 다른 아이콘과 겹치면 그 값은 버리고 채우는 순서대로 빈 칸에 배치한다.
+칸 하나는 가로 96px, 세로 100px이고, 위 34px(메뉴 막대), 오른쪽 12px, 아래 96px(Dock)을 여백으로 확보한다. 그래서 1440×900 화면이면 한 열에 7줄이 들어간다(`(900 − 34 − 96) / 100`의 내림). ==칸은 오른쪽 끝을 기준으로 계산하므로 창 크기가 바뀌어도 아이콘이 오른쪽 끝에 정렬된다.== 끌어 옮긴 위치도 칸 단위로 `localStorage`에 저장한다. 저장한 칸이 화면 밖이거나 다른 아이콘과 겹치면 그 값은 버리고 채우는 순서대로 빈 칸에 배치한다.
 
 ![오른쪽 위에서 세는 칸](./images/desktop-icons-grid.svg '위치는 픽셀이 아니라 (col, row) 칸. 창 폭이 바뀌어도 오른쪽 끝에 정렬된다')
 
@@ -73,17 +74,17 @@ export function nearestFree(want: Cell, taken: ReadonlySet<string>, rows: number
 | ⌘O, ⌘↓, 더블 클릭              | 선택한 폴더 열기                                    |
 | 여러 개를 선택한 상태에서 클릭 | 버튼을 뗀 시각에 끌기가 없었으면 그 아이콘만 남긴다 |
 
-마지막 규칙은 macOS와 같다. 누르는 시각에 바로 선택을 해제하면 선택한 아이콘을 한꺼번에 끌 수 없기 때문이다.
+마지막 규칙은 macOS와 같다. ==누르는 시각에 바로 선택을 해제하면 선택한 아이콘을 한꺼번에 끌 수 없기== 때문이다.
 
 ## 더블 클릭과 포인터 캡처
 
-처음에는 `pointerdown` 시각에 바로 [`setPointerCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)로 포인터를 캡처했다[^capture]. 그러자 더블 클릭해도 폴더가 열리지 않았다. 포인터를 캡처하면 이어지는 `click`·`dblclick`도 캡처한 요소(아이콘 레이어)로 전달되어, 아이콘의 `onDoubleClick`이 호출되지 않는다. 그래서 빈 곳에서 사각형을 그릴 때는 바로 캡처하고, 아이콘은 4px 넘게 움직여 끌기가 시작된 시각에 캡처한다.
+처음에는 `pointerdown` 시각에 바로 [`setPointerCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)로 포인터를 캡처했다[^capture]. 그러자 더블 클릭해도 폴더가 열리지 않았다. 포인터를 캡처하면 이어지는 `click`·`dblclick`도 캡처한 요소(아이콘 레이어)로 전달되어, 아이콘의 `onDoubleClick`이 호출되지 않는다. 그래서 빈 곳에서 사각형을 그릴 때는 바로 캡처하고, ==아이콘은 4px 넘게 움직여 끌기가 시작된 시각에 캡처한다.==
 
 ![pointerdown 시각에 캡처하면 dblclick이 레이어로 가고, 4px 이동 후 캡처하면 아이콘에 전달된다](./images/desktop-icons-capture.svg '포인터 캡처 시각에 따라 dblclick을 받는 요소가 달라진다')
 
 ## 포털로 렌더링한 메뉴
 
-오른쪽 클릭 메뉴는 공통 `Menu` 컴포넌트를 썼다. 메뉴는 [포털](https://react.dev/reference/react-dom/createPortal)로 `body`에 렌더링되지만, React 이벤트는 DOM이 아니라 React 트리를 따라 아이콘 레이어까지 전파된다. 메뉴 항목을 누르는 시각에 레이어가 이 이벤트를 "빈 곳 클릭"으로 처리해 사각형 선택을 시작하고 포인터를 캡처했고, 그 결과 항목의 `click`이 발생하지 않았다. 레이어의 핸들러는 이벤트 대상이 레이어 DOM 안에 있을 때(`currentTarget.contains(target)`)만 처리하도록 수정했다.
+오른쪽 클릭 메뉴는 공통 `Menu` 컴포넌트를 썼다. 메뉴는 [포털](https://react.dev/reference/react-dom/createPortal)로 `body`에 렌더링되지만, ==React 이벤트는 DOM이 아니라 React 트리를 따라 아이콘 레이어까지 전파된다.== 메뉴 항목을 누르는 시각에 레이어가 이 이벤트를 "빈 곳 클릭"으로 처리해 사각형 선택을 시작하고 포인터를 캡처했고, 그 결과 항목의 `click`이 발생하지 않았다. 레이어의 핸들러는 이벤트 대상이 레이어 DOM 안에 있을 때(`currentTarget.contains(target)`)만 처리하도록 수정했다.
 
 ![바탕화면 빈 곳의 오른쪽 클릭 메뉴: 새 폴더, 정리하기, 이름순으로 정리, 배경화면 변경…](./images/desktop-icons-context-menu.jpg '빈 곳의 메뉴. 새 폴더는 이후에 추가한 항목이다')
 
@@ -110,13 +111,14 @@ export function nearestFree(want: Cell, taken: ReadonlySet<string>, rows: number
 - 화살표 키로 아이콘 사이를 이동하는 기능은 아직 없다. ⌘A·Esc·⌘O만 지원한다.
 - 끌어 옮긴 위치는 `localStorage`에만 저장된다. 다른 기기에서는 기본 위치로 표시된다. 방문자마다 위치가 다른 것이 맞다고 판단해 서버에 저장하지 않았다.
 
-배운 것: `setPointerCapture`는 끌기 구현을 단순하게 하지만, 캡처한 동안 `click`·`dblclick`까지 캡처한 요소로 보낸다. 클릭과 끌기를 같은 요소에서 처리할 때는 끌기가 시작된 시각에 캡처해야 한다. 그리고 포털로 렌더링한 메뉴의 이벤트는 DOM이 아니라 React 트리를 따라 전파된다([React 문서](https://react.dev/reference/react-dom/createPortal#caveats)). 이벤트를 처리하는 쪽에서 `currentTarget.contains(target)`로 실제 발생 위치를 확인해야 한다.
+> [!IMPORTANT] 배운 것
+> `setPointerCapture`는 끌기 구현을 단순하게 하지만, 캡처한 동안 `click`·`dblclick`까지 캡처한 요소로 보낸다. 클릭과 끌기를 같은 요소에서 처리할 때는 끌기가 시작된 시각에 캡처해야 한다. 그리고 포털로 렌더링한 메뉴의 이벤트는 DOM이 아니라 React 트리를 따라 전파된다([React 문서](https://react.dev/reference/react-dom/createPortal#caveats)). 이벤트를 처리하는 쪽에서 `currentTarget.contains(target)`로 실제 발생 위치를 확인해야 한다.
 
 ## 관련 글
 
 - [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app): 바탕화면 폴더가 여는 Finder 앱
-- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
-- [가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-home-tree): 바탕화면 가상본과 Finder 트리
+- [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem): 새 폴더·이름 변경·끌어 옮기기
+- [가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-filesystem#가상본이-빈-폴더로-열린-원인): 바탕화면 가상본과 Finder 트리
 - [절대 위치 대신 내용 폭 한 줄 flex로 겹치지 않는 Dock 배치](/memo/dock-layout): 아이콘 레이어 위에 있는 Dock
 
 [^alias]: macOS의 가상본(alias)은 원본 파일이나 폴더를 가리키는 바로가기다. 아이콘 왼쪽 아래에 작은 화살표가 붙는다.

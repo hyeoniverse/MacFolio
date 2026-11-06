@@ -20,7 +20,7 @@ https://www.youtube.com/watch?v=nYkdrAPrdcw ← 임베드
 [발표 영상](https://youtu.be/nYkdrAPrdcw) ← 링크
 ```
 
-주소만 한 줄로 적는 것은 글쓴이가 그 자리에 콘텐츠를 두겠다는 표시이고, `[글자](주소)`로 글자를 붙인 링크는 링크로 읽히기를 의도한 것이다. 이 규칙이면 기존 글을 바꾸지 않아도 된다. 저장소 글 243편 가운데 지원 사이트의 주소만 한 줄로 적은 문단은 없어서, 기능을 더해도 기존 글의 화면은 바뀌지 않는다.
+주소만 한 줄로 적는 것은 글쓴이가 그 자리에 콘텐츠를 두겠다는 표시이고, `[글자](주소)`로 글자를 붙인 링크는 링크로 읽히기를 의도한 것이다. 이 규칙이면 기존 글을 바꾸지 않아도 된다. 저장소 글 243편 가운데 지원 사이트의 주소만 한 줄로 적은 문단은 없어서, ==기능을 더해도 기존 글의 화면은 바뀌지 않는다==.
 
 ## 원래 주소 대신 ID로 임베드 주소를 새로 만든다
 
@@ -79,7 +79,8 @@ function youtube(url: ParsedUrl): Embed | null {
 | Dailymotion             | 예전 임베드 주소가 새 재생기(`geo.dailymotion.com`)로 넘어가는데, 사이트에 등록한 Player ID 없이는 403이다 |
 | 네이버 TV               | 임베드 주소(`tv.naver.com/embed/<id>`)가 다른 서비스 주소로 넘어가, 주소 체계가 바뀐 것으로 보인다         |
 
-YouTube는 `youtube-nocookie.com`을 쓴다. YouTube가 제공하는 개인정보 보호 강화 모드의 주소로, 방문자가 재생 버튼을 누르기 전에는 YouTube 쿠키를 남기지 않는다.
+> [!NOTE] 개인정보 보호 강화 모드
+> YouTube는 `youtube-nocookie.com`을 쓴다. YouTube가 제공하는 개인정보 보호 강화 모드의 주소로, 방문자가 재생 버튼을 누르기 전에는 YouTube 쿠키를 남기지 않는다.
 
 desktop-core는 브라우저·Node·Cloudflare Worker 어디서나 돌도록 `lib`을 `ES2022`로만 두어 `URL` 타입이 없다. 세 환경 모두에 있는 `URL` 가운데 쓰는 속성(`protocol`, `hostname`, `pathname`, `search`, `searchParams.get`)만 이 파일 안에 선언했다.
 
@@ -100,7 +101,7 @@ export const EMBED_ORIGINS: Readonly<Record<EmbedProvider, readonly string[]>> =
 'frame-src': ["'self'", TURNSTILE, ...Object.values(EMBED_ORIGINS).flat().sort(), ...frameOrigins(frameUrls)],
 ```
 
-사이트마다 출처를 배열로 둔 것은 iframe 주소의 출처와 재생기가 실제로 여는 출처가 다른 경우가 있어서다. Twitch는 생방송·다시보기는 `player.twitch.tv`, 클립은 `clips.twitch.tv`를 쓴다. CSP의 `frame-src`는 iframe이 리다이렉트로 넘어간 주소에도 적용되므로, 넘어가는 출처까지 적어야 한다.
+사이트마다 출처를 배열로 둔 것은 iframe 주소의 출처와 재생기가 실제로 여는 출처가 다른 경우가 있어서다. Twitch는 생방송·다시보기는 `player.twitch.tv`, 클립은 `clips.twitch.tv`를 쓴다. CSP의 `frame-src`는 iframe이 리다이렉트로 넘어간 주소에도 적용되므로, ==넘어가는 출처까지 적어야 한다==.
 
 Twitch 재생기는 삽입한 사이트의 도메인을 `parent` 인자로 받아야 열린다. 그래서 `embedOf(href, { parent })`가 도메인을 받고, 브라우저에서는 `location.hostname`을 넘긴다. 도메인을 모르는 환경(서버, 시험)에서는 Twitch를 임베드하지 않는다.
 
@@ -129,7 +130,7 @@ p: ({ node, children, ...rest }) => {
 
 관리자로 로그인하면 글은 Milkdown(ProseMirror) 편집기로 열린다. 편집기에서도 같은 임베드가 보여야 읽기 화면과 같은 모양으로 글을 쓸 수 있다. 다만 편집기는 주소를 고칠 방법도 제공해야 한다.
 
-![편집 화면의 YouTube 임베드](./images/memo-link-embed-editor.jpg '편집 화면에 마우스를 올린 모습. 읽기 화면과 같은 재생기의 제목 줄 아래 왼쪽에 주소 바꾸기·링크로 바꾸기·임베드 삭제 버튼이 보인다')
+![편집 화면의 YouTube 임베드](./images/memo-link-embed-editor.jpg#float-right '편집 화면에 마우스를 올린 모습. 읽기 화면과 같은 재생기의 제목 줄 아래 왼쪽에 주소 바꾸기·링크로 바꾸기·임베드 삭제 버튼이 보인다')
 
 ProseMirror에서 블록을 다르게 그리는 방법은 두 가지다. 노드 종류를 새로 만들어 노드 뷰로 그리거나, 문서는 그대로 두고 장식(decoration)을 붙이는 것이다. 임베드는 Markdown에서 그냥 링크 문단이므로 노드 종류를 만들면 Markdown 변환 규칙까지 새로 정의해야 한다. 그래서 문서를 바꾸지 않는 **위젯 장식**을 골랐다. 위젯 장식은 문서의 특정 위치에 편집 대상이 아닌 DOM을 끼워 넣는 기능이다.
 
@@ -150,7 +151,7 @@ state.doc.descendants((node, pos) => {
 });
 ```
 
-장식은 문서가 바뀔 때마다 다시 계산된다. 위젯을 매번 새로 만들면 글자 하나를 입력할 때마다 iframe이 다시 불러와져 재생 중인 영상이 처음으로 돌아간다. ProseMirror는 이전 장식과 `key`가 같은 위젯의 DOM을 다시 쓰므로, key를 iframe 주소로 정해 이 문제를 막았다. 주소를 고치면 key가 바뀌어 새 재생기를 불러온다.
+장식은 문서가 바뀔 때마다 다시 계산된다. 위젯을 매번 새로 만들면 글자 하나를 입력할 때마다 iframe이 다시 불러와져 재생 중인 영상이 처음으로 돌아간다. ProseMirror는 이전 장식과 `key`가 같은 위젯의 DOM을 다시 쓰므로, ==key를 iframe 주소로 정해 이 문제를 막았다==. 주소를 고치면 key가 바뀌어 새 재생기를 불러온다.
 
 ### 주소 문단을 숨기고, 커서가 들어오면 보인다
 
@@ -165,9 +166,9 @@ state.doc.descendants((node, pos) => {
 
 주소 문단을 숨기는 것도 장식이다. `Decoration.node`로 문단에 `memo-embed-source` 클래스를 붙이고, 선택 영역이 그 문단 안에 있을 때만 `data-editing`을 더한다. CSS는 `data-editing`이 없는 주소 문단의 높이와 여백을 0으로 만든다. 문서에서는 문단이 그대로이므로 저장되는 Markdown은 주소 한 줄이다.
 
-![주소를 고치는 편집 화면](./images/memo-link-embed-editing.jpg '주소 바꾸기를 누른 모습. 숨겼던 주소 문단이 재생기 위에 보이고 주소 전체가 골라져, 새 주소를 입력하거나 붙여 넣으면 된다')
+![주소를 고치는 편집 화면](./images/memo-link-embed-editing.jpg#float-left '주소 바꾸기를 누른 모습. 숨겼던 주소 문단이 재생기 위에 보이고 주소 전체가 골라져, 새 주소를 입력하거나 붙여 넣으면 된다')
 
-높이가 0인 문단에는 브라우저의 위·아래 화살표 이동이 커서를 두지 않고 건너뛴다. 그래서 `handleKeyDown`에서 커서가 문단 끝에 있고(`view.endOfTextblock`) 옆 블록이 주소 문단이면, 직접 그 안에 커서를 둔다. 아래로 들어가면 주소 앞, 위로 들어가면 주소 끝이다.
+==높이가 0인 문단에는 브라우저의 위·아래 화살표 이동이 커서를 두지 않고 건너뛴다==. 그래서 `handleKeyDown`에서 커서가 문단 끝에 있고(`view.endOfTextblock`) 옆 블록이 주소 문단이면, 직접 그 안에 커서를 둔다. 아래로 들어가면 주소 앞, 위로 들어가면 주소 끝이다.
 
 도구 버튼의 동작은 다음과 같다.
 
@@ -203,7 +204,7 @@ state.doc.descendants((node, pos) => {
 
 올린 파일의 주소(`/files/<id>`)에는 확장자가 없다. 대신 편집기가 파일을 넣을 때 링크 글자를 파일 이름으로, 링크 제목을 '첨부 파일 · 크기'로 적으므로 이 둘로 판별한다. 영상은 `mp4`·`m4v`·`webm`·`mov`·`ogv`, 음악은 `mp3`·`m4a`·`aac`·`wav`·`flac`·`ogg`·`oga`·`opus`이고, 판별은 `packages/desktop-core/src/memo/media.ts`의 `mediaKindOf`가 맡는다.
 
-**API는 바꾸지 않았다.** 파일 API는 이미지와 MP4만 `Content-Disposition: inline`으로, 나머지는 `attachment`(내려받기)로 내준다. 이 헤더는 링크를 눌러 파일을 열 때만 적용되고, `<audio src>`·`<video src>`가 파일을 불러와 재생하는 데는 영향이 없다. 파일 API는 이미 Range 요청(파일의 일부 구간만 받기)을 지원해 영상 중간으로 건너뛸 수 있다. 그래서 서버 배포 없이 화면만 바꿨다.
+**API는 바꾸지 않았다.** 파일 API는 이미지와 MP4만 `Content-Disposition: inline`으로, 나머지는 `attachment`(내려받기)로 내준다. 이 헤더는 링크를 눌러 파일을 열 때만 적용되고, `<audio src>`·`<video src>`가 파일을 불러와 재생하는 데는 영향이 없다. 파일 API는 이미 Range 요청(파일의 일부 구간만 받기)을 지원해 영상 중간으로 건너뛸 수 있다. 그래서 ==서버 배포 없이 화면만 바꿨다==.
 
 **CSP의 `media-src`에 `https:`를 더했다.** 지금까지 `media-src`는 사이트와 API 서버만 허용해, 다른 사이트의 영상·음악 주소는 브라우저가 막았다. 바깥 파일 주소는 미리 알 수 없고, 미디어는 스크립트를 실행하지 못하므로 그림(`img-src`)처럼 https 전체를 연다.
 
@@ -211,7 +212,8 @@ state.doc.descendants((node, pos) => {
 
 ![편집 화면의 음악 재생기](./images/memo-link-embed-media-editor.jpg '편집 화면에서 음악 재생기에 마우스를 올린 모습. 재생기 폭은 읽기 화면과 같고, 주소 바꾸기·삭제 버튼은 캡션 줄 왼쪽에 있다')
 
-한 파일의 한도는 지금처럼 10MB다. 1080p 영상이면 1분 남짓, 128kbps MP3면 10분 정도라, 긴 영상은 YouTube에 올리고 임베드하는 편이 낫다.
+> [!TIP] 긴 영상은 YouTube 임베드로
+> 한 파일의 한도는 지금처럼 10MB다. 1080p 영상이면 1분 남짓, 128kbps MP3면 10분 정도라, 긴 영상은 YouTube에 올리고 임베드하는 편이 낫다.
 
 ## 시험
 

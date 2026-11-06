@@ -3,11 +3,11 @@ title: 폴더 대신 *Api.ts·model.ts·use*.ts 이름 규칙으로 파일 종�
 date: 2026-10-10
 category: 개발 기록/MacFolio/구조·상태 관리
 series: 모듈 구조
-seriesOrder: 4
+seriesOrder: 3
 summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 이름이 종류를 나타내게 했다. 서버 호출은 *Api.ts, 순수 계산은 model.ts, 훅은 use*.ts. 폴더 규칙을 채택하지 않은 이유, 규칙에 어긋난 파일 아홉 개를 맞춘 과정, 다음 단계에서 얻은 효과를 정리했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 2단계의 마지막 항목 "앱 폴더 안의 구조를 맞추기"다([순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)). 앞 단계에서 `apps/`, `desktop/`, `shared/`의 경계를 정했으므로, 이번에는 앱 폴더 하나의 내부 구조를 정리했다.
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 2단계의 마지막 항목 "앱 폴더 안의 구조를 맞추기"다([순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-retrospective#2단계-폴더-구조와-의존)). 앞 단계에서 `apps/`, `desktop/`, `shared/`의 경계를 정했으므로, 이번에는 앱 폴더 하나의 내부 구조를 정리했다.
 
 작업은 PR [#191](https://github.com/hyeoniverse/MacFolio/pull/191)의 커밋 하나(`889aee932`)다. 33개 파일에서 236줄이 추가되고 175줄이 삭제되었다. 대부분은 파일 이름 변경과 그에 따른 `import` 경로 수정이다.
 
@@ -33,7 +33,7 @@ summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 �
 1. `passwords/components/Passwords.tsx`처럼 파일 하나만 담긴 폴더가 생긴다.
 2. 함께 수정하는 `Weather.tsx`·`forecast.ts`·`weatherApi.ts`가 폴더 세 개로 흩어진다. 함께 바뀌는 파일은 가까이 있어야 하는데(응집도), 폴더 규칙은 그 반대로 작용한다.
 
-실제로 혼란을 준 것은 폴더가 아니라 이름이었다. 서버를 호출하는 파일 이름이 `data.ts`·`captions.ts`·`githubActivity.ts`였고, 훅이 `admin.ts`·`popover.ts`·`serverResources.ts`에 들어 있었다. 그래서 규칙의 기준을 폴더가 아니라 이름으로 정했다.
+==실제로 혼란을 준 것은 폴더가 아니라 이름==이었다. 서버를 호출하는 파일 이름이 `data.ts`·`captions.ts`·`githubActivity.ts`였고, 훅이 `admin.ts`·`popover.ts`·`serverResources.ts`에 들어 있었다. 그래서 규칙의 기준을 폴더가 아니라 이름으로 정했다.
 
 ![앱 폴더별 .ts·.tsx 파일 수 막대그래프. memo 77개, safari 101개를 빼면 대부분 1~22개다](./images/app-file-naming-counts.svg '대부분의 앱은 파일 열 개 안팎이라 폴더를 나눌 이유가 없다')
 
@@ -53,9 +53,8 @@ summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 �
 | 화면 조각        | `PascalCase.tsx`                   |
 | 조각이 셋 이상   | `components/`                      |
 
-> **한 파일에 서버 호출과 순수 계산을 섞지 않는다.**
-
-이 규칙이 핵심이다. 둘이 섞이면 순수 계산에 시험을 붙이기 어렵고, 3단계에서 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 분리해야 한다.
+> [!IMPORTANT] 한 파일에 서버 호출과 순수 계산을 섞지 않는다
+> 이 규칙이 핵심이다. 둘이 섞이면 순수 계산에 시험을 붙이기 어렵고, 3단계에서 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 분리해야 한다.
 
 ## 수정한 파일
 
@@ -100,13 +99,13 @@ export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?min
 
 ## 예외 하나
 
-응답을 보관하는 store와 그것을 읽는 한 줄짜리 훅([`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore))은 해당 `*Api.ts`에 함께 정의해도 된다고 규칙에 적었다. `githubApi.ts`의 `useGithub`이 그 예다. 훅을 별도 파일로 분리하면 store 하나를 두 파일이 나눠 갖게 되어 오히려 읽기 어렵다. 규칙의 목적은 읽기 쉬운 코드이고, 규칙을 지키려고 파일을 늘리는 것은 목적에 맞지 않는다.
+응답을 보관하는 store와 그것을 읽는 한 줄짜리 훅([`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore))은 해당 `*Api.ts`에 함께 정의해도 된다고 규칙에 적었다. `githubApi.ts`의 `useGithub`이 그 예다. 훅을 별도 파일로 분리하면 store 하나를 두 파일이 나눠 갖게 되어 오히려 읽기 어렵다. 규칙의 목적은 읽기 쉬운 코드이고, ==규칙을 지키려고 파일을 늘리는 것은 목적에 맞지 않는다==.
 
 규칙과 예외는 모두 `CONTRIBUTING.md`의 파일 이름 표에 적었다. 표에는 예시도 함께 넣었다(`postsApi.ts`, `activity/model.ts`, `weather/forecast.ts`).
 
 ## 다음 단계에서 얻은 효과
 
-바로 다음 3단계에서 앱마다 흩어진 `fetch`를 `shared/api/client.ts`의 `api()` 하나로 모았다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)). 이때 수정할 파일을 찾는 작업이 `*Api.ts` 검색으로 끝났다. 이후 응답 모양을 `packages/contracts`의 스키마로 옮길 때([contracts 패키지](/memo/contracts-comments))도 `*Api.ts`만 열면 됐다. 현재 `activityApi.ts`는 응답 타입을 `@macfolio/contracts`에서 가져와 다시 내보내기만 한다.
+바로 다음 3단계에서 앱마다 흩어진 `fetch`를 `shared/api/client.ts`의 `api()` 하나로 모았다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)). 이때 수정할 파일을 찾는 작업이 `*Api.ts` 검색으로 끝났다. 이후 응답 모양을 `packages/contracts`의 스키마로 옮길 때([contracts 패키지](/memo/contracts-package#댓글좋아요-스키마-200))도 `*Api.ts`만 열면 됐다. 현재 `activityApi.ts`는 응답 타입을 `@macfolio/contracts`에서 가져와 다시 내보내기만 한다.
 
 ## 남은 것, 배운 것
 
@@ -135,14 +134,15 @@ find . -name '*Api.ts' | head                  # 서버 호출 파일
 pnpm cycles                                    # 이름을 바꾸면서 순환 import가 생기지 않았는지
 ```
 
-파일을 옮길 때는 `git mv`를 사용해야 이력이 이어진다. 되돌릴 때도 `git mv`를 반대 방향으로 실행한다.
+> [!TIP]
+> 파일을 옮길 때는 `git mv`를 사용해야 이력이 이어진다. 되돌릴 때도 `git mv`를 반대 방향으로 실행한다.
 
 ## 관련 글
 
-- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
-- [api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-step3-foundation)
-- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-retrospective#2단계-폴더-구조와-의존)
+- [api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-retrospective#3단계-공통-기반-코드)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)
 - [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)
 
 [^rename]: git은 이름 변경을 별도로 기록하지 않고, 삭제된 파일과 추가된 파일의 내용이 50% 이상 같으면 이름 변경으로 표시한다. 내용을 거의 바꾸지 않아야 `git log --follow`로 이력이 이어진다. [git diff 문서의 `-M` 옵션](https://git-scm.com/docs/git-diff)

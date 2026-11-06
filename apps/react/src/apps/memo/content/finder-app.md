@@ -32,7 +32,7 @@ Dock 맨 왼쪽의 Finder는 아이콘만 있었고, 눌러도 창이 열리지 
 | GitHub API로 저장소 트리를 실행 시각에 조회 | 항상 최신                            | 요청 한도·지연. 블로그 글·앱처럼 파일이 아닌 항목은 표현할 수 없다 |
 | **기존 데이터에서 트리를 계산**             | 글·프로젝트·앱이 추가되면 자동 반영  | "파일"의 의미가 위치마다 다르다(열었을 때 동작이 다르다)           |
 
-셋째를 선택했다. 위치마다 "열었을 때의 동작"만 다르게 정의하면, 트리 구조는 하나의 함수로 생성할 수 있다.
+셋째를 선택했다. 위치마다 "열었을 때의 동작"만 다르게 정의하면, ==트리 구조는 하나의 함수로 생성할 수 있다.==
 
 ## macOS Finder와 같은 조작
 
@@ -61,7 +61,7 @@ GitHub와 같은 결과로 렌더링하기 위해 다음 네 가지를 맞췄다
 
 ## 다른 앱에 항목 열기 요청 보내기
 
-글을 열면 메모가, 프로젝트를 열면 Safari가 해당 항목을 표시해야 한다. 그런데 메모는 처음 열 때 코드를 불러오는(lazy) 앱이라, Finder가 요청하는 시각에는 아직 마운트되지 않았을 수 있다.
+글을 열면 메모가, 프로젝트를 열면 Safari가 해당 항목을 표시해야 한다. 그런데 메모는 처음 열 때 코드를 불러오는(lazy) 앱이라, ==Finder가 요청하는 시각에는 아직 마운트되지 않았을 수 있다.==
 
 그래서 작은 store(`openRequest.ts`)에 요청을 저장하고, 받는 앱이 마운트될 때 남은 요청을 읽어 처리하게 했다. 이미 열려 있으면 구독으로 바로 받는다. Safari는 닫힌 탭이면 다시 연다.
 
@@ -92,11 +92,11 @@ export function useOpenRequest(app: LinkedApp, onOpen: (id: string) => void) {
 | 주소(`/memo/<글>`) 변경            | 메모에는 동작하지만, Safari 탭이나 다른 앱에는 주소 규칙이 없다 |
 | **값으로 남는 store**              | 마운트 후 남은 값을 읽어 처리한다                               |
 
-이벤트는 발생 시각에 리스너가 없으면 사라지고, store의 값은 읽을 때까지 남는다. 이 경우에는 store가 맞았다.
+==이벤트는 발생 시각에 리스너가 없으면 사라지고, store의 값은 읽을 때까지 남는다.== 이 경우에는 store가 맞았다.
 
 ## 클릭 이벤트가 발생하지 않던 링크
 
-개발 중에 문서 안 링크를 눌러도 반응이 없는 문제가 있었다. 원인은 [react-markdown](https://github.com/remarkjs/react-markdown)에 전달하는 `components`였다. 렌더링마다 새 함수를 만들어 전달하자, react-markdown이 링크 요소를 매번 다시 마운트했다.
+개발 중에 문서 안 링크를 눌러도 반응이 없는 문제가 있었다. 원인은 [react-markdown](https://github.com/remarkjs/react-markdown)에 전달하는 `components`였다. ==렌더링마다 새 함수를 만들어 전달하자, react-markdown이 링크 요소를 매번 다시 마운트했다.==
 
 창을 클릭하면 그 창이 맨 앞으로 오면서 다시 렌더링된다. 그래서 `mousedown`을 받은 링크와 `mouseup`을 받은 링크가 서로 다른 DOM 요소가 되고, [`click` 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Element/click_event)가 발생하지 않았다[^click]. `components`를 `useMemo`로 감싸 문서와 화면 모드가 바뀔 때만 새로 만들자 해결됐다.
 
@@ -138,11 +138,12 @@ const components = useMemo<Components>(
 
 다음 작업은 바탕화면이었다. Finder 트리에 '데스크톱' 폴더를 추가하고, 그 안의 항목을 바탕화면에 아이콘으로 배치하는 계획이었다. 이후 [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)([#259](https://github.com/hyeoniverse/MacFolio/pull/259))으로 구현했고, 빈 이력서 폴더도 [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)([#255](https://github.com/hyeoniverse/MacFolio/pull/255))에서 채웠다.
 
-배운 것: 앱 사이에 열기 요청을 전달할 때는 받는 쪽이 아직 마운트되지 않았을 가능성을 먼저 고려해야 한다. 이벤트는 사라지고 값은 남는다. 그리고 react-markdown의 `components`는 참조가 바뀌면 요소를 다시 마운트한다. 같은 문제를 두 번 겪은 뒤, 이런 객체는 컴포넌트 바깥 상수나 `useMemo`로 정의하는 것을 규칙으로 정했다.
+> [!IMPORTANT] 배운 것
+> 앱 사이에 열기 요청을 전달할 때는 받는 쪽이 아직 마운트되지 않았을 가능성을 먼저 고려해야 한다. 이벤트는 사라지고 값은 남는다. 그리고 react-markdown의 `components`는 참조가 바뀌면 요소를 다시 마운트한다. 같은 문제를 두 번 겪은 뒤, 이런 객체는 컴포넌트 바깥 상수나 `useMemo`로 정의하는 것을 규칙으로 정했다.
 
 ## 관련 글
 
-- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)
+- [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem)
 - [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)
 - [클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기](/memo/doc-links-in-finder): 메모 글의 문서 링크도 Finder로
 

@@ -3,11 +3,11 @@ title: 상태 기준으로 AnalyticsService를 저장·집계·조회 서비스�
 date: 2026-10-16
 category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
-seriesOrder: 6
+seriesOrder: 4
 summary: 341줄짜리 AnalyticsService가 이벤트 저장, 지난 날짜 집계·삭제, 요약·조회수 조회를 모두 담당했다. 상태를 기준으로 저장·집계·조회 세 서비스로 나누고, 경로·응답은 그대로 둔 채 e2e는 한 줄만 수정해 통과시켰다.
 ---
 
-트래픽 분석(이슈 [#102](https://github.com/hyeoniverse/MacFolio/issues/102))은 사이트가 전송한 이벤트를 저장하고, 하루가 지나면 날짜별 통계로 집계하고, '활동 상태 보기' 앱과 블로그 조회수에 지표를 응답한다([쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)). 이 세 가지 역할을 `AnalyticsService` 클래스 하나가 담당했다.
+트래픽 분석(이슈 [#102](https://github.com/hyeoniverse/MacFolio/issues/102))은 사이트가 전송한 이벤트를 저장하고, 하루가 지나면 날짜별 통계로 집계하고, '활동 상태 보기' 앱과 블로그 조회수에 지표를 응답한다([쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)). 이 세 가지 역할을 `AnalyticsService` 클래스 하나가 담당했다.
 
 처음 구현할 당시에는 한 파일이 편했다. 그런데 공개 요약, 글 조회수, 1분 캐시가 차례로 추가되면서 파일이 341줄이 됐다. 요약 하나를 수정하려고 파일을 열어도 요청 제한과 타이머 코드를 함께 읽어야 했다. 이후 UTM 같은 표도 추가될 예정이었으므로([출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)), 기능을 추가하기 전에 먼저 나눴다. 작업은 [#233](https://github.com/hyeoniverse/MacFolio/pull/233)의 커밋 하나(`8a35ac38b`)다.
 
@@ -32,7 +32,7 @@ summary: 341줄짜리 AnalyticsService가 이벤트 저장, 지난 날짜 집계
 | 같은 상태를 쓰는 메서드끼리 서비스로 (고른 방법) | 서비스마다 자기 상태만 갖는다 | 서비스 사이의 의존 방향을 정해야 한다                            |
 | 경로마다 서비스 하나                             | 경로와 역할이 1:1             | `summary`와 `views`가 같은 캐시·같은 집계를 쓰는데 둘로 나뉜다   |
 
-남은 코드가 길었던 원인은 계산이 아니라 상태였다. 그래서 "어느 상태를 사용하는가"를 기준으로 묶었다.
+==남은 코드가 길었던 원인은 계산이 아니라 상태==였다. 그래서 "어느 상태를 사용하는가"를 기준으로 묶었다.
 
 ## 셋으로 나누기
 
@@ -48,7 +48,7 @@ NestJS에서 서비스(`@Injectable`, [프로바이더](https://docs.nestjs.com/
 
 ![서비스마다 가진 상태](./images/analytics-service-split-state.svg '요청 제한 표, 타이머와 마지막 집계 시각, 캐시가 각자의 서비스로 이동했다')
 
-`rowsBetween`의 위치를 가장 오래 고민했다. 호출하는 쪽은 조회지만, "어제까지는 `DailyStat`, 오늘은 이벤트에서 바로"라는 규칙은 집계가 어디까지 끝났는지를 아는 쪽의 지식이다. 조회 서비스에 두면 집계 규칙이 두 곳으로 나뉜다. 그래서 집계 서비스에 두고 조회 서비스가 호출하게 했다.
+`rowsBetween`의 위치를 가장 오래 고민했다. 호출하는 쪽은 조회지만, "어제까지는 `DailyStat`, 오늘은 이벤트에서 바로"라는 규칙은 집계가 어디까지 끝났는지를 아는 쪽의 지식이다. ==조회 서비스에 두면 집계 규칙이 두 곳으로 나뉜다==. 그래서 집계 서비스에 두고 조회 서비스가 호출하게 했다.
 
 ```ts
 @Injectable()
@@ -63,7 +63,7 @@ export class AnalyticsStats {
 }
 ```
 
-의존은 한 방향(조회 → 집계)뿐이다. 저장과 집계는 서로를 참조하지 않는다. 저장은 DB에 이벤트를 넣기만 하고, 집계는 DB에서 이벤트를 읽기만 한다. 둘 사이는 `AnalyticsEvent` 테이블 하나로 연결된다.
+==의존은 한 방향(조회 → 집계)뿐이다==. 저장과 집계는 서로를 참조하지 않는다. 저장은 DB에 이벤트를 넣기만 하고, 집계는 DB에서 이벤트를 읽기만 한다. 둘 사이는 `AnalyticsEvent` 테이블 하나로 연결된다.
 
 ## 바꾼 파일
 
@@ -100,7 +100,8 @@ constructor(
 await app.get(AnalyticsRollup).maintain(now); // 전: app.get(AnalyticsService)
 ```
 
-개인정보 처리 안내(`docs/privacy.md`)의 "지난 날을 모으는 곳" 경로도 새 파일로 수정했다. 이 문서는 코드 경로를 기재하고 있어서, 파일 이름이 바뀌면 함께 수정해야 한다.
+> [!WARNING] 코드 경로를 기재한 문서
+> 개인정보 처리 안내(`docs/privacy.md`)의 "지난 날을 모으는 곳" 경로도 새 파일로 수정했다. 이 문서는 코드 경로를 기재하고 있어서, 파일 이름이 바뀌면 함께 수정해야 한다.
 
 ## 남은 것, 배운 것
 
@@ -129,10 +130,10 @@ NestJS에서 서비스 여러 개를 한 모듈의 `providers`로 등록하는 �
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
-- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-public)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)
+- [같은 경로에서 세션에 따라 응답 범위를 나누는 분석 요약 API](/memo/analytics-api#요약을-방문자에게-공개한다-세션에-따라-응답-범위를-나눈다)
 - [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics)
 - [백엔드 설계](/memo/backend-design)
-- [리팩터링 6 - 서버](/memo/refactor-step6-server)
+- [리팩터링 6 - 서버](/memo/refactor-retrospective#6단계-서버)
 
 #MacFolio #NestJS #리팩터링 #트래픽분석

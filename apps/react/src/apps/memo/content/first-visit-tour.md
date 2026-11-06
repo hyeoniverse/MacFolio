@@ -45,7 +45,7 @@ MacFolio의 첫 화면은 macOS 바탕화면이다. Dock에 아이콘이 스무 
 
 - **구멍은 그림자로 만든다.** 상자 자체는 투명하고, 퍼짐 반경 9999px의 `box-shadow`[^box-shadow]가 상자 바깥 전체를 칠한다. `clip-path`나 SVG 마스크로 구멍을 뚫는 방법보다 요소가 하나 적고, 상자의 `top`·`left`·`width`·`height`에 `transition`을 지정하면 다음 단계로 이동하는 모습이 그대로 애니메이션된다.
 - **덮개는 클릭을 받지 않는다.** `.tour`에 [`pointer-events: none`](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)을 지정해 어두운 영역과 구멍 모두 클릭이 아래 요소에 도달한다. 카드만 `pointer-events: auto`로 되돌려 건너뛰기·이전·다음 단추를 누를 수 있게 했다.
-- **z-index는 전역 층 토큰.** 알림보다 위, 펼친 메뉴보다 아래인 `--z-tour: 9500`을 [전역 층 목록](/memo/z-index-layers)에 추가했다. 둘러보기 중에도 Apple 메뉴를 펼치면 메뉴가 덮개 위에 표시된다.
+- **z-index는 전역 층 토큰.** 알림보다 위, 펼친 메뉴보다 아래인 `--z-tour: 9500`을 [전역 층 목록](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)에 추가했다. 둘러보기 중에도 Apple 메뉴를 펼치면 메뉴가 덮개 위에 표시된다.
 
 ### 비춘 곳을 누르면 다음 단계로
 
@@ -110,11 +110,11 @@ if (!visible) {
 }
 ```
 
-`querySelector`의 결과만 확인하면 부족했다. 휴대폰 홈 화면은 여러 쪽을 가로로 배치하므로 다른 쪽의 아이콘은 문서에는 있지만 화면 밖(`left ≥ innerWidth`)에 있다. 너비·높이 0도 함께 확인해 `display: none`인 요소를 제외한다.
+`querySelector`의 결과만 확인하면 부족했다. 휴대폰 홈 화면은 여러 쪽을 가로로 배치하므로 ==다른 쪽의 아이콘은 문서에는 있지만 화면 밖==(`left ≥ innerWidth`)에 있다. 너비·높이 0도 함께 확인해 `display: none`인 요소를 제외한다.
 
 ## 창 열림·크기 변경 시 위치 다시 계산
 
-대상의 위치는 단계가 바뀐 시각 한 번만 계산하면 어긋난다. 이력서 폴더를 누르면 Finder 창이 열리며 확대 애니메이션이 진행되고, 화면 크기를 바꾸면 Dock 아이콘이 이동한다. 그래서 단계가 유지되는 동안 [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)으로 매 프레임 위치를 다시 읽는다.
+==대상의 위치는 단계가 바뀐 시각 한 번만 계산하면 어긋난다.== 이력서 폴더를 누르면 Finder 창이 열리며 확대 애니메이션이 진행되고, 화면 크기를 바꾸면 Dock 아이콘이 이동한다. 그래서 단계가 유지되는 동안 [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)으로 매 프레임 위치를 다시 읽는다.
 
 ```ts
 let frame = 0;
@@ -168,7 +168,8 @@ const phoneApp = (app: string) => `.mobile-app[data-launch="${app}"]`;
 - 메뉴 막대의 도움말 › MacFolio 둘러보기, 팁 앱의 둘러보기 카드로 언제든 다시 시작한다.
 - `prefers-reduced-motion: reduce`이면 상자 이동과 테두리 애니메이션을 끈다.
 
-E2E 시험이 둘러보기 덮개에 가려지지 않도록, 공통 fixture는 시작 시각에 `macfolio:tour`를 `done`으로 설정한다. 둘러보기 시험만 `firstVisit(page)`로 이 값을 삭제한다.
+> [!NOTE] E2E 시험의 둘러보기 기록
+> E2E 시험이 둘러보기 덮개에 가려지지 않도록, 공통 fixture는 시작 시각에 `macfolio:tour`를 `done`으로 설정한다. 둘러보기 시험만 `firstVisit(page)`로 이 값을 삭제한다.
 
 ## 팁 앱
 
@@ -188,7 +189,7 @@ macOS 팁 앱의 구성을 따랐다. 첫 화면에 찾기 칸, 둘러보기 카
 
 ### 원인
 
-팁 앱은 통합형 창(`chrome="unified"`)이다. 통합형 창에서는 투명한 제목 표시줄 `.macos-titlebar`(z-index 3)가 앱 내용 위에 놓여 끌기와 두 번 눌러 확대를 처리한다. 팁 앱의 위쪽 막대 `.tips-bar`는 뒤로·앞으로·홈 단추를 누를 수 있게 막대 **전체**를 z-index 4로 올렸다. 그 결과 막대가 제목 표시줄을 통째로 덮어, 빈 곳의 클릭이 제목 표시줄에 도달하지 않았다.
+팁 앱은 통합형 창(`chrome="unified"`)이다. 통합형 창에서는 투명한 제목 표시줄 `.macos-titlebar`(z-index 3)가 앱 내용 위에 놓여 끌기와 두 번 눌러 확대를 처리한다. 팁 앱의 위쪽 막대 `.tips-bar`는 뒤로·앞으로·홈 단추를 누를 수 있게 막대 **전체**를 z-index 4로 올렸다. 그 결과 ==막대가 제목 표시줄을 통째로 덮어, 빈 곳의 클릭이 제목 표시줄에 도달하지 않았다.==
 
 ![팁 앱 위쪽 막대 수정 전후의 클릭 경로](./images/first-visit-tour-tips-bar.svg '전: z-index 4인 막대 전체가 클릭을 받는다. 후: 막대는 그대로 위에 있지만 단추만 클릭을 받고 나머지는 아래 제목 표시줄로 통과한다')
 
@@ -218,7 +219,8 @@ macOS 팁 앱의 구성을 따랐다. 첫 화면에 찾기 칸, 둘러보기 카
 +}
 ```
 
-`pointer-events`는 상속되므로 `button`에서 `auto`로 되돌려야 한다.
+> [!WARNING] 상속되는 pointer-events
+> `pointer-events`는 상속되므로 `button`에서 `auto`로 되돌려야 한다.
 
 ## 확인
 
@@ -238,11 +240,11 @@ macOS 팁 앱의 구성을 따랐다. 첫 화면에 찾기 칸, 둘러보기 카
 
 ## 관련 글
 
-- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers): `--z-tour`를 추가한 전역 층 목록
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231): `--z-tour`를 추가한 전역 층 목록
 - [position sticky가 만든 쌓임 맥락에 갇힌 z-index](/memo/sticky-stacking-context): 겹침 순서 때문에 단추가 눌리지 않은 다른 사례
 - [컨테이너 쿼리 좁은 창에서 flex: none으로 신호등 버튼 영역 확보하기](/memo/narrow-window-title): 통합형 창에서 신호등 영역과 앱 내용이 겹치는 구조
 - [Stylelint declaration-property-value-allowed-list로 디자인 토큰 강제하기](/memo/off-scale-values): 같은 날 넓힌 Stylelint 규칙. 둘러보기 카드에서 존재하지 않는 토큰을 사용한 사례도 기록했다
-- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021)
+- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/week-1019#markdown-이력서와-텍스트-편집기-21일)
 
 [^box-shadow]: [`box-shadow`](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow)의 네 번째 길이 값은 퍼짐 반경(spread)이다. 흐림 0, 퍼짐 9999px이면 상자 둘레로 9999px까지 같은 색을 칠해 사실상 화면 전체를 덮는다. 그림자는 상자 안쪽을 칠하지 않으므로 상자 자리만 밝게 남는다.
 

@@ -60,9 +60,10 @@ run: |
   if [[ ! "${{ github.event.pull_request.title }}" =~ $message ]]; then
 ```
 
-`${{ }}` 표현식은 셸이 실행되기 **전에** 문자열 그대로 치환된다. PR 제목은 PR을 여는 사람이 임의로 정하는 값이다. 제목에 `"; curl …; echo "`를 넣으면 치환 결과가 따옴표를 닫고 새 명령을 시작하는 스크립트가 되어 셸 명령으로 실행된다. GitHub 문서가 경고하는 [스크립트 주입](https://docs.github.com/en/actions/concepts/security/script-injections)이다.
+> [!CAUTION] 스크립트 주입
+> `${{ }}` 표현식은 셸이 실행되기 **전에** 문자열 그대로 치환된다. PR 제목은 PR을 여는 사람이 임의로 정하는 값이다. 제목에 `"; curl …; echo "`를 넣으면 치환 결과가 따옴표를 닫고 새 명령을 시작하는 스크립트가 되어 셸 명령으로 실행된다. GitHub 문서가 경고하는 [스크립트 주입](https://docs.github.com/en/actions/concepts/security/script-injections)이다.
 
-그래서 제목과 브랜치 이름은 **환경 변수로 전달하고**, 스크립트에서는 `"$TITLE"`로 읽는다. 환경 변수의 값은 셸이 파싱한 뒤에 확장되므로 명령으로 해석되지 않는다.
+그래서 제목과 브랜치 이름은 **환경 변수로 전달하고**, 스크립트에서는 `"$TITLE"`로 읽는다. ==환경 변수의 값은 셸이 파싱한 뒤에 확장되므로 명령으로 해석되지 않는다==.
 
 ![스크립트 주입과 env 전달 비교](./images/commit-conventions-ci-injection.svg '왼쪽: 표현식이 스크립트 본문에 치환되어 제목이 명령이 된다. 오른쪽: 제목은 환경 변수의 값으로만 전달된다')
 
@@ -108,7 +109,7 @@ BRANCH=my-branch TITLE='Update stuff' BASE_SHA=<첫 커밋> HEAD_SHA=… bash co
 
 ## 머지 버튼까지 차단하기
 
-검사만으로는 강제되지 않는다. CI가 실패해도 GitHub는 결과를 표시할 뿐, **Merge 버튼은 그대로 활성화되어 있다.** 실패한 채로 머지하면 규칙은 다시 문서에만 남는다.
+검사만으로는 강제되지 않는다. CI가 실패해도 GitHub는 결과를 표시할 뿐, **Merge 버튼은 그대로 활성화되어 있다.** ==실패한 채로 머지하면 규칙은 다시 문서에만 남는다==.
 
 그래서 저장소 설정의 **[Rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets)**로 `main`에 규칙을 적용했다.
 
@@ -134,7 +135,7 @@ BRANCH=my-branch TITLE='Update stuff' BASE_SHA=<첫 커밋> HEAD_SHA=… bash co
 
 - 커밋 메시지의 설명이 한국어인지는 검사하지 않는다. 정규식은 `타입(범위): ` 뒤에 문자가 있는지만 확인한다.
 - 범위(scope)는 제한하지 않는다. 그래서 `react`처럼 넓은 범위와 `memo`·`finder`처럼 좁은 범위가 섞여 있다.
-- 새 규칙을 만드는 것보다 기존 관행을 규칙으로 적는 쪽이 지키기 쉬웠다. 처음 실행한 시각에 최근 커밋이 이미 모두 통과했으므로 작업 방식을 바꿀 필요가 없었다.
+- ==새 규칙을 만드는 것보다 기존 관행을 규칙으로 적는 쪽이 지키기 쉬웠다==. 처음 실행한 시각에 최근 커밋이 이미 모두 통과했으므로 작업 방식을 바꿀 필요가 없었다.
 - `${{ }}`를 `run:` 안에 그대로 쓰지 않는 규칙은 이 워크플로에만 해당하지 않는다. 이후에 만든 워크플로도 외부 입력 값은 모두 `env:`로 전달한다.
 
 ## 따라 하기
@@ -161,11 +162,11 @@ git push --force-with-lease
 
 ## 관련 글
 
-- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/pin-actions-dependabot)
+- [GitHub Actions를 커밋 SHA로 고정하고 Dependabot으로 업데이트 받기](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies)
 - [main 커밋 기록 집계로 Merge commit 병합 전략 정하기](/memo/macfolio-merge-strategy): 브랜치 커밋이 main에 그대로 남아 커밋마다 메시지를 검사하는 이유
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions)
-- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
 
 [^hook]: Git 훅은 커밋·푸시 같은 동작 전후에 실행되는 스크립트다. `.git/hooks`는 저장소와 함께 복제되지 않으므로, husky 같은 도구로 각 개발 환경에 설치해야 한다. [Git Hooks](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
 

@@ -27,7 +27,7 @@ summary: 별도로 배포한 Unity WebGL 게임 새싹 농장을 데스크톱의
 curl -sI https://sprout-farm-beta.vercel.app/ | grep -iE "x-frame|content-security"
 ```
 
-출력이 없으므로 삽입할 수 있다. 게임의 첫 화면이 **PLAY를 눌러야 게임을 불러오는** 구조라는 점도 유리했다. 창을 열기만 해서는 용량이 큰 WebGL 빌드를 내려받지 않는다.
+출력이 없으므로 삽입할 수 있다. 게임의 첫 화면이 **PLAY를 눌러야 게임을 불러오는** 구조라는 점도 유리했다. ==창을 열기만 해서는 용량이 큰 WebGL 빌드를 내려받지 않는다.==
 
 ## 앱 추가
 
@@ -48,7 +48,7 @@ sproutfarm: {
 
 ## iframe 안을 클릭해도 창이 앞으로 오지 않던 문제
 
-창은 클릭하는 시각에 맨 앞으로 온다. 창 프레임에 `onPointerDownCapture` 핸들러가 있기 때문이다. 그런데 iframe 안을 클릭하면 그 이벤트는 iframe 내부 문서에서만 처리되고, 바깥 문서로 전달되지 않는다. 다른 창 뒤에 있는 게임을 클릭해도 게임 창이 앞으로 오지 않았다.
+창은 클릭하는 시각에 맨 앞으로 온다. 창 프레임에 `onPointerDownCapture` 핸들러가 있기 때문이다. 그런데 ==iframe 안을 클릭하면 그 이벤트는 iframe 내부 문서에서만 처리되고, 바깥 문서로 전달되지 않는다.== 다른 창 뒤에 있는 게임을 클릭해도 게임 창이 앞으로 오지 않았다.
 
 대신 바깥 문서가 감지할 수 있는 이벤트가 하나 있다. iframe 안을 클릭하면 포커스가 iframe으로 이동하면서 바깥 `window`에 [`blur`](https://developer.mozilla.org/ko/docs/Web/API/Window/blur_event) 이벤트가 발생한다. 그 시각에 [`document.activeElement`](https://developer.mozilla.org/ko/docs/Web/API/Document/activeElement)가 이 iframe인지 확인한다.
 
@@ -70,7 +70,8 @@ useEffect(() => {
 | 게임이 [`postMessage`](https://developer.mozilla.org/ko/docs/Web/API/Window/postMessage)로 클릭을 알림 | 게임 코드를 수정해야 하고, 다른 사이트에는 적용할 수 없다 |
 | **바깥 `window`의 `blur`**                                                                             | 어느 사이트를 삽입해도 같게 동작한다                      |
 
-한계도 있다. 포커스가 iframe 안에 있는 상태에서 다른 창을 클릭했다가 다시 iframe을 클릭하면, 그 사이 바깥 문서가 포커스를 가져갔으므로 `blur`가 다시 발생한다. 반면 iframe 안을 연속으로 두 번 클릭할 때는 포커스가 이미 iframe 안에 있어서 `blur`가 발생하지 않는다. 이 경우에는 창이 이미 맨 앞이라 문제가 없다.
+> [!NOTE] blur가 다시 발생하는 경우와 발생하지 않는 경우
+> 한계도 있다. 포커스가 iframe 안에 있는 상태에서 다른 창을 클릭했다가 다시 iframe을 클릭하면, 그 사이 바깥 문서가 포커스를 가져갔으므로 `blur`가 다시 발생한다. 반면 iframe 안을 연속으로 두 번 클릭할 때는 포커스가 이미 iframe 안에 있어서 `blur`가 발생하지 않는다. 이 경우에는 창이 이미 맨 앞이라 문제가 없다.
 
 ## 창 끌기는 이미 정상 동작
 
@@ -78,7 +79,7 @@ iframe 위로 마우스가 지나가면 `pointermove`가 iframe 문서로 전달
 
 ## 외부 사이트에 의존하지 않는 시험
 
-E2E가 실제 게임 사이트를 불러오면, 그 사이트가 느리거나 변경될 때 시험이 실패한다. Playwright의 [`page.route`](https://playwright.dev/docs/api/class-page#page-route)로 그 주소의 요청을 가짜 페이지 응답으로 대체했다.
+==E2E가 실제 게임 사이트를 불러오면, 그 사이트가 느리거나 변경될 때 시험이 실패한다.== Playwright의 [`page.route`](https://playwright.dev/docs/api/class-page#page-route)로 그 주소의 요청을 가짜 페이지 응답으로 대체했다.
 
 ```ts
 await page.route('https://sprout-farm-beta.vercel.app/**', (route) =>
