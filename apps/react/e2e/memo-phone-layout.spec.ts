@@ -56,7 +56,7 @@ test.describe('메모: 휴대폰 화면이면 폭과 상관없이 한 칸씩', (
 			await page.locator('[data-launch="memo"]').click();
 			const memo = appWindow(page, 'memo');
 			await expect(memo.locator('.memo-item').first()).toBeVisible();
-			await memo.getByRole('button', { name: '새 메모' }).first().click();
+			await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 			await page.keyboard.type('제목');
 			await page.keyboard.press('Enter');
 			for (let line = 0; line < 30; line++) await page.keyboard.press('Enter');

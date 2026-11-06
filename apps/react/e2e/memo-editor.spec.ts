@@ -1098,7 +1098,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 최근 삭제된 항목에서 새 메모를 쓰면 모든 글로 나가서 쓴다 (새 메모가 들어갈 폴더가 아니다)
 		await trash.click();
-		await memo.getByRole('button', { name: '새 메모' }).first().click();
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
 		await expect(memo.getByRole('button', { name: /^폴더 .*, 바꾸기$/ })).toHaveAccessibleName(
 			/^폴더 (?!최근 삭제).+, 바꾸기$/
