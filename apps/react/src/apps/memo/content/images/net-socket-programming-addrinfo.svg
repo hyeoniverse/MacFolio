@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="450" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <text x="55" y="42" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">result</text>
+  <rect x="20" y="50" width="70" height="20" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="90" y1="60" x2="178" y2="60" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <text x="240" y="24" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">addrinfo</text>
+  <text x="240" y="40" text-anchor="middle" font-size="12" fill="#1d1d1f">구조체</text>
+  <rect x="180" y="50" width="120" height="50" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <rect x="180" y="100" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="115" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_canonname</text>
+  <rect x="180" y="122" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="137" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_addr</text>
+  <rect x="180" y="144" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="159" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_next</text>
+  <rect x="180" y="50" width="120" height="116" rx="0" fill="none" stroke="#1d1d1f" stroke-width="1.6"/>
+  <rect x="180" y="200" width="120" height="50" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <rect x="180" y="250" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="265" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_addr</text>
+  <rect x="180" y="272" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="287" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_next</text>
+  <rect x="180" y="200" width="120" height="94" rx="0" fill="none" stroke="#1d1d1f" stroke-width="1.6"/>
+  <rect x="180" y="340" width="120" height="50" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <rect x="180" y="390" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="405" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_addr</text>
+  <rect x="180" y="412" width="120" height="22" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="240.0" y="427" text-anchor="middle" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-style="italic">ai_next</text>
+  <rect x="180" y="340" width="120" height="94" rx="0" fill="none" stroke="#1d1d1f" stroke-width="1.6"/>
+  <text x="510" y="24.0" text-anchor="middle" font-size="12" fill="#1d1d1f">정규 호스트 이름</text>
+  <rect x="440" y="34" width="140" height="16" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="300" y1="111" x2="438" y2="46" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <text x="510" y="82" text-anchor="middle" font-size="12" fill="#1d1d1f">소켓 주소 구조체</text>
+  <rect x="440" y="92" width="140" height="56" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="300" y1="133" x2="438" y2="110" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#k)"/>
+  <rect x="440" y="222" width="140" height="56" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="300" y1="261" x2="438" y2="261" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#k)"/>
+  <rect x="440" y="362" width="140" height="56" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="300" y1="401" x2="438" y2="401" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#k)"/>
+  <path d="M300,155 C330,155 330,155 330,175 L330,180 C330,190 320,206 304,208" fill="none" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <path d="M300,283 C330,283 330,283 330,303 L330,320 C330,330 320,346 304,348" fill="none" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <line x1="300" y1="423" x2="326" y2="423" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="332" y="427" text-anchor="start" font-size="11" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">NULL</text>
+</svg>

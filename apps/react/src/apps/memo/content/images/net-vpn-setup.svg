@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <line x1="20" y1="44" x2="620" y2="44" stroke="#1d1d1f" stroke-width="1.5"/>
+  <g><ellipse cx="277.5" cy="53.3" rx="31.2" ry="25.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="320.0" cy="37.0" rx="39.7" ry="32.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="362.5" cy="51.0" rx="31.2" ry="25.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="305.8" cy="60.3" rx="28.3" ry="23.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="339.8" cy="60.3" rx="28.3" ry="23.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="254.8" cy="62.7" rx="19.8" ry="16.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="385.2" cy="62.7" rx="19.8" ry="16.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="277.5" cy="53.3" rx="30.2" ry="24.7" fill="#f2f2f7"/><ellipse cx="320.0" cy="37.0" rx="38.7" ry="31.7" fill="#f2f2f7"/><ellipse cx="362.5" cy="51.0" rx="30.2" ry="24.7" fill="#f2f2f7"/><ellipse cx="305.8" cy="60.3" rx="27.3" ry="22.3" fill="#f2f2f7"/><ellipse cx="339.8" cy="60.3" rx="27.3" ry="22.3" fill="#f2f2f7"/><ellipse cx="254.8" cy="62.7" rx="18.8" ry="15.3" fill="#f2f2f7"/><ellipse cx="385.2" cy="62.7" rx="18.8" ry="15.3" fill="#f2f2f7"/></g>
+  <text x="320" y="53.333333333333336" text-anchor="middle" font-size="14" fill="#1d1d1f">인터넷</text>
+  <line x1="120" y1="44" x2="120" y2="110" stroke="#1d1d1f" stroke-width="1.5"/>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><rect x="96.2" y="105.60000000000001" width="47.599999999999994" height="33.599999999999994" rx="2" fill="#fff"/><line x1="120" y1="139.2" x2="120" y2="146.2"/><line x1="107.4" y1="146.2" x2="132.6" y2="146.2"/></g>
+  <text x="120" y="172" text-anchor="middle" font-size="13" fill="#1d1d1f">VPN 클라이언트</text>
+  <text x="120" y="190" text-anchor="middle" font-size="13" fill="#6e6e73">호스트 U</text>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><circle cx="46" cy="122" r="7"/><path d="M34,146 q0,-16 12,-16 q12,0 12,16"/></g>
+  <text x="46" y="172" text-anchor="middle" font-size="12" fill="#6e6e73">사용자</text>
+  <line x1="144" y1="124" x2="194" y2="124" stroke="#1d1d1f" stroke-width="1.5"/>
+  <g><rect x="196" y="110" width="46.0" height="28.0" rx="2" fill="#0a84ff"/><line x1="196" y1="104.0" x2="196" y2="144.0" stroke="#0a84ff" stroke-width="2"/>
+    <rect x="202.0" y="115.0" width="10" height="12" fill="#fff"/><rect x="218.0" y="115.0" width="10" height="12" fill="none" stroke="#fff" stroke-width="2"/>
+    <line x1="202.0" y1="134.0" x2="238.0" y2="134.0" stroke="#fff" stroke-width="2" stroke-dasharray="3 2"/></g>
+  <text x="219" y="166" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">tun0</text>
+  <text x="219" y="184" text-anchor="middle" font-size="13" fill="#1d1d1f">10.4.2.99</text>
+  <line x1="500" y1="44" x2="500" y2="104" stroke="#1d1d1f" stroke-width="1.5"/>
+  <g stroke="#1d1d1f" stroke-width="1.5"><rect x="480.8" y="104.8" width="38.400000000000006" height="54.400000000000006" rx="2" fill="#fff"/><line x1="487.2" y1="117.6" x2="512.8000000000001" y2="117.6"/><line x1="487.2" y1="127.2" x2="512.8000000000001" y2="127.2"/><circle cx="500" cy="148.0" r="2.8800000000000003" fill="#1d1d1f"/></g>
+  <text x="530" y="96" text-anchor="start" font-size="13" fill="#1d1d1f">VPN 서버</text>
+  <line x1="480" y1="124" x2="440" y2="124" stroke="#1d1d1f" stroke-width="1.5"/>
+  <g><rect x="392" y="110" width="46.0" height="28.0" rx="2" fill="#0a84ff"/><line x1="392" y1="104.0" x2="392" y2="144.0" stroke="#0a84ff" stroke-width="2"/>
+    <rect x="398.0" y="115.0" width="10" height="12" fill="#fff"/><rect x="414.0" y="115.0" width="10" height="12" fill="none" stroke="#fff" stroke-width="2"/>
+    <line x1="398.0" y1="134.0" x2="434.0" y2="134.0" stroke="#fff" stroke-width="2" stroke-dasharray="3 2"/></g>
+  <text x="415" y="166" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">tun0</text>
+  <text x="415" y="184" text-anchor="middle" font-size="13" fill="#1d1d1f">10.4.2.5</text>
+  <line x1="500" y1="160" x2="500" y2="222" stroke="#1d1d1f" stroke-width="1.5"/>
+  <text x="510" y="196" text-anchor="start" font-size="13" fill="#1d1d1f">192.168.60.5</text>
+  <line x1="380" y1="222" x2="620" y2="222" stroke="#1d1d1f" stroke-width="1.5"/>
+  <text x="620" y="242" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">192.168.60.0/24</text>
+  <line x1="440" y1="222" x2="440" y2="244" stroke="#1d1d1f" stroke-width="1.5"/>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><rect x="421.3" y="244.4" width="37.400000000000006" height="26.400000000000002" rx="2" fill="#fff"/><line x1="440" y1="270.8" x2="440" y2="276.3"/><line x1="430.1" y1="276.3" x2="449.9" y2="276.3"/></g>
+  <text x="466" y="262" text-anchor="start" font-size="13" fill="#1d1d1f">호스트 V</text>
+  <text x="466" y="280" text-anchor="start" font-size="13" fill="#6e6e73">192.168.60.6</text>
+</svg>

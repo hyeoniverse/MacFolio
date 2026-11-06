@@ -1,7 +1,7 @@
 ---
 title: E-R 다이어그램을 릴레이션으로 사상하는 7단계
 date: 2023-06-21
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 9
 summary: 회사 데이터베이스 요구사항을 E-R 다이어그램으로 설계하고 7단계 사상 규칙으로 관계 스키마를 만든 뒤, Oracle DDL로 구현해 SELECT·UPDATE·DELETE 예제로 확인한 실습을 정리했다. 서점 데이터베이스 설계와 설계할 때 틀리기 쉬운 부분도 함께 정리했다.

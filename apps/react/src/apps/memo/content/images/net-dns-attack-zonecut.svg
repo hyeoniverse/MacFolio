@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 540" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="540" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">kr 도메인 안의 존, 존 컷, 존 정점</text>
+  <!-- kr 도메인 -->
+  <rect x="150" y="96" width="290" height="428" rx="26" fill="#f5f5f7" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <!-- user-domain.co.kr 도메인 -->
+  <rect x="166" y="296" width="258" height="218" rx="20" fill="#e8f2ff" stroke="#0a84ff" stroke-dasharray="5 4"/>
+  <!-- 존 상자 -->
+  <g fill="#fff" stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="236" y="114" width="110" height="46" rx="8"/>
+    <rect x="186" y="206" width="104" height="46" rx="8"/>
+    <rect x="304" y="206" width="104" height="46" rx="8"/>
+    <rect x="186" y="314" width="218" height="82" rx="8"/>
+    <rect x="186" y="428" width="218" height="76" rx="8"/>
+  </g>
+  <!-- 트리 -->
+  <g stroke="#1d1d1f" stroke-width="1.5">
+    <line x1="380" y1="58" x2="292" y2="134"/>
+    <line x1="380" y1="58" x2="510" y2="110"/>
+    <line x1="380" y1="58" x2="590" y2="110"/>
+    <line x1="292" y1="134" x2="238" y2="228"/>
+    <line x1="292" y1="134" x2="356" y2="228"/>
+    <line x1="238" y1="228" x2="238" y2="334"/>
+    <line x1="238" y1="334" x2="214" y2="376"/>
+    <line x1="238" y1="334" x2="300" y2="376"/>
+    <line x1="238" y1="334" x2="238" y2="446"/>
+    <line x1="238" y1="446" x2="214" y2="486"/>
+    <line x1="238" y1="446" x2="292" y2="486"/>
+  </g>
+  <g fill="#1d1d1f">
+    <circle cx="380" cy="58" r="4"/><circle cx="510" cy="110" r="4"/><circle cx="590" cy="110" r="4"/>
+    <circle cx="292" cy="134" r="4"/><circle cx="238" cy="228" r="4"/><circle cx="356" cy="228" r="4"/>
+    <circle cx="238" cy="334" r="4"/><circle cx="214" cy="376" r="4"/><circle cx="300" cy="376" r="4"/>
+    <circle cx="238" cy="446" r="4"/><circle cx="214" cy="486" r="4"/><circle cx="292" cy="486" r="4"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f">
+    <text x="392" y="54">루트(.)</text>
+    <text x="518" y="128">com</text><text x="598" y="128">org</text>
+    <text x="302" y="139">kr</text>
+    <text x="248" y="233">co</text><text x="366" y="233">or</text>
+    <text x="248" y="339">user-domain</text>
+    <text x="194" y="392">www</text><text x="310" y="381">ftp</text>
+    <text x="248" y="451">lab</text>
+    <text x="194" y="500">dev</text><text x="302" y="500">beta</text>
+  </g>
+  <!-- 존 컷 -->
+  <g stroke="#ff9f0a" stroke-width="5" stroke-linecap="round">
+    <line x1="250" y1="182" x2="282" y2="176"/>
+    <line x1="222" y1="282" x2="254" y2="282"/>
+    <line x1="222" y1="412" x2="254" y2="412"/>
+  </g>
+  <g font-size="12" fill="#c46f00" text-anchor="end">
+    <text x="140" y="183">존 컷</text>
+    <text x="140" y="286">존 컷</text>
+    <text x="140" y="416">존 컷</text>
+  </g>
+  <g stroke="#ff9f0a" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="144" y1="179" x2="246" y2="179"/>
+    <line x1="144" y1="282" x2="218" y2="282"/>
+    <line x1="144" y1="412" x2="218" y2="412"/>
+  </g>
+  <!-- 오른쪽 이름표 -->
+  <g font-size="12" fill="#1d1d1f">
+    <text x="452" y="168">kr 존</text>
+    <text x="452" y="234">co.kr 존</text>
+    <text x="452" y="250" fill="#6e6e73">(or.kr 존은 따로)</text>
+    <text x="452" y="342">user-domain.co.kr 존</text>
+    <text x="452" y="358" fill="#6e6e73">정점: user-domain.co.kr.</text>
+    <text x="452" y="452">lab.user-domain.co.kr</text>
+    <text x="452" y="468">존이자 도메인</text>
+    <text x="452" y="484" fill="#6e6e73">정점: lab.user-domain.co.kr.</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1">
+    <line x1="346" y1="150" x2="448" y2="164"/>
+    <line x1="408" y1="229" x2="448" y2="230"/>
+    <line x1="404" y1="338" x2="448" y2="338"/>
+    <line x1="404" y1="460" x2="448" y2="460"/>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <text x="20" y="110">kr 도메인(회색 점선)</text>
+    <text x="20" y="510" fill="#0a84ff">user-domain.co.kr</text>
+    <text x="20" y="526" fill="#0a84ff">도메인(파란 점선)</text>
+  </g>
+</svg>

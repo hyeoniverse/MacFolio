@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="250" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">키 입력 1바이트를 TCP로 보내는 이더넷 프레임 (폭은 바이트 수에 비례)</text>
+  <g stroke="#1d1d1f" stroke-width="1">
+    <rect x="40" y="70" width="122.5" height="44" fill="#f2f2f7"/>
+    <rect x="162.5" y="70" width="175" height="44" fill="#e5f1ff"/>
+    <rect x="337.5" y="70" width="175" height="44" fill="#fff4e5"/>
+    <rect x="512.5" y="70" width="8.75" height="44" fill="#0a84ff"/>
+    <rect x="521.25" y="70" width="43.75" height="44" fill="#fff" stroke-dasharray="4 3"/>
+    <rect x="565" y="70" width="35" height="44" fill="#f2f2f7"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <text x="101" y="97">이더넷 헤더</text>
+    <text x="250" y="97">IP 헤더</text>
+    <text x="425" y="97">TCP 헤더</text>
+    <text x="543" y="97" font-size="11">패딩</text>
+    <text x="582" y="97" font-size="11">FCS</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="101" y="132">14</text>
+    <text x="250" y="132">20</text>
+    <text x="425" y="132">20</text>
+    <text x="543" y="132">5</text>
+    <text x="582" y="132">4</text>
+  </g>
+  <line x1="517" y1="66" x2="517" y2="50" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="517" y="45" text-anchor="middle" font-size="12" font-weight="600" fill="#0a84ff">데이터 1</text>
+  <g stroke="#6e6e73" stroke-width="1" fill="none">
+    <path d="M162.5 146 v6 h402.5 v-6"/>
+  </g>
+  <text x="364" y="168" text-anchor="middle" font-size="12" fill="#6e6e73">이더넷 데이터 필드: 20 + 20 + 1 = 41 → 최소 46바이트까지 패딩 5</text>
+  <g font-size="14" fill="#1d1d1f">
+    <text x="40" y="202">프레임 길이 = 14 + 46 + 4 = 64바이트 (이더넷 최소 프레임)</text>
+    <text x="40" y="228" font-weight="600" fill="#0a84ff">사용자 데이터 비율 = 1 / 64 ≈ 1.6%</text>
+  </g>
+</svg>

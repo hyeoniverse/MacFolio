@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker></defs>
+  <text x="20" y="24" font-size="15" font-weight="600" fill="#1d1d1f">배치 정규화</text>
+  <text x="340" y="24" font-size="15" font-weight="600" fill="#1d1d1f">층 정규화</text>
+  <line x1="320" y1="14" x2="320" y2="290" stroke="#c7c7cc" stroke-dasharray="5 4"/>
+  <path d="M80,74 Q80,66 88,66 L110.0,66 Q116.0,66 116.0,60 Q116.0,66 122.0,66 L144,66 Q152,66 152,74" fill="none" stroke="#6e6e73"/>
+  <text x="116.0" y="55" text-anchor="middle" font-size="12" fill="#1d1d1f">배치(샘플)</text>
+  <text x="58" y="150" text-anchor="middle" font-size="12" fill="#1d1d1f" transform="rotate(-90 58 150)">특징 차원</text>
+  <rect x="80" y="84" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="92" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="104" y="84" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="116" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="128" y="84" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="140" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">6</text>
+  <rect x="80" y="106" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="92" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="104" y="106" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="116" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="128" y="106" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="140" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="80" y="128" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="92" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">0</text>
+  <rect x="104" y="128" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="116" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="128" y="128" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="140" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+  <rect x="80" y="150" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="92" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+  <rect x="104" y="150" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="116" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">6</text>
+  <rect x="128" y="150" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="140" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="80" y="172" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="92" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+  <rect x="104" y="172" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="116" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="128" y="172" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="140" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="80" y="194" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="92" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="104" y="194" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="116" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">0</text>
+  <rect x="128" y="194" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="140" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="190" y="84" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="202" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="240" y="84" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="252" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="190" y="106" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="202" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="240" y="106" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="252" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">0</text>
+  <rect x="190" y="128" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="202" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="240" y="128" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="252" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="190" y="150" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="202" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+  <rect x="240" y="150" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="252" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="190" y="172" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="202" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="240" y="172" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="252" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="190" y="194" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="202" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="240" y="194" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="252" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <line x1="68" y1="95" x2="186" y2="95" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="68" y1="117" x2="186" y2="117" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="68" y1="139" x2="186" y2="139" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="68" y1="161" x2="186" y2="161" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="68" y1="183" x2="186" y2="183" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="68" y1="205" x2="186" y2="205" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <text x="202" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">평균</text><text x="252" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">표준편차</text>
+  <rect x="60" y="232" width="236" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="178" y="250" text-anchor="middle" font-size="12" fill="#1d1d1f">특징마다 배치 방향으로 통계를 구해</text>
+  <text x="178" y="267" text-anchor="middle" font-size="12" fill="#1d1d1f">모든 학습 샘플에 같은 값을 쓴다</text>
+  <path d="M420,74 Q420,66 428,66 L450.0,66 Q456.0,66 456.0,60 Q456.0,66 462.0,66 L484,66 Q492,66 492,74" fill="none" stroke="#6e6e73"/>
+  <text x="456.0" y="55" text-anchor="middle" font-size="12" fill="#1d1d1f">배치(샘플)</text>
+  <text x="398" y="150" text-anchor="middle" font-size="12" fill="#1d1d1f" transform="rotate(-90 398 150)">특징 차원</text>
+  <rect x="420" y="84" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="432" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="444" y="84" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="456" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="468" y="84" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="480" y="99.5" text-anchor="middle" font-size="12" fill="#1d1d1f">6</text>
+  <rect x="420" y="106" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="432" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="444" y="106" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="456" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="468" y="106" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="480" y="121.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="420" y="128" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="432" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">0</text>
+  <rect x="444" y="128" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="456" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="468" y="128" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="480" y="143.5" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+  <rect x="420" y="150" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="432" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+  <rect x="444" y="150" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="456" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">6</text>
+  <rect x="468" y="150" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="480" y="165.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="420" y="172" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="432" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+  <rect x="444" y="172" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="456" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="468" y="172" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="480" y="187.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="420" y="194" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="432" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <rect x="444" y="194" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="456" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">0</text>
+  <rect x="468" y="194" width="24" height="22" fill="#fff" stroke="#1d1d1f"/><text x="480" y="209.5" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+  <line x1="432" y1="78" x2="432" y2="228" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="456" y1="78" x2="456" y2="228" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <line x1="480" y1="78" x2="480" y2="228" stroke="#0a84ff" stroke-width="1.5" stroke-opacity="0.6" marker-end="url(#b)"/>
+  <rect x="420" y="234" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="432" y="249.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="420" y="262" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="432" y="277.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="444" y="234" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="456" y="249.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="444" y="262" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="456" y="277.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <rect x="468" y="234" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="480" y="249.5" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+  <rect x="468" y="262" width="24" height="22" fill="#e8f2ff" stroke="#1d1d1f"/><text x="480" y="277.5" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+  <text x="412" y="249.5" text-anchor="end" font-size="12" fill="#1d1d1f">평균</text><text x="412" y="277.5" text-anchor="end" font-size="12" fill="#1d1d1f">표준편차</text>
+  <rect x="508" y="100" width="122" height="96" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="569" y="120" text-anchor="middle" font-size="12" fill="#1d1d1f">샘플마다</text>
+  <text x="569" y="136" text-anchor="middle" font-size="12" fill="#1d1d1f">특징 방향으로</text>
+  <text x="569" y="152" text-anchor="middle" font-size="12" fill="#1d1d1f">통계를 구해 모든</text>
+  <text x="569" y="168" text-anchor="middle" font-size="12" fill="#1d1d1f">특징 차원에 같은</text>
+  <text x="569" y="184" text-anchor="middle" font-size="12" fill="#1d1d1f">값을 쓴다</text>
+</svg>

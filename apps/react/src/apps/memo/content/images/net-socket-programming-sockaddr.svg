@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="410" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <text x="67.0" y="22" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="700">IPv4</text>
+  <text x="67.0" y="42" text-anchor="middle" font-size="11.5" fill="#1d1d1f" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sockaddr_in{}</text>
+  <rect x="6" y="50" width="52" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="32" y="63" text-anchor="middle" font-size="9.5" fill="#1d1d1f">길이</text>
+  <text x="32" y="75" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(length)</text>
+  <rect x="58" y="50" width="70" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="93.0" y="70" text-anchor="middle" font-size="10.5" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">AF_INET</text>
+  <rect x="6" y="82" width="122" height="24" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="67.0" y="98.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">16비트 포트 번호</text>
+  <rect x="6" y="106" width="122" height="40" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="67.0" y="130.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">32비트 IPv4 주소</text>
+  <rect x="6" y="146" width="122" height="70" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="67.0" y="185.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(미사용)</text>
+  <text x="67.0" y="232" text-anchor="middle" font-size="10.5" fill="#6e6e73">고정 길이(16바이트)</text>
+  <text x="194.0" y="22" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="700">IPv6</text>
+  <text x="194.0" y="42" text-anchor="middle" font-size="11.5" fill="#1d1d1f" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sockaddr_in6{}</text>
+  <rect x="133" y="50" width="52" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="159" y="63" text-anchor="middle" font-size="9.5" fill="#1d1d1f">길이</text>
+  <text x="159" y="75" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(length)</text>
+  <rect x="185" y="50" width="70" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="220.0" y="70" text-anchor="middle" font-size="10.5" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">AF_INET6</text>
+  <rect x="133" y="82" width="122" height="24" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="194.0" y="98.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">16비트 포트 번호</text>
+  <rect x="133" y="106" width="122" height="46" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="194.0" y="126.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">32비트 흐름 레이블</text>
+  <text x="194.0" y="140.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(flow label)</text>
+  <rect x="133" y="152" width="122" height="150" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="194.0" y="231.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">128비트 IPv6 주소</text>
+  <rect x="133" y="302" width="122" height="46" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="194.0" y="322.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">32비트 범위 ID</text>
+  <text x="194.0" y="336.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(scope ID)</text>
+  <text x="194.0" y="364" text-anchor="middle" font-size="10.5" fill="#6e6e73">고정 길이(28바이트)</text>
+  <text x="321.0" y="22" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="700">유닉스</text>
+  <text x="321.0" y="42" text-anchor="middle" font-size="11.5" fill="#1d1d1f" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sockaddr_un{}</text>
+  <rect x="260" y="50" width="52" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="286" y="63" text-anchor="middle" font-size="9.5" fill="#1d1d1f">길이</text>
+  <text x="286" y="75" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(length)</text>
+  <rect x="312" y="50" width="70" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="347.0" y="70" text-anchor="middle" font-size="10.5" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">AF_LOCAL</text>
+  <rect x="260" y="82" width="122" height="300" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="321.0" y="229.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">경로 이름(pathname)</text>
+  <text x="321.0" y="243.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(최대 104바이트)</text>
+  <text x="321.0" y="398" text-anchor="middle" font-size="10.5" fill="#6e6e73">가변 길이</text>
+  <text x="448.0" y="22" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="700">데이터링크</text>
+  <text x="448.0" y="42" text-anchor="middle" font-size="11.5" fill="#1d1d1f" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sockaddr_dl{}</text>
+  <rect x="387" y="50" width="52" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="413" y="63" text-anchor="middle" font-size="9.5" fill="#1d1d1f">길이</text>
+  <text x="413" y="75" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(length)</text>
+  <rect x="439" y="50" width="70" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="474.0" y="70" text-anchor="middle" font-size="10.5" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">AF_LINK</text>
+  <rect x="387" y="82" width="122" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="448.0" y="95.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터페이스 인덱스</text>
+  <text x="448.0" y="109.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(interface index)</text>
+  <rect x="387.0" y="114" width="61.0" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="417.5" y="128.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">유형</text>
+  <text x="417.5" y="140.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(type)</text>
+  <rect x="448.0" y="114" width="61.0" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="478.5" y="128.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">이름 길이</text>
+  <text x="478.5" y="140.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(name len)</text>
+  <rect x="387.0" y="146" width="61.0" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="417.5" y="160.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">주소 길이</text>
+  <text x="417.5" y="172.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(addr len)</text>
+  <rect x="448.0" y="146" width="61.0" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="478.5" y="160.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">선택자 길이</text>
+  <text x="478.5" y="172.0" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(sel len)</text>
+  <rect x="387" y="178" width="122" height="110" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="448.0" y="230.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터페이스 이름과</text>
+  <text x="448.0" y="244.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">링크 계층 주소</text>
+  <text x="448.0" y="304" text-anchor="middle" font-size="10.5" fill="#6e6e73">가변 길이</text>
+  <text x="575.0" y="22" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="700">저장소</text>
+  <text x="575.0" y="42" text-anchor="middle" font-size="10.5" fill="#1d1d1f" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sockaddr_storage{}</text>
+  <rect x="514" y="50" width="52" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="540" y="63" text-anchor="middle" font-size="9.5" fill="#1d1d1f">길이</text>
+  <text x="540" y="75" text-anchor="middle" font-size="9.5" fill="#1d1d1f">(length)</text>
+  <rect x="566" y="50" width="70" height="32" rx="0" fill="#fff" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="601.0" y="70" text-anchor="middle" font-size="10.5" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">AF_XXX</text>
+  <rect x="514" y="82" width="122" height="300" rx="0" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.1"/>
+  <text x="575.0" y="236.0" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(불투명, opaque)</text>
+  <text x="575.0" y="398" text-anchor="middle" font-size="10.5" fill="#6e6e73">시스템에서 가장 긴 크기</text>
+</svg>

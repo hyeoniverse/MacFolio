@@ -1,7 +1,7 @@
 ---
 title: SQL 뷰의 갱신 가능 조건과 삽입 SQL의 커서
 date: 2023-05-02
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 6
 summary: 기본 테이블에서 유도되는 가상 테이블인 뷰의 생성·제거와 WITH CHECK OPTION, 열 부분 집합·행 부분 집합·조인·통계 요약 뷰의 갱신 가능 여부, 뷰의 장단점, 응용 프로그램에 삽입하는 SQL의 호스트 변수·SQLSTATE, 커서의 DECLARE·OPEN·FETCH·CLOSE, 동적 SQL의 PREPARE·EXECUTE를 정리했다.

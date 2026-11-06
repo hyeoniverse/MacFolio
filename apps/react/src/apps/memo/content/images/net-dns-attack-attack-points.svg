@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <rect x="20" y="70" width="150" height="110" rx="6" fill="#fff" stroke="#1d1d1f" stroke-width="1.6"/>
+  <rect x="34" y="84" width="122" height="82" rx="3" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+  <rect x="42" y="104" width="86" height="40" rx="6" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="85.0" y="120.5" text-anchor="middle" font-size="12" fill="#1d1d1f">로컬</text>
+  <text x="85.0" y="136.1" text-anchor="middle" font-size="12" fill="#1d1d1f">DNS 파일</text>
+  <circle cx="142" cy="124" r="9" fill="#1d1d1f"/>
+  <text x="142" y="128" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">1</text>
+  <line x1="95" y1="180" x2="95" y2="196" stroke="#1d1d1f" stroke-width="1.6"/>
+  <line x1="70" y1="196" x2="120" y2="196" stroke="#1d1d1f" stroke-width="1.6"/>
+  <text x="95" y="222" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">사용자 기계</text>
+  <line x1="176" y1="125" x2="248" y2="125" stroke="#6e6e73" stroke-width="2.4" marker-end="url(#s)" marker-start="url(#ss)"/>
+  <circle cx="212" cy="104" r="9" fill="#1d1d1f"/>
+  <text x="212" y="108" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">2</text>
+  <rect x="260" y="65" width="80" height="120" rx="3" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.4"/>
+  <ellipse cx="300" cy="84" rx="18" ry="6" fill="#fff" stroke="#1d1d1f"/><path d="M282,84 v16 a18,6 0 0 0 36,0 v-16" fill="#fff" stroke="#1d1d1f"/>
+  <text x="300" y="128" text-anchor="middle" font-size="12" fill="#1d1d1f">DNS 캐시</text>
+  <line x1="272" y1="155" x2="328" y2="155" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="272" y1="163" x2="328" y2="163" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="300" y="222" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">로컬 DNS 서버</text>
+  <line x1="348" y1="100" x2="400" y2="100" stroke="#6e6e73" stroke-width="2.4" marker-end="url(#s)" marker-start="url(#ss)"/>
+  <line x1="348" y1="125" x2="400" y2="125" stroke="#6e6e73" stroke-width="2.4" marker-end="url(#s)" marker-start="url(#ss)"/>
+  <line x1="348" y1="150" x2="400" y2="150" stroke="#6e6e73" stroke-width="2.4" marker-end="url(#s)" marker-start="url(#ss)"/>
+  <circle cx="374" cy="78" r="9" fill="#1d1d1f"/>
+  <text x="374" y="82" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">3</text>
+  <ellipse cx="520" cy="150" rx="112" ry="130" fill="#f2f2f7" stroke="#d1d1d6" stroke-width="1.4"/>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="507.0" y="32.0" width="26" height="36" rx="3" fill="#f2f2f7"/><line x1="513.0" y1="52" x2="527.0" y2="52"/><line x1="513.0" y1="58" x2="527.0" y2="58"/></g>
+  <text x="520" y="82" text-anchor="middle" font-size="12" fill="#1d1d1f">루트</text>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="467.0" y="107.0" width="26" height="36" rx="3" fill="#f2f2f7"/><line x1="473.0" y1="127" x2="487.0" y2="127"/><line x1="473.0" y1="133" x2="487.0" y2="133"/></g>
+  <text x="480" y="157" text-anchor="middle" font-size="12" fill="#1d1d1f">.com</text>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="552.0" y="107.0" width="26" height="36" rx="3" fill="#f2f2f7"/><line x1="558.0" y1="127" x2="572.0" y2="127"/><line x1="558.0" y1="133" x2="572.0" y2="133"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="442.0" y="187.0" width="26" height="36" rx="3" fill="#f2f2f7"/><line x1="448.0" y1="207" x2="462.0" y2="207"/><line x1="448.0" y1="213" x2="462.0" y2="213"/></g>
+  <text x="447" y="237" text-anchor="middle" font-size="12" fill="#1d1d1f">example.com</text>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="512.0" y="187.0" width="26" height="36" rx="3" fill="#3a3a3c"/><line x1="518.0" y1="207" x2="532.0" y2="207"/><line x1="518.0" y1="213" x2="532.0" y2="213"/></g>
+  <text x="535" y="237" text-anchor="middle" font-size="12" fill="#ff3b30">malicious.com</text>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="577.0" y="187.0" width="26" height="36" rx="3" fill="#f2f2f7"/><line x1="583.0" y1="207" x2="597.0" y2="207"/><line x1="583.0" y1="213" x2="597.0" y2="213"/></g>
+  <circle cx="525" cy="266" r="9" fill="#ff3b30"/>
+  <text x="525" y="270" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">4</text>
+  <text x="520" y="296" text-anchor="middle" font-size="12" fill="#6e6e73">인터넷의 DNS 서버</text>
+</svg>

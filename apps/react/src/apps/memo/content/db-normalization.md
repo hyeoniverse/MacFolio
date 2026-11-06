@@ -1,7 +1,7 @@
 ---
 title: 함수 종속과 1NF·2NF·3NF·BCNF 정규화
 date: 2023-05-09
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 7
 summary: 변경 이상의 원인, 함수 종속과 추론 규칙, Heath·Fagin의 무손실 분해 정리를 정리하고, 1NF에서 BCNF까지의 분해와 다치 종속의 4NF, 조인 종속의 5NF를 단계별 이상과 함께 적었다. 7장 연습문제 7문항의 풀이를 붙였다.

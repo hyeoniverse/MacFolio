@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="520" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <!-- 모래시계 -->
+  <path d="M40,60 L440,60 C440,170 300,220 300,250 C300,280 440,330 440,460 L40,460 C40,330 180,280 180,250 C180,220 40,170 40,60 Z" fill="#e3f0ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <g stroke="#c7c7cc" stroke-width="1.2">
+    <line x1="20" y1="140" x2="620" y2="140"/>
+    <line x1="20" y1="210" x2="620" y2="210"/>
+    <line x1="20" y1="290" x2="620" y2="290"/>
+  </g>
+  <g font-size="14" fill="#6e6e73" font-weight="600">
+    <text x="470" y="105">응용 계층</text>
+    <text x="470" y="180">트랜스포트 계층</text>
+    <text x="470" y="255">인터넷 계층</text>
+    <text x="470" y="370">네트워크</text>
+    <text x="470" y="390">인터페이스 계층</text>
+  </g>
+  <g fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="40" y="14" width="100" height="32" rx="6"/>
+    <rect x="190" y="14" width="100" height="32" rx="6"/>
+    <rect x="340" y="14" width="100" height="32" rx="6"/>
+    <rect x="40" y="474" width="100" height="32" rx="6"/>
+    <rect x="190" y="474" width="100" height="32" rx="6"/>
+    <rect x="340" y="474" width="100" height="32" rx="6"/>
+  </g>
+  <g fill="#fff" stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="80" y="86" width="90" height="32" rx="6"/>
+    <rect x="310" y="86" width="90" height="32" rx="6"/>
+    <rect x="130" y="158" width="90" height="32" rx="6"/>
+    <rect x="260" y="158" width="90" height="32" rx="6"/>
+    <rect x="195" y="234" width="90" height="32" rx="6" stroke="#ff9f0a" stroke-width="2"/>
+    <rect x="130" y="380" width="90" height="32" rx="6"/>
+    <rect x="260" y="380" width="90" height="32" rx="6"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle">
+    <text x="90" y="35">출발지 A</text>
+    <text x="240" y="35">출발지 B</text>
+    <text x="390" y="35">출발지 C</text>
+    <text x="90" y="495">목적지 A</text>
+    <text x="240" y="495">목적지 B</text>
+    <text x="390" y="495">목적지 C</text>
+    <text x="125" y="107">HTTP</text>
+    <text x="355" y="107">TFTP</text>
+    <text x="175" y="179">TCP</text>
+    <text x="305" y="179">UDP</text>
+    <text x="240" y="255" font-weight="600">IP</text>
+    <text x="175" y="401">이더넷</text>
+    <text x="305" y="401">X.25</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)">
+    <line x1="90" y1="46" x2="112" y2="82"/>
+    <line x1="230" y1="46" x2="145" y2="82"/>
+    <line x1="390" y1="46" x2="364" y2="82"/>
+    <line x1="135" y1="118" x2="165" y2="154"/>
+    <line x1="345" y1="118" x2="315" y2="154"/>
+    <line x1="185" y1="190" x2="225" y2="230"/>
+    <line x1="295" y1="190" x2="255" y2="230"/>
+    <line x1="225" y1="266" x2="182" y2="376"/>
+    <line x1="255" y1="266" x2="298" y2="376"/>
+    <line x1="160" y1="412" x2="100" y2="470"/>
+    <line x1="190" y1="412" x2="232" y2="470"/>
+    <line x1="320" y1="412" x2="378" y2="470"/>
+  </g>
+</svg>

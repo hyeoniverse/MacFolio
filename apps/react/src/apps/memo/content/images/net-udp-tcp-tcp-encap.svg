@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="200" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <g stroke="#6e6e73" stroke-width="1">
+    <line x1="40" y1="20" x2="40" y2="56"/><line x1="600" y1="20" x2="600" y2="110"/>
+    <line x1="230" y1="70" x2="230" y2="110"/>
+  </g>
+  <line x1="44" y1="38" x2="596" y2="38" stroke="#1d1d1f" stroke-width="1.4" marker-start="url(#a)" marker-end="url(#a)"/>
+  <rect x="262" y="28" width="116" height="20" fill="#fff"/>
+  <text x="320" y="43" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">IP 데이터그램</text>
+  <line x1="234" y1="88" x2="596" y2="88" stroke="#0a84ff" stroke-width="1.4" marker-start="url(#b)" marker-end="url(#b)"/>
+  <rect x="345" y="78" width="130" height="20" fill="#fff"/>
+  <text x="410" y="93" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">TCP 세그먼트</text>
+  <g stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="40" y="110" width="190" height="48" fill="#f2f2f7"/>
+    <rect x="230" y="110" width="170" height="48" fill="#e3f0ff"/>
+    <rect x="400" y="110" width="200" height="48" fill="#fff"/>
+  </g>
+  <g font-size="14" text-anchor="middle" fill="#1d1d1f">
+    <text x="135" y="139">IP 헤더</text>
+    <text x="315" y="139">TCP 헤더</text>
+    <text x="500" y="139">TCP 데이터</text>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#6e6e73">
+    <text x="135" y="182">20바이트</text>
+    <text x="315" y="182">20바이트(옵션 포함 최대 60)</text>
+  </g>
+</svg>

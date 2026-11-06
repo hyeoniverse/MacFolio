@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="200" fill="#fff"/>
+  <ellipse cx="110" cy="70" rx="90" ry="40" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="1.5"/>
+  <text x="110" y="66" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">보호 대상</text>
+  <text x="110" y="84" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">네트워크</text>
+  <ellipse cx="530" cy="70" rx="90" ry="40" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+  <text x="530" y="76" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">외부 네트워크</text>
+  <line x1="200" y1="70" x2="294" y2="70" stroke="#1d1d1f" stroke-width="1.5"/><line x1="346" y1="70" x2="440" y2="70" stroke="#1d1d1f" stroke-width="1.5"/>
+  <rect x="294" y="34" width="52" height="72" fill="#ff9f0a" stroke="#c77700"/>
+  <g stroke="#c77700"><line x1="294" y1="52" x2="346" y2="52"/><line x1="294" y1="70" x2="346" y2="70"/><line x1="294" y1="88" x2="346" y2="88"/><line x1="320" y1="34" x2="320" y2="52"/><line x1="307" y1="52" x2="307" y2="70"/><line x1="333" y1="52" x2="333" y2="70"/><line x1="320" y1="70" x2="320" y2="88"/><line x1="307" y1="88" x2="307" y2="106"/><line x1="333" y1="88" x2="333" y2="106"/></g>
+  <text x="320" y="132" text-anchor="middle" font-size="12" fill="#1d1d1f">서로 관련된 여러 패킷이 이루는 상태 정보를 바탕으로 판단한다</text>
+  <g stroke="#1d1d1f"><line x1="200" y1="146" x2="440" y2="146"/><line x1="200" y1="176" x2="440" y2="176"/></g>
+  <g fill="#6e6e73" stroke="#1d1d1f"><rect x="222" y="154" width="40" height="14"/><rect x="282" y="154" width="40" height="14"/><rect x="342" y="154" width="40" height="14"/><rect x="402" y="154" width="30" height="14"/></g>
+</svg>

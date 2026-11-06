@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 650" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="650" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">인코더 블록 N개와 디코더 블록 N개를 쌓은 트랜스포머</text>
+  <rect x="370" y="410" width="230" height="184" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="370" y="140" width="230" height="184" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="40" y="420" width="230" height="128" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="40" y="150" width="230" height="128" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="40" y="144" font-size="12" fill="#6e6e73">인코더 블록 N</text>
+  <rect x="65" y="158" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="155.0" y="173.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="65" y="186" width="180" height="22" rx="5" fill="#dcefff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="155.0" y="201.6" text-anchor="middle" font-size="12" fill="#1d1d1f">피드포워드</text>
+  <rect x="65" y="214" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="155.0" y="229.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="65" y="242" width="180" height="22" rx="5" fill="#ffe8cc" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="155.0" y="257.6" text-anchor="middle" font-size="12" fill="#1d1d1f">멀티 헤드 어텐션</text>
+  <text x="40" y="414" font-size="12" fill="#6e6e73">인코더 블록 1</text>
+  <rect x="65" y="428" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="155.0" y="443.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="65" y="456" width="180" height="22" rx="5" fill="#dcefff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="155.0" y="471.6" text-anchor="middle" font-size="12" fill="#1d1d1f">피드포워드</text>
+  <rect x="65" y="484" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="155.0" y="499.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="65" y="512" width="180" height="22" rx="5" fill="#ffe8cc" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="155.0" y="527.6" text-anchor="middle" font-size="12" fill="#1d1d1f">멀티 헤드 어텐션</text>
+  <text x="370" y="134" font-size="12" fill="#6e6e73">디코더 블록 N</text>
+  <rect x="395" y="148" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="163.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="395" y="176" width="180" height="22" rx="5" fill="#dcefff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="485.0" y="191.6" text-anchor="middle" font-size="12" fill="#1d1d1f">피드포워드</text>
+  <rect x="395" y="204" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="219.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="395" y="232" width="180" height="22" rx="5" fill="#ffe8cc" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="485.0" y="247.6" text-anchor="middle" font-size="12" fill="#1d1d1f">멀티 헤드 어텐션</text>
+  <rect x="395" y="260" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="275.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="395" y="288" width="180" height="22" rx="5" fill="#ffe8cc" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="485.0" y="303.6" text-anchor="middle" font-size="12" fill="#1d1d1f">마스크를 적용한 멀티 헤드 어텐션</text>
+  <text x="370" y="404" font-size="12" fill="#6e6e73">디코더 블록 1</text>
+  <rect x="395" y="418" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="433.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="395" y="446" width="180" height="22" rx="5" fill="#dcefff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="485.0" y="461.6" text-anchor="middle" font-size="12" fill="#1d1d1f">피드포워드</text>
+  <rect x="395" y="474" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="489.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="395" y="502" width="180" height="22" rx="5" fill="#ffe8cc" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="485.0" y="517.6" text-anchor="middle" font-size="12" fill="#1d1d1f">멀티 헤드 어텐션</text>
+  <rect x="395" y="530" width="180" height="22" rx="5" fill="#eef8d9" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="545.6" text-anchor="middle" font-size="12" fill="#1d1d1f">더하기 · 정규화</text>
+  <rect x="395" y="558" width="180" height="22" rx="5" fill="#ffe8cc" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="485.0" y="573.6" text-anchor="middle" font-size="12" fill="#1d1d1f">마스크를 적용한 멀티 헤드 어텐션</text>
+  <rect x="425" y="90" width="120" height="22" rx="5" fill="#e5e5f7" stroke="#6e6e73" stroke-width="1.2"/>
+  <text x="485.0" y="105.6" text-anchor="middle" font-size="12" fill="#1d1d1f">선형 변환</text>
+  <rect x="425" y="50" width="120" height="22" rx="5" fill="#ddf3e4" stroke="#34c759" stroke-width="1.2"/>
+  <text x="485.0" y="65.6" text-anchor="middle" font-size="12" fill="#1d1d1f">softmax</text>
+  <text x="560" y="65" font-size="12" fill="#6e6e73">단어 확률</text>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="none">
+    <line x1="155" y1="626" x2="155" y2="548" marker-end="url(#a)"/>
+    <line x1="155" y1="420" x2="155" y2="318" />
+    <line x1="155" y1="318" x2="155" y2="278" marker-end="url(#a)" />
+    <line x1="485" y1="626" x2="485" y2="594" marker-end="url(#a)"/>
+    <line x1="485" y1="410" x2="485" y2="364" />
+    <line x1="485" y1="364" x2="485" y2="324" marker-end="url(#a)" />
+    <line x1="485" y1="140" x2="485" y2="112" marker-end="url(#a)"/>
+    <line x1="485" y1="86" x2="485" y2="72" marker-end="url(#a)"/>
+  </g>
+    <text x="115" y="353.0" font-size="12" fill="#6e6e73">⋮</text>
+  <text x="445" y="371.0" font-size="12" fill="#6e6e73">⋮</text>
+  <g stroke="#0a84ff" stroke-width="1.8" fill="none">
+    <path d="M155 158 L155 120 L320 120 L320 513 L393 513" marker-end="url(#b)"/>
+    <path d="M320 243 L393 243" marker-end="url(#b)"/>
+  </g>
+  <circle cx="320" cy="243" r="3" fill="#0a84ff"/>
+  <text x="200" y="114" font-size="11.5" fill="#0a84ff">마지막 인코더 블록의 출력</text>
+  <text x="155" y="642" text-anchor="middle" font-size="12" fill="#6e6e73">인코더 입력</text>
+  <text x="485" y="642" text-anchor="middle" font-size="12" fill="#6e6e73">디코더 입력</text>
+</svg>

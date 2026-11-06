@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+	<rect width="640" height="240" fill="#ffffff" />
+	<defs>
+		<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a" /></marker>
+	</defs>
+	<text x="320" y="24" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">FCN: 컨볼루션으로 줄이고 업 샘플링으로 되돌린다</text>
+	<!-- 컨볼루션 구간 -->
+	<line x1="92" y1="54" x2="626" y2="54" stroke="#34c759" stroke-width="3" />
+	<text x="300" y="46" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">컨볼루션 (크기 감소)</text>
+	<!-- 입력 -->
+	<rect x="14" y="80" width="64" height="64" rx="4" fill="#f2f2f7" stroke="#1d1d1f" />
+	<text x="46" y="116" font-size="12" fill="#1d1d1f" text-anchor="middle">입력 영상</text>
+	<text x="46" y="170" font-size="12" fill="#6e6e73" text-anchor="middle">H×W</text>
+	<g fill="#ffffff" stroke="#34c759" stroke-width="1.5">
+		<path d="M94,96 h44 v40 h-44 z M94,96 l12,-10 h44 l-12,10 M138,96 l12,-10 v40 l-12,10" />
+		<path d="M162,100 h34 v30 h-34 z M162,100 l12,-10 h34 l-12,10 M196,100 l12,-10 v30 l-12,10" />
+		<path d="M220,108 h26 v20 h-26 z M220,108 l14,-12 h26 l-14,12 M246,108 l14,-12 v20 l-14,12" />
+		<path d="M268,108 h26 v20 h-26 z M268,108 l14,-12 h26 l-14,12 M294,108 l14,-12 v20 l-14,12" />
+		<path d="M316,108 h26 v20 h-26 z M316,108 l14,-12 h26 l-14,12 M342,108 l14,-12 v20 l-14,12" />
+		<path d="M370,124 h10 v8 h-10 z M370,124 l40,-40 h10 l-40,40 M380,124 l40,-40 v8 l-40,40" />
+		<path d="M424,124 h10 v8 h-10 z M424,124 l40,-40 h10 l-40,40 M434,124 l40,-40 v8 l-40,40" />
+	</g>
+	<path d="M484,120 h14 v10 h-14 z M484,120 l12,-10 h14 l-12,10 M498,120 l12,-10 v10 l-12,10" fill="#ffffff" stroke="#ff9f0a" stroke-width="2" />
+	<!-- 출력 -->
+	<rect x="548" y="72" width="76" height="76" rx="4" fill="#f2f2f7" stroke="#1d1d1f" />
+	<text x="586" y="108" font-size="12" fill="#1d1d1f" text-anchor="middle">분할 맵</text>
+	<text x="586" y="124" font-size="11" fill="#6e6e73" text-anchor="middle">(원래 크기)</text>
+	<line x1="514" y1="114" x2="544" y2="114" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)" />
+	<!-- 크기 표기 -->
+	<g font-size="11.5" fill="#6e6e73" text-anchor="middle">
+		<text x="118" y="170">H/4×W/4</text>
+		<text x="186" y="170">H/8×W/8</text>
+		<text x="288" y="170">H/16×W/16</text>
+		<text x="440" y="170">H/32×W/32</text>
+		<text x="586" y="170">H×W</text>
+	</g>
+	<line x1="220" y1="154" x2="358" y2="154" stroke="#c7c7cc" />
+	<line x1="368" y1="154" x2="514" y2="154" stroke="#c7c7cc" />
+	<text x="490" y="198" font-size="12" fill="#ff9f0a" text-anchor="middle">가장 작은 맵에도 영상 정보가 남아 있다</text>
+	<text x="490" y="218" font-size="12" font-weight="600" fill="#ff9f0a" text-anchor="middle">업 샘플링(upsampling)으로 원래 크기 복원</text>
+</svg>

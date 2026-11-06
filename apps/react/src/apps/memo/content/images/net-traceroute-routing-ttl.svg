@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="350" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">traceroute: TTL을 1씩 늘려 홉마다 ICMP 오류를 받아 낸다</text>
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+  </defs>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="30" y="44" width="80" height="30" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/><text x="70" y="64">송신 S</text>
+    <rect x="190" y="44" width="80" height="30" rx="6" fill="#e5f1ff" stroke="#0a84ff"/><text x="230" y="64">R1</text>
+    <rect x="350" y="44" width="80" height="30" rx="6" fill="#e5f1ff" stroke="#0a84ff"/><text x="390" y="64">R2</text>
+    <rect x="520" y="44" width="80" height="30" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/><text x="560" y="64">목적지 D</text>
+  </g>
+  <g stroke="#c7c7cc" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="70" y1="74" x2="70" y2="330"/><line x1="230" y1="74" x2="230" y2="330"/>
+    <line x1="390" y1="74" x2="390" y2="330"/><line x1="560" y1="74" x2="560" y2="330"/>
+  </g>
+  <g stroke-width="1.8">
+    <line x1="70" y1="104" x2="226" y2="104" stroke="#0a84ff" marker-end="url(#b)"/>
+    <line x1="230" y1="128" x2="74" y2="128" stroke="#ff9f0a" marker-end="url(#o)"/>
+    <line x1="70" y1="178" x2="386" y2="178" stroke="#0a84ff" marker-end="url(#b)"/>
+    <line x1="390" y1="202" x2="74" y2="202" stroke="#ff9f0a" marker-end="url(#o)"/>
+    <line x1="70" y1="252" x2="556" y2="252" stroke="#0a84ff" marker-end="url(#b)"/>
+    <line x1="560" y1="276" x2="74" y2="276" stroke="#34c759" marker-end="url(#g)"/>
+  </g>
+  <g font-size="11.5">
+    <text x="80" y="98" fill="#0a84ff">UDP → 포트 33435, TTL=1</text>
+    <text x="240" y="132" fill="#ff9f0a">R1: TTL 1→0 폐기, ICMP 시간 초과(time exceeded, 유형 11/코드 0)</text>
+    <text x="80" y="172" fill="#0a84ff">UDP → 포트 33438, TTL=2</text>
+    <text x="236" y="172" fill="#6e6e73" font-size="10.5">R1 통과 2→1</text>
+    <text x="400" y="206" fill="#ff9f0a">R2: TTL 1→0, 시간 초과</text>
+    <text x="80" y="246" fill="#0a84ff">UDP → 포트 33441, TTL=3</text>
+    <text x="236" y="246" fill="#6e6e73" font-size="10.5">R1 3→2</text>
+    <text x="396" y="246" fill="#6e6e73" font-size="10.5">R2 2→1, D에 TTL 1로 도착</text>
+    <text x="96" y="294" fill="#34c759">D: 듣는 프로세스가 없는 포트라 ICMP 포트 도달 불가(port unreachable, 유형 3/코드 3)</text>
+  </g>
+  <text x="70" y="320" font-size="11.5" fill="#6e6e73">TTL마다 프로브 3개를 보내고(포트는 프로브마다 1씩 증가) 응답까지의 왕복 시간을 출력한다.</text>
+</svg>

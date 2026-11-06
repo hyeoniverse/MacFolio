@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="62" y="97" width="36" height="25" rx="2"/><line x1="80" y1="122" x2="80" y2="127"/><line x1="70" y1="127" x2="90" y2="127"/></g>
+  <text x="80" y="70" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">사용자 기계</text>
+  <rect x="30" y="150" width="100" height="26" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="80.0" y="167.3" text-anchor="middle" font-size="12" fill="#1d1d1f">Ajax 코드</text>
+  <rect x="380" y="50" width="26" height="270" rx="2" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+  <line x1="380" y1="68" x2="406" y2="68" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="86" x2="406" y2="86" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="104" x2="406" y2="104" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="122" x2="406" y2="122" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="140" x2="406" y2="140" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="158" x2="406" y2="158" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="176" x2="406" y2="176" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="194" x2="406" y2="194" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="212" x2="406" y2="212" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="230" x2="406" y2="230" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="248" x2="406" y2="248" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="266" x2="406" y2="266" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="284" x2="406" y2="284" stroke="#0a84ff" stroke-width="0.8"/>
+  <line x1="380" y1="302" x2="406" y2="302" stroke="#0a84ff" stroke-width="0.8"/>
+  <text x="393" y="40" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">방화벽</text>
+  <rect x="440" y="50" width="190" height="300" rx="4" fill="none" stroke="#1d1d1f" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="535" y="372" text-anchor="middle" font-size="12" fill="#6e6e73">공격자 기계</text>
+  <g stroke="#0a84ff" stroke-width="1.6" fill="#fff"><circle cx="545" cy="110" r="28"/><ellipse cx="545" cy="110" rx="12" ry="28"/><line x1="517" y1="110" x2="573" y2="110"/></g>
+  <text x="545" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f">www.attacker32.com</text>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="528.0" y="230.0" width="34" height="50" rx="3" fill="#3a3a3c"/><line x1="534.0" y1="257" x2="556.0" y2="257"/><line x1="534.0" y1="263" x2="556.0" y2="263"/></g>
+  <text x="545" y="305" text-anchor="middle" font-size="12" fill="#ff3b30" font-weight="600">악성 네임서버</text>
+  <path d="M118,96 L460,96 L460,245 L524,245" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#k)"/>
+  <text x="124" y="90" text-anchor="start" font-size="12" fill="#1d1d1f">1. www.attacker32.com의 IP 주소 질의</text>
+  <line x1="370" y1="116" x2="120" y2="116" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <text x="250" y="132" text-anchor="middle" font-size="12" fill="#0a84ff" font-weight="600">진짜 답: 실제 IP 주소</text>
+  <path d="M118,170 L470,170 L470,128 L514,118" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#k)"/>
+  <text x="140" y="164" text-anchor="start" font-size="12" fill="#1d1d1f">2. www.attacker32.com/index.html 요청</text>
+  <path d="M118,206 L450,206 L450,265 L524,265" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#k)"/>
+  <text x="124" y="200" text-anchor="start" font-size="12" fill="#1d1d1f">3. www.attacker32.com의 IP 주소 질의</text>
+  <line x1="370" y1="226" x2="120" y2="226" stroke="#ff3b30" stroke-width="2" marker-end="url(#r)"/>
+  <text x="250" y="242" text-anchor="middle" font-size="12" fill="#ff3b30" font-weight="600">가짜 답: 내부 서버의 IP 주소</text>
+  <line x1="260" y1="248" x2="120" y2="320" stroke="#ff3b30" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#r)"/>
+  <line x1="80" y1="178" x2="80" y2="300" stroke="#1d1d1f" stroke-width="2.6" marker-end="url(#k)"/>
+  <text x="90" y="250" text-anchor="start" font-size="12" fill="#1d1d1f" font-weight="600">4. 공격</text>
+  <g stroke="#1d1d1f" stroke-width="1.4"><rect x="63.0" y="308.0" width="34" height="44" rx="3" fill="#f2f2f7"/><line x1="69.0" y1="332" x2="91.0" y2="332"/><line x1="69.0" y1="338" x2="91.0" y2="338"/></g>
+  <text x="80" y="372" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">내부 대상 서버(취약)</text>
+</svg>

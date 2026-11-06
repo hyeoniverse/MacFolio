@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 436" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="436" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">backlog 값과 실제로 허용되는 대기 연결 수</text>
+  <line x1="56" y1="380.0" x2="452" y2="380.0" stroke="#e5e5ea"/>
+  <text x="48" y="384.0" text-anchor="end" font-size="11" fill="#6e6e73">0</text>
+  <line x1="56" y1="326.7" x2="452" y2="326.7" stroke="#e5e5ea"/>
+  <text x="48" y="330.7" text-anchor="end" font-size="11" fill="#6e6e73">4</text>
+  <line x1="56" y1="273.3" x2="452" y2="273.3" stroke="#e5e5ea"/>
+  <text x="48" y="277.3" text-anchor="end" font-size="11" fill="#6e6e73">8</text>
+  <line x1="56" y1="220.0" x2="452" y2="220.0" stroke="#e5e5ea"/>
+  <text x="48" y="224.0" text-anchor="end" font-size="11" fill="#6e6e73">12</text>
+  <line x1="56" y1="166.7" x2="452" y2="166.7" stroke="#e5e5ea"/>
+  <text x="48" y="170.7" text-anchor="end" font-size="11" fill="#6e6e73">16</text>
+  <line x1="56" y1="113.3" x2="452" y2="113.3" stroke="#e5e5ea"/>
+  <text x="48" y="117.3" text-anchor="end" font-size="11" fill="#6e6e73">20</text>
+  <line x1="56" y1="60.0" x2="452" y2="60.0" stroke="#e5e5ea"/>
+  <text x="48" y="64.0" text-anchor="end" font-size="11" fill="#6e6e73">24</text>
+  <text x="56.0" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">0</text>
+  <text x="112.6" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">2</text>
+  <text x="169.1" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">4</text>
+  <text x="225.7" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">6</text>
+  <text x="282.3" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">8</text>
+  <text x="338.9" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">10</text>
+  <text x="395.4" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">12</text>
+  <text x="452.0" y="398" text-anchor="middle" font-size="11" fill="#6e6e73">14</text>
+  <line x1="56" y1="380" x2="452" y2="380" stroke="#1d1d1f"/>
+  <text x="254.0" y="416" text-anchor="middle" font-size="12" fill="#1d1d1f">listen()에 준 backlog</text>
+  <text x="16" y="46" font-size="12" fill="#1d1d1f">실제 대기 연결 수</text>
+  <line x1="56.0" y1="380.0" x2="452.0" y2="193.3" stroke="#c7c7cc" stroke-dasharray="2 4"/>
+  <polyline points="56.0,366.7 84.3,353.3 112.6,326.7 140.9,313.3 169.1,286.7 197.4,273.3 225.7,246.7 254.0,233.3 282.3,206.7 310.6,193.3 338.9,166.7 367.1,153.3 395.4,126.7 423.7,113.3 452.0,86.7" fill="none" stroke="#0a84ff" stroke-width="2"/>
+  <circle cx="56.0" cy="366.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="84.3" cy="353.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="112.6" cy="326.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="140.9" cy="313.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="169.1" cy="286.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="197.4" cy="273.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="225.7" cy="246.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="254.0" cy="233.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="282.3" cy="206.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="310.6" cy="193.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="338.9" cy="166.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="367.1" cy="153.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="395.4" cy="126.7" r="2.6" fill="#0a84ff"/>
+  <circle cx="423.7" cy="113.3" r="2.6" fill="#0a84ff"/>
+  <circle cx="452.0" cy="86.7" r="2.6" fill="#0a84ff"/>
+  <line x1="472" y1="96" x2="496" y2="96" stroke="#0a84ff" stroke-width="2"/>
+  <text x="504" y="100" font-size="12" fill="#1d1d1f">MacOS 10.2.6 · AIX 5.1</text>
+  <polyline points="56.0,366.7 84.3,353.3 112.6,326.7 140.9,313.3 169.1,300.0 197.4,273.3 225.7,246.7 254.0,233.3 282.3,206.7 310.6,193.3 338.9,166.7 367.1,153.3 395.4,126.7 423.7,113.3 452.0,86.7" fill="none" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="56.0" cy="366.7" r="2.6" fill="#1d1d1f"/>
+  <circle cx="84.3" cy="353.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="112.6" cy="326.7" r="2.6" fill="#1d1d1f"/>
+  <circle cx="140.9" cy="313.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="169.1" cy="300.0" r="2.6" fill="#1d1d1f"/>
+  <circle cx="197.4" cy="273.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="225.7" cy="246.7" r="2.6" fill="#1d1d1f"/>
+  <circle cx="254.0" cy="233.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="282.3" cy="206.7" r="2.6" fill="#1d1d1f"/>
+  <circle cx="310.6" cy="193.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="338.9" cy="166.7" r="2.6" fill="#1d1d1f"/>
+  <circle cx="367.1" cy="153.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="395.4" cy="126.7" r="2.6" fill="#1d1d1f"/>
+  <circle cx="423.7" cy="113.3" r="2.6" fill="#1d1d1f"/>
+  <circle cx="452.0" cy="86.7" r="2.6" fill="#1d1d1f"/>
+  <line x1="472" y1="126" x2="496" y2="126" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="504" y="130" font-size="12" fill="#1d1d1f">Solaris 2.9</text>
+  <polyline points="56.0,366.7 84.3,366.7 112.6,340.0 140.9,326.7 169.1,300.0 197.4,286.7 225.7,260.0 254.0,246.7 282.3,220.0 310.6,206.7 338.9,180.0 367.1,166.7 395.4,140.0 423.7,126.7 452.0,100.0" fill="none" stroke="#ff9f0a" stroke-width="2"/>
+  <circle cx="56.0" cy="366.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="84.3" cy="366.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="112.6" cy="340.0" r="2.6" fill="#ff9f0a"/>
+  <circle cx="140.9" cy="326.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="169.1" cy="300.0" r="2.6" fill="#ff9f0a"/>
+  <circle cx="197.4" cy="286.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="225.7" cy="260.0" r="2.6" fill="#ff9f0a"/>
+  <circle cx="254.0" cy="246.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="282.3" cy="220.0" r="2.6" fill="#ff9f0a"/>
+  <circle cx="310.6" cy="206.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="338.9" cy="180.0" r="2.6" fill="#ff9f0a"/>
+  <circle cx="367.1" cy="166.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="395.4" cy="140.0" r="2.6" fill="#ff9f0a"/>
+  <circle cx="423.7" cy="126.7" r="2.6" fill="#ff9f0a"/>
+  <circle cx="452.0" cy="100.0" r="2.6" fill="#ff9f0a"/>
+  <line x1="472" y1="156" x2="496" y2="156" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="504" y="160" font-size="12" fill="#1d1d1f">HP-UX 11.11</text>
+  <polyline points="56.0,340.0 84.3,326.7 112.6,313.3 140.9,300.0 169.1,286.7 197.4,273.3 225.7,260.0 254.0,246.7 282.3,233.3 310.6,220.0 338.9,206.7 367.1,193.3 395.4,180.0 423.7,166.7 452.0,153.3" fill="none" stroke="#34c759" stroke-width="2"/>
+  <circle cx="56.0" cy="340.0" r="2.6" fill="#34c759"/>
+  <circle cx="84.3" cy="326.7" r="2.6" fill="#34c759"/>
+  <circle cx="112.6" cy="313.3" r="2.6" fill="#34c759"/>
+  <circle cx="140.9" cy="300.0" r="2.6" fill="#34c759"/>
+  <circle cx="169.1" cy="286.7" r="2.6" fill="#34c759"/>
+  <circle cx="197.4" cy="273.3" r="2.6" fill="#34c759"/>
+  <circle cx="225.7" cy="260.0" r="2.6" fill="#34c759"/>
+  <circle cx="254.0" cy="246.7" r="2.6" fill="#34c759"/>
+  <circle cx="282.3" cy="233.3" r="2.6" fill="#34c759"/>
+  <circle cx="310.6" cy="220.0" r="2.6" fill="#34c759"/>
+  <circle cx="338.9" cy="206.7" r="2.6" fill="#34c759"/>
+  <circle cx="367.1" cy="193.3" r="2.6" fill="#34c759"/>
+  <circle cx="395.4" cy="180.0" r="2.6" fill="#34c759"/>
+  <circle cx="423.7" cy="166.7" r="2.6" fill="#34c759"/>
+  <circle cx="452.0" cy="153.3" r="2.6" fill="#34c759"/>
+  <line x1="472" y1="186" x2="496" y2="186" stroke="#34c759" stroke-width="2"/>
+  <text x="504" y="190" font-size="12" fill="#1d1d1f">Linux 2.4.7</text>
+  <polyline points="56.0,366.7 84.3,353.3 112.6,340.0 140.9,326.7 169.1,313.3 197.4,300.0 225.7,286.7 254.0,273.3 282.3,260.0 310.6,246.7 338.9,233.3 367.1,220.0 395.4,206.7 423.7,193.3 452.0,180.0" fill="none" stroke="#6e6e73" stroke-width="2"/>
+  <circle cx="56.0" cy="366.7" r="2.6" fill="#6e6e73"/>
+  <circle cx="84.3" cy="353.3" r="2.6" fill="#6e6e73"/>
+  <circle cx="112.6" cy="340.0" r="2.6" fill="#6e6e73"/>
+  <circle cx="140.9" cy="326.7" r="2.6" fill="#6e6e73"/>
+  <circle cx="169.1" cy="313.3" r="2.6" fill="#6e6e73"/>
+  <circle cx="197.4" cy="300.0" r="2.6" fill="#6e6e73"/>
+  <circle cx="225.7" cy="286.7" r="2.6" fill="#6e6e73"/>
+  <circle cx="254.0" cy="273.3" r="2.6" fill="#6e6e73"/>
+  <circle cx="282.3" cy="260.0" r="2.6" fill="#6e6e73"/>
+  <circle cx="310.6" cy="246.7" r="2.6" fill="#6e6e73"/>
+  <circle cx="338.9" cy="233.3" r="2.6" fill="#6e6e73"/>
+  <circle cx="367.1" cy="220.0" r="2.6" fill="#6e6e73"/>
+  <circle cx="395.4" cy="206.7" r="2.6" fill="#6e6e73"/>
+  <circle cx="423.7" cy="193.3" r="2.6" fill="#6e6e73"/>
+  <circle cx="452.0" cy="180.0" r="2.6" fill="#6e6e73"/>
+  <line x1="472" y1="216" x2="496" y2="216" stroke="#6e6e73" stroke-width="2"/>
+  <text x="504" y="220" font-size="12" fill="#1d1d1f">FreeBSD 4.8 · 5.1</text>
+  <g font-size="11.5" fill="#6e6e73">
+    <text x="472" y="266">MacOS·AIX: ⌊1.5 × backlog⌋ + 1</text>
+    <text x="472" y="284">Linux 2.4.7: backlog + 3</text>
+    <text x="472" y="302">FreeBSD: backlog + 1</text>
+    <text x="472" y="320">(backlog 0은 1로 처리)</text>
+    <text x="472" y="348">가는 회색 점선: 실제 수 = backlog</text>
+  </g>
+</svg>

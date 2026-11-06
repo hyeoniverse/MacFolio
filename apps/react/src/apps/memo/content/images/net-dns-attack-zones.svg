@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">example.com 도메인을 다섯 존으로 나눈 예</text>
+  <g fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5">
+    <ellipse cx="340" cy="82" rx="88" ry="34"/>
+    <circle cx="140" cy="232" r="102"/>
+    <ellipse cx="365" cy="200" rx="78" ry="32"/>
+    <ellipse cx="550" cy="200" rx="80" ry="32"/>
+    <ellipse cx="350" cy="300" rx="84" ry="32"/>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5">
+    <line x1="296" y1="104" x2="200" y2="149"/>
+    <line x1="352" y1="104" x2="365" y2="168"/>
+    <line x1="390" y1="104" x2="540" y2="168"/>
+    <line x1="132" y1="210" x2="92" y2="268"/>
+    <line x1="148" y1="210" x2="190" y2="268"/>
+    <line x1="186" y1="212" x2="320" y2="270"/>
+  </g>
+  <g text-anchor="middle" font-size="12" font-weight="600" fill="#0a84ff">
+    <text x="340" y="70">존 1</text>
+    <text x="140" y="172">존 2</text>
+    <text x="365" y="190">존 3</text>
+    <text x="550" y="190">존 4</text>
+    <text x="350" y="290">존 5</text>
+  </g>
+  <g text-anchor="middle" font-size="13" fill="#1d1d1f">
+    <text x="340" y="95">example.com</text>
+    <text x="140" y="205">usa.example.com</text>
+    <text x="365" y="215">uk.example.com</text>
+    <text x="550" y="215">france.example.com</text>
+    <text x="350" y="315">nyc.example.com</text>
+    <text x="92" y="284">chicago</text>
+    <text x="190" y="284">boston</text>
+  </g>
+  <text x="628" y="350" text-anchor="end" font-size="11.5" fill="#6e6e73">파란 테두리 하나가 존 하나, 선은 이름 트리의 부모·자식 관계</text>
+</svg>

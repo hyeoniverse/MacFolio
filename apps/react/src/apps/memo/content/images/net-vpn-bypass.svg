@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="270" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <g><ellipse cx="292.5" cy="204.7" rx="42.2" ry="40.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="350.0" cy="179.0" rx="53.7" ry="51.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="407.5" cy="201.0" rx="42.2" ry="40.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="330.8" cy="215.7" rx="38.3" ry="36.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="376.8" cy="215.7" rx="38.3" ry="36.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="261.8" cy="219.3" rx="26.8" ry="25.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="438.2" cy="219.3" rx="26.8" ry="25.7" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="292.5" cy="204.7" rx="41.2" ry="39.3" fill="#f2f2f7"/><ellipse cx="350.0" cy="179.0" rx="52.7" ry="50.3" fill="#f2f2f7"/><ellipse cx="407.5" cy="201.0" rx="41.2" ry="39.3" fill="#f2f2f7"/><ellipse cx="330.8" cy="215.7" rx="37.3" ry="35.7" fill="#f2f2f7"/><ellipse cx="376.8" cy="215.7" rx="37.3" ry="35.7" fill="#f2f2f7"/><ellipse cx="261.8" cy="219.3" rx="25.8" ry="24.7" fill="#f2f2f7"/><ellipse cx="438.2" cy="219.3" rx="25.8" ry="24.7" fill="#f2f2f7"/></g>
+  <text x="350" y="236" text-anchor="middle" font-size="13" fill="#6e6e73">인터넷</text>
+  <g stroke="#1d1d1f" stroke-width="1.5"><rect x="333.2" y="64.2" width="33.599999999999994" height="47.599999999999994" rx="2" fill="#fff"/><line x1="338.8" y1="75.4" x2="361.19999999999993" y2="75.4"/><line x1="338.8" y1="83.8" x2="361.19999999999993" y2="83.8"/><circle cx="350" cy="102.0" r="2.52" fill="#1d1d1f"/></g>
+  <text x="350" y="24" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">차단 대상 사이트</text>
+  <text x="350" y="44" text-anchor="middle" font-size="12" fill="#6e6e73">(ex. facebook.com)</text>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><circle cx="34" cy="178" r="7"/><path d="M22,202 q0,-16 12,-16 q12,0 12,16"/></g>
+  <text x="34" y="226" text-anchor="middle" font-size="12" fill="#6e6e73">사용자</text>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><rect x="72.2" y="161.6" width="47.599999999999994" height="33.599999999999994" rx="2" fill="#fff"/><line x1="96" y1="195.2" x2="96" y2="202.2"/><line x1="83.4" y1="202.2" x2="108.6" y2="202.2"/></g>
+  <text x="96" y="240" text-anchor="middle" font-size="13" fill="#1d1d1f">VPN 클라이언트</text>
+  <g><rect x="190" y="150" width="30" height="90" rx="2" fill="#ff9f0a"/>
+    <g stroke="#fff" stroke-width="1.2"><line x1="190" y1="158" x2="220" y2="158"/><line x1="190" y1="166" x2="220" y2="166"/><line x1="190" y1="174" x2="220" y2="174"/><line x1="190" y1="182" x2="220" y2="182"/><line x1="190" y1="190" x2="220" y2="190"/><line x1="190" y1="198" x2="220" y2="198"/><line x1="190" y1="206" x2="220" y2="206"/><line x1="190" y1="214" x2="220" y2="214"/><line x1="190" y1="222" x2="220" y2="222"/><line x1="190" y1="230" x2="220" y2="230"/><line x1="190" y1="238" x2="220" y2="238"/><line x1="197.5" y1="150" x2="197.5" y2="158"/><line x1="212.5" y1="158" x2="212.5" y2="166"/><line x1="197.5" y1="158" x2="197.5" y2="166"/><line x1="197.5" y1="166" x2="197.5" y2="174"/><line x1="212.5" y1="174" x2="212.5" y2="182"/><line x1="197.5" y1="174" x2="197.5" y2="182"/><line x1="197.5" y1="182" x2="197.5" y2="190"/><line x1="212.5" y1="190" x2="212.5" y2="198"/><line x1="197.5" y1="190" x2="197.5" y2="198"/><line x1="197.5" y1="198" x2="197.5" y2="206"/><line x1="212.5" y1="206" x2="212.5" y2="214"/><line x1="197.5" y1="206" x2="197.5" y2="214"/><line x1="197.5" y1="214" x2="197.5" y2="222"/><line x1="212.5" y1="222" x2="212.5" y2="230"/><line x1="197.5" y1="222" x2="197.5" y2="230"/><line x1="197.5" y1="230" x2="197.5" y2="238"/><line x1="212.5" y1="238" x2="212.5" y2="240"/><line x1="197.5" y1="238" x2="197.5" y2="240"/></g></g>
+  <g stroke="#1d1d1f" stroke-width="1.5"><rect x="564.4" y="159.4" width="43.2" height="61.2" rx="2" fill="#fff"/><line x1="571.6" y1="173.8" x2="600.4" y2="173.8"/><line x1="571.6" y1="184.6" x2="600.4" y2="184.6"/><circle cx="586" cy="208.00000000000003" r="3.24" fill="#1d1d1f"/></g>
+  <text x="586" y="252" text-anchor="middle" font-size="13" fill="#1d1d1f">VPN 서버</text>
+  <path d="M122,170 L205,140" fill="none" stroke="#ff3b30" stroke-width="2"/>
+  <path d="M205,140 L330,100" fill="none" stroke="#ff3b30" stroke-width="2" stroke-dasharray="3 4" marker-end="url(#r)"/>
+  <polygon points="219.8,146.1 211.1,154.8 198.9,154.8 190.2,146.1 190.2,133.9 198.9,125.2 211.1,125.2 219.8,133.9" fill="#ff3b30" stroke="#fff" stroke-width="2"/>
+  <text x="205" y="144" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">차단</text>
+  <rect x="122" y="196" width="440" height="22" rx="11" fill="#d6e9ff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="380" y="211" text-anchor="middle" font-size="12" fill="#0a84ff" font-weight="600">VPN 터널</text>
+  <path d="M572,162 C560,120 460,88 372,88" fill="none" stroke="#34c759" stroke-width="2" stroke-dasharray="5 4" marker-start="url(#g)" marker-end="url(#g)"/>
+  <text x="520" y="112" text-anchor="start" font-size="12" fill="#34c759" font-weight="600">대신 요청·응답</text>
+</svg>

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="440" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <!-- 오른쪽 스택 -->
+  <g fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="530" y="22" width="96" height="34" rx="5"/>
+    <rect x="530" y="102" width="96" height="34" rx="5"/>
+    <rect x="530" y="182" width="96" height="34" rx="5"/>
+    <rect x="530" y="262" width="96" height="40" rx="5"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle">
+    <text x="578" y="44">응용</text>
+    <text x="578" y="124">TCP</text>
+    <text x="578" y="204">IP</text>
+    <text x="578" y="278">이더넷</text>
+    <text x="578" y="294">드라이버</text>
+    <text x="578" y="342" fill="#6e6e73">이더넷</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)">
+    <line x1="578" y1="58" x2="578" y2="98"/>
+    <line x1="578" y1="138" x2="578" y2="178"/>
+    <line x1="578" y1="218" x2="578" y2="258"/>
+  </g>
+  <line x1="578" y1="302" x2="578" y2="320" stroke="#1d1d1f" stroke-width="1.2"/>
+  <line x1="530" y1="322" x2="626" y2="322" stroke="#1d1d1f" stroke-width="3"/>
+  <!-- 캡슐화 계단: 단위 x: 이더넷헤더 20-110, IP 110-200, TCP 200-290, 응용헤더 290-340, 사용자데이터 340-430, 트레일러 430-500 -->
+  <g stroke="#6e6e73" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="340" y1="58" x2="340" y2="80"/><line x1="430" y1="58" x2="430" y2="80"/>
+    <line x1="290" y1="120" x2="290" y2="142"/><line x1="430" y1="120" x2="430" y2="142"/>
+    <line x1="200" y1="182" x2="200" y2="226"/><line x1="430" y1="182" x2="430" y2="226"/>
+    <line x1="110" y1="266" x2="110" y2="308"/><line x1="430" y1="266" x2="430" y2="308"/>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.2" font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="340" y="22" width="90" height="36" fill="#fff"/>
+    <rect x="290" y="80" width="50" height="40" fill="#e5f7ea"/>
+    <rect x="340" y="80" width="90" height="40" fill="#fff"/>
+    <rect x="200" y="142" width="90" height="40" fill="#e3f0ff"/>
+    <rect x="290" y="142" width="140" height="40" fill="#fff"/>
+    <rect x="110" y="226" width="90" height="40" fill="#fff4e0"/>
+    <rect x="200" y="226" width="90" height="40" fill="#e3f0ff"/>
+    <rect x="290" y="226" width="140" height="40" fill="#fff"/>
+    <rect x="20" y="308" width="90" height="40" fill="#f2f2f7"/>
+    <rect x="110" y="308" width="90" height="40" fill="#fff4e0"/>
+    <rect x="200" y="308" width="90" height="40" fill="#e3f0ff"/>
+    <rect x="290" y="308" width="140" height="40" fill="#fff"/>
+    <rect x="430" y="308" width="70" height="40" fill="#f2f2f7"/>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <text x="385" y="45">사용자 데이터</text>
+    <text x="315" y="98">응용</text><text x="315" y="113">헤더</text>
+    <text x="385" y="105">사용자 데이터</text>
+    <text x="245" y="167">TCP 헤더</text>
+    <text x="360" y="167">응용 데이터</text>
+    <text x="155" y="251">IP 헤더</text>
+    <text x="245" y="251">TCP 헤더</text>
+    <text x="360" y="251">응용 데이터</text>
+    <text x="65" y="333">이더넷 헤더</text>
+    <text x="155" y="333">IP 헤더</text>
+    <text x="245" y="333">TCP 헤더</text>
+    <text x="360" y="333">응용 데이터</text>
+    <text x="465" y="325">이더넷</text><text x="465" y="340">트레일러</text>
+  </g>
+  <!-- PDU 이름 -->
+  <g stroke="#0a84ff" stroke-width="1.3" marker-start="url(#g)" marker-end="url(#g)">
+    <line x1="202" y1="200" x2="428" y2="200"/>
+    <line x1="112" y1="284" x2="428" y2="284"/>
+  </g>
+  <g font-size="13" font-weight="600" fill="#0a84ff" text-anchor="middle">
+    <rect x="270" y="190" width="90" height="18" fill="#fff"/>
+    <text x="315" y="205">TCP 세그먼트</text>
+    <rect x="215" y="274" width="110" height="18" fill="#fff"/>
+    <text x="270" y="289">IP 데이터그램</text>
+  </g>
+  <!-- 크기 -->
+  <g font-size="13" fill="#6e6e73" text-anchor="middle">
+    <text x="65" y="366">14</text>
+    <text x="155" y="366">20</text>
+    <text x="245" y="366">20</text>
+    <text x="465" y="366">4</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.3" marker-start="url(#g)" marker-end="url(#g)">
+    <line x1="22" y1="390" x2="498" y2="390"/>
+    <line x1="112" y1="420" x2="428" y2="420"/>
+  </g>
+  <g font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <rect x="210" y="380" width="100" height="18" fill="#fff"/>
+    <text x="260" y="395">이더넷 프레임</text>
+    <rect x="200" y="410" width="140" height="18" fill="#fff"/>
+    <text x="270" y="425">46~1500바이트</text>
+  </g>
+</svg>

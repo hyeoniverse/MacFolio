@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="420" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">open, write, close와 커널의 파일 디스크립터 테이블</text>
+  <text x="108" y="52" text-anchor="middle" font-size="12" fill="#6e6e73">사용자 프로그램</text>
+  <text x="352" y="52" text-anchor="middle" font-size="12" fill="#6e6e73">커널: 프로세스 제어 블록의 fd 테이블</text>
+  <text x="576" y="52" text-anchor="middle" font-size="12" fill="#6e6e73">디스크</text>
+  <line x1="214" y1="40" x2="214" y2="404" stroke="#d1d1d6" stroke-dasharray="4 4"/>
+  <!-- 행 템플릿 3개 -->
+  <g font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#1d1d1f">
+    <text x="16" y="108">int fd = open(…);</text>
+    <text x="16" y="228">write(fd, …);</text>
+    <text x="16" y="348">close(fd);</text>
+  </g>
+  <g font-size="11.5" fill="#6e6e73">
+    <text x="16" y="128">커널이 파일을 찾아</text><text x="16" y="144">테이블에 행을 만들고 10을 준다</text>
+    <text x="16" y="248">10을 넘기면 커널이</text><text x="16" y="264">그 행의 파일에 쓴다</text>
+    <text x="16" y="368">10을 넘기면 커널이</text><text x="16" y="384">그 행을 지운다</text>
+  </g>
+  <g>
+    <!-- 테이블 1 -->
+    <rect x="250" y="70" width="210" height="90" rx="8" fill="#f5f5f7" stroke="#6e6e73"/>
+    <rect x="270" y="84" width="60" height="24" fill="#0a84ff"/><rect x="330" y="84" width="110" height="24" fill="#0a84ff"/>
+    <rect x="270" y="108" width="60" height="30" fill="#e8f2ff" stroke="#0a84ff"/><rect x="330" y="108" width="110" height="30" fill="#e8f2ff" stroke="#0a84ff"/>
+    <!-- 테이블 2 -->
+    <rect x="250" y="190" width="210" height="90" rx="8" fill="#f5f5f7" stroke="#6e6e73"/>
+    <rect x="270" y="204" width="60" height="24" fill="#0a84ff"/><rect x="330" y="204" width="110" height="24" fill="#0a84ff"/>
+    <rect x="270" y="228" width="60" height="30" fill="#e8f2ff" stroke="#0a84ff"/><rect x="330" y="228" width="110" height="30" fill="#e8f2ff" stroke="#0a84ff"/>
+    <!-- 테이블 3 -->
+    <rect x="250" y="310" width="210" height="90" rx="8" fill="#f5f5f7" stroke="#6e6e73"/>
+    <rect x="270" y="324" width="60" height="24" fill="#0a84ff"/><rect x="330" y="324" width="110" height="24" fill="#0a84ff"/>
+    <rect x="270" y="348" width="60" height="30" fill="#fff" stroke="#c7c7cc" stroke-dasharray="4 3"/><rect x="330" y="348" width="110" height="30" fill="#fff" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+  </g>
+  <g font-size="12" font-weight="600" fill="#fff" text-anchor="middle">
+    <text x="300" y="101">fd</text><text x="385" y="101">파일 정보</text>
+    <text x="300" y="221">fd</text><text x="385" y="221">파일 정보</text>
+    <text x="300" y="341">fd</text><text x="385" y="341">파일 정보</text>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle">
+    <text x="300" y="128">10</text><text x="385" y="128">data.txt</text>
+    <text x="300" y="248">10</text><text x="385" y="248">data.txt</text>
+    <text x="355" y="368" fill="#8e8e93" font-size="12">행 삭제</text>
+  </g>
+  <!-- 디스크 -->
+  <g fill="#e8f2ff" stroke="#0a84ff">
+    <path d="M540 92 v36 a36 9 0 0 0 72 0 v-36"/><ellipse cx="576" cy="92" rx="36" ry="9"/>
+    <path d="M540 212 v36 a36 9 0 0 0 72 0 v-36"/><ellipse cx="576" cy="212" rx="36" ry="9"/>
+    <path d="M540 332 v36 a36 9 0 0 0 72 0 v-36"/><ellipse cx="576" cy="332" rx="36" ry="9"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle"><text x="576" y="120">data.txt</text><text x="576" y="240">data.txt</text><text x="576" y="360">data.txt</text></g>
+  <!-- 화살표 -->
+  <g stroke-width="1.5" fill="none">
+    <path d="M440 123 H536" stroke="#0a84ff" stroke-dasharray="5 4" marker-end="url(#b)"/>
+    <path d="M440 243 H536" stroke="#0a84ff" marker-end="url(#b)"/>
+    <path d="M150 103 C200 103 220 123 268 123" stroke="#1d1d1f" marker-end="url(#a)"/>
+    <path d="M120 223 C190 223 220 243 268 243" stroke="#1d1d1f" marker-end="url(#a)"/>
+    <path d="M100 343 C180 343 220 363 268 363" stroke="#1d1d1f" marker-end="url(#a)"/>
+  </g>
+  <text x="488" y="116" text-anchor="middle" font-size="11" fill="#0a84ff">찾아 연결</text>
+  <text x="488" y="236" text-anchor="middle" font-size="11" fill="#0a84ff">쓰기</text>
+</svg>

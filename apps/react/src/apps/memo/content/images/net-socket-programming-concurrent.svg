@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="430" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">연결 수립 단계별 소켓 주소 쌍 {로컬, 원격}</text>
+  <text x="320" y="46" text-anchor="middle" font-size="12" fill="#6e6e73">서버 198.51.100.10, 클라이언트 203.0.113.7. *는 INADDR_ANY 또는 아직 정해지지 않은 값</text>
+  <g font-size="12.5" fill="#6e6e73"><text x="20" y="76">① listen() 이후</text><text x="20" y="176">② connect() 직후</text><text x="20" y="286">③ connect()와 accept() 반환 이후</text></g>
+  <g font-family="Menlo, monospace" font-size="11">
+    <rect x="340" y="86" width="280" height="50" rx="6" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="352" y="106" fill="#1d1d1f">listenfd (LISTEN)</text>
+    <text x="352" y="126" fill="#0a84ff">{*:13, *:*}</text>
+    <rect x="20" y="186" width="270" height="50" rx="6" fill="#fff" stroke="#1d1d1f"/>
+    <text x="34" y="206" fill="#1d1d1f">sockfd (SYN_SENT)</text>
+    <text x="34" y="226" fill="#1d1d1f">{203.0.113.7:<tspan fill="#c46f00">50000</tspan>, 198.51.100.10:13}</text>
+    <rect x="340" y="186" width="280" height="50" rx="6" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="352" y="206" fill="#1d1d1f">listenfd (LISTEN)</text>
+    <text x="352" y="226" fill="#0a84ff">{*:13, *:*}</text>
+    <rect x="20" y="296" width="270" height="50" rx="6" fill="#fff" stroke="#1d1d1f"/>
+    <text x="34" y="316" fill="#1d1d1f">sockfd (ESTABLISHED)</text>
+    <text x="34" y="336" fill="#1d1d1f">{203.0.113.7:50000, 198.51.100.10:13}</text>
+    <rect x="340" y="296" width="280" height="40" rx="6" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="352" y="321" fill="#0a84ff">listenfd (LISTEN) {*:13, *:*}</text>
+    <rect x="340" y="346" width="280" height="50" rx="6" fill="#e9f8ee" stroke="#34c759"/>
+    <text x="352" y="366" fill="#1d1d1f">connfd (ESTABLISHED)</text>
+    <text x="352" y="386" fill="#1d1d1f">{198.51.100.10:13, 203.0.113.7:50000}</text>
+  </g>
+  <line x1="292" y1="211" x2="338" y2="211" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="315" y="203" text-anchor="middle" font-size="11.5" fill="#1d1d1f">SYN</text>
+  <line x1="292" y1="330" x2="338" y2="368" stroke="#34c759" stroke-width="2"/>
+  <text x="300" y="372" text-anchor="middle" font-size="11.5" fill="#248a3d">연결</text>
+  <text x="20" y="258" font-size="12" fill="#c46f00">클라이언트의 임시 포트는 커널이 connect() 시각에 고른다</text>
+  <text x="20" y="414" font-size="12" fill="#6e6e73">서버에서 listenfd와 connfd는 같은 로컬 포트 13을 쓰고, 원격 주소로 구별된다</text>
+</svg>
