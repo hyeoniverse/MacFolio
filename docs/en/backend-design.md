@@ -59,16 +59,16 @@ flowchart LR
 
 Every request passes through the same steps in order (`app.setup.ts`). The order of guards, pipes and exception filters follows NestJS's [Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle).
 
-| Layer                   | What it does                                                                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `trust proxy`           | Reads the real visitor IP behind the tunnel (used for rate limiting and IP records)                                                                    |
-| helmet                  | Security headers                                                                                                                                       |
-| CORS                    | Allows only the site's origins. Cookies only for the exact listed origins; PR previews (`*`) are read-only, and admin APIs reject that Origin with 403 |
-| `ValidationPipe`        | Validates every input with DTOs and rejects any field not declared (`forbidNonWhitelisted`)                                                            |
-| `AdminGuard`            | On admin-only routes, checks the session cookie against the DB on every request                                                                        |
-| `ThrottlerGuard`        | Limits requests per IP and route per minute, by the `@RateLimit` name attached to each write route                                                     |
-| Global exception filter | Normalizes the error shape, answers oversized bodies and malformed JSON with 413 and 400, and unexpected errors with a 500 that hides the details      |
-| `SafeLogger`            | Masks DB passwords, API keys, cookies and email addresses in all logs (`common/redact.ts`)                                                             |
+| Layer                   | What it does                                                                                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trust proxy`           | Reads the real visitor IP behind the tunnel (used for rate limiting and IP records)                                                                                                           |
+| helmet                  | Security headers                                                                                                                                                                              |
+| CORS                    | Allows only the site's origins. Cookies only for the exact listed origins; PR previews (`*`) are read-only, and admin APIs reject that Origin with 403                                        |
+| `ThrottlerGuard`        | Limits requests per IP and route per minute, by the `@RateLimit` name attached to each write route. On admin routes it also runs before `AdminGuard`, so requests without a session count too |
+| `AdminGuard`            | On admin-only routes, checks the session cookie against the DB on every request                                                                                                               |
+| `ValidationPipe`        | Validates every input with DTOs and rejects any field not declared (`forbidNonWhitelisted`)                                                                                                   |
+| Global exception filter | Normalizes the error shape, answers oversized bodies and malformed JSON with 413 and 400, and unexpected errors with a 500 that hides the details                                             |
+| `SafeLogger`            | Masks DB passwords, API keys, cookies and email addresses in all logs (`common/redact.ts`)                                                                                                    |
 
 ## Modules and permissions
 
