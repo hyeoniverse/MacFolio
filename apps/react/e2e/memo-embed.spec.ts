@@ -115,7 +115,8 @@ test.describe('메모 바깥 링크 임베드', () => {
 			.toMatch(/^<?https:\/\/vimeo\.com\/76979871>?$/m);
 		let body = api.posts.find((post) => post.slug === 'flux-pattern')!.draft!.body;
 		expect(body).toMatch(/^<?https:\/\/youtu\.be\/dQw4w9WgXcQ>?$/m);
-		expect(body).not.toContain('nYkdrAPrdcw');
+		// 바꾼 것은 임베드 주소 한 줄이다 (글 끝 참고 자료의 같은 영상 링크는 그대로 남는다)
+		expect(body).not.toMatch(/nYkdrAPrdcw\\?&t=620/);
 
 		// 링크로 바꾸기: 임베드가 사라지고 https:// 를 뺀 글자의 링크로 남는다
 		await vimeo.hover();

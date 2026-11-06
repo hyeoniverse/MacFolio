@@ -147,8 +147,8 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		const search = memo.getByRole('searchbox', { name: '글 검색' });
 		await search.fill('리액트');
 		await expect(memo.locator('.memo-item').first()).toContainText('React');
-		// 글에 없는 오타 (이 기능을 설명한 글에는 적지 않았다)
-		await search.fill('리엑트');
+		// 글에 없는 오타 (이 기능을 설명한 글이 '리엑트'를 예로 들어, 다른 모음 오타를 쓴다)
+		await search.fill('리악트');
 		// 비슷한 글은 고친 검색어로 찾은 순서: 제목에 React가 있는 글이 먼저. 본문 칸에서 첫 글을 열 수 있다
 		const reader = memo.getByRole('region', { name: '검색 결과 없음' });
 		await expect(reader).toContainText('비슷한 글 5편이 목록에 있습니다.');
@@ -156,7 +156,7 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 		await expect(search).toHaveValue('');
 		await expect(memo.getByRole('article', { name: /React/ })).toBeVisible();
 
-		await search.fill('리엑트');
+		await search.fill('리악트');
 		const similar = memo.getByRole('region', { name: '비슷한 검색 결과' });
 		await expect(similar.getByRole('listitem').first()).toContainText('React');
 		await similar.getByRole('button', { name: '리액트', exact: true }).click();
@@ -296,9 +296,23 @@ test.describe('검색 칸과 글 안에서 찾기', () => {
 	});
 
 	test('편집기: 검색 칸 메뉴의 "이 메모에서 찾기"로 열고, 하나씩·모두 대치한다', async ({ page }) => {
+		// 저장소 글은 캡션(이미지 title)에도 webpack이 들어갈 수 있어, 글줄에만 webpack이 있는 가짜 서버 글로 둔다
 		const api = await fakeApi(page, { signedIn: true });
+		const content = {
+			title: '대치 시험용 글',
+			date: '2020-01-01',
+			category: '기술 노트/Git',
+			summary: '',
+			body: [
+				'CRA는 webpack으로 앱 전체를 번들링한다.',
+				'## Webpack 설정',
+				'- `eject`하면 webpack·Babel 설정을 직접 관리한다.',
+				'| 도구 | 번들러 |\n| --- | --- |\n| CRA | WEBPACK 5 |',
+			].join('\n\n'),
+		};
+		api.posts = [{ slug: 'replace-post', ...content, deleted: false, published: content }];
 		const memo = await openMemo(page);
-		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로' }).click();
+		await memo.locator('.memo-item', { hasText: '대치 시험용 글' }).click();
 		await expect(memo.locator('.ProseMirror')).toBeVisible();
 		await memo.getByRole('button', { name: '검색 조건', exact: true }).first().click();
 		await page.getByRole('menu', { name: '검색 조건' }).getByRole('menuitem', { name: '이 메모에서 찾기…' }).click();
