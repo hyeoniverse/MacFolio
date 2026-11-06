@@ -993,7 +993,7 @@ test.describe('모바일', () => {
 		const memo = appWindow(page, 'memo');
 		await memo.locator('.mobile-navbar-home').tap();
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		// 개발 기록 › MacFolio 아래 같은 층의 열 폴더 (가나다순)
+		// 개발 기록 › MacFolio 아래 같은 층의 여덟 폴더 (가나다순)
 		const topNames = () =>
 			folders.locator(
 				'li[data-folder-path="개발 기록/MacFolio"] > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name'
@@ -1005,6 +1005,7 @@ test.describe('모바일', () => {
 			'서버·API',
 			'인터랙션·브라우저 API',
 			'테스트·보안·성능',
+			'트러블슈팅',
 			'화면·스타일',
 			'회고',
 		];

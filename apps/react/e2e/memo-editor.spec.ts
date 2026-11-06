@@ -1657,7 +1657,7 @@ test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동�
 			date: '2026-10-16',
 			category: '기술 노트/Git',
 			summary: '',
-			body: '[성능 리포트](/memo/site-performance-report)와 [예시](https://example.com/docs) 링크',
+			body: '[성능 리포트](/memo/site-performance-diet)와 [예시](https://example.com/docs) 링크',
 		};
 		api.posts = [{ slug: 'link-post', ...content, deleted: false, published: content }];
 		await page.route('https://example.com/**', (route) =>
@@ -1688,8 +1688,8 @@ test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동�
 		await go.hover();
 		await go.click();
 		// 주소 막대는 맨 앞 창이 보는 글을 따른다
-		await expect(page).toHaveURL(/\/memo\/site-performance-report$/);
-		await expect(memo.locator('.memo-item', { hasText: '성능 측정 리포트' })).toHaveClass(/active/);
+		await expect(page).toHaveURL(/\/memo\/site-performance-diet$/);
+		await expect(memo.locator('.memo-item', { hasText: '첫 방문 전송량 9MB를 0.8MB로' })).toHaveClass(/active/);
 		// 편집하던 글은 바뀌지 않았다
 		expect(api.posts.find((post) => post.slug === 'link-post')?.body).toBe(content.body);
 	});
