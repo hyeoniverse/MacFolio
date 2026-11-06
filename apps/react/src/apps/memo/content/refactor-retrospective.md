@@ -2,7 +2,7 @@
 title: zod 계약 패키지·공통 기반 코드·디자인 토큰·보안 설정 통일로 진행한 일곱 단계 리팩터링
 date: 2026-10-18
 category: 개발 기록/MacFolio/회고
-summary: 열흘간 기능 추가로 쌓인 중복 코드를 PR 52개, 일곱 단계(타입, 구조, 기반 코드, 컴포넌트, 스타일, 서버, 보안)로 정리한 리팩터링 계획(#150)의 회고. 단계별 목표, 전후 수치, 설계 판단, 검증 방법, 남긴 항목을 기록했다.
+summary: 열흘간 기능 추가로 쌓인 중복 코드를 일곱 단계(타입, 구조, 기반 코드, 컴포넌트, 스타일, 서버, 보안)로 정리한 리팩터링 계획(#150)의 회고. 단계별 목표, 전후 수치, 설계 판단, 검증 방법, 남긴 항목을 기록했다.
 ---
 
 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 목적은 두 가지였다. 다음 기능을 추가할 때 수정할 곳이 한 군데가 되게 하는 것, 그리고 기능마다 따로 적용한 보안 설정을 하나의 기준으로 통일하는 것이다. PR마다의 세부 내용은 각 절에서 링크한 글에 적었다.
@@ -44,7 +44,7 @@ summary: 열흘간 기능 추가로 쌓인 중복 코드를 PR 52개, 일곱 단
 
 ![일곱 단계의 머지 날짜](./images/refactor-retrospective-timeline.svg '보안이 먼저 시작됐고, 1~3단계는 하루, 4단계가 가장 길었다')
 
-1~3단계가 하루에 끝난 것은 ==PR을 작게 나눈 효과==가 컸다. 1단계 PR 열 개는 네 시간 사이에 머지했고, 도메인 PR 하나의 diff는 수백 줄 이내였다. 4단계가 길었던 것은 PR마다 컴포넌트를 만들고, 사용처 수십 곳을 교체하고, 화면이 같은지 E2E로 비교하는 작업이 필요했기 때문이다.
+1~3단계가 하루에 끝난 것은 ==PR을 작게 나눈 효과==가 컸다. 도메인 PR 하나의 diff가 수백 줄 이내라 검토와 머지가 빨랐다. 4단계가 길었던 것은 PR마다 컴포넌트를 만들고, 사용처 수십 곳을 교체하고, 화면이 같은지 E2E로 비교하는 작업이 필요했기 때문이다.
 
 ## 전후
 
@@ -114,9 +114,9 @@ export function parse<S extends z.ZodType>(schema: S, input: unknown): Parsed<z.
 
 작은 도메인부터 진행했다. 댓글·좋아요(#200)에서 패키지 기본 구조와 Dockerfile·CI의 빌드 순서를 맞추고, 글·메시지·연락 메일·배경화면·파일·분석·사이트 프로필을 하나씩 이전했다. 세부 내용은 [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)를 비롯한 도메인별 글([글](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201), [메시지](/memo/contracts-package#메시지-스키마와-두-저장소-구현-202), [연락 메일](/memo/contracts-validation#연락-메일-칸마다-첫-실패-문구-하나-203), [배경화면](/memo/contracts-validation#배경화면-이름-한도-40과-정리-함수-204), [파일](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205), [분석](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206), [사이트 프로필](/memo/contracts-validation#사이트-프로필-배치-규칙에-맞춰-desktop-core에서-옮기기-207))과 [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)(#208), [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)(#209)에 있다.
 
-10월 11일, 네 시간 사이에 PR 열 개를 머지했다. 도메인 PR은 글과 그림까지 합쳐 300줄 안팎이었고, `profile.ts` 분리(#208)만 파일 이동 때문에 1,775줄을 추가하고 1,630줄을 삭제했다.
+1단계는 10월 11일에 모두 머지했다. 도메인 PR은 글과 그림까지 합쳐 300줄 안팎이었고, `profile.ts` 분리(#208)만 파일 이동 때문에 1,775줄을 추가하고 1,630줄을 삭제했다.
 
-![1단계 PR 열 개의 더한 줄과 지운 줄](./images/refactor-step1-types-prs.svg 'profile.ts 나누기를 빼면 PR마다 300줄 안팎이다')
+![1단계 PR의 더한 줄과 지운 줄](./images/refactor-step1-types-prs.svg 'profile.ts 나누기를 빼면 PR마다 300줄 안팎이다')
 
 | 항목                | 전                    | 후                                                               |
 | ------------------- | --------------------- | ---------------------------------------------------------------- |
@@ -236,7 +236,7 @@ const map = await api<Record<string, string>>('/photos/captions', {
 
 ## 4단계: 공통 컴포넌트
 
-PR 수가 가장 많았던 단계다. `shared/ui`에 button·dialog·menu·popover·reorder가 있었지만 `<button>`을 사용하는 앱 파일 53개 중 공통 버튼을 사용하는 파일은 15개였고, 시트와 모달은 메일·메시지·음악·설정·휴지통이 각자 구현했다.
+`shared/ui`에 button·dialog·menu·popover·reorder가 있었지만 `<button>`을 사용하는 앱 파일 53개 중 공통 버튼을 사용하는 파일은 15개였고, 시트와 모달은 메일·메시지·음악·설정·휴지통이 각자 구현했다.
 
 | 증상                                                   | 원인                                                            |
 | ------------------------------------------------------ | --------------------------------------------------------------- |
@@ -261,7 +261,7 @@ PR 수가 가장 많았던 단계다. `shared/ui`에 button·dialog·menu·popov
 - 아이콘 버튼 45곳, 텍스트 버튼 30곳: [#245](https://github.com/hyeoniverse/MacFolio/pull/245)·[#246](https://github.com/hyeoniverse/MacFolio/pull/246), [IconButton으로](/memo/icon-button-migrate)
 - 시트·모달 재조사, 메뉴 variant: [#247](https://github.com/hyeoniverse/MacFolio/pull/247)·[#250](https://github.com/hyeoniverse/MacFolio/pull/250), [메뉴 모양을 variant로 고르기](/memo/ui-variant-pairs)
 
-![4단계 PR 열한 개의 날짜와 크기](./images/refactor-step4-components-timeline.svg '부품을 먼저 만들고, 사용처를 옮기는 PR은 마지막 날에 몰았다')
+![4단계 PR의 날짜와 크기](./images/refactor-step4-components-timeline.svg '부품을 먼저 만들고, 사용처를 옮기는 PR은 마지막 날에 몰았다')
 
 ### 접근성 이름과 계산된 스타일 비교
 
@@ -414,12 +414,11 @@ export const parseSpeechRequest = (body: unknown): SpeechRequest => demoInput(pa
 | `AnalyticsService`           | 341줄                   | Recorder 68줄, Rollup 80줄, Stats 203줄 |
 | 설정 상한(200자, 6개)·정규식 | 서버 if문과 화면에 중복 | contracts 한 곳                         |
 | 데모 상한(60·200·800·80자)   | 서버 함수와 화면에 중복 | contracts 한 곳                         |
-| API e2e                      | —                       | 124개 통과                              |
 
 검증 결과는 PR마다 다음과 같았다.
 
-- [#233](https://github.com/hyeoniverse/MacFolio/pull/233): 시험에서 집계를 직접 호출하던 한 줄(`AnalyticsService` → `AnalyticsRollup`)만 수정하고 API e2e 124개 통과
-- [#235](https://github.com/hyeoniverse/MacFolio/pull/235): API 단위 157개, contracts 37개. 알 수 없는 키만 보낸 경우 "바꿀 설정이 없습니다."가 추가되던 동작은 zod의 `when` 옵션으로 유지
+- [#233](https://github.com/hyeoniverse/MacFolio/pull/233): 시험에서 집계를 직접 호출하던 한 줄(`AnalyticsService` → `AnalyticsRollup`)만 수정하고 기존 API e2e 통과
+- [#235](https://github.com/hyeoniverse/MacFolio/pull/235): 기존 API 단위 시험과 contracts 시험 통과. 알 수 없는 키만 보낸 경우 "바꿀 설정이 없습니다."가 추가되던 동작은 zod의 `when` 옵션으로 유지
 - [#236](https://github.com/hyeoniverse/MacFolio/pull/236): `demos.test.ts`에 시험 5개 추가. `speech/rules.test.ts`는 기대 오류 클래스만 `DemoInputError`로 바꾸고 문구("80자")는 변경 없이 통과
 
 개인정보 처리 안내(`docs/privacy.md`)에 적힌 집계 코드 경로도 새 파일로 수정했다. 조회 서비스는 이후 기능이 추가되어 2026-10-23 기준 246줄이고, 다시 분리한다면 요약과 실시간 조회를 먼저 나눈다. 데모의 일일 상한(`DailyQuota`)은 서버만 사용하는 값이라 "화면도 이 값을 알아야 하는가"라는 1단계 기준에 따라 contracts로 옮기지 않았다.
@@ -522,7 +521,7 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 | 3 기반 코드 | `client.test.ts` 10개 등 새 모듈 시험, 사용처는 기존 E2E                                 |
 | 4 컴포넌트  | 공통 클래스 적용 전후의 계산된 스타일 비교, 접근성 이름 시험                             |
 | 5 스타일    | 계산된 스타일 전후 비교, 빌드 CSS의 md5 비교                                             |
-| 6 서버      | API e2e 124개, 단위 157개, contracts 시험                                                |
+| 6 서버      | 기존 API e2e·단위·contracts 시험을 수정 없이 통과                                        |
 | 7 보안      | 변경되는 동작마다 실패하는 시험을 먼저 작성: CSP 위반 fixture, sandbox E2E, 경로 64개 표 |
 
 ## 돌아보며
