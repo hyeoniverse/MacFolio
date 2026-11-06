@@ -692,6 +692,7 @@ pinned: true # 목록 맨 위에 고정 (선택)
   | `![설명](./images/a.jpg#float-right)` (`#float-left`)    | 글 옆에 띄운 이미지          |
   | `#태그`                                                  | 태그 (누르면 그 태그의 글만) |
 
+- 글을 합치거나 주소(파일 이름)를 바꾸면 옛 주소를 `packages/desktop-core/src/memo/movedPosts.ts`에 적습니다. 배포 사이트의 Worker가 옛 주소를 새 글의 그 절로 301 전환해, 검색 색인과 바깥 링크가 404가 되지 않습니다.
 - 이미지는 `content/images/`에 넣고 글 파일 기준 상대 경로로 씁니다. 갤러리 보기에서는 본문의 첫 이미지가 카드 미리보기가 됩니다.
 - 빌드하면 글이 검색용 HTML·sitemap·RSS에 들어갑니다. 링크를 공유했을 때의 그림은 본문의 첫 사진(JPG·PNG·WebP·GIF)이고, 사진이 없으면 제목으로 생성한 카드입니다(`packages/og-card`). 사이트에서 쓴 글의 카드는 API가 생성합니다(`GET /posts/<글>/og.png`). sitemap의 `lastmod`는 그 파일의 마지막 커밋 날입니다.
 
@@ -722,13 +723,13 @@ VM 만들기부터 OAuth App, 터널, 환경 변수, 문제 해결까지 [docs/d
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
 - [개인정보 처리](docs/privacy.md): 수집 항목, 저장 방식, 보관 기간
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
-- 개발기: 사이트의 메모 앱 → 개발 기록 폴더 (`apps/react/src/apps/memo/content/`). CS 공부를 정리한 연재(데이터베이스·딥러닝·네트워크 보안)는 학습 › CS 폴더에 있습니다. 처음 읽기 좋은 글:
-  - [MacFolio 백엔드 한 장으로 보기](https://macfolio.hyeoniverse.com/memo/backend-design)
-  - [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
-  - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
-  - [첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
-  - [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
-  - [PR을 머지하자 CI가 연달아 실패한 원인 네 가지](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges)
+- 개발기: 사이트의 메모 앱 → 개발 기록 › MacFolio 폴더 (`apps/react/src/apps/memo/content/`). 글이 푼 문제별 폴더(화면·스타일, 서버·API, 테스트·보안·성능 …)와 함께, 원인을 추적한 과정이 중심인 글은 트러블슈팅, 하루의 기능·버그 수정·설계 판단은 회고(일별 회고와 그 주 핵심만 모은 "주간 회고" 연재)에 있습니다. CS 공부를 정리한 연재(데이터베이스·딥러닝·네트워크 보안)는 학습 › CS 폴더에 있습니다. 처음 읽기 좋은 글:
+  - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](https://macfolio.hyeoniverse.com/memo/backend-design)
+  - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
+  - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
+  - [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
+  - [Lighthouse 운영 재측정, 명언 데이터 lazy 분리, #boot-splash 삭제 시각으로 휴대폰 LCP 편차 해결과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
+  - [CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges)
   - [zod 계약 패키지·공통 기반 코드·디자인 토큰·보안 설정 통일로 진행한 일곱 단계 리팩터링](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
 
 ### 로드맵
