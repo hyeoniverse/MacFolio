@@ -3,7 +3,6 @@
 // 사이트는 Cloudflare의 single-page-application 설정으로 어떤 경로든 index.html을 돌려준다.
 // 앱이 시작할 때 이 경로를 읽어 그 앱을 그 항목으로 열고, 쓰는 동안에는 맨 앞 창이 가리키는 곳을 주소 막대에 둔다.
 import { createStore } from '@macfolio/desktop-core';
-import { movedPost } from '@macfolio/desktop-core/memo';
 import { hasCoarsePointer } from '@/shared/lib/media';
 import { notify } from '@/desktop/notifications/notificationStore';
 
@@ -21,18 +20,15 @@ export const appPath = ({ app, id }: AppLink) => `/${app}/${encodeURIComponent(i
 /** 공유할 주소 */
 export const appUrl = (link: AppLink, origin = window.location.origin) => `${origin}${appPath(link)}`;
 
-/** 경로가 앱의 항목을 가리키면 그 항목, 아니면 null. 합친 글의 옛 주소는 지금 글로 (배포 사이트에서는 Worker가 먼저 301로 넘긴다) */
+/** 경로가 앱의 항목을 가리키면 그 항목, 아니면 null */
 export function parseAppPath(pathname: string): AppLink | null {
 	const match = /^\/([a-z]+)\/([^/]+)\/?$/.exec(pathname);
 	if (!match || !(LINKED_APPS as readonly string[]).includes(match[1])) return null;
-	let id: string;
 	try {
-		id = decodeURIComponent(match[2]);
+		return { app: match[1] as LinkedApp, id: decodeURIComponent(match[2]) };
 	} catch {
 		return null;
 	}
-	const app = match[1] as LinkedApp;
-	return { app, id: (app === 'memo' && movedPost(id)?.slug) || id };
 }
 
 /**

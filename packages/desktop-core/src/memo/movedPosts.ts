@@ -2,8 +2,8 @@ import { postSlug, type PostSlug } from './rules.js';
 
 /**
  * 합치거나 옮긴 글의 옛 주소 → 지금 주소. 값은 `<글 주소>` 또는 `<글 주소>#<제목 id>`(옛 글의 내용이 들어간 절).
- * 검색엔진 색인과 바깥 링크에 남은 옛 주소가 404가 되지 않게 Worker는 301로 넘기고(worker/index.ts),
- * 앱은 주소를 읽을 때 지금 주소로 바꾼다(shared/lib/appLink.ts). 저장소 글 링크는 지금 주소로 고쳐 쓴다(content.test.ts가 검사한다)
+ * 검색엔진 색인과 바깥 링크에 남은 옛 주소가 404가 되지 않게 Worker가 301로 넘긴다(worker/index.ts).
+ * 앱 번들에는 넣지 않는다(첫 화면 번들 예산). 저장소 글 링크는 지금 주소로 고쳐 쓴다(content.test.ts가 검사한다)
  */
 export const MOVED_POSTS: Readonly<Record<string, string>> = {
 	// 2026-11: 일별 회고를 주간 회고로, 같은 주제를 나눠 쓴 개발 기록을 한 글로 합쳤다
