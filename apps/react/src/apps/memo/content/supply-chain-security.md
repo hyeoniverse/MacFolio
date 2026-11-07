@@ -237,10 +237,10 @@ SHA는 `git ls-remote --tags`로 태그가 가리키는 커밋을 조회해 기�
 | 10-12 | [#215](https://github.com/hyeoniverse/MacFolio/pull/215)                                                                                                                                                                                                                                         | TypeScript 5.9 → 7.0. 그대로는 빌드되지 않아 수동 수정 커밋을 추가했다                  |
 | 10-19 | [#265](https://github.com/hyeoniverse/MacFolio/pull/265)                                                                                                                                                                                                                                         | npm minor·patch 묶음 24개                                                               |
 
-#171은 SHA를 새 버전의 SHA로 바꾸고 주석의 버전도 함께 수정했다. 액션 4종이 PR 하나로 묶여 CI가 한 번에 검증했다. 현재 워크플로의 `uses:` 27줄(같은 저장소의 워크플로를 호출하는 한 줄 제외)은 모두 커밋 SHA와 버전 주석으로 기록되어 있다.
+[#171](https://github.com/hyeoniverse/MacFolio/pull/171)은 SHA를 새 버전의 SHA로 바꾸고 주석의 버전도 함께 수정했다. 액션 4종이 PR 하나로 묶여 CI가 한 번에 검증했다. 현재 워크플로의 `uses:` 27줄(같은 저장소의 워크플로를 호출하는 한 줄 제외)은 모두 커밋 SHA와 버전 주석으로 기록되어 있다.
 
 > [!WARNING] `actor`는 마지막으로 push한 사용자
-> 첫날 PR을 처리하며 규칙 검사의 예외 조건도 수정했다. 처음에는 `github.actor == 'dependabot[bot]'`으로 지정했는데, `actor`는 이 실행을 발생시킨 사용자, 즉 마지막으로 push한 사용자다. Dependabot PR에 사람이 수정 커밋을 push하면 예외가 해제되어 브랜치 이름 검사가 실패한다. PR 작성자(`github.event.pull_request.user.login`) 기준으로 수정했다([PR #178](https://github.com/hyeoniverse/MacFolio/pull/178), `1be4522fb`). 이틀 뒤 TypeScript 7 PR(#215)은 그대로는 빌드되지 않아 수동 수정 커밋(`603e47c41`)을 push해야 했는데, 이 수정 덕분에 규칙 검사를 통과했다.
+> 첫날 PR을 처리하며 규칙 검사의 예외 조건도 수정했다. 처음에는 `github.actor == 'dependabot[bot]'`으로 지정했는데, `actor`는 이 실행을 발생시킨 사용자, 즉 마지막으로 push한 사용자다. Dependabot PR에 사람이 수정 커밋을 push하면 예외가 해제되어 브랜치 이름 검사가 실패한다. PR 작성자(`github.event.pull_request.user.login`) 기준으로 수정했다([PR #178](https://github.com/hyeoniverse/MacFolio/pull/178), `1be4522fb`). 이틀 뒤 TypeScript 7 PR([#215](https://github.com/hyeoniverse/MacFolio/pull/215))은 그대로는 빌드되지 않아 수동 수정 커밋(`603e47c41`)을 push해야 했는데, 이 수정 덕분에 규칙 검사를 통과했다.
 
 | 조건                                           | Dependabot만 push한 PR | 사람이 수정 커밋을 push한 PR |
 | ---------------------------------------------- | ---------------------- | ---------------------------- |
@@ -414,7 +414,7 @@ gitleaks git --redact --verbose --exit-code 1 .
 - [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안): 리팩터링 7단계의 보안 설정
 - [정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci): Dependabot PR이 통과해야 하는 규칙 검사
 - [GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge](/memo/merge-strategies): 병합 방식 비교
-- [npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기](/memo/typescript-7-side-by-side): TypeScript 7 Dependabot PR(#215)의 수동 수정
+- [npm 별칭으로 TypeScript 7 tsc와 TypeScript 6 typescript-eslint 함께 쓰기](/memo/typescript-7-side-by-side): TypeScript 7 Dependabot PR([#215](https://github.com/hyeoniverse/MacFolio/pull/215))의 수동 수정
 - [Workers Builds 대신 GitHub Actions와 wrangler로 시험을 통과한 커밋만 배포하기](/memo/deploy-github-actions): 같은 CI의 배포 단계
 - [git 트리 비교로 PR에서 통과한 main 커밋의 E2E 재실행 생략하기](/memo/faster-e2e-ci): CI 실행 시간 단축
 - [모든 로그가 거치는 ConsoleLogger에서 비밀 값 마스킹하기](/memo/error-log-masking): 런타임 로그의 비밀 값 처리

@@ -14,7 +14,7 @@ summary: iOS Safari는 키보드가 올라와도 레이아웃 뷰포트를 줄�
 | [#230](https://github.com/hyeoniverse/MacFolio/pull/230) | 메모   | 키보드가 올라오면 하단의 서식 알약이 키보드 뒤에 가려진다 | 가려진 높이(`keyboardInset()`)만큼 서식 막대를 올림              |
 | [#363](https://github.com/hyeoniverse/MacFolio/pull/363) | 메시지 | 키보드가 올라오면 대화 머리가 화면 밖으로 밀린다          | 앱 화면을 비주얼 뷰포트의 위치·높이(`keyboardViewport()`)에 맞춤 |
 
-#230에서는 iOS 메모의 문단 도구(들여쓰기·이동·인용·목록)도 서식 막대에 추가했다. #363에서는 메시지 앱의 휴대폰 화면 문제 두 가지를 함께 수정했다. 넓은 휴대폰 화면에서 검색 알약이 입력 칸을 덮는 문제와 빈 목록의 말풍선 아이콘 윗부분이 잘리는 문제다.
+[#230](https://github.com/hyeoniverse/MacFolio/pull/230)에서는 iOS 메모의 문단 도구(들여쓰기·이동·인용·목록)도 서식 막대에 추가했다. [#363](https://github.com/hyeoniverse/MacFolio/pull/363)에서는 메시지 앱의 휴대폰 화면 문제 두 가지를 함께 수정했다. 넓은 휴대폰 화면에서 검색 알약이 입력 칸을 덮는 문제와 빈 목록의 말풍선 아이콘 윗부분이 잘리는 문제다.
 
 ## 배경: 화면 키보드와 뷰포트
 
@@ -246,7 +246,7 @@ page.addInitScript(() => {
 | `e2e/mobile.spec.ts`          | 문단 도구                            | 서식 막대가 문단 막대로 바뀌고, 문단을 위로 이동한 뒤 닫으면 서식 도구로 복귀 |
 | `e2e/mobile-messages.spec.ts` | 키보드가 올라오고 비주얼 뷰포트 이동 | 이름 알약과 상태 표시줄이 비주얼 뷰포트 맨 위에서 키보드 전과 같은 위치       |
 
-메시지 앱 캡처도 같은 방식으로 찍고 비주얼 뷰포트 영역만 잘랐다. #230 전체의 변경 규모는 9개 파일, 378줄 추가, 9줄 삭제이고 그중 107줄이 시험이다.
+메시지 앱 캡처도 같은 방식으로 찍고 비주얼 뷰포트 영역만 잘랐다. [#230](https://github.com/hyeoniverse/MacFolio/pull/230) 전체의 변경 규모는 9개 파일, 378줄 추가, 9줄 삭제이고 그중 107줄이 시험이다.
 
 <details>
 <summary>가짜 visualViewport의 동작</summary>

@@ -200,7 +200,7 @@ $ ~/macfolio/ops/deploy.sh sha-<태그>
 
 며칠 뒤 CORS를 수정한 API 변경([#115](https://github.com/hyeoniverse/MacFolio/pull/115))을 머지했는데, 그 CI 실행이 메뉴 막대 E2E 시험 하나 때문에 실패했다. 시험을 수정한 PR([#116](https://github.com/hyeoniverse/MacFolio/pull/116))을 머지하자 CI는 통과했지만, API 이미지 빌드와 배포 단계가 모두 건너뛰어졌다. 서버는 여전히 `sha-a38ac7e`였다.
 
-API 변경 여부를 **직전 push와 비교**해서 판정했기 때문이다. #116의 push에는 API 변경이 없으므로 배포 대상이 없다고 판정했다. ==#115의 API 변경은 실패한 실행에만 포함되어 이후 어떤 실행에서도 배포되지 않았다==. Secrets 등록 전에 머지한 변경이 배포되지 않은 것도 같은 원인이다.
+API 변경 여부를 **직전 push와 비교**해서 판정했기 때문이다. [#116](https://github.com/hyeoniverse/MacFolio/pull/116)의 push에는 API 변경이 없으므로 배포 대상이 없다고 판정했다. ==[#115](https://github.com/hyeoniverse/MacFolio/pull/115)의 API 변경은 실패한 실행에만 포함되어 이후 어떤 실행에서도 배포되지 않았다==. Secrets 등록 전에 머지한 변경이 배포되지 않은 것도 같은 원인이다.
 
 ![비교 대상 바꾸기](./images/api-auto-deploy-setup-compare.svg '직전 push와 비교하면 실패한 실행의 변경이 누락된다')
 

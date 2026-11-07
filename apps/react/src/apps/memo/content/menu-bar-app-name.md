@@ -170,7 +170,7 @@ Dock에서 앱을 누를 때 항상 그 앱을 앞으로 가져오던 동작도 
 <summary>나머지 시험 이름과 변경 규모</summary>
 
 - `e2e/menubar.spec.ts`의 "바탕화면을 눌러 Finder가 되면 창 항목이 없는 Finder의 메뉴 (Finder는 종료할 수 없다)", "Dock에서 앱을 누르는 동안 앱 이름은 그대로이고, 클릭이 끝나면 그 앱으로 (Finder로 깜빡이지 않는다)", "앱 이름이 Finder로 바뀌어도 같은 자리, 같은 높이 (움찔거리지 않는다)".
-- 변경 규모는 작다. #97은 3개 파일 33줄 추가·13줄 삭제, #101의 기능 커밋은 5개 파일 67줄 추가·10줄 삭제였다.
+- 변경 규모는 작다. [#97](https://github.com/hyeoniverse/MacFolio/pull/97)은 3개 파일 33줄 추가·13줄 삭제, [#101](https://github.com/hyeoniverse/MacFolio/pull/101)의 기능 커밋은 5개 파일 67줄 추가·10줄 삭제였다.
 
 </details>
 

@@ -16,7 +16,7 @@ summary: 열흘간 기능 추가로 쌓인 중복 코드를 일곱 단계(타입
 - 새 팝업의 `z-index`를 정하려면 CSS 파일 네 개를 열어 값을 비교해야 했다.
 - 프로젝트 iframe 안의 링크 하나로 MacFolio 창 전체가 다른 주소로 바뀔 수 있었다.
 
-각각은 작은 문제지만, 다음 기능을 추가할 때마다 수정할 곳이 여러 군데라는 공통점이 있었다. 리팩터링은 10월 1일 버튼 구조를 도식으로 정리하다가 공통 컴포넌트가 없다는 것을 확인하면서 시작했고, 10월 10일에 이슈 #150을 열어 타입·구조체 정리부터 공통 컴포넌트, 스타일, 보안까지 영역별 작업 목록을 작성했다.
+각각은 작은 문제지만, 다음 기능을 추가할 때마다 수정할 곳이 여러 군데라는 공통점이 있었다. 리팩터링은 10월 1일 버튼 구조를 도식으로 정리하다가 공통 컴포넌트가 없다는 것을 확인하면서 시작했고, 10월 10일에 이슈 [#150](https://github.com/hyeoniverse/MacFolio/issues/150)을 열어 타입·구조체 정리부터 공통 컴포넌트, 스타일, 보안까지 영역별 작업 목록을 작성했다.
 
 ## 계획을 나눈 방법
 
@@ -61,7 +61,7 @@ summary: 열흘간 기능 추가로 쌓인 중복 코드를 일곱 단계(타입
 | 린트          | ESLint 경고 185개                                                                                  | 0개, `--max-warnings 0`                                                                                      |
 | 보안          | 사이트 헤더 없음, iframe sandbox 없음, 요청 제한 방식 세 종류, 취약점 6건(high 3), Dependabot 없음 | CSP와 헤더, sandbox, `@RateLimit` 단일 방식, 취약점 6건 수정, Dependabot·gitleaks·액션 SHA 고정              |
 
-마무리 단계에서 ESLint 경고 185개를 정리하고 네 패키지 모두 `--max-warnings 0`을 적용했다(#144).
+마무리 단계에서 ESLint 경고 185개를 정리하고 네 패키지 모두 `--max-warnings 0`을 적용했다([#144](https://github.com/hyeoniverse/MacFolio/pull/144)).
 
 ## 1단계: 타입과 데이터 구조
 
@@ -112,9 +112,9 @@ export function parse<S extends z.ZodType>(schema: S, input: unknown): Parsed<z.
 
 ### 도메인 여덟 개의 이전 순서
 
-작은 도메인부터 진행했다. 댓글·좋아요(#200)에서 패키지 기본 구조와 Dockerfile·CI의 빌드 순서를 맞추고, 글·메시지·연락 메일·배경화면·파일·분석·사이트 프로필을 하나씩 이전했다. 세부 내용은 [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)를 비롯한 도메인별 글([글](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201), [메시지](/memo/contracts-package#메시지-스키마와-두-저장소-구현-202), [연락 메일](/memo/contracts-validation#연락-메일-칸마다-첫-실패-문구-하나-203), [배경화면](/memo/contracts-validation#배경화면-이름-한도-40과-정리-함수-204), [파일](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205), [분석](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206), [사이트 프로필](/memo/contracts-validation#사이트-프로필-배치-규칙에-맞춰-desktop-core에서-옮기기-207))과 [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)(#208), [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)(#209)에 있다.
+작은 도메인부터 진행했다. 댓글·좋아요([#200](https://github.com/hyeoniverse/MacFolio/pull/200))에서 패키지 기본 구조와 Dockerfile·CI의 빌드 순서를 맞추고, 글·메시지·연락 메일·배경화면·파일·분석·사이트 프로필을 하나씩 이전했다. 세부 내용은 [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)를 비롯한 도메인별 글([글](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201), [메시지](/memo/contracts-package#메시지-스키마와-두-저장소-구현-202), [연락 메일](/memo/contracts-validation#연락-메일-칸마다-첫-실패-문구-하나-203), [배경화면](/memo/contracts-validation#배경화면-이름-한도-40과-정리-함수-204), [파일](/memo/contracts-validation#업로드-파일-화면이-알아야-하는-값만-contracts로-205), [분석](/memo/contracts-package#분석-이벤트의-전송수신조회-형식-206), [사이트 프로필](/memo/contracts-validation#사이트-프로필-배치-규칙에-맞춰-desktop-core에서-옮기기-207))과 [index.ts 재내보내기로 import 경로를 유지하며 큰 모듈을 폴더로 나누기](/memo/module-splitting#import-경로를-유지하는-indexts-재내보내기-sharedprofile)([#208](https://github.com/hyeoniverse/MacFolio/pull/208)), [PostSlug·FolderPath 브랜드 타입](/memo/branded-ids)([#209](https://github.com/hyeoniverse/MacFolio/pull/209))에 있다.
 
-1단계는 10월 11일에 모두 머지했다. 도메인 PR은 글과 그림까지 합쳐 300줄 안팎이었고, `profile.ts` 분리(#208)만 파일 이동 때문에 1,775줄을 추가하고 1,630줄을 삭제했다.
+1단계는 10월 11일에 모두 머지했다. 도메인 PR은 글과 그림까지 합쳐 300줄 안팎이었고, `profile.ts` 분리([#208](https://github.com/hyeoniverse/MacFolio/pull/208))만 파일 이동 때문에 1,775줄을 추가하고 1,630줄을 삭제했다.
 
 ![1단계 PR의 더한 줄과 지운 줄](./images/refactor-step1-types-prs.svg 'profile.ts 나누기를 빼면 PR마다 300줄 안팎이다')
 
@@ -158,17 +158,17 @@ export function parse<S extends z.ZodType>(schema: S, input: unknown): Parsed<z.
  });
 ```
 
-이전에는 컴포넌트 연결을 누락하면 ==Dock에 아이콘만 있고 창이 열리지 않는 상태로 배포될 수 있었다==. 루트 `package.json`의 `cycles` 스크립트는 처음에 react·api·desktop-core 세 패키지를 검사했고, 1단계에서 생긴 contracts까지 현재 네 패키지를 검사한다. 세부 내용은 [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)(#188)에 있다.
+이전에는 컴포넌트 연결을 누락하면 ==Dock에 아이콘만 있고 창이 열리지 않는 상태로 배포될 수 있었다==. 루트 `package.json`의 `cycles` 스크립트는 처음에 react·api·desktop-core 세 패키지를 검사했고, 1단계에서 생긴 contracts까지 현재 네 패키지를 검사한다. 세부 내용은 [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)([#188](https://github.com/hyeoniverse/MacFolio/pull/188))에 있다.
 
 ![두 순환 의존을 셋째 파일로 푼 모양과 파일 이름 규칙 네 가지](./images/refactor-step2-structure-cycles.svg '서로 import하던 짝은 공통 부분을 셋째 파일로 꺼내 한 방향으로 만들었다')
 
 ### 큰 파일 분할과 이름 규칙
 
-분할 기준은 "한 파일에 화면 하나"였다. 데모와 CMS 도식은 하나씩 별도 파일로, 공유 코드(색 계산 `color.ts`, 뷰포트 진입 감지 `useInView.ts`, 데모 프레임 `Demo.tsx`)는 독립 파일로 분리했다. 사이드바와 휴대폰 사진 앱은 행 단위 컴포넌트(`FolderRow.tsx`, `PhotoGrid.tsx`), 크게 보기(`PhoneViewer.tsx`), 순수 계산(`folderSidebar.model.ts`, `photosMobile.model.ts`)으로 나눴다. [`git diff -M`](https://git-scm.com/docs/git-diff)에서 대부분 "이동"으로 검출되도록 함수 본문은 수정하지 않았고, 분리된 순수 함수에만 단위 시험(`creative/color.test.ts` 7개)을 추가했다. 세부 내용은 [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/module-splitting#둘-이상이-쓰는-코드만-공유-모듈로-creativedemos)(#189·#193), [import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/module-splitting#서로-쓰는-타입은-model-파일로-폴더-사이드바와-사진-앱)(#190)에 있다.
+분할 기준은 "한 파일에 화면 하나"였다. 데모와 CMS 도식은 하나씩 별도 파일로, 공유 코드(색 계산 `color.ts`, 뷰포트 진입 감지 `useInView.ts`, 데모 프레임 `Demo.tsx`)는 독립 파일로 분리했다. 사이드바와 휴대폰 사진 앱은 행 단위 컴포넌트(`FolderRow.tsx`, `PhotoGrid.tsx`), 크게 보기(`PhoneViewer.tsx`), 순수 계산(`folderSidebar.model.ts`, `photosMobile.model.ts`)으로 나눴다. [`git diff -M`](https://git-scm.com/docs/git-diff)에서 대부분 "이동"으로 검출되도록 함수 본문은 수정하지 않았고, 분리된 순수 함수에만 단위 시험(`creative/color.test.ts` 7개)을 추가했다. 세부 내용은 [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/module-splitting#둘-이상이-쓰는-코드만-공유-모듈로-creativedemos)([#189](https://github.com/hyeoniverse/MacFolio/pull/189)·[#193](https://github.com/hyeoniverse/MacFolio/pull/193)), [import를 계산하는 분리 스크립트와 model 파일로 순환 없이 컴포넌트 나누기](/memo/module-splitting#서로-쓰는-타입은-model-파일로-폴더-사이드바와-사진-앱)([#190](https://github.com/hyeoniverse/MacFolio/pull/190))에 있다.
 
 ![나누기 전 파일과 나눈 뒤 가장 큰 조각의 줄 수](./images/refactor-step2-structure-sizes.svg '가장 큰 조각도 400줄 안쪽이 됐다')
 
-#191에서는 규칙과 어긋난 파일 아홉 개의 이름을 바꿨다([폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)). 서버 호출은 `*Api.ts`, 순수 계산·타입은 `model.ts`, 훅은 `use*.ts`, 화면 컴포넌트는 `PascalCase.tsx`이고, 같은 종류가 세 개 이상이면 폴더로 묶는다. 예를 들어 `github/githubActivity.ts`는 `githubActivityApi.ts`로, `memo/admin.ts`는 훅이므로 `useCanEditMemo.ts`로, 계산과 서버 호출이 섞인 `memo/writer/attachments.ts`는 서버 호출만 `attachmentsApi.ts`로 분리했다. `githubActivity.ts`는 대소문자만 다른 `GithubActivity.tsx`와 macOS의 대소문자 비구분 파일 시스템에서 충돌한 적이 있다([/health 응답 시간을 막대 수로 환산하고 no-cors 요청으로 CORS 차단을 구분하는 서버 상태 표시](/memo/server-status-wifi) 끝 부분).
+[#191](https://github.com/hyeoniverse/MacFolio/pull/191)에서는 규칙과 어긋난 파일 아홉 개의 이름을 바꿨다([폴더 대신 _Api.ts·model.ts·use_.ts 파일 이름으로 앱 안의 파일 종류 구분하기](/memo/app-file-naming)). 서버 호출은 `*Api.ts`, 순수 계산·타입은 `model.ts`, 훅은 `use*.ts`, 화면 컴포넌트는 `PascalCase.tsx`이고, 같은 종류가 세 개 이상이면 폴더로 묶는다. 예를 들어 `github/githubActivity.ts`는 `githubActivityApi.ts`로, `memo/admin.ts`는 훅이므로 `useCanEditMemo.ts`로, 계산과 서버 호출이 섞인 `memo/writer/attachments.ts`는 서버 호출만 `attachmentsApi.ts`로 분리했다. `githubActivity.ts`는 대소문자만 다른 `GithubActivity.tsx`와 macOS의 대소문자 비구분 파일 시스템에서 충돌한 적이 있다([/health 응답 시간을 막대 수로 환산하고 no-cors 요청으로 CORS 차단을 구분하는 서버 상태 표시](/memo/server-status-wifi) 끝 부분).
 
 | 항목                    | 전      | 후                                 |
 | ----------------------- | ------- | ---------------------------------- |
@@ -177,7 +177,7 @@ export function parse<S extends z.ZodType>(schema: S, input: unknown): Parsed<z.
 | `CreativeCms.tsx`       | 970줄   | `creative/cms/`에 도식마다 한 파일 |
 | 이름 규칙에 어긋난 파일 | 9개     | 0개                                |
 
-분할 PR(#189·#190·#193)은 E2E 파일을 하나도 수정하지 않았다. 데모 PR은 1,861줄을 삭제하고 새 파일 16개에 2,007줄을 추가했는데, 증가분은 파일마다 추가된 import와 머리 주석이다. 줄 수는 병합 커밋에서 `wc -l`로 측정했고, 계획 시점(`FolderSidebar.tsx` 675줄)과 PR 직전(697줄)이 달라 PR을 올리는 시각에 다시 측정했다.
+분할 PR([#189](https://github.com/hyeoniverse/MacFolio/pull/189)·[#190](https://github.com/hyeoniverse/MacFolio/pull/190)·[#193](https://github.com/hyeoniverse/MacFolio/pull/193))은 E2E 파일을 하나도 수정하지 않았다. 데모 PR은 1,861줄을 삭제하고 새 파일 16개에 2,007줄을 추가했는데, 증가분은 파일마다 추가된 import와 머리 주석이다. 줄 수는 병합 커밋에서 `wc -l`로 측정했고, 계획 시점(`FolderSidebar.tsx` 675줄)과 PR 직전(697줄)이 달라 PR을 올리는 시각에 다시 측정했다.
 
 `Memo.tsx`(830줄)는 이미 `useMemoLibrary`·`useNoteView`·`useNoteDrag`·`useTrash` 같은 훅으로 분리되어 있어 수정하지 않았다. 이후 2단계 기준을 적용해 [#281](https://github.com/hyeoniverse/MacFolio/pull/281)에서 3,307줄이던 `settings/ProjectsPane.tsx`를 `settings/projects/` 폴더의 파일 열한 개로 분할했고, 현재 `ProjectsPane.tsx`는 281줄이다.
 
@@ -214,13 +214,13 @@ const map = await api<Record<string, string>>('/photos/captions', {
 });
 ```
 
-401 응답을 받으면 `onUnauthorized()`에 등록한 함수를 호출한다. 등록된 관리자 상태(`shared/auth/adminStore.ts`)가 `/auth/me`를 다시 조회해 메뉴 막대와 모든 앱이 함께 로그아웃 상태로 전환된다. 외부 서비스(날씨, 효과음)는 쿠키를 전송하면 안 되고 오류 형태도 달라 이 함수를 거치지 않는다. 세부 내용은 [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)(#196)에 있다.
+401 응답을 받으면 `onUnauthorized()`에 등록한 함수를 호출한다. 등록된 관리자 상태(`shared/auth/adminStore.ts`)가 `/auth/me`를 다시 조회해 메뉴 막대와 모든 앱이 함께 로그아웃 상태로 전환된다. 외부 서비스(날씨, 효과음)는 쿠키를 전송하면 안 되고 오류 형태도 달라 이 함수를 거치지 않는다. 세부 내용은 [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)([#196](https://github.com/hyeoniverse/MacFolio/pull/196))에 있다.
 
 ### 저장소와 미디어 쿼리 모듈
 
-`storage.ts`는 키 이름을 `STORAGE_KEYS` 한 곳에 정의하고 읽기·쓰기 예외를 내부에서 처리한다. 사생활 보호 창이나 저장 공간 부족으로 `localStorage`가 예외를 던져도 화면은 이번 방문 동안 메모리 값으로 동작한다. 모든 키에 `macfolio:` 접두어를 붙여 같은 출처의 라이브러리 키와 충돌하지 않게 했고, 휴지통의 '내 브라우저 데이터'도 이 목록을 기준으로 표시하고 삭제한다([readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-modules#브라우저-저장소-readjsonwritejson), #198).
+`storage.ts`는 키 이름을 `STORAGE_KEYS` 한 곳에 정의하고 읽기·쓰기 예외를 내부에서 처리한다. 사생활 보호 창이나 저장 공간 부족으로 `localStorage`가 예외를 던져도 화면은 이번 방문 동안 메모리 값으로 동작한다. 모든 키에 `macfolio:` 접두어를 붙여 같은 출처의 라이브러리 키와 충돌하지 않게 했고, 휴지통의 '내 브라우저 데이터'도 이 목록을 기준으로 표시하고 삭제한다([readJson·writeJson으로 브라우저 저장소 예외 처리를 한 곳에 모으기](/memo/shared-modules#브라우저-저장소-readjsonwritejson), [#198](https://github.com/hyeoniverse/MacFolio/pull/198)).
 
-`media.ts`는 동작 줄이기·다크 모드·터치 입력 세 가지를 통합하고, `matchMedia`가 없는 환경에서는 모두 `false`를 반환한다. 이전에는 옵셔널 체이닝으로 방어한 곳과 방어하지 않은 곳이 섞여, 같은 환경에서 한쪽은 `false`, 다른 쪽은 예외였다. 화면 크기는 `getViewport()` 하나로 조회하고 휴대폰 여부는 셸과 같은 `isMobileViewport`로 판단해, 가로 방향 휴대폰이 통계에서도 휴대폰으로 집계된다([matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-modules#화면-조건-조회-mediats와-getviewport), #199).
+`media.ts`는 동작 줄이기·다크 모드·터치 입력 세 가지를 통합하고, `matchMedia`가 없는 환경에서는 모두 `false`를 반환한다. 이전에는 옵셔널 체이닝으로 방어한 곳과 방어하지 않은 곳이 섞여, 같은 환경에서 한쪽은 `false`, 다른 쪽은 예외였다. 화면 크기는 `getViewport()` 하나로 조회하고 휴대폰 여부는 셸과 같은 `isMobileViewport`로 판단해, 가로 방향 휴대폰이 통계에서도 휴대폰으로 집계된다([matchMedia·innerWidth 직접 조회를 media.ts와 getViewport()로 모으기](/memo/shared-modules#화면-조건-조회-mediats와-getviewport), [#199](https://github.com/hyeoniverse/MacFolio/pull/199)).
 
 | 항목                                | 전                                      | 후                                        |
 | ----------------------------------- | --------------------------------------- | ----------------------------------------- |
@@ -282,7 +282,7 @@ export type IconButtonProps = IconButtonBase &
 
 ![계산된 스타일 비교 순서](./images/refactor-retrospective-style-compare.svg '공통 클래스를 뺀 상태와 적용한 상태를 같은 화면에서 비교하고, 차이가 난 값은 :where() 규칙으로 되돌려 차이 0을 확인했다')
 
-교체 중 공통 버튼의 여백이 사라진 문제도 있었다. `@layer reset, components;`를 선언했지만 빌드한 `index.html`에서 components 레이어가 reset보다 먼저 등장해 `* { padding: 0 }`이 우선했다. 브라우저는 레이어 이름이 문서에 처음 등장한 순서로 [레이어 순서](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)를 정하므로, 선언을 `index.html`의 인라인 `<style>` 맨 앞으로 옮겼다(#221). 마지막 #250에서는 macOS·iOS 모양을 고르는 곳을 조사했고, `variant` prop이 적합한 곳은 Menu 하나였다(`className="touch"` → `variant="ios"`). 사진 보기, 메일 목록 같은 다른 짝은 DOM 구조 자체가 달랐다.
+교체 중 공통 버튼의 여백이 사라진 문제도 있었다. `@layer reset, components;`를 선언했지만 빌드한 `index.html`에서 components 레이어가 reset보다 먼저 등장해 `* { padding: 0 }`이 우선했다. 브라우저는 레이어 이름이 문서에 처음 등장한 순서로 [레이어 순서](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)를 정하므로, 선언을 `index.html`의 인라인 `<style>` 맨 앞으로 옮겼다([#221](https://github.com/hyeoniverse/MacFolio/pull/221)). 마지막 [#250](https://github.com/hyeoniverse/MacFolio/pull/250)에서는 macOS·iOS 모양을 고르는 곳을 조사했고, `variant` prop이 적합한 곳은 Menu 하나였다(`className="touch"` → `variant="ios"`). 사진 보기, 메일 목록 같은 다른 짝은 DOM 구조 자체가 달랐다.
 
 | 항목               | 전          | 후                                                                          |
 | ------------------ | ----------- | --------------------------------------------------------------------------- |
@@ -328,11 +328,11 @@ CSS 값은 하나도 바꾸지 않고 이름을 붙이고, 분할하고, 삭제�
 }
 ```
 
-토큰별 세부 내용은 [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)(#231), [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/design-tokens#모서리-반경---radius--여섯-값-232)(#232), [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234)(#234), [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/design-tokens#그림자와-간격---shadow---space--248)(#248), [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)(#249)에 있다.
+토큰별 세부 내용은 [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)([#231](https://github.com/hyeoniverse/MacFolio/pull/231)), [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/design-tokens#모서리-반경---radius--여섯-값-232)([#232](https://github.com/hyeoniverse/MacFolio/pull/232)), [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234)([#234](https://github.com/hyeoniverse/MacFolio/pull/234)), [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/design-tokens#그림자와-간격---shadow---space--248)([#248](https://github.com/hyeoniverse/MacFolio/pull/248)), [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)([#249](https://github.com/hyeoniverse/MacFolio/pull/249))에 있다.
 
 ### 파일 분할, 중복 삭제와 동일성 검증
 
-`Memo.css`는 도구 막대·사이드바·목록·본문·편집기·휴대폰 화면 같은 구역 경계에서 잘라 `memo/styles/` 열다섯 파일로 분할하고, 원래 파일에는 순서대로 import하는 목록만 남겼다. 규칙 순서가 바뀌면 명시도가 같은 규칙끼리 우선순위가 바뀌므로 순서는 변경하지 않았다([@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/css-cleanup-tools#memocss-분할-선언-순서-유지), #238). Safari 페이지의 중복 규칙은 [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/css-cleanup-tools#중복-규칙-삭제-creativepartscss와-hyeoniversepagecss)(#241)에서 삭제했다.
+`Memo.css`는 도구 막대·사이드바·목록·본문·편집기·휴대폰 화면 같은 구역 경계에서 잘라 `memo/styles/` 열다섯 파일로 분할하고, 원래 파일에는 순서대로 import하는 목록만 남겼다. 규칙 순서가 바뀌면 명시도가 같은 규칙끼리 우선순위가 바뀌므로 순서는 변경하지 않았다([@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/css-cleanup-tools#memocss-분할-선언-순서-유지), [#238](https://github.com/hyeoniverse/MacFolio/pull/238)). Safari 페이지의 중복 규칙은 [getComputedStyle 비교로 동일성을 확인하며 중복 CSS 규칙 지우기](/memo/css-cleanup-tools#중복-규칙-삭제-creativepartscss와-hyeoniversepagecss)([#241](https://github.com/hyeoniverse/MacFolio/pull/241))에서 삭제했다.
 
 | 작업            | 비교 대상                                                     |
 | --------------- | ------------------------------------------------------------- |
@@ -342,7 +342,7 @@ CSS 값은 하나도 바꾸지 않고 이름을 붙이고, 분할하고, 삭제�
 
 ![이름 붙이기, 파일 나누기, 중복 지우기를 확인한 세 방법](./images/refactor-step5-styles-checks.svg '세 방법 모두 다르면 실패하는 기계 비교다')
 
-사용하지 않는 선택자(#242)는 세 단계로 찾았다([2,761개 중 정말 안 쓰는 것은 9개](/memo/css-cleanup-tools#사용하지-않는-css-클래스-삭제)).
+사용하지 않는 선택자([#242](https://github.com/hyeoniverse/MacFolio/pull/242))는 세 단계로 찾았다([2,761개 중 정말 안 쓰는 것은 9개](/memo/css-cleanup-tools#사용하지-않는-css-클래스-삭제)).
 
 1. CSS의 클래스 이름 2,761개 중 코드 어디에도 문자열이 없는 150개를 추출했다.
 2. `이름-${…}`처럼 코드가 조합하는 이름과 라이브러리(highlight.js, ProseMirror)가 붙이는 이름을 제외해 9개를 남겼다.
@@ -398,11 +398,11 @@ CSS 값은 하나도 바꾸지 않고 이름을 붙이고, 분할하고, 삭제�
 
 ![이벤트가 Recorder, Rollup, Stats를 거쳐 숫자가 되는 흐름](./images/refactor-step6-server-flow.svg '지난 날짜는 집계 테이블에서, 오늘은 이벤트 테이블에서 조회한다')
 
-서버가 한 대이므로 집계는 서버 프로세스 안의 `setInterval` 타이머로 유지했다. 모듈 초기화 시점에 한 시간 주기 타이머를 등록하고(`unref()`), 요약을 조회하는 시각에 집계가 5분 이상 밀렸거나 날짜가 바뀌었으면 `maintainIfStale()`이 한 번 더 실행한다. 기간 내 행을 반환하는 `rowsBetween`은 "지난 날짜는 집계 테이블, 오늘은 이벤트 테이블" 규칙이 집계 실행 시점을 아는 클래스의 책임이므로 집계 클래스에 배치했다. `analytics.service.ts`는 `analytics-stats.service.ts`로 이동해 git이 파일 이름 변경으로 인식하게 하고, 저장과 집계만 새 파일로 분리했다. 세부 내용은 [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)(#233)에 있다.
+서버가 한 대이므로 집계는 서버 프로세스 안의 `setInterval` 타이머로 유지했다. 모듈 초기화 시점에 한 시간 주기 타이머를 등록하고(`unref()`), 요약을 조회하는 시각에 집계가 5분 이상 밀렸거나 날짜가 바뀌었으면 `maintainIfStale()`이 한 번 더 실행한다. 기간 내 행을 반환하는 `rowsBetween`은 "지난 날짜는 집계 테이블, 오늘은 이벤트 테이블" 규칙이 집계 실행 시점을 아는 클래스의 책임이므로 집계 클래스에 배치했다. `analytics.service.ts`는 `analytics-stats.service.ts`로 이동해 git이 파일 이름 변경으로 인식하게 하고, 저장과 집계만 새 파일로 분리했다. 세부 내용은 [상태 기준으로 AnalyticsService를 저장·집계·조회 서비스로 나누기](/memo/analytics-service-split)([#233](https://github.com/hyeoniverse/MacFolio/pull/233))에 있다.
 
 ### 설정·데모 검사를 공유 스키마로
 
-검사는 1단계의 방식(zod[^zod] 스키마를 contracts에 정의하고 서버는 `parse()`로 검사)을 따랐다. 설정 세 본문은 `packages/contracts/src/settings.ts`(#235)로, 데모 네 본문은 `packages/contracts/src/demos.ts`(#236)로 옮겼고, 데모의 "텍스트 필드 하나" 규칙은 `demoText({ max, empty, refused, tooLong, lines })` 함수 하나로 정의해 데모마다 상한과 문구만 인자로 전달한다. 음성 데모의 서버 검사는 한 줄로 줄었다.
+검사는 1단계의 방식(zod[^zod] 스키마를 contracts에 정의하고 서버는 `parse()`로 검사)을 따랐다. 설정 세 본문은 `packages/contracts/src/settings.ts`([#235](https://github.com/hyeoniverse/MacFolio/pull/235))로, 데모 네 본문은 `packages/contracts/src/demos.ts`([#236](https://github.com/hyeoniverse/MacFolio/pull/236))로 옮겼고, 데모의 "텍스트 필드 하나" 규칙은 `demoText({ max, empty, refused, tooLong, lines })` 함수 하나로 정의해 데모마다 상한과 문구만 인자로 전달한다. 음성 데모의 서버 검사는 한 줄로 줄었다.
 
 ```ts
 // apps/api/src/speech/rules.ts (#236 뒤)
@@ -446,9 +446,9 @@ export const parseSpeechRequest = (body: unknown): SpeechRequest => demoInput(pa
 
 대시보드 설정은 저장소에 기록되지 않아 변경 내용과 시각을 추적할 수 없다. 전역 요청 제한 하나는 분석 이벤트(5초마다 전송)와 댓글(도배 차단)처럼 성격이 다른 경로에 같은 횟수를 적용한다.
 
-- 프론트엔드: [보안 헤더와 CSP](/memo/security-headers)(#156), [iframe sandbox](/memo/iframe-sandbox)(#157), [Markdown 렌더링 XSS 시험](/memo/markdown-xss-tests)(#159)
-- API: [경로 표와 `AdminGuard` 시험](/memo/api-route-table-test)(#160), [요청 제한 한 방식](/memo/rate-limit-all-writes)(#162), [업로드 EXIF 삭제](/memo/upload-strip-exif)(#163), [로그 마스킹](/memo/error-log-masking)(#167), [미리보기 CORS 읽기 전용](/memo/preview-cors-read-only)(#182)
-- 의존성·CI·서버: [취약점 6건과 `pnpm audit`](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)(#152), [액션 SHA 고정·Dependabot](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)(#169), [gitleaks 비밀 값 스캔](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)(#170), [서버 하드닝 `audit.sh`](/memo/server-hardening-audit)(#183)
+- 프론트엔드: [보안 헤더와 CSP](/memo/security-headers)([#156](https://github.com/hyeoniverse/MacFolio/pull/156)), [iframe sandbox](/memo/iframe-sandbox)([#157](https://github.com/hyeoniverse/MacFolio/pull/157)), [Markdown 렌더링 XSS 시험](/memo/markdown-xss-tests)([#159](https://github.com/hyeoniverse/MacFolio/pull/159))
+- API: [경로 표와 `AdminGuard` 시험](/memo/api-route-table-test)([#160](https://github.com/hyeoniverse/MacFolio/pull/160)), [요청 제한 한 방식](/memo/rate-limit-all-writes)([#162](https://github.com/hyeoniverse/MacFolio/pull/162)), [업로드 EXIF 삭제](/memo/upload-strip-exif)([#163](https://github.com/hyeoniverse/MacFolio/pull/163)), [로그 마스킹](/memo/error-log-masking)([#167](https://github.com/hyeoniverse/MacFolio/pull/167)), [미리보기 CORS 읽기 전용](/memo/preview-cors-read-only)([#182](https://github.com/hyeoniverse/MacFolio/pull/182))
+- 의존성·CI·서버: [취약점 6건과 `pnpm audit`](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)([#152](https://github.com/hyeoniverse/MacFolio/pull/152)), [액션 SHA 고정·Dependabot](/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)([#169](https://github.com/hyeoniverse/MacFolio/pull/169)), [gitleaks 비밀 값 스캔](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)([#170](https://github.com/hyeoniverse/MacFolio/pull/170)), [서버 하드닝 `audit.sh`](/memo/server-hardening-audit)([#183](https://github.com/hyeoniverse/MacFolio/pull/183))
 
 ![사이트, API, 서버, CI의 계층마다 적용한 보안 설정과 PR 번호](./images/refactor-step7-security-layers.svg '한 계층이 놓쳐도 다음 계층이 차단하도록 계층마다 별도로 적용했다')
 
@@ -530,16 +530,18 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 돌아보며
 
-- 공통 컴포넌트 후보 아홉 개는 실제 사용처를 조사해 보니 세 개였고, 사용하지 않는 CSS 클래스는 처음 추정한 150개에서 9개로 줄었다. 계획에 적은 수치를 그대로 믿지 않고 다시 측정한 덕분에 작업량이 줄었다.
-- 1~6단계는 동작을 변경하지 않는 것이 규칙이라, 빌드한 CSS를 바이트 단위로, 화면을 계산된 스타일로, 서버를 거절 문구 시험으로 비교해 "변경 없음"을 증명했다. `parse()`가 기존 함수와 같은 반환 형태를 쓴 것처럼, 새 모듈이 기존 형태를 유지하면 교체 PR이 기계적인 치환이 된다는 것도 확인했다.
-- 규칙은 기억에 맡기지 않고 도구로 강제했다. 순환은 madge가, 이름 없는 아이콘 버튼은 `tsc`가, 토큰 밖의 CSS 값은 Stylelint가, CSP 출처·요청 제한 이름·경로 표는 코드에서 생성한 목록과 시험이 차단한다.
-- 보안처럼 동작이 바뀌는 PR은 리팩터링과 섞지 않아, 거부되는 요청이 생겨도 원인을 바로 특정할 수 있었다. sandbox 시험에서는 실패하는 상태부터 확인해야 시험이 실제로 검증한다는 것을 확인했다.
+| 일어난 일                                                                                                                           | 알게 된 것·바꾼 것                                                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 공통 컴포넌트 후보 9개는 사용처를 조사하니 3개였고, 사용하지 않는 CSS 클래스는 처음 추정한 150개에서 9개로 줄었다.                  | 계획에 적은 수치는 작업 전에 다시 측정한다.                                                                                                        |
+| 1~6단계는 동작을 바꾸지 않는 것이 규칙이라, 빌드한 CSS는 바이트 단위로, 화면은 계산된 스타일로, 서버는 거절 문구 시험으로 비교했다. | `parse()`처럼 새 모듈이 기존 반환 형태를 유지하면 교체 PR은 기계적인 치환이 됐다.                                                                  |
+| 규칙은 도구로 강제했다.                                                                                                             | 순환은 madge, 이름 없는 아이콘 버튼은 `tsc`, 토큰 밖의 CSS 값은 Stylelint, CSP 출처·요청 제한 이름·경로 표는 코드에서 생성한 목록과 시험이 막는다. |
+| 보안처럼 동작이 바뀌는 PR은 리팩터링과 섞지 않아, 거부되는 요청이 생겨도 원인을 바로 특정할 수 있었다.                              | sandbox 시험은 실패하는 상태부터 확인해야 실제로 검증한다.                                                                                         |
 
 ## 아쉬웠던 것
 
 - 계획 수립 시 측정한 줄 수(예: `FolderSidebar.tsx` 675줄)와 PR 직전 줄 수(697줄)가 달랐다. 계획 문서의 수치는 측정 날짜와 함께 기록했어야 했다.
 - 이 기간에 Docker Hub의 내려받기 한도에 걸려 Postgres 이미지를 받지 못해 CI가 시작조차 하지 못한 날이 있었다. 이미지 저장소를 ECR Public으로 바꿨지만, 리팩터링과 무관한 문제로 머지가 늦어졌다.
-- 4단계는 사용처를 교체하는 PR(#245·#246·#247)이 마지막 날에 몰리면서 길어졌다. 컴포넌트를 만든 PR과 사용처를 교체하는 PR 사이에 다른 기능 작업(#187 등)을 끼워 넣어 간격이 벌어졌다.
+- 4단계는 사용처를 교체하는 PR([#245](https://github.com/hyeoniverse/MacFolio/pull/245)·[#246](https://github.com/hyeoniverse/MacFolio/pull/246)·[#247](https://github.com/hyeoniverse/MacFolio/pull/247))이 마지막 날에 몰리면서 길어졌다. 컴포넌트를 만든 PR과 사용처를 교체하는 PR 사이에 다른 기능 작업([#187](https://github.com/hyeoniverse/MacFolio/pull/187) 등)을 끼워 넣어 간격이 벌어졌다.
 
 ## 의도적으로 남긴 것
 
@@ -549,7 +551,7 @@ pnpm --filter @macfolio/api test:e2e   # DATABASE_URL의 PostgreSQL이 있어야
 
 ## 다음 작업
 
-- 리팩터링 이후 생긴 큰 파일을 같은 기준으로 분리한다. `settings/ProjectsPane.tsx`(3,307줄)는 #281에서 분할했고, `Memo.tsx`는 917줄로 늘었다.
+- 리팩터링 이후 생긴 큰 파일을 같은 기준으로 분리한다. `settings/ProjectsPane.tsx`(3,307줄)는 [#281](https://github.com/hyeoniverse/MacFolio/pull/281)에서 분할했고, `Memo.tsx`는 917줄로 늘었다.
 - 비슷한 값의 통합(간격 18px·28px, 같은 의미의 `z-index` 값)은 화면을 확인하며 하나씩 진행한다.
 
 ## 관련 글

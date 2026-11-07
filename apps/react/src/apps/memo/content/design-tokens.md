@@ -515,7 +515,7 @@ TS·TSX 안의 hex 403곳도 그대로 두었다. 프로젝트 소개 데이터�
 | 모서리 반경 | `border-radius` 576줄, 이름 239, 숫자 0 | `border-radius` 921줄, 이름 246, 숫자 115 |
 | 글자 크기   | 이름 645, 여덟 값의 숫자 0              | 이름 646, 여덟 값의 숫자 375              |
 
-`border-radius` 줄이 사흘 만에 345줄 늘었는데, 이름을 쓴 줄은 7줄만 늘었다. 숫자로 다시 생긴 115줄은 대부분 그 사이 크게 늘어난 Safari 프로젝트 페이지 템플릿(`apps/safari`)에 있다. 글자 크기의 숫자 375곳 중 253곳은 Safari 프로젝트 템플릿 다섯 개(`repo`·`devtool`·`friendly`·`keynote`·`paper`)와 `Settings.css`다. 이 CSS는 #234와 같은 시기에 다른 브랜치에서 작성되어, #234가 병합된 뒤에 합쳐졌다.
+`border-radius` 줄이 사흘 만에 345줄 늘었는데, 이름을 쓴 줄은 7줄만 늘었다. 숫자로 다시 생긴 115줄은 대부분 그 사이 크게 늘어난 Safari 프로젝트 페이지 템플릿(`apps/safari`)에 있다. 글자 크기의 숫자 375곳 중 253곳은 Safari 프로젝트 템플릿 다섯 개(`repo`·`devtool`·`friendly`·`keynote`·`paper`)와 `Settings.css`다. 이 CSS는 [#234](https://github.com/hyeoniverse/MacFolio/pull/234)와 같은 시기에 다른 브랜치에서 작성되어, [#234](https://github.com/hyeoniverse/MacFolio/pull/234)가 병합된 뒤에 합쳐졌다.
 
 ![이름 쓰는 곳과 다시 생긴 숫자](./images/radius-tokens-after.svg '이름은 그대로 쓰이지만, 뒤에 더한 코드는 숫자로 적었다')
 

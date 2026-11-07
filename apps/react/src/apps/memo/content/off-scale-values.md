@@ -44,7 +44,7 @@ MacFolio의 토큰은 세 층으로 나뉜다([#286](https://github.com/hyeonive
 
 ### 남은 숫자 집계
 
-토큰을 세 층으로 나눈 #286 이후 앱 CSS를 다시 집계했다.
+토큰을 세 층으로 나눈 [#286](https://github.com/hyeoniverse/MacFolio/pull/286) 이후 앱 CSS를 다시 집계했다.
 
 | 종류              | 남은 숫자                                                 |
 | ----------------- | --------------------------------------------------------- |
@@ -55,7 +55,7 @@ MacFolio의 토큰은 세 층으로 나뉜다([#286](https://github.com/hyeonive
 | 그라데이션        | 색을 직접 작성한 `linear-gradient` 16곳                   |
 | 부품 CSS의 기본값 | `var(--ui-accent, var(--color-control-accent))` 형태 15개 |
 
-숫자가 남은 원인은 #280 규칙의 정규식에 있었다.
+숫자가 남은 원인은 [#280](https://github.com/hyeoniverse/MacFolio/pull/280) 규칙의 정규식에 있었다.
 
 ```js
 // #280: 토큰과 같은 값, 그리고 값이 하나뿐인 선언만 차단
@@ -173,7 +173,7 @@ border-radius: var(--ui-button-radius, 8px);
 background-color: var(--ui-accent, var(--color-control-accent));
 ```
 
-부품의 기본 색을 확인하려면 부품 파일을 하나씩 열어야 했고, `--ui-*` 이름은 세 층 토큰 체계 밖에 있었다. #289에서 기본값 15개를 `styles/tokens/components.css`(3층)로 옮기고, 부품 CSS에는 `var(--ui-x)`만 남겼다.
+부품의 기본 색을 확인하려면 부품 파일을 하나씩 열어야 했고, `--ui-*` 이름은 세 층 토큰 체계 밖에 있었다. [#289](https://github.com/hyeoniverse/MacFolio/pull/289)에서 기본값 15개를 `styles/tokens/components.css`(3층)로 옮기고, 부품 CSS에는 `var(--ui-x)`만 남겼다.
 
 ```css
 /* styles/tokens/components.css */
@@ -271,7 +271,7 @@ src/zz-lint-sample.css
 ✖ 4 problems (4 errors, 0 warnings)
 ```
 
-#280 규칙이었다면 네 줄 모두 통과한다. `5px 1px`은 단축 속성, `18px`·`12px`은 토큰과 같은 값이 아니고, z-index `50`은 차단 목록의 전역 층 숫자가 아니기 때문이다.
+[#280](https://github.com/hyeoniverse/MacFolio/pull/280) 규칙이었다면 네 줄 모두 통과한다. `5px 1px`은 단축 속성, `18px`·`12px`은 토큰과 같은 값이 아니고, z-index `50`은 차단 목록의 전역 층 숫자가 아니기 때문이다.
 
 오류 메시지에는 바로 적용할 토큰 이름과 예외 처리 방법(`stylelint-disable-next-line … -- 이유`)을 포함했다. 같은 기준을 `CONTRIBUTING.md`의 스타일 규칙에도 기록했다.
 
@@ -280,12 +280,12 @@ src/zz-lint-sample.css
 - ==규칙을 넓힌 시각에 앱 CSS의 위반은 0곳==이었다. `stylelint-disable` 주석도 0개다. 이 상태에서 시작했으므로 이후의 위반은 모두 새로 작성한 CSS에서 발생한다.
 - prettier·eslint·stylelint·tsc 통과, 단위 테스트 778개 통과.
 - E2E: 미리보기 슬라이드쇼·설정·프로젝트 앱·서버 상태 41개 통과. z-index를 바꾼 화면이 포함된 시험이다.
-- #296은 파일 74개(CSS 62개)에서 615줄 추가, 566줄 삭제.
+- [#296](https://github.com/hyeoniverse/MacFolio/pull/296)은 파일 74개(CSS 62개)에서 615줄 추가, 566줄 삭제.
 
 ## 남은 것
 
 - **정의되지 않은 토큰은 검출하지 못한다.** 규칙을 넓힌 같은 날, 새로 만든 둘러보기 카드에 `--radius-16`·`--text-caption1`처럼 존재하지 않는 토큰을 사용해 모서리가 0으로 표시됐다. `var()`에 정의되지 않은 이름을 넣으면 오류 없이 무시되기 때문이다. 이 규칙은 숫자만 검사하므로 이름의 존재 여부를 확인하는 규칙이 별도로 필요하다.
-- **색은 범위로 차단할 수 없다.** 간격·글자는 숫자 축이 하나라 범위가 성립하지만, 색은 그렇지 않다. 색은 테마와 무관한 이름 있는 색(`#fff`·`#ff3b30` 등)을 단일 값으로 쓴 선언만 차단하는 #288의 방식을 유지했다.
+- **색은 범위로 차단할 수 없다.** 간격·글자는 숫자 축이 하나라 범위가 성립하지만, 색은 그렇지 않다. 색은 테마와 무관한 이름 있는 색(`#fff`·`#ff3b30` 등)을 단일 값으로 쓴 선언만 차단하는 [#288](https://github.com/hyeoniverse/MacFolio/pull/288)의 방식을 유지했다.
 - 프로젝트 소개 페이지(`apps/safari/project/**`)는 브랜드 디자인을 그대로 따르므로 검사 대상에서 제외했다.
 
 ## 관련 글
@@ -295,8 +295,8 @@ src/zz-lint-sample.css
 - [그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/design-tokens#그림자와-간격---shadow---space--248): 18px·28px처럼 이름을 붙이지 않고 남긴 간격 값
 - [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234): 이번에 `title1`·`large-title`을 추가한 글자 단계
 - [자주 쓰는 border-radius 여섯 값을 --radius-* 디자인 토큰으로 바꾸기](/memo/design-tokens#모서리-반경---radius--여섯-값-232)
-- [10월 20일 - 디자인 토큰 세 층, 큰 파일 분리, 실제 OS 구조의 Finder, SSH 접속 복구](/memo/day-1020): #286·#289가 병합된 날의 회고
-- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021): #296이 병합된 날의 회고
+- [10월 20일 - 디자인 토큰 세 층, 큰 파일 분리, 실제 OS 구조의 Finder, SSH 접속 복구](/memo/day-1020): [#286](https://github.com/hyeoniverse/MacFolio/pull/286)·[#289](https://github.com/hyeoniverse/MacFolio/pull/289)가 병합된 날의 회고
+- [10월 21일 - Markdown 이력서, 텍스트 편집기, 위젯, 첫 방문자를 위한 둘러보기](/memo/day-1021): [#296](https://github.com/hyeoniverse/MacFolio/pull/296)이 병합된 날의 회고
 
 [^hig]: Apple Human Interface Guidelines의 [Typography](https://developer.apple.com/design/human-interface-guidelines/typography). iOS 기본 크기 기준으로 Title 1이 28pt, Large Title이 34pt이며, 기존 여덟 단계도 같은 iOS 크기를 사용한다.
 

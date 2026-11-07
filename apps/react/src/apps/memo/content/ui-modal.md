@@ -361,7 +361,7 @@ E2E에서 연 상태의 오버레이와 이미지의 계산된 스타일(위치,
 | `SearchField`를 추출하고 메모는 유지한다  | 추출했다 ([#223](https://github.com/hyeoniverse/MacFolio/pull/223)). 현재 앱 쪽 7파일이 사용한다                                                                   |
 | `usePopover`는 한 곳 더 생기면 옮긴다     | 현재 `shared/ui/popover/`에 `placement`·`useDismiss`가 있다                                                                                                        |
 | `IconButton`·`Button`으로 93곳을 전환한다 | 아이콘 버튼([#245](https://github.com/hyeoniverse/MacFolio/pull/245))과 글자 버튼([#246](https://github.com/hyeoniverse/MacFolio/pull/246))을 PR 두 개로 전환했다  |
-| `variant="circle"`을 추가한다             | #245에서 추가했다                                                                                                                                                  |
+| `variant="circle"`을 추가한다             | [#245](https://github.com/hyeoniverse/MacFolio/pull/245)에서 추가했다                                                                                              |
 
 글을 쓴 시각에 같은 방법으로 다시 집계한 결과, `IconButton`을 사용하는 파일은 15개에서 34개로, `Button`은 10개에서 25개로 늘었다. 직접 작성한 `<button>`을 처음과 같은 방법으로 집계하면 현재 95파일 289곳이고, 그중 95곳이 Safari 프로젝트 데모 페이지다(그사이 데모 페이지가 늘었다). 데모 페이지를 제외하면 228곳에서 194곳으로 줄었다. 남은 곳은 대부분 표에서 "앱 고유"로 분류한 목록 행·탭·카드이고, 그사이 새로 추가된 화면의 버튼도 포함돼 있다.
 

@@ -142,7 +142,7 @@ if (icon) observer.observe(icon);
 
 ### 시험 하나에 재시도를 넣었다가 되돌린 경위
 
-처음에는 `markdown-safety.spec.ts`에만 Playwright의 [`toPass()`](https://playwright.dev/docs/test-assertions#expecttopass)를 넣었다. 원하는 글이 열릴 때까지 다시 누르는 방식이다. 그런데 이 수정을 올린 #369의 첫 CI에서 `memo.spec.ts:424`(접기 블록)가 같은 원인으로 실패했다. 열린 글의 요약 문구가 '먼저 알아 둘 용어'가 아니라 '도메인 속성의 TXT 레코드 추가 (Cloudflare)'였다.
+처음에는 `markdown-safety.spec.ts`에만 Playwright의 [`toPass()`](https://playwright.dev/docs/test-assertions#expecttopass)를 넣었다. 원하는 글이 열릴 때까지 다시 누르는 방식이다. 그런데 이 수정을 올린 [#369](https://github.com/hyeoniverse/MacFolio/pull/369)의 첫 CI에서 `memo.spec.ts:424`(접기 블록)가 같은 원인으로 실패했다. 열린 글의 요약 문구가 '먼저 알아 둘 용어'가 아니라 '도메인 속성의 TXT 레코드 추가 (Cloudflare)'였다.
 
 E2E에서 `.memo-item`을 찾아 누르는 곳을 검색하니 15개 파일에 88곳이었다. 시험마다 재시도를 넣는 대신 앱을 고쳤다. 판단 기준은 두 가지였다.
 
@@ -172,7 +172,7 @@ const posts = useMemo(
 
 ### 증상
 
-#369를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다.
+[#369](https://github.com/hyeoniverse/MacFolio/pull/369)를 머지하자 main의 CI가 E2E 이전 단계인 `check`에서 실패했다. 실패한 단계는 [의존성 취약점 검사](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)(`pnpm audit --prod --audit-level=high`)였다. 운영 의존성에 high 이상 취약점이 있으면 CI를 막도록 10월 9일에 추가한 단계다.
 
 ### 원인
 
@@ -180,14 +180,14 @@ const posts = useMemo(
 
 #### 공개에서 운영 반영까지 (한국 시각)
 
-| 시각        | 내용                                                                                                                       |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------- |
-| 10/22 20:39 | body-parser 2.4.0 배포 (수정판)                                                                                            |
-| 10/24 05:53 | [GHSA-27r3-jxmh-p828](https://github.com/advisories/GHSA-27r3-jxmh-p828) 공개 (CVE-2026-111181, high, CVSS 7.5)            |
-| 07:27       | #369 머지 뒤 main CI의 `check` 실패. 같은 시각 이후 main을 합친 #366·#370도 같은 단계에서 실패                             |
-| 07:40       | 수정 PR [#371](https://github.com/hyeoniverse/MacFolio/pull/371) 생성                                                      |
-| 07:52       | #371 CI 통과, 머지                                                                                                         |
-| 08:26       | API 이미지 빌드·배포 완료 (#370 머지 실행. #371 머지 실행의 배포는 다음 머지로 취소되어, 다음 실행이 같은 변경을 배포했다) |
+| 시각        | 내용                                                                                                                                                                                                                                                       |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10/22 20:39 | body-parser 2.4.0 배포 (수정판)                                                                                                                                                                                                                            |
+| 10/24 05:53 | [GHSA-27r3-jxmh-p828](https://github.com/advisories/GHSA-27r3-jxmh-p828) 공개 (CVE-2026-111181, high, CVSS 7.5)                                                                                                                                            |
+| 07:27       | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) 머지 뒤 main CI의 `check` 실패. 같은 시각 이후 main을 합친 [#366](https://github.com/hyeoniverse/MacFolio/pull/366)·[#370](https://github.com/hyeoniverse/MacFolio/pull/370)도 같은 단계에서 실패 |
+| 07:40       | 수정 PR [#371](https://github.com/hyeoniverse/MacFolio/pull/371) 생성                                                                                                                                                                                      |
+| 07:52       | [#371](https://github.com/hyeoniverse/MacFolio/pull/371) CI 통과, 머지                                                                                                                                                                                     |
+| 08:26       | API 이미지 빌드·배포 완료 ([#370](https://github.com/hyeoniverse/MacFolio/pull/370) 머지 실행. [#371](https://github.com/hyeoniverse/MacFolio/pull/371) 머지 실행의 배포는 다음 머지로 취소되어, 다음 실행이 같은 변경을 배포했다)                         |
 
 권고가 공개된 뒤 약 1시간 30분 만에 CI가 차단했고, 공개 2시간 33분 뒤 수정한 API가 운영 서버에서 동작했다. 사람이 권고 메일이나 Dependabot 알림을 확인하기 전에, 다음 머지가 검사를 실행하는 시각에 바로 드러났다.
 
@@ -223,11 +223,11 @@ overrides:
 
 - **fflate:** satori가 `0.7.3`으로 고정해 두었다. `'fflate@0.7.3'` 선택자는 이 버전만 바꾸고, 다른 패키지가 쓰는 fflate 0.8.3은 그대로 둔다. moderate라 CI를 막지는 않았지만 같은 검사 결과에 나와 함께 올렸다.
 - **확인:** `pnpm audit --prod`가 `No known vulnerabilities found`를 출력하는 것을 확인했다. API 단위 시험 190개, OG 이미지 시험, CI의 API E2E(실제 PostgreSQL)가 통과했다.
-- **열린 PR:** 기능 PR(#366·#370)에 섞지 않고 별도 PR로 고친 뒤, 두 PR에 main을 다시 합쳤다.
+- **열린 PR:** 기능 PR([#366](https://github.com/hyeoniverse/MacFolio/pull/366)·[#370](https://github.com/hyeoniverse/MacFolio/pull/370))에 섞지 않고 별도 PR로 고친 뒤, 두 PR에 main을 다시 합쳤다.
 
 ### 같은 날 두 번째: multer
 
-#371을 머지하고 46분 뒤(08:38), 다음 PR([#373](https://github.com/hyeoniverse/MacFolio/pull/373))에 커밋을 올리자 같은 단계가 다시 실패했다. 이번에는 권고 다섯 건이 새로 공개되어 있었고, 그중 multer가 high였다.
+[#371](https://github.com/hyeoniverse/MacFolio/pull/371)을 머지하고 46분 뒤(08:38), 다음 PR([#373](https://github.com/hyeoniverse/MacFolio/pull/373))에 커밋을 올리자 같은 단계가 다시 실패했다. 이번에는 권고 다섯 건이 새로 공개되어 있었고, 그중 multer가 high였다.
 
 | 패키지         | 수정   | 쓰는 곳             | 권고                                                                                              |
 | -------------- | ------ | ------------------- | ------------------------------------------------------------------------------------------------- |
@@ -237,14 +237,14 @@ overrides:
 
 한국 시각으로 맞춰 보면 GitHub 권고 공개와 `pnpm audit` 결과 반영 사이에 시간 차이가 있다.
 
-| 시각  | 내용                                                                  |
-| ----- | --------------------------------------------------------------------- |
-| 07:08 | multer 권고 공개 (GitHub Advisory Database)                           |
-| 08:33 | main(#372 머지)의 `check` 통과: 이 시각까지는 audit 결과에 없었다     |
-| 08:38 | #373의 `check` 실패: 처음으로 audit 결과에 나타났다                   |
-| 08:46 | 수정 PR [#374](https://github.com/hyeoniverse/MacFolio/pull/374) 생성 |
-| 09:09 | #374 CI 통과(API E2E의 파일 업로드 시험 포함), 머지                   |
-| 09:25 | API 이미지 빌드·배포 완료                                             |
+| 시각  | 내용                                                                                                                  |
+| ----- | --------------------------------------------------------------------------------------------------------------------- |
+| 07:08 | multer 권고 공개 (GitHub Advisory Database)                                                                           |
+| 08:33 | main([#372](https://github.com/hyeoniverse/MacFolio/pull/372) 머지)의 `check` 통과: 이 시각까지는 audit 결과에 없었다 |
+| 08:38 | [#373](https://github.com/hyeoniverse/MacFolio/pull/373)의 `check` 실패: 처음으로 audit 결과에 나타났다               |
+| 08:46 | 수정 PR [#374](https://github.com/hyeoniverse/MacFolio/pull/374) 생성                                                 |
+| 09:09 | [#374](https://github.com/hyeoniverse/MacFolio/pull/374) CI 통과(API E2E의 파일 업로드 시험 포함), 머지               |
+| 09:25 | API 이미지 빌드·배포 완료                                                                                             |
 
 > [!WARNING] 같은 커밋도 실행 시각에 따라 통과하거나 실패한다
 > `pnpm audit`는 npm 레지스트리의 취약점 조회 API에 질의하므로, GitHub에 권고가 공개된 시각과 audit 결과에 나타나는 시각이 다르다. 이번에는 07:08에 공개된 권고가 08:33에 끝난 검사에는 없었고 08:38에 끝난 검사에서 처음 나타나, 1시간 25분 이상 차이가 났다.
@@ -269,13 +269,13 @@ overrides:
 
 ### 증상
 
-main을 다시 합친 #370의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/activity-live-refresh)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
+main을 다시 합친 [#370](https://github.com/hyeoniverse/MacFolio/pull/370)의 CI에서 `live-refresh.spec.ts:65`가 재시도까지 실패했다. 메시지 앱에서 맨 아래를 보고 있으면 새 답글을 따라 내려가는지 확인하는 시험이다([메시지·댓글도 보이는 동안만 갱신하기](/memo/activity-live-refresh)). 새 답글이 도착했지만 대화 칸이 맨 아래에서 37px 떨어진 채였다.
 
 ![새 답글을 따라 내려가지 않은 화면](./images/ci-failures-after-merges-live-refresh.jpg '맨 아래에서 받은 답글이 입력 칸 위에서 잘려 있다')
 
 ### 원인
 
-#370은 새 피드백 화면만 바꾸고 대화 화면 코드는 바꾸지 않았다. 대화 화면은 맨 아래를 보고 있는지를 `onScroll`에서 기록하고, 새 답글이 오면 그 기록을 읽는다.
+[#370](https://github.com/hyeoniverse/MacFolio/pull/370)은 새 피드백 화면만 바꾸고 대화 화면 코드는 바꾸지 않았다. 대화 화면은 맨 아래를 보고 있는지를 `onScroll`에서 기록하고, 새 답글이 오면 그 기록을 읽는다.
 
 ```tsx
 // ChatView.tsx
@@ -313,25 +313,25 @@ const scrollLog = (log: Locator, to: 'top' | 'bottom') =>
 - **macOS에서 통과해도 Linux 글꼴로 결과가 달라질 수 있다.** 측정값을 계산에 쓰는 요소(여기서는 아이콘 이름)는 `line-height`를 숫자로 지정해 글꼴 메트릭에 의존하지 않게 한다. 측정 effect는 계산에 쓰는 요소를 모두 `ResizeObserver`로 관찰한다.
 - **재현되지 않으면 추측으로 고치기 전에 아티팩트를 내려받는다.** 이번 네 건 중 세 건은 `trace.zip`의 반환값·요청 순서와 `test-failed-1.png`로 원인을 좁혔다.
 - **재시도를 넣기 전에 같은 패턴의 시험이 몇 곳인지 검색한다.** 여러 곳이 같은 원인에 걸리면 방문자도 겪는 문제일 가능성이 높고, 앱을 고치는 편이 수정 범위가 작다. 반대로 실제 사용자에게는 생기지 않는 순서(④)는 시험을 고친다.
-- **`check` 단계 실패는 먼저 실패한 단계 이름을 확인한다.** 의존성 검사는 코드와 무관하게 외부 권고 공개 시각에 따라 실패한다. 이 경우 기능 PR이 아니라 별도 PR(#371, #374)로 고치고, 열린 PR들은 main을 다시 합친다. 권고는 GitHub 공개 뒤 시간 차이를 두고 audit 결과에 반영되므로, 직전 실행이 통과했어도 다음 실행에서 실패할 수 있다.
+- **`check` 단계 실패는 먼저 실패한 단계 이름을 확인한다.** 의존성 검사는 코드와 무관하게 외부 권고 공개 시각에 따라 실패한다. 이 경우 기능 PR이 아니라 별도 PR([#371](https://github.com/hyeoniverse/MacFolio/pull/371), [#374](https://github.com/hyeoniverse/MacFolio/pull/374))로 고치고, 열린 PR들은 main을 다시 합친다. 권고는 GitHub 공개 뒤 시간 차이를 두고 audit 결과에 반영되므로, 직전 실행이 통과했어도 다음 실행에서 실패할 수 있다.
 
 <details>
 <summary>실행별 결과 (한국 시각)</summary>
 
-| 시각  | 실행                      | 결과                                               |
-| ----- | ------------------------- | -------------------------------------------------- |
-| 01:17 | main, #368 머지           | 실패: E2E 2칸(②), E2E 5칸(①)                       |
-| 01:20 | #366, main 합침           | 실패: E2E 5칸(①)                                   |
-| 01:47 | #369 첫 커밋              | 실패: `memo.spec.ts:424`(②)                        |
-| 02:15 | #369 앱 수정              | 02:31 커밋(PR 그림)이 올라와 취소, 02:31 실행 통과 |
-| 07:27 | main, #369 머지           | 실패: `check` › 의존성 취약점 검사(③)              |
-| 07:36 | #366·#370, main 합침      | #366 `check` 실패, #370 `check`와 E2E 1칸(④) 실패  |
-| 07:40 | #371                      | 통과, 07:52 머지                                   |
-| 07:57 | #366·#370, main 다시 합침 | 통과, 08:09 머지                                   |
-| 08:33 | main, #372 머지           | `check` 통과                                       |
-| 08:38 | #373                      | 실패: `check` › 의존성 취약점 검사(③, multer)      |
-| 08:46 | #374                      | multer·undici·fast-uri 수정                        |
-| 09:09 | main, #374 머지           | 통과, 09:25 API 배포                               |
+| 시각  | 실행                                                                                                                              | 결과                                                                                                                                                      |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 01:17 | main, [#368](https://github.com/hyeoniverse/MacFolio/pull/368) 머지                                                               | 실패: E2E 2칸(②), E2E 5칸(①)                                                                                                                              |
+| 01:20 | [#366](https://github.com/hyeoniverse/MacFolio/pull/366), main 합침                                                               | 실패: E2E 5칸(①)                                                                                                                                          |
+| 01:47 | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) 첫 커밋                                                                  | 실패: `memo.spec.ts:424`(②)                                                                                                                               |
+| 02:15 | [#369](https://github.com/hyeoniverse/MacFolio/pull/369) 앱 수정                                                                  | 02:31 커밋(PR 그림)이 올라와 취소, 02:31 실행 통과                                                                                                        |
+| 07:27 | main, [#369](https://github.com/hyeoniverse/MacFolio/pull/369) 머지                                                               | 실패: `check` › 의존성 취약점 검사(③)                                                                                                                     |
+| 07:36 | [#366](https://github.com/hyeoniverse/MacFolio/pull/366)·[#370](https://github.com/hyeoniverse/MacFolio/pull/370), main 합침      | [#366](https://github.com/hyeoniverse/MacFolio/pull/366) `check` 실패, [#370](https://github.com/hyeoniverse/MacFolio/pull/370) `check`와 E2E 1칸(④) 실패 |
+| 07:40 | [#371](https://github.com/hyeoniverse/MacFolio/pull/371)                                                                          | 통과, 07:52 머지                                                                                                                                          |
+| 07:57 | [#366](https://github.com/hyeoniverse/MacFolio/pull/366)·[#370](https://github.com/hyeoniverse/MacFolio/pull/370), main 다시 합침 | 통과, 08:09 머지                                                                                                                                          |
+| 08:33 | main, [#372](https://github.com/hyeoniverse/MacFolio/pull/372) 머지                                                               | `check` 통과                                                                                                                                              |
+| 08:38 | [#373](https://github.com/hyeoniverse/MacFolio/pull/373)                                                                          | 실패: `check` › 의존성 취약점 검사(③, multer)                                                                                                             |
+| 08:46 | [#374](https://github.com/hyeoniverse/MacFolio/pull/374)                                                                          | multer·undici·fast-uri 수정                                                                                                                               |
+| 09:09 | main, [#374](https://github.com/hyeoniverse/MacFolio/pull/374) 머지                                                               | 통과, 09:25 API 배포                                                                                                                                      |
 
 </details>
 
