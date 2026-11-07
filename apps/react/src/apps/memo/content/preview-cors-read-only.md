@@ -4,7 +4,7 @@ date: 2026-10-10
 category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
 seriesOrder: 9
-summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하고 있었다. SameSite=Lax가 이미 차단하고 있었지만 서버에서도 차단하게 했다. 허용 목록을 exact·pattern으로 분류해 pattern에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다.
+summary: PR 미리보기용 CORS 와일드카드가 쿠키(credentials)까지 허용하던 범위를 줄였다. 패턴에 맞은 주소에는 credentials를 허용하지 않고, 관리자 가드는 exact가 아닌 Origin을 403으로 거부한다. 프론트엔드는 사이트가 다른 미리보기에서 쿠키 없이 요청해 공개 데이터를 읽는다.
 ---
 
 MacFolio의 화면(`macfolio.hyeoniverse.com`)과 API 서버(`macfolio-api.hyeoniverse.com`)는 주소가 다르다. 브라우저는 주소가 다른 서버의 응답을 페이지 코드에 넘기기 전에 서버의 허락을 확인하는데, 이 허락을 주고받는 규칙이 CORS다. API는 사이트 주소 외에 PR마다 생기는 미리보기 주소도 허락 목록에 두고 있었고, 그 허락에 관리자 로그인 쿠키까지 포함되어 있었다. 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))의 보안 항목 "CORS 와일드카드 범위 점검"에서 이 범위를 줄였다([#182](https://github.com/hyeoniverse/MacFolio/pull/182)).
@@ -147,12 +147,36 @@ if (!this.cookiesAllowed(request.headers.origin))
 
 ![Origin을 exact, pattern, null로 나누고 CORS 응답과 관리자 가드가 각각 다르게 답하는 도식](./images/preview-cors-read-only-origin.svg 'exact만 쿠키를 허용하고 관리자 API를 통과한다. * 패턴에 일치한 미리보기는 읽기만 허용')
 
-> [!NOTE] 미리보기는 읽기 전용
-> 미리보기 동작은 바뀌지 않는다. 이전에도 읽기만 가능했고 지금도 읽기만 가능하다. 관리자 기능은 로컬에서 확인한다.
+### 프론트엔드: API와 사이트가 다르면 쿠키 없이 요청한다
+
+서버 쪽 변경만으로는 미리보기가 글을 읽지 못한다. 프론트엔드의 요청 함수(`apps/react/src/shared/api/client.ts`)가 모든 요청에 `credentials: 'include'`를 붙이고 있었기 때문이다. 앞의 [credentials](#credentials-쿠키를-포함한-교차-출처-요청) 절에서 설명한 대로, credentials 요청은 응답에 `Access-Control-Allow-Credentials: true`가 없으면 브라우저가 응답 전체를 차단한다. 서버는 미리보기 주소에 이 헤더를 보내지 않으므로, 미리보기에서 보내는 글 목록·댓글 같은 공개 데이터 요청도 모두 실패한다.
+
+| 미리보기의 요청                    | 서버 응답 헤더                                       | 브라우저 처리                            |
+| ---------------------------------- | ---------------------------------------------------- | ---------------------------------------- |
+| `credentials: 'include'` (수정 전) | `Allow-Origin: <미리보기>`, `Allow-Credentials` 없음 | 응답 차단, 콘솔에 CORS 오류              |
+| `credentials: 'omit'` (수정 후)    | `Allow-Origin: <미리보기>`                           | 응답을 페이지에 전달, 쿠키는 보내지 않음 |
+
+미리보기에서 쿠키를 보낼 이유도 없다. 미리보기(`hyeoniverse.workers.dev`)와 API(`hyeoniverse.com`)는 사이트가 달라 `SameSite=Lax` 쿠키가 요청에 실리지 않는다. 그래서 요청 함수가 ==페이지와 API의 사이트가 같을 때만 쿠키를 붙이도록== 바꿨다. 판단은 `credentials.ts`의 순수 함수 하나가 맡는다.
+
+```ts
+// apps/react/src/shared/api/credentials.ts
+export function credentialsFor(pageHostname: string, apiUrl: string): RequestCredentials {
+	// 호스트 이름의 끝 두 라벨(hyeoniverse.com)을 사이트로 보고 비교한다. localhost·IP는 include
+}
+```
+
+| 페이지 주소                               | API 주소                       | 결과      |
+| ----------------------------------------- | ------------------------------ | --------- |
+| `macfolio.hyeoniverse.com` (배포 사이트)  | `macfolio-api.hyeoniverse.com` | `include` |
+| `feat-x-macfolio.hyeoniverse.workers.dev` | `macfolio-api.hyeoniverse.com` | `omit`    |
+| `localhost:5173` (로컬 개발)              | `localhost:4000`               | `include` |
+
+보안 측면에서는 쿠키를 보내는 범위가 더 좁아진다. 서버의 CORS 응답과 관리자 가드는 그대로이고, 미리보기 화면은 처음부터 쿠키 없이 공개 API만 호출한다. 관리자 기능은 미리보기에서 열리지 않으므로 로컬에서 확인한다.
 
 ## 확인
 
 - 단위: `exact`·`pattern`·거절 분류, 쿠키 허용 판단
+- 프론트엔드 단위: 배포 사이트·로컬은 `include`, 미리보기(`workers.dev`)는 `omit` (`apps/react/src/shared/api/credentials.test.ts`)
 - e2e: 사이트 주소에는 `Allow-Credentials: true`, 미리보기 주소에는 헤더 없음, 관리자 API에 미리보기·다른 사이트 Origin을 지정하면 403
 
 시험 이름은 `apps/api/src/common/cors.test.ts`의 "*에는 점이 오지 않는다: 다른 도메인이나 다른 계정으로 넓어지지 않는다", "그대로 적은 주소는 exact, *에 맞은 주소는 pattern", "exact 주소와 Origin이 없는 요청(같은 사이트 이동, curl)에만 쿠키를 허용한다"와 `apps/api/test/auth.e2e.test.ts`의 "허용한 사이트 주소가 아닌 Origin이 붙으면 세션이 맞아도 403 (PR 미리보기·다른 사이트에서는 관리자 기능이 열리지 않는다)"이다. 이 시험은 같은 세션 쿠키로 Origin만 바꿔 세 번 요청한다.

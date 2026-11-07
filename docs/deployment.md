@@ -36,7 +36,7 @@
 빌드와 배포는 GitHub Actions(`.github/workflows/ci.yml`)가 실행한다([#82](https://github.com/hyeoniverse/MacFolio/pull/82)). Cloudflare의 빌드 서버(Workers Builds)는 사용하지 않는다. 워크플로가 쓰는 액션은 태그(`@v7`)가 아니라 커밋 SHA로 고정하고(태그는 나중에 다른 코드를 가리킬 수 있다), 새 버전은 Dependabot(`.github/dependabot.yml`)이 PR로 올린다.
 
 - **main**: 시험(`check`)이 통과하면 `deploy` 작업이 `wrangler deploy`로 실제 사이트에 올린다. 시험이 실패한 커밋은 배포되지 않는다.
-- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 [미리보기 버전](https://developers.cloudflare.com/workers/configuration/previews/)을 업로드하고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 수정한다). 실제 사이트는 변경되지 않는다. 미리보기는 실제 API를 읽기만 한다: 주소가 `*.workers.dev`라 `SameSite=Lax` 세션 쿠키가 전송되지 않고, API도 `*`로 맞은 주소에는 쿠키를 허용하지 않으며 관리자 API는 그런 Origin을 403으로 거절한다. 관리자 기능은 미리보기 대신 로컬(`pnpm dev`)에서 확인한다. Dependabot PR과 프론트엔드 파일(`apps/react`, `packages`, lockfile 등)이 바뀌지 않은 PR에서는 건너뛴다. 업로드 자체는 무료(요청 수로만 과금)이고 버전은 최근 100개까지만 보관되지만, CI 실행 시간과 댓글 수를 줄이기 위해 건너뛴다.
+- **PR**: `preview` 작업이 `wrangler versions upload --preview-alias <브랜치>`로 [미리보기 버전](https://developers.cloudflare.com/workers/configuration/previews/)을 업로드하고, 주소를 PR 댓글 하나에 적는다(새 커밋을 올리면 같은 댓글을 수정한다). 실제 사이트는 변경되지 않는다. 미리보기는 실제 API를 읽기만 한다: 주소가 `*.workers.dev`라 `SameSite=Lax` 세션 쿠키가 전송되지 않고, API도 `*`로 맞은 주소에는 쿠키를 허용하지 않으며 관리자 API는 그런 Origin을 403으로 거절한다. 프론트엔드도 API와 사이트가 다르면 쿠키 없이(`credentials: 'omit'`) 요청해, 쿠키를 허용하지 않는 CORS 응답을 브라우저가 차단하지 않게 한다(`apps/react/src/shared/api/credentials.ts`). 관리자 기능은 미리보기 대신 로컬(`pnpm dev`)에서 확인한다. Dependabot PR과 프론트엔드 파일(`apps/react`, `packages`, lockfile 등)이 바뀌지 않은 PR에서는 건너뛴다. 업로드 자체는 무료(요청 수로만 과금)이고 버전은 최근 100개까지만 보관되지만, CI 실행 시간과 댓글 수를 줄이기 위해 건너뛴다.
 
 ### 처음 한 번: 토큰과 Git 연결
 
