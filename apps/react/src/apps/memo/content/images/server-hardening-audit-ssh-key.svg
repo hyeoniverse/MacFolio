@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>SSH 공개 키 인증: 클라이언트는 개인 키로 세션 데이터에 서명해 보내고, 서버는 authorized_keys의 공개 키로 서명을 검증한다. 개인 키는 네트워크로 나가지 않는다. 비밀번호 인증은 비밀번호 자체를 보내므로 무작위 대입의 대상이 된다</title>
+<defs>
+<marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">공개 키 인증은 비밀 값을 네트워크로 보내지 않는다</text>
+<rect x="24" y="52" width="180" height="150" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="114" y="76" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">내 노트북</text>
+<rect x="40" y="90" width="148" height="44" rx="6" fill="#ffffff" stroke="#ff9f0a"/>
+<text x="114" y="109" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">개인 키</text>
+<text x="114" y="125" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">~/.ssh/id_ed25519</text>
+<text x="114" y="160" font-size="12" fill="#6e6e73" text-anchor="middle">밖으로 나가지 않는다</text>
+<rect x="436" y="52" width="180" height="150" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="526" y="76" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">서버 (sshd)</text>
+<rect x="452" y="90" width="148" height="44" rx="6" fill="#ffffff" stroke="#34c759"/>
+<text x="526" y="109" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">공개 키</text>
+<text x="526" y="125" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">authorized_keys</text>
+<text x="526" y="160" font-size="12" fill="#6e6e73" text-anchor="middle">서명을 검증만 한다</text>
+<path d="M204 100 H434" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="320" y="92" font-size="12" fill="#0a84ff" text-anchor="middle">① 이 공개 키로 로그인하겠다</text>
+<path d="M204 140 H434" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="320" y="132" font-size="12" fill="#0a84ff" text-anchor="middle">② 세션 데이터에 개인 키로 서명</text>
+<path d="M434 180 H206" stroke="#34c759" stroke-width="1.5" marker-end="url(#k)"/>
+<text x="320" y="172" font-size="12" fill="#34c759" text-anchor="middle">③ 공개 키로 검증 성공 → 접속</text>
+<line x1="24" y1="222" x2="616" y2="222" stroke="#d1d1d6"/>
+<text x="24" y="248" font-size="13" font-weight="700" fill="#ff3b30">PasswordAuthentication yes일 때</text>
+<rect x="24" y="260" width="592" height="56" rx="8" fill="#ff3b30" fill-opacity="0.07" stroke="#ff3b30"/>
+<text x="40" y="282" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">ubuntu / 123456, ubuntu / password, root / admin …</text>
+<text x="40" y="302" font-size="12" fill="#ff3b30">누구나 22번에 접속해 추측한 비밀번호를 계속 시도할 수 있다</text>
+</svg>

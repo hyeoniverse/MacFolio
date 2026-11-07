@@ -181,7 +181,7 @@ Fonts are fetched according to the characters drawn on screen, so their size can
 | Desktop first screen (desktop-chromium)           | 568KB (6 files)             | **600KB** |
 | Phone home screen (mobile-iphone, mobile-android) | 382KB (3 files)             | **410KB** |
 
-- The limits add about 30KB to the measured values. One small piece fits; the Korean serif pieces (about 440KB) or the Pretendard `ksx` piece (253KB) returning to the first screen fail the test
+- The limits add about 30KB to the measured values. One small piece fits; the Korean serif pieces (about 440KB) or the Pretendard `ksx` piece (244KB) returning to the first screen fail the test
 - The desktop test also checks that no Korean serif piece is loaded on the first screen, and that clicking the Safari window loads it
 - On failure the message lists each font file's size. To raise a limit, change `FONT_BUDGET` in `fontBudget.ts` and this table together
 
@@ -348,9 +348,9 @@ Switching apps to load when first opened broke 16 E2E tests.
 
 ## Related posts (Korean)
 
-- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-report)
+- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-diet#병목-분석)
 - [첫 방문 전송량 9MB를 0.8MB로 — 글꼴, 글 원문, 앱 코드, 이미지 최적화 과정](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
-- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](https://macfolio.hyeoniverse.com/memo/site-performance-remeasure)
+- [성능 재측정 — 운영 휴대폰 98점, 그리고 다시 커진 첫 번들](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget#운영-사이트-재측정)
 - [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
 
 [^fcp]: [First Contentful Paint](https://web.dev/articles/fcp): when the first content such as text or an image is rendered.

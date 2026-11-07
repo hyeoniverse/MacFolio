@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>bringAppToFront의 번호 다시 매기기와 같은 렌더에서 두 번 호출한 결과</title>
+<rect width="640" height="440" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">앱 A·B·C의 zIndex (큰 값이 앞)</text>
+<text x="24" y="66" font-size="14" font-weight="700" fill="#1d1d1f">한 번 호출: A를 누름</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#1d1d1f">
+<rect x="24" y="78" width="168" height="44" rx="8" fill="#f2f2f7"/><text x="108" y="105" text-anchor="middle">A0  B1  C2</text>
+<rect x="236" y="78" width="168" height="44" rx="8" fill="#f2f2f7"/><text x="320" y="105" text-anchor="middle">A0  B1  C2</text>
+<rect x="448" y="78" width="168" height="44" rx="8" fill="#eafaef" stroke="#34c759"/><text x="532" y="105" text-anchor="middle">A3  B1  C2</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M194 100 H232"/><path d="M406 100 H444"/></g>
+<text x="108" y="142" font-size="12" text-anchor="middle" fill="#6e6e73">시작 상태</text>
+<text x="320" y="142" font-size="12" text-anchor="middle" fill="#6e6e73">정렬 순서대로 0부터</text>
+<text x="532" y="142" font-size="12" text-anchor="middle" fill="#6e6e73">A에 개수(3)를 부여</text>
+<text x="24" y="190" font-size="14" font-weight="700" fill="#1d1d1f">같은 렌더에서 A, B 순서로 두 번 호출</text>
+<text x="24" y="210" font-size="12" fill="#6e6e73">두 호출 모두 렌더 시점의 apps(A0 B1 C2)로 정렬한 순서 [A, B, C]를 쓴다</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#1d1d1f">
+<rect x="24" y="224" width="168" height="44" rx="8" fill="#f2f2f7"/><text x="108" y="251" text-anchor="middle">A0  B1  C2</text>
+<rect x="236" y="224" width="168" height="44" rx="8" fill="#f2f2f7"/><text x="320" y="251" text-anchor="middle">A3  B1  C2</text>
+<rect x="448" y="224" width="168" height="44" rx="8" fill="#fff0ef" stroke="#ff3b30"/><text x="532" y="251" text-anchor="middle">A0  B3  C2</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M194 246 H232"/><path d="M406 246 H444"/></g>
+<text x="320" y="288" font-size="12" text-anchor="middle" fill="#6e6e73">첫 updater: A를 맨 앞으로</text>
+<text x="532" y="288" font-size="12" text-anchor="middle" fill="#6e6e73">둘째 updater: [A, B, C] 순서로</text>
+<text x="532" y="304" font-size="12" text-anchor="middle" fill="#6e6e73">다시 0, 1, 2를 매겨 A가 0</text>
+<rect x="24" y="328" width="592" height="94" rx="10" fill="#fff4e5"/>
+<text x="40" y="352" font-size="12.5" fill="#1d1d1f">기대한 결과는 B가 맨 앞이고 A가 그다음(A2 B3 C1)이지만, A는 맨 뒤로 간다.</text>
+<text x="40" y="376" font-size="12.5" fill="#1d1d1f">원인 1. 정렬을 setApps 밖의 apps로 해 updater가 받은 직전 상태(prevState)를 쓰지 않는다.</text>
+<text x="40" y="400" font-size="12.5" fill="#1d1d1f">원인 2. { ...prevState }는 바깥 객체만 복사해, zIndex 대입이 이전 상태의 앱 객체를 직접 바꾼다.</text>
+</svg>

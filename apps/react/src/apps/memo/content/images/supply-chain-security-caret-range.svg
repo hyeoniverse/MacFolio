@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>&gt;=4.0.33은 4.0.33 이상의 모든 버전을 허용해 5.x까지 설치될 수 있고, ^4.0.33은 4.0.33 이상 5.0.0 미만만 허용한다</title>
+<rect width="640" height="270" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">버전 범위 표기: &gt;=4.0.33과 ^4.0.33</text>
+<text x="24" y="56" font-size="12" fill="#6e6e73">유의적 버전 MAJOR.MINOR.PATCH에서 MAJOR가 바뀌면 호환되지 않는 변경이 있다는 뜻이다</text>
+<line x1="40" y1="120" x2="610" y2="120" stroke="#1d1d1f" stroke-width="1.5"/>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<line x1="80" y1="114" x2="80" y2="126" stroke="#1d1d1f"/><text x="80" y="144">4.0.5</text>
+<line x1="170" y1="114" x2="170" y2="126" stroke="#1d1d1f"/><text x="170" y="144">4.0.33</text>
+<line x1="300" y1="114" x2="300" y2="126" stroke="#1d1d1f"/><text x="300" y="144">4.0.60</text>
+<line x1="420" y1="108" x2="420" y2="132" stroke="#ff3b30" stroke-width="2"/><text x="420" y="144" fill="#ff3b30">5.0.0</text>
+<line x1="530" y1="114" x2="530" y2="126" stroke="#1d1d1f"/><text x="530" y="144">5.x</text>
+</g>
+<text x="80" y="100" font-size="12" fill="#ff3b30" text-anchor="middle">취약</text>
+<text x="420" y="100" font-size="12" fill="#ff3b30" text-anchor="middle">메이저 변경</text>
+<text x="24" y="182" font-size="13" font-weight="700" fill="#1d1d1f">&gt;=4.0.33</text>
+<rect x="170" y="170" width="440" height="18" rx="4" fill="#ff9f0a" fill-opacity="0.35" stroke="#ff9f0a"/>
+<text x="560" y="204" font-size="12" fill="#ff3b30" text-anchor="end">5.x까지 허용 → 실제로 5.x가 설치되었다</text>
+<text x="24" y="232" font-size="13" font-weight="700" fill="#1d1d1f">^4.0.33</text>
+<rect x="170" y="220" width="250" height="18" rx="4" fill="#34c759" fill-opacity="0.35" stroke="#34c759"/>
+<text x="430" y="234" font-size="12" fill="#34c759">4.x 안에서만 → 4.0.60 설치</text>
+<circle cx="170" cy="179" r="5" fill="#1d1d1f"/><circle cx="170" cy="229" r="5" fill="#1d1d1f"/>
+<circle cx="420" cy="229" r="5" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.5"/>
+</svg>

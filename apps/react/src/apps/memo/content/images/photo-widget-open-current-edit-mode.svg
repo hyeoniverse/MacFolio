@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>홈 화면 편집 중의 위젯 누름</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="270" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">홈 화면 편집 중에 사진 위젯을 누른 경우</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">편집 중에는 open()이 아무 일도 하지 않지만, 요청은 open() 호출 전에 저장된다</text>
+<text x="20" y="78" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">수정 전</text>
+<rect x="20" y="86" width="138" height="54" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="89" y="109" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">위젯 누름</text>
+<text x="89" y="127" font-size="12" fill="#1d1d1f" text-anchor="middle">편집 중</text>
+<line x1="158" y1="113" x2="170" y2="113" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="174" y="86" width="138" height="54" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.2"/>
+<text x="243" y="109" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">requestOpen</text>
+<text x="243" y="127" font-size="12" fill="#1d1d1f" text-anchor="middle">요청이 저장됨</text>
+<line x1="312" y1="113" x2="324" y2="113" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="328" y="86" width="138" height="54" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="397" y="109" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">open() 무시</text>
+<text x="397" y="127" font-size="12" fill="#1d1d1f" text-anchor="middle">앱이 열리지 않음</text>
+<line x1="466" y1="113" x2="478" y2="113" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="482" y="86" width="138" height="54" rx="6" fill="#fff0ef" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="551" y="109" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">나중에 사진 앱</text>
+<text x="551" y="127" font-size="12" fill="#1d1d1f" text-anchor="middle">남은 요청으로 크게 보기</text>
+<text x="20" y="188" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">수정 후</text>
+<rect x="20" y="196" width="138" height="54" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="89" y="219" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">위젯 누름</text>
+<text x="89" y="237" font-size="12" fill="#1d1d1f" text-anchor="middle">편집 중</text>
+<line x1="158" y1="223" x2="170" y2="223" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="174" y="196" width="138" height="54" rx="6" fill="#e8f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="243" y="219" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">onClickCapture</text>
+<text x="243" y="237" font-size="12" fill="#1d1d1f" text-anchor="middle">캡처 단계에서 차단</text>
+<line x1="312" y1="223" x2="324" y2="223" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="328" y="196" width="138" height="54" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="397" y="219" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">requestOpen 없음</text>
+<text x="397" y="237" font-size="12" fill="#1d1d1f" text-anchor="middle">요청이 저장되지 않음</text>
+<line x1="466" y1="223" x2="478" y2="223" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="482" y="196" width="138" height="54" rx="6" fill="#ecf9ef" stroke="#34c759" stroke-width="1.2"/>
+<text x="551" y="219" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">나중에 사진 앱</text>
+<text x="551" y="237" font-size="12" fill="#1d1d1f" text-anchor="middle">보관함 격자</text>
+</svg>

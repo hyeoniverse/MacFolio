@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>현재 이미지 위에 HEALTHCHECK CMD false 레이어만 추가한 훈련용 이미지와, 그 컨테이너가 starting에서 unhealthy로 바뀌는 상태 전이</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker></defs>
+<rect width="640" height="370" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">훈련용 이미지와 컨테이너 상태</text>
+
+<text x="20" y="60" font-size="13" font-weight="700" fill="#1d1d1f">이미지 레이어 (아래부터 쌓인다)</text>
+<g font-size="12">
+<rect x="20" y="72" width="270" height="34" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="32" y="88" font-weight="700" fill="#c46c00">추가: HEALTHCHECK … CMD false</text>
+<text x="32" y="101" fill="#6e6e73">sha-dead000에만 있는 레이어</text>
+<rect x="20" y="112" width="270" height="28" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="32" y="131" fill="#6e6e73">HEALTHCHECK … wget /health (가려짐)</text>
+<rect x="20" y="144" width="270" height="28" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="32" y="163" fill="#1d1d1f">앱 코드, version = sha-7e7eac0</text>
+<rect x="20" y="176" width="270" height="28" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="32" y="195" fill="#1d1d1f">Node.js 런타임, 의존성</text>
+</g>
+<text x="20" y="224" font-size="12" fill="#6e6e73">HEALTHCHECK는 마지막에 지정한 하나만 적용된다</text>
+
+<text x="330" y="60" font-size="13" font-weight="700" fill="#1d1d1f">HEALTHCHECK 상태 전이</text>
+<rect x="330" y="84" width="110" height="36" rx="18" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="385" y="107" font-size="13" text-anchor="middle" fill="#1d1d1f">starting</text>
+<rect x="510" y="72" width="110" height="36" rx="18" fill="#e8f8ec" stroke="#34c759"/>
+<text x="565" y="95" font-size="13" text-anchor="middle" fill="#248a3d">healthy</text>
+<rect x="510" y="150" width="110" height="36" rx="18" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="565" y="173" font-size="13" text-anchor="middle" fill="#ff3b30" font-weight="700">unhealthy</text>
+<line x1="440" y1="96" x2="508" y2="90" stroke="#34c759" stroke-width="1.5" marker-end="url(#g)"/>
+<text x="474" y="80" font-size="12" text-anchor="middle" fill="#248a3d">검사 성공</text>
+<path d="M420 120 L508 162" fill="none" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="420" y="160" font-size="12" text-anchor="end" fill="#ff3b30">false (retries=1)</text>
+<text x="330" y="212" font-size="12" fill="#6e6e73">start-period 10s 뒤 10초마다 검사, 1번 실패로 unhealthy</text>
+
+<rect x="20" y="246" width="600" height="108" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="34" y="270" font-size="13" font-weight="700" fill="#0a84ff">ops/deploy.sh의 healthy 판정 (3초마다, 최대 120초)</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="34" y="294">① docker 상태가 healthy인가</text>
+<text x="330" y="294" fill="#ff3b30">훈련용: unhealthy → 실패</text>
+<text x="34" y="316">② 컨테이너 안 /health의 version이 이번 태그인가</text>
+<text x="330" y="316" fill="#ff3b30">훈련용: sha-7e7eac0 ≠ sha-dead000 → 실패</text>
+<text x="34" y="340" fill="#6e6e73">둘 다 만족해야 성공. 120초 동안 만족하지 않으면 이전 태그로 되돌린다</text>
+</g>
+</svg>

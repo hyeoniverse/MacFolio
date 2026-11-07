@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="380" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">Safari 창(left 100px, 폭 576px)을 왼쪽으로 636px 밀 때</text>
+<text x="20" y="62" font-size="13" font-weight="600" fill="#1d1d1f">채택: 값마다 다른 속성에 기록</text>
+<rect x="20" y="74" width="180" height="76" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="110" y="96" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">left·top·width·height</text>
+<text x="110" y="116" font-size="12" fill="#6e6e73" text-anchor="middle">left: 100px (그대로)</text>
+<text x="110" y="136" font-size="12" fill="#6e6e73" text-anchor="middle">끌기·저장·clampRect 대상</text>
+<rect x="230" y="74" width="180" height="76" rx="8" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320" y="96" font-size="13" font-weight="600" fill="#0a84ff" text-anchor="middle">translate</text>
+<text x="320" y="116" font-size="12" fill="#1d1d1f" text-anchor="middle">−636px 0</text>
+<text x="320" y="136" font-size="12" fill="#6e6e73" text-anchor="middle">desktopRevealed일 때만</text>
+<rect x="440" y="74" width="180" height="76" rx="8" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="530" y="96" font-size="13" font-weight="600" fill="#c46f00" text-anchor="middle">transform</text>
+<text x="530" y="116" font-size="12" fill="#1d1d1f" text-anchor="middle">열기·닫기 애니메이션</text>
+<text x="530" y="136" font-size="12" fill="#6e6e73" text-anchor="middle">windowMotion.ts</text>
+<text x="215" y="117" font-size="16" fill="#6e6e73" text-anchor="middle">+</text>
+<text x="425" y="117" font-size="16" fill="#6e6e73" text-anchor="middle">+</text>
+<line x1="320" y1="150" x2="320" y2="176" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="150" y="178" width="340" height="40" rx="8" fill="#eafaef" stroke="#34c759"/>
+<text x="320" y="203" font-size="12" fill="#1d1d1f" text-anchor="middle">그려지는 자리: x = 100 − 636 = −536, 화면에는 오른쪽 40px만</text>
+<line x1="20" y1="240" x2="620" y2="240" stroke="#e5e5ea"/>
+<text x="20" y="270" font-size="13" font-weight="600" fill="#1d1d1f">택하지 않은 방식: left를 직접 바꿈</text>
+<rect x="20" y="284" width="160" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="100" y="308" font-size="12" fill="#1d1d1f" text-anchor="middle">left: −536px</text>
+<text x="100" y="326" font-size="12" fill="#6e6e73" text-anchor="middle">밀어 낸 좌표 기록</text>
+<line x1="180" y1="312" x2="226" y2="312" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="230" y="284" width="180" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="320" y="308" font-size="12" fill="#1d1d1f" text-anchor="middle">clampRect: x는 0 ~ (1440 − 576)</text>
+<text x="320" y="326" font-size="12" fill="#6e6e73" text-anchor="middle">다음 렌더링에서 실행</text>
+<line x1="410" y1="312" x2="456" y2="312" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="460" y="284" width="160" height="56" rx="8" fill="#ffefee" stroke="#ff3b30"/>
+<text x="540" y="308" font-size="12" font-weight="600" fill="#ff3b30" text-anchor="middle">x = 0으로 되돌아옴</text>
+<text x="540" y="326" font-size="12" fill="#6e6e73" text-anchor="middle">원래 자리를 따로 보관해야 함</text>
+<text x="320" y="368" font-size="12" fill="#6e6e73" text-anchor="middle">개별 변환 속성은 translate → rotate → scale → transform 순서로 합성된다</text>
+</svg>

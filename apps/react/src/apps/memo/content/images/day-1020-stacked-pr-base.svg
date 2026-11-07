@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+  </defs>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">스택 PR: base가 앞 PR의 브랜치인 채로 머지하면</text>
+
+  <!-- main line -->
+  <text x="20" y="78" font-size="13" font-weight="700" fill="#0a84ff">main</text>
+  <line x1="70" y1="74" x2="610" y2="74" stroke="#0a84ff" stroke-width="3"/>
+  <circle cx="200" cy="74" r="8" fill="#0a84ff"/>
+  <text x="176" y="56" font-size="12" fill="#1d1d1f">#290 머지</text>
+
+  <!-- 290 branch -->
+  <text x="20" y="138" font-size="12" fill="#6e6e73">#290 브랜치</text>
+  <line x1="100" y1="134" x2="200" y2="134" stroke="#6e6e73" stroke-width="2"/>
+  <line x1="200" y1="134" x2="200" y2="84" stroke="#0a84ff" stroke-width="2" marker-end="url(#ab)"/>
+  <line x1="200" y1="134" x2="360" y2="134" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="330" cy="134" r="8" fill="#ff9f0a"/>
+  <text x="250" y="122" font-size="12" fill="#1d1d1f">#291 머지 (1분 뒤)</text>
+  <text x="370" y="138" font-size="12" fill="#ff3b30">머지가 끝난 브랜치에 들어감</text>
+
+  <!-- 291 branch -->
+  <text x="20" y="198" font-size="12" fill="#6e6e73">#291 브랜치</text>
+  <line x1="100" y1="194" x2="330" y2="194" stroke="#6e6e73" stroke-width="2"/>
+  <line x1="330" y1="194" x2="330" y2="144" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="330" y1="194" x2="460" y2="194" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 4"/>
+  <circle cx="440" cy="194" r="8" fill="#ff9f0a"/>
+  <text x="370" y="182" font-size="12" fill="#1d1d1f">#292 머지 (3분 뒤)</text>
+  <text x="470" y="198" font-size="12" fill="#ff3b30">같은 이유로 미반영</text>
+
+  <!-- 292 branch -->
+  <text x="20" y="248" font-size="12" fill="#6e6e73">#292 브랜치</text>
+  <line x1="100" y1="244" x2="440" y2="244" stroke="#6e6e73" stroke-width="2"/>
+  <line x1="440" y1="244" x2="440" y2="204" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="20" y="268" width="600" height="48" rx="8" fill="#f2f2f7"/>
+  <text x="34" y="288" font-size="13" fill="#1d1d1f">GitHub에는 세 PR 모두 "Merged"로 표시되지만 main에는 #290만 들어갔다.</text>
+  <text x="34" y="306" font-size="13" fill="#1d1d1f">앞 PR이 머지되면 뒤 PR의 base를 main으로 바꾼 뒤에 머지해야 한다.</text>
+</svg>

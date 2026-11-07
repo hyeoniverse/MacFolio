@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>토큰 정의, var() 참조, 계산된 값의 관계</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="320" y="30" font-size="16" font-weight="700" fill="#1d1d1f" text-anchor="middle">정의 한 곳, 참조 여러 곳, 계산된 값은 숫자</text>
+
+  <text x="20" y="62" font-size="13" font-weight="700" fill="#6e6e73">theme.css (:root)</text>
+  <rect x="20" y="72" width="190" height="110" rx="10" fill="#f2f2f7" stroke="#0a84ff"/>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <text x="32" y="98">--radius-md: 8px;</text>
+    <text x="32" y="122">--color-label: #1d1d1f;</text>
+    <text x="32" y="150" fill="#6e6e73">[data-theme='dark']</text>
+    <text x="32" y="170">--color-label: #f5f5f7;</text>
+  </g>
+
+  <text x="240" y="62" font-size="13" font-weight="700" fill="#6e6e73">사용처 CSS</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <rect x="240" y="72" width="190" height="48" rx="10" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="252" y="92">border-radius:</text>
+    <text x="252" y="110" fill="#0a84ff">var(--radius-md)</text>
+    <rect x="240" y="134" width="190" height="48" rx="10" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="252" y="154">color:</text>
+    <text x="252" y="172" fill="#0a84ff">var(--color-label)</text>
+  </g>
+  <line x1="210" y1="100" x2="236" y2="96" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="210" y1="140" x2="236" y2="158" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <text x="460" y="62" font-size="13" font-weight="700" fill="#6e6e73">getComputedStyle</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+    <rect x="460" y="72" width="164" height="48" rx="10" fill="#ffffff" stroke="#34c759"/>
+    <text x="472" y="101">border-radius: 8px</text>
+    <rect x="460" y="134" width="164" height="48" rx="10" fill="#ffffff" stroke="#34c759"/>
+    <text x="472" y="154">라이트 rgb(29,29,31)</text>
+    <text x="472" y="172">다크 rgb(245,245,247)</text>
+  </g>
+  <line x1="430" y1="96" x2="456" y2="96" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="430" y1="158" x2="456" y2="158" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <rect x="20" y="206" width="604" height="108" rx="10" fill="#f2f2f7"/>
+  <g font-size="13" fill="#1d1d1f">
+    <text x="36" y="232">• 계산된 값에는 변수 이름이 남지 않고 숫자만 남는다. 교체 전 8px과 교체 후 var()는 같은 값이다.</text>
+    <text x="36" y="258">• 그래서 전후 빌드의 계산된 스타일이 모두 같으면 화면도 같다고 판단할 수 있다.</text>
+    <text x="36" y="284">• 다크 모드는 변수 값만 바꾼다. 사용처 CSS는 그대로다.</text>
+    <text x="36" y="304" fill="#ff3b30" font-size="12">• 이름 오타(var(--radius-mdd))는 오류 없이 무효 값이 되어 상속값이나 초기값이 적용된다.</text>
+  </g>
+</svg>

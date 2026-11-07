@@ -7,11 +7,19 @@ seriesOrder: 3
 summary: 자동 배포의 롤백을 실제 서버에서 확인했다. 코드에 스위치를 추가하지 않고 HEALTHCHECK false 레이어만 추가한 훈련용 이미지를 배포했다. 120초 대기 후 41초 만에 이전 버전으로 복귀했고, Actions는 3분 만에 실패로 종료되었다.
 ---
 
-API 자동 배포([#100](https://github.com/hyeoniverse/MacFolio/issues/100))는 새 버전이 healthy 상태가 되지 않으면 이전 버전으로 롤백하고 Actions를 실패로 종료한다. 로컬 레지스트리로는 시험했지만, 실제 서버에서 SSH 키와 터널을 거쳐 롤백하는 경로는 아직 검증하지 않았다. 그래서 훈련 절차를 작성했다(`docs/rollback-drill.md`, [#254](https://github.com/hyeoniverse/MacFolio/pull/254)).
+## 배경: 자동 배포와 롤백
+
+API 자동 배포([#100](https://github.com/hyeoniverse/MacFolio/issues/100))는 GitHub Actions가 Docker 이미지를 만들어 레지스트리(GHCR)에 올리고, 서버에 접속해 그 이미지로 API 컨테이너를 교체하는 절차다. 새 버전이 정상 동작하지 않는 경우를 대비해 **롤백**(rollback) 단계가 있다. 롤백은 새 버전을 내리고 직전에 정상 동작하던 버전으로 되돌리는 작업이다.
+
+새 버전이 "정상"인지는 **헬스 체크**(health check)로 판단한다. 헬스 체크는 서비스가 요청을 처리할 수 있는 상태인지 일정 간격으로 확인하는 검사로, 이 서버에서는 Docker의 `HEALTHCHECK`가 10초마다 컨테이너 안에서 `/health`를 요청한다. 응답이 오면 컨테이너 상태가 `healthy`, 정해진 횟수만큼 실패하면 `unhealthy`가 된다. 배포 스크립트는 새 컨테이너가 120초 안에 `healthy`가 되지 않으면 이전 버전으로 롤백하고 Actions를 실패로 종료한다.
+
+롤백 코드는 로컬 레지스트리로 시험했지만, 실제 서버에서 SSH 키와 터널을 거쳐 롤백하는 경로는 아직 검증하지 않았다. 롤백은 장애가 발생한 시각에만 실행되는 코드라 평소에는 동작 여부를 확인할 기회가 없고, 실제로 필요한 시각에 처음 실행되어 실패하면 장애가 길어진다. 그래서 일부러 실패하는 버전을 배포해 롤백이 동작하는지 확인하는 **훈련**(drill) 절차를 작성했다(`docs/rollback-drill.md`, [#254](https://github.com/hyeoniverse/MacFolio/pull/254)).
 
 ## 배포 스크립트의 동작
 
 먼저 훈련 대상을 정리했다. GitHub Actions의 "API 배포"는 배포 전용 SSH 키로 서버에 태그 하나만 전송한다. 서버의 `authorized_keys`에서 그 키에 `command=` 옵션[^forced-command]이 지정되어 있어, 어떤 명령을 보내도 `ops/deploy.sh`만 실행되고 전송한 문자열은 `SSH_ORIGINAL_COMMAND` 환경 변수로 전달된다.
+
+![GitHub Actions가 배포 키로 sha 태그를 보내면 sshd가 authorized_keys의 restrict,command 옵션에 따라 ops/deploy.sh만 실행하고, cat 명령을 보내도 deploy.sh가 실행되어 태그 검사에서 exit 2로 끝나는 비교](./images/rollback-drill-forced-command.svg '배포 키로는 무엇을 보내도 deploy.sh만 실행된다')
 
 ```yaml
 # .github/workflows/deploy-api.yml '서버에서 배포'
@@ -20,7 +28,7 @@ ssh -i ~/.ssh/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o Conne
 -o ServerAliveInterval=15 "$DEPLOY_USER@$DEPLOY_HOST" "$TAG"
 ```
 
-스크립트는 태그 형식부터 검사한다. `sha-` 뒤에 16진수 7~40자가 아니면 아무 작업도 하지 않는다.
+스크립트는 태그 형식부터 검사한다. `sha-` 뒤에 16진수 7~40자가 아니면 아무 작업도 하지 않는다. 예를 들어 `sha-7e7eac0`은 통과하고, `latest`나 `sha-xyz1234`(`x`·`y`·`z`는 16진수가 아니다)는 종료 코드 2로 끝난다.
 
 ```bash
 # ops/deploy.sh
@@ -33,11 +41,15 @@ fi
 
 그다음 잠금, 배포 직전 백업, `.env`의 `API_TAG` 변경, 이미지 내려받기, `docker compose up -d api`, healthy 대기 순서로 진행한다. 결과는 세 가지로 나뉜다.
 
-![ops/deploy.sh의 세 가지 결과](./images/rollback-drill-branches.svg '훈련은 healthy가 되지 않는 오른쪽 경로를 실제 서버에서 실행하는 것이다')
+![ops/deploy.sh의 세 가지 결과](./images/rollback-drill-branches.svg '훈련은 healthy가 되지 않는 오른쪽 경로를 실제 서버에서 실행하는 작업이다')
 
 healthy 판정은 두 조건을 함께 검사한다. 컨테이너의 `HEALTHCHECK` 상태가 `healthy`이고, 컨테이너 안에서 요청한 `/health`의 `version`이 이번 태그여야 한다. 120초 동안 3초마다 확인하고, 실패하면 마지막 로그 40줄을 출력한 뒤 이전 태그로 같은 `up`을 다시 실행한다.
 
+`version` 조건은 새 컨테이너가 아니라 다른 버전의 앱이 응답하는 경우를 걸러 낸다. `HEALTHCHECK`는 "앱이 응답하는가"만 확인하므로, 이미지 태그와 실제 실행 중인 코드가 다르면 상태만으로는 구분할 수 없다. 아래 훈련용 이미지가 정확히 그런 경우다.
+
 ## 실패 유발 방법 선택
+
+훈련하려면 "헬스 체크에 실패하는 버전"이 필요하다. 세 가지 방법을 비교했다.
 
 | 방법                                                       | 장점                    | 단점                                                                             |
 | ---------------------------------------------------------- | ----------------------- | -------------------------------------------------------------------------------- |
@@ -45,11 +57,13 @@ healthy 판정은 두 조건을 함께 검사한다. 컨테이너의 `HEALTHCHEC
 | 워크플로 입력 `drill_fail_health`로 스위치                 | 버튼 하나로 활성화      | 배포 키로 전송 가능한 범위가 넓어지고, 운영에서 활성화될 수 있는 스위치가 남는다 |
 | 서버에서 `HEALTHCHECK false` 레이어만 추가한 이미지 (선택) | 코드·키·권한이 그대로다 | 서버에 직접 접속해 이미지를 생성하고, 종료 후 삭제해야 한다                      |
 
-## 환경 변수 스위치를 두지 않은 이유
+### 환경 변수 스위치를 두지 않은 이유
 
-처음 검토한 방법은 Run workflow에 `drill_fail_health` 입력을 추가하고, 활성화하면 `/health`가 503을 반환하게 하는 방식이다. 그런데 배포 전용 SSH 키는 `authorized_keys`의 `command=`로 제한되어 **태그 하나만** 전송할 수 있다. 컨테이너에 환경 변수를 전달하려면 그 키의 전송 범위를 넓혀야 하고, 코드에는 운영 환경에서 활성화될 수 있는 스위치가 남는다. 훈련 1회를 위해 기존 보안 제약을 완화하는 셈이다.
+처음 검토한 방법은 Run workflow에 `drill_fail_health` 입력을 추가하고, 활성화하면 `/health`가 503을 반환하게 하는 방식이다. 그런데 배포 전용 SSH 키는 `authorized_keys`의 `command=`로 제한되어 **태그 하나만** 전송할 수 있다. 컨테이너에 환경 변수를 전달하려면 그 키의 전송 범위를 넓혀야 하고, 코드에는 운영 환경에서 활성화될 수 있는 스위치가 남는다. ==훈련 1회를 위해 기존 보안 제약을 완화하는 셈이다==.
 
-대신 서버에서 현재 이미지 위에 레이어 하나만 추가한다.
+### HEALTHCHECK 레이어 하나 추가
+
+Docker 이미지는 읽기 전용 레이어를 차례로 쌓은 구조다. `FROM 기존이미지`로 시작하는 Dockerfile은 기존 이미지의 레이어를 그대로 쓰고, 그 위에 새 지시문의 결과만 더한다. `HEALTHCHECK`는 여러 번 지정되면 마지막 것만 적용되므로, 현재 이미지 위에 `HEALTHCHECK … CMD false`를 더하면 앱 코드는 같고 헬스 체크만 항상 실패하는 이미지가 된다. `false`는 아무 작업 없이 종료 코드 1로 끝나는 명령이다.
 
 ```bash
 docker build -t ghcr.io/hyeoniverse/macfolio-api:sha-dead000 - <<EOF
@@ -58,31 +72,48 @@ HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=1 CMD false
 EOF
 ```
 
-태그 `sha-dead000`은 실제 커밋이 아니지만 `d`·`e`·`a`·`0`이 모두 16진수 문자라 위의 태그 검사를 통과한다. `ops/deploy.sh`는 서버에 그 태그의 이미지가 있으면 GHCR에서 내려받지 않는다. 따라서 Actions에서 태그 `sha-dead000`을 입력하고 Run workflow를 실행하면 실제 배포 경로를 그대로 거친다. 새 비밀 값, 새 권한, 새 입력이 필요 없고, 종료 후 이미지를 삭제하면 흔적도 남지 않는다.
+`docker build … -`는 Dockerfile을 표준 입력으로 받는다. 복사할 파일(빌드 컨텍스트)이 없어도 되므로 서버에서 저장소 없이 실행할 수 있다. `$cur`에는 현재 배포된 태그가 들어간다.
+
+| 옵션             | 원래 이미지      | 훈련용 이미지 | 뜻                                          |
+| ---------------- | ---------------- | ------------- | ------------------------------------------- |
+| `--interval`     | 10s              | 10s           | 검사 간격                                   |
+| `--timeout`      | 5s               | 5s            | 검사 한 번의 제한 시간                      |
+| `--start-period` | 60s              | 10s           | 시작 직후 실패를 횟수에 넣지 않는 유예 시간 |
+| `--retries`      | 3                | 1             | 연속 몇 번 실패하면 `unhealthy`로 바꿀지    |
+| `CMD`            | `wget … /health` | `false`       | 검사 명령. 종료 코드 0이면 성공             |
+
+![기존 이미지의 Node.js 런타임·앱 코드·wget HEALTHCHECK 레이어 위에 CMD false HEALTHCHECK를 추가한 훈련용 이미지와, starting에서 unhealthy로 바뀌는 상태 전이, deploy.sh의 두 판정 조건이 모두 실패하는 모습](./images/rollback-drill-health-states.svg '훈련용 이미지는 헬스 체크와 version 두 조건에서 모두 실패한다')
+
+태그 `sha-dead000`은 실제 커밋이 아니지만 `d`·`e`·`a`·`0`이 모두 16진수 문자라 위의 태그 검사를 통과한다. `ops/deploy.sh`는 서버에 그 태그의 이미지가 있으면 GHCR에서 내려받지 않는다. 따라서 Actions에서 태그 `sha-dead000`을 입력하고 Run workflow를 실행하면 ==실제 배포 경로를 그대로 거친다==. 새 비밀 값, 새 권한, 새 입력이 필요 없고, 종료 후 이미지를 삭제하면 흔적도 남지 않는다.
+
+훈련용 이미지가 실패하는 조건은 실제로 두 가지다. `HEALTHCHECK`가 `false`라 컨테이너가 `starting`에서 `unhealthy`로 바뀌고, 앱은 현재 버전 그대로라 `/health`의 `version`도 `sha-dead000`이 아니다. 서버 `compose.yml`의 api 서비스에는 `healthcheck:`가 없으므로 이미지의 `HEALTHCHECK`가 그대로 적용된다([Docker 문서: HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck)).
 
 ## 서비스 중단 시간
 
 배포 스크립트는 블루·그린 배포[^bluegreen]가 아니다. `docker compose up -d api`가 기존 컨테이너를 중지하고 새 컨테이너를 시작한다. 그래서 중단이 두 번 발생한다.
 
-- 훈련용 컨테이너로 교체하는 시각: 마이그레이션 확인과 Nest 시작까지 수 초~수십 초
-- 대기하는 120초: 중단되지 않는다. 훈련용 이미지도 앱 자체는 정상이라 요청에 응답한다
-- 이전 버전으로 롤백하는 시각: 다시 수 초~수십 초
+| 구간                   | 상태      | 길이                                               |
+| ---------------------- | --------- | -------------------------------------------------- |
+| 훈련용 컨테이너로 교체 | 중단      | 마이그레이션 확인과 Nest 시작까지 수 초~수십 초    |
+| 120초 대기             | 정상 응답 | 훈련용 이미지도 앱 자체는 정상이라 요청에 응답한다 |
+| 이전 버전으로 롤백     | 중단      | 다시 수 초~수십 초                                 |
 
-합계 1분 이내다. 방문이 적은 시간대에 진행한다. 10분마다 실행되는 업타임 감시가 그 사이에 실행되면 실패 메일이 한 통 발송될 수 있고, 배포 직전 백업도 평소처럼 하나 생성된다.
-
-훈련용 이미지가 실패하는 조건은 실제로 두 가지다. `HEALTHCHECK`가 `false`라 컨테이너가 `starting`에서 `unhealthy`로 바뀌고, 앱은 현재 버전 그대로라 `/health`의 `version`도 `sha-dead000`이 아니다. 서버 `compose.yml`의 api 서비스에는 `healthcheck:`가 없으므로 이미지의 `HEALTHCHECK`가 그대로 적용된다([Docker 문서: HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck)).
+> [!WARNING] 훈련 중 중단과 알림
+> 합계 1분 이내다. 방문이 적은 시간대에 진행한다. 10분마다 실행되는 업타임 감시가 그 사이에 실행되면 실패 메일이 한 통 발송될 수 있고, 배포 직전 백업도 평소처럼 하나 생성된다.
 
 ## 확인 항목
 
-- Actions: 실패 표시. '서버에서 배포' 단계가 `exit code 1`로 종료되고, '바깥에서 버전 확인'은 건너뛴다
-- 배포 로그: `120초 안에 healthy가 되지 않았다` → `이전 버전으로 되돌린다` → `배포 실패, 되돌림: …가 다시 떠 있다`
-- 서버: `.env`의 `API_TAG`, `docker compose ps api`의 이미지, 외부 `/health`의 version이 모두 이전 태그이고 healthy
+| 위치      | 기대 결과                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------- |
+| Actions   | 실패 표시. '서버에서 배포' 단계가 `exit code 1`로 종료되고, '바깥에서 버전 확인'은 건너뛴다                 |
+| 배포 로그 | `120초 안에 healthy가 되지 않았다` → `이전 버전으로 되돌린다` → `배포 실패, 되돌림: …가 다시 떠 있다`       |
+| 서버      | `.env`의 `API_TAG`, `docker compose ps api`의 이미지, 외부 `/health`의 version이 모두 이전 태그이고 healthy |
 
 롤백까지 실패하면 이전 태그로 `ops/deploy.sh`를 수동 실행하고, 그래도 실패하면 `.env`의 `API_TAG`를 수정해 `docker compose up -d api`를 실행한다. 이전 이미지는 서버에 보관되므로 다시 내려받지 않는다.
 
 ## 실행 결과 (2026-10-18)
 
-절차 문서를 작성한 뒤 훈련 실행 방법을 단계별로 보강했고, 그 순서대로 서버에 접속해 실행했다. 시각은 모두 UTC다.
+절차 문서의 순서대로 서버에 접속해 실행했다. 시각은 모두 UTC다.
 
 **1. 현재 상태 기록.** 서버에 접속해 `.env`의 `API_TAG`, 컨테이너 상태, 외부 `/health`를 확인했다. 세 값 모두 `sha-7e7eac0`, `(healthy)`였다. `dead000`이 실제 커밋이 아닌지도 `git rev-parse --verify`로 확인했다. 출력이 없으면 실제 커밋이 아니다.
 
@@ -96,7 +127,7 @@ EOF
 
 - 09:03:22 훈련용 컨테이너의 Nest가 정상 시작되었다. 앱은 정상이고 헬스 체크만 실패를 보고한다
 - 120초 대기 후 09:04:53 `이전 버전으로 되돌린다: sha-7e7eac0`
-- 09:05:34 `배포 실패, 되돌림: sha-7e7eac0가 다시 떠 있다`. 롤백 소요 시간 41초
+- 09:05:34 `배포 실패, 되돌림: sha-7e7eac0가 다시 떠 있다`. ==롤백 소요 시간 41초==
 
 ![서버 로그의 롤백 기록 부분](./images/rollback-drill-server-log.jpg '3단계: 서버 로그. Nest 시작 후 09:04:53 롤백 시작, 09:05:34 롤백 완료')
 
@@ -117,7 +148,7 @@ EOF
 **준비 사항**: 서버 SSH 접속, 저장소의 Actions 실행 권한, 방문이 적은 시간대. 문서의 `<…>` 플레이스홀더는 그대로 붙여 넣지 않는다.
 
 ```bash
-# 1. 지금 상태 (서버) — 이 태그를 적어 둔다
+# 1. 지금 상태 (서버): 이 태그를 기록한다
 cd ~/deploy
 grep '^API_TAG=' .env                  # API_TAG=sha-xxxxxxx
 docker compose ps api                  # STATUS가 Up … (healthy)
@@ -141,7 +172,8 @@ watch -n 3 docker compose ps api
 
 **정리**: `docker image rm ghcr.io/hyeoniverse/macfolio-api:sha-dead000`
 
-**롤백까지 실패하면** 수동으로 롤백한다. 이전 이미지는 서버에 보관되어 있다.
+> [!CAUTION] 롤백까지 실패하면
+> 수동으로 롤백한다. 이전 이미지는 서버에 보관되어 있다.
 
 ```bash
 cd ~/deploy
@@ -151,8 +183,6 @@ docker compose ps api; docker compose logs --tail 100 api   # 원인부터 본�
 sed -i 's/^API_TAG=.*/API_TAG=sha-xxxxxxx/' .env
 docker compose up -d api
 ```
-
-참고 문서: [Dockerfile HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [docker compose up](https://docs.docker.com/reference/cli/docker/compose/up/), [GitHub Actions 수동 실행](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow).
 
 ## 확인한 것
 
@@ -164,7 +194,7 @@ docker compose up -d api
 | 롤백 소요 시간                 | 수십 초                        | 41초 (09:04:53 → 09:05:34)       |
 | `.env`·컨테이너·외부 `/health` | 모두 이전 태그, healthy        | 모두 `sha-7e7eac0`, `(healthy)`  |
 
-## 남은 과제와 정리
+## 남은 과제
 
 - **블루·그린 배포가 아니다.** 현재 배포는 기존 컨테이너를 중지하고 새 컨테이너를 시작한다. 메모리 1GB 서버에서 API 컨테이너 2개를 동시에 실행하기는 어려워 현재 방식을 유지했다. 훈련으로 중단 시간이 1분 이내라는 수치를 확보했다.
 - **롤백도 실패할 수 있다.** 그 경우 이전 태그로 `ops/deploy.sh`를 수동 실행하고, 그래도 실패하면 `.env`를 수정해 `docker compose up -d api`를 실행한다. 이 두 단계는 훈련하지 않았다.
@@ -179,6 +209,18 @@ docker compose up -d api
 - [GitHub Actions 예약 실행으로 외부에서 API 서버 업타임 감시하기](/memo/server-uptime-and-logs)
 - [서버 하드닝 규칙을 문서 대신 audit.sh 점검 스크립트로 남기기](/memo/server-hardening-audit)
 - [pg_dump와 R2로 하는 DB 백업과 복원 시험](/memo/db-backup)
+
+<details>
+<summary>참고 문헌</summary>
+
+- Docker Docs, [Dockerfile reference: HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck)
+- Docker Docs, [docker compose up](https://docs.docker.com/reference/cli/docker/compose/up/)
+- Docker Docs, [docker buildx build](https://docs.docker.com/reference/cli/docker/buildx/build/) (표준 입력으로 Dockerfile 전달)
+- GitHub Docs, [Manually running a workflow](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow)
+- OpenBSD manual pages, [sshd(8): AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)
+- Martin Fowler, [BlueGreenDeployment](https://martinfowler.com/bliki/BlueGreenDeployment.html)
+
+</details>
 
 [^forced-command]: `authorized_keys`의 키 앞에 `command="…"`를 지정하면, 그 키로 접속할 때 클라이언트가 요청한 명령 대신 지정한 명령만 실행된다. 요청한 명령은 `SSH_ORIGINAL_COMMAND` 환경 변수로 전달된다. [OpenSSH 매뉴얼: sshd(8) AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)
 

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">패킷 세 개를 ACL 규칙 ①~⑤와 위에서부터 대조하는 순서</text>
+  <!-- header -->
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <text x="100" y="60" font-weight="600">패킷</text>
+    <text x="226" y="56" font-weight="600">규칙 ①</text><text x="226" y="72" fill="#6e6e73">TCP 나감, :80</text>
+    <text x="298" y="56" font-weight="600">규칙 ②</text><text x="298" y="72" fill="#6e6e73">:80→, ACK</text>
+    <text x="370" y="56" font-weight="600">규칙 ③</text><text x="370" y="72" fill="#6e6e73">UDP 나감, :53</text>
+    <text x="442" y="56" font-weight="600">규칙 ④</text><text x="442" y="72" fill="#6e6e73">:53→, UDP</text>
+    <text x="514" y="56" font-weight="600">규칙 ⑤</text><text x="514" y="72" fill="#6e6e73">모두 거부</text>
+    <text x="592" y="60" font-weight="600">결과</text>
+  </g>
+  <line x1="20" y1="84" x2="620" y2="84" stroke="#1d1d1f" stroke-width="1"/>
+  <!-- row 1 -->
+  <g font-size="12" fill="#1d1d1f">
+    <text x="24" y="108" font-weight="600">P1  TCP SYN</text>
+    <text x="24" y="124" fill="#6e6e73">192.168.3.7:51000</text>
+    <text x="24" y="140" fill="#6e6e73">→ 203.0.113.80:80</text>
+  </g>
+  <rect x="196" y="104" width="60" height="28" rx="14" fill="#34c759"/><text x="226" y="123" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">일치</text>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="298" y="123">–</text><text x="370" y="123">–</text><text x="442" y="123">–</text><text x="514" y="123">–</text></g>
+  <text x="592" y="123" text-anchor="middle" font-size="13" font-weight="600" fill="#34c759">허용</text>
+  <line x1="20" y1="154" x2="620" y2="154" stroke="#d1d1d6"/>
+  <!-- row 2 -->
+  <g font-size="12" fill="#1d1d1f">
+    <text x="24" y="178" font-weight="600">P2  TCP ACK</text>
+    <text x="24" y="194" fill="#6e6e73">203.0.113.80:80</text>
+    <text x="24" y="210" fill="#6e6e73">→ 192.168.3.7:51000</text>
+  </g>
+  <text x="226" y="193" text-anchor="middle" font-size="12" fill="#6e6e73">불일치</text>
+  <rect x="268" y="174" width="60" height="28" rx="14" fill="#34c759"/><text x="298" y="193" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">일치</text>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="370" y="193">–</text><text x="442" y="193">–</text><text x="514" y="193">–</text></g>
+  <text x="592" y="193" text-anchor="middle" font-size="13" font-weight="600" fill="#34c759">허용</text>
+  <line x1="20" y1="224" x2="620" y2="224" stroke="#d1d1d6"/>
+  <!-- row 3 -->
+  <g font-size="12" fill="#1d1d1f">
+    <text x="24" y="248" font-weight="600">P3  TCP SYN</text>
+    <text x="24" y="264" fill="#6e6e73">198.51.100.9:40000</text>
+    <text x="24" y="280" fill="#6e6e73">→ 192.168.3.7:23</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="226" y="263">불일치</text><text x="298" y="263">불일치</text><text x="370" y="263">불일치</text><text x="442" y="263">불일치</text></g>
+  <rect x="484" y="244" width="60" height="28" rx="14" fill="#ff3b30"/><text x="514" y="263" text-anchor="middle" font-size="12" font-weight="600" fill="#fff">일치</text>
+  <text x="592" y="263" text-anchor="middle" font-size="13" font-weight="600" fill="#ff3b30">거부</text>
+  <line x1="20" y1="294" x2="620" y2="294" stroke="#1d1d1f" stroke-width="1"/>
+  <text x="24" y="320" font-size="12" fill="#1d1d1f">첫 번째로 일치한 규칙의 동작을 적용하고, 그 아래 규칙(–)은 대조하지 않는다.</text>
+  <text x="24" y="340" font-size="12" fill="#6e6e73">내부망 192.168/16, 외부 웹 서버 203.0.113.80, 외부 호스트 198.51.100.9 (문서용·사설 주소)</text>
+</svg>

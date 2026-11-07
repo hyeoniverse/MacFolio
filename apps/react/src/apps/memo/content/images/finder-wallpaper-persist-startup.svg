@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>수정 전 새로고침 직후 배경화면이 기본값으로 바뀌는 순서</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d1d1f"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">수정 전: 새로고침 직후에 일어나는 일</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">위에서 아래로 시간 순서. 빨간 단계가 저장된 값을 기본값으로 덮어쓴 검사다</text>
+<g font-size="13" font-weight="700" text-anchor="middle">
+<rect x="30" y="68" width="150" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="105" y="90" fill="#1d1d1f">localStorage</text>
+<rect x="245" y="68" width="150" height="34" rx="8" fill="#eaf3ff" stroke="#0a84ff"/><text x="320" y="90" fill="#0a84ff">앱 (브라우저)</text>
+<rect x="460" y="68" width="150" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="535" y="90" fill="#1d1d1f">API 서버</text>
+</g>
+<g stroke="#6e6e73" stroke-dasharray="4 4"><line x1="105" y1="102" x2="105" y2="406"/><line x1="320" y1="102" x2="320" y2="406"/><line x1="535" y1="102" x2="535" y2="406"/></g>
+<g font-size="12" fill="#1d1d1f">
+<line x1="108" y1="132" x2="316" y2="132" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="118" y="124">① 설정 읽기</text>
+<text x="118" y="150" font-family="ui-monospace, Menlo, monospace" fill="#ff9f0a">"custom:finder-9auzvy"</text>
+<rect x="326" y="164" width="200" height="30" rx="6" fill="#effaf2"/>
+<text x="334" y="184">② 저장된 주소로 바탕화면 표시</text>
+<line x1="323" y1="222" x2="531" y2="222" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="332" y="214">③ custom: 이므로 GET /wallpapers</text>
+<line x1="531" y1="256" x2="323" y2="256" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="332" y="248">④ 목록 응답 (Finder 파일 없음)</text>
+<rect x="190" y="272" width="262" height="48" rx="6" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="200" y="292" fill="#ff3b30" font-weight="700">⑤ reconcile(): 목록에 같은 id 없음</text>
+<text x="200" y="310" font-family="ui-monospace, Menlo, monospace" fill="#ff3b30">chooseWallpaper('mac', 'sierra')</text>
+<line x1="316" y1="346" x2="108" y2="346" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="118" y="338" fill="#ff3b30">⑥ 기본값으로 덮어쓰기</text>
+<text x="118" y="364" font-family="ui-monospace, Menlo, monospace" fill="#ff3b30">wallpaper: "sierra"</text>
+<rect x="326" y="370" width="200" height="30" rx="6" fill="#f2f2f7"/>
+<text x="334" y="390">⑦ 바탕화면이 Sierra로 바뀜</text>
+</g>
+<text x="620" y="424" font-size="12" fill="#6e6e73" text-anchor="end">수정 후에는 ③에서 custom:finder-를 제외하므로 ③~⑦이 실행되지 않는다</text>
+</svg>

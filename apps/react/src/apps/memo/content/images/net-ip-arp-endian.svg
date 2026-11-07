@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#fff"/>
+  <defs>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">32비트 값 0x12345678의 메모리 배치</text>
+  <g font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <text x="190" y="60">빅 엔디안</text>
+    <text x="490" y="60">리틀 엔디안</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="end">
+    <text x="20" y="88" text-anchor="start">낮은 주소</text>
+    <text x="20" y="294" text-anchor="start">높은 주소</text>
+  </g>
+  <line x1="44" y1="98" x2="44" y2="276" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#o)"/>
+  <!-- 빅 엔디안 -->
+  <g stroke="#0a84ff" stroke-width="1.4">
+    <rect x="150" y="76" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="150" y="126" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="150" y="176" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="150" y="226" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="450" y="76" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="450" y="126" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="450" y="176" width="120" height="44" rx="6" fill="#e3f0ff"/>
+    <rect x="450" y="226" width="120" height="44" rx="6" fill="#e3f0ff"/>
+  </g>
+  <g font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">
+    <text x="210" y="104">0x12</text>
+    <text x="210" y="154">0x34</text>
+    <text x="210" y="204">0x56</text>
+    <text x="210" y="254">0x78</text>
+    <text x="510" y="104">0x78</text>
+    <text x="510" y="154">0x56</text>
+    <text x="510" y="204">0x34</text>
+    <text x="510" y="254">0x12</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">
+    <text x="80" y="102">n</text>
+    <text x="80" y="152">n+1</text>
+    <text x="80" y="202">n+2</text>
+    <text x="80" y="252">n+3</text>
+    <text x="380" y="102">n</text>
+    <text x="380" y="152">n+1</text>
+    <text x="380" y="202">n+2</text>
+    <text x="380" y="252">n+3</text>
+  </g>
+  <g font-size="13" font-weight="600" fill="#ff9f0a">
+    <text x="282" y="103">← MSB</text>
+    <text x="282" y="253">← LSB</text>
+    <text x="582" y="103">← LSB</text>
+    <text x="582" y="253">← MSB</text>
+  </g>
+  <text x="320" y="312" text-anchor="middle" font-size="12" fill="#6e6e73">네트워크 바이트 순서는 빅 엔디안이다</text>
+</svg>

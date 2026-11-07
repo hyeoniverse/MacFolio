@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="400" fill="#fff"/>
+  <text x="320" y="28" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">브라우저 탭 하나에 창 세 개, 브라우저 기록은 한 줄</text>
+
+  <!-- 탭 -->
+  <rect x="16" y="48" width="330" height="236" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="32" y="70" font-size="12" fill="#6e6e73">브라우저 탭 1개 (MacFolio 바탕화면)</text>
+  <rect x="34" y="86" width="150" height="96" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="109" y="110" font-size="13" font-weight="600" fill="#0a84ff" text-anchor="middle">메모 창</text>
+  <text x="109" y="132" font-size="12" fill="#1d1d1f" text-anchor="middle">글 A → 글 B</text>
+  <rect x="200" y="100" width="130" height="80" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+  <text x="265" y="124" font-size="13" font-weight="600" fill="#ff9f0a" text-anchor="middle">Safari 창</text>
+  <text x="265" y="146" font-size="12" fill="#1d1d1f" text-anchor="middle">프로젝트 X</text>
+  <rect x="80" y="196" width="150" height="72" rx="8" fill="#fff" stroke="#34c759" stroke-width="1.5"/>
+  <text x="155" y="220" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">Finder 창</text>
+  <text x="155" y="242" font-size="12" fill="#1d1d1f" text-anchor="middle">문서 폴더</text>
+
+  <!-- pushState로 쌓았다면 -->
+  <text x="372" y="70" font-size="12" fill="#6e6e73">pushState로 쌓았다면 (탭의 기록)</text>
+  <rect x="372" y="84" width="252" height="34" rx="6" fill="#fff" stroke="#6e6e73"/>
+  <text x="384" y="106" font-size="12" fill="#1d1d1f">① /memo/글-A</text>
+  <rect x="372" y="124" width="252" height="34" rx="6" fill="#fff" stroke="#6e6e73"/>
+  <text x="384" y="146" font-size="12" fill="#1d1d1f">② /safari/프로젝트-X</text>
+  <rect x="372" y="164" width="252" height="34" rx="6" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="384" y="186" font-size="12" fill="#1d1d1f">③ /memo/글-B (지금)</text>
+  <path d="M612,181 C 632,170 632,150 614,142" fill="none" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="498" y="226" font-size="12" fill="#ff3b30" text-anchor="middle">뒤로 가기 한 번 = ②로 이동</text>
+  <text x="498" y="246" font-size="12" fill="#1d1d1f" text-anchor="middle">메모 창을 글 A로 되돌려야 하나,</text>
+  <text x="498" y="264" font-size="12" fill="#1d1d1f" text-anchor="middle">Safari 창을 앞으로 올려야 하나?</text>
+
+  <!-- 결론 -->
+  <rect x="16" y="300" width="608" height="84" rx="10" fill="#fff" stroke="#0a84ff"/>
+  <text x="32" y="324" font-size="13" font-weight="600" fill="#0a84ff">MacFolio의 선택</text>
+  <text x="32" y="346" font-size="12" fill="#1d1d1f">주소는 replaceState로 맨 앞 창의 글만 반영하고, 탭의 기록은 늘리지 않는다.</text>
+  <text x="32" y="366" font-size="12" fill="#1d1d1f">뒤로·앞으로 기록은 메모 창 안에 따로 보관한다: [글 A, 글 B]</text>
+</svg>

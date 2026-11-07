@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>package.json의 exports 조건에 따라 화면의 Vite·Vitest·tsc는 source 조건으로 src/index.ts를, Node로 실행하는 API 서버는 default 조건으로 dist/index.js를, 서버의 타입 검사는 types 조건으로 dist/index.d.ts를 읽는다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">import '@macfolio/contracts'가 읽는 파일</text>
+
+<rect x="200" y="50" width="240" height="118" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="212" y="70" font-size="12" font-weight="700" fill="#1d1d1f">packages/contracts/package.json</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" style="white-space:pre">
+<text style="white-space:pre" x="212" y="92" fill="#1d1d1f">"exports": { ".": {</text>
+<text style="white-space:pre" x="226" y="112" fill="#0a84ff">"source": "./src/index.ts",</text>
+<text style="white-space:pre" x="226" y="130" fill="#1d1d1f">"types": "./dist/index.d.ts",</text>
+<text style="white-space:pre" x="226" y="148" fill="#ff9f0a">"default": "./dist/index.js"</text>
+<text style="white-space:pre" x="212" y="162" fill="#1d1d1f">} }</text>
+</g>
+
+<g font-size="12">
+<rect x="20" y="210" width="180" height="68" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="32" y="230" font-weight="700" fill="#1d1d1f">화면 (Vite·Vitest·tsc)</text>
+<text x="32" y="248" fill="#6e6e73">source 조건을 지정</text>
+<text x="32" y="266" fill="#0a84ff">src/index.ts를 바로 읽음</text>
+
+<rect x="230" y="210" width="180" height="68" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="242" y="230" font-weight="700" fill="#1d1d1f">서버 타입 검사 (tsc)</text>
+<text x="242" y="248" fill="#6e6e73">types 조건</text>
+<text x="242" y="266" fill="#1d1d1f">dist/index.d.ts</text>
+
+<rect x="440" y="210" width="180" height="68" rx="8" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="452" y="230" font-weight="700" fill="#1d1d1f">서버 (Node 실행)</text>
+<text x="452" y="248" fill="#6e6e73">source 조건을 모른다</text>
+<text x="452" y="266" fill="#ff9f0a">dist/index.js (빌드 결과)</text>
+</g>
+<line x1="250" y1="168" x2="130" y2="206" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<line x1="320" y1="168" x2="320" y2="206" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="390" y1="168" x2="510" y2="206" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+<line x1="20" y1="302" x2="620" y2="302" stroke="#e5e5ea"/>
+<text x="20" y="324" font-size="12" fill="#6e6e73">조건은 위에서부터 확인해 처음 일치하는 항목을 사용한다. 화면은 스키마를 고쳐도 빌드 없이 바로 반영되고,</text>
+<text x="20" y="342" font-size="12" fill="#6e6e73">서버는 dist가 필요하므로 Turborepo 작업이 dependsOn: ["^build"]로 contracts를 먼저 빌드한다</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="360" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">같은 그리드에서 grid-template-areas만 바꾼 두 화면</text>
+<text x="160" y="60" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">표지 화면</text>
+<text x="160" y="78" font-size="12" fill="#6e6e73" text-anchor="middle">'art art art' / 'info info more'</text>
+<rect x="50" y="92" width="220" height="190" rx="10" fill="#0a84ff"/>
+<text x="160" y="192" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">art (큰 표지)</text>
+<rect x="50" y="290" width="170" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="135" y="315" font-size="13" fill="#1d1d1f" text-anchor="middle">info (제목·아티스트)</text>
+<rect x="228" y="290" width="42" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="249" y="315" font-size="13" fill="#1d1d1f" text-anchor="middle">•••</text>
+<line x1="290" y1="190" x2="350" y2="190" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar)"/>
+<text x="320" y="178" font-size="12" fill="#0a84ff" text-anchor="middle">대기열</text>
+<text x="480" y="60" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">대기열 화면</text>
+<text x="480" y="78" font-size="12" fill="#6e6e73" text-anchor="middle">'art info more' / 'modes …' / 'list …'</text>
+<rect x="370" y="92" width="56" height="56" rx="8" fill="#0a84ff"/>
+<text x="398" y="125" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">art</text>
+<rect x="434" y="92" width="128" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="498" y="125" font-size="13" fill="#1d1d1f" text-anchor="middle">info</text>
+<rect x="570" y="92" width="40" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="590" y="125" font-size="13" fill="#1d1d1f" text-anchor="middle">•••</text>
+<rect x="370" y="156" width="240" height="36" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="490" y="179" font-size="12" fill="#1d1d1f" text-anchor="middle">modes (셔플·반복 캡슐)</text>
+<rect x="370" y="200" width="240" height="130" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="490" y="236" font-size="12" fill="#1d1d1f" text-anchor="middle">list (다음 재생 목록)</text>
+<text x="490" y="256" font-size="12" fill="#6e6e73" text-anchor="middle">minmax(0, 1fr) 칸 안에서 스크롤</text>
+<g stroke="#c7c7cc"><line x1="386" y1="280" x2="594" y2="280"/><line x1="386" y1="300" x2="594" y2="300"/><line x1="386" y1="320" x2="594" y2="320"/></g>
+<text x="320" y="352" font-size="12" fill="#6e6e73" text-anchor="middle">art 칸의 크기·위치가 바뀌므로 transition 대신 FLIP으로 표지를 움직인다</text>
+</svg>

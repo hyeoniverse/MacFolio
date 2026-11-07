@@ -1,6 +1,7 @@
 // 서버(apps/api)에 보내는 모든 요청이 거치는 곳: 기본 주소, 쿠키, JSON, 시간 제한, 실패 문구, 401 알림.
 // 앱의 *Api.ts는 경로와 응답 모양만 적는다. 바깥 서비스(날씨, 효과음)는 여기를 거치지 않는다
 import { env } from '@/shared/config/env';
+import { credentialsFor } from './credentials';
 
 /** 서버에 닿지 못했을 때 (주소가 없거나, 서버가 꺼졌거나, 네트워크가 끊김) */
 export const UNREACHABLE = '서버에 연결할 수 없습니다. 잠시 뒤 다시 시도해 주세요.';
@@ -69,7 +70,7 @@ export async function reasonsOf(response: Response, fallback = DEFAULT_FAILURE):
 }
 
 /**
- * 응답을 그대로 받는다 (상태 코드로 분기할 때). 쿠키를 함께 보내고, 서버에 닿지 못하면 ApiError(0).
+ * 응답을 그대로 받는다 (상태 코드로 분기할 때). 같은 사이트면 쿠키를 함께 보내고(credentials.ts), 서버에 닿지 못하면 ApiError(0).
  * 401이면 onUnauthorized 핸들러를 부른다
  */
 export async function apiFetch(path: string, options: ApiOptions = {}): Promise<Response> {
@@ -77,7 +78,8 @@ export async function apiFetch(path: string, options: ApiOptions = {}): Promise<
 	const apiUrl = options.apiUrl ?? env.apiUrl;
 	const fetchImpl = options.fetchImpl ?? fetch;
 	if (!apiUrl) throw new ApiError(0, [UNREACHABLE]);
-	const init: RequestInit = { method, credentials: 'include', headers: { ...headers } };
+	const pageHostname = typeof location === 'undefined' ? 'localhost' : location.hostname;
+	const init: RequestInit = { method, credentials: credentialsFor(pageHostname, apiUrl), headers: { ...headers } };
 	if (json !== undefined) {
 		(init.headers as Record<string, string>)['Content-Type'] = 'application/json';
 		init.body = JSON.stringify(json);

@@ -7,7 +7,21 @@ seriesOrder: 1
 summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. 정보를 보는 위젯은 유리, 글을 읽는 위젯은 불투명한 판이고, 사진 위젯은 Finder › 그림의 폴더도 선택한다. 잘리던 앱과 시계, 날씨 요청 공유, 휴대폰 Finder 편집과 휴지통 문제까지 정리했다.
 ---
 
-바탕화면에는 폴더 아이콘 세 개만 있었고, 휴대폰 홈 화면에는 소개와 음악 위젯 두 개가 고정되어 있었다. macOS Sonoma부터는 위젯을 바탕화면에 직접 배치한다. 이 사이트도 같은 방식으로 구현했다([#311](https://github.com/hyeoniverse/MacFolio/pull/311)).
+바탕화면에는 폴더 아이콘 세 개만 있었고, 휴대폰 홈 화면에는 소개와 음악 위젯 두 개가 고정되어 있었다. 바탕화면과 휴대폰 홈 화면에 위젯 여덟 종류를 배치하고 편집할 수 있게 만들었다([#311](https://github.com/hyeoniverse/MacFolio/pull/311)).
+
+## 배경: macOS와 iOS의 위젯
+
+**위젯**은 앱을 열지 않고도 앱의 정보 일부(날씨, 오늘 일정, 재생 중인 곡 등)를 보여 주는 작은 판이다. iOS 14(2020년)부터 휴대폰 홈 화면에 배치할 수 있었고, macOS는 2023년 macOS Sonoma부터 위젯을 알림 센터가 아닌 바탕화면에 직접 배치한다. 위젯을 누르면 해당 앱이 열린다.
+
+![macOS Sonoma의 바탕화면 위젯](./images/desktop-widgets-macos-sonoma.jpg '왼쪽 위에 사진·날씨, 오른쪽 위에 세계 시계·캘린더·메모, 왼쪽 아래에 미리 알림·단축어 위젯. 위젯은 크기 몇 가지 중 하나를 고르고, 격자에 맞춰 놓인다')
+
+macOS 위젯에는 이 사이트 구현에 영향을 준 규칙이 세 가지 있다.
+
+1. **정해진 크기**: 위젯은 작게(정사각형)·중간(가로 두 칸)·크게 같은 몇 가지 크기 중 하나다. 임의의 픽셀 크기로 늘리지 않는다.
+2. **격자 배치**: 위젯을 끌어 놓으면 가까운 격자 칸에 맞춰 정렬된다.
+3. **창 아래 레이어**: 위젯은 바탕화면 위, 앱 창 아래에 놓인다. 앱 창을 띄우면 위젯은 창 뒤로 가려진다.
+
+이 사이트도 같은 규칙을 따른다. 크기는 작게·중간 두 가지, 위치는 180px 칸 단위 좌표, 레이어는 폴더 아이콘 위·창 아래다.
 
 ![바탕화면 위젯](./images/desktop-widgets-desktop.jpg '날씨·캘린더(작게)와 GitHub 잔디(중간), 그 아래 음악(중간)·사진·시계(작게), 최근 글(중간). 창·Dock 아래, 폴더 아이콘 위 레이어다. 잔디는 E2E의 가짜 API 자료, 사진은 그림 폴더에 올린 배경화면 두 장이다')
 
@@ -40,6 +54,10 @@ summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. �
 | 2    | macOS 기본 위젯 같은 흰 판               | Dock·메뉴 막대·제어 센터는 모두 유리인데 위젯만 불투명해 어울리지 않음 |
 | 3    | 모든 위젯을 유리로                       | 글이 많은 위젯(캘린더·최근 글)의 글자가 배경과 겹쳐 읽기 어려움        |
 | 4    | **읽는 위젯은 불투명, 보는 위젯은 유리** | 현재 방식. 실제 macOS도 메모·캘린더 위젯은 거의 불투명하다             |
+
+유리 효과는 CSS [`backdrop-filter`](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter)로 만든다. `filter`가 요소 자신을 흐리게 하는 것과 달리, `backdrop-filter`는 요소 **뒤에 보이는 화면**(여기서는 배경화면)에 효과를 적용한다. 그 위에 반투명한 흰색을 덮으면 배경 색은 비치지만 무늬와 글자는 알아볼 수 없는 판이 된다.
+
+![유리 위젯을 이루는 네 겹](./images/desktop-widgets-glass-layers.svg '배경화면을 흐리게 하고 채도를 높인 뒤, 반투명 흰색과 1px 하이라이트를 덮는다. 1단계의 탁한 판은 블러 단계가 없었다')
 
 불투명한 판은 평면처럼 보여서 그림자와 그라데이션으로 두께를 표현했다. 모든 위젯의 그림자는 가까운 짙은 그림자와 먼 옅은 그림자를 네 겹 겹친 `--shadow-lifted`다. 한 겹이면 판이 바탕에 붙어 보이고, 여러 겹이면 바탕에서 조금 떨어져 보인다. 캘린더·메모 판은 위가 흰색이고 아래로 갈수록 조금 어두워지며(다크 모드는 회색 700 → 850), 윗변에 1px 하이라이트와 아랫변에 1px 그늘을 `inset` 그림자로 넣었다. 날씨는 하늘 색 위쪽에 옅은 흰빛을 원형 그라데이션으로 넣었고, 메모 위젯의 머리 띠는 위가 조금 밝은 노랑이며, 캘린더의 오늘 표시 원에도 작은 그림자를 넣었다.
 
@@ -97,7 +115,8 @@ summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. �
 | 편집 종료     | 최소화했던 창만 복원하고, 시트는 올라올 때의 반대 방향으로 내려가며 사라진다(`useExitMotion`의 복사본[^exit])                                           |
 | 움직임 줄이기 | [`prefers-reduced-motion`](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)이 켜져 있으면 이동 애니메이션 없이 바로 배치 |
 
-처음 갤러리는 미리보기를 가로로 나열하고 넘치면 가로 스크롤했다. 그런데 미리보기에 포인터를 올렸을 때 확대되는 효과가 위쪽에서 잘렸다. `overflow-x: auto`를 지정하면 `overflow-y`는 `visible`일 수 없고 `auto`로 계산되어[^overflow] 목록 상자 밖으로 나간 부분이 잘린다. 지금은 세로로 스크롤하는 격자에 넉넉한 안쪽 여백을 지정해서, 확대되는 위젯과 +가 그 안에 들어온다.
+> [!WARNING] 한 축의 overflow가 바꾸는 다른 축
+> 처음 갤러리는 미리보기를 가로로 나열하고 넘치면 가로 스크롤했다. 그런데 미리보기에 포인터를 올렸을 때 확대되는 효과가 위쪽에서 잘렸다. `overflow-x: auto`를 지정하면 `overflow-y`는 `visible`일 수 없고 `auto`로 계산되어[^overflow] 목록 상자 밖으로 나간 부분이 잘린다. 지금은 세로로 스크롤하는 격자에 넉넉한 안쪽 여백을 지정해서, 확대되는 위젯과 +가 그 안에 들어온다.
 
 ## 휴대폰: 페이지 위쪽 위젯, 길게 눌러 편집
 
@@ -122,7 +141,7 @@ summary: 바탕화면과 휴대폰 홈 화면에 위젯 8종을 배치했다. �
 
 ![사진 위젯의 그림 폴더](./images/desktop-widgets-album.jpg '사진 위젯의 오른쪽 클릭 메뉴. 사진 앱의 앨범 아래 그림 폴더 묶음이 있고, 그림에 만든 위젯 폴더를 선택했다')
 
-사진 위젯의 앨범은 사진 앱의 앨범, 즉 프로젝트 화면뿐이었다. 위젯에 표시할 사진을 직접 올릴 곳이 필요했다. macOS에서는 사진을 홈의 그림 폴더에 보관한다. 이 사이트의 [Finder](/memo/finder-home-tree)에도 그림 폴더가 있지만, 사진 앱의 앨범을 표시하기만 하고 업로드할 수 없었다.
+사진 위젯의 앨범은 사진 앱의 앨범, 즉 프로젝트 화면뿐이었다. 위젯에 표시할 사진을 직접 올릴 곳이 필요했다. macOS에서는 사진을 홈의 그림 폴더에 보관한다. 이 사이트의 [Finder](/memo/finder-filesystem#가상본이-빈-폴더로-열린-원인)에도 그림 폴더가 있지만, 사진 앱의 앨범을 표시하기만 하고 업로드할 수 없었다.
 
 그래서 그림 폴더를 업로드 가능한 폴더로 바꿨다.
 
@@ -147,7 +166,7 @@ Finder 트리 전체(블로그 글 목록까지)를 생성하면 위젯 하나 �
 
 시험 과정에서 버그 두 개를 더 발견했다.
 
-**같은 이름을 두 번 휴지통에 넣으면 저장이 거절됐다.** 실제 API로 폴더를 만들고 휴지통에 넣기를 두 번 반복하자 두 번째에 `PUT /finder/layout`이 400을 반환했다. 휴지통도 구조 안에서는 상위 폴더 하나(`trash`)라서 "같은 폴더 안에 같은 이름의 폴더는 둘일 수 없다"는 규칙에 걸렸다. 화면에는 "저장하지 못함" 알림이 표시되고 폴더가 원래 위치로 돌아왔다. macOS 휴지통은 같은 이름을 몇 번이든 받는다. 그래서 휴지통 안은 이름 규칙에서 제외했다(`finderLayoutErrors`). 대신 되돌릴 때 그 사이 같은 이름이 생겼으면 `작업 2`처럼 번호를 붙인다(`putBackChange`). 번호를 정하는 `untitledName`이 대소문자를 구분하지 않는다고 하면서 첫 이름만 대소문자를 구분해 비교하던 버그도 함께 수정했다.
+**같은 이름을 두 번 휴지통에 넣으면 저장이 거절됐다.** 실제 API로 폴더를 만들고 휴지통에 넣기를 두 번 반복하자 두 번째에 `PUT /finder/layout`이 400을 반환했다. 휴지통도 구조 안에서는 상위 폴더 하나(`trash`)라서 "같은 폴더 안에 같은 이름의 폴더는 둘일 수 없다"는 규칙에 걸렸다. 화면에는 "저장하지 못함" 알림이 표시되고 폴더가 원래 위치로 돌아왔다. ==macOS 휴지통은 같은 이름을 몇 번이든 받는다.== 그래서 휴지통 안은 이름 규칙에서 제외했다(`finderLayoutErrors`). 대신 되돌릴 때 그 사이 같은 이름이 생겼으면 `작업 2`처럼 번호를 붙인다(`putBackChange`). 번호를 정하는 `untitledName`이 대소문자를 구분하지 않는다고 하면서 첫 이름만 대소문자를 구분해 비교하던 버그도 함께 수정했다.
 
 **가상본 화살표가 화면 아래에 크게 표시됐다.** 휴대폰 파일 앱의 데스크탑 폴더에서 이력서·포트폴리오·자격증 가상본의 화살표가 아이콘이 아니라 화면 왼쪽 아래에 큰 크기로 렌더링됐다. 화살표는 `position: absolute`인데 휴대폰 아이콘 칸에 기준 요소(`position: relative`)가 없어 [포함 블록](https://developer.mozilla.org/ko/docs/Web/CSS/Containing_block)이 화면 전체가 됐다. 칸에 `position: relative`를 지정하고 화살표 크기를 칸에 맞췄다.
 
@@ -161,7 +180,7 @@ Finder 트리 전체(블로그 글 목록까지)를 생성하면 위젯 하나 �
 | iPhone 13 (390×664)    | 154px      | 112px / 112px              | 4         |
 | iPhone 15 Pro Max      | 168px      | 158px / 158px              | 4         |
 
-앱 한 줄이 81px인데 iPhone SE에는 66px만 남았다. 페이지 나누기는 최소 한 줄을 배치하므로 그 한 줄이 아래에서 잘렸다. 잘리지 않는 기기에서도 1쪽에 앱이 네 개뿐이었다.
+==앱 한 줄이 81px인데 iPhone SE에는 66px만 남았다.== 페이지 나누기는 최소 한 줄을 배치하므로 그 한 줄이 아래에서 잘렸다. 잘리지 않는 기기에서도 1쪽에 앱이 네 개뿐이었다.
 
 그래서 위젯 줄의 높이를 화면 크기에서 계산한다(`widgetRowHeight`). 기본은 정사각형이고, 위젯 아래에 아이콘 두 줄이 들어가지 않으면 그만큼 줄인다. 다만 112px보다 작게 줄이지는 않는다. 위젯 줄 수가 가장 많은 페이지를 기준으로 모든 페이지가 같은 높이를 쓴다(이후 한 페이지가 세 줄이 되면 모든 위젯이 작아지는 문제가 있어, 화면 크기로만 계산하도록 바꿨다. [관련 글](/memo/mobile-widget-reorder)). 수정 후 값은 다음과 같다.
 
@@ -175,11 +194,13 @@ Finder 트리 전체(블로그 글 목록까지)를 생성하면 위젯 하나 �
 
 ## 최근 글: 2.5MB 대신 6편
 
-최근 글 위젯은 첫 화면에 바로 표시된다. 그런데 글 목록은 메모 앱을 열 때 불러오는 번들 안에 있었다. 검색 엔진용으로 빌드하는 `seo/posts.json`도 본문 HTML까지 포함해 2,537,133바이트였다.
+최근 글 위젯은 첫 화면에 바로 표시된다. 그런데 글 목록은 메모 앱을 열 때 불러오는 번들 안에 있었다. 검색 엔진용으로 빌드하는 `seo/posts.json`도 ==본문 HTML까지 포함해 2,537,133바이트==였다.
 
-그래서 빌드 시각에 작은 [가상 모듈](https://vite.dev/guide/api-plugin#virtual-modules-convention)을 하나 더 생성한다(`virtual:recent-posts`). 저장소 글 중 날짜가 지난 최신 6편의 제목·날짜·분류만 넣는다. 개발 서버에서는 글 파일 변경을 감시하다가 바뀌면 다시 생성한다.
+그래서 빌드 시각에 작은 [가상 모듈](https://vite.dev/guide/api-plugin#virtual-modules-convention)을 하나 더 생성한다(`virtual:recent-posts`). 가상 모듈은 디스크에 파일이 없는데도 `import`할 수 있는 모듈로, Vite 플러그인이 빌드 중에 내용을 문자열로 만들어 넘긴다. 저장소 글 중 날짜가 지난 최신 6편의 제목·날짜·분류만 넣는다. 개발 서버에서는 글 파일 변경을 감시하다가 바뀌면 다시 생성한다.
 
 관리자가 사이트에서 작성한 글은 빌드 결과에 없다. 위젯이 처음 렌더링될 때 `GET /posts`를 한 번 요청하고, 메모 앱과 같은 규칙으로 병합한다(`mergeRecentPosts`). 같은 주소는 서버 글이 대체하고, 삭제한 글과 예약 글은 저장소 글까지 숨긴다. 데스크톱과 휴대폰에 위젯이 여러 개 있어도 요청은 페이지마다 한 번이다.
+
+![최근 글 위젯이 읽는 자료](./images/desktop-widgets-recent-posts-module.svg '첫 화면은 2.5MB 글 목록 대신 6편의 머리말만 담은 가상 모듈을 읽고, 서버 글은 GET /posts 한 번으로 병합한다')
 
 ## 날씨를 두 번 요청하지 않게
 
@@ -189,7 +210,7 @@ Finder 트리 전체(블로그 글 목록까지)를 생성하면 위젯 하나 �
 expect(asked.forecast).toEqual(['37.5665']);
 ```
 
-바탕화면의 날씨 위젯이 서울을 먼저 요청하고 날씨 앱이 다시 요청하면 두 번이 된다. 시험만 수정할 문제가 아니었다. 같은 도시를 같은 단위로 두 곳에서 따로 요청하는 것 자체가 불필요한 요청이다.
+바탕화면의 날씨 위젯이 서울을 먼저 요청하고 날씨 앱이 다시 요청하면 두 번이 된다. 시험만 수정할 문제가 아니었다. ==같은 도시를 같은 단위로 두 곳에서 따로 요청하는 것 자체가 불필요한 요청==이다.
 
 `useForecasts`가 장소·단위별 응답을 15분 동안 메모리에 보관하도록 바꿨다. 위젯과 날씨 앱이 같은 응답을 공유한다.
 
@@ -249,6 +270,29 @@ expect(asked.forecast).toEqual(['37.5665']);
 - [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 이후 음악 위젯 수정
 - [Pointer Events와 FLIP으로 2열 격자 위젯 순서 바꾸기](/memo/mobile-widget-reorder): 편집 모드에서 위젯 순서 바꾸기
 - [ref 정리 함수에서 제거 직전 DOM을 복제해 만드는 퇴장 애니메이션](/memo/global-motion): 시트 퇴장에 쓴 `useExitMotion`
+
+<details>
+<summary>참고 문헌</summary>
+
+- Apple, [Add and customize widgets on Mac](https://support.apple.com/guide/mac-help/add-and-customize-widgets-mchl52be5da5/mac)
+- MDN, [backdrop-filter](https://developer.mozilla.org/en-US/docs/Web/CSS/backdrop-filter)
+- MDN, [pointer-events](https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events)
+- MDN, [inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert)
+- MDN, [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API)
+- MDN, [CSS container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)
+- MDN, [ResizeObserver](https://developer.mozilla.org/en-US/docs/Web/API/ResizeObserver)
+- MDN, [Containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block)
+- Vite, [Plugin API: Virtual Modules Convention](https://vite.dev/guide/api-plugin#virtual-modules-convention)
+- Playwright, [page.route()](https://playwright.dev/docs/api/class-page#page-route)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- macOS Sonoma의 바탕화면 위젯: Apple Newsroom, [macOS Sonoma brings new capabilities for elevating productivity and creativity](https://www.apple.com/newsroom/2023/06/macos-sonoma-brings-new-capabilities-for-elevating-productivity-and-creativity/) (2023년 6월), 출처 표기
+
+</details>
 
 [^exit]: 닫힌 요소는 React 트리에서 바로 제거되므로, 제거 직전의 DOM을 복사해 퇴장 애니메이션을 재생한다. [관련 글](/memo/global-motion)에서 설명했다.
 

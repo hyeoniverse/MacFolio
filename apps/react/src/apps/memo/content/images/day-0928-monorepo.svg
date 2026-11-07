@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>pnpm workspaces와 Turborepo 모노레포 구성</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">저장소 하나에 여러 패키지를 두는 모노레포 구성</text>
+  <g font-size="12">
+    <rect x="20" y="48" width="600" height="96" rx="12" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="36" y="72" font-size="13" font-weight="600" fill="#1d1d1f">저장소 루트</text>
+    <rect x="36" y="84" width="180" height="48" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="126" y="104" text-anchor="middle" fill="#1d1d1f">pnpm-workspace.yaml</text><text x="126" y="122" text-anchor="middle" fill="#6e6e73">apps/* · packages/* 를 패키지로</text>
+    <rect x="230" y="84" width="180" height="48" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="320" y="104" text-anchor="middle" fill="#1d1d1f">turbo.json</text><text x="320" y="122" text-anchor="middle" fill="#6e6e73">build·test 작업 순서와 캐시</text>
+    <rect x="424" y="84" width="180" height="48" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="514" y="104" text-anchor="middle" fill="#1d1d1f">wrangler.jsonc</text><text x="514" y="122" text-anchor="middle" fill="#6e6e73">apps/react/dist를 Workers에 배포</text>
+    <line x1="170" y1="144" x2="170" y2="180" stroke="#6e6e73" marker-end="url(#a)"/>
+    <line x1="470" y1="144" x2="470" y2="180" stroke="#6e6e73" marker-end="url(#a)"/>
+    <rect x="40" y="182" width="260" height="70" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="2"/>
+    <text x="170" y="206" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">apps/react</text>
+    <text x="170" y="226" text-anchor="middle" fill="#6e6e73">@macfolio/react · Vite SPA (9월 28일)</text>
+    <text x="170" y="242" text-anchor="middle" fill="#6e6e73">기존 src·public·index.html을 이동</text>
+    <rect x="340" y="182" width="260" height="70" rx="10" fill="#fff" stroke="#34c759" stroke-width="2" stroke-dasharray="6 4"/>
+    <text x="470" y="206" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">apps/api</text>
+    <text x="470" y="226" text-anchor="middle" fill="#6e6e73">NestJS API (9월 29일에 추가)</text>
+    <text x="470" y="242" text-anchor="middle" fill="#6e6e73">같은 저장소·같은 CI에서 빌드</text>
+    <rect x="40" y="270" width="560" height="44" rx="8" fill="#fff" stroke="#d2d2d7"/>
+    <text x="320" y="297" text-anchor="middle" fill="#1d1d1f">루트에서 pnpm build 한 번 → Turborepo가 각 패키지의 build를 의존 순서대로 실행</text>
+  </g>
+</svg>

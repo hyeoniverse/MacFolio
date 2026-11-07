@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <g><ellipse cx="317.5" cy="126.0" rx="45.8" ry="44.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="380.0" cy="98.0" rx="58.3" ry="56.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="442.5" cy="122.0" rx="45.8" ry="44.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="359.2" cy="138.0" rx="41.7" ry="40.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="409.2" cy="138.0" rx="41.7" ry="40.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="284.2" cy="142.0" rx="29.2" ry="28.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="475.8" cy="142.0" rx="29.2" ry="28.0" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="317.5" cy="126.0" rx="44.8" ry="43.0" fill="#f2f2f7"/><ellipse cx="380.0" cy="98.0" rx="57.3" ry="55.0" fill="#f2f2f7"/><ellipse cx="442.5" cy="122.0" rx="44.8" ry="43.0" fill="#f2f2f7"/><ellipse cx="359.2" cy="138.0" rx="40.7" ry="39.0" fill="#f2f2f7"/><ellipse cx="409.2" cy="138.0" rx="40.7" ry="39.0" fill="#f2f2f7"/><ellipse cx="284.2" cy="142.0" rx="28.2" ry="27.0" fill="#f2f2f7"/><ellipse cx="475.8" cy="142.0" rx="28.2" ry="27.0" fill="#f2f2f7"/></g>
+  <text x="380" y="148" text-anchor="middle" font-size="12" fill="#6e6e73">터널은 인터넷 같은</text>
+  <text x="380" y="164" text-anchor="middle" font-size="12" fill="#6e6e73">공용 네트워크를 지난다</text>
+  <rect x="84" y="100" width="472" height="26" rx="13" fill="#d6e9ff" stroke="#0a84ff" stroke-width="2"/>
+  <rect x="130" y="105" width="40" height="16" rx="2" fill="#ff3b30"/>
+  <rect x="190" y="105" width="40" height="16" rx="2" fill="#ff3b30"/>
+  <rect x="500" y="105" width="40" height="16" rx="2" fill="#ff3b30"/>
+  <g stroke="#1d1d1f" stroke-width="1.5"><rect x="36.8" y="84.8" width="38.400000000000006" height="54.400000000000006" rx="2" fill="#fff"/><line x1="43.199999999999996" y1="97.6" x2="68.8" y2="97.6"/><line x1="43.199999999999996" y1="107.2" x2="68.8" y2="107.2"/><circle cx="56" cy="127.99999999999999" r="2.8800000000000003" fill="#1d1d1f"/></g>
+  <text x="56" y="56" text-anchor="middle" font-size="13" fill="#1d1d1f">터널 끝 A</text>
+  <g stroke="#1d1d1f" stroke-width="1.5"><rect x="564.8" y="84.8" width="38.400000000000006" height="54.400000000000006" rx="2" fill="#fff"/><line x1="571.1999999999999" y1="97.6" x2="596.8" y2="97.6"/><line x1="571.1999999999999" y1="107.2" x2="596.8" y2="107.2"/><circle cx="584" cy="127.99999999999999" r="2.8800000000000003" fill="#1d1d1f"/></g>
+  <text x="584" y="56" text-anchor="middle" font-size="13" fill="#1d1d1f">터널 끝 B</text>
+  <line x1="210" y1="98" x2="210" y2="70" stroke="#6e6e73" stroke-width="1.2"/>
+  <text x="210" y="46" text-anchor="middle" font-size="12" fill="#1d1d1f">터널 안의 트래픽은</text>
+  <text x="210" y="62" text-anchor="middle" font-size="12" fill="#1d1d1f">보호된다</text>
+  <line x1="190" y1="210" x2="190" y2="132" stroke="#0a84ff" stroke-width="4" marker-end="url(#b)"/>
+  <rect x="130" y="214" width="120" height="70" rx="4" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+  <rect x="130" y="214" width="34" height="70" fill="#d6e9ff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="147" y="253" text-anchor="middle" font-size="12" fill="#0a84ff" font-weight="600">IP</text>
+  <rect x="178" y="236" width="56" height="26" rx="2" fill="#ff3b30"/>
+  <path d="M120,216 q-8,0 -8,8 v18 q0,7 -6,7 q6,0 6,7 v18 q0,8 8,8" fill="none" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="64" y="234" text-anchor="middle" font-size="12" fill="#1d1d1f">터널 양 끝</text>
+  <text x="64" y="250" text-anchor="middle" font-size="12" fill="#1d1d1f">사이의</text>
+  <text x="64" y="266" text-anchor="middle" font-size="12" fill="#1d1d1f">실제 패킷</text>
+  <line x1="300" y1="249" x2="238" y2="249" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="310" y="234" text-anchor="start" font-size="13" fill="#1d1d1f">페이로드는 보호할 또 다른 IP 패킷을 담는다</text>
+  <text x="310" y="254" text-anchor="start" font-size="13" fill="#1d1d1f">(예: 사설망을 오가는 패킷)</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>키가 필요한 날씨 API는 키를 숨기기 위해 사이트 API 서버가 중계해야 하지만, 키가 없는 Open-Meteo는 브라우저가 CSP connect-src에 등록한 두 주소로 직접 요청한다</title>
+<defs>
+<marker id="dc-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="dc-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+</defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">날씨 데이터를 가져오는 두 가지 경로</text>
+
+<text x="24" y="68" font-size="13" font-weight="700" fill="#6e6e73">키가 필요한 API (채택하지 않음)</text>
+<rect x="24" y="80" width="140" height="56" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="94" y="104" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">브라우저</text>
+<text x="94" y="122" font-size="12" fill="#6e6e73" text-anchor="middle">날씨 앱</text>
+<path d="M164 108 H226" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#dc-g)"/>
+<rect x="230" y="80" width="180" height="56" rx="9" fill="#fff8ec" stroke="#ff9f0a"/>
+<text x="320" y="104" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">사이트 API 서버</text>
+<text x="320" y="122" font-size="12" fill="#c46f00" text-anchor="middle">API 키 보관, 중계 코드 추가</text>
+<path d="M410 108 H472" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#dc-g)"/>
+<rect x="476" y="80" width="140" height="56" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="546" y="104" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">기상청·</text>
+<text x="546" y="122" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">OpenWeatherMap</text>
+<text x="24" y="160" font-size="12" fill="#6e6e73">키를 페이지 코드에 넣으면 누구나 읽을 수 있으므로 서버가 대신 요청해야 한다. API 서버 없이는 동작하지 않는다</text>
+
+<line x1="24" y1="180" x2="616" y2="180" stroke="#e5e5ea"/>
+
+<text x="24" y="208" font-size="13" font-weight="700" fill="#0a84ff">Open-Meteo (채택)</text>
+<rect x="24" y="222" width="140" height="78" rx="9" fill="#eef6ff" stroke="#0a84ff"/>
+<text x="94" y="256" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">브라우저</text>
+<text x="94" y="274" font-size="12" fill="#6e6e73" text-anchor="middle">날씨 앱</text>
+<path d="M164 240 H330" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#dc-b)"/>
+<path d="M164 284 H330" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#dc-b)"/>
+<text x="248" y="232" font-size="12" fill="#0a84ff" text-anchor="middle">일기예보</text>
+<text x="248" y="276" font-size="12" fill="#0a84ff" text-anchor="middle">지오코딩</text>
+<rect x="334" y="222" width="282" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="346" y="244" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">api.open-meteo.com</text>
+<rect x="334" y="266" width="282" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="346" y="288" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">geocoding-api.open-meteo.com</text>
+<text x="24" y="320" font-size="12" fill="#6e6e73">두 주소를 CSP connect-src에 등록해야 브라우저가 요청을 허용한다 (worker/securityHeaders.ts)</text>
+</svg>

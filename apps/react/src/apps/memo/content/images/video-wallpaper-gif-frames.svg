@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 404" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>GIF를 캔버스로 줄이면</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="404" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">움직이는 GIF를 캔버스로 줄이면 한 장면만 남는다</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">GIF는 장면 여러 개를 한 파일에 담는다. 캔버스에 그리면 그중 한 장면만 픽셀로 남는다</text>
+<text x="20" y="84" font-size="14" fill="#ff3b30" text-anchor="start" font-weight="700">변경 전</text>
+<rect x="30" y="98" width="74" height="50" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<rect x="40" y="106" width="74" height="50" rx="4" fill="#ffffff" stroke="#34c759" stroke-width="1.6"/>
+<rect x="50" y="114" width="74" height="50" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.6"/>
+<rect x="60" y="122" width="74" height="50" rx="4" fill="#ffffff" stroke="#ff3b30" stroke-width="1.6"/>
+<circle cx="90" cy="146" r="10" fill="#ff3b30"/>
+<text x="30" y="190" font-size="12" fill="#6e6e73" text-anchor="start">GIF 장면 1~N</text>
+<line x1="150" y1="130" x2="220" y2="130" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="224" y="104" width="150" height="54" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="299" y="126" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">createImageBitmap</text>
+<text x="299" y="145" font-size="12" fill="#6e6e73" text-anchor="middle">→ canvas, 2,560px</text>
+<line x1="376" y1="130" x2="446" y2="130" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="452" y="104" width="74" height="50" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<circle cx="489" cy="129" r="10" fill="#0a84ff"/>
+<text x="452" y="176" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">JPEG 한 장</text>
+<text x="452" y="192" font-size="12" fill="#6e6e73" text-anchor="start">(첫 장면만)</text>
+<line x1="20" y1="214" x2="620" y2="214" stroke="#d1d1d6" stroke-width="1"/>
+<text x="20" y="240" font-size="14" fill="#34c759" text-anchor="start" font-weight="700">변경 후</text>
+<rect x="30" y="254" width="74" height="50" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<rect x="40" y="262" width="74" height="50" rx="4" fill="#ffffff" stroke="#34c759" stroke-width="1.6"/>
+<rect x="50" y="270" width="74" height="50" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.6"/>
+<rect x="60" y="278" width="74" height="50" rx="4" fill="#ffffff" stroke="#ff3b30" stroke-width="1.6"/>
+<circle cx="90" cy="302" r="10" fill="#ff3b30"/>
+<text x="30" y="346" font-size="12" fill="#6e6e73" text-anchor="start">GIF 장면 1~N</text>
+<line x1="150" y1="270" x2="446" y2="270" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<text x="224" y="262" font-size="12" fill="#34c759" text-anchor="start">원본 파일 그대로 업로드</text>
+<rect x="452" y="246" width="74" height="50" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<rect x="462" y="254" width="74" height="50" rx="4" fill="#ffffff" stroke="#34c759" stroke-width="1.6"/>
+<rect x="472" y="262" width="74" height="50" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.6"/>
+<rect x="482" y="270" width="74" height="50" rx="4" fill="#ffffff" stroke="#ff3b30" stroke-width="1.6"/>
+<circle cx="512" cy="294" r="10" fill="#ff3b30"/>
+<text x="560" y="290" font-size="12" fill="#1d1d1f" text-anchor="start">배경화면</text>
+<path d="M 150 300 L 190 300 L 190 372 L 220 372" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="224" y="352" width="150" height="40" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="299" y="377" font-size="12" fill="#1d1d1f" text-anchor="middle">썸네일만 캔버스로</text>
+<line x1="376" y1="372" x2="446" y2="372" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="452" y="356" width="48" height="32" rx="4" fill="#ffffff" stroke="#0a84ff" stroke-width="1.4"/>
+<text x="508" y="377" font-size="12" fill="#6e6e73" text-anchor="start">썸네일 640px JPEG</text>
+</svg>

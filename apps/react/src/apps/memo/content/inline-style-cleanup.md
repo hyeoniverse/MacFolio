@@ -7,9 +7,21 @@ seriesOrder: 2
 summary: 여러 컴포넌트에 분산된 인라인 스타일을 세 종류로 나눴다. 고정 값은 CSS로, 데이터마다 바뀌는 색·크기는 cssVars()로 CSS 변수만 전달하고, 계산된 좌표만 인라인에 남겼다. 전후 스크린샷 37장이 바이트 단위로 일치했고, 타입 단언 61곳이 0이 됐다.
 ---
 
-리팩터링 이슈([#15](https://github.com/hyeoniverse/MacFolio/issues/15))의 마지막 항목은 인라인 스타일 정리였다([#138](https://github.com/hyeoniverse/MacFolio/pull/138)). `style={{ ... }}`가 컴포넌트마다 섞여 있어서, 어떤 스타일이 CSS에서 오고 어떤 스타일이 JSX에서 오는지 두 파일을 번갈아 확인해야 했다. 인라인 스타일은 `!important`가 없는 모든 CSS 규칙보다 우선하므로, CSS 파일만으로는 요소의 최종 스타일을 파악할 수 없다.
+## 배경
 
-정리 전 `apps/react/src`의 `.tsx`에서 `style={`가 있는 줄은 114줄, `as React.CSSProperties`·`as string]` 같은 타입 단언은 61곳이었다.
+### 인라인 스타일과 CSS 파일
+
+웹 페이지의 모양을 지정하는 방법은 두 가지다. 하나는 `.css` 파일에 선택자와 규칙을 적는 방법이고(예: `.gh-language-dot { background-color: gray }`), 다른 하나는 요소의 `style` 속성에 값을 직접 적는 인라인 스타일이다(예: `<span style="background-color: #3178c6">`). React에서는 인라인 스타일을 `style={{ backgroundColor: '#3178c6' }}`처럼 객체로 전달한다.
+
+두 방법이 같은 속성을 지정하면 인라인 스타일이 적용된다. 브라우저가 규칙의 우선순위를 정하는 과정을 캐스케이드(cascade)라고 하는데, 캐스케이드에서 인라인 스타일은 `!important`가 없는 모든 선택자 규칙보다 우선한다. 그래서 ==CSS 파일만 읽어서는 요소의 최종 스타일을 알 수 없다.==
+
+![CSS 파일 규칙과 인라인 스타일의 우선순위](./images/inline-style-cleanup-priority.svg '명시도가 높은 선택자 규칙이 gray를 지정해도, JSX의 인라인 style이 지정한 #3178c6이 적용된다')
+
+### 정리 대상
+
+리팩터링 이슈([#15](https://github.com/hyeoniverse/MacFolio/issues/15))의 마지막 항목은 인라인 스타일 정리였다([#138](https://github.com/hyeoniverse/MacFolio/pull/138)). `style={{ ... }}`가 컴포넌트마다 섞여 있어서, 어떤 스타일이 CSS에서 오고 어떤 스타일이 JSX에서 오는지 두 파일을 번갈아 확인해야 했다.
+
+정리 전 `apps/react/src`의 `.tsx`에서 `style={`가 있는 줄은 114줄, `as React.CSSProperties`·`as string]` 같은 타입 단언(TypeScript에 "이 값은 이 타입이다"라고 검사 없이 알리는 문법)은 61곳이었다.
 
 ## 인라인 스타일의 종류
 
@@ -42,7 +54,7 @@ style={{ '--i': i, '--n': STEPS } as React.CSSProperties}
 style={{ ['--color' as string]: color }}
 ```
 
-React의 `CSSProperties` 타입에는 `--`로 시작하는 [사용자 지정 속성](https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties) 키가 없어서 매번 타입 단언이 필요했다. 이것을 작은 함수 하나로 통합했다.
+CSS 변수(사용자 지정 속성)는 `--`로 시작하는 이름에 값을 보관하고, 다른 규칙에서 `var(--이름)`으로 읽는 기능이다. 예를 들어 요소에 `--color: #3178c6`을 지정하면 그 요소와 자식의 CSS에서 `var(--color)`가 `#3178c6`이 된다. 값은 JSX에서 정하고, 그 값을 어떤 속성에 어떻게 쓸지는 CSS가 정할 수 있다. React의 `CSSProperties` 타입에는 `--`로 시작하는 [사용자 지정 속성](https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties) 키가 없어서 매번 타입 단언이 필요했다. 이것을 작은 함수 하나로 통합했다.
 
 ```ts
 export function cssVars(vars: Record<string, string | number | undefined>): CSSProperties {
@@ -52,7 +64,7 @@ export function cssVars(vars: Record<string, string | number | undefined>): CSSP
 }
 ```
 
-`undefined` 값은 제외하므로, 색 표에 없는 언어면 CSS 쪽 `var(--color, 기본값)`의 기본값이 적용된다. 타입 단언은 이 함수 안 한 곳에만 남는다.
+`undefined` 값은 제외하므로, 색 표에 없는 언어면 CSS 쪽 `var(--color, 기본값)`의 기본값이 적용된다. ==타입 단언은 이 함수 안 한 곳에만 남는다==.
 
 ```tsx
 <span className="gh-language-dot" style={cssVars({ color: LANGUAGE_COLORS[repo.language] })} />
@@ -64,6 +76,8 @@ export function cssVars(vars: Record<string, string | number | undefined>): CSSP
 }
 ```
 
+![cssVars()가 값을 CSS 변수로 전달하는 과정](./images/inline-style-cleanup-cssvars-flow.svg 'TypeScript면 --color가 전달되어 파란 점이 되고, 색 표에 없는 언어면 키가 빠져 var()의 기본값인 회색이 적용된다')
+
 아바타도 같은 방식이다. 이전에는 크기를 받아 `width`, `height`, `fontSize`를 JSX에서 계산해 지정했는데, 이제 `--size`만 전달하고 글자 크기는 CSS에서 `calc(var(--size) * 0.46)`으로 계산한다. 이니셜이 두 글자일 때 글자 크기를 줄이는 규칙도 `data-letters="2"` 속성 선택자로 옮겼다.
 
 Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 수십 번 반복되는 곳은 스크립트로 일괄 치환했다. 결과적으로 `as React.CSSProperties`와 `as string]`은 코드에서 모두 삭제됐다.
@@ -74,7 +88,7 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 
 ## 로딩 화면의 lint 경고
 
-로딩 화면은 화면을 클릭한 뒤 안내 문구를 `visibility: hidden` 인라인 스타일로 숨겼는데, 클릭 여부를 렌더링 중에 `ref`에서 읽고 있어서 lint 경고 두 개가 계속 남아 있었다. [ref는 값이 바뀌어도 다시 렌더링을 일으키지 않으므로](https://react.dev/learn/referencing-values-with-refs), 다른 이유로 다시 렌더링되는 시각에야 문구가 사라지는 구조였다. `started` 상태를 추가하고 `.loading-text.started { visibility: hidden }`으로 바꾸자 경고가 6개에서 4개로 줄었다.
+lint는 코드를 실행하지 않고 규칙 위반을 찾는 정적 검사 도구다(이 저장소는 ESLint). 로딩 화면은 화면을 클릭한 뒤 안내 문구를 `visibility: hidden` 인라인 스타일로 숨겼는데, 클릭 여부를 렌더링 중에 `ref`에서 읽고 있어서 lint 경고 두 개가 계속 남아 있었다. [ref는 값이 바뀌어도 다시 렌더링을 일으키지 않으므로](https://react.dev/learn/referencing-values-with-refs), ==다른 이유로 다시 렌더링되는 시각에야 문구가 사라지는 구조==였다. `started` 상태를 추가하고 `.loading-text.started { visibility: hidden }`으로 바꾸자 경고가 6개에서 4개로 줄었다.
 
 ## 구현 정리
 
@@ -94,7 +108,10 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 - 데스크톱 바탕화면, 메일·메시지·GitHub·사진 창, 사진 확대
 - 휴대폰 홈, 제어 센터, 단축어
 
-37장 모두 일치했다. 남은 인라인 `style`은 105곳이고, 그중 68곳이 `cssVars()`, 나머지는 모두 계산된 좌표다. 바이트 비교는 픽셀 하나만 달라도 실패하므로, 일치한다는 것은 글자 안티에일리어싱까지 같다는 의미다. 시각을 고정하지 않으면 메뉴 막대 시계가 달라져 모든 데스크톱 화면이 불일치한다.
+==37장 모두 일치했다==. 남은 인라인 `style`은 105곳이고, 그중 68곳이 `cssVars()`, 나머지는 모두 계산된 좌표다. 바이트 비교는 픽셀 하나만 달라도 실패하므로, 일치한다는 것은 글자 안티에일리어싱(글자 가장자리를 중간색 픽셀로 부드럽게 그리는 처리)까지 같다는 의미다.
+
+> [!WARNING] 시각 고정
+> 시각을 고정하지 않으면 메뉴 막대 시계가 달라져 모든 데스크톱 화면이 불일치한다.
 
 ## 열하루 뒤 재집계
 
@@ -102,7 +119,7 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 
 ![인라인 스타일과 타입 단언 수](./images/inline-style-cleanup-counts.svg '정리 직후 타입 단언은 0이었지만, 이후 새로 작성한 코드에서 27곳이 다시 생겼다')
 
-증가한 116줄 중 92줄이 Safari 프로젝트 페이지(템플릿)다. 타입 단언은 QuickTime 재생 막대(`'--fill'`), 메모, PDF 미리보기, Safari 템플릿에서 다시 생겼다. 모두 `cssVars()`를 사용하지 않고 새로 작성한 코드다.
+==증가한 116줄 중 92줄이 Safari 프로젝트 페이지(템플릿)다==. 타입 단언은 QuickTime 재생 막대(`'--fill'`), 메모, PDF 미리보기, Safari 템플릿에서 다시 생겼다. 모두 `cssVars()`를 사용하지 않고 새로 작성한 코드다.
 
 ## 남은 것·배운 것
 
@@ -113,8 +130,19 @@ Safari 프로젝트 페이지의 단계 애니메이션처럼 같은 패턴이 �
 ## 관련 글
 
 - [Playwright와 E2E 가짜 API로 블로그 스크린샷 생성하기](/memo/screenshots-with-playwright)
-- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/color-tokens)
-- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/font-size-tokens)
-- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-step5-styles)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)
+- [Apple HIG 글자 스타일 이름으로 font-size 디자인 토큰 만들기](/memo/design-tokens#글자-크기-apple-hig-스타일-이름의---text--234)
+- [CSS 값에 토큰 이름을 붙이고 자동 비교로 동일성 검증하기](/memo/refactor-retrospective#5단계-스타일)
+
+<details><summary>참고 문헌</summary>
+
+- MDN, [Using CSS custom properties (variables)](https://developer.mozilla.org/ko/docs/Web/CSS/Using_CSS_custom_properties)
+- MDN, [var()](https://developer.mozilla.org/ko/docs/Web/CSS/var)
+- MDN, [Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
+- React, [Common components: style](https://react.dev/reference/react-dom/components/common#applying-css-styles)
+- React, [Referencing values with refs](https://react.dev/learn/referencing-values-with-refs)
+- ESLint, [no-restricted-syntax](https://eslint.org/docs/latest/rules/no-restricted-syntax)
+
+</details>
 
 #MacFolio #CSS #리팩터링

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="470" fill="#fff"/>
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">정상 상태: 스위치는 목적지 MAC의 포트로만 보낸다</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="40" y="40" width="250" height="70" rx="6" fill="#fff" stroke="#6e6e73"/>
+    <rect x="40" y="40" width="250" height="26" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="165" y="58" text-anchor="middle" font-weight="600" font-size="13">호스트 A ARP 캐시</text>
+    <line x1="40" y1="88" x2="290" y2="88" stroke="#c7c7cc"/>
+    <line x1="140" y1="66" x2="140" y2="110" stroke="#c7c7cc"/>
+    <text x="90" y="82" text-anchor="middle" fill="#6e6e73">IP 주소</text>
+    <text x="215" y="82" text-anchor="middle" fill="#6e6e73">MAC 주소</text>
+    <text x="90" y="104" text-anchor="middle">192.168.1.2</text>
+    <text x="215" y="104" text-anchor="middle">00:01:02:03:04:06</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="350" y="40" width="250" height="70" rx="6" fill="#fff" stroke="#6e6e73"/>
+    <rect x="350" y="40" width="250" height="26" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="475" y="58" text-anchor="middle" font-weight="600" font-size="13">호스트 B ARP 캐시</text>
+    <line x1="350" y1="88" x2="600" y2="88" stroke="#c7c7cc"/>
+    <line x1="450" y1="66" x2="450" y2="110" stroke="#c7c7cc"/>
+    <text x="400" y="82" text-anchor="middle" fill="#6e6e73">IP 주소</text>
+    <text x="525" y="82" text-anchor="middle" fill="#6e6e73">MAC 주소</text>
+    <text x="400" y="104" text-anchor="middle">192.168.1.1</text>
+    <text x="525" y="104" text-anchor="middle">00:01:02:03:04:05</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#f2f2f7">
+    <rect x="132" y="170" width="36" height="60" rx="4"/>
+    <line x1="140" y1="182" x2="160" y2="182"/>
+    <line x1="140" y1="190" x2="160" y2="190"/>
+    <circle cx="150" cy="216" r="3" fill="#34c759" stroke="none"/>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#f2f2f7">
+    <rect x="472" y="170" width="36" height="60" rx="4"/>
+    <line x1="480" y1="182" x2="500" y2="182"/>
+    <line x1="480" y1="190" x2="500" y2="190"/>
+    <circle cx="490" cy="216" r="3" fill="#34c759" stroke="none"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="180" y="186" font-weight="600" font-size="13">호스트 A</text>
+    <text x="180" y="204">192.168.1.1</text>
+    <text x="180" y="220" fill="#6e6e73">00:01:02:03:04:05</text>
+    <text x="460" y="186" font-weight="600" font-size="13" text-anchor="end">호스트 B</text>
+    <text x="460" y="204" text-anchor="end">192.168.1.2</text>
+    <text x="460" y="220" text-anchor="end" fill="#6e6e73">00:01:02:03:04:06</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5" fill="none">
+    <path d="M150,230 L150,290 L270,290"/>
+    <path d="M490,230 L490,290 L370,290"/>
+    <line x1="320" y1="306" x2="320" y2="370"/>
+  </g>
+  <path d="M164,238 L164,280 L476,280 L476,238" fill="none" stroke="#34c759" stroke-width="3" marker-start="url(#g)" marker-end="url(#g)"/>
+  <rect x="270" y="276" width="100" height="30" rx="5" fill="#e3f0ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="320" y="296" text-anchor="middle" font-size="13" fill="#1d1d1f">스위치</text>
+  <g font-size="12" font-weight="600" fill="#0a84ff" text-anchor="middle">
+    <text x="258" y="306">1</text>
+    <text x="382" y="306">5</text>
+    <text x="292" y="324">3</text>
+  </g>
+  <!-- 스니퍼 노트북 -->
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#f2f2f7">
+    <rect x="300" y="372" width="40" height="28" rx="3"/>
+    <path d="M292,404 L348,404 L344,410 L296,410 Z"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="360" y="380" font-weight="600" font-size="13">스니퍼</text>
+    <text x="360" y="397">192.168.1.10</text>
+    <text x="360" y="413" fill="#6e6e73">00:01:12:23:34:45</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="20" y="300" width="200" height="92" rx="6" fill="#fff" stroke="#6e6e73"/>
+    <rect x="20" y="300" width="200" height="26" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="120" y="318" text-anchor="middle" font-weight="600" font-size="13">스위치 MAC 주소 테이블</text>
+    <line x1="20" y1="348" x2="220" y2="348" stroke="#c7c7cc"/>
+    <line x1="70" y1="326" x2="70" y2="392" stroke="#c7c7cc"/>
+    <text x="45" y="342" text-anchor="middle" fill="#6e6e73">포트</text>
+    <text x="145" y="342" text-anchor="middle" fill="#6e6e73">MAC 주소</text>
+    <text x="45" y="366" text-anchor="middle">1</text>
+    <text x="145" y="366" text-anchor="middle">00:01:02:03:04:05</text>
+    <text x="45" y="388" text-anchor="middle">5</text>
+    <text x="145" y="388" text-anchor="middle">00:01:02:03:04:06</text>
+  </g>
+  <text x="320" y="262" text-anchor="middle" font-size="12" fill="#34c759" font-weight="600">A ↔ B 프레임은 포트 1과 5 사이만 지난다</text>
+  <text x="320" y="456" text-anchor="middle" font-size="12" fill="#6e6e73">포트 3의 스니퍼에는 A와 B 사이의 프레임이 전달되지 않는다</text>
+</svg>

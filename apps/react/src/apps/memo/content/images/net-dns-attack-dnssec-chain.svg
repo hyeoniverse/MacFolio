@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <text x="261.0" y="30" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="700">루트 서버의 응답</text>
+  <rect x="145" y="40" width="232" height="128" rx="2" fill="#fff" stroke="#aeaeb2" stroke-width="1.6"/>
+  <text x="155" y="62" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">DNSKEY:</tspan> 루트 서버의 공개 키</text>
+  <text x="155" y="92" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">RRSIG:</tspan> 이 응답 레코드의 서명</text>
+  <text x="155" y="122" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">DS:</tspan> .net 서버 공개 키의</text>
+  <text x="167" y="137" text-anchor="start" font-size="11.5" fill="#1d1d1f">일방향 해시</text>
+  <path d="M319,56 Q343,70 323,86" fill="none" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+  <text x="347" y="76" text-anchor="start" font-size="10.5" fill="#0a84ff">검증</text>
+  <text x="521.0" y="30" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="700">.net 서버의 응답</text>
+  <rect x="405" y="40" width="232" height="128" rx="2" fill="#fff" stroke="#aeaeb2" stroke-width="1.6"/>
+  <text x="415" y="62" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">DNSKEY:</tspan> 이 서버의 공개 키</text>
+  <text x="415" y="92" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">RRSIG:</tspan> 이 응답 레코드의 서명</text>
+  <text x="415" y="122" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">DS:</tspan> example.net 서버 공개 키의</text>
+  <text x="427" y="137" text-anchor="start" font-size="11.5" fill="#1d1d1f">일방향 해시</text>
+  <path d="M579,56 Q603,70 583,86" fill="none" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+  <text x="607" y="76" text-anchor="start" font-size="10.5" fill="#0a84ff">검증</text>
+  <text x="436.0" y="260" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="700">example.net 서버의 응답</text>
+  <rect x="320" y="270" width="232" height="78" rx="2" fill="#fff" stroke="#aeaeb2" stroke-width="1.6"/>
+  <text x="330" y="292" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">DNSKEY:</tspan> 이 서버의 공개 키</text>
+  <text x="330" y="322" font-size="11.5" fill="#1d1d1f"><tspan font-weight="700">RRSIG:</tspan> 이 응답 레코드의 서명</text>
+  <path d="M494,286 Q518,300 498,316" fill="none" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#b)"/>
+  <text x="522" y="306" text-anchor="start" font-size="10.5" fill="#0a84ff">검증</text>
+  <rect x="10" y="280" width="130" height="56" rx="2" fill="#fff" stroke="#aeaeb2" stroke-width="1.2"/>
+  <text x="75.0" y="304.7" text-anchor="middle" font-size="11.5" fill="#1d1d1f">다른 경로로 얻은</text>
+  <text x="75.0" y="319.6" text-anchor="middle" font-size="11.5" fill="#1d1d1f">신뢰할 수 있는 정보</text>
+  <path d="M75,280 L75,58 L141,58" fill="none" stroke="#1d1d1f" stroke-width="1.8" marker-end="url(#k)"/>
+  <text x="66" y="170" text-anchor="end" font-size="11" fill="#0a84ff">검증</text>
+  <path d="M290,128 L391,128 L391,58 L401,58" fill="none" stroke="#1d1d1f" stroke-width="1.8" marker-end="url(#k)"/>
+  <text x="391" y="50" text-anchor="middle" font-size="10.5" fill="#0a84ff">검증</text>
+  <path d="M545,168 L545,266" fill="none" stroke="#1d1d1f" stroke-width="1.8" marker-end="url(#k)"/>
+  <text x="553" y="222" text-anchor="start" font-size="11" fill="#0a84ff">검증</text>
+</svg>

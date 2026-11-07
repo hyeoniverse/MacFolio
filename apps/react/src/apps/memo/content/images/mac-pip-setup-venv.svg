@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="340" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">python3 -m venv .venv가 만드는 폴더와 activate의 동작</text>
+  <g font-size="12">
+    <text x="20" y="62" font-weight="600" fill="#1d1d1f">.venv 폴더</text>
+    <rect x="20" y="72" width="280" height="200" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/>
+    <text x="36" y="96" fill="#1d1d1f">.venv/</text>
+    <text x="52" y="120" fill="#0a84ff">bin/</text><text x="120" y="120" fill="#6e6e73">python, pip, activate</text>
+    <text x="52" y="144" fill="#0a84ff">lib/python3.15/</text>
+    <text x="68" y="166" fill="#1d1d1f">site-packages/</text><text x="170" y="166" fill="#6e6e73">requests 등</text>
+    <text x="52" y="194" fill="#0a84ff">pyvenv.cfg</text>
+    <text x="68" y="216" fill="#6e6e73">home = 기반 Python의 폴더</text>
+    <text x="36" y="250" fill="#ff9f0a">기반 Python이 삭제되면 bin/python이</text>
+    <text x="36" y="266" fill="#ff9f0a">가리킬 대상이 사라진다</text>
+    <text x="330" y="62" font-weight="600" fill="#1d1d1f">PATH 맨 앞 폴더</text>
+    <text x="330" y="96" fill="#6e6e73">활성화 전</text>
+    <rect x="330" y="104" width="290" height="34" rx="6" fill="#fff" stroke="#d1d1d6"/><text x="342" y="125" fill="#1d1d1f">/opt/homebrew/bin : …</text>
+    <text x="330" y="160" fill="#6e6e73">→ python, pip 없음 (python3, pip3만 있음)</text>
+    <text x="330" y="200" fill="#6e6e73">source .venv/bin/activate 뒤</text>
+    <rect x="330" y="208" width="290" height="34" rx="6" fill="#e5f1ff" stroke="#0a84ff" stroke-width="2"/><text x="342" y="229" fill="#1d1d1f">/path/to/project/.venv/bin : /opt/homebrew/bin : …</text>
+    <text x="330" y="264" fill="#0a84ff">→ python, pip가 .venv/bin의 파일을 실행</text>
+    <text x="20" y="310" fill="#6e6e73">activate는 PATH 앞에 .venv/bin을 추가하고, deactivate는 원래 PATH로 되돌린다.</text>
+    <text x="20" y="328" fill="#6e6e73">venv 안의 pip는 PEP 668 검사를 통과해 .venv/lib/…/site-packages에 설치한다.</text>
+  </g>
+</svg>

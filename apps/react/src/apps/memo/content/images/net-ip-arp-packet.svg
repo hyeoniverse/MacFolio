@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="250" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <g stroke="#1d1d1f" stroke-width="1.3" fill="none" marker-end="url(#a)">
+    <polyline points="185,110 185,26 220,26"/>
+    <polyline points="215,110 215,56 250,56"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="226" y="30">하드웨어 주소 길이(hard size)</text>
+    <text x="256" y="60">프로토콜 주소 길이(prot size)</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.2">
+    <rect x="40" y="90" width="65" height="66" fill="#f2f2f7"/>
+    <rect x="105" y="90" width="65" height="66" fill="#f2f2f7"/>
+    <rect x="170" y="90" width="30" height="66" fill="#f2f2f7"/>
+    <rect x="200" y="90" width="30" height="66" fill="#f2f2f7"/>
+    <rect x="230" y="90" width="45" height="66" fill="#f2f2f7"/>
+    <rect x="275" y="90" width="90" height="66" fill="#e5f1ff"/>
+    <rect x="365" y="90" width="70" height="66" fill="#e5f1ff"/>
+    <rect x="435" y="90" width="95" height="66" fill="#fff4e5"/>
+    <rect x="530" y="90" width="70" height="66" fill="#fff4e5"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <text x="72.5" y="113">하드웨어</text>
+    <text x="72.5" y="128">유형</text>
+    <text x="72.5" y="143" font-size="10" fill="#6e6e73">(hard type)</text>
+    <text x="137.5" y="113">프로토콜</text>
+    <text x="137.5" y="128">유형</text>
+    <text x="137.5" y="143" font-size="10" fill="#6e6e73">(prot type)</text>
+    <text x="252.5" y="128">op</text>
+    <text x="320" y="113">송신자</text>
+    <text x="320" y="128">이더넷</text>
+    <text x="320" y="143">주소</text>
+    <text x="400" y="113">송신자</text>
+    <text x="400" y="128">IP</text>
+    <text x="400" y="143">주소</text>
+    <text x="482.5" y="113">타깃</text>
+    <text x="482.5" y="128">이더넷</text>
+    <text x="482.5" y="143">주소</text>
+    <text x="565" y="113">타깃</text>
+    <text x="565" y="128">IP</text>
+    <text x="565" y="143">주소</text>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle">
+    <text x="72.5" y="176">2</text>
+    <text x="137.5" y="176">2</text>
+    <text x="185" y="176">1</text>
+    <text x="215" y="176">1</text>
+    <text x="252.5" y="176">2</text>
+    <text x="320" y="176">6</text>
+    <text x="400" y="176">4</text>
+    <text x="482.5" y="176">6</text>
+    <text x="565" y="176">4</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.3">
+    <line x1="40" y1="190" x2="40" y2="224"/>
+    <line x1="600" y1="190" x2="600" y2="224"/>
+    <line x1="230" y1="207" x2="42" y2="207" marker-end="url(#a)"/>
+    <line x1="410" y1="207" x2="598" y2="207" marker-end="url(#a)"/>
+  </g>
+  <text x="320" y="212" text-anchor="middle" font-size="13" fill="#1d1d1f">28바이트 ARP 요청/응답</text>
+</svg>

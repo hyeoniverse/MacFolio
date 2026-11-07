@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>잠긴 글의 임시 저장 요청이 409로 거절되는 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">화면을 거치지 않은 요청도 서버가 거절한다</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">관리자 쿠키를 붙여 curl로 잠긴 글(slug: memo-lock)에 임시 저장을 보낸 경우</text>
+<rect x="20" y="70" width="130" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="85" y="95" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">curl (관리자)</text>
+<rect x="250" y="70" width="160" height="40" rx="8" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="330" y="95" font-size="13" font-weight="700" fill="#0a84ff" text-anchor="middle">PostsService</text>
+<rect x="490" y="70" width="130" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="555" y="95" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">PostgreSQL</text>
+<line x1="85" y1="110" x2="85" y2="380" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="330" y1="110" x2="330" y2="380" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="555" y1="110" x2="555" y2="380" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="85" y1="140" x2="326" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="95" y="133" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">① PUT /posts/memo-lock/draft</text>
+<line x1="330" y1="178" x2="551" y2="178" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="340" y="171" font-size="12" fill="#1d1d1f">② checkUnlocked(slug)</text>
+<text x="340" y="196" font-size="12" fill="#6e6e73">MemoOrganization id=1 조회</text>
+<line x1="555" y1="222" x2="334" y2="222" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="345" y="215" font-size="12" fill="#1d1d1f">③ data.locks = { "memo-lock": true }</text>
+<line x1="330" y1="262" x2="89" y2="262" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="100" y="255" font-size="12" font-weight="700" fill="#ff3b30">④ ConflictException → 409 (본문은 수정하지 않음)</text>
+<rect x="20" y="280" width="600" height="100" rx="10" fill="#fff1f0" stroke="#ff3b30"/>
+<g font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">
+<text x="36" y="302">HTTP/1.1 409 Conflict</text>
+<text x="36" y="322">{ "statusCode": 409, "error": "Conflict",</text>
+<text x="36" y="342">  "message": "잠긴 메모입니다. 잠금을 풀고 고치세요.",</text>
+<text x="36" y="362">  "path": "/posts/memo-lock/draft", "timestamp": "…" }</text>
+</g>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>PR의 머지 미리보기 커밋과 실제 머지 커밋은 부모와 시각이 달라 커밋 해시가 다르지만, 파일 내용이 같으면 트리 해시가 같다. 그 사이 다른 PR이 먼저 머지되면 트리도 달라진다</title>
+<defs>
+<marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="32" font-size="15" font-weight="700" fill="#1d1d1f">커밋 해시와 트리 해시 (해시 값은 예시)</text>
+<!-- main 줄 -->
+<text x="24" y="78" font-size="12" fill="#6e6e73">main</text>
+<circle cx="90" cy="74" r="12" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="90" y="78" text-anchor="middle" font-size="12" fill="#1d1d1f">M</text>
+<!-- PR 줄 -->
+<text x="24" y="148" font-size="12" fill="#6e6e73">PR 브랜치</text>
+<circle cx="150" cy="144" r="12" fill="#fff4e0" stroke="#ff9f0a"/><text x="150" y="148" text-anchor="middle" font-size="12">P1</text>
+<circle cx="210" cy="144" r="12" fill="#fff4e0" stroke="#ff9f0a"/><text x="210" y="148" text-anchor="middle" font-size="12">P2</text>
+<path d="M100 82 L139 136" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<line x1="162" y1="144" x2="196" y2="144" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<!-- 미리보기 -->
+<rect x="268" y="52" width="348" height="78" rx="10" fill="#e8f1ff" stroke="#0a84ff"/>
+<text x="282" y="74" font-size="13" font-weight="700" fill="#1d1d1f">① 머지 미리보기 커밋 (PR의 CI가 시험)</text>
+<text x="282" y="94" font-size="12" fill="#6e6e73">refs/pull/266/merge · 부모 M, P2 · 시각 t1</text>
+<text x="282" y="116" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">commit 9f3c… <tspan fill="#0a84ff" font-weight="700">tree a1b2…</tspan></text>
+<rect x="268" y="146" width="348" height="78" rx="10" fill="#eaf7ee" stroke="#34c759"/>
+<text x="282" y="168" font-size="13" font-weight="700" fill="#1d1d1f">② 실제 머지 커밋 (main push)</text>
+<text x="282" y="188" font-size="12" fill="#6e6e73">Merge pull request #266 · 부모 M, P2 · 시각 t2</text>
+<text x="282" y="210" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">commit 4d7e… <tspan fill="#0a84ff" font-weight="700">tree a1b2…</tspan></text>
+<path d="M222 140 L266 100" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<path d="M222 148 L266 180" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#ag)"/>
+<text x="268" y="246" font-size="12" fill="#248a3d">①과 ②는 커밋 해시가 다르고 트리 해시가 같다 → 통과 기록 재사용, e2e 생략</text>
+<line x1="24" y1="266" x2="616" y2="266" stroke="#d2d2d7"/>
+<!-- 다른 PR이 먼저 -->
+<text x="24" y="296" font-size="13" font-weight="700" fill="#1d1d1f">그 사이 다른 PR이 먼저 머지된 경우</text>
+<text x="24" y="336" font-size="12" fill="#6e6e73">main</text>
+<circle cx="90" cy="332" r="12" fill="#f2f2f7" stroke="#6e6e73"/><text x="90" y="336" text-anchor="middle" font-size="12">M</text>
+<circle cx="170" cy="332" r="12" fill="#f2f2f7" stroke="#6e6e73"/><text x="170" y="336" text-anchor="middle" font-size="12">M′</text>
+<line x1="102" y1="332" x2="156" y2="332" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="130" y="356" text-anchor="middle" font-size="12" fill="#6e6e73">다른 PR</text>
+<rect x="268" y="306" width="348" height="58" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="282" y="328" font-size="13" font-weight="700" fill="#1d1d1f">③ 실제 머지 커밋 · 부모 M′, P2</text>
+<text x="282" y="350" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">commit 7b01… <tspan fill="#ff3b30" font-weight="700">tree c3d4…</tspan></text>
+<line x1="182" y1="332" x2="266" y2="334" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ag)"/>
+<text x="268" y="390" font-size="12" fill="#ff3b30">트리 c3d4…의 통과 기록이 없다 → e2e 6개 샤드를 모두 실행</text>
+</svg>

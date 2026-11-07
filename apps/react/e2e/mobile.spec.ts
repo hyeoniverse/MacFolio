@@ -769,7 +769,7 @@ test.describe('모바일', () => {
 		// 서식 버튼은 편집기를 불러온 뒤에 생긴다
 		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
 		await expect(bottom.getByRole('button', { name: '체크리스트' })).toBeVisible();
-		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '새 메모', exact: true })).toBeVisible();
 
 		// ••• 메뉴: 맨 위에 고정·잠그기, 비밀 글(저장소 글이라 꺼져 있다), 그 아래 찾기·읽기 화면·삭제
 		await top.getByRole('button', { name: '메모 동작' }).tap();
@@ -795,7 +795,7 @@ test.describe('모바일', () => {
 
 		// 목록 위 검색 칸 옆의 새 메모 → 빈 편집기
 		await memo.locator('.mobile-navbar-home').tap();
-		await memo.getByRole('region', { name: '글 목록' }).getByRole('button', { name: '새 메모' }).tap();
+		await memo.getByRole('region', { name: '글 목록' }).getByRole('button', { name: '새 메모', exact: true }).tap();
 		await expect(memo.getByRole('textbox', { name: '제목' })).toBeVisible();
 
 		// 폴더 화면의 새로운 폴더
@@ -993,7 +993,7 @@ test.describe('모바일', () => {
 		const memo = appWindow(page, 'memo');
 		await memo.locator('.mobile-navbar-home').tap();
 		const folders = memo.getByRole('navigation', { name: '카테고리' });
-		// 개발 기록 › MacFolio 아래 같은 층의 열 폴더 (가나다순)
+		// 개발 기록 › MacFolio 아래 같은 층의 여덟 폴더 (가나다순)
 		const topNames = () =>
 			folders.locator(
 				'li[data-folder-path="개발 기록/MacFolio"] > ul > li[data-folder-path] > .memo-folder-row .memo-folder-name'
@@ -1005,6 +1005,7 @@ test.describe('모바일', () => {
 			'서버·API',
 			'인터랙션·브라우저 API',
 			'테스트·보안·성능',
+			'트러블슈팅',
 			'화면·스타일',
 			'회고',
 		];
@@ -2022,7 +2023,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 		await expect(bottom.getByRole('button', { name: '서식' })).toBeVisible();
 		const resting = (await bottom.boundingBox())!;
 		// 새 메모 버튼은 넓은 서식 알약 옆에서도 줄어들지 않는 50px 동그라미다
-		const compose = (await bottom.getByRole('button', { name: '새 메모' }).boundingBox())!;
+		const compose = (await bottom.getByRole('button', { name: '새 메모', exact: true }).boundingBox())!;
 		expect(Math.round(compose.width)).toBe(50);
 		expect(Math.round(compose.height)).toBe(50);
 		// 서식 알약과 겹치지 않고 화면 오른쪽 여백(16px) 안에 있다
@@ -2035,7 +2036,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 		const keyboard = Math.round(viewport.height * 0.4);
 		await setKeyboard(page, keyboard);
 		await expect(bottom).toHaveClass(/above-keyboard/);
-		await expect(bottom.getByRole('button', { name: '새 메모' })).toHaveCount(0);
+		await expect(bottom.getByRole('button', { name: '새 메모', exact: true })).toHaveCount(0);
 		const lifted = (await bottom.boundingBox())!;
 		// 키보드 위 8px에 붙는다
 		expect(Math.round(lifted.y + lifted.height)).toBe(viewport.height - keyboard - 8);
@@ -2049,7 +2050,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 
 		await setKeyboard(page, 0);
 		await expect(bottom).not.toHaveClass(/above-keyboard/);
-		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '새 메모', exact: true })).toBeVisible();
 		expect(Math.round((await bottom.boundingBox())!.y)).toBe(Math.round(resting.y));
 	});
 
@@ -2087,7 +2088,7 @@ test.describe('메모 (휴대폰): 쓰는 중 키보드 위 서식 막대', () =
 		await setKeyboard(page, 80);
 		await page.waitForTimeout(200);
 		await expect(bottom).not.toHaveClass(/above-keyboard/);
-		await expect(bottom.getByRole('button', { name: '새 메모' })).toBeVisible();
+		await expect(bottom.getByRole('button', { name: '새 메모', exact: true })).toBeVisible();
 	});
 });
 

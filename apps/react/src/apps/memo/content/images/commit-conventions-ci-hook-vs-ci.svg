@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>커밋이 만들어지는 세 곳 가운데 로컬 커밋 훅은 훅을 설치한 PC만 검사하고, PR의 CI 검사는 세 곳의 커밋을 모두 검사한다</title>
+<defs>
+<marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+<marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+</defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="24" y="32" font-size="15" font-weight="700" fill="#1d1d1f">커밋이 만들어지는 곳과 검사가 실행되는 곳</text>
+<g font-size="13" fill="#1d1d1f">
+<rect x="24" y="58" width="168" height="54" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="108" y="81" text-anchor="middle">개발 PC</text>
+<text x="108" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">husky 훅 설치함</text>
+<rect x="24" y="138" width="168" height="54" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="108" y="161" text-anchor="middle">다른 PC</text>
+<text x="108" y="179" text-anchor="middle" font-size="12" fill="#6e6e73">훅 설치 안 함</text>
+<rect x="24" y="218" width="168" height="54" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="108" y="241" text-anchor="middle">GitHub 웹 편집기</text>
+<text x="108" y="259" text-anchor="middle" font-size="12" fill="#6e6e73">브라우저에서 바로 커밋</text>
+</g>
+<rect x="232" y="58" width="150" height="54" rx="8" fill="#fff4e0" stroke="#ff9f0a"/>
+<text x="307" y="81" text-anchor="middle" font-size="13" fill="#1d1d1f">commit-msg 훅</text>
+<text x="307" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">커밋하는 시각에 검사</text>
+<line x1="192" y1="85" x2="230" y2="85" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ah)"/>
+<line x1="192" y1="165" x2="246" y2="165" stroke="#6e6e73" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="252" y="169" font-size="12" fill="#ff3b30">검사 없이 통과</text>
+<line x1="192" y1="245" x2="246" y2="245" stroke="#6e6e73" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="252" y="249" font-size="12" fill="#ff3b30">검사 없이 통과</text>
+<rect x="420" y="58" width="196" height="214" rx="10" fill="#e8f1ff" stroke="#0a84ff"/>
+<text x="518" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="#1d1d1f">PR의 conventions 작업</text>
+<text x="518" y="108" text-anchor="middle" font-size="12" fill="#6e6e73">GitHub Actions에서 실행</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="436" y="140">· 브랜치 이름</text>
+<text x="436" y="162">· PR 제목</text>
+<text x="436" y="184">· PR에 포함된 커밋 전부</text>
+<text x="436" y="218" fill="#6e6e73">어디서 만든 커밋이든</text>
+<text x="436" y="236" fill="#6e6e73">push되면 같은 규칙으로</text>
+<text x="436" y="254" fill="#6e6e73">검사한다</text>
+</g>
+<path d="M382 85 H400 V120 H418" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<path d="M346 165 H418" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<path d="M346 245 H400 V210 H418" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="24" y="310" font-size="12" fill="#6e6e73">훅은 .git/hooks에 설치되어 저장소와 함께 복제되지 않는다. 설치하지 않은 환경의 커밋은 훅을 거치지 않는다.</text>
+</svg>

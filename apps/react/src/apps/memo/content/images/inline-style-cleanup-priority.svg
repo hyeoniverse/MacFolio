@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">같은 속성을 CSS 파일과 인라인 style이 함께 지정하면</text>
+  <rect x="20" y="52" width="290" height="96" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="32" y="74" font-size="13" font-weight="600" fill="#1d1d1f">Github.css</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <text x="32" y="98">#root .gh-repo .gh-language-dot {</text>
+    <text x="32" y="116">  background-color: gray;</text>
+    <text x="32" y="134">}  /* 명시도 1-2-0 */</text>
+  </g>
+  <rect x="330" y="52" width="290" height="96" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="342" y="74" font-size="13" font-weight="600" fill="#0a84ff">Github.tsx (JSX)</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <text x="342" y="98">&lt;span className="gh-language-dot"</text>
+    <text x="342" y="116">  style={{ background:</text>
+    <text x="342" y="134">    '#3178c6' }} /&gt;</text>
+  </g>
+  <line x1="165" y1="150" x2="290" y2="192" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="475" y1="150" x2="350" y2="192" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="200" y="196" width="240" height="64" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <circle cx="236" cy="228" r="12" fill="#3178c6"/>
+  <text x="260" y="222" font-size="12" font-weight="600" fill="#1d1d1f">최종 색: #3178c6</text>
+  <text x="260" y="240" font-size="12" fill="#6e6e73">인라인 style이 적용됨</text>
+  <rect x="20" y="276" width="600" height="40" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+  <text x="320" y="300" font-size="12" fill="#1d1d1f" text-anchor="middle">인라인 style은 명시도가 아무리 높은 선택자보다도 우선한다(!important 제외). CSS 파일만 보면 gray로 오해한다</text>
+</svg>

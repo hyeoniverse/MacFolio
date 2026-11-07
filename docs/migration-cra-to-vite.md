@@ -74,6 +74,6 @@ Create React App(CRA)으로 만든 프로젝트를 [Vite](https://vite.dev/)로 
 ## 관련 글
 
 - [CRA에서 Vite로 옮기기](https://macfolio.hyeoniverse.com/memo/cra-to-vite)
-- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-report)
+- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-diet#병목-분석)
 
 [^fast-refresh]: 컴포넌트 파일을 수정하면 페이지를 새로 고치지 않고 그 컴포넌트만 교체하면서 state를 유지하는 React의 HMR 방식이다. Vite에서는 [`@vitejs/plugin-react`](https://github.com/vitejs/vite-plugin-react)가 제공한다.

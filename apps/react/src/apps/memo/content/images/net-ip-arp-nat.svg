@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">NAT 공유기가 출발지 주소와 포트를 바꾸는 과정</text>
+  <defs><marker id="b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0a84ff"/></marker></defs>
+  <!-- inside -->
+  <rect x="20" y="44" width="200" height="176" rx="8" fill="#f2f2f7"/>
+  <text x="120" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">내부망 192.168.0.0/24 (사설)</text>
+  <rect x="36" y="78" width="168" height="46" rx="6" fill="#fff" stroke="#1d1d1f"/>
+  <text x="120" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">PC A</text>
+  <text x="120" y="115" text-anchor="middle" font-size="12" fill="#6e6e73">192.168.0.10:51000</text>
+  <rect x="36" y="150" width="168" height="46" rx="6" fill="#fff" stroke="#1d1d1f"/>
+  <text x="120" y="170" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">PC B</text>
+  <text x="120" y="187" text-anchor="middle" font-size="12" fill="#6e6e73">192.168.0.11:51000</text>
+  <!-- router -->
+  <rect x="262" y="96" width="116" height="80" rx="8" fill="#e8f2ff" stroke="#0a84ff"/>
+  <text x="320" y="124" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">NAT 공유기</text>
+  <text x="320" y="142" text-anchor="middle" font-size="12" fill="#6e6e73">공인 주소</text>
+  <text x="320" y="158" text-anchor="middle" font-size="12" fill="#6e6e73">203.0.113.5</text>
+  <!-- server -->
+  <rect x="440" y="110" width="180" height="52" rx="6" fill="#fff" stroke="#1d1d1f"/>
+  <text x="530" y="131" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">웹 서버</text>
+  <text x="530" y="149" text-anchor="middle" font-size="12" fill="#6e6e73">198.51.100.80:443</text>
+  <!-- arrows -->
+  <line x1="204" y1="101" x2="258" y2="124" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <line x1="204" y1="173" x2="258" y2="150" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <line x1="378" y1="136" x2="436" y2="136" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <text x="408" y="128" text-anchor="middle" font-size="12" fill="#6e6e73">인터넷</text>
+  <!-- table -->
+  <text x="20" y="250" font-size="13" font-weight="600" fill="#1d1d1f">공유기의 변환 표</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="20" y="260" width="600" height="26" fill="#f2f2f7"/>
+    <text x="32" y="278" font-weight="600">내부 주소:포트</text>
+    <text x="232" y="278" font-weight="600">바뀐 공인 주소:포트</text>
+    <text x="452" y="278" font-weight="600">상대</text>
+    <text x="32" y="306">192.168.0.10:51000</text>
+    <text x="232" y="306" fill="#0a84ff">203.0.113.5:40001</text>
+    <text x="452" y="306">198.51.100.80:443</text>
+    <line x1="20" y1="316" x2="620" y2="316" stroke="#d1d1d6"/>
+    <text x="32" y="334">192.168.0.11:51000</text>
+    <text x="232" y="334" fill="#0a84ff">203.0.113.5:40002</text>
+    <text x="452" y="334">198.51.100.80:443</text>
+  </g>
+  <text x="20" y="366" font-size="12" fill="#6e6e73">두 PC가 같은 출발 포트를 써도 공인 포트를 다르게 배정해 돌아오는 응답을 구별한다.</text>
+</svg>

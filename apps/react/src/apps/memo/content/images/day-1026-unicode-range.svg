@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>unicode-range로 나눈 Pretendard 조각과 화면 글자에 따라 받는 조각</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">같은 글꼴 이름의 @font-face를 글자 범위(unicode-range)별로 나눈다</text>
+<g font-size="13">
+<rect x="20" y="48" width="190" height="96" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="36" y="72" font-weight="700" fill="#0a84ff">core 246KB</text>
+<text x="36" y="94" fill="#1d1d1f">영문·문장 부호·자모</text>
+<text x="36" y="114" fill="#1d1d1f">이 사이트가 쓰는</text>
+<text x="36" y="132" fill="#1d1d1f">KS X 1001 1,093자</text>
+<rect x="225" y="48" width="190" height="96" rx="10" fill="#f2f2f7"/>
+<text x="241" y="72" font-weight="700" fill="#1d1d1f">ksx 253KB</text>
+<text x="241" y="94" fill="#1d1d1f">KS X 1001의</text>
+<text x="241" y="114" fill="#1d1d1f">나머지 1,257자</text>
+<rect x="430" y="48" width="190" height="96" rx="10" fill="#f2f2f7"/>
+<text x="446" y="72" font-weight="700" fill="#1d1d1f">ext-0 ~ ext-7</text>
+<text x="446" y="94" fill="#1d1d1f">그 밖의 한글</text>
+<text x="446" y="114" fill="#1d1d1f">(완성형 11,172자 중</text>
+<text x="446" y="132" fill="#1d1d1f">KS X 1001 밖)</text>
+</g>
+<text x="20" y="180" font-size="14" font-weight="700" fill="#1d1d1f">브라우저는 화면에 그린 글자가 든 조각만 요청한다</text>
+<g font-size="13">
+<rect x="20" y="196" width="600" height="40" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="36" y="221" fill="#1d1d1f">화면 글자 "메모 · 회고 · 글꼴"</text>
+<text x="330" y="221" fill="#0a84ff" font-weight="700">core</text>
+<text x="380" y="221" fill="#6e6e73">만 받는다</text>
+<rect x="20" y="246" width="600" height="40" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="36" y="271" fill="#1d1d1f">core에 없는 KS X 1001 글자가 있다</text>
+<text x="330" y="271" fill="#0a84ff" font-weight="700">core</text>
+<text x="370" y="271" fill="#1d1d1f">+</text>
+<text x="386" y="271" fill="#ff9f0a" font-weight="700">ksx</text>
+<rect x="20" y="296" width="600" height="40" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="36" y="321" fill="#1d1d1f">드문 글자 '똠'이 있다</text>
+<text x="330" y="321" fill="#0a84ff" font-weight="700">core</text>
+<text x="370" y="321" fill="#1d1d1f">+ '똠'이 든</text>
+<text x="440" y="321" fill="#ff9f0a" font-weight="700">ext 한 조각</text>
+</g>
+</svg>

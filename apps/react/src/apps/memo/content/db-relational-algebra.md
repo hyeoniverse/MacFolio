@@ -1,13 +1,27 @@
 ---
 title: 관계 대수의 연산자와 폐쇄 성질
 date: 2023-04-11
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 4
 summary: 관계 대수의 집합 연산자와 순수 관계 연산자, 기본 연산과 복합 연산, 확장 연산, 튜플·도메인 관계 해석의 정형식과 정량자, QBE를 대학 데이터베이스 예제와 연습문제 풀이로 정리했다.
 ---
 
-데이터베이스 기초 연재의 네 번째 글로, 5장(관계 대수와 관계 해석)을 다룬다. 예제는 [앞 글](/memo/db-relational-model-keys)의 대학 데이터베이스(학생, 과목, 등록)를 쓴다.
+## 들어가기 전에
+
+SQL로 `SELECT 이름 FROM 학생 WHERE 학과 = '컴퓨터'{:sql}`를 실행하면 DBMS는 이 문장을 "학생 릴레이션에서 학과가 컴퓨터인 행만 고르고, 이름 열만 남긴다"는 연산의 조합으로 바꿔 실행한다. 이 연산들의 체계가 관계 대수다. 관계 대수는 표(릴레이션)를 입력받아 표를 돌려주는 연산자 몇 개로 구성되어, 덧셈과 곱셈을 조합해 수식을 만들듯 연산자를 조합해 질의를 만든다. 관계 해석은 같은 질의를 "어떤 조건을 만족하는 튜플"이라는 논리식으로 적는 방법이다.
+
+이 글이 답하려는 질문은 세 가지다. 관계 대수의 연산자는 각각 릴레이션의 어느 부분을 고르거나 잇는가. 어떤 연산이 기본이고 어떤 연산이 다른 연산의 조합인가. 같은 질의를 관계 해석과 QBE로는 어떻게 쓰는가.
+
+| 순서 | 내용                                                          |
+| ---- | ------------------------------------------------------------- |
+| 1    | 관계 데이터 언어, 폐쇄 성질                                   |
+| 2    | 일반 집합 연산자, 순수 관계 연산자(σ, π, ⋈, ÷, ρ)             |
+| 3    | 기본·복합 연산, 확장 연산, 질의를 관계 대수식으로 바꾸는 방법 |
+| 4    | 튜플·도메인 관계 해석, QBE                                    |
+| 5    | 연습문제·실습 풀이                                            |
+
+예제는 [앞 글](/memo/db-relational-model-keys)의 대학 데이터베이스(학생, 과목, 등록)를 쓴다.
 
 ## 관계 데이터 언어
 
@@ -51,6 +65,8 @@ summary: 관계 대수의 집합 연산자와 순수 관계 연산자, 기본 �
 
 1. 두 릴레이션의 차수가 같다.
 2. 대응하는 애트리뷰트 쌍마다 도메인이 같다.
+
+![R = {100, 200, 300}, S = {300, 400}의 합집합·교집합·차집합 벤 다이어그램과 카티션 프로덕트 3×2 격자](./images/db-relational-algebra-set-ops.svg '학번 릴레이션 두 개에 집합 연산을 적용한 결과')
 
 ∪, ∩, ×는 결합적(associative)이고 교환적(commutative)이다. 차집합은 둘 다 아니다.
 
@@ -105,7 +121,7 @@ R \times S \times T &= (R \times S) \times T = R \times (S \times T) &\qquad R \
 | 400  | C413     | B    | 80       | 85       |
 | 400  | E412     | C    | 65       | 75       |
 
-![σAθv(R), σAθB(R) 정의식과 θ 비교 연산자·상수 v 설명](./images/db-relational-algebra-note-01.jpg 'σAθv(R), σAθB(R) 정의식과 θ 비교 연산자·상수 v 설명 (강의 자료)')
+![σAθv(R), σAθB(R) 정의식과 θ 비교 연산자·상수 v 설명](./images/db-relational-algebra-note-01.jpg 'σAθv(R), σAθB(R) 정의식과 θ 비교 연산자·상수 v 설명')
 
 ### 프로젝트(π)
 
@@ -123,7 +139,7 @@ R \times S \times T &= (R \times S) \times T = R \times (S \times T) &\qquad R \
 
 같은 릴레이션에 프로젝트를 겹쳐 쓰면 바깥쪽만 남는다(`\pi_Y(\pi_X(R)) = \pi_Y(R){:math}`, `Y \subseteq X{:math}`).
 
-![π이름,학과(학생) 결과 표(이름·학과 5행)](./images/db-relational-algebra-note-02.jpg 'π이름,학과(학생) 결과 표(이름·학과 5행) (강의 자료)')
+![π이름,학과(학생) 결과 표(이름·학과 5행)](./images/db-relational-algebra-note-02.jpg 'π이름,학과(학생) 결과 표(이름·학과 5행)')
 
 ### 조인(⋈)
 
@@ -161,9 +177,9 @@ R \bowtie_N S &= \{ \langle r \cdot s \rangle [X \cup Y] \mid r \in R \land s \i
 
 ==두 릴레이션을 조인할 수 있다는 것은 연결점이 있다는 뜻이고, 그 연결점은 대부분 기본 키와 외래 키의 조합이다.== 조인으로 여러 릴레이션을 하나로 합치면 한 릴레이션만으로는 알 수 없던 정보에 조건을 걸 수 있다. 위 결과에서는 "컴퓨터학과 학생의 C413 성적"처럼 학생과 등록에 흩어진 정보를 함께 조회할 수 있다.
 
-![학생⋈학번=학번 등록 동일 조인 결과표(학생.학번과 등록.학번이 모두 남은 9열 11행)](./images/db-relational-algebra-note-04.jpg '학생⋈학번=학번 등록 동일 조인 결과표(학생.학번과 등록.학번이 모두 남은 9열 11행) (강의 자료)')
+![학생⋈학번=학번 등록 동일 조인 결과표(학생.학번과 등록.학번이 모두 남은 9열 11행)](./images/db-relational-algebra-note-04.jpg '학생⋈학번=학번 등록 동일 조인 결과표(학생.학번과 등록.학번이 모두 남은 9열 11행)')
 
-![학생⋈N등록 자연 조인 결과표(학번이 한 번만 남은 8열 11행)](./images/db-relational-algebra-note-05.jpg '학생⋈N등록 자연 조인 결과표(학번이 한 번만 남은 8열 11행) (강의 자료)')
+![학생⋈N등록 자연 조인 결과표(학번이 한 번만 남은 8열 11행)](./images/db-relational-algebra-note-05.jpg '학생⋈N등록 자연 조인 결과표(학번이 한 번만 남은 8열 11행)')
 
 ### 디비전(÷)
 
@@ -178,13 +194,15 @@ R \div S &= \{ t \mid t \in \pi_D(R) \land t \cdot s \in R \text{ for all } s \i
 
 =="모든 과목을 수강한 학생"처럼 "모든"이 들어간 질의에 쓴다.==
 
+![등록의 학번·과목번호를 {C312, C413}으로 나눠 두 과목을 모두 등록한 학번 300, 400을 구하는 디비전 예](./images/db-relational-algebra-division.svg '제수의 과목을 모두 가진 학번만 몫에 남는다')
+
 ```math
 \pi_{\text{학번},\text{이름}}((\pi_{\text{학번},\text{과목번호}}(\text{등록}) \div \pi_{\text{과목번호}}(\text{과목})) \bowtie_N \text{학생})
 ```
 
 예제 데이터에서는 과목 다섯 개를 모두 등록한 학생이 없어 결과가 공집합이다. 가장 많이 등록한 송병길(400)도 C123을 등록하지 않았다.
 
-![학과목(SC)을 과목1·2·3(C1·C2·C3)으로 나눈 SC÷C1·SC÷C2·SC÷C3 결과 예시](./images/db-relational-algebra-note-06.jpg '학과목(SC)을 과목1·2·3(C1·C2·C3)으로 나눈 SC÷C1·SC÷C2·SC÷C3 결과 예시 (강의 자료)')
+![학과목(SC)을 과목1·2·3(C1·C2·C3)으로 나눈 SC÷C1·SC÷C2·SC÷C3 결과 예시](./images/db-relational-algebra-note-06.jpg '학과목(SC)을 과목1·2·3(C1·C2·C3)으로 나눈 SC÷C1·SC÷C2·SC÷C3 결과 예시')
 
 ### 개명 연산(ρ)
 
@@ -227,11 +245,11 @@ R(Z, Y) \div S(Y) &= R[Z] - ((R[Z] \times S) - R)[Z]
 
 대신 `R \bowtie_N S = (R \ltimes S) \bowtie_N S = (S \ltimes R) \bowtie_N R{:math}`이 성립해, 먼저 한쪽 릴레이션을 줄인 뒤 조인해도 같은 결과를 얻는다. 두 식은 결과가 같지만 처리 과정에서 다루는 데이터 양이 다르다.
 
-![R(A,B,C)·S(B,C,D)의 자연 조인 R⋈NS와 세미 조인 R⋉S(ΠX∩Y(S) 경유)를 비교한 도식](./images/db-relational-algebra-note-07.jpg 'R(A,B,C)·S(B,C,D)의 자연 조인 R⋈NS와 세미 조인 R⋉S(ΠX∩Y(S) 경유)를 비교한 도식 (강의 자료)')
+![R(A,B,C)·S(B,C,D)의 자연 조인 R⋈NS와 세미 조인 R⋉S(ΠX∩Y(S) 경유)를 비교한 도식](./images/db-relational-algebra-note-07.jpg 'R(A,B,C)·S(B,C,D)의 자연 조인 R⋈NS와 세미 조인 R⋉S(ΠX∩Y(S) 경유)를 비교한 도식')
 
-![R⋈+S 외부 조인(짝 없는 a3·b3 행을 널로 채움)과 R⋈NS 자연 조인 결과 비교 도식](./images/db-relational-algebra-note-08.jpg 'R⋈+S 외부 조인(짝 없는 a3·b3 행을 널로 채움)과 R⋈NS 자연 조인 결과 비교 도식 (강의 자료)')
+![R⋈+S 외부 조인(짝 없는 a3·b3 행을 널로 채움)과 R⋈NS 자연 조인 결과 비교 도식](./images/db-relational-algebra-note-08.jpg 'R⋈+S 외부 조인(짝 없는 a3·b3 행을 널로 채움)과 R⋈NS 자연 조인 결과 비교 도식')
 
-![R(A,B,C)와 S(B,C,D)를 ∪+로 합쳐 A~D 4열에 없는 값은 비워 둔 외부 합집합 결과 도식](./images/db-relational-algebra-note-09.jpg 'R(A,B,C)와 S(B,C,D)를 ∪+로 합쳐 A~D 4열에 없는 값은 비워 둔 외부 합집합 결과 도식 (강의 자료)')
+![R(A,B,C)와 S(B,C,D)를 ∪+로 합쳐 A~D 4열에 없는 값은 비워 둔 외부 합집합 결과 도식](./images/db-relational-algebra-note-09.jpg 'R(A,B,C)와 S(B,C,D)를 ∪+로 합쳐 A~D 4열에 없는 값은 비워 둔 외부 합집합 결과 도식')
 
 ### 집계 연산
 
@@ -250,7 +268,7 @@ G_A \, F_B(E)
 | `\text{GROUP}_{\text{과목번호}}\,\text{AVG}_{\text{성적}}(\text{등록}){:math}` | 과목별 평균 성적. GROUP을 먼저, AVG를 다음에 실행한다 |
 | `\text{GROUP}_{\text{학번}}\,\text{AVG}_{\text{성적}}(\text{등록}){:math}`     | 학생별 평균 성적                                      |
 
-![집계 연산 일반 형식 G_A F_B(E) 한 줄 수식](./images/db-relational-algebra-note-10.jpg '집계 연산 일반 형식 G_A F_B(E) 한 줄 수식 (강의 자료)')
+![집계 연산 일반 형식 G_A F_B(E) 한 줄 수식](./images/db-relational-algebra-note-10.jpg '집계 연산 일반 형식 G_A F_B(E) 한 줄 수식')
 
 ## 질의문을 관계 대수식으로 표현하기
 
@@ -269,7 +287,9 @@ G_A \, F_B(E)
 | 학생 <600, 김영호, 4, 컴퓨터> 삽입        | `\text{학생} \cup \{\langle 600, \text{'김영호'}, 4, \text{'컴퓨터'} \rangle\}{:math}`                            |
 | 데이터베이스 과목 삭제                    | `\text{과목} - \sigma_{\text{과목이름}=\text{'데이터베이스'}}(\text{과목}){:math}`                                |
 
-수업 실습에서 풀었던 "담당교수가 황수관인 과목을 수강한 학생의 학번과 중간성적"은 세 단계로 나눠 쓸 수 있다.
+"담당교수가 황수관인 과목을 수강한 학생의 학번과 중간성적"은 세 단계로 나눠 쓸 수 있다. 중간 결과에 이름을 붙이면 아래 질의 트리처럼 잎에서 뿌리 방향으로 계산 순서가 드러난다.
+
+![과목에 실렉트, 등록과 조인, 프로젝트 순서로 계산하는 질의 트리](./images/db-relational-algebra-query-tree.svg '폐쇄 성질 덕분에 각 단계의 결과 릴레이션이 다음 연산의 입력이 된다')
 
 ```text
 A = σ담당교수='황수관'(과목)              -- C312 자료구조 한 튜플
@@ -381,7 +401,7 @@ WHERE C.Prname = '황수관';
 "모든"은 ∀로, "하지 않은"은 ¬∃로 쓴다.
 
 > [!WARNING]
-> 강의록은 셋째 식을 `(\forall c)(\exists e)(\text{COURSE}(c) \land \text{ENROL}(e) \land \dots){:math}`로 적어 `\text{COURSE}(c){:math}`를 c의 범위 선언으로 쓴다. 정형식 규칙만으로 읽으면 이 식은 모든 튜플이 COURSE에 속해야 참이 되므로, 위 표처럼 `\text{COURSE}(c) \to \dots{:math}`(= `\lnot \text{COURSE}(c) \lor \dots{:math}`)로 써야 정확하다.
+> 셋째 식에서 `\text{COURSE}(c){:math}`를 `\land`로 붙여 `(\forall c)(\exists e)(\text{COURSE}(c) \land \text{ENROL}(e) \land \dots){:math}`로 쓰면, 정형식 규칙상 모든 튜플이 COURSE에 속해야 참이 된다. ∀로 한정한 변수의 범위는 `\text{COURSE}(c) \to \dots{:math}`(= `\lnot \text{COURSE}(c) \lor \dots{:math}`)로 제한한다.
 
 ### 도메인 관계 해석
 
@@ -410,14 +430,7 @@ WHERE C.Prname = '황수관';
 | 기말성적 90점 이상인 학생의 학번과 이름 | `\{ x_{\mathit{Sno}}, x_{\mathit{Sname}} \vert (\exists x_{\mathit{Year}})(\exists x_{\mathit{Dept}})(\text{STUDENT}(x_{\mathit{Sno}}, x_{\mathit{Sname}}, x_{\mathit{Year}}, x_{\mathit{Dept}}) \land (\exists x_{\mathit{Cno}})(\exists x_{\mathit{Grade}})(\exists x_{\mathit{Midterm}})(\exists x_{\mathit{Final}})(\text{ENROL}(x_{\mathit{Sno}}, x_{\mathit{Cno}}, x_{\mathit{Grade}}, x_{\mathit{Midterm}}, x_{\mathit{Final}}) \land x_{\mathit{Final}} \ge 90)) \}{:math}`                     | 100 나수영, 300 정기태, 400 송병길 |
 | C324에 등록하지 않은 학생의 이름        | `\{ x_{\mathit{Sname}} \vert (\exists x_{\mathit{Sno}})(\exists x_{\mathit{Year}})(\exists x_{\mathit{Dept}})(\text{STUDENT}(x_{\mathit{Sno}}, x_{\mathit{Sname}}, x_{\mathit{Year}}, x_{\mathit{Dept}}) \land \lnot(\exists x_{\mathit{Cno}})(\exists x_{\mathit{Grade}})(\exists x_{\mathit{Midterm}})(\exists x_{\mathit{Final}})(\text{ENROL}(x_{\mathit{Sno}}, x_{\mathit{Cno}}, x_{\mathit{Grade}}, x_{\mathit{Midterm}}, x_{\mathit{Final}}) \land x_{\mathit{Cno}} = \text{'C324'})) \}{:math}` | 나수영, 이찬수, 박종화             |
 
-<details>
-<summary>강의록 식과 다르게 쓴 부분</summary>
-
-- 강의록은 목표 리스트에 없는 도메인 변수 가운데 일부만 ∃로 한정했다. 정형식 규칙대로면 목표 리스트 밖의 변수는 모두 속박 변수여야 하므로 위 표에서는 모두 ∃로 한정했다.
-- 강의록은 두 릴레이션의 학번을 `x_{\mathit{Sno}}{:math}`, `xx_{\mathit{Sno}}{:math}`로 따로 두고 `x_{\mathit{Sno}} = xx_{\mathit{Sno}}{:math}`로 연결했다. 위 표처럼 같은 도메인 변수를 두 범위식에 함께 쓰면 같은 조건이 된다.
-- 강의록의 "C324에 등록하지 않은 학생" 식은 텍스트에서 ¬가 빠져 있고 `\text{STUDENT}(x_{\mathit{Sname}}, x_{\mathit{Sno}}, \dots){:math}`로 애트리뷰트 순서가 바뀌어 있다. 스키마 순서대로 쓰고 ¬∃로 고쳤다.
-
-</details>
+목표 리스트 밖의 도메인 변수는 모두 ∃로 한정해 속박 변수로 만든다. 두 범위식에 같은 도메인 변수(예: `x_{\mathit{Sno}}{:math}`)를 함께 쓰면 두 값이 같다는 조인 조건이 된다.
 
 ### QBE
 
@@ -481,8 +494,6 @@ ENROL | Sno | Cno | … | Final        CONDITIONS
 | C413 등록 학생의 기말성적에 5점 가산           | `ENROL`에 행: Sno `_X`, Cno C413, Final `_F`, `U.` 행: Sno `_X`, Cno C413, Final `_F + 5` | 산술식을 이용한 갱신                                                                     |
 
 ## 연습문제 풀이
-
-교재 5장 연습문제 가운데 과제로 나온 7·8번을 풀었다. 번호는 교재 번호 그대로다.
 
 <details>
 <summary>7. 연산 결과 릴레이션의 기본 키</summary>
@@ -556,14 +567,12 @@ C = S ⋈N B
 
 ## 실습 풀이
 
-5·6주차 수업의 실습 과제 3개를 풀었다.
-
 <details>
 <summary>1. 자연 조인을 기본 연산으로 계산</summary>
 
 > `\text{학생} \bowtie_N \text{등록}{:math}`을 카티션 프로덕트(×), 실렉트(σ), 프로젝트(π) 순서로 계산하라.
 
-![자연 조인을 카티션 프로덕트, 실렉트, 프로젝트로 나눈 식](./images/db-relational-algebra-natural-join.jpg '과제에서 계산 순서를 색으로 표시한 식. 파랑, 빨강, 초록 순서로 계산한다')
+![자연 조인을 카티션 프로덕트, 실렉트, 프로젝트로 나눈 식](./images/db-relational-algebra-natural-join.jpg '계산 순서를 색으로 표시한 식. 파랑, 빨강, 초록 순서로 계산한다')
 
 [조인](#조인) 절의 `\pi_{X \cup Y}(\sigma_{Z=Z}(R \times S)){:math}`를 파랑, 빨강, 초록 순서로 계산한다.
 
@@ -653,5 +662,15 @@ B = 등록 ⋈N A                           -- C413 등록 튜플 3개
 
 - [관계 데이터 모델의 릴레이션, 키, 무결성 제약](/memo/db-relational-model-keys): 앞 글
 - [SQL 데이터 정의문과 SELECT·INSERT·UPDATE 조작문](/memo/db-sql-ddl-dml): 관계 대수를 기초로 한 SQL을 다룬 다음 글
+
+<details>
+<summary>참고 문헌</summary>
+
+- E. F. Codd, [A Relational Model of Data for Large Shared Data Banks](https://doi.org/10.1145/362384.362685), Communications of the ACM 13(6), 1970
+- [Relational algebra](https://en.wikipedia.org/wiki/Relational_algebra), Wikipedia
+- [Relational calculus](https://en.wikipedia.org/wiki/Relational_calculus), Wikipedia
+- [Query by Example](https://en.wikipedia.org/wiki/Query_by_Example), Wikipedia
+
+</details>
 
 #데이터베이스 #관계대수 #CS

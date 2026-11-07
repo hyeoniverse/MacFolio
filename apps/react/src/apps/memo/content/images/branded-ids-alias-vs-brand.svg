@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>타입 별칭과 브랜드 타입에 같은 문자열을 넘긴 결과</title>
+<defs>
+<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">같은 문자열을 openPost(slug)에 넘기면</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">fromAddress는 주소창에서 잘라 낸 string이다. 예: "a/b?x=1"처럼 글 주소 형식이 아닌 값도 들어올 수 있다</text>
+
+<rect x="24" y="72" width="284" height="266" rx="10" fill="#f2f2f7"/>
+<text x="40" y="98" font-size="14" font-weight="700" fill="#1d1d1f">타입 별칭</text>
+<text x="40" y="120" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">type PostSlug = string</text>
+<rect x="40" y="136" width="252" height="38" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="52" y="160" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">openPost(fromAddress)</text>
+<line x1="166" y1="176" x2="166" y2="206" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="40" y="210" width="252" height="44" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="166" y="230" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">tsc 통과 (오류 0개)</text>
+<text x="166" y="246" font-size="12" fill="#6e6e73" text-anchor="middle">PostSlug와 string은 같은 타입</text>
+<text x="40" y="282" font-size="12" fill="#1d1d1f">검사하지 않은 값이 그대로 전달된다.</text>
+<text x="40" y="300" font-size="12" fill="#1d1d1f">이름은 읽는 사람을 위한 표시일 뿐이고</text>
+<text x="40" y="318" font-size="12" fill="#1d1d1f">컴파일러는 둘을 구별하지 않는다.</text>
+
+<rect x="332" y="72" width="284" height="266" rx="10" fill="#f2f2f7"/>
+<text x="348" y="98" font-size="14" font-weight="700" fill="#1d1d1f">브랜드 타입</text>
+<text x="348" y="120" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">string &amp; { [brand]: true }</text>
+<rect x="348" y="136" width="252" height="38" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="360" y="160" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">openPost(fromAddress)</text>
+<line x1="474" y1="176" x2="474" y2="206" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="348" y="210" width="252" height="44" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="474" y="230" font-size="13" font-weight="700" fill="#ff3b30" text-anchor="middle">error TS2345</text>
+<text x="474" y="246" font-size="12" fill="#6e6e73" text-anchor="middle">'string' → 'PostSlug' 대입 불가</text>
+<rect x="348" y="266" width="252" height="56" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="360" y="288" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">const s = postSlug(fromAddress)</text>
+<text x="360" y="308" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">if (s) openPost(s)</text>
+<text x="590" y="308" font-size="12" font-weight="700" fill="#34c759" text-anchor="end">통과</text>
+</svg>

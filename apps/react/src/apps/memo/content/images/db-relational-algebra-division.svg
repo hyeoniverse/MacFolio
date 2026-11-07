@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">π학번,과목번호(등록) ÷ {C312, C413}: 두 과목을 모두 등록한 학생</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="20" y="48" width="290" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="32" y="65">학번</text><text x="100" y="65">등록한 과목번호</text>
+    <rect x="20" y="72" width="290" height="30" fill="#fff" stroke="#6e6e73"/><text x="32" y="92">100</text>
+    <text x="100" y="92"><tspan fill="#6e6e73">C413</tspan>  E412</text>
+    <rect x="20" y="102" width="290" height="30" fill="#fff" stroke="#6e6e73"/><text x="32" y="122">200</text><text x="100" y="122">C123</text>
+    <rect x="20" y="132" width="290" height="30" fill="#eafaf0" stroke="#34c759"/><text x="32" y="152" font-weight="600">300</text>
+    <text x="100" y="152"><tspan fill="#0a84ff" font-weight="600">C312</tspan>  C324  <tspan fill="#0a84ff" font-weight="600">C413</tspan></text>
+    <rect x="20" y="162" width="290" height="30" fill="#eafaf0" stroke="#34c759"/><text x="32" y="182" font-weight="600">400</text>
+    <text x="100" y="182"><tspan fill="#0a84ff" font-weight="600">C312</tspan>  C324  <tspan fill="#0a84ff" font-weight="600">C413</tspan>  E412</text>
+    <rect x="20" y="192" width="290" height="30" fill="#fff" stroke="#6e6e73"/><text x="32" y="212">500</text>
+    <text x="100" y="212"><tspan fill="#6e6e73">C312</tspan></text>
+  </g>
+  <text x="20" y="246" font-size="12" fill="#6e6e73">등록 11튜플을 학번별로 묶어 적었다</text>
+
+  <g font-size="12" fill="#1d1d1f">
+    <text x="350" y="62" font-weight="600">제수 S</text>
+    <rect x="350" y="72" width="110" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="362" y="89">과목번호</text>
+    <rect x="350" y="96" width="110" height="48" fill="#e8f2ff" stroke="#0a84ff"/><text x="362" y="114">C312</text><text x="362" y="136">C413</text>
+    <text x="490" y="62" font-weight="600">몫 R ÷ S</text>
+    <rect x="490" y="72" width="110" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="502" y="89">학번</text>
+    <rect x="490" y="96" width="110" height="48" fill="#eafaf0" stroke="#34c759"/><text x="502" y="114">300</text><text x="502" y="136">400</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="350" y="180">100: C413은 있지만 C312가 없다</text>
+    <text x="350" y="200">200: 둘 다 없다</text>
+    <text x="350" y="220">500: C312는 있지만 C413이 없다</text>
+  </g>
+  <rect x="20" y="268" width="600" height="46" rx="6" fill="#f2f2f7" stroke="#d2d2d7"/>
+  <text x="320" y="288" text-anchor="middle" font-size="12" fill="#1d1d1f">검산: (R ÷ S) × S = {&lt;300, C312&gt;, &lt;300, C413&gt;, &lt;400, C312&gt;, &lt;400, C413&gt;} ⊆ R</text>
+  <text x="320" y="306" text-anchor="middle" font-size="12" fill="#6e6e73">S의 모든 튜플과 짝을 이루는 학번만 몫에 남는다</text>
+</svg>

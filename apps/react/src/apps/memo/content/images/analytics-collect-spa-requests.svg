@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>여러 페이지 사이트는 글을 열 때마다 서버에 요청이 가지만, 페이지 하나로 동작하는 MacFolio는 첫 화면 이후 서버 요청이 없다</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">같은 조작, 서버가 받는 요청</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">방문자가 같은 순서로 조작했을 때 서버 접근 기록에 남는 요청</text>
+
+<rect x="24" y="70" width="284" height="32" rx="8" fill="#f2f2f7"/>
+<text x="166" y="91" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">여러 페이지 사이트</text>
+<rect x="332" y="70" width="284" height="32" rx="8" fill="#0a84ff"/>
+<text x="474" y="91" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">MacFolio (페이지 하나)</text>
+
+<g font-size="12" fill="#1d1d1f">
+<text x="36" y="136">첫 화면 열기</text>
+<rect x="160" y="118" width="136" height="28" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="172" y="137" font-family="ui-monospace, Menlo, monospace">GET /</text>
+<text x="36" y="184">글 A 읽기</text>
+<rect x="160" y="166" width="136" height="28" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="172" y="185" font-family="ui-monospace, Menlo, monospace">GET /posts/a</text>
+<text x="36" y="232">글 B 읽기</text>
+<rect x="160" y="214" width="136" height="28" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="172" y="233" font-family="ui-monospace, Menlo, monospace">GET /posts/b</text>
+<text x="36" y="280">GitHub 링크 누르기</text>
+<rect x="160" y="262" width="136" height="28" rx="6" fill="#f2f2f7"/>
+<text x="172" y="281" fill="#6e6e73">사이트 밖, 기록 없음</text>
+
+<text x="344" y="136">첫 화면 열기</text>
+<rect x="468" y="118" width="136" height="28" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="480" y="137" font-family="ui-monospace, Menlo, monospace">GET / + JS 파일</text>
+<text x="344" y="184">메모 앱 열기</text>
+<rect x="468" y="166" width="136" height="28" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="480" y="185" fill="#ff3b30">요청 없음</text>
+<text x="344" y="232">글 세 개 읽기</text>
+<rect x="468" y="214" width="136" height="28" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="480" y="233" fill="#ff3b30">요청 없음</text>
+<text x="344" y="280">GitHub 링크 누르기</text>
+<rect x="468" y="262" width="136" height="28" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="480" y="281" fill="#ff3b30">요청 없음</text>
+</g>
+
+<line x1="320" y1="112" x2="320" y2="300" stroke="#e5e5ea" stroke-width="1"/>
+
+<rect x="24" y="314" width="284" height="66" rx="10" fill="#f2f2f7"/>
+<text x="38" y="340" font-size="12" fill="#1d1d1f">서버 접근 기록만 집계해도</text>
+<text x="38" y="360" font-size="12" fill="#1d1d1f">어떤 글을 몇 번 열었는지 알 수 있다</text>
+<rect x="332" y="314" width="284" height="66" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="346" y="340" font-size="12" fill="#1d1d1f">화면 전환은 브라우저 안의 JS가 처리한다</text>
+<text x="346" y="360" font-size="12" fill="#0a84ff" font-weight="600">→ 사이트가 POST /analytics/events로 전송</text>
+</svg>

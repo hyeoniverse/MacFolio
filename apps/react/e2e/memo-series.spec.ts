@@ -24,7 +24,7 @@ test.describe('메모 연재', () => {
 		const items = series.getByRole('listitem');
 		const more = series.getByRole('button', { name: /편 더보기$/ });
 		await expect(items).toHaveCount(5);
-		await expect(items.nth(0)).toHaveText(/^1\s*쿠키 없이/);
+		await expect(items.nth(0)).toHaveText(/^1\s*쿠키 없는/);
 		await expect(items.nth(1).getByRole('button')).toHaveAttribute('aria-current', 'page');
 		await expect(items.nth(4)).toHaveText(/^5\D/);
 		await expect(more).toHaveText(`${total - 5}편 더보기`);
@@ -51,13 +51,13 @@ test.describe('메모 연재', () => {
 	});
 
 	test('지금 글이 앞 5편보다 뒤면 1편부터 순서대로 몇 편, ⋯, 이전 편과 지금 글을 보인다', async ({ page }) => {
-		// analytics-beacon-corp은 9편: 1, 2, 3 ⋯ 8, 9 그리고 아래에 나머지 편의 더보기
+		// analytics-beacon-corp은 7편: 1, 2, 3 ⋯ 6, 7 그리고 아래에 나머지 편의 더보기
 		await enterDesktop(page, '/memo/analytics-beacon-corp');
 		const series = appWindow(page, 'memo').getByRole('navigation', { name: `연재: ${SERIES}` });
 		const total = Number((await series.locator('.memo-series-head').textContent())?.match(/\/ (\d+)/)?.[1]);
 		const numbers = () =>
 			series.getByRole('listitem').evaluateAll((items) => items.map((item) => item.textContent?.match(/^\d+/)?.[0]));
-		await expect.poll(numbers).toEqual(['1', '2', '3', '8', '9']);
+		await expect.poll(numbers).toEqual(['1', '2', '3', '6', '7']);
 		await expect(series.getByRole('listitem').nth(4).getByRole('button')).toHaveAttribute('aria-current', 'page');
 		await expect(series.locator('.memo-series-gap')).toBeVisible();
 		const more = series.getByRole('button', { name: /편 더보기$/ });
@@ -68,10 +68,10 @@ test.describe('메모 연재', () => {
 		await expect.poll(numbers).toEqual(Array.from({ length: total }, (_, at) => String(at + 1)));
 		await expect(series.locator('.memo-series-gap')).toBeHidden();
 		await series.getByRole('button', { name: '접기' }).click();
-		await expect.poll(numbers).toEqual(['1', '2', '3', '8', '9']);
+		await expect.poll(numbers).toEqual(['1', '2', '3', '6', '7']);
 
-		// 6편(analytics-service-split)처럼 한 편만 빠져도 그 자리는 ⋮: 1, 2, 3 ⋮ 5, 6
-		await enterDesktop(page, '/memo/analytics-service-split');
+		// 6편(search-keywords)처럼 한 편만 빠져도 그 자리는 ⋮: 1, 2, 3 ⋮ 5, 6
+		await enterDesktop(page, '/memo/search-keywords');
 		await expect.poll(numbers).toEqual(['1', '2', '3', '5', '6']);
 		await expect(series.locator('.memo-series-gap')).toBeVisible();
 	});

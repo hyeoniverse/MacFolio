@@ -1,22 +1,11 @@
 ---
-title: Mac에서 pip 설치하기 — Homebrew Python, venv, pipx, externally-managed-environment
+title: 'Mac에서 pip 설치하기: Homebrew Python, venv, pipx, externally-managed-environment'
 date: 2026-10-23
 category: 기술 노트/개발 환경
 summary: Apple Silicon Mac에서 Homebrew로 Python과 pip를 설치하고 확인하는 순서를 정리했다. pip3 install이 externally-managed-environment 오류로 실패하는 이유(PEP 668)와 venv·pipx로 해결하는 방법, 시스템 python3(Xcode CLT)와의 차이, 자주 발생하는 오류를 함께 정리했다.
 ---
 
-## pip란
-
-pip는 Python 패키지 관리자다. [PyPI](https://pypi.org/)(Python Package Index)에 등록된 라이브러리와 도구를 내려받아 설치하고, 업데이트·삭제한다. npm이 Node.js 패키지를 관리하는 것과 같은 역할이다.
-
-| 명령                              | 기능                                  |
-| --------------------------------- | ------------------------------------- |
-| `pip install requests`            | 패키지 설치                           |
-| `pip install -r requirements.txt` | 목록 파일에 기록된 패키지를 일괄 설치 |
-| `pip list`                        | 설치된 패키지 목록                    |
-| `pip uninstall requests`          | 패키지 삭제                           |
-
-pip는 Python에 포함되어 배포된다. Mac에서 pip를 설치한다는 것은 곧 Python을 설치한다는 뜻이고, 개발용 Python은 Homebrew로 설치하는 것이 일반적이다.
+pip는 Python에 포함되어 배포되므로, ==Mac에서 pip를 설치한다는 것은 곧 Python을 설치한다는 뜻==이다. 아래는 Homebrew로 Python을 설치하고 pip가 동작하는지 확인하는 순서다. pip가 무엇인지는 [pip와 PyPI](#pip와-pypi) 절에 정리했다.
 
 ## 설치 순서
 
@@ -52,7 +41,8 @@ pipx ensurepath
 pipx install black
 ```
 
-Homebrew Python에서는 `pip3 install requests`를 직접 실행하면 아래 오류가 발생한다. 정상 동작이며, 위의 두 방법이 해결 방법이다.
+> [!IMPORTANT] 오류는 정상 동작
+> Homebrew Python에서는 `pip3 install requests`를 직접 실행하면 아래 오류가 발생한다. 정상 동작이며, 위의 두 방법이 해결 방법이다.
 
 ![Mac의 python3 두 종류와 패키지 설치 위치](./images/mac-pip-setup-pythons.svg '시스템 python3(CLT)는 개발용으로 사용하지 않고, Homebrew python3에는 직접 설치하지 않는다. 라이브러리는 venv, 명령줄 도구는 pipx에 설치한다')
 
@@ -85,14 +75,16 @@ error: externally-managed-environment
 
 ### 원인: PEP 668
 
-[PEP 668](https://peps.python.org/pep-0668/)은 운영체제나 패키지 관리자가 관리하는 Python 환경에 pip가 직접 설치하지 못하게 하는 규칙이다. 표준 라이브러리 폴더에 `EXTERNALLY-MANAGED` 파일이 있으면 pip는 설치를 거부한다. Homebrew Python에는 이 파일이 포함되어 있다.
+[PEP 668](https://peps.python.org/pep-0668/)은 운영체제나 패키지 관리자가 관리하는 Python 환경에 pip가 직접 설치하지 못하게 하는 규칙이다. 표준 라이브러리 폴더에 `EXTERNALLY-MANAGED` 파일이 있으면 pip는 설치를 거부한다. Homebrew Python에는 이 파일이 포함되어 있다. 가상 환경 안에서 실행한 pip는 이 파일을 확인하지 않는다.
 
 ```text
 $ ls "$(python3 -c 'import sysconfig; print(sysconfig.get_path("stdlib"))')/EXTERNALLY-MANAGED"
 /opt/homebrew/opt/python@3.15/Frameworks/Python.framework/Versions/3.15/lib/python3.15/EXTERNALLY-MANAGED
 ```
 
-이 규칙이 필요한 이유는 Homebrew의 다른 formula가 같은 Python을 사용하기 때문이다. pip로 설치한 패키지가 brew가 설치한 패키지를 덮어쓰거나 버전을 바꾸면 그 formula가 동작하지 않을 수 있다. 또한 `brew upgrade`로 Python 마이너 버전이 올라가면(3.15 → 3.16) site-packages 경로가 바뀌어 pip로 설치한 패키지가 모두 사라진다.
+이 규칙이 필요한 이유는 Homebrew의 다른 formula가 같은 Python을 사용하기 때문이다. pip로 설치한 패키지가 brew가 설치한 패키지를 덮어쓰거나 버전을 바꾸면 그 formula가 동작하지 않을 수 있다. 또한 `brew upgrade`로 Python 마이너 버전이 올라가면(3.15 → 3.16) ==site-packages 경로가 바뀌어 pip로 설치한 패키지가 모두 사라진다==.
+
+![pip가 설치를 거부하는 조건](./images/mac-pip-setup-pep668.svg '가상 환경 밖에서, stdlib 폴더에 EXTERNALLY-MANAGED 파일이 있는 Python에 설치하려 하면 거부한다')
 
 ### 해결 방법 비교
 
@@ -105,7 +97,8 @@ $ ls "$(python3 -c 'import sysconfig; print(sysconfig.get_path("stdlib"))')/EXTE
 | `pip3 install --break-system-packages` | Homebrew Python에 직접 설치 | 비권장    | 오류를 무시한다. brew 패키지와 충돌, 업그레이드 시 패키지 유실                       |
 | `sudo pip3 install`                    | -                           | 사용 금지 | root 소유 파일이 생겨 이후 brew·pip 작업에서 권한 오류                               |
 
-오류 메시지도 `--break-system-packages`를 사용한다면 `--user`를 함께 지정하라고 안내한다. 그래도 Python 업그레이드 시 패키지가 유실되는 문제는 남는다.
+> [!WARNING] 오류를 무시해도 남는 문제
+> 오류 메시지도 `--break-system-packages`를 사용한다면 `--user`를 함께 지정하라고 안내한다. 그래도 Python 업그레이드 시 패키지가 유실되는 문제는 남는다.
 
 ### venv 사용 방법
 
@@ -116,6 +109,10 @@ pip install -r requirements.txt
 pip freeze > requirements.txt  # 설치 목록 기록
 deactivate                     # 비활성화
 ```
+
+가상 환경(venv)은 프로젝트 폴더 안에 만드는 독립된 Python 설치 공간이다. `python3 -m venv .venv`는 `.venv` 폴더에 Python 실행 파일 링크, 빈 `site-packages`, 기반 Python의 위치를 적은 `pyvenv.cfg`를 만든다. 패키지는 이 `site-packages`에만 설치되므로 Homebrew Python의 패키지와 섞이지 않고, 프로젝트 A의 `requests` 2.30과 프로젝트 B의 2.34가 같은 Mac에 공존한다.
+
+![.venv 폴더 구조와 activate 전후의 PATH](./images/mac-pip-setup-venv.svg 'activate는 PATH 맨 앞에 .venv/bin을 추가해 python, pip가 venv의 파일을 가리키게 한다')
 
 활성화한 venv 안에서는 `python`, `pip`(버전 번호 없는 이름)가 venv의 실행 파일을 가리키고 오류 없이 설치된다.
 
@@ -128,6 +125,19 @@ $ pip install --dry-run requests
 ...
 Would install certifi-2026.10.19 charset-normalizer-3.5.2 idna-3.20 requests-2.34.2 urllib3-2.8.0
 ```
+
+## pip와 PyPI
+
+pip는 Python 패키지 관리자다. [PyPI](https://pypi.org/)(Python Package Index)에 등록된 라이브러리와 도구를 내려받아 설치하고, 업데이트·삭제한다. npm이 Node.js 패키지를 관리하는 것과 같은 역할이다.
+
+| 명령                              | 기능                                  |
+| --------------------------------- | ------------------------------------- |
+| `pip install requests`            | 패키지 설치                           |
+| `pip install -r requirements.txt` | 목록 파일에 기록된 패키지를 일괄 설치 |
+| `pip list`                        | 설치된 패키지 목록                    |
+| `pip uninstall requests`          | 패키지 삭제                           |
+
+`pip install requests`를 실행하면 pip는 PyPI에서 `requests`와 이 패키지가 필요로 하는 `urllib3`·`idna` 같은 의존 패키지를 내려받아, 실행 중인 Python의 `site-packages` 폴더에 설치한다. 설치 위치가 "실행 중인 Python"에 따라 정해지므로, Python이 여러 개 있는 Mac에서는 어느 Python의 pip인지가 중요하다.
 
 ## 시스템 python3와 Homebrew python3
 
@@ -171,7 +181,8 @@ idle  pip  pydoc  python  python-config
 - venv를 활성화하면 `python`, `pip`가 사용 가능해진다
 - 항상 필요하면 `~/.zprofile`의 `brew shellenv` 줄 아래에 `export PATH="/opt/homebrew/opt/python@3/libexec/bin:$PATH"`를 추가한다
 
-`pip3` 대신 `python3 -m pip`를 권장하는 이유는 실행하는 Python과 pip가 항상 일치하기 때문이다. `pip3`는 PATH에서 먼저 발견된 것이 실행되므로 `python3`와 다른 Python의 pip일 수 있다.
+> [!TIP] python3 -m pip로 실행
+> `pip3` 대신 `python3 -m pip`를 권장하는 이유는 실행하는 Python과 pip가 항상 일치하기 때문이다. `pip3`는 PATH에서 먼저 발견된 것이 실행되므로 `python3`와 다른 Python의 pip일 수 있다.
 
 ## 자주 발생하는 문제
 
@@ -188,9 +199,12 @@ idle  pip  pydoc  python  python-config
 
 - [Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup)
 
-## 참고한 공식 문서
+<details>
+<summary>참고 문헌</summary>
 
 - [Homebrew and Python](https://docs.brew.sh/Homebrew-and-Python) (Homebrew): `python3`, `pip3`로 설치되며 버전 번호 없는 링크는 `libexec/bin`에 있다. PEP 668에 따라 `pip install`이 제한되며 venv, pipx 사용을 안내한다
 - [PEP 668 – Marking Python base environments as "externally managed"](https://peps.python.org/pep-0668/) (Python): `EXTERNALLY-MANAGED` 파일, 패키지 관리자와 pip의 충돌을 막는 목적, `--break-system-packages`
 - [venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html) (Python): 가상 환경 생성과 활성화
 - [Installing stand alone command line tools](https://packaging.python.org/en/latest/guides/installing-stand-alone-command-line-tools/) (Python Packaging User Guide): pipx로 명령줄 도구를 격리된 환경에 설치
+
+</details>

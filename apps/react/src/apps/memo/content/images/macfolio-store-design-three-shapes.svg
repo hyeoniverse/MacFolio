@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <rect width="640" height="410" fill="#fff"/>
+  <text x="320" y="28" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">같은 '메모 창 열기'를 세 구조로 처리하는 순서</text>
+
+  <!-- Flux -->
+  <text x="16" y="80" font-size="14" font-weight="700" fill="#1d1d1f">Flux</text>
+  <text x="16" y="97" font-size="12" fill="#6e6e73">Store 여럿</text>
+  <rect x="100" y="56" width="116" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="158" y="78" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">View</text>
+  <text x="158" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">클릭 처리</text>
+  <rect x="234" y="56" width="116" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="292" y="78" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">Action 객체</text>
+  <text x="292" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">{ type, name }</text>
+  <rect x="368" y="56" width="116" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="426" y="78" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">Dispatcher</text>
+  <text x="426" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">모든 Store에 전달</text>
+  <rect x="502" y="56" width="122" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="563" y="78" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">Store</text>
+  <text x="563" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">type으로 분기</text>
+  <line x1="216" y1="82" x2="232" y2="82" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="350" y1="82" x2="366" y2="82" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="484" y1="82" x2="500" y2="82" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M563,108 V126 H158 V110" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="360" y="142" font-size="12" fill="#6e6e73" text-anchor="middle">change 이벤트를 받은 View가 다시 그린다</text>
+
+  <!-- Redux -->
+  <text x="16" y="194" font-size="14" font-weight="700" fill="#1d1d1f">Redux</text>
+  <text x="16" y="211" font-size="12" fill="#6e6e73">store 하나</text>
+  <rect x="100" y="170" width="116" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="158" y="192" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">View</text>
+  <text x="158" y="210" font-size="12" fill="#6e6e73" text-anchor="middle">dispatch(action)</text>
+  <rect x="234" y="170" width="116" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="292" y="192" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">Action 객체</text>
+  <text x="292" y="210" font-size="12" fill="#6e6e73" text-anchor="middle">{ type, payload }</text>
+  <rect x="368" y="170" width="116" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="426" y="192" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">reducer</text>
+  <text x="426" y="210" font-size="12" fill="#6e6e73" text-anchor="middle">새 state를 반환</text>
+  <rect x="502" y="170" width="122" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="563" y="192" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">단일 store</text>
+  <text x="563" y="210" font-size="12" fill="#6e6e73" text-anchor="middle">구독자에게 알림</text>
+  <line x1="216" y1="196" x2="232" y2="196" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="350" y1="196" x2="366" y2="196" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="484" y1="196" x2="500" y2="196" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M563,222 V240 H158 V224" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="360" y="256" font-size="12" fill="#6e6e73" text-anchor="middle">selector로 고른 값이 바뀐 컴포넌트만 다시 그린다</text>
+
+  <!-- MacFolio -->
+  <text x="16" y="308" font-size="14" font-weight="700" fill="#0a84ff">MacFolio</text>
+  <text x="16" y="325" font-size="12" fill="#6e6e73">관심사별 store</text>
+  <rect x="100" y="284" width="116" height="52" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="158" y="306" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">View</text>
+  <text x="158" y="324" font-size="12" fill="#6e6e73" text-anchor="middle">open('memo') 호출</text>
+  <rect x="234" y="284" width="116" height="52" rx="8" fill="#fff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+  <text x="292" y="306" font-size="13" font-weight="600" fill="#6e6e73" text-anchor="middle">Action 없음</text>
+  <text x="292" y="324" font-size="12" fill="#6e6e73" text-anchor="middle">Dispatcher 없음</text>
+  <rect x="368" y="284" width="116" height="52" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="426" y="306" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">store 메서드</text>
+  <text x="426" y="324" font-size="12" fill="#6e6e73" text-anchor="middle">새 객체 → setState</text>
+  <rect x="502" y="284" width="122" height="52" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="563" y="306" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">listeners</text>
+  <text x="563" y="324" font-size="12" fill="#6e6e73" text-anchor="middle">Object.is로 비교 후</text>
+  <path d="M216,310 C 260,350 330,350 366,312" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+  <line x1="484" y1="310" x2="500" y2="310" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+  <path d="M563,336 V362 H158 V338" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+  <text x="360" y="380" font-size="12" fill="#0a84ff" text-anchor="middle">useSyncExternalStore가 새 상태를 읽어 다시 그린다</text>
+  <text x="320" y="402" font-size="12" fill="#6e6e73" text-anchor="middle">세 구조 모두 상태는 한 방향으로만 흐른다. 다른 것은 변경을 전달하는 단계의 수다</text>
+</svg>

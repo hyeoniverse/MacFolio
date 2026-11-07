@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">cssVars()에 넘긴 이름 하나로 bottom 선언 전체가 무효가 되는 과정</text>
+  <g font-size="12">
+    <text x="30" y="62" font-weight="600" fill="#ff3b30">수정 전</text>
+    <rect x="30" y="72" width="180" height="56" rx="6" fill="#f2f2f7"/>
+    <text x="40" y="94" fill="#1d1d1f">cssVars({</text>
+    <text x="40" y="114" fill="#1d1d1f">  '--keyboard-inset': 336 })</text>
+    <rect x="230" y="72" width="180" height="56" rx="6" fill="#f2f2f7"/>
+    <text x="240" y="94" fill="#6e6e73">style 속성</text>
+    <text x="240" y="114" fill="#ff3b30">----keyboard-inset: 336</text>
+    <rect x="430" y="72" width="180" height="56" rx="6" fill="#fff0ef" stroke="#ff3b30"/>
+    <text x="440" y="94" fill="#1d1d1f">var(--keyboard-inset) 없음</text>
+    <text x="440" y="114" fill="#ff3b30">bottom → 초기값 auto</text>
+    <path d="M212 100 h14 M222 95 l6 5 -6 5 M412 100 h14 M422 95 l6 5 -6 5" stroke="#6e6e73" fill="none" stroke-width="1.5"/>
+    <text x="30" y="180" font-weight="600" fill="#34c759">수정 후</text>
+    <rect x="30" y="190" width="180" height="56" rx="6" fill="#f2f2f7"/>
+    <text x="40" y="212" fill="#1d1d1f">cssVars({</text>
+    <text x="40" y="232" fill="#1d1d1f">  'keyboard-inset': 336 })</text>
+    <rect x="230" y="190" width="180" height="56" rx="6" fill="#f2f2f7"/>
+    <text x="240" y="212" fill="#6e6e73">style 속성</text>
+    <text x="240" y="232" fill="#0a84ff">--keyboard-inset: 336px</text>
+    <rect x="430" y="190" width="180" height="56" rx="6" fill="#effaf2" stroke="#34c759"/>
+    <text x="440" y="212" fill="#1d1d1f">bottom: calc(336px + 8px)</text>
+    <text x="440" y="232" fill="#34c759">= 344px, 키보드 바로 위</text>
+    <path d="M212 218 h14 M222 213 l6 5 -6 5 M412 218 h14 M422 213 l6 5 -6 5" stroke="#6e6e73" fill="none" stroke-width="1.5"/>
+  </g>
+  <text x="320" y="284" text-anchor="middle" font-size="12" fill="#6e6e73">없는 변수를 var()로 참조한 선언은 파싱은 통과하고 계산 단계에서 무효가 된다</text>
+  <text x="320" y="304" text-anchor="middle" font-size="12" fill="#6e6e73">콘솔에 오류가 나오지 않으므로 개발자 도구의 계산된 값(Computed)으로 확인한다</text>
+</svg>

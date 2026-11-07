@@ -1098,7 +1098,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 최근 삭제된 항목에서 새 메모를 쓰면 모든 글로 나가서 쓴다 (새 메모가 들어갈 폴더가 아니다)
 		await trash.click();
-		await memo.getByRole('button', { name: '새 메모' }).first().click();
+		await memo.getByRole('button', { name: '새 메모', exact: true }).first().click();
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('모든 글');
 		await expect(memo.getByRole('button', { name: /^폴더 .*, 바꾸기$/ })).toHaveAccessibleName(
 			/^폴더 (?!최근 삭제).+, 바꾸기$/
@@ -1513,10 +1513,23 @@ test.describe('빈 폴더', () => {
 });
 
 test.describe('한국어 사이의 굵게', () => {
-	const post = '이미지 로드 전 좌표와 누락된 dragover';
+	// 저장소 글은 다시 쓰면서 문장이 바뀔 수 있어, 괄호로 끝난 굵게 뒤에 조사가 붙은 문장을 가짜 서버 글로 둔다
+	const post = '굵게 뒤 조사 시험';
+	const sentence = '이번엔 실패가 아니라 **취소(cancelled)**가 떴다.';
+	const content = {
+		title: post,
+		date: '2026-10-01',
+		category: '기술 노트/Git',
+		summary: '',
+		body: `앞 문단\n\n${sentence}\n\n뒤 문단`,
+	};
+	const withPost = (api: FakeApiState) => {
+		api.posts = [{ slug: 'cjk-bold-post', ...content, deleted: false, published: content }];
+	};
 
 	test('문장부호로 끝난 굵게 뒤에 조사가 붙어도 읽기 화면에서 굵게 보인다', async ({ page }) => {
 		const api = await fakeApi(page);
+		withPost(api);
 		const memo = await openMemo(page, api);
 		await memo.locator('.memo-item', { hasText: post }).click();
 		const body = memo.locator('.memo-markdown');
@@ -1526,6 +1539,7 @@ test.describe('한국어 사이의 굵게', () => {
 
 	test('편집기에서도 굵게 보이고, 고쳐 저장해도 원래 Markdown 그대로다', async ({ page }) => {
 		const api = await fakeApi(page, { signedIn: true });
+		withPost(api);
 		const memo = await openMemo(page, api);
 		await memo.locator('.memo-item', { hasText: post }).click();
 		const editor = memo.locator('.ProseMirror');
@@ -1533,12 +1547,16 @@ test.describe('한국어 사이의 굵게', () => {
 		await expect(editor).not.toContainText('**');
 
 		// 굵게가 있는 문단 끝에 이어 쓴다
-		await editor.locator('p', { hasText: '취소(cancelled)' }).click();
+		// 한 줄짜리 문단의 오른쪽 끝을 누른다 (macOS의 End는 커서를 옮기지 않는다)
+		const paragraph = editor.locator('p', { hasText: '취소(cancelled)' });
+		const box = (await paragraph.boundingBox())!;
+		await paragraph.click({ position: { x: box.width - 2, y: box.height / 2 } });
+		await expect(editor).toBeFocused();
 		await page.keyboard.press('End');
 		await page.keyboard.type(' 끝.');
 		await expect.poll(() => api.posts[0]?.body).toContain('끝.');
 		const saved = api.posts[0].body;
-		expect(saved).toContain('이번엔 실패가 아니라 **취소(cancelled)**가 떴다.');
+		expect(saved).toContain(`${sentence} 끝.`);
 		// 굵게 앞뒤의 글자를 문자 참조(&#x…;)로 바꿔 저장하지 않는다
 		expect(saved).not.toMatch(/&#x/);
 	});
@@ -1657,7 +1675,7 @@ test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동�
 			date: '2026-10-16',
 			category: '기술 노트/Git',
 			summary: '',
-			body: '[성능 리포트](/memo/site-performance-report)와 [예시](https://example.com/docs) 링크',
+			body: '[성능 리포트](/memo/site-performance-diet)와 [예시](https://example.com/docs) 링크',
 		};
 		api.posts = [{ slug: 'link-post', ...content, deleted: false, published: content }];
 		await page.route('https://example.com/**', (route) =>
@@ -1688,8 +1706,8 @@ test.describe('편집 중인 글의 링크 (편집기에서는 눌러도 이동�
 		await go.hover();
 		await go.click();
 		// 주소 막대는 맨 앞 창이 보는 글을 따른다
-		await expect(page).toHaveURL(/\/memo\/site-performance-report$/);
-		await expect(memo.locator('.memo-item', { hasText: '성능 측정 리포트' })).toHaveClass(/active/);
+		await expect(page).toHaveURL(/\/memo\/site-performance-diet$/);
+		await expect(memo.locator('.memo-item', { hasText: '첫 방문 전송량 9MB를 0.8MB로' })).toHaveClass(/active/);
 		// 편집하던 글은 바뀌지 않았다
 		expect(api.posts.find((post) => post.slug === 'link-post')?.body).toBe(content.body);
 	});

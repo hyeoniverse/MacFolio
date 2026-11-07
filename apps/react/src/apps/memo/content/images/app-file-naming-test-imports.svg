@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>파일 분리 전후 시험 파일이 끌어오는 모듈</title>
+<defs><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">시험 파일이 import하는 범위</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">화살표: import. 시험하려는 함수는 change(112, 100) → '+12%' 같은 순수 계산이다</text>
+<text x="20" y="86" font-size="14" font-weight="700" fill="#ff3b30">분리 전</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<rect x="20" y="98" width="160" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="100" y="125" text-anchor="middle" fill="#1d1d1f">data.test.ts</text>
+<line x1="180" y1="120" x2="226" y2="120" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+<rect x="230" y="92" width="190" height="56" rx="8" fill="#fff1f0" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="325" y="114" text-anchor="middle" fill="#1d1d1f">data.ts (190줄)</text>
+<text x="325" y="134" text-anchor="middle" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">요청 함수 + 순수 계산</text>
+<line x1="420" y1="120" x2="466" y2="120" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+<rect x="470" y="98" width="150" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="545" y="117" text-anchor="middle" fill="#1d1d1f">shared/config/env</text>
+<text x="545" y="134" text-anchor="middle" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">서버 주소 설정</text>
+</g>
+<text x="20" y="176" font-size="12" fill="#1d1d1f">순수 함수만 시험해도 서버 주소 설정과 요청 코드까지 함께 불러온다</text>
+<line x1="20" y1="196" x2="620" y2="196" stroke="#6e6e73" stroke-dasharray="4 4"/>
+<text x="20" y="226" font-size="14" font-weight="700" fill="#34c759">분리 후</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<rect x="20" y="240" width="160" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="100" y="267" text-anchor="middle" fill="#1d1d1f">model.test.ts</text>
+<line x1="180" y1="262" x2="226" y2="262" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+<rect x="230" y="236" width="190" height="52" rx="8" fill="#eefaf1" stroke="#34c759" stroke-width="1.5"/>
+<text x="325" y="257" text-anchor="middle" fill="#1d1d1f">model.ts</text>
+<text x="325" y="276" text-anchor="middle" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">기간 · 비교 · 표 이름</text>
+<rect x="230" y="300" width="190" height="44" rx="8" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="325" y="327" text-anchor="middle" fill="#1d1d1f">activityApi.ts</text>
+<line x1="420" y1="322" x2="466" y2="322" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+<rect x="470" y="300" width="150" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="545" y="319" text-anchor="middle" fill="#1d1d1f">shared/config/env</text>
+<text x="545" y="336" text-anchor="middle" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">서버 주소 설정</text>
+</g>
+<text x="440" y="262" font-size="12" fill="#1d1d1f">요청 코드는 불러오지 않는다</text>
+</svg>

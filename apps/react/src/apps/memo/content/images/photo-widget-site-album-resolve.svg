@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>effectiveAlbum 입력과 결과 예</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">effectiveAlbum(local, siteDefault)의 네 가지 입력</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">local ?? siteDefault ?? undefined. 'all'은 undefined가 아니므로 사이트 기본값을 이긴다</text>
+  <g font-size="12">
+    <text x="40" y="88" font-weight="600" fill="#6e6e73">이 브라우저의 값 (local)</text>
+    <text x="240" y="88" font-weight="600" fill="#6e6e73">사이트 기본값</text>
+    <text x="440" y="88" font-weight="600" fill="#6e6e73">위젯이 표시하는 사진</text>
+  </g>
+  <line x1="24" y1="98" x2="616" y2="98" stroke="#6e6e73" stroke-width="1"/>
+  <g font-size="13">
+    <rect x="24" y="108" width="592" height="46" rx="8" fill="#f2f2f7"/>
+    <text x="40" y="136" fill="#0a84ff" font-weight="600">'qru'</text>
+    <text x="240" y="136" fill="#6e6e73">'folder:widget01'</text>
+    <text x="440" y="136" fill="#1d1d1f">QRU 앨범 (① 우선)</text>
+    <rect x="24" y="162" width="592" height="46" rx="8" fill="#ffffff" stroke="#f2f2f7"/>
+    <text x="40" y="190" fill="#6e6e73">undefined (고르지 않음)</text>
+    <text x="240" y="190" fill="#0a84ff" font-weight="600">'folder:widget01'</text>
+    <text x="440" y="190" fill="#1d1d1f">그림 폴더 widget01 (②)</text>
+    <rect x="24" y="216" width="592" height="46" rx="8" fill="#f2f2f7"/>
+    <text x="40" y="244" fill="#0a84ff" font-weight="600">'all' (모든 앨범을 고름)</text>
+    <text x="240" y="244" fill="#6e6e73">'folder:widget01'</text>
+    <text x="440" y="244" fill="#1d1d1f">모든 앨범 (① 우선)</text>
+    <rect x="24" y="270" width="592" height="46" rx="8" fill="#ffffff" stroke="#f2f2f7"/>
+    <text x="40" y="298" fill="#6e6e73">undefined</text>
+    <text x="240" y="298" fill="#6e6e73">null (기본값 없음)</text>
+    <text x="440" y="298" fill="#ff9f0a" font-weight="600">모든 앨범 (③)</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5" fill="none">
+    <path d="M396 131 H426"/><path d="M396 185 H426"/><path d="M396 239 H426"/><path d="M396 293 H426"/>
+  </g>
+</svg>

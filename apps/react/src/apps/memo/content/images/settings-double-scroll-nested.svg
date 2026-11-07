@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>중첩된 스크롤 컨테이너와 스크롤 체이닝</title>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">스크롤 컨테이너 두 개가 겹치면 스크롤이 두 번 일어난다</text>
+  <!-- outer -->
+  <rect x="40" y="60" width="300" height="290" rx="10" fill="#fff4e5" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="54" y="82" font-size="13" font-weight="600" fill="#1d1d1f">창의 콘텐츠 영역 .content</text>
+  <text x="54" y="100" font-size="12" fill="#6e6e73">overflow: scroll (모든 앱 공통 창 틀)</text>
+  <!-- inner -->
+  <rect x="64" y="114" width="250" height="190" rx="8" fill="#e3f0ff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="78" y="136" font-size="13" font-weight="600" fill="#1d1d1f">패널 .settings-panel</text>
+  <text x="78" y="154" font-size="12" fill="#6e6e73">overflow: auto (설정 자체 스크롤)</text>
+  <rect x="78" y="166" width="200" height="14" rx="4" fill="#ffffff"/>
+  <rect x="78" y="186" width="200" height="14" rx="4" fill="#ffffff"/>
+  <rect x="78" y="206" width="200" height="14" rx="4" fill="#ffffff"/>
+  <rect x="78" y="226" width="200" height="14" rx="4" fill="#ffffff"/>
+  <rect x="78" y="246" width="200" height="14" rx="4" fill="#ffffff"/>
+  <text x="78" y="288" font-size="12" fill="#0a84ff">① 패널이 끝까지 스크롤된다</text>
+  <rect x="64" y="314" width="250" height="24" rx="6" fill="#ffe1df" stroke="#ff3b30" stroke-dasharray="4 3"/>
+  <text x="76" y="331" font-size="12" fill="#ff3b30">넘친 부분 (scrollHeight &gt; clientHeight)</text>
+  <!-- right side steps -->
+  <g font-size="13" fill="#1d1d1f">
+    <text x="368" y="84" font-weight="600">휠을 계속 굴리면</text>
+    <circle cx="378" cy="112" r="11" fill="#0a84ff"/><text x="378" y="117" font-size="12" fill="#ffffff" text-anchor="middle">1</text>
+    <text x="398" y="110">안쪽 패널이 먼저 스크롤된다</text>
+    <text x="398" y="128" font-size="12" fill="#6e6e73">패널 끝에 닿으면 더 갈 곳이 없다</text>
+    <circle cx="378" cy="164" r="11" fill="#ff9f0a"/><text x="378" y="169" font-size="12" fill="#ffffff" text-anchor="middle">2</text>
+    <text x="398" y="162">남은 입력이 바깥으로 넘어간다</text>
+    <text x="398" y="180" font-size="12" fill="#6e6e73">스크롤 체이닝(scroll chaining)</text>
+    <circle cx="378" cy="216" r="11" fill="#ff3b30"/><text x="378" y="221" font-size="12" fill="#ffffff" text-anchor="middle">3</text>
+    <text x="398" y="214">바깥 .content가 넘친 만큼</text>
+    <text x="398" y="232">창 전체를 한 번 더 스크롤한다</text>
+    <text x="368" y="280" font-weight="600" fill="#34c759">해결 방향</text>
+    <text x="368" y="302" font-size="12" fill="#1d1d1f">바깥이 넘치지 않게 만든다</text>
+    <text x="368" y="320" font-size="12" fill="#1d1d1f">(최소 창 크기, 패널을 기준 상자로)</text>
+    <text x="368" y="338" font-size="12" fill="#1d1d1f">+ overscroll-behavior: contain</text>
+  </g>
+</svg>

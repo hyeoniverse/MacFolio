@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>배포 도중 새 파일이 전파되기 전에 요청하면, 수정 전에는 index.html이 1년 캐시로 저장되어 파일이 전파된 뒤에도 캐시의 HTML을 쓰고, 수정 후에는 404에 캐시 헤더가 없어 다음 요청이 서버에서 올바른 파일을 받는다</title>
+<defs>
+<marker id="ct-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">같은 파일 이름을 세 번 요청한 결과와 브라우저 캐시</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">배포 도중 새 Memo 파일이 아직 전파되지 않은 위치에서 첫 요청을 받은 경우</text>
+
+<text x="178" y="84" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">① 전파 전에 요청</text>
+<text x="353" y="84" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">② 전파 완료</text>
+<text x="528" y="84" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">③ 같은 이름을 다시 요청</text>
+
+<text x="24" y="138" font-size="13" font-weight="700" fill="#ff3b30">수정 전</text>
+<rect x="96" y="96" width="165" height="90" rx="9" fill="#fff5f4" stroke="#ff3b30"/>
+<text x="108" y="118" font-size="12" fill="#1d1d1f">파일 없음</text>
+<text x="108" y="138" font-size="12" fill="#1d1d1f">index.html, 200</text>
+<text x="108" y="158" font-size="12" fill="#ff3b30">immutable 1년</text>
+<text x="108" y="176" font-size="12" fill="#ff3b30">→ 브라우저 캐시에 저장</text>
+<rect x="271" y="96" width="165" height="90" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="283" y="118" font-size="12" fill="#1d1d1f">서버: 올바른 JS 파일</text>
+<text x="283" y="138" font-size="12" fill="#1d1d1f">브라우저 캐시: HTML</text>
+<text x="283" y="166" font-size="12" fill="#6e6e73">캐시가 서버보다 우선</text>
+<rect x="446" y="96" width="165" height="90" rx="9" fill="#fff5f4" stroke="#ff3b30"/>
+<text x="458" y="118" font-size="12" fill="#1d1d1f">캐시의 HTML을 사용</text>
+<text x="458" y="138" font-size="12" fill="#1d1d1f">서버에 요청하지 않음</text>
+<text x="458" y="166" font-size="12" font-weight="700" fill="#ff3b30">실행 거부, 최대 1년</text>
+<path d="M261 141 H267" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ct-g)"/>
+<path d="M436 141 H442" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ct-g)"/>
+
+<text x="24" y="250" font-size="13" font-weight="700" fill="#248a3d">수정 후</text>
+<rect x="96" y="208" width="165" height="90" rx="9" fill="#f0faf2" stroke="#34c759"/>
+<text x="108" y="230" font-size="12" fill="#1d1d1f">파일 없음</text>
+<text x="108" y="250" font-size="12" fill="#1d1d1f">Worker가 404</text>
+<text x="108" y="270" font-size="12" fill="#248a3d">캐시 헤더 없음</text>
+<text x="108" y="288" font-size="12" fill="#248a3d">→ 저장하지 않음</text>
+<rect x="271" y="208" width="165" height="90" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="283" y="230" font-size="12" fill="#1d1d1f">서버: 올바른 JS 파일</text>
+<text x="283" y="250" font-size="12" fill="#1d1d1f">브라우저 캐시: 비어 있음</text>
+<rect x="446" y="208" width="165" height="90" rx="9" fill="#f0faf2" stroke="#34c759"/>
+<text x="458" y="230" font-size="12" fill="#1d1d1f">서버에 다시 요청</text>
+<text x="458" y="250" font-size="12" fill="#1d1d1f">200, text/javascript</text>
+<text x="458" y="278" font-size="12" font-weight="700" fill="#248a3d">정상 실행</text>
+<path d="M261 253 H267" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ct-g)"/>
+<path d="M436 253 H442" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ct-g)"/>
+</svg>

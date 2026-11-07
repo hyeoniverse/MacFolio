@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="410" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">줄 높이 계산: auto, 1fr, 1fr + 세 줄 말줄임</text>
+  <text x="320" y="52" font-size="12" fill="#6e6e73" text-anchor="middle">카드 네 장의 내용 높이(예시 값): A 96px, B 132px / C 70px(설명 없음), D 96px</text>
+
+  <!-- auto -->
+  <text x="110" y="84" font-size="13" font-weight="600" fill="#ff3b30" text-anchor="middle">grid-auto-rows: auto</text>
+  <rect x="30" y="96" width="76" height="132" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="68" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">A</text>
+  <rect x="114" y="96" width="76" height="132" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="152" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">B</text>
+  <rect x="30" y="236" width="76" height="96" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="68" y="288" font-size="12" fill="#1d1d1f" text-anchor="middle">C</text>
+  <rect x="114" y="236" width="76" height="96" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="152" y="288" font-size="12" fill="#1d1d1f" text-anchor="middle">D</text>
+  <text x="110" y="354" font-size="12" fill="#1d1d1f" text-anchor="middle">1줄 = max(96, 132) = 132</text>
+  <text x="110" y="372" font-size="12" fill="#1d1d1f" text-anchor="middle">2줄 = max(70, 96) = 96</text>
+
+  <!-- 1fr -->
+  <text x="320" y="84" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">grid-auto-rows: 1fr</text>
+  <rect x="240" y="96" width="76" height="132" rx="6" fill="#eafaef" stroke="#34c759"/><text x="278" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">A</text>
+  <rect x="324" y="96" width="76" height="132" rx="6" fill="#eafaef" stroke="#34c759"/><text x="362" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">B</text>
+  <rect x="240" y="236" width="76" height="132" rx="6" fill="#eafaef" stroke="#34c759"/><text x="278" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">C</text>
+  <rect x="324" y="236" width="76" height="132" rx="6" fill="#eafaef" stroke="#34c759"/><text x="362" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">D</text>
+  <text x="320" y="388" font-size="12" fill="#1d1d1f" text-anchor="middle">모든 줄 = 전체 최대 132</text>
+
+  <!-- long -->
+  <text x="530" y="84" font-size="13" font-weight="600" fill="#ff9f0a" text-anchor="middle">1fr + 세 줄 말줄임</text>
+  <rect x="460" y="96" width="66" height="132" rx="6" fill="#fff6e8" stroke="#ff9f0a"/><text x="493" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">A</text>
+  <rect x="534" y="96" width="66" height="132" rx="6" fill="#fff6e8" stroke="#ff9f0a"/>
+  <text x="567" y="140" font-size="12" fill="#1d1d1f" text-anchor="middle">B</text><text x="567" y="158" font-size="12" fill="#6e6e73" text-anchor="middle">설명 10줄</text>
+  <text x="567" y="170" font-size="12" fill="#6e6e73" text-anchor="middle">→ 세 줄만</text>
+  <text x="567" y="186" font-size="12" fill="#6e6e73" text-anchor="middle">…</text>
+  <rect x="460" y="236" width="66" height="132" rx="6" fill="#fff6e8" stroke="#ff9f0a"/><text x="493" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">C</text>
+  <rect x="534" y="236" width="66" height="132" rx="6" fill="#fff6e8" stroke="#ff9f0a"/><text x="567" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">D</text>
+  <text x="530" y="380" font-size="12" fill="#1d1d1f" text-anchor="middle">B가 잘려 132 유지</text><text x="530" y="396" font-size="12" fill="#ff3b30" text-anchor="middle">말줄임 없으면 네 장 모두 커짐</text>
+  <line x1="430" y1="96" x2="430" y2="368" stroke="#e5e5ea"/>
+  <line x1="210" y1="96" x2="210" y2="368" stroke="#e5e5ea"/>
+</svg>

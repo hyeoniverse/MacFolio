@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>theme.css의 z-index 층 이름 일부</title>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="20" y="28" font-size="14" font-weight="700" fill="#1d1d1f">theme.css의 층 이름 (값이 클수록 위에 그린다, 15개 중 일부)</text>
+<g font-size="12">
+<rect x="120" y="44" width="400" height="34" rx="6" fill="#0a84ff"/><text x="136" y="66" fill="#ffffff">--z-login</text><text x="504" y="66" fill="#ffffff" text-anchor="end">20000 로그인</text>
+<rect x="130" y="84" width="380" height="34" rx="6" fill="#3d9bff"/><text x="146" y="106" fill="#ffffff">--z-app-error</text><text x="494" y="106" fill="#ffffff" text-anchor="end">15000 앱 오류 화면</text>
+<rect x="140" y="124" width="360" height="34" rx="6" fill="#6db3ff"/><text x="156" y="146" fill="#1d1d1f">--z-menu</text><text x="484" y="146" fill="#1d1d1f" text-anchor="end">10000 펼친 메뉴</text>
+<rect x="150" y="164" width="340" height="34" rx="6" fill="#9ccaff"/><text x="166" y="186" fill="#1d1d1f">--z-notifications</text><text x="474" y="186" fill="#1d1d1f" text-anchor="end">9000 알림</text>
+<rect x="160" y="204" width="320" height="34" rx="6" fill="#c4e0ff"/><text x="176" y="226" fill="#1d1d1f">--z-launchpad</text><text x="464" y="226" fill="#1d1d1f" text-anchor="end">2000</text>
+<rect x="170" y="244" width="300" height="34" rx="6" fill="#dcecff"/><text x="186" y="266" fill="#1d1d1f">--z-menubar</text><text x="454" y="266" fill="#1d1d1f" text-anchor="end">1001 메뉴 막대</text>
+<rect x="180" y="284" width="280" height="34" rx="6" fill="#eef5ff"/><text x="196" y="306" fill="#1d1d1f">--z-dock</text><text x="444" y="306" fill="#1d1d1f" text-anchor="end">1000 Dock</text>
+<rect x="190" y="324" width="260" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/><text x="206" y="346" fill="#6e6e73">앱 창</text><text x="434" y="346" fill="#6e6e73" text-anchor="end">1, 2, … (창 순서)</text>
+</g>
+<text x="536" y="66" font-size="12" fill="#6e6e73">위</text>
+<text x="536" y="346" font-size="12" fill="#6e6e73">아래</text>
+<line x1="545" y1="76" x2="545" y2="330" stroke="#6e6e73" stroke-width="1.5"/>
+</svg>

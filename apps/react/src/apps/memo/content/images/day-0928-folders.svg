@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>파일 종류별 폴더에서 앱 단위 폴더로</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">src/ 폴더 구성 (커밋 ccc642213 전후)</text>
+  <g font-size="13">
+    <text x="30" y="62" font-weight="600" fill="#6e6e73">전: 파일 종류별</text>
+    <rect x="30" y="72" width="250" height="220" rx="12" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="48" y="98" fill="#1d1d1f" font-weight="600">src/</text>
+    <text x="68" y="122" fill="#1d1d1f">components/</text>
+    <text x="88" y="142" fill="#0a84ff">apps/Mail.tsx</text>
+    <text x="68" y="166" fill="#1d1d1f">contexts/   pages/</text>
+    <text x="68" y="190" fill="#1d1d1f">services/   types/   utils/</text>
+    <text x="68" y="214" fill="#1d1d1f">styles/</text>
+    <text x="88" y="234" fill="#0a84ff">Mail.css</text>
+    <text x="48" y="270" font-size="12" fill="#6e6e73">메일 앱 하나가 두 폴더에 나뉘어 있다</text>
+
+    <line x1="290" y1="182" x2="350" y2="182" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+
+    <text x="360" y="62" font-weight="600" fill="#0a84ff">후: 앱 단위</text>
+    <rect x="360" y="72" width="250" height="220" rx="12" fill="#eaf3ff" stroke="#0a84ff"/>
+    <text x="378" y="98" fill="#1d1d1f" font-weight="600">src/</text>
+    <text x="398" y="122" fill="#1d1d1f">apps/</text>
+    <text x="418" y="142" fill="#0a84ff">mail/ Mail.tsx · Mail.css</text>
+    <text x="418" y="162" fill="#1d1d1f">memo/  music/  safari/</text>
+    <text x="418" y="182" fill="#1d1d1f">blog/  github/</text>
+    <text x="398" y="206" fill="#1d1d1f">desktop/   (창·Dock·메뉴 막대)</text>
+    <text x="398" y="230" fill="#1d1d1f">shared/    (여러 앱이 쓰는 코드)</text>
+    <text x="378" y="270" font-size="12" fill="#6e6e73">앱을 고칠 때 폴더 하나만 연다</text>
+  </g>
+  <rect x="30" y="306" width="580" height="38" rx="8" fill="#fff" stroke="#d2d2d7"/>
+  <text x="320" y="330" text-anchor="middle" font-size="12" fill="#1d1d1f">앱 이름·아이콘·창 크기는 manifest, 앱 이름 → 컴포넌트 연결은 registry 한 곳에서 관리</text>
+</svg>

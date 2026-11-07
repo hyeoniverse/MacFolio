@@ -40,7 +40,7 @@ test.describe('휴대폰 메모 검색', () => {
 		await expect(list.locator('.memo-item').first()).toContainText('React');
 		await expect(memo.locator('.memo-list .memo-section-title')).toHaveCount(0);
 		await search.fill('');
-		await search.fill('리엑트');
+		await search.fill('리악트');
 		await expect(memo.getByRole('region', { name: '비슷한 검색 결과' })).toBeVisible();
 		await expect(memo.locator('.memo-list .memo-scroll > .memo-items')).toHaveCount(0);
 		await expect(memo.locator('.memo-phone-title p')).toHaveText('0개의 메모');

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>onClose 의존성 effect와 ref 보관 비교</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">재생 위치가 바뀔 때마다 음악 화면이 새 onClose를 넘길 때</text>
+  <text x="20" y="72" font-size="13" font-weight="600" fill="#1d1d1f">렌더링</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="150" y="52" width="110" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="205" y="67" fill="#1d1d1f">① 시트 열림</text><text x="205" y="81" fill="#6e6e73">onClose A</text>
+    <rect x="270" y="52" width="110" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="325" y="67" fill="#1d1d1f">② 재생 0:01</text><text x="325" y="81" fill="#6e6e73">onClose B</text>
+    <rect x="390" y="52" width="110" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="445" y="67" fill="#1d1d1f">③ 재생 0:02</text><text x="445" y="81" fill="#6e6e73">onClose C</text>
+    <rect x="510" y="52" width="110" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="565" y="67" fill="#1d1d1f">④ 재생 0:03</text><text x="565" y="81" fill="#6e6e73">onClose D</text>
+  </g>
+  <line x1="20" y1="104" x2="620" y2="104" stroke="#d2d2d7"/>
+  <text x="20" y="132" font-size="13" font-weight="600" fill="#ff3b30">수정 전</text>
+  <text x="20" y="150" font-size="12" fill="#6e6e73">의존성 [onClose]</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="150" y="122" width="110" height="40" rx="8" fill="#fff" stroke="#ff3b30"/><text x="205" y="139" fill="#1d1d1f">effect 실행</text><text x="205" y="154" fill="#6e6e73">초점 + Esc 등록</text>
+    <rect x="270" y="122" width="110" height="40" rx="8" fill="#fff" stroke="#ff3b30"/><text x="325" y="139" fill="#1d1d1f">정리 → 다시 실행</text><text x="325" y="154" fill="#6e6e73">초점 + Esc 등록</text>
+    <rect x="390" y="122" width="110" height="40" rx="8" fill="#fff" stroke="#ff3b30"/><text x="445" y="139" fill="#1d1d1f">정리 → 다시 실행</text><text x="445" y="154" fill="#6e6e73">초점 + Esc 등록</text>
+    <rect x="510" y="122" width="110" height="40" rx="8" fill="#fff" stroke="#ff3b30"/><text x="565" y="139" fill="#1d1d1f">정리 → 다시 실행</text><text x="565" y="154" fill="#6e6e73">초점 + Esc 등록</text>
+  </g>
+  <text x="150" y="182" font-size="12" fill="#ff3b30">렌더링마다 리스너를 해제·등록하고 초점 코드를 다시 실행한다</text>
+  <line x1="20" y1="198" x2="620" y2="198" stroke="#d2d2d7"/>
+  <text x="20" y="226" font-size="13" font-weight="600" fill="#34c759">수정 후</text>
+  <text x="20" y="244" font-size="12" fill="#6e6e73">ref + 의존성 []</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="150" y="216" width="110" height="40" rx="8" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="205" y="233" fill="#1d1d1f">effect 실행 (1회)</text><text x="205" y="248" fill="#6e6e73">초점 + Esc 등록</text>
+    <rect x="270" y="216" width="110" height="40" rx="8" fill="#f2f2f7" stroke="#d2d2d7"/><text x="325" y="233" fill="#1d1d1f">close.current</text><text x="325" y="248" fill="#6e6e73">= onClose B</text>
+    <rect x="390" y="216" width="110" height="40" rx="8" fill="#f2f2f7" stroke="#d2d2d7"/><text x="445" y="233" fill="#1d1d1f">close.current</text><text x="445" y="248" fill="#6e6e73">= onClose C</text>
+    <rect x="510" y="216" width="110" height="40" rx="8" fill="#f2f2f7" stroke="#d2d2d7"/><text x="565" y="233" fill="#1d1d1f">close.current</text><text x="565" y="248" fill="#6e6e73">= onClose D</text>
+  </g>
+  <rect x="150" y="276" width="470" height="36" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="385" y="299" text-anchor="middle" font-size="12" fill="#1d1d1f">④ 이후 Esc를 누르면 close.current()가 가장 최근의 onClose D를 호출한다</text>
+</svg>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="430" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <g font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <text x="190" y="30">OSI 참조 모델</text>
+    <text x="490" y="30">TCP/IP 모델</text>
+  </g>
+  <g stroke-width="1.5">
+    <rect x="90" y="46" width="200" height="44" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <rect x="90" y="96" width="200" height="44" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <rect x="90" y="146" width="200" height="44" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <rect x="90" y="196" width="200" height="44" rx="6" fill="#ffe5e3" stroke="#ff3b30"/>
+    <rect x="90" y="246" width="200" height="44" rx="6" fill="#e3f0ff" stroke="#0a84ff"/>
+    <rect x="90" y="296" width="200" height="44" rx="6" fill="#e5f7ea" stroke="#34c759"/>
+    <rect x="90" y="346" width="200" height="44" rx="6" fill="#e5f7ea" stroke="#34c759"/>
+    <rect x="390" y="46" width="200" height="144" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <rect x="390" y="196" width="200" height="44" rx="6" fill="#ffe5e3" stroke="#ff3b30"/>
+    <rect x="390" y="246" width="200" height="44" rx="6" fill="#e3f0ff" stroke="#0a84ff"/>
+    <rect x="390" y="296" width="200" height="94" rx="6" fill="#e5f7ea" stroke="#34c759"/>
+  </g>
+  <g font-size="13" font-weight="600" fill="#6e6e73" text-anchor="middle">
+    <text x="60" y="73">7</text>
+    <text x="60" y="123">6</text>
+    <text x="60" y="173">5</text>
+    <text x="60" y="223">4</text>
+    <text x="60" y="273">3</text>
+    <text x="60" y="323">2</text>
+    <text x="60" y="373">1</text>
+  </g>
+  <g font-size="15" fill="#1d1d1f" text-anchor="middle">
+    <text x="190" y="73">응용</text>
+    <text x="190" y="123">표현</text>
+    <text x="190" y="173">세션</text>
+    <text x="190" y="223">트랜스포트</text>
+    <text x="190" y="273">네트워크</text>
+    <text x="190" y="323">데이터 링크</text>
+    <text x="190" y="373">물리</text>
+    <text x="490" y="123">응용</text>
+    <text x="490" y="223">트랜스포트</text>
+    <text x="490" y="273">네트워크</text>
+    <text x="490" y="340">네트워크</text>
+    <text x="490" y="360">인터페이스</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5" marker-start="url(#a)" marker-end="url(#a)">
+    <line x1="296" y1="118" x2="384" y2="118"/>
+    <line x1="296" y1="218" x2="384" y2="218"/>
+    <line x1="296" y1="268" x2="384" y2="268"/>
+    <line x1="296" y1="343" x2="384" y2="343"/>
+  </g>
+  <text x="320" y="416" text-anchor="middle" font-size="13" fill="#6e6e73">OSI 5~7계층은 TCP/IP 응용 계층 하나로, 1~2계층은 네트워크 인터페이스 계층 하나로 묶인다</text>
+</svg>

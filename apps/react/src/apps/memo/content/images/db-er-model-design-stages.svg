@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="470" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">수강 사실 하나가 설계 단계를 거치며 바뀌는 모습</text>
+
+  <g font-size="12">
+    <text x="20" y="62" font-weight="600" fill="#6e6e73">현실 세계</text>
+    <rect x="150" y="46" width="470" height="30" rx="6" fill="#f2f2f7" stroke="#d2d2d7"/>
+    <text x="385" y="66" text-anchor="middle" fill="#1d1d1f">"학번 100인 나수영 학생이 데이터베이스(C413) 과목을 수강해 A를 받았다"</text>
+  </g>
+  <line x1="385" y1="80" x2="385" y2="100" stroke="#6e6e73" marker-end="url(#a)"/>
+  <text x="395" y="95" font-size="12" fill="#0a84ff">개념적 설계</text>
+
+  <text x="20" y="140" font-size="12" font-weight="600" fill="#6e6e73">개념적 구조</text>
+  <text x="20" y="156" font-size="12" fill="#6e6e73">(E-R 다이어그램)</text>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <rect x="170" y="124" width="90" height="34" fill="#fff" stroke="#1d1d1f"/><text x="215" y="146">학생</text>
+    <polygon points="385,114 435,141 385,168 335,141" fill="#fff" stroke="#1d1d1f"/><text x="385" y="146">등록</text>
+    <rect x="510" y="124" width="90" height="34" fill="#fff" stroke="#1d1d1f"/><text x="555" y="146">과목</text>
+    <line x1="260" y1="141" x2="335" y2="141" stroke="#1d1d1f"/><line x1="435" y1="141" x2="510" y2="141" stroke="#1d1d1f"/>
+    <text x="290" y="134">n</text><text x="480" y="134">m</text>
+    <ellipse cx="385" cy="196" rx="34" ry="14" fill="#fff" stroke="#1d1d1f"/><text x="385" y="200">성적</text>
+    <line x1="385" y1="168" x2="385" y2="182" stroke="#1d1d1f"/>
+  </g>
+  <line x1="385" y1="214" x2="385" y2="236" stroke="#6e6e73" marker-end="url(#a)"/>
+  <text x="395" y="230" font-size="12" fill="#0a84ff">논리적 설계</text>
+
+  <text x="20" y="266" font-size="12" font-weight="600" fill="#6e6e73">논리적 구조</text>
+  <text x="20" y="282" font-size="12" fill="#6e6e73">(관계 스키마)</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="150" y="244" width="470" height="62" rx="6" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="164" y="264">STUDENT(<tspan text-decoration="underline">Sno</tspan>, Sname, Year, Dept)</text>
+    <text x="400" y="264">COURSE(<tspan text-decoration="underline">Cno</tspan>, Cname, …)</text>
+    <text x="164" y="292">ENROL(<tspan text-decoration="underline">Sno, Cno</tspan>, Grade)</text>
+    <text x="400" y="292" fill="#0a84ff">튜플 &lt;100, C413, A&gt;</text>
+  </g>
+  <line x1="385" y1="310" x2="385" y2="332" stroke="#6e6e73" marker-end="url(#a)"/>
+  <text x="395" y="326" font-size="12" fill="#0a84ff">물리적 설계</text>
+
+  <text x="20" y="362" font-size="12" font-weight="600" fill="#6e6e73">물리적 구조</text>
+  <text x="20" y="378" font-size="12" fill="#6e6e73">(저장 장치)</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="150" y="340" width="225" height="76" rx="6" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="164" y="362" font-weight="600">ENROL 데이터 파일</text>
+    <text x="164" y="382">디스크 블록에 레코드 배치</text>
+    <text x="164" y="402">레코드 형식: Sno·Cno·Grade 필드</text>
+    <rect x="395" y="340" width="225" height="76" rx="6" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="409" y="362" font-weight="600">접근 경로</text>
+    <text x="409" y="382">Sno, Cno에 만든 인덱스</text>
+    <text x="409" y="402">인덱스 항목 → 레코드 위치</text>
+  </g>
+  <text x="320" y="448" text-anchor="middle" font-size="12" fill="#6e6e73">위로 갈수록 DBMS와 무관하고, 아래로 갈수록 특정 DBMS와 저장 장치에 종속된다</text>
+</svg>

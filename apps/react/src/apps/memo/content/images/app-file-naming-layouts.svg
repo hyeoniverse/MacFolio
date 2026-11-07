@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>weather 앱에 폴더 규칙과 이름 규칙을 적용한 비교</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">weather 앱 (작업 당시 파일 6개 + 시험 2개)</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">파란 글자: 예보 표시 방식을 바꿀 때 함께 수정하는 파일 세 개</text>
+<rect x="20" y="68" width="290" height="270" rx="10" fill="#f2f2f7"/>
+<text x="36" y="94" font-size="14" font-weight="700" fill="#1d1d1f">폴더 규칙 (검토안)</text>
+<g font-size="13" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+<text x="36" y="124">weather/</text>
+<text x="56" y="148" fill="#6e6e73">components/</text>
+<text x="80" y="170" fill="#0a84ff" font-weight="700">Weather.tsx</text>
+<text x="80" y="190">Weather.css</text>
+<text x="56" y="214" fill="#6e6e73">hooks/</text>
+<text x="80" y="234" fill="#ff9f0a" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="12">(비어 있음)</text>
+<text x="56" y="258" fill="#6e6e73">api/</text>
+<text x="80" y="278" fill="#0a84ff" font-weight="700">weatherApi.ts</text>
+<text x="56" y="302" fill="#6e6e73">model/</text>
+<text x="80" y="322"><tspan fill="#0a84ff" font-weight="700">forecast.ts</tspan> places.ts …</text>
+</g>
+<rect x="330" y="68" width="290" height="270" rx="10" fill="#f2f2f7"/>
+<text x="346" y="94" font-size="14" font-weight="700" fill="#1d1d1f">이름 규칙 (채택)</text>
+<g font-size="13" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+<text x="346" y="124">weather/</text>
+<text x="370" y="148" fill="#0a84ff" font-weight="700">Weather.tsx</text>
+<text x="370" y="170">Weather.css</text>
+<text x="370" y="192">cities.ts</text>
+<text x="370" y="214" fill="#0a84ff" font-weight="700">forecast.ts</text>
+<text x="370" y="236">forecast.test.ts</text>
+<text x="370" y="258">places.ts</text>
+<text x="370" y="280">places.test.ts</text>
+<text x="370" y="302" fill="#0a84ff" font-weight="700">weatherApi.ts</text>
+</g>
+<text x="510" y="148" font-size="12" fill="#6e6e73">화면</text>
+<text x="510" y="214" font-size="12" fill="#6e6e73">순수 계산</text>
+<text x="510" y="302" font-size="12" fill="#6e6e73">서버 호출</text>
+<rect x="20" y="350" width="290" height="40" rx="8" fill="#fff8ec" stroke="#ff9f0a"/>
+<text x="165" y="375" font-size="12" fill="#1d1d1f" text-anchor="middle">함께 바뀌는 파일 3개가 폴더 3곳에 흩어진다</text>
+<rect x="330" y="350" width="290" height="40" rx="8" fill="#eefaf1" stroke="#34c759"/>
+<text x="475" y="375" font-size="12" fill="#1d1d1f" text-anchor="middle">한 폴더에 있고, 종류는 이름 끝으로 구분한다</text>
+</svg>

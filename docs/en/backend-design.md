@@ -59,16 +59,16 @@ flowchart LR
 
 Every request passes through the same steps in order (`app.setup.ts`). The order of guards, pipes and exception filters follows NestJS's [Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle).
 
-| Layer                   | What it does                                                                                                                                           |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `trust proxy`           | Reads the real visitor IP behind the tunnel (used for rate limiting and IP records)                                                                    |
-| helmet                  | Security headers                                                                                                                                       |
-| CORS                    | Allows only the site's origins. Cookies only for the exact listed origins; PR previews (`*`) are read-only, and admin APIs reject that Origin with 403 |
-| `ValidationPipe`        | Validates every input with DTOs and rejects any field not declared (`forbidNonWhitelisted`)                                                            |
-| `AdminGuard`            | On admin-only routes, checks the session cookie against the DB on every request                                                                        |
-| `ThrottlerGuard`        | Limits requests per IP and route per minute, by the `@RateLimit` name attached to each write route                                                     |
-| Global exception filter | Normalizes the error shape, answers oversized bodies and malformed JSON with 413 and 400, and unexpected errors with a 500 that hides the details      |
-| `SafeLogger`            | Masks DB passwords, API keys, cookies and email addresses in all logs (`common/redact.ts`)                                                             |
+| Layer                   | What it does                                                                                                                                                                                  |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trust proxy`           | Reads the real visitor IP behind the tunnel (used for rate limiting and IP records)                                                                                                           |
+| helmet                  | Security headers                                                                                                                                                                              |
+| CORS                    | Allows only the site's origins. Cookies only for the exact listed origins; PR previews (`*`) are read-only, and admin APIs reject that Origin with 403                                        |
+| `ThrottlerGuard`        | Limits requests per IP and route per minute, by the `@RateLimit` name attached to each write route. On admin routes it also runs before `AdminGuard`, so requests without a session count too |
+| `AdminGuard`            | On admin-only routes, checks the session cookie against the DB on every request                                                                                                               |
+| `ValidationPipe`        | Validates every input with DTOs and rejects any field not declared (`forbidNonWhitelisted`)                                                                                                   |
+| Global exception filter | Normalizes the error shape, answers oversized bodies and malformed JSON with 413 and 400, and unexpected errors with a 500 that hides the details                                             |
+| `SafeLogger`            | Masks DB passwords, API keys, cookies and email addresses in all logs (`common/redact.ts`)                                                                                                    |
 
 ## Modules and permissions
 
@@ -249,5 +249,5 @@ Detailed steps and troubleshooting are in [deployment.md](deployment.md).
 - [API 경로 64개를 표 하나로 고정하기](https://macfolio.hyeoniverse.com/memo/api-route-table-test)
 - [오류 응답은 감추고, 로그는 가리고](https://macfolio.hyeoniverse.com/memo/error-log-masking)
 - [올린 사진의 EXIF를 지우되 방향은 남기기](https://macfolio.hyeoniverse.com/memo/upload-strip-exif)
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](https://macfolio.hyeoniverse.com/memo/contracts-comments)
+- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](https://macfolio.hyeoniverse.com/memo/contracts-package#댓글좋아요-스키마-200)
 - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)

@@ -3,15 +3,24 @@ title: HMAC으로 IP 원문 없이 관리자 방문 식별하기
 date: 2026-10-23
 category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
-seriesOrder: 11
+seriesOrder: 9
 summary: 로그인하지 않은 기기에서 둘러본 관리자 방문이 집계에 섞였다. 관리자로 인증된 요청의 IP를 HMAC으로만 30일 보관해 그 IP의 방문을 제외한다. 실시간 탭은 30분에서 마스킹된 IP 보관 기간인 7일까지 넓히고 IP별 방문 표를 더했으며, 맥 Safari에서 정렬하면 이름이 사라지던 표를 고쳤다.
 ---
 
-'활동 상태 보기'의 실시간 탭으로 방문을 확인하던 중 두 가지가 불편했다. 첫째, 관리자 본인의 방문이 섞였다. 서버는 **관리자 세션 쿠키가 붙은 방문**만 제외했으므로, 로그인하지 않은 휴대폰이나 다른 브라우저로 사이트를 확인하면 일반 방문으로 집계되었다. 실시간 탭의 IP에도 관리자 IP가 나타났다. 둘째, 실시간 탭은 **최근 30분**만 조회했다. 서버는 마스킹된 IP를 7일 동안 보관하는데 화면은 그중 30분만 사용해, 30분이 지난 방문은 IP와 흐름을 확인할 곳이 없었다.
+방문 통계에서 사이트 주인의 방문은 빼는 것이 일반적이다. 글을 고친 뒤 화면을 확인하려고 수십 번 새로 고치면, 그 횟수가 방문자 수에 그대로 더해져 실제 방문 추이를 알 수 없기 때문이다.
+
+'활동 상태 보기'의 실시간 탭으로 방문을 확인하던 중 두 가지가 불편했다.
+
+| 문제                         | 내용                                                                                                                                                                                    |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 관리자 본인의 방문이 섞임    | 서버는 **관리자 세션 쿠키가 붙은 방문**만 제외했다. 로그인하지 않은 휴대폰이나 다른 브라우저로 사이트를 확인하면 일반 방문으로 집계되었고, 실시간 탭의 IP 목록에도 관리자 IP가 나타났다 |
+| 실시간 탭이 최근 30분만 조회 | 서버는 마스킹된 IP를 7일 동안 보관하는데 화면은 그중 30분만 사용했다. 30분이 지난 방문은 IP와 흐름을 확인할 곳이 없었다                                                                 |
 
 변경은 [#337](https://github.com/hyeoniverse/MacFolio/pull/337)(관리자 IP 제외)과 [#333](https://github.com/hyeoniverse/MacFolio/pull/333)(실시간 7일, IP 표, Safari 정렬 문제)이다.
 
 ## 관리자 IP를 HMAC으로 기록하고 그 IP의 방문을 제외
+
+쿠키는 브라우저마다 따로 있으므로, 노트북의 Chrome에서 로그인해도 같은 노트북의 Safari나 휴대폰에는 관리자 쿠키가 없다. 반면 같은 집 공유기에 연결된 기기들은 서버에 같은 **IP 주소**로 보인다. IP 주소는 인터넷에서 요청을 보낸 쪽을 가리키는 번호로, IPv4는 `203.0.113.7`처럼 0~255 숫자 네 개로 쓴다. 그래서 "관리자로 로그인한 요청이 온 IP"를 기억해 두면, 같은 IP에서 쿠키 없이 들어온 방문도 관리자 방문으로 판정할 수 있다.
 
 관리자로 인증된 요청이 오면 그 IP를 HMAC으로 변환해 `AdminIp` 표에 기록한다. 방문 이벤트를 받으면 관리자 세션이 있거나, 세션이 없어도 요청 IP가 `AdminIp`에 있으면 저장하지 않는다.
 
@@ -41,6 +50,8 @@ await this.recorder.record(body, {
 });
 ```
 
+예를 들어 관리자가 노트북 Chrome에서 로그인한 상태로 사이트를 열면 `/auth/me`가 `AdminGuard`를 통과하면서 노트북의 공인 IP가 기록된다. 몇 분 뒤 같은 와이파이의 휴대폰으로 로그인 없이 사이트를 열면, 휴대폰의 방문 이벤트는 쿠키가 없지만 IP가 `AdminIp`에 있어 저장되지 않는다.
+
 ### 쓰기와 읽기 횟수
 
 `AdminGuard`는 관리자 경로마다 실행되고, 방문 이벤트는 5초마다 도착한다. 매번 DB를 조회하지 않도록 두 값을 메모리에 보관한다.
@@ -51,26 +62,36 @@ await this.recorder.record(body, {
 | `CACHE_MS`      | 1분  | `isAdminIp`는 메모리 `Set`으로 판정하고 1분이 지나면 DB에서 목록을 다시 조회 |
 | `ADMIN_IP_DAYS` | 30일 | 다시 조회하기 전에 `lastSeenAt`이 30일 지난 행을 삭제                        |
 
+관리자가 1시간 동안 글을 편집하며 관리자 API를 수백 번 호출해도 `AdminIp`에 쓰는 횟수는 6번(10분에 한 번)이다. 방문 이벤트 판정은 메모리 `Set` 조회라 DB를 읽지 않고, DB 목록 조회는 1분에 한 번이다.
+
 `remember`는 DB에 쓴 직후 메모리 `Set`에도 해시를 추가한다. 그래서 관리자가 로그인한 직후의 방문도 1분을 기다리지 않고 제외된다.
 
 ### 개인정보: IP 원문은 저장하지 않는다
+
+IP 주소는 개인을 추정하는 데 쓰일 수 있는 값이라 원문을 DB에 남기지 않는다. 대신 **HMAC**으로 바꾼 값만 저장한다. HMAC(Hash-based Message Authentication Code)은 비밀 키와 입력을 함께 해시 함수에 넣어 고정 길이 값을 만드는 방법이다[^hmac]. 같은 키와 같은 입력은 언제나 같은 값이 되므로 "이 IP가 표에 있는가"는 확인할 수 있지만, 키를 모르면 값을 계산할 수도 거꾸로 되돌릴 수도 없다.
 
 ```ts
 createHmac('sha256', this.config.ipHashSecret).update(`admin-ip:${ip}`).digest('hex');
 ```
 
-- **HMAC만 저장한다.** IPv4 주소는 약 43억 개라, 키 없는 SHA-256 해시는 모든 주소를 대입해 원문을 복원할 수 있다. 서버만 아는 `IP_HASH_SECRET`을 키로 쓰는 HMAC은 키 없이는 대입이 불가능하다. API e2e 시험이 `AdminIp`에 64자 16진수만 있고 IP 원문은 없는지 확인한다.
+- **HMAC만 저장한다.** IPv4 주소는 2^32, 약 43억 개라 ==키 없는 SHA-256 해시는 모든 주소를 대입해 원문을 복원할 수 있다==. 서버만 아는 `IP_HASH_SECRET`을 키로 쓰는 HMAC은 키 없이는 대입이 불가능하다. API e2e 시험이 `AdminIp`에 64자 16진수만 있고 IP 원문은 없는지 확인한다.
 - **용도별 접두어.** 댓글·메시지의 요청 제한용 IP 해시와 같은 키를 쓰지만 `admin-ip:` 접두어를 붙인다. 같은 IP라도 표마다 해시 값이 달라 두 표를 IP로 연결할 수 없다.
 - **보관 기간은 마지막 관리자 요청 후 30일.** 관리자가 쓰던 IP가 바뀌거나 그 IP를 다른 사람이 받게 되어도 30일 뒤에는 다시 집계된다.
-- **방문 기록 쪽은 그대로다.** `AnalyticsEvent`에는 마지막 자리를 마스킹한 IP(`203.0.113.x`)만 7일 보관하고, 7일이 지나면 `null`로 바꾼다([쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)).
+- **방문 기록 쪽은 그대로다.** `AnalyticsEvent`에는 마지막 자리를 마스킹한 IP(`203.0.113.x`)만 7일 보관하고, 7일이 지나면 `null`로 바꾼다([쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)).
+
+![키 없는 SHA-256은 0.0.0.0부터 모든 IPv4 주소를 대입해 203.0.113.7의 해시와 일치하는 값을 찾을 수 있고, HMAC은 키를 모르면 후보 값을 계산할 수 없다](./images/analytics-admin-ip-hash-vs-hmac.svg 'AdminIp 표가 유출됐을 때 (도식, 해시 값은 예시)')
 
 규칙은 [개인정보 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)의 '집계에서 제외하는 방문'과 '보관 기간'에도 추가했다.
 
 ### 한계
 
+집 공유기는 집 안의 기기들에 `192.168.0.x` 같은 **사설 IP**를 나눠 주고, 인터넷으로 나가는 요청은 모두 공유기 하나의 **공인 IP**로 바꿔 보낸다. 이 변환을 NAT(Network Address Translation)라고 한다[^nat]. 서버는 공인 IP만 보므로 공유기 뒤의 기기들을 구분할 수 없다.
+
+![같은 공유기 뒤의 관리자 노트북, 관리자 휴대폰, 가족의 태블릿이 서버에 모두 198.51.100.20으로 보여 함께 제외되고, LTE로 바뀐 휴대폰은 새 IP라 관리자 요청이 한 번 있기 전까지 집계된다](./images/analytics-admin-ip-nat.svg '공유기와 IP 판정 (도식, 문서용 예시 IP)')
+
 - **같은 공유기 뒤의 다른 방문자도 30일 동안 제외된다.** 서버가 보는 IP는 공유기의 공인 IP 하나다. 개인 포트폴리오 사이트라 이 손실을 받아들인다.
 - **IP가 자주 바뀌는 망은 한 번 인증해야 제외된다.** 휴대폰 데이터처럼 IP가 바뀌면, 새 IP에서 관리자 요청(로그인한 상태로 사이트 열기 등)이 한 번은 있어야 `AdminIp`에 기록된다.
-- **과거 방문은 소급해서 제외할 수 없다.** 저장된 방문에는 IP 원문이 없고 마스킹된 IP는 `/24` 대역이라, `AdminIp`의 HMAC과 대조할 값이 없다. 이 변경 이전의 관리자 방문은 집계에 남는다.
+- **과거 방문은 소급해서 제외할 수 없다.** 저장된 방문에는 IP 원문이 없고 마스킹된 IP는 `/24` 대역이라, `AdminIp`의 HMAC과 대조할 값이 없다. `/24`는 앞의 24비트(숫자 세 개)가 같은 주소 256개의 묶음이다. `203.0.113.x`는 `203.0.113.0`부터 `203.0.113.255`까지 중 어느 것인지 알 수 없으므로 이 변경 이전의 관리자 방문은 집계에 남는다.
 
 ## 실시간 탭을 7일까지
 
@@ -99,7 +120,7 @@ createHmac('sha256', this.config.ipHashSecret).update(`admin-ip:${ip}`).digest('
 | 조회 순서      | `createdAt asc`, 5,000개 | **`createdAt desc, id desc`**, 20,000개 → 뒤집어 시간 순 |
 | 응답 형식      | 변경 없음                | 변경 없음                                                |
 
-조회 순서를 바꾼 이유는 상한에 도달했을 때 잘리는 쪽이다. 오래된 것부터 읽으면 기간을 늘린 순간 상한을 넘는 쪽, 즉 가장 최근 방문이 빠진다. 최대 24시간에서는 이벤트가 5,000개에 도달하지 않아 드러나지 않았다. 최근 것부터 읽으면 상한을 넘어도 가장 오래된 쪽이 잘린다.
+조회 순서를 바꾼 이유는 상한에 도달했을 때 잘리는 쪽이다. `take`로 개수를 제한하면 정렬 순서의 앞쪽부터 그 개수만 읽는다. 오래된 것부터 읽으면 기간을 늘린 순간 상한을 넘는 쪽, 즉 ==가장 최근 방문이 빠진다==. 최대 24시간에서는 이벤트가 5,000개에 도달하지 않아 드러나지 않았다. 최근 것부터 읽으면 상한을 넘어도 가장 오래된 쪽이 잘린다.
 
 ![전 방식으로 7일을 읽으면 오래된 5,000개만 읽고 최근 3,000개가 잘린다. 후에는 최근 것부터 20,000개까지 읽어 8,000개를 모두 읽는다](./images/analytics-admin-ip-live-read.svg '7일 이벤트 8,000개를 읽는 순서 (도식)')
 
@@ -115,7 +136,16 @@ const events = (
 ).reverse();
 ```
 
-`LIVE_MAX_MINUTES`는 `IP_RETENTION_DAYS * 24 * 60`으로 계산해 보관 기간과 함께 바뀐다. 응답 형식이 같아 API와 사이트 중 어느 쪽이 먼저 배포되어도 동작한다. 사이트만 먼저 배포되면 7일을 골라도 이전 서버가 24시간으로 제한하고, API만 먼저 배포되면 이전 화면이 30분을 조회한다. DB 마이그레이션은 없다.
+`minutes` 입력은 아래처럼 정리된다.
+
+| 요청                            | `minutes`                  |
+| ------------------------------- | -------------------------- |
+| `?minutes` 없음, `?minutes=abc` | 30 (기본값)                |
+| `?minutes=0`                    | 30 (`0`은 거짓이라 기본값) |
+| `?minutes=-5`                   | 1 (하한)                   |
+| `?minutes=99999`                | 10080 (상한)               |
+
+`LIVE_MAX_MINUTES`는 `IP_RETENTION_DAYS * 24 * 60`으로 계산해 보관 기간과 함께 바뀐다. ==응답 형식이 같아 API와 사이트 중 어느 쪽이 먼저 배포되어도 동작한다==. 사이트만 먼저 배포되면 7일을 골라도 이전 서버가 24시간으로 제한하고, API만 먼저 배포되면 이전 화면이 30분을 조회한다. DB 마이그레이션은 없다.
 
 ### 갱신 간격
 
@@ -141,9 +171,10 @@ resetKey: String(liveMinutes),
 
 ### 원인 (추정)
 
-맥 Safari에서만 발생했다. Chromium, Playwright WebKit, 휴대폰 화면에서는 가짜 데이터로 여러 차례 시도해도 재현되지 않았다. 그래서 아래 원인은 **추정**이다.
+> [!NOTE] 재현 범위
+> 맥 Safari에서만 발생했다. Chromium, Playwright WebKit, 휴대폰 화면에서는 가짜 데이터로 여러 차례 시도해도 재현되지 않았다. 그래서 아래 원인은 **추정**이다.
 
-다른 표와의 차이는 하나다. 이 표만 이름 칸이 **버튼**이다(누르면 그 조합의 일별 방문을 펼친다). 그리고 `StatTable`은 정렬이 바뀌면 `tbody`의 `key`를 바꿔 새로 만들고, 새 `tbody`에 `.motion-swap`(`animation: fade-in`, opacity 0 → 1)을 건다.
+다른 표와의 차이는 하나다. 이 표만 이름 칸이 **버튼**이다(누르면 그 조합의 일별 방문을 펼친다). 그리고 `StatTable`은 정렬이 바뀌면 `tbody`의 `key`를 바꿔 새로 만들고, 새 `tbody`에 `.motion-swap`(`animation: fade-in`, opacity 0 → 1)을 건다. React는 `key`가 바뀐 요소를 같은 요소로 보지 않고, 기존 DOM을 삭제한 뒤 새로 만든다[^key]. 페이드 애니메이션은 새로 만든 `tbody`에서 처음부터 다시 실행된다.
 
 | 조건                                 | 결과          |
 | ------------------------------------ | ------------- |
@@ -151,7 +182,7 @@ resetKey: String(liveMinutes),
 | 정렬 변경, 이름이 글자인 표 + 페이드 | 이름이 보인다 |
 | 정렬 변경, 이름이 버튼인 표 + 페이드 | **빈칸**      |
 
-이름 버튼에는 말줄임을 위한 `overflow: hidden`과 `text-overflow: ellipsis`가 적용되어 있다. 세 조건을 비교하면 '새로 만든 버튼 + 부모의 opacity 애니메이션' 조합에서 Safari가 버튼 안의 글자를 그리지 않는 것으로 판단했다.
+이름 버튼에는 말줄임을 위한 `overflow: hidden`과 `text-overflow: ellipsis`가 적용되어 있다. 세 조건을 비교하면 =='새로 만든 버튼 + 부모의 opacity 애니메이션' 조합==에서 Safari가 버튼 안의 글자를 그리지 않는 것으로 판단했다.
 
 ### 고친 방법
 
@@ -188,11 +219,31 @@ resetKey: String(liveMinutes),
 
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api): 마스킹된 IP와 일별 해시, 보관 기간
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor): 실시간 탭과 StatTable을 만든 글
 - [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](/memo/utm-analytics): 이름이 버튼인 `출처 / 매체 / 캠페인` 표를 만든 글
 - [visibilityState와 지수 백오프로 보이는 동안만 폴링하는 usePolling 훅과 같은 요청 묶기](/memo/activity-live-refresh): 실시간 탭의 usePolling
 - [no-cors 요청인 sendBeacon에도 적용되는 Cross-Origin-Resource-Policy](/memo/analytics-beacon-corp): 같은 주의 Safari 전용 문제
 - [macOS Safari와 iOS Safari의 렌더링 차이 — 브라우저별로 주의할 점](/memo/safari-macos-ios-rendering): Safari 렌더링 차이 정리
+
+[^hmac]: [RFC 2104: HMAC](https://www.rfc-editor.org/rfc/rfc2104), [Node.js: crypto.createHmac](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options).
+
+[^nat]: [RFC 1918: Address Allocation for Private Internets](https://www.rfc-editor.org/rfc/rfc1918)가 사설 IP 대역(`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`)을, [RFC 3022](https://www.rfc-editor.org/rfc/rfc3022)가 NAT 동작을 정의한다. 글의 예시 주소 `203.0.113.x`, `198.51.100.x`는 [RFC 5737](https://www.rfc-editor.org/rfc/rfc5737)이 문서용으로 예약한 대역이다.
+
+[^key]: [React 문서: Resetting state with a key](https://react.dev/learn/preserving-and-resetting-state#option-2-resetting-state-with-a-key).
+
+<details>
+<summary>참고 문헌</summary>
+
+- [RFC 2104: HMAC: Keyed-Hashing for Message Authentication](https://www.rfc-editor.org/rfc/rfc2104)
+- [Node.js: crypto.createHmac](https://nodejs.org/api/crypto.html#cryptocreatehmacalgorithm-key-options)
+- [RFC 1918: Address Allocation for Private Internets](https://www.rfc-editor.org/rfc/rfc1918)
+- [RFC 3022: Traditional IP Network Address Translator](https://www.rfc-editor.org/rfc/rfc3022)
+- [RFC 5737: IPv4 Address Blocks Reserved for Documentation](https://www.rfc-editor.org/rfc/rfc5737)
+- [Prisma: findMany의 orderBy와 take](https://www.prisma.io/docs/orm/reference/prisma-client-reference#findmany)
+- [React 문서: Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state)
+- [MDN: text-overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/text-overflow)
+
+</details>
 
 #MacFolio #트래픽분석 #개인정보 #HMAC #Safari #NestJS

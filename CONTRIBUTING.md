@@ -148,12 +148,15 @@ API는 main에 머지되면 자동으로 배포되고, 새 버전이 헬스 체�
 - **기술 글**은 구현과 트러블슈팅을 쓴다. 한 일을 늘어놓는 일지가 되지 않게 한다
 - 하루나 한 주를 돌아보는 글은 `개발 기록/MacFolio/회고` 폴더에 쓴다
 - 폴더는 아래 중에서 고른다 (3단계까지)
-  - `개발 기록/MacFolio/`: 화면·스타일(레이아웃, 반응형, 디자인 토큰, CSS, 공통 컴포넌트, Markdown 표시) · 인터랙션·브라우저 API(입력, 끌기, 편집기 동작, iframe, 오디오·동영상) · 구조·상태 관리(모듈 구조, desktop-core, store, 앱 사이 연결, 브라우저 저장소) · 서버·API(서버 API, DB, 분석) · 테스트·보안·성능 · 배포·운영 · 회고
+  - `개발 기록/MacFolio/`: 화면·스타일(레이아웃, 반응형, 디자인 토큰, CSS, 공통 컴포넌트, Markdown 표시) · 인터랙션·브라우저 API(입력, 끌기, 편집기 동작, iframe, 오디오·동영상) · 구조·상태 관리(모듈 구조, desktop-core, store, 앱 사이 연결, 브라우저 저장소) · 서버·API(서버 API, DB, 분석) · 테스트·보안·성능 · 배포·운영 · 트러블슈팅(버그·장애의 증상에서 출발해 원인을 찾아 고친 글 중 원인을 추적한 과정이 글의 중심인 것. 원인이 바로 보인 수정이나 고친 결과·기법이 중심인 글은 주제 폴더에 둔다. 증상 → 원인 추적 → 원인 → 해결 → 확인 → 재발 방지 순서로 쓴다) · 회고(그날의 기능·버그 수정·설계 판단을 쓰는 일별 회고 `day-<MMDD>`와, 그 주에서 가장 중요한 변경 3~5개만 모아 일별 회고로 잇는 주간 회고 `week-<첫날 MMDD>`)
   - 앱 이름이 아니라 글이 푼 문제로 고른다. 앱 단위 묶음은 연재(`series`)가 맡는다. 예: 끌어서 순서 바꾸기는 인터랙션·브라우저 API, 휴대폰 키보드 높이에 화면 맞추기는 화면·스타일
   - `기술 노트/`: 프론트엔드 · 백엔드 · 인프라 · 보안 · 테스트 · Git · 개발 환경 (한 단계만 두고, 글이 쌓이면 나눈다)
   - `인사이트/`: 최신 동향과 그에 대한 고찰. 주제별 하위 폴더(보안 · 프론트엔드 …)를 두고, 글이 쌓이면 나눈다
+  - `학습/`: 공부한 내용의 정리. `학습/CS/<과목>`(데이터베이스 · 딥러닝 · 네트워크 보안 …), `학습/코딩 테스트/…`, `학습/언어/<언어>`. 한 과목을 여러 편으로 나누면 `series`·`seriesOrder`로 연재로 묶는다
 - 로그, 코드, 수치는 실제로 실행해 얻은 것만 쓴다
-- 머리말(frontmatter)에 `title`, `date`(YYYY-MM-DD), `category`(폴더, 최대 3단계), `summary`를 쓴다
+- 머리말(frontmatter)에 `title`, `date`(YYYY-MM-DD), `category`(폴더, 최대 3단계), `summary`를 쓴다. 연재 글이면 `series`(연재 이름)와 `seriesOrder`(1부터)를 더한다
+- 본문은 5만 자 이하다(`content.test.ts`가 검사한다). 넘으면 글을 나눈다
+- 글을 합치거나 주소(파일 이름)를 바꾸면 옛 주소를 `packages/desktop-core/src/memo/movedPosts.ts`의 `MOVED_POSTS`에 `옛 주소: '새 주소#절-id'`로 더한다. 배포 사이트의 Worker가 옛 주소를 301로 넘겨 검색 색인과 바깥 링크가 404가 되지 않는다. 저장소 글 안의 링크는 새 주소로 고친다(`content.test.ts`가 옛 주소 링크와 없는 절 링크를 검사한다)
 
 ```markdown
 ---
@@ -210,6 +213,7 @@ summary: 목록과 검색에 보이는 한두 문장 요약
 - CI(`check`, `conventions`, `secrets`)가 통과해야 머지한다. `main`의 Ruleset이 세 검사를 필수로 지정해, 통과하기 전에는 Merge 버튼이 막힌다. `secrets`는 [gitleaks](https://github.com/gitleaks/gitleaks)로 API 키·토큰·개인 키 형식의 문자열이 커밋에 포함되었는지 전체 기록을 검사한다 (예외는 `.gitleaks.toml`)
 - **Merge commit**으로 머지한다. 브랜치의 커밋이 그대로 main에 남는다 ([병합 방식 비교 글](https://macfolio.hyeoniverse.com/memo/merge-strategies), [이 저장소가 Merge commit을 고른 근거](https://macfolio.hyeoniverse.com/memo/macfolio-merge-strategy), [GitHub 문서](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github))
 - 머지한 브랜치는 삭제한다 (PR 페이지의 Delete branch)
+- 다른 PR의 브랜치를 base로 연 PR은 머지하기 전에 base가 `main`인지 확인한다. 아래 PR을 머지하고 그 브랜치를 지우면 GitHub이 위 PR의 base를 `main`으로 바꾸지만, 브랜치가 남아 있으면 base가 그대로라 머지해도 `main`에 들어가지 않고 배포되지 않는다(#413 → #415). PR 페이지 제목 아래의 `into <브랜치>`로 확인하고, 다르면 Edit으로 base를 `main`으로 바꾼다
 - 아직 작업이 남았으면 draft로 열고, 완료되면 Ready for review로 변경한다
 
 ## 저장소 설정
@@ -252,11 +256,11 @@ Settings → General → Pull Requests의 **Automatically delete head branches**
 - [MacFolio 저장소의 PR 병합 — Merge commit을 고른 근거와 main 기록 집계](https://macfolio.hyeoniverse.com/memo/macfolio-merge-strategy)
 - [폴더 대신 이름으로 — 앱 안의 파일 규칙](https://macfolio.hyeoniverse.com/memo/app-file-naming)
 - [서로 import하는 파일 둘을 풀고, 다시 생기면 CI가 막게](https://macfolio.hyeoniverse.com/memo/break-import-cycles)
-- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](https://macfolio.hyeoniverse.com/memo/shared-api-client)
-- [try/catch 열두 개를 하나로 — 브라우저 저장소 모듈](https://macfolio.hyeoniverse.com/memo/shared-storage)
-- [matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈](https://macfolio.hyeoniverse.com/memo/shared-media)
+- [fetch 33곳을 client.ts 하나로 — 공통 API 클라이언트](https://macfolio.hyeoniverse.com/memo/shared-modules#서버-호출-apiapifetch)
+- [try/catch 열두 개를 하나로 — 브라우저 저장소 모듈](https://macfolio.hyeoniverse.com/memo/shared-modules#브라우저-저장소-readjsonwritejson)
+- [matchMedia 네 가지 표기를 하나로 — 화면 질문 모듈](https://macfolio.hyeoniverse.com/memo/shared-modules#화면-조건-조회-mediats와-getviewport)
 - [문자열은 문을 지나야 글 주소가 된다 — PostSlug·FolderPath 브랜드 타입](https://macfolio.hyeoniverse.com/memo/branded-ids)
-- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](https://macfolio.hyeoniverse.com/memo/color-tokens)
-- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](https://macfolio.hyeoniverse.com/memo/z-index-layers)
-- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/secret-scanning)
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/pin-actions-dependabot)
+- [색에 이름 붙이기 — 되풀이된 hex 288곳을 --color-* 이름으로](https://macfolio.hyeoniverse.com/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)
+- [z-index 숫자에 이름 붙이기 — 화면 전체의 겹침 순서를 한 표로](https://macfolio.hyeoniverse.com/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)
+- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
+- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)

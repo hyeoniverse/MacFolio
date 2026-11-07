@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">학생(학번, 주민등록번호, 이름, 학과)의 키 포함 관계</text>
+  <!-- 바깥: 애트리뷰트 부분집합 전체 -->
+  <rect x="20" y="46" width="600" height="316" rx="12" fill="#fff" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="36" y="68" font-size="13" font-weight="600" fill="#6e6e73">키가 아닌 애트리뷰트 집합</text>
+  <text x="36" y="88" font-size="12" fill="#6e6e73">{이름} 동명이인 가능</text>
+  <text x="36" y="106" font-size="12" fill="#6e6e73">{학과} 컴퓨터 3명</text>
+  <text x="36" y="124" font-size="12" fill="#6e6e73">{이름, 학과}</text>
+  <!-- 슈퍼 키 -->
+  <rect x="200" y="58" width="404" height="290" rx="12" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="216" y="80" font-size="13" font-weight="600" fill="#1d1d1f">슈퍼 키: 유일성</text>
+  <text x="216" y="100" font-size="12" fill="#1d1d1f">{학번, 이름}  {학번, 학과}</text>
+  <text x="216" y="118" font-size="12" fill="#1d1d1f">{주민등록번호, 이름}  {학번, 주민등록번호}</text>
+  <text x="216" y="136" font-size="12" fill="#1d1d1f">{학번, 주민등록번호, 이름, 학과} 전체</text>
+  <!-- 후보 키 -->
+  <rect x="228" y="152" width="352" height="180" rx="10" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="244" y="174" font-size="13" font-weight="600" fill="#0a84ff">후보 키: 유일성 + 최소성</text>
+  <!-- 기본 키 / 대체 키 -->
+  <rect x="248" y="190" width="150" height="122" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="323" y="216" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">기본 키</text>
+  <text x="323" y="242" text-anchor="middle" font-size="14" fill="#1d1d1f">{학번}</text>
+  <text x="323" y="268" text-anchor="middle" font-size="12" fill="#6e6e73">설계자가 지정</text>
+  <text x="323" y="286" text-anchor="middle" font-size="12" fill="#6e6e73">NULL 금지</text>
+  <rect x="412" y="190" width="150" height="122" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="487" y="216" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">대체 키</text>
+  <text x="487" y="242" text-anchor="middle" font-size="14" fill="#1d1d1f">{주민등록번호}</text>
+  <text x="487" y="268" text-anchor="middle" font-size="12" fill="#6e6e73">기본 키가 아닌</text>
+  <text x="487" y="286" text-anchor="middle" font-size="12" fill="#6e6e73">나머지 후보 키</text>
+  <text x="36" y="300" font-size="12" fill="#1d1d1f">{학번, 이름}에서</text>
+  <text x="36" y="318" font-size="12" fill="#1d1d1f">이름을 빼도 유일하다</text>
+  <text x="36" y="336" font-size="12" fill="#1d1d1f">→ 최소성 불만족</text>
+</svg>

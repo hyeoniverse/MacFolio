@@ -1,0 +1,541 @@
+---
+title: 2024년 - 바닐라 JS에서 CRA·Express를 거쳐 Firebase까지
+date: 2024-12-23
+category: 개발 기록/MacFolio/회고
+summary: 2024년 8월 첫 커밋부터 12월 Firebase 이전까지의 회고. 세 파일 화면을 CRA 컴포넌트로 나누고, 창 상태를 AppContext에 모으고, 메모 저장소를 메모리·MySQL·Cloud SQL·Firebase 순으로 바꾸고, node_modules·캐시 커밋을 정리한 과정을 주제별로 돌아봤다.
+---
+
+2024년 8월부터 12월까지 MacFolio는 HTML 파일 세 개에서 시작해 React 앱, Express 서버, Firebase로 구조를 세 번 바꿨다. 이 기간에는 PR 없이 `main`에 직접 커밋했다.
+
+## 연표
+
+| 날짜          | 변경                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------- |
+| 2024-08-27    | 첫 커밋. HTML·CSS·JS 세 파일과 자산 61MB                                              |
+| 2024-10-11    | Create React App과 TypeScript로 이전, `script.js`를 컴포넌트로 분리                   |
+| 2024-10-12    | Dock 재작성, jQuery 음악 플레이어를 React로                                           |
+| 2024-10-13    | `AppContext`·`Container`, 누른 창을 맨 앞으로, 블로그·메일 앱, `client`/`server` 분리 |
+| 2024-10-14    | 재생 로직을 `MusicContext`로, 볼륨 창, 최소화 애니메이션·창 위치 저장·최대화          |
+| 2024-10-15    | 메모 앱 첫판, GitHub 앱, 첫 클릭에 음악 재생, 곡 7개                                  |
+| 2024-10-21~22 | 서버를 TypeScript로, 메모를 MySQL에 저장, 메모 단위 비밀번호                          |
+| 2024-10-26    | DB를 Google Cloud SQL로, `.env` 추적 제외                                             |
+| 2024-10-27    | `.gitignore`에서 `node_modules` 삭제, 60,791개 파일 커밋                              |
+| 2024-11-04    | 클릭 소리, `Loading.css`, 커밋된 webpack 캐시 정리                                    |
+| 2024-12-22    | 메모·GitHub·음악 코드에 포매터 적용                                                   |
+| 2024-12-23    | Express·MySQL 서버 삭제, Firebase Hosting과 Realtime Database로 이전                  |
+
+## 8월 27일 - 첫 커밋: 빌드 도구 없는 세 파일
+
+2024년 8월 27일에 빈 저장소를 생성하고, 파일 39개를 한 번에 커밋하고, `main.html`의 이름을 `index.html`로 변경했다.
+
+![2024년 8월 27일 작업 흐름](./images/day-20240827-timeline.svg '빈 저장소 생성, 첫 파일 커밋, index.html 이름 변경')
+
+빌드 도구도 패키지 관리자도 없었다. 브라우저가 `index.html`을 열면 CDN에서 jQuery 3.6과 Font Awesome 6 베타를 내려받고, `script.js`와 `style.css`를 불러오는 것이 전부다. CDN(Content Delivery Network)은 여러 지역의 서버에 같은 파일을 복제해 두고 가까운 서버에서 내려주는 배포망이고, jQuery는 `$("#player-track")`처럼 선택자로 DOM 요소를 찾아 조작하는 라이브러리다.
+
+![첫 커밋의 구조](./images/day-20240827-structure.svg '코드는 세 파일, 나머지 61MB는 글꼴·그림·음악')
+
+`script.js` 455줄 안에 현재 사이트의 기본 구조가 대부분 들어 있다.
+
+- 창: 닫기, 최소화, 전체 화면, 제목 표시줄 드래그로 이동. 창은 Safari 하나뿐이었다.
+- 상태 막대의 시계.
+- Dock: 13칸. 클릭하면 아이콘 아래 실행 표시(`active-indicator`)가 활성화된다. GitHub·블로그·노션·메일은 외부 링크였다.
+- 음악: jQuery로 작성한 플레이어(재생 위치 드래그, 이전·다음 곡)와, 첫 클릭에 배경 음악을 재생하는 코드.
+
+Safari 창 안에는 프로젝트 카드 세 개(새싹 농장, 퍼펙데이, 챗벗)가 있었다. 코드는 1,032줄이고, 저장소 용량의 대부분은 자산이었다. 자산을 저장소에 직접 커밋하는 방식은 이후 [저장소 위생](#저장소-위생) 문제로 이어진다.
+
+## 빌드 도구와 코드 형식
+
+### 10월 11일 - CRA와 TypeScript로 이전
+
+10월 11일에 `index.html`·`script.js`·`style.css`를 삭제하고 `create-react-app`의 TypeScript 템플릿으로 옮겼다. Create React App(CRA)은 webpack·Babel 설정을 `react-scripts` 패키지 안에 숨겨 두고 명령 한 줄로 React 프로젝트를 만들어 주는 도구다. React는 화면을 컴포넌트 단위의 함수로 나누고, 상태(state)가 바뀌면 해당 컴포넌트를 다시 그리는 라이브러리다. jQuery처럼 DOM을 직접 고치는 대신 "상태가 이 값이면 화면은 이 모양"을 코드로 적는다.
+
+![2024년 10월 11~12일 작업 흐름](./images/day-20241011-timeline.svg '11일에 CRA로 이전하고, 12일에 Dock과 음악 플레이어를 다시 썼다')
+
+| 항목       | 값                                   |
+| ---------- | ------------------------------------ |
+| 빌드       | `react-scripts` 5.0.1 (CRA)          |
+| React      | 18.3.1                               |
+| TypeScript | 4.9.5                                |
+| 그 밖      | react-toastify, Tailwind 3.4(개발용) |
+| 시험       | CRA가 생성한 `App.test.tsx` 하나     |
+
+같은 커밋에서 `script.js` 455줄을 컴포넌트로 나눴다. 그림은 `public/imgs/`로 옮기고, 그림 주소는 `REACT_APP_IMAGE_URL` 환경 변수에서 읽게 했다. CRA는 빌드 시각에 `REACT_APP_`로 시작하는 환경 변수만 코드의 `process.env.REACT_APP_…` 자리에 문자열로 넣는다. 다른 이름의 변수는 서버 비밀 값일 수 있어 브라우저 코드에 넣지 않는다.
+
+| script.js의 역할     | 옮긴 컴포넌트         |
+| -------------------- | --------------------- |
+| Dock 칸과 실행 표시  | `Dock`, `DockItem`    |
+| 상단 시계            | `StatusBar`           |
+| 프로젝트 카드 창     | `Safari`              |
+| jQuery 음악 플레이어 | `MusicPlayer`         |
+| 주소 복사            | `clipboardHelpers.ts` |
+
+10월 12일에는 Dock을 재작성했다(커밋 메시지의 "docker"는 Dock을 가리킨다). 앱 12칸의 목록을 배열로 정의하고, 화면 폭에 따라 Dock 폭을 95%·85%·70% 세 단계로 전환했다. 아이콘 라이브러리로 lucide-react를 도입했다.
+
+![10월 12일의 src 구조](./images/day-20241011-structure.svg '창 열기·닫기를 담당하는 곳이 아직 없어서 앱마다 따로 처리했다')
+
+이전 작업은 컴포넌트를 나누는 단계에서 멈췄다. 창을 열고 닫는 상태를 관리할 위치를 정하지 않아서, 13일 `AppContext`가 생기기 전까지는 앱마다 자기 창을 따로 다뤘다([창 관리](#창-관리)).
+
+### 12월 22일 - 코드 형식 정리
+
+"fix: update UI/UX" 커밋의 실제 내용은 포매터를 수동으로 실행한 결과다. 변경 줄 대부분은 스페이스 들여쓰기를 탭으로 바꾸고, 한 줄에 나열한 구조 분해 할당을 한 줄에 하나씩 나눈 것이다. 공백 차이를 제외한(`git diff -w`) 수치와 비교하면 실제 코드 변경은 일부다.
+
+| 커밋                           | 대상                                 | 전체 diff (추가/삭제) | 공백 제외 (추가/삭제) |
+| ------------------------------ | ------------------------------------ | --------------------: | --------------------: |
+| 2024-12-22 "fix: update UI/UX" | 메모·GitHub 앱, 창·음악 CSS 6개 파일 |           1,611/1,498 |               243/130 |
+
+이후 2025년 3월 23일에 `react-scripts`를 제거하고 Vite 6으로 이전했고, 이튿날 Prettier로 음악·창 코드 형식을 한 번 더 정리했다([2025년 3월 23~24일 회고](/memo/day-20250323)).
+
+## 창 관리
+
+### 10월 13일 - 앱 상태를 AppContext 하나로
+
+10월 13일에는 창 관리, 블로그·메일 앱, 음악, 저장소 구조를 오가며 작업했다.
+
+![2024년 10월 13일 주제별 커밋](./images/day-20241013-topics.svg '창 관리는 오전에 몰렸고, 블로그 앱은 낮과 오후에 두 번, 메일과 음악은 오후 늦게 이어졌다')
+
+![2024년 10월 13일 작업 흐름](./images/day-20241013-timeline.svg '같은 커밋을 시간대별로 집계한 그림. 오전과 낮에 커밋이 몰렸다')
+
+첫 커밋 "Fix: music player"는 이름과 달리 이날의 기반을 만든 커밋이다. React의 Context는 컴포넌트 트리 위쪽에서 만든 값을 중간 컴포넌트에 props로 넘기지 않고 아래의 어느 컴포넌트에서든 읽게 하는 기능이다. Dock, 창, 상태 막대가 모두 "어느 앱이 열려 있는가"를 알아야 해서 이 상태를 Context에 보관했다.
+
+- `AppContext`: 앱 13개마다 `{ isRunning, isMinimized, zIndex }`를 보관하고, 열기·닫기·최소화·최대화 함수를 제공한다
+- `Container`: 창 틀(제목 표시줄, 신호등, 끌기)을 한 컴포넌트가 렌더링한다. 앱마다 따로 있던 `MacOSTitlebar`를 삭제했다
+- `types/AppTyes.ts`: 앱 이름과 상태 타입 (파일 이름의 오타는 그대로 남았다)
+
+`Container`가 생기자 창 동작을 여기에 차례로 추가했다.
+
+| 커밋                           | 내용                                                                                                            |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
+| feat: safari                   | Safari를 `Container`로 감싸고, 창 네 변을 끌어 크기를 바꾸게 했다(최소 200×150px). 최소화되면 렌더링하지 않는다 |
+| feat: add animation            | 최소화하면 `scale(1)` → `scale(0)`, 0.5초 동안 줄어드는 `minimize` 키프레임                                     |
+| feat: bring using app to front | 누른 창을 맨 앞으로 (`bringAppToFront`)                                                                         |
+| feat: bring app to top         | Dock에서 앱을 열 때도 맨 앞으로                                                                                 |
+| feat: content style            | 창 내용 영역의 스타일                                                                                           |
+
+### 누른 창을 맨 앞으로
+
+CSS의 `z-index`는 겹친 요소 중 어느 것을 앞에 그릴지 정하는 정수이고, 값이 클수록 앞에 그린다. 맨 앞으로 올리는 방식은 이랬다. 모든 앱을 `zIndex` 순으로 정렬해 0부터 다시 번호를 매기고, 누른 앱에 가장 큰 번호(앱 개수)를 부여한다.
+
+```ts
+const bringAppToFront = useCallback(
+	(appName: AppName) => {
+		const sortedApps = Object.entries(apps).sort(([, a], [, b]) => a.zIndex - b.zIndex);
+		setApps((prevState) => {
+			const updatedApps = { ...prevState };
+			sortedApps.forEach(([name], index) => {
+				updatedApps[name as AppName].zIndex = index;
+			});
+			updatedApps[appName].zIndex = sortedApps.length;
+			return updatedApps;
+		});
+	},
+	[apps]
+);
+```
+
+이 코드에는 두 가지 문제가 있다. `setApps`에 함수(updater)를 넘기면 React는 그 함수에 직전 상태(`prevState`)를 넣어 차례로 실행하는데, 정렬은 그 밖에서 렌더 시점의 `apps`로 한다. 또 `{ ...prevState }`는 바깥 객체만 복사하므로, 안쪽 객체의 `zIndex`를 대입하면 이전 상태의 앱 객체까지 바뀐다. React는 상태 객체를 직접 바꾸지 않고 새 객체로 교체한다고 가정하고 동작한다. ==같은 렌더에서 두 번 호출하면 앞의 결과를 반영하지 못한다==.
+
+![zIndex 번호 다시 매기기와 두 번 호출한 결과](./images/history-2024-zindex-renumber.svg '한 번 호출하면 A가 맨 앞이 된다. 같은 렌더에서 A, B를 연달아 올리면 둘째 호출이 옛 정렬 순서로 다시 번호를 매겨 A가 맨 뒤로 간다')
+
+### 블로그 iframe이 클릭을 가져가는 문제
+
+블로그 앱은 따로 운영하던 블로그(`codingkirby.github.io`)를 창 안에 iframe으로 표시하는 앱이다. iframe은 페이지 안에 다른 HTML 문서를 통째로 넣는 요소이고, 그 안의 문서는 바깥 문서와 별도의 DOM 트리와 이벤트를 갖는다. 그런데 블로그 창이 뒤에 있을 때 그 안을 눌러도 맨 앞으로 올라오지 않았다. 클릭 이벤트는 눌린 요소에서 시작해 부모 요소로 차례로 전달(버블링)되는데, iframe 안의 클릭은 iframe 문서의 루트에서 전달이 끝나 바깥 창의 `onClick`까지 오지 않기 때문이다.
+
+![iframe 클릭과 투명 덮개](./images/history-2024-iframe-overlay.svg '덮개가 없으면 클릭이 iframe 문서 안에서 끝난다. 블로그 창이 맨 앞이 아닐 때만 바깥 문서의 투명 div가 클릭을 받는다')
+이어진 "fix: bring app to front" 커밋에서, 블로그 창이 맨 앞이 아닐 때만 iframe 위에 투명한 `div`를 덮어 클릭을 받게 했다.
+
+```tsx
+// 현재 blog 앱이 가장 높은 zIndex인지 확인
+const isTopApp = Object.values(apps).every((app) => app.zIndex <= apps.blog.zIndex);
+
+{
+	!isTopApp && <div style={{ position: 'absolute', inset: 0, zIndex: 1 }} onClick={() => bringAppToFront('blog')} />;
+}
+```
+
+맨 앞에 올라오면 덮개가 사라져 블로그를 그대로 조작할 수 있다. iframe을 창 안에 넣는 앱마다 필요한 처리인데, 이날은 블로그 앱에만 적용했다. 10월 15일에는 Blog 앱에 남아 있던 `bringAppToFront` 호출 하나를 삭제했다. 창을 맨 앞으로 올리는 처리를 `Container`로 옮겼기 때문이다.
+
+### 10월 14일 - 최소화 애니메이션, 위치 저장, 최대화
+
+10월 14일에는 음악 재생 상태와 창 동작을 다뤘다.
+
+![2024년 10월 14일 작업 흐름](./images/day-20241014-timeline.svg '커밋이 새벽에 몰렸다')
+
+최소화 애니메이션은 창의 중심을 기준으로 `translate`와 `scale(0)`을 0.5초 동안 적용하고, `setTimeout` 0.5초 뒤에 최소화 상태로 전환한다. 창 위치는 `containerPosition_<앱>` 키로 localStorage에 저장해, 다시 열면 같은 위치에 표시한다. localStorage는 브라우저가 사이트(출처)마다 문자열 키·값을 저장하는 공간이고, 탭을 닫거나 새로고침해도 값이 남는다.
+
+```ts
+setIsMinimizing(true); // 애니메이션을 트리거
+setTimeout(() => {
+	minimizeApp(appName);
+	setIsMinimizing(false);
+	savePositionToStorage(position.x, position.y);
+}, 500); // 애니메이션 시간과 맞춰서
+```
+
+CSS 전환 0.5초와 `setTimeout` 500ms를 각각 하드코딩해 일치시킨 구조다. 한쪽 값만 바꾸면 애니메이션이 끝나기 전에 창이 사라지거나, 끝난 뒤에도 빈 자리가 남는다. 이어서 최대화를 구현했다. 최대화하면 창을 상태 막대(25px) 아래부터 화면 끝까지 확장하고, 이전 크기를 `containerSize_<앱>` 키로 저장해 복원할 때 사용한다. 화면 끝까지 확장했기 때문에 최대화한 창이 Dock을 가렸다.
+
+| localStorage 키          | 저장 값        | 사용 시점            |
+| ------------------------ | -------------- | -------------------- |
+| `containerPosition_<앱>` | 창의 x, y      | 최소화 후 다시 열 때 |
+| `containerSize_<앱>`     | 최대화 전 크기 | 최대화를 해제할 때   |
+
+![10월 14일의 창 상태](./images/day-20241014-structure.svg '앱 실행 여부와 창 표시 여부가 isRunning 한 값에 함께 들어 있었다')
+
+### isRunning 하나에 묶인 창과 실행
+
+`AppContext`의 `isRunning`은 창 표시 여부와 앱 실행 여부를 함께 나타냈다. 창을 닫으면 앱도 종료된 것으로 처리했다. 그래서 배경 음악이 재생되는 중에도 음악 창을 닫으면 음악 앱이 "종료" 상태였다. 음악은 창과 무관하게 재생되도록 Context로 옮겼는데([음악과 효과음](#음악과-효과음)), 앱 상태는 여전히 "창이 열려 있다 = 실행 중"이었다. ==이 불일치는 2년 동안 남아 있다가 버그 세 개로 드러났고==, 2026년 10월 18일에 창 표시와 앱 실행 상태로 분리했다.
+
+## 음악과 효과음
+
+음악 플레이어는 이 기간에 가장 자주 바뀐 코드다.
+
+| 날짜       | 변경                                                          |
+| ---------- | ------------------------------------------------------------- |
+| 2024-10-12 | jQuery 플레이어를 React 컴포넌트로                            |
+| 2024-10-13 | 재생 상태를 `MusicContext`로 분리하고 상태 막대 아이콘과 연결 |
+| 2024-10-14 | `MusicPlayer.tsx`의 재생 로직을 `MusicContext`로 이동         |
+| 2024-10-14 | 상태 막대 스피커 아이콘에 볼륨 창(`VolumeModal`)              |
+| 2024-10-15 | 첫 클릭에 배경 음악 재생                                      |
+| 2024-10-15 | 볼륨 창을 `MusicPlayerVolume`으로 이동                        |
+| 2024-10-15 | 곡 2개 → 7개                                                  |
+| 2024-11-04 | 화면 전체의 클릭 소리                                         |
+
+### 10월 12일 - jQuery에서 React로
+
+jQuery 선택자 대신 `useRef`로 audio 요소·재생 막대·앨범 표지를 참조하고, 재생 여부·재생 위치·곡 번호를 `useState`로 관리했다.
+
+| jQuery 방식                                               | React 방식                                |
+| --------------------------------------------------------- | ----------------------------------------- |
+| `$("#player-track")` 등 선택자로 요소 조회, `new Audio()` | `useRef`로 audio·재생 막대·앨범 표지 참조 |
+| `addClass("active")`로 재생 상태 표시                     | `useState`의 재생 여부로 렌더링           |
+| 함수 범위 변수 `currIndex`의 곡 번호                      | `useState`의 곡 번호                      |
+
+### 10월 13~14일 - 재생 상태를 창 밖의 MusicContext로
+
+10월 13일에는 먼저 메뉴 막대 오른쪽에 이전 곡·일시 정지·다음 곡·음량 아이콘 넷을 추가했다. 이 시점에는 누를 수 없는 장식이었다. 그 뒤 재생 상태를 `MusicContext`로 분리하고, 이 아이콘에 `prevTrack`·`play`/`pause`·`nextTrack`을 연결했다. 재생 중이면 일시 정지 아이콘, 멈춰 있으면 재생 아이콘을 표시한다. 창을 닫아도 음악은 계속 재생되어야 해서, 재생 상태를 창 컴포넌트 밖에 보관해야 했다.
+
+10월 14일에는 남은 재생 로직을 모두 `MusicContext`로 옮겼다. 재생·일시 정지, 이전·다음 곡, 재생 위치 이동, 버퍼링 표시가 Context로 이동했고, 창 컴포넌트는 Context의 값을 렌더링만 한다. 곡은 두 개(〈센과 치히로의 행방불명〉 OST)이고, 파일 주소는 `REACT_APP_MUSIC_URL` 환경 변수에서 읽는다. 이어서 만든 볼륨 창은 `MusicContext`의 0~1 값을 조절한다.
+
+### 10월 15일 - 첫 클릭에 재생, 곡 7개
+
+브라우저는 사용자가 페이지와 상호작용하기 전에는 소리가 있는 자동 재생을 차단한다(자동 재생 정책). 페이지를 열자마자 `audio.play()`를 호출하면 재생되지 않고 Promise가 거부된다. 그래서 `window`에 클릭 리스너를 한 번 등록하고, 첫 클릭에서 재생한 뒤 리스너를 제거한다.
+
+볼륨 창은 상태 막대 쪽 `VolumeModal`에서 음악 플레이어 쪽 `MusicPlayerVolume`으로 옮기고, 스타일도 `MusicPlayer.css`로 합쳤다. `MusicContext`의 곡 목록은 2개에서 7개로 늘렸다. 〈센과 치히로의 행방불명〉 두 곡에 〈하울의 움직이는 성〉, 이루마 두 곡 등 다섯 곡을 더하고, 곡 이름·앨범·표지 배열도 7개로 맞췄다. 음악 파일 4개(`4.mp3`~`7.mp3`, 약 12.8MB)와 앨범 그림 4장은 `client/public/`에 직접 커밋했다.
+
+### 11월 4일 - 클릭 소리
+
+11월 4일의 기능 변경은 클릭 소리와 로딩 화면 스타일이고, 나머지 커밋은 [커밋된 webpack 캐시](#11월-4일---webpack-캐시-커밋) 처리다.
+
+![2024년 11월 4일 작업 흐름](./images/day-20241104-timeline.svg '기능 커밋 뒤에 설치·캐시·.gitignore 커밋이 이어졌다')
+
+클릭 소리는 화면 어디를 클릭하든 마우스 버튼을 누르는 시점과 떼는 시점에 재생했다. `App.tsx`에 `Audio` 객체 두 개를 생성하고, `document`의 `mousedown`·`mouseup` 이벤트에서 `play()`를 호출했다.
+
+```ts
+const mouseDownSound = new Audio(`${mp3Url}/mouse-down.mp3`);
+const mouseUpSound = new Audio(`${mp3Url}/mouse-up.mp3`);
+
+const handleMouseDown = useCallback(() => {
+	mouseDownSound.play();
+}, []);
+
+useEffect(() => {
+	document.addEventListener('mousedown', handleMouseDown);
+	document.addEventListener('mouseup', handleMouseUp);
+	// ...
+}, [handleMouseDown, handleMouseUp]);
+```
+
+같은 커밋에서 시작음 파일(`mac-startup.mp3`)을 클릭 소리와 같은 `sounds/` 폴더로 옮기고, 로딩 화면이 그 경로를 사용하게 했다. 시작음은 10월 22일에 로딩 화면에 추가한 Mac 시작음이다. 이어서 로딩 화면 컴포넌트의 인라인 스타일을 `Loading.css`로 분리했다.
+
+## Dock과 부속 앱
+
+### 10월 13일 - Dock, 상태 막대, 공유 버튼
+
+- **공유 버튼**: Dock의 공유 칸을 누르면 `navigator.clipboard.writeText(window.location.href)`로 주소를 복사하고, react-toastify로 "링크가 복사되었습니다!" 알림을 표시한다. 알림이 떠 있는 동안 공유 칸 아래 실행 표시를 켠다. 이 동작은 10월 11일에 `clipboardHelpers.ts`로 분리한 함수다
+- **Dock 정리**: GitHub·Notion 칸이 각 서비스의 첫 화면 대신 본인 프로필로 이동하게 했다
+
+### 10월 13일 - 메일 앱과 사용하지 않은 메일 경로
+
+메일 앱은 받은편지함 모양으로 시작했다. 메일 세 통은 코드에 작성한 더미 데이터였다. 다음 커밋에서 더미 메일을 환영 메일 한 통으로 줄이고, 쓰기 버튼을 `mailto:` 링크로 변경했다.
+
+같은 날 마지막 커밋에서 서버에 nodemailer로 Gmail SMTP를 사용하는 `POST /sendMail` 경로를 추가했지만, 앱은 이 경로를 호출하지 않았다. 이 `routes/mail.js`는 10월 15일 메모 앱 첫판 커밋에서 삭제했다.
+
+### 10월 15일 - GitHub 앱
+
+10월 15일에는 GitHub 앱을 추가했다. 프로필 사진·이름·링크, GitHub README에 있던 배지와 통계 그림, 고정 저장소 목록을 JSX로 옮겨 작성했다. 통계 그림은 외부 서비스(github-readme-stats 등)의 이미지 주소를 그대로 사용했다. 값은 모두 직접 작성한 것이라, GitHub의 실제 프로필이 바뀌어도 화면은 바뀌지 않는다.
+
+## 메모 앱과 데이터 저장소의 변천
+
+메모 앱의 데이터는 다섯 달 동안 저장 위치가 네 번 바뀌었다.
+
+| 기간        | 저장 위치                                     | 편집 권한 확인                           |
+| ----------- | --------------------------------------------- | ---------------------------------------- |
+| 2024-10-15~ | 화면의 `useState` 초깃값 (서버는 메모리 배열) | 없음                                     |
+| 2024-10-21~ | Express + MySQL (`mysql2` 연결 풀)            | 서버 미들웨어가 bcrypt 해시 비교         |
+| 2024-10-26~ | Express + Google Cloud SQL (MySQL)            | 같음                                     |
+| 2024-12-23~ | Firebase Realtime Database                    | 브라우저가 평문 비교, 규칙상 누구나 쓰기 |
+
+### 10월 13일 - client와 server로 분리
+
+10월 13일에 React 앱 전체를 `client/`로 옮기고(내용 변경 없이 경로만), 다음 커밋에서 Express 생성기로 `server/`를 만들었다. 생성기가 만든 jade 템플릿(`views/*.jade`)과 `routes/users.js`는 수정 없이 그대로 커밋했다. 루트에는 `concurrently`로 두 폴더를 함께 실행하는 `package.json`(`npm run dev`)을 추가했다. 이날은 서버와 앱을 한 번도 연결하지 않았다.
+
+![10월 13일의 저장소 구조](./images/day-20241013-structure.svg 'client와 server로 나눴지만 둘은 아직 서로 호출하지 않았다')
+
+### 10월 15일 - 메모 앱 첫판, 데이터는 코드 안에
+
+10월 15일에는 메모 앱 첫판, GitHub 앱, 음악을 다뤘다.
+
+![2024년 10월 15일 작업 흐름](./images/day-20241015-timeline.svg '새벽, 아침, 오전 세 시간대에 커밋이 모였다')
+
+| 주제         | 내용                                                         |
+| ------------ | ------------------------------------------------------------ |
+| 메모 앱 첫판 | 세 칸 화면, 코드에 작성한 폴더·메모, 서버의 메모리 메모 경로 |
+| GitHub 앱    | GitHub README를 옮겨 작성한 프로필 화면                      |
+| 음악         | 첫 클릭에 재생, 볼륨 창 이동, 곡 2개 → 7개                   |
+
+"fix: app state" 커밋의 실제 내용은 메시지와 달리 메모 앱 첫판이다. macOS 메모처럼 왼쪽에 폴더, 가운데에 메모 목록, 오른쪽에 본문을 배치했다. `Button`, `Input`, `ScrollArea` 같은 작은 공통 컴포넌트도 이 커밋에서 생겼다.
+
+데이터는 모두 코드에 있었다. 폴더 다섯 개(모든 iCloud 메모, 메모, 공부, 아이디어, 스케치)와 메모 세 개(파스타 레시피, 책 읽기, 프로그래밍 공부)를 `useState`의 초깃값으로 정의했다. 새로고침하면 처음 상태로 돌아간다. 같은 커밋에서 서버에 `routes/memo.js`를 추가했다. `let memos = []`인 메모리 배열에 GET·POST 경로를 연결한 것이고, 화면은 이 경로를 호출하지 않았다.
+
+![10월 15일의 메모 앱 구조](./images/day-20241015-structure.svg '화면과 서버 모두 메모를 메모리에만 보관했다')
+
+이어서 "모든 iCloud 메모" 폴더를 선택하면 모든 메모를 표시하게 했다. 폴더 id가 `'1'`이면 폴더 필터링을 건너뛰는 한 줄이다.
+
+### 10월 21~22일 - Express와 MySQL, 메모 단위 비밀번호
+
+![2024년 10월 21~22일 작업 흐름](./images/day-20241021-timeline.svg '21일 밤부터 22일 새벽까지, 그리고 22일 오전')
+
+21일의 "FEAT: Memo app" 커밋에서 서버를 Express 생성기의 JavaScript에서 TypeScript로 다시 썼다. Express는 Node.js에서 주소와 HTTP 메서드별로 처리 함수를 연결하는 웹 서버 프레임워크이고, MySQL은 표 형태로 데이터를 저장하고 SQL로 조회하는 관계형 데이터베이스다. `routes → controllers → models` 3계층으로 나누고, `mysql2`의 연결 풀로 MySQL에 연결했다. 테이블은 `folders`와 `memos` 두 개다.
+
+| 계층        | 역할                                                                           |
+| ----------- | ------------------------------------------------------------------------------ |
+| routes      | 주소와 HTTP 메서드를 컨트롤러에 연결한다 (`PUT /:id` → `updateMemoController`) |
+| controllers | 요청 값을 모델에 전달하고 응답을 반환한다                                      |
+| models      | `mysql2` 연결 풀로 SQL을 실행한다                                              |
+
+화면에서는 10월 15일 코드에 작성한 폴더·메모를 삭제하고, `MemoContext`가 axios로 서버를 호출하게 했다. 메모를 수정하면 목록의 제목도 즉시 갱신된다.
+
+![메모 저장 흐름](./images/day-20241021-structure.svg '편집 권한이 사용자가 아니라 메모 단위로 정해졌다')
+
+로그인 기능이 없어서, 수정·삭제 권한을 구분하는 방법으로 메모마다 비밀번호를 지정했다. `memos.password` 열에 bcrypt 해시를 저장하고, 수정·삭제 경로 앞에 검증 미들웨어를 배치했다.
+
+```ts
+// 메모 수정 (비밀번호 검증 필요)
+router.put('/:id', validatePassword, updateMemoController);
+// 메모 삭제 (비밀번호 검증 필요)
+router.delete('/:id', validatePassword, deleteMemoController);
+```
+
+`validatePassword`는 요청 본문의 `password`를 `bcrypt.compare`로 해당 메모의 해시와 비교한다. bcrypt는 비밀번호를 되돌릴 수 없는 문자열(해시)로 바꾸는 함수다. 같은 비밀번호도 매번 다른 무작위 값(salt)을 섞어 `$2b$`로 시작하는 60자 문자열을 만들고, 저장한 해시와 입력값을 비교하는 함수(`compare`)만 제공한다. DB가 유출되어도 원래 비밀번호를 바로 알 수 없게 하는 것이 목적이다.
+
+| 경우                   | 응답                 |
+| ---------------------- | -------------------- |
+| 요청에 비밀번호가 없음 | 400                  |
+| 메모가 없음            | 404                  |
+| 비밀번호 불일치        | 403                  |
+| 일치                   | 다음 컨트롤러로 진행 |
+
+22일에 화면에 삭제 기능을 추가하면서, 비밀번호를 입력받는 창을 표시하게 했다. 메모마다 비밀번호를 지정한 것은 "누가 수정할 수 있는가"를 "무엇을 알고 있는가"로 바꾼 것이다. 로그인 없이 구현할 수 있는 가장 가까운 방법이었지만, 비밀번호를 아는 사람은 누구든 관리자 권한을 갖는다.
+
+메모 화면도 함께 고쳤다. `Memo.tsx`에서 `FolderList`, `MemoItem`, `MemoTools`를 분리했고, 새 메모에는 기본 제목과 내용을 지정했다. 이때 커밋한 "고정"은 다음과 같은 정렬 규칙이었다.
+
+```ts
+.sort((a, b) => {
+	// 1번 폴더에서 id가 1인 메모를 상단 고정
+	if (selectedFolder === 1) {
+		if (a.id === 1) return -1;
+		if (b.id === 1) return 1;
+	}
+	return b.id - a.id;
+});
+```
+
+고정할 메모를 선택하는 기능이 아니라, id가 1인 메모를 "모든 메모" 폴더 맨 위에 배치하는 규칙이었다. 고정 기능 대신 고정된 결과를 코드에 작성한 것이다. 작성 중인 새 메모는 저장 전까지 임시 메모로 목록에 표시했다.
+
+시간대 처리도 변경했다. 화면의 `toLocaleString`에 지정하던 `timeZone: 'Asia/Seoul'`을 삭제하고, DB 연결에 `timezone: '+09:00'`을 지정했다. 시간대 변환을 화면마다 처리하지 않고 DB 연결 한 곳에서 처리한다.
+
+### 10월 26일 - Cloud SQL로 이전
+
+![2024년 10월 26~27일 작업 흐름](./images/day-20241026-timeline.svg '26일에 Cloud SQL로 옮기고 .env를 추적에서 뺐고, 27일에는 npm install 커밋이 이어졌다')
+
+첫 커밋에서 DB 연결 대상을 Google Cloud SQL로 변경했다. Cloud SQL은 Google Cloud가 MySQL·PostgreSQL 서버의 설치·백업·패치를 대신 운영해 주는 관리형 데이터베이스다. 코드 변경은 적다. 연결 설정에 포트(`DB_PORT`, 기본값 3306)를 추가하고 주석을 작성했을 뿐, 주소·사용자·비밀번호는 이전과 같이 환경 변수에서 읽는다. 변경된 것은 환경 변수가 가리키는 DB 서버다. 마지막 커밋에서 `macbook.sql`에 테이블 정의를 기록했다.
+
+```sql
+CREATE TABLE `memos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `folder_id` int DEFAULT NULL,
+  `title` varchar(300) DEFAULT NULL,
+  `content` text,
+  `password` varchar(60) NOT NULL DEFAULT '0000',
+  ...
+```
+
+> [!WARNING] 해시가 아닌 기본값
+> `password`의 기본값 `'0000'`은 bcrypt 해시가 아니다. `bcrypt.compare`는 해시 형식이 아닌 값과 비교하면 항상 불일치를 반환하므로, 비밀번호 없이 생성된 메모는 아무도 수정하거나 삭제할 수 없었을 것이다.
+
+### 12월 23일 - 서버 삭제와 Firebase 이전
+
+12월 22일 커밋은 [코드 형식 정리](#12월-22일---코드-형식-정리)이고, 23일 커밋은 `node_modules` 제거를 포함해 59,588개 파일을 변경했다.
+
+![2024년 12월 22~23일 작업 흐름](./images/day-20241222-timeline.svg '22일의 형식 정리와 23일의 Firebase 이전')
+
+1. `server/`를 삭제했다. Express, TypeScript 컨트롤러, MySQL 연결을 모두 제거했다.
+2. `client/` 안의 앱을 저장소 루트로 옮겼다. `client/src`가 `src`가 되었고, React를 18.3에서 19.0으로 업그레이드했다.
+3. Firebase를 연동했다. 호스팅은 `build` 폴더를 배포하고 모든 경로를 `index.html`로 재작성(rewrite)한다. 메모는 Realtime Database의 `memos/<폴더>/<id>` 경로에 저장한다.
+
+Firebase Realtime Database는 데이터를 하나의 큰 JSON 트리로 저장하고, 브라우저의 Firebase SDK가 서버 코드 없이 직접 읽고 쓰는 데이터베이스다. 중간에 서버가 없으므로 누가 어느 경로를 읽고 쓸 수 있는지는 데이터베이스에 등록한 보안 규칙(Security Rules)이 결정한다.
+
+![Firebase 전후 구조](./images/day-20241222-structure.svg '서버를 제거하고 브라우저가 데이터베이스를 직접 읽고 쓴다')
+
+서버를 삭제한 이유는 커밋에 남기지 않았다. 코드로 보면 Express 서버와 Cloud SQL을 별도로 운영하는 대신, 정적 호스팅과 관리형 데이터베이스로 전환한 선택이었다. 그 과정에서 서버가 담당하던 권한 확인도 함께 사라졌다. 이 커밋의 데이터베이스 보안 규칙은 다음과 같았다.
+
+```json
+{
+	"rules": {
+		".read": true,
+		".write": true
+	}
+}
+```
+
+> [!CAUTION] 평문 비밀번호와 누구나 읽는 데이터베이스
+> 이 규칙에서는 누구나 모든 메모를 읽고 쓸 수 있다. 메모 비밀번호는 10월 21일부터 서버가 bcrypt 해시로 비교했는데, 이 커밋부터는 브라우저가 메모의 `password` 값을 그대로 읽어 `memo.password === password`로 비교한다. 비밀번호가 평문으로 데이터베이스에 저장되고, 그 데이터베이스는 누구나 읽을 수 있었다.
+
+| 항목             | 서버 시절 (10월 21일~) | Firebase 이전 후 (12월 23일~) |
+| ---------------- | ---------------------- | ----------------------------- |
+| 비밀번호 저장    | bcrypt 해시            | 평문                          |
+| 비교 위치        | 서버 미들웨어          | 브라우저                      |
+| 데이터 읽기·쓰기 | 서버 경로만            | 규칙상 누구나                 |
+
+서버를 제거할 때는 서버의 역할을 목록으로 정리하고, 각 역할을 어디로 옮길지 하나씩 정해야 했다. =="누가 쓸 수 있는가"의 확인은 이 이전 뒤 아무 곳에서도 하지 않게 되었다==.
+
+## 저장소 위생
+
+### 8월 27일 - 자산 61MB
+
+첫 커밋에서는 자산을 압축이나 최적화 없이 모두 저장소에 커밋했다.
+
+| 자산                     | 파일 수 |   크기 |
+| ------------------------ | ------: | -----: |
+| Apple SD Gothic Neo 글꼴 |       9 | 33.0MB |
+| 그림 (배경 12.5MB 포함)  |      24 | 13.8MB |
+| 음악                     |       3 | 14.6MB |
+
+### 10월 13~26일 - 빌드 결과물과 .env 커밋
+
+10월 13일 메일 앱 커밋에 빈 `server/.env` 파일을 함께 넣었고, 10월 21일 "FEAT: Memo app" 커밋에는 컴파일 결과물 `server/dist/`와 환경 변수 파일 `server/.env`까지 커밋했다. 10월 26일 Cloud SQL로 옮기면서 `.gitignore`에 `.env`를 추가하고, 이어서 `server/.env`를 저장소에서 삭제했다.
+
+### 10월 27일 - node_modules 6만 개 커밋
+
+`.gitignore`는 git이 추적하지 않을 파일 이름 규칙을 적는 파일이다. `node_modules`는 `npm install`이 `package.json`과 잠금 파일을 보고 언제든 다시 만들 수 있는 폴더라, 보통 이 파일에 적어 추적에서 제외한다. `.env`를 삭제한 다음 날인 27일 아침에는 `.gitignore`에서 `node_modules` 한 줄을 삭제했다. 이어서 밤까지 "CHORE: npm install"이라는 같은 메시지로 일곱 번 커밋했다.
+
+| 순서 | 변경 파일 |   추가 줄 |
+| ---: | --------: | --------: |
+|    1 |     5,561 |   217,325 |
+|    2 |     5,327 |   155,829 |
+|    3 |    10,000 | 1,143,727 |
+|    4 |    10,000 |   437,917 |
+|    5 |    10,000 | 1,057,942 |
+|    6 |    10,000 | 1,134,264 |
+|    7 |     9,906 | 2,538,167 |
+
+네 번은 정확히 10,000개씩이다. 한 번에 push하지 못해 나눠 커밋한 것으로 보이지만, 커밋 메시지에는 이유가 없다. 마지막 커밋 시점에 git이 추적하는 `node_modules` 파일은 60,791개였다. 그중 44,322개가 `client/node_modules`(CRA와 그 의존성)다.
+
+![node_modules 추적 파일 수](./images/day-20241026-node-modules.svg '이날 6만 개가 되었고, 두 달 뒤 Firebase로 이전하며 줄었고, 2026년 9월 28일에 0이 되었다')
+
+| 시점                     | 추적 중인 `node_modules` 파일 | 원인                                        |
+| ------------------------ | ----------------------------: | ------------------------------------------- |
+| 2024-10-27               |                        60,791 | `.gitignore`에서 `node_modules` 삭제        |
+| 2024-12-23 Firebase 이전 |                60,798 → 1,478 | `server/`와 `client/`의 `node_modules` 제거 |
+| 2026-09-28               |                             0 | 추적 제외                                   |
+
+> [!WARNING] 기록에 남은 6만 개
+> 이 6만 개는 2년 동안 저장소 기록에 남았다. 지금도 이 저장소를 처음부터 clone하면 그 파일들을 함께 내려받는다.
+
+### 11월 4일 - webpack 캐시 커밋
+
+11월 4일 두 번째 "Chore: npm install" 커밋의 실제 내용은 패키지가 아니라 `client/node_modules/.cache/` 아래의 webpack 캐시였다. `index.pack` 하나가 3.3MB다. 일주일 전에 `node_modules` 전체를 추적하기 시작했기 때문에, CRA 개발 서버가 `node_modules` 안에 생성하는 캐시도 git이 함께 추적했다.
+
+"Chore: remove cache" 커밋은 babel-loader 캐시 1,732개를 포함해 1,820개 파일을 변경했다. 그런데 같은 커밋에 `client/build/` 빌드 결과물 72개를 새로 넣었다. 마지막 커밋에서 `.gitignore`에 `client/node_modules/.cache` 한 줄을 추가해 정리를 마쳤다. 캐시만 제외했고, `node_modules`와 `build`는 계속 추적했다.
+
+| 커밋 메시지                   | 실제 변경 내용                                 |
+| ----------------------------- | ---------------------------------------------- |
+| Feat: click sound             | 클릭 소리, 시작음 파일 위치 변경               |
+| Chore: npm install            | `node_modules` 1,882개 (서버 의존성 정리 포함) |
+| Refactor: 분리된 CSS 파일로 … | 로딩 화면 스타일을 `Loading.css`로             |
+| Chore: npm install            | webpack 캐시                                   |
+| Chore: remove cache           | 캐시 1,820개 삭제, `client/build` 72개 추가    |
+| Chore: Update .gitgnore       | `.cache` 무시                                  |
+
+![캐시가 커밋에 들어온 경로](./images/day-20241104-cache-cause.svg '.gitignore에서 삭제한 node_modules 한 줄 때문에 캐시와 빌드 결과물까지 커밋되었다')
+
+이날 커밋의 대부분은 앞 커밋이 만든 문제를 처리하는 데 썼다. 근본 원인은 일주일 전 `.gitignore`에서 삭제한 `node_modules` 한 줄이었고, 이날은 그 하위의 `.cache`만 다시 제외했다. ==증상을 하나씩 막으면 같은 원인이 다른 형태로 다시 나타난다==. 같은 날 `client/build`가 커밋된 것이 그 예다.
+
+### 잘못 커밋한 파일의 영향
+
+git은 커밋마다 그 시점의 모든 파일 내용을 기록에 보관하므로, 나중 커밋에서 파일을 삭제해도 이전 커밋을 checkout하면 파일이 그대로 나온다. 이 성질은 비밀 값에만 해당하는 문제가 아니다.
+
+| 잘못 커밋한 것               | 기록에 남은 영향                       | 대응                         |
+| ---------------------------- | -------------------------------------- | ---------------------------- |
+| `.env` (비밀 값)             | 삭제 후에도 기록에서 값을 읽을 수 있음 | 추적 제외, 기록 전체 검사 CI |
+| `node_modules` 6만 개        | clone 용량 증가                        | 추적 제외, 기록은 그대로     |
+| webpack 캐시, `client/build` | clone 용량 증가                        | 추적 제외, 기록은 그대로     |
+
+### 커밋 메시지와 실제 변경의 불일치
+
+이 기간의 커밋 메시지는 실제 변경과 자주 달랐다. 메시지만으로는 어떤 변경인지 알 수 없어 코드를 직접 대조해야 한다.
+
+| 커밋 메시지 (날짜)                        | 실제 변경                                         |
+| ----------------------------------------- | ------------------------------------------------- |
+| "Fix: music player" (2024-10-13)          | `AppContext`·`Container` 도입                     |
+| "fix: app state" (2024-10-15)             | 메모 앱 첫판, 서버 메모 경로 추가, 메일 경로 삭제 |
+| "Chore: npm install" (2024-11-04 두 번째) | webpack 캐시                                      |
+| "fix: update UI/UX" (2024-12-22)          | 포매터 적용                                       |
+
+## 지금과 비교하면
+
+| 당시                                                    | 지금                                                                                                                                                                                                                                            |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 창 닫기·최소화·드래그를 DOM에서, 이후 `AppContext`에서  | 창 위치·크기·겹침 계산은 React도 브라우저도 모르는 `desktop-core`의 순수 함수 ([창 관리를 core로](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore))                                                                         |
+| `zIndex`를 매번 0부터 다시 매김                         | 층은 이름으로 관리 ([z-index 층 이름](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231))                                                                                                                                     |
+| `isRunning` 하나가 창과 실행을 함께 표시                | 2026년 10월 18일에 분리 ([isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes), [10월 18일 회고](/memo/day-1018))                                                                                        |
+| 최대화하면 Dock까지 가림                                | 2026년 9월 28일 "최대화 시 Dock 영역 비우기" ([9월 28일 회고](/memo/day-0928))                                                                                                                                                                  |
+| Dock 폭을 화면 폭 세 구간의 비율로 선택                 | Dock 폭이 앱 칸 수에 맞춰 정해진다 ([Dock 배치](/memo/dock-layout))                                                                                                                                                                             |
+| jQuery, 이후 `MusicContext`의 음악 플레이어             | 재생 목록·셔플·반복은 core의 플레이어 store ([음악을 core로](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store))                                                                                                                 |
+| `<audio>`로 클릭 소리                                   | 0.08초 소리를 한 번 디코딩해 보관하고 클릭마다 새 `AudioBufferSourceNode`로 재생 ([Web Audio로 클릭 소리 내기](/memo/click-sound))                                                                                                              |
+| 메일 = `mailto:` 링크                                   | 서버가 Resend로 보내는 메일 앱 ([연락 메일](/memo/contact-mail))                                                                                                                                                                                |
+| GitHub = 링크, 이후 README를 JSX로 옮겨 작성            | API가 GitHub에서 조회해 30분 동안 캐시 ([GitHub 프로필을 실제 값으로](/memo/github-live-profile))                                                                                                                                               |
+| Safari의 프로젝트 카드 3개를 HTML에 작성                | 시스템 설정에서 수정하는 프로젝트 페이지 ([프로젝트 관리](/memo/site-projects-editing))                                                                                                                                                         |
+| 블로그 = 바깥 블로그의 iframe, 메모 = 예시 데이터       | 메모 앱이 블로그다. 저장소의 Markdown 글과 API의 글을 합친다 ([9월 28일 회고](/memo/day-0928), [게시와 편집](/memo/post-editor))                                                                                                                |
+| 메모마다 비밀번호, 이후 누구나 읽고 쓰는 Firebase 규칙  | 2026년 9월 28일 규칙을 전체 차단하고 Firebase 코드 삭제, 편집을 잠갔다가 GitHub 로그인한 관리자만 수정 ([관리자만 편집](/memo/read-only-memo), [관리자 로그인](/memo/admin-login-github-oauth))                                                 |
+| 1번 메모를 코드로 맨 위에                               | 아무 글이나 고정하고, 고정은 정리 내용에 저장 ([메모 잠금](/memo/memo-lock))                                                                                                                                                                    |
+| "모든 iCloud 메모"는 id `'1'`로 필터링                  | 폴더 정리 규칙은 `desktop-core`에 ([메모를 core로](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리))                                                                                                                        |
+| Express + MySQL/Cloud SQL, 이후 Firebase Hosting        | Cloudflare Workers가 정적 파일을 제공하고, NestJS + PostgreSQL API를 Oracle Cloud VM에서 운영 ([백엔드 설계](/memo/backend-design), [서버 배포](/memo/deploy-api-oracle-tunnel))                                                                |
+| 수동으로 작성한 `.sql` 파일                             | Prisma 마이그레이션이 테이블을 생성                                                                                                                                                                                                             |
+| CRA (설정은 CRA가 숨김)                                 | 2025년 3월 23일에 Vite로 이전 ([2025년 3월 23~24일 회고](/memo/day-20250323)). 같은 조건에서 개발 서버 시작 5.05초 → 0.58초, 프로덕션 빌드 6.33초 → 1.88초. 남은 CRA 설정은 2026년 9월 28일에 정리 ([CRA에서 Vite로 옮기기](/memo/cra-to-vite)) |
+| `node_modules`·빌드 결과물·`.env` 커밋                  | pnpm 잠금 파일만 커밋하고, git 기록 전체를 검사하는 비밀 값 검사 CI ([비밀 값 검사](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사))                                                                                    |
+| 포매터를 수동으로 한 번 실행, 메시지와 내용이 다른 커밋 | CI가 PR마다 형식과 커밋 규칙을 검사 ([정규식 검사 워크플로와 Rulesets로 커밋·PR 규칙을 CI에서 강제하기](/memo/commit-conventions-ci))                                                                                                           |
+| CRA 기본 시험 하나, `test` 스크립트 없음                | 브라우저 E2E와 단위 시험이 천 개를 넘는다 ([리팩터링 전 E2E 시험 10개로 찾은 hook 순서·클로저·ICU 버그](/memo/bugs-found-by-tests))                                                                                                             |
+
+## 돌아보며
+
+> [!IMPORTANT] 쓸 곳보다 먼저 생긴 서버
+> 10월 13일의 Express 서버와 메일 경로, 15일의 메모 경로는 화면이 호출하지 않았고, 메일 앱은 결국 `mailto:`로 갔다. 서버를 지울 때는 서버가 맡던 권한 확인을 옮길 곳을 정하지 않았다. 2026년에 서버를 다시 구축할 때는 데이터베이스를 차단하고 편집을 잠근 뒤, 로그인과 권한 확인을 구현하고 나서 편집을 허용했다.
+
+- 10월 13일에 `AppContext`와 `Container`로 상태를 관리할 위치를 먼저 정해, 크기 조절·애니메이션·맨 앞으로 올리기를 같은 날 하나씩 더할 수 있었다. 반대로 음악은 창 밖으로 옮기면서 앱 상태의 `isRunning`은 같은 기준으로 바꾸지 않았고, 그 불일치가 2년 뒤 버그로 드러났다.
+- 10월 26일에는 있으면 안 되는 `.env`를 제외했고, 27일에는 없어도 되는 `node_modules`를 추가했다. 커밋 전에 `git status`로 변경 파일을 확인하지 않아 11월 4일의 캐시 커밋도 생겼다.
+- CRA가 만든 `App.test.tsx`는 있었지만 `package.json`에 `test` 스크립트가 없었다. 2026년 9월에 작업을 재개하며 가장 먼저 시험을 추가했고, 그 과정에서 [한 번도 동작한 적 없던 기능](/memo/bugs-found-by-tests)이 나왔다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Adding Custom Environment Variables](https://create-react-app.dev/docs/adding-custom-environment-variables/), Create React App 문서
+- [Updating Objects in State](https://react.dev/learn/updating-objects-in-state), [Queueing a Series of State Updates](https://react.dev/learn/queueing-a-series-of-state-updates), React 문서
+- [&lt;iframe&gt;: The Inline Frame element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), MDN
+- [Autoplay guide for media and Web Audio APIs](https://developer.mozilla.org/en-US/docs/Web/Media/Autoplay_guide), MDN
+- [node.bcrypt.js](https://github.com/kelektiv/node.bcrypt.js), GitHub
+- [Understand Firebase Realtime Database Security Rules](https://firebase.google.com/docs/database/security), Firebase 문서
+- [gitignore](https://git-scm.com/docs/gitignore), [git-diff](https://git-scm.com/docs/git-diff), Git 문서
+
+</details>
+
+#MacFolio #회고 #React #CRA #Express #MySQL #Firebase #창관리 #git

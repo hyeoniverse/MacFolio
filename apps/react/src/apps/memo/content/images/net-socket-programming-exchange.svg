@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 560" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="560" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <text x="235" y="24" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="700">클라이언트</text>
+  <text x="425" y="24" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="700">서버</text>
+  <line x1="235" y1="34" x2="235" y2="540" stroke="#1d1d1f" stroke-width="1"/>
+  <line x1="425" y1="34" x2="425" y2="540" stroke="#1d1d1f" stroke-width="1"/>
+  <text x="433" y="48" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">socket, bind, listen</tspan></text>
+  <text x="433" y="64" text-anchor="start" font-size="11.5" fill="#1d1d1f">LISTEN (수동 열기)</text>
+  <text x="433" y="80" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">accept</tspan> (블록)</text>
+  <text x="227" y="76" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">socket</tspan></text>
+  <text x="227" y="92" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">connect</tspan> (블록)</text>
+  <text x="227" y="108" text-anchor="end" font-size="11.5" fill="#1d1d1f">(능동 열기) SYN_SENT</text>
+  <line x1="235" y1="92" x2="423" y2="116" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(7.2 330 104.0)">
+  <text x="330" y="99.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">SYN J, MSS = 536</text>
+  </g>
+  <text x="433" y="120" text-anchor="start" font-size="11.5" fill="#1d1d1f">SYN_RCVD</text>
+  <line x1="425" y1="124" x2="237" y2="148" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(-7.2 330 136.0)">
+  <text x="330" y="131.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">SYN K, ACK J+1, MSS = 1460</text>
+  </g>
+  <text x="227" y="152" text-anchor="end" font-size="11.5" fill="#1d1d1f">ESTABLISHED</text>
+  <text x="227" y="168" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">connect</tspan> 반환</text>
+  <line x1="235" y1="164" x2="423" y2="188" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(7.2 330 176.0)">
+  <text x="330" y="171.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">ACK K+1</text>
+  </g>
+  <text x="433" y="192" text-anchor="start" font-size="11.5" fill="#1d1d1f">ESTABLISHED</text>
+  <text x="433" y="208" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">accept</tspan> 반환</text>
+  <text x="433" y="224" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">read</tspan> (블록)</text>
+  <text x="227" y="196" text-anchor="end" font-size="11.5" fill="#1d1d1f" font-style="italic">&lt;클라이언트가 요청 생성&gt;</text>
+  <text x="227" y="226" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">write</tspan></text>
+  <text x="227" y="242" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">read</tspan> (블록)</text>
+  <line x1="235" y1="226" x2="423" y2="250" stroke="#1d1d1f" stroke-width="2.4" marker-end="url(#k)"/>
+  <g transform="rotate(7.2 330 238.0)">
+  <text x="330" y="233.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">데이터(요청)</text>
+  </g>
+  <text x="433" y="254" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">read</tspan> 반환</text>
+  <text x="433" y="280" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-style="italic">&lt;서버가 요청 처리&gt;</text>
+  <text x="433" y="306" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">write</tspan></text>
+  <text x="433" y="322" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">read</tspan> (블록)</text>
+  <line x1="425" y1="306" x2="237" y2="330" stroke="#1d1d1f" stroke-width="2.4" marker-end="url(#k)"/>
+  <g transform="rotate(-7.2 330 318.0)">
+  <text x="330" y="313.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">데이터(응답)</text>
+  <text x="330" y="332.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">요청에 대한 ACK</text>
+  </g>
+  <text x="227" y="334" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">read</tspan> 반환</text>
+  <line x1="235" y1="352" x2="423" y2="376" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(7.2 330 364.0)">
+  <text x="330" y="359.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">응답에 대한 ACK</text>
+  </g>
+  <text x="227" y="398" text-anchor="end" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">close</tspan></text>
+  <text x="227" y="414" text-anchor="end" font-size="11.5" fill="#1d1d1f">(능동 닫기) FIN_WAIT_1</text>
+  <line x1="235" y1="398" x2="423" y2="422" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(7.2 330 410.0)">
+  <text x="330" y="405.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">FIN M</text>
+  </g>
+  <text x="433" y="426" text-anchor="start" font-size="11.5" fill="#1d1d1f">CLOSE_WAIT (수동 닫기)</text>
+  <text x="433" y="442" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">read</tspan>가 0 반환</text>
+  <line x1="425" y1="438" x2="237" y2="462" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(-7.2 330 450.0)">
+  <text x="330" y="445.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">ACK M+1</text>
+  </g>
+  <text x="227" y="466" text-anchor="end" font-size="11.5" fill="#1d1d1f">FIN_WAIT_2</text>
+  <text x="433" y="472" text-anchor="start" font-size="11.5" fill="#1d1d1f"><tspan font-family="ui-monospace, Menlo, monospace">close</tspan></text>
+  <text x="433" y="488" text-anchor="start" font-size="11.5" fill="#1d1d1f">LAST_ACK</text>
+  <line x1="425" y1="476" x2="237" y2="500" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(-7.2 330 488.0)">
+  <text x="330" y="483.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">FIN N</text>
+  </g>
+  <text x="227" y="504" text-anchor="end" font-size="11.5" fill="#1d1d1f">TIME_WAIT</text>
+  <line x1="235" y1="510" x2="423" y2="534" stroke="#1d1d1f" stroke-width="1.1" marker-end="url(#k)"/>
+  <g transform="rotate(7.2 330 522.0)">
+  <text x="330" y="517.0" text-anchor="middle" font-size="11" fill="#1d1d1f" font-style="italic">ACK N+1</text>
+  </g>
+  <text x="433" y="538" text-anchor="start" font-size="11.5" fill="#1d1d1f">CLOSED</text>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>첫 방문 전송량과 첫 번들 크기의 개선 전후 비교. 휴대폰 4.9MB에서 483KB, 데스크톱 9MB에서 771KB, 첫 번들 250KB에서 47KB</title>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">첫 방문에 내려받는 양 (10월 22일 세 차례 개선 전후)</text>
+<text x="20" y="54" font-size="13" font-weight="700" fill="#1d1d1f">첫 방문 전송량 합계</text>
+<text x="20" y="84" font-size="12" fill="#1d1d1f">데스크톱</text>
+<rect x="100" y="70" width="440" height="20" rx="3" fill="#c7c7cc"/><text x="548" y="85" font-size="12" fill="#1d1d1f">9MB</text>
+<rect x="100" y="94" width="38" height="20" rx="3" fill="#0a84ff"/><text x="146" y="109" font-size="12" fill="#0a84ff">771KB</text>
+<text x="20" y="140" font-size="12" fill="#1d1d1f">휴대폰</text>
+<rect x="100" y="126" width="240" height="20" rx="3" fill="#c7c7cc"/><text x="348" y="141" font-size="12" fill="#1d1d1f">4.9MB</text>
+<rect x="100" y="150" width="24" height="20" rx="3" fill="#0a84ff"/><text x="132" y="165" font-size="12" fill="#0a84ff">483KB</text>
+<line x1="20" y1="188" x2="620" y2="188" stroke="#d1d1d6"/>
+<text x="20" y="212" font-size="13" font-weight="700" fill="#1d1d1f">첫 번들 크기 (brotli)</text>
+<text x="20" y="242" font-size="12" fill="#1d1d1f">첫 번들</text>
+<rect x="100" y="228" width="440" height="20" rx="3" fill="#c7c7cc"/><text x="548" y="243" font-size="12" fill="#1d1d1f">250KB</text>
+<rect x="100" y="252" width="83" height="20" rx="3" fill="#0a84ff"/><text x="191" y="267" font-size="12" fill="#0a84ff">47KB</text>
+<rect x="400" y="262" width="12" height="12" fill="#c7c7cc"/><text x="418" y="273" font-size="12" fill="#6e6e73">개선 전</text>
+<rect x="480" y="262" width="12" height="12" fill="#0a84ff"/><text x="498" y="273" font-size="12" fill="#6e6e73">개선 후</text>
+<text x="20" y="292" font-size="12" fill="#6e6e73">두 그래프는 축척이 다르다</text>
+</svg>

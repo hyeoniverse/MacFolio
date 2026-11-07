@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 412" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="412" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">너무 큰 요청(413)이 전역 예외 필터에 도착하는 모양</text>
+  <text x="165" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#6e6e73">NestJS 12.2</text>
+  <text x="475" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">NestJS 12.3</text>
+  <!-- left -->
+  <rect x="30" y="70" width="270" height="44" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/>
+  <text x="165" y="89" text-anchor="middle" font-size="12" fill="#1d1d1f">body-parser: 몸통이 크기 제한 초과</text>
+  <text x="165" y="105" text-anchor="middle" font-size="12" fill="#6e6e73">http-errors 생성</text>
+  <path d="M165 114 L165 134" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="30" y="140" width="270" height="44" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/>
+  <text x="165" y="159" text-anchor="middle" font-size="12" fill="#1d1d1f">{ status: 413,</text>
+  <text x="165" y="175" text-anchor="middle" font-size="12" fill="#1d1d1f">type: 'entity.too.large' }</text>
+  <path d="M165 184 L165 274" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="175" y="232" font-size="12" fill="#6e6e73">그대로 전달</text>
+  <rect x="30" y="280" width="270" height="44" rx="8" fill="#fff" stroke="#1d1d1f"/>
+  <text x="165" y="299" text-anchor="middle" font-size="12" fill="#1d1d1f">전역 예외 필터</text>
+  <text x="165" y="315" text-anchor="middle" font-size="12" fill="#6e6e73">type으로 우리말 설명 조회</text>
+  <path d="M165 324 L165 344" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="30" y="350" width="270" height="34" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+  <text x="165" y="372" text-anchor="middle" font-size="12" fill="#1d1d1f">413 "요청이 너무 큽니다."</text>
+  <!-- right -->
+  <rect x="340" y="70" width="270" height="44" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/>
+  <text x="475" y="89" text-anchor="middle" font-size="12" fill="#1d1d1f">body-parser: 몸통이 크기 제한 초과</text>
+  <text x="475" y="105" text-anchor="middle" font-size="12" fill="#6e6e73">http-errors 생성</text>
+  <path d="M475 114 L475 134" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="340" y="140" width="270" height="44" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/>
+  <text x="475" y="159" text-anchor="middle" font-size="12" fill="#1d1d1f">{ status: 413,</text>
+  <text x="475" y="175" text-anchor="middle" font-size="12" fill="#1d1d1f">type: 'entity.too.large' }</text>
+  <path d="M475 184 L475 204" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="340" y="210" width="270" height="56" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+  <text x="475" y="230" text-anchor="middle" font-size="12" fill="#1d1d1f">Express 어댑터가 감싼다</text>
+  <text x="475" y="248" text-anchor="middle" font-size="12" fill="#0a84ff">HttpException(…, 413, { cause })</text>
+  <path d="M475 266 L475 274" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="340" y="280" width="270" height="44" rx="8" fill="#fff" stroke="#1d1d1f"/>
+  <text x="475" y="299" text-anchor="middle" font-size="12" fill="#1d1d1f">전역 예외 필터</text>
+  <text x="475" y="315" text-anchor="middle" font-size="12" fill="#6e6e73">HttpException 분기, 원문 message 사용</text>
+  <path d="M475 324 L475 344" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="340" y="350" width="270" height="34" rx="8" fill="#ffecea" stroke="#ff3b30"/>
+  <text x="475" y="372" text-anchor="middle" font-size="12" fill="#1d1d1f">413 "request entity too large"</text>
+  <text x="320" y="403" text-anchor="middle" font-size="12" fill="#ff9f0a">수정: toErrorBody가 cause.type으로도 우리말 설명을 조회한다</text>
+</svg>

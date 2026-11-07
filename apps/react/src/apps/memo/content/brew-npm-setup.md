@@ -1,21 +1,11 @@
 ---
-title: Mac에서 Homebrew와 npm 설치하기 — 설치 순서, 확인 명령, 자주 발생하는 문제
+title: 'Mac에서 Homebrew와 npm 설치하기: 설치 순서, 확인 명령, 자주 발생하는 문제'
 date: 2026-10-20
 category: 기술 노트/개발 환경
 summary: Apple Silicon Mac에 Homebrew와 Node·npm을 설치하는 순서를 명령 단위로 정리했다. 단계마다 확인 명령과 정상 출력, 특정 Node 버전(node@22)과 corepack 설정, 자주 발생하는 오류와 해결 방법을 정리하고, 파일 위치와 .npmrc 우선순위는 뒤에 별도로 정리했다.
 ---
 
-## Homebrew란
-
-Homebrew(`brew`)는 macOS용 패키지 관리자다. 명령 한 줄로 개발 도구를 설치·업데이트·삭제한다. 설치한 프로그램은 `/opt/homebrew` 아래에 모아 관리하므로 macOS 시스템 파일과 섞이지 않고, `brew upgrade` 한 번으로 설치한 도구 전체를 최신 버전으로 업데이트할 수 있다.
-
-| 용어    | 뜻                                                                          |
-| ------- | --------------------------------------------------------------------------- |
-| formula | 명령줄 도구 패키지 (예: `node`, `git`, `python`)                            |
-| cask    | GUI 앱 패키지 (예: `visual-studio-code`). `brew install --cask` 로 설치한다 |
-| bottle  | 미리 빌드된 formula 바이너리. 소스를 컴파일하지 않아 설치가 빠르다          |
-
-Node.js는 JavaScript 실행 환경이고, npm은 Node.js에 포함된 패키지 관리자다. Homebrew로 Node.js를 설치하면 npm도 함께 설치된다.
+Apple Silicon Mac에 Homebrew를 설치하고, Homebrew로 Node.js와 npm을 설치하는 순서다. 명령 세 단계를 실행한 뒤 새 터미널에서 확인 명령의 출력을 표와 비교한다. Homebrew와 npm이 무엇인지는 [Homebrew와 npm](#homebrew와-npm) 절에 정리했다.
 
 ## 설치 순서
 
@@ -33,7 +23,12 @@ eval "$(/opt/homebrew/bin/brew shellenv zsh)"
 brew install node
 ```
 
-2단계를 생략하면 새 터미널에서 `brew`를 찾지 못한다. Homebrew 공식 문서도 이 설정을 따르지 않으면 Homebrew가 동작하지 않는다고 명시한다.
+![brew.sh 첫 화면의 설치 명령](./images/brew-npm-setup-brew-sh.jpg '1단계 명령은 Homebrew 공식 사이트 첫 화면의 Install Homebrew 칸에 있는 명령과 같다')
+
+1단계의 설치 스크립트는 실행 전에 만들 폴더와 바꿀 권한을 출력하고 Enter 입력을 기다린다. 이때 macOS 로그인 암호를 한 번 묻는데, `/opt/homebrew` 폴더를 만들고 소유자를 현재 사용자로 지정하는 데 쓰인다. 2단계는 셸이 시작할 때마다 `/opt/homebrew/bin`을 PATH에 추가하도록 `~/.zprofile`에 한 줄을 기록하고, 지금 열린 셸에도 바로 적용한다.
+
+> [!WARNING]
+> 2단계를 생략하면 새 터미널에서 `brew`를 찾지 못한다. Homebrew 공식 문서도 이 설정을 따르지 않으면 Homebrew가 동작하지 않는다고 명시한다.
 
 ### 단계별 확인
 
@@ -63,7 +58,7 @@ brew install node
 
 ## 특정 Node 버전이 필요한 경우
 
-`brew install node`는 항상 최신 메이저 버전(현재 26)을 설치하고, `brew upgrade` 시 메이저 버전도 함께 올라간다. 프로젝트가 `.node-version`이나 `engines`로 22를 요구한다면 메이저 버전별 formula를 설치한다.
+`brew install node`는 항상 최신 메이저 버전(현재 26)을 설치하고, `brew upgrade` 시 ==메이저 버전도 함께 올라간다==. 프로젝트가 `.node-version`이나 `engines`로 22를 요구한다면 메이저 버전별 formula를 설치한다.
 
 ```bash
 brew install node@22
@@ -80,11 +75,24 @@ v22.23.3
 - PATH 줄은 반드시 `brew shellenv` **아래에** 둔다. 위에 두면 shellenv가 `/opt/homebrew/bin`을 다시 맨 앞에 추가해 26이 우선한다
 - `opt/node@22` 경로는 버전 번호가 없는 링크라 `brew upgrade` 뒤에도 유효하다
 
+PATH는 셸이 명령 이름으로 실행 파일을 찾을 폴더 목록이다. 셸은 `:`로 구분된 폴더를 왼쪽부터 확인해 처음 발견한 파일을 실행하므로, 같은 이름의 `node`가 두 폴더에 있으면 PATH에서 앞에 있는 폴더의 것이 실행된다.
+
+![PATH 순서에 따라 실행되는 node 버전](./images/brew-npm-setup-path.svg 'node@22 PATH 줄의 위치에 따라 v22 또는 v26이 실행된다')
+
+현재 셸에서 어느 `node`가 먼저 발견되는지는 `which -a node`로 확인한다. 출력의 첫 줄이 실행되는 파일이다.
+
+```text
+$ which -a node
+/opt/homebrew/opt/node@22/bin/node
+/opt/homebrew/bin/node
+```
+
 프로젝트마다 Node 버전이 다르면 버전 관리자(fnm, mise 등)를 `brew`로 설치하고 `.node-version`을 읽게 하는 방식이 관리하기 쉽다. npm 문서도 전역 설치 권한 문제를 피하는 가장 좋은 방법으로 Node 버전 관리자를 권장한다.
 
 ## corepack (pnpm·yarn)
 
-Node 25부터 corepack이 Node에 포함되지 않는다. brew의 `node`(26)에서는 별도로 설치한다.
+> [!NOTE]
+> Node 25부터 corepack이 Node에 포함되지 않는다. brew의 `node`(26)에서는 별도로 설치한다.
 
 ```bash
 npm install -g corepack
@@ -109,7 +117,8 @@ $ corepack --version
 | `node@22`를 설치했는데 `node -v`가 26 | keg-only라 링크되지 않음, 또는 PATH 줄이 shellenv보다 위에 있음 | PATH 줄을 shellenv 아래로 이동                                                         |
 | `corepack: command not found`         | Node 25 이상에는 corepack이 없음                                | `npm install -g corepack`                                                              |
 
-`sudo npm install -g`는 root 소유 파일을 만들어 이후 설치에서 권한 오류를 일으킨다. brew로 설치한 npm은 전역 설치 경로가 사용자 계정 소유인 `/opt/homebrew`이므로 `sudo`가 필요 없다.
+> [!WARNING] sudo를 붙이지 않는다
+> `sudo npm install -g`는 root 소유 파일을 만들어 이후 설치에서 권한 오류를 일으킨다. brew로 설치한 npm은 전역 설치 경로가 사용자 계정 소유인 `/opt/homebrew`이므로 `sudo`가 필요 없다.
 
 ## 설치 상태 점검 명령
 
@@ -120,6 +129,18 @@ $ corepack --version
 | `brew doctor`      | 설정 문제 진단                                                    |
 | `brew bundle dump` | 설치 목록을 `Brewfile`로 저장. 새 Mac에서 `brew bundle`로 복원    |
 | `npm config ls -l` | npm 설정값과 설정 파일 위치                                       |
+
+## Homebrew와 npm
+
+Homebrew(`brew`)는 macOS용 패키지 관리자다. 명령 한 줄로 개발 도구를 설치·업데이트·삭제한다. 설치한 프로그램은 `/opt/homebrew` 아래에 모아 관리하므로 macOS 시스템 파일과 섞이지 않고, `brew upgrade` 한 번으로 설치한 도구 전체를 최신 버전으로 업데이트할 수 있다.
+
+| 용어    | 뜻                                                                          |
+| ------- | --------------------------------------------------------------------------- |
+| formula | 명령줄 도구 패키지 (예: `node`, `git`, `python`)                            |
+| cask    | GUI 앱 패키지 (예: `visual-studio-code`). `brew install --cask` 로 설치한다 |
+| bottle  | 미리 빌드된 formula 바이너리. 소스를 컴파일하지 않아 설치가 빠르다          |
+
+Node.js는 브라우저 밖에서 JavaScript를 실행하는 환경이고, npm은 Node.js에 포함된 패키지 관리자다. npm은 [npm 레지스트리](https://www.npmjs.com/)에 등록된 라이브러리를 내려받아 프로젝트의 `node_modules`에 설치하고, 그 목록을 `package.json`에 기록한다. 예를 들어 `npm install zod`를 실행하면 `node_modules/zod`가 생기고 `package.json`의 `dependencies`에 `"zod": "^<설치된 버전>"` 형식의 줄이 추가된다. Homebrew로 Node.js를 설치하면 npm도 함께 설치된다.
 
 ---
 
@@ -183,7 +204,7 @@ npm 설정은 여러 위치에서 읽고, 위쪽이 아래쪽을 덮어쓴다.
 5. 전역 설정 `/opt/homebrew/etc/npmrc` (globalconfig)
 6. npm 내장 `npmrc`
 
-`~/.npmrc`가 없어도 prefix가 `/opt/homebrew`인 이유는 6번, Homebrew가 npm 내장 설정에 기록한 값이기 때문이다.
+`~/.npmrc`가 없어도 prefix가 `/opt/homebrew`인 이유는 6번, ==Homebrew가 npm 내장 설정에 기록한 값==이기 때문이다.
 
 ```text
 $ npm config list
@@ -212,17 +233,29 @@ init-license = "MIT"
 | `fund`, `audit` | 설치 후 후원 안내, 취약점 검사 표시 여부 (기본 `true`)                           |
 | `registry`      | 패키지 레지스트리 주소. 사내 레지스트리를 사용할 때 변경                         |
 
-인증 토큰(`//registry.npmjs.org/:_authToken=…`)은 사용자 설정(`~/.npmrc`)에만 저장하고, 버전 관리에 포함되는 프로젝트 `.npmrc`에는 저장하지 않는다.
+> [!CAUTION]
+> 인증 토큰(`//registry.npmjs.org/:_authToken=…`)은 사용자 설정(`~/.npmrc`)에만 저장하고, 버전 관리에 포함되는 프로젝트 `.npmrc`에는 저장하지 않는다.
 
 ## 관련 글
 
 - [Mac에서 pip 설치하기](/memo/mac-pip-setup)
 - [zsh: command not found: pnpm](/memo/pnpm-command-not-found)
 
-## 참고한 공식 문서
+<details>
+<summary>참고 문헌</summary>
 
 - [brew.sh](https://brew.sh/), [Installation](https://docs.brew.sh/Installation) (Homebrew): 설치 명령, macOS 요구 사항, 기본 접두사(`/opt/homebrew`), 설치 후 셸 설정을 따르지 않으면 Homebrew가 동작하지 않는다는 안내
 - [FAQ](https://docs.brew.sh/FAQ) (Homebrew): keg-only의 의미(Cellar에만 설치되고 접두사에 링크되지 않음), `sudo`를 사용하지 않는 이유
 - [npmrc](https://docs.npmjs.com/cli/v11/configuring-npm/npmrc), [config](https://docs.npmjs.com/cli/v11/using-npm/config) (npm): 설정 파일 네 종류와 우선순위, `save-exact`·`save-prefix`, 인증 토큰은 레지스트리별로 지정
 - [Resolving EACCES permissions errors](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally) (npm): 전역 설치 권한 오류는 Node 버전 관리자로 해결하는 것을 권장
 - [Corepack](https://nodejs.org/docs/latest-v24.x/api/corepack.html) (Node.js v24 문서): Node.js v25부터 corepack을 함께 배포하지 않으며, npm 패키지 `corepack`으로 대체할 수 있다
+- [PATH](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap08.html#tag_08_03) (POSIX): PATH의 폴더를 앞에서부터 확인해 실행 파일을 찾는 규칙
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- brew.sh 첫 화면: Homebrew, [brew.sh](https://brew.sh/ko/), 출처 표기
+
+</details>

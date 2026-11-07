@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>저장소 category에 서버의 폴더 정리를 적용하는 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">메모 앱이 글의 폴더를 정하는 순서</text>
+<g font-size="13">
+<rect x="20" y="50" width="140" height="76" rx="10" fill="#f2f2f7"/>
+<text x="90" y="78" text-anchor="middle" font-weight="700" fill="#1d1d1f">1. 저장소</text>
+<text x="90" y="100" text-anchor="middle" fill="#1d1d1f">머리말 category</text>
+<rect x="180" y="50" width="140" height="76" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="250" y="78" text-anchor="middle" font-weight="700" fill="#0a84ff">2. moves</text>
+<text x="250" y="100" text-anchor="middle" fill="#1d1d1f">폴더 이름 변경</text>
+<rect x="340" y="50" width="140" height="76" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="410" y="78" text-anchor="middle" font-weight="700" fill="#0a84ff">3. posts</text>
+<text x="410" y="100" text-anchor="middle" fill="#1d1d1f">글별 폴더 지정</text>
+<rect x="500" y="50" width="120" height="76" rx="10" fill="#f2f2f7"/>
+<text x="560" y="78" text-anchor="middle" font-weight="700" fill="#1d1d1f">화면의 폴더</text>
+<text x="560" y="100" text-anchor="middle" fill="#6e6e73">order로 정렬</text>
+<line x1="160" y1="88" x2="178" y2="88" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="320" y1="88" x2="338" y2="88" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="480" y1="88" x2="498" y2="88" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="330" y="146" text-anchor="middle" fill="#6e6e73">2·3은 관리자가 메모 앱에서 바꾼 내용 (GET /memo/organization)</text>
+</g>
+<text x="20" y="186" font-size="14" font-weight="700" fill="#1d1d1f">예: 저장소 category를 고친 시각의 두 글</text>
+<g font-size="13">
+<rect x="20" y="200" width="600" height="50" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="36" y="222" fill="#1d1d1f">category: 개발 기록/…</text>
+<text x="230" y="222" fill="#6e6e73">moves '개발기 → 개발 기록'은 이미 같은 이름</text>
+<text x="36" y="241" fill="#34c759" font-weight="700">→ 표시는 그대로</text>
+<rect x="20" y="260" width="600" height="56" rx="8" fill="#ffffff" stroke="#ff3b30"/>
+<text x="36" y="282" fill="#1d1d1f">notes-polish</text>
+<text x="230" y="282" fill="#6e6e73">posts가 '…/프론트엔드'로 지정, 저장소 category보다 우선</text>
+<text x="36" y="302" fill="#ff3b30" font-weight="700">→ 저장소에서 없앤 '프론트엔드' 폴더가 이 글 하나로 다시 생긴다</text>
+</g>
+</svg>

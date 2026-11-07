@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>터치 입력에서 발생하는 이벤트 순서와 CI에서 빠진 click</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">삭제 버튼을 누를 때 브라우저가 발생시키는 이벤트</text>
+<text x="20" y="74" font-size="13" font-weight="600" fill="#1d1d1f">사람의 터치</text>
+<g font-size="12" text-anchor="middle">
+<rect x="130" y="54" width="110" height="32" rx="6" fill="#f2f2f7"/><text x="185" y="75" fill="#1d1d1f">pointerdown</text>
+<rect x="270" y="54" width="110" height="32" rx="6" fill="#f2f2f7"/><text x="325" y="75" fill="#1d1d1f">pointerup</text>
+<rect x="410" y="54" width="110" height="32" rx="6" fill="#effaf2" stroke="#34c759"/><text x="465" y="75" fill="#1f7a3a">click → 삭제</text>
+</g>
+<path d="M240 70 H266" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><path d="M380 70 H406" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="20" y="144" font-size="13" font-weight="600" fill="#1d1d1f">CI 시험</text>
+<text x="20" y="162" font-size="12" fill="#6e6e73">CDP 터치 직후</text>
+<text x="20" y="178" font-size="12" fill="#6e6e73">수백 ms 안에 재입력</text>
+<g font-size="12" text-anchor="middle">
+<rect x="130" y="130" width="110" height="32" rx="6" fill="#f2f2f7"/><text x="185" y="151" fill="#1d1d1f">pointerdown</text>
+<rect x="270" y="130" width="110" height="32" rx="6" fill="#f2f2f7"/><text x="325" y="151" fill="#1d1d1f">pointerup</text>
+<rect x="410" y="130" width="110" height="32" rx="6" fill="#fff1f0" stroke="#ff3b30" stroke-dasharray="5 4"/><text x="465" y="151" fill="#ff3b30">click 없음</text>
+</g>
+<path d="M240 146 H266" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><path d="M380 146 H406" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#r)"/>
+<rect x="20" y="206" width="600" height="76" rx="8" fill="#f2f2f7"/>
+<text x="36" y="230" font-size="12" fill="#1d1d1f">처음 추정: 카드가 아직 삭제 버튼을 덮고 있다 → 이벤트 기록으로 반박 (pointerdown·pointerup이 버튼에 도달)</text>
+<text x="36" y="250" font-size="12" fill="#1d1d1f">실제 원인: Linux Chrome이 짧은 간격의 CDP 터치 뒤에 click을 발생시키지 않는다</text>
+<text x="36" y="270" font-size="12" fill="#0a84ff">조치: 해당 시험만 click으로 삭제 버튼을 누른다. 사람의 입력에서는 이 간격이 생기지 않는다</text>
+</svg>

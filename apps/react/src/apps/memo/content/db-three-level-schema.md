@@ -1,13 +1,19 @@
 ---
 title: 3단계 스키마와 DBMS 구성 요소
 date: 2023-03-21
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 2
-summary: 데이터베이스 시스템의 구성 요소를 정리했다. 외부·개념·내부 스키마와 두 사상이 논리적·물리적 데이터 독립성을 만드는 방식, 카탈로그와 데이터 디렉터리, DDL·DML·DCL, 사용자 유형, DBMS 내부 모듈의 처리 흐름, DBA의 업무와 3장 연습문제 12문항의 풀이를 적었다.
+summary: 데이터베이스 시스템의 구성 요소를 정리했다. 외부·개념·내부 스키마와 두 사상이 논리적·물리적 데이터 독립성을 만드는 방식, 카탈로그와 데이터 디렉터리, DDL·DML·DCL, 사용자 유형, DBMS 내부 모듈의 처리 흐름, DBA의 업무와 연습문제 12문항의 풀이를 적었다.
 ---
 
-데이터베이스 기초 연재의 두 번째 글로, 3장(데이터베이스 시스템의 구성)을 다룬다. [앞 글](/memo/db-dbms-data-independence)에서 DBMS의 목적이 사상(mapping)으로 구현하는 데이터 독립성이라고 했는데, 이 글은 그 구조를 구체적으로 정리한다.
+## 들어가기 전에
+
+대학의 학생 데이터는 여러 프로그램이 함께 쓴다. 성적 처리 프로그램은 학번·이름·성적을, 학적 프로그램은 학번·이름·학과를 읽는다. 디스크에는 이 데이터가 바이트 단위 레코드와 인덱스로 저장되어 있다. 프로그램이 디스크의 바이트 위치를 직접 알고 있으면, 저장 구조를 바꾸거나 열 하나를 추가할 때마다 모든 프로그램을 고쳐야 한다.
+
+DBMS(database management system, 데이터베이스 관리 시스템)는 이 문제를 데이터베이스를 세 단계로 나눠 기술하는 방식으로 해결한다. 프로그램은 자기에게 필요한 부분(외부 스키마)만 알고, 기관 전체의 논리 구조(개념 스키마)와 디스크 저장 구조(내부 스키마)는 DBMS가 관리한다. 단계 사이의 대응 관계인 사상(mapping)만 고치면 한 단계의 변경이 다른 단계로 번지지 않는다. 이 성질을 데이터 독립성이라 하며, DBMS가 필요한 이유와 정의는 [파일 시스템과 DBMS 글](/memo/db-dbms-data-independence)에서 다뤘다.
+
+이 구조는 1975년 ANSI/X3/SPARC 연구 그룹의 보고서에서 정리되어 ANSI/SPARC 3단계 구조라고도 부른다. 여기서는 3단계 스키마와 두 사상, 스키마를 보관하는 카탈로그, 데이터 언어(DDL·DML·DCL), 사용자 유형, 요청을 처리하는 DBMS 내부 모듈, DBA의 업무 순서로 데이터베이스 시스템의 구성 요소를 정의한다.
 
 ## 데이터베이스 시스템의 구성 요소
 
@@ -22,7 +28,7 @@ summary: 데이터베이스 시스템의 구성 요소를 정리했다. 외부·
 | DBA                 | 데이터베이스 시스템 전체를 책임지는 특수한 사용자         |
 | 데이터베이스 컴퓨터 | 데이터베이스 처리 전용 하드웨어(선택)                     |
 
-![사용자 1~n(질의어·DML)→외부 스키마→개념 스키마→내부 스키마→저장 DB, 그리고 각 단계와 연결된 DBMS를 그린 데이터베이스 시스템 전체 구성도](./images/db-three-level-schema-note-05.jpg '사용자 1~n(질의어·DML)→외부 스키마→개념 스키마→내부 스키마→저장 DB, 그리고 각 단계와 연결된 DBMS를 그린 데이터베이스 시스템 전체 구성도 (강의 자료)')
+![사용자 1~n(질의어·DML)→외부 스키마→개념 스키마→내부 스키마→저장 DB, 그리고 각 단계와 연결된 DBMS를 그린 데이터베이스 시스템 전체 구성도](./images/db-three-level-schema-note-05.jpg '사용자 1~n(질의어·DML)→외부 스키마→개념 스키마→내부 스키마→저장 DB, 그리고 각 단계와 연결된 DBMS를 그린 데이터베이스 시스템 전체 구성도')
 
 ## 3단계 데이터베이스와 스키마
 
@@ -35,13 +41,13 @@ summary: 데이터베이스 시스템의 구성 요소를 정리했다. 외부·
 | 내부 단계(internal level)   | 저장 장치                  | 내부 스키마             | 개념 스키마의 저장 구조(storage structure). 저장 장치가 필요로 하는 정보를 추가한다 |
 
 > [!IMPORTANT]
-> \==**스키마(schema)** 는 데이터베이스의 구조(개체, 관계)와 제약조건(constraints)을 명세한 것이다.==
+> **스키마(schema)** 는 ==데이터베이스의 구조(개체, 관계)와 제약조건(constraints)을 명세한 것이다.==
 
 ![3단계 데이터베이스 구조와 두 사상](./images/db-three-level-schema-mapping.svg '외부 스키마는 응용마다, 개념·내부 스키마는 하나씩 있다')
 
 학생 데이터베이스를 예로 들면, 성적 처리 프로그램의 외부 스키마는 학번·이름·성적만, 학적 프로그램의 외부 스키마는 학번·이름·학과만 가져간다. 개념 스키마에는 학생 개체의 모든 애트리뷰트가 정의되고, 내부 스키마에는 레코드 길이, 필드 오프셋, 인덱스 같은 저장 정보가 더해진다. ==세 스키마는 달라 보이지만 모두 "학생"이라는 하나의 개체를 위해 정의된 것이며, 사상으로 연결된다.==
 
-![학적과·학생과 외부 스키마 2개, STUDENT 개념 스키마, STORED-STUDENT 내부 스키마(BYTE·OFFSET)가 화살표로 연결된 3단계 예시](./images/db-three-level-schema-note-01.jpg '학적과·학생과 외부 스키마 2개, STUDENT 개념 스키마, STORED-STUDENT 내부 스키마(BYTE·OFFSET)가 화살표로 연결된 3단계 예시 (강의 자료)')
+![학적과·학생과 외부 스키마 2개, STUDENT 개념 스키마, STORED-STUDENT 내부 스키마(BYTE·OFFSET)가 화살표로 연결된 3단계 예시](./images/db-three-level-schema-note-01.jpg '학적과·학생과 외부 스키마 2개, STUDENT 개념 스키마, STORED-STUDENT 내부 스키마(BYTE·OFFSET)가 화살표로 연결된 3단계 예시')
 
 ### 단계 간의 사상
 
@@ -54,7 +60,11 @@ summary: 데이터베이스 시스템의 구성 요소를 정리했다. 외부·
 > ==개념 스키마에 애트리뷰트를 추가해도 외부/개념 사상만 고치면 외부 스키마와 응용 프로그램은 그대로다(논리적 독립성).==
 > ==인덱스를 추가하거나 저장 장치를 바꿔도 개념/내부 사상만 고치면 개념 스키마는 그대로다(물리적 독립성).==
 
-![외부 스키마 1~n→외부/개념 사상(응용 인터페이스)→개념 스키마→개념/내부 사상(저장 인터페이스)→내부 스키마→저장 DB 3단계 구조도](./images/db-three-level-schema-note-02.jpg '외부 스키마 1~n→외부/개념 사상(응용 인터페이스)→개념 스키마→개념/내부 사상(저장 인터페이스)→내부 스키마→저장 DB 3단계 구조도 (강의 자료)')
+학생 데이터에 두 가지 변경을 가하면 변경이 사상에서 멈추는 위치가 드러난다. 개념 스키마에 Email 열을 추가해도 성적 처리 프로그램이 쓰는 외부 스키마 (Sno, Sname)는 그대로다. Dept 열에 인덱스를 만들어 내부 스키마를 바꿔도 개념 스키마의 STUDENT 정의는 그대로다.
+
+![왼쪽은 개념 스키마에 Email 열을 추가해도 외부 스키마가 그대로인 논리적 독립성, 오른쪽은 내부 스키마에 인덱스를 추가해도 개념 스키마가 그대로인 물리적 독립성](./images/db-three-level-schema-independence-example.svg '굵은 테두리가 변경된 스키마, 점선 테두리가 수정한 사상이다')
+
+![외부 스키마 1~n→외부/개념 사상(응용 인터페이스)→개념 스키마→개념/내부 사상(저장 인터페이스)→내부 스키마→저장 DB 3단계 구조도](./images/db-three-level-schema-note-02.jpg '외부 스키마 1~n→외부/개념 사상(응용 인터페이스)→개념 스키마→개념/내부 사상(저장 인터페이스)→내부 스키마→저장 DB 3단계 구조도')
 
 ### 카탈로그와 데이터 디렉터리
 
@@ -70,6 +80,24 @@ summary: 데이터베이스 시스템의 구성 요소를 정리했다. 외부·
 
 > [!NOTE]
 > 관계 DBMS에서는 카탈로그도 테이블로 저장되므로 사용자가 SQL로 조회할 수 있다.
+
+SQL 표준은 카탈로그를 조회하는 뷰 모음으로 `INFORMATION_SCHEMA`를 정의한다. PostgreSQL 17에서 STUDENT 테이블을 만든 뒤 열 정보를 조회하면, `CREATE TABLE{:sql}`로 정의한 열 이름·타입·NULL 허용 여부가 그대로 나온다. 기본 키로 선언한 sno만 NULL을 허용하지 않는다.
+
+```sql
+SELECT column_name, data_type, is_nullable
+FROM   information_schema.columns
+WHERE  table_name = 'student'
+ORDER  BY ordinal_position;
+```
+
+```text
+ column_name |     data_type     | is_nullable
+-------------+-------------------+-------------
+ sno         | integer           | NO
+ sname       | character varying | YES
+ year        | integer           | YES
+ dept        | character varying | YES
+```
 
 ## 데이터 언어
 
@@ -93,6 +121,10 @@ DML(Data Manipulation Language)은 사용자(응용 프로그램)와 DBMS 사이
 | 명세      | 무엇을(what)과 어떻게(how)                                  | 무엇을(what)만. 어떻게는 시스템에 맡긴다(선언적) |
 | 처리 단위 | 한 번에 레코드 하나(one record at a time)                   | 한 번에 레코드 집합(set of records at a time)    |
 | 사용 방식 | 응용 프로그램에 삽입(embedded)되어 DML 예비 컴파일러가 처리 | 독립적·대화식으로 쓰는 질의어(query language)    |
+
+같은 요청을 두 방식으로 작성하면 차이가 드러난다. 절차적 DML은 레코드를 하나씩 찾아 읽는 반복문을 프로그래머가 작성하고, 비절차적 DML인 SQL은 조건만 적는다.
+
+![절차적 DML은 FIND·GET을 반복하며 Dept를 비교하는 코드를, 비절차적 DML은 SELECT 한 문장을 작성해 같은 결과 나수영·정기태·송병길을 얻는 비교](./images/db-three-level-schema-procedural-dml.svg '왼쪽 의사 코드는 네트워크 DBMS의 레코드 단위 명령 형식을 따랐다')
 
 비절차적 DML인 질의어는 단말에서 명령(command) 형태로 독자적·대화식으로 실행하며, 질의문 하나가 레코드 집합을 처리하는 프로그램을 추상적으로 표현한다.
 
@@ -148,7 +180,7 @@ DBMS는 사용자 요청을 다음 순서로 처리한다.
 | 응용 프로그래머 | 응용 프로그램 → 예비 컴파일러 → DML 컴파일러 → 런타임 데이터베이스 처리기 → 저장 데이터 관리자 → 저장 데이터베이스   |
 | 일반 사용자     | 질의어 → 질의어 처리기 → 런타임 데이터베이스 처리기(트랜잭션 관리자와 협력) → 저장 데이터 관리자 → 저장 데이터베이스 |
 
-![일반사용자·응용프로그래머·DBA의 요청이 질의어 처리기·DML 예비컴파일러·DDL 컴파일러·런타임 처리기·트랜잭션 관리자·저장 데이터 관리자를 거쳐 저장 DB와 카탈로그에 닿는 DBMS 구성도](./images/db-three-level-schema-note-03.jpg '일반사용자·응용프로그래머·DBA의 요청이 질의어 처리기·DML 예비컴파일러·DDL 컴파일러·런타임 처리기·트랜잭션 관리자·저장 데이터 관리자를 거쳐 저장 DB와 카탈로그에 닿는 DBMS 구성도 (강의 자료)')
+![일반사용자·응용프로그래머·DBA의 요청이 질의어 처리기·DML 예비컴파일러·DDL 컴파일러·런타임 처리기·트랜잭션 관리자·저장 데이터 관리자를 거쳐 저장 DB와 카탈로그에 닿는 DBMS 구성도](./images/db-three-level-schema-note-03.jpg '일반사용자·응용프로그래머·DBA의 요청이 질의어 처리기·DML 예비컴파일러·DDL 컴파일러·런타임 처리기·트랜잭션 관리자·저장 데이터 관리자를 거쳐 저장 DB와 카탈로그에 닿는 DBMS 구성도')
 
 ## 데이터베이스 관리자(DBA)
 
@@ -166,7 +198,7 @@ DBA(Database Administrator)는 데이터베이스 시스템의 관리와 운영�
 
 데이터베이스 기능만 효율적으로 수행하는 특수 목적 하드웨어로, 필수 요소는 아니다. 데이터베이스가 GB(1024MB), TB(1024GB), PB(1024TB), EB(1024PB) 단위로 커지는 대규모 데이터베이스(VLDB)에서 성능을 높이려고 쓴다. 범용 컴퓨터 뒤에 후위 컴퓨터(backend computer)로 두며, 지능형 저장 장치, 내용 주소화 메모리(associative memory), 병렬 처리(parallel processing) 같은 기술을 사용한다.
 
-![터미널-호스트 컴퓨터(DB 컴퓨터 인터페이스)와 백엔드 데이터베이스 컴퓨터(DB 처리기·디스크 관리자·메모리), 저장 DB·메타 DB 구성도](./images/db-three-level-schema-note-04.jpg '터미널-호스트 컴퓨터(DB 컴퓨터 인터페이스)와 백엔드 데이터베이스 컴퓨터(DB 처리기·디스크 관리자·메모리), 저장 DB·메타 DB 구성도 (강의 자료)')
+![터미널-호스트 컴퓨터(DB 컴퓨터 인터페이스)와 백엔드 데이터베이스 컴퓨터(DB 처리기·디스크 관리자·메모리), 저장 DB·메타 DB 구성도](./images/db-three-level-schema-note-04.jpg '터미널-호스트 컴퓨터(DB 컴퓨터 인터페이스)와 백엔드 데이터베이스 컴퓨터(DB 처리기·디스크 관리자·메모리), 저장 DB·메타 DB 구성도')
 
 ## 연습문제 풀이
 
@@ -362,5 +394,15 @@ REVOKE UPDATE ON STUDENT FROM user1;
 
 - [파일 시스템의 데이터 종속성·중복성과 DBMS의 데이터 독립성](/memo/db-dbms-data-independence): DBMS가 등장한 배경과 데이터 독립성의 정의
 - [관계 데이터 모델의 릴레이션, 키, 무결성 제약](/memo/db-relational-model-keys): 개념 스키마를 표현하는 관계 데이터 모델
+
+<details>
+<summary>참고 문헌</summary>
+
+- Wikipedia, [ANSI-SPARC Architecture](https://en.wikipedia.org/wiki/ANSI-SPARC_Architecture)
+- PostgreSQL 문서, [The Information Schema](https://www.postgresql.org/docs/current/information-schema.html)
+- PostgreSQL 문서, [System Catalogs](https://www.postgresql.org/docs/current/catalogs.html)
+- PostgreSQL 문서, [GRANT](https://www.postgresql.org/docs/current/sql-grant.html)
+
+</details>
 
 #데이터베이스 #DBMS #스키마 #CS

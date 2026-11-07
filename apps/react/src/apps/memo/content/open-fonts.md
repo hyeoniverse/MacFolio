@@ -1,21 +1,68 @@
 ---
 title: 오픈 라이선스 글꼴로 바꾸고 첫 화면 글꼴을 1,187KB에서 568KB로 줄이기
 date: 2026-10-26
-category: 개발 기록/MacFolio/화면·스타일
+category: 개발 기록/MacFolio/테스트·보안·성능
 series: 성능 최적화
-seriesOrder: 5
+seriesOrder: 3
 summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -apple-system을 앞에 둔 글꼴 지정과 웹 배포 허락이 없는 Apple 웹 글꼴(Regular 하나)이었다. 오픈 라이선스 글꼴로 바꾸고, 첫 화면 글꼴을 1,187KB에서 568KB로 줄여 CI 예산을 걸었다.
 ---
 
-같은 사이트를 macOS에서 볼 때와 Windows·Android·Linux에서 볼 때 글꼴이 달랐다. 영문과 숫자의 모양, 굵은 글씨, 코드 블록의 고정폭 글꼴이 모두 기기에 따라 바뀌었다. 이 글은 원인, 라이선스 문제, 새 글꼴을 고른 근거, 바꾼 뒤 전송량을 정리한다([#384](https://github.com/hyeoniverse/MacFolio/pull/384)).
+같은 사이트를 macOS에서 볼 때와 Windows·Android·Linux에서 볼 때 글꼴이 달랐다. 영문과 숫자의 모양, 굵은 글씨, 코드 블록의 고정폭 글꼴이 모두 기기에 따라 바뀌었다. 원인은 글꼴 지정 순서와, 웹 배포 허락이 확인되지 않은 Apple 글꼴 파일이었다. 오픈 라이선스 글꼴로 바꿔 모든 기기가 같은 글꼴을 받게 하고, 늘어난 글꼴 전송량을 첫 화면 기준 ==1,187KB에서 568KB로== 줄였다([#384](https://github.com/hyeoniverse/MacFolio/pull/384)).
 
 ![고치기 전: macOS와 Linux](./images/open-fonts-before-os.jpg '고치기 전. 같은 빌드를 macOS Chromium과 Linux Chromium(CI와 같은 Playwright Docker 이미지)에서 열었다. 영문·숫자·고정폭·굵은 글씨가 다르다')
 
 ![고친 뒤: macOS와 Linux](./images/open-fonts-after-os.jpg '고친 뒤. 두 OS가 같은 글꼴을 받는다. 글자 사이 간격의 미세한 차이는 Linux Chromium이 글자 폭을 화소 단위로 반올림해 생긴다')
 
+## 배경
+
+### 브라우저가 글꼴을 고르는 순서
+
+CSS의 `font-family`는 글꼴 이름의 목록이다. 브라우저는 글자 하나를 그릴 때마다 목록의 앞에서부터 그 글자가 들어 있는 글꼴을 찾고, 끝까지 없으면 `sans-serif` 같은 일반 글꼴 이름(generic family)이 가리키는 기기의 기본 글꼴을 쓴다.
+
+```css
+body {
+	font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+```
+
+이 규칙으로 "Hello 안녕"을 그리면, macOS는 `H`·`e`·`l`·`o`를 Helvetica Neue로 그리고 한글 "안녕"은 Helvetica Neue에 한글이 없으므로 Arial을 거쳐 `sans-serif`(macOS에서는 Apple SD Gothic Neo)로 그린다. Windows에는 Helvetica Neue가 없으므로 영문은 Arial로, 한글은 `sans-serif`가 가리키는 기기의 한글 글꼴로 그린다. 같은 CSS라도 기기에 설치된 글꼴에 따라 결과가 달라진다.
+
+`-apple-system`과 `system-ui`는 특정 글꼴이 아니라 "이 기기의 시스템 UI 글꼴"을 뜻하는 이름이다. macOS·iOS에서는 SF Pro와 Apple SD Gothic Neo, Windows에서는 Segoe UI와 맑은 고딕을 가리킨다.
+
+### 웹 글꼴과 `@font-face`
+
+기기에 없는 글꼴은 `@font-face` 규칙으로 서버에서 내려받아 쓴다. 이를 웹 글꼴이라 한다. 파일 형식은 대부분 WOFF2로, 글꼴 데이터를 Brotli로 압축해 TTF보다 작다.
+
+예를 들어 다음 규칙은 조각 하나를 정의한다(파일 이름과 범위는 설명을 위한 예).
+
+```css
+@font-face {
+	font-family: 'Pretendard Variable';
+	src: url('/assets/pretendard-core.woff2') format('woff2');
+	font-weight: 45 920;
+	unicode-range: U+0020-007E, U+AC00-D7A3; /* 이 범위의 글자가 화면에 있을 때만 받는다 */
+}
+```
+
+`unicode-range`는 이 파일이 담당하는 글자 범위다. 브라우저는 화면에 그 범위의 글자가 실제로 나올 때만 파일을 받는다. 한글 완성형 11,172자를 파일 하나에 담으면 수 MB가 되므로, 한글 웹 글꼴은 글자를 여러 조각(subset)으로 나누고 조각마다 `unicode-range`를 지정해, 화면에 나온 글자가 든 조각만 받게 한다.
+
+### 굵기 합성
+
+글꼴 파일은 보통 굵기마다 따로 있다(Regular 400, Medium 500, Bold 700 등). `font-weight: 700`을 지정했는데 Bold 파일이 없으면, 브라우저는 Regular의 획 둘레를 두껍게 칠해 굵은 글씨를 흉내 낸다. 이를 굵기 합성(synthetic bold, faux bold)이라 하며, CSS `font-synthesis` 속성이 허용 여부를 정한다. 합성한 글씨는 획 사이 공간이 메워지고 글자 폭이 실제 Bold와 달라, 같은 문장이라도 줄바꿈 위치가 달라질 수 있다.
+
+### 가변 글꼴
+
+가변 글꼴(variable font)은 굵기·폭 같은 축(axis)을 파일 하나에 담은 OpenType 글꼴이다. 디자이너가 축의 양 끝(예: 가장 가는 굵기와 가장 굵은 굵기)을 그리면, 그 사이의 굵기는 글꼴 렌더러가 두 디자인을 보간(interpolation)해 만든다. Pretendard Variable은 굵기 축 하나에 45~920을 담아, `font-weight: 500`, `650`, `800` 어느 값이든 파일 하나로 실제 굵기를 그린다.
+
+![가변 글꼴의 축과 보간](./images/open-fonts-variable-axes.jpg '가변 글꼴의 보간 예시. 가로 방향(Breddaxel)은 글자 폭, 세로 방향은 획 굵기가 달라지며, 사이의 모양은 양 끝 디자인을 보간해 만든다')
+
+### 글꼴 라이선스
+
+글꼴 파일도 소프트웨어라 사용 조건이 있다. 기기에 설치된 글꼴을 그 기기에서 쓰는 것과, 글꼴 파일을 서버에 올려 방문자의 기기로 내려보내는 것(웹 글꼴)은 다른 행위로 다뤄진다. 후자는 파일의 재배포에 해당하므로 라이선스가 웹 배포를 허락해야 한다. SIL Open Font License(OFL) 1.1은 글꼴을 다른 소프트웨어와 함께 사용·수정·재배포하는 것을 허락하는 라이선스로, 글꼴 파일만 따로 판매하는 것은 금지한다.
+
 ## OS마다 달랐던 이유
 
-고치기 전 본문 글꼴 지정은 `font-family: -apple-system, MacSystemFont, Arial, sans-serif`였다(`index.css`, 같은 모양의 지정이 20여 곳). 브라우저는 목록의 앞에서부터 기기에 있는 글꼴을 쓴다.
+고치기 전 본문 글꼴 지정은 `font-family: -apple-system, MacSystemFont, Arial, sans-serif`였다(`index.css`, 같은 모양의 지정이 20여 곳). 위의 규칙대로 브라우저는 목록의 앞에서부터 기기에 있는 글꼴을 쓰므로, Apple 기기는 첫 항목 `-apple-system`에서, 그 밖의 기기는 둘째 항목인 웹 글꼴 `MacSystemFont`에서 글꼴이 정해졌다.
 
 | 영역                                         | macOS·iOS                             | Windows·Android·Linux                                       |
 | -------------------------------------------- | ------------------------------------- | ----------------------------------------------------------- |
@@ -25,16 +72,16 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 코드 (`ui-monospace, 'SF Mono', Menlo, …`)   | SF Mono                               | Consolas·DejaVu Sans Mono 등 OS마다 다름                    |
 | 명조 (`'Nanum Myeongjo', 'AppleMyungjo', …`) | AppleMyungjo                          | 기기에 있는 명조, 없으면 기본 serif                         |
 
-같은 웹 글꼴을 받은 기기끼리도 굵은 글씨는 합성이라 실제 굵은 글꼴과 모양이 다르다. 앞서 CI에서 휴대폰 위젯 높이가 2px 달라진 것도 이 차이였다([머지하자 CI가 연달아 실패한 원인](/memo/ci-failures-after-merges)).
+==같은 웹 글꼴을 받은 기기끼리도 굵은 글씨는 합성이라 실제 굵은 글꼴과 모양이 다르다==. 앞서 CI에서 휴대폰 위젯 높이가 2px 달라진 것도 이 차이였다([머지하자 CI가 연달아 실패한 원인](/memo/ci-failures-after-merges)).
 
 ## 라이선스: Apple 글꼴은 웹으로 배포할 수 없다
 
-`-apple-system`을 앞에 둔 것은 Apple 기기에서 기기의 글꼴을 부르는 것이라 문제가 없다. 문제는 그 밖의 기기를 위해 `public/fonts/`에 둔 Apple SD Gothic Neo 파일(TTF 9종, woff2 2조각)이었다.
+`-apple-system`을 앞에 지정한 것은 Apple 기기에서 기기의 글꼴을 부르는 것이라 문제가 없다. 문제는 그 밖의 기기를 위해 `public/fonts/`에 보관한 Apple SD Gothic Neo 파일(TTF 9종, woff2 2조각)이었다.
 
 - **SF Pro:** Apple이 [글꼴 페이지](https://developer.apple.com/fonts/)에서 배포하는 라이선스는 Apple 운영체제용 소프트웨어의 UI 시안(mock-up) 제작으로 쓰임을 한정한다. Apple 개발자 포럼의 답변도 웹 글꼴로 쓰지 말고 `-apple-system`·`system-ui`로 기기의 글꼴을 부르라고 안내한다([포럼 1](https://developer.apple.com/forums/thread/733267), [포럼 2](https://developer.apple.com/forums/thread/127350)). 상업·비상업으로 나뉘는 조건이 아니다.
 - **Apple SD Gothic Neo:** macOS·iOS에 들어 있는 글꼴이다. Apple의 라이선스 원문은 찾지 못했다. 웹 배포를 허락한다는 근거도 찾지 못했다. 기기 안에서 쓰는 것과 파일을 서버에 올려 다른 기기에 내려보내는 것은 다른 행위라, 배포를 멈추는 쪽으로 판단했다.
 
-그래서 화면 통일과 함께, 웹 배포가 허락된 글꼴로 바꾸는 것이 목표가 되었다.
+그래서 화면 통일과 함께, ==웹 배포가 허락된 글꼴로 바꾸는 것==이 목표가 되었다.
 
 ## 고른 글꼴
 
@@ -46,7 +93,10 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 고정폭 | [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) Variable          | 라틴 조각이 39KB. 한글이 든 고정폭 글꼴(D2Coding 등)은 한글 글자 수만큼 파일이 커서, 코드 블록의 한글은 다음 글꼴인 Pretendard로 그린다                          |
 | 명조   | [Noto Serif KR](https://fonts.google.com/noto/specimen/Noto+Serif+KR) Variable | Safari 프로젝트 페이지의 명조 제목. [Fontsource](https://fontsource.org) 패키지가 `unicode-range` 조각으로 나눠 둔 것을 쓴다                                     |
 
-이모지는 범위에서 뺐다. 기기의 이모지 글꼴을 쓰고, 같게 하려면 이모지 글꼴(수 MB)을 받아야 한다.
+![Pretendard 계열 글꼴 견본](./images/open-fonts-pretendard-specimen.jpg 'Pretendard 계열(Pretendard GOV) 글꼴 견본. 한글 자모 조합, 한자·가나, 숫자, 라틴 대소문자와 악센트 문자를 한 글꼴에서 같은 굵기로 그린다')
+
+> [!NOTE] 이모지 제외
+> 이모지는 범위에서 뺐다. 기기의 이모지 글꼴을 쓰고, 같게 하려면 이모지 글꼴(수 MB)을 받아야 한다.
 
 ![휴대폰 홈](./images/open-fonts-iphone.jpg '휴대폰 홈(iPhone 15, WebKit). 고치기 전에는 Apple 기기라 시스템 글꼴, 고친 뒤에는 다른 기기와 같은 Pretendard')
 
@@ -66,7 +116,7 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 }
 ```
 
-`-apple-system` 등은 웹 글꼴을 받기 전이나 받지 못했을 때만 쓰인다. 입력 칸·버튼은 브라우저 기본값이 시스템 글꼴이라, `reset` 층에 `font-family: inherit`를 더해 사이트 글꼴을 물려받게 했다.
+`-apple-system` 등은 웹 글꼴을 받기 전이나 받지 못했을 때만 쓰인다. 예를 들어 `--font-sans`로 지정한 제목은 macOS·Windows·Android 모두 Pretendard로 그려지고, 네트워크 오류로 Pretendard 파일을 받지 못한 경우에만 목록의 다음 글꼴인 기기의 시스템 글꼴로 그려진다. 입력 칸·버튼은 브라우저 기본값이 시스템 글꼴이라, `reset` 층에 `font-family: inherit`를 더해 사이트 글꼴을 물려받게 했다.
 
 예외가 둘 있다.
 
@@ -82,7 +132,7 @@ summary: macOS와 Windows·Android·Linux에서 글꼴이 달랐다. 원인은 -
 | 메모 앱 첫 화면(글 234편의 제목·요약)이 받는 Pretendard | 92조각 중 거의 전부, 약 1.7MB             | core 하나, 456KB           |
 | `@font-face` CSS (첫 방문 번들에 포함, brotli)          | 약 14.6KB → 성능 예산 265KB 초과(271.4KB) | 1KB 미만 → 259.7KB         |
 
-글 목록은 한 화면에 다양한 한글이 나와 빈도 순 조각이 거의 다 필요했다. 그래서 예전 Apple 글꼴과 같은 방식([글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet))으로 `scripts/subset-font.py`를 다시 썼다.
+==글 목록은 한 화면에 다양한 한글이 나와 빈도 순 조각이 거의 다 필요했다==. 그래서 예전 Apple 글꼴과 같은 방식([Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet))으로 `scripts/subset-font.py`를 다시 썼다.
 
 - **core:** 영문·숫자·라틴-1, 문장 부호, 화살표, 한글 자모, KS X 1001 완성형 2,350자. 가변 글꼴이라 굵기 전체를 포함해 456KB (아래 '전송량 줄이기'에서 다시 나눴다)
 - **ext-0\~7:** 나머지 한글 8,822자를 코드 순서로 8등분(각 170\~210KB). 저장소의 글과 화면 문구 전체에서 KS X 1001 밖 글자는 '긂·똠·햏' 세 글자, 글 2편뿐이었다
@@ -98,7 +148,7 @@ ext의 `unicode-range`는 코드 범위(예: `U+AC02-B1C1`)라 자주 쓰는 글
 
 ## 전송량 (Apple 글꼴과 비교)
 
-`vite preview`로 연 화면에서 Playwright로 글꼴 파일(woff2·woff) 요청을 집계했다. 같은 파일은 한 번만 셌고, Font Awesome 아이콘 글꼴을 포함한다.
+`vite preview`로 연 화면에서 Playwright로 글꼴 파일(woff2·woff) 요청을 집계했다. 같은 파일은 한 번만 집계했고, Font Awesome 아이콘 글꼴을 포함한다.
 
 | 화면                   | 전 (Chromium) | 전 (WebKit) | 후      |
 | ---------------------- | ------------- | ----------- | ------- |
@@ -123,10 +173,12 @@ ext의 `unicode-range`는 코드 범위(예: `U+AC02-B1C1`)라 자주 쓰는 글
 
 - `ProjectPage.css`의 `@import`를 지우고, `apps/safari/serifFont.ts`의 `loadSerifKorean()`이 처음 불릴 때 `import('@fontsource-variable/noto-serif-kr/wght.css')`로 불러온다
 - 부르는 시각: Safari 창 안을 누르거나 스크롤·키 입력(`onPointerDownCapture` 등), 탭을 고름(`/safari/<프로젝트>` 주소로 들어온 경우 포함), 닫았던 창을 다시 엶, 휴대폰에서 Safari를 엶
-- 그 전까지 제목의 한글은 `--font-serif`의 다음 글꼴인 'Pretendard Serif Fallback'으로 그린다. 시스템 명조로 넘어가면 OS마다 글꼴이 달라지므로, 대체 글꼴도 사이트 글꼴로 두었다. 라틴 명조 조각(34KB)은 처음부터 받는다
+- 그 전까지 제목의 한글은 `--font-serif`의 다음 글꼴인 'Pretendard Serif Fallback'으로 그린다. 시스템 명조로 넘어가면 OS마다 글꼴이 달라지므로, 대체 글꼴도 사이트 글꼴로 지정했다. 라틴 명조 조각(34KB)은 처음부터 받는다
 - 대체 글꼴은 같은 Pretendard 파일에 [`size-adjust: 111.8%`](https://developer.mozilla.org/ko/docs/Web/CSS/@font-face/size-adjust)를 준 `@font-face`다. 한글 한 글자의 폭이 Pretendard는 0.864em, Noto Serif KR은 0.966em이라(fontTools로 `hmtx` 확인) 그 비율만큼 키웠다. 파일 주소가 같아 더 받지 않는다
 - 폭을 맞추지 않았을 때는 명조로 바뀌는 시각에 HYEONIVERSE 페이지 제목이 한 줄에서 두 줄로 바뀌었다(높이 43px → 87px). 맞춘 뒤에는 바뀌기 전과 후의 제목 상자가 571×87px로 같다
 - 처음에는 이름을 'Serif Fallback'으로 지었다가 적용되지 않았다. 빌드의 CSS 압축이 따옴표를 지워 `font-family: Serif Fallback`이 되었고, 따옴표 없는 이름의 첫 낱말이 일반 글꼴 키워드 `serif`라 브라우저가 그 `@font-face` 규칙을 버렸다(`document.styleSheets`에서 규칙 0개). 이름을 바꿔 해결했다
+
+![size-adjust로 글자 폭 맞추기](./images/open-fonts-size-adjust.svg '한글 한 글자의 폭은 Pretendard 0.864em, Noto Serif KR 0.966em이다. size-adjust 111.8%로 폭을 맞추면 명조로 바뀌어도 제목 상자가 571×87px로 같다')
 
 ![명조를 받기 전과 후](./images/open-fonts-serif-swap.jpg '첫 화면의 Safari 창. 왼쪽은 명조를 받기 전(폭을 맞춘 Pretendard), 오른쪽은 창을 누른 뒤의 Noto Serif KR. 제목의 줄바꿈과 높이가 같다')
 
@@ -140,14 +192,14 @@ ext의 `unicode-range`는 코드 범위(예: `U+AC02-B1C1`)라 자주 쓰는 글
 | ksx  | KS X 1001의 나머지 1,257자                               | 253KB         | 방문자 댓글처럼 저장소 밖 글에 그 글자가 있을 때 |
 | ext  | KS X 1001 밖 8,822자 (8조각)                             | 각 170\~210KB | 그 조각의 글자가 있을 때                         |
 
-- 글자 빈도를 세어 보니 저장소 전체가 쓰는 한글은 1,096자였고, 그중 KS X 1001 안이 1,093자였다. 빈도 상위 600자만으로도 글자 수의 99.4%가 덮였지만, 메모 목록은 글 234편의 제목·요약을 한 화면에 그려 드문 글자도 거의 다 나온다. 그래서 빈도로 자르지 않고 '쓰는 글자 전부'를 core에 넣었다
+- 글자 빈도를 집계하니 저장소 전체가 쓰는 한글은 1,096자였고, 그중 KS X 1001 안이 1,093자였다. 빈도 상위 600자만으로도 글자 수의 99.4%가 덮였지만, 메모 목록은 글 234편의 제목·요약을 한 화면에 그려 드문 글자도 거의 다 나온다. 그래서 빈도로 자르지 않고 '쓰는 글자 전부'를 core에 넣었다
 - 관리자가 서버에 쓴 글은 저장소에 없다. 2026-10-26 배포 서버의 글과 메시지를 확인해 core에 없는 글자가 없었다
-- `ksx`의 `unicode-range`는 한글 전체(`U+AC00-D7A3`)로 두고 core보다 먼저 정의했다. 1,257자를 낱낱이 나열하면 CSS가 brotli로 약 2.8KB 늘어나 첫 방문 번들 예산(265KB)에 가까워진다. 대신 드문 글자(긂·똠·햏)가 있는 화면은 core에 없을 때 다음 후보인 `ksx`도 받는다(저장소에서는 글 2편의 본문)
+- `ksx`의 `unicode-range`는 한글 전체(`U+AC00-D7A3`)로 지정하고 core보다 먼저 정의했다. 1,257자를 낱낱이 나열하면 CSS가 brotli로 약 2.8KB 늘어나 첫 방문 번들 예산(265KB)에 가까워진다. 대신 드문 글자(긂·똠·햏)가 있는 화면은 core에 없을 때 다음 후보인 `ksx`도 받는다(저장소에서는 글 2편의 본문)
 - 글을 많이 더해 core에 없는 글자가 생기면 그 화면은 `ksx`를 더 받는다. 화면은 그대로이고, 스크립트를 다시 실행하면 core에 들어간다
 
 ### 3. 첫 화면 글꼴에 예산을 건다
 
-첫 방문 번들 예산(`budget.mjs`)은 `index.html`이 처음부터 요청하는 스크립트·CSS만 집계해, 이번처럼 글꼴이 세 배로 늘어도 CI가 통과했다. 글꼴은 화면에 그린 글자에 따라 받으므로 빌드 결과만으로는 알 수 없어, 실제 브라우저로 재는 E2E 시험으로 넣었다(`e2e/fontBudget.ts`).
+첫 방문 번들 예산(`budget.mjs`)은 `index.html`이 처음부터 요청하는 스크립트·CSS만 집계해, ==이번처럼 글꼴이 세 배로 늘어도 CI가 통과했다==. 글꼴은 화면에 그린 글자에 따라 받으므로 빌드 결과만으로는 알 수 없어, 실제 브라우저로 측정하는 E2E 시험으로 넣었다(`e2e/fontBudget.ts`).
 
 - `perf-fonts.spec.ts` (데스크톱): 첫 화면 글꼴 합계 600KB 이하, 한글 명조 조각 없음. Safari 창을 누르면 명조를 받는지도 확인한다
 - `mobile-perf-fonts.spec.ts` (iPhone·Android): 홈 화면 글꼴 합계 410KB 이하
@@ -155,7 +207,7 @@ ext의 `unicode-range`는 코드 범위(예: `U+AC02-B1C1`)라 자주 쓰는 글
 
 ### 결과
 
-같은 방법(`vite preview`, Playwright로 글꼴 응답 크기 합계, Font Awesome 포함)으로 쟀다. Safari 프로젝트 페이지는 `/safari/hyeoniverse`로 들어온 바탕화면이다.
+같은 방법(`vite preview`, Playwright로 글꼴 응답 크기 합계, Font Awesome 포함)으로 측정했다. Safari 프로젝트 페이지는 `/safari/hyeoniverse`로 들어온 바탕화면이다.
 
 | 화면                               | 교체 직후     | 1 적용        | 1 + 2 적용     |
 | ---------------------------------- | ------------- | ------------- | -------------- |
@@ -163,6 +215,8 @@ ext의 `unicode-range`는 코드 범위(예: `U+AC02-B1C1`)라 자주 쓰는 글
 | Safari 프로젝트 페이지             | 17개, 1,187KB | 18개, 1,187KB | 18개, 977KB    |
 | 메모 글 (`/memo/merge-strategies`) | 17개, 1,187KB | 6개, 777KB    | **6개, 568KB** |
 | 휴대폰 홈 (iPhone 15)              | 3개, 591KB    | 3개, 591KB    | **3개, 382KB** |
+
+![화면별 글꼴 전송량](./images/open-fonts-transfer.svg '데스크톱 첫 화면과 메모 글은 1,187KB → 777KB → 568KB, 휴대폰 홈은 591KB → 382KB로 줄었다.')
 
 - 드문 글자가 있는 글(`/memo/music-widget-ios-corners`의 '둥긂')은 core·`ksx`·ext-0을 받아 1,024KB다. core 하나였을 때보다 Pretendard가 약 43KB 많다
 - 고치기 전 Apple 글꼴(데스크톱 Chromium 397KB)보다는 여전히 많다. 굵기 전체가 든 가변 글꼴을 모든 기기에 보내기 때문이다
@@ -178,8 +232,30 @@ PDF 이력서와 공유 카드도 Pretendard로 바꿨다. 브라우저의 react
 
 ## 관련 글
 
-- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
-- [#boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
+- [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): Apple 글꼴을 core·ext로 나눴던 1차 최적화
+- [Lighthouse 운영 재측정, 명언 데이터 lazy 분리, #boot-splash 삭제 시각으로 휴대폰 LCP 편차 해결과 CI 성능 예산](/memo/site-performance-lcp-budget): 첫 방문 번들 예산과 로딩 문구의 글꼴
 - [CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](/memo/ci-failures-after-merges): 글꼴마다 다른 줄 높이로 위젯 크기가 달라진 사례
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [font-family](https://developer.mozilla.org/en-US/docs/Web/CSS/font-family), [@font-face](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face), [unicode-range](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/unicode-range)
+- MDN, [font-synthesis](https://developer.mozilla.org/en-US/docs/Web/CSS/font-synthesis), [size-adjust](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/size-adjust)
+- MDN, [Variable fonts guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fonts/Variable_fonts_guide)
+- W3C, [CSS Fonts Module Level 4: Font matching algorithm](https://www.w3.org/TR/css-fonts-4/#font-matching-algorithm)
+- W3C, [WOFF File Format 2.0](https://www.w3.org/TR/WOFF2/)
+- SIL, [SIL Open Font License 1.1](https://openfontlicense.org)
+- Apple, [Fonts for Apple platforms](https://developer.apple.com/fonts/)
+- orioncactus, [Pretendard](https://github.com/orioncactus/pretendard)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 가변 글꼴 보간 예시: Krisduck, Wikimedia Commons, [Interpolation variable fonts.png](https://commons.wikimedia.org/wiki/File:Interpolation_variable_fonts.png), CC BY-SA 4.0
+- Pretendard GOV 글꼴 견본: Seojoohyun, Wikimedia Commons, [Pretendard GOV 1.3.9.jpg](https://commons.wikimedia.org/wiki/File:Pretendard_GOV_1.3.9.jpg), CC0
+
+</details>
 
 #MacFolio #글꼴 #웹폰트 #라이선스 #성능

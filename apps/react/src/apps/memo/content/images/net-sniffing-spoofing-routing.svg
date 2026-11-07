@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="450" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <line x1="320" y1="110" x2="170" y2="210" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="320" y1="110" x2="470" y2="210" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="170" y1="210" x2="170" y2="350" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="270" y1="45" x2="320" y2="110" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="370" y1="45" x2="320" y2="110" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="110" y1="285" x2="170" y2="210" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="230" y1="285" x2="170" y2="210" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="410" y1="285" x2="470" y2="210" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="530" y1="285" x2="470" y2="210" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="110" y1="420" x2="170" y2="350" stroke="#1d1d1f" stroke-width="1.4"/>
+  <line x1="230" y1="420" x2="170" y2="350" stroke="#1d1d1f" stroke-width="1.4"/>
+  <rect x="291.0" y="99.0" width="58" height="22" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+  <text x="320.0" y="114.0" text-anchor="middle" font-size="12" fill="#1d1d1f">라우터</text>
+  <rect x="141.0" y="199.0" width="58" height="22" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+  <text x="170.0" y="214.0" text-anchor="middle" font-size="12" fill="#1d1d1f">라우터</text>
+  <rect x="441.0" y="199.0" width="58" height="22" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+  <text x="470.0" y="214.0" text-anchor="middle" font-size="12" fill="#1d1d1f">라우터</text>
+  <rect x="141.0" y="339.0" width="58" height="22" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.4"/>
+  <text x="170.0" y="354.0" text-anchor="middle" font-size="12" fill="#1d1d1f">라우터</text>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="252" y="32" width="36" height="25" rx="2"/><line x1="270" y1="57" x2="270" y2="62"/><line x1="260" y1="62" x2="280" y2="62"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="352" y="32" width="36" height="25" rx="2"/><line x1="370" y1="57" x2="370" y2="62"/><line x1="360" y1="62" x2="380" y2="62"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="92" y="272" width="36" height="25" rx="2"/><line x1="110" y1="297" x2="110" y2="302"/><line x1="100" y1="302" x2="120" y2="302"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="212" y="272" width="36" height="25" rx="2"/><line x1="230" y1="297" x2="230" y2="302"/><line x1="220" y1="302" x2="240" y2="302"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="392" y="272" width="36" height="25" rx="2"/><line x1="410" y1="297" x2="410" y2="302"/><line x1="400" y1="302" x2="420" y2="302"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="512" y="272" width="36" height="25" rx="2"/><line x1="530" y1="297" x2="530" y2="302"/><line x1="520" y1="302" x2="540" y2="302"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="92" y="407" width="36" height="25" rx="2"/><line x1="110" y1="432" x2="110" y2="437"/><line x1="100" y1="437" x2="120" y2="437"/></g>
+  <g stroke="#1d1d1f" stroke-width="1.4" fill="#fff"><rect x="212" y="407" width="36" height="25" rx="2"/><line x1="230" y1="432" x2="230" y2="437"/><line x1="220" y1="437" x2="240" y2="437"/></g>
+  <text x="370" y="114" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">네트워크 A</text>
+  <text x="80" y="214" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">네트워크 B</text>
+  <text x="560" y="214" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">네트워크 C</text>
+  <text x="80" y="354" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">네트워크 D</text>
+  <line x1="190" y1="330" x2="190" y2="236" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <line x1="220" y1="400" x2="194" y2="366" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <circle cx="222" cy="210" r="10" fill="#fff" stroke="#ff9f0a" stroke-width="1.6"/>
+  <text x="222" y="215" text-anchor="middle" font-size="13" fill="#ff9f0a" font-weight="700">?</text>
+  <text x="238" y="214" text-anchor="start" font-size="12" fill="#ff9f0a">이 구간에서 문제가 생기는가?</text>
+</svg>

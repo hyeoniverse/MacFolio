@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>1440px 화면 안의 500px 창에서 미디어 질의는 화면 폭을 보고 넓은 배치를 고르고, 컨테이너 질의는 창 폭을 보고 좁은 배치를 고른다</title>
+<rect width="640" height="400" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">같은 500px 창, 기준이 다른 두 질의</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">1440px 화면에 활동 상태 보기 창을 500px로 줄여 둔 경우. 조건은 둘 다 max-width: 640px</text>
+
+<!-- 왼쪽: media -->
+<rect x="24" y="70" width="290" height="270" rx="10" fill="#f2f2f7"/>
+<text x="40" y="94" font-size="13" font-weight="600" fill="#1d1d1f">@media (max-width: 640px)</text>
+<text x="40" y="112" font-size="12" fill="#6e6e73">브라우저 화면 1440px로 판단 → 거짓</text>
+<rect x="40" y="124" width="258" height="196" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="169" y="142" font-size="12" fill="#6e6e73" text-anchor="middle">창 500px</text>
+<!-- 지표 4칸 한 줄 -->
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<rect x="50" y="152" width="56" height="40" rx="4" fill="#ffebea" stroke="#ff3b30"/><text x="78" y="176">방문</text>
+<rect x="111" y="152" width="56" height="40" rx="4" fill="#ffebea" stroke="#ff3b30"/><text x="139" y="176">순방…</text>
+<rect x="172" y="152" width="56" height="40" rx="4" fill="#ffebea" stroke="#ff3b30"/><text x="200" y="176">앱 …</text>
+<rect x="233" y="152" width="56" height="40" rx="4" fill="#ffebea" stroke="#ff3b30"/><text x="261" y="176">평균…</text>
+</g>
+<rect x="50" y="200" width="117" height="108" rx="4" fill="#ffebea" stroke="#ff3b30"/>
+<rect x="172" y="200" width="117" height="108" rx="4" fill="#ffebea" stroke="#ff3b30"/>
+<text x="108" y="258" font-size="12" fill="#1d1d1f" text-anchor="middle">표 1</text>
+<text x="230" y="258" font-size="12" fill="#1d1d1f" text-anchor="middle">표 2</text>
+<text x="169" y="332" font-size="12" fill="#ff3b30" text-anchor="middle">넓은 배치 그대로 → 글자가 잘린다</text>
+
+<!-- 오른쪽: container -->
+<rect x="326" y="70" width="290" height="270" rx="10" fill="#f2f2f7"/>
+<text x="342" y="94" font-size="13" font-weight="600" fill="#1d1d1f">@container (max-width: 640px)</text>
+<text x="342" y="112" font-size="12" fill="#6e6e73">.activity 폭 500px로 판단 → 참</text>
+<rect x="342" y="124" width="258" height="196" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+<text x="471" y="142" font-size="12" fill="#0a84ff" text-anchor="middle">창 500px (container-type: inline-size)</text>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<rect x="352" y="150" width="117" height="28" rx="4" fill="#e8f8ec" stroke="#34c759"/><text x="410" y="169">방문</text>
+<rect x="474" y="150" width="117" height="28" rx="4" fill="#e8f8ec" stroke="#34c759"/><text x="532" y="169">순방문자</text>
+<rect x="352" y="182" width="117" height="28" rx="4" fill="#e8f8ec" stroke="#34c759"/><text x="410" y="201">앱 열기</text>
+<rect x="474" y="182" width="117" height="28" rx="4" fill="#e8f8ec" stroke="#34c759"/><text x="532" y="201">평균 체류</text>
+<rect x="352" y="216" width="239" height="44" rx="4" fill="#e8f8ec" stroke="#34c759"/><text x="471" y="243">표 1</text>
+<rect x="352" y="264" width="239" height="44" rx="4" fill="#e8f8ec" stroke="#34c759"/><text x="471" y="291">표 2</text>
+</g>
+<text x="471" y="332" font-size="12" fill="#248a3d" text-anchor="middle">지표 두 줄, 표 한 열로 바뀐다</text>
+<text x="24" y="370" font-size="12" fill="#6e6e73">미디어 질의는 브라우저 화면(뷰포트)의 크기를, 컨테이너 질의는 container-type을 지정한</text>
+<text x="24" y="388" font-size="12" fill="#6e6e73">가장 가까운 조상 요소의 크기를 조건으로 쓴다</text>
+</svg>

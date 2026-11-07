@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>관리자 쓰기 경로에서 요청 제한과 세션 확인이 실행되는 순서</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">POST /posts 한 번이 거치는 가드 (posts.controller.ts)</text>
+<rect x="24" y="54" width="250" height="96" rx="10" fill="#f2f2f7"/>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12.5" fill="#1d1d1f">
+<text x="40" y="80">@Post()</text>
+<text x="40" y="102">@UseGuards(AdminGuard)</text>
+<text x="40" y="124" fill="#0a84ff">@RateLimit('write')</text>
+</g>
+<text x="290" y="84" font-size="12.5" fill="#1d1d1f">데코레이터는 아래 줄부터 적용되어</text>
+<text x="290" y="106" font-size="12.5" fill="#1d1d1f">@RateLimit의 가드가 먼저 등록된다.</text>
+<text x="290" y="128" font-size="12" fill="#6e6e73">순서는 경로 표 시험(routes.e2e.test.ts)이 검사</text>
+<g font-size="12.5" fill="#1d1d1f">
+<rect x="24" y="180" width="110" height="56" rx="10" fill="#f2f2f7"/><text x="79" y="204" text-anchor="middle">요청</text><text x="79" y="223" text-anchor="middle" font-size="12" fill="#6e6e73">쿠키 없음</text>
+<rect x="164" y="180" width="140" height="56" rx="10" fill="#e6f2ff" stroke="#0a84ff"/><text x="234" y="204" text-anchor="middle">ThrottlerGuard</text><text x="234" y="223" text-anchor="middle" font-size="12" fill="#6e6e73">IP·경로별 1분 60회</text>
+<rect x="334" y="180" width="140" height="56" rx="10" fill="#f2f2f7"/><text x="404" y="204" text-anchor="middle">AdminGuard</text><text x="404" y="223" text-anchor="middle" font-size="12" fill="#6e6e73">DB에서 세션 조회</text>
+<rect x="504" y="180" width="112" height="56" rx="10" fill="#f2f2f7"/><text x="560" y="213" text-anchor="middle">핸들러</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M136 208 H160"/><path d="M306 208 H330"/><path d="M476 208 H500"/></g>
+<path d="M234 238 V270" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M404 238 V270" stroke="#ff9f0a" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="150" y="276" width="168" height="40" rx="8" fill="#fff0ef"/><text x="234" y="301" font-size="12.5" text-anchor="middle" fill="#ff3b30">한도 초과 429, DB 조회 없음</text>
+<rect x="334" y="276" width="140" height="40" rx="8" fill="#fff4e5"/><text x="404" y="301" font-size="12.5" text-anchor="middle" fill="#1d1d1f">세션 없음 401</text>
+<text x="24" y="344" font-size="12" fill="#6e6e73">순서가 반대면 쿠키 없는 요청이 모두 세션 조회를 거쳐 401로 끝나, 요청 수만큼 DB 조회가 생긴다.</text>
+</svg>

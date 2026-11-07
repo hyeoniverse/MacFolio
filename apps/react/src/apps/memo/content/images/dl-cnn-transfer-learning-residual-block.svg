@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="340" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker></defs>
+  <text x="320" y="24" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">잔차 블록</text>
+  <circle cx="300" cy="300" r="6" fill="#fff" stroke="#1d1d1f" stroke-width="1.6"/>
+  <text x="300" y="328" text-anchor="middle" font-size="15" fill="#1d1d1f">x</text>
+  <line x1="300" y1="294" x2="300" y2="262" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#a)"/>
+  <rect x="240" y="222" width="120" height="38" rx="3" fill="#fde7c6" stroke="#ff9f0a" stroke-width="1.6"/>
+  <text x="300" y="246" text-anchor="middle" font-size="14" fill="#c46f00">컨볼루션</text>
+  <line x1="300" y1="222" x2="300" y2="174" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="312" y="203" font-size="13" fill="#1d1d1f">ReLU</text>
+  <rect x="240" y="134" width="120" height="38" rx="3" fill="#fde7c6" stroke="#ff9f0a" stroke-width="1.6"/>
+  <text x="300" y="158" text-anchor="middle" font-size="14" fill="#c46f00">컨볼루션</text>
+  <line x1="300" y1="134" x2="300" y2="96" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#a)"/>
+  <circle cx="300" cy="82" r="13" fill="#fff" stroke="#1d1d1f" stroke-width="1.8"/>
+  <path d="M292,82 H308 M300,74 V90" stroke="#1d1d1f" stroke-width="1.8"/>
+  <line x1="300" y1="69" x2="300" y2="40" stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#a)"/>
+  <text x="312" y="52" font-size="13" fill="#1d1d1f">ReLU</text>
+  <text x="280" y="87" text-anchor="end" font-size="15" fill="#0a84ff">F(x) + x</text>
+  <text x="200" y="202" text-anchor="end" font-size="15" fill="#ff9f0a">F(x)</text>
+  <path d="M306,298 C420,280 420,100 316,84" fill="none" stroke="#1d1d1f" stroke-width="1.8" marker-end="url(#a)"/>
+  <text x="430" y="186" font-size="14" fill="#1d1d1f">x</text>
+  <text x="430" y="204" font-size="13" fill="#6e6e73">항등 연결(identity)</text>
+</svg>

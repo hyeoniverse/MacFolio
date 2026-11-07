@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 376" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>sticky 무대와 스크롤 진행도 --p</title>
+  <rect width="640" height="376" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">긴 트랙 안에 고정된 무대, 진행도는 CSS 변수 --p</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">트랙 높이 ≈ 창 높이 × 2 · 무대는 position: sticky; top: 0</text>
+  <rect x="70" y="72" width="270" height="288" rx="8" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="62" y="220" font-size="12" text-anchor="end" fill="#6e6e73">트랙</text>
+  <text x="62" y="236" font-size="12" text-anchor="end" fill="#6e6e73">(창 ×2)</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="80" y="80" width="250" height="132" rx="8" fill="#ffffff" fill-opacity="0.85" stroke="#0a84ff" stroke-width="2"/>
+    <text x="205" y="102" text-anchor="middle" fill="#0a84ff">창 · 스크롤 시작</text>
+    <text x="205" y="140" text-anchor="middle">--p = 0</text>
+    <text x="205" y="162" text-anchor="middle" fill="#6e6e73">제목 선명</text>
+    <text x="205" y="182" text-anchor="middle" fill="#6e6e73">노트북 작게 아래</text>
+    <rect x="80" y="220" width="250" height="132" rx="8" fill="#ffffff" fill-opacity="0.85" stroke="#ff9f0a" stroke-width="2"/>
+    <text x="205" y="242" text-anchor="middle" fill="#ff9f0a">창 · 트랙 끝까지 스크롤</text>
+    <text x="205" y="280" text-anchor="middle">--p = 1</text>
+    <text x="205" y="302" text-anchor="middle" fill="#6e6e73">제목 흐림</text>
+    <text x="205" y="322" text-anchor="middle" fill="#6e6e73">노트북 가운데·확대</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="356" y="96" font-weight="700">스크롤 이벤트 (프레임당 한 번)</text>
+    <text x="356" y="118" fill="#6e6e73">(창 위 − 트랙 위) ÷ (트랙 높이 − 창 높이)</text>
+    <text x="356" y="140" font-family="ui-monospace, Menlo, monospace">node.style.setProperty('--p', '0.5000')</text>
+    <line x1="356" y1="156" x2="616" y2="156" stroke="#f2f2f7" stroke-width="2"/>
+    <text x="356" y="182" font-weight="700">CSS가 위치·크기를 계산</text>
+    <text x="356" y="204" font-family="ui-monospace, Menlo, monospace">scale: calc(0.6 + 0.4 * var(--p))</text>
+    <text x="356" y="226" fill="#6e6e73">(계산식은 설명용 예시)</text>
+    <line x1="356" y1="242" x2="616" y2="242" stroke="#f2f2f7" stroke-width="2"/>
+    <text x="356" y="268" font-weight="700" fill="#34c759">React 다시 렌더링 없음</text>
+    <text x="356" y="290" fill="#6e6e73">상태(state)를 바꾸지 않고</text>
+    <text x="356" y="310" fill="#6e6e73">스타일 변수 하나만 갱신한다</text>
+  </g>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>늦게 생기는 앨범을 기다리는 요청</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">요청을 보관했다가 앨범이 생긴 뒤 처리하는 순서</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">위젯이 그림 폴더(finder:folder:widget01)의 사진을 표시하던 경우</text>
+<line x1="40" y1="84" x2="40" y2="332" stroke="#c7c7cc" stroke-width="2"/>
+<circle cx="40" cy="92" r="11" fill="#1d1d1f"/>
+<text x="40" y="96" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="700">1</text>
+<rect x="64" y="70" width="556" height="48" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="78" y="90" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">위젯 클릭</text>
+<text x="606" y="90" font-size="12" fill="#6e6e73" text-anchor="end">위젯</text>
+<text x="78" y="108" font-size="12" fill="#1d1d1f" text-anchor="start">requestOpen('photos', id) 후 openApp('photos')</text>
+<circle cx="40" cy="154" r="11" fill="#0a84ff"/>
+<text x="40" y="158" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="700">2</text>
+<rect x="64" y="132" width="556" height="48" rx="6" fill="#e8f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="78" y="152" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">마운트, 요청 수신</text>
+<text x="606" y="152" font-size="12" fill="#6e6e73" text-anchor="end">사진 앱</text>
+<text x="78" y="170" font-size="12" fill="#1d1d1f" text-anchor="start">parsePhotoTarget(id)를 ref에 보관하고 저장소의 요청은 비움</text>
+<circle cx="40" cy="216" r="11" fill="#ff9f0a"/>
+<text x="40" y="220" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="700">3</text>
+<rect x="64" y="194" width="556" height="48" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.2"/>
+<text x="78" y="214" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">첫 렌더링: albums에 폴더 앨범이 없음</text>
+<text x="606" y="214" font-size="12" fill="#6e6e73" text-anchor="end">사진 앱</text>
+<text x="78" y="232" font-size="12" fill="#1d1d1f" text-anchor="start">locatePhoto(albums, target) = null, ref의 요청은 삭제하지 않고 유지</text>
+<circle cx="40" cy="278" r="11" fill="#c7c7cc"/>
+<text x="40" y="282" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="700">4</text>
+<rect x="64" y="256" width="556" height="48" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="78" y="276" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">loadDocuments() 완료</text>
+<text x="606" y="276" font-size="12" fill="#6e6e73" text-anchor="end">보관함</text>
+<text x="78" y="294" font-size="12" fill="#1d1d1f" text-anchor="start">folderSources가 폴더 앨범을 만들어 albums가 바뀐다</text>
+<circle cx="40" cy="340" r="11" fill="#34c759"/>
+<text x="40" y="344" font-size="12" fill="#ffffff" text-anchor="middle" font-weight="700">5</text>
+<rect x="64" y="318" width="556" height="48" rx="6" fill="#ecf9ef" stroke="#34c759" stroke-width="1.2"/>
+<text x="78" y="338" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">albums 변경으로 다시 찾기</text>
+<text x="606" y="338" font-size="12" fill="#6e6e73" text-anchor="end">사진 앱</text>
+<text x="78" y="356" font-size="12" fill="#1d1d1f" text-anchor="start">locatePhoto 성공, onOpen(album, index) 호출 후 ref를 비운다</text>
+<text x="20" y="388" font-size="12" fill="#6e6e73" text-anchor="start">3에서 요청을 삭제했다면 4 이후에는 처리할 요청이 없어 보관함 격자가 열렸을 것이다</text>
+</svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>authorized_keys의 command= 옵션 때문에 배포 키로는 어떤 명령을 보내도 ops/deploy.sh만 실행되고 보낸 문자열은 SSH_ORIGINAL_COMMAND로 전달된다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">배포 키의 강제 명령(command=)</text>
+
+<rect x="20" y="50" width="170" height="74" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="32" y="72" font-size="13" font-weight="700" fill="#1d1d1f">GitHub Actions</text>
+<text x="32" y="92" font-size="12" fill="#6e6e73">배포 키로 SSH 접속,</text>
+<text x="32" y="110" font-size="12" fill="#1d1d1f">보내는 문자열: <tspan font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">sha-…</tspan></text>
+<line x1="190" y1="87" x2="222" y2="87" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+<rect x="226" y="50" width="394" height="74" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="238" y="72" font-size="13" font-weight="700" fill="#1d1d1f">서버의 sshd가 읽는 ~/.ssh/authorized_keys 한 줄</text>
+<text x="238" y="96" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f"><tspan fill="#0a84ff" font-weight="700">restrict,command="…/ops/deploy.sh"</tspan> ssh-ed25519 AAAA…</text>
+<text x="238" y="114" font-size="12" fill="#6e6e73">이 키로 접속하면 요청한 명령 대신 지정한 명령을 실행한다</text>
+
+<text x="20" y="160" font-size="13" font-weight="700" fill="#1d1d1f">보낸 문자열에 따른 결과</text>
+<g font-size="12">
+<rect x="20" y="172" width="600" height="26" fill="#f2f2f7"/>
+<text x="30" y="189" font-weight="700" fill="#6e6e73">클라이언트가 보낸 것</text>
+<text x="210" y="189" font-weight="700" fill="#6e6e73">실제로 실행되는 것</text>
+<text x="478" y="189" font-weight="700" fill="#6e6e73">결과</text>
+
+<text x="30" y="222" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">sha-dead000</text>
+<text x="210" y="216" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">ops/deploy.sh</text>
+<text x="210" y="232" font-family="SFMono-Regular, Menlo, monospace" fill="#6e6e73">SSH_ORIGINAL_COMMAND=sha-dead000</text>
+<text x="478" y="222" fill="#248a3d">태그 검사 통과, 배포 진행</text>
+<line x1="20" y1="244" x2="620" y2="244" stroke="#e5e5ea"/>
+
+<text x="30" y="268" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">cat ~/deploy/api.env</text>
+<text x="210" y="262" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">ops/deploy.sh</text>
+<text x="210" y="278" font-family="SFMono-Regular, Menlo, monospace" fill="#6e6e73">SSH_ORIGINAL_COMMAND=cat …</text>
+<text x="478" y="268" fill="#ff3b30">태그 모양 아님, exit 2</text>
+<line x1="20" y1="290" x2="620" y2="290" stroke="#e5e5ea"/>
+</g>
+<text x="20" y="318" font-size="12" fill="#6e6e73">restrict는 포트 전달·터미널 할당 등을 함께 막는다. 이 키로 할 수 있는 일은 "태그 하나로 배포 요청"뿐이다</text>
+</svg>

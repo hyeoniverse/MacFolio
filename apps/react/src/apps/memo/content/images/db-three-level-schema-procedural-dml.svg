@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">"컴퓨터학과 학생의 이름"을 구하는 두 방식</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="20" y="56" font-size="13" font-weight="600" fill="#ff9f0a">절차적 DML: 무엇을 + 어떻게</text>
+    <rect x="20" y="66" width="300" height="168" rx="8" fill="#fff5e6" stroke="#ff9f0a"/>
+    <g font-family="SFMono-Regular, Menlo, monospace">
+      <text x="34" y="90">FIND FIRST STUDENT</text>
+      <text x="34" y="110">while (레코드가 있으면) {</text>
+      <text x="54" y="130">GET STUDENT</text>
+      <text x="54" y="150">if (Dept == "컴퓨터")</text>
+      <text x="74" y="170">print(Sname)</text>
+      <text x="54" y="190">FIND NEXT STUDENT</text>
+      <text x="34" y="210">}</text>
+    </g>
+    <text x="20" y="256">레코드를 하나씩 읽는 순서와 반복을</text>
+    <text x="20" y="274">프로그래머가 직접 작성한다</text>
+
+    <text x="340" y="56" font-size="13" font-weight="600" fill="#0a84ff">비절차적 DML: 무엇을만</text>
+    <rect x="340" y="66" width="280" height="64" rx="8" fill="#e8f2ff" stroke="#0a84ff"/>
+    <g font-family="SFMono-Regular, Menlo, monospace">
+      <text x="354" y="92">SELECT Sname FROM STUDENT</text>
+      <text x="354" y="112">WHERE  Dept = '컴퓨터';</text>
+    </g>
+    <text x="340" y="160">읽는 순서와 인덱스 사용 여부는</text>
+    <text x="340" y="178">DBMS가 정한다</text>
+    <rect x="340" y="196" width="280" height="38" rx="8" fill="#f2f2f7"/>
+    <text x="354" y="220">두 방식의 결과: 나수영, 정기태, 송병길</text>
+  </g>
+</svg>

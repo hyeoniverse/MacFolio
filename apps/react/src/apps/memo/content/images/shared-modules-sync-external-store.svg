@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>useMediaQuery와 useSyncExternalStore</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">useMediaQuery('(prefers-color-scheme: dark)')의 동작</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)</text>
+  <rect x="24" y="76" width="200" height="200" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="124" y="100" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">브라우저</text>
+  <text x="124" y="124" font-size="12" text-anchor="middle" fill="#1d1d1f">MediaQueryList</text>
+  <text x="124" y="144" font-size="12" text-anchor="middle" fill="#6e6e73">matches: false → true</text>
+  <text x="124" y="190" font-size="12" text-anchor="middle" fill="#1d1d1f">macOS 화면 모드를</text>
+  <text x="124" y="208" font-size="12" text-anchor="middle" fill="#1d1d1f">다크로 바꾸면</text>
+  <text x="124" y="226" font-size="12" text-anchor="middle" fill="#ff9f0a">'change' 이벤트 발생</text>
+  <rect x="416" y="76" width="200" height="200" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="516" y="100" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">React</text>
+  <text x="516" y="124" font-size="12" text-anchor="middle" fill="#1d1d1f">컴포넌트 렌더링</text>
+  <text x="516" y="144" font-size="12" text-anchor="middle" fill="#6e6e73">dark = false</text>
+  <text x="516" y="208" font-size="12" text-anchor="middle" fill="#1d1d1f">값이 바뀌었으면</text>
+  <text x="516" y="226" font-size="12" text-anchor="middle" fill="#34c759">다시 렌더링: dark = true</text>
+  <g font-size="12" fill="#1d1d1f">
+    <path d="M416 120 H232" stroke="#0a84ff" stroke-width="2"/><path d="M226 120 l10 -5 v10z" fill="#0a84ff"/>
+    <text x="320" y="112" text-anchor="middle" fill="#0a84ff">① subscribe = onMediaChange</text>
+    <text x="320" y="138" text-anchor="middle" fill="#6e6e73">addEventListener('change')</text>
+    <path d="M224 200 H410" stroke="#ff9f0a" stroke-width="2"/><path d="M416 200 l-10 -5 v10z" fill="#ff9f0a"/>
+    <text x="320" y="192" text-anchor="middle" fill="#ff9f0a">② onChange() 호출</text>
+    <path d="M416 240 H232" stroke="#34c759" stroke-width="2"/><path d="M226 240 l10 -5 v10z" fill="#34c759"/>
+    <text x="320" y="232" text-anchor="middle" fill="#34c759">③ getSnapshot = mediaMatches</text>
+    <text x="320" y="258" text-anchor="middle" fill="#6e6e73">현재 matches를 다시 읽어 비교</text>
+  </g>
+  <rect x="24" y="294" width="592" height="50" rx="8" fill="#f2f2f7"/>
+  <text x="40" y="316" font-size="12" fill="#1d1d1f">첫 렌더링부터 getSnapshot으로 실제 값을 읽고, 언마운트하면 subscribe가 돌려준</text>
+  <text x="40" y="334" font-size="12" fill="#1d1d1f">해제 함수(removeEventListener)를 React가 호출한다. 서버 렌더링 값은 false</text>
+</svg>

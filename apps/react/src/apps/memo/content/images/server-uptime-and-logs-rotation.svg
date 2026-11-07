@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>json-file 로그 드라이버가 max-size 10m, max-file 3으로 파일을 돌려 쓰는 과정</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">로그 로테이션: max-size 10m, max-file 3</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73">현재 파일이 10MB에 도달하면 이름을 한 칸씩 밀고, 가장 오래된 파일을 삭제한다</text>
+
+<text x="20" y="84" font-size="13" font-weight="700" fill="#1d1d1f">① 도달 직전</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace">
+<rect x="20" y="96" width="180" height="40" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="30" y="114" fill="#1d1d1f">…-json.log</text><text x="30" y="129" fill="#0a84ff" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">기록 중 · 9.9MB</text>
+<rect x="216" y="96" width="180" height="40" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="226" y="114" fill="#1d1d1f">…-json.log.1</text><text x="226" y="129" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">10MB</text>
+<rect x="412" y="96" width="180" height="40" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="422" y="114" fill="#1d1d1f">…-json.log.2</text><text x="422" y="129" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">10MB · 가장 오래됨</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.5" fill="none">
+<path d="M110 136 C110 160 306 152 306 182" marker-end="url(#a)"/>
+<path d="M306 136 C306 160 502 152 502 182" marker-end="url(#a)"/>
+</g>
+<line x1="502" y1="136" x2="610" y2="160" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<text x="560" y="176" font-size="12" fill="#ff3b30">삭제</text>
+
+<text x="20" y="176" font-size="13" font-weight="700" fill="#1d1d1f">② 도달 직후</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace">
+<rect x="20" y="188" width="180" height="40" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="30" y="206" fill="#1d1d1f">…-json.log</text><text x="30" y="221" fill="#0a84ff" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">새 파일 · 0MB부터</text>
+<rect x="216" y="188" width="180" height="40" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="226" y="206" fill="#1d1d1f">…-json.log.1</text><text x="226" y="221" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">방금까지의 10MB</text>
+<rect x="412" y="188" width="180" height="40" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="422" y="206" fill="#1d1d1f">…-json.log.2</text><text x="422" y="221" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">이전 .1</text>
+</g>
+<rect x="20" y="246" width="600" height="38" rx="8" fill="#f2f2f7"/>
+<text x="34" y="270" font-size="13" fill="#1d1d1f">컨테이너 하나가 디스크에 남기는 로그는 최대 10MB × 3 = <tspan font-weight="700" fill="#0a84ff">30MB</tspan>, 세 컨테이너 합계 90MB</text>
+</svg>

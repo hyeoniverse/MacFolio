@@ -57,18 +57,18 @@ flowchart LR
 
 ## 요청이 지나가는 길
 
-모든 요청은 아래 순서로 같은 처리 단계를 지납니다 (`app.setup.ts`). 가드·파이프·예외 필터의 실행 순서는 NestJS 문서의 [Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle)과 같습니다.
+모든 요청은 아래 순서로 같은 처리 단계를 지납니다 (`app.setup.ts`). 가드·파이프·예외 필터의 실행 순서는 NestJS 문서의 [Request lifecycle](https://docs.nestjs.com/faq/request-lifecycle)과 같습니다. 가드가 파이프보다 먼저 실행되므로, 권한이 없거나 횟수를 넘긴 요청은 입력 검사 전에 거절됩니다.
 
-| 단계             | 하는 일                                                                                                                 |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `trust proxy`    | 터널 뒤에서 실제 방문자 IP를 읽습니다 (요청 제한과 IP 기록에 사용합니다)                                                |
-| helmet           | 보안 헤더                                                                                                               |
-| CORS             | 사이트 주소만 허용. 쿠키는 그대로 적은 주소에만, PR 미리보기(`*`)는 읽기 전용이고 관리자 API는 그 Origin을 403으로 거절 |
-| `ValidationPipe` | DTO로 모든 입력을 검사하고, 정해 두지 않은 필드가 있으면 거절합니다 (`forbidNonWhitelisted`)                            |
-| `AdminGuard`     | 관리자 전용 경로에서 요청마다 세션 쿠키를 DB에서 확인합니다                                                             |
-| `ThrottlerGuard` | 쓰기 경로마다 붙인 `@RateLimit` 이름별로 IP·경로당 1분 요청 수를 제한합니다                                             |
-| 전역 예외 필터   | 에러 응답 형식을 통일하고, 너무 큰 본문·잘못된 JSON은 413·400으로, 예상하지 못한 에러는 내용을 숨긴 500으로 응답합니다  |
-| `SafeLogger`     | 모든 로그에서 DB 비밀번호·API 키·쿠키·메일 주소를 마스킹합니다 (`common/redact.ts`)                                     |
+| 단계             | 하는 일                                                                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `trust proxy`    | 터널 뒤에서 실제 방문자 IP를 읽습니다 (요청 제한과 IP 기록에 사용합니다)                                                                                            |
+| helmet           | 보안 헤더                                                                                                                                                           |
+| CORS             | 사이트 주소만 허용. 쿠키는 그대로 적은 주소에만, PR 미리보기(`*`)는 읽기 전용이고 관리자 API는 그 Origin을 403으로 거절                                             |
+| `ThrottlerGuard` | 쓰기 경로마다 붙인 `@RateLimit` 이름별로 IP·경로당 1분 요청 수를 제한합니다. 관리자 경로에서도 `AdminGuard`보다 먼저 돌아, 로그인하지 않은 요청도 횟수에 들어갑니다 |
+| `AdminGuard`     | 관리자 전용 경로에서 요청마다 세션 쿠키를 DB에서 확인합니다                                                                                                         |
+| `ValidationPipe` | DTO로 모든 입력을 검사하고, 정해 두지 않은 필드가 있으면 거절합니다 (`forbidNonWhitelisted`)                                                                        |
+| 전역 예외 필터   | 에러 응답 형식을 통일하고, 너무 큰 본문·잘못된 JSON은 413·400으로, 예상하지 못한 에러는 내용을 숨긴 500으로 응답합니다                                              |
+| `SafeLogger`     | 모든 로그에서 DB 비밀번호·API 키·쿠키·메일 주소를 마스킹합니다 (`common/redact.ts`)                                                                                 |
 
 ## 모듈과 권한
 
@@ -249,5 +249,5 @@ erDiagram
 - [API 경로 64개를 표 하나로 고정하기](https://macfolio.hyeoniverse.com/memo/api-route-table-test)
 - [오류 응답은 감추고, 로그는 가리고](https://macfolio.hyeoniverse.com/memo/error-log-masking)
 - [올린 사진의 EXIF를 지우되 방향은 남기기](https://macfolio.hyeoniverse.com/memo/upload-strip-exif)
-- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](https://macfolio.hyeoniverse.com/memo/contracts-comments)
+- [응답 타입을 두 번 적지 않기 — @macfolio/contracts와 zod](https://macfolio.hyeoniverse.com/memo/contracts-package#댓글좋아요-스키마-200)
 - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)

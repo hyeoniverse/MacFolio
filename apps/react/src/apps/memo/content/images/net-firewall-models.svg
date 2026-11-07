@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 540" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="540" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+<ellipse cx="120" cy="64" rx="100" ry="34" fill="#cfe8ff" stroke="#0a84ff"/>
+<ellipse cx="520" cy="64" rx="100" ry="34" fill="#cfe8ff" stroke="#0a84ff"/>
+<line x1="220" y1="64" x2="296" y2="64" stroke="#1d1d1f"/><line x1="344" y1="64" x2="420" y2="64" stroke="#1d1d1f"/>
+<rect x="296" y="40" width="48" height="48" fill="#ff9f0a" stroke="#c77700"/>
+<g stroke="#c77700" stroke-width="1"><line x1="296" y1="52" x2="344" y2="52"/><line x1="296" y1="64" x2="344" y2="64"/><line x1="296" y1="76" x2="344" y2="76"/><line x1="320" y1="40" x2="320" y2="52"/><line x1="308" y1="52" x2="308" y2="64"/><line x1="332" y1="52" x2="332" y2="64"/><line x1="320" y1="64" x2="320" y2="76"/><line x1="308" y1="76" x2="308" y2="88"/><line x1="332" y1="76" x2="332" y2="88"/></g>
+<text x="320" y="30" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">방화벽</text>
+<text x="120" y="60" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">내부(보호) 네트워크</text>
+<text x="120" y="76" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(예: 기업망)</text>
+<text x="520" y="60" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">외부(신뢰할 수 없는) 네트워크</text>
+<text x="520" y="76" text-anchor="middle" font-size="10.5" fill="#1d1d1f">(예: 인터넷)</text>
+<text x="320" y="118" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">(a) 일반 모델</text>
+<rect x="120" y="140" width="98" height="140" fill="none" stroke="#1d1d1f"/>
+<rect x="130" y="150" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="169.0" y="166" text-anchor="middle" font-size="10.5" fill="#1d1d1f">응용</text>
+<rect x="130" y="174" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="169.0" y="190" text-anchor="middle" font-size="10.5" fill="#1d1d1f">전송</text>
+<rect x="130" y="198" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="169.0" y="214" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터넷</text>
+<rect x="130" y="222" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="169.0" y="238" text-anchor="middle" font-size="10.5" fill="#1d1d1f">네트워크 접근</text>
+<rect x="130" y="246" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="169.0" y="262" text-anchor="middle" font-size="10.5" fill="#1d1d1f">물리</text>
+<line x1="14" y1="186" x2="128" y2="186" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/><line x1="210" y1="186" x2="320" y2="186" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/>
+<text x="70" y="164" text-anchor="middle" font-size="10" fill="#1d1d1f">종단 간</text><text x="70" y="177" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text><text x="266" y="164" text-anchor="middle" font-size="10" fill="#1d1d1f">종단 간</text><text x="266" y="177" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text>
+<text x="169" y="300" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">(b) 패킷 필터링 방화벽</text>
+<rect x="440" y="140" width="98" height="140" fill="none" stroke="#1d1d1f"/>
+<rect x="450" y="150" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="489.0" y="166" text-anchor="middle" font-size="10.5" fill="#1d1d1f">응용</text>
+<rect x="450" y="174" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="489.0" y="190" text-anchor="middle" font-size="10.5" fill="#1d1d1f">전송</text>
+<rect x="450" y="198" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="489.0" y="214" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터넷</text>
+<rect x="450" y="222" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="489.0" y="238" text-anchor="middle" font-size="10.5" fill="#1d1d1f">네트워크 접근</text>
+<rect x="450" y="246" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="489.0" y="262" text-anchor="middle" font-size="10.5" fill="#1d1d1f">물리</text>
+<line x1="330" y1="186" x2="448" y2="186" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/><line x1="530" y1="186" x2="632" y2="186" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/>
+<text x="388" y="164" text-anchor="middle" font-size="10" fill="#1d1d1f">종단 간</text><text x="388" y="177" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text><text x="582" y="164" text-anchor="middle" font-size="10" fill="#1d1d1f">종단 간</text><text x="582" y="177" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text>
+<line x1="410" y1="250" x2="440" y2="250" stroke="#1d1d1f"/>
+<path d="M370,238 v26 a20,6 0 0 0 40,0 v-26" fill="#9fd0ff" stroke="#1d1d1f"/><ellipse cx="390" cy="238" rx="20" ry="6" fill="#cfe8ff" stroke="#1d1d1f"/>
+<text x="390" y="255" text-anchor="middle" font-size="9.5" fill="#1d1d1f">상태 정보</text>
+<text x="489" y="300" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">(c) 상태 검사 방화벽</text>
+<rect x="58" y="360" width="210" height="140" fill="none" stroke="#1d1d1f"/>
+<rect x="74" y="370" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="113.0" y="386" text-anchor="middle" font-size="10.5" fill="#1d1d1f">응용</text>
+<rect x="74" y="394" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="113.0" y="410" text-anchor="middle" font-size="10.5" fill="#1d1d1f">전송</text>
+<rect x="74" y="418" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="113.0" y="434" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터넷</text>
+<rect x="74" y="442" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="113.0" y="458" text-anchor="middle" font-size="10.5" fill="#1d1d1f">네트워크 접근</text>
+<rect x="74" y="466" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="113.0" y="482" text-anchor="middle" font-size="10.5" fill="#1d1d1f">물리</text>
+<rect x="174" y="370" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="213.0" y="386" text-anchor="middle" font-size="10.5" fill="#1d1d1f">응용</text>
+<rect x="174" y="394" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="213.0" y="410" text-anchor="middle" font-size="10.5" fill="#1d1d1f">전송</text>
+<rect x="174" y="418" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="213.0" y="434" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터넷</text>
+<rect x="174" y="442" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="213.0" y="458" text-anchor="middle" font-size="10.5" fill="#1d1d1f">네트워크 접근</text>
+<rect x="174" y="466" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="213.0" y="482" text-anchor="middle" font-size="10.5" fill="#1d1d1f">물리</text>
+<line x1="152" y1="382" x2="174" y2="382" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/>
+<line x1="163" y1="348" x2="163" y2="378" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#k)"/>
+<text x="163" y="344" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1d1d1f">응용 프록시</text>
+<line x1="2" y1="382" x2="72" y2="382" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/><line x1="254" y1="382" x2="324" y2="382" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/>
+<text x="30" y="360" text-anchor="middle" font-size="10" fill="#1d1d1f">내부</text><text x="30" y="373" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text><text x="296" y="360" text-anchor="middle" font-size="10" fill="#1d1d1f">외부</text><text x="296" y="373" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text>
+<text x="163" y="520" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">(d) 응용 프록시 방화벽</text>
+<rect x="372" y="360" width="210" height="140" fill="none" stroke="#1d1d1f"/>
+<rect x="388" y="370" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="427.0" y="386" text-anchor="middle" font-size="10.5" fill="#1d1d1f">응용</text>
+<rect x="388" y="394" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="427.0" y="410" text-anchor="middle" font-size="10.5" fill="#1d1d1f">전송</text>
+<rect x="388" y="418" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="427.0" y="434" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터넷</text>
+<rect x="388" y="442" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="427.0" y="458" text-anchor="middle" font-size="10.5" fill="#1d1d1f">네트워크 접근</text>
+<rect x="388" y="466" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="427.0" y="482" text-anchor="middle" font-size="10.5" fill="#1d1d1f">물리</text>
+<rect x="488" y="370" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="527.0" y="386" text-anchor="middle" font-size="10.5" fill="#1d1d1f">응용</text>
+<rect x="488" y="394" width="78" height="24" fill="#9fd0ff" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="527.0" y="410" text-anchor="middle" font-size="10.5" fill="#1d1d1f">전송</text>
+<rect x="488" y="418" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="527.0" y="434" text-anchor="middle" font-size="10.5" fill="#1d1d1f">인터넷</text>
+<rect x="488" y="442" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="527.0" y="458" text-anchor="middle" font-size="10.5" fill="#1d1d1f">네트워크 접근</text>
+<rect x="488" y="466" width="78" height="24" fill="#e5e5ea" stroke="#1d1d1f" stroke-width="0.8"/>
+<text x="527.0" y="482" text-anchor="middle" font-size="10.5" fill="#1d1d1f">물리</text>
+<line x1="466" y1="406" x2="488" y2="406" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/>
+<line x1="477" y1="348" x2="477" y2="402" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#k)"/>
+<text x="477" y="344" text-anchor="middle" font-size="10.5" font-weight="600" fill="#1d1d1f">회선 수준 프록시</text>
+<line x1="316" y1="406" x2="386" y2="406" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/><line x1="568" y1="406" x2="638" y2="406" stroke="#1d1d1f" stroke-width="1.2" marker-start="url(#ks)" marker-end="url(#k)"/>
+<text x="344" y="384" text-anchor="middle" font-size="10" fill="#1d1d1f">내부</text><text x="344" y="397" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text><text x="610" y="384" text-anchor="middle" font-size="10" fill="#1d1d1f">외부</text><text x="610" y="397" text-anchor="middle" font-size="10" fill="#1d1d1f">전송 연결</text>
+<text x="477" y="520" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1d1d1f">(e) 회선 수준 프록시 방화벽</text>
+</svg>

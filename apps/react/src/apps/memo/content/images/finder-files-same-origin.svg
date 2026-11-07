@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>출처는 스킴·호스트·포트의 조합이다. R2 공개 주소는 사이트와 출처가 달라 CSP frame-src에 출처를 추가해야 하지만, Worker가 제공하는 /files/ 주소는 사이트와 같은 출처라 frame-src 'self'로 허용된다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">출처(origin) 비교와 CSP frame-src</text>
+
+<g font-size="12">
+<text x="20" y="62" font-weight="700" fill="#6e6e73">주소</text>
+<text x="340" y="62" font-weight="700" fill="#6e6e73">출처 = 스킴 + 호스트 + 포트</text>
+<line x1="20" y1="72" x2="620" y2="72" stroke="#e5e5ea"/>
+
+<text x="20" y="98" fill="#1d1d1f" font-weight="700">사이트 페이지</text>
+<text x="20" y="116" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">https://macfolio.hyeoniverse.com/</text>
+<text x="340" y="107" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">https · macfolio.hyeoniverse.com · 443</text>
+<line x1="20" y1="130" x2="620" y2="130" stroke="#e5e5ea"/>
+
+<text x="20" y="156" fill="#1d1d1f" font-weight="700">R2 공개 주소 (사용하지 않음)</text>
+<text x="20" y="174" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">https://pub-….r2.dev/resume/….pdf</text>
+<text x="340" y="165" font-family="SFMono-Regular, Menlo, monospace" fill="#ff3b30">https · pub-….r2.dev · 443</text>
+<line x1="20" y1="188" x2="620" y2="188" stroke="#e5e5ea"/>
+
+<text x="20" y="214" fill="#1d1d1f" font-weight="700">Worker가 제공하는 주소</text>
+<text x="20" y="232" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">https://macfolio.hyeoniverse.com/files/…</text>
+<text x="340" y="223" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">https · macfolio.hyeoniverse.com · 443</text>
+<line x1="20" y1="246" x2="620" y2="246" stroke="#e5e5ea"/>
+</g>
+
+<rect x="20" y="264" width="600" height="96" rx="8" fill="#f2f2f7"/>
+<text x="34" y="286" font-size="12" fill="#6e6e73">사이트 응답의 CSP 헤더 (일부)</text>
+<text x="34" y="306" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">Content-Security-Policy: frame-src 'self' …</text>
+<text x="34" y="328" font-size="12" fill="#1d1d1f"><tspan fill="#248a3d" font-weight="700">/files/…</tspan>는 출처가 같아 'self'에 포함되므로 iframe으로 열린다</text>
+<text x="34" y="348" font-size="12" fill="#1d1d1f"><tspan fill="#ff3b30" font-weight="700">*.r2.dev</tspan>를 쓰려면 frame-src에 그 출처를 추가해야 한다</text>
+</svg>

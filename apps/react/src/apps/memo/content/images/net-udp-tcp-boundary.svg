@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">같은 세 번의 쓰기(10, 20, 30바이트)를 받는 방식</text>
+
+  <text x="16" y="56" font-size="13" font-weight="700" fill="#1d1d1f">송신 응용</text>
+  <rect x="140" y="40" width="50" height="26" fill="#0a84ff"/><text x="165" y="58" text-anchor="middle" font-size="12" fill="#fff">10</text>
+  <rect x="200" y="40" width="100" height="26" fill="#34c759"/><text x="250" y="58" text-anchor="middle" font-size="12" fill="#fff">20</text>
+  <rect x="310" y="40" width="150" height="26" fill="#ff9f0a"/><text x="385" y="58" text-anchor="middle" font-size="12" fill="#fff">30</text>
+  <text x="472" y="58" font-size="12" fill="#6e6e73">write 3회</text>
+
+  <!-- UDP -->
+  <rect x="16" y="84" width="608" height="118" rx="8" fill="#f2f2f7"/>
+  <text x="28" y="106" font-size="13" font-weight="700" fill="#1d1d1f">UDP</text>
+  <text x="28" y="122" font-size="12" fill="#6e6e73">데이터그램 3개</text>
+  <rect x="140" y="96" width="50" height="26" fill="#fff" stroke="#0a84ff" stroke-width="2"/><text x="165" y="114" text-anchor="middle" font-size="12" fill="#1d1d1f">10</text>
+  <rect x="200" y="96" width="100" height="26" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="250" y="114" text-anchor="middle" font-size="12" fill="#1d1d1f">20</text>
+  <rect x="310" y="96" width="150" height="26" fill="#fff" stroke="#ff9f0a" stroke-width="2"/><text x="385" y="114" text-anchor="middle" font-size="12" fill="#1d1d1f">30</text>
+  <line x1="300" y1="126" x2="300" y2="150" stroke="#6e6e73" marker-end="url(#a)"/>
+  <text x="28" y="172" font-size="12" fill="#6e6e73">수신 응용</text>
+  <rect x="140" y="156" width="50" height="26" fill="#0a84ff"/><text x="165" y="174" text-anchor="middle" font-size="12" fill="#fff">10</text>
+  <rect x="200" y="156" width="100" height="26" fill="#34c759"/><text x="250" y="174" text-anchor="middle" font-size="12" fill="#fff">20</text>
+  <rect x="310" y="156" width="150" height="26" fill="#ff9f0a"/><text x="385" y="174" text-anchor="middle" font-size="12" fill="#fff">30</text>
+  <text x="472" y="168" font-size="12" fill="#1d1d1f">recvfrom 3회</text>
+  <text x="472" y="184" font-size="12" fill="#1d1d1f">경계 유지</text>
+
+  <!-- TCP -->
+  <rect x="16" y="214" width="608" height="132" rx="8" fill="#f2f2f7"/>
+  <text x="28" y="236" font-size="13" font-weight="700" fill="#1d1d1f">TCP</text>
+  <text x="28" y="252" font-size="12" fill="#6e6e73">바이트 60개</text>
+  <rect x="140" y="226" width="320" height="26" fill="#fff" stroke="#1d1d1f"/>
+  <text x="300" y="244" text-anchor="middle" font-size="12" fill="#1d1d1f">바이트 1 ~ 60 (구분자 없음)</text>
+  <line x1="300" y1="256" x2="300" y2="272" stroke="#6e6e73" marker-end="url(#a)"/>
+  <text x="28" y="292" font-size="12" fill="#6e6e73">수신 예 1</text>
+  <rect x="140" y="278" width="320" height="24" fill="#6e6e73"/><text x="300" y="295" text-anchor="middle" font-size="12" fill="#fff">read 1회에 60</text>
+  <text x="28" y="326" font-size="12" fill="#6e6e73">수신 예 2</text>
+  <rect x="140" y="312" width="130" height="24" fill="#6e6e73"/><text x="205" y="329" text-anchor="middle" font-size="12" fill="#fff">25</text>
+  <rect x="276" y="312" width="184" height="24" fill="#6e6e73"/><text x="368" y="329" text-anchor="middle" font-size="12" fill="#fff">35</text>
+  <text x="472" y="298" font-size="12" fill="#1d1d1f">읽는 크기는</text>
+  <text x="472" y="314" font-size="12" fill="#1d1d1f">도착 시각과 버퍼에</text>
+  <text x="472" y="330" font-size="12" fill="#1d1d1f">따라 달라진다</text>
+</svg>

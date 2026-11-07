@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="440" fill="#fff"/>
+  <text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">listBody: 목록이 읽는 줄만 남긴 색인 본문</text>
+  <text x="24" y="54" font-size="12" fill="#6e6e73">같은 함수(firstImage·tagsOf·POST_FILTERS)에 넣어 같은 답이 나오도록 원문을 줄인다</text>
+
+  <!-- original -->
+  <rect x="24" y="72" width="260" height="264" rx="10" fill="#f2f2f7"/>
+  <text x="40" y="96" font-size="13" font-weight="700" fill="#1d1d1f">원문 (예: 약 15,000자)</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <text x="40" y="122">## 들어가기 전에</text>
+    <text x="40" y="140" fill="#6e6e73">문단 … 문단 … 문단 …</text>
+    <text x="40" y="160" fill="#0a84ff">![](./images/first.jpg)</text>
+    <text x="40" y="178" fill="#6e6e73">문단 … ![](./images/b.jpg)</text>
+    <text x="40" y="198" fill="#0a84ff">| 항목 | 값 |</text>
+    <text x="40" y="216" fill="#0a84ff">| --- | ---: |</text>
+    <text x="40" y="234" fill="#6e6e73">| … | … |</text>
+    <text x="40" y="254" fill="#0a84ff">```ts</text>
+    <text x="40" y="272" fill="#6e6e73">const x = 1 …</text>
+    <text x="40" y="290" fill="#0a84ff">```</text>
+    <text x="40" y="310" fill="#6e6e73">문단 … 문단 …</text>
+    <text x="40" y="328" fill="#0a84ff">#React #상태관리</text>
+  </g>
+
+  <line x1="288" y1="204" x2="350" y2="204" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="319" y="194" font-size="12" fill="#6e6e73" text-anchor="middle">listBody()</text>
+
+  <!-- index -->
+  <rect x="356" y="72" width="260" height="200" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+  <text x="372" y="96" font-size="13" font-weight="700" fill="#1d1d1f">색인 본문 (수십 자)</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <text x="372" y="124">![](./images/first.jpg)</text>
+    <text x="372" y="152">| --- | ---: |</text>
+    <text x="372" y="180">```</text>
+    <text x="372" y="198">```</text>
+    <text x="372" y="226">#React #상태관리</text>
+  </g>
+  <text x="372" y="256" font-size="12" fill="#0a84ff">bodyPending: true (원문이 아님 표시)</text>
+
+  <!-- consumers -->
+  <rect x="356" y="286" width="260" height="50" rx="8" fill="#f0fbf3" stroke="#34c759"/>
+  <text x="372" y="307" font-size="12" fill="#1d1d1f">첫 그림 · 태그 · 표/코드/그림 조건</text>
+  <text x="372" y="325" font-size="12" font-weight="600" fill="#248a3d">원문과 같은 값 (listing.test.ts)</text>
+
+  <rect x="24" y="352" width="592" height="72" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="40" y="376" font-size="12" fill="#1d1d1f">• 파란 줄만 남긴다: 첫 그림 1장, 체크리스트·표 구분 줄·코드 블록·첨부 링크가 있다는 표시 1줄씩, 태그 줄</text>
+  <text x="40" y="396" font-size="12" fill="#1d1d1f">• 문단과 코드 내용은 버린다. 본문 검색만 원문 전체가 필요하므로, 원문은 뒤에서 받는다</text>
+  <text x="40" y="416" font-size="12" fill="#6e6e73">  (원문 글자 수는 예시. 색인 247편 전체는 brotli 45KB)</text>
+</svg>

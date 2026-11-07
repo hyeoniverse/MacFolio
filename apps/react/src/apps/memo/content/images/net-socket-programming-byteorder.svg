@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="340" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">0xC63364C8을 메모리에 보관하는 두 순서</text>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="250" y="60">주소 a</text><text x="340" y="60">a+1</text><text x="430" y="60">a+2</text><text x="520" y="60">a+3</text>
+    <text x="250" y="76">c[0]</text><text x="340" y="76">c[1]</text><text x="430" y="76">c[2]</text><text x="520" y="76">c[3]</text>
+  </g>
+  <text x="40" y="112" font-size="13" fill="#1d1d1f">빅 엔디언</text>
+  <text x="40" y="128" font-size="11.5" fill="#6e6e73">네트워크 바이트 순서</text>
+  <g font-size="14" font-family="Menlo, monospace" text-anchor="middle">
+    <rect x="205" y="90" width="90" height="44" fill="#e8f2ff" stroke="#0a84ff"/><text x="250" y="110" fill="#1d1d1f">C6</text><text x="250" y="126" font-size="12" fill="#6e6e73">198</text>
+    <rect x="295" y="90" width="90" height="44" fill="#fff" stroke="#0a84ff"/><text x="340" y="110" fill="#1d1d1f">33</text><text x="340" y="126" font-size="12" fill="#6e6e73">51</text>
+    <rect x="385" y="90" width="90" height="44" fill="#fff" stroke="#0a84ff"/><text x="430" y="110" fill="#1d1d1f">64</text><text x="430" y="126" font-size="12" fill="#6e6e73">100</text>
+    <rect x="475" y="90" width="90" height="44" fill="#fff" stroke="#0a84ff"/><text x="520" y="110" fill="#1d1d1f">C8</text><text x="520" y="126" font-size="12" fill="#6e6e73">200</text>
+  </g>
+  <text x="40" y="182" font-size="13" fill="#1d1d1f">리틀 엔디언</text>
+  <text x="40" y="198" font-size="11.5" fill="#6e6e73">x86, 대부분의 ARM</text>
+  <g font-size="14" font-family="Menlo, monospace" text-anchor="middle">
+    <rect x="205" y="160" width="90" height="44" fill="#fff4e0" stroke="#ff9f0a"/><text x="250" y="180" fill="#1d1d1f">C8</text><text x="250" y="196" font-size="12" fill="#6e6e73">200</text>
+    <rect x="295" y="160" width="90" height="44" fill="#fff" stroke="#ff9f0a"/><text x="340" y="180" fill="#1d1d1f">64</text><text x="340" y="196" font-size="12" fill="#6e6e73">100</text>
+    <rect x="385" y="160" width="90" height="44" fill="#fff" stroke="#ff9f0a"/><text x="430" y="180" fill="#1d1d1f">33</text><text x="430" y="196" font-size="12" fill="#6e6e73">51</text>
+    <rect x="475" y="160" width="90" height="44" fill="#fff" stroke="#ff9f0a"/><text x="520" y="180" fill="#1d1d1f">C6</text><text x="520" y="196" font-size="12" fill="#6e6e73">198</text>
+  </g>
+  <rect x="40" y="226" width="560" height="98" rx="8" fill="#f5f5f7"/>
+  <text x="56" y="250" font-size="12.5" fill="#1d1d1f">0xC63364C8을 점 표기로 쓰면 198.51.100.200이다. 리틀 엔디언 호스트에서 c[0]은 200이다.</text>
+  <text x="56" y="274" font-size="12.5" fill="#1d1d1f">htonl()은 리틀 엔디언 호스트에서 네 바이트를 뒤집고, 빅 엔디언 호스트에서는 그대로 둔다.</text>
+  <text x="56" y="298" font-size="12.5" fill="#0a84ff">char가 부호 있는 형이면 0xC8, 0xC6은 음수가 되어 %u로 4294967240, 4294967238이 찍힌다.</text>
+  <text x="56" y="316" font-size="12" fill="#6e6e73">바이트를 숫자로 다룰 때는 unsigned char를 쓴다.</text>
+</svg>

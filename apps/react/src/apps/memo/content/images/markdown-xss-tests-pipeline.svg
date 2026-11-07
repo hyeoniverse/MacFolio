@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="470" fill="#fff"/>
+  <text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">react-markdown이 Markdown을 화면으로 바꾸는 단계</text>
+  <text x="24" y="52" font-size="12" fill="#6e6e73">입력 예: &lt;img src="x" onerror="…"&gt;  /  [링크](javascript:alert(1))</text>
+
+  <!-- shared stages -->
+  <rect x="24" y="70" width="130" height="58" rx="8" fill="#f2f2f7"/>
+  <text x="89" y="94" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">Markdown</text>
+  <text x="89" y="113" font-size="12" fill="#6e6e73" text-anchor="middle">문자열</text>
+  <line x1="154" y1="99" x2="182" y2="99" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="184" y="70" width="130" height="58" rx="8" fill="#f2f2f7"/>
+  <text x="249" y="94" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">mdast</text>
+  <text x="249" y="113" font-size="12" fill="#6e6e73" text-anchor="middle">remark-parse</text>
+  <line x1="314" y1="99" x2="342" y2="99" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="344" y="70" width="130" height="58" rx="8" fill="#f2f2f7"/>
+  <text x="409" y="94" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">hast</text>
+  <text x="409" y="113" font-size="12" fill="#6e6e73" text-anchor="middle">remark-rehype</text>
+  <text x="490" y="94" font-size="12" fill="#6e6e73">HTML 태그는 아직</text>
+  <text x="490" y="112" font-size="12" fill="#6e6e73">raw 문자열 노드</text>
+
+  <line x1="409" y1="128" x2="409" y2="146" stroke="#6e6e73" stroke-width="1.5"/>
+  <line x1="200" y1="146" x2="560" y2="146" stroke="#6e6e73" stroke-width="1.5"/>
+  <line x1="200" y1="146" x2="200" y2="166" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="560" y1="146" x2="560" y2="166" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- memo column -->
+  <rect x="24" y="168" width="352" height="284" rx="10" fill="#fff" stroke="#0a84ff"/>
+  <text x="40" y="192" font-size="14" font-weight="700" fill="#0a84ff">메모 글 (MemoMarkdown)</text>
+  <rect x="40" y="206" width="320" height="56" rx="6" fill="#f2f2f7"/>
+  <text x="52" y="228" font-size="12" font-weight="600" fill="#1d1d1f">rehype-raw 없음</text>
+  <text x="52" y="248" font-size="12" fill="#1d1d1f">raw 노드는 태그가 아니라 글자로 출력</text>
+  <rect x="40" y="272" width="320" height="56" rx="6" fill="#f2f2f7"/>
+  <text x="52" y="294" font-size="12" font-weight="600" fill="#1d1d1f">urlTransform (기본값)</text>
+  <text x="52" y="314" font-size="12" fill="#1d1d1f">http·https·mailto 등이 아니면 주소를 빈 값으로</text>
+  <text x="40" y="352" font-size="12" font-weight="600" fill="#1d1d1f">결과 HTML</text>
+  <rect x="40" y="362" width="320" height="76" rx="6" fill="#f0fbf3" stroke="#34c759"/>
+  <text x="52" y="384" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;a href=""&gt;링크&lt;/a&gt;</text>
+  <text x="52" y="404" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&amp;lt;img src="x"</text>
+  <text x="52" y="424" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">  onerror="…"&amp;gt;  ← 글자로 표시</text>
+
+  <!-- readme column -->
+  <rect x="392" y="168" width="224" height="284" rx="10" fill="#fff" stroke="#ff9f0a"/>
+  <text x="408" y="192" font-size="14" font-weight="700" fill="#c77700">GitHub README</text>
+  <rect x="408" y="206" width="192" height="56" rx="6" fill="#f2f2f7"/>
+  <text x="420" y="228" font-size="12" font-weight="600" fill="#1d1d1f">rehype-raw</text>
+  <text x="420" y="248" font-size="12" fill="#1d1d1f">raw 문자열을 요소로 파싱</text>
+  <rect x="408" y="272" width="192" height="56" rx="6" fill="#f2f2f7"/>
+  <text x="420" y="294" font-size="12" font-weight="600" fill="#1d1d1f">rehype-sanitize</text>
+  <text x="420" y="314" font-size="12" fill="#1d1d1f">허용 목록 밖 태그·속성 삭제</text>
+  <text x="408" y="352" font-size="12" font-weight="600" fill="#1d1d1f">결과 HTML</text>
+  <rect x="408" y="362" width="192" height="76" rx="6" fill="#f0fbf3" stroke="#34c759"/>
+  <text x="420" y="384" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;a&gt;링크&lt;/a&gt;</text>
+  <text x="420" y="404" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;img src="x"&gt;</text>
+  <text x="420" y="424" font-size="12" fill="#6e6e73">onerror만 삭제된 요소</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="320" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">글리프 상자의 끝과 그림의 보이는 끝 (fa-list-ul, 글자 크기 20px)</text>
+<text x="320" y="46" font-size="12" fill="#6e6e73" text-anchor="middle">상자 폭 1.25em = 25px, 그림 좌우 여백 2/15em ≈ 2.67px. 그림은 10배로 확대</text>
+<line x1="560" y1="64" x2="560" y2="290" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="556" y="80" font-size="12" fill="#c46f00" text-anchor="end">진행 막대 오른쪽 끝</text>
+<text x="40" y="112" font-size="13" font-weight="600" fill="#1d1d1f">상자 끝을 맞춤</text>
+<rect x="310" y="96" width="250" height="70" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<g fill="#1d1d1f"><circle cx="344" cy="112" r="7"/><circle cx="344" cy="131" r="7"/><circle cx="344" cy="150" r="7"/>
+<rect x="366" y="107" width="167" height="10" rx="3"/><rect x="366" y="126" width="167" height="10" rx="3"/><rect x="366" y="145" width="167" height="10" rx="3"/></g>
+<line x1="533" y1="176" x2="560" y2="176" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="546" y="194" font-size="12" fill="#ff3b30" text-anchor="middle">2.67px 안쪽</text>
+<text x="40" y="232" font-size="13" font-weight="600" fill="#1d1d1f">여백만큼 내보냄</text>
+<text x="40" y="250" font-size="12" fill="#6e6e73">margin-right: calc(20px × −2/15)</text>
+<rect x="337" y="216" width="250" height="70" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<g fill="#1d1d1f"><circle cx="371" cy="232" r="7"/><circle cx="371" cy="251" r="7"/><circle cx="371" cy="270" r="7"/>
+<rect x="393" y="227" width="167" height="10" rx="3"/><rect x="393" y="246" width="167" height="10" rx="3"/><rect x="393" y="265" width="167" height="10" rx="3"/></g>
+<text x="320" y="312" font-size="12" fill="#6e6e73" text-anchor="middle">점선 상자는 글리프 상자, 검은 그림의 오른쪽 끝이 화면에서 보이는 끝이다</text>
+</svg>

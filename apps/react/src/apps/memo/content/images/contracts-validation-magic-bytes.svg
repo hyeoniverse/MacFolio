@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>sniffImage는 파일 이름이나 브라우저가 보낸 type 대신 파일 앞부분의 바이트를 읽는다. PNG는 89 50 4E 47 0D 0A 1A 0A로 시작하고, 이름만 사진.png로 바꾼 GIF는 47 49 46 38로 시작해 image/gif로 판별되며, SVG는 텍스트라 어떤 서명과도 일치하지 않아 내려받기로 응답한다</title>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">파일 앞부분 바이트로 형식 판별 (sniffImage)</text>
+
+<g font-size="12">
+<text x="20" y="62" font-weight="700" fill="#6e6e73">파일 이름 · 브라우저가 보낸 type</text>
+<text x="300" y="62" font-weight="700" fill="#6e6e73">앞 8바이트 (16진수)</text>
+<text x="520" y="62" font-weight="700" fill="#6e6e73">판별 결과</text>
+<line x1="20" y1="72" x2="620" y2="72" stroke="#e5e5ea"/>
+
+<text x="20" y="100" fill="#1d1d1f">제주.png · image/png</text>
+<g font-family="SFMono-Regular, Menlo, monospace">
+<rect x="296" y="86" width="210" height="22" rx="4" fill="#e8f1ff"/>
+<text x="302" y="102" fill="#0a84ff">89 50 4E 47 0D 0A 1A 0A</text>
+<text x="302" y="124" fill="#6e6e73" font-size="12" style="white-space:pre">.  P  N  G  \r \n .  \n</text>
+</g>
+<text x="520" y="102" fill="#248a3d">image/png</text>
+<line x1="20" y1="138" x2="620" y2="138" stroke="#e5e5ea"/>
+
+<text x="20" y="166" fill="#1d1d1f">사진.png · image/png</text>
+<text x="20" y="184" fill="#6e6e73">(GIF 파일의 이름만 바꿈)</text>
+<g font-family="SFMono-Regular, Menlo, monospace">
+<rect x="296" y="152" width="210" height="22" rx="4" fill="#fff4e5"/>
+<text x="302" y="168" fill="#ff9f0a">47 49 46 38 39 61 …</text>
+<text x="302" y="190" fill="#6e6e73" font-size="12" style="white-space:pre">G  I  F  8  9  a</text>
+</g>
+<text x="520" y="168" fill="#248a3d">image/gif</text>
+<line x1="20" y1="204" x2="620" y2="204" stroke="#e5e5ea"/>
+
+<text x="20" y="232" fill="#1d1d1f">그림.svg · image/svg+xml</text>
+<g font-family="SFMono-Regular, Menlo, monospace">
+<rect x="296" y="218" width="210" height="22" rx="4" fill="#ffeceb"/>
+<text x="302" y="234" fill="#ff3b30">3C 73 76 67 20 78 6D 6C</text>
+<text x="302" y="256" fill="#6e6e73" font-size="12" style="white-space:pre">&lt;  s  v  g     x  m  l</text>
+</g>
+<text x="520" y="234" fill="#ff3b30">null (이미지 아님)</text>
+<text x="520" y="252" fill="#6e6e73">내려받기로 응답</text>
+<line x1="20" y1="270" x2="620" y2="270" stroke="#e5e5ea"/>
+</g>
+
+<rect x="20" y="288" width="600" height="72" rx="8" fill="#f2f2f7"/>
+<text x="34" y="310" font-size="12" fill="#1d1d1f">이름과 type은 사용자가 마음대로 바꿀 수 있지만, 파일 내용의 앞부분은 형식마다 정해져 있다</text>
+<text x="34" y="330" font-size="12" fill="#1d1d1f">서버는 판별한 값을 type에 저장하고, 이미지로 판별된 파일만 브라우저에 바로 표시(inline)한다</text>
+<text x="34" y="350" font-size="12" fill="#6e6e73">SVG는 &lt;script&gt;를 담을 수 있는 XML 텍스트라 서명 목록에 넣지 않았다</text>
+</svg>

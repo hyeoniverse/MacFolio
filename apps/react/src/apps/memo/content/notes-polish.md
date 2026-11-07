@@ -7,11 +7,18 @@ seriesOrder: 2
 summary: macOS 메모와 나란히 비교하며 표 핸들, 글 내부 찾기·대치, 도구를 접고 확장되는 검색 칸, 이미지 캡션·내려받기, Safari 탭을 구현했다. 핸들 위치가 13px 어긋난 원인은 본문 문단 간격 규칙이었다.
 ---
 
-편집기가 동작하기 시작하자, 글을 작성하면서 불편한 기능이 하나씩 드러났다. macOS 메모와 나란히 비교하며 하나씩 맞췄다.
-
 ## 배경
 
-9월 말에 메모 앱에서 블로그 글을 직접 작성하기 시작했다. 글을 몇 편 작성하자 다음 문제가 드러났다.
+MacFolio의 메모 앱은 블로그다. 관리자로 로그인하면 읽기 화면이 그대로 편집기로 바뀌고, 글을 그 자리에서 고친다. 편집기는 [Milkdown](https://milkdown.dev/)으로 만들었고, Milkdown은 [ProseMirror](https://prosemirror.net/docs/guide/) 위에서 동작한다. 이 글에 자주 나오는 ProseMirror 용어는 다음과 같다.
+
+| 용어       | 뜻                                                                                   | 이 글의 예                  |
+| ---------- | ------------------------------------------------------------------------------------ | --------------------------- |
+| 문서       | 문단·표·이미지 같은 노드의 트리. 각 글자 사이에 0부터 시작하는 정수 위치가 매겨진다  | 찾은 단어의 시작·끝 위치    |
+| 트랜잭션   | 문서를 바꾸는 단위. 여러 변경을 묶어 한 번에 적용하고, 되돌리기도 한 단위로 처리한다 | 모두 대치                   |
+| 데코레이션 | 문서 내용은 바꾸지 않고 화면에만 덧씌우는 표시                                       | 찾은 단어 강조              |
+| 플러그인   | 키 입력·클릭·화면 갱신에 끼어들어 동작을 더하는 모듈                                 | 표 핸들, 글 끝 빈 문단 유지 |
+
+9월 말에 메모 앱에서 블로그 글을 직접 작성하기 시작했다. 글을 몇 편 작성하자 다음 문제가 드러났고, macOS 메모와 나란히 비교하며 하나씩 맞췄다.
 
 | 영역      | 문제                                                                                                           |
 | --------- | -------------------------------------------------------------------------------------------------------------- |
@@ -37,7 +44,15 @@ summary: macOS 메모와 나란히 비교하며 표 핸들, 글 내부 찾기·�
 
 ![표 핸들로 열을 선택한 화면](./images/notes-table-handles.jpg '열 핸들을 누르면 열 전체를 선택하고, 핸들이 열 폭만큼 확장된 막대가 된다. 메뉴는 표를 가리지 않는 위치에 표시된다')
 
-[GFM 표](https://github.github.com/gfm/#tables-extension-)는 첫 행이 항상 머리글이다. 그래서 행을 맨 위로 이동하면 표를 재구성해, 새로 첫 행이 된 행을 머리글 셀로, 밀려난 머리글을 일반 셀로 변환한다.
+[GFM 표](https://github.github.com/gfm/#tables-extension-)(GitHub Flavored Markdown의 표 문법)는 첫 행이 항상 머리글이다. 예를 들어 Markdown 원문은 다음과 같고, 두 번째 줄의 `---`가 첫 행을 머리글로 지정한다.
+
+```md
+| 이름 | 값  |
+| ---- | --- |
+| a    | 1   |
+```
+
+그래서 행을 맨 위로 이동하면 표를 재구성해, 새로 첫 행이 된 행을 머리글 셀로, 밀려난 머리글을 일반 셀로 변환한다.
 
 ### 선택한 셀이 표시되지 않았다
 
@@ -51,11 +66,17 @@ summary: macOS 메모와 나란히 비교하며 표 핸들, 글 내부 찾기·�
 
 첫 구현의 핸들은 열 위가 아니라 머리글 셀을 덮고 있었다. 계산한 위치와 렌더링된 위치가 약 13px 어긋났다. 처음에는 위치를 측정한 뒤에 레이아웃이 바뀐 것으로 추정하고 다음 프레임에 한 번 더 측정하게 했지만, 결과가 같았다.
 
-원인은 **본문의 문단 간격 규칙**이었다. 읽기 화면과 스타일을 맞추려고 `.memo-markdown > * + * { margin-top: 0.9em }`를 지정했는데, 핸들을 편집기의 직계 자식으로 렌더링하다 보니 핸들도 '본문의 두 번째 이후 요소'에 해당해 0.9em(약 13px)의 위 여백이 적용됐다. 핸들과 테두리에 `margin: 0`을 지정해 해결했다.
+원인은 **본문의 문단 간격 규칙**이었다. 읽기 화면과 스타일을 맞추려고 `.memo-markdown > * + * { margin-top: 0.9em }`를 지정했다. 이 선택자에서 `>`는 직계 자식, `+`는 바로 앞에 형제가 있는 요소를 뜻한다. 따라서 "본문의 직계 자식 중 첫 번째가 아닌 모든 요소"에 위 여백을 주어, 첫 블록 위에는 여백 없이 블록 사이에만 간격을 만든다.
+
+![형제 선택자 여백이 표 핸들에 적용된 과정](./images/notes-polish-sibling-margin.svg '핸들도 본문의 직계 자식이라 0.9em 위 여백을 받아, 계산한 위치보다 약 13px 아래에 그려졌다')
+
+그런데 핸들을 편집기의 직계 자식으로 렌더링하다 보니 핸들도 '본문의 두 번째 이후 요소'에 해당해 0.9em(약 13px)의 위 여백이 적용됐다. 핸들과 테두리에 `margin: 0`을 지정해 해결했다.
 
 ### 표 앞에 커서를 놓을 수 없었다
 
 본문 맨 앞에 삽입한 표는 앞에 문단이 없어서 표 앞에 입력할 방법이 없었다. 표 뒤에서 Backspace로 표를 삭제할 수도 없었다. 편집기의 기본 Backspace는 표 뒤의 빈 문단을 삭제하는데, 글 끝에 항상 빈 문단을 유지하는 플러그인이 그 문단을 즉시 다시 생성했다. 삭제와 재생성이 반복될 뿐이었다.
+
+두 문제를 다음과 같이 수정했다. 갭 커서는 ProseMirror가 제공하는 플러그인으로, 텍스트가 들어갈 수 없는 두 블록 사이(예: 문서 맨 앞과 표 사이)에 가로 막대 모양의 커서를 그린다. 그 위치에서 글자를 입력하면 새 문단이 생긴다.
 
 - 표·이미지 앞뒤처럼 텍스트를 입력할 수 없는 위치에도 커서([갭 커서](https://github.com/ProseMirror/prosemirror-gapcursor))를 놓는다. 첫 행에서 ↑, 마지막 행에서 ↓로 이동한다
 - 표 바로 뒤 문단의 맨 앞에서 Backspace를 누르면 먼저 **표를 선택하고**, 한 번 더 누르면 삭제한다
@@ -93,10 +114,18 @@ export function findMatches(text: string, query: string, options: FindOptions): 
 }
 ```
 
-단어 문자는 `[\p{L}\p{N}_]`라 한글에서도 단어 경계를 판별한다. 블록(문단, 표의 셀, 제목) 경계를 넘는 문자열은 찾지 않는다.
+단어 문자는 `[\p{L}\p{N}_]`라 한글에서도 단어 경계를 판별한다. `\p{L}`은 유니코드의 모든 문자(한글·한자·라틴 문자 등), `\p{N}`은 모든 숫자를 뜻한다. 검색어 `메모`로 예를 들면 다음과 같다.
 
-- **편집기**: ProseMirror 데코레이션으로 강조하고, 대치는 트랜잭션으로 실행한다. 문서 끝부터 바꿔야 앞쪽 위치 값이 밀리지 않는다
+| 본문      | 다음을 포함 | 다음으로 시작 | 전체 단어 |
+| --------- | ----------- | ------------- | --------- |
+| `메모 앱` | 찾음        | 찾음          | 찾음      |
+| `메모장`  | 찾음        | 찾음          | 못 찾음   |
+| `새메모`  | 찾음        | 못 찾음       | 못 찾음   | 블록(문단, 표의 셀, 제목) 경계를 넘는 문자열은 찾지 않는다. |
+
+- **편집기**: ProseMirror 데코레이션으로 강조하고, 대치는 트랜잭션으로 실행한다. 문서 끝부터 바꿔야 앞쪽 위치 값이 밀리지 않는다(아래 그림)
 - **읽기 화면**: DOM을 변경하지 않고 [CSS Custom Highlight API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API)(`::highlight()`)로 강조한다. 텍스트를 문단·셀 단위로 수집해 검색하고, 검색 결과 위치를 DOM `Range`로 변환한다
+
+![모두 대치를 문서 끝부터 하는 이유](./images/notes-polish-replace-order.svg 'cat을 tiger로 바꾸면 글자가 두 칸 늘어난다. 앞에서부터 바꾸면 미리 계산한 뒤쪽 위치가 어긋나고, 끝에서부터 바꾸면 앞쪽 위치가 그대로라 처음 목록을 그대로 쓴다')
 
 읽기 화면의 강조 방법은 두 가지를 비교했다.
 
@@ -169,7 +198,14 @@ registry.set('memo-find-current', new Highlight(...(current >= 0 ? [ranges[curre
 - 한글은 자모로 풀어 비교한다(프런트엔드 → ㅍㅡㄹㅓㄴㅌㅡㅇㅔㄴㄷㅡ). 한 음절 오타가 자모 1~2개 차이로 잡힌다.
 - **비슷한 글:** 낱말마다 제목·주소·태그의 어느 부분과 편집 비용이 자모 길이의 25% 이하(적어도 1)인 글을, 비용이 적은 순서로 5편까지. 본문은 보지 않는다. 긴 본문에는 아무 검색어나 비슷한 부분이 있어 추천이 의미 없어진다.
 - **고친 검색어:** 제목·주소·태그 어디에도 없는 낱말을, 제목·주소·태그에 나오는 낱말 중 가장 가까운 것으로 바꾼다. 바꾼 검색어로 찾은 글이 있을 때만 보인다(dispacher → dispatcher, 프런트엔드 셩능 → 프론트엔드 성능).
+- 편집 거리는 한 문자열을 다른 문자열로 만드는 데 필요한 최소 편집 횟수다. 편집은 글자 하나 바꾸기, 넣기, 빼기 세 가지다. 예를 들어 `flix` → `flux`는 i를 u로 한 번 바꾸면 되고, `flix` → `fix`는 l을 한 번 빼면 된다.
 - 바꾸기 비용은 0.9, 넣기·빼기는 1로 두어, 같은 횟수면 길이가 같은 낱말을 고른다(flix → fix가 아니라 flux).
+
+| 후보   | 편집         | 비용 |
+| ------ | ------------ | ---- |
+| `flux` | i → u 바꾸기 | 0.9  |
+| `fix`  | l 빼기       | 1    |
+
 - 이웃한 두 글자를 맞바꾼 오타는 비용 1로 본다(Damerau–Levenshtein의 인접 전치. dokcer → docker, fulx → flux). 맞바꾸기를 따로 두지 않으면 바꾸기 두 번(1.8)이 되어 6글자 낱말의 허용치(1)를 넘는다.
 - 고친 검색어 후보에는 표기 사전의 표기와, 제목의 이웃한 낱말 2~3개를 띄어쓰기 없이 이은 것도 넣는다. 음차의 오타는 사전의 표기로(플럭쓰 → 플럭스), 붙여 쓴 검색어의 오타는 이은 낱말로(프론트엔드셩능 → 프론트엔드 성능) 고친다. 비슷한 글은 음차의 오타를 사전의 표기로 고친 뒤 그 영문 표기로도 찾는다.
 - 후보 목록은 같은 글 목록에 한 번만 만들어 `WeakMap`에 보관한다.
@@ -193,7 +229,14 @@ registry.set('memo-find-current', new Highlight(...(current >= 0 ? [ranges[curre
 
 ## Safari 탭
 
-좁은 창에서 탭이 가로로 넘쳐 스크롤해야 표시됐다. macOS Safari처럼 **현재 탭은 넓게, 나머지는 좁게** 폭을 배분했다. 모든 탭이 같은 비율(`flex-grow: 1`)에서 시작하고 현재 탭만 더 큰 비율을 가진다. 탭을 바꾸면 `flex-grow` 값이 이동하면서 폭이 애니메이션으로 바뀌고, 다른 탭 제목은 말줄임표로 앞부분만 표시된다.
+좁은 창에서 탭이 가로로 넘쳐 스크롤해야 표시됐다. macOS Safari처럼 **현재 탭은 넓게, 나머지는 좁게** 폭을 배분했다. 모든 탭이 같은 비율(`flex-grow: 1`)에서 시작하고 현재 탭만 더 큰 비율(`flex-grow: 2.6`)을 가진다. `flex-grow`는 남는 폭을 항목들이 나눠 가질 때의 몫이다. 탭 기본 폭을 0(`flex-basis: 0`)으로 두었으므로, 탭 막대 전체 폭이 그 비율대로 나뉜다. 예를 들어 탭이 세 개이고 나눌 폭이 460px이면 다음과 같다(최소 폭 56px 조건은 이 예에서 걸리지 않는다).
+
+| 탭                                                                                                               | `flex-grow` | 폭 계산         | 폭    |
+| ---------------------------------------------------------------------------------------------------------------- | ----------- | --------------- | ----- |
+| 현재 탭                                                                                                          | 2.6         | 460 × 2.6 / 4.6 | 260px |
+| 다른 탭 1                                                                                                        | 1           | 460 × 1 / 4.6   | 100px |
+| 다른 탭 2                                                                                                        | 1           | 460 × 1 / 4.6   | 100px |
+| 탭을 바꾸면 `flex-grow` 값이 이동하면서 폭이 애니메이션으로 바뀌고, 다른 탭 제목은 말줄임표로 앞부분만 표시된다. |
 
 ![좁은 창의 Safari 탭](./images/safari-tabs.jpg '현재 탭은 제목 전체가 표시되고, 다른 탭은 좁게 축소된다. 창이 좁아도 주소창은 유지된다')
 
@@ -226,5 +269,22 @@ registry.set('memo-find-current', new Highlight(...(current >= 0 ? [ranges[curre
 - [앱이 등록한 메뉴를 공통 메뉴와 병합하는 메뉴 막대 구조](/memo/menubar-menus)
 
 [^fixed-container]: `container-type: size` 또는 `inline-size`는 요소에 레이아웃 격리(layout containment)를 적용하고, 레이아웃 격리가 적용된 요소는 `position: fixed` 자손의 포함 블록(containing block)이 된다. 그래서 고정 위치 요소가 뷰포트가 아니라 그 컨테이너를 기준으로 배치된다. [MDN: Containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [ProseMirror Guide](https://prosemirror.net/docs/guide/)
+- [prosemirror-gapcursor](https://github.com/ProseMirror/prosemirror-gapcursor)
+- [Milkdown](https://milkdown.dev/)
+- [GitHub Flavored Markdown Spec: Tables](https://github.github.com/gfm/#tables-extension-)
+- [MDN: Next-sibling combinator](https://developer.mozilla.org/en-US/docs/Web/CSS/Next-sibling_combinator)
+- [MDN: CSS Custom Highlight API](https://developer.mozilla.org/en-US/docs/Web/API/CSS_Custom_Highlight_API)
+- [MDN: Unicode character class escape](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Unicode_character_class_escape)
+- [MDN: flex-grow](https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow)
+- [MDN: a 요소의 download 속성](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#download)
+- [React: useDeferredValue](https://react.dev/reference/react/useDeferredValue)
+- [Wikipedia: Damerau–Levenshtein distance](https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance)
+
+</details>
 
 #MacFolio #메모앱

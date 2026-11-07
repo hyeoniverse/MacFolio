@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<text x="150" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">NMS 전: 같은 부류 박스 3개</text>
+<text x="490" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">NMS 후 (IoU 임계값 0.5)</text>
+<!-- before -->
+<rect x="20" y="45" width="260" height="200" rx="8" fill="#f2f2f7"/>
+<rect x="50" y="70" width="110" height="140" fill="none" stroke="#0a84ff" stroke-width="3"/><text x="50" y="64" font-size="13" fill="#0a84ff" font-weight="600">A 0.9</text>
+<rect x="61" y="81" width="110" height="140" fill="none" stroke="#ff3b30" stroke-width="2" stroke-dasharray="6 4"/><text x="120" y="240" font-size="13" fill="#ff3b30" font-weight="600">B 0.8</text>
+<rect x="140" y="95" width="70" height="100" fill="none" stroke="#34c759" stroke-width="3"/><text x="176" y="113" font-size="13" fill="#34c759" font-weight="600">C 0.7</text>
+<!-- table -->
+<g font-size="12" fill="#1d1d1f">
+<text x="20" y="270">IoU(A, B) = 0.7 &gt; 0.5 → B는 A와 같은 물체로 보고 삭제</text>
+<text x="20" y="290">IoU(A, C) = 0.1 ≤ 0.5 → C는 다른 물체로 보고 유지</text>
+<text x="20" y="310" fill="#6e6e73">순서: 신뢰도가 가장 높은 A를 먼저 고르고, A와 많이 겹치는 박스를 지운 뒤 남은 박스에서 반복</text>
+</g>
+<line x1="290" y1="145" x2="345" y2="145" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<!-- after -->
+<rect x="360" y="45" width="260" height="200" rx="8" fill="#f2f2f7"/>
+<rect x="390" y="70" width="110" height="140" fill="none" stroke="#0a84ff" stroke-width="3"/><text x="390" y="64" font-size="13" fill="#0a84ff" font-weight="600">A 0.9</text>
+<rect x="480" y="95" width="70" height="100" fill="none" stroke="#34c759" stroke-width="3"/><text x="516" y="113" font-size="13" fill="#34c759" font-weight="600">C 0.7</text>
+</svg>

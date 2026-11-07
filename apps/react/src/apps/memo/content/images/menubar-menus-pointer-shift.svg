@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>정지한 포인터 아래로 제목이 이동하는 경우</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">정지한 포인터 아래로 다른 제목이 이동해 오는 경우</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">메모가 메뉴를 등록하면 편집·보기가 추가되어 윈도우가 오른쪽으로 이동한다</text>
+<text x="20" y="82" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">① 클릭한 시각</text>
+<rect x="20" y="90" width="360" height="34" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="47.0" y="112" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">메모</text>
+<text x="93.0" y="112" font-size="13" fill="#1d1d1f" text-anchor="middle">파일</text>
+<rect x="118" y="95" width="55" height="24" rx="5" fill="#0a84ff" stroke="none" stroke-width="1.2"/>
+<text x="145.5" y="112" font-size="13" fill="#ffffff" text-anchor="middle">윈도우</text>
+<text x="204.5" y="112" font-size="13" fill="#1d1d1f" text-anchor="middle">도움말</text>
+<path d="M132 102 l0 18 l4.5 -4.5 l3.5 7.5 l3 -1.4 l-3.5 -7.2 l6.3 0 z" fill="#1d1d1f" stroke="#ffffff" stroke-width="1"/>
+<text x="400" y="104" font-size="12" fill="#1d1d1f" text-anchor="start">포인터로 윈도우를 눌러 메뉴를 열었다</text>
+<text x="400" y="121" font-size="12" fill="#0a84ff" text-anchor="start">열린 메뉴: 윈도우</text>
+<text x="20" y="162" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">② 등록 직후, 수정 전 (pointerenter로 전환)</text>
+<rect x="20" y="170" width="360" height="34" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="47.0" y="192" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">메모</text>
+<text x="93.0" y="192" font-size="13" fill="#1d1d1f" text-anchor="middle">파일</text>
+<rect x="118" y="175" width="42" height="24" rx="5" fill="#ff3b30" stroke="none" stroke-width="1.2"/>
+<text x="139.0" y="192" font-size="13" fill="#ffffff" text-anchor="middle">편집</text>
+<text x="185.0" y="192" font-size="13" fill="#1d1d1f" text-anchor="middle">보기</text>
+<text x="237.5" y="192" font-size="13" fill="#1d1d1f" text-anchor="middle">윈도우</text>
+<text x="296.5" y="192" font-size="13" fill="#1d1d1f" text-anchor="middle">도움말</text>
+<path d="M132 182 l0 18 l4.5 -4.5 l3.5 7.5 l3 -1.4 l-3.5 -7.2 l6.3 0 z" fill="#1d1d1f" stroke="#ffffff" stroke-width="1"/>
+<text x="400" y="184" font-size="12" fill="#1d1d1f" text-anchor="start">포인터는 움직이지 않았는데 편집이</text>
+<text x="400" y="201" font-size="12" fill="#1d1d1f" text-anchor="start">아래로 들어와 pointerenter가 발생</text>
+<text x="400" y="218" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">열린 메뉴: 편집 (오동작)</text>
+<text x="20" y="252" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">③ 등록 직후, 수정 후 (pointermove의 이동 거리로 판단)</text>
+<rect x="20" y="260" width="360" height="34" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="47.0" y="282" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">메모</text>
+<text x="93.0" y="282" font-size="13" fill="#1d1d1f" text-anchor="middle">파일</text>
+<text x="139.0" y="282" font-size="13" fill="#1d1d1f" text-anchor="middle">편집</text>
+<text x="185.0" y="282" font-size="13" fill="#1d1d1f" text-anchor="middle">보기</text>
+<rect x="210" y="265" width="55" height="24" rx="5" fill="#34c759" stroke="none" stroke-width="1.2"/>
+<text x="237.5" y="282" font-size="13" fill="#ffffff" text-anchor="middle">윈도우</text>
+<text x="296.5" y="282" font-size="13" fill="#1d1d1f" text-anchor="middle">도움말</text>
+<path d="M132 272 l0 18 l4.5 -4.5 l3.5 7.5 l3 -1.4 l-3.5 -7.2 l6.3 0 z" fill="#1d1d1f" stroke="#ffffff" stroke-width="1"/>
+<text x="400" y="274" font-size="12" fill="#1d1d1f" text-anchor="start">movementX = 0, movementY = 0 이라</text>
+<text x="400" y="291" font-size="12" fill="#1d1d1f" text-anchor="start">전환하지 않는다</text>
+<text x="400" y="308" font-size="12" fill="#34c759" text-anchor="start" font-weight="700">열린 메뉴: 윈도우 유지</text>
+</svg>

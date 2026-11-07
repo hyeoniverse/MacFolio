@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">명시도 계산: (ID, 클래스·속성·가상 클래스, 요소) 개수</text>
+  <rect x="20" y="48" width="600" height="32" fill="#f2f2f7"/>
+  <g font-size="13" font-weight="600" fill="#1d1d1f">
+    <text x="32" y="69">선택자</text>
+    <text x="370" y="69" text-anchor="middle">ID</text>
+    <text x="440" y="69" text-anchor="middle">클래스</text>
+    <text x="510" y="69" text-anchor="middle">요소</text>
+    <text x="580" y="69" text-anchor="middle">명시도</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="32" y="106" font-family="ui-monospace, Menlo, monospace">.bin-empty-button</text>
+    <text x="370" y="106" text-anchor="middle">0</text><text x="440" y="106" text-anchor="middle" fill="#0a84ff">1</text><text x="510" y="106" text-anchor="middle">0</text><text x="580" y="106" text-anchor="middle" font-weight="600">0-1-0</text>
+    <text x="32" y="140" font-family="ui-monospace, Menlo, monospace">.memo button</text>
+    <text x="370" y="140" text-anchor="middle">0</text><text x="440" y="140" text-anchor="middle" fill="#0a84ff">1</text><text x="510" y="140" text-anchor="middle" fill="#0a84ff">1</text><text x="580" y="140" text-anchor="middle" font-weight="600">0-1-1</text>
+    <text x="32" y="174" font-family="ui-monospace, Menlo, monospace">.ui-icon-button.tool</text>
+    <text x="370" y="174" text-anchor="middle">0</text><text x="440" y="174" text-anchor="middle" fill="#0a84ff">2</text><text x="510" y="174" text-anchor="middle">0</text><text x="580" y="174" text-anchor="middle" font-weight="600">0-2-0</text>
+    <text x="32" y="208" font-family="ui-monospace, Menlo, monospace">:where(.bin-empty-button)</text>
+    <text x="32" y="224" font-family="ui-monospace, Menlo, monospace">  :where(.ui-button)</text>
+    <text x="370" y="216" text-anchor="middle">0</text><text x="440" y="216" text-anchor="middle" fill="#ff9f0a">0</text><text x="510" y="216" text-anchor="middle">0</text><text x="580" y="216" text-anchor="middle" font-weight="600" fill="#ff9f0a">0-0-0</text>
+  </g>
+  <line x1="20" y1="120" x2="620" y2="120" stroke="#e5e5ea"/>
+  <line x1="20" y1="154" x2="620" y2="154" stroke="#e5e5ea"/>
+  <line x1="20" y1="188" x2="620" y2="188" stroke="#e5e5ea"/>
+  <line x1="20" y1="236" x2="620" y2="236" stroke="#e5e5ea"/>
+  <rect x="20" y="250" width="600" height="56" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+  <text x="320" y="273" font-size="12" fill="#1d1d1f" text-anchor="middle">:where() 안의 선택자는 개수에 넣지 않는다. 그래서 같은 요소를 고르면서도 명시도는 0이다</text>
+  <text x="320" y="293" font-size="12" fill="#6e6e73" text-anchor="middle">브라우저는 레이어 순서를 먼저 비교하고, 레이어가 같을 때만 명시도를 비교한다</text>
+</svg>

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">Memo 컴포넌트 본체는 셸 Context의 Provider 바깥에 있다</text>
+  <g font-size="12">
+    <rect x="40" y="54" width="560" height="236" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="56" y="76" font-weight="600" fill="#1d1d1f">Memo</text>
+    <text x="100" y="76" fill="#ff3b30">본체에서 useContext(MobileNavContext) → null</text>
+    <rect x="70" y="90" width="510" height="186" rx="10" fill="#fff" stroke="#6e6e73"/>
+    <text x="86" y="112" font-weight="600" fill="#1d1d1f">AppWindow</text>
+    <rect x="100" y="124" width="460" height="140" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="116" y="146" font-weight="600" fill="#1d1d1f">MobileAppFrame (휴대폰 셸)</text>
+    <rect x="130" y="158" width="410" height="94" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+    <text x="146" y="180" font-weight="600" fill="#0a84ff">MobileNavContext.Provider</text>
+    <rect x="160" y="192" width="360" height="46" rx="8" fill="#fff" stroke="#0a84ff"/>
+    <text x="176" y="212" fill="#1d1d1f">children: Memo가 넘긴 JSX (MobileNavigation 등)</text>
+    <text x="176" y="230" fill="#34c759">여기서 useContext를 부르면 값을 받는다</text>
+  </g>
+  <text x="320" y="314" text-anchor="middle" font-size="12" fill="#6e6e73">Memo는 Provider를 렌더링하는 쪽이라 Context를 읽지 못한다. 그래서 화면 폭으로 판별하는 useIsMobile()을 썼다</text>
+</svg>

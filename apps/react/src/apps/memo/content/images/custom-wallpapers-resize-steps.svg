@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>4032×3024 휴대폰 사진을 createImageBitmap으로 디코딩하고, 캔버스에 2560×1920과 640×480으로 그린 뒤 toBlob으로 JPEG 두 장을 만든다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<rect width="640" height="420" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">휴대폰 사진 한 장이 JPEG 두 장이 되는 과정</text>
+<!-- step 1 -->
+<rect x="24" y="56" width="180" height="74" rx="10" fill="#f2f2f7"/>
+<text x="114" y="80" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">① 고른 파일 (File)</text>
+<text x="114" y="100" font-size="12" fill="#6e6e73" text-anchor="middle">예: IMG_4021.jpg</text>
+<text x="114" y="118" font-size="12" fill="#6e6e73" text-anchor="middle">4032 × 3024, 압축 상태</text>
+<line x1="204" y1="93" x2="228" y2="93" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="230" y="56" width="190" height="74" rx="10" fill="#f2f2f7"/>
+<text x="325" y="80" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">② createImageBitmap</text>
+<text x="325" y="100" font-size="12" fill="#6e6e73" text-anchor="middle">픽셀 배열로 디코딩</text>
+<text x="325" y="118" font-size="12" fill="#6e6e73" text-anchor="middle">4032×3024×4바이트 ≈ 48.8MB</text>
+<line x1="420" y1="93" x2="444" y2="93" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"/>
+<rect x="446" y="56" width="170" height="74" rx="10" fill="#f2f2f7"/>
+<text x="531" y="80" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">③ 축소 비율 계산</text>
+<text x="531" y="100" font-size="12" fill="#6e6e73" text-anchor="middle">scale = min(1,</text>
+<text x="531" y="118" font-size="12" fill="#6e6e73" text-anchor="middle">max ÷ 긴 변 4032)</text>
+<!-- branches -->
+<line x1="531" y1="130" x2="531" y2="150" stroke="#1d1d1f" stroke-width="1.4"/>
+<line x1="170" y1="150" x2="531" y2="150" stroke="#1d1d1f" stroke-width="1.4"/>
+<line x1="170" y1="150" x2="170" y2="170" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"/>
+<line x1="470" y1="150" x2="470" y2="170" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#a)"/>
+<!-- original -->
+<rect x="24" y="172" width="292" height="230" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="40" y="196" font-size="13" font-weight="700" fill="#0a84ff">원본 (max 2560, 품질 0.86)</text>
+<text x="40" y="218" font-size="12" fill="#1d1d1f">scale = 2560 ÷ 4032 ≈ 0.635</text>
+<text x="40" y="238" font-size="12" fill="#1d1d1f">캔버스 2560 × 1920</text>
+<rect x="40" y="250" width="192" height="144" fill="#0a84ff" opacity="0.15" stroke="#0a84ff"/>
+<text x="136" y="326" font-size="12" fill="#0a84ff" text-anchor="middle">2560 × 1920</text>
+<text x="244" y="372" font-size="12" fill="#6e6e73">toBlob(</text>
+<text x="244" y="388" font-size="12" fill="#6e6e73">'image/jpeg')</text>
+<!-- thumb -->
+<rect x="332" y="172" width="284" height="230" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="348" y="196" font-size="13" font-weight="700" fill="#ff9f0a">썸네일 (max 640, 품질 0.8)</text>
+<text x="348" y="218" font-size="12" fill="#1d1d1f">scale = 640 ÷ 4032 ≈ 0.159</text>
+<text x="348" y="238" font-size="12" fill="#1d1d1f">캔버스 640 × 480</text>
+<rect x="348" y="250" width="48" height="36" fill="#ff9f0a" opacity="0.2" stroke="#ff9f0a"/>
+<text x="406" y="273" font-size="12" fill="#ff9f0a">640 × 480 (같은 축척)</text>
+<text x="348" y="320" font-size="12" fill="#6e6e73">설정 화면 썸네일 폭 320px의 2배.</text>
+<text x="348" y="338" font-size="12" fill="#6e6e73">레티나 화면에서 흐려지지 않는 크기</text>
+<text x="348" y="388" font-size="12" fill="#6e6e73">두 장은 Promise.all로 병렬 생성</text>
+</svg>

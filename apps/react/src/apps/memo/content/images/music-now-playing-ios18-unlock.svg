@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="360" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">iPhone Safari에서 배경 음악 audio 요소가 재생되는 조건</text>
+<text x="320" y="46" font-size="12" fill="#6e6e73" text-anchor="middle">WebKit은 사용자 제스처 처리 중에 play()를 한 번 호출한 요소만 이후 제스처 없이 재생한다</text>
+<rect x="140" y="62" width="40" height="250" fill="#e5f1ff"/>
+<text x="160" y="80" font-size="12" fill="#0a84ff" text-anchor="middle">탭 처리 중</text>
+<line x1="140" y1="312" x2="610" y2="312" stroke="#1d1d1f" stroke-width="1.5"/>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<line x1="140" y1="306" x2="140" y2="318" stroke="#1d1d1f"/><text x="140" y="334">0초 (로딩 화면 탭)</text>
+<line x1="540" y1="306" x2="540" y2="318" stroke="#1d1d1f"/><text x="540" y="334">약 2.5초 (startMusic)</text>
+</g>
+<text x="20" y="128" font-size="13" font-weight="600" fill="#1d1d1f">조건문만 지움</text>
+<line x1="140" y1="140" x2="600" y2="140" stroke="#c7c7cc"/>
+<circle cx="160" cy="140" r="6" fill="#6e6e73"/>
+<text x="172" y="128" font-size="12" fill="#6e6e73">시작음 재생, 배경 음악 요소는 아직 없음</text>
+<circle cx="540" cy="140" r="6" fill="#ff3b30"/>
+<text x="540" y="164" font-size="12" font-weight="600" fill="#ff3b30" text-anchor="middle">play() 거절</text>
+<text x="540" y="180" font-size="12" fill="#ff3b30" text-anchor="middle">NotAllowedError</text>
+<text x="20" y="232" font-size="13" font-weight="600" fill="#1d1d1f">이후</text>
+<line x1="140" y1="244" x2="600" y2="244" stroke="#c7c7cc"/>
+<rect x="160" y="238" width="380" height="12" rx="6" fill="#34c759" opacity="0.35"/>
+<circle cx="160" cy="244" r="6" fill="#0a84ff"/>
+<text x="172" y="226" font-size="12" fill="#1d1d1f">unlockMusicAudio(): play() 직후 pause()</text>
+<text x="350" y="270" font-size="12" fill="#248a3d" text-anchor="middle">이 audio 요소는 허용된 상태로 남는다</text>
+<circle cx="540" cy="244" r="6" fill="#34c759"/>
+<text x="540" y="226" font-size="12" font-weight="600" fill="#248a3d" text-anchor="middle">play() 재생</text>
+</svg>

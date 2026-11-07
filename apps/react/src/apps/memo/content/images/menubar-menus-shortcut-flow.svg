@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>단축키 입력이 메뉴 항목에 도달하는 경로</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">단축키 입력이 메뉴 항목에 도달하는 경로 (Safari가 활성 앱)</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">⌘W는 브라우저가 먼저 처리하고, ⌥W는 페이지의 keydown 핸들러까지 전달된다</text>
+<rect x="20" y="70" width="200" height="36" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="120" y="93" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">⌘W 입력</text>
+<line x1="120" y1="106" x2="120" y2="136" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="20" y="140" width="200" height="58" rx="6" fill="#fff0ef" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="120" y="163" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">브라우저가 먼저 처리</text>
+<text x="120" y="184" font-size="12" fill="#1d1d1f" text-anchor="middle">현재 브라우저 탭을 닫는다</text>
+<text x="120" y="222" font-size="12" fill="#6e6e73" text-anchor="middle">페이지의 keydown 핸들러는</text>
+<text x="120" y="239" font-size="12" fill="#6e6e73" text-anchor="middle">호출되지 않는다</text>
+<text x="120" y="262" font-size="12" fill="#6e6e73" text-anchor="middle">preventDefault()로도</text>
+<text x="120" y="279" font-size="12" fill="#6e6e73" text-anchor="middle">막을 수 없다</text>
+<rect x="260" y="70" width="360" height="36" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="440" y="93" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">⌥W 입력</text>
+<line x1="440" y1="106" x2="440" y2="126" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<rect x="260" y="130" width="360" height="56" rx="6" fill="#e8f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="275" y="152" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">window의 keydown 이벤트</text>
+<text x="275" y="173" font-size="12" fill="#1d1d1f" text-anchor="start">event.key = '∑',  event.code = 'KeyW',  altKey = true</text>
+<line x1="440" y1="186" x2="440" y2="206" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<rect x="260" y="210" width="360" height="98" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="275" y="232" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">표시 중인 메뉴를 앞에서부터 검색 (code로 비교)</text>
+<rect x="275" y="242" width="330" height="26" rx="4" fill="#e8f1ff" stroke="none" stroke-width="1.2"/>
+<text x="285" y="260" font-size="12" fill="#1d1d1f" text-anchor="start">1. 파일 › 탭 닫기  ⌥W</text>
+<text x="595" y="260" font-size="12" fill="#0a84ff" text-anchor="end" font-weight="700">일치, 실행</text>
+<rect x="275" y="274" width="330" height="26" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="285" y="292" font-size="12" fill="#6e6e73" text-anchor="start">2. 윈도우 › 윈도우 닫기  ⌥⇧W</text>
+<text x="595" y="292" font-size="12" fill="#6e6e73" text-anchor="end">⇧가 없어 불일치</text>
+<line x1="440" y1="308" x2="440" y2="328" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<rect x="260" y="332" width="360" height="48" rx="6" fill="#ecf9ef" stroke="#34c759" stroke-width="1.2"/>
+<text x="275" y="352" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">preventDefault() 후 탭 닫기 onSelect() 실행</text>
+<text x="275" y="370" font-size="12" fill="#1d1d1f" text-anchor="start">Safari 앱 안의 탭 하나만 닫힌다</text>
+</svg>

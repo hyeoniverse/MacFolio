@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>두 칸을 4배로 확대할 때 최근접 이웃과 이중 선형의 결과</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">원본 2칸을 가로 4배(8픽셀)로 확대하기</text>
+<text x="24" y="56" font-size="12" fill="#6e6e73">초록 칸 rgb(88, 160, 64)과 갈색 칸 rgb(140, 90, 50)이 붙어 있는 한 줄</text>
+<text x="24" y="92" font-size="13" font-weight="600" fill="#1d1d1f">원본</text>
+<rect x="120" y="74" width="60" height="30" fill="rgb(88, 160, 64)" stroke="#1d1d1f"/>
+<rect x="180" y="74" width="60" height="30" fill="rgb(140, 90, 50)" stroke="#1d1d1f"/>
+<text x="24" y="144" font-size="13" font-weight="600" fill="#1d1d1f">최근접 이웃</text>
+<text x="24" y="162" font-size="12" fill="#6e6e73">가까운 칸 복사</text>
+<rect x="120" y="124" width="60" height="44" fill="rgb(88, 160, 64)" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="124" width="60" height="44" fill="rgb(88, 160, 64)" stroke="#ffffff" stroke-width="1"/>
+<rect x="240" y="124" width="60" height="44" fill="rgb(88, 160, 64)" stroke="#ffffff" stroke-width="1"/>
+<rect x="300" y="124" width="60" height="44" fill="rgb(88, 160, 64)" stroke="#ffffff" stroke-width="1"/>
+<rect x="360" y="124" width="60" height="44" fill="rgb(140, 90, 50)" stroke="#ffffff" stroke-width="1"/>
+<rect x="420" y="124" width="60" height="44" fill="rgb(140, 90, 50)" stroke="#ffffff" stroke-width="1"/>
+<rect x="480" y="124" width="60" height="44" fill="rgb(140, 90, 50)" stroke="#ffffff" stroke-width="1"/>
+<rect x="540" y="124" width="60" height="44" fill="rgb(140, 90, 50)" stroke="#ffffff" stroke-width="1"/>
+<text x="150" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">A</text>
+<text x="210" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">A</text>
+<text x="270" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">A</text>
+<text x="330" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">A</text>
+<text x="390" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">B</text>
+<text x="450" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">B</text>
+<text x="510" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">B</text>
+<text x="570" y="186" font-size="12" text-anchor="middle" fill="#6e6e73">B</text>
+<text x="24" y="234" font-size="13" font-weight="600" fill="#1d1d1f">이중 선형</text>
+<text x="24" y="252" font-size="12" fill="#6e6e73">거리에 따라 섞기</text>
+<rect x="120" y="214" width="60" height="44" fill="rgb(88, 160, 64)" stroke="#ffffff" stroke-width="1"/>
+<rect x="180" y="214" width="60" height="44" fill="rgb(88, 160, 64)" stroke="#ffffff" stroke-width="1"/>
+<rect x="240" y="214" width="60" height="44" fill="rgb(94, 151, 62)" stroke="#ffffff" stroke-width="1"/>
+<rect x="300" y="214" width="60" height="44" fill="rgb(108, 134, 59)" stroke="#ffffff" stroke-width="1"/>
+<rect x="360" y="214" width="60" height="44" fill="rgb(120, 116, 55)" stroke="#ffffff" stroke-width="1"/>
+<rect x="420" y="214" width="60" height="44" fill="rgb(134, 99, 52)" stroke="#ffffff" stroke-width="1"/>
+<rect x="480" y="214" width="60" height="44" fill="rgb(140, 90, 50)" stroke="#ffffff" stroke-width="1"/>
+<rect x="540" y="214" width="60" height="44" fill="rgb(140, 90, 50)" stroke="#ffffff" stroke-width="1"/>
+<text x="150" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">A</text>
+<text x="210" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">A</text>
+<text x="270" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">B 12.5%</text>
+<text x="330" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">B 37.5%</text>
+<text x="390" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">B 62.5%</text>
+<text x="450" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">B 87.5%</text>
+<text x="510" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">B</text>
+<text x="570" y="276" font-size="12" text-anchor="middle" fill="#6e6e73">B</text>
+<rect x="238" y="210" width="244" height="52" fill="none" stroke="#ff3b30" stroke-width="2.5" rx="4"/>
+<text x="360" y="300" font-size="12" text-anchor="middle" fill="#ff3b30">원본에 없던 중간색 4개</text>
+<text x="24" y="336" font-size="12" fill="#1d1d1f">중간색 값:</text>
+<text x="24" y="358" font-size="12" fill="#1d1d1f">12.5%: rgb(94, 151, 62)</text>
+<text x="176" y="358" font-size="12" fill="#1d1d1f">37.5%: rgb(108, 134, 59)</text>
+<text x="328" y="358" font-size="12" fill="#1d1d1f">62.5%: rgb(120, 116, 55)</text>
+<text x="480" y="358" font-size="12" fill="#1d1d1f">87.5%: rgb(134, 99, 52)</text>
+<text x="24" y="384" font-size="12" fill="#6e6e73">값 = A × (1 − t) + B × t,  t는 출력 픽셀 중심과 A 중심 사이 거리(원본 칸 단위)</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>macfolio와 macfolio-api는 등록 가능한 도메인 hyeoniverse.com이 같아 같은 사이트이고 SameSite=Lax 쿠키가 전송된다. workers.dev 주소나 IP 주소는 교차 사이트라 전송되지 않는다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="350" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">같은 사이트(same-site)와 SameSite=Lax 쿠키</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">사이트 = 스킴 + 등록 가능한 도메인. 하위 도메인(macfolio., macfolio-api.)이 달라도 같은 사이트다</text>
+<text x="24" y="86" font-size="13" font-weight="600" fill="#1d1d1f">페이지</text>
+<rect x="24" y="96" width="196" height="56" rx="8" fill="#f2f2f7"/>
+<text x="36" y="119" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">https://macfolio.</text>
+<text x="36" y="139" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff" font-weight="700">hyeoniverse.com</text>
+<text x="250" y="86" font-size="13" font-weight="600" fill="#1d1d1f">API 주소 후보 (fetch, credentials: 'include')</text>
+<line x1="222" y1="124" x2="246" y2="118" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="222" y1="124" x2="246" y2="186" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="222" y1="124" x2="246" y2="252" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="250" y="96" width="366" height="50" rx="8" fill="#eafaef" stroke="#34c759" stroke-width="1.5"/>
+<text x="262" y="116" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">https://macfolio-api.<tspan fill="#0a84ff" font-weight="700">hyeoniverse.com</tspan></text>
+<text x="262" y="136" font-size="12" fill="#1d1d1f">같은 사이트 → 세션 쿠키 전송 (채택한 구성)</text>
+<rect x="250" y="162" width="366" height="50" rx="8" fill="#ffecea" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="262" y="182" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">https://macfolio-api.<tspan fill="#ff3b30" font-weight="700">계정.workers.dev</tspan></text>
+<text x="262" y="202" font-size="12" fill="#1d1d1f">교차 사이트 → Lax 쿠키 미전송</text>
+<rect x="250" y="228" width="366" height="50" rx="8" fill="#ffecea" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="262" y="248" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">https://<tspan fill="#ff3b30" font-weight="700">203.0.113.10</tspan>  (IP 주소, 예시)</text>
+<text x="262" y="268" font-size="12" fill="#1d1d1f">교차 사이트 → Lax 쿠키 미전송</text>
+<rect x="24" y="294" width="592" height="42" rx="8" fill="#f2f2f7"/>
+<text x="38" y="313" font-size="12" fill="#1d1d1f">workers.dev는 공개 접미사 목록에 있어 계정마다 별도 사이트로 취급된다. Lax 쿠키는 교차 사이트의</text>
+<text x="38" y="329" font-size="12" fill="#1d1d1f">fetch·이미지 같은 하위 요청에는 붙지 않고, 링크를 눌러 이동하는 최상위 GET에만 붙는다.</text>
+</svg>

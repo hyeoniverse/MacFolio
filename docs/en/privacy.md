@@ -91,7 +91,7 @@ Writing mail, comments or messages can require verifying that you're human. The 
 
 ## Related posts (Korean)
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](https://macfolio.hyeoniverse.com/memo/analytics-api)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](https://macfolio.hyeoniverse.com/memo/analytics-api)
 - [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](https://macfolio.hyeoniverse.com/memo/analytics-collect)
 - [출처·매체·캠페인 조합 키로 집계하는 UTM 분석](https://macfolio.hyeoniverse.com/memo/utm-analytics)
 - [무엇을 검색하고 들어왔나 - 검색어와 Google Search Console](https://macfolio.hyeoniverse.com/memo/search-keywords)

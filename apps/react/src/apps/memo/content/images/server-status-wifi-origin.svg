@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>출처는 스킴, 호스트, 포트의 조합이고, 배포 사이트·PR 미리보기·로컬 개발 페이지가 API를 부를 때 모두 다른 출처 요청이며 허용 목록에 있는 주소만 응답을 읽는다</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">출처(origin) = 스킴 + 호스트 + 포트</text>
+<g font-family="SFMono-Regular, Menlo, monospace" font-size="15">
+<text x="40" y="74"><tspan fill="#0a84ff">https://</tspan><tspan fill="#34c759">macfolio.hyeoniverse.com</tspan><tspan fill="#ff9f0a">:443</tspan><tspan fill="#6e6e73">/memo/hello?x=1</tspan></text>
+</g>
+<g font-size="12">
+<text x="40" y="96" fill="#0a84ff">스킴</text>
+<text x="160" y="96" fill="#34c759">호스트</text>
+<text x="330" y="96" fill="#ff9f0a">포트 (https 기본값)</text>
+<text x="470" y="96" fill="#6e6e73">경로·쿼리는 출처가 아님</text>
+</g>
+<text x="24" y="134" font-size="13" font-weight="700" fill="#1d1d1f">API 출처 https://macfolio-api.hyeoniverse.com 으로 보내는 요청</text>
+<line x1="24" y1="146" x2="616" y2="146" stroke="#d1d1d6"/>
+<text x="40" y="168" font-size="12" font-weight="700" fill="#6e6e73">페이지 출처</text>
+<text x="330" y="168" font-size="12" font-weight="700" fill="#6e6e73">CORS_ORIGINS</text>
+<text x="470" y="168" font-size="12" font-weight="700" fill="#6e6e73">페이지가 응답을 읽나</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="198" font-family="SFMono-Regular, Menlo, monospace">https://macfolio.hyeoniverse.com</text>
+<text x="40" y="216" fill="#6e6e73">배포 사이트 (호스트가 달라 다른 출처)</text>
+<text x="330" y="206">정확히 일치</text>
+<rect x="466" y="188" width="140" height="26" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="478" y="206">읽는다</text>
+<text x="40" y="256" font-family="SFMono-Regular, Menlo, monospace">https://feat-x-macfolio.hyeoniverse</text>
+<text x="40" y="272" font-family="SFMono-Regular, Menlo, monospace">.workers.dev</text>
+<text x="40" y="290" fill="#6e6e73">PR 미리보기</text>
+<text x="330" y="270">없음 (수정 전)</text>
+<rect x="466" y="252" width="140" height="26" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="478" y="270">브라우저가 차단</text>
+<text x="40" y="330" font-family="SFMono-Regular, Menlo, monospace">http://localhost:5173</text>
+<text x="40" y="348" fill="#6e6e73">로컬 화면 → 로컬 API :4000 (포트가 다름)</text>
+<text x="330" y="338">.env에 있으면</text>
+<rect x="466" y="320" width="140" height="26" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="478" y="338">읽는다</text>
+</g>
+<line x1="24" y1="366" x2="616" y2="366" stroke="#d1d1d6"/>
+<text x="40" y="388" font-size="12" fill="#6e6e73">요청은 서버까지 도착한다. 막는 것은 응답을 페이지 코드에 넘기는 단계다.</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>서버 안의 cron은 서버와 함께 중지되어 알림을 보내지 못하고, 바깥의 GitHub Actions는 실패를 감지해 메일을 보낸다</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">서버가 중지되었을 때 두 감시 방식의 차이</text>
+
+<!-- 왼쪽 -->
+<text x="20" y="62" font-size="14" font-weight="700" fill="#1d1d1f">A. 서버 안의 cron이 확인</text>
+<rect x="20" y="76" width="290" height="150" rx="10" fill="#f2f2f7" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="6 4"/>
+<text x="34" y="98" font-size="13" font-weight="700" fill="#ff3b30">Oracle VM: 중지됨</text>
+<g font-size="13" fill="#6e6e73">
+<rect x="34" y="112" width="80" height="34" rx="6" fill="#ffffff" stroke="#c7c7cc"/><text x="74" y="134" text-anchor="middle">API</text>
+<rect x="124" y="112" width="80" height="34" rx="6" fill="#ffffff" stroke="#c7c7cc"/><text x="164" y="134" text-anchor="middle">DB</text>
+<rect x="214" y="112" width="82" height="34" rx="6" fill="#ffffff" stroke="#c7c7cc"/><text x="255" y="134" text-anchor="middle">감시 cron</text>
+</g>
+<text x="34" y="176" font-size="13" fill="#1d1d1f">VM이 중지되면 감시 cron도</text>
+<text x="34" y="196" font-size="13" fill="#1d1d1f">함께 중지된다</text>
+<line x1="255" y1="146" x2="255" y2="252" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#r)"/>
+<rect x="150" y="256" width="160" height="40" rx="8" fill="#ffffff" stroke="#ff3b30"/>
+<text x="230" y="281" font-size="13" text-anchor="middle" fill="#ff3b30" font-weight="700">알림 메일 없음</text>
+<text x="20" y="318" font-size="12" fill="#6e6e73">감지하려는 상황에서 알림 주체도 동작하지 않는다</text>
+
+<!-- 오른쪽 -->
+<text x="340" y="62" font-size="14" font-weight="700" fill="#1d1d1f">B. 바깥의 GitHub Actions가 확인</text>
+<rect x="340" y="76" width="200" height="38" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="440" y="100" font-size="13" text-anchor="middle" fill="#1d1d1f">Actions 러너 (10분마다 curl)</text>
+<line x1="440" y1="114" x2="440" y2="134" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="340" y="138" width="200" height="34" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="440" y="160" font-size="13" text-anchor="middle" fill="#1d1d1f">Cloudflare → Tunnel</text>
+<line x1="440" y1="172" x2="440" y2="192" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#r)"/>
+<rect x="340" y="196" width="200" height="34" rx="8" fill="#f2f2f7" stroke="#ff3b30" stroke-dasharray="6 4"/>
+<text x="440" y="218" font-size="13" text-anchor="middle" fill="#ff3b30" font-weight="700">Oracle VM: 중지됨</text>
+<text x="556" y="166" font-size="12" fill="#ff3b30">530 응답</text>
+<text x="556" y="182" font-size="12" fill="#ff3b30">또는 시간 초과</text>
+<path d="M540 95 H600 V264 H542" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<rect x="340" y="250" width="200" height="40" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="440" y="268" font-size="13" text-anchor="middle" fill="#0a84ff" font-weight="700">실행 실패 → GitHub 메일</text>
+<text x="440" y="284" font-size="12" text-anchor="middle" fill="#6e6e73">다시 시도 3번 뒤에도 실패한 경우</text>
+<text x="340" y="318" font-size="12" fill="#6e6e73">감시 주체가 감시 대상과 다른 곳에서 실행된다</text>
+</svg>

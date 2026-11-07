@@ -7,7 +7,11 @@ seriesOrder: 1
 summary: Dock에 Finder 아이콘은 있었지만 눌러도 창이 열리지 않았다. 저장소 문서, 프로젝트, 블로그 글, 앱을 폴더와 파일로 구성해 탐색하는 Finder를 만들었다. 문서는 Finder 안에서 GitHub처럼 렌더링하고(Mermaid 도식 포함), 글은 메모, 프로젝트는 Safari, 앱은 해당 앱으로 연다.
 ---
 
-Dock 맨 왼쪽의 Finder는 아이콘만 있었고, 눌러도 창이 열리지 않았다. macOS에서 가장 기본이 되는 앱이 구현되지 않은 상태였다. 바탕화면에 폴더를 배치하려면 그 폴더를 열 창도 필요해서, Finder부터 만들었다. PR은 [#86](https://github.com/hyeoniverse/MacFolio/pull/86)이다.
+Finder는 macOS의 기본 파일 관리 앱이다. 왼쪽 사이드바에 자주 쓰는 위치(응용 프로그램, 데스크톱, 문서, 다운로드)가 있고, 오른쪽에 선택한 폴더의 내용이 아이콘이나 목록으로 표시된다. 파일을 더블 클릭하면 그 파일 종류에 맞는 앱이 열린다. 예를 들어 `.pdf`는 미리보기 앱이, `.docx`는 문서 편집 앱이 연다.
+
+![macOS Finder 창. 왼쪽 사이드바에 즐겨찾기 위치, 오른쪽에 문서 폴더의 파일이 아이콘 보기로 표시된다](./images/finder-app-macos-finder.jpg 'macOS의 Finder. 위쪽 막대에 뒤로·앞으로 버튼과 아이콘·목록·계층·갤러리 보기 버튼이 있다. Apple 지원 문서')
+
+MacFolio의 Dock 맨 왼쪽에도 Finder 아이콘이 있었지만, 눌러도 창이 열리지 않았다. macOS에서 가장 기본이 되는 앱이 구현되지 않은 상태였다. 바탕화면에 폴더를 배치하려면 그 폴더를 열 창도 필요해서, Finder부터 만들었다. PR은 [#86](https://github.com/hyeoniverse/MacFolio/pull/86)이다.
 
 ![Finder 아이콘 보기와 목록 보기](./images/finder-app.jpg '왼쪽: 문서 폴더(아이콘 보기) / 오른쪽: 블로그 폴더(목록 보기)')
 
@@ -22,7 +26,7 @@ Dock 맨 왼쪽의 Finder는 아이콘만 있었고, 눌러도 창이 열리지 
 | 블로그        | 블로그 글 (카테고리가 폴더)               | 메모에서 그 글          |
 | 응용 프로그램 | 창이 있는 앱                              | 그 앱                   |
 
-블로그 폴더는 글의 카테고리(`개발기/MacFolio/백엔드`)를 그대로 폴더 경로로 쓴다. 폴더의 수정일은 폴더 안 가장 최근 글의 날짜다. 문서 폴더에는 빈 `이력서` 폴더도 하나 만들었다. 저장소가 공개라 넣은 파일은 누구나 내려받을 수 있으므로, 공개용 이력서를 준비한 뒤에 추가하기로 했다.
+블로그 폴더는 글의 카테고리를 그대로 폴더 경로로 쓴다. 예를 들어 카테고리가 `개발기/MacFolio/백엔드`인 글은 블로그 → 개발기 → MacFolio → 백엔드 폴더 안에 파일로 나타난다. 폴더의 수정일은 폴더 안 가장 최근 글의 날짜다. 문서 폴더에는 빈 `이력서` 폴더도 하나 만들었다. 저장소가 공개라 넣은 파일은 누구나 내려받을 수 있으므로, 공개용 이력서를 준비한 뒤에 추가하기로 했다.
 
 트리 생성은 React와 분리된 순수 함수(`files.ts`)로 구현하고 단위 시험을 작성했다. 화면은 이 트리를 렌더링만 한다.
 
@@ -32,7 +36,7 @@ Dock 맨 왼쪽의 Finder는 아이콘만 있었고, 눌러도 창이 열리지 
 | GitHub API로 저장소 트리를 실행 시각에 조회 | 항상 최신                            | 요청 한도·지연. 블로그 글·앱처럼 파일이 아닌 항목은 표현할 수 없다 |
 | **기존 데이터에서 트리를 계산**             | 글·프로젝트·앱이 추가되면 자동 반영  | "파일"의 의미가 위치마다 다르다(열었을 때 동작이 다르다)           |
 
-셋째를 선택했다. 위치마다 "열었을 때의 동작"만 다르게 정의하면, 트리 구조는 하나의 함수로 생성할 수 있다.
+셋째를 선택했다. 위치마다 "열었을 때의 동작"만 다르게 정의하면, ==트리 구조는 하나의 함수로 생성할 수 있다.==
 
 ## macOS Finder와 같은 조작
 
@@ -44,11 +48,13 @@ Dock 맨 왼쪽의 Finder는 아이콘만 있었고, 눌러도 창이 열리지 
 | 경로 막대     | 아래쪽에 현재 위치까지의 폴더를 표시하고, 클릭하면 그 폴더로 이동                                                                                                                             |
 | 이름으로 찾기 | 현재 폴더가 아니라 모든 위치에서 이름에 검색어가 포함된 항목을 표시                                                                                                                           |
 
+아이콘 보기의 위아래 이동을 예로 들면, 창 폭이 넓어 한 줄에 항목이 6개 표시될 때 3번째 항목에서 ↓를 누르면 9번째 항목이 선택된다. 창을 줄여 한 줄에 4개가 되면 같은 조작으로 7번째 항목이 선택된다. [`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)로 읽은 `grid-template-columns`는 열마다 픽셀 너비 하나씩을 공백으로 구분한 문자열이므로, 값의 개수가 곧 열 개수다.
+
 ## 저장소 문서를 Finder에서 읽기
 
 ![Finder에서 읽는 저장소 문서](./images/finder-doc.jpg '백엔드 설계 문서의 Mermaid 구성도도 도식으로 렌더링한다')
 
-문서는 빌드 시각에 Vite의 [`import.meta.glob`](https://vite.dev/guide/features#glob-import)으로 번들에 넣는다. 저장소의 Markdown 원문을 읽으므로, 문서를 수정하면 다음 배포에서 Finder의 문서도 함께 바뀐다.
+문서는 빌드 시각에 Vite의 [`import.meta.glob`](https://vite.dev/guide/features#glob-import)으로 번들에 넣는다. `docsBundle.ts`는 `import.meta.glob(['../../../../../README.md', '../../../../../CONTRIBUTING.md', '../../../../../docs/*.md'], { query: '?raw', … })`처럼 파일 패턴을 넘기고, Vite는 빌드할 때 패턴에 맞는 파일을 모두 찾아 원문 문자열 모듈로 만든다. 저장소의 Markdown 원문을 읽으므로, 문서를 수정하면 다음 배포에서 Finder의 문서도 함께 바뀐다.
 
 GitHub와 같은 결과로 렌더링하기 위해 다음 네 가지를 맞췄다.
 
@@ -61,7 +67,17 @@ GitHub와 같은 결과로 렌더링하기 위해 다음 네 가지를 맞췄다
 
 ## 다른 앱에 항목 열기 요청 보내기
 
-글을 열면 메모가, 프로젝트를 열면 Safari가 해당 항목을 표시해야 한다. 그런데 메모는 처음 열 때 코드를 불러오는(lazy) 앱이라, Finder가 요청하는 시각에는 아직 마운트되지 않았을 수 있다.
+글을 열면 메모가, 프로젝트를 열면 Safari가 해당 항목을 표시해야 한다. 그런데 메모는 처음 열 때 코드를 내려받는 lazy 앱이다. lazy 앱은 첫 화면 번들에 포함되지 않고, 창을 처음 여는 시각에 별도 JS 파일(청크)을 내려받아 평가한 뒤에 컴포넌트가 마운트된다. 그래서 ==Finder가 요청하는 시각에는 메모가 아직 마운트되지 않았을 수 있다.==
+
+전달 방법을 고르기 전에 두 방식의 차이를 시간 순서로 비교했다. **이벤트**는 발생하는 순간 등록된 리스너에게만 전달되고 남지 않는다. **store**는 값을 보관하므로, 나중에 읽는 쪽도 같은 값을 받는다.
+
+![이벤트는 메모가 마운트되기 전에 발생해 유실되고, store 값은 메모가 마운트될 때까지 남아 있다가 읽힌다](./images/finder-app-event-vs-store.svg 't0에 요청, t1에 메모 마운트. 이벤트 방식은 t0에 받을 리스너가 없고, store 방식은 t1에 남은 값을 읽는다')
+
+| 방법                               | 메모가 아직 코드를 불러오는 중일 때                             |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `window.dispatchEvent` 같은 이벤트 | 수신하는 리스너가 없어서 요청이 유실된다                        |
+| 주소(`/memo/<글>`) 변경            | 메모에는 동작하지만, Safari 탭이나 다른 앱에는 주소 규칙이 없다 |
+| **값으로 남는 store**              | 마운트 후 남은 값을 읽어 처리한다                               |
 
 그래서 작은 store(`openRequest.ts`)에 요청을 저장하고, 받는 앱이 마운트될 때 남은 요청을 읽어 처리하게 했다. 이미 열려 있으면 구독으로 바로 받는다. Safari는 닫힌 탭이면 다시 연다.
 
@@ -84,21 +100,27 @@ export function useOpenRequest(app: LinkedApp, onOpen: (id: string) => void) {
 }
 ```
 
+예를 들어 Finder의 블로그 폴더에서 `branded-ids` 글을 더블 클릭하면 다음 순서로 동작한다.
+
+1. Finder가 `openApp('memo')`로 창을 열고, `requestOpen('memo', 'branded-ids')`로 store에 `{ app: 'memo', id: 'branded-ids' }`를 저장한다
+2. 메모 청크를 내려받는 동안 요청은 store에 그대로 남아 있다
+3. 메모가 마운트되며 `useOpenRequest('memo', …)`의 `take()`가 요청을 읽고, store의 `request`를 `null`로 바꾼 뒤 그 글을 선택한다
+
+`take()`가 읽은 요청을 바로 `null`로 바꾸므로, 메모 창을 닫았다 다시 열어도 같은 글이 다시 선택되지 않는다.
+
 ![Finder가 requestOpen으로 요청을 저장하고 openApp으로 창을 연다. 메모가 마운트되며 useOpenRequest로 읽는다](./images/finder-app-open-request.svg '요청은 store에 남아 있다가 받는 앱이 읽으면 삭제한다')
 
-| 방법                               | 메모가 아직 코드를 불러오는 중일 때                             |
-| ---------------------------------- | --------------------------------------------------------------- |
-| `window.dispatchEvent` 같은 이벤트 | 수신하는 리스너가 없어서 요청이 유실된다                        |
-| 주소(`/memo/<글>`) 변경            | 메모에는 동작하지만, Safari 탭이나 다른 앱에는 주소 규칙이 없다 |
-| **값으로 남는 store**              | 마운트 후 남은 값을 읽어 처리한다                               |
-
-이벤트는 발생 시각에 리스너가 없으면 사라지고, store의 값은 읽을 때까지 남는다. 이 경우에는 store가 맞았다.
+==이벤트는 발생 시각에 리스너가 없으면 사라지고, store의 값은 읽을 때까지 남는다.== 받는 쪽이 늦게 준비될 수 있는 이 경우에는 store가 맞았다.
 
 ## 클릭 이벤트가 발생하지 않던 링크
 
-개발 중에 문서 안 링크를 눌러도 반응이 없는 문제가 있었다. 원인은 [react-markdown](https://github.com/remarkjs/react-markdown)에 전달하는 `components`였다. 렌더링마다 새 함수를 만들어 전달하자, react-markdown이 링크 요소를 매번 다시 마운트했다.
+개발 중에 문서 안 링크를 눌러도 반응이 없는 문제가 있었다. 원인은 [react-markdown](https://github.com/remarkjs/react-markdown)에 전달하는 `components`였다. `components`는 Markdown의 각 요소(링크, 그림 등)를 어떤 React 컴포넌트로 렌더링할지 지정하는 객체다. ==렌더링마다 새 함수를 만들어 전달하자, react-markdown이 링크 요소를 매번 다시 마운트했다.==
 
-창을 클릭하면 그 창이 맨 앞으로 오면서 다시 렌더링된다. 그래서 `mousedown`을 받은 링크와 `mouseup`을 받은 링크가 서로 다른 DOM 요소가 되고, [`click` 이벤트](https://developer.mozilla.org/ko/docs/Web/API/Element/click_event)가 발생하지 않았다[^click]. `components`를 `useMemo`로 감싸 문서와 화면 모드가 바뀔 때만 새로 만들자 해결됐다.
+React는 다시 렌더링할 때 같은 자리의 컴포넌트가 이전과 같은 함수인지 확인한다. 같으면 기존 DOM 요소의 속성만 갱신하고, 다른 함수면 기존 요소를 제거하고 새로 만든다[^position]. 렌더링마다 `a: () => …`를 새로 만들면 매번 "다른 함수"가 되므로, 링크의 `<a>` 요소가 매번 새 요소로 교체된다.
+
+창을 클릭하면 그 창이 맨 앞으로 오면서 다시 렌더링된다. 그래서 `mousedown`을 받은 링크와 `mouseup`을 받은 링크가 서로 다른 DOM 요소가 되고, 링크 요소에는 [`click` 이벤트](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event)가 전달되지 않았다[^click]. `components`를 `useMemo`로 감싸 문서와 화면 모드가 바뀔 때만 새로 만들자 해결됐다.
+
+![렌더링마다 새 components를 넘기면 mousedown과 mouseup의 대상 요소가 달라지고, useMemo로 유지하면 같은 요소에서 click이 발생한다](./images/finder-app-click-remount.svg '위: mousedown과 mouseup 사이에 <a> #1이 #2로 교체된다. 아래: 같은 #1이 유지되어 click이 발생한다')
 
 ```tsx
 // apps/react/src/apps/finder/DocView.tsx
@@ -120,7 +142,7 @@ const components = useMemo<Components>(
 
 ## 휴대폰에서는 '파일'
 
-휴대폰에서는 iOS처럼 '파일'이라는 이름으로 홈 화면에 배치한다. 창이 좁으면([컨테이너 쿼리](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) 600px 이하) 왼쪽 사이드바를 숨기고, 위치 목록을 위쪽에 한 줄로 배치한다.
+휴대폰에서는 iOS처럼 '파일'이라는 이름으로 홈 화면에 배치한다. 창이 좁으면([컨테이너 쿼리](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) 600px 이하) 왼쪽 사이드바를 숨기고, 위치 목록을 위쪽에 한 줄로 배치한다. 컨테이너 쿼리는 화면 전체 폭이 아니라 요소를 감싼 컨테이너의 폭을 기준으로 스타일을 바꾸는 CSS 기능이라, 데스크톱에서 Finder 창을 좁게 줄여도 같은 배치가 적용된다.
 
 ## 확인
 
@@ -132,20 +154,46 @@ const components = useMemo<Components>(
 
 </details>
 
-- PR 크기: 파일 21개, +2,434/−3. 그중 616줄은 Mermaid를 추가하면서 바뀐 잠금 파일이고, `Finder.css` 587줄, `Finder.tsx` 355줄, `files.ts` 210줄이다.
+| 항목           | 값                                                       |
+| -------------- | -------------------------------------------------------- |
+| PR 크기        | 파일 21개, +2,434/−3                                     |
+| 그중 잠금 파일 | 616줄 (Mermaid 추가)                                     |
+| 큰 파일        | `Finder.css` 587줄, `Finder.tsx` 355줄, `files.ts` 210줄 |
 
 ## 남은 것과 배운 것
 
-다음 작업은 바탕화면이었다. Finder 트리에 '데스크톱' 폴더를 추가하고, 그 안의 항목을 바탕화면에 아이콘으로 배치하는 계획이었다. 이후 [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)([#259](https://github.com/hyeoniverse/MacFolio/pull/259))으로 구현했고, 빈 이력서 폴더도 [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)([#255](https://github.com/hyeoniverse/MacFolio/pull/255))에서 채웠다.
+다음 작업은 바탕화면이었다. Finder 트리에 '데스크톱' 폴더를 추가하고, 그 안의 항목을 바탕화면에 아이콘으로 배치하는 계획이었다. 이후 [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)([#259](https://github.com/hyeoniverse/MacFolio/pull/259))로 구현했고, 빈 이력서 폴더도 [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files)([#255](https://github.com/hyeoniverse/MacFolio/pull/255))에서 채웠다.
 
-배운 것: 앱 사이에 열기 요청을 전달할 때는 받는 쪽이 아직 마운트되지 않았을 가능성을 먼저 고려해야 한다. 이벤트는 사라지고 값은 남는다. 그리고 react-markdown의 `components`는 참조가 바뀌면 요소를 다시 마운트한다. 같은 문제를 두 번 겪은 뒤, 이런 객체는 컴포넌트 바깥 상수나 `useMemo`로 정의하는 것을 규칙으로 정했다.
+> [!IMPORTANT] 배운 것
+> 앱 사이에 열기 요청을 전달할 때는 받는 쪽이 아직 마운트되지 않았을 가능성을 먼저 고려해야 한다. 이벤트는 사라지고 값은 남는다. 그리고 react-markdown의 `components`는 참조가 바뀌면 요소를 다시 마운트한다. 같은 문제를 두 번 겪은 뒤, 이런 객체는 컴포넌트 바깥 상수나 `useMemo`로 정의하는 것을 규칙으로 정했다.
 
 ## 관련 글
 
-- [R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템](/memo/finder-filesystem)
+- [표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템](/memo/finder-filesystem)
 - [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons)
 - [클릭 가로채기로 GitHub 문서 링크를 사이트에 번들된 문서로 열기](/memo/doc-links-in-finder): 메모 글의 문서 링크도 Finder로
 
-[^click]: `click`은 같은 요소에서 `mousedown`과 `mouseup`이 모두 발생해야 발생한다. 두 이벤트 사이에 요소가 교체되면 `click`이 발생하지 않는다.
+<details>
+<summary>참고 문헌</summary>
+
+- Apple 지원, [Mac에서 Finder 사용하기](https://support.apple.com/ko-kr/guide/mac-help/mchlp2605/mac)
+- MDN, [Element: click event](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event)
+- React 문서, [Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state)
+- React 문서, [lazy](https://react.dev/reference/react/lazy)
+- Vite 문서, [Glob Import](https://vite.dev/guide/features#glob-import)
+- MDN, [CSS container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- macOS Finder 창: Apple, [Mac에서 Finder 사용하기](https://support.apple.com/ko-kr/guide/mac-help/mchlp2605/mac), 출처 표기
+
+</details>
+
+[^position]: React 문서는 "같은 위치에 다른 컴포넌트를 렌더링하면 그 아래 상태가 모두 초기화된다"고 설명하고, 같은 이유로 컴포넌트 함수 정의를 다른 컴포넌트 안에 두지 말라고 권한다. [React: Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state#different-components-at-the-same-position-reset-state)
+
+[^click]: MDN에 따르면 `click`은 포인터 버튼을 같은 요소 안에서 누르고 뗐을 때 그 요소에서 발생한다. 누른 요소와 뗀 요소가 다르면 두 요소를 모두 포함하는 가장 가까운 상위 요소에서 발생한다. 이 경우 링크 요소 자신은 `click`을 받지 않으므로 링크에 연결한 처리기가 실행되지 않는다.
 
 #MacFolio #데스크톱 #Finder

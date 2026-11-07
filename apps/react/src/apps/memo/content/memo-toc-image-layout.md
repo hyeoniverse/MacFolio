@@ -5,13 +5,27 @@ category: 개발 기록/MacFolio/화면·스타일
 summary: 긴 글을 훑어볼 수 있게 제목 아래 목차와 스크롤하면 뜨는 목차 버튼을 더했다. 이미지는 주소 끝의 #left·#right·#float-left·#float-right로 정렬하고 글을 옆으로 흐르게 한다. 표기를 고른 이유, 목차가 비어 있던 ref 순서 문제, 휴대폰 처리를 적었다.
 ---
 
-메모 글은 갈수록 길어졌다. 2026-10-27 기준 저장소 글 238편의 맨 위 단계 `##`·`###` 제목 수는 중앙값 9개, 최대 32개이고, 10개 이상인 글이 99편이다. 그런데 읽기 화면에는 목차가 없어서 원하는 절을 찾으려면 끝까지 스크롤해야 했다. 이미지도 본문 가운데에 한 줄씩만 놓을 수 있어, 세로로 긴 캡처 옆에 설명을 둘 방법이 없었다. 이 글은 두 기능을 더한 과정이다([#391](https://github.com/hyeoniverse/MacFolio/pull/391)). 10월 27일 목차를 여는 방식과 모양을 바꾸고 편집 화면에도 목차를 더했다. 바뀐 내용은 아래 '여는 방식과 편집 화면' 절에 정리했다.
+메모 글은 갈수록 길어졌다. 2026-10-27 기준 저장소 글 238편의 맨 위 단계 `##`·`###` 제목 수는 중앙값 9개, 최대 32개이고, 10개 이상인 글이 99편이다. 그런데 읽기 화면에는 목차가 없어서 원하는 절을 찾으려면 끝까지 스크롤해야 했다. 이미지도 본문 가운데에 한 줄씩만 놓을 수 있어, 세로로 긴 캡처 옆에 설명을 둘 방법이 없었다. [#391](https://github.com/hyeoniverse/MacFolio/pull/391)에서 목차와 이미지 배치 표기를 추가했고, [#394](https://github.com/hyeoniverse/MacFolio/pull/394)에서 목차를 여는 방식과 모양을 바꾸고 편집 화면에도 목차를 더했다.
 
 | 기능          | 표기·동작                                                        | 쓰는 곳                               |
 | ------------- | ---------------------------------------------------------------- | ------------------------------------- |
 | 목차          | 본문의 `##`·`###` 제목으로 자동 생성, 제목 3개 이상일 때만       | 읽기 화면                             |
 | 이미지 정렬   | `![설명](주소#left)`, `#right` (가운데는 표기 없음)              | 읽기·편집 화면                        |
 | 이미지 띄우기 | `#float-left`, `#float-right`: 본문의 40% 폭, 문단이 옆으로 흐름 | 읽기·편집 화면 (휴대폰은 띄우지 않음) |
+
+## 배경
+
+**목차**(table of contents)는 글의 절 제목을 순서대로 모은 목록이다. 웹 문서에서는 항목을 누르면 그 절로 이동한다. 위키백과 문서 머리의 '목차' 상자나 MDN 문서 오른쪽의 'In this article' 목록이 같은 기능이다. Markdown에서는 `##`가 HTML `<h2>`, `###`가 `<h3>`가 되므로, 렌더링된 본문에서 `h2`·`h3` 요소를 순서대로 읽으면 목차 항목을 만들 수 있다.
+
+```md
+## 목차 → <h2>목차</h2> → 항목 1
+
+### 두 곳에 둔 이유 → <h3>두 곳에 둔 이유</h3> → 항목 1-1 (들여 씀)
+```
+
+메모 앱의 글은 브라우저 창 전체가 아니라 앱 창 안의 **읽기 칸**에서 스크롤된다. 그래서 문서 전체 스크롤 위치(`window.scrollY`) 대신 읽기 칸 요소의 스크롤 위치와 그 안의 제목 위치를 기준으로 계산한다.
+
+이미지 배치에는 CSS [`float`](https://developer.mozilla.org/en-US/docs/Web/CSS/float)를 쓴다. `float: left`인 요소는 줄의 왼쪽 끝으로 붙고, 뒤따르는 문단의 글줄이 그 오른쪽 남은 폭으로 흐른다. 잡지 기사에서 사진 옆으로 글이 감싸 도는 배치와 같다. [`clear: both`](https://developer.mozilla.org/en-US/docs/Web/CSS/clear)를 지정한 요소는 앞의 띄운 요소 옆에 놓이지 않고 그 아래에서 시작한다.
 
 ## 목차
 
@@ -37,7 +51,12 @@ summary: 긴 글을 훑어볼 수 있게 제목 아래 목차와 스크롤하면
 
 항목을 누르면 그 제목을 읽기 칸 안에서 `scrollIntoView({ block: 'start' })`로 맨 위에 둔다. 주소의 `#`는 바꾸지 않는다. 글 주소가 `/memo/<글>`이고 주소 막대가 맨 앞 창을 따르는 구조라, 각주 이동과 같은 원칙을 따랐다([History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)). 움직임 줄이기 설정(`prefers-reduced-motion`)이 켜져 있으면 부드러운 스크롤 없이 바로 이동한다. 이동한 뒤에는 그 제목에 초점을 옮겨, 키보드 사용자가 그 절부터 이어서 `Tab`으로 읽게 했다.
 
-지금 읽는 절은 읽기 칸의 `scroll` 이벤트에서 계산한다. 칸 위에서 96px 내려온 선을 지난 마지막 제목이 지금 절이다(`activeHeading`, `toc.ts`). 스크롤마다 제목 위치를 재면 비용이 커서, `requestAnimationFrame`으로 한 프레임에 한 번만 잰다.
+> [!NOTE] 늦게 받아지는 그림과 목차 이동
+> 본문 그림은 `loading="lazy"`라 화면 근처에 와야 내려받고, 받기 전에는 높이가 0이다. 그림이 많은 글에서 목차로 멀리 넘기면 지나가거나 도착한 자리 근처의 그림이 그제야 받아져 위쪽 본문이 늘어나고, 제목이 화면 아래로 수백~수천 px 밀려났다. 그래서 넘긴 뒤 본문 높이가 바뀔 때마다 같은 제목으로 다시 넘기고, 높이가 1.2초 동안 그대로이거나 사용자가 직접 스크롤하면 멈춘다(`scrollToSettled.ts`). 처음부터 부드럽게 넘기면 지나가는 그림을 모두 내려받느라 6초가 지나도 도착하지 못했다. 그래서 화면 세 개보다 먼 제목은 목적지 한 화면 앞까지 바로 옮긴 뒤 마지막 한 화면만 부드럽게 넘긴다. 그림 29장인 글에서 마지막 제목으로 넘기면 새로 받는 그림은 4장이다. 부드러운 스크롤은 브라우저의 `behavior: 'smooth'` 대신 `requestAnimationFrame`으로 직접 그린다. 매 프레임 제목의 지금 자리를 목적지로 다시 잡으므로, 스크롤하는 도중 그림이 받아져도 애니메이션이 끊기지 않고 바뀐 자리로 이어서 도착한다.
+
+지금 읽는 절은 읽기 칸의 `scroll` 이벤트에서 계산한다. 칸 위에서 96px 내려온 선을 지난 마지막 제목이 지금 절이다(`activeHeading`, `toc.ts`). 스크롤마다 제목 위치를 재면 비용이 커서, [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)으로 한 프레임에 한 번만 잰다. `scroll` 이벤트는 한 프레임(60Hz 화면에서 약 16.7ms) 안에 여러 번 발생할 수 있는데, `requestAnimationFrame`에 넘긴 함수는 다음 화면 갱신 직전에 한 번만 실행된다.
+
+![지금 읽는 절을 고르는 기준선](./images/memo-toc-image-layout-active-heading.svg '도식. 제목 위치가 [−820, 10, 130, 216, 640]이면 96px 기준선을 지난 마지막 제목은 두 번째(## 증상)다. 세 번째 제목(130)에서 반복을 멈춘다')
 
 <details>
 <summary>지금 읽는 절을 고르는 함수</summary>
@@ -60,11 +79,14 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 처음에는 목차 컴포넌트(`MemoToc`) 안의 `useLayoutEffect`에서 본문 ref로 제목을 읽었다. 그런데 화면에 목차가 나오지 않았다. 확인해 보니 본문에는 `h2`가 8개 있는데 목차가 읽은 제목은 0개였다.
 
-원인은 React가 커밋하는 순서였다. layout 단계는 트리를 자식부터 거슬러 올라가며 진행하고, 형제는 앞에서부터 처리한다. 목차는 본문보다 앞에 그리는 형제라, 목차의 layout effect가 실행되는 시각에는 아직 본문 `div`의 ref가 연결되지 않았다(`body.current === null`). 부모(`ReaderBody`)의 layout effect는 자식이 모두 끝난 뒤에 실행되므로, 제목 읽기를 부모로 옮겨(`useTocHeadings`) 해결했다.
+React는 화면을 두 단계로 바꾼다. **렌더 단계**에서 컴포넌트 함수를 호출해 새 화면 구조를 계산하고, **커밋 단계**에서 실제 DOM을 바꾼다. 커밋 단계 안에서 DOM 요소를 `ref.current`에 연결하고, `useLayoutEffect`에 넘긴 함수를 브라우저가 화면을 그리기 전에 실행한다. 렌더 단계에서는 아직 DOM이 없으므로, DOM을 읽는 코드는 layout effect나 effect 안에 둔다.
+
+원인은 React가 커밋하는 순서였다. ==layout 단계는 트리를 자식부터 거슬러 올라가며 진행하고, 형제는 앞에서부터 처리한다==. 목차는 본문보다 앞에 그리는 형제라, 목차의 layout effect가 실행되는 시각에는 아직 본문 `div`의 ref가 연결되지 않았다(`body.current === null`). 부모(`ReaderBody`)의 layout effect는 자식이 모두 끝난 뒤에 실행되므로, 제목 읽기를 부모로 옮겨(`useTocHeadings`) 해결했다.
 
 ![React 커밋의 ref 연결 순서](./images/memo-toc-image-layout-ref-order.svg '도식. 위: 목차 안에서 읽으면 본문 ref가 아직 비어 있다. 아래: 부모에서 읽으면 ref가 붙은 뒤라 제목 8개를 읽고, 그리기 전에 다시 렌더링한다')
 
-`useEffect`로 바꾸는 방법도 있었지만, 그러면 첫 화면을 그린 뒤에 목차가 끼어들어 본문이 한 번 아래로 밀린다. layout effect 안의 `setState`는 브라우저가 그리기 전에 처리되므로, 첫 화면부터 목차가 있는 상태로 그려진다.
+> [!NOTE] useEffect를 쓰지 않은 이유
+> `useEffect`로 바꾸는 방법도 있었지만, 그러면 첫 화면을 그린 뒤에 목차가 끼어들어 본문이 한 번 아래로 밀린다. layout effect 안의 `setState`는 브라우저가 그리기 전에 처리되므로, 첫 화면부터 목차가 있는 상태로 그려진다.
 
 ## 이미지 정렬과 띄우기
 
@@ -87,6 +109,8 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 | 캡션 뒤에 덧붙이기         | `"캡션 \| float-right"`               | 제외. 캡션은 사람이 읽는 글이고, 캡션이 없는 이미지는 표기할 자리가 없다                                                                                |
 | **주소의 # 조각**          | `![설명](./images/a.jpg#float-right)` | **채택.** # 조각은 HTTP 요청에 포함되지 않아 GitHub·다른 뷰어에서도 이미지는 그대로 나오고 배치만 무시된다. 주소의 일부라 편집기는 손대지 않고 보관한다 |
 
+주소의 # 조각(fragment)은 URL 표준(RFC 3986)에서 `#` 뒤에 오는 부분으로, 문서 안의 특정 위치를 가리키는 데 쓴다. 브라우저는 # 조각을 서버로 보내지 않는다. 예를 들어 `https://example.com/images/a.jpg#float-right`를 불러오면 서버가 받는 요청은 `GET /images/a.jpg`다. 그래서 같은 이미지 파일이 그대로 내려오고, # 조각을 해석하는 프로그램(이 사이트의 렌더러)만 배치 정보로 쓴다.
+
 ![표기 하나가 쓰이는 곳](./images/memo-toc-image-layout-notation.svg '도식. 같은 줄을 읽기 화면은 배치로, 편집기는 주소로 보관하고, GitHub는 이미지로만 보여 준다. 휴대폰은 띄우지 않는다')
 
 표기를 읽고 쓰는 함수는 화면과 서버가 함께 쓰는 `desktop-core`에 두었다(`imageLayout.ts`). 배치가 아닌 # 조각(예: SVG 스프라이트의 `#star`)은 주소에 그대로 남긴다. 주소를 빌드된 파일 주소로 바꾸는 `resolveImageSrc`는 표기를 떼고 바꾸므로, 목록 미리 보기와 검색 로봇용 본문(`og:image`)에도 영향이 없다. 서버 글의 업로드 이미지(`/files/<id>#float-right`)도 업로드 id를 찾는 정규식(`/files/([\w-]{16})(?![\w-])`)이 `#` 앞에서 끝나 그대로 동작한다.
@@ -101,11 +125,15 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 | 목록·인용                                  | `display: flow-root`. 띄운 이미지 옆의 남은 폭 안에 그려 글머리 기호가 이미지에 겹치지 않는다                                                                                                     |
 | 본문 끝                                    | `::after`에서 `clear: both`. 짧은 글에서 띄운 이미지가 글 아래(좋아요·댓글)로 넘치지 않는다                                                                                                       |
 
+![띄운 이미지 주변 블록의 배치](./images/memo-toc-image-layout-float-flow.svg '도식. 40% 폭으로 왼쪽에 띄운 이미지 옆으로 문단과 목록(flow-root)이 흐르고, clear: both인 다음 제목은 이미지 아래에서 시작한다')
+
+`display: flow-root`는 요소가 자기만의 배치 영역(block formatting context)을 만들게 하는 값이다. 이 영역은 띄운 요소와 겹치지 않도록 남은 폭 안에 통째로 놓인다. 목록에 이 값이 없으면 목록 상자는 이미지 아래까지 넓게 깔리고 글줄만 옆으로 밀려, 상자 왼쪽에 그려지는 글머리 기호(•)가 이미지 위에 겹친다.
+
 규칙은 읽기 화면(`.memo-markdown`)과 편집 화면(`.memo-inline-editor .ProseMirror`)에 함께 건다. 두 화면이 같은 자리에 같은 모양으로 놓여야 한다는 원칙([Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기](/memo/markdown-prose-css))을 따랐다.
 
 ![휴대폰에서 목차와 띄운 이미지](./images/memo-toc-image-layout-phone.jpg '휴대폰(390px). 목차는 접힌 채 시작하고, 띄운 이미지는 띄우지 않고 본문 폭으로 보인다')
 
-휴대폰과 좁은 창(메모 칸 700px 이하, 한 칸 보기)에서는 띄우지 않는다. 390px 폭의 40%는 약 140px이라, 그림도 옆 문단도 읽기 어렵다. 한 칸 보기 규칙이 이미 쓰는 `:where(.memo-shell[data-compact])` 아래에서 `float: none`, 폭은 본문 폭으로 되돌린다.
+휴대폰과 좁은 창(메모 칸 700px 이하, 한 칸 보기)에서는 띄우지 않는다. ==390px 폭의 40%는 약 140px==이라, 그림도 옆 문단도 읽기 어렵다. 한 칸 보기 규칙이 이미 쓰는 `:where(.memo-shell[data-compact])` 아래에서 `float: none`, 폭은 본문 폭으로 되돌린다.
 
 ### 편집기: 배치 버튼 다섯 개
 
@@ -142,7 +170,7 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 ### 펼치고 접는 움직임
 
-펼치면 높이가 0에서 목록 높이까지 늘고, 목록이 서서히 나타나며, 화살표가 ›에서 ⌄로 돈다. 높이는 `height: auto`로 전환할 수 없어서 `display: grid`의 `grid-template-rows`를 `0fr`에서 `1fr`로 바꾼다. 행 높이 `1fr`는 내용 높이로 정해지므로 목록 높이를 스크립트로 재지 않아도 된다. 안쪽 칸은 `min-height: 0`과 `overflow: hidden`이라 줄어드는 동안 넘치는 부분이 잘린다.
+펼치면 높이가 0에서 목록 높이까지 늘고, 목록이 서서히 나타나며, 화살표가 ›에서 ⌄로 돈다. CSS `transition`은 시작값과 끝값이 모두 숫자이면 그 사이를 계산해 움직인다. `height: 0`에서 `height: auto`로는 끝값이 숫자가 아니라 전환되지 않는다. 그래서 `display: grid`의 `grid-template-rows`를 `0fr`에서 `1fr`로 바꾼다. 행 높이 `1fr`는 내용 높이로 정해지므로 목록 높이를 스크립트로 재지 않아도 된다. 안쪽 칸은 `min-height: 0`과 `overflow: hidden`이라 줄어드는 동안 넘치는 부분이 잘린다.
 
 ![목차가 펼쳐지는 중간 프레임](./images/memo-toc-image-layout-toc-opening.jpg '펼치는 도중의 한 프레임. 위쪽 네 항목까지만 높이가 늘어났고 글자는 아직 옅다. 아래 본문이 함께 내려가는 중이다. 캡처용으로 전환 시간을 늘려 잡았다')
 
@@ -169,7 +197,7 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 처음 바꾼 목록은 제목과 항목이 모두 12px 보조 글자색(`--memo-muted`)이라 흐릿했다. 기본 글자색(`--memo-text`)으로 바꾸면 이번에는 목차가 본문보다 진해 먼저 눈에 들어왔다. 목차는 본문을 돕는 목록이라 본문보다 약간만 옅게 둔다. 본문 문단(`.memo-markdown`)의 글자색 `--memo-body` 85%에 보조 글자색 15%를 섞은 색(라이트 `#3f4856`·다크 `#c8c8cd`)이다. 굵기는 '목차' 제목만 굵게 하고, 단계는 색 대신 들여쓰기로 나눈다. 글자는 한 단계 키웠다(12px → 13px).
 
-마우스를 올린 항목과 지금 읽는 절은 둘 다 메모 앱의 강조색 노랑이다. 사이드바에서 고른 폴더 바탕, 링크와 같은 색이다. 둘을 구분하는 것은 막대다: 지금 읽는 절만 세로선 위에 노랑 막대가 있다.
+마우스를 올린 항목과 지금 읽는 절은 둘 다 메모 앱의 강조색 노랑이다. 사이드바에서 고른 폴더 바탕, 링크와 같은 색이다. 둘은 막대로 구분한다. ==지금 읽는 절만 세로선 위에 노랑 막대가 있다==.
 
 | 글자                                   | 라이트 본문 | 라이트 목차 창 | 다크 본문 | 다크 목차 창 |
 | -------------------------------------- | ----------- | -------------- | --------- | ------------ |
@@ -178,6 +206,8 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 | 마우스 올림·지금 읽는 절 (강조색 노랑) | **1.7:1**   | **1.6:1**      | 9.5:1     | 8.1:1        |
 | 마우스를 올린 '목차' 줄 (옅은 바탕 위) | 7.9:1       |                | 8.0:1     |              |
 | (처음) 보조 글자색 `--memo-muted`      | 5.1:1       | 4.7:1          | 5.8:1     | 4.9:1        |
+
+대비(contrast ratio)는 글자색과 바탕색의 상대 밝기를 비교한 값으로, 1:1(같은 색)부터 21:1(흰 바탕의 검정 글자)까지다. [WCAG 2.1](https://www.w3.org/TR/WCAG21/#contrast-minimum)은 작은 글자에 4.5:1 이상을 AA 기준으로 정한다.
 
 - **라이트의 노랑 글자:** 메모 강조색(`#fcb827`)은 흰 바탕에서 1.7:1로 WCAG AA의 작은 글자 기준(4.5:1)에 못 미친다. 노랑을 진하게 섞은 황갈색(5.9:1)을 먼저 써 보았지만 칙칙해 메모 앱의 노랑으로 보이지 않았다. 그래서 강조색을 그대로 쓴다. 노랑 글자는 마우스를 올린 순간과 지금 읽는 절에만 나오고, 지금 읽는 절은 막대로도, 마우스 올림은 마우스 위치로도 알 수 있다. 다크에서는 9.5:1이다.
 - **목차 창 바탕:** 반투명 판(`--memo-panel-bg`)을 본문 바탕 위에 겹친 색으로 계산했다. 판의 불투명도가 90%라 판 뒤의 그림에 따른 차이는 작다.
@@ -193,7 +223,7 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 
 ### 편집 화면의 목차와 글자 크기
 
-#391에서 편집 화면에 목차를 두지 않은 이유는 본문 폭이었다. 편집·읽기 화면이 블록을 같은 자리에 놓는지 확인하는 시험이 있어, 목차가 본문 옆 칸을 차지하면 줄바꿈이 달라진다. 목차를 본문 위에 두는 지금 방식은 본문 폭을 바꾸지 않으므로, 편집 화면에도 같은 자리(제목 아래)에 둘 수 있다. 그 시험은 본문 맨 위에서의 거리를 비교하므로 본문 위에 목차가 있어도 그대로 통과한다.
+[#391](https://github.com/hyeoniverse/MacFolio/pull/391)에서 편집 화면에 목차를 두지 않은 이유는 본문 폭이었다. 편집·읽기 화면이 블록을 같은 자리에 놓는지 확인하는 시험이 있어, 목차가 본문 옆 칸을 차지하면 줄바꿈이 달라진다. 목차를 본문 위에 두는 지금 방식은 본문 폭을 바꾸지 않으므로, 편집 화면에도 같은 자리(제목 아래)에 둘 수 있다. 그 시험은 본문 맨 위에서의 거리를 비교하므로 본문 위에 목차가 있어도 그대로 통과한다.
 
 - **제목 읽기:** 편집 화면은 `.ProseMirror`의 맨 위 단계 제목을 읽는다. 편집기는 늦게 불러오고 입력할 때마다 제목이 바뀌므로, 편집기를 감싼 칸의 DOM 변화를 `MutationObserver`로 지켜보고 다시 읽는다. 제목을 새로 쓰면 목차에 바로 나온다.
 - **이동:** 읽기 화면은 제목에 초점을 옮기지만, 편집기 안의 제목에 `tabindex`를 붙이면 편집기 문서가 바뀐다. 그래서 편집 화면에서는 제목으로 스크롤한 뒤 편집기에 초점을 주고 제목 맨 앞에 커서를 둔다.
@@ -212,7 +242,8 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 | `mobile-memo-toc.spec.ts` (E2E, 아이폰·안드로이드) | 목차가 접힌 채 시작, 펼쳐 누르면 이동, 떠 있는 버튼 없음, 띄운 이미지가 본문 폭                                                                                                                                                                                                                                                                                                                                                                                           |
 | 10월 27일 추가 (E2E)                               | 데스크톱: 접힌 채 시작, 마우스를 올려도 열리지 않음, 클릭으로 펼치고 접기, '목차' 줄 오른쪽 빈 곳을 눌러도 펼치고 접기(줄 폭 전체가 단추), Space, 다음 방문에도 펼침 유지, Enter·Esc, 떠 있는 목차 창도 클릭으로만 열고 Esc·항목 고름으로 닫기. 움직임: 높이가 0에서 시작해 중간 높이를 거쳐 늘고, 접으면 0과 hidden. 편집 화면: 목차 = 편집기 제목, 누르면 제목 맨 앞 커서, 새 제목 반영, 키운 글자에서 누른 자리에 입력. 휴대폰: 탭으로 펼치고 접기, 항목을 누르면 이동 |
 
-띄운 이미지 옆으로 문단이 흐르는지는 다음 문단의 첫 줄 위치로 확인한다. `Range.getClientRects()`의 첫 사각형이 줄 하나라, 그 왼쪽 끝이 이미지의 오른쪽 끝보다 오른쪽에 있으면 옆으로 흐른 것이다.
+> [!TIP] 문단이 옆으로 흐르는지 확인하는 방법
+> 띄운 이미지 옆으로 문단이 흐르는지는 다음 문단의 첫 줄 위치로 확인한다. [`Range.getClientRects()`](https://developer.mozilla.org/en-US/docs/Web/API/Range/getClientRects)는 범위 안 글자가 차지한 줄마다 사각형을 하나씩 반환한다. 첫 사각형의 왼쪽 끝이 이미지의 오른쪽 끝보다 오른쪽에 있으면 옆으로 흐른 것이다. 예를 들어 본문 폭이 700px이고 이미지가 280px(40%)이면, 첫 줄의 왼쪽 끝이 본문 왼쪽 끝에서 280px보다 오른쪽에 있어야 한다.
 
 ## 관련 글
 
@@ -220,5 +251,22 @@ export function activeHeading(tops: readonly number[], offset: number): number {
 - [Markdown 본문 CSS를 prose.css와 --prose-* 변수로 합치기](/memo/markdown-prose-css): 읽기·편집 화면이 함께 쓰는 본문 스타일
 - [컴포넌트는 공유하고 휴대폰에서만 플로팅 막대를 쓰는 iOS 메모 화면](/memo/memo-mobile): 한 칸 보기(`data-compact`) 규칙
 - [History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links): 주소의 #를 바꾸지 않는 이유
+
+<details>
+<summary>참고 문헌</summary>
+
+- React, [useLayoutEffect](https://react.dev/reference/react/useLayoutEffect)
+- React, [Render and Commit](https://react.dev/learn/render-and-commit)
+- MDN, [Element.scrollIntoView()](https://developer.mozilla.org/en-US/docs/Web/API/Element/scrollIntoView)
+- MDN, [Window.requestAnimationFrame()](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)
+- IETF, [RFC 3986 Section 3.5: Fragment](https://www.rfc-editor.org/rfc/rfc3986#section-3.5)
+- MDN, [float](https://developer.mozilla.org/en-US/docs/Web/CSS/float), [clear](https://developer.mozilla.org/en-US/docs/Web/CSS/clear)
+- MDN, [Block formatting context](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_display/Block_formatting_context)
+- MDN, [prefers-reduced-motion](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion)
+- W3C, [WCAG 2.1 Success Criterion 1.4.3 Contrast (Minimum)](https://www.w3.org/TR/WCAG21/#contrast-minimum)
+- MDN, [MutationObserver](https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver)
+- MDN, [Range.getClientRects()](https://developer.mozilla.org/en-US/docs/Web/API/Range/getClientRects)
+
+</details>
 
 #MacFolio #메모앱 #React #CSS

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>동영상 중간으로 이동할 때의 HTTP Range 요청</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="28" font-size="14" font-weight="700" fill="#1d1d1f">10바이트 파일로 본 Range 해석 (worker/files.ts의 parseRange 시험)</text>
+<g font-size="12">
+<text x="20" y="62" fill="#6e6e73">바이트 위치</text>
+</g>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f" text-anchor="middle">
+<rect x="120" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="144" y="63">0</text>
+<rect x="168" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="192" y="63">1</text>
+<rect x="216" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="240" y="63">2</text>
+<rect x="264" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="288" y="63">3</text>
+<rect x="312" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="336" y="63">4</text>
+<rect x="360" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="384" y="63">5</text>
+<rect x="408" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="432" y="63">6</text>
+<rect x="456" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="480" y="63">7</text>
+<rect x="504" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="528" y="63">8</text>
+<rect x="552" y="44" width="48" height="28" fill="#f2f2f7" stroke="#c7c7cc"/><text x="576" y="63">9</text>
+</g>
+<g font-size="12">
+<text x="20" y="104" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bytes=0-3</text>
+<rect x="120" y="88" width="192" height="24" rx="4" fill="#0a84ff"/><text x="324" y="104" fill="#1d1d1f">처음 4바이트</text>
+<text x="20" y="144" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bytes=4-</text>
+<rect x="312" y="128" width="288" height="24" rx="4" fill="#0a84ff"/><text x="120" y="144" fill="#1d1d1f">4번부터 끝까지 6바이트</text>
+<text x="20" y="184" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bytes=-3</text>
+<rect x="456" y="168" width="144" height="24" rx="4" fill="#34c759"/><text x="120" y="184" fill="#1d1d1f">마지막 3바이트 (7~9)</text>
+<text x="20" y="224" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bytes=5-99</text>
+<rect x="360" y="208" width="240" height="24" rx="4" fill="#ff9f0a"/><text x="120" y="224" fill="#1d1d1f">끝을 넘으면 9까지로 자른다</text>
+<text x="20" y="264" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bytes=10-</text>
+<text x="120" y="264" fill="#ff3b30">시작이 파일 밖: 416 Range Not Satisfiable</text>
+</g>
+<text x="20" y="306" font-size="12" fill="#6e6e73">범위가 맞으면 206 Partial Content와 Content-Range: bytes 시작-끝/전체 크기로 그 부분만 응답한다</text>
+</svg>

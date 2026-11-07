@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>pnpm overrides의 두 가지 쓰임: 이름 전체에 범위를 지정하는 방식과 특정 버전만 바꾸는 선택자</title>
+  <defs>
+    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="440" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">하위 의존성을 overrides로 바꾸는 두 방식</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">직접 설치하지 않은 패키지도 pnpm-workspace.yaml의 overrides로 잠금 파일이 가리키는 버전을 바꾼다</text>
+
+  <!-- 왼쪽: 범위 -->
+  <text x="24" y="92" font-size="13" font-weight="600" fill="#1d1d1f">① 이름 전체에 범위 지정</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace">
+    <rect x="24" y="104" width="280" height="30" rx="6" fill="#f2f2f7"/>
+    <text x="36" y="124" fill="#1d1d1f">apps/api</text>
+    <rect x="44" y="142" width="260" height="30" rx="6" fill="#f2f2f7"/>
+    <text x="56" y="162" fill="#1d1d1f">@nestjs/platform-express</text>
+    <rect x="64" y="180" width="240" height="30" rx="6" fill="#f2f2f7"/>
+    <text x="76" y="200" fill="#1d1d1f">express  (body-parser ^2.x)</text>
+    <rect x="84" y="218" width="220" height="30" rx="6" fill="#ffecea" stroke="#ff3b30"/>
+    <text x="96" y="238" fill="#ff3b30">body-parser 2.3.0  high</text>
+  </g>
+  <path d="M194 252 V270" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+  <rect x="24" y="274" width="280" height="54" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+  <text x="36" y="296" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">body-parser: '^2.4.0'</text>
+  <text x="36" y="316" font-size="12" fill="#6e6e73">상위 범위(^2.x) 안이라 그대로 허용된다</text>
+  <rect x="84" y="340" width="220" height="30" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+  <text x="96" y="360" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">body-parser 2.4.0</text>
+
+  <!-- 오른쪽: 버전 선택자 -->
+  <text x="336" y="92" font-size="13" font-weight="600" fill="#1d1d1f">② 고정된 버전 하나만 바꾸는 선택자</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace">
+    <rect x="336" y="104" width="280" height="30" rx="6" fill="#f2f2f7"/>
+    <text x="348" y="124" fill="#1d1d1f">@nestjs/platform-express</text>
+    <rect x="356" y="142" width="260" height="30" rx="6" fill="#ffecea" stroke="#ff3b30"/>
+    <text x="368" y="162" fill="#ff3b30">multer 2.4.0 (고정)  high</text>
+    <rect x="336" y="180" width="280" height="30" rx="6" fill="#f2f2f7"/>
+    <text x="348" y="200" fill="#1d1d1f">packages/og-card › satori</text>
+    <rect x="356" y="218" width="260" height="30" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <text x="368" y="238" fill="#c27100">fflate 0.7.3 (고정)  moderate</text>
+  </g>
+  <path d="M476 252 V270" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+  <rect x="336" y="274" width="280" height="54" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+  <text x="348" y="296" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">'multer@2.4.0': '2.5.0'</text>
+  <text x="348" y="316" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">'fflate@0.7.3': '0.7.5'</text>
+  <rect x="356" y="340" width="260" height="30" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+  <text x="368" y="360" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">multer 2.5.0, fflate 0.7.5</text>
+
+  <text x="24" y="404" font-size="12" fill="#1d1d1f">①은 그 이름의 모든 사본을 범위에 맞춘다. ②는 적힌 버전만 바꾸고 다른 버전은 그대로 둔다.</text>
+  <text x="24" y="424" font-size="12" fill="#6e6e73">예: 다른 패키지가 쓰는 fflate 0.8.3은 ② 선택자의 영향을 받지 않는다</text>
+</svg>

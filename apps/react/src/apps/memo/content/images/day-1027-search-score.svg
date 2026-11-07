@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>검색어 '리액트 목차'의 글별 점수 계산 예</title>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">검색어 "리액트 목차" → 낱말 두 개, 둘 다 있어야 결과에 든다 (AND)</text>
+<text x="20" y="54" font-size="13" fill="#6e6e73">낱말마다 걸린 칸 중 가장 무거운 칸의 무게를 더한다 (제목 10, 주소 8, 태그 6, 초성 5, 요약 4, 본문 1)</text>
+<g font-size="13">
+<rect x="20" y="70" width="600" height="28" fill="#f2f2f7"/>
+<text x="36" y="89" font-weight="700" fill="#1d1d1f">글</text>
+<text x="170" y="89" font-weight="700" fill="#1d1d1f">'리액트'</text>
+<text x="350" y="89" font-weight="700" fill="#1d1d1f">'목차'</text>
+<text x="604" y="89" font-weight="700" fill="#1d1d1f" text-anchor="end">점수</text>
+<text x="36" y="128" fill="#1d1d1f">글 A</text>
+<text x="170" y="120" fill="#1d1d1f">태그에 react</text>
+<text x="170" y="138" fill="#6e6e73">표기 사전: 6 × 0.9 = 5.4</text>
+<text x="350" y="120" fill="#1d1d1f">제목에 '목차'</text>
+<text x="350" y="138" fill="#6e6e73">10</text>
+<text x="604" y="128" fill="#0a84ff" font-weight="700" text-anchor="end">15.4</text>
+<line x1="20" y1="152" x2="620" y2="152" stroke="#e5e5ea"/>
+<text x="36" y="182" fill="#1d1d1f">글 B</text>
+<text x="170" y="174" fill="#1d1d1f">제목에 '리액트'</text>
+<text x="170" y="192" fill="#6e6e73">10</text>
+<text x="350" y="174" fill="#1d1d1f">본문에 '목차'</text>
+<text x="350" y="192" fill="#6e6e73">1</text>
+<text x="604" y="182" fill="#0a84ff" font-weight="700" text-anchor="end">11</text>
+<line x1="20" y1="206" x2="620" y2="206" stroke="#e5e5ea"/>
+<text x="36" y="236" fill="#1d1d1f">글 C</text>
+<text x="170" y="228" fill="#1d1d1f">요약·본문에 '리액트'</text>
+<text x="170" y="246" fill="#6e6e73">가장 무거운 요약: 4</text>
+<text x="350" y="228" fill="#1d1d1f">요약에 '목차'</text>
+<text x="350" y="246" fill="#6e6e73">4</text>
+<text x="604" y="236" fill="#0a84ff" font-weight="700" text-anchor="end">8</text>
+<line x1="20" y1="260" x2="620" y2="260" stroke="#e5e5ea"/>
+<text x="36" y="290" fill="#1d1d1f">글 D</text>
+<text x="170" y="282" fill="#1d1d1f">제목에 '리액트'</text>
+<text x="170" y="300" fill="#6e6e73">10</text>
+<text x="350" y="282" fill="#ff3b30">어디에도 없음</text>
+<text x="350" y="300" fill="#6e6e73">0</text>
+<text x="604" y="290" fill="#ff3b30" font-weight="700" text-anchor="end">제외</text>
+</g>
+<rect x="20" y="322" width="600" height="40" rx="8" fill="#e8f2ff"/>
+<text x="36" y="347" font-size="13" fill="#1d1d1f">결과 순서: 글 A (15.4) → 글 B (11) → 글 C (8). 점수가 같으면 원래 목록 순서를 따른다</text>
+</svg>

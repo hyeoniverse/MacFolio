@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>출처(origin)와 사이트(site)를 나누는 기준: 사이트 주소와 API 주소, PR 미리보기 주소 비교</title>
+  <rect width="640" height="420" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">출처(origin)와 사이트(site)</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">출처 = 스킴 + 호스트 + 포트 전체, 사이트 = 스킴 + 등록 가능한 도메인</text>
+
+  <!-- 사이트 주소 분해 -->
+  <text x="24" y="92" font-size="13" font-weight="600" fill="#1d1d1f">사이트 주소</text>
+  <g font-size="14" font-family="ui-monospace, Menlo, monospace">
+    <rect x="24" y="102" width="74" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="61" y="123" text-anchor="middle" fill="#1d1d1f">https</text>
+    <rect x="104" y="102" width="88" height="32" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <text x="148" y="123" text-anchor="middle" fill="#1d1d1f">macfolio</text>
+    <rect x="198" y="102" width="132" height="32" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+    <text x="264" y="123" text-anchor="middle" fill="#1d1d1f">hyeoniverse.com</text>
+    <rect x="336" y="102" width="52" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="362" y="123" text-anchor="middle" fill="#1d1d1f">443</text>
+  </g>
+  <!-- API 주소 분해 -->
+  <text x="24" y="166" font-size="13" font-weight="600" fill="#1d1d1f">API 주소</text>
+  <g font-size="14" font-family="ui-monospace, Menlo, monospace">
+    <rect x="24" y="176" width="74" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="61" y="197" text-anchor="middle" fill="#1d1d1f">https</text>
+    <rect x="104" y="176" width="124" height="32" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+    <text x="166" y="197" text-anchor="middle" fill="#1d1d1f">macfolio-api</text>
+    <rect x="234" y="176" width="132" height="32" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+    <text x="300" y="197" text-anchor="middle" fill="#1d1d1f">hyeoniverse.com</text>
+    <rect x="372" y="176" width="52" height="32" rx="6" fill="#f2f2f7"/>
+    <text x="398" y="197" text-anchor="middle" fill="#1d1d1f">443</text>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <text x="61" y="228" text-anchor="middle">스킴</text>
+    <text x="166" y="228" text-anchor="middle">하위 도메인</text>
+    <text x="300" y="228" text-anchor="middle">등록 가능한 도메인</text>
+    <text x="398" y="228" text-anchor="middle">포트</text>
+  </g>
+
+  <!-- 판정 -->
+  <rect x="444" y="102" width="172" height="106" rx="10" fill="#f2f2f7"/>
+  <text x="458" y="126" font-size="13" font-weight="600" fill="#1d1d1f">두 주소 비교</text>
+  <text x="458" y="152" font-size="13" fill="#ff3b30">같은 출처: 아니오</text>
+  <text x="458" y="170" font-size="12" fill="#6e6e73">(하위 도메인이 다르다)</text>
+  <text x="458" y="194" font-size="13" fill="#34c759">같은 사이트: 예</text>
+
+  <!-- CORP 값별 결과 표 -->
+  <text x="24" y="270" font-size="13" font-weight="600" fill="#1d1d1f">API 응답의 CORP 값에 따른 결과 (요청한 문서별)</text>
+  <g font-size="12">
+    <rect x="24" y="282" width="592" height="30" fill="#f2f2f7"/>
+    <text x="36" y="302" fill="#1d1d1f" font-weight="600">요청한 문서</text>
+    <text x="300" y="302" fill="#1d1d1f" font-weight="600">same-origin</text>
+    <text x="410" y="302" fill="#1d1d1f" font-weight="600">same-site</text>
+    <text x="512" y="302" fill="#1d1d1f" font-weight="600">cross-origin</text>
+
+    <text x="36" y="334" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">macfolio.hyeoniverse.com</text>
+    <text x="300" y="334" fill="#ff3b30">차단</text>
+    <text x="410" y="334" fill="#34c759">허용</text>
+    <text x="512" y="334" fill="#34c759">허용</text>
+    <line x1="24" y1="346" x2="616" y2="346" stroke="#e5e5ea"/>
+
+    <text x="36" y="370" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">*-macfolio.hyeoniverse.workers.dev</text>
+    <text x="300" y="370" fill="#ff3b30">차단</text>
+    <text x="410" y="370" fill="#ff3b30">차단</text>
+    <text x="512" y="370" fill="#34c759">허용</text>
+    <line x1="24" y1="382" x2="616" y2="382" stroke="#e5e5ea"/>
+  </g>
+  <text x="24" y="406" font-size="12" fill="#6e6e73">PR 미리보기 주소는 등록 가능한 도메인이 달라 다른 사이트다. 그래서 이벤트 경로는 cross-origin으로 지정했다</text>
+</svg>

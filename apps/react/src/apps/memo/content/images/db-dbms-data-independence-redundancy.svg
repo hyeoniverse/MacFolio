@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">사원 E01이 이사한 뒤의 주소: 중복 저장과 통합 저장</text>
+  <line x1="320" y1="48" x2="320" y2="312" stroke="#d2d2d7" stroke-dasharray="4 4"/>
+
+  <text x="165" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="#ff3b30">파일 시스템: 주소가 파일 2개에 저장</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="20" y="90" font-weight="600">인사 파일</text>
+    <rect x="20" y="98" width="290" height="26" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="30" y="116">사번</text><text x="90" y="116">이름</text><text x="170" y="116">주소</text>
+    <rect x="20" y="124" width="290" height="28" fill="#fff" stroke="#6e6e73"/>
+    <text x="30" y="143">E01</text><text x="90" y="143">김가람</text><text x="170" y="143" fill="#34c759" font-weight="600">성남시 분당구</text>
+    <text x="20" y="186" font-weight="600">급여 파일</text>
+    <rect x="20" y="194" width="290" height="26" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="30" y="212">사번</text><text x="90" y="212">이름</text><text x="170" y="212">주소</text>
+    <rect x="20" y="220" width="290" height="28" fill="#fff0ef" stroke="#ff3b30" stroke-width="1.5"/>
+    <text x="30" y="239">E01</text><text x="90" y="239">김가람</text><text x="170" y="239" fill="#ff3b30" font-weight="600">서울시 마포구</text>
+  </g>
+  <text x="165" y="172" text-anchor="middle" font-size="12" fill="#6e6e73">인사 프로그램만 주소를 갱신</text>
+  <text x="165" y="276" text-anchor="middle" font-size="13" fill="#ff3b30" font-weight="600">같은 사원의 주소가 두 값으로 갈린다</text>
+  <text x="165" y="296" text-anchor="middle" font-size="12" fill="#6e6e73">급여 명세서는 옛 주소로 발송된다</text>
+
+  <text x="480" y="62" text-anchor="middle" font-size="14" font-weight="600" fill="#0a84ff">DBMS: 주소는 한 곳에만 저장</text>
+  <g font-size="12" text-anchor="middle">
+    <rect x="345" y="78" width="100" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="395" y="101" fill="#1d1d1f">인사 프로그램</text>
+    <rect x="515" y="78" width="100" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="565" y="101" fill="#1d1d1f">급여 프로그램</text>
+  </g>
+  <line x1="395" y1="116" x2="440" y2="158" stroke="#6e6e73" marker-end="url(#a)"/>
+  <line x1="565" y1="116" x2="520" y2="158" stroke="#6e6e73" marker-end="url(#a)"/>
+  <text x="400" y="146" text-anchor="end" font-size="12" fill="#6e6e73">갱신</text>
+  <text x="560" y="146" font-size="12" fill="#6e6e73">조회</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="335" y="178" font-weight="600">사원 릴레이션</text>
+    <rect x="335" y="186" width="290" height="26" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="345" y="204">사번</text><text x="405" y="204">이름</text><text x="485" y="204">주소</text>
+    <rect x="335" y="212" width="290" height="28" fill="#eafaf0" stroke="#34c759" stroke-width="1.5"/>
+    <text x="345" y="231">E01</text><text x="405" y="231">김가람</text><text x="485" y="231" fill="#248a3d" font-weight="600">성남시 분당구</text>
+  </g>
+  <text x="480" y="276" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">갱신 한 번으로 모든 응용에 반영</text>
+  <text x="480" y="296" text-anchor="middle" font-size="12" fill="#6e6e73">두 프로그램이 같은 튜플을 읽는다</text>
+</svg>

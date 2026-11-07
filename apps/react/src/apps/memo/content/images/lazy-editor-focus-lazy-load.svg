@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>React.lazy로 분리한 편집기 청크를 내려받는 동안 Suspense fallback이 그려지고, 도착한 뒤 편집기가 마운트되는 순서</title>
+  <defs>
+    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="400" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">React.lazy 편집기가 화면에 나오기까지</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">편집기 코드는 첫 화면 번들에 없고, 새 메모를 처음 열 때 별도 파일(청크)로 내려받는다</text>
+
+  <!-- 번들 구성 -->
+  <rect x="24" y="76" width="280" height="72" rx="8" fill="#f2f2f7"/>
+  <text x="36" y="98" font-size="13" font-weight="600" fill="#1d1d1f">첫 화면 번들</text>
+  <text x="36" y="118" font-size="12" fill="#6e6e73">메모 앱, PostWriter(제목 칸 포함)</text>
+  <text x="36" y="136" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">lazy(() =&gt; import('./InlineEditor'))</text>
+  <rect x="336" y="76" width="280" height="72" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+  <text x="348" y="98" font-size="13" font-weight="600" fill="#1d1d1f">편집기 청크</text>
+  <text x="348" y="118" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">InlineEditor-….js</text>
+  <text x="348" y="136" font-size="12" fill="#6e6e73">Milkdown, ProseMirror (관리자만 필요)</text>
+
+  <!-- 시간 축 -->
+  <path d="M24 300 H616" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+  <text x="616" y="320" font-size="12" text-anchor="end" fill="#6e6e73">시간</text>
+
+  <g font-size="12" text-anchor="middle">
+    <rect x="24" y="176" width="120" height="48" rx="8" fill="#f2f2f7"/>
+    <text x="84" y="196" fill="#1d1d1f">새 메모 클릭</text>
+    <text x="84" y="214" fill="#6e6e73">PostWriter 렌더링</text>
+
+    <rect x="156" y="176" width="200" height="48" rx="8" fill="#fff4e0" stroke="#ff9f0a"/>
+    <text x="256" y="196" fill="#1d1d1f">청크 요청·다운로드·실행</text>
+    <text x="256" y="214" fill="#c27100">이 동안 Suspense fallback 표시</text>
+
+    <rect x="368" y="176" width="120" height="48" rx="8" fill="#f2f2f7"/>
+    <text x="428" y="196" fill="#1d1d1f">InlineEditor 마운트</text>
+    <text x="428" y="214" fill="#6e6e73">Milkdown 생성 시작</text>
+
+    <rect x="500" y="176" width="116" height="48" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+    <text x="558" y="196" fill="#1d1d1f">loading = false</text>
+    <text x="558" y="214" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">onReady()</text>
+  </g>
+  <path d="M156 236 H356" stroke="#ff9f0a" stroke-width="3"/>
+  <text x="256" y="256" font-size="12" text-anchor="middle" fill="#c27100">.ProseMirror 요소가 없는 구간</text>
+  <text x="256" y="274" font-size="12" text-anchor="middle" fill="#c27100">느린 네트워크·높은 CPU 부하에서 길어진다</text>
+
+  <rect x="24" y="336" width="592" height="48" rx="8" fill="#ffecea"/>
+  <text x="36" y="356" font-size="12" fill="#1d1d1f">이 구간에 제목 칸에서 Enter를 누르면 querySelector('.ProseMirror')가 null을 반환하고,</text>
+  <text x="36" y="374" font-size="12" fill="#1d1d1f">?.focus()는 아무것도 하지 않아 커서가 제목 칸에 남는다</text>
+</svg>

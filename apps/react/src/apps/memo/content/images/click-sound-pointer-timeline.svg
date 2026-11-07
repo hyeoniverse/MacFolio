@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>마우스 버튼을 누르는 순간 pointerdown과 mouse-down 소리, 떼는 순간 pointerup과 mouse-up 소리, 그 직후 click 이벤트가 발생한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<rect width="640" height="330" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">클릭 한 번에 발생하는 이벤트와 소리</text>
+<!-- button state band -->
+<text x="24" y="78" font-size="12" fill="#6e6e73">버튼 상태</text>
+<rect x="110" y="64" width="110" height="22" fill="#f2f2f7"/>
+<rect x="220" y="64" width="250" height="22" fill="#0a84ff" opacity="0.18"/>
+<rect x="470" y="64" width="146" height="22" fill="#f2f2f7"/>
+<text x="165" y="80" font-size="12" fill="#6e6e73" text-anchor="middle">떼어 있음</text>
+<text x="345" y="80" font-size="12" fill="#0a84ff" font-weight="600" text-anchor="middle">눌려 있음 (약 0.1초)</text>
+<text x="543" y="80" font-size="12" fill="#6e6e73" text-anchor="middle">떼어 있음</text>
+<!-- time axis -->
+<line x1="110" y1="128" x2="616" y2="128" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="616" y="148" font-size="12" fill="#6e6e73" text-anchor="end">시간</text>
+<!-- events -->
+<line x1="220" y1="96" x2="220" y2="290" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<line x1="470" y1="96" x2="470" y2="290" stroke="#ff9f0a" stroke-dasharray="4 3"/>
+<circle cx="220" cy="128" r="5" fill="#0a84ff"/>
+<circle cx="470" cy="128" r="5" fill="#ff9f0a"/>
+<circle cx="500" cy="128" r="5" fill="#6e6e73"/>
+<text x="24" y="176" font-size="12" fill="#6e6e73">이벤트</text>
+<rect x="160" y="160" width="120" height="26" rx="6" fill="#0a84ff"/>
+<text x="220" y="178" font-size="13" fill="#ffffff" font-weight="600" text-anchor="middle">pointerdown</text>
+<rect x="400" y="160" width="100" height="26" rx="6" fill="#ff9f0a"/>
+<text x="450" y="178" font-size="13" fill="#ffffff" font-weight="600" text-anchor="middle">pointerup</text>
+<rect x="506" y="160" width="62" height="26" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="537" y="178" font-size="13" fill="#1d1d1f" text-anchor="middle">click</text>
+<text x="24" y="228" font-size="12" fill="#6e6e73">재생</text>
+<rect x="160" y="212" width="120" height="26" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="220" y="230" font-size="12" fill="#0a84ff" text-anchor="middle">mouse-down.mp3</text>
+<rect x="400" y="212" width="100" height="26" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="450" y="230" font-size="12" fill="#ff9f0a" text-anchor="middle">mouse-up.mp3</text>
+<text x="537" y="230" font-size="12" fill="#6e6e73" text-anchor="middle">소리 없음</text>
+<text x="24" y="276" font-size="12" fill="#6e6e73">소리 길이</text>
+<rect x="220" y="266" width="10" height="12" fill="#0a84ff"/>
+<rect x="470" y="266" width="10" height="12" fill="#ff9f0a"/>
+<text x="238" y="277" font-size="12" fill="#1d1d1f">0.078초</text>
+<text x="488" y="277" font-size="12" fill="#1d1d1f">0.078초</text>
+<text x="24" y="314" font-size="12" fill="#6e6e73">click은 pointerup 뒤에 한 번만 발생하므로, click에 소리를 연결하면 누르는 순간의 소리를 낼 수 없다</text>
+</svg>

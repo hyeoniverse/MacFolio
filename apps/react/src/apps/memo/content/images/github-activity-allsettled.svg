@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>달력 요청만 실패했을 때 Promise.all과 Promise.allSettled의 결과 비교</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">달력 HTML 요청만 실패했을 때</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">같은 두 요청을 어떤 함수로 기다리느냐에 따라 화면에 남는 것이 달라진다</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="20" y="90" font-size="13" font-weight="700">입력</text>
+<rect x="20" y="102" width="290" height="34" rx="6" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="32" y="124" font-family="ui-monospace, Menlo, monospace">contributionsHtml()</text>
+<text x="300" y="124" text-anchor="end" fill="#ff3b30" font-weight="700">rejected</text>
+<rect x="330" y="102" width="290" height="34" rx="6" fill="#effaf2" stroke="#34c759"/>
+<text x="342" y="124" font-family="ui-monospace, Menlo, monospace">userEvents()</text>
+<text x="610" y="124" text-anchor="end" fill="#1d1d1f" font-weight="700">fulfilled</text>
+
+<rect x="20" y="160" width="290" height="180" rx="10" fill="#f2f2f7"/>
+<text x="36" y="186" font-size="14" font-weight="700" font-family="ui-monospace, Menlo, monospace">Promise.all</text>
+<text x="36" y="210">하나라도 거부되면 즉시 거부된다</text>
+<text x="36" y="236" font-family="ui-monospace, Menlo, monospace" fill="#ff3b30">→ throw (달력 오류)</text>
+<text x="36" y="262">이벤트 응답은 받았지만 버려진다</text>
+<rect x="36" y="280" width="258" height="44" rx="6" fill="#ffffff" stroke="#ff3b30"/>
+<text x="48" y="300" fill="#ff3b30" font-weight="700">결과: 받은 활동도 반영 안 됨</text>
+<text x="48" y="316" fill="#6e6e73">(마지막 값 전체, 없으면 두 섹션 숨김)</text>
+
+<rect x="330" y="160" width="290" height="180" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="346" y="186" font-size="14" font-weight="700" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff">Promise.allSettled</text>
+<text x="346" y="210">모두 끝날 때까지 기다리고 결과를 배열로</text>
+<text x="346" y="236" font-family="ui-monospace, Menlo, monospace">[{status:'rejected'},</text>
+<text x="346" y="254" font-family="ui-monospace, Menlo, monospace"> {status:'fulfilled', value}]</text>
+<rect x="346" y="280" width="258" height="44" rx="6" fill="#ffffff" stroke="#34c759"/>
+<text x="358" y="300" font-weight="700">결과: 달력은 이전 값, 활동은 새 값</text>
+<text x="358" y="316" fill="#6e6e73">실패한 쪽만 peek()으로 대체</text>
+</g>
+</svg>

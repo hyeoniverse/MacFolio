@@ -7,9 +7,9 @@ const linkTargetOf = (href: string) => targetOf(href, SITE);
 describe('글 본문 링크가 가리키는 곳', () => {
 	it('같은 글 안의 자리, 이 사이트의 글·프로젝트, 저장소 문서, 바깥 주소를 가른다', () => {
 		expect(linkTargetOf('#fn-1')).toEqual({ kind: 'anchor', id: 'fn-1' });
-		expect(linkTargetOf('/memo/site-performance-report')).toEqual({
+		expect(linkTargetOf('/memo/site-performance-diet')).toEqual({
 			kind: 'app',
-			link: { app: 'memo', id: 'site-performance-report' },
+			link: { app: 'memo', id: 'site-performance-diet' },
 		});
 		expect(linkTargetOf('/safari/qru')).toEqual({ kind: 'app', link: { app: 'safari', id: 'qru' } });
 		expect(linkTargetOf('https://github.com/hyeoniverse/MacFolio/blob/main/docs/performance.md')).toEqual({

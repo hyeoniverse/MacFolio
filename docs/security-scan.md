@@ -183,11 +183,11 @@ dependency-check.sh --project MacFolio --scan pnpm-lock.yaml --nvdApiKey "$NVD_A
 ## 관련 글
 
 - [Semgrep과 SCA 도구로 MacFolio 점검하기 - 7건 중 실제 취약점 0](https://macfolio.hyeoniverse.com/memo/security-scan)
-- [하위 의존성 취약점 6건을 overrides로 고치기](https://macfolio.hyeoniverse.com/memo/dependency-vulnerabilities)
-- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/pin-actions-dependabot)
-- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/secret-scanning)
+- [하위 의존성 취약점 6건을 overrides로 고치기](https://macfolio.hyeoniverse.com/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)
+- [액션은 커밋으로 고정하고, 올리는 일은 Dependabot에게](https://macfolio.hyeoniverse.com/memo/supply-chain-security#github-actions-커밋-sha-고정과-dependabot)
+- [커밋에 비밀 값이 섞이지 않았는지 기록 전체를 훑기](https://macfolio.hyeoniverse.com/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
 - [글과 README가 스크립트가 되지 않는다는 것을 시험으로 고정하기](https://macfolio.hyeoniverse.com/memo/markdown-xss-tests)
-- [리팩터링 7단계 — 보안](https://macfolio.hyeoniverse.com/memo/refactor-step7-security)
+- [리팩터링 7단계 — 보안](https://macfolio.hyeoniverse.com/memo/refactor-retrospective#7단계-보안)
 
 [^sast]: SAST(Static Application Security Testing): 코드를 실행하지 않고 소스 코드의 패턴과 데이터 흐름을 분석해 취약한 코드를 찾는 방식이다.
 

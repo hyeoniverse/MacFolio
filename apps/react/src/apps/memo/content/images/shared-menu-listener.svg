@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>effect 의존성에 함수를 넣을 때와 ref에 저장할 때 리스너 등록 횟수 비교</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">메뉴가 열린 동안 렌더링이 4번 일어날 때</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">onDismiss·inside는 렌더링마다 새로 만들어지는 함수·배열이다</text>
+
+  <!-- timeline -->
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="190" y="86">열림</text><text x="290" y="86">렌더링 2</text><text x="390" y="86">렌더링 3</text><text x="490" y="86">렌더링 4</text><text x="590" y="86">닫힘</text>
+  </g>
+  <line x1="150" y1="96" x2="616" y2="96" stroke="#c7c7cc"/>
+  <g fill="#6e6e73"><circle cx="190" cy="96" r="3"/><circle cx="290" cy="96" r="3"/><circle cx="390" cy="96" r="3"/><circle cx="490" cy="96" r="3"/><circle cx="590" cy="96" r="3"/></g>
+
+  <!-- row A -->
+  <text x="24" y="134" font-size="13" font-weight="600" fill="#1d1d1f">의존성에 함수</text>
+  <text x="24" y="152" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">[open, onDismiss,</text>
+  <text x="24" y="168" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace"> inside]</text>
+  <g>
+    <rect x="190" y="124" width="96" height="22" rx="4" fill="#ff9f0a" opacity="0.25" stroke="#ff9f0a"/>
+    <rect x="290" y="124" width="96" height="22" rx="4" fill="#ff9f0a" opacity="0.25" stroke="#ff9f0a"/>
+    <rect x="390" y="124" width="96" height="22" rx="4" fill="#ff9f0a" opacity="0.25" stroke="#ff9f0a"/>
+    <rect x="490" y="124" width="96" height="22" rx="4" fill="#ff9f0a" opacity="0.25" stroke="#ff9f0a"/>
+  </g>
+  <text x="190" y="166" font-size="12" fill="#ff3b30">등록 4번, 해제 4번 (렌더링마다 해제 후 다시 등록)</text>
+
+  <!-- row B -->
+  <text x="24" y="226" font-size="13" font-weight="600" fill="#1d1d1f">ref에 최신 값</text>
+  <text x="24" y="244" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">[open]</text>
+  <rect x="190" y="216" width="396" height="22" rx="4" fill="#0a84ff" opacity="0.18" stroke="#0a84ff"/>
+  <text x="388" y="231" font-size="12" fill="#0a84ff" text-anchor="middle">리스너 1개가 계속 유지된다</text>
+  <g fill="#34c759"><circle cx="290" cy="254" r="4"/><circle cx="390" cy="254" r="4"/><circle cx="490" cy="254" r="4"/></g>
+  <text x="190" y="280" font-size="12" fill="#248a3d">초록 점: latest.current만 새 값으로 바꾼다 (리스너는 그대로)</text>
+  <text x="190" y="298" font-size="12" fill="#0a84ff">등록 1번, 해제 1번</text>
+
+  <text x="24" y="340" font-size="12" fill="#6e6e73">리스너는 실행되는 시각에 latest.current를 읽으므로 항상 마지막 렌더링의 onDismiss를 호출한다</text>
+</svg>

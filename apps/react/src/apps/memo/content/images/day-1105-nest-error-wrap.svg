@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>NestJS 12.3이 body-parser 오류를 감싸면서 바뀐 필터 분기</title>
+<rect width="640" height="420" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">본문이 너무 큰 요청(413)이 전역 예외 필터에 닿는 모양</text>
+<text x="24" y="70" font-size="14" font-weight="700" fill="#1d1d1f">NestJS 12.2</text>
+<rect x="24" y="82" width="150" height="58" rx="10" fill="#f2f2f7"/>
+<text x="99" y="106" font-size="13" text-anchor="middle" fill="#1d1d1f">body-parser</text>
+<text x="99" y="126" font-size="12" text-anchor="middle" fill="#6e6e73">본문 크기 초과</text>
+<rect x="206" y="82" width="200" height="58" rx="10" fill="#f2f2f7"/>
+<text x="306" y="104" font-size="12.5" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">http-errors 객체</text>
+<text x="306" y="124" font-size="12" text-anchor="middle" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">type: 'entity.too.large'</text>
+<rect x="438" y="82" width="178" height="58" rx="10" fill="#e6f2ff" stroke="#0a84ff"/>
+<text x="527" y="104" font-size="12.5" text-anchor="middle" fill="#1d1d1f">http-errors 분기</text>
+<text x="527" y="124" font-size="12.5" text-anchor="middle" fill="#0a84ff" font-weight="600">"요청이 너무 큽니다."</text>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M176 111 H202"/><path d="M408 111 H434"/></g>
+<text x="24" y="182" font-size="14" font-weight="700" fill="#1d1d1f">NestJS 12.3, 수정 전</text>
+<rect x="24" y="194" width="150" height="58" rx="10" fill="#f2f2f7"/>
+<text x="99" y="218" font-size="13" text-anchor="middle" fill="#1d1d1f">body-parser</text>
+<text x="99" y="238" font-size="12" text-anchor="middle" fill="#6e6e73">본문 크기 초과</text>
+<rect x="206" y="188" width="200" height="70" rx="10" fill="#fff4e5" stroke="#ff9f0a"/>
+<text x="306" y="209" font-size="12.5" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">HttpException(413)</text>
+<text x="306" y="228" font-size="12" text-anchor="middle" fill="#6e6e73">Express 어댑터가 감쌈</text>
+<text x="306" y="246" font-size="12" text-anchor="middle" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">cause: http-errors 객체</text>
+<rect x="438" y="194" width="178" height="58" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="527" y="216" font-size="12.5" text-anchor="middle" fill="#1d1d1f">HttpException 분기</text>
+<text x="527" y="236" font-size="12.5" text-anchor="middle" fill="#ff3b30" font-weight="600">"request entity too large"</text>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M176 223 H202"/><path d="M408 223 H434"/></g>
+<text x="24" y="300" font-size="14" font-weight="700" fill="#1d1d1f">NestJS 12.3, 수정 후 (1a37be36b)</text>
+<rect x="206" y="312" width="200" height="70" rx="10" fill="#fff4e5" stroke="#ff9f0a"/>
+<text x="306" y="333" font-size="12.5" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">HttpException(413)</text>
+<text x="306" y="352" font-size="12" text-anchor="middle" fill="#6e6e73">cause.type을 꺼낸다</text>
+<text x="306" y="370" font-size="12" text-anchor="middle" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">'entity.too.large'</text>
+<rect x="438" y="318" width="178" height="58" rx="10" fill="#eafaef" stroke="#34c759"/>
+<text x="527" y="340" font-size="12.5" text-anchor="middle" fill="#1d1d1f">HttpException 분기</text>
+<text x="527" y="360" font-size="12.5" text-anchor="middle" fill="#1d1d1f" font-weight="600">"요청이 너무 큽니다."</text>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M408 347 H434"/></g>
+<text x="24" y="345" font-size="12" fill="#6e6e73">상태 코드 413은</text>
+<text x="24" y="363" font-size="12" fill="#6e6e73">세 경우 모두 같다</text>
+<text x="24" y="404" font-size="12" fill="#6e6e73">응답의 message만 달라진다. 영어 원문은 감싼 예외의 기본 설명이다.</text>
+</svg>

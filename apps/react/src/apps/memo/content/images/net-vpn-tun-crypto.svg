@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="230" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <rect x="12" y="10" width="300" height="210" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="28" y="34" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">보내기</text>
+  <rect x="112" y="48" width="104" height="52" rx="4" fill="#0a84ff"/>
+  <text x="164" y="79" text-anchor="middle" font-size="14" fill="#fff" font-weight="600">암호화</text>
+  <g><rect x="42" y="140" width="46.0" height="28.0" rx="2" fill="#0a84ff"/><line x1="42" y1="134.0" x2="42" y2="174.0" stroke="#0a84ff" stroke-width="2"/>
+    <rect x="48.0" y="145.0" width="10" height="12" fill="#fff"/><rect x="64.0" y="145.0" width="10" height="12" fill="none" stroke="#fff" stroke-width="2"/>
+    <line x1="48.0" y1="164.0" x2="84.0" y2="164.0" stroke="#fff" stroke-width="2" stroke-dasharray="3 2"/></g>
+  <text x="65" y="204" text-anchor="middle" font-size="13" fill="#1d1d1f">TUN 인터페이스</text>
+  <g><rect x="208" y="142" width="90" height="24" rx="12.0" fill="#d6e9ff" stroke="#0a84ff" stroke-width="2"/><ellipse cx="286.0" cy="154.0" rx="6.0" ry="10.0" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/></g>
+  <text x="253" y="204" text-anchor="middle" font-size="13" fill="#1d1d1f">IP 터널</text>
+  <path d="M65,134 V74 H110" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+  <path d="M216,74 H253 V138" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+  <rect x="328" y="10" width="300" height="210" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="344" y="34" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">받기</text>
+  <rect x="428" y="48" width="104" height="52" rx="4" fill="#0a84ff"/>
+  <text x="480" y="79" text-anchor="middle" font-size="14" fill="#fff" font-weight="600">복호화</text>
+  <g><rect x="358" y="140" width="46.0" height="28.0" rx="2" fill="#0a84ff"/><line x1="358" y1="134.0" x2="358" y2="174.0" stroke="#0a84ff" stroke-width="2"/>
+    <rect x="364.0" y="145.0" width="10" height="12" fill="#fff"/><rect x="380.0" y="145.0" width="10" height="12" fill="none" stroke="#fff" stroke-width="2"/>
+    <line x1="364.0" y1="164.0" x2="400.0" y2="164.0" stroke="#fff" stroke-width="2" stroke-dasharray="3 2"/></g>
+  <text x="381" y="204" text-anchor="middle" font-size="13" fill="#1d1d1f">TUN 인터페이스</text>
+  <g><rect x="524" y="142" width="90" height="24" rx="12.0" fill="#d6e9ff" stroke="#0a84ff" stroke-width="2"/><ellipse cx="602.0" cy="154.0" rx="6.0" ry="10.0" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/></g>
+  <text x="569" y="204" text-anchor="middle" font-size="13" fill="#1d1d1f">IP 터널</text>
+  <path d="M569,140 V74 H534" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+  <path d="M428,74 H381 V132" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+</svg>

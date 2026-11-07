@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>bundledDocOf가 GitHub 주소를 판별하는 방법</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker><marker id="agr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">bundledDocOf(href): 주소를 두 부분으로 나눠 검사한다</text>
+<rect x="24" y="54" width="380" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="32" y="76" font-size="12" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">https://github.com/hyeoniverse/MacFolio/blob/main/</text>
+<rect x="410" y="54" width="206" height="34" rx="6" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="420" y="76" font-size="12" fill="#0a84ff" font-family="'SF Mono', Menlo, Consolas, monospace">docs/rollback-drill.md</text>
+<text x="34" y="110" font-size="12.5" fill="#6e6e73">① 접두어: REPO_URL + /blob/main/ 로 시작하는가</text>
+<text x="410" y="110" font-size="12.5" fill="#0a84ff">② 나머지 경로가 번들 형식인가</text>
+<text x="410" y="127" font-size="12" fill="#6e6e73">(BUNDLED_DOC 정규식)</text>
+<line x1="24" y1="146" x2="616" y2="146" stroke="#d2d2d7"/>
+<text x="24" y="170" font-size="13" font-weight="600" fill="#1d1d1f">접두어 뒤의 부분</text>
+<text x="330" y="170" font-size="13" font-weight="600" fill="#1d1d1f">반환값</text>
+<text x="530" y="170" font-size="13" font-weight="600" fill="#1d1d1f">여는 곳</text>
+<g font-size="12.5">
+<rect x="20" y="182" width="600" height="30" rx="4" fill="#f2f2f7"/>
+<text x="28" y="202" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">docs/rollback-drill.md</text>
+<text x="330" y="202" fill="#34c759" font-family="'SF Mono', Menlo, Consolas, monospace">'docs/rollback-drill.md'</text>
+<text x="530" y="202" fill="#0a84ff" font-weight="600">사이트 안</text>
+<text x="28" y="232" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">README.md</text>
+<text x="330" y="232" fill="#34c759" font-family="'SF Mono', Menlo, Consolas, monospace">'README.md'</text>
+<text x="530" y="232" fill="#0a84ff" font-weight="600">사이트 안</text>
+<rect x="20" y="242" width="600" height="30" rx="4" fill="#f2f2f7"/>
+<text x="28" y="262" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">docs/backend-design.md#…</text>
+<text x="330" y="262" fill="#ff3b30" font-family="'SF Mono', Menlo, Consolas, monospace">null</text>
+<text x="372" y="262" fill="#6e6e73">#제목 링크</text>
+<text x="530" y="262" fill="#6e6e73">GitHub 새 탭</text>
+<text x="28" y="292" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">ops/deploy.sh</text>
+<text x="330" y="292" fill="#ff3b30" font-family="'SF Mono', Menlo, Consolas, monospace">null</text>
+<text x="372" y="292" fill="#6e6e73">문서 아님</text>
+<text x="530" y="292" fill="#6e6e73">GitHub 새 탭</text>
+<rect x="20" y="302" width="600" height="30" rx="4" fill="#f2f2f7"/>
+<text x="28" y="322" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">docs/images/…</text>
+<text x="330" y="322" fill="#ff3b30" font-family="'SF Mono', Menlo, Consolas, monospace">null</text>
+<text x="372" y="322" fill="#6e6e73">그림 폴더</text>
+<text x="530" y="322" fill="#6e6e73">GitHub 새 탭</text>
+<text x="28" y="352" fill="#1d1d1f" font-family="'SF Mono', Menlo, Consolas, monospace">(…/blob/dev/ 로 시작)</text>
+<text x="330" y="352" fill="#ff3b30" font-family="'SF Mono', Menlo, Consolas, monospace">null</text>
+<text x="372" y="352" fill="#6e6e73">다른 브랜치</text>
+<text x="530" y="352" fill="#6e6e73">GitHub 새 탭</text>
+</g>
+<text x="24" y="392" font-size="12.5" fill="#6e6e73">경로는 normalizePath로 a/./b/../c 같은 표기를 먼저 정리하고, 주소에 ?가 있어도 null이다.</text>
+<text x="24" y="412" font-size="12.5" fill="#6e6e73">null이면 링크의 원래 동작(target="_blank")대로 GitHub를 새 탭에 연다.</text>
+</svg>

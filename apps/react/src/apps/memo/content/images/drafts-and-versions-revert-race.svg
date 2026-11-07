@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>편집기를 다시 마운트하면 언마운트되는 편집기의 저장 요청과 되돌린 내용의 저장 요청이 순서 없이 서버에 도착하고, 편집기 내부 저장 대기열을 쓰면 두 요청이 차례로 처리된다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">"이 버전으로 되돌리기"를 누른 직후의 저장 요청</text>
+
+<text x="20" y="62" font-size="13" font-weight="700" fill="#ff3b30">편집기 재마운트</text>
+<rect x="20" y="74" width="150" height="40" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="30" y="92" font-size="12" fill="#1d1d1f">언마운트되는 편집기</text>
+<text x="30" y="107" font-size="12" fill="#6e6e73">마지막 편집 "ㄱㄴ"</text>
+<rect x="20" y="124" width="150" height="40" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="30" y="142" font-size="12" fill="#1d1d1f">새로 마운트한 편집기</text>
+<text x="30" y="157" font-size="12" fill="#6e6e73">되돌린 내용 "v3"</text>
+<line x1="170" y1="94" x2="400" y2="140" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<line x1="170" y1="144" x2="400" y2="104" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="205" y="82" font-size="12" fill="#ff3b30">PUT /draft (느리게 도착)</text>
+<text x="205" y="176" font-size="12" fill="#6e6e73">PUT /draft (먼저 도착)</text>
+<rect x="404" y="80" width="216" height="84" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="416" y="102" font-size="12" font-weight="700" fill="#1d1d1f">서버 임시 저장</text>
+<text x="416" y="122" font-size="12" fill="#6e6e73">① "v3" 저장</text>
+<text x="416" y="140" font-size="12" fill="#6e6e73">② "ㄱㄴ"으로 덮어쓰기</text>
+<text x="416" y="157" font-size="12" font-weight="700" fill="#ff3b30">최종: 되돌리기 유실</text>
+
+<line x1="20" y1="204" x2="620" y2="204" stroke="#e5e5ea"/>
+
+<text x="20" y="236" font-size="13" font-weight="700" fill="#0a84ff">편집기 내부 저장 대기열</text>
+<rect x="20" y="250" width="150" height="64" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="30" y="270" font-size="12" fill="#1d1d1f">편집기 하나</text>
+<text x="30" y="288" font-size="12" fill="#6e6e73">내용만 "v3"로 교체</text>
+<text x="30" y="304" font-size="12" fill="#6e6e73">저장 요청을 대기열에</text>
+<rect x="196" y="250" width="180" height="64" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="208" y="270" font-size="12" font-weight="700" fill="#1d1d1f">저장 대기열</text>
+<text x="208" y="288" font-size="12" fill="#1d1d1f">① "ㄱㄴ" 저장</text>
+<text x="208" y="304" font-size="12" fill="#1d1d1f">② "v3" 저장 (①의 응답 뒤)</text>
+<line x1="170" y1="282" x2="192" y2="282" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="376" y1="282" x2="400" y2="282" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<rect x="404" y="240" width="216" height="84" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="416" y="262" font-size="12" font-weight="700" fill="#1d1d1f">서버 임시 저장</text>
+<text x="416" y="282" font-size="12" fill="#6e6e73">① "ㄱㄴ" 저장</text>
+<text x="416" y="300" font-size="12" fill="#6e6e73">② "v3"으로 갱신</text>
+<text x="416" y="317" font-size="12" font-weight="700" fill="#248a3d">최종: 되돌린 내용</text>
+
+<line x1="20" y1="346" x2="620" y2="346" stroke="#e5e5ea"/>
+<text x="20" y="368" font-size="12" fill="#6e6e73">HTTP 요청 두 개를 동시에 보내면 도착 순서는 네트워크 상태에 따라 달라진다</text>
+<text x="20" y="386" font-size="12" fill="#6e6e73">서버는 나중에 도착한 요청의 내용을 최종 값으로 저장한다</text>
+</svg>

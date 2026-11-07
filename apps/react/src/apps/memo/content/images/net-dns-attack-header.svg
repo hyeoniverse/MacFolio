@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="470" fill="#fff"/>
+<text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">DNS 메시지 형식 (RFC 1035, 플래그의 AD·CD는 RFC 4035)</text>
+<text x="75.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">0</text>
+<text x="105.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">1</text>
+<text x="135.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">2</text>
+<text x="165.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">3</text>
+<text x="195.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">4</text>
+<text x="225.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">5</text>
+<text x="255.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">6</text>
+<text x="285.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">7</text>
+<text x="315.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">8</text>
+<text x="345.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">9</text>
+<text x="375.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">10</text>
+<text x="405.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">11</text>
+<text x="435.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">12</text>
+<text x="465.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">13</text>
+<text x="495.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">14</text>
+<text x="525.0" y="50" text-anchor="middle" font-size="10" fill="#6e6e73">15</text>
+<rect x="60" y="58" width="480" height="34" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="79.0" text-anchor="middle" font-size="12" fill="#1d1d1f">ID: 질의와 응답을 짝짓는 16비트 트랜잭션 ID</text>
+<rect x="60" y="92" width="30" height="34" fill="#fff4e0" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="75.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">QR</text>
+<rect x="90" y="92" width="120" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="150.0" y="113.0" text-anchor="middle" font-size="12" fill="#1d1d1f">Opcode</text>
+<rect x="210" y="92" width="30" height="34" fill="#fff4e0" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="225.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">AA</text>
+<rect x="240" y="92" width="30" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="255.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">TC</text>
+<rect x="270" y="92" width="30" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="285.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">RD</text>
+<rect x="300" y="92" width="30" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="315.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">RA</text>
+<rect x="330" y="92" width="30" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="345.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Z</text>
+<rect x="360" y="92" width="30" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="375.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">AD</text>
+<rect x="390" y="92" width="30" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="405.0" y="113.0" text-anchor="middle" font-size="11" fill="#1d1d1f">CD</text>
+<rect x="420" y="92" width="120" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="480.0" y="113.0" text-anchor="middle" font-size="12" fill="#1d1d1f">RCODE</text>
+<rect x="60" y="126" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="147.0" text-anchor="middle" font-size="12" fill="#1d1d1f">QDCOUNT: 질문 레코드 수</text>
+<rect x="60" y="160" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="181.0" text-anchor="middle" font-size="12" fill="#1d1d1f">ANCOUNT: 응답 레코드 수</text>
+<rect x="60" y="194" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="215.0" text-anchor="middle" font-size="12" fill="#1d1d1f">NSCOUNT: 권한 레코드 수</text>
+<rect x="60" y="228" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="249.0" text-anchor="middle" font-size="12" fill="#1d1d1f">ARCOUNT: 추가 레코드 수</text>
+<path d="M552 58 h8 v204 h-8" fill="none" stroke="#6e6e73"/>
+<text x="566" y="158.0" font-size="12" fill="#6e6e73">헤더</text>
+<text x="566" y="174.0" font-size="12" fill="#6e6e73">12바이트</text>
+<rect x="60" y="272" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="293.0" text-anchor="middle" font-size="12" fill="#1d1d1f">질문(Question): 질의 이름, 타입(A, NS …), 클래스(IN)</text>
+<rect x="60" y="306" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="327.0" text-anchor="middle" font-size="12" fill="#1d1d1f">응답(Answer): 질문에 답하는 자원 레코드(RR)</text>
+<rect x="60" y="340" width="480" height="34" fill="#fff4e0" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="361.0" text-anchor="middle" font-size="12" fill="#1d1d1f">권한(Authority): 권한 네임서버를 가리키는 NS 레코드</text>
+<rect x="60" y="374" width="480" height="34" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="300.0" y="395.0" text-anchor="middle" font-size="12" fill="#1d1d1f">추가(Additional): 관련 레코드 (예: 네임서버의 A 레코드)</text>
+<path d="M552 272 h8 v136 h-8" fill="none" stroke="#6e6e73"/>
+<text x="566" y="338.0" font-size="12" fill="#6e6e73">가변</text>
+<text x="566" y="354.0" font-size="12" fill="#6e6e73">길이</text>
+<text x="60" y="434" font-size="12.5" fill="#1d1d1f">위조 응답의 플래그 0x8400 = 1000 0100 0000 0000(2)</text>
+<text x="60" y="454" font-size="12.5" fill="#0a84ff">→ QR = 1(응답), Opcode = 0(표준 질의), AA = 1(권한 있는 응답), 나머지 0</text>
+</svg>

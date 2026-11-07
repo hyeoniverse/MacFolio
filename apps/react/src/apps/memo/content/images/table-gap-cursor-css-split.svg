@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 466" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>패키지의 JS와 CSS</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="466" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">플러그인 패키지는 동작(JS)과 모양(CSS)을 따로 제공한다</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">편집기(Milkdown)는 JS만 불러왔다. CSS가 없으면 요소는 생기지만 화면에 그려지지 않는다</text>
+<rect x="20" y="72" width="260" height="145" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="34" y="96" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">prosemirror-gapcursor</text>
+<rect x="34" y="108" width="232" height="44" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="46" y="126" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">dist/index.js</text>
+<text x="46" y="143" font-size="12" fill="#6e6e73" text-anchor="start">gapCursor() 플러그인</text>
+<rect x="34" y="162" width="232" height="44" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="46" y="180" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">style/gapcursor.css</text>
+<text x="46" y="197" font-size="12" fill="#6e6e73" text-anchor="start">.ProseMirror-gapcursor 모양·깜빡임</text>
+<line x1="268" y1="130" x2="360" y2="130" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<text x="280" y="122" font-size="12" fill="#34c759" text-anchor="start">불러옴</text>
+<line x1="268" y1="184" x2="360" y2="184" stroke="#ff3b30" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="280" y="176" font-size="12" fill="#ff3b30" text-anchor="start">불러오지 않음</text>
+<rect x="366" y="108" width="254" height="44" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="126" font-size="12" fill="#34c759" text-anchor="start" font-weight="700">DOM: 생성됨</text>
+<text x="378" y="143" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">div.ProseMirror-gapcursor</text>
+<rect x="366" y="162" width="254" height="44" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="180" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">화면: 스타일 없음</text>
+<text x="378" y="197" font-size="12" fill="#1d1d1f" text-anchor="start">틈 커서가 보이지 않음</text>
+<rect x="20" y="237" width="260" height="145" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="34" y="261" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">prosemirror-view</text>
+<rect x="34" y="273" width="232" height="44" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="46" y="291" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">dist/index.js</text>
+<text x="46" y="308" font-size="12" fill="#6e6e73" text-anchor="start">EditorView, 칸 선택 시 클래스 부여</text>
+<rect x="34" y="327" width="232" height="44" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="46" y="345" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">style/prosemirror.css</text>
+<text x="46" y="362" font-size="12" fill="#6e6e73" text-anchor="start">.ProseMirror-hideselection 투명 처리</text>
+<line x1="268" y1="295" x2="360" y2="295" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<text x="280" y="287" font-size="12" fill="#34c759" text-anchor="start">불러옴</text>
+<line x1="268" y1="349" x2="360" y2="349" stroke="#ff3b30" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+<text x="280" y="341" font-size="12" fill="#ff3b30" text-anchor="start">불러오지 않음</text>
+<rect x="366" y="273" width="254" height="44" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="291" font-size="12" fill="#34c759" text-anchor="start" font-weight="700">DOM: 생성됨</text>
+<text x="378" y="308" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">hideselection 클래스가 붙음</text>
+<rect x="366" y="327" width="254" height="44" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="345" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">화면: 스타일 없음</text>
+<text x="378" y="362" font-size="12" fill="#1d1d1f" text-anchor="start">파란 글자 선택이 남음</text>
+<rect x="20" y="406" width="600" height="46" rx="6" fill="#e8f2ff" stroke="none" stroke-width="1.2"/>
+<text x="34" y="425" font-size="12" fill="#1d1d1f" text-anchor="start">E2E: toHaveCount(1)은 DOM의 요소 개수만 확인한다 → 통과</text>
+<text x="34" y="443" font-size="12" fill="#6e6e73" text-anchor="start">표시 여부(display, 위치)를 확인하지 않아 보이지 않는 커서를 검출하지 못했다</text>
+</svg>

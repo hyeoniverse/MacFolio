@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>shields.io 배지 주소에서 글자·색·로고를 추출해 Contact 버튼으로 바꾸는 과정</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">배지 주소 한 줄에서 버튼 재료를 읽는다</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">README의 &lt;img src&gt; 주소가 img.shields.io/badge/로 시작할 때만 변환한다</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="13">
+<text x="20" y="92" fill="#6e6e73">https://img.shields.io/badge/</text>
+<text x="252" y="92" fill="#0a84ff" font-weight="700">Gmail</text>
+<text x="292" y="92" fill="#1d1d1f">-</text>
+<text x="300" y="92" fill="#ff9f0a" font-weight="700">EA4335</text>
+<text x="348" y="92" fill="#6e6e73">?logo=</text>
+<text x="396" y="92" fill="#34c759" font-weight="700">gmail</text>
+</g>
+<line x1="250" y1="100" x2="290" y2="100" stroke="#0a84ff" stroke-width="2"/>
+<line x1="300" y1="100" x2="346" y2="100" stroke="#ff9f0a" stroke-width="2"/>
+<line x1="396" y1="100" x2="436" y2="100" stroke="#34c759" stroke-width="2"/>
+<g font-size="12">
+<text x="270" y="122" text-anchor="middle" fill="#0a84ff">글자(label)</text>
+<text x="323" y="140" text-anchor="middle" fill="#ff9f0a">색(마지막 조각)</text>
+<text x="416" y="122" text-anchor="middle" fill="#34c759">로고</text>
+</g>
+<text x="20" y="182" font-size="13" font-weight="700" fill="#1d1d1f">GitHub에서 보이는 배지 그림</text>
+<image x="20" y="196" width="130.9" height="42" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4Ny4yNSIgaGVpZ2h0PSIyOCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJHTUFJTCI+PHRpdGxlPkdNQUlMPC90aXRsZT48ZyBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPjxyZWN0IHdpZHRoPSI4Ny4yNSIgaGVpZ2h0PSIyOCIgZmlsbD0iI2VhNDMzNSIvPjwvZz48ZyBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iVmVyZGFuYSxHZW5ldmEsRGVqYVZ1IFNhbnMsc2Fucy1zZXJpZiIgdGV4dC1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIgZm9udC1zaXplPSIxMDAiPjxpbWFnZSB4PSI5IiB5PSI3IiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIGhyZWY9ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5Qm1hV3hzUFNKM2FHbDBaU0lnY205c1pUMGlhVzFuSWlCMmFXVjNRbTk0UFNJd0lEQWdNalFnTWpRaUlIaHRiRzV6UFNKb2RIUndPaTh2ZDNkM0xuY3pMbTl5Wnk4eU1EQXdMM04yWnlJK1BIUnBkR3hsUGtkdFlXbHNQQzkwYVhSc1pUNDhjR0YwYUNCa1BTSk5NalFnTlM0ME5UZDJNVE11T1RBNVl6QWdMamt3TkMwdU56TXlJREV1TmpNMkxURXVOak0ySURFdU5qTTJhQzB6TGpneE9WWXhNUzQzTTB3eE1pQXhOaTQyTkd3dE5pNDFORFV0TkM0NU1YWTVMakkzTTBneExqWXpOa0V4TGpZek5pQXhMall6TmlBd0lEQWdNU0F3SURFNUxqTTJObFkxTGpRMU4yTXdMVEl1TURJeklESXVNekE1TFRNdU1UYzRJRE11T1RJM0xURXVPVFkwVERVdU5EVTFJRFF1TmpRZ01USWdPUzQxTkRoc05pNDFORFV0TkM0NU1TQXhMalV5T0MweExqRTBOVU15TVM0Mk9TQXlMakk0SURJMElETXVORE0wSURJMElEVXVORFUzZWlJdlBqd3ZjM1puUGc9PSIvPjx0ZXh0IHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB4PSI1MzYuMjUiIHk9IjE3NSIgdGV4dExlbmd0aD0iNDMyLjUiIGZvbnQtd2VpZ2h0PSJib2xkIj5HTUFJTDwvdGV4dD48L2c+PC9zdmc+"/>
+<line x1="170" y1="217" x2="250" y2="217" stroke="#0a84ff" stroke-width="1.8" marker-end="url(#a)"/>
+<text x="270" y="182" font-size="13" font-weight="700" fill="#1d1d1f">MacFolio가 대신 그리는 버튼</text>
+<rect x="270" y="198" width="104" height="38" rx="8" fill="#EA4335"/>
+<text x="322" y="222" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">✉ Gmail</text>
+<text x="390" y="214" font-size="12" fill="#6e6e73">background-color: #EA4335</text>
+<text x="390" y="232" font-size="12" fill="#6e6e73">아이콘: logo=gmail</text>
+<line x1="20" y1="262" x2="620" y2="262" stroke="#f2f2f7" stroke-width="2"/>
+<text x="20" y="288" font-size="13" font-weight="700" fill="#1d1d1f">글자 안의 기호 복원 규칙 (shields.io 표기)</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="300" width="600" height="28" fill="#f2f2f7"/>
+<text x="32" y="319" font-weight="700">경로 조각</text><text x="250" y="319" font-weight="700">단일 - 로 분리</text><text x="470" y="319" font-weight="700">label / 색</text>
+<text x="32" y="348" font-family="ui-monospace, Menlo, monospace">Tech--Blog-Velog-20C997</text>
+<text x="250" y="348" font-family="ui-monospace, Menlo, monospace">Tech--Blog │ Velog │ 20C997</text>
+<text x="470" y="348">Tech-Blog Velog / #20C997</text>
+<text x="32" y="376" font-family="ui-monospace, Menlo, monospace">Hello_World-ff9f0a</text>
+<text x="250" y="376" font-family="ui-monospace, Menlo, monospace">Hello_World │ ff9f0a</text>
+<text x="470" y="376">Hello World / #FF9F0A</text>
+<text x="32" y="404" fill="#6e6e73">-- 는 글자 속 '-', _ 는 공백, __ 는 글자 속 '_'. 색이 16진수 3·6자리가 아니면 null을 반환해 원래 배지 그림을 유지한다</text>
+</g>
+</svg>

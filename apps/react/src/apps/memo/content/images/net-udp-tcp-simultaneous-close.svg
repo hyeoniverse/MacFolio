@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="270" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <g stroke="#6e6e73" stroke-width="2">
+    <line x1="180" y1="30" x2="180" y2="250"/><line x1="460" y1="30" x2="460" y2="250"/>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <text x="170" y="50" text-anchor="end">능동 폐쇄</text>
+    <text x="470" y="50">능동 폐쇄</text>
+  </g>
+  <g font-size="12" font-weight="600" fill="#0a84ff">
+    <text x="170" y="68" text-anchor="end">FIN_WAIT_1</text>
+    <text x="470" y="68">FIN_WAIT_1</text>
+    <text x="170" y="134" text-anchor="end">CLOSING</text>
+    <text x="470" y="134">CLOSING</text>
+    <text x="170" y="222" text-anchor="end">TIME_WAIT</text>
+    <text x="470" y="222">TIME_WAIT</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#a)">
+    <line x1="180" y1="64" x2="458" y2="126"/>
+    <line x1="460" y1="64" x2="182" y2="126"/>
+    <line x1="180" y1="156" x2="458" y2="218"/>
+    <line x1="460" y1="156" x2="182" y2="218"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f">
+    <text x="192" y="60">FIN J</text>
+    <text x="448" y="60" text-anchor="end">FIN K</text>
+    <text x="192" y="152">ack K+1</text>
+    <text x="448" y="152" text-anchor="end">ack J+1</text>
+  </g>
+  <text x="320" y="262" text-anchor="middle" font-size="12" fill="#6e6e73">상대의 FIN을 먼저 받으면 CLOSING, 자기 FIN의 ACK를 받으면 TIME_WAIT</text>
+</svg>

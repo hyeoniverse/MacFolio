@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>iframe 안을 클릭했을 때 창을 앞으로 가져오는 방법</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">iframe 안을 클릭했을 때 창을 맨 앞으로 가져오는 순서</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">클릭 이벤트는 바깥 문서에 오지 않으므로, 바깥 window의 blur 이벤트로 대신 감지한다</text>
+<rect x="20" y="66" width="290" height="34" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="165" y="88" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">바깥 문서 (MacFolio)</text>
+<rect x="330" y="66" width="290" height="34" rx="6" fill="#fff4e5" stroke="none" stroke-width="1.2"/>
+<text x="475" y="88" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">iframe 안 문서 (배포한 사이트)</text>
+<line x1="165" y1="100" x2="165" y2="380" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="5 4"/>
+<line x1="475" y1="100" x2="475" y2="250" stroke="#c7c7cc" stroke-width="2" stroke-dasharray="5 4"/>
+<rect x="345" y="116" width="260" height="46" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.2"/>
+<text x="475" y="136" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">① 사용자가 iframe 안을 클릭</text>
+<text x="475" y="153" font-size="12" fill="#1d1d1f" text-anchor="middle">click은 안쪽 문서에서만 발생</text>
+<path d="M345 139 L190 139" fill="none" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="268" y="131" font-size="12" fill="#ff3b30" text-anchor="middle" font-weight="700">전달되지 않음</text>
+<rect x="35" y="124" width="150" height="30" rx="6" fill="#fff0ef" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="110" y="144" font-size="12" fill="#ff3b30" text-anchor="middle">click 핸들러 호출 없음</text>
+<rect x="345" y="186" width="260" height="46" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.2"/>
+<text x="475" y="206" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">② 키보드 포커스가 iframe으로 이동</text>
+<text x="475" y="223" font-size="12" fill="#1d1d1f" text-anchor="middle">바깥 문서는 포커스를 잃는다</text>
+<line x1="345" y1="224" x2="312" y2="252" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<rect x="35" y="240" width="275" height="46" rx="6" fill="#e8f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="172" y="260" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">③ window의 blur 이벤트 발생</text>
+<text x="172" y="277" font-size="12" fill="#1d1d1f" text-anchor="middle">document.activeElement === iframe 요소</text>
+<line x1="172" y1="286" x2="172" y2="312" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="35" y="316" width="275" height="46" rx="6" fill="#ecf9ef" stroke="#34c759" stroke-width="1.2"/>
+<text x="172" y="336" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">④ bringAppToFront(appName)</text>
+<text x="172" y="353" font-size="12" fill="#1d1d1f" text-anchor="middle">그 프로젝트 앱 창이 맨 앞으로</text>
+<text x="345" y="300" font-size="12" fill="#6e6e73" text-anchor="start">다른 앱으로 전환하거나 브라우저 탭을</text>
+<text x="345" y="317" font-size="12" fill="#6e6e73" text-anchor="start">떠나도 blur가 발생하지만, 이때는</text>
+<text x="345" y="334" font-size="12" fill="#6e6e73" text-anchor="start">activeElement가 이 iframe이 아니므로</text>
+<text x="345" y="351" font-size="12" fill="#6e6e73" text-anchor="start">창 순서를 바꾸지 않는다</text>
+</svg>

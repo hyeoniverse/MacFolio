@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">같은 글이 화면에 도착하는 두 경로</text>
+<text x="320" y="48" font-size="12" fill="#6e6e73" text-anchor="middle">slug가 같으면 아래 경로(서버 글)가 위 경로(저장소 글)를 가린다</text>
+<text x="20" y="84" font-size="13" font-weight="600" fill="#0a84ff">경로 1 · 저장소 Markdown</text>
+<rect x="20" y="94" width="150" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="95" y="118" font-size="13" fill="#1d1d1f" text-anchor="middle">content/*.md</text>
+<text x="95" y="137" font-size="12" fill="#6e6e73" text-anchor="middle">git으로 수정</text>
+<line x1="170" y1="122" x2="228" y2="122" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="230" y="94" width="150" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="305" y="118" font-size="13" fill="#1d1d1f" text-anchor="middle">빌드 번들</text>
+<text x="305" y="137" font-size="12" fill="#6e6e73" text-anchor="middle">import.meta.glob</text>
+<line x1="380" y1="122" x2="470" y2="200" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="20" y="226" font-size="13" font-weight="600" fill="#ff9f0a">경로 2 · 메모 편집기</text>
+<rect x="20" y="236" width="150" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="95" y="260" font-size="13" fill="#1d1d1f" text-anchor="middle">ProseMirror 문서</text>
+<text x="95" y="279" font-size="12" fill="#6e6e73" text-anchor="middle">관리자가 수정</text>
+<line x1="170" y1="264" x2="228" y2="264" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="230" y="236" width="150" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="305" y="260" font-size="13" fill="#1d1d1f" text-anchor="middle">Markdown 직렬화</text>
+<text x="305" y="279" font-size="12" fill="#6e6e73" text-anchor="middle">remark-stringify</text>
+<line x1="305" y1="292" x2="305" y2="318" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="230" y="320" width="150" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="305" y="344" font-size="13" fill="#1d1d1f" text-anchor="middle">DB Post 행</text>
+<text x="305" y="363" font-size="12" fill="#6e6e73" text-anchor="middle">임시 저장 · 게시 API</text>
+<line x1="380" y1="340" x2="470" y2="240" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="472" y="190" width="150" height="64" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+<text x="547" y="216" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">목록 병합</text>
+<text x="547" y="236" font-size="12" fill="#6e6e73" text-anchor="middle">mergeServerPosts</text>
+<circle cx="305" cy="216" r="11" fill="#ff3b30"/><text x="305" y="221" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+<text x="322" y="221" font-size="12" fill="#ff3b30">첫 태그를 \#로 이스케이프</text>
+<circle cx="200" cy="246" r="11" fill="#ff3b30"/><text x="200" y="251" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+<text x="176" y="312" font-size="12" fill="#ff3b30" text-anchor="end">펼치기만 해도</text>
+<text x="176" y="328" font-size="12" fill="#ff3b30" text-anchor="end">open 속성 저장</text>
+<circle cx="547" cy="282" r="11" fill="#ff3b30"/><text x="547" y="287" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+<text x="547" y="310" font-size="12" fill="#ff3b30" text-anchor="middle">서버 행이 남아</text>
+<text x="547" y="326" font-size="12" fill="#ff3b30" text-anchor="middle">저장소 글을 계속 가림</text>
+</svg>

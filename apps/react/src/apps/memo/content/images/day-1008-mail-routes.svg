@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>번호로 조회하는 경로와 쿠키로 필터링하는 경로의 차이</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="28" font-size="14" font-weight="700" fill="#ff3b30">만들지 않은 경로: GET /contact/:id</text>
+<rect x="20" y="42" width="600" height="108" rx="10" fill="#fff1f0"/>
+<text x="36" y="68" font-size="12" fill="#1d1d1f">방문자 A가 자기 메일 17번을 조회한다</text>
+<text x="390" y="68" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">GET /contact/17</text>
+<text x="36" y="94" font-size="12" fill="#1d1d1f">주소의 숫자만 바꿔 다시 요청한다</text>
+<text x="390" y="94" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">GET /contact/18, /19, ...</text>
+<text x="36" y="124" font-size="12" fill="#ff3b30">서버가 소유자 검사를 한 번이라도 빠뜨리면 다른 방문자의 메일이 응답된다</text>
+<text x="36" y="142" font-size="12" fill="#6e6e73">(IDOR: 요청에 들어 있는 객체 식별자를 그대로 믿는 취약점)</text>
+<text x="20" y="184" font-size="14" font-weight="700" fill="#34c759">만든 경로: GET /contact/mine</text>
+<rect x="20" y="198" width="600" height="118" rx="10" fill="#ecfaef"/>
+<rect x="36" y="214" width="150" height="44" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="111" y="232" font-size="12" fill="#1d1d1f" text-anchor="middle">요청의 Cookie</text>
+<text x="111" y="249" font-size="12" fill="#6e6e73" text-anchor="middle">macfolio_visitor=토큰</text>
+<line x1="186" y1="236" x2="226" y2="236" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="230" y="214" width="150" height="44" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="305" y="232" font-size="12" fill="#1d1d1f" text-anchor="middle">서버가 HMAC 계산</text>
+<text x="305" y="249" font-size="12" fill="#6e6e73" text-anchor="middle">비밀 키 + 토큰</text>
+<line x1="380" y1="236" x2="420" y2="236" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="424" y="214" width="180" height="44" rx="8" fill="#ffffff" stroke="#34c759"/>
+<text x="514" y="232" font-size="12" fill="#1d1d1f" text-anchor="middle">WHERE visitorHash</text>
+<text x="514" y="249" font-size="12" fill="#1d1d1f" text-anchor="middle">= 계산한 값</text>
+<text x="36" y="284" font-size="12" fill="#1d1d1f">요청에는 바꿀 수 있는 번호가 없다. 쿠키 토큰을 모르면 다른 방문자의 해시를 만들 수 없다</text>
+<text x="36" y="304" font-size="12" fill="#6e6e73">관리자의 받은 편지함(GET /contact/inbox)은 별도 경로이고 AdminGuard가 세션을 확인한다</text>
+</svg>

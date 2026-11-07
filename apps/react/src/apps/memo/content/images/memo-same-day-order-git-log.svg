@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <rect width="640" height="400" fill="#fff"/>
+  <text x="320" y="28" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">git log 출력을 slug → 올린 시각 객체로 바꾸는 과정</text>
+
+  <!-- 왼쪽: git 출력 -->
+  <text x="16" y="60" font-size="12" font-weight="600" fill="#6e6e73">git log 출력 (최신 커밋 먼저, \0은 NUL 문자)</text>
+  <rect x="16" y="70" width="290" height="290" rx="8" fill="#f2f2f7"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12">
+    <text x="24" y="92" fill="#ff9f0a">\0</text><text x="44" y="92" fill="#1d1d1f">2026-10-22T22:47:20+09:00</text>
+    <text x="44" y="111" fill="#6e6e73">images/safari-macos-…-engines.svg</text>
+    <text x="44" y="130" fill="#0a84ff">safari-macos-ios-rendering.md</text>
+    <text x="24" y="149" fill="#ff9f0a">\0</text><text x="44" y="149" fill="#1d1d1f">2026-10-22T21:10:32+09:00</text>
+    <text x="44" y="168" fill="#6e6e73">images/music-widget-…-layers.svg</text>
+    <text x="44" y="187" fill="#0a84ff">music-widget-ios-corners.md</text>
+    <text x="24" y="206" fill="#ff9f0a">\0</text><text x="44" y="206" fill="#1d1d1f">2026-10-22T14:04:43+09:00</text>
+    <text x="44" y="225" fill="#6e6e73">images/search-keywords-… (3개)</text>
+    <text x="44" y="244" fill="#0a84ff">search-keywords.md</text>
+    <text x="24" y="263" fill="#ff9f0a">\0</text><text x="44" y="263" fill="#1d1d1f">2026-10-22T09:50:42+09:00</text>
+    <text x="44" y="282" fill="#6e6e73">images/site-performance-… (3개)</text>
+    <text x="44" y="301" fill="#0a84ff">site-performance-diet.md</text>
+    <text x="44" y="320" fill="#0a84ff">site-performance-report.md</text>
+    <text x="44" y="339" fill="#6e6e73">…</text>
+  </g>
+
+  <!-- 화살표 -->
+  <line x1="310" y1="214" x2="342" y2="214" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <text x="326" y="190" font-size="11.5" fill="#0a84ff" text-anchor="middle">created</text>
+  <text x="326" y="204" font-size="11.5" fill="#0a84ff" text-anchor="middle">Times</text>
+
+  <!-- 오른쪽: 결과 -->
+  <text x="346" y="60" font-size="12" font-weight="600" fill="#6e6e73">virtual:post-created의 내용 (UTC)</text>
+  <rect x="346" y="70" width="278" height="190" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <text x="358" y="94">{</text>
+    <text x="366" y="114" fill="#0a84ff">"safari-macos-ios-rendering":</text>
+    <text x="380" y="132">"2026-10-22T13:47:20.000Z",</text>
+    <text x="366" y="152" fill="#0a84ff">"music-widget-ios-corners":</text>
+    <text x="380" y="170">"2026-10-22T12:10:32.000Z",</text>
+    <text x="366" y="190" fill="#0a84ff">"search-keywords": …,</text>
+    <text x="366" y="210" fill="#0a84ff">"site-performance-diet": …,</text>
+    <text x="366" y="230" fill="#0a84ff">"site-performance-report": …,</text>
+    <text x="358" y="250">  …  }</text>
+  </g>
+
+  <rect x="346" y="274" width="278" height="86" rx="8" fill="#f2f2f7"/>
+  <text x="358" y="296" font-size="12" fill="#1d1d1f">① \0으로 커밋을 나눈다</text>
+  <text x="358" y="315" font-size="12" fill="#1d1d1f">② 첫 줄은 시각, 나머지는 파일</text>
+  <text x="358" y="334" font-size="12" fill="#1d1d1f">③ *.md만 slug로, images/는 제외</text>
+  <text x="358" y="353" font-size="12" fill="#1d1d1f">④ 오래된 커밋이 뒤에서 덮어쓴다</text>
+  <text x="320" y="388" font-size="12" fill="#6e6e73" text-anchor="middle">+09:00(KST) 시각을 toISOString()으로 UTC로 바꾸므로 문자열 비교가 곧 시각 비교다</text>
+</svg>

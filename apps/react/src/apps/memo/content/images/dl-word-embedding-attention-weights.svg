@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">디코더 g⁵를 query로 계산한 주목 벡터</text>
+<rect x="110" y="179.6" width="56" height="60.4" rx="3" fill="#c7c7cc"/>
+<text x="138" y="171.6" text-anchor="middle" font-size="13" fill="#1d1d1f">0.151</text>
+<text x="138" y="260" text-anchor="middle" font-size="12" fill="#1d1d1f">h¹ 저게</text>
+<rect x="205" y="104.0" width="56" height="136.0" rx="3" fill="#0a84ff"/>
+<text x="233" y="96.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">0.340</text>
+<text x="233" y="260" text-anchor="middle" font-size="12" fill="#1d1d1f">h² 저절로</text>
+<rect x="300" y="175.2" width="56" height="64.8" rx="3" fill="#c7c7cc"/>
+<text x="328" y="167.2" text-anchor="middle" font-size="13" fill="#1d1d1f">0.162</text>
+<text x="328" y="260" text-anchor="middle" font-size="12" fill="#1d1d1f">h³ 붉어질</text>
+<rect x="395" y="172.4" width="56" height="67.6" rx="3" fill="#c7c7cc"/>
+<text x="423" y="164.39999999999998" text-anchor="middle" font-size="13" fill="#1d1d1f">0.169</text>
+<text x="423" y="260" text-anchor="middle" font-size="12" fill="#1d1d1f">h⁴ 리</text>
+<rect x="490" y="168.8" width="56" height="71.2" rx="3" fill="#c7c7cc"/>
+<text x="518" y="160.8" text-anchor="middle" font-size="13" fill="#1d1d1f">0.178</text>
+<text x="518" y="260" text-anchor="middle" font-size="12" fill="#1d1d1f">h⁵ 없다</text>
+<path d="M90 240 L590 240" stroke="#6e6e73"/>
+<text x="320" y="285" text-anchor="middle" font-size="12" fill="#6e6e73">다섯 값의 합은 1이고, itself를 만들 다음 시점에는 '저절로'(h²)의 비중이 가장 크다</text>
+</svg>

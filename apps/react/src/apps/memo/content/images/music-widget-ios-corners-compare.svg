@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>border-radius 클리핑과 clip-path 클리핑의 결과 비교</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="24" y="30" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">같은 위젯을 세 조건에서 렌더링한 결과</text>
+<rect x="24" y="50" width="196" height="200" rx="10" fill="#f2f2f7"/>
+<rect x="44" y="70" width="156" height="140" rx="22" fill="#4a3f6b"/>
+<rect x="60" y="86" width="44" height="44" rx="8" fill="#c9b8f0"/>
+<text x="60" y="156" font-size="13" fill="#ffffff" text-anchor="start" font-weight="700">곡 제목</text>
+<text x="60" y="174" font-size="12" fill="#e5e5ea" text-anchor="start">가수</text>
+<text x="122" y="232" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">기대한 모양</text>
+<text x="122" y="274" font-size="12" fill="#6e6e73" text-anchor="middle">모든 자식이 둥근 모서리로 잘림</text>
+<rect x="228" y="50" width="196" height="200" rx="10" fill="#f2f2f7"/>
+<rect x="248" y="70" width="156" height="140" fill="#4a3f6b"/>
+<circle cx="248" cy="70" r="9" fill="none" stroke="#ff3b30" stroke-width="2"/>
+<circle cx="404" cy="70" r="9" fill="none" stroke="#ff3b30" stroke-width="2"/>
+<circle cx="248" cy="210" r="9" fill="none" stroke="#ff3b30" stroke-width="2"/>
+<circle cx="404" cy="210" r="9" fill="none" stroke="#ff3b30" stroke-width="2"/>
+<rect x="264" y="86" width="44" height="44" rx="8" fill="#c9b8f0"/>
+<text x="264" y="156" font-size="13" fill="#ffffff" text-anchor="start" font-weight="700">곡 제목</text>
+<text x="264" y="174" font-size="12" fill="#e5e5ea" text-anchor="start">가수</text>
+<text x="326" y="232" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700">iPhone Safari, 수정 전</text>
+<text x="326" y="274" font-size="12" fill="#6e6e73" text-anchor="middle">블러 레이어가 사각형으로 남음</text>
+<rect x="432" y="50" width="196" height="200" rx="10" fill="#f2f2f7"/>
+<rect x="452" y="70" width="156" height="140" rx="22" fill="#4a3f6b"/>
+<rect x="468" y="86" width="44" height="44" rx="8" fill="#c9b8f0"/>
+<text x="468" y="156" font-size="13" fill="#ffffff" text-anchor="start" font-weight="700">곡 제목</text>
+<text x="468" y="174" font-size="12" fill="#e5e5ea" text-anchor="start">가수</text>
+<text x="530" y="232" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">clip-path 추가 후</text>
+<text x="530" y="274" font-size="12" fill="#6e6e73" text-anchor="middle">합성 결과 전체를 다시 잘라 둥긂</text>
+</svg>

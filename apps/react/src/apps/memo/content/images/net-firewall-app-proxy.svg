@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="350" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <rect x="16" y="30" width="430" height="128" rx="8" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="7 4"/>
+  <text x="28" y="22" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">이중 홈 프록시 방화벽</text>
+  <rect x="36" y="52" width="110" height="84" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="91.0" y="90" text-anchor="middle" font-size="13" fill="#1d1d1f">프록시</text>
+  <text x="91.0" y="107" text-anchor="middle" font-size="13" fill="#1d1d1f">서버</text>
+  <rect x="186" y="52" width="110" height="84" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="241.0" y="90" text-anchor="middle" font-size="13" fill="#1d1d1f">응용 프로토콜</text>
+  <text x="241.0" y="107" text-anchor="middle" font-size="13" fill="#1d1d1f">분석</text>
+  <rect x="336" y="52" width="96" height="84" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="384.0" y="90" text-anchor="middle" font-size="13" fill="#1d1d1f">프록시</text>
+  <text x="384.0" y="107" text-anchor="middle" font-size="13" fill="#1d1d1f">클라이언트</text>
+  <line x1="146" y1="66" x2="184" y2="66" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <line x1="296" y1="66" x2="334" y2="66" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <line x1="334" y1="122" x2="298" y2="122" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <line x1="184" y1="122" x2="148" y2="122" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <g><ellipse cx="490.0" cy="104.5" rx="22.0" ry="23.5" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="520.0" cy="89.6" rx="28.0" ry="29.9" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="550.0" cy="102.4" rx="22.0" ry="23.5" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="510.0" cy="110.9" rx="20.0" ry="21.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="534.0" cy="110.9" rx="20.0" ry="21.3" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="474.0" cy="113.1" rx="14.0" ry="14.9" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="566.0" cy="113.1" rx="14.0" ry="14.9" fill="#f2f2f7" stroke="#aeaeb2" stroke-width="2"/><ellipse cx="490.0" cy="104.5" rx="21.0" ry="22.5" fill="#f2f2f7"/><ellipse cx="520.0" cy="89.6" rx="27.0" ry="28.9" fill="#f2f2f7"/><ellipse cx="550.0" cy="102.4" rx="21.0" ry="22.5" fill="#f2f2f7"/><ellipse cx="510.0" cy="110.9" rx="19.0" ry="20.3" fill="#f2f2f7"/><ellipse cx="534.0" cy="110.9" rx="19.0" ry="20.3" fill="#f2f2f7"/><ellipse cx="474.0" cy="113.1" rx="13.0" ry="13.9" fill="#f2f2f7"/><ellipse cx="566.0" cy="113.1" rx="13.0" ry="13.9" fill="#f2f2f7"/></g>
+  <text x="520" y="104.53333333333333" text-anchor="middle" font-size="13" fill="#1d1d1f">인터넷</text>
+  <g stroke="#1d1d1f" stroke-width="1.5"><rect x="589.6" y="75.6" width="28.799999999999997" height="40.8" rx="2" fill="#fff"/><line x1="594.4" y1="85.19999999999999" x2="613.6" y2="85.19999999999999"/><line x1="594.4" y1="92.39999999999999" x2="613.6" y2="92.39999999999999"/><circle cx="604" cy="107.99999999999999" r="2.16" fill="#1d1d1f"/></g>
+  <text x="604" y="140" text-anchor="middle" font-size="13" fill="#1d1d1f">실제 서버</text>
+  <line x1="432" y1="66" x2="588" y2="66" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <text x="470" y="58" text-anchor="middle" font-size="12" fill="#ff3b30">전달된 요청</text>
+  <line x1="588" y1="126" x2="434" y2="126" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <text x="470" y="146" text-anchor="middle" font-size="12" fill="#ff3b30">응답</text>
+  <rect x="16" y="196" width="430" height="140" rx="8" fill="#f2f2f7"/>
+  <text x="430" y="218" text-anchor="end" font-size="13" fill="#6e6e73">내부 네트워크</text>
+  <line x1="60" y1="292" x2="380" y2="292" stroke="#6e6e73" stroke-width="1.5"/>
+  <line x1="80" y1="270" x2="80" y2="292" stroke="#6e6e73" stroke-width="1.5"/>
+  <g fill="none" stroke="#ff3b30" stroke-width="1.5"><rect x="63.0" y="240.0" width="34.0" height="24.0" rx="2" fill="#fff"/><line x1="80" y1="264.0" x2="80" y2="269.0"/><line x1="71.0" y1="269.0" x2="89.0" y2="269.0"/></g>
+  <line x1="180" y1="270" x2="180" y2="292" stroke="#6e6e73" stroke-width="1.5"/>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><rect x="163.0" y="240.0" width="34.0" height="24.0" rx="2" fill="#fff"/><line x1="180" y1="264.0" x2="180" y2="269.0"/><line x1="171.0" y1="269.0" x2="189.0" y2="269.0"/></g>
+  <line x1="260" y1="270" x2="260" y2="292" stroke="#6e6e73" stroke-width="1.5"/>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><rect x="243.0" y="240.0" width="34.0" height="24.0" rx="2" fill="#fff"/><line x1="260" y1="264.0" x2="260" y2="269.0"/><line x1="251.0" y1="269.0" x2="269.0" y2="269.0"/></g>
+  <line x1="340" y1="270" x2="340" y2="292" stroke="#6e6e73" stroke-width="1.5"/>
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5"><rect x="323.0" y="240.0" width="34.0" height="24.0" rx="2" fill="#fff"/><line x1="340" y1="264.0" x2="340" y2="269.0"/><line x1="331.0" y1="269.0" x2="349.0" y2="269.0"/></g>
+  <text x="80" y="316" text-anchor="middle" font-size="13" fill="#ff3b30">실제 클라이언트</text>
+  <line x1="96" y1="238" x2="96" y2="138" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <text x="104" y="186" text-anchor="start" font-size="12" fill="#ff3b30">요청</text>
+  <line x1="64" y1="138" x2="64" y2="236" stroke="#ff3b30" stroke-width="2" fill="none" marker-end="url(#r)"/>
+  <text x="56" y="176" text-anchor="end" font-size="12" fill="#ff3b30">전달된</text>
+  <text x="56" y="192" text-anchor="end" font-size="12" fill="#ff3b30">응답</text>
+  <rect x="462" y="196" width="164" height="140" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="476" y="222" font-size="12" fill="#1d1d1f">연결 1: 실제 클라이언트</text>
+  <text x="476" y="238" font-size="12" fill="#1d1d1f">→ 프록시 서버</text>
+  <text x="476" y="266" font-size="12" fill="#1d1d1f">연결 2: 프록시 클라이언트</text>
+  <text x="476" y="282" font-size="12" fill="#1d1d1f">→ 실제 서버</text>
+  <text x="476" y="310" font-size="12" fill="#6e6e73">두 연결 사이에서</text>
+  <text x="476" y="326" font-size="12" fill="#6e6e73">응용 데이터를 검사한다</text>
+</svg>

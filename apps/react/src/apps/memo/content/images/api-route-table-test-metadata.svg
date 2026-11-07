@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>데코레이터 메타데이터</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">데코레이터가 저장한 메타데이터를 시험이 그대로 읽는다</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">NestJS가 라우터를 구성하며 읽는 값과 같은 키(PATH_METADATA 등)를 시험도 읽는다</text>
+<rect x="20" y="70" width="250" height="180" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="92" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">컨트롤러 코드</text>
+<text x="32.0" y="116" font-size="12" fill="#0a84ff" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">@Controller('posts')</text>
+<text x="32.0" y="133" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">class PostsController {</text>
+<text x="46.4" y="150" font-size="12" fill="#ff9f0a" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">@Post()</text>
+<text x="46.4" y="167" font-size="12" fill="#34c759" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">@UseGuards(AdminGuard)</text>
+<text x="46.4" y="184" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">create(@Body() body) {</text>
+<text x="60.8" y="201" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">…</text>
+<text x="46.4" y="218" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">}</text>
+<text x="32.0" y="235" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">}</text>
+<line x1="272" y1="160" x2="312" y2="160" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="316" y="70" width="304" height="180" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="328" y="92" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">Reflect에 저장된 값</text>
+<text x="328" y="116" font-size="12" fill="#6e6e73" text-anchor="start">클래스</text>
+<text x="410" y="116" font-size="12" fill="#0a84ff" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">'path'</text>
+<text x="410" y="131" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">→ 'posts'</text>
+<text x="328" y="148" font-size="12" fill="#6e6e73" text-anchor="start">create 함수</text>
+<text x="410" y="148" font-size="12" fill="#ff9f0a" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">'path'</text>
+<text x="410" y="163" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">→ '/'</text>
+<text x="328" y="180" font-size="12" fill="#6e6e73" text-anchor="start">create 함수</text>
+<text x="410" y="180" font-size="12" fill="#ff9f0a" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">'method'</text>
+<text x="410" y="195" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">→ 1 (RequestMethod.POST)</text>
+<text x="328" y="212" font-size="12" fill="#6e6e73" text-anchor="start">create 함수</text>
+<text x="410" y="212" font-size="12" fill="#34c759" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">'__guards__'</text>
+<text x="410" y="227" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">→ [AdminGuard]</text>
+<line x1="320" y1="254" x2="320" y2="284" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="20" y="288" width="600" height="98" rx="6" fill="#e8f2ff" stroke="none" stroke-width="1.2"/>
+<text x="34" y="310" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">시험이 만든 한 줄</text>
+<text x="34" y="334" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">'POST' + 'posts' + '/'  →  'POST /posts',  가드: AdminGuard 있음</text>
+<text x="34" y="358" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">ACCESS 표: 'POST /posts': 'admin'</text>
+<text x="330" y="358" font-size="12" fill="#34c759" text-anchor="start" font-weight="700">→ 일치하면 통과, 가드가 없으면 실패</text>
+<text x="34" y="376" font-size="12" fill="#6e6e73" text-anchor="start">클래스에 붙은 @UseGuards와 메서드에 붙은 @UseGuards는 합쳐서 판정한다</text>
+</svg>

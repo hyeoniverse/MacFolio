@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>메모를 열면 React.lazy가 import()를 실행하고, 실패하면 렌더링 오류로 AppErrorBoundary에 전달된다. isChunkLoadError가 참이면 새 버전 경고창과 새로고침, 거짓이면 문제 발생 경고창과 다시 열기를 표시한다</title>
+<defs>
+<marker id="eb-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="eb-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="eb-o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+</defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">오류가 경고창이 되기까지</text>
+
+<rect x="24" y="56" width="180" height="50" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="114" y="78" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">메모 앱 열기</text>
+<text x="114" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">Dock·Launchpad·주소</text>
+<path d="M204 81 H226" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#eb-g)"/>
+<rect x="230" y="56" width="180" height="50" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="320" y="78" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">React.lazy</text>
+<text x="320" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">import('./Memo-….js')</text>
+<path d="M410 81 H432" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#eb-g)"/>
+<rect x="436" y="56" width="180" height="50" rx="9" fill="#fff5f4" stroke="#ff3b30"/>
+<text x="526" y="78" font-size="13" font-weight="700" fill="#ff3b30" text-anchor="middle">Promise 거부</text>
+<text x="526" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">렌더링 중 오류로 전달</text>
+
+<path d="M526 106 V128 H320 V142" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#eb-g)"/>
+<rect x="200" y="146" width="240" height="50" rx="9" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="320" y="168" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">AppErrorBoundary</text>
+<text x="320" y="186" font-size="12" fill="#6e6e73" text-anchor="middle">앱마다 하나, 오류를 받아 대체 화면 표시</text>
+
+<path d="M320 196 V214" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#eb-g)"/>
+<polygon points="320,218 440,246 320,274 200,246" fill="#f2f2f7" stroke="#1d1d1f"/>
+<text x="320" y="251" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">isChunkLoadError?</text>
+
+<path d="M200 246 H120 V292" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#eb-b)"/>
+<text x="150" y="238" font-size="12" font-weight="700" fill="#0a84ff" text-anchor="middle">예</text>
+<path d="M440 246 H520 V292" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#eb-o)"/>
+<text x="490" y="238" font-size="12" font-weight="700" fill="#c46f00" text-anchor="middle">아니요</text>
+
+<rect x="24" y="296" width="280" height="88" rx="10" fill="#eef6ff" stroke="#0a84ff"/>
+<text x="40" y="318" font-size="13" font-weight="700" fill="#1d1d1f">새 버전이 있습니다</text>
+<text x="40" y="338" font-size="12" fill="#6e6e73">메시지가 코드 파일 로드 실패 문구</text>
+<text x="40" y="362" font-size="12" fill="#1d1d1f">[닫기] 앱 종료</text>
+<text x="40" y="378" font-size="12" fill="#0a84ff">[새로고침] location.reload()</text>
+
+<rect x="336" y="296" width="280" height="88" rx="10" fill="#fff8ec" stroke="#ff9f0a"/>
+<text x="352" y="318" font-size="13" font-weight="700" fill="#1d1d1f">메모 앱에서 문제가 발생했습니다</text>
+<text x="352" y="338" font-size="12" fill="#6e6e73">그 밖의 렌더링 오류</text>
+<text x="352" y="362" font-size="12" fill="#1d1d1f">[닫기] 앱 종료</text>
+<text x="352" y="378" font-size="12" fill="#c46f00">[다시 열기] 오류 상태 초기화 후 렌더링</text>
+</svg>

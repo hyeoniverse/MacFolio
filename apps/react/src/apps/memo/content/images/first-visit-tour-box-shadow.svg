@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>box-shadow 퍼짐 반경으로 만든 스포트라이트</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker><marker id="agr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="470" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">box-shadow 값 다섯 개의 뜻</text>
+<g font-size="13" font-family="'SF Mono', Menlo, Consolas, monospace">
+<rect x="24" y="50" width="592" height="40" rx="8" fill="#f2f2f7"/>
+<text x="38" y="75" fill="#1d1d1f">box-shadow:</text>
+<text x="146" y="75" fill="#6e6e73">0</text>
+<text x="176" y="75" fill="#6e6e73">0</text>
+<text x="206" y="75" fill="#6e6e73">0</text>
+<text x="236" y="75" fill="#0a84ff" font-weight="700">9999px</text>
+<text x="306" y="75" fill="#ff9f0a">rgba(0, 0, 0, 0.45)</text>
+</g>
+<g font-size="12" fill="#6e6e73">
+<line x1="150" y1="94" x2="150" y2="108" stroke="#6e6e73"/>
+<line x1="180" y1="94" x2="180" y2="124" stroke="#6e6e73"/>
+<line x1="210" y1="94" x2="210" y2="140" stroke="#6e6e73"/>
+<text x="38" y="120">가로 오프셋</text>
+<text x="38" y="136">세로 오프셋</text>
+<text x="38" y="152">흐림 반경</text>
+<line x1="108" y1="116" x2="146" y2="108" stroke="#d2d2d7"/>
+<line x1="108" y1="132" x2="176" y2="124" stroke="#d2d2d7"/>
+<line x1="100" y1="148" x2="206" y2="140" stroke="#d2d2d7"/>
+<line x1="260" y1="94" x2="260" y2="112" stroke="#0a84ff"/>
+<text x="246" y="128" fill="#0a84ff" font-weight="600">퍼짐 반경: 상자 둘레로 9999px까지 칠한다</text>
+<line x1="380" y1="94" x2="380" y2="140" stroke="#ff9f0a"/>
+<text x="366" y="156" fill="#ff9f0a" font-weight="600">그림자 색: 45% 불투명 검정</text>
+</g>
+<text x="24" y="196" font-size="14" font-weight="600" fill="#1d1d1f">화면에 그려진 결과</text>
+<rect x="24" y="210" width="592" height="200" rx="10" fill="#f2f2f7" stroke="#d2d2d7"/>
+<g font-size="12" fill="#1d1d1f">
+<rect x="56" y="232" width="70" height="56" rx="8" fill="#ffffff" stroke="#6e6e73"/><text x="68" y="265">아이콘</text>
+<rect x="150" y="232" width="70" height="56" rx="8" fill="#ffffff" stroke="#6e6e73"/><text x="162" y="265">아이콘</text>
+<rect x="56" y="320" width="164" height="70" rx="8" fill="#ffffff" stroke="#6e6e73"/><text x="96" y="359">다른 창</text>
+<rect x="470" y="232" width="110" height="90" rx="10" fill="#ffffff" stroke="#6e6e73"/><text x="488" y="282">이력서 폴더</text>
+</g>
+<mask id="hole"><rect x="0" y="0" width="640" height="470" fill="#fff"/><rect x="464" y="226" width="122" height="102" rx="14" fill="#000"/></mask><rect x="24" y="210" width="592" height="200" rx="10" fill="#1d1d1f" fill-opacity="0.45" mask="url(#hole)"/>
+<rect x="464" y="226" width="122" height="102" rx="14" fill="none" stroke="#0a84ff" stroke-width="3"/>
+<rect x="144" y="226" width="82" height="68" rx="14" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="5 4"/>
+<path d="M232 260 C 320 240, 380 240, 456 262" fill="none" stroke="#ffffff" stroke-width="2" marker-end="url(#ab)"/>
+<text x="250" y="232" font-size="12" fill="#ffffff" font-weight="600">top·left·width·height transition</text>
+<text x="300" y="356" font-size="12.5" fill="#ffffff" font-weight="600">상자 바깥: 그림자가 칠한 어두운 영역</text>
+<text x="300" y="376" font-size="12.5" fill="#ffffff">상자 안쪽: 칠하지 않아 아래 화면이 그대로 보인다</text>
+<text x="24" y="440" font-size="12.5" fill="#6e6e73">점선은 이전 단계의 상자 위치다. 상자의 위치·크기에 transition을 지정하면 구멍이 다음 대상으로 이동한다.</text>
+</svg>

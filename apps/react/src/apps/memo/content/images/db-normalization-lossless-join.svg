@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">지도(학번, 지도교수, 학과)를 나누는 두 방법과 다시 조인한 결과</text>
+  <line x1="320" y1="46" x2="320" y2="388" stroke="#d2d2d7" stroke-dasharray="4 4"/>
+
+  <text x="165" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#34a853">공통 애트리뷰트 = 지도교수(키)</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="20" y="72" width="130" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="30" y="89">학번</text><text x="85" y="89">지도교수</text>
+    <rect x="20" y="96" width="130" height="80" fill="#fff" stroke="#6e6e73"/>
+    <text x="30" y="113">100</text><text x="85" y="113">P1</text><text x="30" y="131">200</text><text x="85" y="131">P2</text>
+    <text x="30" y="149">300</text><text x="85" y="149">P3</text><text x="30" y="167">400</text><text x="85" y="167">P1</text>
+    <rect x="170" y="72" width="130" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="180" y="89">지도교수</text><text x="245" y="89">학과</text>
+    <rect x="170" y="96" width="130" height="62" fill="#fff" stroke="#6e6e73"/>
+    <text x="180" y="113">P1</text><text x="245" y="113">컴퓨터</text><text x="180" y="131">P2</text><text x="245" y="131">전기</text>
+    <text x="180" y="149">P3</text><text x="245" y="149">컴퓨터</text>
+  </g>
+  <text x="165" y="200" text-anchor="middle" font-size="12" fill="#6e6e73">지도교수로 자연 조인</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="45" y="212" width="240" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="60" y="229">학번</text><text x="130" y="229">지도교수</text><text x="210" y="229">학과</text>
+    <rect x="45" y="236" width="240" height="80" fill="#eafaf0" stroke="#34c759"/>
+    <text x="60" y="253">100</text><text x="130" y="253">P1</text><text x="210" y="253">컴퓨터</text>
+    <text x="60" y="271">200</text><text x="130" y="271">P2</text><text x="210" y="271">전기</text>
+    <text x="60" y="289">300</text><text x="130" y="289">P3</text><text x="210" y="289">컴퓨터</text>
+    <text x="60" y="307">400</text><text x="130" y="307">P1</text><text x="210" y="307">컴퓨터</text>
+  </g>
+  <text x="165" y="346" text-anchor="middle" font-size="13" font-weight="600" fill="#248a3d">4튜플: 원래 릴레이션과 같다</text>
+  <text x="165" y="366" text-anchor="middle" font-size="12" fill="#6e6e73">무손실 분해</text>
+
+  <text x="480" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#ff3b30">공통 애트리뷰트 = 학과(키 아님)</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="340" y="72" width="130" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="350" y="89">학번</text><text x="405" y="89">학과</text>
+    <rect x="340" y="96" width="130" height="80" fill="#fff" stroke="#6e6e73"/>
+    <text x="350" y="113">100</text><text x="405" y="113">컴퓨터</text><text x="350" y="131">200</text><text x="405" y="131">전기</text>
+    <text x="350" y="149">300</text><text x="405" y="149">컴퓨터</text><text x="350" y="167">400</text><text x="405" y="167">컴퓨터</text>
+    <rect x="490" y="72" width="130" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="500" y="89">지도교수</text><text x="565" y="89">학과</text>
+    <rect x="490" y="96" width="130" height="62" fill="#fff" stroke="#6e6e73"/>
+    <text x="500" y="113">P1</text><text x="565" y="113">컴퓨터</text><text x="500" y="131">P2</text><text x="565" y="131">전기</text>
+    <text x="500" y="149">P3</text><text x="565" y="149">컴퓨터</text>
+  </g>
+  <text x="480" y="200" text-anchor="middle" font-size="12" fill="#6e6e73">학과로 자연 조인</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="365" y="212" width="240" height="24" fill="#f2f2f7" stroke="#6e6e73"/><text x="380" y="229">학번</text><text x="450" y="229">지도교수</text><text x="530" y="229">학과</text>
+    <rect x="365" y="236" width="240" height="134" fill="#fff" stroke="#6e6e73"/>
+    <text x="380" y="253">100</text><text x="450" y="253">P1</text><text x="530" y="253">컴퓨터</text>
+    <text x="380" y="271" fill="#ff3b30">100</text><text x="450" y="271" fill="#ff3b30">P3</text><text x="530" y="271" fill="#ff3b30">컴퓨터</text>
+    <text x="380" y="289">200</text><text x="450" y="289">P2</text><text x="530" y="289">전기</text>
+    <text x="380" y="307" fill="#ff3b30">300</text><text x="450" y="307" fill="#ff3b30">P1</text><text x="530" y="307" fill="#ff3b30">컴퓨터</text>
+    <text x="380" y="325">300</text><text x="450" y="325">P3</text><text x="530" y="325">컴퓨터</text>
+    <text x="380" y="343">400</text><text x="450" y="343">P1</text><text x="530" y="343">컴퓨터</text>
+    <text x="380" y="361" fill="#ff3b30">400</text><text x="450" y="361" fill="#ff3b30">P3</text><text x="530" y="361" fill="#ff3b30">컴퓨터</text>
+  </g>
+  <text x="485" y="390" text-anchor="middle" font-size="13" font-weight="600" fill="#ff3b30">7튜플: 빨간 3개는 원래 없던 위조 튜플</text>
+</svg>

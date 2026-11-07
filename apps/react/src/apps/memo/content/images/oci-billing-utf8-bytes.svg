@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>문자열 "예산"은 length 2지만 UTF-8로 6바이트다. content-length는 바이트 수를 서명해야 한다</title>
+<rect width="640" height="260" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">문자 수와 바이트 수: "예산"</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">HTTP 본문은 UTF-8 바이트로 전송되고, content-length 헤더는 그 바이트 수다</text>
+<rect x="40" y="76" width="240" height="44" rx="8" fill="#f2f2f7"/><text x="160" y="104" font-size="16" text-anchor="middle" fill="#1d1d1f">예</text>
+<rect x="290" y="76" width="240" height="44" rx="8" fill="#f2f2f7"/><text x="410" y="104" font-size="16" text-anchor="middle" fill="#1d1d1f">산</text>
+<text x="548" y="104" font-size="12.5" fill="#6e6e73">length = 2</text>
+<g font-size="12.5" font-family="ui-monospace, Menlo, monospace" text-anchor="middle" fill="#1d1d1f">
+<rect x="40" y="132" width="76" height="34" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="78" y="154">EC</text>
+<rect x="122" y="132" width="76" height="34" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="160" y="154">98</text>
+<rect x="204" y="132" width="76" height="34" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="242" y="154">88</text>
+<rect x="290" y="132" width="76" height="34" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="328" y="154">EC</text>
+<rect x="372" y="132" width="76" height="34" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="410" y="154">82</text>
+<rect x="454" y="132" width="76" height="34" rx="6" fill="#eaf3ff" stroke="#0a84ff"/><text x="492" y="154">B0</text>
+</g>
+<text x="548" y="154" font-size="12.5" fill="#0a84ff" font-weight="600">6바이트</text>
+<rect x="24" y="186" width="292" height="56" rx="8" fill="#ffecea" stroke="#ff3b30"/>
+<text x="38" y="208" font-size="12.5" fill="#1d1d1f">body.length로 서명: content-length: 2</text>
+<text x="38" y="228" font-size="12" fill="#6e6e73">서버가 받은 본문(6바이트)과 달라 서명 불일치</text>
+<rect x="324" y="186" width="292" height="56" rx="8" fill="#eafaef" stroke="#34c759"/>
+<text x="338" y="208" font-size="12.5" fill="#1d1d1f">Buffer.byteLength로 서명: content-length: 6</text>
+<text x="338" y="228" font-size="12" fill="#6e6e73">실제 전송되는 바이트 수와 일치</text>
+</svg>

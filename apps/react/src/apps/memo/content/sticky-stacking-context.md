@@ -1,13 +1,51 @@
 ---
 title: position sticky가 만든 쌓임 맥락에 갇힌 z-index
 date: 2026-09-29
-category: 개발 기록/MacFolio/화면·스타일
+category: 개발 기록/MacFolio/트러블슈팅
 summary: 메모 도구 막대에 position sticky를 적용하자 버튼이 표시되는데도 클릭되지 않았다. sticky가 생성한 쌓임 맥락 때문에 z-index 4가 창 끌기 영역(3) 아래에 놓였고, 도구 막대 대신 그 아래 영역만 스크롤하도록 바꿔 해결했다.
 ---
 
-메모 앱을 macOS 메모처럼 도구 막대 중심으로 바꾸면서, 글을 스크롤해도 도구 막대가 위에 고정되도록 [`position: sticky`](https://developer.mozilla.org/en-US/docs/Web/CSS/position)를 적용했다. 그 결과 버튼은 화면에 정상적으로 표시되지만 클릭해도 반응하지 않았다.
+| 증상                                                          | 원인                                                                        | 해결                                        | 영향 범위                                             |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------- |
+| 도구 막대 버튼이 표시되지만 클릭되지 않고, 끌면 창이 이동한다 | sticky 도구 막대가 쌓임 맥락을 생성해 버튼(z-index 4)이 끌기 영역(3) 아래로 | 도구 막대는 고정하고 아래 영역만 스크롤한다 | 메모 앱 도구 막대의 사이드바 여닫기, 목록/갤러리 전환 |
 
-## 배경과 증상
+## 배경
+
+### position과 sticky
+
+CSS의 [`position`](https://developer.mozilla.org/en-US/docs/Web/CSS/position) 속성은 요소를 어디에 배치할지 정한다.
+
+| 값         | 배치 방식                                                                         | 예                        |
+| ---------- | --------------------------------------------------------------------------------- | ------------------------- |
+| `static`   | 기본값. 문서 순서대로 위에서 아래로 놓인다(보통 흐름)                             | 본문 문단                 |
+| `relative` | 보통 흐름 자리에 놓되, `top`·`left`만큼 옮겨 그릴 수 있다                         | 버튼에 겹침 순서만 지정   |
+| `absolute` | 흐름에서 빠져, 가장 가까운 위치 지정 조상을 기준으로 좌표를 정한다                | 창 위를 덮는 끌기 영역    |
+| `sticky`   | 보통 흐름에 있다가, 스크롤로 지정한 위치(`top: 0` 등)에 닿으면 그 자리에 고정된다 | 스크롤해도 남는 표 머리글 |
+
+![스크롤 위치 0, 60, 180픽셀에서 도구 막대는 같은 자리에 남고 글 목록만 위로 지나가는 세 장면](./images/sticky-stacking-context-sticky-scroll.svg 'position: sticky; top: 0을 지정한 도구 막대. 글 목록이 스크롤되어도 도구 막대는 스크롤 상자 위쪽에 남는다')
+
+메모 앱을 macOS 메모처럼 도구 막대 중심으로 바꾸면서, 글을 스크롤해도 도구 막대가 위에 남도록 `position: sticky`를 적용했다. 그 결과 버튼은 화면에 표시되지만 클릭해도 반응하지 않았다.
+
+### z-index와 쌓임 맥락
+
+요소가 같은 자리에서 겹치면 나중에 그려진 요소가 위에 보이고, 클릭도 위에 있는 요소가 받는다. [`z-index`](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index)는 위치 지정 요소(`position`이 `static`이 아닌 요소)의 겹침 순서를 정수로 지정한다. 값이 클수록 위에 그려진다.
+
+단, z-index는 문서 전체에서 한 번에 비교되지 않는다. 브라우저는 요소들을 **쌓임 맥락**(stacking context) 단위로 묶어, 같은 맥락 안의 형제끼리만 z-index를 비교한다. 쌓임 맥락을 만드는 요소는 그 안의 자식을 모두 정렬한 뒤, 바깥 맥락에서는 자식 전체가 하나의 판처럼 취급된다. `position: sticky`는 z-index 값과 관계없이 쌓임 맥락을 만드는 속성 중 하나다.
+
+MDN 문서의 예제가 이 규칙을 보여 준다.
+
+![MDN 쌓임 맥락 예제를 렌더링한 화면. z-index 6인 Section Element #4가 z-index 5인 Article element #1 아래에 깔리고, z-index 1인 Section Element #5는 z-index 2인 Article Element #2 위에 그려진다](./images/sticky-stacking-context-mdn-example.jpg 'MDN Stacking context 문서의 예제 코드를 그대로 렌더링했다. Section #4~#6은 z-index 4인 Article #3의 쌓임 맥락 안에 있다')
+
+| 요소               | 자기 z-index | 속한 맥락의 z-index | 실제 비교 순서 |
+| ------------------ | ------------ | ------------------- | -------------- |
+| Article #2         | 2            | 루트                | 2              |
+| Section #5 (#3 안) | 1            | 4                   | 4 → 1          |
+| Section #4 (#3 안) | 6            | 4                   | 4 → 6          |
+| Article #1         | 5            | 루트                | 5              |
+
+Section #4의 z-index 6은 Article #3 안에서만 유효하다. 루트에서는 Article #3(4)과 Article #1(5)이 비교되므로, 6이라는 값에도 Section #4는 Article #1 아래에 그려진다. 이 글의 버튼도 같은 이유로 클릭되지 않았다.
+
+## 증상
 
 2026년 9월 말([#33](https://github.com/hyeoniverse/MacFolio/pull/33)), 메모 화면을 macOS 메모처럼 다시 구성했다. 그전에는 사이드바 여닫기 버튼과 목록/갤러리 전환 버튼을 창 위에 절대 위치(`position: absolute`)로 배치했는데, 이번에는 이 버튼들을 신호등 버튼과 같은 높이의 도구 막대에 나란히 배치했다. 글을 길게 스크롤해도 도구 막대는 위에 고정되어야 했고, 처음 적용한 방법은 도구 막대에 `position: sticky; top: 0`을 지정하는 것이었다.
 
@@ -17,9 +55,13 @@ summary: 메모 도구 막대에 position sticky를 적용하자 버튼이 표�
 - 포인터를 올려도 hover 색이 바뀌지 않고, 클릭해도 반응이 없다.
 - 대신 그 위치를 끌면 창이 이동한다.
 
-마지막 증상이 단서였다. 버튼 위치에서 창이 끌린다면, 포인터 이벤트가 버튼이 아니라 창 끌기 영역(`.macos-titlebar`)으로 전달된다는 뜻이다.
+![메모 앱의 도구 막대](./images/memo-toolbar.jpg '메모의 도구 막대. 신호등 버튼이 있는 윗줄 전체가 창 끌기 영역과 겹친다')
 
-## 창 위를 덮는 끌기 영역
+## 원인 추적
+
+마지막 증상이 단서였다. 버튼 위치에서 창이 끌린다면, ==포인터 이벤트가 버튼이 아니라 창 끌기 영역(`.macos-titlebar`)으로 전달된다==는 뜻이다.
+
+### 창 위를 덮는 끌기 영역
 
 제목 표시줄이 없는 창(Safari, 메모처럼 도구 막대와 제목 표시줄이 합쳐진 형태)은 투명한 끌기 영역을 내용 위에 배치한다. 이 영역에 신호등 버튼이 들어 있고, 사용자는 이 영역을 끌어 창을 이동한다.
 
@@ -43,11 +85,11 @@ summary: 메모 도구 막대에 position sticky를 적용하자 버튼이 표�
 }
 ```
 
-![메모 앱의 도구 막대](./images/memo-toolbar.jpg '메모의 도구 막대. 신호등 버튼이 있는 윗줄 전체가 창 끌기 영역과 겹친다')
+값으로는 버튼(4)이 끌기 영역(3)보다 위인데도, sticky를 적용한 뒤에는 이벤트가 끌기 영역으로 전달되었다.
 
-## z-index 4가 3보다 아래에 있었다
+## 원인
 
-sticky를 적용하자 도구 막대가 새 **[쌓임 맥락(stacking context)](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)**[^1]을 생성했다. 쌓임 맥락 안의 z-index는 그 맥락 안에서만 순서를 정한다. 버튼의 4는 도구 막대 안에서의 순서일 뿐이고, 창 기준으로는 도구 막대 전체가 z-index가 `auto`인 하나의 단위로 비교되어 끌기 영역(3) 아래에 놓였다.
+sticky를 적용하자 도구 막대가 새 **[쌓임 맥락](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)**[^1]을 생성했다. ==쌓임 맥락 안의 z-index는 그 맥락 안에서만 순서를 정한다.== 버튼의 4는 도구 막대 안에서의 순서일 뿐이고, 창 기준으로는 도구 막대 전체가 z-index가 `auto`인 하나의 단위로 비교되어 끌기 영역(3) 아래에 놓였다.
 
 ```text
 창
@@ -56,11 +98,18 @@ sticky를 적용하자 도구 막대가 새 **[쌓임 맥락(stacking context)](
    └─ 버튼             z-index 4, 도구 막대 안에서만 의미 있음
 ```
 
-버튼의 z-index 값을 키워도 결과는 같다. 순서 비교는 버튼과 끌기 영역이 아니라 도구 막대와 끌기 영역 사이에서 일어난다.
+> [!IMPORTANT] z-index는 전역 순위가 아니다
+> 버튼의 z-index 값을 키워도 결과는 같다. 순서 비교는 버튼과 끌기 영역이 아니라 도구 막대와 끌기 영역 사이에서 일어난다.
 
 ![쌓임 맥락 안에 갇힌 버튼](./images/stacking-context.svg '버튼의 z-index 4는 도구 막대 안에서만 통한다')
 
-## 검토한 방법
+브라우저는 클릭 좌표에서 맨 위에 그려진 요소를 찾아 이벤트를 전달한다. 이 과정을 히트 테스트(hit testing)라고 하며, [`document.elementFromPoint(x, y)`](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint)로 같은 결과를 확인할 수 있다. 수정 전에는 버튼 좌표의 맨 위 요소가 끌기 영역이었다.
+
+![수정 전에는 끌기 영역이 쌓임 맥락에 갇힌 버튼 위에 있어 elementFromPoint가 .macos-titlebar를 반환하고, 수정 후에는 버튼이 끌기 영역 위에 있어 .memo-tool을 반환하는 비교 도식](./images/sticky-stacking-context-hit-test.svg '위쪽 판일수록 나중에 그려진다. 클릭 좌표에서 첫 번째로 만나는 판이 이벤트를 받는다')
+
+## 해결
+
+### 검토한 방법
 
 | 방법                                            | 결과                                                                             |
 | ----------------------------------------------- | -------------------------------------------------------------------------------- |
@@ -69,11 +118,11 @@ sticky를 적용하자 도구 막대가 새 **[쌓임 맥락(stacking context)](
 | 끌기 영역에 `pointer-events: none`              | 버튼은 동작하지만 창을 끌 수 없다                                                |
 | 도구 막대는 고정하고, 그 아래 영역만 스크롤한다 | 쌓임 맥락이 생기지 않는다. 버튼이 동작하고 빈 곳을 끌어 창도 이동한다            |
 
-앞의 세 방법은 모두 "버튼 클릭"과 "창 끌기" 중 하나를 포기한다. 마지막 방법만 둘 다 유지한다. macOS 메모도 도구 막대는 고정되어 있고 아래 목록만 스크롤하므로 동작도 일치한다.
+앞의 세 방법은 모두 "버튼 클릭"과 "창 끌기" 중 하나를 포기해야 한다. 마지막 방법만 둘 다 유지한다. macOS 메모도 도구 막대는 고정되어 있고 아래 목록만 스크롤하므로 동작도 일치한다.
 
-## 스크롤 컨테이너를 도구 막대 아래로 이동
+### 스크롤 컨테이너를 도구 막대 아래로 이동
 
-도구 막대에 sticky를 적용하는 대신, 목록·본문·갤러리 화면을 세로 flex 컨테이너로 바꾸고 도구 막대 아래의 `.memo-scroll`만 스크롤하도록 했다.
+도구 막대에 sticky를 적용하는 대신, 목록·본문·갤러리 화면을 세로 flex 컨테이너로 바꾸고 도구 막대 아래의 `.memo-scroll`만 스크롤하도록 했다([#33](https://github.com/hyeoniverse/MacFolio/pull/33)).
 
 ```css
 .memo-list,
@@ -91,16 +140,23 @@ sticky를 적용하자 도구 막대가 새 **[쌓임 맥락(stacking context)](
 }
 ```
 
-도구 막대가 쌓임 맥락을 생성하지 않으므로 버튼의 z-index 4가 다시 창 기준으로 비교된다. 도구 막대 안의 검색 칸도 스크롤 위치와 무관하게 같은 좌표에 유지된다.
+==도구 막대가 쌓임 맥락을 생성하지 않으므로 버튼의 z-index 4가 다시 창 기준으로 비교된다.== 도구 막대 안의 검색 칸도 스크롤 위치와 무관하게 같은 좌표에 유지된다.
 
 ![sticky 도구 막대 구조와, 도구 막대를 두고 아래만 스크롤하는 구조 비교](./images/sticky-stacking-context-scroll-area.svg '스크롤 상자를 도구 막대 아래로 옮겼다')
 
-여기서 `min-height: 0`은 필수다. flex 자식의 기본 [`min-height`](https://developer.mozilla.org/en-US/docs/Web/CSS/min-height)는 `auto`라서, 내용이 길면 `.memo-scroll`이 내용 높이만큼 늘어나 스크롤 막대가 생기지 않고 창 밖으로 넘친다.
+> [!WARNING] `min-height: 0`은 필수
+> flex 자식의 기본 [`min-height`](https://developer.mozilla.org/en-US/docs/Web/CSS/min-height)는 `auto`라서, 내용이 길면 `.memo-scroll`이 내용 높이만큼 늘어나 스크롤 막대가 생기지 않고 창 밖으로 넘친다.
 
 | `.memo-scroll`의 `min-height` | 내용이 창보다 긴 경우                          |
 | ----------------------------- | ---------------------------------------------- |
 | `auto` (기본값)               | 내용 높이만큼 늘어나 창 밖으로 넘친다          |
 | `0`                           | 남은 높이로 제한되고 세로 스크롤 막대가 생긴다 |
+
+## 확인
+
+- Playwright의 `click()`은 클릭 전에 [actionability 검사](https://playwright.dev/docs/actionability)를 수행해, 해당 좌표에서 이벤트를 수신하는 요소가 대상 요소인지 확인한다. 다른 요소가 덮고 있으면 제한 시간까지 재시도한 뒤 실패한다. 따라서 `e2e/memo.spec.ts`에서 도구 막대 버튼을 클릭하는 시험(`사이드바를 여닫을 수 있다`, 목록/갤러리 전환)이 통과하면, 버튼이 다른 요소에 덮이지 않았다는 사실도 함께 확인된다.
+
+## 재발 방지
 
 이 결정은 `apps/react/src/apps/memo/styles/toolbar.css`에 주석으로 기록했다. 이후 도구 막대에 다시 sticky를 적용하는 변경을 막기 위한 주석이다.
 
@@ -108,12 +164,6 @@ sticky를 적용하자 도구 막대가 새 **[쌓임 맥락(stacking context)](
 /* 목록·본문·갤러리: 위에 도구 막대, 그 아래만 스크롤한다.
    (도구 막대를 sticky로 붙이면 새 쌓임 맥락이 생겨 버튼이 창 끌기 영역 아래로 깔린다) */
 ```
-
-## 확인
-
-- Playwright의 `click()`은 클릭 전에 [actionability 검사](https://playwright.dev/docs/actionability)를 수행해, 해당 좌표에서 이벤트를 수신하는 요소가 대상 요소인지 확인한다. 다른 요소가 덮고 있으면 제한 시간까지 재시도한 뒤 실패한다. 따라서 `e2e/memo.spec.ts`에서 도구 막대 버튼을 클릭하는 시험(`사이드바를 여닫을 수 있다`, 목록/갤러리 전환)이 통과하면, 버튼이 다른 요소에 덮이지 않았다는 사실도 함께 확인된다.
-
-## 쌓임 맥락을 생성하는 속성
 
 z-index가 예상과 다르게 동작하면, 조상 요소 중 쌓임 맥락을 생성하는 요소가 있는지부터 확인한다.
 
@@ -132,21 +182,37 @@ z-index가 예상과 다르게 동작하면, 조상 요소 중 쌓임 맥락을 
 
 브라우저 개발자 도구의 3D 보기나 레이어 보기로 쌓인 순서를 확인할 수 있다.
 
-## 배운 것
-
 - z-index는 "전역 순위"가 아니다. 같은 쌓임 맥락 안에서만 비교된다. 값을 키워도 순서가 바뀌지 않으면 값이 아니라 조상 요소를 확인한다.
 - "표시되지만 클릭되지 않는다"는 증상은 대부분 다른 요소가 위를 덮고 있다는 뜻이다. [`document.elementFromPoint(x, y)`](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint)로 그 좌표에서 이벤트를 수신하는 요소를 먼저 확인하면 원인을 빨리 찾는다.
-- 이런 함정은 수정한 위치에 이유를 주석으로 남긴다. 코드만 보면 sticky가 더 간단한 방법으로 보이기 때문이다.
+- 이런 사례는 수정한 위치에 이유를 주석으로 남긴다. 코드만 보면 sticky가 더 간단한 방법으로 보이기 때문이다.
 
-이후 화면 전체의 z-index를 이름으로 정리한 작업([흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers))에도 같은 원칙을 적용했다. 이름을 붙여도 쌓임 맥락 안의 값은 맥락 밖의 값과 비교되지 않는다.
+이후 화면 전체의 z-index를 이름으로 정리한 작업([흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231))에도 같은 원칙을 적용했다. 이름을 붙여도 쌓임 맥락 안의 값은 맥락 밖의 값과 비교되지 않는다.
 
 ## 관련 글
 
-- 화면 전체의 겹침 순서를 이름으로 정리한 작업: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers)
+- 화면 전체의 겹침 순서를 이름으로 정리한 작업: [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231)
 - 같은 날의 작업 기록: [9월 29일 - Safari 포트폴리오, 그리고 첫 API와 관리자 로그인](/memo/day-0929)
-- 메모 CSS를 분할하면서 이 주석을 옮긴 작업: [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
+- 메모 CSS를 분할하면서 이 주석을 옮긴 작업: [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/css-cleanup-tools#memocss-분할-선언-순서-유지)
 - PR: [#33](https://github.com/hyeoniverse/MacFolio/pull/33)
 
 [^1]: 쌓임 맥락: 자식 요소의 z-index를 서로 비교하는 범위. 맥락 안의 요소는 맥락 밖의 요소와 직접 비교되지 않고, 맥락을 생성한 요소 하나의 순서를 따른다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [position](https://developer.mozilla.org/en-US/docs/Web/CSS/position), [z-index](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index)
+- MDN, [Stacking context](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context)
+- MDN, [min-height](https://developer.mozilla.org/en-US/docs/Web/CSS/min-height), [Document.elementFromPoint()](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementFromPoint)
+- W3C, [CSS Positioned Layout Module Level 3](https://www.w3.org/TR/css-position-3/)
+- Playwright, [Auto-waiting (actionability)](https://playwright.dev/docs/actionability)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 쌓임 맥락 예제 화면: MDN Web Docs, [Stacking context: Nested stacking contexts](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_positioned_layout/Stacking_context#nested_stacking_contexts) 예제의 HTML·CSS([원본 문서 소스](https://github.com/mdn/content/blob/main/files/en-us/web/css/guides/positioned_layout/stacking_context/index.md))를 Chromium에서 렌더링해 캡처. MDN 코드 예제는 CC0, 출처 표기
+
+</details>
 
 #MacFolio #메모앱 #CSS #트러블슈팅

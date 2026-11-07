@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>휴대폰과 좁은 데스크톱 창의 상단 구조</title>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">같은 음악 화면, 위쪽을 채우는 주체가 다르다</text>
+  <!-- phone -->
+  <text x="40" y="66" font-size="13" font-weight="600" fill="#1d1d1f">휴대폰</text>
+  <rect x="40" y="76" width="160" height="280" rx="22" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="52" y="88" width="136" height="20" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="3 3"/>
+  <text x="60" y="102" font-size="12" fill="#6e6e73">상태 표시줄</text>
+  <rect x="52" y="112" width="136" height="26" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+  <text x="60" y="130" font-size="12" fill="#0a84ff">‹ 뒤로 (셸)</text>
+  <text x="196" y="146" font-size="12" fill="#6e6e73" text-anchor="end">--phone-top</text>
+  <text x="60" y="176" font-size="16" font-weight="700" fill="#1d1d1f">보관함</text>
+  <rect x="60" y="188" width="120" height="14" rx="4" fill="#ffffff"/>
+  <rect x="60" y="208" width="120" height="14" rx="4" fill="#ffffff"/>
+  <rect x="60" y="228" width="120" height="14" rx="4" fill="#ffffff"/>
+  <text x="120" y="290" font-size="12" fill="#6e6e73" text-anchor="middle">셸이 위쪽 공간과</text>
+  <text x="120" y="306" font-size="12" fill="#6e6e73" text-anchor="middle">뒤로 가기를 맡는다</text>
+  <!-- before -->
+  <text x="236" y="66" font-size="13" font-weight="600" fill="#ff3b30">좁은 데스크톱 창 (전)</text>
+  <rect x="236" y="76" width="176" height="280" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <circle cx="254" cy="94" r="6" fill="#ff5f57"/><circle cx="274" cy="94" r="6" fill="#febc2e"/><circle cx="294" cy="94" r="6" fill="#28c840"/>
+  <rect x="244" y="86" width="110" height="20" rx="6" fill="none" stroke="#ff3b30" stroke-dasharray="4 3"/>
+  <text x="252" y="104" font-size="16" font-weight="700" fill="#1d1d1f" opacity="0.45">보관함</text>
+  <text x="324" y="126" font-size="12" fill="#ff3b30">↖ 겹침</text>
+  <text x="252" y="150" font-size="12" fill="#6e6e73">위 여백 16px</text>
+  <rect x="252" y="160" width="140" height="14" rx="4" fill="#ffffff"/>
+  <rect x="252" y="180" width="140" height="14" rx="4" fill="#ffffff"/>
+  <text x="324" y="290" font-size="12" fill="#ff3b30" text-anchor="middle">곡 목록에서</text>
+  <text x="324" y="306" font-size="12" fill="#ff3b30" text-anchor="middle">돌아갈 버튼 없음</text>
+  <!-- after -->
+  <text x="440" y="66" font-size="13" font-weight="600" fill="#34c759">좁은 데스크톱 창 (후)</text>
+  <rect x="440" y="76" width="176" height="280" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="440" y="76" width="176" height="44" rx="10" fill="#e3f0ff"/>
+  <circle cx="458" cy="94" r="6" fill="#ff5f57"/><circle cx="478" cy="94" r="6" fill="#febc2e"/><circle cx="498" cy="94" r="6" fill="#28c840"/>
+  <text x="608" y="102" font-size="12" fill="#0a84ff" text-anchor="end">44px</text>
+  <rect x="452" y="128" width="64" height="22" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+  <text x="460" y="144" font-size="12" fill="#0a84ff">‹ 보관함</text>
+  <text x="456" y="176" font-size="16" font-weight="700" fill="#1d1d1f">곡 목록</text>
+  <rect x="456" y="188" width="140" height="14" rx="4" fill="#ffffff"/>
+  <rect x="456" y="208" width="140" height="14" rx="4" fill="#ffffff"/>
+  <text x="528" y="290" font-size="12" fill="#34c759" text-anchor="middle">앱이 위쪽 44px을 비우고</text>
+  <text x="528" y="306" font-size="12" fill="#34c759" text-anchor="middle">돌아가기 버튼을 직접 둔다</text>
+</svg>

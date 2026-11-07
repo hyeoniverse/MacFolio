@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>API가 발급하는 서명 URL의 구성: R2 호스트, 버킷과 키 경로, 알고리즘, 자격 증명 범위, 서명 시각, 유효 시간 300초, 서명에 포함한 헤더 content-length와 host, 비밀 키로 계산한 서명</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">서명 URL(presigned URL)의 구성</text>
+
+<rect x="20" y="44" width="600" height="58" rx="8" fill="#f2f2f7"/>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace">
+<text x="32" y="66" fill="#1d1d1f">PUT https://<tspan fill="#0a84ff">&lt;계정&gt;.r2.cloudflarestorage.com</tspan><tspan fill="#34c759">/macfolio-files/resume/&lt;무작위&gt;.pdf</tspan></text>
+<text x="32" y="88" fill="#6e6e73">?X-Amz-Algorithm=…&amp;X-Amz-Date=…&amp;X-Amz-Expires=300&amp;…&amp;X-Amz-Signature=…</text>
+</g>
+
+<g font-size="12">
+<text x="20" y="130" font-weight="700" fill="#6e6e73">매개변수</text>
+<text x="230" y="130" font-weight="700" fill="#6e6e73">값</text>
+<text x="430" y="130" font-weight="700" fill="#6e6e73">뜻</text>
+<line x1="20" y1="140" x2="620" y2="140" stroke="#e5e5ea"/>
+
+<text x="20" y="162" fill="#0a84ff">호스트</text><text x="230" y="162" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">…r2.cloudflarestorage.com</text><text x="430" y="162" fill="#1d1d1f">R2의 S3 호환 API 주소</text>
+<text x="20" y="186" fill="#34c759">경로</text><text x="230" y="186" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">/버킷/키</text><text x="430" y="186" fill="#1d1d1f">키는 서버가 생성</text>
+<text x="20" y="210" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">X-Amz-Algorithm</text><text x="230" y="210" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">AWS4-HMAC-SHA256</text><text x="430" y="210" fill="#1d1d1f">서명 버전 4</text>
+<text x="20" y="234" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">X-Amz-Credential</text><text x="230" y="234" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">키ID/날짜/auto/s3/…</text><text x="430" y="234" fill="#1d1d1f">어느 키로, 어느 날 서명했나</text>
+<text x="20" y="258" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">X-Amz-Date</text><text x="230" y="258" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">20261018T…Z</text><text x="430" y="258" fill="#1d1d1f">서명 시각 (UTC)</text>
+<text x="20" y="282" font-family="SFMono-Regular, Menlo, monospace" fill="#ff9f0a" font-weight="700">X-Amz-Expires</text><text x="230" y="282" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">300</text><text x="430" y="282" fill="#1d1d1f">서명 시각부터 5분간 유효</text>
+<text x="20" y="306" font-family="SFMono-Regular, Menlo, monospace" fill="#ff9f0a" font-weight="700">X-Amz-SignedHeaders</text><text x="230" y="306" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">content-length;host</text><text x="430" y="306" fill="#1d1d1f">크기가 다르면 서명 불일치</text>
+<text x="20" y="330" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">X-Amz-Signature</text><text x="230" y="330" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">16진수 64자</text><text x="430" y="330" fill="#1d1d1f">비밀 키로 계산한 HMAC</text>
+<line x1="20" y1="344" x2="620" y2="344" stroke="#e5e5ea"/>
+</g>
+<text x="20" y="368" font-size="12" fill="#6e6e73">비밀 키는 서버에만 있고 URL에는 서명 결과만 담긴다. 경로·크기·만료를 바꾸면 R2가 다시 계산한 서명과 달라져</text>
+<text x="20" y="386" font-size="12" fill="#6e6e73">요청을 거절한다. 브라우저는 이 URL 하나로 정해진 키에 정해진 크기의 파일만 올릴 수 있다</text>
+</svg>

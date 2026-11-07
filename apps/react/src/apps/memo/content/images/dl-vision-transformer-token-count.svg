@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">토큰 단위에 따른 주목 행렬의 크기 (224×224 영상)</text>
+<text x="24" y="60" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">화소 하나 = 토큰 하나</text>
+<rect x="40" y="74" width="90" height="90" rx="0" fill="#f2f2f7" stroke="#ff3b30"/>
+<path d="M43.2 74 L43.2 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 77.2 L130 77.2" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M46.4 74 L46.4 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 80.4 L130 80.4" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M49.6 74 L49.6 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 83.6 L130 83.6" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M52.9 74 L52.9 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 86.9 L130 86.9" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M56.1 74 L56.1 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 90.1 L130 90.1" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M59.3 74 L59.3 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 93.3 L130 93.3" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M62.5 74 L62.5 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 96.5 L130 96.5" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M65.7 74 L65.7 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 99.7 L130 99.7" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M68.9 74 L68.9 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 102.9 L130 102.9" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M72.1 74 L72.1 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 106.1 L130 106.1" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M75.4 74 L75.4 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 109.4 L130 109.4" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M78.6 74 L78.6 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 112.6 L130 112.6" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M81.8 74 L81.8 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 115.8 L130 115.8" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M85.0 74 L85.0 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 119.0 L130 119.0" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M88.2 74 L88.2 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 122.2 L130 122.2" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M91.4 74 L91.4 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 125.4 L130 125.4" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M94.6 74 L94.6 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 128.6 L130 128.6" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M97.9 74 L97.9 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 131.9 L130 131.9" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M101.1 74 L101.1 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 135.1 L130 135.1" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M104.3 74 L104.3 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 138.3 L130 138.3" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M107.5 74 L107.5 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 141.5 L130 141.5" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M110.7 74 L110.7 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 144.7 L130 144.7" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M113.9 74 L113.9 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 147.9 L130 147.9" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M117.1 74 L117.1 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 151.1 L130 151.1" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M120.4 74 L120.4 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 154.4 L130 154.4" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M123.6 74 L123.6 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 157.6 L130 157.6" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M126.8 74 L126.8 164" stroke="#ff3b30" stroke-width="0.6"/><path d="M40 160.8 L130 160.8" stroke="#ff3b30" stroke-width="0.6"/>
+<path d="M150 119 L200 119" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M193.7 122.0 L200 119 L193.7 116.0" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<rect x="210" y="98" width="150" height="42" rx="6" fill="#fff" stroke="#ff3b30"/>
+<text x="285" y="124" text-anchor="middle" font-size="13" fill="#1d1d1f">50,176개 토큰</text>
+<path d="M375 119 L425 119" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M418.7 122.0 L425 119 L418.7 116.0" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<rect x="435" y="80" width="180" height="78" rx="6" fill="#ff3b30" stroke="#ff3b30" fill-opacity="0.1"/>
+<text x="525" y="112" text-anchor="middle" font-size="13" fill="#1d1d1f">주목 행렬 50,176 × 50,176</text>
+<text x="525" y="134" text-anchor="middle" font-size="13" fill="#ff3b30" font-weight="600">≈ 25억 2천만 개 원소</text>
+<text x="24" y="190" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">16×16 패치 하나 = 토큰 하나</text>
+<rect x="40" y="204" width="90" height="90" rx="0" fill="#f2f2f7" stroke="#0a84ff"/>
+<path d="M46.4 204 L46.4 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 210.4 L130 210.4" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M52.9 204 L52.9 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 216.9 L130 216.9" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M59.3 204 L59.3 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 223.3 L130 223.3" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M65.7 204 L65.7 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 229.7 L130 229.7" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M72.1 204 L72.1 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 236.1 L130 236.1" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M78.6 204 L78.6 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 242.6 L130 242.6" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M85.0 204 L85.0 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 249.0 L130 249.0" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M91.4 204 L91.4 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 255.4 L130 255.4" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M97.9 204 L97.9 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 261.9 L130 261.9" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M104.3 204 L104.3 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 268.3 L130 268.3" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M110.7 204 L110.7 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 274.7 L130 274.7" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M117.1 204 L117.1 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 281.1 L130 281.1" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M123.6 204 L123.6 294" stroke="#0a84ff" stroke-width="0.6"/><path d="M40 287.6 L130 287.6" stroke="#0a84ff" stroke-width="0.6"/>
+<path d="M150 249 L200 249" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M193.7 252.0 L200 249 L193.7 246.0" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<rect x="210" y="228" width="150" height="42" rx="6" fill="#fff" stroke="#0a84ff"/>
+<text x="285" y="254" text-anchor="middle" font-size="13" fill="#1d1d1f">196개 토큰 (14×14)</text>
+<path d="M375 249 L425 249" stroke="#1d1d1f" stroke-width="1.5" fill="none"/><path d="M418.7 252.0 L425 249 L418.7 246.0" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<rect x="435" y="210" width="180" height="78" rx="6" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.1"/>
+<text x="525" y="242" text-anchor="middle" font-size="13" fill="#1d1d1f">주목 행렬 196 × 196</text>
+<text x="525" y="264" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">= 38,416개 원소</text>
+<text x="320" y="316" text-anchor="middle" font-size="12" fill="#6e6e73">패치를 토큰으로 쓰면 주목 행렬 원소 수가 256² = 65,536분의 1로 줄어든다</text>
+</svg>

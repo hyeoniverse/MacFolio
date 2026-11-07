@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>ProjectAppName 브랜드 타입</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">앱 이름 값이 AppName 타입이 되는 두 경로</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">AppName = BuiltinAppName | ProjectAppName</text>
+<text x="20" y="82" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">컴파일 시점에 검사 (내장 앱)</text>
+<rect x="20" y="92" width="270" height="34" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="30" y="114" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">openApp('safari')</text>
+<text x="280" y="114" font-size="12" fill="#34c759" text-anchor="end" font-weight="700">통과</text>
+<rect x="20" y="132" width="270" height="34" rx="4" fill="#fff0ef" stroke="none" stroke-width="1.2"/>
+<text x="30" y="154" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">openApp('safary')</text>
+<text x="280" y="154" font-size="12" fill="#ff3b30" text-anchor="end" font-weight="700">컴파일 오류</text>
+<text x="20" y="188" font-size="12" fill="#6e6e73" text-anchor="start">BuiltinAppName은 'safari' | 'memo' | …</text>
+<text x="20" y="205" font-size="12" fill="#6e6e73" text-anchor="start">문자열 리터럴의 유니언 타입</text>
+<text x="310" y="82" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">실행 시점에 검사 (프로젝트 앱)</text>
+<rect x="310" y="92" width="310" height="46" rx="4" fill="#ecf9ef" stroke="none" stroke-width="1.2"/>
+<text x="320" y="111" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">projectAppName('newpick')</text>
+<text x="320" y="129" font-size="12" fill="#34c759" text-anchor="start" font-weight="700">→ ProjectAppName</text>
+<rect x="310" y="144" width="310" height="46" rx="4" fill="#fff0ef" stroke="none" stroke-width="1.2"/>
+<text x="320" y="163" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">projectAppName('macfolio')</text>
+<text x="320" y="181" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">→ null (앱이 아님)</text>
+<rect x="310" y="196" width="310" height="46" rx="4" fill="#fff0ef" stroke="none" stroke-width="1.2"/>
+<text x="320" y="215" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">projectAppName('devcourse')</text>
+<text x="320" y="233" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">→ null (데모 없음)</text>
+<text x="310" y="262" font-size="12" fill="#6e6e73" text-anchor="start">PROJECT_APPS에 그 id가 있을 때만 ProjectAppName</text>
+<rect x="20" y="276" width="600" height="52" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="298" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">const name: AppName = 'newpick';</text>
+<text x="608" y="298" font-size="12" fill="#ff3b30" text-anchor="end" font-weight="700">컴파일 오류</text>
+<text x="32" y="317" font-size="12" fill="#6e6e73" text-anchor="start">일반 string은 브랜드 표시가 없어 ProjectAppName으로 대입할 수 없다</text>
+</svg>

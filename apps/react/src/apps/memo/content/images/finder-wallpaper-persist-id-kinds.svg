@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 372" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>설정에 저장되는 배경화면 id 세 종류와 서버 목록 대조 여부</title>
+<rect width="640" height="372" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">macfolio:settings의 wallpaper 값 세 종류</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">앱을 열 때 서버 배경화면 목록(GET /wallpapers)과 대조하는지 여부</text>
+<g font-size="12" font-weight="700" fill="#6e6e73">
+<text x="32" y="84">저장된 id (예)</text>
+<text x="250" y="84">만드는 곳</text>
+<text x="430" y="84" text-anchor="middle">수정 전</text>
+<text x="560" y="84" text-anchor="middle">수정 후</text>
+</g>
+<line x1="20" y1="94" x2="620" y2="94" stroke="#6e6e73" stroke-width="1"/>
+<g font-size="13" fill="#1d1d1f">
+<rect x="20" y="104" width="600" height="68" rx="8" fill="#f2f2f7"/>
+<text x="32" y="134" font-family="ui-monospace, Menlo, monospace" font-weight="700">sierra</text>
+<text x="32" y="154" font-size="12" fill="#6e6e73">내장 배경화면 (기본값)</text>
+<text x="250" y="134">시스템 설정의</text>
+<text x="250" y="154">기본 배경화면 목록</text>
+<text x="430" y="144" text-anchor="middle" fill="#6e6e73">대조 안 함</text>
+<text x="560" y="144" text-anchor="middle" fill="#6e6e73">대조 안 함</text>
+
+<rect x="20" y="182" width="600" height="68" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="32" y="212" font-family="ui-monospace, Menlo, monospace" font-weight="700" fill="#0a84ff">custom:&lt;서버 id&gt;</text>
+<text x="32" y="232" font-size="12" fill="#6e6e73">관리자가 업로드한 배경화면</text>
+<text x="250" y="212">시스템 설정 ›</text>
+<text x="250" y="232">배경화면 ＋ 업로드</text>
+<text x="430" y="222" text-anchor="middle" fill="#0a84ff" font-weight="700">대조</text>
+<text x="560" y="222" text-anchor="middle" fill="#0a84ff" font-weight="700">대조</text>
+
+<rect x="20" y="260" width="600" height="68" rx="8" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="32" y="290" font-family="ui-monospace, Menlo, monospace" font-weight="700" fill="#ff9f0a">custom:finder-9auzvy</text>
+<text x="32" y="310" font-size="12" fill="#6e6e73">Finder 파일 키의 해시</text>
+<text x="250" y="290">Finder 오른쪽 클릭 ›</text>
+<text x="250" y="310">데스크탑 사진 설정</text>
+<rect x="378" y="278" width="104" height="44" rx="6" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="430" y="297" text-anchor="middle" fill="#ff3b30" font-weight="700">대조 → 항상 없음</text>
+<text x="430" y="314" text-anchor="middle" fill="#ff3b30" font-size="12">기본값으로 복원</text>
+<rect x="508" y="278" width="104" height="44" rx="6" fill="#effaf2" stroke="#34c759"/>
+<text x="560" y="297" text-anchor="middle" fill="#1d1d1f" font-weight="700">대조 제외</text>
+<text x="560" y="314" text-anchor="middle" fill="#1d1d1f" font-size="12">값 유지</text>
+</g>
+<text x="20" y="356" font-size="12" fill="#6e6e73">수정 전 검사는 앞부분 custom:만 확인해 파란 행과 주황 행을 구분하지 못했다. 수정 후에는 custom:finder-를 먼저 제외한다.</text>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 210" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="210" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">X = S + P: 단어 임베딩에 위치 인코딩을 더한다</text>
+  <text x="20" y="62" font-size="13" fill="#1d1d1f"><tspan font-weight="700" font-size="16">P</tspan> 위치 인코딩</text>
+  <text x="20" y="142" font-size="13" fill="#1d1d1f"><tspan font-weight="700" font-size="16">S</tspan> 단어 임베딩 벡터</text>
+  <rect x="150" y="40" width="26" height="30" fill="#7a7a7a" stroke="#fff"/>
+  <rect x="150" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="176" y="40" width="26" height="30" fill="#c8c8c8" stroke="#fff"/>
+  <rect x="176" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="202" y="40" width="26" height="30" fill="#d6d6d6" stroke="#fff"/>
+  <rect x="202" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="228" y="40" width="26" height="30" fill="#d6d6d6" stroke="#fff"/>
+  <rect x="228" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <text x="202" y="100" text-anchor="middle" font-size="18" fill="#1d1d1f">+</text>
+  <text x="202" y="176" text-anchor="middle" font-size="14" fill="#0a84ff">I</text>
+  <rect x="270" y="40" width="26" height="30" fill="#c8c8c8" stroke="#fff"/>
+  <rect x="270" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="296" y="40" width="26" height="30" fill="#7a7a7a" stroke="#fff"/>
+  <rect x="296" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="322" y="40" width="26" height="30" fill="#d6d6d6" stroke="#fff"/>
+  <rect x="322" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="348" y="40" width="26" height="30" fill="#eeeeee" stroke="#fff"/>
+  <rect x="348" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <text x="322" y="100" text-anchor="middle" font-size="18" fill="#1d1d1f">+</text>
+  <text x="322" y="176" text-anchor="middle" font-size="14" fill="#0a84ff">am</text>
+  <rect x="390" y="40" width="26" height="30" fill="#f2f2f2" stroke="#fff"/>
+  <rect x="390" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="416" y="40" width="26" height="30" fill="#aaaaaa" stroke="#fff"/>
+  <rect x="416" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="442" y="40" width="26" height="30" fill="#7a7a7a" stroke="#fff"/>
+  <rect x="442" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="468" y="40" width="26" height="30" fill="#c8c8c8" stroke="#fff"/>
+  <rect x="468" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <text x="442" y="100" text-anchor="middle" font-size="18" fill="#1d1d1f">+</text>
+  <text x="442" y="176" text-anchor="middle" font-size="14" fill="#0a84ff">a</text>
+  <rect x="510" y="40" width="26" height="30" fill="#d6d6d6" stroke="#fff"/>
+  <rect x="510" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="536" y="40" width="26" height="30" fill="#aaaaaa" stroke="#fff"/>
+  <rect x="536" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="562" y="40" width="26" height="30" fill="#7a7a7a" stroke="#fff"/>
+  <rect x="562" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <rect x="588" y="40" width="26" height="30" fill="#aaaaaa" stroke="#fff"/>
+  <rect x="588" y="120" width="26" height="30" fill="#dcefff" stroke="#0a84ff"/>
+  <text x="562" y="100" text-anchor="middle" font-size="18" fill="#1d1d1f">+</text>
+  <text x="562" y="176" text-anchor="middle" font-size="14" fill="#0a84ff">student</text>
+  <text x="320" y="200" text-anchor="middle" font-size="11.5" fill="#6e6e73">단어마다 같은 크기(d_model)의 두 벡터를 원소별로 더해 입력 X를 만든다</text>
+</svg>

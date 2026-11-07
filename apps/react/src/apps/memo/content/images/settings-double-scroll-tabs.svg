@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>좁은 창의 상단 탭이 패널 높이를 줄인 과정</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">탭 일곱 개를 flex: 1로 나누면 이름이 세로로 줄바꿈된다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">폭 520px 이하의 옛 레이아웃. 관리자는 항목이 일곱 개</text>
+  <!-- window -->
+  <rect x="24" y="72" width="340" height="270" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <rect x="34" y="82" width="42" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="55" y="102">화</text><text x="55" y="118">면</text><text x="55" y="134">모</text><text x="55" y="150">드</text>
+    <rect x="80" y="82" width="42" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="101" y="102">개</text><text x="101" y="118">인</text><text x="101" y="134">정</text><text x="101" y="150">보</text><text x="101" y="166">보</text><text x="101" y="182">호</text><text x="101" y="198">및</text><text x="101" y="214">보</text><text x="101" y="230">안</text>
+    <rect x="126" y="82" width="42" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="147" y="102">정</text><text x="147" y="118">보</text>
+    <rect x="172" y="82" width="42" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="193" y="102">…</text>
+    <rect x="218" y="82" width="42" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="239" y="102">…</text>
+    <rect x="264" y="82" width="42" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="285" y="102">…</text>
+    <rect x="310" y="82" width="44" height="170" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="332" y="102">…</text>
+  </g>
+  <rect x="34" y="260" width="320" height="72" rx="6" fill="#ffe1df" stroke="#ff3b30"/>
+  <text x="194" y="292" font-size="13" font-weight="600" fill="#ff3b30" text-anchor="middle">패널 79px</text>
+  <text x="194" y="312" font-size="12" fill="#ff3b30" text-anchor="middle">나머지는 바깥 창이 스크롤</text>
+  <!-- explanation -->
+  <g font-size="13" fill="#1d1d1f">
+    <text x="392" y="98" font-weight="600">탭 행 높이 = 가장 긴 탭 이름</text>
+    <text x="392" y="120" font-size="12" fill="#6e6e73">'개인정보 보호 및 보안'이</text>
+    <text x="392" y="138" font-size="12" fill="#6e6e73">한 글자씩 줄바꿈되어 행이 길어진다</text>
+    <text x="392" y="184" font-weight="600">탭 행이 커질수록</text>
+    <text x="392" y="206" font-size="12" fill="#6e6e73">창 높이는 그대로이므로</text>
+    <text x="392" y="224" font-size="12" fill="#6e6e73">패널이 차지할 높이가 줄어든다</text>
+    <text x="392" y="270" font-weight="600" fill="#34c759">macOS 시스템 설정은</text>
+    <text x="392" y="292" font-size="12">좁은 레이아웃이 없고,</text>
+    <text x="392" y="310" font-size="12">일정 크기보다 작아지지 않는다</text>
+  </g>
+</svg>

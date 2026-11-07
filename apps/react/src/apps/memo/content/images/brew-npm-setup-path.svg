@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">셸이 node 명령을 찾는 순서</text>
+  <text x="320" y="48" text-anchor="middle" font-size="12" fill="#6e6e73">PATH의 폴더를 왼쪽부터 확인해 node 파일이 처음 발견된 폴더의 것을 실행한다</text>
+  <g font-size="12">
+    <text x="20" y="84" font-weight="600" fill="#1d1d1f">① brew shellenv만 적용</text>
+    <rect x="20" y="94" width="150" height="34" rx="6" fill="#e5f1ff" stroke="#0a84ff" stroke-width="2"/><text x="95" y="115" text-anchor="middle" fill="#1d1d1f">/opt/homebrew/bin</text>
+    <path d="M170 111 L188 111" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="194" y="94" width="150" height="34" rx="6" fill="#f2f2f7" stroke="#d1d1d6"/><text x="269" y="115" text-anchor="middle" fill="#1d1d1f">/opt/homebrew/sbin</text>
+    <path d="M344 111 L362 111" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="368" y="94" width="90" height="34" rx="6" fill="#f2f2f7" stroke="#d1d1d6"/><text x="413" y="115" text-anchor="middle" fill="#1d1d1f">/usr/bin …</text>
+    <text x="474" y="115" fill="#0a84ff">node v26</text>
+    <text x="20" y="168" font-weight="600" fill="#1d1d1f">② node@22 PATH 줄을 shellenv 아래에 추가</text>
+    <rect x="20" y="178" width="200" height="34" rx="6" fill="#e5f1ff" stroke="#0a84ff" stroke-width="2"/><text x="120" y="199" text-anchor="middle" fill="#1d1d1f">/opt/homebrew/opt/node@22/bin</text>
+    <path d="M220 195 L238 195" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="244" y="178" width="150" height="34" rx="6" fill="#f2f2f7" stroke="#d1d1d6"/><text x="319" y="199" text-anchor="middle" fill="#1d1d1f">/opt/homebrew/bin</text>
+    <path d="M394 195 L412 195" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <text x="420" y="199" fill="#6e6e73">…</text>
+    <text x="474" y="199" fill="#0a84ff">node v22</text>
+    <text x="20" y="252" font-weight="600" fill="#1d1d1f">③ node@22 PATH 줄을 shellenv 위에 추가</text>
+    <rect x="20" y="262" width="150" height="34" rx="6" fill="#ffecea" stroke="#ff3b30" stroke-width="2"/><text x="95" y="283" text-anchor="middle" fill="#1d1d1f">/opt/homebrew/bin</text>
+    <path d="M170 279 L188 279" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="194" y="262" width="200" height="34" rx="6" fill="#f2f2f7" stroke="#d1d1d6"/><text x="294" y="283" text-anchor="middle" fill="#1d1d1f">/opt/homebrew/opt/node@22/bin</text>
+    <path d="M394 279 L412 279" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <text x="420" y="283" fill="#6e6e73">…</text>
+    <text x="474" y="283" fill="#ff3b30">node v26</text>
+    <text x="20" y="320" fill="#6e6e73">③은 뒤에 실행된 shellenv가 /opt/homebrew/bin을 다시 맨 앞에 추가해</text>
+    <text x="20" y="338" fill="#6e6e73">node@22보다 먼저 확인된다. 파란 테두리는 node가 발견된 폴더</text>
+  </g>
+</svg>

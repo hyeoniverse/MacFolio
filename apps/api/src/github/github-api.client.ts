@@ -75,7 +75,7 @@ export class GithubApiClient {
 		);
 	}
 
-	/** 공개 활동 (GitHub가 최근 90일, 300개까지 준다. 첫 100개만 받는다) */
+	/** 공개 활동 (GitHub가 최근 30일, 300개까지 준다. 첫 100개만 받는다) */
 	async userEvents(login: string) {
 		return (await this.json<Json[]>(`/users/${encodeURIComponent(login)}/events/public?per_page=100`)) ?? [];
 	}

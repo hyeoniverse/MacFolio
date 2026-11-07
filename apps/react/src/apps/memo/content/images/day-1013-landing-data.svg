@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>모든 템플릿이 같은 landingOf 데이터를 읽고, 이전 템플릿 이름은 LEGACY_LOOKS로 변환하는 구조</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">데이터 하나, 템플릿 여러 개</text>
+<rect x="20" y="52" width="170" height="200" rx="10" fill="#eef5ff" stroke="#0a84ff"/>
+<text x="105" y="76" font-size="13" font-weight="700" fill="#0a84ff" text-anchor="middle">landingOf(project)</text>
+<g font-size="12" fill="#1d1d1f"><text x="36" y="104">히어로</text><text x="36" y="128">수치</text><text x="36" y="152">주요 기능</text><text x="36" y="176">화면 모음</text><text x="36" y="200">사용법</text><text x="36" y="224">구현 방식 등</text></g>
+<text x="20" y="276" font-size="12" fill="#6e6e73">비어 있는 섹션은</text><text x="20" y="294" font-size="12" fill="#6e6e73">렌더링하지 않는다</text>
+<g font-size="12" text-anchor="middle">
+<rect x="250" y="56" width="120" height="40" rx="8" fill="#f2f2f7"/><text x="310" y="74" fill="#1d1d1f">제품</text><text x="310" y="89" fill="#6e6e73">Apple 제품 페이지</text>
+<rect x="250" y="106" width="120" height="40" rx="8" fill="#f2f2f7"/><text x="310" y="124" fill="#1d1d1f">카드</text><text x="310" y="139" fill="#6e6e73">Stripe</text>
+<rect x="250" y="156" width="120" height="40" rx="8" fill="#f2f2f7"/><text x="310" y="174" fill="#1d1d1f">문서</text><text x="310" y="189" fill="#6e6e73">Notion</text>
+<rect x="250" y="206" width="120" height="40" rx="8" fill="#f2f2f7"/><text x="310" y="224" fill="#1d1d1f">벤토</text><text x="310" y="239" fill="#6e6e73">Framer·Raycast</text>
+</g>
+<path d="M190 120 L246 76" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<path d="M190 140 L246 126" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<path d="M190 160 L246 176" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<path d="M190 180 L246 226" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="400" y="62" font-size="13" font-weight="700" fill="#b25d00">LEGACY_LOOKS: 서버에 저장된 이전 이름</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="400" y="76" width="220" height="30" rx="6" fill="#fff6e8"/><text x="414" y="96">"cinema" → 키노트(keynote)</text>
+<rect x="400" y="112" width="220" height="30" rx="6" fill="#fff6e8"/><text x="414" y="132">"brutal" → 벤토(bento)</text>
+<rect x="400" y="148" width="220" height="30" rx="6" fill="#fff6e8"/><text x="414" y="168">"phone" → 제품(product)</text>
+</g>
+<text x="400" y="204" font-size="12" fill="#1d1d1f">읽을 때 가장 가까운 새 템플릿으로 변환한다.</text>
+<text x="400" y="222" font-size="12" fill="#1d1d1f">DB의 값은 그대로 두므로 마이그레이션이</text>
+<text x="400" y="240" font-size="12" fill="#1d1d1f">필요 없다</text>
+<text x="20" y="326" font-size="12" fill="#6e6e73">템플릿 4개는 3단계 기준. 4단계에서 키노트·매거진·개발자 도구·놀이·저장소·RPG 대화창을 더해 10개가 되었다</text>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">ELECTRA의 대체 토큰 탐지(replaced token detection)</text>
+  <g font-size="13" text-anchor="middle">
+    <text x="60" y="62" fill="#6e6e73" font-size="11">원문</text>
+    <text x="60" y="84" fill="#1d1d1f">the</text><text x="60" y="112" fill="#1d1d1f">chef</text><text x="60" y="140" fill="#1d1d1f">cooked</text><text x="60" y="168" fill="#1d1d1f">the</text><text x="60" y="196" fill="#1d1d1f">meal</text>
+    <text x="160" y="62" fill="#6e6e73" font-size="11">마스킹</text>
+    <text x="160" y="84" fill="#0a84ff">[MASK]</text><text x="160" y="112" fill="#1d1d1f">chef</text><text x="160" y="140" fill="#0a84ff">[MASK]</text><text x="160" y="168" fill="#1d1d1f">the</text><text x="160" y="196" fill="#1d1d1f">meal</text>
+  </g>
+  <line x1="98" y1="140" x2="122" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="200" y1="140" x2="226" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="228" y="90" width="110" height="100" rx="8" fill="#f5f5f7" stroke="#6e6e73"/>
+  <text x="283" y="132" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">생성자</text>
+  <text x="283" y="150" text-anchor="middle" font-size="11" fill="#6e6e73">작은 MLM</text>
+  <line x1="338" y1="140" x2="364" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <g font-size="13" text-anchor="middle">
+    <text x="400" y="62" fill="#6e6e73" font-size="11">대체된 입력</text>
+    <text x="400" y="84" fill="#1d1d1f">the</text><text x="400" y="112" fill="#1d1d1f">chef</text><text x="400" y="140" fill="#0a84ff" font-weight="600">ate</text><text x="400" y="168" fill="#1d1d1f">the</text><text x="400" y="196" fill="#1d1d1f">meal</text>
+  </g>
+  <line x1="436" y1="140" x2="460" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="462" y="90" width="80" height="100" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="502" y="132" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">판별자</text>
+  <text x="502" y="150" text-anchor="middle" font-size="11" fill="#1d1d1f">ELECTRA</text>
+  <line x1="542" y1="140" x2="562" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <g font-size="12" text-anchor="middle">
+    <text x="598" y="62" fill="#6e6e73" font-size="11">판정</text>
+    <text x="598" y="84" fill="#1d1d1f">원본</text><text x="598" y="112" fill="#1d1d1f">원본</text><text x="598" y="140" fill="#0a84ff" font-weight="600">대체</text><text x="598" y="168" fill="#1d1d1f">원본</text><text x="598" y="196" fill="#1d1d1f">원본</text>
+  </g>
+  <text x="320" y="240" text-anchor="middle" font-size="12" fill="#1d1d1f">첫 [MASK]는 생성자가 원래 단어 the를 맞혀 '원본'이 정답이다</text>
+  <text x="320" y="262" text-anchor="middle" font-size="12" fill="#6e6e73">판별자는 마스킹된 15%가 아니라 모든 토큰에서 손실을 받는다</text>
+  <text x="320" y="284" text-anchor="middle" font-size="11" fill="#6e6e73">사전 학습 후 생성자는 버리고 판별자만 미세 조정에 사용한다</text>
+</svg>

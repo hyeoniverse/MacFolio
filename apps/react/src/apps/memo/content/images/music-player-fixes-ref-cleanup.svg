@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 364" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>ref 콜백 함수가 바뀔 때 React 19의 처리 순서</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="364" fill="#ffffff"/>
+<text x="24" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="600">ref 콜백이 바뀔 때 React 19가 하는 일</text>
+<text x="24" y="50" font-size="12" fill="#6e6e73" text-anchor="start">재생 시간이 1초마다 바뀌어 지금 재생 중 시트가 다시 렌더링되는 상황</text>
+<text x="92" y="80" font-size="12" fill="#6e6e73" text-anchor="middle" font-weight="600">렌더링 1</text>
+<text x="244" y="80" font-size="12" fill="#6e6e73" text-anchor="middle" font-weight="600">렌더링 2</text>
+<text x="396" y="80" font-size="12" fill="#6e6e73" text-anchor="middle" font-weight="600">렌더링 3</text>
+<text x="548" y="80" font-size="12" fill="#6e6e73" text-anchor="middle" font-weight="600">시트 닫힘</text>
+<text x="24" y="100" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="600">수정 전: 렌더링마다 새 함수</text>
+<rect x="24" y="112" width="136" height="64" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="34" y="138" font-size="12" fill="#1d1d1f" text-anchor="start">f1(시트) 호출</text>
+<text x="34" y="158" font-size="12" fill="#6e6e73" text-anchor="start">정리 함수 c1 보관</text>
+<line x1="162" y1="144" x2="174" y2="144" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="176" y="112" width="136" height="64" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.6"/>
+<text x="186" y="138" font-size="12" fill="#1d1d1f" text-anchor="start">f2 ≠ f1</text>
+<text x="186" y="158" font-size="12" fill="#ff3b30" text-anchor="start">c1() → 복제본 생성</text>
+<line x1="314" y1="144" x2="326" y2="144" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="328" y="112" width="136" height="64" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.6"/>
+<text x="338" y="138" font-size="12" fill="#1d1d1f" text-anchor="start">f3 ≠ f2</text>
+<text x="338" y="158" font-size="12" fill="#ff3b30" text-anchor="start">c2() → 복제본 생성</text>
+<line x1="466" y1="144" x2="478" y2="144" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="480" y="112" width="136" height="64" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="490" y="138" font-size="12" fill="#1d1d1f" text-anchor="start">c3() → 복제본 생성</text>
+<text x="24" y="204" font-size="13" fill="#34c759" text-anchor="start" font-weight="600">수정 후: useCallback으로 같은 함수</text>
+<rect x="24" y="216" width="136" height="64" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="34" y="242" font-size="12" fill="#1d1d1f" text-anchor="start">f(시트) 호출</text>
+<text x="34" y="262" font-size="12" fill="#6e6e73" text-anchor="start">정리 함수 c 보관</text>
+<line x1="162" y1="248" x2="174" y2="248" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="176" y="216" width="136" height="64" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="186" y="242" font-size="12" fill="#1d1d1f" text-anchor="start">f === f</text>
+<text x="186" y="262" font-size="12" fill="#6e6e73" text-anchor="start">아무것도 하지 않음</text>
+<line x1="314" y1="248" x2="326" y2="248" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="328" y="216" width="136" height="64" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="338" y="242" font-size="12" fill="#1d1d1f" text-anchor="start">f === f</text>
+<text x="338" y="262" font-size="12" fill="#6e6e73" text-anchor="start">아무것도 하지 않음</text>
+<line x1="466" y1="248" x2="478" y2="248" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="480" y="216" width="136" height="64" rx="6" fill="#ffffff" stroke="#d1d1d6" stroke-width="1.2"/>
+<text x="490" y="242" font-size="12" fill="#1d1d1f" text-anchor="start">c() → 복제본 1번</text>
+<rect x="24" y="310" width="592" height="40" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="36" y="335" font-size="12" fill="#1d1d1f" text-anchor="start">복제본: 정리 함수가 시트를 복사해 아래로 내려가는 닫힘 애니메이션을 재생한 뒤 삭제한다</text>
+</svg>

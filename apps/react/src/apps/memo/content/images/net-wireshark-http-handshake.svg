@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker></defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">TCP 3-way handshake의 순서 번호</text>
+  <text x="140" y="54" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d1d1f">클라이언트</text>
+  <text x="140" y="70" text-anchor="middle" font-size="11" fill="#6e6e73">198.51.100.10</text>
+  <text x="500" y="54" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d1d1f">서버</text>
+  <text x="500" y="70" text-anchor="middle" font-size="11" fill="#6e6e73">203.0.113.50 : 80</text>
+  <line x1="140" y1="80" x2="140" y2="330" stroke="#6e6e73" stroke-width="2"/>
+  <line x1="500" y1="80" x2="500" y2="330" stroke="#6e6e73" stroke-width="2"/>
+  <g font-size="12">
+    <line x1="140" y1="110" x2="500" y2="150" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+    <text x="320" y="118" text-anchor="middle" fill="#0a84ff">① SYN  Seq=512816760</text>
+    <line x1="500" y1="178" x2="140" y2="218" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+    <text x="320" y="186" text-anchor="middle" fill="#1d1d1f">② SYN+ACK  Seq=3296522402  Ack=512816761</text>
+    <line x1="140" y1="246" x2="500" y2="286" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+    <text x="320" y="254" text-anchor="middle" fill="#0a84ff">③ ACK  Seq=512816761  Ack=3296522403</text>
+  </g>
+  <text x="508" y="172" font-size="11" fill="#ff9f0a">= 512816760 + 1</text>
+  <g font-size="11" fill="#6e6e73">
+    <text x="16" y="108">SYN-SENT</text>
+    <text x="508" y="200">SYN-RCVD</text>
+    <text x="16" y="244">ESTABLISHED</text>
+    <text x="508" y="300">ESTABLISHED</text>
+  </g>
+  <text x="320" y="348" text-anchor="middle" font-size="12" fill="#6e6e73">SYN이 순서 번호를 1 소비하므로 ACK 번호는 받은 Seq + 1이다.</text>
+</svg>

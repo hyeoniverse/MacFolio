@@ -6,7 +6,7 @@ This is where the components that several apps use with the same look and behavi
 
 ## Principles
 
-- **Extract when there are three or more call sites with the same look and behavior.** With only one or two, or when they differ, options appear to absorb the differences and the component becomes heavier instead ('What I didn't build' in the [text button post](https://macfolio.hyeoniverse.com/memo/shared-text-button))
+- **Extract when there are three or more call sites with the same look and behavior.** With only one or two, or when they differ, options appear to absorb the differences and the component becomes heavier instead ('What I didn't build' in the [text button post](https://macfolio.hyeoniverse.com/memo/shared-button#button-텍스트-버튼-6종-통합))
 - **Look through variables, meaning through role.** A component's CSS sits in the `components` [cascade layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer), so the app's unlayered CSS always takes precedence. Colors, corners and spacing are set by the app via `--ui-*` variables. Even if the look is the same, components whose meaning differs for a screen reader (two pressed buttons vs. a tab list) are not merged into one component
 - **App variables don't reach windows drawn into body.** Things drawn into body with [`createPortal`](https://react.dev/reference/react-dom/createPortal), like `Menu` and popovers, sit outside the app root in the DOM and don't inherit the app's overrides, so they redefine `--ui-*` on their outer element
 - A component's files are `shared/ui/<kind>/<Name>.tsx` and a `.css` with the same name. Pure computation (positioning, shortcut labels) goes in `.ts` with tests next to it
@@ -177,7 +177,7 @@ Naming rules (what the component adds, what the caller must provide):
 
 ## Related posts (Korean)
 
-- [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](https://macfolio.hyeoniverse.com/memo/ui-inventory)
+- [공통 부품 목록을 먼저 적고, 아홉 후보를 다시 쟀다](https://macfolio.hyeoniverse.com/memo/ui-modal#공통-부품-집계)
 - [손으로 쓴 아이콘 버튼 45곳을 IconButton으로 — 모양은 그대로 두고](https://macfolio.hyeoniverse.com/memo/icon-button-migrate)
 - [모달 다이얼로그 5개의 공통 동작을 Modal 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-modal)
 - [휴대폰 시트 3곳의 공통 동작을 Sheet 컴포넌트로 추출](https://macfolio.hyeoniverse.com/memo/ui-sheet)

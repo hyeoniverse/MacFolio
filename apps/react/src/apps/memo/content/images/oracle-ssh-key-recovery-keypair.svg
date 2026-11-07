@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>SSH 공개 키 인증: Mac은 비밀 키를, 서버는 authorized_keys에 공개 키를 보관하고, 비밀 키로 만든 서명을 서버가 공개 키로 검증한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="370" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">SSH 공개 키 인증에서 각 파일의 위치와 역할</text>
+
+<rect x="20" y="48" width="220" height="168" rx="10" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="34" y="72" font-size="14" font-weight="700" fill="#1d1d1f">Mac (~/.ssh)</text>
+<rect x="34" y="84" width="192" height="58" rx="6" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="46" y="104" font-size="12" font-weight="700" fill="#1d1d1f">oracle-macfolio.key</text>
+<text x="46" y="120" font-size="12" fill="#c46c00">비밀 키. 밖으로 보내지 않는다</text>
+<text x="46" y="135" font-size="12" fill="#6e6e73">암호(passphrase)로 잠겨 있음</text>
+<rect x="34" y="150" width="192" height="52" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="46" y="170" font-size="12" font-weight="700" fill="#1d1d1f">oracle-macfolio.key.pub</text>
+<text x="46" y="186" font-size="12" fill="#6e6e73">공개 키 한 줄. 공개해도 된다</text>
+
+<rect x="400" y="48" width="220" height="168" rx="10" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="414" y="72" font-size="14" font-weight="700" fill="#1d1d1f">서버</text>
+<text x="414" y="92" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">~/.ssh/authorized_keys</text>
+<g font-size="12">
+<rect x="414" y="102" width="192" height="30" rx="5" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="424" y="122" fill="#6e6e73">1  ssh-rsa … (분실한 키)</text>
+<rect x="414" y="136" width="192" height="30" rx="5" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="424" y="156" fill="#6e6e73">2  restrict,command=… (배포)</text>
+<rect x="414" y="170" width="192" height="30" rx="5" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="424" y="190" fill="#0a84ff" font-weight="700">3  ssh-ed25519 … (새 키)</text>
+</g>
+<path d="M226 176 C300 176 330 186 412 186" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#b)"/>
+<text x="320" y="166" font-size="12" text-anchor="middle" fill="#0a84ff">복구 작업에서</text>
+<text x="320" y="200" font-size="12" text-anchor="middle" fill="#0a84ff">이 한 줄을 추가</text>
+
+<text x="20" y="246" font-size="13" font-weight="700" fill="#1d1d1f">접속할 때의 확인 순서</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="256" width="146" height="58" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="276" font-weight="700">① 키 잠금 해제</text><text x="30" y="294" fill="#6e6e73">Mac 안에서 암호 입력</text><text x="30" y="308" fill="#6e6e73">(서버로 가지 않는다)</text>
+<rect x="171" y="256" width="146" height="58" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="181" y="276" font-weight="700">② 공개 키 제시</text><text x="181" y="294" fill="#6e6e73">서버가 authorized_keys</text><text x="181" y="308" fill="#6e6e73">에 있는 키인지 확인</text>
+<rect x="322" y="256" width="146" height="58" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="332" y="276" font-weight="700">③ 비밀 키로 서명</text><text x="332" y="294" fill="#6e6e73">접속마다 다른 값에</text><text x="332" y="308" fill="#6e6e73">Mac이 서명해 전송</text>
+<rect x="473" y="256" width="147" height="58" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+<text x="483" y="276" font-weight="700" fill="#0a84ff">④ 공개 키로 검증</text><text x="483" y="294" fill="#6e6e73">서명이 맞으면</text><text x="483" y="308" fill="#6e6e73">로그인 허용</text>
+</g>
+<text x="20" y="342" font-size="12" fill="#6e6e73">비밀 키가 없으면 ③을 할 수 없다. 서버에 공개 키를 새로 등록하는 것 외에는 복구 방법이 없다</text>
+</svg>

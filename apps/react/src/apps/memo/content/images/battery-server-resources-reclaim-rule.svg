@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>유휴 회수 기준 20%와 주의 여유 10%p로 위험 단계를 정하는 규칙과 세 가지 예시</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">회수 위험 단계를 정하는 규칙</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">resources/rules.ts. 최근 7일 측정값으로 조건마다 값을 구하고, 모든 조건을 함께 판정한다</text>
+
+<rect x="64" y="84" width="200" height="24" fill="#ff3b30" fill-opacity="0.18"/>
+<rect x="264" y="84" width="100" height="24" fill="#ff9f0a" fill-opacity="0.22"/>
+<rect x="364" y="84" width="236" height="24" fill="#34c759" fill-opacity="0.18"/>
+<text x="164" y="101" font-size="12" fill="#d70015" text-anchor="middle" font-weight="600">회수 기준 아래</text>
+<text x="314" y="101" font-size="12" fill="#c77700" text-anchor="middle" font-weight="600">여유 10%p</text>
+<text x="482" y="101" font-size="12" fill="#248a3d" text-anchor="middle" font-weight="600">기준과 먼 값</text>
+<line x1="64" y1="108" x2="600" y2="108" stroke="#1d1d1f"/>
+<g font-size="12" fill="#6e6e73" text-anchor="middle">
+<line x1="64" y1="108" x2="64" y2="114" stroke="#1d1d1f"/><text x="64" y="128">0%</text>
+<line x1="264" y1="108" x2="264" y2="114" stroke="#1d1d1f"/><text x="264" y="128">20%</text>
+<line x1="364" y1="108" x2="364" y2="114" stroke="#1d1d1f"/><text x="364" y="128">30%</text>
+<line x1="564" y1="108" x2="564" y2="114" stroke="#1d1d1f"/><text x="564" y="128">50%</text>
+</g>
+
+<rect x="24" y="146" width="592" height="70" rx="10" fill="#f2f2f7"/>
+<g font-size="12" fill="#1d1d1f">
+<text x="38" y="168"><tspan font-weight="700">조건</tspan>  CPU 사용률 95퍼센타일, 네트워크 평균 (대역폭 50Mbps 대비), 메모리 평균 (A1 형태만)</text>
+<text x="38" y="188"><tspan font-weight="700" fill="#d70015">위험</tspan>  모든 조건이 20% 미만   <tspan font-weight="700" fill="#c77700">주의</tspan>  모든 조건이 30% 미만</text>
+<text x="38" y="206"><tspan font-weight="700" fill="#248a3d">안전</tspan>  그 밖   <tspan font-weight="700" fill="#6e6e73">모름</tspan>  측정값 없음</text>
+</g>
+
+<text x="24" y="246" font-size="13" font-weight="700" fill="#1d1d1f">예시 (VM.Standard.E2.1.Micro: 메모리 조건 없음)</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="24" y="258" width="592" height="38" rx="8" fill="#ffffff" stroke="#e5e5ea"/>
+<text x="38" y="282">CPU 4.1%, 네트워크 0.6%</text>
+<text x="272" y="282" fill="#6e6e73">둘 다 20% 미만</text>
+<text x="452" y="282" font-weight="700" fill="#d70015">위험 → fill 10, 빨강</text>
+<rect x="24" y="302" width="592" height="38" rx="8" fill="#ffffff" stroke="#e5e5ea"/>
+<text x="38" y="326">CPU 26%, 네트워크 0.6%</text>
+<text x="272" y="326" fill="#6e6e73">CPU가 20% 이상, 둘 다 30% 미만</text>
+<text x="452" y="326" font-weight="700" fill="#c77700">주의 → fill 25, 주황</text>
+<rect x="24" y="346" width="592" height="38" rx="8" fill="#ffffff" stroke="#e5e5ea"/>
+<text x="38" y="370">CPU 45%, 네트워크 0.6%</text>
+<text x="272" y="370" fill="#6e6e73">CPU가 30% 이상</text>
+<text x="452" y="370" font-weight="700" fill="#248a3d">안전 → fill 100</text>
+</g>
+</svg>

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 460" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="460" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <rect x="20" y="14" width="300" height="34" rx="6" fill="#f2f2f7"/>
+  <text x="34" y="36" font-size="13" fill="#1d1d1f">응용: 목적지 D, 소스 라우트 {R1, R2, R3}</text>
+  <line x1="70" y1="48" x2="70" y2="70" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <g font-size="13" font-weight="600" fill="#6e6e73" text-anchor="middle">
+    <text x="250" y="76">IP 헤더 목적지</text>
+    <text x="440" y="76">옵션의 주소 목록</text>
+    <text x="590" y="76">포인터</text>
+  </g>
+  <rect x="40" y="74" width="60" height="32" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="70" y="95" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">S</text>
+  <rect x="40" y="154" width="60" height="32" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="70" y="175" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">R1</text>
+  <rect x="40" y="234" width="60" height="32" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="70" y="255" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">R2</text>
+  <rect x="40" y="314" width="60" height="32" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="70" y="335" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">R3</text>
+  <rect x="40" y="394" width="60" height="32" rx="6" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="70" y="415" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">D</text>
+  <line x1="70" y1="106" x2="70" y2="152" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <line x1="80" y1="130" x2="196" y2="130" stroke="#c7c7cc" stroke-dasharray="3 3"/>
+  <rect x="200" y="115" width="100" height="30" rx="5" fill="#fff" stroke="#1d1d1f"/>
+  <text x="250" y="135" text-anchor="middle" font-size="13" fill="#1d1d1f">R1</text>
+  <rect x="350" y="115" width="60" height="30" fill="#e3f0ff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="380" y="135" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">R2</text>
+  <rect x="410" y="115" width="60" height="30" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="440" y="135" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R3</text>
+  <rect x="470" y="115" width="60" height="30" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="500" y="135" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">D</text>
+  <text x="354" y="127" font-size="12" fill="#0a84ff" font-weight="600">#</text>
+  <text x="590" y="135" text-anchor="middle" font-size="13" fill="#1d1d1f">4</text>
+  <line x1="70" y1="186" x2="70" y2="232" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <line x1="80" y1="210" x2="196" y2="210" stroke="#c7c7cc" stroke-dasharray="3 3"/>
+  <rect x="200" y="195" width="100" height="30" rx="5" fill="#fff" stroke="#1d1d1f"/>
+  <text x="250" y="215" text-anchor="middle" font-size="13" fill="#1d1d1f">R2</text>
+  <rect x="350" y="195" width="60" height="30" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="380" y="215" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R1</text>
+  <rect x="410" y="195" width="60" height="30" fill="#e3f0ff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="440" y="215" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">R3</text>
+  <rect x="470" y="195" width="60" height="30" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+  <text x="500" y="215" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">D</text>
+  <text x="414" y="207" font-size="12" fill="#0a84ff" font-weight="600">#</text>
+  <text x="590" y="215" text-anchor="middle" font-size="13" fill="#1d1d1f">8</text>
+  <line x1="70" y1="266" x2="70" y2="312" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <line x1="80" y1="290" x2="196" y2="290" stroke="#c7c7cc" stroke-dasharray="3 3"/>
+  <rect x="200" y="275" width="100" height="30" rx="5" fill="#fff" stroke="#1d1d1f"/>
+  <text x="250" y="295" text-anchor="middle" font-size="13" fill="#1d1d1f">R3</text>
+  <rect x="350" y="275" width="60" height="30" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="380" y="295" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R1</text>
+  <rect x="410" y="275" width="60" height="30" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="440" y="295" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R2</text>
+  <rect x="470" y="275" width="60" height="30" fill="#e3f0ff" stroke="#0a84ff" stroke-width="1.2"/>
+  <text x="500" y="295" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">D</text>
+  <text x="474" y="287" font-size="12" fill="#0a84ff" font-weight="600">#</text>
+  <text x="590" y="295" text-anchor="middle" font-size="13" fill="#1d1d1f">12</text>
+  <line x1="70" y1="346" x2="70" y2="392" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <line x1="80" y1="370" x2="196" y2="370" stroke="#c7c7cc" stroke-dasharray="3 3"/>
+  <rect x="200" y="355" width="100" height="30" rx="5" fill="#fff" stroke="#1d1d1f"/>
+  <text x="250" y="375" text-anchor="middle" font-size="13" fill="#1d1d1f">D</text>
+  <rect x="350" y="355" width="60" height="30" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="380" y="375" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R1</text>
+  <rect x="410" y="355" width="60" height="30" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="440" y="375" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R2</text>
+  <rect x="470" y="355" width="60" height="30" fill="#fff4e0" stroke="#ff9f0a" stroke-width="1.2"/>
+  <text x="500" y="375" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="normal">R3</text>
+  <text x="538" y="375" font-size="13" fill="#0a84ff" font-weight="600">#</text>
+  <text x="590" y="375" text-anchor="middle" font-size="13" fill="#1d1d1f">16</text>
+  <g font-size="12">
+    <rect x="200" y="432" width="14" height="14" fill="#e3f0ff" stroke="#0a84ff"/>
+    <text x="220" y="444" fill="#1d1d1f">포인터(#)가 가리키는 다음 목적지</text>
+    <rect x="420" y="432" width="14" height="14" fill="#fff4e0" stroke="#ff9f0a"/>
+    <text x="440" y="444" fill="#1d1d1f">라우터가 기록한 자기 주소</text>
+  </g>
+</svg>

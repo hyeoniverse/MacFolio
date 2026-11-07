@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 332" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="332" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <pattern id="h" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fff"/><line x1="0" y1="0" x2="0" y2="8" stroke="#c7c7cc" stroke-width="2"/></pattern>
+  </defs>
+
+  <!-- 수신 창 표시 -->
+  <line x1="170" y1="22" x2="170" y2="50" stroke="#1d1d1f" stroke-width="1.5"/>
+  <line x1="470" y1="22" x2="470" y2="50" stroke="#1d1d1f" stroke-width="1.5"/>
+  <line x1="172" y1="36" x2="468" y2="36" stroke="#1d1d1f" stroke-width="1.5" marker-start="url(#a)" marker-end="url(#a)"/>
+  <rect x="228" y="24" width="184" height="24" fill="#fff"/>
+  <text x="320" y="41" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">수신 창 (RCV.WND)</text>
+  <text x="320" y="76" text-anchor="middle" font-size="12" fill="#6e6e73">ACK에 실어 송신 측에 광고하는 창 크기</text>
+
+    <rect x="20" y="96" width="50" height="56" fill="#d1d1d6" stroke="#6e6e73"/><text x="45" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">…</text>
+  <rect x="70" y="96" width="50" height="56" fill="#d1d1d6" stroke="#6e6e73"/><text x="95" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">2</text>
+  <rect x="120" y="96" width="50" height="56" fill="#d1d1d6" stroke="#6e6e73"/><text x="145" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">3</text>
+  <rect x="170" y="96" width="50" height="56" fill="#f2f2f7" stroke="#6e6e73"/><text x="195" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">4</text>
+  <rect x="220" y="96" width="50" height="56" fill="#f2f2f7" stroke="#6e6e73"/><text x="245" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">5</text>
+  <rect x="270" y="96" width="50" height="56" fill="#f2f2f7" stroke="#6e6e73"/><text x="295" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">6</text>
+  <rect x="320" y="96" width="50" height="56" fill="#f2f2f7" stroke="#6e6e73"/><text x="345" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">7</text>
+  <rect x="370" y="96" width="50" height="56" fill="#f2f2f7" stroke="#6e6e73"/><text x="395" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">8</text>
+  <rect x="420" y="96" width="50" height="56" fill="#f2f2f7" stroke="#6e6e73"/><text x="445" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">9</text>
+  <rect x="470" y="96" width="50" height="56" fill="url(#h)" stroke="#6e6e73"/><text x="495" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">10</text>
+  <rect x="520" y="96" width="50" height="56" fill="url(#h)" stroke="#6e6e73"/><text x="545" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">11</text>
+  <rect x="570" y="96" width="50" height="56" fill="url(#h)" stroke="#6e6e73"/><text x="595" y="129" text-anchor="middle" font-size="14" fill="#1d1d1f">…</text>
+  <rect x="170" y="96" width="300" height="56" fill="none" stroke="#ff9f0a" stroke-width="3"/>
+
+  <!-- 구간 -->
+  <g stroke="#6e6e73" stroke-width="1">
+    <line x1="170" y1="160" x2="170" y2="196"/><line x1="470" y1="160" x2="470" y2="196"/>
+  </g>
+  <line x1="20" y1="178" x2="168" y2="178" stroke="#6e6e73" marker-start="url(#a)" marker-end="url(#a)"/>
+  <line x1="172" y1="178" x2="468" y2="178" stroke="#6e6e73" marker-start="url(#a)" marker-end="url(#a)"/>
+  <line x1="472" y1="178" x2="620" y2="178" stroke="#6e6e73" marker-start="url(#a)" marker-end="url(#a)"/>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle">
+    <rect x="45" y="168" width="100" height="20" fill="#fff"/><text x="95" y="183">수신·확인 완료</text>
+    <rect x="264" y="168" width="112" height="20" fill="#fff"/><text x="320" y="183">수신하면 저장</text>
+    <rect x="511" y="168" width="68" height="20" fill="#fff"/><text x="545" y="183">수신 불가</text>
+  </g>
+
+  <!-- 끝점과 주입 위치 -->
+  <line x1="170" y1="250" x2="170" y2="204" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="170" y="270" text-anchor="middle" font-size="13" fill="#1d1d1f">왼쪽 끝</text>
+  <text x="170" y="288" text-anchor="middle" font-size="13" fill="#6e6e73">RCV.NXT</text>
+  <line x1="470" y1="250" x2="470" y2="204" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="470" y="270" text-anchor="middle" font-size="13" fill="#1d1d1f">오른쪽 끝</text>
+  <text x="470" y="288" text-anchor="middle" font-size="13" fill="#6e6e73">RCV.NXT + RCV.WND</text>
+  <line x1="320" y1="250" x2="320" y2="194" stroke="#0a84ff" stroke-width="3" marker-end="url(#b)"/>
+  <text x="320" y="270" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">주입된 데이터</text>
+  <text x="320" y="316" text-anchor="middle" font-size="12" fill="#6e6e73">시퀀스 번호가 창 안에 들어야 저장된다</text>
+</svg>

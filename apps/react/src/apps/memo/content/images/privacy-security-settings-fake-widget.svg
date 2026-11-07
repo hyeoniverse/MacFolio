@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>가짜 Turnstile 위젯의 순서 오류</title>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">가짜 위젯이 글자를 먼저 표시하면 시험이 너무 일찍 누른다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">가로축은 render() 호출 뒤 경과 시간. 시험은 '사람 확인 완료' 글자가 보이면 [보내기]를 누른다</text>
+  <!-- axis before -->
+  <text x="24" y="96" font-size="14" font-weight="700" fill="#ff3b30">수정 전</text>
+  <line x1="100" y1="140" x2="600" y2="140" stroke="#6e6e73" stroke-width="1.5"/>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <line x1="120" y1="134" x2="120" y2="146" stroke="#6e6e73"/><text x="120" y="162">0ms</text>
+    <line x1="520" y1="134" x2="520" y2="146" stroke="#6e6e73"/><text x="520" y="162">50ms</text>
+  </g>
+  <rect x="104" y="96" width="140" height="28" rx="6" fill="#fff6e8" stroke="#ff9f0a"/>
+  <text x="174" y="115" font-size="12" fill="#1d1d1f" text-anchor="middle">'사람 확인 완료' 표시</text>
+  <rect x="452" y="96" width="140" height="28" rx="6" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="522" y="115" font-size="12" fill="#1d1d1f" text-anchor="middle">callback(토큰)</text>
+  <path d="M260 140 V180" stroke="#ff3b30" stroke-width="1.5"/>
+  <circle cx="260" cy="140" r="5" fill="#ff3b30"/>
+  <rect x="180" y="180" width="300" height="46" rx="8" fill="#fff1f0"/>
+  <text x="194" y="200" font-size="12" font-weight="600" fill="#ff3b30">시험이 [보내기] 클릭, 앱에는 토큰이 없음</text>
+  <text x="194" y="218" font-size="12" fill="#1d1d1f">→ "기다려 주세요" 안내로 전송 차단</text>
+  <!-- axis after -->
+  <text x="24" y="270" font-size="14" font-weight="700" fill="#34c759">수정 후</text>
+  <line x1="100" y1="314" x2="600" y2="314" stroke="#6e6e73" stroke-width="1.5"/>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <line x1="120" y1="308" x2="120" y2="320" stroke="#6e6e73"/><text x="120" y="336">0ms</text>
+    <line x1="520" y1="308" x2="520" y2="320" stroke="#6e6e73"/><text x="520" y="336">50ms</text>
+  </g>
+  <rect x="415" y="270" width="210" height="28" rx="6" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="520" y="289" font-size="12" fill="#1d1d1f" text-anchor="middle">① callback(토큰) ② 글자 표시</text>
+  <path d="M560 314 V346" stroke="#34c759" stroke-width="1.5"/>
+  <circle cx="560" cy="314" r="5" fill="#34c759"/>
+  <text x="600" y="364" font-size="12" font-weight="600" fill="#34c759" text-anchor="end">이후 클릭 → 토큰과 함께 전송</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>키 없는 해시와 HMAC의 차이</title>
+  <rect width="640" height="350" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">IP를 키 없이 해시하면 되돌릴 수 있다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">IPv4 주소는 2³² ≈ 43억 개뿐이라, 모든 주소의 해시를 미리 계산할 수 있다</text>
+  <defs><marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6e6e73"/></marker></defs>
+  <!-- sha256 -->
+  <rect x="24" y="76" width="592" height="114" rx="10" fill="#fff1f0"/>
+  <text x="40" y="100" font-size="14" font-weight="700" fill="#ff3b30">SHA-256(IP): 쓰지 않은 방식</text>
+  <rect x="40" y="114" width="150" height="58" rx="8" fill="#ffffff"/>
+  <text x="54" y="138" font-size="12" fill="#6e6e73">DB가 유출됨</text>
+  <text x="54" y="158" font-size="12" fill="#1d1d1f">해시 9f86…</text>
+  <rect x="222" y="114" width="200" height="58" rx="8" fill="#ffffff"/>
+  <text x="236" y="138" font-size="12" fill="#6e6e73">0.0.0.0 ~ 255.255.255.255</text>
+  <text x="236" y="158" font-size="12" fill="#1d1d1f">전부 해시해 9f86…과 대조</text>
+  <rect x="454" y="114" width="146" height="58" rx="8" fill="#ffffff" stroke="#ff3b30"/>
+  <text x="468" y="138" font-size="12" fill="#6e6e73">찾은 원문</text>
+  <text x="468" y="158" font-size="12" font-weight="600" fill="#ff3b30">211.234.56.78</text>
+  <path d="M190 143 H216" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#f)"/>
+  <path d="M422 143 H448" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#f)"/>
+  <!-- hmac -->
+  <rect x="24" y="206" width="592" height="130" rx="10" fill="#eaf8ee"/>
+  <text x="40" y="230" font-size="14" font-weight="700" fill="#34c759">HMAC-SHA256(IP_HASH_SECRET, IP): 채택</text>
+  <rect x="40" y="244" width="150" height="58" rx="8" fill="#ffffff"/>
+  <text x="54" y="268" font-size="12" fill="#6e6e73">DB가 유출됨</text>
+  <text x="54" y="288" font-size="12" fill="#1d1d1f">ipHash 4c1a…</text>
+  <rect x="222" y="244" width="200" height="58" rx="8" fill="#ffffff"/>
+  <text x="236" y="268" font-size="12" fill="#6e6e73">키는 서버 api.env에만 있다</text>
+  <text x="236" y="288" font-size="12" fill="#1d1d1f">키 없이는 대조할 값을 못 만듦</text>
+  <rect x="454" y="244" width="146" height="58" rx="8" fill="#ffffff" stroke="#34c759"/>
+  <text x="468" y="268" font-size="12" fill="#6e6e73">서버 안에서는</text>
+  <text x="468" y="288" font-size="12" font-weight="600" fill="#1d1d1f">같은 IP = 같은 해시</text>
+  <path d="M190 273 H216" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#f)"/>
+  <path d="M422 273 H448" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#f)"/>
+  <text x="40" y="324" font-size="12" fill="#1d1d1f">같은 사람의 댓글을 ipHash로 묶어 조회할 수 있고, 원래 IP는 복원되지 않는다</text>
+</svg>

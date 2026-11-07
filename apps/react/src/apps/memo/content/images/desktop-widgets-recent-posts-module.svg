@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>최근 글 위젯이 읽는 자료: 빌드 시 가상 모듈과 서버 글 병합</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="320" y="30" font-size="16" font-weight="700" fill="#1d1d1f" text-anchor="middle">첫 화면에 필요한 것은 글 6편의 제목·날짜·분류뿐</text>
+
+  <rect x="20" y="52" width="200" height="120" rx="10" fill="#f2f2f7"/>
+  <text x="120" y="76" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">content/*.md</text>
+  <text x="120" y="98" font-size="12" fill="#6e6e73" text-anchor="middle">저장소 글 전체</text>
+  <text x="120" y="130" font-size="12" fill="#1d1d1f" text-anchor="middle">빌드 시 Vite 플러그인이</text>
+  <text x="120" y="148" font-size="12" fill="#1d1d1f" text-anchor="middle">날짜 지난 최신 6편만 추출</text>
+
+  <line x1="222" y1="90" x2="262" y2="76" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="222" y1="140" x2="262" y2="150" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <rect x="268" y="52" width="352" height="48" rx="10" fill="#ffffff" stroke="#ff3b30"/>
+  <text x="282" y="72" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">seo/posts.json</text>
+  <text x="282" y="90" font-size="12" fill="#ff3b30">본문 HTML 포함 2,537,133바이트 (위젯에 쓰지 않음)</text>
+  <rect x="268" y="124" width="352" height="48" rx="10" fill="#ffffff" stroke="#0a84ff"/>
+  <text x="282" y="144" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">virtual:recent-posts</text>
+  <text x="282" y="162" font-size="12" fill="#0a84ff">6편 × { 제목, 날짜, 분류 }</text>
+
+  <rect x="268" y="196" width="160" height="48" rx="10" fill="#ffffff" stroke="#34c759"/>
+  <text x="348" y="216" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">GET /posts</text>
+  <text x="348" y="234" font-size="12" fill="#6e6e73" text-anchor="middle">페이지마다 한 번</text>
+
+  <rect x="460" y="196" width="160" height="48" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="540" y="216" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">mergeRecentPosts</text>
+  <text x="540" y="234" font-size="12" fill="#6e6e73" text-anchor="middle">메모 앱과 같은 규칙</text>
+  <line x1="540" y1="172" x2="540" y2="192" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="428" y1="220" x2="456" y2="220" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <rect x="20" y="262" width="600" height="56" rx="10" fill="#f2f2f7"/>
+  <text x="36" y="286" font-size="12" fill="#1d1d1f">같은 주소는 서버 글이 대체하고, 삭제한 글·예약 글은 저장소 글까지 숨긴다.</text>
+  <text x="36" y="306" font-size="12" fill="#1d1d1f">관리자가 사이트에서 쓴 글은 빌드 결과에 없으므로 GET /posts로 보충한다.</text>
+</svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <line x1="320" y1="20" x2="320" y2="340" stroke="#e5e5ea" stroke-width="2"/>
+
+  <!-- before -->
+  <text x="20" y="34" font-size="15" font-weight="700" fill="#1d1d1f">변경 전: 화면마다 따로 조합</text>
+  <rect x="20" y="56" width="130" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="85" y="83" font-size="13" text-anchor="middle" fill="#1d1d1f">프로필 값</text>
+  <rect x="166" y="56" width="130" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="231" y="83" font-size="13" text-anchor="middle" fill="#1d1d1f">프로젝트 값</text>
+
+  <g stroke="#6e6e73" stroke-width="1.5" fill="none">
+    <path d="M85 100 L60 200" marker-end="url(#a)"/>
+    <path d="M85 100 L158 200" marker-end="url(#a)"/>
+    <path d="M85 100 L250 200" marker-end="url(#a)"/>
+    <path d="M231 100 L72 200" marker-end="url(#a)"/>
+    <path d="M231 100 L162 200" marker-end="url(#a)"/>
+    <path d="M231 100 L262 200" marker-end="url(#a)"/>
+  </g>
+  <rect x="20" y="204" width="88" height="56" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="64" y="228" font-size="12" text-anchor="middle" fill="#1d1d1f">Finder 화면</text>
+  <text x="64" y="248" font-size="12" text-anchor="middle" fill="#6e6e73">조합 코드 A</text>
+  <rect x="116" y="204" width="88" height="56" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="160" y="228" font-size="12" text-anchor="middle" fill="#1d1d1f">PDF</text>
+  <text x="160" y="248" font-size="12" text-anchor="middle" fill="#6e6e73">조합 코드 B</text>
+  <rect x="212" y="204" width="88" height="56" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="256" y="228" font-size="12" text-anchor="middle" fill="#1d1d1f">터미널</text>
+  <text x="256" y="248" font-size="12" text-anchor="middle" fill="#6e6e73">조합 코드 C</text>
+  <text x="20" y="292" font-size="12" fill="#ff3b30">한 화면의 조합 코드만 고치면</text>
+  <text x="20" y="310" font-size="12" fill="#ff3b30">화면마다 이력서 내용이 달라진다</text>
+
+  <!-- after -->
+  <text x="340" y="34" font-size="15" font-weight="700" fill="#0a84ff">변경 후: Markdown 문서 하나</text>
+  <rect x="340" y="56" width="140" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="410" y="83" font-size="13" text-anchor="middle" fill="#1d1d1f">프로필·프로젝트 값</text>
+  <path d="M480 78 L516 78 L516 118" fill="none" stroke="#6e6e73" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  <text x="526" y="96" font-size="12" fill="#6e6e73">"불러오기"로 삽입</text>
+
+  <rect x="380" y="122" width="220" height="56" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="490" y="146" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">이력서 Markdown 원본</text>
+  <text x="490" y="166" font-size="12" text-anchor="middle" fill="#0a84ff" font-family="Menlo, monospace">GET /site/resume</text>
+
+  <g stroke="#0a84ff" stroke-width="1.5" fill="none">
+    <path d="M490 178 L384 200" marker-end="url(#ab)"/>
+    <path d="M490 178 L480 200" marker-end="url(#ab)"/>
+    <path d="M490 178 L576 200" marker-end="url(#ab)"/>
+  </g>
+  <rect x="340" y="204" width="88" height="56" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="384" y="228" font-size="12" text-anchor="middle" fill="#1d1d1f">Finder 문서</text>
+  <text x="384" y="248" font-size="12" text-anchor="middle" fill="#6e6e73">.md 문서 보기</text>
+  <rect x="436" y="204" width="88" height="56" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="480" y="228" font-size="12" text-anchor="middle" fill="#1d1d1f">미리보기</text>
+  <text x="480" y="248" font-size="12" text-anchor="middle" fill="#6e6e73">요청 시 PDF</text>
+  <rect x="532" y="204" width="88" height="56" rx="8" fill="#ffffff" stroke="#1d1d1f"/>
+  <text x="576" y="228" font-size="12" text-anchor="middle" fill="#1d1d1f">터미널</text>
+  <text x="576" y="248" font-size="12" text-anchor="middle" fill="#6e6e73">resume 명령</text>
+  <text x="340" y="292" font-size="12" fill="#34c759">세 화면이 같은 문서를 읽으므로</text>
+  <text x="340" y="310" font-size="12" fill="#34c759">내용이 어긋날 경로가 없다</text>
+  <text x="340" y="334" font-size="12" fill="#6e6e73">영문판은 /site/resume/en</text>
+</svg>

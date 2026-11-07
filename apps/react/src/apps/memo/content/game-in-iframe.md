@@ -5,7 +5,13 @@ category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 별도로 배포한 Unity WebGL 게임 새싹 농장을 데스크톱의 앱으로 추가했다. iframe 삽입을 차단하는 헤더 확인, iframe 안을 클릭해도 창이 앞으로 오지 않던 문제와 blur 이벤트로 해결한 방법, 외부 사이트에 의존하지 않는 E2E, 그 코드가 프로젝트 앱 공통 컴포넌트가 된 과정.
 ---
 
-이전에 Unity로 만든 탑다운 게임 SproutFarm(새싹 농장)은 WebGL로 빌드해 Vercel에 별도로 배포되어 있다. Safari 포트폴리오에서 링크로 연결하는 대신, 이 데스크톱 안에서 바로 플레이할 수 있게 앱으로 추가했다([#33](https://github.com/hyeoniverse/MacFolio/pull/33)). 링크는 새 탭을 열어 이 사이트를 벗어나게 한다. 창으로 열면 게임을 플레이하고 창을 닫으면 원래 화면으로 돌아온다.
+## 배경
+
+SproutFarm(새싹 농장)은 이전에 Unity로 만든 탑다운 게임이다. Unity는 게임을 여러 플랫폼용으로 빌드할 수 있고, 그중 WebGL 빌드는 브라우저에서 실행되는 HTML·JavaScript·WebAssembly 파일 묶음을 만든다. 새싹 농장은 이 WebGL 빌드를 Vercel(정적 사이트 호스팅 서비스)에 별도로 배포해 `https://sprout-farm-beta.vercel.app/`에서 플레이할 수 있다.
+
+MacFolio의 Safari 포트폴리오에서는 이 주소로 링크만 걸어 두었다. 링크는 새 탭을 열어 MacFolio를 벗어나게 한다. 이 데스크톱 안에서 바로 플레이할 수 있게 새싹 농장을 앱으로 추가했다([#33](https://github.com/hyeoniverse/MacFolio/pull/33)). 창으로 열면 게임을 플레이하고, 창을 닫으면 원래 바탕화면으로 돌아온다.
+
+다른 사이트를 페이지 안에 표시하는 HTML 요소가 `<iframe>`이다. iframe은 부모 페이지 안에 독립된 문서를 하나 더 불러온다. 부모 페이지와 iframe 안 문서의 **출처**(origin: 프로토콜·도메인·포트의 조합)가 다르면, 브라우저의 동일 출처 정책[^same-origin]에 따라 서로의 DOM과 이벤트에 접근할 수 없다. MacFolio(`macfolio.hyeoniverse.com`)와 게임(`sprout-farm-beta.vercel.app`)은 도메인이 다르므로 이 경우에 해당한다.
 
 세 가지 방법을 비교했다.
 
@@ -21,17 +27,31 @@ summary: 별도로 배포한 Unity WebGL 게임 새싹 농장을 데스크톱의
 
 ## iframe 삽입 허용 여부 확인
 
-다른 사이트를 iframe에 넣으려면 그 사이트가 삽입을 허용해야 한다. 응답 헤더에 [`X-Frame-Options`](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Frame-Options)나 CSP의 [`frame-ancestors`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)가 있으면 브라우저가 표시하지 않는다.
+다른 사이트를 iframe에 넣으려면 그 사이트가 삽입을 허용해야 한다. 사이트는 응답 헤더로 삽입을 거부할 수 있다. 다른 사이트가 투명한 iframe으로 버튼을 덮어 클릭을 유도하는 공격(클릭재킹)을 막기 위한 장치다.
+
+| 응답 헤더                                                                                                                              | 뜻                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| [`X-Frame-Options: DENY`](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Frame-Options)                                      | 어떤 페이지의 iframe에도 표시하지 않는다            |
+| `X-Frame-Options: SAMEORIGIN`                                                                                                          | 같은 출처 페이지의 iframe에만 표시한다              |
+| CSP의 [`frame-ancestors 'self'`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors) 등 | 나열한 출처의 페이지에만 표시한다 (CSP의 최신 방식) |
+
+이 헤더가 있으면 브라우저는 iframe 안에 내용을 그리지 않는다. 그래서 게임 사이트의 응답 헤더에 두 헤더가 있는지 먼저 확인했다.
 
 ```bash
 curl -sI https://sprout-farm-beta.vercel.app/ | grep -iE "x-frame|content-security"
 ```
 
-출력이 없으므로 삽입할 수 있다. 게임의 첫 화면이 **PLAY를 눌러야 게임을 불러오는** 구조라는 점도 유리했다. 창을 열기만 해서는 용량이 큰 WebGL 빌드를 내려받지 않는다.
+`curl -sI`는 본문 없이 응답 헤더만 받아 출력하고, `grep`이 그중 두 헤더 이름을 대소문자 구분 없이 찾는다. 출력이 없으므로 두 헤더가 모두 없고, 삽입할 수 있다.
+
+![부모 페이지의 iframe 요청부터 브라우저가 응답 헤더를 확인해 게임을 그리기까지의 순서](./images/game-in-iframe-embed-check.svg '브라우저는 응답 헤더에 X-Frame-Options나 frame-ancestors가 있으면 iframe에 표시하지 않는다. 새싹 농장의 응답에는 둘 다 없다')
+
+게임의 첫 화면이 **PLAY를 눌러야 게임을 불러오는** 구조라는 점도 유리했다. ==창을 열기만 해서는 용량이 큰 WebGL 빌드를 내려받지 않는다.== 첫 화면은 Unity 로고와 PLAY 단추, 안내 문구만 있는 가벼운 페이지다.
+
+![새싹 농장 게임 사이트의 첫 화면. 어두운 배경에 Unity 로고, PLAY 단추, '누르면 게임을 불러와 · 소리도 같이 나와!' 문구](./images/game-in-iframe-play.jpg '게임 사이트의 첫 화면. PLAY를 누르기 전에는 WebGL 빌드를 내려받지 않으므로, 창을 열어 두기만 해서는 전송량이 거의 늘지 않는다')
 
 ## 앱 추가
 
-앱 목록은 `manifest.ts` 한 곳에 있다. 창 크기는 게임 화면(1280×720)과 같은 16:9 비율에 제목 막대 높이를 더했다.
+앱 목록은 `manifest.ts` 한 곳에 있다. 앱 이름·아이콘·창 크기를 여기에 적으면 Dock·Launchpad·터미널이 같은 값을 읽는다. 창 크기는 게임 화면(1280×720)과 같은 16:9 비율에 제목 막대 높이를 더했다. 너비 960px이면 16:9 화면 높이는 540px이고, 여기에 제목 막대 29px을 더해 569px이다.
 
 ```ts
 sproutfarm: {
@@ -44,13 +64,23 @@ sproutfarm: {
 
 처음에는 키보드로 조작하는 PC 게임이라 `desktopOnly` 속성을 새로 만들어 모바일 홈 화면과 단축어에서 제외했다. 이후 게임에 모바일 모드가 추가되어 이 속성을 제거하고 휴대폰에서도 열 수 있게 했다. 이 속성을 쓰는 앱이 새싹 농장 하나뿐이어서 속성 정의 자체도 삭제했다.
 
-처음 작성한 `apps/sproutfarm/SproutFarm.tsx`는 41줄이었다. `AppWindow` 안에 iframe 하나를 두고, [`allow`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#allow)`="autoplay; fullscreen; gamepad"`로 자동 재생·전체 화면·게임패드 권한을 부여했다.
+처음 작성한 `apps/sproutfarm/SproutFarm.tsx`는 41줄이었다. `AppWindow` 안에 iframe 하나를 두고, [`allow`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#allow)`="autoplay; fullscreen; gamepad"`로 자동 재생·전체 화면·게임패드 권한을 부여했다. `allow` 속성은 iframe 안 문서가 쓸 수 있는 브라우저 기능을 부모 페이지가 지정하는 권한 정책(Permissions Policy)이다. 예를 들어 `fullscreen`이 없으면 게임 안의 전체 화면 단추를 눌러도 전체 화면으로 바뀌지 않는다.
 
 ## iframe 안을 클릭해도 창이 앞으로 오지 않던 문제
 
-창은 클릭하는 시각에 맨 앞으로 온다. 창 프레임에 `onPointerDownCapture` 핸들러가 있기 때문이다. 그런데 iframe 안을 클릭하면 그 이벤트는 iframe 내부 문서에서만 처리되고, 바깥 문서로 전달되지 않는다. 다른 창 뒤에 있는 게임을 클릭해도 게임 창이 앞으로 오지 않았다.
+창은 클릭하는 시각에 맨 앞으로 온다. 창 프레임에 `onPointerDownCapture` 핸들러가 있어, 창 안 어디를 누르든 포인터 이벤트가 프레임을 지나가며 그 창을 맨 앞으로 올린다. 그런데 ==iframe 안을 클릭하면 그 이벤트는 iframe 내부 문서에서만 처리되고, 바깥 문서로 전달되지 않는다.== iframe 안 문서는 별도의 문서이고, 이벤트는 한 문서의 DOM 트리 안에서만 전파되기 때문이다. 그래서 다른 창 뒤에 있는 게임을 클릭해도 게임 창이 앞으로 오지 않았다.
 
-대신 바깥 문서가 감지할 수 있는 이벤트가 하나 있다. iframe 안을 클릭하면 포커스가 iframe으로 이동하면서 바깥 `window`에 [`blur`](https://developer.mozilla.org/ko/docs/Web/API/Window/blur_event) 이벤트가 발생한다. 그 시각에 [`document.activeElement`](https://developer.mozilla.org/ko/docs/Web/API/Document/activeElement)가 이 iframe인지 확인한다.
+### 포커스 이동은 바깥에서 감지할 수 있다
+
+바깥 문서가 감지할 수 있는 신호가 하나 있다. 포커스다. 포커스는 키보드 입력을 받을 요소가 어디인지를 나타내는 상태이고, 클릭하면 클릭한 곳으로 이동한다. iframe 안을 클릭하면 포커스가 바깥 문서에서 iframe 안 문서로 이동하면서, 바깥 `window`에 [`blur`](https://developer.mozilla.org/ko/docs/Web/API/Window/blur_event) 이벤트(포커스를 잃었다는 이벤트)가 발생한다.
+
+`blur`는 사용자가 다른 브라우저 탭으로 이동할 때도 발생하므로, iframe 때문인지 구분해야 한다. 이때 [`document.activeElement`](https://developer.mozilla.org/ko/docs/Web/API/Document/activeElement)를 확인한다. 포커스가 현재 문서에 포함된 iframe 안에 있으면 `activeElement`는 그 `<iframe>` 요소를 반환한다.
+
+| 상황                       | 바깥 `window`의 `blur` | `document.activeElement` |
+| -------------------------- | ---------------------- | ------------------------ |
+| 게임 iframe 안을 클릭      | 발생                   | 게임의 `<iframe>`        |
+| 다른 브라우저 탭으로 이동  | 발생                   | 이전에 포커스된 요소     |
+| 바깥 문서의 다른 창을 클릭 | 발생하지 않음          | 클릭한 창 안의 요소      |
 
 ```tsx
 useEffect(() => {
@@ -64,21 +94,26 @@ useEffect(() => {
 
 ![iframe 안을 눌렀을 때의 이벤트](./images/game-in-iframe-focus.svg '클릭 이벤트는 바깥 문서로 전달되지 않지만, 바깥 문서의 포커스 상실은 감지할 수 있다')
 
+다른 방법도 검토했다.
+
 | 방법                                                                                                   | 문제                                                      |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------- |
 | iframe 위에 투명 레이어를 덮고 첫 클릭 후 제거                                                         | 첫 클릭이 게임에 전달되지 않아 한 번 더 클릭해야 한다     |
 | 게임이 [`postMessage`](https://developer.mozilla.org/ko/docs/Web/API/Window/postMessage)로 클릭을 알림 | 게임 코드를 수정해야 하고, 다른 사이트에는 적용할 수 없다 |
 | **바깥 `window`의 `blur`**                                                                             | 어느 사이트를 삽입해도 같게 동작한다                      |
 
-한계도 있다. 포커스가 iframe 안에 있는 상태에서 다른 창을 클릭했다가 다시 iframe을 클릭하면, 그 사이 바깥 문서가 포커스를 가져갔으므로 `blur`가 다시 발생한다. 반면 iframe 안을 연속으로 두 번 클릭할 때는 포커스가 이미 iframe 안에 있어서 `blur`가 발생하지 않는다. 이 경우에는 창이 이미 맨 앞이라 문제가 없다.
+`postMessage`는 출처가 다른 문서끼리 메시지를 주고받는 API다. 게임이 클릭할 때마다 부모에게 메시지를 보내면 정확하지만, 게임 코드를 고쳐야 하고 직접 고칠 수 없는 다른 사이트에는 쓸 수 없다.
+
+> [!NOTE] blur가 다시 발생하는 경우와 발생하지 않는 경우
+> 포커스가 iframe 안에 있는 상태에서 다른 창을 클릭했다가 다시 iframe을 클릭하면, 그 사이 바깥 문서가 포커스를 가져갔으므로 `blur`가 다시 발생한다. 반면 iframe 안을 연속으로 두 번 클릭하면 포커스가 이미 iframe 안에 있어서 `blur`가 발생하지 않는다. 이 경우에는 창이 이미 맨 앞이라 문제가 없다.
 
 ## 창 끌기는 이미 정상 동작
 
-iframe 위로 마우스가 지나가면 `pointermove`가 iframe 문서로 전달되어, 창을 끄는 도중에 멈추는 문제가 흔하다. 이 데스크톱은 창 끌기를 시작하는 시각에 [`setPointerCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)를 호출하므로, 마우스가 iframe 위를 지나가도 이벤트가 끌기 영역으로 계속 전달된다. 별도 수정이 필요 없었다.
+iframe이 있는 창을 끌 때 흔한 문제가 있다. 창을 끄는 도중 마우스가 iframe 위로 지나가면 `pointermove` 이벤트가 iframe 안 문서로 전달되어, 바깥의 끌기 코드가 이벤트를 받지 못하고 창이 멈춘다. 이 데스크톱은 창 끌기를 시작하는 시각에 [`setPointerCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)를 호출한다. 이 메서드는 이후의 포인터 이벤트를 포인터 위치와 관계없이 지정한 요소로 보내게 한다. 그래서 마우스가 iframe 위를 지나가도 이벤트가 끌기 영역으로 계속 전달되고, 별도 수정이 필요 없었다.
 
 ## 외부 사이트에 의존하지 않는 시험
 
-E2E가 실제 게임 사이트를 불러오면, 그 사이트가 느리거나 변경될 때 시험이 실패한다. Playwright의 [`page.route`](https://playwright.dev/docs/api/class-page#page-route)로 그 주소의 요청을 가짜 페이지 응답으로 대체했다.
+==E2E가 실제 게임 사이트를 불러오면, 그 사이트가 느리거나 변경될 때 시험이 실패한다.== MacFolio 코드에는 문제가 없는데 게임 서버의 응답 시간 때문에 CI가 실패하는 상황이다. Playwright의 [`page.route`](https://playwright.dev/docs/api/class-page#page-route)는 브라우저가 보내는 요청 중 주소 패턴에 맞는 것을 가로채, 실제 서버 대신 시험 코드가 응답하게 한다. 이 기능으로 게임 주소의 요청을 가짜 페이지 응답으로 대체했다.
 
 ```ts
 await page.route('https://sprout-farm-beta.vercel.app/**', (route) =>
@@ -90,7 +125,9 @@ await expect(
 ).toBeVisible();
 ```
 
-iframe에 올바른 주소가 지정되고 내부가 렌더링되는지까지만 확인한다. 게임 자체의 시험은 게임 저장소의 범위다. 현재 `e2e/sproutfarm.spec.ts`에는 시험이 두 개 있다. "Dock(넘치면 Launchpad)에서 열면 배포한 게임을 창 안에 띄운다"와 "Safari 프로젝트 페이지에서 바로 플레이한다"다. 둘 다 같은 가짜 페이지를 쓴다.
+![E2E 시험에서 iframe 요청을 page.route가 가로채 가짜 응답을 돌려주는 흐름](./images/game-in-iframe-route.svg 'iframe의 요청은 실제 게임 사이트로 나가지 않고 page.route에서 START 단추 하나뿐인 HTML로 응답받는다')
+
+시험은 iframe에 올바른 주소가 지정되고 내부가 렌더링되는지까지만 확인한다. 가짜 페이지의 START 단추가 iframe 안에 보이면, 앱이 그 주소로 iframe을 만들었다는 뜻이다. 게임 자체의 시험은 게임 저장소의 범위다. 현재 `e2e/sproutfarm.spec.ts`에는 시험이 두 개 있다. "Dock(넘치면 Launchpad)에서 열면 배포한 게임을 창 안에 띄운다"와 "Safari 프로젝트 페이지에서 바로 플레이한다"다. 둘 다 같은 가짜 페이지를 쓴다.
 
 ## 이후: 게임 앱 코드가 프로젝트 앱의 공통 컴포넌트가 되었다
 
@@ -125,5 +162,29 @@ app: {
 - [iframe sandbox에서 allow-top-navigation을 빼 최상위 창 이동 막기](/memo/iframe-sandbox)
 - [최근접 이웃 보간과 정수 배율로 픽셀 그림 아이콘 확대하기](/memo/sproutfarm-icon)
 - [Playwright 모바일 에뮬레이션과 움직임 줄이기 기본값으로 E2E 안정시키기](/memo/playwright-mobile-and-motion)
+
+[^same-origin]: 동일 출처 정책은 한 출처에서 불러온 문서나 스크립트가 다른 출처의 리소스와 상호작용하는 방식을 제한하는 보안 규칙이다. 두 URL의 프로토콜·포트·호스트가 모두 같아야 같은 출처다. [MDN: Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: Same-origin policy](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)
+- [MDN: X-Frame-Options](https://developer.mozilla.org/ko/docs/Web/HTTP/Headers/X-Frame-Options)
+- [MDN: CSP frame-ancestors](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)
+- [MDN: &lt;iframe&gt;](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe)
+- [MDN: Window blur event](https://developer.mozilla.org/ko/docs/Web/API/Window/blur_event)
+- [MDN: Document.activeElement](https://developer.mozilla.org/en-US/docs/Web/API/Document/activeElement)
+- [MDN: Element.setPointerCapture()](https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture)
+- [MDN: Window.postMessage()](https://developer.mozilla.org/ko/docs/Web/API/Window/postMessage)
+- [Playwright: page.route](https://playwright.dev/docs/api/class-page#page-route)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 새싹 농장 게임 첫 화면: SproutFarm, [sprout-farm-beta.vercel.app](https://sprout-farm-beta.vercel.app/), 2026년 11월 직접 캡처
+
+</details>
 
 #MacFolio #Safari #새싹농장 #iframe

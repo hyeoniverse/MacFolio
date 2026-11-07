@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>스택 PR의 머지 순서에 따른 결과</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="28" font-size="13" font-weight="700" fill="#1d1d1f">구조: 위 PR(#141)의 대상 브랜치가 아래 PR(#143)의 브랜치</text>
+<rect x="20" y="40" width="120" height="36" rx="8" fill="#f2f2f7"/><text x="80" y="63" font-size="12" fill="#1d1d1f" text-anchor="middle">main</text>
+<rect x="210" y="40" width="190" height="36" rx="8" fill="#ffffff" stroke="#6e6e73"/><text x="305" y="63" font-size="12" fill="#1d1d1f" text-anchor="middle">#143 블로그 폴더 (→ main)</text>
+<rect x="460" y="40" width="160" height="36" rx="8" fill="#ffffff" stroke="#6e6e73"/><text x="540" y="63" font-size="12" fill="#1d1d1f" text-anchor="middle">#141 음악 (→ #143)</text>
+<line x1="210" y1="58" x2="144" y2="58" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="460" y1="58" x2="404" y2="58" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="98" width="600" height="110" rx="10" fill="#ecfaef"/>
+<text x="36" y="122" font-size="13" font-weight="700" fill="#34c759">순서 A (10월 9일): 위 PR을 먼저 머지</text>
+<text x="36" y="146" font-size="12" fill="#1d1d1f">1. #141을 #143 브랜치에 머지 → #143 브랜치에 음악 변경이 들어간다</text>
+<text x="36" y="168" font-size="12" fill="#1d1d1f">2. #143을 main에 머지 → 블로그 폴더와 음악이 함께 main에 들어간다</text>
+<text x="36" y="192" font-size="12" fill="#34c759">결과: 둘 다 main에 반영</text>
+<rect x="20" y="222" width="600" height="124" rx="10" fill="#fff1f0"/>
+<text x="36" y="246" font-size="13" font-weight="700" fill="#ff3b30">순서 B (다음 날 휴지통 PR): 아래 PR을 먼저 머지</text>
+<text x="36" y="270" font-size="12" fill="#1d1d1f">1. 아래 PR을 main에 머지 → 아래 PR의 브랜치는 역할이 끝난다</text>
+<text x="36" y="292" font-size="12" fill="#1d1d1f">2. 위 PR은 대상이 여전히 아래 PR의 브랜치 → 머지해도 그 브랜치에만 들어간다</text>
+<text x="36" y="316" font-size="12" fill="#ff3b30">결과: 위 PR은 "Merged"로 표시되지만 main에는 반영되지 않음</text>
+<text x="36" y="336" font-size="12" fill="#6e6e73">해결: 아래 PR을 머지한 뒤 위 PR의 대상 브랜치를 main으로 변경</text>
+</svg>

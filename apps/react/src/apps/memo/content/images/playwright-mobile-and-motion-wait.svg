@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">애니메이션 종료를 기다리는 두 방법</text>
+  <text x="24" y="54" font-size="12" fill="#6e6e73">같은 열기 애니메이션이 빠른 컴퓨터에서는 짧게, 느린 CI 러너에서는 길게 걸리는 경우 (막대 길이는 비율 예시)</text>
+
+  <!-- axis labels -->
+  <text x="24" y="92" font-size="13" font-weight="700" fill="#1d1d1f">① 고정 시간 기다리기</text>
+  <text x="24" y="112" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">await page.waitForTimeout(500)</text>
+
+  <text x="40" y="142" font-size="12" fill="#1d1d1f">빠른 컴퓨터</text>
+  <rect x="150" y="128" width="180" height="20" rx="4" fill="#0a84ff"/>
+  <text x="240" y="143" font-size="12" fill="#fff" text-anchor="middle">애니메이션</text>
+  <line x1="400" y1="122" x2="400" y2="154" stroke="#34c759" stroke-width="2"/>
+  <text x="408" y="143" font-size="12" fill="#248a3d">검사: 통과 (불필요한 대기 포함)</text>
+
+  <text x="40" y="180" font-size="12" fill="#1d1d1f">느린 CI 러너</text>
+  <rect x="150" y="166" width="330" height="20" rx="4" fill="#0a84ff"/>
+  <text x="315" y="181" font-size="12" fill="#fff" text-anchor="middle">애니메이션</text>
+  <line x1="400" y1="160" x2="400" y2="192" stroke="#ff3b30" stroke-width="2"/>
+  <text x="488" y="181" font-size="12" fill="#ff3b30">검사: 중간 값을 읽어 실패</text>
+
+  <line x1="24" y1="210" x2="616" y2="210" stroke="#c7c7cc"/>
+
+  <text x="24" y="240" font-size="13" font-weight="700" fill="#1d1d1f">② 실행 중인 애니메이션 수가 0이 될 때까지 기다리기</text>
+  <text x="24" y="260" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">await expect.poll(() =&gt; el.getAnimations().length).toBe(0)</text>
+
+  <text x="40" y="290" font-size="12" fill="#1d1d1f">빠른 컴퓨터</text>
+  <rect x="150" y="276" width="180" height="20" rx="4" fill="#0a84ff"/>
+  <text x="240" y="291" font-size="12" fill="#fff" text-anchor="middle">애니메이션</text>
+  <line x1="334" y1="270" x2="334" y2="302" stroke="#34c759" stroke-width="2"/>
+  <text x="342" y="291" font-size="12" fill="#248a3d">끝난 직후 검사: 통과</text>
+
+  <text x="40" y="328" font-size="12" fill="#1d1d1f">느린 CI 러너</text>
+  <rect x="150" y="314" width="330" height="20" rx="4" fill="#0a84ff"/>
+  <text x="315" y="329" font-size="12" fill="#fff" text-anchor="middle">애니메이션</text>
+  <line x1="484" y1="308" x2="484" y2="340" stroke="#34c759" stroke-width="2"/>
+  <text x="492" y="329" font-size="12" fill="#248a3d">끝난 뒤 검사: 통과</text>
+
+  <text x="24" y="366" font-size="12" fill="#6e6e73">expect.poll은 값이 기대와 같아질 때까지 짧은 간격으로 다시 읽고, 제한 시간(기본 5초)을 넘기면 실패한다</text>
+</svg>

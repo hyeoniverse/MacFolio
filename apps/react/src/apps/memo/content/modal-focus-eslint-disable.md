@@ -5,12 +5,43 @@ category: 개발 기록/MacFolio/화면·스타일
 summary: Modal의 초점 effect는 주석에 '열 때 한 번만'이라고 적혀 있었지만 [onClose]에 의존해, 부모가 렌더링마다 새 함수를 넘기면 초점이 처음 칸으로 돌아갔다. exhaustive-deps를 끈 주석이 원인을 가렸고, effect를 둘로 나눠 규칙을 끄지 않고 수정했다.
 ---
 
-저장소의 `eslint-disable` 주석은 같은 줄에 `-- 이유`를 붙이는 것이 관례다. `apps/react/src`의 `eslint-disable` 7개 가운데 두 곳만 이유가 윗줄 주석으로 분리되어 있었다. 이 두 곳을 관례대로 정리하려고 코드를 읽다가, 그중 공통 모달 컴포넌트 `Modal.tsx`에서 규칙을 끈 탓에 드러나지 않던 버그를 발견해 함께 수정했다([#295](https://github.com/hyeoniverse/MacFolio/pull/295)).
+MacFolio 저장소의 `eslint-disable` 주석은 같은 줄에 `-- 이유`를 붙이는 것이 관례다. `apps/react/src`의 `eslint-disable` 7개 가운데 두 곳만 이유가 윗줄 주석으로 분리되어 있었다. 이 두 곳을 관례대로 정리하려고 코드를 읽다가, 그중 공통 모달 컴포넌트 `Modal.tsx`에서 규칙을 끈 탓에 드러나지 않던 버그를 발견해 함께 수정했다([#295](https://github.com/hyeoniverse/MacFolio/pull/295)).
 
 | 파일                | 판정        | 조치                                      |
 | ------------------- | ----------- | ----------------------------------------- |
 | `Modal.tsx`         | 버그        | effect를 둘로 분리, `eslint-disable` 삭제 |
 | `DevCoursePage.tsx` | 의도한 생략 | 동작 유지, 이유를 같은 줄로 이동          |
+
+## 배경
+
+### 초점과 모달
+
+초점(focus)은 키보드 입력을 받는 요소를 가리킨다. 입력 칸에 초점이 있으면 타이핑한 글자가 그 칸에 들어가고, Tab 키를 누르면 다음 요소로 초점이 이동한다. 모달은 화면 가운데에 뜨고 뒤의 화면 조작을 막는 창이다. [WAI-ARIA 모달 다이얼로그 패턴](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)은 모달이 열리면 초점을 모달 안의 요소로 옮기도록 권장한다. 그래야 키보드 사용자가 바로 모달을 조작할 수 있다.
+
+### useEffect와 의존성 배열
+
+React 컴포넌트는 화면에 그릴 내용을 반환하는 함수이고, 상태가 바뀔 때마다 다시 호출된다. 이 호출을 렌더링이라고 한다. 초점 이동이나 이벤트 리스너 등록처럼 화면을 그린 뒤에 실행할 작업은 [`useEffect`](https://react.dev/reference/react/useEffect)에 넣는다.
+
+```tsx
+useEffect(() => {
+	input.current?.focus(); // effect 본문
+	return () => {}; // 정리 함수: 다음 실행 전이나 컴포넌트 제거 시 실행
+}, [a, b]); // 의존성 배열
+```
+
+React는 렌더링할 때마다 의존성 배열의 각 값을 이전 렌더링의 값과 [`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)로 비교한다. 하나라도 다르면 이전 정리 함수를 실행하고 effect를 다시 실행한다. 모두 같으면 건너뛴다. 숫자나 문자열은 값이 같으면 같다고 판정하지만, 함수와 객체는 **같은 객체인지**를 비교한다.
+
+![렌더링마다 새로 만드는 함수와 유지되는 ref 객체](./images/modal-focus-eslint-disable-identity.svg '부모가 렌더링할 때마다 () => setOpen(false)는 새 함수가 되어 Object.is가 false를 반환하고, useRef 객체는 같은 객체라 true를 반환한다')
+
+예를 들어 부모 컴포넌트가 `<Modal onClose={() => setOpen(false)} />`처럼 화살표 함수를 직접 넘기면, 부모가 렌더링될 때마다 내용이 같은 새 함수가 만들어진다. 반면 [`useRef`](https://react.dev/reference/react/useRef)가 반환하는 ref 객체는 컴포넌트가 화면에 있는 동안 같은 객체이고 `current` 속성값만 바뀐다.
+
+### exhaustive-deps 규칙과 eslint-disable 지시문
+
+ESLint는 코드의 문제 패턴을 검사하는 도구이고, [`react-hooks/exhaustive-deps`](https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps) 규칙은 effect 안에서 사용한 값이 의존성 배열에 모두 들어 있는지 검사한다. 빠진 값이 있으면 effect가 오래된 값을 계속 사용하는 버그가 생길 수 있어서 경고를 낸다.
+
+규칙을 특정 줄에서만 끄려면 [ESLint 지시문 주석](https://eslint.org/docs/latest/use/configure/rules#disabling-rules)을 사용한다. 지시문 뒤에 `--`를 쓰고 이유를 적으면 ESLint는 그 부분을 설명으로 취급한다.
+
+![eslint-disable 지시문의 구성](./images/modal-focus-eslint-disable-directive.svg '지시문, 끌 규칙 이름, -- 뒤의 이유를 한 줄에 적는다')
 
 ## 증상
 
@@ -42,7 +73,7 @@ useEffect(() => {
 }, [onClose]);
 ```
 
-주석은 "초점은 열 때 한 번만"인데, 의존성 배열은 `[onClose]`다. [`useEffect`](https://react.dev/reference/react/useEffect)는 의존성 값이 `Object.is`로 달라지면 정리 함수를 실행하고 effect를 다시 실행한다. 인라인 화살표 함수는 렌더링마다 새 객체이므로, 부모가 렌더링될 때마다 effect 전체가 다시 실행되고 `focus()`도 다시 호출된다.
+주석은 "초점은 열 때 한 번만"인데, 의존성 배열은 `[onClose]`다. 앞에서 설명한 대로 `useEffect`는 의존성 값이 `Object.is`로 달라지면 정리 함수를 실행하고 effect를 다시 실행한다. ==인라인 화살표 함수는 렌더링마다 새 객체==이므로, 부모가 렌더링될 때마다 effect 전체가 다시 실행되고 `focus()`도 다시 호출된다.
 
 ![수정 전후의 실행 순서](./images/modal-focus-eslint-disable-sequence.svg '수정 전에는 부모가 새 onClose를 넘기면 effect 하나가 통째로 다시 실행되어 initialFocus(첫 칸)로 초점을 옮긴다. 수정 후에는 Esc effect만 리스너를 다시 등록하고, 초점 effect는 initialFocus가 같아 실행되지 않는다')
 
@@ -50,7 +81,7 @@ useEffect(() => {
 
 [`react-hooks/exhaustive-deps`](https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps) 규칙이 이 effect에서 보고한 경고는 "`initialFocus`가 의존성 배열에 없다"였다. `onClose`는 이미 배열에 있었으므로 규칙이 문제 삼은 대상은 `initialFocus` 하나다. 작성 시각의 의도는 "`initialFocus`가 바뀌어도 초점을 다시 옮기지 않는다"였고, 그 의도를 위해 규칙을 껐다. 그런데 실제로 초점 이동을 반복시키는 값은 배열에 남아 있던 `onClose`였다.
 
-이 저장소의 lint는 `--max-warnings 0`이라 경고 하나도 CI 실패다. 규칙을 끄지 않았다면 경고가 남아 "이 effect가 무엇에 의존하는가"를 다시 확인했을 것이다. 끈 주석 한 줄이 경고와 함께 effect가 두 가지 일을 섞고 있다는 신호를 숨겼다. 이유도 윗줄의 별도 주석에 있어서, 무엇을 의도하고 무엇을 생략했는지가 규칙 비활성화 지시문과 분리되어 읽혔다.
+이 저장소의 lint는 `--max-warnings 0`이라 경고 하나도 CI 실패다. 규칙을 끄지 않았다면 경고가 남아 "이 effect가 무엇에 의존하는가"를 다시 확인했을 것이다. ==끈 주석 한 줄이 경고와 함께 effect가 두 가지 일을 섞고 있다는 신호를 숨겼다==. 이유도 윗줄의 별도 주석에 있어서, 무엇을 의도하고 무엇을 생략했는지가 규칙 비활성화 지시문과 분리되어 읽혔다.
 
 ## 수정
 
@@ -103,7 +134,8 @@ useEffect(() => {
 }, [repo]);
 ```
 
-두 곳의 차이는 생략한 값이 effect의 반복 조건에 영향을 주는가였다. `DevCoursePage`는 생략한 `cwd`가 반복을 막는 의도 그대로였고, `Modal`은 생략한 `initialFocus`와 무관하게 남아 있는 `onClose`가 반복을 일으켰다.
+> [!IMPORTANT] 의도한 생략과 버그의 구분
+> 두 곳의 차이는 생략한 값이 effect의 반복 조건에 영향을 주는가였다. `DevCoursePage`는 생략한 `cwd`가 반복을 막는 의도 그대로였고, `Modal`은 생략한 `initialFocus`와 무관하게 남아 있는 `onClose`가 반복을 일으켰다.
 
 ## 확인
 
@@ -119,7 +151,20 @@ useEffect(() => {
 
 ## 관련 글
 
-- [오버레이·포커스·Esc 처리를 공통 Modal 컴포넌트로 추출하기](/memo/ui-modal): 이 effect를 처음 만든 글. 남은 과제에 이 문제를 적어 두었다
+- [shared/ui 사용처 집계로 공통 컴포넌트 후보를 고르고 모달 동작을 Modal 컴포넌트로 추출하기](/memo/ui-modal): 이 effect를 처음 만든 글. 남은 과제에 이 문제를 적어 두었다
 - [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 같은 문제를 ref 보관으로 해결한 컴포넌트
+
+<details>
+<summary>참고 문헌</summary>
+
+- [React: useEffect](https://react.dev/reference/react/useEffect)
+- [React: useRef](https://react.dev/reference/react/useRef)
+- [React: exhaustive-deps](https://react.dev/reference/eslint-plugin-react-hooks/lints/exhaustive-deps)
+- [MDN: Object.is()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is)
+- [ESLint: Disabling rules with inline comments](https://eslint.org/docs/latest/use/configure/rules#disabling-rules)
+- [eslint-plugin-eslint-comments: require-description](https://eslint-community.github.io/eslint-plugin-eslint-comments/rules/require-description.html)
+- [W3C WAI-ARIA APG: Dialog (Modal) Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+
+</details>
 
 #MacFolio #공통컴포넌트 #React #ESLint #트러블슈팅

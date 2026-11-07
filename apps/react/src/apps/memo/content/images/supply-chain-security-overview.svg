@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>배포되는 사이트에 들어가는 외부 구성 요소는 하위 패키지, CI에서 실행되는 외부 액션, 커밋 기록이다. 각각 pnpm overrides와 pnpm audit, 커밋 SHA 고정과 Dependabot, gitleaks로 점검한다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">이 저장소의 공급망: 코드가 운영 서버에 닿기까지</text>
+<rect x="24" y="60" width="120" height="70" rx="10" fill="#f2f2f7"/>
+<text x="84" y="90" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">내가 쓴 코드</text>
+<text x="84" y="110" font-size="12" fill="#6e6e73" text-anchor="middle">apps · packages</text>
+<path d="M146 95 L176 95" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="180" y="60" width="120" height="70" rx="10" fill="#f2f2f7"/>
+<text x="240" y="90" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">git 저장소</text>
+<text x="240" y="110" font-size="12" fill="#6e6e73" text-anchor="middle">커밋 기록 전체</text>
+<path d="M302 95 L332 95" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="336" y="60" width="120" height="70" rx="10" fill="#f2f2f7"/>
+<text x="396" y="90" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">GitHub Actions</text>
+<text x="396" y="110" font-size="12" fill="#6e6e73" text-anchor="middle">설치 · 시험 · 빌드</text>
+<path d="M458 95 L488 95" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="492" y="60" width="124" height="70" rx="10" fill="#f2f2f7"/>
+<text x="554" y="90" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">운영 배포</text>
+<text x="554" y="110" font-size="12" fill="#6e6e73" text-anchor="middle">Cloudflare · VM</text>
+<rect x="24" y="170" width="184" height="78" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="2"/>
+<text x="36" y="194" font-size="13" font-weight="700" fill="#1d1d1f">① 하위 패키지</text>
+<text x="36" y="214" font-size="12" fill="#1d1d1f">npm 레지스트리에서 설치</text>
+<text x="36" y="232" font-size="12" fill="#ff3b30">알려진 취약점이 든 버전</text>
+<path d="M116 168 L360 132" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<rect x="228" y="170" width="184" height="78" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="2"/>
+<text x="240" y="194" font-size="13" font-weight="700" fill="#1d1d1f">② 외부 액션</text>
+<text x="240" y="214" font-size="12" fill="#1d1d1f">uses: 작성자/저장소@태그</text>
+<text x="240" y="232" font-size="12" fill="#ff3b30">태그가 다른 커밋으로 이동</text>
+<path d="M320 168 L396 132" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<rect x="432" y="170" width="184" height="78" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="2"/>
+<text x="444" y="194" font-size="13" font-weight="700" fill="#1d1d1f">③ 비밀 값</text>
+<text x="444" y="214" font-size="12" fill="#1d1d1f">API 키 · DB 비밀번호</text>
+<text x="444" y="232" font-size="12" fill="#ff3b30">커밋 기록에 남은 키</text>
+<path d="M500 168 L260 132" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<rect x="24" y="268" width="184" height="66" rx="10" fill="#f2f2f7"/>
+<text x="36" y="292" font-size="12" fill="#34c759" font-weight="700">대응</text>
+<text x="36" y="312" font-size="12" fill="#1d1d1f">pnpm overrides</text>
+<text x="36" y="328" font-size="12" fill="#1d1d1f">CI의 pnpm audit</text>
+<rect x="228" y="268" width="184" height="66" rx="10" fill="#f2f2f7"/>
+<text x="240" y="292" font-size="12" fill="#34c759" font-weight="700">대응</text>
+<text x="240" y="312" font-size="12" fill="#1d1d1f">커밋 SHA 고정</text>
+<text x="240" y="328" font-size="12" fill="#1d1d1f">permissions 축소 · Dependabot</text>
+<rect x="432" y="268" width="184" height="66" rx="10" fill="#f2f2f7"/>
+<text x="444" y="292" font-size="12" fill="#34c759" font-weight="700">대응</text>
+<text x="444" y="312" font-size="12" fill="#1d1d1f">gitleaks 사용자 규칙</text>
+<text x="444" y="328" font-size="12" fill="#1d1d1f">CI 작업 secrets</text>
+</svg>

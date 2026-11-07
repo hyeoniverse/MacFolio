@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">디코더 Masked MHA의 마스크 (앞 다섯 단어)</text>
+<text x="310.0" y="54" text-anchor="middle" font-size="12" fill="#6e6e73">key (주목받는 단어)</text>
+<text x="78" y="220.0" text-anchor="middle" font-size="12" fill="#6e6e73" transform="rotate(-90 78 220.0)">query (주목하는 단어)</text>
+<text x="198.0" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">&lt;sos&gt;</text>
+<text x="254.0" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">That</text>
+<text x="310.0" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">can't</text>
+<text x="366.0" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">turn</text>
+<text x="422.0" y="76" text-anchor="middle" font-size="12" fill="#1d1d1f">red</text>
+<text x="162" y="112.0" text-anchor="end" font-size="12" fill="#1d1d1f">&lt;sos&gt;</text>
+<rect x="170" y="80" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="198.0" y="113.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="226" y="80" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="254.0" y="113.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<rect x="282" y="80" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="310.0" y="113.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<rect x="338" y="80" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="366.0" y="113.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<rect x="394" y="80" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="422.0" y="113.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<text x="162" y="168.0" text-anchor="end" font-size="12" fill="#1d1d1f">That</text>
+<rect x="170" y="136" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="198.0" y="169.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="226" y="136" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="254.0" y="169.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="282" y="136" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="310.0" y="169.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<rect x="338" y="136" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="366.0" y="169.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<rect x="394" y="136" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="422.0" y="169.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<text x="162" y="224.0" text-anchor="end" font-size="12" fill="#1d1d1f">can't</text>
+<rect x="170" y="192" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="198.0" y="225.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="226" y="192" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="254.0" y="225.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="282" y="192" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="310.0" y="225.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="338" y="192" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="366.0" y="225.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<rect x="394" y="192" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="422.0" y="225.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<text x="162" y="280.0" text-anchor="end" font-size="12" fill="#1d1d1f">turn</text>
+<rect x="170" y="248" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="198.0" y="281.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="226" y="248" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="254.0" y="281.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="282" y="248" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="310.0" y="281.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="338" y="248" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="366.0" y="281.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="394" y="248" width="56" height="56" rx="0" fill="#f2f2f7" stroke="#fff"/>
+<text x="422.0" y="281.0" text-anchor="middle" font-size="12" fill="#ff3b30">−10⁹</text>
+<text x="162" y="336.0" text-anchor="end" font-size="12" fill="#1d1d1f">red</text>
+<rect x="170" y="304" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="198.0" y="337.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="226" y="304" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="254.0" y="337.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="282" y="304" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="310.0" y="337.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="338" y="304" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="366.0" y="337.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="394" y="304" width="56" height="56" rx="0" fill="#0a84ff" stroke="#fff" fill-opacity="0.18"/>
+<text x="422.0" y="337.0" text-anchor="middle" font-size="12" fill="#1d1d1f">계산</text>
+<rect x="474" y="110" width="16" height="16" rx="2" fill="#0a84ff" stroke="#0a84ff" fill-opacity="0.18"/>
+<text x="498" y="123" text-anchor="start" font-size="12" fill="#1d1d1f">원래 점수 유지</text>
+<rect x="474" y="140" width="16" height="16" rx="2" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="498" y="153" text-anchor="start" font-size="12" fill="#1d1d1f">아주 큰 음수로 교체</text>
+<text x="474" y="190" text-anchor="start" font-size="12" fill="#6e6e73">softmax 뒤</text>
+<text x="474" y="208" text-anchor="start" font-size="12" fill="#6e6e73">회색 칸의 주목 값은 0</text>
+<text x="474" y="244" text-anchor="start" font-size="12" fill="#6e6e73">예: can't 행은</text>
+<text x="474" y="262" text-anchor="start" font-size="12" fill="#6e6e73">&lt;sos&gt;, That, can't만</text>
+<text x="474" y="280" text-anchor="start" font-size="12" fill="#6e6e73">참조한다</text>
+<rect x="170" y="192" width="280" height="56" rx="0" fill="none" stroke="#ff9f0a" stroke-width="2.5"/>
+<text x="320" y="385" text-anchor="middle" font-size="12" fill="#6e6e73">대각선 위쪽은 아직 생성하지 않은 뒤쪽 단어라서 가린다</text>
+</svg>

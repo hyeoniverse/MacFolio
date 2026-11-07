@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+    <marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">www.example.net을 찾는 반복 질의와 위임 응답</text>
+  <g font-size="13" font-weight="600" text-anchor="middle">
+    <rect x="16" y="44" width="136" height="34" rx="6" fill="#1d1d1f"/><text x="84" y="66" fill="#fff">로컬 DNS 서버</text>
+    <rect x="200" y="44" width="120" height="34" rx="6" fill="#0a84ff"/><text x="260" y="66" fill="#fff">루트 서버</text>
+    <rect x="352" y="44" width="120" height="34" rx="6" fill="#0a84ff"/><text x="412" y="66" fill="#fff">.net 서버</text>
+    <rect x="504" y="44" width="120" height="34" rx="6" fill="#0a84ff"/><text x="564" y="66" fill="#fff">example.net 서버</text>
+  </g>
+  <g stroke="#c7c7cc" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="84" y1="78" x2="84" y2="350"/><line x1="260" y1="78" x2="260" y2="350"/><line x1="412" y1="78" x2="412" y2="350"/><line x1="564" y1="78" x2="564" y2="350"/>
+  </g>
+  <g stroke-width="1.5">
+    <line x1="84" y1="112" x2="258" y2="112" stroke="#1d1d1f" marker-end="url(#a)"/>
+    <line x1="260" y1="148" x2="86" y2="148" stroke="#0a84ff" stroke-dasharray="6 4" marker-end="url(#b)"/>
+    <line x1="84" y1="196" x2="410" y2="196" stroke="#1d1d1f" marker-end="url(#a)"/>
+    <line x1="412" y1="232" x2="86" y2="232" stroke="#0a84ff" stroke-dasharray="6 4" marker-end="url(#b)"/>
+    <line x1="84" y1="280" x2="562" y2="280" stroke="#1d1d1f" marker-end="url(#a)"/>
+    <line x1="564" y1="316" x2="86" y2="316" stroke="#34c759" stroke-width="2" marker-end="url(#c)"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="94" y="105">① www.example.net의 A 레코드?</text>
+    <text x="94" y="141" fill="#0a84ff">모른다. .net 서버(NS·주소)에 물어라</text>
+    <text x="94" y="189">② 같은 질문</text>
+    <text x="94" y="225" fill="#0a84ff">모른다. example.net 서버(NS·주소)에 물어라</text>
+    <text x="94" y="273">③ 같은 질문</text>
+    <text x="94" y="309" fill="#248a3d">답: www.example.net A 레코드</text>
+  </g>
+  <text x="320" y="370" text-anchor="middle" font-size="12" fill="#6e6e73">파란 점선은 위임 응답(referral), 초록 실선은 최종 답</text>
+</svg>

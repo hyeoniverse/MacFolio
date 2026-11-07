@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="300" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">황수관 교수 과목 수강생의 학번·중간성적: 아래에서 위로 계산</text>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <rect x="200" y="46" width="200" height="34" rx="6" fill="#eafaf0" stroke="#34c759"/><text x="300" y="68">C = π학번,중간성적(B)</text>
+    <rect x="200" y="118" width="200" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="300" y="140">B = 등록 ⋈과목번호 A</text>
+    <rect x="60" y="200" width="150" height="34" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="135" y="222">등록 (11튜플)</text>
+    <rect x="320" y="200" width="200" height="34" rx="6" fill="#fff4e5" stroke="#ff9f0a"/><text x="420" y="222">A = σ담당교수='황수관'(과목)</text>
+    <rect x="360" y="260" width="120" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="420" y="280">과목 (5튜플)</text>
+  </g>
+  <g stroke="#6e6e73">
+    <line x1="420" y1="258" x2="420" y2="238" marker-end="url(#a)"/>
+    <line x1="150" y1="198" x2="260" y2="156" marker-end="url(#a)"/>
+    <line x1="410" y1="198" x2="340" y2="156" marker-end="url(#a)"/>
+    <line x1="300" y1="116" x2="300" y2="84" marker-end="url(#a)"/>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <text x="530" y="222">1튜플 (C312)</text>
+    <text x="410" y="140">3튜플 (300·400·500)</text>
+    <text x="410" y="68">3튜플: (300, 90), (400, 90), (500, 85)</text>
+  </g>
+</svg>
