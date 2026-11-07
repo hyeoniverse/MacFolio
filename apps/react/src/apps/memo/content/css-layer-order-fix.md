@@ -131,7 +131,7 @@ Vite는 배포용 빌드에서 소스 파일을 묶어 몇 개의 JavaScript·CS
 </style>
 ```
 
-![메일 앱 본문 아래 "김정현에게 답장" 버튼. 파란 바탕 안에 좌우 여백이 있다](./images/css-layer-order-fix-mail-button.jpg#float-right '고친 뒤의 답장 버튼. 안쪽 여백 5px 14px')
+![메일 앱 본문 아래 "김정현에게 답장" 버튼. 파란 바탕 안에 좌우 여백이 있다](./images/css-layer-order-fix-mail-button.jpg '고친 뒤의 답장 버튼. 안쪽 여백 5px 14px')
 
 이 사이트의 보안 헤더(CSP)는 `style-src`에 `'unsafe-inline'`을 허용하고([CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)), 이미 로딩 화면용 인라인 스타일이 있어서 추가 변경이 필요 없었다. `styles/layers.css`는 개발 서버용으로 유지한다.
 

@@ -181,7 +181,7 @@ frame-src 'self' https://challenges.cloudflare.com https://newpick-tan.vercel.ap
 
 ## 주 언어와 기술: 칩과 검색
 
-![기술 칸에 react를 입력하자 칸 위로 React Query, React 19, react-beautiful-dnd 같은 후보 목록이 뜨고, 아래에는 고른 기술 칩이 줄지어 있다](./images/site-projects-editing-stack-chips.jpg#float-right '고른 기술은 칩으로, 후보는 칸에 붙은 목록으로. 코드의 후보 뒤에 npm 검색 결과가 붙는다')
+![기술 칸에 react를 입력하자 칸 위로 React Query, React 19, react-beautiful-dnd 같은 후보 목록이 뜨고, 아래에는 고른 기술 칩이 줄지어 있다](./images/site-projects-editing-stack-chips.jpg '고른 기술은 칩으로, 후보는 칸에 붙은 목록으로. 코드의 후보 뒤에 npm 검색 결과가 붙는다')
 
 기술은 칩으로 선택한다. 선택한 칩이 한 줄로 나열되고 그 아래 검색 칸이 있다. 검색 칸에 초점을 두면 칸 바로 아래에 후보 목록이 표시된다. 후보 순서는 프로젝트들의 기술과 사이트 주인의 기술(많이 쓴 것부터), 그다음 자주 쓰는 기술 1,700여 개(프레임워크·라이브러리·클라우드·DB·도구·AI·게임·결제·국내 서비스·개념까지)다. 칸을 누르기만 해도 후보 전체가 목록에 있어 스크롤하며 고를 수 있고, 입력하면 일치하는 후보로 필터링되며 일치 개수를 표시한다. ↑·↓와 Enter로 선택하고, 쉼표나 Enter로 목록에 없는 기술도 추가한다.
 

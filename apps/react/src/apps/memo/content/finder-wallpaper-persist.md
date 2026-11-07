@@ -11,7 +11,7 @@ summary: Finder의 '데스크탑 사진 설정'으로 선택한 배경화면이 
 
 macOS의 Finder에서 그림 파일을 오른쪽 클릭하면 '데스크탑 사진 설정' 메뉴가 나온다. 누르면 시스템 설정을 거치지 않고 그 그림이 바로 바탕화면이 된다. MacFolio의 Finder에도 같은 메뉴가 있다. 아래 그림처럼 Finder에 넣은 그림 `지구.webp`를 오른쪽 클릭해 '데스크탑 사진 설정'을 누르면 바탕화면이 그 그림으로 바뀐다.
 
-![Finder에서 그림을 오른쪽 클릭해 연 메뉴. 열기, 데스크탑 사진 설정, 이름 변경, 휴지통으로 이동 항목이 있다](./images/finder-wallpaper-persist-menu.jpg#float-right "방문자로 Finder에 넣은 그림 '지구.webp'의 오른쪽 클릭 메뉴. 두 번째 항목이 '데스크탑 사진 설정'이다")
+![Finder에서 그림을 오른쪽 클릭해 연 메뉴. 열기, 데스크탑 사진 설정, 이름 변경, 휴지통으로 이동 항목이 있다](./images/finder-wallpaper-persist-menu.jpg "방문자로 Finder에 넣은 그림 '지구.webp'의 오른쪽 클릭 메뉴. 두 번째 항목이 '데스크탑 사진 설정'이다")
 
 선택한 배경화면은 서버가 아니라 방문자의 브라우저에 저장된다. 저장 위치는 `localStorage`다. `localStorage`는 웹 페이지가 문자열 키와 값을 브라우저에 저장하는 저장소로, 탭이나 브라우저를 닫았다 열어도 값이 남는다[^localstorage]. MacFolio는 화면 모드, 배경화면, 클릭 소리 같은 설정을 `macfolio:settings` 키 하나에 JSON으로 저장하고, 앱을 열 때마다 이 값을 읽어 화면을 복원한다.
 
@@ -133,7 +133,7 @@ poster={poster && poster !== src ? poster : undefined}
 
 파일 없이 QuickTime Player를 실행하면 "재생할 파일을 고르세요"라는 제목 아래 동영상·소리 파일 이름을 한 줄씩 나열했다. 실제 macOS에서는 미리보기와 같은 열기 창(파일 선택 대화상자)이 표시되고, 그 앱이 열 수 없는 파일은 흐리게 비활성으로 표시된다. 예를 들어 QuickTime의 열기 창에서 PDF는 목록에 보이지만 선택할 수 없다. 미리보기에는 이미 그 열기 창(`apps/preview/OpenPanel.tsx`)이 있었다.
 
-![QuickTime Player의 열기 창](./images/finder-wallpaper-persist-quicktime.jpg#float-right '파일 없이 실행한 QuickTime Player. 미리보기와 같은 열기 창이고 맨 위 항목이 QuickTime Player 폴더다 (API 없는 미리보기 서버라 파일이 없다)')
+![QuickTime Player의 열기 창](./images/finder-wallpaper-persist-quicktime.jpg '파일 없이 실행한 QuickTime Player. 미리보기와 같은 열기 창이고 맨 위 항목이 QuickTime Player 폴더다 (API 없는 미리보기 서버라 파일이 없다)')
 
 `OpenPanel`이 호출한 앱 정보를 `app` prop으로 받게 했다. 이름·아이콘과 "열 수 있는 파일인가"를 판단하는 함수 하나다. 기본값은 미리보기라서 미리보기 쪽 코드는 변경하지 않았다.
 

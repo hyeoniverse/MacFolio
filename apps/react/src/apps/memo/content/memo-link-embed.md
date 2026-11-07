@@ -155,7 +155,7 @@ p: ({ node, children, ...rest }) => {
 
 관리자로 로그인하면 글은 Milkdown(ProseMirror) 편집기로 열린다. 편집기에서도 같은 임베드가 보여야 읽기 화면과 같은 모양으로 글을 쓸 수 있다. 다만 편집기는 주소를 고칠 방법도 제공해야 한다.
 
-![편집 화면의 YouTube 임베드](./images/memo-link-embed-editor.jpg#float-right '편집 화면에 마우스를 올린 모습. 읽기 화면과 같은 재생기의 제목 줄 아래 왼쪽에 주소 바꾸기·링크로 바꾸기·임베드 삭제 버튼이 보인다')
+![편집 화면의 YouTube 임베드](./images/memo-link-embed-editor.jpg '편집 화면에 마우스를 올린 모습. 읽기 화면과 같은 재생기의 제목 줄 아래 왼쪽에 주소 바꾸기·링크로 바꾸기·임베드 삭제 버튼이 보인다')
 
 ProseMirror에서 블록을 다르게 그리는 방법은 두 가지다.
 
@@ -200,7 +200,7 @@ state.doc.descendants((node, pos) => {
 
 주소 문단을 숨기는 것도 장식이다. `Decoration.node`로 문단에 `memo-embed-source` 클래스를 붙이고, 선택 영역이 그 문단 안에 있는 경우에만 `data-editing`을 더한다. CSS는 `data-editing`이 없는 주소 문단의 높이와 여백을 0으로 만든다. 문서에서는 문단이 그대로이므로 저장되는 Markdown은 주소 한 줄이다.
 
-![주소를 고치는 편집 화면](./images/memo-link-embed-editing.jpg#float-left '주소 바꾸기를 누른 모습. 숨겼던 주소 문단이 재생기 위에 보이고 주소 전체가 골라져, 새 주소를 입력하거나 붙여 넣으면 된다')
+![주소를 고치는 편집 화면](./images/memo-link-embed-editing.jpg '주소 바꾸기를 누른 모습. 숨겼던 주소 문단이 재생기 위에 보이고 주소 전체가 골라져, 새 주소를 입력하거나 붙여 넣으면 된다')
 
 ==높이가 0인 문단에는 브라우저의 위·아래 화살표 이동이 커서를 두지 않고 건너뛴다==. 그래서 `handleKeyDown`에서 커서가 문단 끝에 있고(`view.endOfTextblock`) 옆 블록이 주소 문단이면, 직접 그 안에 커서를 둔다. 아래로 들어가면 주소 앞, 위로 들어가면 주소 끝이다.
 

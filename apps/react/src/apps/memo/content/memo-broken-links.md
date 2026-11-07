@@ -46,7 +46,7 @@ Markdown 문법의 기준은 두 문서다.
 
 `트래픽 분석 5` 글의 관련 글 절이 링크가 아니라 `/memo/analytics-activity-monitor` 같은 주소 글자로만 표시됐다.
 
-![고치기 전 관련 글 절](./images/memo-broken-links-before.jpg#float-right '/memo/activity-live-refresh의 관련 글 절. 링크 문법 없이 주소만 적어 누를 수 없는 글자로 표시된다')
+![고치기 전 관련 글 절](./images/memo-broken-links-before.jpg '/memo/activity-live-refresh의 관련 글 절. 링크 문법 없이 주소만 적어 누를 수 없는 글자로 표시된다')
 
 주소 글자는 누를 수 없고, 독자는 어느 글인지 제목도 알 수 없다. 같은 형식으로 쓴 글이 더 있는지 저장소 글 223편 전체를 스크립트로 검사했고, 세 종류의 문제가 글 11편에서 확인됐다.
 
