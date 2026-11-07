@@ -21,28 +21,7 @@ summary: 화면 E2E를 3개에서 6개 샤드로 나눠 PR 시험 시간을 약 
 
 - **작업(job)**: GitHub Actions 워크플로를 구성하는 실행 단위. 작업마다 새 가상 머신에서 실행되므로, 작업을 나누면 병렬로 실행할 수 있다. `needs:`로 "이 작업은 저 작업이 끝난 뒤 실행"이라는 순서를 지정한다.
 - **matrix**: 작업 하나를 변수 값마다 복제해 실행하는 설정. `shard: [1, 2, 3]`이면 같은 작업이 `shard=1`, `2`, `3`으로 세 번 동시에 실행된다.
-- **샤드(shard)**<details>
-
-<summary>참고 문헌</summary>
-
-- Playwright 문서, [Sharding](https://playwright.dev/docs/test-sharding), [Projects](https://playwright.dev/docs/test-projects)
-- GitHub Docs, [Workflow syntax: jobs.<job_id>.strategy.fail-fast](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast), [jobs.<job_id>.needs](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds)
-- GitHub Docs, [Events that trigger workflows: pull_request](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request) (`GITHUB_SHA`가 머지 미리보기 커밋, `GITHUB_REF`가 `refs/pull/<번호>/merge`)
-- GitHub Docs, [Storing and sharing data from a workflow](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow) (아티팩트와 보관 기간)
-- GitHub REST API, [List artifacts for a repository](https://docs.github.com/en/rest/actions/artifacts#list-artifacts-for-a-repository)
-- Pro Git, [Git의 내부: Git 개체](https://git-scm.com/book/ko/v2/Git%EC%9D%98-%EB%82%B4%EB%B6%80-Git-%EA%B0%9C%EC%B2%B4), [Branches in a Nutshell](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell)
-
-</details>
-
-<details>
-<summary>사진 출처</summary>
-
-- 커밋 객체와 트리, 블롭의 관계: Scott Chacon·Ben Straub, Pro Git 2판, [3.1 Git Branching - Branches in a Nutshell](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) (원본 [commit-and-tree.png](https://git-scm.com/book/en/v2/images/commit-and-tree.png)), CC BY-NC-SA 3.0
-
-</details>
-
-[^shard]: 전체 시험을 나눈 묶음 하나. Playwright의 `--shard=2/6`은 "시험을 6묶음으로 나눈 것 중 두 번째만 실행"이라는 뜻이다.
-
+- **샤드(shard)**: 전체 시험을 나눈 묶음 하나. Playwright의 `--shard=2/6`은 "시험을 6묶음으로 나눈 것 중 두 번째만 실행"이라는 뜻이다.
 - **Playwright project**: 같은 시험을 다른 브라우저·기기 설정으로 실행하는 단위. MacFolio는 데스크톱 Chromium, iPhone, Android 세 project를 사용한다.
 - **아티팩트(artifact)**: 워크플로 실행이 끝난 뒤에도 보관되는 파일. 시험 보고서나 빌드 결과를 업로드해 두고, 다른 실행이나 API에서 이름으로 조회할 수 있다. 보관 기간(`retention-days`)이 지나면 만료된다.
 
@@ -199,7 +178,24 @@ git rev-parse HEAD^{tree}     # PR 브랜치와 머지된 main 커밋에서 같�
 - [이미지 로드 전 좌표와 누락된 dragover로 흔들린 끌기 E2E](/memo/flaky-drag-e2e)
 - [command= 제한 SSH 키와 GHCR 이미지로 하는 API 자동 배포와 롤백](/memo/api-auto-deploy)
 
-[^shard]: 전체 시험을 여러 묶음으로 나눠 서로 다른 머신에서 동시에 실행하는 방식. 각 묶음을 샤드라고 한다. GitHub Actions에서는 matrix 작업 하나가 샤드 하나를 실행한다.
+<details>
+<summary>참고 문헌</summary>
+
+- Playwright 문서, [Sharding](https://playwright.dev/docs/test-sharding), [Projects](https://playwright.dev/docs/test-projects)
+- GitHub Docs, [Workflow syntax: jobs.<job_id>.strategy.fail-fast](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idstrategyfail-fast), [jobs.<job_id>.needs](https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds)
+- GitHub Docs, [Events that trigger workflows: pull_request](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request) (`GITHUB_SHA`가 머지 미리보기 커밋, `GITHUB_REF`가 `refs/pull/<번호>/merge`)
+- GitHub Docs, [Storing and sharing data from a workflow](https://docs.github.com/en/actions/how-tos/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow) (아티팩트와 보관 기간)
+- GitHub REST API, [List artifacts for a repository](https://docs.github.com/en/rest/actions/artifacts#list-artifacts-for-a-repository)
+- Pro Git, [Git의 내부: Git 개체](https://git-scm.com/book/ko/v2/Git%EC%9D%98-%EB%82%B4%EB%B6%80-Git-%EA%B0%9C%EC%B2%B4), [Branches in a Nutshell](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 커밋 객체와 트리, 블롭의 관계: Scott Chacon·Ben Straub, Pro Git 2판, [3.1 Git Branching - Branches in a Nutshell](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) (원본 [commit-and-tree.png](https://git-scm.com/book/en/v2/images/commit-and-tree.png)), CC BY-NC-SA 3.0
+
+</details>
 
 [^tree]: git이 디렉터리 구조와 파일 내용을 저장하는 객체. 커밋 객체는 트리 하나와 부모 커밋, 작성자, 시각을 담으므로 파일이 같아도 커밋 해시는 달라질 수 있다. [Pro Git: Git Objects](https://git-scm.com/book/ko/v2/Git%EC%9D%98-%EB%82%B4%EB%B6%80-Git-%EA%B0%9C%EC%B2%B4)
 

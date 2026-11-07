@@ -42,6 +42,16 @@ describe('REMARK_PLUGINS', () => {
 		);
 	});
 
+	it('글줄 속 <details>(링크 글자 등)는 접기 블록으로 바꾸지 않는다', () => {
+		const html = render('- [편집기에 <details> 토글 추가하기](/memo/a): 설명\n\n표 | 값\n--- | ---\n<details> | 칸');
+		expect(html).not.toContain('<details');
+		expect(html).toContain('<a href="/memo/a">편집기에');
+		// 목록·인용 안의 블록 줄은 그대로 접기 블록이다
+		expect(render('- 항목\n\n  <details>\n  <summary>용어</summary>\n\n  내용\n\n  </details>')).toContain(
+			'<details class="memo-details"><summary>용어</summary>'
+		);
+	});
+
 	it('<details id>는 user-content-를 붙인 id로 (본문 링크로 찾아간다)', () => {
 		expect(render('<details id="terms">\n<summary>용어</summary>\n\n내용\n\n</details>')).toBe(
 			'<details class="memo-details" id="user-content-terms"><summary>용어</summary><p>내용</p></details>'

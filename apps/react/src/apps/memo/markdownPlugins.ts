@@ -251,6 +251,9 @@ export const decodeText = (text: string) =>
  * `<details id="terms">`이면 `[링크](#terms)`로 찾아갈 수 있다. 사이트의 다른 id와 겹치지 않게 각주처럼
  * `user-content-`를 앞에 붙인다 (MarkdownLink가 둘 다 찾는다)
  */
+/** 블록을 자식으로 담는 Markdown 노드 (토글 여는·닫는 줄이 올 수 있는 곳) */
+const BLOCK_CONTAINERS = new Set(['root', 'blockquote', 'list', 'listItem', 'footnoteDefinition']);
+
 export function remarkDetails() {
 	const group = (parent: MdNode) => {
 		if (!parent.children) return;
@@ -258,7 +261,9 @@ export function remarkDetails() {
 		const stack: { node: MdNode; from: MdNode[] }[] = [];
 		let target = out;
 		for (const child of parent.children) {
-			group(child);
+			// 블록을 담는 노드만 들여다본다. 문단·제목·표 칸·링크 안의 HTML은 글줄 속 글자라서
+			// "[편집기에 <details> 토글 추가하기](…)" 같은 링크 글자를 토글로 바꾸지 않는다
+			if (BLOCK_CONTAINERS.has(child.type)) group(child);
 			const html = child.type === 'html' ? (child.value ?? '').trim() : '';
 			const open = html.match(DETAILS_OPEN);
 			if (open) {
