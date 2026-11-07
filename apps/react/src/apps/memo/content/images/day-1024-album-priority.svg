@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+  <rect width="640" height="300" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">사진 위젯이 보일 앨범을 고르는 순서</text>
+  <text x="20" y="52" font-size="13" fill="#0a84ff" font-family="Menlo, monospace">effectiveAlbum = local ?? siteDefault ?? undefined</text>
+
+  <!-- step boxes -->
+  <rect x="20" y="76" width="180" height="76" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="34" y="100" font-size="13" font-weight="700" fill="#1d1d1f">1. 이 브라우저의 값</text>
+  <text x="34" y="120" font-size="12" fill="#6e6e73">localStorage의 위젯 자리</text>
+  <text x="34" y="140" font-size="12" fill="#6e6e73" font-family="Menlo, monospace">'qru' 또는 'all'</text>
+
+  <rect x="230" y="76" width="180" height="76" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="244" y="100" font-size="13" font-weight="700" fill="#1d1d1f">2. 사이트 기본값</text>
+  <text x="244" y="120" font-size="12" fill="#6e6e73">GET /site의</text>
+  <text x="244" y="140" font-size="12" fill="#6e6e73" font-family="Menlo, monospace">widgets.photoAlbum</text>
+
+  <rect x="440" y="76" width="180" height="76" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="454" y="100" font-size="13" font-weight="700" fill="#1d1d1f">3. 모든 앨범</text>
+  <text x="454" y="120" font-size="12" fill="#6e6e73">코드 기본 동작</text>
+  <text x="454" y="140" font-size="12" fill="#6e6e73" font-family="Menlo, monospace">undefined</text>
+
+  <line x1="200" y1="114" x2="226" y2="114" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="410" y1="114" x2="436" y2="114" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="213" y="172" font-size="12" text-anchor="middle" fill="#6e6e73">없으면</text>
+  <text x="423" y="172" font-size="12" text-anchor="middle" fill="#6e6e73">null이면</text>
+
+  <!-- examples -->
+  <text x="20" y="210" font-size="13" font-weight="700" fill="#1d1d1f">예: 관리자가 노트북에서 'qru' 앨범을 고른 뒤</text>
+  <rect x="20" y="222" width="290" height="62" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="34" y="246" font-size="12" fill="#1d1d1f">처음 온 아이폰 Safari: 1이 비어 있음</text>
+  <text x="34" y="266" font-size="12" fill="#0a84ff">→ 2의 'qru' 앨범을 보인다</text>
+  <rect x="330" y="222" width="290" height="62" rx="8" fill="#ffffff" stroke="#34c759" stroke-width="2"/>
+  <text x="344" y="246" font-size="12" fill="#1d1d1f">방문자가 '모든 앨범'을 직접 고름: 1 = 'all'</text>
+  <text x="344" y="266" font-size="12" fill="#34c759">→ 2보다 앞서 모든 앨범을 보인다</text>
+</svg>

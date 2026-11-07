@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">192.168.32.0/24를 /26 서브넷 네 개로 나누고 192.168.32.189가 속한 곳 찾기</text>
+  <g stroke="#1d1d1f" stroke-width="1">
+    <rect x="40" y="56" width="140" height="40" fill="#f2f2f7"/>
+    <rect x="180" y="56" width="140" height="40" fill="#f2f2f7"/>
+    <rect x="320" y="56" width="140" height="40" fill="#e5f1ff" stroke="#0a84ff" stroke-width="2"/>
+    <rect x="460" y="56" width="140" height="40" fill="#f2f2f7"/>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <text x="110" y="74">.0/26</text><text x="110" y="89" fill="#6e6e73">.0 ~ .63</text>
+    <text x="250" y="74">.64/26</text><text x="250" y="89" fill="#6e6e73">.64 ~ .127</text>
+    <text x="390" y="74" fill="#0a84ff" font-weight="600">.128/26</text><text x="390" y="89" fill="#0a84ff">.128 ~ .191</text>
+    <text x="530" y="74">.192/26</text><text x="530" y="89" fill="#6e6e73">.192 ~ .255</text>
+  </g>
+  <line x1="410" y1="100" x2="410" y2="114" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="410" y="128" text-anchor="middle" font-size="12" fill="#0a84ff">.189</text>
+  <g font-family="Menlo, monospace" font-size="13" fill="#1d1d1f">
+    <text x="40" y="168">주소 마지막 옥텟   189 = 10 111101</text>
+    <text x="40" y="192">마스크 마지막 옥텟 192 = 11 000000</text>
+    <line x1="40" y1="200" x2="380" y2="200" stroke="#6e6e73"/>
+    <text x="40" y="220" fill="#0a84ff">AND → 네트워크       128 = 10 000000</text>
+    <text x="40" y="246" fill="#ff9f0a">호스트 비트 모두 1   191 = 10 111111</text>
+  </g>
+  <g font-size="12.5" fill="#1d1d1f">
+    <text x="410" y="168">네트워크 주소 192.168.32.128</text>
+    <text x="410" y="192">브로드캐스트 192.168.32.191</text>
+    <text x="410" y="216">사용 가능 .129 ~ .190</text>
+    <text x="410" y="240">호스트 수 2⁶ − 2 = 62</text>
+  </g>
+  <text x="40" y="290" font-size="12.5" fill="#6e6e73">/26 = 마스크 255.255.255.192: 앞 26비트가 네트워크, 뒤 6비트가 호스트.</text>
+  <text x="40" y="312" font-size="12.5" fill="#6e6e73">/24에서 2비트를 빌려 2² = 4개의 서브넷을 만들고, 서브넷마다 2⁶ = 64개 주소를 갖는다.</text>
+</svg>

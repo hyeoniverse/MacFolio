@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>ISO 8601 문자열에서 화면 문구까지</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">expiresAt 문자열 하나가 화면 문구가 되기까지</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">서버는 UTC로 보내고, 브라우저는 사용자 시간대(한국 UTC+9)로 읽는다</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="18" fill="#1d1d1f">
+    <text x="60" y="104">2026-10-02</text><text x="186" y="104" fill="#ff9f0a">T</text><text x="204" y="104">22:03:00.000</text><text x="352" y="104" fill="#ff3b30">Z</text>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <path d="M60 114 H178" stroke="#6e6e73"/><text x="119" y="132" text-anchor="middle">날짜</text>
+    <text x="192" y="132" text-anchor="middle" fill="#ff9f0a">구분자</text>
+    <path d="M204 114 H344" stroke="#6e6e73"/><text x="274" y="132" text-anchor="middle">시각 (밀리초까지)</text>
+    <text x="358" y="132" text-anchor="middle" fill="#ff3b30">UTC</text>
+  </g>
+  <path d="M220 146 V176" stroke="#0a84ff" stroke-width="2"/><path d="M220 184 l-5 -10 h10z" fill="#0a84ff"/>
+  <text x="232" y="168" font-size="12" fill="#0a84ff">new Date(value) · 사용자 시간대 +9시간</text>
+  <rect x="24" y="190" width="592" height="56" rx="10" fill="#f2f2f7"/>
+  <g font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">
+    <text x="40" y="214">getFullYear() 2026 · getMonth()+1 10 · getDate() 3</text>
+    <text x="40" y="234">getHours() 7 · getMinutes() 3 → '03'</text>
+  </g>
+  <path d="M220 246 V266" stroke="#0a84ff" stroke-width="2"/><path d="M220 274 l-5 -10 h10z" fill="#0a84ff"/>
+  <rect x="24" y="276" width="592" height="40" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="40" y="301" font-size="14" font-weight="700" fill="#1d1d1f">2026년 10월 3일 오전 7:03</text>
+  <text x="300" y="301" font-size="12" fill="#6e6e73">(UTC 22시는 한국 다음 날 오전 7시)</text>
+</svg>

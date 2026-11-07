@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>대소문자만 다른 두 파일</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="350" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">대소문자만 다른 두 파일과 import 해석</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">같은 폴더의 Slides.tsx와 slides.ts, 그리고 import { Slides } from './Slides'</text>
+<rect x="20" y="66" width="290" height="270" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="34" y="90" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">Linux (CI)</text>
+<text x="34" y="108" font-size="12" fill="#6e6e73" text-anchor="start">파일 시스템이 대소문자를 구분</text>
+<text x="34" y="134" font-size="12" fill="#6e6e73" text-anchor="start">확장자를 붙여 차례로 찾는다</text>
+<rect x="34" y="142" width="262" height="30" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="44" y="162" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">1. ./Slides.ts</text>
+<rect x="34" y="180" width="262" height="30" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="44" y="200" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">2. ./Slides.tsx</text>
+<text x="286" y="162" font-size="12" fill="#6e6e73" text-anchor="end">없음</text>
+<text x="286" y="200" font-size="12" fill="#34c759" text-anchor="end" font-weight="700">있음, 선택</text>
+<rect x="34" y="226" width="262" height="52" rx="6" fill="#ecf9ef" stroke="#34c759" stroke-width="1.2"/>
+<text x="44" y="248" font-size="12" fill="#1d1d1f" text-anchor="start">Slides.tsx의 Slides 컴포넌트를 가져온다</text>
+<text x="44" y="266" font-size="12" fill="#34c759" text-anchor="start" font-weight="700">타입 검사·빌드·시험 통과</text>
+<text x="34" y="302" font-size="12" fill="#6e6e73" text-anchor="start">Slides.ts와 slides.ts는</text>
+<text x="34" y="319" font-size="12" fill="#6e6e73" text-anchor="start">서로 다른 이름이다</text>
+<rect x="330" y="66" width="290" height="270" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="344" y="90" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">macOS (개발 환경)</text>
+<text x="344" y="108" font-size="12" fill="#6e6e73" text-anchor="start">APFS 기본값은 대소문자를 구분하지 않음</text>
+<text x="344" y="134" font-size="12" fill="#6e6e73" text-anchor="start">확장자를 붙여 차례로 찾는다</text>
+<rect x="344" y="142" width="262" height="30" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="354" y="162" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">1. ./Slides.ts</text>
+<rect x="344" y="180" width="262" height="30" rx="4" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="354" y="200" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">2. ./Slides.tsx</text>
+<text x="596" y="162" font-size="12" fill="#ff3b30" text-anchor="end" font-weight="700">slides.ts와 일치, 선택</text>
+<text x="596" y="200" font-size="12" fill="#6e6e73" text-anchor="end">확인하지 않음</text>
+<rect x="344" y="226" width="262" height="52" rx="6" fill="#fff0ef" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="354" y="248" font-size="12" fill="#1d1d1f" text-anchor="start">slides.ts에는 Slides export가 없다</text>
+<text x="354" y="266" font-size="12" fill="#ff3b30" text-anchor="start" font-weight="700">타입 검사·빌드 실패</text>
+<text x="344" y="302" font-size="12" fill="#6e6e73" text-anchor="start">Slides.ts와 slides.ts를</text>
+<text x="344" y="319" font-size="12" fill="#6e6e73" text-anchor="start">같은 이름으로 취급한다</text>
+</svg>

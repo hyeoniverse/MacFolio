@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>formatToParts 비교</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="700">문구는 ICU에 맡기지 않고, 숫자만 받아 직접 조립한다</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73" text-anchor="start">입력: 2026-09-28T01:36:00Z, timeZone 'Asia/Seoul'(한국 시각 오전 10시 36분). 칸은 formatToParts로 나눈 구성</text>
+<text x="20" y="84" font-size="12" fill="#ff3b30" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">수정 전: new Intl.DateTimeFormat('ko-KR', { timeZone, …options }).format(date)</text>
+<rect x="20" y="96" width="110" height="50" rx="6" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.4"/>
+<text x="75.0" y="116" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">dayPeriod</text>
+<text x="75.0" y="136" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">'오전'</text>
+<rect x="136" y="96" width="70" height="50" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.4"/>
+<text x="171.0" y="116" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">literal</text>
+<text x="171.0" y="136" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">' '</text>
+<rect x="212" y="96" width="70" height="50" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.4"/>
+<text x="247.0" y="116" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">hour</text>
+<text x="247.0" y="136" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">'10'</text>
+<rect x="288" y="96" width="70" height="50" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.4"/>
+<text x="323.0" y="116" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">literal</text>
+<text x="323.0" y="136" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">':'</text>
+<rect x="364" y="96" width="70" height="50" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.4"/>
+<text x="399.0" y="116" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">minute</text>
+<text x="399.0" y="136" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">'36'</text>
+<text x="448" y="116" font-size="13" fill="#1d1d1f" text-anchor="start">→ "오전 10:36"</text>
+<text x="448" y="136" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="700">또는 "AM 10:36"</text>
+<text x="20" y="168" font-size="12" fill="#ff3b30" text-anchor="start">dayPeriod 문구는 ICU의 로케일 데이터에서 나온다. CI(Node 22)에서는 같은 코드가 'AM'을 출력했다</text>
+<line x1="20" y1="186" x2="620" y2="186" stroke="#d1d1d6"/>
+<text x="20" y="212" font-size="12" fill="#34c759" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">수정 후: new Intl.DateTimeFormat('en-US', { …, hourCycle: 'h23' }).formatToParts(date)</text>
+<rect x="20" y="224" width="80" height="50" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="60" y="244" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">month</text>
+<text x="60" y="264" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">9</text>
+<rect x="106" y="224" width="80" height="50" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="146" y="244" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">day</text>
+<text x="146" y="264" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">28</text>
+<rect x="192" y="224" width="80" height="50" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="232" y="244" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">year</text>
+<text x="232" y="264" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">2026</text>
+<rect x="278" y="224" width="80" height="50" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="318" y="244" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">hour</text>
+<text x="318" y="264" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">10</text>
+<rect x="364" y="224" width="80" height="50" rx="6" fill="#e9f8ee" stroke="#34c759" stroke-width="1.4"/>
+<text x="404" y="244" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">minute</text>
+<text x="404" y="264" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">36</text>
+<text x="456" y="244" font-size="12" fill="#6e6e73" text-anchor="start">숫자만 남기고</text>
+<text x="456" y="262" font-size="12" fill="#6e6e73" text-anchor="start">Number()로 변환</text>
+<line x1="320" y1="280" x2="320" y2="304" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="20" y="308" width="600" height="76" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="34" y="330" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">clock(): `${hour &lt; 12 ? '오전' : '오후'} ${hour % 12 || 12}:${분 두 자리}`</text>
+<text x="34" y="352" font-size="13" fill="#34c759" text-anchor="start" font-weight="700">hour 10 → 10 &lt; 12 → "오전 10:36"</text>
+<text x="34" y="372" font-size="12" fill="#6e6e73" text-anchor="start">요일도 [일, 월, 화, 수, 목, 금, 토] 배열에서 직접 고른다</text>
+</svg>

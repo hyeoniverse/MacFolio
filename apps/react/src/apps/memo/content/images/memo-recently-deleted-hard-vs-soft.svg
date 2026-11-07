@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>행을 삭제하는 방식과 표시만 바꾸는 방식의 비교</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">저장소에 hello.md가 있는 글을 삭제할 때</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">서버 Post 행이 사라지면 화면은 저장소 파일의 글을 다시 표시한다</text>
+<rect x="20" y="66" width="290" height="320" rx="12" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="36" y="92" font-size="14" font-weight="700" fill="#ff3b30">하드 삭제 (행 삭제)</text>
+<rect x="36" y="106" width="258" height="80" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="48" y="138" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">DELETE FROM "Post"</text>
+<text x="48" y="160" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">WHERE slug = 'hello'</text>
+<line x1="165" y1="186" x2="165" y2="212" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="36" y="216" width="258" height="56" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<text x="165" y="240" font-size="12" fill="#6e6e73" text-anchor="middle">Post 행 없음</text>
+<text x="165" y="260" font-size="12" fill="#6e6e73" text-anchor="middle">본문·임시 저장·버전도 없음</text>
+<text x="36" y="300" font-size="12" fill="#ff3b30" font-weight="700">결과</text>
+<text x="36" y="322" font-size="12" fill="#1d1d1f">hello.md의 글이 목록에 다시 나타난다</text>
+<text x="36" y="344" font-size="12" fill="#1d1d1f">서버에서 고친 내용은 복구할 수 없다</text>
+<rect x="330" y="66" width="290" height="320" rx="12" fill="#eefaf1" stroke="#34c759"/>
+<text x="346" y="92" font-size="14" font-weight="700" fill="#248a3d">소프트 삭제 (표시 변경)</text>
+<rect x="346" y="106" width="258" height="80" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<g font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">
+<text x="358" y="128">UPDATE "Post" SET deleted = true,</text>
+<text x="358" y="148">  "deletedAt" = now()</text>
+<text x="358" y="168">WHERE slug = 'hello'</text>
+</g>
+<line x1="475" y1="186" x2="475" y2="212" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="346" y="216" width="258" height="56" rx="6" fill="#ffffff" stroke="#34c759"/>
+<text x="475" y="240" font-size="12" fill="#1d1d1f" text-anchor="middle">행 유지 (deleted = true)</text>
+<text x="475" y="260" font-size="12" fill="#1d1d1f" text-anchor="middle">본문·임시 저장·버전 유지</text>
+<text x="346" y="300" font-size="12" fill="#248a3d" font-weight="700">결과</text>
+<text x="346" y="322" font-size="12" fill="#1d1d1f">hello.md의 글도 계속 숨겨진다</text>
+<text x="346" y="344" font-size="12" fill="#1d1d1f">30일 안에는 표시만 되돌려 복구한다</text>
+<text x="346" y="366" font-size="12" fill="#6e6e73">조회마다 deleted 조건이 필요하다</text>
+</svg>

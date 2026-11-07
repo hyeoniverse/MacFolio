@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 404" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>최근 삭제된 항목의 상태와 동작</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="404" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">메모 하나가 거치는 세 상태와 버튼</text>
+<rect x="24" y="80" width="160" height="72" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="104" y="110" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">일반 메모</text>
+<text x="104" y="132" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">deletedAt = null</text>
+<rect x="240" y="80" width="180" height="72" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.6"/>
+<text x="330" y="110" font-size="14" fill="#c27400" text-anchor="middle" font-weight="700">최근 삭제된 항목</text>
+<text x="330" y="132" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">deletedAt = 삭제 시각</text>
+<rect x="476" y="80" width="140" height="72" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="1.6"/>
+<text x="546" y="110" font-size="14" fill="#ff3b30" text-anchor="middle" font-weight="700">영구 삭제</text>
+<text x="546" y="132" font-size="12" fill="#6e6e73" text-anchor="middle">행 삭제, 복구 불가</text>
+<line x1="184" y1="104" x2="238" y2="104" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<text x="211" y="96" font-size="12" fill="#1d1d1f" text-anchor="middle">삭제</text>
+<path d="M300 152 C300 200 120 200 110 156" fill="none" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<text x="206" y="214" font-size="12" fill="#248a3d" text-anchor="middle">되돌려 놓기 버튼</text>
+<text x="206" y="232" font-size="12" fill="#248a3d" text-anchor="middle">또는 폴더로 끌어 놓기</text>
+<line x1="420" y1="104" x2="474" y2="104" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="447" y="96" font-size="12" fill="#ff3b30" text-anchor="middle">즉시</text>
+<path d="M380 152 C380 200 530 200 540 156" fill="none" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="470" y="218" font-size="12" fill="#ff3b30" text-anchor="middle">30일 경과</text>
+<rect x="24" y="256" width="592" height="132" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="40" y="282" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">최근 삭제된 항목 화면의 구성</text>
+<text x="40" y="306" font-size="12" fill="#1d1d1f" text-anchor="start">· 목록 위 안내 상자: "삭제한 메모는 30일 동안 여기에 보관된 후 영구 삭제됩니다.</text>
+<text x="52" y="324" font-size="12" fill="#1d1d1f" text-anchor="start">폴더로 끌어 놓으면 복구됩니다."</text>
+<text x="40" y="346" font-size="12" fill="#1d1d1f" text-anchor="start">· ⋯ 메뉴: 휴지통 비우기 / 메모 위 아이콘 버튼: 되돌려 놓기, 즉시 삭제</text>
+<text x="40" y="368" font-size="12" fill="#1d1d1f" text-anchor="start">· 즉시 삭제·휴지통 비우기는 메모 창 가운데의 경고 대화상자에서 한 번 더 확인한다</text>
+</svg>

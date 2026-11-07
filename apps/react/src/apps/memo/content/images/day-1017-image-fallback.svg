@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Postgres 이미지를 services로 띄울 때와 단계로 띄울 때</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<rect x="16" y="16" width="296" height="328" rx="12" fill="#f2f2f7"/>
+<text x="32" y="40" font-size="13" font-weight="700" fill="#ff3b30">수정 전: services</text>
+<rect x="32" y="54" width="264" height="44" rx="8" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="164" y="74" font-size="12" fill="#1d1d1f" text-anchor="middle">작업 시작 전 이미지 내려받기</text>
+<text x="164" y="90" font-size="12" fill="#ff3b30" text-anchor="middle">public.ecr.aws: toomanyrequests</text>
+<line x1="164" y1="98" x2="164" y2="124" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="32" y="128" width="264" height="36" rx="8" fill="#ffffff" stroke="#ff3b30"/>
+<text x="164" y="151" font-size="12" fill="#ff3b30" text-anchor="middle">작업 전체가 시작되지 않음</text>
+<g font-size="12" fill="#6e6e73">
+<rect x="32" y="180" width="264" height="30" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-dasharray="4 3"/><text x="44" y="200">형식 검사 (실행 안 됨)</text>
+<rect x="32" y="218" width="264" height="30" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-dasharray="4 3"/><text x="44" y="238">lint·typecheck·단위 시험 (실행 안 됨)</text>
+<rect x="32" y="256" width="264" height="30" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-dasharray="4 3"/><text x="44" y="276">API e2e (실행 안 됨)</text>
+</g>
+<rect x="328" y="16" width="296" height="328" rx="12" fill="#f2f2f7"/>
+<text x="344" y="40" font-size="13" font-weight="700" fill="#34c759">수정 후: 작업 단계 (#240)</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="344" y="54" width="264" height="30" rx="6" fill="#ecfaef" stroke="#34c759"/><text x="356" y="74">형식 검사·lint·typecheck·단위 시험</text>
+<rect x="344" y="94" width="264" height="150" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="356" y="114" font-weight="700" fill="#0a84ff">PostgreSQL 띄우기 단계</text>
+<text x="356" y="138">① public.ecr.aws/docker/library</text>
+<text x="356" y="162">② mirror.gcr.io/library</text>
+<text x="356" y="186">③ docker.io/library</text>
+<text x="356" y="210" fill="#6e6e73">실패하면 다음 곳에서 같은</text>
+<text x="356" y="228" fill="#6e6e73">postgres:17-alpine을 받는다</text>
+<line x1="476" y1="244" x2="476" y2="262" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="266" width="264" height="30" rx="6" fill="#ecfaef" stroke="#34c759"/><text x="356" y="286">API e2e</text>
+</g>
+<text x="344" y="326" font-size="12" fill="#6e6e73">세 곳 모두 실패해도 앞 단계 결과는 남는다</text>
+</svg>

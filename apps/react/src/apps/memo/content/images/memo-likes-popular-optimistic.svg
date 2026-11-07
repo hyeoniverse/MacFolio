@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>좋아요 버튼의 낙관적 업데이트: 성공과 실패</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">누르는 즉시 화면을 바꾸고, 응답으로 보정한다</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">좋아요 4개인 글을 누른 경우. 왼쪽에서 오른쪽으로 시간이 흐른다</text>
+<text x="20" y="92" font-size="13" font-weight="700" fill="#34c759">성공</text>
+<rect x="70" y="70" width="110" height="56" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="125" y="94" font-size="12" fill="#1d1d1f" text-anchor="middle">누르기 전</text>
+<text x="125" y="114" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">♡ 4</text>
+<line x1="180" y1="98" x2="206" y2="98" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="210" y="70" width="110" height="56" rx="10" fill="#fff0f3" stroke="#ff2d55" stroke-width="1.5"/>
+<text x="265" y="94" font-size="12" fill="#1d1d1f" text-anchor="middle">즉시 표시</text>
+<text x="265" y="114" font-size="13" font-weight="700" fill="#ff2d55" text-anchor="middle">♥ 5</text>
+<line x1="320" y1="98" x2="346" y2="98" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="350" y="70" width="140" height="56" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="420" y="92" font-size="12" fill="#1d1d1f" text-anchor="middle">200 응답</text>
+<text x="420" y="112" font-size="12" fill="#0a84ff" text-anchor="middle">count 6 · liked true</text>
+<line x1="490" y1="98" x2="516" y2="98" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="520" y="70" width="100" height="56" rx="10" fill="#fff0f3" stroke="#ff2d55" stroke-width="1.5"/>
+<text x="570" y="94" font-size="12" fill="#1d1d1f" text-anchor="middle">서버 값</text>
+<text x="570" y="114" font-size="13" font-weight="700" fill="#ff2d55" text-anchor="middle">♥ 6</text>
+<text x="350" y="146" font-size="12" fill="#6e6e73">그사이 다른 방문자가 누른 1개까지 반영된다</text>
+<line x1="20" y1="168" x2="620" y2="168" stroke="#e5e5ea"/>
+<text x="20" y="210" font-size="13" font-weight="700" fill="#ff3b30">실패</text>
+<rect x="70" y="188" width="110" height="56" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="125" y="212" font-size="12" fill="#1d1d1f" text-anchor="middle">누르기 전</text>
+<text x="125" y="232" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">♡ 4</text>
+<line x1="180" y1="216" x2="206" y2="216" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="210" y="188" width="110" height="56" rx="10" fill="#fff0f3" stroke="#ff2d55" stroke-width="1.5"/>
+<text x="265" y="212" font-size="12" fill="#1d1d1f" text-anchor="middle">즉시 표시</text>
+<text x="265" y="232" font-size="13" font-weight="700" fill="#ff2d55" text-anchor="middle">♥ 5</text>
+<line x1="320" y1="216" x2="346" y2="216" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="350" y="188" width="140" height="56" rx="10" fill="#fff1f0" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="420" y="210" font-size="12" fill="#1d1d1f" text-anchor="middle">요청 실패</text>
+<text x="420" y="230" font-size="12" fill="#ff3b30" text-anchor="middle">429 또는 네트워크 오류</text>
+<line x1="490" y1="216" x2="516" y2="216" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="520" y="188" width="100" height="56" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="570" y="212" font-size="12" fill="#1d1d1f" text-anchor="middle">되돌림</text>
+<text x="570" y="232" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">♡ 4</text>
+<text x="20" y="286" font-size="12" fill="#6e6e73">응답을 기다렸다가 바꾸면 클릭 후 왕복 시간만큼 버튼이 반응하지 않는다.</text>
+<text x="20" y="306" font-size="12" fill="#6e6e73">먼저 바꾸고, 응답 값으로 덮어쓰거나 실패 시 누르기 전 상태로 되돌린다</text>
+</svg>

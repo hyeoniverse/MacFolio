@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>출처는 스킴, 호스트, 포트 세 값의 조합이다. MacFolio와 NewPick은 호스트가 달라 다른 출처이고, allow-same-origin이 없으면 iframe 문서는 어떤 출처와도 같지 않은 불투명 출처가 된다</title>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="32" font-size="15" font-weight="700" fill="#1d1d1f">출처(origin) = 스킴 + 호스트 + 포트</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="14">
+<rect x="24" y="52" width="76" height="32" rx="6" fill="#e8f1ff" stroke="#0a84ff"/>
+<text x="62" y="73" text-anchor="middle">https</text>
+<text x="108" y="73">://</text>
+<rect x="134" y="52" width="252" height="32" rx="6" fill="#fff4e0" stroke="#ff9f0a"/>
+<text x="260" y="73" text-anchor="middle">macfolio.hyeoniverse.com</text>
+<text x="392" y="73">:</text>
+<rect x="404" y="52" width="48" height="32" rx="6" fill="#eaf7ee" stroke="#34c759"/>
+<text x="428" y="73" text-anchor="middle">443</text>
+<rect x="24" y="96" width="76" height="32" rx="6" fill="#e8f1ff" stroke="#0a84ff"/>
+<text x="62" y="117" text-anchor="middle">https</text>
+<text x="108" y="117">://</text>
+<rect x="134" y="96" width="252" height="32" rx="6" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="260" y="117" text-anchor="middle">newpick.hyeoniverse.com</text>
+<text x="392" y="117">:</text>
+<rect x="404" y="96" width="48" height="32" rx="6" fill="#eaf7ee" stroke="#34c759"/>
+<text x="428" y="117" text-anchor="middle">443</text>
+</g>
+<g font-size="12">
+<text x="470" y="73" fill="#6e6e73">MacFolio (부모)</text>
+<text x="470" y="117" fill="#6e6e73">NewPick (iframe)</text>
+<text x="24" y="152" fill="#ff3b30">호스트가 다르므로 다른 출처다. 상위 도메인(hyeoniverse.com)이 같아도 출처는 같지 않다.</text>
+</g>
+<line x1="24" y1="172" x2="616" y2="172" stroke="#d2d2d7"/>
+<text x="24" y="200" font-size="14" font-weight="700" fill="#1d1d1f">sandbox의 allow-same-origin 토큰에 따른 iframe 문서의 출처</text>
+<rect x="24" y="214" width="288" height="160" rx="10" fill="#eaf7ee" stroke="#34c759"/>
+<text x="40" y="238" font-size="13" font-weight="700" fill="#1d1d1f">allow-same-origin 있음 (적용)</text>
+<text x="40" y="260" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">origin = https://newpick…</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="286">✓ 자기 출처의 쿠키·localStorage 사용</text>
+<text x="40" y="306">✓ 로그인 상태·설정 유지</text>
+<text x="40" y="326" fill="#6e6e73">✕ 부모(MacFolio) DOM 접근은 여전히</text>
+<text x="40" y="344" fill="#6e6e73">   불가: 출처가 다르기 때문</text>
+</g>
+<rect x="328" y="214" width="288" height="160" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="344" y="238" font-size="13" font-weight="700" fill="#1d1d1f">allow-same-origin 없음</text>
+<text x="344" y="260" font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">origin = "null" (불투명 출처)</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="344" y="286">✕ 어떤 출처와도 같지 않다</text>
+<text x="344" y="306">✕ localStorage 접근 시 오류</text>
+<text x="344" y="326">✕ 쿠키를 읽고 쓰지 못한다</text>
+<text x="344" y="344" fill="#6e6e73">→ 로그인·설정 저장이 실패한다</text>
+</g>
+</svg>

@@ -19,7 +19,16 @@ API를 배포하려면 서버에 SSH로 접속해 `git pull`과 `docker compose 
 
 폴더를 옮겨 다시 실행하자 `docker compose logs -f api`에 "11 migrations found"가 출력되며 API가 시작됐지만, 1GB 서버에서 빌드까지 하느라 오래 걸렸다. 순서와 위치를 사람이 기억해야 하는 배포를 자동 배포로 바꿨다.
 
-지금은 main에 머지하면 이미지 빌드부터 서버 교체까지 자동으로 진행된다. 워크플로(`.github/workflows/ci.yml`의 이미지 단계와 `deploy-api.yml` 91줄)와 서버 스크립트(`ops/deploy.sh` 151줄)는 PR [#104](https://github.com/hyeoniverse/MacFolio/pull/104), 첫 배포 버그는 [#107](https://github.com/hyeoniverse/MacFolio/pull/107), 서버에서 한 번에 하는 설정은 [#108](https://github.com/hyeoniverse/MacFolio/pull/108)에 있다.
+## 배경: 이미지, 레지스트리, 자동 배포
+
+API는 Docker 컨테이너로 실행한다. 컨테이너 이미지는 실행에 필요한 코드·런타임·의존성을 하나로 묶은 파일이고, 이미지를 저장하고 내려받는 서버를 레지스트리라고 한다. `docker compose up --build`는 서버가 소스 코드에서 이미지를 직접 빌드하는 방식이고, `image: ghcr.io/…:sha-1a2b3c4`처럼 이미지 이름을 지정하면 레지스트리에서 완성된 이미지를 내려받아 실행만 한다.
+
+| 방식                         | 서버가 하는 일                           | 1GB 서버에서의 비용                |
+| ---------------------------- | ---------------------------------------- | ---------------------------------- |
+| 서버에서 빌드 (`--build`)    | 소스 내려받기, 의존성 설치, 컴파일, 실행 | 10분 넘게 걸리고 그동안 API가 느림 |
+| 레지스트리 이미지 (`image:`) | 이미지 내려받기, 실행                    | 내려받는 시간만 소요               |
+
+자동 배포(CD, Continuous Deployment)는 main 브랜치에 변경이 들어오면 사람이 서버에 접속하지 않아도 빌드, 배포, 확인이 이어지게 하는 구성이다. 이 사이트에서는 GitHub Actions가 빌드와 배포를 실행한다. 지금은 main에 머지하면 이미지 빌드부터 서버 교체까지 자동으로 진행된다. 워크플로(`.github/workflows/ci.yml`의 이미지 단계와 `deploy-api.yml` 91줄)와 서버 스크립트(`ops/deploy.sh` 151줄)는 PR [#104](https://github.com/hyeoniverse/MacFolio/pull/104), 첫 배포 버그는 [#107](https://github.com/hyeoniverse/MacFolio/pull/107), 서버에서 한 번에 하는 설정은 [#108](https://github.com/hyeoniverse/MacFolio/pull/108)에 있다.
 
 ![자동 배포 흐름](./images/api-auto-deploy-pipeline.svg 'check 뒤에 API가 바뀐 커밋만 이미지를 만들고, 서버의 deploy.sh가 백업·교체·확인·되돌리기를 한다. 프론트엔드는 그 뒤에')
 
@@ -35,7 +44,7 @@ API를 배포하려면 서버에 SSH로 접속해 `git pull`과 `docker compose 
 
 ## 서버 접속 경로: 명령 하나만 실행하는 키
 
-Actions가 서버에 SSH로 접속해야 한다. GitHub 호스팅 러너의 IP는 고정되어 있지 않아서 22번 포트를 열어 둔다(키 인증만 허용). 대신 배포 전용 키를 따로 만들고, 서버의 `authorized_keys`에서 그 키로는 **배포 스크립트 하나만** 실행되게 제한했다([OpenSSH `authorized_keys` 형식](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)).
+Actions가 서버에 SSH로 접속해야 한다. SSH 키 인증은 개인 키와 공개 키 한 쌍으로 이루어진다. 접속하는 쪽이 개인 키를 갖고, 서버는 허용할 공개 키를 `~/.ssh/authorized_keys`에 한 줄씩 등록한다. GitHub 호스팅 러너의 IP는 고정되어 있지 않아서 22번 포트를 개방한다(키 인증만 허용). 대신 배포 전용 키를 따로 만들고, 서버의 `authorized_keys`에서 그 키로는 **배포 스크립트 하나만** 실행되게 제한했다([OpenSSH `authorized_keys` 형식](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)).
 
 ```
 restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… github-actions-deploy
@@ -44,7 +53,9 @@ restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… githu
 - `restrict`: 포트 포워딩, 에이전트 포워딩, 터미널 할당을 모두 차단한다.
 - `command=`: 이 키로 접속하면 클라이언트가 보낸 명령 대신 `ops/deploy.sh`가 실행된다. 클라이언트가 보낸 문자열은 환경 변수 `SSH_ORIGINAL_COMMAND`로 전달된다.
 
-스크립트는 이 문자열이 `sha-[0-9a-f]{7,40}` 형식일 때만 진행한다. `'sha-abc; rm -rf /'`를 보내면 "태그 모양이 아니다"를 출력하고 종료 코드 2로 끝난다. 키가 유출되어도 가능한 일은 "레지스트리에 이미 있는 이미지 태그로 배포"뿐이다. 서버의 호스트 키도 Secrets(`DEPLOY_KNOWN_HOSTS`)에 고정해서, 다른 서버가 같은 주소로 응답해도 접속하지 않는다.
+스크립트는 이 문자열이 `sha-[0-9a-f]{7,40}` 형식일 때만 진행한다. `'sha-abc; rm -rf /'`를 보내면 "태그 모양이 아니다"를 출력하고 종료 코드 2로 끝난다. ==키가 유출되어도 가능한 일은 "레지스트리에 이미 있는 이미지 태그로 배포"뿐이다==. 서버의 호스트 키도 Secrets(`DEPLOY_KNOWN_HOSTS`)에 고정해서, 다른 서버가 같은 주소로 응답해도 접속하지 않는다.
+
+![배포 키로 접속하면 sshd가 command= 옵션에 따라 deploy.sh를 실행하고, 보낸 문자열은 SSH_ORIGINAL_COMMAND로 전달되어 태그 형식 검사를 거치는 흐름](./images/api-auto-deploy-forced-command.svg '배포 키로 할 수 있는 일. 보낸 문자열은 명령이 아니라 태그 값으로만 쓰인다')
 
 서버가 새 이미지를 주기적으로 확인하는 방식(cron, [Watchtower](https://containrrr.dev/watchtower/))도 검토했다. 서버로 들어오는 경로가 필요 없지만, 배포가 끝났는지 Actions가 알 수 없어서 프론트엔드 배포를 API 배포 뒤에 배치할 수 없었다.
 
@@ -71,6 +82,8 @@ restrict,command="/home/ubuntu/macfolio/ops/deploy.sh" ssh-ed25519 AAAA… githu
 ubuntu@***: Permission denied (publickey).
 ```
 
+SSH 접속은 여러 단계로 진행되므로, 어느 단계에서 실패했는지 나눠 확인했다.
+
 | 단계                           | 결과                       |
 | ------------------------------ | -------------------------- |
 | TCP 연결 (22번 포트)           | 성공                       |
@@ -89,7 +102,7 @@ echo "등록된 배포 열쇠 수: $(grep -c github-actions-deploy ~/.ssh/author
 
 ![키 등록 순서](./images/api-auto-deploy-setup-keys.svg '먼저 삭제하고 새로 등록하므로 몇 번을 실행해도 배포 키는 하나다')
 
-이 절차는 몇 번을 실행해도 서버에 배포 키가 하나만 남고, 그 키가 방금 출력한 키다. 평소 접속하는 키는 주석이 다른 줄이라 삭제되지 않는다. 마지막 줄의 `등록된 배포 열쇠 수: 1` 출력으로 결과를 확인한다. 새 키로 `DEPLOY_SSH_KEY`만 교체하자 배포가 통과했다.
+이 절차는 몇 번을 실행해도 서버에 배포 키가 하나만 남고, 그 키가 방금 출력한 키다. 이런 성질을 멱등성[^idempotent]이라고 한다. 평소 접속하는 키는 주석이 다른 줄이라 삭제되지 않는다. 마지막 줄의 `등록된 배포 열쇠 수: 1` 출력으로 결과를 확인한다. 새 키로 `DEPLOY_SSH_KEY`만 교체하자 배포가 통과했다.
 
 ```text
 서버에서 배포:      배포 시작: sha-a38ac7e → sha-a38ac7e
@@ -111,7 +124,7 @@ echo "등록된 배포 열쇠 수: $(grep -c github-actions-deploy ~/.ssh/author
 
 ![deploy.sh의 분기](./images/api-auto-deploy-script.svg '종료 경로마다 종료 코드가 정해져 있어서 Actions가 성공·실패를 구분한다')
 
-배포 성공의 조건은 두 가지다. 컨테이너의 Docker 헬스 상태([`HEALTHCHECK`](https://docs.docker.com/reference/dockerfile/#healthcheck))가 `healthy`이고, 컨테이너 안에서 호출한 `/health`의 `version`이 배포하려는 태그와 같아야 한다. 헬스 상태만 확인하면 이전 컨테이너가 아직 응답하는 시각을 성공으로 잘못 판정할 수 있다.
+배포 성공의 조건은 두 가지다. 컨테이너의 Docker 헬스 상태([`HEALTHCHECK`](https://docs.docker.com/reference/dockerfile/#healthcheck))가 `healthy`이고, 컨테이너 안에서 호출한 `/health`의 `version`이 배포하려는 태그와 같아야 한다. `HEALTHCHECK`는 Docker가 컨테이너 안에서 정해진 명령을 주기적으로 실행해 성공하면 `healthy`, 연속으로 실패하면 `unhealthy`로 표시하는 기능이다. ==헬스 상태만 확인하면 이전 컨테이너가 아직 응답하는 시각을 성공으로 잘못 판정할 수 있다==. 예를 들어 `sha-a38ac7e`에서 `sha-5531e4f`로 교체하는 도중 아직 옛 컨테이너가 `healthy`로 응답하면, 버전 비교가 없을 때는 새 버전이 뜬 것으로 판정한다.
 
 ```bash
 is_live() {
@@ -124,7 +137,7 @@ is_live() {
 }
 ```
 
-이 함수를 3초 간격으로 호출하고, 120초(`HEALTH_TIMEOUT` 기본값)를 넘기면 실패로 판정한다. 컨테이너가 시작할 때 마이그레이션을 먼저 실행하므로 여유 있게 잡았다.
+이 함수를 3초 간격으로 호출하고, 120초(`HEALTH_TIMEOUT` 기본값)를 넘기면 실패로 판정한다. 컨테이너가 시작하면서 마이그레이션을 먼저 실행하므로 여유 있게 잡았다.
 
 ### 로컬에서 실패 경로 시험하기
 
@@ -165,7 +178,7 @@ error while interpolating services.api.image: required variable API_TAG is missi
 배포 실패: 배포 직전 백업이 되지 않아 멈췄다
 ```
 
-서버의 `compose.yml`은 태그가 없으면 중단하도록 `${API_TAG:?…}`[^interp]로 작성했다. 첫 배포 시각에는 `.env`에 `API_TAG`가 아직 없다. 그런데 배포 직전 백업도 `docker compose exec db pg_dump`로 DB 컨테이너에 접속한다. compose는 서비스 하나만 다뤄도 파일 전체를 해석하므로, api 서비스의 태그가 없다는 이유로 db 백업까지 거부됐다. 로컬 시험의 compose 파일은 `${API_TAG}`로만 작성해서 이 경우를 재현하지 못했다.
+서버의 `compose.yml`은 태그가 없으면 중단하도록 `${API_TAG:?…}`[^interp]로 작성했다. 첫 배포 시각에는 `.env`에 `API_TAG`가 아직 없다. 그런데 배포 직전 백업도 `docker compose exec db pg_dump`로 DB 컨테이너에 접속한다. compose는 서비스 하나만 다뤄도 파일 전체를 해석하므로, ==api 서비스의 태그가 없다는 이유로 db 백업까지 거부됐다==. 로컬 시험의 compose 파일은 `${API_TAG}`로만 작성해서 이 경우를 재현하지 못했다.
 
 수정이 배포되기 전에는 환경 변수로 태그를 직접 넘겨 `API_TAG=sha-a38ac7e ops/deploy.sh sha-a38ac7e`로 첫 배포를 마쳤다. 수정([#107](https://github.com/hyeoniverse/MacFolio/pull/107))은 스크립트가 호출하는 compose가 항상 태그 값을 갖게 한 것이다. 교체 전에는 현재 태그(첫 배포면 새 태그)를, 교체 후에는 새 태그를 환경 변수로 전달한다(compose는 셸 환경 변수를 `.env`보다 우선한다). 첫 배포에서 이미지를 받지 못하면 `.env`에 `API_TAG` 줄을 남기지 않는다. 그 뒤 서버와 같은 `${API_TAG:?…}`를 쓴 compose 파일로 첫 배포, 첫 배포인데 받지 못하는 태그, 다음 배포, 되돌리기 네 경우를 다시 시험했다.
 
@@ -176,7 +189,8 @@ $ ~/macfolio/ops/deploy.sh sha-<태그>
 -bash: syntax error near unexpected token `newline'
 ```
 
-문서의 명령에 `sha-<커밋 7자리>` 같은 자리표시를 썼다. 그대로 붙여 넣으면 bash가 `<`와 `>`를 입출력 리디렉션[^redirect] 기호로 해석해 구문 오류로 끝난다. 백업 복원 안내의 `~/backups/<파일>`에서도 같은 오류가 났다. 명령 안의 자리표시를 실제 형식의 예(`sha-a38ac7e`)로 바꾸고, "예시 값이니 바꿔서 실행한다"는 안내를 명령 밖의 문장으로 적었다.
+> [!WARNING] 명령 안의 자리표시
+> 문서의 명령에 `sha-<커밋 7자리>` 같은 자리표시를 썼다. 그대로 붙여 넣으면 bash가 `<`와 `>`를 입출력 리디렉션[^redirect] 기호로 해석해 구문 오류로 끝난다. 백업 복원 안내의 `~/backups/<파일>`에서도 같은 오류가 났다. 명령 안의 자리표시를 실제 형식의 예(`sha-a38ac7e`)로 바꾸고, "예시 값이니 바꿔서 실행한다"는 안내를 명령 밖의 문장으로 적었다.
 
 ### Secrets보다 먼저 머지한 PR
 
@@ -186,7 +200,7 @@ $ ~/macfolio/ops/deploy.sh sha-<태그>
 
 며칠 뒤 CORS를 수정한 API 변경([#115](https://github.com/hyeoniverse/MacFolio/pull/115))을 머지했는데, 그 CI 실행이 메뉴 막대 E2E 시험 하나 때문에 실패했다. 시험을 수정한 PR([#116](https://github.com/hyeoniverse/MacFolio/pull/116))을 머지하자 CI는 통과했지만, API 이미지 빌드와 배포 단계가 모두 건너뛰어졌다. 서버는 여전히 `sha-a38ac7e`였다.
 
-API 변경 여부를 **직전 push와 비교**해서 판정했기 때문이다. #116의 push에는 API 변경이 없으므로 배포 대상이 없다고 판정했다. #115의 API 변경은 실패한 실행에만 포함되어 이후 어떤 실행에서도 배포되지 않았다. Secrets 등록 전에 머지한 변경이 배포되지 않은 것도 같은 원인이다.
+API 변경 여부를 **직전 push와 비교**해서 판정했기 때문이다. [#116](https://github.com/hyeoniverse/MacFolio/pull/116)의 push에는 API 변경이 없으므로 배포 대상이 없다고 판정했다. ==[#115](https://github.com/hyeoniverse/MacFolio/pull/115)의 API 변경은 실패한 실행에만 포함되어 이후 어떤 실행에서도 배포되지 않았다==. Secrets 등록 전에 머지한 변경이 배포되지 않은 것도 같은 원인이다.
 
 ![비교 대상 바꾸기](./images/api-auto-deploy-setup-compare.svg '직전 push와 비교하면 실패한 실행의 변경이 누락된다')
 
@@ -218,22 +232,32 @@ fi
 
 이전에는 비교 기준으로 `$BEFORE`(`github.event.before`, 직전 push의 커밋)를 썼다. 수정은 그 자리에 서버의 커밋을 넣은 것뿐이다. 비교 경로에는 지금 `packages/contracts`와 `packages/desktop-core`도 들어 있다. API가 이 패키지를 쓰게 된 뒤에 추가했다. 서버의 커밋이 몇 커밋 전이든 `git diff`할 수 있도록 `actions/checkout`에 `fetch-depth: 0`[^fetch-depth]을 지정한다.
 
-서버가 일시적으로 응답하지 않으면 항상 `api=true`가 되어 이미지를 다시 빌드한다. 같은 버전이면 `deploy.sh`가 "이미 이 버전이 떠 있다"를 출력하고 종료하므로 서버에는 영향이 없고, 빌드 시간만 추가된다.
+> [!NOTE]
+> 서버가 일시적으로 응답하지 않으면 항상 `api=true`가 되어 이미지를 다시 빌드한다. 같은 버전이면 `deploy.sh`가 "이미 이 버전이 떠 있다"를 출력하고 종료하므로 서버에는 영향이 없고, 빌드 시간만 추가된다.
 
 ## 연결이 끊겨도 끝까지, 동시에 하나만
 
-CI 워크플로(`ci.yml`)는 같은 브랜치에 새 커밋이 오면 이전 실행을 취소한다(`cancel-in-progress: true`). 배포 도중에 취소되면 SSH 연결이 끊기고, 서버의 스크립트가 중간에 멈춰 `.env`와 실행 중인 컨테이너가 서로 다른 버전을 가리킬 수 있다. 그래서 대응을 세 겹으로 두었다.
+CI 워크플로(`ci.yml`)는 같은 브랜치에 새 커밋이 오면 이전 실행을 취소한다(`cancel-in-progress: true`). 배포 도중에 취소되면 SSH 연결이 끊기고, 서버의 스크립트가 중간에 멈춰 `.env`와 실행 중인 컨테이너가 서로 다른 버전을 가리킬 수 있다. 예를 들어 `.env`의 `API_TAG`는 새 태그로 바뀌었는데 컨테이너 교체 전에 멈추면, 다음에 서버에서 `docker compose up`을 실행하는 시각에 확인을 거치지 않은 버전이 올라간다. 그래서 대응을 세 겹으로 적용했다.
 
 1. 스크립트 첫머리에서 `trap '' HUP`으로 연결 끊김 신호(SIGHUP)를 무시해 끝까지 실행한다.
 2. 다음 배포는 `flock` 잠금에서 앞 배포가 끝나기를 기다린다.
 3. 배포 워크플로(`deploy-api.yml`)는 [`concurrency`](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs)의 `cancel-in-progress: false`로 실행을 취소하지 않고 순서대로 처리한다.
 
+![SSH 연결이 끊겨도 trap으로 deploy.sh A가 끝까지 실행되고, 배포 B는 flock에서 A가 끝나기를 기다리며, 워크플로는 concurrency로 순서대로 처리하는 시간선](./images/api-auto-deploy-cancel-guards.svg '세 겹의 처리. 연결 끊김, 동시 실행, 워크플로 취소를 각각 막는다')
+
+SIGHUP은 터미널이나 SSH 세션이 끊기면 그 세션에서 실행 중인 프로세스에 전달되는 신호이고, 기본 동작은 프로세스 종료다. `trap '' HUP`은 이 신호를 받으면 아무것도 하지 않도록 지정해 기본 동작을 무시한다.
+
 ## 되돌리기는 이미지만
 
-되돌리기는 **이미지만** 이전 버전으로 바꾼다. 이미 적용된 마이그레이션은 되돌리지 않는다. 그래서 마이그레이션은 이전 버전 코드에서도 동작하도록 나눠 작성한다는 규칙을 `CONTRIBUTING.md`의 '마이그레이션' 절에 적었다.
+> [!CAUTION] 마이그레이션은 되돌리지 않는다
+> 되돌리기는 **이미지만** 이전 버전으로 바꾼다. 이미 적용된 마이그레이션은 되돌리지 않는다. 그래서 마이그레이션은 이전 버전 코드에서도 동작하도록 나눠 작성한다는 규칙을 `CONTRIBUTING.md`의 '마이그레이션' 절에 적었다.
+
+마이그레이션은 DB의 표 구조를 바꾸는 SQL이다. 새 이미지가 시작하면서 마이그레이션을 적용한 뒤 헬스 체크에 실패하면, 컨테이너는 이전 이미지로 돌아가지만 DB는 새 구조로 남는다. 이전 코드가 새 구조에서 동작하려면 다음 규칙을 지켜야 한다.
 
 - 열·표 추가: 새 열은 nullable로 만들거나 기본값을 지정한다. 이전 코드는 모르는 열을 무시한다.
 - 이름 변경·삭제: 한 번에 하지 않는다. ① 새 열을 추가하고 코드가 둘 다 쓰게 배포 → ② 다음 배포에서 옛 열을 삭제한다.
+
+예를 들어 `title` 열의 이름을 `heading`으로 한 번에 바꾸면, 되돌린 이전 코드는 없는 `title` 열을 조회하다 실패한다. 첫 배포에서 `heading`을 추가하고 두 열에 함께 쓰게 하면, 그 배포가 되돌려져도 `title`이 남아 있으므로 이전 코드가 동작한다.
 
 ![되돌리기는 이미지만](./images/api-auto-deploy-rollback.svg '새 이미지가 실패하면 컨테이너만 이전 버전으로 돌아가고, DB에는 새 마이그레이션이 남는다. 그래서 마이그레이션은 이전 코드와 호환되게 작성한다')
 
@@ -257,7 +281,7 @@ DB까지 되돌려야 하는 경우에는 배포 직전 백업(`~/backups`)을 `
 ### 평소
 
 ```bash
-# 평소: API를 바꾼 PR을 main에 머지하면 끝. 진행 상황은 Actions의 ci 실행에서 확인한다
+# 평소: API를 바꾼 PR을 main에 머지하면 배포까지 진행된다. 진행 상황은 Actions의 ci 실행에서 확인한다
 # 지금 서버 버전
 curl -s https://macfolio-api.hyeoniverse.com/health; echo
 # 서버에서 직접 특정 태그로 (되돌리기도 같은 명령)
@@ -265,22 +289,22 @@ curl -s https://macfolio-api.hyeoniverse.com/health; echo
 tail -20 ~/deploy/deploy.log     # 배포 기록
 ```
 
-- 수동 배포: GitHub → Actions → **API 배포** → Run workflow → 태그 입력. 예전 태그를 넣으면 되돌리기가 된다
-- 실패 시: 새 이미지가 120초 안에 healthy가 되지 않으면 스크립트가 이전 태그로 되돌리고 실패로 종료한다. 실제 서버에서 일부러 실패시킨 기록은 [되돌리기 훈련](/memo/rollback-drill)에 있다
-- 배포 키 폐기: 서버의 `~/.ssh/authorized_keys`에서 `github-actions-deploy`로 끝나는 줄을 삭제한다(`sed -i '/github-actions-deploy/d' ~/.ssh/authorized_keys`)
-- 소요 시간: 머지부터 사이트 반영까지 시간의 대부분을 E2E가 차지했다. 10월 19일 머지 뒤 배포가 늦게 끝난 일이 [E2E와 CI를 빠르게](/memo/faster-e2e-ci)로 이어졌다
+- 수동 배포: GitHub → Actions → **API 배포** → Run workflow → 태그 입력. 예전 태그를 넣으면 되돌리기가 된다.
+- 실패 시: 새 이미지가 120초 안에 healthy가 되지 않으면 스크립트가 이전 태그로 되돌리고 실패로 종료한다. 실제 서버에서 일부러 실패시킨 기록은 [되돌리기 훈련](/memo/rollback-drill)에 있다.
+- 배포 키 폐기: 서버의 `~/.ssh/authorized_keys`에서 `github-actions-deploy`로 끝나는 줄을 삭제한다(`sed -i '/github-actions-deploy/d' ~/.ssh/authorized_keys`).
+- 소요 시간: 머지부터 사이트 반영까지 시간의 대부분을 E2E가 차지했다. 10월 19일 머지 뒤 배포가 늦게 끝난 일이 [E2E와 CI를 빠르게](/memo/faster-e2e-ci)로 이어졌다.
 
-스크립트: [ops/deploy.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/deploy.sh), 워크플로: [.github/workflows/deploy-api.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/deploy-api.yml). 이미지 저장소는 [GHCR 문서](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry), compose는 [Docker Compose 문서](https://docs.docker.com/compose/), Secrets는 [GitHub Actions 문서](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)를 참고했다.
+스크립트: [ops/deploy.sh](https://github.com/hyeoniverse/MacFolio/blob/main/ops/deploy.sh), 워크플로: [.github/workflows/deploy-api.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/deploy-api.yml).
 
 ## 남은 것, 배운 것
 
-- 배포 중 API가 응답하지 않는 구간이 있다. 컨테이너를 하나만 실행하므로 교체하는 동안(마이그레이션 포함) 요청이 실패한다. 1GB 서버에 컨테이너 두 개를 동시에 실행할 메모리가 없어서 이 중단 시간을 감수했다. 사이트는 API 없이도 열리게 만들어 두었다.
+- 배포 중 API가 응답하지 않는 구간이 있다. 컨테이너를 하나만 실행하므로 교체하는 동안(마이그레이션 포함) 요청이 실패한다. 1GB 서버에 컨테이너 두 개를 동시에 실행할 메모리가 없어서 이 중단 시간을 감수했다. 사이트는 API 없이도 열리게 만들었다.
 - 되돌리기는 로컬에서 시험만 했고 실제 서버에서는 실행된 적이 없었다. 그래서 며칠 뒤 헬스 체크에 실패하는 이미지를 서버에 일부러 배포해 되돌리기를 훈련했다([되돌리기 훈련](/memo/rollback-drill)).
 - 스크립트 버그 세 가지(`pipefail`과 `grep`, 한글 앞 변수 이름, 받지 못한 이미지의 되돌리기)는 모두 실패 경로에서 나왔다. 성공 경로만 시험했다면 세 가지 모두 실제 배포에서 처음 발생했을 것이다.
 - 그래도 서버의 `compose.yml`(`${API_TAG:?…}`)과 로컬 시험용 파일(`${API_TAG}`)의 표기 차이 때문에 첫 배포 버그를 놓쳤다. 이후로 시험 환경의 설정 파일은 실제 파일을 그대로 복사해 쓴다.
-- 로컬 시험은 스크립트가 맞는지는 확인해 주지만, 사람이 그 스크립트를 서버에 적용하는 과정까지는 확인해 주지 않았다. 실제 서버에서 막힌 곳 가운데 넷(자리표시, 키 두 번 생성, Secrets 전 머지, 누락된 배포)이 적용 과정에서 발생했다.
+- 로컬 시험은 스크립트의 동작을 검증하지만, 사람이 그 스크립트를 서버에 적용하는 절차까지 검증하지는 않는다. 실제 서버에서 막힌 곳 가운데 넷(자리표시, 키 두 번 생성, Secrets 전 머지, 누락된 배포)이 적용 과정에서 발생했다.
 - 자리표시 `<…>`는 문서에서 쓰지 않는다. 명령은 대개 읽지 않고 그대로 붙여 넣기 때문이다. 붙여 넣어도 안전한 예시 값을 쓰고, 바꿀 부분은 명령 밖의 문장으로 적는다.
-- 멱등성[^idempotent]은 스크립트뿐 아니라 사람이 따라 하는 설정 절차에도 필요했다. 한 번에 성공한다고 가정한 절차는 두 번째 실행에서 오류 없이 서버와 GitHub의 키를 어긋나게 만들었다.
+- 멱등성은 스크립트뿐 아니라 사람이 따라 하는 설정 절차에도 필요했다. 한 번에 성공한다고 가정한 절차는 두 번째 실행에서 오류 없이 서버와 GitHub의 키를 어긋나게 만들었다.
 - 변경 여부는 직전 실행이 아니라 실제 상태와 비교해 판정한다. 실행은 실패하거나 건너뛸 수 있지만, 서버의 `/health`가 응답하는 버전은 실제로 실행 중인 코드를 가리킨다.
 
 ## 관련 글
@@ -304,5 +328,18 @@ tail -20 ~/deploy/deploy.log     # 배포 기록
 [^fetch-depth]: `actions/checkout`은 기본값(`fetch-depth: 1`)으로 마지막 커밋 하나만 내려받는다. `0`은 전체 기록을 내려받는다는 뜻이다. [actions/checkout](https://github.com/actions/checkout)
 
 [^idempotent]: 같은 작업을 여러 번 실행해도 결과가 한 번 실행한 것과 같은 성질.
+
+<details>
+<summary>참고 문헌</summary>
+
+- GitHub Docs, [Working with the Container registry](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+- GitHub Docs, [Using secrets in GitHub Actions](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)
+- GitHub Docs, [Control the concurrency of workflows and jobs](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs)
+- OpenBSD, [sshd(8): AUTHORIZED_KEYS FILE FORMAT](https://man.openbsd.org/sshd#AUTHORIZED_KEYS_FILE_FORMAT)
+- Docker Docs, [Dockerfile reference: HEALTHCHECK](https://docs.docker.com/reference/dockerfile/#healthcheck), [Docker Compose](https://docs.docker.com/compose/), [Variable interpolation](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/)
+- GNU, [Bash Reference Manual: Redirections](https://www.gnu.org/software/bash/manual/html_node/Redirections.html), [Signals](https://www.gnu.org/software/bash/manual/html_node/Signals.html)
+- util-linux, [flock(1)](https://man7.org/linux/man-pages/man1/flock.1.html)
+
+</details>
 
 #MacFolio #배포 #CI #서버 #트러블슈팅

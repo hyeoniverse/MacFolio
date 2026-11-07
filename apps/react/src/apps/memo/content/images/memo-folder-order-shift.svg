@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="360" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">행 높이 44px 목록에서 첫 행을 100px 아래로 끈 순간</text>
+<text x="320" y="48" font-size="12" fill="#6e6e73" text-anchor="middle">pointerdown에서 측정한 위치(왼쪽)와 pointermove가 지정한 transform(오른쪽)</text>
+<text x="20" y="82" font-size="13" font-weight="600" fill="#6e6e73">누른 시각의 측정값</text>
+<g font-size="13" fill="#1d1d1f">
+<rect x="20" y="92" width="240" height="44" fill="#f2f2f7" stroke="#fff"/><text x="34" y="119">0 · 학습</text><text x="246" y="119" text-anchor="end" fill="#6e6e73">중심 22</text>
+<rect x="20" y="136" width="240" height="44" fill="#f2f2f7" stroke="#fff"/><text x="34" y="163">1 · 개발 기록</text><text x="246" y="163" text-anchor="end" fill="#6e6e73">중심 66</text>
+<rect x="20" y="180" width="240" height="44" fill="#f2f2f7" stroke="#fff"/><text x="34" y="207">2 · 기술 노트</text><text x="246" y="207" text-anchor="end" fill="#6e6e73">중심 110</text>
+<rect x="20" y="224" width="240" height="44" fill="#f2f2f7" stroke="#fff"/><text x="34" y="251">3 · 인사이트</text><text x="246" y="251" text-anchor="end" fill="#6e6e73">중심 154</text>
+</g>
+<text x="20" y="300" font-size="12.5" fill="#1d1d1f">잡은 행의 중심 = 22 + dy(100) = 122</text>
+<text x="20" y="320" font-size="12.5" fill="#1d1d1f">122보다 중심이 큰 첫 행 = 3번 → to = 3 − 1 = 2</text>
+<line x1="270" y1="180" x2="330" y2="180" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="350" y="82" font-size="13" font-weight="600" fill="#6e6e73">화면 (transform만 변경)</text>
+<g font-size="13">
+<rect x="350" y="92" width="270" height="44" fill="#f2f2f7" stroke="#fff"/><text x="364" y="119" fill="#1d1d1f">개발 기록</text><text x="606" y="119" text-anchor="end" fill="#ff9f0a">translateY(−44px)</text>
+<rect x="350" y="136" width="270" height="44" fill="#f2f2f7" stroke="#fff"/><text x="364" y="163" fill="#1d1d1f">기술 노트</text><text x="606" y="163" text-anchor="end" fill="#ff9f0a">translateY(−44px)</text>
+<rect x="350" y="224" width="270" height="44" fill="#f2f2f7" stroke="#fff"/><text x="364" y="259" fill="#1d1d1f">인사이트</text><text x="606" y="259" text-anchor="end" fill="#6e6e73">변경 없음</text>
+<rect x="356" y="192" width="270" height="44" rx="6" fill="#fff" stroke="#0a84ff" stroke-width="2" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.18))"/><text x="370" y="219" fill="#0a84ff" font-weight="600">학습</text><text x="612" y="219" text-anchor="end" fill="#0a84ff">translateY(100px)</text>
+</g>
+<text x="350" y="320" font-size="12.5" fill="#1d1d1f">놓으면 onDrop(from 0, to 2) 호출 후 transform 제거</text>
+</svg>

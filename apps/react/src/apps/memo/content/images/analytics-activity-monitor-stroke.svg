@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>viewBox 150×60인 선 그래프를 가로로 3.6배 늘렸을 때 vector-effect가 없으면 가파른 구간의 선이 두꺼워지고, non-scaling-stroke를 주면 두께가 그대로인 비교</title>
+<rect width="640" height="380" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">preserveAspectRatio="none"으로 늘린 선</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">같은 path(viewBox 150×60, stroke-width 2)를 가로 540, 세로 60으로 그렸다. 가로만 3.6배</text>
+
+<text x="24" y="88" font-size="13" font-weight="600" fill="#1d1d1f">원래 비율 (150×60)</text>
+<svg x="50" y="98" width="150" height="60" viewBox="0 0 150 60">
+<rect width="150" height="60" fill="#f2f2f7"/>
+<path d="M0 50 L25 40 L50 46 L60 10 L75 35 L100 22 L110 52 L150 30" fill="none" stroke="#34c759" stroke-width="2" stroke-linejoin="round"/>
+</svg>
+
+<text x="24" y="192" font-size="13" font-weight="600" fill="#1d1d1f">늘림, vector-effect 없음</text>
+<text x="240" y="192" font-size="12" fill="#ff3b30">가파른 구간일수록 선이 가로로 두꺼워진다</text>
+<svg x="50" y="202" width="540" height="60" viewBox="0 0 150 60" preserveAspectRatio="none">
+<rect width="150" height="60" fill="#f2f2f7"/>
+<path d="M0 50 L25 40 L50 46 L60 10 L75 35 L100 22 L110 52 L150 30" fill="none" stroke="#34c759" stroke-width="2" stroke-linejoin="round"/>
+</svg>
+
+<text x="24" y="296" font-size="13" font-weight="600" fill="#1d1d1f">늘림, vector-effect: non-scaling-stroke</text>
+<text x="330" y="296" font-size="12" fill="#248a3d">선 두께가 화면에서 2px로 유지된다</text>
+<svg x="50" y="306" width="540" height="60" viewBox="0 0 150 60" preserveAspectRatio="none">
+<rect width="150" height="60" fill="#f2f2f7"/>
+<path d="M0 50 L25 40 L50 46 L60 10 L75 35 L100 22 L110 52 L150 30" fill="none" stroke="#34c759" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+</svg>
+</svg>

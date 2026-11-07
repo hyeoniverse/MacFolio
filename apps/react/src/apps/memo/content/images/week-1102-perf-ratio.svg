@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">절대 시간 기준과 같은 실행 안의 비율 기준</text>
+  <!-- left -->
+  <text x="20" y="62" font-size="13" font-weight="600" fill="#1d1d1f">이전 시험: 검색 한 번 평균 &lt; 5ms</text>
+  <text x="20" y="96" font-size="12" fill="#6e6e73">Mac</text>
+  <rect x="110" y="84" width="8" height="18" fill="#34c759"/>
+  <text x="124" y="98" font-size="12" fill="#1d1d1f">0.2ms 통과</text>
+  <text x="20" y="132" font-size="12" fill="#6e6e73">GitHub 러너</text>
+  <rect x="110" y="120" width="197" height="18" fill="#ff3b30"/>
+  <text x="110" y="160" font-size="12" fill="#ff3b30">5.46ms 실패, 배포 중단</text>
+  <line x1="290" y1="74" x2="290" y2="146" stroke="#1d1d1f" stroke-dasharray="4 3"/>
+  <text x="290" y="70" text-anchor="middle" font-size="12" fill="#1d1d1f">5ms</text>
+  <text x="20" y="196" font-size="12" fill="#6e6e73">러너 속도에 따라 같은 코드가</text>
+  <text x="20" y="214" font-size="12" fill="#6e6e73">통과하거나 실패한다</text>
+  <line x1="320" y1="50" x2="320" y2="300" stroke="#d1d1d6"/>
+  <!-- right -->
+  <text x="340" y="62" font-size="13" font-weight="600" fill="#0a84ff">#414: perQuery &lt; build / 5</text>
+  <text x="340" y="96" font-size="12" fill="#6e6e73">build</text>
+  <rect x="400" y="84" width="180" height="18" fill="#0a84ff"/>
+  <text x="586" y="98" font-size="12" fill="#1d1d1f">10~14ms</text>
+  <text x="340" y="132" font-size="12" fill="#6e6e73">perQuery</text>
+  <rect x="400" y="120" width="4" height="18" fill="#0a84ff"/>
+  <text x="410" y="134" font-size="12" fill="#1d1d1f">0.21~0.23ms</text>
+  <text x="340" y="168" font-size="12" fill="#1d1d1f">Mac에서 잰 비율 48~62배, 기준 5배</text>
+  <rect x="340" y="186" width="280" height="44" rx="8" fill="#f2f2f7"/>
+  <text x="352" y="205" font-size="12" fill="#1d1d1f">러너가 느리면 build와 perQuery가</text>
+  <text x="352" y="222" font-size="12" fill="#1d1d1f">함께 늘어 비율이 유지된다</text>
+  <rect x="340" y="240" width="280" height="44" rx="8" fill="#fff4e5" stroke="#ff9f0a"/>
+  <text x="352" y="259" font-size="12" fill="#1d1d1f">캐시가 깨지면 검색마다 검색용 글자를</text>
+  <text x="352" y="276" font-size="12" fill="#1d1d1f">다시 만들어 perQuery ≈ build, 실패</text>
+  <text x="20" y="318" font-size="12" fill="#6e6e73">build: 글 240개의 검색용 글자를 처음부터 만드는 시간, perQuery: 검색 한 번의 평균 시간</text>
+</svg>

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 610" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="610" fill="#fff"/>
+  <defs><marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker><marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="bs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker><marker id="os" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff9f0a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker><marker id="gs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#34c759"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="ss" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="rs" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#ff3b30"/></marker></defs>
+  <rect x="18" y="384" width="400" height="150" rx="0" fill="none" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="22" y="378" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-style="italic">능동 닫기</text>
+  <rect x="476" y="284" width="128" height="150" rx="0" fill="none" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="480" y="278" text-anchor="start" font-size="11.5" fill="#1d1d1f" font-style="italic">수동 닫기</text>
+  <line x1="290" y1="50" x2="60" y2="201" stroke="#1d1d1f" stroke-width="2" marker-end="url(#k)"/>
+  <text x="176" y="96" text-anchor="end" font-size="11" fill="#1d1d1f" font-weight="700">능동 열기</text>
+  <text x="176" y="110" text-anchor="end" font-size="11" fill="#1d1d1f">송신: SYN (1)</text>
+  <line x1="106" y1="201" x2="306" y2="54" stroke="#1d1d1f" stroke-width="1" marker-end="url(#k)"/>
+  <text x="196" y="178" text-anchor="start" font-size="11" fill="#1d1d1f">close (또는 타임아웃)</text>
+  <line x1="342" y1="54" x2="342" y2="116" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="350" y="90" text-anchor="start" font-size="11" fill="#1d1d1f" font-weight="700">수동 열기</text>
+  <line x1="318" y1="116" x2="318" y2="54" stroke="#1d1d1f" stroke-width="1" marker-end="url(#k)"/>
+  <text x="310" y="90" text-anchor="end" font-size="11" fill="#1d1d1f" font-weight="700">close</text>
+  <line x1="385" y1="140" x2="535" y2="201" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="470" y="150" text-anchor="start" font-size="11" fill="#1d1d1f">수신: SYN (1)</text>
+  <text x="470" y="164" text-anchor="start" font-size="11" fill="#1d1d1f">송신: SYN, ACK (2)</text>
+  <line x1="110" y1="229" x2="290" y2="296" stroke="#1d1d1f" stroke-width="2" marker-end="url(#k)"/>
+  <text x="212" y="278" text-anchor="end" font-size="11" fill="#1d1d1f">수신: SYN, ACK (2)</text>
+  <text x="212" y="292" text-anchor="end" font-size="11" fill="#1d1d1f">송신: ACK (3)</text>
+  <line x1="545" y1="229" x2="372" y2="296" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="520" y="250" text-anchor="start" font-size="11" fill="#1d1d1f">수신: ACK (3)</text>
+  <text x="520" y="264" text-anchor="start" font-size="11" fill="#1d1d1f">송신: &lt;없음&gt;</text>
+  <line x1="385" y1="310" x2="485" y2="310" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="434" y="302" text-anchor="middle" font-size="11" fill="#1d1d1f">수신: FIN (4)</text>
+  <text x="434" y="326" text-anchor="middle" font-size="11" fill="#1d1d1f">송신: ACK (5)</text>
+  <line x1="540" y1="324" x2="540" y2="396" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="550" y="356" text-anchor="start" font-size="11" fill="#1d1d1f" font-weight="700">close</text>
+  <text x="550" y="370" text-anchor="start" font-size="11" fill="#1d1d1f">송신: FIN (6)</text>
+  <line x1="540" y1="424" x2="540" y2="496" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="550" y="456" text-anchor="start" font-size="11" fill="#1d1d1f">수신: ACK (7)</text>
+  <text x="550" y="470" text-anchor="start" font-size="11" fill="#1d1d1f">송신: &lt;없음&gt;</text>
+  <line x1="300" y1="324" x2="110" y2="396" stroke="#1d1d1f" stroke-width="2" marker-end="url(#k)"/>
+  <text x="222" y="368" text-anchor="start" font-size="11" fill="#1d1d1f" font-weight="700">close</text>
+  <text x="222" y="382" text-anchor="start" font-size="11" fill="#1d1d1f">송신: FIN (4)</text>
+  <line x1="145" y1="410" x2="275" y2="410" stroke="#1d1d1f" stroke-width="1" marker-end="url(#k)"/>
+  <text x="210" y="402" text-anchor="middle" font-size="11" fill="#1d1d1f">수신: FIN</text>
+  <text x="210" y="426" text-anchor="middle" font-size="11" fill="#1d1d1f">송신: ACK</text>
+  <line x1="90" y1="424" x2="90" y2="496" stroke="#1d1d1f" stroke-width="2" marker-end="url(#k)"/>
+  <text x="98" y="456" text-anchor="start" font-size="11" fill="#1d1d1f">수신: ACK (5)</text>
+  <text x="98" y="470" text-anchor="start" font-size="11" fill="#1d1d1f">송신: &lt;없음&gt;</text>
+  <line x1="140" y1="424" x2="290" y2="496" stroke="#1d1d1f" stroke-width="1" marker-end="url(#k)"/>
+  <text x="244" y="452" text-anchor="start" font-size="11" fill="#1d1d1f">수신: FIN, ACK</text>
+  <text x="244" y="466" text-anchor="start" font-size="11" fill="#1d1d1f">송신: ACK</text>
+  <line x1="330" y1="424" x2="330" y2="496" stroke="#1d1d1f" stroke-width="1" marker-end="url(#k)"/>
+  <text x="338" y="456" text-anchor="start" font-size="11" fill="#1d1d1f">수신: ACK</text>
+  <text x="338" y="470" text-anchor="start" font-size="11" fill="#1d1d1f">송신: &lt;없음&gt;</text>
+  <line x1="145" y1="510" x2="275" y2="510" stroke="#1d1d1f" stroke-width="2" marker-end="url(#k)"/>
+  <text x="210" y="502" text-anchor="middle" font-size="11" fill="#1d1d1f">수신: FIN (6)</text>
+  <text x="210" y="526" text-anchor="middle" font-size="11" fill="#1d1d1f">송신: ACK (7)</text>
+  <line x1="385" y1="510" x2="485" y2="510" stroke="#1d1d1f" stroke-width="1" marker-end="url(#k)"/>
+  <text x="434" y="502" text-anchor="middle" font-size="11" fill="#1d1d1f">2MSL</text>
+  <text x="434" y="526" text-anchor="middle" font-size="11" fill="#1d1d1f">타임아웃</text>
+  <rect x="275" y="26" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="330.0" y="44.0" text-anchor="middle" font-size="11" fill="#1d1d1f">CLOSED</text>
+  <rect x="275" y="116" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="330.0" y="134.0" text-anchor="middle" font-size="11" fill="#1d1d1f">LISTEN</text>
+  <rect x="35" y="201" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="90.0" y="219.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SYN_SENT</text>
+  <rect x="505" y="201" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="560.0" y="219.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SYN_RCVD</text>
+  <rect x="275" y="296" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="330.0" y="314.0" text-anchor="middle" font-size="11" fill="#1d1d1f">ESTABLISHED</text>
+  <rect x="485" y="296" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="540.0" y="314.0" text-anchor="middle" font-size="11" fill="#1d1d1f">CLOSE_WAIT</text>
+  <rect x="485" y="396" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="540.0" y="414.0" text-anchor="middle" font-size="11" fill="#1d1d1f">LAST_ACK</text>
+  <rect x="35" y="396" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="90.0" y="414.0" text-anchor="middle" font-size="11" fill="#1d1d1f">FIN_WAIT_1</text>
+  <rect x="275" y="396" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="330.0" y="414.0" text-anchor="middle" font-size="11" fill="#1d1d1f">CLOSING</text>
+  <rect x="35" y="496" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="90.0" y="514.0" text-anchor="middle" font-size="11" fill="#1d1d1f">FIN_WAIT_2</text>
+  <rect x="275" y="496" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="330.0" y="514.0" text-anchor="middle" font-size="11" fill="#1d1d1f">TIME_WAIT</text>
+  <rect x="485" y="496" width="110" height="28" rx="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.4"/>
+  <text x="540.0" y="514.0" text-anchor="middle" font-size="11" fill="#1d1d1f">CLOSED</text>
+  <text x="330" y="166" text-anchor="middle" font-size="10.5" fill="#6e6e73" font-style="italic">수동 열기</text>
+  <text x="90" y="251" text-anchor="middle" font-size="10.5" fill="#6e6e73" font-style="italic">능동 열기</text>
+  <text x="330" y="346" text-anchor="middle" font-size="10.5" fill="#6e6e73" font-style="italic">데이터 전송 상태</text>
+  <line x1="20" y1="560" x2="56" y2="560" stroke="#1d1d1f" stroke-width="2" marker-end="url(#k)"/>
+  <text x="62" y="564" text-anchor="start" font-size="11" fill="#1d1d1f">클라이언트의 일반 경로</text>
+  <line x1="20" y1="584" x2="56" y2="584" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k)"/>
+  <text x="62" y="588" text-anchor="start" font-size="11" fill="#1d1d1f">서버의 일반 경로</text>
+  <text x="250" y="564" font-size="11" fill="#1d1d1f"><tspan font-weight="700">굵은 글씨</tspan>: 로컬 응용의 동작</text>
+  <text x="250" y="582" text-anchor="start" font-size="11" fill="#1d1d1f">수신: 전이를 일으킨 상대의 세그먼트</text>
+  <text x="250" y="600" text-anchor="start" font-size="11" fill="#1d1d1f">송신: 전이 중 상대에게 보낸 세그먼트</text>
+</svg>

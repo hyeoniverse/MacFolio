@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="300" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">poller.ts의 다음 요청 시각 (간격 1분)</text>
+
+  <!-- row 1 normal -->
+  <text x="20" y="66" font-size="13" font-weight="700" fill="#1d1d1f">정상</text>
+  <line x1="120" y1="62" x2="620" y2="62" stroke="#e5e5ea" stroke-width="2"/>
+  <g fill="#0a84ff">
+    <circle cx="130" cy="62" r="6"/><circle cx="200" cy="62" r="6"/><circle cx="270" cy="62" r="6"/><circle cx="340" cy="62" r="6"/><circle cx="410" cy="62" r="6"/><circle cx="480" cy="62" r="6"/><circle cx="550" cy="62" r="6"/>
+  </g>
+  <text x="165" y="86" font-size="12" text-anchor="middle" fill="#6e6e73">1분</text>
+  <text x="235" y="86" font-size="12" text-anchor="middle" fill="#6e6e73">1분</text>
+  <text x="305" y="86" font-size="12" text-anchor="middle" fill="#6e6e73">1분</text>
+  <text x="620" y="86" font-size="12" text-anchor="end" fill="#6e6e73">응답이 온 뒤 다음 요청을 예약</text>
+
+  <!-- row 2 failures -->
+  <text x="20" y="136" font-size="13" font-weight="700" fill="#1d1d1f">연속 실패</text>
+  <line x1="120" y1="132" x2="620" y2="132" stroke="#e5e5ea" stroke-width="2"/>
+  <g fill="#ff3b30">
+    <circle cx="130" cy="132" r="6"/><circle cx="160" cy="132" r="6"/><circle cx="220" cy="132" r="6"/><circle cx="340" cy="132" r="6"/>
+  </g>
+  <circle cx="490" cy="132" r="6" fill="#34c759"/>
+  <circle cx="560" cy="132" r="6" fill="#0a84ff"/>
+  <g font-size="12" text-anchor="middle" fill="#6e6e73">
+    <text x="145" y="156">2분</text><text x="190" y="156">4분</text><text x="280" y="156">8분</text><text x="415" y="156">10분 (상한)</text><text x="525" y="156">1분</text>
+  </g>
+  <text x="235" y="116" font-size="12" text-anchor="middle" fill="#ff3b30">실패 1~4회째</text>
+  <text x="490" y="116" font-size="12" text-anchor="middle" fill="#34c759">성공</text>
+  <text x="20" y="178" font-size="12" fill="#6e6e73">축척 생략. 실패 n회째의 대기 = min(1분 × 2ⁿ, 10분), 성공하면 다시 1분</text>
+
+  <!-- row 3 hidden -->
+  <text x="20" y="224" font-size="13" font-weight="700" fill="#1d1d1f">탭 숨김</text>
+  <line x1="120" y1="220" x2="620" y2="220" stroke="#e5e5ea" stroke-width="2"/>
+  <rect x="250" y="206" width="220" height="28" rx="6" fill="#f2f2f7"/>
+  <text x="360" y="225" font-size="12" text-anchor="middle" fill="#6e6e73">visibilityState = hidden: 요청 없음</text>
+  <g fill="#0a84ff"><circle cx="130" cy="220" r="6"/><circle cx="200" cy="220" r="6"/><circle cx="490" cy="220" r="6"/><circle cx="560" cy="220" r="6"/></g>
+  <text x="490" y="254" font-size="12" text-anchor="middle" fill="#0a84ff">다시 보이면</text>
+  <text x="490" y="270" font-size="12" text-anchor="middle" fill="#0a84ff">간격이 지났을 때만 즉시 조회</text>
+  <text x="20" y="290" font-size="12" fill="#6e6e73">창을 닫아도 같은 방식으로 멈춘다 (usePolling)</text>
+</svg>

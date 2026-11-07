@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">상태의 원본을 차례로 물어 둘 곳을 정한다</text>
+
+  <g font-size="13">
+    <!-- 질문 -->
+    <rect x="24" y="50" width="300" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="40" y="77" fill="#1d1d1f">① 원본이 서버에 있는가?</text>
+    <rect x="24" y="116" width="300" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="40" y="143" fill="#1d1d1f">② React 바깥(브라우저 API)에 있는가?</text>
+    <rect x="24" y="182" width="300" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="40" y="209" fill="#1d1d1f">③ 한 컴포넌트만 쓰는가?</text>
+    <rect x="24" y="248" width="300" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="40" y="275" fill="#1d1d1f">④ 한 화면의 컴포넌트 트리 안에서만 쓰는가?</text>
+    <rect x="24" y="314" width="300" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="40" y="341" fill="#1d1d1f">⑤ 여러 화면이 함께 쓴다</text>
+  </g>
+
+  <g stroke="#6e6e73" stroke-width="1.5" fill="none">
+    <line x1="174" y1="94" x2="174" y2="114" marker-end="url(#a)"/>
+    <line x1="174" y1="160" x2="174" y2="180" marker-end="url(#a)"/>
+    <line x1="174" y1="226" x2="174" y2="246" marker-end="url(#a)"/>
+    <line x1="174" y1="292" x2="174" y2="312" marker-end="url(#a)"/>
+    <line x1="324" y1="72" x2="380" y2="72" marker-end="url(#a)"/>
+    <line x1="324" y1="138" x2="380" y2="138" marker-end="url(#a)"/>
+    <line x1="324" y1="204" x2="380" y2="204" marker-end="url(#a)"/>
+    <line x1="324" y1="270" x2="380" y2="270" marker-end="url(#a)"/>
+    <line x1="324" y1="336" x2="380" y2="336" marker-end="url(#a)"/>
+  </g>
+  <g font-size="12" fill="#6e6e73">
+    <text x="182" y="109">아니요</text><text x="182" y="175">아니요</text><text x="182" y="241">아니요</text><text x="182" y="307">아니요</text>
+    <text x="334" y="66">예</text><text x="334" y="132">예</text><text x="334" y="198">예</text><text x="334" y="264">예</text>
+  </g>
+
+  <g font-size="12">
+    <rect x="382" y="50" width="234" height="44" rx="8" fill="#0a84ff"/>
+    <text x="396" y="68" fill="#fff" font-weight="600">서버 상태 라이브러리</text><text x="396" y="85" fill="#fff">글 목록, 댓글, 좋아요 수</text>
+    <rect x="382" y="116" width="234" height="44" rx="8" fill="#34c759"/>
+    <text x="396" y="134" fill="#1d1d1f" font-weight="600">useSyncExternalStore</text><text x="396" y="151" fill="#1d1d1f">온라인 상태, 창 크기</text>
+    <rect x="382" y="182" width="234" height="44" rx="8" fill="#e5e5ea"/>
+    <text x="396" y="200" fill="#1d1d1f" font-weight="600">useState · useReducer</text><text x="396" y="217" fill="#1d1d1f">댓글 입력 칸, 드롭다운 열림</text>
+    <rect x="382" y="248" width="234" height="44" rx="8" fill="#e5e5ea"/>
+    <text x="396" y="266" fill="#1d1d1f" font-weight="600">useReducer + Context</text><text x="396" y="283" fill="#1d1d1f">여러 단계의 글 작성 마법사</text>
+    <rect x="382" y="314" width="234" height="44" rx="8" fill="#ff9f0a"/>
+    <text x="396" y="332" fill="#1d1d1f" font-weight="600">외부 store (Zustand, Redux)</text><text x="396" y="349" fill="#1d1d1f">다크 모드 설정, 장바구니</text>
+  </g>
+  <text x="24" y="386" font-size="12" fill="#6e6e73">외부 store까지 내려온 상태만 상태 관리 라이브러리를 고를 대상이 된다.</text>
+</svg>

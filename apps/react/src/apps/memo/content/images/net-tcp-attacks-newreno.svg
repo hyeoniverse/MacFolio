@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="450" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+  </defs>
+  <!-- 왼쪽: 받지 않은 데이터를 ACK -->
+  <g font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle"><text x="28" y="40">A</text><text x="190" y="40">B</text></g>
+  <g stroke="#1d1d1f" stroke-width="1.5"><line x1="28" y1="48" x2="28" y2="420"/><line x1="190" y1="48" x2="190" y2="420"/></g>
+  <g stroke="#ff9f0a" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#o)">
+    <line x1="190" y1="60" x2="31" y2="96"/><line x1="190" y1="84" x2="31" y2="120"/><line x1="190" y1="108" x2="31" y2="144"/>
+  </g>
+  <g font-size="10.5" font-weight="600" fill="#ff9f0a" text-anchor="end"><text x="186" y="58">ACK 1501</text><text x="186" y="82">ACK 2001</text><text x="186" y="106">ACK 2502</text></g>
+  <g stroke="#0a84ff" stroke-width="1.6" marker-end="url(#k)">
+    <line x1="28" y1="100" x2="187" y2="132"/><line x1="28" y1="124" x2="187" y2="156"/><line x1="28" y1="148" x2="187" y2="180"/>
+  </g>
+  <g font-size="10" fill="#0a84ff"><text x="36" y="204">바이트 1000-1500</text><text x="36" y="218">바이트 1501-2001</text><text x="36" y="232">바이트 2002-2502</text></g>
+  <text x="34" y="254" font-size="10.5" fill="#6e6e73">데이터가 도착하기 전에</text>
+  <text x="34" y="268" font-size="10.5" fill="#6e6e73">미리 ACK를 보낸다</text>
+  <line x1="190" y1="278" x2="31" y2="306" stroke="#ff9f0a" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#o)"/>
+  <text x="186" y="274" font-size="10.5" font-weight="600" fill="#ff9f0a" text-anchor="end">ACK</text>
+  <g stroke="#1d1d1f" stroke-width="1.6" marker-end="url(#k)">
+    <line x1="28" y1="300" x2="130" y2="318"/><line x1="28" y1="314" x2="130" y2="332"/><line x1="28" y1="328" x2="130" y2="346"/><line x1="28" y1="342" x2="130" y2="360"/>
+  </g>
+  <g stroke="#ff3b30" stroke-width="2"><path d="M138,312 l10,10 m0,-10 l-10,10"/><path d="M138,326 l10,10 m0,-10 l-10,10"/><path d="M138,340 l10,10 m0,-10 l-10,10"/><path d="M138,354 l10,10 m0,-10 l-10,10"/></g>
+  <text x="34" y="388" font-size="10.5" fill="#6e6e73">전송률이 올라가 손실이 난다</text>
+  <!-- 오른쪽: 상태 기계 -->
+  <text x="430" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">뉴 리노(New Reno) 혼잡 제어 상태 기계</text>
+  <g fill="#fff" stroke="#1d1d1f" stroke-width="2">
+    <circle cx="300" cy="150" r="40"/><circle cx="580" cy="150" r="40"/><circle cx="440" cy="232" r="40"/><circle cx="440" cy="370" r="40"/>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <text x="300" y="148">슬로 스타트</text><text x="300" y="163" font-size="9.5" fill="#6e6e73">(slow start)</text>
+    <text x="580" y="148">혼잡 회피</text><text x="580" y="163" font-size="9.5" fill="#6e6e73">(cong. avoid.)</text>
+    <text x="440" y="230">지수 백오프</text><text x="440" y="245" font-size="9.5" fill="#6e6e73">(exp. backoff)</text>
+    <text x="440" y="368">빠른 회복</text><text x="440" y="383" font-size="9.5" fill="#6e6e73">(fast recovery)</text>
+  </g>
+  <g fill="none" stroke-width="1.8">
+    <path d="M300,62 L300,108" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M330,124 C380,60 500,60 552,120" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M338,160 C380,170 400,180 412,202" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M541,160 C500,170 480,180 468,202" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M470,212 C500,190 500,240 478,244" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M400,236 C360,236 330,220 316,188" stroke="#ff3b30" marker-end="url(#r)"/>
+    <path d="M290,189 C280,300 340,360 398,368" stroke="#ff3b30" marker-end="url(#r)"/>
+    <path d="M590,189 C600,300 540,360 482,368" stroke="#ff3b30" marker-end="url(#r)"/>
+    <path d="M440,330 L440,274" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M466,340 L552,182" stroke="#1d1d1f" marker-end="url(#k)"/>
+    <path d="M262,140 C230,120 230,180 262,162" stroke="#34c759" marker-end="url(#g)"/>
+    <path d="M600,115 C600,80 640,90 616,130" stroke="#34c759" marker-end="url(#g)"/>
+    <path d="M425,407 C410,440 470,440 455,407" stroke="#34c759" marker-end="url(#g)"/>
+  </g>
+  <g font-size="10" fill="#1d1d1f">
+    <text x="236" y="70">새 ACK</text><text x="236" y="84" font-family="monospace">cwnd+=MSS</text>
+    <text x="440" y="64" text-anchor="middle" font-family="monospace">cwnd &gt; ssthresh</text>
+    <text x="372" y="172">타임아웃</text>
+    <text x="476" y="172">타임아웃</text>
+    <text x="478" y="264">타임아웃</text>
+    <text x="330" y="226">ACK</text><text x="330" y="240" font-family="monospace">cwnd=0</text>
+    <text x="226" y="318">중복 ACK 3개</text><text x="226" y="332" font-family="monospace">cwnd=cwnd/2</text>
+    <text x="568" y="318">중복 ACK 3개</text><text x="568" y="332" font-family="monospace">cwnd=cwnd/2</text>
+    <text x="434" y="300" text-anchor="end">타임아웃</text>
+    <text x="514" y="272" font-size="9.5">손실 시점 최고</text><text x="514" y="285" font-size="9.5">전송분 초과 ACK</text>
+    <text x="566" y="70">새 ACK</text><text x="566" y="84" font-family="monospace">cwnd+=1</text>
+    <text x="470" y="430">ACK</text><text x="470" y="444" font-family="monospace">cwnd+=1</text>
+  </g>
+</svg>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 376" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>프론트엔드와 API 서버의 버전 불일치</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="376" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">머지 직후: 프론트엔드만 새 코드로 배포된 상태</text>
+<rect x="24" y="56" width="250" height="170" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="40" y="82" font-size="14" fill="#0a84ff" text-anchor="start" font-weight="700">프론트엔드 (새 코드)</text>
+<text x="40" y="106" font-size="12" fill="#6e6e73" text-anchor="start">Cloudflare에 자동 배포</text>
+<rect x="40" y="120" width="218" height="90" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="52" y="142" font-size="12" fill="#1d1d1f" text-anchor="start">댓글 입력 칸: 본문만</text>
+<text x="52" y="164" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">POST /posts/:slug/comments</text>
+<text x="52" y="184" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">{ "body": "좋은 글" }</text>
+<rect x="366" y="56" width="250" height="170" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.6"/>
+<text x="382" y="82" font-size="14" fill="#c27400" text-anchor="start" font-weight="700">API 서버 (이전 코드)</text>
+<text x="382" y="106" font-size="12" fill="#6e6e73" text-anchor="start">VM에서 수동 갱신 전</text>
+<rect x="382" y="120" width="218" height="90" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="394" y="142" font-size="12" fill="#1d1d1f" text-anchor="start">필수 필드 검사</text>
+<text x="394" y="164" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">name: 필수</text>
+<text x="394" y="184" font-size="12" fill="#1d1d1f" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">password: 4~20자</text>
+<line x1="274" y1="120" x2="364" y2="120" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#arb)"/>
+<text x="320" y="110" font-size="12" fill="#0a84ff" text-anchor="middle">요청</text>
+<path d="M364 190 L274 190" fill="none" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="320" y="182" font-size="12" fill="#ff3b30" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">400</text>
+<rect x="24" y="248" width="592" height="84" rx="10" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="40" y="274" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="700">화면에 표시된 오류</text>
+<text x="40" y="298" font-size="13" fill="#1d1d1f" text-anchor="start">"이름을 입력해 주세요"   "비밀번호는 4~20자로…"</text>
+<text x="40" y="318" font-size="12" fill="#6e6e73" text-anchor="start">입력 칸은 이미 없으므로 사용자가 고칠 방법이 없다</text>
+<text x="24" y="360" font-size="12" fill="#6e6e73" text-anchor="start">프론트엔드와 서버가 따로 배포되면 두 버전이 함께 동작하는 구간이 생긴다.</text>
+</svg>

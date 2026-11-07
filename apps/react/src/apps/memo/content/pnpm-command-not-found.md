@@ -1,20 +1,11 @@
 ---
-title: 'zsh: command not found: pnpm — pnpm 설치 방법과 Node 25에서 corepack이 제외된 이유'
+title: 'zsh: command not found: pnpm 해결: pnpm 설치 방법과 Node 25에서 corepack이 제외된 이유'
 date: 2026-10-20
 category: 기술 노트/개발 환경
 summary: Node 25부터 corepack이 Node에 포함되지 않아, corepack enable로 pnpm을 사용하던 저장소에서 pnpm을 찾지 못한다. pnpm 설치 명령과 확인 방법, 전역 pnpm과 저장소의 pnpm 버전이 다른 이유, npm install로 대신 설치했을 때 남는 파일의 정리 순서를 정리했다.
 ---
 
-## pnpm이란
-
-pnpm은 Node.js 패키지 관리자다. npm과 같은 `package.json`을 읽어 의존성을 설치하지만, 패키지 파일을 디스크의 저장소(content-addressable store) 한 곳에 보관하고 프로젝트에는 링크만 생성한다. 그래서 같은 패키지를 여러 프로젝트에서 사용해도 디스크를 한 번만 사용하고, 설치 속도가 빠르다. 여러 패키지를 한 저장소에서 관리하는 **workspace**(monorepo) 기능도 제공한다.
-
-| 구분        | npm                                | pnpm                                  |
-| ----------- | ---------------------------------- | ------------------------------------- |
-| 설치 방식   | Node.js에 포함                     | 별도 설치 (아래 "설치 방법")          |
-| 잠금 파일   | `package-lock.json`                | `pnpm-lock.yaml`                      |
-| workspace   | `package.json`의 `workspaces`      | `pnpm-workspace.yaml`                 |
-| 패키지 저장 | 프로젝트마다 `node_modules`에 복사 | 공용 저장소에 보관, 프로젝트에는 링크 |
+터미널에서 `pnpm`을 실행했을 때 `zsh: command not found: pnpm`이 출력되면, 셸이 PATH의 어느 폴더에서도 `pnpm` 실행 파일을 찾지 못했다는 뜻이다. 아래 설치 명령 한 줄로 해결되고, 원인은 [Node 25부터 corepack이 제외됨](#원인-node-25부터-corepack이-제외됨) 절에 정리했다.
 
 ## 설치 방법
 
@@ -75,7 +66,7 @@ Node.js에 포함된 패키지 관리자는 npm뿐이고, pnpm은 포함되지 �
 "packageManager": "pnpm@10.34.5"
 ```
 
-Node.js 25부터 corepack이 Node.js와 함께 배포되지 않는다. Homebrew의 `node`처럼 항상 최신 메이저 버전으로 업데이트되는 설치에서는 `corepack enable` 자체가 `command not found`로 실패한다. pnpm과 corepack이 모두 없으므로 `pnpm` 명령을 찾지 못한다.
+==Node.js 25부터 corepack이 Node.js와 함께 배포되지 않는다==. Homebrew의 `node`처럼 항상 최신 메이저 버전으로 업데이트되는 설치에서는 `corepack enable` 자체가 `command not found`로 실패한다. pnpm과 corepack이 모두 없으므로 `pnpm` 명령을 찾지 못한다.
 
 | Node.js 버전 | corepack | `corepack enable`   | 해결                                                 |
 | ------------ | -------- | ------------------- | ---------------------------------------------------- |
@@ -93,12 +84,14 @@ $ cd ~/projects/acme && pnpm -v
 10.34.5
 ```
 
-pnpm은 실행 시 `package.json`의 `packageManager`를 확인하고, 지정된 버전과 자신의 버전이 다르면 지정된 버전을 내려받아 대신 실행한다. corepack이 수행하던 기능을 pnpm이 직접 수행하는 방식이다. 따라서 전역에 설치한 버전과 관계없이 저장소 안에서는 저장소가 지정한 버전이 사용된다.
+pnpm은 실행 시 `package.json`의 `packageManager`를 확인하고, 지정된 버전과 자신의 버전이 다르면 지정된 버전을 내려받아 대신 실행한다. corepack이 수행하던 기능을 pnpm이 직접 수행하는 방식이다. 따라서 전역에 설치한 버전과 관계없이 ==저장소 안에서는 저장소가 지정한 버전이 사용된다==.
 
 | pnpm 버전 | 설정                           | 기본값     |
 | --------- | ------------------------------ | ---------- |
 | 10        | `managePackageManagerVersions` | `true`     |
 | 11 이상   | `pmOnFail`                     | `download` |
+
+![pnpm -v가 버전을 정하는 순서](./images/pnpm-command-not-found-version.svg '저장소의 packageManager가 자기 버전과 다르면 지정된 버전을 내려받아 대신 실행한다')
 
 `pnpm install`의 마지막 줄에서 실제로 사용된 버전을 확인할 수 있다.
 
@@ -135,7 +128,7 @@ $ git status --short
 
 ![같은 저장소에서 npm install과 pnpm install의 설치 범위](./images/pnpm-command-not-found-install.svg '왼쪽: npm은 루트 package.json만 처리한다. 오른쪽: pnpm은 pnpm-workspace.yaml에 지정된 프로젝트를 모두 설치한다')
 
-pnpm workspace는 패키지 폴더 목록을 `pnpm-workspace.yaml`에 지정한다. npm은 이 파일을 읽지 않고, 루트 `package.json`에도 npm이 읽는 `workspaces` 필드가 없다. 그래서 npm은 루트 `package.json`의 devDependencies만 설치하고, pnpm이 사용하지 않는 `package-lock.json`을 새로 생성한다.
+pnpm workspace는 패키지 폴더 목록을 `pnpm-workspace.yaml`에 지정한다. ==npm은 이 파일을 읽지 않고==, 루트 `package.json`에도 npm이 읽는 `workspaces` 필드가 없다. 그래서 npm은 루트 `package.json`의 devDependencies만 설치하고, pnpm이 사용하지 않는 `package-lock.json`을 새로 생성한다.
 
 이 상태에서 빌드하면 하위 패키지에서 실패한다.
 
@@ -159,7 +152,8 @@ rm -rf package-lock.json node_modules
 pnpm install
 ```
 
-`pnpm install`은 npm이 생성한 `node_modules`가 남아 있어도 동작하지만, `package-lock.json`은 삭제하지 않는다. 남겨 두면 실수로 커밋되거나, 이후 `npm install` 실행 시 다시 갱신된다.
+> [!WARNING] package-lock.json은 직접 삭제한다
+> `pnpm install`은 npm이 생성한 `node_modules`가 남아 있어도 동작하지만, `package-lock.json`은 삭제하지 않는다. 남겨 두면 실수로 커밋되거나, 이후 `npm install` 실행 시 다시 갱신된다.
 
 ```text
 $ pnpm install
@@ -173,6 +167,21 @@ packages/contracts/node_modules/zod
 
 `Lockfile is up to date`는 커밋된 `pnpm-lock.yaml`을 그대로 사용했다는 뜻이다.
 
+## pnpm과 npm의 차이
+
+pnpm은 Node.js 패키지 관리자다. npm과 같은 `package.json`을 읽어 의존성을 설치하지만, 패키지 파일을 디스크의 저장소(content-addressable store) 한 곳에 보관하고 프로젝트에는 링크만 생성한다. 그래서 같은 패키지를 여러 프로젝트에서 사용해도 디스크를 한 번만 사용하고, 설치 속도가 빠르다. 여러 패키지를 한 저장소에서 관리하는 **workspace**(monorepo) 기능도 제공한다.
+
+![pnpm의 content-addressable store](./images/pnpm-command-not-found-pnpm-store.svg '두 프로젝트의 node_modules 파일이 저장소의 같은 파일을 하드 링크로 가리킨다. 같은 내용의 LICENSE.md는 저장소에 한 번만 저장된다')
+
+content-addressable store는 파일을 이름 대신 내용의 해시값으로 찾는 저장소다. 위 그림에서 `is-odd/LICENSE.md`와 `is-even/LICENSE.md`는 내용이 같아 저장소의 같은 파일 하나를 가리킨다. 프로젝트의 `node_modules`에는 복사본 대신 하드 링크(같은 디스크 데이터를 가리키는 또 하나의 파일 이름)가 생기므로 디스크 사용량이 늘지 않는다.
+
+| 구분        | npm                                | pnpm                                  |
+| ----------- | ---------------------------------- | ------------------------------------- |
+| 설치 방식   | Node.js에 포함                     | 별도 설치 (위 "설치 방법")            |
+| 잠금 파일   | `package-lock.json`                | `pnpm-lock.yaml`                      |
+| workspace   | `package.json`의 `workspaces`      | `pnpm-workspace.yaml`                 |
+| 패키지 저장 | 프로젝트마다 `node_modules`에 복사 | 공용 저장소에 보관, 프로젝트에는 링크 |
+
 ## 요약
 
 - pnpm은 Node.js에 포함되지 않는다. Node 24까지는 Node.js에 포함된 corepack이 pnpm을 내려받았지만, Node 25부터 corepack이 제외되었다
@@ -185,7 +194,8 @@ packages/contracts/node_modules/zod
 - [Mac에서 Homebrew와 npm 설치하기](/memo/brew-npm-setup)
 - [Mac에서 pip 설치하기](/memo/mac-pip-setup)
 
-## 참고한 공식 문서
+<details>
+<summary>참고 문헌</summary>
 
 영어 문서는 이 글과 관련된 부분만 번역했다.
 
@@ -202,3 +212,14 @@ packages/contracts/node_modules/zod
   - `managePackageManagerVersions`·`packageManagerStrict`·`packageManagerStrictVersion` 설정을 제거하고 `pmOnFail`로 통합했다. `managePackageManagerVersions: true`는 `pmOnFail: download`(기본값)에 해당한다.
 - [Installation](https://pnpm.io/installation) (pnpm)
   - npm 기반 설치 방법은 `npx get-pnpm`이다. "이 설치 프로그램을 실행하려면 Node.js 22.13 이상이 필요하지만, 설치한 뒤 pnpm을 사용하는 데는 필요 없다."
+- [Motivation](https://pnpm.io/motivation) (pnpm)
+  - 모든 파일을 content-addressable store에 한 번만 저장하고, 프로젝트의 `node_modules`에는 저장소의 파일을 하드 링크로 연결한다.
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- content-addressable store 그림: pnpm, [Motivation](https://pnpm.io/motivation) 문서의 pnpm-store.svg, 출처 표기 (바탕을 흰색으로 채움)
+
+</details>

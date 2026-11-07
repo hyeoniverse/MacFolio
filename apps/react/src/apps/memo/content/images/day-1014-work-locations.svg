@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>작업 결과가 저장된 위치와 중단 뒤에 남은 것</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="320" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">작업 결과가 있던 곳과 중단 뒤에 남은 것</text>
+<rect x="20" y="52" width="190" height="200" rx="10" fill="#f2f2f7"/>
+<text x="115" y="76" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">/tmp 아래 작업 폴더</text>
+<text x="115" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">커밋하지 않은 파일</text>
+<rect x="36" y="112" width="158" height="54" rx="6" fill="#fff1f0" stroke="#ff3b30" stroke-dasharray="5 4"/><text x="115" y="134" font-size="12" fill="#1d1d1f" text-anchor="middle">2단계: RPG 게임 그래픽</text><text x="115" y="152" font-size="12" fill="#ff3b30" text-anchor="middle">폴더와 함께 삭제</text>
+<rect x="36" y="176" width="158" height="54" rx="6" fill="#fff1f0" stroke="#ff3b30" stroke-dasharray="5 4"/><text x="115" y="198" font-size="12" fill="#1d1d1f" text-anchor="middle">2단계: 섹션 디자인</text><text x="115" y="216" font-size="12" fill="#ff3b30" text-anchor="middle">폴더와 함께 삭제</text>
+<rect x="240" y="52" width="170" height="200" rx="10" fill="#f2f2f7"/>
+<text x="325" y="76" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">로컬 커밋</text>
+<text x="325" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">.git 안에 기록</text>
+<text x="325" y="140" font-size="12" fill="#1d1d1f" text-anchor="middle">작업 폴더와 같은</text><text x="325" y="158" font-size="12" fill="#1d1d1f" text-anchor="middle">디스크에 있으면</text><text x="325" y="176" font-size="12" fill="#1d1d1f" text-anchor="middle">함께 사라질 수 있다</text>
+<rect x="440" y="52" width="180" height="200" rx="10" fill="#effaf2" stroke="#34c759"/>
+<text x="530" y="76" font-size="13" font-weight="700" fill="#1f7a3a" text-anchor="middle">GitHub의 #187 브랜치</text>
+<text x="530" y="96" font-size="12" fill="#6e6e73" text-anchor="middle">push한 커밋</text>
+<rect x="456" y="112" width="148" height="54" rx="6" fill="#ffffff" stroke="#34c759"/><text x="530" y="134" font-size="12" fill="#1d1d1f" text-anchor="middle">1단계: 섹션 3개</text><text x="530" y="152" font-size="12" fill="#1f7a3a" text-anchor="middle">남아 있음</text>
+<path d="M210 140 H236" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><text x="223" y="270" font-size="12" fill="#6e6e73" text-anchor="middle">git commit</text>
+<path d="M410 140 H436" stroke="#34c759" stroke-width="1.5" marker-end="url(#g)"/><text x="423" y="270" font-size="12" fill="#1f7a3a" text-anchor="middle">git push</text>
+<text x="20" y="302" font-size="12" fill="#1d1d1f">오른쪽으로 갈수록 작업 환경이 중단되거나 삭제되어도 남는다</text>
+</svg>

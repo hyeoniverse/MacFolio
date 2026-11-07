@@ -1,13 +1,27 @@
 ---
 title: 관계 데이터 모델의 릴레이션, 키, 무결성 제약
 date: 2023-03-28
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 3
-summary: 관계 데이터 모델의 도메인·애트리뷰트·튜플, 릴레이션 스키마·인스턴스, 차수와 카디널리티, 릴레이션의 네 가지 특성, 슈퍼 키·후보 키·기본 키·대체 키·외래 키, 개체 무결성과 참조 무결성을 대학 데이터베이스 예로 설명하고 4장 연습문제 14문항을 풀었다.
+summary: 관계 데이터 모델의 도메인·애트리뷰트·튜플, 릴레이션 스키마·인스턴스, 차수와 카디널리티, 릴레이션의 네 가지 특성, 슈퍼 키·후보 키·기본 키·대체 키·외래 키, 개체 무결성과 참조 무결성을 대학 데이터베이스 예와 PostgreSQL 오류 메시지로 설명하고 연습문제 14문항을 풀었다.
 ---
 
-데이터베이스 기초 연재의 세 번째 글로, 4장(관계 데이터베이스)을 다룬다. 관계 데이터 모델(relational data model)은 1970년 IBM의 E. F. Codd가 제안했고, 수학의 릴레이션(relation)과 집합(set) 이론에 기초한다.
+## 들어가기 전에
+
+학생 명단을 스프레드시트로 관리한다고 하자. 열에는 학번, 이름, 학년, 학과를 적고 한 줄에 학생 한 명을 적는다. 이 방식은 직관적이지만 규칙이 없으면 문제가 생긴다. 같은 학생을 두 줄에 적을 수 있고, 이름이 같은 학생 둘 가운데 누구의 성적인지 구별할 수 없으며, 명단에 없는 학번으로 수강 신청 기록을 남길 수도 있다.
+
+관계 데이터 모델(relational data model)은 이런 표에 수학적인 규칙을 부여한 데이터 모델이다. 1970년 IBM의 E. F. Codd가 논문 "A Relational Model of Data for Large Shared Data Banks"에서 제안했고, 수학의 릴레이션(relation)과 집합(set) 이론에 기초한다. 오늘날 PostgreSQL, MySQL, Oracle 같은 관계 DBMS는 모두 이 모델을 구현한다.
+
+위 세 문제는 이 모델의 세 개념으로 해결된다.
+
+| 문제                             | 해결하는 개념                      | 학생 데이터의 예                                |
+| -------------------------------- | ---------------------------------- | ----------------------------------------------- |
+| 같은 학생이 두 줄에 저장된다     | 릴레이션은 집합이라 중복 튜플 금지 | 학번 100인 행은 하나만 존재한다                 |
+| 동명이인을 구별할 수 없다        | 튜플을 유일하게 식별하는 키        | 이름 대신 학번으로 학생을 식별한다              |
+| 없는 학생의 수강 기록이 저장된다 | 외래 키와 참조 무결성 제약         | 학생 릴레이션에 없는 학번 600의 등록을 거부한다 |
+
+용어는 다음 순서로 정의한다. 릴레이션을 구성하는 도메인·애트리뷰트·튜플, 릴레이션의 구조(스키마)와 값(인스턴스), 릴레이션이 지켜야 하는 네 가지 특성, 키의 종류, 무결성 제약 순서다. 마지막에 연습문제 14문항을 풀었다.
 
 ## 테이블과 릴레이션
 
@@ -22,7 +36,7 @@ summary: 관계 데이터 모델의 도메인·애트리뷰트·튜플, 릴레�
 > [!WARNING]
 > ==관계 데이터베이스라고 해서 데이터가 물리적으로 테이블 형태로 저장된다는 뜻은 아니다.== 테이블은 논리적 구조이고, 물리적 저장 방식은 내부 스키마가 정한다.
 
-다음 학생 릴레이션을 예로 쓴다. 이 연재의 다른 글도 같은 데이터를 쓴다.
+다음 학생 릴레이션을 예로 쓴다. 데이터베이스 기초 연재의 다른 글도 같은 데이터를 쓴다.
 
 | 학번 | 이름   | 학년 | 학과   |
 | ---- | ------ | ---- | ------ |
@@ -34,7 +48,7 @@ summary: 관계 데이터 모델의 도메인·애트리뷰트·튜플, 릴레�
 
 이 릴레이션의 차수(degree)는 애트리뷰트 수인 4이고, 카디널리티(cardinality)는 튜플 수인 5다.
 
-![학생(STUDENT) 테이블(학번·이름·학년·학과 5행: 나수영·이찬수·정기태·송병길·박종화)](./images/db-relational-model-keys-note-01.jpg '학생(STUDENT) 테이블(학번·이름·학년·학과 5행: 나수영·이찬수·정기태·송병길·박종화) (강의 자료)')
+![학생(STUDENT) 테이블(학번·이름·학년·학과 5행: 나수영·이찬수·정기태·송병길·박종화)](./images/db-relational-model-keys-note-01.jpg '학생(STUDENT) 테이블(학번·이름·학년·학과 5행: 나수영·이찬수·정기태·송병길·박종화)')
 
 ## 도메인과 애트리뷰트
 
@@ -72,13 +86,13 @@ R \subseteq D_1 \times D_2 \times \cdots \times D_n
 
 즉 R은 `d_i \in D_i{:math}`인 n-튜플 `\langle d_1, d_2, \ldots, d_n \rangle{:math}`의 집합이다. 여기서 n이 차수, 튜플의 수가 카디널리티다. 차수에 따라 1차(unary), 2차(binary), 3차(ternary), …, n차 릴레이션이라 부른다. ==차수는 스키마가 정하므로 고정이고, 카디널리티는 인스턴스에 따라 바뀐다.==
 
-![DCL DOMAIN으로 DSNO·NAME·DYEAR·DEPT 도메인을 선언하고 STUDENT 릴레이션 애트리뷰트에 연결한 정의문](./images/db-relational-model-keys-note-02.jpg 'DCL DOMAIN으로 DSNO·NAME·DYEAR·DEPT 도메인을 선언하고 STUDENT 릴레이션 애트리뷰트에 연결한 정의문 (강의 자료)')
+![DCL DOMAIN으로 DSNO·NAME·DYEAR·DEPT 도메인을 선언하고 STUDENT 릴레이션 애트리뷰트에 연결한 정의문](./images/db-relational-model-keys-note-02.jpg 'DCL DOMAIN으로 DSNO·NAME·DYEAR·DEPT 도메인을 선언하고 STUDENT 릴레이션 애트리뷰트에 연결한 정의문')
 
-![도메인 없이 INTEGER·CHAR 타입을 직접 지정한 DCL RELATION STUDENT 정의문](./images/db-relational-model-keys-note-03.jpg '도메인 없이 INTEGER·CHAR 타입을 직접 지정한 DCL RELATION STUDENT 정의문 (강의 자료)')
+![도메인 없이 INTEGER·CHAR 타입을 직접 지정한 DCL RELATION STUDENT 정의문](./images/db-relational-model-keys-note-03.jpg '도메인 없이 INTEGER·CHAR 타입을 직접 지정한 DCL RELATION STUDENT 정의문')
 
-![STUDENT 테이블에 도메인·애트리뷰트·릴레이션 스키마·튜플·인스턴스를 각각 주석으로 표시한 구조 설명도](./images/db-relational-model-keys-note-04.jpg 'STUDENT 테이블에 도메인·애트리뷰트·릴레이션 스키마·튜플·인스턴스를 각각 주석으로 표시한 구조 설명도 (강의 자료)')
+![STUDENT 테이블에 도메인·애트리뷰트·릴레이션 스키마·튜플·인스턴스를 각각 주석으로 표시한 구조 설명도](./images/db-relational-model-keys-note-04.jpg 'STUDENT 테이블에 도메인·애트리뷰트·릴레이션 스키마·튜플·인스턴스를 각각 주석으로 표시한 구조 설명도')
 
-![학번{100,200}×과목번호{C412,C123,C312}=6개 순서쌍을 타원으로 그린 카티션 프로덕트 예시](./images/db-relational-model-keys-note-05.jpg '학번{100,200}×과목번호{C412,C123,C312}=6개 순서쌍을 타원으로 그린 카티션 프로덕트 예시 (강의 자료)')
+![학번{100,200}×과목번호{C412,C123,C312}=6개 순서쌍을 타원으로 그린 카티션 프로덕트 예시](./images/db-relational-model-keys-note-05.jpg '학번{100,200}×과목번호{C412,C123,C312}=6개 순서쌍을 타원으로 그린 카티션 프로덕트 예시')
 
 위 그림에서 학번 도메인 원소 2개와 과목번호 도메인 원소 3개의 카티션 프로덕트는 `2 \times 3 = 6{:math}`개의 순서쌍이다. 학생이 실제로 수강한 쌍만 모은 (학번, 과목번호) 릴레이션은 이 6개 순서쌍 중 일부를 원소로 갖는 부분집합이다.
 
@@ -105,9 +119,9 @@ R \subseteq D_1 \times D_2 \times \cdots \times D_n
 | 100  | C413              |
 | 100  | E412              |
 
-정규화는 [7장 글](/memo/db-normalization)에서 함수 종속과 함께 자세히 다룬다.
+정규화는 [정규화 글](/memo/db-normalization)에서 함수 종속과 함께 자세히 다룬다.
 
-![과목성적이 반복 그룹인 비정규 릴레이션 ENROL1과 이를 펼친 정규 릴레이션 ENROL 비교표](./images/db-relational-model-keys-note-06.jpg '과목성적이 반복 그룹인 비정규 릴레이션 ENROL1과 이를 펼친 정규 릴레이션 ENROL 비교표 (강의 자료)')
+![과목성적이 반복 그룹인 비정규 릴레이션 ENROL1과 이를 펼친 정규 릴레이션 ENROL 비교표](./images/db-relational-model-keys-note-06.jpg '과목성적이 반복 그룹인 비정규 릴레이션 ENROL1과 이를 펼친 정규 릴레이션 ENROL 비교표')
 
 ## 관계 데이터베이스와 스키마
 
@@ -125,11 +139,11 @@ R \subseteq D_1 \times D_2 \times \cdots \times D_n
 등록 (학번, 과목번호, 성적, 중간성적, 기말성적)
 ```
 
-![대학 DB의 학생(STUDENT) 테이블(학번 밑줄, 5행)](./images/db-relational-model-keys-note-07.jpg '대학 DB의 학생(STUDENT) 테이블(학번 밑줄, 5행) (강의 자료)')
+![대학 DB의 학생(STUDENT) 테이블(학번 밑줄, 5행)](./images/db-relational-model-keys-note-07.jpg '대학 DB의 학생(STUDENT) 테이블(학번 밑줄, 5행)')
 
-![대학 DB의 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)](./images/db-relational-model-keys-note-08.jpg '대학 DB의 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행) (강의 자료)')
+![대학 DB의 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)](./images/db-relational-model-keys-note-08.jpg '대학 DB의 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)')
 
-![대학 DB의 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)](./images/db-relational-model-keys-note-09.jpg '대학 DB의 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행) (강의 자료)')
+![대학 DB의 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)](./images/db-relational-model-keys-note-09.jpg '대학 DB의 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)')
 
 ## 키
 
@@ -151,8 +165,14 @@ R \subseteq D_1 \times D_2 \times \cdots \times D_n
 | 유일성(uniqueness) | 각 튜플에 대해 K의 값 `\langle v_i, v_j, \ldots, v_k \rangle{:math}`는 유일하다                                                             |
 | 최소성(minimality) | K는 튜플을 유일하게 식별하는 데 필요한 애트리뷰트만 포함한다. {학번, 이름}은 학번만으로 식별되므로 이름이 불필요해 최소성을 만족하지 않는다 |
 
-> [!WARNING]
-> 강의록은 슈퍼 키를 "유일성은 만족하지만 최소성은 만족하지 않는 애트리뷰트의 집합"으로 설명해 후보 키와 구별한다. 정의상으로는 유일성만 요구하므로 최소성까지 만족하는 후보 키도 슈퍼 키에 속한다. ==후보 키는 최소인 슈퍼 키이고, `\text{기본 키} \subseteq \text{후보 키} \subseteq \text{슈퍼 키}{:math}`의 포함 관계가 성립한다.==
+> [!NOTE]
+> 슈퍼 키는 유일성만 요구하므로 최소성까지 만족하는 후보 키도 슈퍼 키에 속한다. ==후보 키는 최소인 슈퍼 키이고, `\text{기본 키} \subseteq \text{후보 키} \subseteq \text{슈퍼 키}{:math}`의 포함 관계가 성립한다.==
+
+학생 릴레이션에 주민등록번호 애트리뷰트를 추가하면 후보 키가 둘이 되어 다섯 종류의 키를 한 그림에 표시할 수 있다. 이름이나 학과만으로는 튜플을 식별할 수 없으므로 키가 아니고, 학번 또는 주민등록번호를 포함한 집합은 모두 슈퍼 키다.
+
+![학생(학번, 주민등록번호, 이름, 학과)에서 키가 아닌 집합, 슈퍼 키, 후보 키, 기본 키와 대체 키의 포함 관계](./images/db-relational-model-keys-key-hierarchy.svg '바깥 상자일수록 조건이 약하다. 후보 키 가운데 하나를 기본 키로, 나머지를 대체 키로 지정한다')
+
+기본 키를 고르는 기준은 모델이 정하지 않는다. 실무에서는 값이 바뀌지 않고 짧은 후보 키를 고른다. 주민등록번호는 개인정보라 노출 범위를 줄여야 하고 외국인 학생에게는 없을 수 있으므로, 학교가 발급하는 학번이 기본 키로 더 적합하다.
 
 ### 외래 키
 
@@ -173,7 +193,9 @@ R \subseteq D_1 \times D_2 \times \cdots \times D_n
 교수1 (교수번호, 교수이름, 학과번호, 학장교수번호)
 ```
 
-==등록 릴레이션처럼 외래 키 두 개가 합쳐져 기본 키가 되는 경우도 많다.==
+==등록 릴레이션처럼 외래 키 두 개가 합쳐져 기본 키가 되는 경우도 많다.== 등록의 학번은 학생을, 과목번호는 과목을 참조하므로 등록 튜플 하나는 "어느 학생이 어느 과목을 수강했다"는 관계를 표현한다.
+
+![등록 릴레이션의 학번·과목번호가 학생·과목 릴레이션의 기본 키 값을 가리키고, 학생에 없는 학번 600을 가진 행은 거부되는 모습](./images/db-relational-model-keys-foreign-key.svg '외래 키 값은 피참조 릴레이션에 실제로 존재하는 기본 키 값이어야 한다')
 
 ## 무결성 제약
 
@@ -182,13 +204,32 @@ R \subseteq D_1 \times D_2 \times \cdots \times D_n
 | 개체 무결성(entity integrity)      | 기본 키 값은 언제든 널일 수 없다                              | 학번이 널인 학생 튜플 삽입                       |
 | 참조 무결성(referential integrity) | 외래 키 값은 피참조 릴레이션의 기본 키 값이거나 널이어야 한다 | 학생 릴레이션에 없는 학번 600으로 등록 튜플 삽입 |
 
+DBMS는 이 두 제약을 위반하는 연산을 실행하지 않고 오류로 돌려준다. 학생·과목·등록 테이블을 PostgreSQL 17에 기본 키와 외래 키를 선언해 만들고 위 표의 위반 예를 실행하면 다음 오류가 나온다.
+
+```sql
+INSERT INTO student VALUES (NULL, '홍길동', 1, '컴퓨터');   -- 기본 키가 NULL
+INSERT INTO student VALUES (100, '홍길동', 1, '컴퓨터');    -- 이미 있는 기본 키 값
+INSERT INTO enrol VALUES (600, 'C413', 'A');               -- 학생에 없는 학번
+```
+
+```text
+ERROR:  null value in column "sno" of relation "student" violates not-null constraint
+DETAIL:  Failing row contains (null, 홍길동, 1, 컴퓨터).
+ERROR:  duplicate key value violates unique constraint "student_pkey"
+DETAIL:  Key (sno)=(100) already exists.
+ERROR:  insert or update on table "enrol" violates foreign key constraint "enrol_sno_fkey"
+DETAIL:  Key (sno)=(600) is not present in table "student".
+```
+
+첫 두 오류가 개체 무결성과 기본 키의 유일성을, 세 번째 오류가 참조 무결성을 검사한 결과다. PostgreSQL은 `PRIMARY KEY{:sql}`를 선언한 열에 NOT NULL 제약과 유일 인덱스(`student_pkey`)를 함께 만들기 때문에, 오류 메시지에 not-null 제약과 unique 제약이라는 이름이 나온다.
+
 널은 정보가 없음을 명시적으로 표현하는 특수한 데이터 값이며, [릴레이션의 특성](#릴레이션의-특성) 절에서 본 두 경우(unknown, inapplicable)를 표현한다.
 
 ==이 제약조건은 데이터베이스 상태가 항상 만족해야 한다.== **데이터베이스 상태(database state)** 는 어느 한 시각에 데이터베이스에 저장된 모든 데이터 값이며, 데이터베이스 인스턴스(스키마에 포함된 모든 릴레이션 인스턴스의 집합)라고도 한다. 상태는 삽입·삭제·변경 연산으로 계속 바뀌므로, DBMS는 상태가 바뀌어도 무결성 제약을 항상 만족시켜야 한다. SQL에서 이를 명세하는 `PRIMARY KEY{:sql}`, `FOREIGN KEY … ON DELETE{:sql}` 구문은 [SQL 데이터 정의문 글](/memo/db-sql-ddl-dml)에서 다룬다.
 
 ## 연습문제 풀이
 
-4장 연습문제 14문항을 다시 풀었다.
+관계 데이터 모델 단원의 연습문제 14문항을 풀었다.
 
 <details>
 <summary>1. 용어 설명</summary>
@@ -378,5 +419,15 @@ SP의 Sno는 S의 기본 키를, SP의 Pno는 P의 기본 키를 참조하는 �
 - [3단계 스키마와 DBMS 구성 요소](/memo/db-three-level-schema): 앞 글
 - [관계 대수의 연산자와 폐쇄 성질](/memo/db-relational-algebra): 릴레이션을 처리하는 연산을 다룬 다음 글
 - [함수 종속과 1NF·2NF·3NF·BCNF 정규화](/memo/db-normalization): 정규화 릴레이션을 더 엄격한 정규형으로 분해하는 과정
+
+<details>
+<summary>참고 문헌</summary>
+
+- E. F. Codd, [A Relational Model of Data for Large Shared Data Banks](https://dl.acm.org/doi/10.1145/362384.362685), Communications of the ACM 13(6), 1970
+- PostgreSQL 문서, [5.5. Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)
+- Wikipedia, [Candidate key](https://en.wikipedia.org/wiki/Candidate_key)
+- Wikipedia, [Relational model](https://en.wikipedia.org/wiki/Relational_model)
+
+</details>
 
 #데이터베이스 #관계형데이터베이스 #CS

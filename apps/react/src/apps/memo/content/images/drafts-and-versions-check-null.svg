@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>제목만 있고 본문이 NULL인 행에서 처음 작성한 CHECK 식은 NULL로 평가되어 통과하고, IS NOT NULL을 먼저 검사한 식은 false로 평가되어 거절된다</title>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">본문이 NULL인 행을 CHECK 식이 평가하는 과정</text>
+<rect x="20" y="44" width="600" height="30" rx="6" fill="#f2f2f7"/>
+<text x="32" y="64" font-size="12" fill="#1d1d1f">삽입한 행:  <tspan font-family="SFMono-Regular, Menlo, monospace">title = '제목'</tspan>,  <tspan font-family="SFMono-Regular, Menlo, monospace" fill="#ff3b30">body = NULL</tspan>,  나머지 열은 규칙에 맞는 값</text>
+
+<text x="20" y="104" font-size="13" font-weight="700" fill="#ff3b30">처음 작성한 식</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace">
+<rect x="20" y="114" width="290" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="132" fill="#1d1d1f">length(btrim(NULL)) &gt; 0</text>
+<text x="322" y="132" fill="#6e6e73">→</text>
+<text x="344" y="132" fill="#ff9f0a" font-weight="700">NULL</text>
+<rect x="20" y="148" width="290" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="166" fill="#1d1d1f">(제목 검사 true) AND NULL</text>
+<text x="322" y="166" fill="#6e6e73">→</text>
+<text x="344" y="166" fill="#ff9f0a" font-weight="700">NULL</text>
+<rect x="20" y="182" width="290" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="200" fill="#1d1d1f">(모두 NULL? false) OR NULL</text>
+<text x="322" y="200" fill="#6e6e73">→</text>
+<text x="344" y="200" fill="#ff9f0a" font-weight="700">NULL</text>
+</g>
+<rect x="420" y="148" width="200" height="62" rx="8" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="432" y="172" font-size="13" font-weight="700" fill="#1d1d1f">CHECK 결과: 통과</text>
+<text x="432" y="192" font-size="12" fill="#6e6e73">false가 아니므로 삽입된다</text>
+
+<text x="20" y="248" font-size="13" font-weight="700" fill="#0a84ff">수정한 식 (IS NOT NULL을 먼저)</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace">
+<rect x="20" y="258" width="290" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="276" fill="#1d1d1f">"body" IS NOT NULL</text>
+<text x="322" y="276" fill="#6e6e73">→</text>
+<text x="344" y="276" fill="#1d1d1f" font-weight="700">false</text>
+<rect x="20" y="292" width="290" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="310" fill="#1d1d1f">… AND false AND NULL</text>
+<text x="322" y="310" fill="#6e6e73">→</text>
+<text x="344" y="310" fill="#1d1d1f" font-weight="700">false</text>
+<rect x="20" y="326" width="290" height="28" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="344" fill="#1d1d1f">(모두 NULL? false) OR false</text>
+<text x="322" y="344" fill="#6e6e73">→</text>
+<text x="344" y="344" fill="#1d1d1f" font-weight="700">false</text>
+</g>
+<rect x="420" y="292" width="200" height="62" rx="8" fill="#ffeceb" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="432" y="316" font-size="13" font-weight="700" fill="#1d1d1f">CHECK 결과: 거절</text>
+<text x="432" y="336" font-size="12" fill="#6e6e73">23514 check_violation</text>
+
+<line x1="20" y1="378" x2="620" y2="378" stroke="#e5e5ea"/>
+<text x="20" y="400" font-size="12" fill="#6e6e73">AND는 false가 하나라도 있으면 NULL이 섞여도 false다. 그래서 IS NOT NULL 검사(false)가 NULL을 덮는다</text>
+<text x="20" y="418" font-size="12" fill="#6e6e73">CHECK는 결과가 false일 때만 거절하고 true와 NULL은 모두 통과시킨다</text>
+</svg>

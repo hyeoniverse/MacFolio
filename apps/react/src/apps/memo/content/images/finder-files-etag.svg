@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 344" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>첫 요청은 200과 ETag, Cache-Control max-age=300을 받고, 5분 동안은 브라우저 캐시를 쓰며, 그 뒤에는 If-None-Match로 다시 확인해 파일이 같으면 본문 없는 304를 받는다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="344" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">/files/ 응답의 캐시: max-age와 ETag</text>
+
+<rect x="40" y="46" width="120" height="30" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="76" y="66" font-size="12" font-weight="700" fill="#1d1d1f">브라우저</text>
+<rect x="460" y="46" width="140" height="30" rx="6" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="490" y="66" font-size="12" font-weight="700" fill="#1d1d1f">Worker + R2</text>
+<line x1="100" y1="76" x2="100" y2="280" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<line x1="530" y1="76" x2="530" y2="280" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+
+<g font-size="12">
+<line x1="100" y1="104" x2="526" y2="104" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="120" y="98" fill="#1d1d1f">① GET /files/resume/….pdf</text>
+<line x1="530" y1="140" x2="104" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="120" y="134" fill="#1d1d1f">200, 본문 전체, <tspan font-family="SFMono-Regular, Menlo, monospace">ETag: "…abc"</tspan>, <tspan font-family="SFMono-Regular, Menlo, monospace">max-age=300</tspan></text>
+
+<rect x="110" y="156" width="410" height="36" rx="6" fill="#e8f7ec"/>
+<text x="122" y="179" fill="#1d1d1f">② 5분 이내에 다시 열면 요청 없이 브라우저 캐시 사용</text>
+
+<line x1="100" y1="228" x2="526" y2="228" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="120" y="222" fill="#1d1d1f">③ 5분 뒤: GET + <tspan font-family="SFMono-Regular, Menlo, monospace">If-None-Match: "…abc"</tspan></text>
+<line x1="530" y1="264" x2="104" y2="264" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="120" y="258" fill="#1d1d1f">ETag가 같으면 <tspan font-weight="700" fill="#0a84ff">304 Not Modified</tspan>, 본문 없음</text>
+</g>
+<text x="20" y="306" font-size="12" fill="#6e6e73">ETag는 파일 내용에 대응하는 식별자다. 관리자가 파일을 바꾸면 ETag가 달라져 ③에서 200과 새 본문을 받는다</text>
+<text x="20" y="326" font-size="12" fill="#6e6e73">304에는 본문이 없으므로 몇 MB짜리 PDF도 헤더만 오간다</text>
+</svg>

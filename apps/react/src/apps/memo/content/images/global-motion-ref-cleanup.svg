@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">요소가 사라지는 두 경우와 호출되는 정리 함수</text>
+
+  <rect x="20" y="50" width="200" height="40" fill="#f2f2f7"/>
+  <text x="120" y="75" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">사라지는 방식</text>
+  <rect x="224" y="50" width="196" height="40" fill="#f2f2f7"/>
+  <text x="322" y="68" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">effect 정리 함수</text>
+  <text x="322" y="84" font-size="12" fill="#6e6e73" text-anchor="middle">useLayoutEffect의 return</text>
+  <rect x="424" y="50" width="196" height="40" fill="#eaf3ff"/>
+  <text x="522" y="68" font-size="13" font-weight="600" fill="#0a84ff" text-anchor="middle">ref 콜백 정리 함수</text>
+  <text x="522" y="84" font-size="12" fill="#6e6e73" text-anchor="middle">React 19</text>
+
+  <rect x="20" y="96" width="200" height="88" fill="#fff" stroke="#e5e5ea"/>
+  <text x="32" y="120" font-size="13" font-weight="600" fill="#1d1d1f">① 부모가 그리지 않음</text>
+  <text x="32" y="142" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">{menu &amp;&amp; &lt;Menu /&gt;}</text>
+  <text x="32" y="164" font-size="12" fill="#6e6e73">menu = null → 언마운트</text>
+  <rect x="224" y="96" width="196" height="88" fill="#eafaef" stroke="#e5e5ea"/>
+  <text x="322" y="138" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">호출됨</text>
+  <text x="322" y="158" font-size="12" fill="#6e6e73" text-anchor="middle">컴포넌트가 제거되므로</text>
+  <rect x="424" y="96" width="196" height="88" fill="#eafaef" stroke="#e5e5ea"/>
+  <text x="522" y="138" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">호출됨</text>
+  <text x="522" y="158" font-size="12" fill="#6e6e73" text-anchor="middle">요소가 분리되므로</text>
+
+  <rect x="20" y="190" width="200" height="88" fill="#fff" stroke="#e5e5ea"/>
+  <text x="32" y="214" font-size="13" font-weight="600" fill="#1d1d1f">② 컴포넌트가 null 반환</text>
+  <text x="32" y="236" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">if (!open) return null;</text>
+  <text x="32" y="258" font-size="12" fill="#6e6e73">마운트 유지 (로그인 창)</text>
+  <rect x="224" y="190" width="196" height="88" fill="#fff0ef" stroke="#e5e5ea"/>
+  <text x="322" y="232" font-size="13" font-weight="600" fill="#ff3b30" text-anchor="middle">호출되지 않음</text>
+  <text x="322" y="252" font-size="12" fill="#6e6e73" text-anchor="middle">언마운트가 없으므로</text>
+  <rect x="424" y="190" width="196" height="88" fill="#eafaef" stroke="#e5e5ea"/>
+  <text x="522" y="232" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">호출됨</text>
+  <text x="522" y="252" font-size="12" fill="#6e6e73" text-anchor="middle">&lt;div&gt;가 분리되므로</text>
+
+  <text x="320" y="310" font-size="12" fill="#6e6e73" text-anchor="middle">ref 정리 함수는 요소 단위로 호출되어 두 경우를 모두 처리한다. 호출 시각에 요소는 아직 문서에 연결되어 있다</text>
+</svg>

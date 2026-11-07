@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>저장소 언어 비율 API가 요청을 처리하는 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="320" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">GET /github/languages/:owner/:name 처리 순서</text>
+<g font-size="12">
+<rect x="20" y="52" width="230" height="44" rx="8" fill="#f2f2f7"/><text x="135" y="79" fill="#1d1d1f" text-anchor="middle">1. 사이트 프로젝트에 등록된 저장소인가?</text>
+<rect x="290" y="52" width="150" height="44" rx="8" fill="#fff1f0" stroke="#ff3b30"/><text x="365" y="79" fill="#ff3b30" text-anchor="middle">아니오 → 거부</text>
+<rect x="20" y="120" width="230" height="44" rx="8" fill="#f2f2f7"/><text x="135" y="147" fill="#1d1d1f" text-anchor="middle">2. 6시간 안에 받은 값이 있는가?</text>
+<rect x="290" y="120" width="150" height="44" rx="8" fill="#effaf2" stroke="#34c759"/><text x="365" y="147" fill="#1f7a3a" text-anchor="middle">예 → 캐시 응답</text>
+<rect x="20" y="188" width="230" height="44" rx="8" fill="#eef5ff" stroke="#0a84ff"/><text x="135" y="215" fill="#0a84ff" text-anchor="middle">3. GitHub API에 언어별 바이트 조회</text>
+<rect x="290" y="188" width="150" height="44" rx="8" fill="#fff6e8" stroke="#ff9f0a"/><text x="365" y="208" fill="#b25d00" text-anchor="middle">응답 없음 →</text><text x="365" y="224" fill="#b25d00" text-anchor="middle">이전 캐시 값 사용</text>
+<rect x="20" y="256" width="230" height="44" rx="8" fill="#f2f2f7"/><text x="135" y="283" fill="#1d1d1f" text-anchor="middle">4. 바이트를 비율(%)로 변환해 응답</text>
+</g>
+<path d="M250 74 H286" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<path d="M250 142 H286" stroke="#34c759" stroke-width="1.5" marker-end="url(#g)"/>
+<path d="M250 210 H286" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#a)"/>
+<path d="M135 96 V116" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><text x="142" y="111" font-size="12" fill="#6e6e73">예</text>
+<path d="M135 164 V184" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><text x="142" y="179" font-size="12" fill="#6e6e73">아니오</text>
+<path d="M135 232 V252" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="460" y="52" width="160" height="248" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="472" y="76" font-size="12" font-weight="600" fill="#1d1d1f">변환 예 (예시 값)</text>
+<g font-size="12" fill="#1d1d1f"><text x="472" y="100">GitHub 응답:</text><text x="472" y="120">TypeScript 900,000</text><text x="472" y="138">CSS 80,000</text><text x="472" y="156">HTML 20,000</text><text x="472" y="186">응답 비율:</text></g>
+<rect x="472" y="198" width="122" height="12" fill="#0a84ff"/><rect x="594" y="198" width="11" height="12" fill="#ff9f0a"/><rect x="605" y="198" width="3" height="12" fill="#34c759"/>
+<g font-size="12" fill="#1d1d1f"><text x="472" y="232">TypeScript 90.0%</text><text x="472" y="250">CSS 8.0%</text><text x="472" y="268">HTML 2.0%</text></g>
+</svg>

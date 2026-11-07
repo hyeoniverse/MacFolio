@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>방문자 쿠키 토큰을 HMAC으로 바꿔 ContactMail 행을 필터링하는 과정</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d1d1f"/></marker></defs>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">브라우저 A가 GET /contact/mine을 요청할 때</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">토큰과 해시는 설명용으로 줄여 쓴 값이다 (실제 토큰 32자, 해시 64자)</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="70" width="180" height="70" rx="8" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="32" y="92" font-weight="700" fill="#0a84ff">브라우저 A의 쿠키</text>
+<text x="32" y="112" font-family="ui-monospace, Menlo, monospace">macfolio_visitor=</text>
+<text x="32" y="130" font-family="ui-monospace, Menlo, monospace">Qm3x…9Za</text>
+<line x1="202" y1="105" x2="236" y2="105" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="240" y="70" width="190" height="70" rx="8" fill="#f2f2f7"/>
+<text x="252" y="92" font-weight="700">서버: HMAC-SHA256</text>
+<text x="252" y="112">키: 서버 비밀 값</text>
+<text x="252" y="130" font-family="ui-monospace, Menlo, monospace">입력: "visitor:Qm3x…9Za"</text>
+<line x1="432" y1="105" x2="466" y2="105" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="470" y="70" width="150" height="70" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="482" y="92" font-weight="700" fill="#0a84ff">visitor.hash</text>
+<text x="482" y="116" font-family="ui-monospace, Menlo, monospace" font-size="13" fill="#0a84ff">7f2c…a1</text>
+<text x="20" y="176" font-size="13" font-weight="700">ContactMail 테이블</text>
+<text x="300" y="176" fill="#6e6e73">WHERE "visitorHash" = '7f2c…a1'</text>
+<rect x="20" y="186" width="600" height="28" fill="#f2f2f7"/>
+<text x="32" y="205" font-weight="700">보낸 사람</text><text x="170" y="205" font-weight="700">제목</text><text x="370" y="205" font-weight="700">visitorHash</text><text x="520" y="205" font-weight="700">A에게 응답</text>
+<rect x="20" y="218" width="600" height="30" rx="4" fill="#effaf2"/>
+<text x="32" y="238">민수</text><text x="170" y="238">포트폴리오 문의</text><text x="370" y="238" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff">7f2c…a1</text><text x="520" y="238" font-weight="700">포함</text>
+<rect x="20" y="252" width="600" height="30" rx="4" fill="#effaf2"/>
+<text x="32" y="272">민수</text><text x="170" y="272">추가 질문</text><text x="370" y="272" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff">7f2c…a1</text><text x="520" y="272" font-weight="700">포함</text>
+<rect x="20" y="286" width="600" height="30" rx="4" fill="#ffffff" stroke="#f2f2f7"/>
+<text x="32" y="306" fill="#6e6e73">지은</text><text x="170" y="306" fill="#6e6e73">채용 관련 연락</text><text x="370" y="306" font-family="ui-monospace, Menlo, monospace" fill="#ff9f0a">b90e…4d</text><text x="520" y="306" fill="#ff3b30">제외</text>
+<rect x="20" y="320" width="600" height="30" rx="4" fill="#ffffff" stroke="#f2f2f7"/>
+<text x="32" y="340" fill="#6e6e73">(쿠키 없이 보낸 메일 없음)</text>
+<text x="20" y="376">· 같은 토큰은 항상 같은 해시가 되므로 A는 언제 다시 와도 자기 메일 두 통을 받는다</text>
+<text x="20" y="396">· 서버 비밀 값을 모르면 해시에서 토큰을 계산할 수도, 다른 사람의 해시를 만들 수도 없다</text>
+<text x="20" y="416">· 응답에는 visitorHash 열을 포함하지 않는다</text>
+</g>
+</svg>

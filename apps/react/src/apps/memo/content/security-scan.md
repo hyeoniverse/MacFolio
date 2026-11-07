@@ -3,24 +3,37 @@ title: Semgrep·pnpm audit·osv-scanner로 코드와 의존성 취약점 점검�
 date: 2026-10-18
 category: 개발 기록/MacFolio/테스트·보안·성능
 series: 보안 점검
-seriesOrder: 12
+seriesOrder: 10
 summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다. Semgrep이 7건을 냈고 오탐 4, 영향 없음 3, 실제 취약점은 0이었다. 영향 없음 3건은 수정했고, 라이선스를 집계했고, ERROR만 차단하는 CI 작업을 추가했다.
 ---
 
-그동안의 보안 작업은 필요한 설정을 하나씩 추가하는 방식이었다. CSP 헤더, iframe `sandbox`, 요청 제한, zod 검증, 업로드 매직 바이트 확인, 로그 마스킹이 그 결과다. 이번에는 반대로 정적 분석 도구가 먼저 후보를 찾고, 발견 항목마다 실제 취약점인지 판정했다([#213](https://github.com/hyeoniverse/MacFolio/issues/213)). 전체 판정 표는 저장소의 `docs/security-scan.md`에 있다. 점검일은 10월 18일, 기준 커밋은 main의 `aa23e0a`다.
+그동안의 보안 작업은 필요한 설정을 하나씩 추가하는 방식이었다. CSP 헤더, iframe `sandbox`, 요청 제한, zod 검증, 업로드 매직 바이트 확인, 로그 마스킹이 그 결과다. 이 방식은 "알고 있는 위험"만 막는다. 이번에는 반대로 정적 분석 도구가 먼저 후보를 찾고, 발견 항목마다 실제 취약점인지 판정했다([#213](https://github.com/hyeoniverse/MacFolio/issues/213)). 점검일은 10월 18일, 기준 커밋은 main의 `aa23e0a`이고, 전체 판정 표는 저장소의 `docs/security-scan.md`에 있다.
 
-<details>
-<summary>용어 정리: SAST와 SCA</summary>
+## SAST와 SCA
 
-- **SAST(정적 애플리케이션 보안 시험)**: 코드를 실행하지 않고 소스에서 위험한 패턴을 찾는다. 이 글에서는 [Semgrep](https://semgrep.dev/docs/)을 썼다.
-- **SCA(소프트웨어 구성 분석)**: 설치한 의존성 패키지의 버전을 취약점 데이터베이스와 비교한다. 이 글에서는 `pnpm audit`, osv-scanner, OWASP Dependency-Check를 썼다.
-- **오탐(false positive)**: 도구가 보고했지만 실제로는 문제가 아닌 항목.
+웹 애플리케이션의 코드는 두 부분으로 나뉜다. 직접 작성한 코드와, npm 같은 패키지 저장소에서 가져온 의존성 패키지다. MacFolio의 `pnpm-lock.yaml`에는 패키지 1,268개가 기록되어 있어, 실제로 실행되는 코드의 대부분은 직접 작성하지 않은 코드다. 두 부분은 검사 방법이 다르다.
 
-</details>
+![SAST는 소스 코드를 규칙의 코드 패턴과 비교해 파일과 줄을 보고하고, SCA는 잠금 파일의 패키지 버전을 취약점 DB와 비교해 취약점 ID를 보고하는 비교](./images/security-scan-sast-sca.svg 'SAST는 아직 알려지지 않은 약점 후보를, SCA는 이미 공개된 취약점을 찾는다')
+
+| 구분                               | 검사 대상             | 방법                                                        | 이 글의 도구                                      |
+| ---------------------------------- | --------------------- | ----------------------------------------------------------- | ------------------------------------------------- |
+| SAST (정적 애플리케이션 보안 시험) | 직접 작성한 소스 코드 | 코드를 실행하지 않고, 위험한 코드 형태를 기술한 규칙과 비교 | [Semgrep](https://semgrep.dev/docs/)              |
+| SCA (소프트웨어 구성 분석)         | 설치한 의존성 패키지  | 패키지 이름과 버전을 공개 취약점 데이터베이스와 비교        | `pnpm audit`, osv-scanner, OWASP Dependency-Check |
+
+SAST 규칙은 코드의 형태를 기술한다. 예를 들어 Semgrep의 `detect-non-literal-regexp` 규칙은 `new RegExp()`에 문자열 상수가 아닌 값이 들어가는 형태를 찾는다. 정규식 패턴을 공격자가 정할 수 있으면, 일치 여부를 판정하는 데 수 초 이상 걸리는 패턴을 보내 서버를 멈추게 할 수 있기 때문이다(ReDoS[^redos]).
+
+```ts
+new RegExp(`^${key}:\\s+(\\d+)`, 'm'); // 규칙에 걸린다: key가 변수다
+/^MemTotal:\s+(\d+)/m; // 걸리지 않는다: 패턴이 상수다
+```
+
+SCA는 "어떤 패키지의 어떤 버전 범위에 어떤 취약점이 있다"는 공개 기록을 사용한다. 이 기록은 CVE[^cve] 번호나 GitHub 보안 권고(GHSA) 번호로 식별된다. 예를 들어 잠금 파일에 `패키지@1.2.3`이 있고 데이터베이스에 "1.2.0 이상 1.2.5 미만에 취약점, 1.2.5에서 수정"이 있으면, 도구는 그 패키지를 보고하고 1.2.5로 올리라고 알려 준다.
+
+도구가 보고했지만 실제로는 문제가 아닌 항목을 **오탐**(false positive)이라고 한다. SAST 규칙은 코드 형태만 보므로, 위 예처럼 `key`가 코드에 적은 상수 `'MemTotal'`뿐이어도 보고한다. 그래서 SAST 결과는 항목마다 사람이 판정해야 한다.
 
 ## 판정 기준
 
-도구가 보고한 항목을 그대로 수정하면 작업은 빨리 끝나지만, 위험의 근거를 확인하지 않은 채 코드만 바뀐다. 그래서 먼저 판정을 세 가지로 나눴다.
+도구가 보고한 항목을 그대로 수정하면 작업은 빨리 끝나지만, ==위험의 근거를 확인하지 않은 채 코드만 바뀐다==. 그래서 먼저 판정을 세 가지로 나눴다.
 
 | 판정        | 뜻                                                                                   |
 | ----------- | ------------------------------------------------------------------------------------ |
@@ -51,6 +64,8 @@ summary: Semgrep, pnpm audit, osv-scanner로 코드와 의존성을 점검했다
 | osv-scanner 2.7.0                                                                       | `pnpm-lock.yaml` 패키지 1,268개 | 0건       |
 | OWASP Dependency-Check 13.0.0                                                           | -                               | 실행 실패 |
 
+Semgrep의 `p/…` 묶음은 Semgrep 레지스트리가 주제별로 모아 둔 규칙 목록이다. `p/owasp-top-ten`은 웹 애플리케이션의 대표적인 위험 10가지를 정리한 [OWASP Top 10](https://owasp.org/www-project-top-ten/) 분류에 해당하는 규칙을 모은 것이다. `--config auto`는 Semgrep이 저장소의 언어와 프레임워크를 보고 규칙을 골라 준다.
+
 시험 코드(`*.test.ts`, `e2e`)와 빌드 결과는 검사에서 제외했다. 시험용 가짜 값이 규칙에 걸리면 의미 없는 발견 항목만 늘어난다. 이렇게 제외한 파일이 226개다. 1MB를 넘어 Semgrep이 건너뛴 파일 18개는 모두 글꼴·음악·영상이었다. 보조 묶음(`p/react`·`p/secrets`·`p/xss`·`p/jwt`, 규칙 58개)도 실행했고 결과는 0건이었다.
 
 ```sh
@@ -61,6 +76,8 @@ semgrep scan --config p/owasp-top-ten --config p/typescript --config p/nodejs --
 # 자동 선택 규칙 (266개. 저장소 정보를 보내므로 --metrics=off를 쓸 수 없다)
 semgrep scan --config auto $EXCLUDE --json --output semgrep-auto.json apps/react apps/api packages
 ```
+
+### Dependency-Check 대신 osv-scanner
 
 Dependency-Check는 내려받아 실행했지만 NVD[^nvd] 데이터를 내려받는 단계에서 중단됐다.
 
@@ -76,13 +93,15 @@ exit=13
 
 </details>
 
-현재 버전(13.0.0)은 NVD API 2.0을 사용하며, API 키가 없으면 데이터를 내려받지 않는다. 키를 발급받아 다시 실행하는 방법도 있지만, Dependency-Check는 제품 이름(CPE[^cpe])을 대조하는 방식이라 npm 패키지에서 오탐이 많다. 그래서 잠금 파일의 정확한 버전을 [OSV](https://osv.dev/) 데이터베이스와 대조하는 osv-scanner로 대체했다. osv-scanner와 `pnpm audit`의 결과는 모두 0건으로 일치했다. 0건인 이유는 앞서 운영 의존성 취약점 6건을 `overrides`로 올리고([pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)) Dependabot을 매주 실행해 왔기 때문이다.
+현재 버전(13.0.0)은 NVD API 2.0을 사용하며, API 키가 없으면 데이터를 내려받지 않는다. 키를 발급받아 다시 실행하는 방법도 있지만, Dependency-Check는 제품 이름(CPE[^cpe])을 대조하는 방식이라 npm 패키지에서 오탐이 많다. 예를 들어 npm 패키지 이름이 같은 이름의 다른 제품 CPE와 대응되면, 그 제품의 취약점이 npm 패키지에 보고된다.
+
+그래서 잠금 파일의 정확한 패키지 이름과 버전을 [OSV](https://osv.dev/) 데이터베이스와 대조하는 osv-scanner로 대체했다. OSV는 Google이 운영하는 공개 취약점 데이터베이스로, npm·PyPI 같은 패키지 생태계의 이름과 버전 범위로 취약점을 기록한다. osv-scanner와 `pnpm audit`의 결과는 모두 0건으로 일치했다. 0건인 이유는 앞서 운영 의존성 취약점 6건을 `overrides`로 올리고([pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)) Dependabot을 매주 실행해 왔기 때문이다.
 
 ![Semgrep 7건을 오탐 4건과 영향 없음 3건으로 판정하고 처리한 흐름](./images/security-scan-triage.svg '7건 모두 규칙을 끄지 않고 그 줄에 사유를 적어 억제했다')
 
 ## 오탐 4건: 값의 출처 추적
 
-네 건은 모두 "정규식이나 서식 문자열을 변수로 생성한다"는 패턴 규칙이었다. 규칙은 값의 형태만 검사하고 출처는 알지 못한다. 그래서 판정은 값의 출처를 추적하는 작업이 된다.
+네 건은 모두 "정규식이나 서식 문자열을 변수로 생성한다"는 패턴 규칙이었다. ==규칙은 값의 형태만 검사하고 출처는 알지 못한다==. 그래서 판정은 값의 출처를 추적하는 작업이 된다.
 
 | 위치                                | 변수로 만드는 값 | 값의 출처                                                                                                                                               |
 | ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -90,6 +109,21 @@ exit=13
 | GitHub 기여 달력 HTML에서 속성 추출 | 정규식           | 코드에 적은 상수 이름                                                                                                                                   |
 | `/proc/meminfo`에서 값 추출         | 정규식           | 코드에 적은 상수 `MemTotal`·`MemAvailable`                                                                                                              |
 | 앱 오류를 콘솔에 출력               | 서식 문자열      | 앱 이름은 `AppName` 유니언 타입이라 `%s` 같은 서식 지정자가 들어갈 수 없다                                                                              |
+
+CORS 항목을 예로 들면, 설정값 `https://*-macfolio.hyeoniverse.workers.dev`는 다음 정규식이 된다. 점(`.`)은 `\.`로 이스케이프되고, `*` 자리에는 영문 소문자·숫자·`-`만 올 수 있다. 정규식의 재료는 운영자가 서버 환경 변수에 적은 값이고, 방문자가 보낸 `Origin` 헤더는 이 정규식으로 검사받는 문자열일 뿐이다.
+
+```text
+^https://[a-z0-9-]+-macfolio\.hyeoniverse\.workers\.dev$
+```
+
+서식 문자열 규칙은 콘솔 함수의 첫 인자를 변수로 만드는 형태를 찾는다. 걸린 코드는 앱 하나가 오류로 멈췄을 때 기록을 남기는 줄이다.
+
+```tsx
+// apps/react/src/desktop/window/AppErrorBoundary.tsx
+console.error(`[${this.props.appName}] 앱에서 에러가 발생했습니다`, error, info.componentStack);
+```
+
+`console.error`는 첫 인자의 `%s`, `%o` 같은 서식 지정자를 뒤 인자로 치환하므로, 첫 인자에 `%s`가 섞이면 출력 내용이 바뀐다. 여기서는 `appName`이 `'memo' | 'finder' | …` 같은 앱 이름 유니언 타입이라 `%`가 들어갈 수 없다.
 
 억제는 규칙을 끄지 않고 해당 줄 위에 규칙 ID와 사유를 함께 기록했다([Semgrep 억제 주석 문서](https://semgrep.dev/docs/ignoring-files-folders-code)).
 
@@ -99,11 +133,17 @@ exit=13
 
 같은 파일에 새로 생기는 다른 위반은 계속 검출되고, 억제한 위치는 `grep nosemgrep`으로 모두 찾을 수 있다.
 
-## 영향 없음 3건: 패턴은 실제 약점과 일치
+## 영향 없음 3건: 프로토타입 오염
 
-나머지 세 건은 `prototype-pollution-loop` 규칙으로, 이름을 객체 키로 써서 트리를 만드는 반복문이었다. 프로젝트 페이지의 "폴더 구조" 텍스트를 트리로 변환하는 함수에 `__proto__/` 줄을 입력하자 실제로 `Object.prototype`에 값이 기록됐다. 규칙이 가리킨 약점([프로토타입 오염](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/Prototype_pollution))은 실재했다.
+나머지 세 건은 `prototype-pollution-loop` 규칙으로, 이름을 객체 키로 써서 트리를 만드는 반복문이었다.
 
-하지만 이 텍스트는 코드에 작성해 빌드에 포함하는 프로젝트 소개뿐이고, API나 방문자가 변경할 수 없다. 그래서 실제 취약점이 아니라 "영향 없음"으로 판정했다. 다만 수정 비용이 작아 수정했다. `__proto__`·`constructor`·`prototype` 이름과 그 하위 줄을 건너뛰고, 오염이 발생하지 않는지 확인하는 시험을 추가했다.
+JavaScript의 일반 객체는 모두 `Object.prototype`이라는 원형 객체를 공유한다. `{}`에 없는 속성을 읽으면 원형에서 찾으므로, `({}).toString`이 함수로 나오는 이유가 이것이다. 그런데 `obj['__proto__']`는 객체 자신의 키가 아니라 그 원형을 가리킨다. 사용자가 정한 이름을 그대로 키로 쓰는 반복문에 `__proto__`가 들어오면, 새 객체에 값을 쓰려던 코드가 `Object.prototype`에 값을 쓰게 된다. 그 뒤로는 프로그램의 모든 일반 객체가 그 값을 가진 것처럼 동작한다. 이것이 [프로토타입 오염](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/Prototype_pollution)이다.
+
+프로젝트 페이지의 "폴더 구조" 텍스트를 트리로 변환하는 함수에 `__proto__/` 줄을 입력하자 실제로 `Object.prototype`에 값이 기록됐다. 규칙이 가리킨 약점은 실재했다.
+
+![폴더 구조 글의 `__proto__/` 줄 때문에 반복문이 Object.prototype에 polluted 키를 기록하고, 수정 후에는 그 줄과 하위 줄을 건너뛰는 과정](./images/security-scan-prototype-pollution.svg '새 폴더 객체를 만들 자리에 원형 객체가 들어가, 그 아래 파일이 모든 객체의 속성이 된다')
+
+하지만 이 텍스트는 코드에 작성해 빌드에 포함하는 프로젝트 소개뿐이고, ==API나 방문자가 변경할 수 없다==. 그래서 실제 취약점이 아니라 "영향 없음"으로 판정했다. 다만 수정 비용이 작아 수정했다. `__proto__`·`constructor`·`prototype` 이름과 그 하위 줄을 건너뛰고, 오염이 발생하지 않는지 확인하는 시험을 추가했다.
 
 ```ts
 // apps/react/src/apps/safari/project/templates/repo/repo.ts
@@ -118,6 +158,8 @@ if (parts.some((part) => UNSAFE_KEYS.has(part))) {
 }
 ```
 
+시험은 위 그림의 입력을 그대로 사용한다. 결과 트리가 `{ 'ok.txt': '' }`이고, 빈 객체의 `polluted`가 `undefined`인지 확인한다.
+
 세 번째는 프로젝트 페이지 터미널의 경로 탐색이었다. 방문자가 입력하는 값이지만 읽기만 하므로 오염은 발생하지 않는다. 대신 `cd __proto__`를 입력하면 빈 폴더로 이동되는 버그가 있었다. [`Object.hasOwn`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn)으로 객체 자신의 키만 탐색하도록 수정했다.
 
 ```ts
@@ -126,15 +168,24 @@ if (parts.some((part) => UNSAFE_KEYS.has(part))) {
 +const name = Object.hasOwn(dir, part) ? part : Object.keys(dir).find((key) => key.toLowerCase() === part.toLowerCase());
 ```
 
-`dir[part] !== undefined`는 객체 자신의 키가 아닌 `Object.prototype`의 이름에도 참이 된다. 시험에서 `__proto__`, `constructor`, `toString`을 입력해 모두 `null`이 반환되는지 확인한다.
+`dir[part] !== undefined`는 객체 자신의 키가 아닌 `Object.prototype`의 이름에도 참이 된다.
 
-수정한 뒤에도 Semgrep은 같은 줄을 검출한다. 규칙이 필터링 코드를 인식하지 못하기 때문이다. 해당 줄에는 차단 방법과 시험 위치를 적어 억제했다.
+| 입력           | `dir[part] !== undefined`             | `Object.hasOwn(dir, part)` |
+| -------------- | ------------------------------------- | -------------------------- |
+| `cd Week01`    | 참 (자신의 키)                        | 참                         |
+| `cd __proto__` | 참 (`Object.prototype`을 가리킨다)    | 거짓                       |
+| `cd toString`  | 참 (`Object.prototype.toString` 함수) | 거짓                       |
+
+시험에서 `__proto__`, `constructor`, `toString`을 입력해 모두 `null`이 반환되는지 확인한다. 수정한 뒤에도 Semgrep은 같은 줄을 검출한다. 규칙이 필터링 코드를 인식하지 못하기 때문이다. 해당 줄에는 차단 방법과 시험 위치를 적어 억제했다.
 
 ## 규칙이 검출하지 못한 위치
 
-0건이 안전을 보장하지는 않는다. HTML을 직접 삽입하는 `dangerouslySetInnerHTML`(Mermaid SVG)과 `innerHTML`(아이콘 상수) 두 곳은 어느 규칙 묶음에서도 검출되지 않았다. 두 곳 모두 이전에 출처를 주석과 시험으로 고정해 두었고, 이번에 코드를 직접 다시 확인했다.
+> [!IMPORTANT] 0건이 안전을 보장하지는 않는다
+> HTML을 직접 삽입하는 `dangerouslySetInnerHTML`(Mermaid SVG)과 `innerHTML`(아이콘 상수) 두 곳은 어느 규칙 묶음에서도 검출되지 않았다. 두 곳 모두 이전에 출처를 주석과 시험으로 고정해 두었고, 이번에 코드를 직접 다시 확인했다.
 
 ## 라이선스
+
+의존성 패키지는 각자 라이선스를 가진다. MIT·Apache-2.0 같은 허용형 라이선스는 저작권 고지만 유지하면 되지만, GPL 계열(copyleft) 라이선스는 그 코드를 포함해 배포하는 프로그램의 소스 공개를 요구할 수 있다. 그래서 운영 의존성의 라이선스를 함께 집계했다.
 
 ![운영 의존성 717개의 라이선스](./images/security-scan-licenses.svg 'MIT가 대부분이고 GPL 계열은 없다')
 
@@ -165,7 +216,10 @@ echo "Semgrep: 전체 $(jq '.results | length' semgrep.json)건, ERROR ${errors}
 [ "$errors" -eq 0 ]
 ```
 
-`--config auto`는 CI에 사용하지 않았다. 저장소 정보를 Semgrep에 전송해야 하고, 규칙 목록이 실행마다 달라질 수 있어 같은 커밋이 전날에는 통과하고 다음 날에는 실패할 수 있다. 사람이 판정하는 점검에서만 실행한다.
+마지막 줄 `[ "$errors" -eq 0 ]`이 0이 아니면 종료 코드 1을 반환해 작업이 실패한다. 예를 들어 결과가 WARNING 2건뿐이면 요약에 "전체 2건, ERROR 0건"이 기록되고 작업은 통과한다.
+
+> [!WARNING] --config auto는 CI에 쓰지 않는다
+> `--config auto`는 저장소 정보를 Semgrep에 전송해야 하고, 규칙 목록이 실행마다 달라질 수 있다. 같은 커밋이 전날에는 통과하고 다음 날에는 실패할 수 있으므로 사람이 판정하는 점검에서만 실행한다.
 
 ## Dependency-Check 재시도
 
@@ -183,9 +237,7 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 
 제외 목록까지 포함한 전체 명령과 판정 표는 [docs/security-scan.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/security-scan.md), CI는 [.github/workflows/sast.yml](https://github.com/hyeoniverse/MacFolio/blob/main/.github/workflows/sast.yml)에 있다. 새 발견 항목이 나오면 문서 표에 한 줄을 추가하고, 값의 출처와 차단 방법을 판정 근거로 기록한다.
 
-참고 문서: [Semgrep](https://semgrep.dev/docs/), [osv-scanner](https://google.github.io/osv-scanner/), [pnpm audit](https://pnpm.io/cli/audit), [NVD API 키 신청](https://nvd.nist.gov/developers/request-an-api-key).
-
-## 남은 과제와 정리
+## 남은 과제
 
 - **Dependency-Check는 API 키를 발급받으면 다시 실행한다.** 같은 명령에 `--nvdApiKey`만 추가하면 된다.
 - **억제 주석은 7곳이다.** `grep -rn nosemgrep apps packages`가 6개 파일 7곳을 출력한다. 줄마다 사유와 시험 위치가 있어, 이후 코드를 수정하는 사람이 억제가 여전히 유효한지 판단할 수 있다.
@@ -194,17 +246,39 @@ osv-scanner scan source --lockfile pnpm-lock.yaml
 
 ## 관련 글
 
-- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-step7-security)
-- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/secret-scanning)
-- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/dependency-vulnerabilities)
+- [CSP·iframe sandbox·@RateLimit·Dependabot으로 보안 설정 통일하기](/memo/refactor-retrospective#7단계-보안)
+- [gitleaks 사용자 규칙과 CI 작업으로 저장소 기록 전체의 비밀 값 검사하기](/memo/supply-chain-security#gitleaks로-저장소-기록-전체의-비밀-값-검사)
+- [pnpm overrides로 하위 의존성 취약점 고치고 pnpm audit로 CI에서 막기](/memo/supply-chain-security#하위-의존성-취약점과-pnpm-overrides)
 - [CSP 출처 목록을 코드에서 생성하고 같은 CSP로 E2E 실행하기](/memo/security-headers)
 
 PR: [#252](https://github.com/hyeoniverse/MacFolio/pull/252)
+
+[^redos]: Regular expression Denial of Service. 중첩된 반복(`(a+)+`)처럼 입력 길이에 따라 판정 시간이 지수적으로 늘어나는 패턴을 이용해 서버를 멈추게 하는 공격. [OWASP: ReDoS](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS)
+
+[^cve]: Common Vulnerabilities and Exposures. 공개된 취약점마다 `CVE-2024-12345` 형식의 고유 번호를 붙이는 체계로, MITRE가 운영한다.
 
 [^nvd]: National Vulnerability Database. 미국 NIST가 운영하는 공개 취약점(CVE) 데이터베이스.
 
 [^cpe]: Common Platform Enumeration. 제품을 `cpe:2.3:a:<제조사>:<제품>:<버전>` 형식으로 식별하는 이름 체계. npm 패키지 이름과 정확히 대응하지 않아 다른 제품으로 잘못 대응되는 경우가 생긴다.
 
 [^sarif]: Static Analysis Results Interchange Format. 정적 분석 도구의 결과를 담는 JSON 기반 표준 형식으로, GitHub Code scanning이 읽는다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Semgrep 문서](https://semgrep.dev/docs/)
+- [Semgrep: Ignore files, folders, and code](https://semgrep.dev/docs/ignoring-files-folders-code)
+- [OWASP Top 10](https://owasp.org/www-project-top-ten/)
+- [OWASP: Regular expression Denial of Service (ReDoS)](https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service_-_ReDoS)
+- [MDN: Prototype pollution](https://developer.mozilla.org/en-US/docs/Web/Security/Attacks/Prototype_pollution)
+- [MDN: Object.hasOwn()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwn)
+- [MDN: console, Using string substitutions](https://developer.mozilla.org/en-US/docs/Web/API/console#using_string_substitutions)
+- [OSV](https://osv.dev/), [osv-scanner](https://google.github.io/osv-scanner/)
+- [pnpm audit](https://pnpm.io/cli/audit)
+- [CVE Program](https://www.cve.org/)
+- [NVD: Request an API Key](https://nvd.nist.gov/developers/request-an-api-key)
+- [OASIS: SARIF v2.1.0](https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html)
+
+</details>
 
 #MacFolio #보안 #Semgrep #SAST #SCA

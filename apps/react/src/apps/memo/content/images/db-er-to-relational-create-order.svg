@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="340" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">외래 키가 정하는 CREATE TABLE·INSERT 순서</text>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="85" y="58">1번째</text><text x="245" y="58">2번째</text><text x="405" y="58">3번째</text><text x="565" y="58">4번째</text>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <rect x="30" y="80" width="110" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="85" y="102">DEPART</text>
+    <rect x="30" y="160" width="110" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="85" y="182">SUPPLIER</text>
+    <rect x="30" y="240" width="110" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="85" y="262">COMPONENT</text>
+    <rect x="190" y="80" width="110" height="34" rx="6" fill="#fff" stroke="#6e6e73"/><text x="245" y="102">EMPLOYEE</text>
+    <rect x="350" y="80" width="110" height="34" rx="6" fill="#fff" stroke="#6e6e73"/><text x="405" y="102">PROJECT</text>
+    <rect x="350" y="150" width="110" height="34" rx="6" fill="#fff" stroke="#6e6e73"/><text x="405" y="172">FAMILY</text>
+    <rect x="510" y="80" width="110" height="34" rx="6" fill="#fff" stroke="#6e6e73"/><text x="565" y="102">CONDUCT</text>
+    <rect x="510" y="150" width="110" height="34" rx="6" fill="#fff" stroke="#6e6e73"/><text x="565" y="172">LOCATION</text>
+    <rect x="510" y="240" width="110" height="34" rx="6" fill="#fff" stroke="#6e6e73"/><text x="565" y="262">SUPPLY</text>
+  </g>
+  <g stroke="#6e6e73" fill="none">
+    <line x1="140" y1="97" x2="188" y2="97" marker-end="url(#a)"/>
+    <line x1="300" y1="97" x2="348" y2="97" marker-end="url(#a)"/>
+    <line x1="300" y1="106" x2="348" y2="160" marker-end="url(#a)"/>
+    <line x1="460" y1="97" x2="508" y2="97" marker-end="url(#a)"/>
+    <path d="M245 80 V66 H565 V78" marker-end="url(#a)"/>
+    <line x1="460" y1="106" x2="508" y2="160" marker-end="url(#a)"/>
+    <line x1="460" y1="112" x2="512" y2="238" marker-end="url(#a)"/>
+    <path d="M140 180 H165 V214 H490 L516 238" marker-end="url(#a)"/>
+    <path d="M140 257 H508" marker-end="url(#a)"/>
+    <path d="M60 274 V292 H110 V276" marker-end="url(#a)"/>
+  </g>
+  <text x="85" y="308" text-anchor="middle" font-size="12" fill="#6e6e73">Contain → 자기 자신</text>
+  <text x="320" y="330" text-anchor="middle" font-size="12" fill="#6e6e73">화살표: 참조되는 테이블 → 그 테이블을 외래 키로 참조하는 테이블 (삭제는 반대 방향)</text>
+</svg>

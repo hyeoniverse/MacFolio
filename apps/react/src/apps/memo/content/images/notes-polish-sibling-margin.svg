@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>형제 선택자 여백이 표 핸들에 적용된 과정</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">.memo-markdown &gt; * + * 는 핸들도 '두 번째 이후 블록'으로 고른다</text>
+  <!-- DOM tree -->
+  <text x="24" y="70" font-size="13" font-weight="600" fill="#1d1d1f">편집기 DOM (직계 자식)</text>
+  <g font-size="12" font-family="ui-monospace, Menlo, monospace">
+    <rect x="24" y="82" width="250" height="28" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="36" y="101" fill="#1d1d1f">&lt;div class="memo-markdown"&gt;</text>
+    <rect x="48" y="118" width="226" height="28" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+    <text x="60" y="137" fill="#1d1d1f">&lt;p&gt; 첫 문단</text>
+    <text x="268" y="137" fill="#6e6e73" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">여백 없음</text>
+    <rect x="48" y="154" width="226" height="28" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+    <text x="60" y="173" fill="#1d1d1f">&lt;table&gt;</text>
+    <text x="268" y="173" fill="#0a84ff" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">+0.9em (의도)</text>
+    <rect x="48" y="190" width="226" height="28" rx="6" fill="#ffe1df" stroke="#ff3b30"/>
+    <text x="60" y="209" fill="#1d1d1f">&lt;div&gt; 열 핸들</text>
+    <text x="268" y="209" fill="#ff3b30" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">+0.9em (의도 밖)</text>
+    <rect x="48" y="226" width="226" height="28" rx="6" fill="#ffe1df" stroke="#ff3b30"/>
+    <text x="60" y="245" fill="#1d1d1f">&lt;div&gt; 행 핸들</text>
+    <text x="268" y="245" fill="#ff3b30" text-anchor="end" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">+0.9em (의도 밖)</text>
+  </g>
+  <!-- table illustration -->
+  <text x="320" y="70" font-size="13" font-weight="600" fill="#1d1d1f">화면</text>
+  <rect x="320" y="120" width="290" height="120" fill="#ffffff" stroke="#6e6e73"/>
+  <line x1="320" y1="150" x2="610" y2="150" stroke="#6e6e73"/>
+  <line x1="320" y1="180" x2="610" y2="180" stroke="#6e6e73"/>
+  <line x1="320" y1="210" x2="610" y2="210" stroke="#6e6e73"/>
+  <line x1="417" y1="120" x2="417" y2="240" stroke="#6e6e73"/>
+  <line x1="514" y1="120" x2="514" y2="240" stroke="#6e6e73"/>
+  <rect x="417" y="120" width="97" height="30" fill="#f2f2f7"/>
+  <text x="465" y="140" font-size="12" fill="#1d1d1f" text-anchor="middle">머리글</text>
+  <!-- intended handle -->
+  <rect x="447" y="104" width="36" height="12" rx="6" fill="none" stroke="#34c759" stroke-width="2" stroke-dasharray="4 3"/>
+  <text x="490" y="100" font-size="12" fill="#34c759">계산한 위치 (열 위)</text>
+  <!-- actual handle -->
+  <rect x="447" y="117" width="36" height="12" rx="6" fill="#ff3b30" opacity="0.9"/>
+  <text x="320" y="262" font-size="12" fill="#ff3b30">빨간 핸들: 실제 위치. 약 13px 아래로 밀려 머리글 셀을 덮는다</text>
+  <rect x="24" y="286" width="592" height="54" rx="6" fill="#f2f2f7"/>
+  <text x="36" y="308" font-size="12" fill="#1d1d1f">0.9em은 본문 글자 크기의 0.9배로, 이 편집기에서는 약 13px이다</text>
+  <text x="36" y="328" font-size="12" fill="#1d1d1f">해결: 핸들과 선택 테두리에 margin: 0 을 지정해 형제 여백을 취소했다</text>
+</svg>

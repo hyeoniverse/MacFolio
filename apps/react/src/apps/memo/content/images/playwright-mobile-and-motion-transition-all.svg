@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="420" fill="#fff"/>
+  <text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">transition-duration 하나만 바꾸면 생기는 일</text>
+  <text x="24" y="54" font-size="12" fill="#6e6e73">전환을 쓰지 않던 창 요소에 * { transition-duration: 1ms !important }가 적용된 경우</text>
+
+  <!-- before -->
+  <rect x="24" y="72" width="284" height="132" rx="10" fill="#f2f2f7"/>
+  <text x="40" y="96" font-size="13" font-weight="700" fill="#1d1d1f">규칙 적용 전 (브라우저 기본값)</text>
+  <text x="40" y="122" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">transition-property: all</text>
+  <text x="40" y="142" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">transition-duration: 0s</text>
+  <text x="40" y="170" font-size="12" fill="#248a3d" font-weight="600">시간이 0이라 전환 없음</text>
+  <text x="40" y="190" font-size="12" fill="#1d1d1f">left를 바꾸면 그 값이 바로 적용</text>
+
+  <line x1="312" y1="138" x2="330" y2="138" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <rect x="332" y="72" width="284" height="132" rx="10" fill="#fff5f4" stroke="#ff3b30"/>
+  <text x="348" y="96" font-size="13" font-weight="700" fill="#1d1d1f">규칙 적용 후</text>
+  <text x="348" y="122" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">transition-property: all</text>
+  <text x="348" y="142" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">transition-duration: 1ms</text>
+  <text x="348" y="170" font-size="12" fill="#ff3b30" font-weight="600">모든 속성에 1ms 전환이 생긴다</text>
+  <text x="348" y="190" font-size="12" fill="#1d1d1f">left를 바꾸면 전환이 시작된다</text>
+
+  <!-- timeline -->
+  <text x="24" y="236" font-size="13" font-weight="700" fill="#1d1d1f">드래그 시험의 한 단계</text>
+  <line x1="40" y1="300" x2="600" y2="300" stroke="#c7c7cc" stroke-width="2"/>
+  <circle cx="90" cy="300" r="6" fill="#0a84ff"/>
+  <text x="90" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">mouse.move</text>
+  <text x="90" y="292" font-size="12" fill="#6e6e73" text-anchor="middle">left: 100 → 300</text>
+  <circle cx="250" cy="300" r="6" fill="#ff9f0a"/>
+  <text x="250" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">위치 읽기</text>
+  <text x="250" y="292" font-size="12" fill="#6e6e73" text-anchor="middle">boundingBox()</text>
+  <rect x="90" y="312" width="320" height="22" rx="4" fill="#ffe5e3"/>
+  <text x="250" y="328" font-size="12" fill="#ff3b30" text-anchor="middle">전환이 끝나기 전에 읽으면 중간 값</text>
+  <circle cx="410" cy="300" r="6" fill="#34c759"/>
+  <text x="410" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">다음 프레임</text>
+  <text x="410" y="292" font-size="12" fill="#6e6e73" text-anchor="middle">left: 300</text>
+
+  <rect x="24" y="352" width="592" height="54" rx="8" fill="#f2f2f7"/>
+  <text x="40" y="374" font-size="12" fill="#1d1d1f">끄려던 움직임이 오히려 페이지 전체에 켜진다. 해결: transition: none !important</text>
+  <text x="40" y="394" font-size="12" fill="#1d1d1f">(단축 속성 transition은 property·duration·delay 등 하위 속성을 모두 다시 지정한다)</text>
+</svg>

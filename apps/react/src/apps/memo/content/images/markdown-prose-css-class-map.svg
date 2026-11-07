@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">본문 요소의 클래스 두 개가 각각 가져오는 규칙</text>
+  <g font-size="12">
+    <rect x="30" y="56" width="180" height="56" rx="8" fill="#f2f2f7"/>
+    <text x="120" y="80" text-anchor="middle" fill="#1d1d1f">블로그 읽기·편집</text>
+    <text x="120" y="98" text-anchor="middle" fill="#0a84ff">prose memo-markdown</text>
+    <rect x="30" y="196" width="180" height="56" rx="8" fill="#f2f2f7"/>
+    <text x="120" y="220" text-anchor="middle" fill="#1d1d1f">문서 보기·이력서</text>
+    <text x="120" y="238" text-anchor="middle" fill="#0a84ff">prose finder-doc</text>
+    <rect x="250" y="126" width="160" height="56" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+    <text x="330" y="150" text-anchor="middle" font-weight="600" fill="#1d1d1f">styles/prose.css</text>
+    <text x="330" y="168" text-anchor="middle" fill="#6e6e73">구조 + 변수 기본값</text>
+    <rect x="450" y="56" width="170" height="56" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+    <text x="535" y="80" text-anchor="middle" font-weight="600" fill="#1d1d1f">memo/…/markdown.css</text>
+    <text x="535" y="98" text-anchor="middle" fill="#6e6e73">--prose-flow-gap: 0.9em</text>
+    <rect x="450" y="196" width="170" height="56" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+    <text x="535" y="220" text-anchor="middle" font-weight="600" fill="#1d1d1f">finder/DocView.css</text>
+    <text x="535" y="238" text-anchor="middle" fill="#6e6e73">--prose-heading-gap: 0.6em</text>
+    <path d="M210 84 L250 140 M210 224 L250 168" stroke="#0a84ff" stroke-width="1.5" fill="none"/>
+    <path d="M210 84 C300 60 380 70 450 84 M210 224 C300 250 380 240 450 224" stroke="#ff9f0a" stroke-width="1.5" fill="none" stroke-dasharray="5 3"/>
+    <text x="330" y="54" text-anchor="middle" fill="#ff9f0a">화면 클래스</text>
+    <text x="330" y="262" text-anchor="middle" fill="#ff9f0a">화면 클래스</text>
+    <text x="226" y="156" text-anchor="end" fill="#0a84ff">.prose</text>
+  </g>
+  <text x="320" y="302" text-anchor="middle" font-size="12" fill="#6e6e73">prose.css는 .prose만 참조한다. Markdown을 그리는 화면이 늘면 그 요소에 prose 클래스를 붙이고 값만 정한다</text>
+</svg>

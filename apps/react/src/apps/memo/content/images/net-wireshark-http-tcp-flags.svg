@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 368" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="368" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">TCP 플래그 비트와 Wireshark tcp.flags 값</text>
+  <text x="198.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">CWR</text>
+  <text x="198.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x80</text>
+  <text x="242.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">ECE</text>
+  <text x="242.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x40</text>
+  <text x="286.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">URG</text>
+  <text x="286.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x20</text>
+  <text x="330.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">ACK</text>
+  <text x="330.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x10</text>
+  <text x="374.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">PSH</text>
+  <text x="374.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x08</text>
+  <text x="418.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">RST</text>
+  <text x="418.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x04</text>
+  <text x="462.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">SYN</text>
+  <text x="462.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x02</text>
+  <text x="506.0" y="48" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">FIN</text>
+  <text x="506.0" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">0x01</text>
+  <text x="588" y="56" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">tcp.flags</text>
+  <text x="16" y="87" font-size="13" font-weight="700" fill="#1d1d1f">SYN</text>
+  <text x="16" y="102" font-size="12" fill="#6e6e73">스캔·연결 요청</text>
+  <rect x="178" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="198.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="222" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="242.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="266" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="286.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="310" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="330.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="354" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="374.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="398" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="418.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="442" y="74" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="462.0" y="93.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="486" y="74" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="506.0" y="93.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <text x="588" y="93.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">0x002</text>
+  <text x="16" y="125" font-size="13" font-weight="700" fill="#1d1d1f">SYN+ACK</text>
+  <text x="16" y="140" font-size="12" fill="#6e6e73">열린 포트의 응답</text>
+  <rect x="178" y="112" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="198.0" y="131.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="222" y="112" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="242.0" y="131.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="266" y="112" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="286.0" y="131.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="310" y="112" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="330.0" y="131.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="354" y="112" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="374.0" y="131.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="398" y="112" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="418.0" y="131.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="442" y="112" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="462.0" y="131.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="486" y="112" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="506.0" y="131.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <text x="588" y="131.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">0x012</text>
+  <text x="16" y="163" font-size="13" font-weight="700" fill="#1d1d1f">ACK</text>
+  <text x="16" y="178" font-size="12" fill="#6e6e73">핸드셰이크 3단계</text>
+  <rect x="178" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="198.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="222" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="242.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="266" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="286.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="310" y="150" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="330.0" y="169.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="354" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="374.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="398" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="418.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="442" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="462.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="486" y="150" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="506.0" y="169.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <text x="588" y="169.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">0x010</text>
+  <text x="16" y="201" font-size="13" font-weight="700" fill="#1d1d1f">RST+ACK</text>
+  <text x="16" y="216" font-size="12" fill="#6e6e73">닫힌 포트의 응답</text>
+  <rect x="178" y="188" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="198.0" y="207.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="222" y="188" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="242.0" y="207.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="266" y="188" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="286.0" y="207.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="310" y="188" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="330.0" y="207.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="354" y="188" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="374.0" y="207.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="398" y="188" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="418.0" y="207.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="442" y="188" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="462.0" y="207.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="486" y="188" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="506.0" y="207.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <text x="588" y="207.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">0x014</text>
+  <text x="16" y="239" font-size="13" font-weight="700" fill="#1d1d1f">NULL 스캔</text>
+  <text x="16" y="254" font-size="12" fill="#6e6e73">플래그 없음</text>
+  <rect x="178" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="198.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="222" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="242.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="266" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="286.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="310" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="330.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="354" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="374.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="398" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="418.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="442" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="462.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="486" y="226" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="506.0" y="245.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <text x="588" y="245.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">0x000</text>
+  <text x="16" y="277" font-size="13" font-weight="700" fill="#1d1d1f">XMAS 스캔</text>
+  <text x="16" y="292" font-size="12" fill="#6e6e73">FIN+PSH+URG</text>
+  <rect x="178" y="264" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="198.0" y="283.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="222" y="264" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="242.0" y="283.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="266" y="264" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="286.0" y="283.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="310" y="264" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="330.0" y="283.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="354" y="264" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="374.0" y="283.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <rect x="398" y="264" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="418.0" y="283.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="442" y="264" width="40" height="30" rx="4" fill="#f2f2f7"/>
+  <text x="462.0" y="283.0" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+  <rect x="486" y="264" width="40" height="30" rx="4" fill="#0a84ff"/>
+  <text x="506.0" y="283.0" text-anchor="middle" font-size="12" fill="#fff">1</text>
+  <text x="588" y="283.0" text-anchor="middle" font-size="13" font-weight="700" fill="#1d1d1f">0x029</text>
+  <text x="16" y="320" font-size="12" fill="#1d1d1f">켜진 비트의 값을 더하면 필터 값이 된다. SYN+ACK = 0x10 + 0x02 = 0x012</text>
+  <text x="16" y="340" font-size="12" fill="#1d1d1f">XMAS = URG 0x20 + PSH 0x08 + FIN 0x01 = 0x029</text>
+  <text x="16" y="360" font-size="12" fill="#6e6e73">CWR·ECE는 혼잡 알림(ECN)용 비트로, 일반 연결 설정·스캔에서는 0이다.</text>
+</svg>

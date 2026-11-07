@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>연재를 제목 형식으로 판별할 때와 series·seriesOrder 칸으로 지정할 때, 제목을 고친 뒤의 결과 비교</title>
+<rect width="640" height="290" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">제목을 고쳤을 때 연재 정보가 남는가 (예시 제목)</text>
+<rect x="20" y="46" width="290" height="226" rx="12" fill="#f2f2f7"/>
+<text x="36" y="72" font-size="14" font-weight="700" fill="#1d1d1f">첫 구현: 제목 형식으로 판별</text>
+<text x="36" y="98" font-size="12" fill="#6e6e73">규칙: "이름 번호 - 제목"</text>
+<text x="36" y="124" font-size="12" fill="#1d1d1f">트래픽 분석 2 - 수집 API</text>
+<text x="36" y="142" font-size="12" fill="#34c759">→ 연재 "트래픽 분석", 2편</text>
+<text x="36" y="174" font-size="12" fill="#6e6e73">제목을 고치면</text>
+<text x="36" y="200" font-size="12" fill="#1d1d1f">방문 기록 수집 API 만들기</text>
+<text x="36" y="218" font-size="12" fill="#ff3b30">→ 형식 불일치, 연재에서 빠짐</text>
+<text x="36" y="252" font-size="12" fill="#6e6e73">제목과 연재 정보가 한 문자열에 있다</text>
+<rect x="330" y="46" width="290" height="226" rx="12" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+<text x="346" y="72" font-size="14" font-weight="700" fill="#1d1d1f">바꾼 구현: 별도 칸</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace">
+<text x="346" y="104" fill="#1d1d1f">title: 수집 API</text>
+<text x="346" y="124" fill="#0a84ff">series: 트래픽 분석</text>
+<text x="346" y="144" fill="#0a84ff">seriesOrder: 2</text>
+</g>
+<text x="346" y="174" font-size="12" fill="#6e6e73">제목을 고치면</text>
+<text x="346" y="200" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">title: 방문 기록 수집 API</text>
+<text x="346" y="218" font-size="12" fill="#34c759">→ 연재와 순서는 그대로</text>
+<text x="346" y="252" font-size="12" fill="#6e6e73">DB에는 nullable 열 두 개와 CHECK 제약</text>
+</svg>

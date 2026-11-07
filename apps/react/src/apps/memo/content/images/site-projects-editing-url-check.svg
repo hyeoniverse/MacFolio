@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>링크 칸과 그림 칸에 넣은 값이 parseProjects 검사에서 통과하거나 거절되는 예. https와 사이트 안 경로, 자기 API 출처는 통과하고 javascript:, data:, http, 따옴표가 든 경로는 거절된다</title>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">parseProjects가 주소 칸을 검사하는 예</text>
+<text x="40" y="66" font-size="12" font-weight="700" fill="#6e6e73">칸</text>
+<text x="120" y="66" font-size="12" font-weight="700" fill="#6e6e73">입력한 값</text>
+<text x="452" y="66" font-size="12" font-weight="700" fill="#6e6e73">결과</text>
+<line x1="24" y1="76" x2="616" y2="76" stroke="#d1d1d6"/>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="102">저장소</text><text x="40" y="142">데모</text><text x="40" y="182">데모</text><text x="40" y="222">데모</text>
+<text x="40" y="262">대표 화면</text><text x="40" y="302">대표 화면</text><text x="40" y="342">대표 화면</text>
+</g>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="120" y="102">https://github.com/hyeoniverse/…</text>
+<text x="120" y="142">javascript:alert(1)</text>
+<text x="120" y="182">data:text/html,&lt;script&gt;…</text>
+<text x="120" y="222">http://newpick.example.com</text>
+<text x="120" y="262">/imgs/projects/qru/cover.png</text>
+<text x="120" y="302">/imgs/a.png" onerror="…</text>
+<text x="120" y="342">http://localhost:4000/files/&lt;id&gt;</text>
+</g>
+<g stroke-width="1.5" fill="#ffffff">
+<rect x="444" y="86" width="164" height="24" rx="6" stroke="#34c759"/>
+<rect x="444" y="126" width="164" height="24" rx="6" stroke="#ff3b30"/>
+<rect x="444" y="166" width="164" height="24" rx="6" stroke="#ff3b30"/>
+<rect x="444" y="206" width="164" height="24" rx="6" stroke="#ff3b30"/>
+<rect x="444" y="246" width="164" height="24" rx="6" stroke="#34c759"/>
+<rect x="444" y="286" width="164" height="24" rx="6" stroke="#ff3b30"/>
+<rect x="444" y="326" width="164" height="24" rx="6" stroke="#34c759"/>
+</g>
+<g font-size="12" fill="#1d1d1f">
+<text x="454" y="103">통과 (https)</text>
+<text x="454" y="143">거절: https가 아님</text>
+<text x="454" y="183">거절: https가 아님</text>
+<text x="454" y="223">거절: https가 아님</text>
+<text x="454" y="263">통과 (사이트 안 경로)</text>
+<text x="454" y="303">거절: 따옴표·공백</text>
+<text x="454" y="343">통과 (자기 API 출처)</text>
+</g>
+<g font-size="12" fill="#6e6e73">
+<text x="120" y="158">누르는 시각에 스크립트 실행</text>
+<text x="120" y="318">속성을 닫고 이벤트 처리기를 추가</text>
+<text x="120" y="358">로컬에서 올린 그림 (API_URL과 같은 출처)</text>
+</g>
+</svg>

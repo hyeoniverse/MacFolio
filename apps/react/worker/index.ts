@@ -1,3 +1,4 @@
+import { movedPostPath } from '@macfolio/desktop-core/memo';
 import { FILES_PREFIX, serveFile, type FilesBucket } from './files';
 import { isAppRoute } from './notFound';
 import { applySeo, fetchSeoPosts, isPreviewHost, seoPage, siteDataOf } from './seo';
@@ -22,6 +23,7 @@ interface Env {
  *   만든 HTML은 엣지에 보관해 다음 방문자에게 바로 준다 (worker/edgeCache.ts)
  *   주소마다 검색엔진이 읽을 제목·설명·본문도 넣는다 (worker/seo.ts)
  * - sitemap.xml·rss.xml은 저장소 글과 서버에 쓴 글(worker/serverPosts.ts)을 합쳐 만든다
+ * - 합친 글의 옛 주소(/memo/<옛 글>)는 지금 주소로 301 (desktop-core memo/movedPosts.ts)
  * - 없는 글·프로젝트 주소(/memo/<없는 글>)는 404. 글 목록이나 사이트 콘텐츠를 받지 못했으면 단정하지 않고 200(noindex)
  * - 문서 파일(/files/<키>)은 R2 버킷에서 (worker/files.ts)
  * - 파일 주소(/assets/…)는 404 (worker/notFound.ts)
@@ -30,6 +32,13 @@ export default {
 	async fetch(request: Request, env: Env, ctx?: BackgroundTasks): Promise<Response> {
 		const url = new URL(request.url);
 		if (url.pathname.startsWith(FILES_PREFIX)) return serveFile(request, env.FILES);
+		// 합친 글의 옛 주소는 지금 주소(그 내용이 들어간 절)로 영구 이동 (검색엔진이 색인을 옮긴다)
+		const moved = movedPostPath(url.pathname);
+		if (moved) {
+			const target = new URL(moved, url);
+			target.search = url.search;
+			return Response.redirect(target.toString(), 301);
+		}
 		// sitemap.xml·rss.xml은 빌드한 파일 대신 서버에 쓴 글까지 합쳐 만든다 (wrangler.jsonc의 run_worker_first)
 		const sitemap = url.pathname === '/sitemap.xml';
 		const rss = url.pathname === '/rss.xml';

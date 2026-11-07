@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>공통 버튼 교체 전후의 계산된 스타일 비교</title>
+<rect width="640" height="380" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">교체해도 화면이 같은지 기계로 확인하는 순서 (4단계)</text>
+<g font-size="12.5" fill="#1d1d1f">
+<rect x="24" y="56" width="180" height="62" rx="10" fill="#f2f2f7"/><text x="114" y="82" text-anchor="middle">E2E가 화면을 연다</text><text x="114" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">데스크톱·휴대폰, 켜짐·꺼짐 등</text>
+<rect x="236" y="56" width="180" height="62" rx="10" fill="#f2f2f7"/><text x="326" y="82" text-anchor="middle">공통 클래스 제거</text><text x="326" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">교체 전의 &lt;button&gt;</text>
+<rect x="448" y="56" width="168" height="62" rx="10" fill="#f2f2f7"/><text x="532" y="82" text-anchor="middle">공통 클래스 적용</text><text x="532" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">교체 후</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M206 87 H232"/><path d="M418 87 H444"/></g>
+<path d="M326 120 V150 H420" stroke="#6e6e73" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+<path d="M532 120 V150 H436" stroke="#6e6e73" stroke-width="1.6" fill="none" marker-end="url(#a)"/>
+<rect x="236" y="160" width="380" height="58" rx="10" fill="#e6f2ff" stroke="#0a84ff"/>
+<text x="426" y="184" font-size="13" text-anchor="middle" fill="#1d1d1f">두 상태의 getComputedStyle을 속성마다 비교</text>
+<text x="426" y="204" font-size="12" text-anchor="middle" fill="#6e6e73">시험이 통과하는 화면(비활성·호버 포함)마다 기록</text>
+<path d="M426 220 V250" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"/>
+<rect x="24" y="256" width="280" height="80" rx="10" fill="#fff4e5" stroke="#ff9f0a"/>
+<text x="40" y="280" font-size="13" font-weight="700" fill="#1d1d1f">차이가 난 값</text>
+<text x="40" y="302" font-size="12.5" fill="#1d1d1f">공통 CSS가 더하는 값이었다.</text>
+<text x="40" y="322" font-size="12.5" fill="#1d1d1f">앱마다 :where() 규칙 하나로 원래 값 복원</text>
+<rect x="336" y="256" width="280" height="80" rx="10" fill="#eafaef" stroke="#34c759"/>
+<text x="352" y="280" font-size="13" font-weight="700" fill="#1d1d1f">차이 0</text>
+<text x="352" y="302" font-size="12.5" fill="#1d1d1f">교체해도 화면이 같다고 판단.</text>
+<text x="352" y="322" font-size="12.5" fill="#1d1d1f">75곳 모두 최종 차이가 없었다.</text>
+<path d="M306 296 H332" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"/>
+<path d="M420 220 C380 236 200 230 164 252" stroke="#6e6e73" stroke-width="1.6" fill="none" stroke-dasharray="4 3" marker-end="url(#a)"/>
+<text x="24" y="364" font-size="12" fill="#6e6e73">:where()는 명시도가 0이라, 복원 규칙이 다른 앱 규칙을 덮어쓰지 않는다.</text>
+</svg>

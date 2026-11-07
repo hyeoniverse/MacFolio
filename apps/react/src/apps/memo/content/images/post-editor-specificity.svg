@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">h2 위 간격에 걸린 세 선택자의 명시도 (ID-클래스-태그)</text>
+<text x="320" y="46" font-size="12" fill="#6e6e73" text-anchor="middle">왼쪽 자리부터 비교해 큰 쪽이 적용된다. 전체 선택자 *와 결합자 &gt; +는 명시도에 더하지 않는다</text>
+<rect x="20" y="72" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="34" y="96" font-size="13" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">.memo-markdown h2</text>
+<text x="34" y="118" font-size="12" fill="#6e6e73">머리말 위 큰 간격</text>
+<rect x="440" y="80" width="28" height="28" rx="5" fill="#fff" stroke="#c7c7cc"/>
+<text x="454" y="99" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">0</text>
+<rect x="474" y="80" width="28" height="28" rx="5" fill="#fff" stroke="#0a84ff"/>
+<text x="488" y="99" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">1</text>
+<rect x="508" y="80" width="28" height="28" rx="5" fill="#fff" stroke="#c7c7cc"/>
+<text x="522" y="99" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">1</text>
+<rect x="20" y="144" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="34" y="168" font-size="13" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">.memo-markdown .ProseMirror > * + *</text>
+<text x="34" y="190" font-size="12" fill="#6e6e73">편집기 문단 간격 (수정 1)</text>
+<rect x="440" y="152" width="28" height="28" rx="5" fill="#fff" stroke="#c7c7cc"/>
+<text x="454" y="171" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">0</text>
+<rect x="474" y="152" width="28" height="28" rx="5" fill="#fff" stroke="#0a84ff"/>
+<text x="488" y="171" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">2</text>
+<rect x="508" y="152" width="28" height="28" rx="5" fill="#fff" stroke="#c7c7cc"/>
+<text x="522" y="171" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">0</text>
+<text x="606" y="196" font-size="12" font-weight="600" fill="#ff3b30" text-anchor="end">0-2-0 &gt; 0-1-1: 머리말 간격을 덮어씀</text>
+<rect x="20" y="216" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="34" y="240" font-size="13" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">.memo-markdown :where(.ProseMirror) > * + *</text>
+<text x="34" y="262" font-size="12" fill="#6e6e73">편집기 문단 간격 (수정 2)</text>
+<rect x="440" y="224" width="28" height="28" rx="5" fill="#fff" stroke="#c7c7cc"/>
+<text x="454" y="243" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">0</text>
+<rect x="474" y="224" width="28" height="28" rx="5" fill="#fff" stroke="#0a84ff"/>
+<text x="488" y="243" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">1</text>
+<rect x="508" y="224" width="28" height="28" rx="5" fill="#fff" stroke="#c7c7cc"/>
+<text x="522" y="243" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">0</text>
+<text x="606" y="268" font-size="12" font-weight="600" fill="#248a3d" text-anchor="end">0-1-0 &lt; 0-1-1: 머리말 간격 유지</text>
+<text x="454" y="68" font-size="12" fill="#6e6e73" text-anchor="middle">ID</text><text x="488" y="68" font-size="12" fill="#6e6e73" text-anchor="middle">클래스</text><text x="522" y="68" font-size="12" fill="#6e6e73" text-anchor="middle">태그</text>
+<text x="320" y="290" font-size="12" fill="#6e6e73" text-anchor="middle">:where() 안의 선택자는 명시도가 0이라 읽기 화면 규칙 .memo-markdown &gt; * + *(0-1-0)과 같아진다</text>
+</svg>

@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 510" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="510" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+  </defs>
+
+  <!-- 위: 증폭기의 재전송 동작 -->
+  <g fill="#f2f2f7" stroke="#6e6e73">
+    <rect x="96" y="12" width="80" height="28" rx="5"/><rect x="236" y="12" width="80" height="28" rx="5"/><rect x="376" y="12" width="80" height="28" rx="5"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle"><text x="136" y="31">공격자</text><text x="276" y="31">증폭기</text><text x="416" y="31">피해자</text></g>
+  <g stroke="#6e6e73"><line x1="136" y1="40" x2="136" y2="258"/><line x1="276" y1="40" x2="276" y2="258"/><line x1="416" y1="40" x2="416" y2="258"/></g>
+
+  <g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="60" y="116">동작 1</text><text x="60" y="222">동작 2</text></g>
+  <path d="M96,58 h-6 v112 h6" fill="none" stroke="#6e6e73"/>
+  <path d="M96,186 h-6 v70 h6" fill="none" stroke="#6e6e73"/>
+
+  <g font-size="12" font-weight="600" text-anchor="middle">
+    <line x1="136" y1="66" x2="274" y2="66" stroke="#1d1d1f" marker-end="url(#a)"/><text x="206" y="61" fill="#1d1d1f">1. SYN</text>
+    <line x1="276" y1="88" x2="414" y2="88" stroke="#1d1d1f" marker-end="url(#a)"/><text x="346" y="83" fill="#1d1d1f">2. SYN/ACK</text>
+    <line x1="276" y1="110" x2="414" y2="110" stroke="#ff3b30" marker-end="url(#r)"/><text x="346" y="105" fill="#ff3b30">3. SYN/ACK</text>
+    <line x1="276" y1="132" x2="414" y2="132" stroke="#ff3b30" marker-end="url(#r)"/><text x="346" y="127" fill="#ff3b30">4. SYN/ACK</text>
+    <text x="346" y="147" fill="#ff3b30">⋯</text>
+    <line x1="276" y1="166" x2="414" y2="166" stroke="#ff3b30" marker-end="url(#r)"/><text x="346" y="161" fill="#ff3b30">n. SYN/ACK</text>
+  </g>
+  <line x1="40" y1="178" x2="440" y2="178" stroke="#c7c7cc" stroke-width="3" stroke-dasharray="6 5"/>
+  <g font-size="12" font-weight="600" text-anchor="middle">
+    <line x1="136" y1="192" x2="274" y2="192" stroke="#1d1d1f" marker-end="url(#a)"/><text x="206" y="187" fill="#1d1d1f">1. SYN</text>
+    <line x1="276" y1="212" x2="414" y2="212" stroke="#1d1d1f" marker-end="url(#a)"/><text x="346" y="207" fill="#1d1d1f">2. SYN/ACK</text>
+    <line x1="416" y1="232" x2="278" y2="232" stroke="#1d1d1f" marker-end="url(#a)"/><text x="346" y="227" fill="#1d1d1f">3. RST</text>
+    <line x1="276" y1="252" x2="414" y2="252" stroke="#ff3b30" marker-end="url(#r)"/><text x="346" y="247" fill="#ff3b30">4. SYN/ACK</text>
+  </g>
+
+  <rect x="462" y="56" width="164" height="118" rx="8" fill="#f2f2f7"/>
+  <text x="476" y="80" font-size="13" font-weight="600" fill="#1d1d1f">SYN/ACK 증폭기</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="476" y="104">· ACK가 올 때까지</text><text x="486" y="120">SYN/ACK 반복</text>
+    <text x="476" y="142">· 유닉스 계열 기본 동작</text>
+    <text x="476" y="162">· 패킷 손실 대비</text>
+  </g>
+  <text x="476" y="210" font-size="12" fill="#6e6e73">RST를 받아도 재전송하는</text>
+  <text x="476" y="226" font-size="12" fill="#6e6e73">구현이 있다</text>
+
+  <!-- 아래: 반사 구성 -->
+  <rect x="140" y="288" width="128" height="176" rx="18" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="204" y="482" text-anchor="middle" font-size="13" fill="#6e6e73">인터넷</text>
+  <g fill="#fff" stroke="#1d1d1f">
+    <rect x="164" y="300" width="80" height="26" rx="4"/><rect x="164" y="340" width="80" height="26" rx="4"/>
+    <rect x="164" y="380" width="80" height="26" rx="4"/><rect x="164" y="420" width="80" height="26" rx="4"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <text x="204" y="318">증폭기</text><text x="204" y="358">증폭기</text><text x="204" y="398">증폭기</text><text x="204" y="438">증폭기</text>
+  </g>
+  <rect x="24" y="440" width="76" height="28" rx="4" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="62" y="459" text-anchor="middle" font-size="13" fill="#ff3b30">공격자</text>
+  <g fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="7 4" marker-end="url(#b)">
+    <path d="M50,440 C50,360 100,313 162,313"/>
+    <path d="M62,440 C62,380 110,353 162,353"/>
+    <path d="M74,440 C80,410 120,393 162,393"/>
+    <path d="M100,450 C120,440 140,433 162,433"/>
+  </g>
+
+  <rect x="430" y="288" width="196" height="176" rx="18" fill="#fff" stroke="#c7c7cc"/>
+  <text x="528" y="482" text-anchor="middle" font-size="13" fill="#6e6e73">피해자 네트워크</text>
+  <rect x="480" y="306" width="110" height="40" rx="4" fill="#fff" stroke="#1d1d1f"/>
+  <text x="535" y="331" text-anchor="middle" font-size="13" fill="#1d1d1f">할당된 IP</text>
+  <rect x="480" y="396" width="110" height="40" rx="4" fill="#fff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+  <text x="535" y="421" text-anchor="middle" font-size="13" fill="#6e6e73">미할당 IP</text>
+
+  <g fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)">
+    <path d="M244,310 C340,306 400,316 478,316"/>
+    <path d="M244,350 C340,346 400,328 478,326"/>
+    <path d="M244,390 C340,390 400,408 478,410"/>
+    <path d="M244,430 C340,430 400,420 478,420"/>
+  </g>
+  <g fill="none" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="2 3" marker-end="url(#r)">
+    <path d="M480,336 C400,336 330,322 246,320"/>
+    <path d="M480,342 C400,348 330,360 246,360"/>
+  </g>
+
+  <!-- 범례 -->
+  <g font-size="12" fill="#1d1d1f">
+    <line x1="284" y1="494" x2="312" y2="494" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="7 4"/><text x="318" y="498">위조 SYN</text>
+    <line x1="384" y1="494" x2="412" y2="494" stroke="#1d1d1f" stroke-width="1.5"/><text x="418" y="498">SYN/ACK</text>
+    <line x1="490" y1="494" x2="518" y2="494" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="2 3"/><text x="524" y="498">RST</text>
+  </g>
+</svg>

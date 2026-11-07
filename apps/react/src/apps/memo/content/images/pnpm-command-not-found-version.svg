@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">pnpm -v가 폴더에 따라 다른 버전을 출력하는 순서</text>
+  <g font-size="12">
+    <rect x="200" y="46" width="240" height="34" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/><text x="320" y="68" text-anchor="middle" fill="#1d1d1f">전역 pnpm 12.14.0 실행</text>
+    <path d="M320 80 L320 100" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="160" y="106" width="320" height="40" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="320" y="124" text-anchor="middle" fill="#1d1d1f">현재 프로젝트의 package.json에</text><text x="320" y="139" text-anchor="middle" fill="#1d1d1f">packageManager가 있는가?</text>
+    <path d="M160 126 L90 126 L90 176" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/><text x="100" y="118" fill="#6e6e73">없음 (예: ~)</text>
+    <rect x="20" y="182" width="140" height="40" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/><text x="90" y="200" text-anchor="middle" fill="#1d1d1f">12.14.0 그대로 실행</text><text x="90" y="215" text-anchor="middle" fill="#6e6e73">출력 12.14.0</text>
+    <path d="M480 126 L550 126 L550 176" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/><text x="490" y="118" fill="#6e6e73">"pnpm@10.34.5"</text>
+    <rect x="460" y="182" width="170" height="40" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="545" y="200" text-anchor="middle" fill="#1d1d1f">자기 버전과 다른가?</text><text x="545" y="215" text-anchor="middle" fill="#6e6e73">12.14.0 ≠ 10.34.5</text>
+    <path d="M545 222 L545 252" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="400" y="258" width="230" height="44" rx="8" fill="#e5f1ff" stroke="#0a84ff" stroke-width="2"/><text x="515" y="276" text-anchor="middle" fill="#1d1d1f">10.34.5를 내려받아 대신 실행</text><text x="515" y="293" text-anchor="middle" fill="#0a84ff">출력 10.34.5</text>
+    <text x="20" y="262" fill="#6e6e73">pnpm 10: managePackageManagerVersions: true</text>
+    <text x="20" y="280" fill="#6e6e73">pnpm 11 이상: pmOnFail: download</text>
+    <text x="20" y="298" fill="#6e6e73">(둘 다 기본값)</text>
+    <text x="20" y="322" fill="#6e6e73">Node 24 이하의 corepack도 같은 packageManager 필드를 읽어 지정된 버전을 실행했다</text>
+  </g>
+</svg>

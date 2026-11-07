@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>position sticky 요소가 스크롤 중에 고정되는 모습</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="24" y="30" font-size="16" fill="#1d1d1f" text-anchor="start" font-weight="600">position: sticky; top: 0의 동작</text>
+<text x="24" y="50" font-size="12" fill="#6e6e73" text-anchor="start">스크롤 상자 안에서 보통 흐름대로 놓였다가, 위쪽 끝(top: 0)에 닿으면 그 자리에 고정된다</text>
+<text x="24" y="82" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">scrollTop = 0px</text>
+<rect x="24" y="92" width="176" height="210" rx="8" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.2"/>
+<clipPath id="c24"><rect x="25" y="93" width="174" height="208" rx="8"/></clipPath>
+<g clip-path="url(#c24)">
+<rect x="34" y="144" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="171" font-size="13" fill="#1d1d1f" text-anchor="start">글 1</text>
+<rect x="34" y="204" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="231" font-size="13" fill="#1d1d1f" text-anchor="start">글 2</text>
+<rect x="34" y="264" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="291" font-size="13" fill="#1d1d1f" text-anchor="start">글 3</text>
+<rect x="34" y="324" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="351" font-size="13" fill="#1d1d1f" text-anchor="start">글 4</text>
+<rect x="34" y="384" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="411" font-size="13" fill="#1d1d1f" text-anchor="start">글 5</text>
+<rect x="34" y="444" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="471" font-size="13" fill="#1d1d1f" text-anchor="start">글 6</text>
+<rect x="34" y="504" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="531" font-size="13" fill="#1d1d1f" text-anchor="start">글 7</text>
+<rect x="34" y="564" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="46" y="591" font-size="13" fill="#1d1d1f" text-anchor="start">글 8</text>
+<rect x="25" y="93" width="174" height="40" rx="0" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="112" y="118" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600">도구 막대</text>
+</g>
+<text x="232" y="82" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">scrollTop = 60px</text>
+<rect x="232" y="92" width="176" height="210" rx="8" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.2"/>
+<clipPath id="c232"><rect x="233" y="93" width="174" height="208" rx="8"/></clipPath>
+<g clip-path="url(#c232)">
+<rect x="242" y="84" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="111" font-size="13" fill="#1d1d1f" text-anchor="start">글 1</text>
+<rect x="242" y="144" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="171" font-size="13" fill="#1d1d1f" text-anchor="start">글 2</text>
+<rect x="242" y="204" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="231" font-size="13" fill="#1d1d1f" text-anchor="start">글 3</text>
+<rect x="242" y="264" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="291" font-size="13" fill="#1d1d1f" text-anchor="start">글 4</text>
+<rect x="242" y="324" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="351" font-size="13" fill="#1d1d1f" text-anchor="start">글 5</text>
+<rect x="242" y="384" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="411" font-size="13" fill="#1d1d1f" text-anchor="start">글 6</text>
+<rect x="242" y="444" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="471" font-size="13" fill="#1d1d1f" text-anchor="start">글 7</text>
+<rect x="242" y="504" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="254" y="531" font-size="13" fill="#1d1d1f" text-anchor="start">글 8</text>
+<rect x="233" y="93" width="174" height="40" rx="0" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="320" y="118" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600">도구 막대</text>
+</g>
+<text x="440" y="82" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">scrollTop = 180px</text>
+<rect x="440" y="92" width="176" height="210" rx="8" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.2"/>
+<clipPath id="c440"><rect x="441" y="93" width="174" height="208" rx="8"/></clipPath>
+<g clip-path="url(#c440)">
+<rect x="450" y="-36" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="-9" font-size="13" fill="#1d1d1f" text-anchor="start">글 1</text>
+<rect x="450" y="24" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="51" font-size="13" fill="#1d1d1f" text-anchor="start">글 2</text>
+<rect x="450" y="84" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="111" font-size="13" fill="#1d1d1f" text-anchor="start">글 3</text>
+<rect x="450" y="144" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="171" font-size="13" fill="#1d1d1f" text-anchor="start">글 4</text>
+<rect x="450" y="204" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="231" font-size="13" fill="#1d1d1f" text-anchor="start">글 5</text>
+<rect x="450" y="264" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="291" font-size="13" fill="#1d1d1f" text-anchor="start">글 6</text>
+<rect x="450" y="324" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="351" font-size="13" fill="#1d1d1f" text-anchor="start">글 7</text>
+<rect x="450" y="384" width="156" height="44" rx="6" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="462" y="411" font-size="13" fill="#1d1d1f" text-anchor="start">글 8</text>
+<rect x="441" y="93" width="174" height="40" rx="0" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="528" y="118" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600">도구 막대</text>
+</g>
+<text x="24" y="326" font-size="12" fill="#1d1d1f" text-anchor="start">도구 막대는 같은 자리에 남고 글 목록만 그 아래로 지나간다</text>
+<text x="24" y="346" font-size="12" fill="#0a84ff" text-anchor="start">MDN 기준: position이 sticky인 요소는 z-index 값과 관계없이 새 쌓임 맥락을 만든다</text>
+</svg>

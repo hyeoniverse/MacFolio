@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>나타나는 기준과 사라지는 기준을 나눈 이유</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">나타나는 기준 12%, 사라지는 기준 0%</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">IntersectionObserver threshold: [0, 0.12] · 숨은 요소는 아래로 조금 내려가 있다</text>
+  <text x="24" y="92" font-size="13" font-weight="700" fill="#ff3b30">전: 기준 하나</text>
+  <rect x="24" y="104" width="280" height="150" rx="8" fill="#f2f2f7"/>
+  <line x1="24" y1="200" x2="304" y2="200" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="34" y="244" font-size="12" fill="#6e6e73">점선: 화면(스크롤 영역) 아래 경계</text>
+  <rect x="70" y="180" width="180" height="40" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="160" y="205" font-size="12" text-anchor="middle" fill="#1d1d1f">WTD 숫자 띠</text>
+  <text x="34" y="128" font-size="12" fill="#1d1d1f">① 경계를 넘어 표시</text>
+  <text x="34" y="148" font-size="12" fill="#1d1d1f">② 숨으며 아래로 이동 → 경계 밖</text>
+  <text x="34" y="168" font-size="12" fill="#ff3b30">③ 다시 표시… 반복 (떨림)</text>
+  <text x="336" y="92" font-size="13" font-weight="700" fill="#34c759">후: 기준 둘</text>
+  <rect x="336" y="104" width="280" height="150" rx="8" fill="#f2f2f7"/>
+  <line x1="336" y1="200" x2="616" y2="200" stroke="#1d1d1f" stroke-width="2" stroke-dasharray="6 4"/>
+  <rect x="382" y="180" width="180" height="40" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="2"/>
+  <rect x="382" y="180" width="180" height="20" rx="6" fill="#34c759" opacity="0.25"/>
+  <text x="472" y="215" font-size="12" text-anchor="middle" fill="#1d1d1f">보이는 비율 50%</text>
+  <text x="346" y="128" font-size="12" fill="#1d1d1f">보이는 비율 ≥ 12% → data-shown 추가</text>
+  <text x="346" y="148" font-size="12" fill="#1d1d1f">0% (완전히 벗어남) → data-shown 제거</text>
+  <text x="346" y="168" font-size="12" fill="#34c759">그 사이에서는 상태를 유지</text>
+  <rect x="24" y="270" width="592" height="44" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+  <text x="40" y="297" font-size="12" fill="#1d1d1f">상태가 바뀌는 두 기준 사이에 간격을 두면, 경계 근처의 작은 이동으로 상태가 뒤집히지 않는다</text>
+</svg>

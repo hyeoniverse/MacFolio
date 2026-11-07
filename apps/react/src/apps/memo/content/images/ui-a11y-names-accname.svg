@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 452" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>버튼의 접근 가능한 이름을 정하는 순서와 MacFolio 버튼 예시</title>
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="452" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">버튼의 이름은 위에서부터 처음 찾은 값으로 정해진다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">W3C Accessible Name and Description Computation 1.2를 버튼에 해당하는 단계만 줄인 것</text>
+
+  <g font-size="12">
+    <rect x="24" y="76" width="300" height="52" rx="10" fill="#f2f2f7"/>
+    <text x="40" y="98" font-weight="600" fill="#1d1d1f">1. aria-labelledby</text>
+    <text x="40" y="116" fill="#6e6e73">다른 요소의 글자를 이름으로 가져온다</text>
+
+    <rect x="24" y="140" width="300" height="52" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+    <text x="40" y="162" font-weight="600" fill="#0a84ff">2. aria-label</text>
+    <text x="40" y="180" fill="#6e6e73">속성 값 그대로. IconButton의 label이 여기로</text>
+
+    <rect x="24" y="204" width="300" height="52" rx="10" fill="#f2f2f7"/>
+    <text x="40" y="226" font-weight="600" fill="#1d1d1f">3. 요소 고유의 이름</text>
+    <text x="40" y="244" fill="#6e6e73">img의 alt, input에 연결된 label 등</text>
+
+    <rect x="24" y="268" width="300" height="52" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="2"/>
+    <text x="40" y="290" font-weight="600" fill="#248a3d">4. 안쪽 글자 (내용)</text>
+    <text x="40" y="308" fill="#6e6e73">aria-hidden 요소는 빼고 이어 붙인다</text>
+
+    <rect x="24" y="332" width="300" height="52" rx="10" fill="#f2f2f7"/>
+    <text x="40" y="354" font-weight="600" fill="#1d1d1f">5. title 속성</text>
+    <text x="40" y="372" fill="#6e6e73">마우스를 올리면 보이는 툴팁 글자</text>
+
+    <line x1="12" y1="84" x2="12" y2="380" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#b)"/>
+
+    <!-- examples -->
+    <text x="352" y="92" font-weight="600" fill="#1d1d1f" font-size="13">예시</text>
+    <rect x="352" y="140" width="264" height="52" rx="10" fill="#ffffff" stroke="#0a84ff"/>
+    <text x="366" y="162" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;IconButton label="메모 삭제"/&gt;</text>
+    <text x="366" y="180" fill="#0a84ff">→ 2단계에서 "메모 삭제"</text>
+    <line x1="326" y1="166" x2="350" y2="166" stroke="#0a84ff" stroke-width="1.5"/>
+
+    <rect x="352" y="268" width="264" height="52" rx="10" fill="#ffffff" stroke="#34c759"/>
+    <text x="366" y="290" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;IconButton&gt;‹ 블로그&lt;/…&gt;</text>
+    <text x="366" y="308" fill="#248a3d">→ 4단계에서 "‹ 블로그"</text>
+    <line x1="326" y1="294" x2="350" y2="294" stroke="#34c759" stroke-width="1.5"/>
+
+    <rect x="352" y="396" width="264" height="44" rx="10" fill="#ffffff" stroke="#ff3b30"/>
+    <text x="366" y="416" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;IconButton icon="…xmark"/&gt;</text>
+    <text x="366" y="432" fill="#ff3b30">→ 모든 단계가 비어 이름 없음 (타입 오류)</text>
+    <text x="24" y="416" fill="#6e6e73">어느 단계에서도 값을 찾지 못하면</text>
+    <text x="24" y="432" fill="#6e6e73">스크린 리더는 역할("버튼")만 읽는다</text>
+  </g>
+</svg>

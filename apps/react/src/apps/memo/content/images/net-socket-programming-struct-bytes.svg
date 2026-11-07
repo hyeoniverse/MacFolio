@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="280" fill="#fff"/><defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="13" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">fwrite(&amp;d1, sizeof(d1), 1, fp);</text>
+<text x="80" y="210" text-anchor="end" font-size="12" font-weight="600" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">data2.bin</text>
+<rect x="88" y="190" width="23" height="30" fill="#fff4e5" stroke="#1d1d1f" stroke-width="1"/>
+<text x="99.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">61</text>
+<rect x="111" y="190" width="23" height="30" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1"/>
+<text x="122.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">64</text>
+<rect x="134" y="190" width="23" height="30" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1"/>
+<text x="145.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">7D</text>
+<rect x="157" y="190" width="23" height="30" fill="#e9f8ee" stroke="#1d1d1f" stroke-width="1"/>
+<text x="168.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">64</text>
+<rect x="180" y="190" width="23" height="30" fill="#e9f8ee" stroke="#1d1d1f" stroke-width="1"/>
+<text x="191.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">75</text>
+<rect x="203" y="190" width="23" height="30" fill="#e9f8ee" stroke="#1d1d1f" stroke-width="1"/>
+<text x="214.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2B</text>
+<rect x="226" y="190" width="23" height="30" fill="#e9f8ee" stroke="#1d1d1f" stroke-width="1"/>
+<text x="237.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">7D</text>
+<rect x="249" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="260.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">48</text>
+<rect x="272" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="283.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">65</text>
+<rect x="295" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="306.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6C</text>
+<rect x="318" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="329.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6C</text>
+<rect x="341" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="352.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6F</text>
+<rect x="364" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="375.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2C</text>
+<rect x="387" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="398.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">20</text>
+<rect x="410" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="421.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">77</text>
+<rect x="433" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="444.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6F</text>
+<rect x="456" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="467.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">72</text>
+<rect x="479" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="490.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6C</text>
+<rect x="502" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="513.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">64</text>
+<rect x="525" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="536.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">21</text>
+<rect x="548" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="559.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">00</text>
+<rect x="571" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="582.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">…</text>
+<rect x="594" y="190" width="23" height="30" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1"/>
+<text x="605.5" y="210" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">00</text>
+<path d="M89.5,186 L89.5,180 L109.5,180 L109.5,186" fill="none" stroke="#6e6e73" stroke-width="1.2"/>
+<path d="M112.5,186 L112.5,180 L155.5,180 L155.5,186" fill="none" stroke="#6e6e73" stroke-width="1.2"/>
+<path d="M158.5,186 L158.5,180 L247.5,180 L247.5,186" fill="none" stroke="#6e6e73" stroke-width="1.2"/>
+<path d="M250.5,186 L250.5,180 L615.5,180 L615.5,186" fill="none" stroke="#6e6e73" stroke-width="1.2"/>
+<path d="M88,224 L88,230 L617,230 L617,224" fill="none" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="352.5" y="250" text-anchor="middle" font-size="12" fill="#1d1d1f">합계 27바이트 (#pragma pack(1)이라 멤버 사이 패딩 없음)</text>
+<text x="62" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">c1 = 'a'</text>
+<text x="62" y="90" text-anchor="middle" font-size="12" fill="#6e6e73">1바이트, ASCII 0x61</text>
+<line x1="62" y1="100" x2="99.5" y2="174" stroke="#0a84ff" stroke-width="1.4" marker-end="url(#b)"/>
+<text x="200" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">num1 = 32100</text>
+<text x="200" y="90" text-anchor="middle" font-size="12" fill="#6e6e73">2바이트, 0x7D64</text>
+<line x1="200" y1="100" x2="134.0" y2="174" stroke="#0a84ff" stroke-width="1.4" marker-end="url(#b)"/>
+<text x="355" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">num2 = 2100000100</text>
+<text x="355" y="90" text-anchor="middle" font-size="12" fill="#6e6e73">4바이트, 0x7D2B7564</text>
+<line x1="355" y1="100" x2="203.0" y2="174" stroke="#0a84ff" stroke-width="1.4" marker-end="url(#b)"/>
+<text x="525" y="72" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">s1 = "Hello, world!"</text>
+<text x="525" y="90" text-anchor="middle" font-size="12" fill="#6e6e73">20바이트, 13글자 + 널</text>
+<line x1="525" y1="100" x2="433.0" y2="174" stroke="#0a84ff" stroke-width="1.4" marker-end="url(#b)"/>
+</svg>

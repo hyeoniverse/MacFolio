@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">목록 안 머리말을 허용할 때와 한 줄 한 서식일 때의 저장값</text>
+<text x="20" y="66" font-size="13" font-weight="600" fill="#ff9f0a">겹쳐 쓰기 (노션 방식)</text>
+<rect x="20" y="76" width="290" height="70" rx="8" fill="#f2f2f7"/>
+<text x="34" y="104" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">- ### 우유</text>
+<text x="34" y="128" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">- 달걀</text>
+<text x="20" y="176" font-size="12" font-weight="600" fill="#6e6e73">읽기 화면</text>
+<rect x="20" y="184" width="290" height="96" rx="8" fill="#fff" stroke="#ff9f0a"/>
+<circle cx="40" cy="214" r="3" fill="#1d1d1f"/><text x="52" y="221" font-size="20" font-weight="700" fill="#1d1d1f">우유</text>
+<circle cx="40" cy="254" r="3" fill="#1d1d1f"/><text x="52" y="259" font-size="14" fill="#1d1d1f">달걀</text>
+<text x="20" y="304" font-size="12" fill="#ff9f0a">목록 기호 옆 큰 제목, 항목마다 글자 크기가 다르다</text>
+<text x="340" y="66" font-size="13" font-weight="600" fill="#34c759">한 줄 한 서식 (macOS 메모 방식)</text>
+<rect x="340" y="76" width="280" height="70" rx="8" fill="#f2f2f7"/>
+<text x="354" y="98" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">### 우유</text>
+<text x="354" y="138" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">- 달걀</text>
+<text x="340" y="176" font-size="12" font-weight="600" fill="#6e6e73">읽기 화면</text>
+<rect x="340" y="184" width="280" height="96" rx="8" fill="#fff" stroke="#34c759"/>
+<text x="354" y="221" font-size="20" font-weight="700" fill="#1d1d1f">우유</text>
+<circle cx="360" cy="254" r="3" fill="#1d1d1f"/><text x="372" y="259" font-size="14" fill="#1d1d1f">달걀</text>
+<text x="340" y="304" font-size="12" fill="#34c759">머리말과 목록이 각자의 줄, 표준 Markdown</text>
+</svg>

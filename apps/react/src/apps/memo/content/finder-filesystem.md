@@ -1,13 +1,21 @@
 ---
-title: R2 키는 두고 JSON 한 행에 표시 위치만 기록하는 Finder 파일 시스템
-date: 2026-10-19
+title: 표시 위치 JSON과 가상본 종류로 구성한 Finder 단일 루트 파일 시스템
+date: 2026-10-20
 category: 개발 기록/MacFolio/서버·API
 series: Finder
 seriesOrder: 3
-summary: 관리자가 Finder에서 새 폴더를 만들고, 이름을 바꾸고, 파일과 폴더를 끌어 옮긴다. 구조는 서버(/finder/layout)에 저장해 방문자도 같은 구조를 조회한다. 블로그 폴더는 메모의 정리 내용을 수정해 메모와 동기화되고, 바탕화면은 Finder의 데스크탑 폴더가 되었다.
+summary: 관리자가 Finder에서 폴더를 만들고 파일을 옮기는 구조를 R2 키 대신 JSON 한 행(/finder/layout)에 기록하고, 블로그 폴더는 메모 정리 내용과 동기화했다. 이어서 가상본을 별도 kind로 분리하고 최상위 위치를 Macintosh HD 아래 한 트리로 통합했다.
 ---
 
+## 배경: 파일 시스템 트리와 가상본
+
+macOS의 Finder는 디스크의 파일 시스템을 트리(tree) 구조로 표시하는 앱이다. 트리는 맨 위의 루트(root) 폴더 하나에서 시작해, 폴더마다 하위 항목(children)을 갖는 구조다. 예를 들어 `/Users/hyeoniverse/Documents/이력서.pdf`는 루트(`/`) › 사용자 › 홈 › 문서를 차례로 거쳐 도달하는 파일이다.
+
+가상본(alias)은 다른 폴더나 파일을 가리키는 작은 참조 파일이다. 바탕화면에 문서 폴더의 가상본을 만들면 아이콘 왼쪽 아래에 화살표가 붙고, 더블 클릭하면 원래 폴더가 열린다. 가상본 자체에는 내용이 없고 "어디를 가리키는가"만 저장된다[^alias].
+
 Finder는 사이트의 데이터(문서, 프로젝트, 블로그 글, 앱)를 파일 형태로 표시하지만, 지금까지는 조회만 가능했다. 폴더를 만들거나 파일을 옮길 수 없었다. 바탕화면의 이력서·포트폴리오·자격증 아이콘도 코드에 고정된 목록이었다. 이번에 실제 Mac처럼 폴더를 편집할 수 있게 했다. 단, 편집은 관리자만 할 수 있고, 편집한 구조는 서버에 저장해 모든 방문자가 같은 구조를 조회한다. PR은 [#263](https://github.com/hyeoniverse/MacFolio/pull/263)이고, 커밋 22개, 파일 82개, +4,255/−386이다.
+
+다음 날 [#285](https://github.com/hyeoniverse/MacFolio/pull/285)에서는 열기 창에서 바탕화면의 포트폴리오가 빈 폴더로 열리는 버그를 계기로, 가상본을 별도 종류로 분리하고 서로 독립된 최상위 위치를 macOS처럼 Macintosh HD 아래 한 트리로 통합했다. 가상본 수정 과정은 [가상본이 빈 폴더로 열린 원인](#가상본이-빈-폴더로-열린-원인) 절에 있다.
 
 ## 편집 가능한 항목
 
@@ -20,11 +28,11 @@ Finder는 사이트의 데이터(문서, 프로젝트, 블로그 글, 앱)를 �
 | 블로그 글과 블로그 폴더 | 블로그 안에서만 이동. 폴더 이름 변경                                                                                                                                  |
 | 시스템 항목             | 위치(데스크탑, 문서, 블로그, 응용 프로그램), 이력서·포트폴리오·자격증, 포트폴리오 안의 프로젝트별 폴더와 그 안의 사진 폴더, 저장소 문서, 앱. 끌 수 없고 메뉴도 비활성 |
 
-방문자에게는 같은 메뉴가 비활성으로 표시되고, 항목도 끌리지 않는다. 화면의 제한은 안내용이고, 실제 차단은 서버가 한다. 저장 요청에 관리자 세션이 없으면 401을 반환한다.
+방문자에게는 같은 메뉴가 비활성으로 표시되고, 항목도 끌리지 않는다. ==화면의 제한은 안내용이고, 실제 차단은 서버가 한다.== 저장 요청에 관리자 세션이 없으면 401을 반환한다.
 
 ## 파일을 옮겨도 R2 객체는 그대로
 
-업로드한 파일은 R2에 `resume/<무작위>.pdf`처럼 폴더별 키로 저장되어 있고, 문서 테이블(Document)의 폴더 값과 키 접두사가 일치하는지 DB의 CHECK 제약이 검사한다. 파일을 옮길 때마다 R2 객체를 복사하고 삭제하는 방법도 있지만, 중간에 실패하면 파일이 두 개가 되거나 사라질 수 있다.
+업로드한 파일은 R2에 `resume/<무작위>.pdf`처럼 폴더별 키로 저장되어 있고, 문서 테이블(Document)의 폴더 값과 키 접두사가 일치하는지 DB의 CHECK 제약이 검사한다. 파일을 옮길 때마다 R2 객체를 복사하고 삭제하는 방법도 있지만, ==중간에 실패하면 파일이 두 개가 되거나 사라질 수 있다.==
 
 그래서 R2와 문서 테이블은 수정하지 않고 "표시 위치"만 별도로 기록했다. 새 테이블 `FinderLayout`은 메모 정리(`MemoOrganization`)처럼 JSON 한 행이다.
 
@@ -59,7 +67,9 @@ Finder는 사이트의 데이터(문서, 프로젝트, 블로그 글, 앱)를 �
 
 처음에는 이력서·포트폴리오·자격증과 프로젝트 폴더에만 파일을 놓아 업로드할 수 있었다. 새로 만든 폴더나 바탕화면에 놓으면 반응이 없어서 실제 폴더처럼 동작하지 않았다. 이제는 파일을 받을 수 있는 폴더라면 어디에 놓아도 업로드된다.
 
-R2에 업로드할 문서 폴더는 놓은 폴더에서 상위로 올라가며 처음 만나는 이력서·포트폴리오·자격증·프로젝트 폴더로 정한다.
+R2에 업로드할 문서 폴더는 놓은 폴더에서 상위로 올라가며 처음 만나는 이력서·포트폴리오·자격증·프로젝트 폴더로 정한다. R2 키의 접두사(`resume/`, `portfolio/` 등)와 문서 테이블의 폴더 값은 DB CHECK 제약으로 묶여 있어서, 관리자가 만든 폴더를 R2 키에 직접 쓸 수는 없다.
+
+![발표 자료 폴더에 놓은 PDF는 상위의 포트폴리오로 업로드되고, Finder 구조에 발표 자료 위치가 기록된다](./images/finder-filesystem-upload-target.svg '만든 폴더는 건너뛰고 가장 가까운 문서 폴더에서 멈춘다')
 
 | 놓은 위치                              | R2 문서 폴더                    | Finder 구조에 기록      |
 | -------------------------------------- | ------------------------------- | ----------------------- |
@@ -79,7 +89,7 @@ Finder 구조에 기록하는 방식은 끌어서 옮길 때와 같아서, 업�
 - SVG·HTML은 사이트 출처에서 스크립트가 실행될 수 있어 허용하지 않는다
 - 텍스트·영상·소리가 아닌 파일은 Worker가 항상 내려받기(`Content-Disposition: attachment`)로 응답한다
 
-관리자가 아닌 방문자가 파일을 놓으면 서버에 업로드하지 않는다. 대신 브라우저의 [blob URL](https://developer.mozilla.org/ko/docs/Web/API/URL/createObjectURL_static)로 그 폴더에 추가해, 실제 Finder처럼 놓은 위치에 표시되고 미리보기로 열린다. 처음 한 번 "내 화면에만 추가됨" 알림을 표시하고, 새로고침하면 사라진다.
+관리자가 아닌 방문자가 파일을 놓으면 서버에 업로드하지 않는다. 대신 브라우저의 [blob URL](https://developer.mozilla.org/ko/docs/Web/API/URL/createObjectURL_static)로 그 폴더에 추가한다. blob URL은 `URL.createObjectURL(file)`이 반환하는 `blob:https://macfolio.hyeoniverse.com/<무작위 id>` 형식의 주소로, 브라우저 메모리에 있는 파일을 현재 페이지 안에서만 가리킨다. 이 주소로 놓은 파일을 실제 Finder처럼 놓은 위치에 표시되고 미리보기로 열린다. 처음 한 번 "내 화면에만 추가됨" 알림을 표시하고, 새로고침하면 사라진다.
 
 그림은 오른쪽 클릭 › 데스크탑 사진 설정으로 바로 배경화면이 된다. 바탕화면에서 실행한 휴지통 경고창은 창 안이 아니라 화면 중앙, 모든 창 위에 표시된다(이전에는 바탕화면 레이어 안에 렌더링되어 Safari 같은 창 아래에 가려졌다).
 
@@ -101,7 +111,12 @@ mp4를 업로드해도 회색 문서 아이콘이었고, 열면 내려받기만 
 - Finder 아이콘은 동영상의 0.5초 시점 프레임([`#t=0.5`](https://developer.mozilla.org/ko/docs/Web/HTML/Element/video) 미디어 프래그먼트)에 재생 표시를 겹치고, 휴대폰 파일 앱은 그 자리에서 재생한다
 - 재생 막대는 브라우저 기본 컨트롤 대신 macOS QuickTime처럼 영상 아래에 떠 있는 반투명 패널로 구현했다. 위 줄에 소리, 10초 뒤로·재생·10초 앞으로, PIP·공유(내려받기)·재생 속도가 있고, 아래 줄에 경과 시간·탐색 막대·전체 시간이 있다. 재생 중 마우스를 2.5초 움직이지 않으면 숨긴다
 
-`<video>`는 파일을 구간 단위로 요청한다. 사이트 Worker의 `/files/*`가 [Range 요청](https://developer.mozilla.org/ko/docs/Web/HTTP/Range_requests)에 206(`content-range`)으로 응답하지 않으면 Safari는 재생하지 않고 Chrome도 탐색할 수 없어서, R2의 범위 읽기(`get(key, { range })`)로 요청한 구간만 응답한다.
+> [!WARNING] 동영상은 Range 요청으로 받는다
+> `<video>`는 파일을 구간 단위로 요청한다. 사이트 Worker의 `/files/*`가 [Range 요청](https://developer.mozilla.org/ko/docs/Web/HTTP/Range_requests)에 206(`content-range`)으로 응답하지 않으면 Safari는 재생하지 않고 Chrome도 탐색할 수 없어서, R2의 범위 읽기(`get(key, { range })`)로 요청한 구간만 응답한다.
+
+Range 요청은 `Range: bytes=시작-끝` 헤더로 파일의 일부만 요청하는 HTTP 기능이다. 서버는 `206 Partial Content`와 `Content-Range: bytes 시작-끝/전체 크기` 헤더로 그 구간만 응답한다. 탐색 막대를 영상 중간으로 옮기면 브라우저는 그 위치에 해당하는 바이트부터 다시 요청한다.
+
+![재생 시작은 bytes=0-, 탐색은 중간 바이트부터, 파일 밖 범위는 416](./images/finder-filesystem-range.svg 'Worker는 크기를 먼저 확인하고 요청한 구간만 R2에서 읽는다')
 
 ## 블로그 폴더는 메모와 같은 데이터
 
@@ -148,7 +163,156 @@ macOS에서 바탕화면은 사용자 폴더 안의 "데스크탑" 폴더다. Fi
 | 6    | Dock의 휴지통으로 끌어 놓기가 동작하지 않음                | 지원 추가. 끄는 동안 항목이 휴지통 아이콘 아래로 가려지던 레이어 순서도 수정                                                                                                                                                                     |
 | 7    | MP4를 미리보기도 재생도 할 수 없음                         | 동영상을 여는 QuickTime Player 추가                                                                                                                                                                                                              |
 
+## 가상본이 빈 폴더로 열린 원인
+
+미리보기 앱의 열기 창에서 **데스크탑 › 포트폴리오**를 더블 클릭하면 "비어 있음"이 표시됐다. 같은 창에서 **문서 › 포트폴리오**로 이동하면 프로젝트 폴더가 모두 표시됐다. 같은 폴더인데 접근 경로에 따라 내용이 달랐다.
+
+![수정 전: 데스크탑 › 포트폴리오가 비어 있다](./images/finder-home-tree-openpanel-before.jpg '수정 전. 바탕화면의 포트폴리오를 열면 비어 있음이 표시되고, 사이드바는 데스크탑을 강조한다')
+
+![수정 후: 프로젝트 폴더가 표시된다](./images/finder-home-tree-openpanel-after.jpg '수정 후. 같은 동작으로 문서 › 포트폴리오가 열리고, 사이드바도 문서를 강조한다')
+
+바탕화면의 포트폴리오·이력서·자격증은 실제 폴더가 아니다. macOS의 가상본(alias)처럼 문서 안의 폴더를 가리키는 바로가기다. Finder 트리를 생성하는 코드에서 가상본은 다음과 같이 표현되어 있었다.
+
+```ts
+desktop.children.push({ kind: 'folder', id: `alias:${target}`, name: real.name, aliasOf: target, children: [] });
+```
+
+`kind`는 `'folder'`인데 하위 항목(`children`)은 항상 비어 있고, 원래 폴더 id가 `aliasOf`에 들어 있다. Finder는 폴더를 열 때 이 값을 따라간다.
+
+```ts
+case 'folder':
+	// 바탕화면의 가상본은 원래 폴더로
+	go({ folder: item.aliasOf ?? item.id });
+```
+
+그런데 미리보기의 열기 창은 가상본 항목 자체로 이동했다.
+
+```ts
+if (item.kind === 'folder') go(item.id);
+```
+
+빈 `children`을 렌더링하므로 "비어 있음"이 표시된다. Finder처럼 `item.aliasOf ?? item.id`로 바꾸면 수정된다. 한 줄 변경이다.
+
+## 한 줄 수정으로 충분한가
+
+같은 실수가 다른 곳에도 있을 수 있어서, 가상본을 처리하는 코드를 모두 조사했다.
+
+| 사용 위치                         | 가상본 처리                                          |
+| --------------------------------- | ---------------------------------------------------- |
+| Finder 열기                       | `aliasOf ?? id`                                      |
+| 휴대폰 파일 앱 열기·항목 수       | 직접 확인                                            |
+| 바탕화면 아이콘 열기·위치 저장    | 직접 확인                                            |
+| 끌어서 옮기기, 컴퓨터 파일 올리기 | `resolveAlias`                                       |
+| 편집 종류·휴지통·영구 삭제        | 직접 확인                                            |
+| 찾기, 수정일 계산                 | 건너뜀                                               |
+| 최근 항목, 미리보기 폴더          | 확인 안 함 (빈 children을 순회해 결과는 우연히 맞음) |
+| 열기 창의 파일 모으기             | 건너뜀                                               |
+| **열기 창의 폴더 열기**           | **없음 → 버그**                                      |
+
+12곳이 "가상본이면 `aliasOf`를 따라간다"는 같은 규칙을 **각각 직접 구현**하고 있었다. ==누락하면 오류도 경고도 없이 빈 폴더처럼 동작한다.== 타입상 가상본도 `children`이 있는 정상 폴더라 TypeScript가 검출할 수도 없다. 최근 항목처럼 확인하지 않았는데 우연히 결과가 맞는 곳도 있었다.
+
+git 기록에서 누락 경위를 확인할 수 있다 (한국 시간).
+
+| 시각        | 변경                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------ |
+| 10-19 03:55 | 열기 창이 Finder와 같은 트리를 쓰기 시작. 폴더 열기는 `go(item.id)`                              |
+| 10-19 05:41 | 두 시간 뒤 가상본 도입. Finder·휴대폰·바탕화면·편집 규칙에는 처리를 넣었지만 **열기 창은 누락**  |
+| 10-19 10:40 | 열기 창을 수정하며 파일 수집에는 가상본 건너뛰기를 넣었지만, **같은 파일의 폴더 열기는 또 누락** |
+
+같은 파일 안에서도 한 곳은 수정하고 한 곳은 누락했다. ==개발자가 기억해야 하는 규칙은 이렇게 누락된다.== 그래서 한 줄 수정과 함께 구조를 바꿨다.
+
+![가상본 표현 방식의 전과 후](./images/finder-home-tree-model.svg '위: 폴더의 한 변형이던 가상본을 별도 종류로. 아래: 독립된 최상위 위치 넷을 디스크 하나 아래 트리로')
+
+## 가상본을 별도 종류로 분리
+
+가상본을 폴더의 변형이 아니라 별도 종류로 분리했다. 하위 항목이 없으므로 `children` 필드도 없다.
+
+```ts
+export interface AliasItem extends ItemBase {
+	kind: 'alias';
+	/** 원래 폴더의 id (예: docs:포트폴리오) */
+	target: string;
+}
+```
+
+`FinderItem`은 판별 유니언(discriminated union)이다. 판별 유니언은 여러 객체 타입을 `|`로 묶고, 공통 필드(여기서는 `kind`)의 문자열 값으로 어느 타입인지 구분하는 TypeScript 패턴이다. `if (item.kind === 'alias')` 안에서는 TypeScript가 `item`을 `AliasItem`으로 좁혀서 `item.target`을 읽을 수 있고, `item.children`을 읽으면 컴파일 오류가 난다.
+
+이제 `kind === 'folder'`로 필터링하는 코드에 가상본이 포함되지 않는다. 폴더처럼 다루려면 `resolveAlias`로 원래 폴더를 찾아야 하고, 찾지 않으면 "빈 폴더"가 아니라 폴더가 아닌 항목이 된다. 새 종류의 처리를 누락했을 때 컴파일러가 검출하는 지점도 만들었다([판별 유니언과 `never` 검사](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#exhaustiveness-checking)).
+
+- 목록 보기의 종류 라벨은 `Record<FinderItem['kind'], string>` 타입이라, 새 종류의 라벨이 없으면 컴파일 오류가 난다
+- Finder의 열기 처리는 `switch` 끝에 `never` 검사를 추가했다. 열기 동작을 정의하지 않은 종류가 생기면 컴파일 오류가 난다
+
+```ts
+default: {
+	// 새 종류를 더하면 여기서 컴파일 오류가 난다 (여는 법을 정하게)
+	const unhandled: never = item;
+	return unhandled;
+}
+```
+
+![모든 kind를 처리하면 default의 item은 never, alias를 빠뜨리면 AliasItem이 남아 컴파일 오류](./images/finder-filesystem-exhaustive.svg 'never 변수에 대입할 수 없는 타입이 남으면 tsc가 TS2322 오류를 낸다')
+
+> [!WARNING] 컴파일러가 검출하지 못하는 누락
+> 모든 실수를 컴파일러가 검출하지는 않는다. `if (item.kind === 'folder')`만 쓰고 가상본 처리를 누락하면, 오류 없이 "클릭해도 반응이 없는" 방식으로 실패한다. 그래도 빈 폴더가 정상처럼 표시되던 이전 방식보다는 문제가 바로 드러난다.
+
+12곳을 새 종류에 맞게 수정했다. 화면 쪽 타입만 바뀌고, 서버에 저장하는 구조(`layout.aliases`는 원래 폴더 id 목록)와 API는 그대로다.
+
+## 실제 macOS는 루트가 하나다
+
+다음으로 실제 OS처럼 루트 아래에 폴더가 있는 구조를 검토했다. 실제 macOS의 Finder를 열면 홈 폴더 안에 데스크탑·문서·다운로드가 있고, 사이드바의 즐겨찾기는 그 폴더로 가는 바로가기다(Apple 문서도 사이드바의 문서 항목을 홈 폴더 안 문서 폴더의 가상본으로 설명한다[^alias]). 이 사이트의 Finder는 데스크탑·문서·블로그·응용 프로그램이 **서로 독립된 최상위 항목**이었고, 사이드바는 그 목록을 그대로 렌더링했다.
+
+트리를 macOS와 같은 구조로 바꿨다.
+
+```text
+Macintosh HD
+├─ 사용자 › hyeoniverse
+│  ├─ 공용 · 그림 · 다운로드 · 동영상 · 음악   (빈 폴더, 열면 안내 표시)
+│  ├─ 데스크탑
+│  ├─ 문서 › 이력서 · 포트폴리오(› 프로젝트들) · 자격증
+│  └─ 블로그
+└─ 응용 프로그램
+```
+
+![홈 폴더](./images/finder-home-tree-home.jpg '사이드바에 위치 섹션(hyeoniverse, Macintosh HD)이 추가되고, 경로 막대는 디스크부터 시작한다')
+
+| 항목                   | 변경 후                                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------------------ |
+| 사이드바 즐겨찾기      | 트리 안 폴더로 가는 바로가기. 그 아래 **위치** 섹션에 홈과 디스크 추가                     |
+| 경로 막대              | `Macintosh HD › 사용자 › hyeoniverse › 문서`처럼 디스크부터 시작                           |
+| 사이드바 강조          | "경로에서 가장 안쪽의 사이드바 항목". 문서 › 이력서 안이면 이력서, 홈의 다운로드 안이면 홈 |
+| 블로그                 | macOS에 없는 폴더라 홈 안에 배치                                                           |
+| macOS 기본 폴더        | 표시할 데이터가 없어 비어 있다. 열면 "다운로드한 파일이 없습니다."처럼 폴더별 안내 표시    |
+| 홈 폴더 이름           | GitHub 계정과 같은 `hyeoniverse`                                                           |
+| 열기 창·휴대폰 파일 앱 | 기존처럼 즐겨찾기 목록만 표시                                                              |
+
+### 서버는 변경하지 않았다
+
+관리자가 만든 폴더와 옮긴 파일은 서버에 저장되는데, 그 기록은 `desktop`, `docs`, `docs:포트폴리오`, `projects/<id>` 같은 **폴더 id**로 저장되어 있다. 서버도 이 id 형식을 정규식으로 검사한다.
+
+```ts
+export const FINDER_BUILTIN_PARENT =
+	/^(trash|desktop|docs|docs:(이력서|포트폴리오|자격증)|projects\/[a-z0-9][a-z0-9-]{0,39})$/;
+```
+
+id를 `/Users/hyeoniverse/Documents`처럼 경로로 바꾸면 저장된 데이터를 마이그레이션하고 서버 검사도 수정해야 한다. 그래서 **id는 그대로 두고 그 위에 `mac`·`users`·`home` 노드만 추가했다.** 화면 쪽 트리 생성, 사이드바, 경로 막대, 열기 창, 휴대폰 파일 앱만 바뀐다. 대신 새 기본 폴더와 홈·디스크에는 관리자가 폴더를 만들거나 파일을 놓을 수 없다. 서버 검사 규칙에 포함되지 않은 id이기 때문이다.
+
+최상위 목록에 의존하던 곳은 세 군데였다. Finder의 사이드바·이동 메뉴·좁은 창의 위치 칩, 열기 창의 사이드바와 강조, 휴대폰 파일 앱의 즐겨찾기다. 모두 즐겨찾기 id 목록으로 트리에서 폴더를 찾아 렌더링하도록 바꿨다.
+
+```ts
+export const FAVORITE_IDS = ['desktop', 'docs', 'blog', 'apps'] as const;
+
+/** ids의 폴더들 (트리에 없는 것은 건너뛴다) */
+export const foldersOf = (roots: FinderItem[], ids: readonly string[]): FolderItem[] =>
+	ids.map((id) => find(roots, id)).filter((item): item is FolderItem => item?.kind === 'folder');
+```
+
+### 폴더 문양
+
+macOS의 기본 폴더는 앞면에 음각 문양이 있다. 다운로드는 화살표, 음악은 음표, 응용 프로그램은 A다. 폴더 아이콘은 모든 폴더가 SVG 하나를 공유하고 있어서, 폴더 id별로 앞면 중앙에 진한 파랑 선 문양을 겹쳐 그리게 했다. Macintosh HD는 폴더 대신 디스크 아이콘이다.
+
 ## 확인
+
+### 파일 시스템 편집
 
 <details>
 <summary>계층별 시험 이름</summary>
@@ -161,21 +325,49 @@ macOS에서 바탕화면은 사용자 폴더 안의 "데스크탑" 폴더다. Fi
 
 화면의 편집 규칙은 `finder/edit.ts`(333줄)에 모았다. 이동 가능 여부(`editKind`, `canMove`, `canTrash`)와 놓을 수 있는 위치(`containerKind`)가 모두 순수 함수다.
 
+### 가상본 분리와 단일 루트 트리
+
+- 열기 창에서 데스크탑 › 포트폴리오를 열면 MacFolio 프로젝트 폴더가 표시되는지 확인하는 E2E를 먼저 추가했다. **수정 전 빌드에서 실패**하고 수정 후 통과하는 것을 확인한 뒤 구조를 바꿨다. 시험이 이 버그를 실제로 검출하는지 확인하기 위해서다
+- 홈과 디스크를 탐색하는 E2E를 추가했다. 홈의 폴더 순서, 문서로 이동했을 때의 사이드바 강조와 경로 막대, 다운로드의 안내, 디스크의 응용 프로그램을 확인한다
+- 단위 시험 781개, E2E 566개(데스크톱 Chrome, iPhone, Android)가 통과했다
+
 ## 남은 것과 배운 것
 
 - 휴지통의 R2 파일은 비우기 전까지 서버에 남는다. 관리자가 오래 비우지 않으면 사용하지 않는 파일이 R2에 누적된다. 현재 용량은 작다.
 - 여러 관리자가 동시에 구조를 수정하면 마지막 저장이 적용된다(last write wins). 관리자가 한 명이라 버전 검사는 넣지 않았다.
 - 방문자가 놓은 파일은 새로고침하면 사라진다. 의도한 동작이다. 방문자 파일을 서버에 저장하면 공개 업로드 경로가 생긴다.
 
-배운 것: "이동"을 실제 데이터 이동으로 구현하면 실패 경우가 늘고 이미 공유한 주소가 깨진다. 데이터는 그대로 두고 "표시 위치"만 덮어써 기록하면, 실패해도 데이터가 손실되지 않고 되돌리기도 쉽다. 메모 앱의 정리 내용(`MemoOrganization`)에서 쓴 방법을 Finder에 그대로 적용했다. 같은 문제를 같은 구조로 해결하자 두 앱을 서로 동기화하기도 쉬웠다.
+> [!IMPORTANT] 배운 것
+> "이동"을 실제 데이터 이동으로 구현하면 실패 경우가 늘고 이미 공유한 주소가 깨진다. 데이터는 그대로 두고 "표시 위치"만 덮어써 기록하면, 실패해도 데이터가 손실되지 않고 되돌리기도 쉽다. 메모 앱의 정리 내용(`MemoOrganization`)에서 쓴 방법을 Finder에 그대로 적용했다. 같은 문제를 같은 구조로 해결하자 두 앱을 서로 동기화하기도 쉬웠다.
+
+가상본 구조 개편에서 배운 것:
+
+- 바탕화면의 가상본을 `kind: 'folder'`에 빈 `children`과 `aliasOf`를 붙여 표현하자, 12곳이 "가상본이면 따라간다"는 규칙을 각각 구현해야 했다. 열기 창 한 곳에서 누락되어 빈 폴더가 열렸다
+- 개발자가 기억해야 하는 규칙은 누락된다. 가상본을 `kind: 'alias'`로 분리해 폴더와 섞이지 않게 하고, `Record`와 `never` 검사로 새 종류를 누락하면 컴파일 오류가 나게 했다
+- 독립된 최상위 위치 넷을 macOS처럼 Macintosh HD › 사용자 › 홈 아래 한 트리로 통합하고, 사이드바 즐겨찾기를 그 안 폴더로 가는 바로가기로 바꿨다
+- 서버에 저장된 폴더 id는 그대로 두고 그 위에 노드만 추가해, 서버·API·저장된 데이터는 변경하지 않았다
 
 ## 관련 글
 
 - [openRequest store로 Finder에서 고른 항목을 다른 앱에서 열기](/memo/finder-app)
 - [Cloudflare R2 파일을 Worker가 같은 출처 /files/로 제공하기](/memo/finder-files): R2 업로드와 미리보기 앱
 - [칸 단위 좌표와 포인터 캡처로 구현한 바탕화면 아이콘 선택과 끌기](/memo/desktop-icons): 바탕화면 아이콘의 칸 계산
-- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo): 메모 정리 함수의 위치
-- [가상본을 별도 종류로 분리한 단일 루트 파일 시스템 트리](/memo/finder-home-tree): 이후 Finder 트리 개편
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리): 메모 정리 함수의 위치
+- [180px 칸 격자 좌표로 바탕화면 위젯 배치하기](/memo/desktop-widgets): 이후 홈 › 그림 폴더를 업로드 가능하게 바꾼 작업
+
+<details>
+<summary>참고 문헌</summary>
+
+- Apple, [Mac에서 가상본 생성 및 삭제하기](https://support.apple.com/ko-kr/guide/mac-help/mchlp1046/mac)
+- TypeScript, [Narrowing: Discriminated unions, Exhaustiveness checking](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#discriminated-unions)
+- MDN, [HTTP range requests](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Range_requests), [206 Partial Content](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/206), [416 Range Not Satisfiable](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/416)
+- MDN, [URL.createObjectURL()](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static), [HTML Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API), [Document.elementsFromPoint()](https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint)
+- MDN, [Media fragments](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Media_fragments)
+- Cloudflare, [R2 Workers API reference: get with range](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/)
+
+</details>
+
+[^alias]: Apple 지원 문서 [Mac에서 가상본 생성 및 삭제하기](https://support.apple.com/ko-kr/guide/mac-help/mchlp1046/mac)는 "가상본을 열면 원본이 열립니다"라고 설명하고, Finder 사이드바와 Dock의 항목도 원본으로 연결되는 가상본이라고 적는다. 예로 든 것이 "사이드바에 있는 문서는 홈 폴더 안에 있는 문서 폴더를 열어 줍니다"이다.
 
 [^desktop]: 처음에는 포트폴리오에 업로드하고 위치만 바탕화면으로 기록했다. 본문 "macOS와 같은 휴지통" 절의 문제로 `desktop/…` 키를 추가했다.
 

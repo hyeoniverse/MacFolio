@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>창이 열린 상태와 실행 중인 상태를 나누기</title>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="28" font-size="14" font-weight="700" fill="#1d1d1f">음악 창을 닫았지만 배경 음악은 재생 중인 상태</text>
+<rect x="20" y="44" width="290" height="236" rx="12" fill="#f2f2f7"/>
+<text x="36" y="68" font-size="13" font-weight="700" fill="#ff3b30">수정 전: 값 하나</text>
+<rect x="36" y="82" width="258" height="40" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="48" y="107" font-size="12" fill="#1d1d1f">isRunning = 창이 열려 있는가 → false</text>
+<text x="36" y="150" font-size="12" fill="#1d1d1f">Dock 실행 표시: 없음</text>
+<text x="36" y="170" font-size="12" fill="#1d1d1f">실제: 음악이 재생 중</text>
+<text x="36" y="200" font-size="12" fill="#ff3b30">재생 중인데 실행 표시가 없다</text>
+<rect x="330" y="44" width="290" height="236" rx="12" fill="#f2f2f7"/>
+<text x="346" y="68" font-size="13" font-weight="700" fill="#34c759">수정 후: 값 둘</text>
+<rect x="346" y="82" width="258" height="40" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="358" y="107" font-size="12" fill="#1d1d1f">창이 열려 있는가 → false</text>
+<rect x="346" y="130" width="258" height="40" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="358" y="155" font-size="12" fill="#1d1d1f">앱이 실행 중인가 → true (재생 중)</text>
+<text x="346" y="200" font-size="12" fill="#1d1d1f">Dock 실행 표시: 있음</text>
+<circle cx="378" cy="252" r="3" fill="#1d1d1f"/>
+<text x="390" y="256" font-size="12" fill="#6e6e73">아이콘 아래 점이 실행 표시</text>
+</svg>

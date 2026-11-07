@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>OAuth state 쿠키가 돌아오지 않아 400이 나는 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<rect x="30" y="16" width="140" height="36" rx="8" fill="#f2f2f7"/>
+<text x="100" y="39" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">브라우저</text>
+<rect x="250" y="16" width="160" height="36" rx="8" fill="#f2f2f7"/>
+<text x="330" y="33" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">API 컨테이너</text>
+<text x="330" y="47" font-size="12" fill="#6e6e73" text-anchor="middle">localhost:4000 (http)</text>
+<rect x="490" y="16" width="130" height="36" rx="8" fill="#f2f2f7"/>
+<text x="555" y="39" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">GitHub</text>
+<line x1="100" y1="52" x2="100" y2="366" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="330" y1="52" x2="330" y2="366" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="555" y1="52" x2="555" y2="366" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="100" y1="84" x2="326" y2="84" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="112" y="77" font-size="12" fill="#1d1d1f">① GET /auth/github</text>
+<line x1="330" y1="126" x2="104" y2="126" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="112" y="110" font-size="12" fill="#1d1d1f">② 302 + Set-Cookie: state=x7f…;</text>
+<text x="112" y="146" font-size="12" fill="#ff3b30">HttpOnly; SameSite=Lax; Secure</text>
+<text x="342" y="122" font-size="12" fill="#6e6e73">NODE_ENV=production이라</text>
+<text x="342" y="138" font-size="12" fill="#6e6e73">Secure 속성을 붙인다</text>
+<line x1="100" y1="180" x2="551" y2="180" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="112" y="173" font-size="12" fill="#1d1d1f">③ GitHub 로그인 화면 (state=x7f… 포함)</text>
+<line x1="555" y1="222" x2="104" y2="222" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="360" y="215" font-size="12" fill="#1d1d1f">④ 승인 후 callback으로 이동</text>
+<line x1="100" y1="268" x2="326" y2="268" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="112" y="250" font-size="12" fill="#1d1d1f">⑤ GET /auth/github/callback</text>
+<text x="112" y="262" font-size="12" fill="#1d1d1f">?code=…&amp;state=x7f…</text>
+<text x="112" y="288" font-size="12" fill="#ff3b30">Cookie: (state 없음)</text>
+<line x1="330" y1="326" x2="104" y2="326" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="112" y="318" font-size="12" fill="#ff3b30">⑥ 400 로그인 요청이 올바르지 않습니다.</text>
+<rect x="342" y="252" width="200" height="58" rx="8" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="352" y="272" font-size="12" fill="#1d1d1f">주소의 state와 쿠키의 state를</text>
+<text x="352" y="288" font-size="12" fill="#1d1d1f">비교해야 하는데 쿠키가 없어</text>
+<text x="352" y="304" font-size="12" fill="#1d1d1f">비교에 실패한다</text>
+<text x="20" y="360" font-size="12" fill="#6e6e73">http 주소에는 Secure 쿠키가 다시 전송되지 않을 수 있다</text>
+</svg>

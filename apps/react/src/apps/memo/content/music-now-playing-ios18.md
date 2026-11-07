@@ -11,6 +11,24 @@ summary: 휴대폰 음악 앱의 지금 재생 중을 iOS 18 음악 앱의 구�
 
 ![왼쪽부터 이전 지금 재생 중, 새 표지 화면, 새 대기열 화면, 새 ••• 메뉴](./images/music-now-playing-ios18-compare.jpg '왼쪽부터 이전 화면, 새 표지 화면, 대기열 화면, ••• 메뉴. iPhone 13 크기(390×664)에서 Playwright로 캡처')
 
+## 배경
+
+### 지금 재생 중 화면
+
+iPhone의 음악 앱에서 화면 아래의 미니 플레이어(재생 중인 곡 한 줄)를 누르면 '지금 재생 중(Now Playing)' 화면이 아래에서 올라온다. 이 화면은 화면 전체를 덮는 시트(sheet)로, 큰 앨범 표지, 곡 제목과 아티스트, 재생 위치 막대, 이전·재생·다음 버튼, 음량 막대를 위에서 아래로 배치한다. 시트를 아래로 쓸어내리면 닫히고 원래 보던 보관함 화면으로 돌아간다. MacFolio의 휴대폰 화면에도 같은 역할의 화면이 있었지만, 구성은 iOS와 달랐다.
+
+### 브라우저의 자동 재생 제한
+
+웹 페이지는 `<audio>`나 `<video>` 요소의 `play()` 메서드로 소리를 재생한다. 그런데 방문자가 아무것도 누르지 않았는데 페이지를 열자마자 소리가 나면 불편하므로, 브라우저는 소리가 있는 미디어의 자동 재생을 제한한다. 사용자가 페이지를 누르거나 키를 입력하는 동작을 사용자 제스처(user gesture)라고 하고, 브라우저는 대체로 "제스처를 처리하는 중에 호출한 `play()`"만 허용한다. 허용하지 않은 `play()`는 `NotAllowedError`로 거절된다[^webkit].
+
+| 상황                                                | 결과 (iPhone Safari)             |
+| --------------------------------------------------- | -------------------------------- |
+| 버튼의 `click` 처리기 안에서 `play()`               | 재생                             |
+| 페이지를 연 직후 스크립트가 `play()`                | `NotAllowedError`로 거절         |
+| `click` 처리기에서 `setTimeout`으로 3초 뒤 `play()` | 거절 (제스처 처리가 이미 끝났다) |
+
+규칙의 세부는 브라우저마다 다르다. Chrome은 사이트 단위로 판단해, 사용자가 한 번 페이지와 상호작용하면 그 뒤로는 다른 미디어 요소도 재생할 수 있다. iPhone Safari의 브라우저 엔진인 WebKit은 **요소 단위**로 판단한다. 이 차이가 아래 "휴대폰에서 배경 음악이 재생되지 않던 원인"의 핵심이다.
+
 ## iOS 구성과 이 앱의 기능 대응
 
 iOS 화면의 요소를 하나씩 이 앱의 기능과 대응시켰다. 이 앱에 없는 기능(가사, AirPlay, 즐겨찾기, 스테이션, 크레딧, 제안 줄이기)은 버튼을 만들지 않았다. 누르면 아무 일도 하지 않는 버튼은 실제 기능이 있는 것처럼 보이게 하기 때문이다.
@@ -28,6 +46,10 @@ iOS 화면의 요소를 하나씩 이 앱의 기능과 대응시켰다. 이 앱�
 | ••• 메뉴: 추가·즐겨찾기·공유, 이동 등 | 없음                                 | 플레이리스트·앨범·아티스트로 이동 (보관함의 그 목록 화면을 연다)                                   |
 | 앨범 색 배경                          | 표지를 `blur(40px) brightness(0.55)` | `blur(60px) saturate(1.6)`에 아래로 어두워지는 스크림                                              |
 
+표의 `cqw`·`cqh`는 [컨테이너 쿼리 단위](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries#container_query_length_units)다. `container-type: size`를 지정한 조상 요소(컨테이너)의 너비와 높이의 1%를 각각 1cqw, 1cqh로 쓴다. 표지 칸이 가로 342px, 세로 300px이면 `min(100cqw, 100cqh)`는 `min(342px, 300px)` = 300px이 되어, 표지가 칸을 넘지 않는 가장 큰 정사각형이 된다. 화면 높이 `vh`를 기준으로 하면 위아래 버튼이 차지하는 높이를 따로 빼야 하지만, 컨테이너 단위는 실제로 남은 칸의 크기를 그대로 쓴다.
+
+스크림(scrim)은 배경 위에 겹쳐 글자 대비를 높이는 반투명한 어두운 층이다. 표지를 흐리게 한 배경은 곡마다 밝기가 달라, 밝은 표지에서는 흰 글자가 잘 보이지 않는다. 아래로 갈수록 어두워지는 스크림을 겹쳐 버튼과 막대가 있는 아래쪽의 대비를 확보했다.
+
 공유는 넣지 않았다. 메모 글(`/memo/<글>`)과 Safari 프로젝트(`/safari/<프로젝트>`)에는 앱 주소가 있지만 음악에는 없어서, 공유할 주소가 사이트 첫 화면뿐이다. 곡 주소를 만들려면 Cloudflare Worker의 404 판정과 검색 엔진용 HTML까지 함께 바꿔야 하므로 별도 작업으로 남겼다([History API로 SPA 창 상태를 /memo·/safari 주소와 연결하기](/memo/app-links)).
 
 <details>
@@ -39,7 +61,7 @@ iOS 화면의 요소를 하나씩 이 앱의 기능과 대응시켰다. 이 앱�
 
 ## 표지가 썸네일로 줄어드는 움직임
 
-대기열 버튼을 누르면 큰 표지가 제목 옆 64px 썸네일로 옮겨 간다. 표지·제목·••• 버튼은 한 그리드 안에 있고, 두 화면은 `grid-template-areas`만 다르다.
+대기열 버튼을 누르면 큰 표지가 제목 옆 64px 썸네일로 옮겨 간다. 표지·제목·••• 버튼은 한 그리드 안에 있고, 두 화면은 [`grid-template-areas`](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-areas)만 다르다. `grid-template-areas`는 격자의 칸에 이름을 붙여 배치를 문자열로 그리는 속성이다. 따옴표 하나가 한 줄이고, 같은 이름을 여러 칸에 쓰면 그 요소가 그 칸들을 모두 차지한다.
 
 ```css
 .music-now-top {
@@ -56,7 +78,11 @@ iOS 화면의 요소를 하나씩 이 앱의 기능과 대응시켰다. 이 앱�
 }
 ```
 
-레이아웃이 바뀌는 속성은 CSS 전환(transition)으로 보간되지 않으므로 [FLIP](https://aerotwist.com/blog/flip-your-animations/) 방식을 썼다. 버튼을 누른 시각에 표지의 위치(`getBoundingClientRect`)를 기록하고, 새 레이아웃이 그려진 직후(`useLayoutEffect`) 새 위치를 재서, 옛 위치에서 출발하는 `transform`을 [Web Animations API](https://developer.mozilla.org/ko/docs/Web/API/Web_Animations_API)로 재생한다. 표지는 두 화면 모두 정사각형이라 `scale` 하나로 크기 차이를 맞출 수 있다. 움직임 줄이기 설정이 켜져 있으면 애니메이션을 건너뛴다.
+![표지 화면은 art가 첫 줄 세 칸을 모두 차지하고, 대기열 화면은 art가 첫 줄 첫 칸만 차지하며 아래에 modes와 list 줄이 생긴다](./images/music-now-playing-ios18-areas.svg '같은 요소에 queue-open 클래스만 붙여 배치를 바꾼다')
+
+표지 화면의 첫 줄 `'art art art'`는 표지가 세 칸을 모두 차지한다는 뜻이고, 대기열 화면의 `'art info more'`는 표지가 첫 칸만 차지하고 그 옆에 제목과 ••• 버튼이 온다는 뜻이다.
+
+레이아웃이 바뀌는 속성은 CSS 전환(transition)으로 보간되지 않으므로 [FLIP](https://aerotwist.com/blog/flip-your-animations/) 방식을 썼다. FLIP은 바뀌기 전 위치(First)와 바뀐 뒤 위치(Last)를 측정하고, 그 차이만큼 요소를 옛 자리로 되돌려 그린 뒤(Invert) 차이를 0까지 줄이는 애니메이션을 재생(Play)하는 기법이다. 버튼을 누른 시각에 표지의 위치(`getBoundingClientRect`)를 기록하고, 새 레이아웃이 그려진 직후(`useLayoutEffect`) 새 위치를 재서, 옛 위치에서 출발하는 `transform`을 [Web Animations API](https://developer.mozilla.org/ko/docs/Web/API/Web_Animations_API)로 재생한다. 표지는 두 화면 모두 정사각형이라 `scale` 하나로 크기 차이를 맞출 수 있다. 예를 들어 300px 표지가 64px 썸네일이 되면 애니메이션은 `scale(300 / 64)` ≈ `scale(4.69)`에서 출발해 `scale(1)`로 끝난다. 움직임 줄이기 설정이 켜져 있으면 애니메이션을 건너뛴다.
 
 ## 쓸어내려 닫기
 
@@ -71,22 +97,39 @@ iOS의 지금 재생 중에는 뒤로 가기 버튼이 없고, 시트를 아래�
 | 손잡이 누르기, Enter, Esc         | 닫힌다. 손잡이는 보이는 막대를 감싼 `<button aria-label="지금 재생 중 닫기">`이다                                        |
 | 움직임 줄이기 설정                | 따라 내려오지 않고, 기준을 넘기면 닫히기만 한다                                                                          |
 
-거리·속도 판단은 React와 분리해 `swipe.ts`에 두고 단위 시험으로 확인했다. 쓸기를 시작하는 영역은 손잡이와 표지·제목 머리로 정했다. 진행 막대·음량 막대·••• 버튼·셔플·반복 버튼은 각자 누르기나 끌기 동작이 있어 제외했다. 다음 재생 목록도 제외했다. iOS는 목록이 맨 위로 스크롤된 상태에서 아래로 끌면 시트가 내려오지만, 브라우저는 세로 스크롤이 시작되면 그 손가락의 포인터 이벤트를 `pointercancel`로 끊는다. 목록에서도 시트를 끌려면 터치 이벤트에서 스크롤을 직접 막아야 해서, 이번에는 목록을 스크롤 전용으로 두었다.
+거리·속도 판단은 React와 분리해 `swipe.ts`에 두고 단위 시험으로 확인했다(`CLOSE_DISTANCE = 120`, `FLICK_VELOCITY = 0.5`, `FLICK_MIN_DISTANCE = 16`, `VELOCITY_WINDOW = 100`). 두 기준을 같이 두는 이유는 다음 예에서 드러난다.
 
-셸에는 "화면 어디서든 아래로 쓸면 제어 센터가 내려온다"는 동작(`useVerticalSwipe`)이 있다. 쓸기 영역에 `data-swipe-ignore`를 붙여 시트를 끄는 손가락이 제어 센터를 열지 않게 했다. 표지 이미지는 `draggable={false}`로 두었다. 브라우저의 이미지 끌어 옮기기가 시작되면 포인터 이벤트가 끊기기 때문이다.
+| 손가락 움직임                        | 거리  | 놓기 직전 100ms 속도 | 결과               |
+| ------------------------------------ | ----- | -------------------- | ------------------ |
+| 천천히 150px 끌어내림                | 150px | 0.2px/ms             | 닫힘 (거리 기준)   |
+| 60px만 빠르게 튕김                   | 60px  | 0.9px/ms             | 닫힘 (속도 기준)   |
+| 60px를 천천히 끌다 놓음              | 60px  | 0.1px/ms             | 제자리             |
+| 10px만 빠르게 튕김 (누르다 미끄러짐) | 10px  | 0.8px/ms             | 제자리 (16px 이하) |
+
+쓸기를 시작하는 영역은 손잡이와 표지·제목 머리로 정했다. 진행 막대·음량 막대·••• 버튼·셔플·반복 버튼은 각자 누르기나 끌기 동작이 있어 제외했다. 다음 재생 목록도 제외했다. iOS는 목록이 맨 위로 스크롤된 상태에서 아래로 끌면 시트가 내려오지만, 브라우저는 세로 스크롤이 시작되면 그 손가락의 포인터 이벤트를 `pointercancel`로 끊는다. 목록에서도 시트를 끌려면 터치 이벤트에서 스크롤을 직접 막아야 해서, 이번에는 목록을 스크롤 전용으로 두었다.
+
+셸에는 "화면 어디서든 아래로 쓸면 제어 센터가 내려온다"는 동작(`useVerticalSwipe`)이 있다. 쓸기 영역에 `data-swipe-ignore`를 붙여 시트를 끄는 손가락이 제어 센터를 열지 않게 했다. 표지 이미지는 `draggable={false}`로 두었다. 브라우저의 이미지 끌어 옮기기(이미지를 다른 창이나 바탕화면으로 끌어 저장하는 기본 동작)가 시작되면 포인터 이벤트가 끊기기 때문이다.
 
 ## 아이콘의 보이는 끝 맞추기
 
 진행 막대·음량 막대·••• 버튼의 오른쪽 끝은 같은 x좌표(390px 화면에서 366px)에 있었지만, 대기열 아이콘의 보이는 끝은 319px로 47px 안쪽에 있었다. 아래 줄을 가사·AirPlay·대기열 세 칸으로 나누고 셋째 칸 가운데에 버튼을 두었기 때문이다. 다음 재생 목록의 ≡ 손잡이도 44px 버튼 가운데에 있어 13px 안쪽이었다.
 
-Font Awesome 6의 글리프 상자는 1.25em이고, 그림은 그 안에서 좌우에 여백을 두고 그려진다. `fa-list-ul`은 좌우 2/15em, `fa-bars`는 0.1875em이다. 그래서 상자의 끝을 맞춰도 보이는 끝은 맞지 않는다. 버튼 상자를 글리프 상자와 같게 두고 그림의 여백만큼 오른쪽으로 내보냈고, 44px 누르는 영역과 켜졌을 때의 원은 의사 요소로 그 둘레에 그렸다. E2E 시험은 상자 좌표 대신 화면을 캡처해 밝은 픽셀의 오른쪽 끝을 찾고, 진행 막대 끝과 1px 이내인지 확인한다.
+아이콘은 [Font Awesome](https://docs.fontawesome.com/) 6 글꼴로 그린다. 아이콘 글꼴은 글자 하나(글리프)에 그림 하나를 대응시키고, 글자처럼 `font-size`로 크기를 정한다. Font Awesome 6의 글리프 상자는 너비 1.25em이고, 그림은 그 안에서 좌우에 여백을 두고 그려진다. `fa-list-ul`은 좌우 2/15em, `fa-bars`는 0.1875em이다. 그래서 상자의 끝을 맞춰도 보이는 끝은 맞지 않는다.
+
+![글리프 상자의 오른쪽 끝을 진행 막대 끝에 맞추면 그림은 2.67px 안쪽에서 끝나고, 상자를 여백만큼 오른쪽으로 내보내면 그림의 끝이 진행 막대 끝과 일치한다](./images/music-now-playing-ios18-glyph.svg '글자 크기 20px(--text-title3)에서 fa-list-ul의 상자와 그림. 너비는 10배로 확대했다')
+
+이 화면의 아이콘 글자 크기는 20px(`--text-title3`)이다. 계산하면 글리프 상자는 1.25 × 20 = 25px, `fa-list-ul`의 오른쪽 여백은 20 × 2 / 15 ≈ 2.67px, `fa-bars`의 여백은 20 × 0.1875 = 3.75px이다. 버튼 상자를 글리프 상자와 같게 두고 `margin-right: calc(var(--text-title3) * -2 / 15)`로 그림의 여백만큼 오른쪽으로 내보냈다. 44px 누르는 영역과 켜졌을 때의 원은 의사 요소(`::after`)로 그 둘레에 그렸다. 의사 요소는 HTML에 없는 상자를 CSS로 덧붙이는 기능이라, 보이는 아이콘의 위치를 건드리지 않고 누르는 영역만 넓힐 수 있다.
+
+E2E 시험은 상자 좌표 대신 화면을 캡처해 밝은 픽셀의 오른쪽 끝을 찾고, 진행 막대 끝과 1px 이내인지 확인한다. 상자 좌표(`getBoundingClientRect`)는 글리프 상자의 끝을 돌려주므로, 그림의 여백 때문에 생기는 2.67px 차이를 잡지 못한다.
 
 ## 다음 재생 목록의 순서 바꾸기
 
-대기열은 `packages/desktop-core`의 플레이어 store가 관리한다([결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music)). 여기에 두 동작을 추가했다.
+대기열은 `packages/desktop-core`의 플레이어 store가 관리한다([결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store)). 여기에 두 동작을 추가했다.
 
-- `jumpTo(trackId)`: 목록의 곡을 누르면 대기열 순서는 그대로 두고 그 위치로 건너뛴다. 이전에는 `playFrom`으로 대기열을 처음부터 다시 만들었다
-- `moveUpcoming(from, to)`: '다음 재생' 목록(지금 곡 다음부터, 끝에 닿으면 처음부터 지금 곡 앞까지)에서 한 곡을 옮긴다. 결과 대기열은 지금 곡을 맨 앞(position 0)에 두고 바뀐 순서로 잇는다
+| 동작                     | 내용                                                                                                                                                            | 예 (대기열 A, B, C, D, E에서 지금 C 재생)              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `jumpTo(trackId)`        | 목록의 곡을 누르면 대기열 순서는 그대로 두고 그 위치로 건너뛴다. 이전에는 `playFrom`으로 대기열을 처음부터 다시 만들었다                                        | E를 누르면 순서 A~E 유지, 재생 위치만 E                |
+| `moveUpcoming(from, to)` | '다음 재생' 목록(지금 곡 다음부터, 끝에 닿으면 처음부터 지금 곡 앞까지)에서 한 곡을 옮긴다. 결과 대기열은 지금 곡을 맨 앞(position 0)에 두고 바뀐 순서로 잇는다 | 다음 재생 D, E, A, B에서 A를 맨 앞으로 → C, A, D, E, B |
 
 ≡ 손잡이는 설정 앱의 프로젝트 순서와 같은 `startPointerReorder`를 쓰고, ↑·↓ 키로도 옮길 수 있다.
 
@@ -94,14 +137,16 @@ Font Awesome 6의 글리프 상자는 1.25em이고, 그림은 그 안에서 좌�
 
 데스크톱은 로딩 화면을 누르고 진행 막대가 차면(약 2.5초 뒤) `startMusic` 이벤트로 배경 음악을 재생한다. 그런데 이 이벤트를 받는 코드에 `if (!isMobileViewport(getViewport())) play();` 조건이 있어 휴대폰에서는 재생하지 않았다. 2024년 첫 코드부터 있던 조건이고 이유는 기록되어 있지 않다.
 
-조건만 지우면 iPhone Safari에서는 여전히 재생되지 않는다. WebKit은 소리가 있는 미디어를 **요소마다** 사용자 제스처(탭·클릭) 처리 중에 처음 `play()`해야 재생을 허용하고, 한 번 허용된 요소는 그 뒤로 제스처 없이 `play()`해도 재생한다[^webkit]. 배경 음악의 `play()`는 탭 처리가 끝나고 2.5초 뒤에 호출되므로 거절된다.
+조건만 지우면 iPhone Safari에서는 여전히 재생되지 않는다. WebKit은 소리가 있는 미디어를 ==요소마다== 사용자 제스처(탭·클릭) 처리 중에 처음 `play()`해야 재생을 허용하고, 한 번 허용된 요소는 그 뒤로 제스처 없이 `play()`해도 재생한다[^webkit]. 배경 음악의 `play()`는 탭 처리가 끝나고 2.5초 뒤에 호출되므로 거절된다.
+
+![조건만 지운 경우 2.5초 뒤의 play()가 NotAllowedError로 거절되고, 이후에는 탭 처리 중에 play()와 pause()로 요소를 허용받아 2.5초 뒤의 play()가 재생된다](./images/music-now-playing-ios18-unlock.svg '파란 구간이 탭 처리 중. 같은 audio 요소가 이 구간에 한 번 play()를 호출하면 이후 호출도 허용된다')
 
 | 시각                     | 이전                                    | 이후                                                     |
 | ------------------------ | --------------------------------------- | -------------------------------------------------------- |
 | 로딩 화면 탭 (제스처 중) | 시작음 재생, 배경 음악 요소는 아직 없음 | 시작음 재생, 배경 음악 요소에 `play()` 후 바로 `pause()` |
 | 약 2.5초 뒤 `startMusic` | 휴대폰은 조건문으로 건너뜀              | `play()` 호출. 이미 허용된 요소라 재생된다               |
 
-탭 처리 안에서 허용받으려면 그 시각에 배경 음악 요소가 있어야 한다. 그런데 바탕화면(휴대폰은 홈 화면)은 첫 방문 성능을 위해 로딩 화면을 누른 뒤에 렌더링하고([글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)), 음악 상태(`MusicProvider`)와 `<audio>`도 그 안에 있었다. 그래서 audio 요소를 React 밖의 모듈(`apps/music/musicAudio.ts`)에서 하나만 만들고, 로딩 화면과 `MusicProvider`가 같은 요소를 쓰게 했다. 이벤트 처리기는 JSX 속성 대신 `addEventListener`로 연결한다.
+탭 처리 안에서 허용받으려면 그 시각에 배경 음악 요소가 있어야 한다. 그런데 바탕화면(휴대폰은 홈 화면)은 첫 방문 성능을 위해 로딩 화면을 누른 뒤에 렌더링하고([Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet)), 음악 상태(`MusicProvider`)와 `<audio>`도 그 안에 있었다. ==React가 그리는 `<audio>`는 탭 시각에 아직 존재하지 않았다==. 그래서 audio 요소를 React 밖의 모듈(`apps/music/musicAudio.ts`)에서 하나만 만들고, 로딩 화면과 `MusicProvider`가 같은 요소를 쓰게 했다. 이벤트 처리기는 JSX 속성 대신 `addEventListener`로 연결한다.
 
 ```ts
 /** 탭·클릭 처리 중에 동기적으로 부른다 (await·setTimeout 뒤면 제스처가 지나 허용되지 않는다) */
@@ -113,7 +158,7 @@ export function unlockMusicAudio() {
 }
 ```
 
-`play()` 직후 `pause()`하므로 데이터가 도착하기 전에 멈춰 소리가 나지 않는다. 이때 `play()`의 약속은 `AbortError`로 거절되지만 허용 여부와는 관계없다.
+`play()` 직후 `pause()`하므로 데이터가 도착하기 전에 멈춰 소리가 나지 않는다. 이때 `play()`의 약속(Promise)은 `AbortError`로 거절되지만 허용 여부와는 관계없다. `musicAudio()`가 만드는 요소는 `preload = 'none'`이라, 로딩 화면을 누르기 전에는 곡 파일을 내려받지 않는다.
 
 <details>
 <summary>스크립트를 내려받기 전에 첫 화면을 누른 경우</summary>
@@ -124,7 +169,7 @@ export function unlockMusicAudio() {
 
 ### 시험에서 WebKit의 규칙 흉내 내기
 
-Playwright의 모바일 프로젝트(iPhone 13, Pixel 7)는 Chromium으로 실행되고, 시험용 Chromium은 사용자 제스처 없이도 소리 재생을 허용한다. 조건문만 지워도 시험은 통과하므로, 시험이 iPhone의 실패를 재현하도록 `HTMLMediaElement.prototype.play`를 바꿔 WebKit의 규칙을 흉내 냈다.
+Playwright의 모바일 프로젝트(iPhone 13, Pixel 7)는 Chromium으로 실행되고, 시험용 Chromium은 사용자 제스처 없이도 소리 재생을 허용한다. 조건문만 지워도 시험은 통과하므로, 시험이 iPhone의 실패를 재현하도록 `HTMLMediaElement.prototype.play`를 바꿔 WebKit의 규칙을 흉내 냈다. 아래 코드는 제스처 이벤트가 발생한 같은 작업(task) 안에서 `play()`를 부른 요소만 `WeakSet`에 기록하고, 기록되지 않은 요소의 `play()`는 거절한다. `setTimeout(…, 0)`으로 다음 작업에서 `gesture`를 끄므로, 탭 처리 뒤 2.5초가 지나 호출한 `play()`는 제스처 밖으로 판단된다.
 
 ```ts
 const allowed = new WeakSet<HTMLMediaElement>();
@@ -147,14 +192,32 @@ HTMLMediaElement.prototype.play = function () {
 
 이 규칙에서 `unlockMusicAudio()` 호출을 주석 처리하면 "로딩 화면을 탭하면 배경 음악이 재생된다" 시험이 실패하고, 되돌리면 통과하는 것을 확인했다. 흉내일 뿐이므로 실제 iPhone Safari에서도 따로 확인한다.
 
+> [!NOTE] 시험을 실패시켜 보는 이유
+> 고친 코드를 지웠을 때 실패하지 않는 시험은 그 수정을 지키지 못한다. 처음 시험은 조건문만 지워도 통과했으므로, 시험 환경이 실제 기기의 제약을 재현하는지부터 확인했다.
+
 ## 관련 글
 
 - [isRunning 정의와 React key·ref 함수 동일성이 일으킨 음악 앱 버그](/memo/music-player-fixes): 이전 지금 재생 중 시트와 배경 음악의 실행 상태
-- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-music): 이 글의 대기열 동작을 추가한 플레이어 store
+- [결과 값을 돌려주는 store로 재생 대기열과 audio 요소 제어 분리하기](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store): 이 글의 대기열 동작을 추가한 플레이어 store
 - [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style): 휴대폰 음악 보관함의 이전 구성
 - [iOS Safari의 filter 합성 레이어에서 빠지는 border-radius 클리핑과 clip-path](/memo/music-widget-ios-corners): 같은 표지 블러 배경의 Safari 문제
-- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
+- [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 로딩 화면을 누른 뒤에 바탕화면을 그리게 된 배경
 
 [^webkit]: WebKit 블로그 [New `<video>` Policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/), MDN [자동 재생 가이드](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)
+
+<details>
+<summary>참고 문헌</summary>
+
+- WebKit, [New `<video>` Policies for iOS](https://webkit.org/blog/6784/new-video-policies-for-ios/)
+- MDN, [Autoplay guide for media and Web Audio APIs](https://developer.mozilla.org/en-US/docs/Web/Media/Guides/Autoplay)
+- MDN, [HTMLMediaElement.play()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play)
+- Chrome for Developers, [Autoplay policy in Chrome](https://developer.chrome.com/blog/autoplay)
+- MDN, [grid-template-areas](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-areas)
+- MDN, [Container query length units](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_size_and_style_queries#container_query_length_units)
+- MDN, [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API)
+- Paul Lewis, [FLIP Your Animations](https://aerotwist.com/blog/flip-your-animations/)
+- Font Awesome, [Font Awesome Docs](https://docs.fontawesome.com/)
+
+</details>
 
 #MacFolio #프론트엔드 #iOS #Safari #React

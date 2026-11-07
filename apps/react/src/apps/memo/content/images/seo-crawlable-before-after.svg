@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>수정 전에는 모든 주소에 같은 빈 HTML이 응답되고, 수정 후에는 주소마다 제목과 본문이 들어간 HTML이 응답된다</title>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">스크립트를 실행하지 않는 수집기가 받는 HTML</text>
+
+<text x="20" y="62" font-size="14" font-weight="700" fill="#6e6e73">수정 전: 모든 주소가 같은 응답</text>
+<g font-size="12">
+<rect x="20" y="74" width="290" height="22" rx="5" fill="#f2f2f7"/><text x="30" y="89" fill="#1d1d1f">GET /memo/db-backup</text>
+<rect x="20" y="100" width="290" height="22" rx="5" fill="#f2f2f7"/><text x="30" y="115" fill="#1d1d1f">GET /safari/&lt;프로젝트&gt;</text>
+</g>
+<rect x="20" y="132" width="290" height="132" rx="8" fill="#ffffff" stroke="#c7c7cc"/>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="32" y="154">&lt;title&gt;김정현의 Mac&lt;/title&gt;</text>
+<text x="32" y="174" fill="#6e6e73">&lt;meta name="description" …&gt;</text>
+<text x="32" y="194" fill="#6e6e73">…</text>
+<text x="32" y="222" fill="#ff3b30">&lt;div id="root"&gt;&lt;/div&gt;</text>
+</g>
+<text x="32" y="250" font-size="12" fill="#ff3b30">본문 없음, 제목은 모든 주소에서 같다</text>
+<rect x="20" y="276" width="290" height="48" rx="8" fill="#fff1f0"/>
+<text x="32" y="296" font-size="12" fill="#1d1d1f">링크 미리보기: "김정현의 Mac"</text>
+<text x="32" y="314" font-size="12" fill="#1d1d1f">검색 색인: 텍스트 없는 페이지</text>
+
+<text x="330" y="62" font-size="14" font-weight="700" fill="#0a84ff">수정 후: Worker가 주소별로 채운 응답</text>
+<g font-size="12">
+<rect x="330" y="74" width="290" height="22" rx="5" fill="#e5f1ff"/><text x="340" y="89" fill="#1d1d1f">GET /memo/db-backup</text>
+</g>
+<rect x="330" y="104" width="290" height="160" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="342" y="126">&lt;title&gt;pg_dump와 R2로 하는…&lt;/title&gt;</text>
+<text x="342" y="146">&lt;meta name="description" 글 요약&gt;</text>
+<text x="342" y="166">&lt;link rel="canonical" …&gt;</text>
+<text x="342" y="186">&lt;meta property="og:title" …&gt;</text>
+<text x="342" y="206">&lt;script type="application/ld+json"&gt;</text>
+<text x="342" y="232" fill="#0a84ff">&lt;div id="root"&gt;</text>
+<text x="354" y="250" fill="#0a84ff">&lt;div class="seo-content"&gt;본문…</text>
+</g>
+<rect x="330" y="276" width="290" height="48" rx="8" fill="#e8f8ec"/>
+<text x="342" y="296" font-size="12" fill="#1d1d1f">링크 미리보기: 글 제목·요약·이미지</text>
+<text x="342" y="314" font-size="12" fill="#1d1d1f">검색 색인: 제목과 본문 텍스트</text>
+</svg>

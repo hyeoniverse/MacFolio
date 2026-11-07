@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>폴더 구조 글에 __proto__/ 줄과 그 아래 polluted 줄이 있으면, 트리를 만드는 반복문이 dir['__proto__']로 Object.prototype에 들어가 polluted 키를 기록한다. 그 뒤로는 모든 일반 객체가 polluted 값을 가진다. 수정 후에는 위험한 이름과 그 하위 줄을 건너뛴다</title>
+<defs>
+<marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#1d1d1f"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+</defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">이름을 객체 키로 쓰는 반복문과 <tspan font-family="ui-monospace, Menlo, monospace">__proto__</tspan></text>
+<rect x="24" y="52" width="196" height="114" rx="8" fill="#f2f2f7"/>
+<text x="36" y="72" font-size="12" fill="#6e6e73">입력: 폴더 구조 글</text>
+<text x="36" y="94" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">a/</text>
+<text x="36" y="112" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">├── __proto__/</text>
+<text x="36" y="130" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">│   └── polluted # x</text>
+<text x="36" y="148" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">└── ok.txt</text>
+<path d="M220 100 H256" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#k)"/>
+<rect x="258" y="52" width="358" height="96" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="270" y="72" font-size="12" fill="#6e6e73">수정 전 반복문</text>
+<text x="270" y="94" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">at = dir['__proto__']</text>
+<text x="452" y="94" font-size="12" fill="#ff3b30">→ Object.prototype</text>
+<text x="270" y="116" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">at['polluted'] = 'x'</text>
+<text x="270" y="136" font-size="12" fill="#6e6e73">새 폴더 객체가 아니라 모든 객체의 원형에 기록</text>
+<path d="M437 148 V176" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<rect x="258" y="178" width="358" height="52" rx="8" fill="#ff3b30" fill-opacity="0.08" stroke="#ff3b30"/>
+<text x="270" y="200" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">({}).polluted === 'x'</text>
+<text x="270" y="219" font-size="12" fill="#ff3b30">원형을 공유하는 모든 일반 객체가 polluted 값을 갖는다</text>
+<line x1="24" y1="248" x2="616" y2="248" stroke="#d1d1d6"/>
+<text x="24" y="274" font-size="13" font-weight="700" fill="#34c759">수정 후</text>
+<rect x="24" y="284" width="592" height="34" rx="8" fill="#34c759" fill-opacity="0.12" stroke="#34c759"/>
+<text x="36" y="305" font-size="12" fill="#1d1d1f">이름이 <tspan font-family="ui-monospace, Menlo, monospace">__proto__</tspan>·<tspan font-family="ui-monospace, Menlo, monospace">constructor</tspan>·<tspan font-family="ui-monospace, Menlo, monospace">prototype</tspan>이면 그 줄과 하위 줄을 건너뛴다 → <tspan font-family="ui-monospace, Menlo, monospace">{ 'ok.txt': '' }</tspan></text>
+</svg>

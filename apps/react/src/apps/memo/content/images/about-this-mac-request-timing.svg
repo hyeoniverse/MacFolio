@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>요청 저장소가 요청을 전달하는 순서</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="430" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">'추가 정보…'를 누른 뒤 시스템 설정이 요청을 읽는 순서</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">같은 요청 저장소 requestedSection, 같은 함수 take가 두 경우를 모두 처리한다</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="68" width="290" height="32" rx="8" fill="#1d1d1f"/>
+<text x="165" y="89" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">시스템 설정이 닫혀 있을 때</text>
+<rect x="330" y="68" width="290" height="32" rx="8" fill="#1d1d1f"/>
+<text x="475" y="89" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">시스템 설정이 이미 열려 있을 때</text>
+
+<rect x="20" y="114" width="290" height="50" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="34" y="135" font-weight="700">① 요청 기록</text>
+<text x="34" y="154" font-family="ui-monospace, Menlo, monospace">setState({ section: 'about' })</text>
+<text x="300" y="135" fill="#6e6e73" text-anchor="end">구독자 없음</text>
+<line x1="165" y1="166" x2="165" y2="180" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="20" y="184" width="290" height="50" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="34" y="205" font-weight="700">② 창 닫기, 앱 열기</text>
+<text x="34" y="224" font-family="ui-monospace, Menlo, monospace">closeAbout() · openApp('settings')</text>
+<line x1="165" y1="236" x2="165" y2="250" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="20" y="254" width="290" height="50" rx="8" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="34" y="275" font-weight="700" fill="#0a84ff">③ 마운트하며 현재 값 읽기</text>
+<text x="34" y="294" font-family="ui-monospace, Menlo, monospace">take(getState())</text>
+<line x1="165" y1="306" x2="165" y2="320" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="20" y="324" width="290" height="50" rx="8" fill="#eefaf1" stroke="#34c759" stroke-width="1.5"/>
+<text x="34" y="345" font-weight="700">④ 정보 항목 표시, 요청 초기화</text>
+<text x="34" y="364" font-family="ui-monospace, Menlo, monospace">section: null</text>
+
+<rect x="330" y="114" width="290" height="50" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="344" y="135" font-weight="700">① 요청 기록</text>
+<text x="344" y="154" font-family="ui-monospace, Menlo, monospace">setState({ section: 'about' })</text>
+<line x1="475" y1="166" x2="475" y2="180" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="184" width="290" height="50" rx="8" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="344" y="205" font-weight="700" fill="#0a84ff">② 구독 중인 함수가 바로 실행</text>
+<text x="344" y="224" font-family="ui-monospace, Menlo, monospace">subscribe(take) → take(새 값)</text>
+<line x1="475" y1="236" x2="475" y2="250" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="254" width="290" height="50" rx="8" fill="#eefaf1" stroke="#34c759" stroke-width="1.5"/>
+<text x="344" y="275" font-weight="700">③ 정보 항목 표시, 요청 초기화</text>
+<text x="344" y="294" font-family="ui-monospace, Menlo, monospace">section: null</text>
+<line x1="475" y1="306" x2="475" y2="320" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<rect x="330" y="324" width="290" height="50" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="344" y="345" font-weight="700">④ 창 닫기, 앱을 앞으로</text>
+<text x="344" y="364" font-family="ui-monospace, Menlo, monospace">closeAbout() · openApp('settings')</text>
+</g>
+<text x="20" y="404" font-size="12" fill="#6e6e73">setState는 구독자를 동기적으로 호출한다. 열려 있는 설정 앱은 openApp보다 먼저 요청을 처리한다.</text>
+<text x="20" y="420" font-size="12" fill="#6e6e73">초기화(null) 후에는 설정을 다시 열어도 정보 항목으로 이동하지 않는다.</text>
+</svg>

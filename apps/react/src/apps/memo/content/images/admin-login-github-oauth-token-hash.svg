@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>세션 토큰은 쿠키에만 있고 DB에는 SHA-256 해시만 있어서, 유출된 해시를 쿠키에 넣으면 한 번 더 해시되어 일치하는 행이 없다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="380" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">쿠키에는 토큰, DB에는 토큰의 해시</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">값은 앞부분만 적은 예시. 토큰은 32바이트를 base64url로 바꾼 43자, 해시는 64자 16진수</text>
+
+<!-- 정상 -->
+<text x="24" y="86" font-size="13" font-weight="600" fill="#1d1d1f">정상 요청</text>
+<g font-size="12" text-anchor="middle">
+<rect x="24" y="98" width="170" height="54" rx="8" fill="#f2f2f7"/>
+<text x="109" y="120" fill="#6e6e73">쿠키 macfolio_session</text>
+<text x="109" y="140" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">k3J9qX…</text>
+<line x1="194" y1="125" x2="232" y2="125" stroke="#6e6e73" marker-end="url(#a)"/>
+<rect x="236" y="98" width="150" height="54" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="311" y="120" fill="#0a84ff" font-weight="600">hashToken</text>
+<text x="311" y="140" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">→ 5e1a07…</text>
+<line x1="386" y1="125" x2="424" y2="125" stroke="#6e6e73" marker-end="url(#a)"/>
+<rect x="428" y="98" width="188" height="54" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+<text x="522" y="120" fill="#1d1d1f">tokenHash = 5e1a07… 행</text>
+<text x="522" y="140" fill="#248a3d" font-weight="600">있음 → 관리자</text>
+</g>
+
+<!-- 위장 -->
+<text x="24" y="196" font-size="13" font-weight="600" fill="#1d1d1f">DB가 유출된 뒤, 해시 값을 쿠키에 넣어 보낸 요청</text>
+<g font-size="12" text-anchor="middle">
+<rect x="24" y="208" width="170" height="54" rx="8" fill="#fff4e5" stroke="#ff9f0a"/>
+<text x="109" y="230" fill="#6e6e73">쿠키 macfolio_session</text>
+<text x="109" y="250" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">5e1a07…</text>
+<line x1="194" y1="235" x2="232" y2="235" stroke="#6e6e73" marker-end="url(#a)"/>
+<rect x="236" y="208" width="150" height="54" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="311" y="230" fill="#0a84ff" font-weight="600">hashToken</text>
+<text x="311" y="250" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">→ b77c3d…</text>
+<line x1="386" y1="235" x2="424" y2="235" stroke="#6e6e73" marker-end="url(#a)"/>
+<rect x="428" y="208" width="188" height="54" rx="8" fill="#ffebea" stroke="#ff3b30"/>
+<text x="522" y="230" fill="#1d1d1f">tokenHash = b77c3d… 행</text>
+<text x="522" y="250" fill="#ff3b30" font-weight="600">없음 → 401</text>
+</g>
+
+<rect x="24" y="290" width="592" height="68" rx="8" fill="#f2f2f7"/>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="312">5e1a07…에서 k3J9qX…를 되찾으려면 SHA-256의 역상을 구해야 한다.</text>
+<text x="40" y="332">토큰은 2^256가지 중 하나라 후보를 모두 대입하는 방법도 쓸 수 없다.</text>
+<text x="40" y="350" fill="#6e6e73">그래서 일부러 느리게 만든 bcrypt 대신 빠른 SHA-256 한 번으로 충분하다.</text>
+</g>
+</svg>

@@ -3,17 +3,43 @@ title: 폴더 대신 *Api.ts·model.ts·use*.ts 이름 규칙으로 파일 종�
 date: 2026-10-10
 category: 개발 기록/MacFolio/구조·상태 관리
 series: 모듈 구조
-seriesOrder: 4
+seriesOrder: 3
 summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 이름이 종류를 나타내게 했다. 서버 호출은 *Api.ts, 순수 계산은 model.ts, 훅은 use*.ts. 폴더 규칙을 채택하지 않은 이유, 규칙에 어긋난 파일 아홉 개를 맞춘 과정, 다음 단계에서 얻은 효과를 정리했다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 2단계의 마지막 항목 "앱 폴더 안의 구조를 맞추기"다([순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)). 앞 단계에서 `apps/`, `desktop/`, `shared/`의 경계를 정했으므로, 이번에는 앱 폴더 하나의 내부 구조를 정리했다.
+## 배경: 프론트엔드 파일을 나누는 두 방식
+
+React 프로젝트의 파일 배치에는 널리 쓰이는 방식이 두 가지 있다. React 공식 문서의 파일 구조 안내도 이 두 방식을 소개한다[^react-structure].
+
+| 방식              | 예                                                       | 기준                            |
+| ----------------- | -------------------------------------------------------- | ------------------------------- |
+| 파일 종류별 폴더  | `components/Weather.tsx`, `api/weatherApi.ts`, `hooks/…` | 파일이 무엇인가(화면, 요청, 훅) |
+| 기능(화면)별 폴더 | `weather/Weather.tsx`, `weather/weatherApi.ts`           | 파일이 어느 기능에 속하는가     |
+
+같은 문서는 자주 함께 바뀌는 파일을 가까이 두라고(colocation) 권하고, 실제 프로젝트는 두 방식을 섞어 쓰는 경우가 많다고 설명한다. 이 글에 나오는 용어는 다음과 같다.
+
+- **순수 함수**: 같은 입력에 항상 같은 결과를 반환하고, 서버 요청이나 화면 변경 같은 외부 동작이 없는 함수. 예를 들어 `change(112, 100)`은 항상 `'+12%'`를 반환한다.
+- **훅**: `useState`, `useEffect`처럼 React 컴포넌트 안에서만 호출할 수 있는 함수. React 규칙상 이름이 `use`로 시작한다.
+- **응집도**: 한 묶음(파일, 폴더) 안의 코드가 같은 목적을 위해 함께 바뀌는 정도. 함께 바뀌는 파일이 한곳에 있으면 응집도가 높다.
+
+MacFolio는 처음부터 기능별 폴더(`src/apps/<앱>/`)를 사용했다. 이 글은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 2단계의 마지막 항목 "앱 폴더 안의 구조를 맞추기"를 다룬다([순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-retrospective#2단계-폴더-구조와-의존)). 앞 단계에서 `apps/`, `desktop/`, `shared/`의 경계를 정했으므로, 이번에는 앱 폴더 하나의 내부 구조를 정리했다.
 
 작업은 PR [#191](https://github.com/hyeoniverse/MacFolio/pull/191)의 커밋 하나(`889aee932`)다. 33개 파일에서 236줄이 추가되고 175줄이 삭제되었다. 대부분은 파일 이름 변경과 그에 따른 `import` 경로 수정이다.
 
 ## 문제
 
-`activity/data.ts`가 대표적인 예였다. 서버에 요청을 보내는 코드와, 기간·비교·표 이름을 계산하는 순수 함수가 190줄 파일 하나에 섞여 있었다. 그래서 순수 함수만 시험하려 해도 시험 파일이 서버 클라이언트까지 import했다. 다른 앱도 파일 이름만으로는 "이 파일이 서버를 호출하는가", "이 파일이 훅인가"를 알 수 없었다.
+`activity/data.ts`가 대표적인 예였다. 서버에 요청을 보내는 코드와, 기간·비교·표 이름을 계산하는 순수 함수가 190줄 파일 하나에 섞여 있었다. 시험 파일 `data.test.ts`는 다음과 같은 순수 함수만 검사했다.
+
+```ts
+expect(change(112, 100)).toEqual({ text: '+12%', direction: 'up' });
+expect(periodRange('7d', '2026-10-07')).toEqual({ from: '2026-10-01', to: '2026-10-07' });
+```
+
+그런데 이 함수들이 `data.ts`에 있으므로, 시험 파일은 같은 파일의 요청 함수와 서버 주소 설정(`shared/config/env`)까지 함께 import했다.
+
+![분리 전후의 import 범위](./images/app-file-naming-test-imports.svg '분리 전에는 순수 함수 시험이 서버 주소 설정까지 불러왔다. 분리 후 model.test.ts는 요청 코드를 불러오지 않는다')
+
+다른 앱도 파일 이름만으로는 "이 파일이 서버를 호출하는가", "이 파일이 훅인가"를 알 수 없었다.
 
 | 파일 이름                     | 실제 역할             | 이름으로 알 수 있는가 |
 | ----------------------------- | --------------------- | --------------------- |
@@ -28,14 +54,16 @@ summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 �
 
 처음 계획은 앱 16개 모두에 `components/`·`hooks/`·`api.ts`·`model.ts`를 두는 것이었다. 조사 결과 하위 폴더를 쓰는 앱은 memo·safari·mail·messages·apidocs 다섯뿐이었고, 나머지는 파일 1~22개가 하위 폴더 없이 한 폴더에 있었다.
 
-이런 앱에 폴더를 만들면 두 가지 문제가 생긴다.
-
-1. `passwords/components/Passwords.tsx`처럼 파일 하나만 담긴 폴더가 생긴다.
-2. 함께 수정하는 `Weather.tsx`·`forecast.ts`·`weatherApi.ts`가 폴더 세 개로 흩어진다. 함께 바뀌는 파일은 가까이 있어야 하는데(응집도), 폴더 규칙은 그 반대로 작용한다.
-
-실제로 혼란을 준 것은 폴더가 아니라 이름이었다. 서버를 호출하는 파일 이름이 `data.ts`·`captions.ts`·`githubActivity.ts`였고, 훅이 `admin.ts`·`popover.ts`·`serverResources.ts`에 들어 있었다. 그래서 규칙의 기준을 폴더가 아니라 이름으로 정했다.
-
 ![앱 폴더별 .ts·.tsx 파일 수 막대그래프. memo 77개, safari 101개를 빼면 대부분 1~22개다](./images/app-file-naming-counts.svg '대부분의 앱은 파일 열 개 안팎이라 폴더를 나눌 이유가 없다')
+
+이런 앱에 폴더를 만들면 두 가지 문제가 생긴다. weather 앱에 적용하면 다음 그림과 같다.
+
+1. `passwords/components/Passwords.tsx`나 weather의 빈 `hooks/`처럼 파일이 하나뿐이거나 없는 폴더가 생긴다.
+2. 예보 표시 방식을 바꿀 때 함께 수정하는 `Weather.tsx`·`forecast.ts`·`weatherApi.ts`가 폴더 세 개로 흩어진다. 함께 바뀌는 파일은 가까이 있어야 하는데(응집도), 폴더 규칙은 그 반대로 작용한다.
+
+![weather 앱의 두 배치](./images/app-file-naming-layouts.svg '왼쪽은 종류별 폴더를 적용한 검토안, 오른쪽은 실제 배치. 함께 수정하는 세 파일(파란 글자)이 오른쪽에서는 한 폴더에 있다')
+
+==실제로 혼란을 준 것은 폴더가 아니라 이름==이었다. 서버를 호출하는 파일 이름이 `data.ts`·`captions.ts`·`githubActivity.ts`였고, 훅이 `admin.ts`·`popover.ts`·`serverResources.ts`에 들어 있었다. 그래서 규칙의 기준을 폴더가 아니라 이름으로 정했다.
 
 | 방법                                   | 장점                                 | 문제                                                       |
 | -------------------------------------- | ------------------------------------ | ---------------------------------------------------------- |
@@ -45,17 +73,18 @@ summary: 앱마다 components/·hooks/·api/ 폴더를 만드는 대신 파일 �
 
 ## 규칙
 
-| 종류             | 이름                               |
-| ---------------- | ---------------------------------- |
-| 서버 호출        | `*Api.ts`                          |
-| 타입과 순수 계산 | `model.ts` 또는 뜻이 드러나는 이름 |
-| 훅               | `use*.ts`                          |
-| 화면 조각        | `PascalCase.tsx`                   |
-| 조각이 셋 이상   | `components/`                      |
+| 종류             | 이름                               | 예                                         |
+| ---------------- | ---------------------------------- | ------------------------------------------ |
+| 서버 호출        | `*Api.ts`                          | `weatherApi.ts`                            |
+| 타입과 순수 계산 | `model.ts` 또는 뜻이 드러나는 이름 | `activity/model.ts`, `weather/forecast.ts` |
+| 훅               | `use*.ts`                          | `useServerResources.ts`                    |
+| 화면 조각        | `PascalCase.tsx`                   | `Weather.tsx`                              |
+| 조각이 셋 이상   | `components/`                      | `mail/components/`                         |
 
-> **한 파일에 서버 호출과 순수 계산을 섞지 않는다.**
+이름 끝만 확인하면 종류를 알 수 있다. 예를 들어 `ls weather/`의 결과에서 `weatherApi.ts`는 서버를 호출하고, `forecast.ts`는 React와 서버 없이 실행되며, `Weather.tsx`는 화면이다.
 
-이 규칙이 핵심이다. 둘이 섞이면 순수 계산에 시험을 붙이기 어렵고, 3단계에서 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 분리해야 한다.
+> [!IMPORTANT] 한 파일에 서버 호출과 순수 계산을 섞지 않는다
+> 이 규칙이 핵심이다. 둘이 섞이면 순수 계산에 시험을 붙이기 어렵고, 3단계에서 서버 호출을 공통 클라이언트로 옮길 때 파일을 다시 분리해야 한다.
 
 ## 수정한 파일
 
@@ -92,7 +121,7 @@ export const fetchSummary = (from: string, to: string) => get<Summary>(`/analyti
 export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?minutes=${minutes}`);
 ```
 
-`model.ts`에는 기간 계산, 이전 기간 비교, 체류 시간 표기, 표 이름 같은 순수 함수만 있다. 그래서 `model.test.ts`는 서버 클라이언트를 모의 객체로 바꿀 필요 없이 함수만 호출한다.
+`model.ts`에는 기간 계산, 이전 기간 비교, 체류 시간 표기, 표 이름 같은 순수 함수만 있다. 그래서 `model.test.ts`는 서버 클라이언트를 모의 객체(실제 서버 대신 미리 정한 응답을 반환하는 가짜 함수)로 바꿀 필요 없이 함수만 호출한다.
 
 ![activity/data.ts를 activityApi.ts와 model.ts로 분리하고, 훅 네 개와 서버 호출 파일 두 개의 이름을 바꾼 도식](./images/app-file-naming-renames.svg '섞인 파일 하나를 둘로 분리하고, 훅 넷과 서버 호출 둘의 이름을 규칙에 맞췄다')
 
@@ -100,19 +129,19 @@ export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?min
 
 ## 예외 하나
 
-응답을 보관하는 store와 그것을 읽는 한 줄짜리 훅([`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore))은 해당 `*Api.ts`에 함께 정의해도 된다고 규칙에 적었다. `githubApi.ts`의 `useGithub`이 그 예다. 훅을 별도 파일로 분리하면 store 하나를 두 파일이 나눠 갖게 되어 오히려 읽기 어렵다. 규칙의 목적은 읽기 쉬운 코드이고, 규칙을 지키려고 파일을 늘리는 것은 목적에 맞지 않는다.
+응답을 보관하는 store와 그것을 읽는 한 줄짜리 훅([`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore))은 해당 `*Api.ts`에 함께 정의해도 된다고 규칙에 적었다. `githubApi.ts`의 `useGithub`이 그 예다. 훅을 별도 파일로 분리하면 store 하나를 두 파일이 나눠 갖게 되어 오히려 읽기 어렵다. 규칙의 목적은 읽기 쉬운 코드이고, ==규칙을 지키려고 파일을 늘리는 것은 목적에 맞지 않는다==.
 
 규칙과 예외는 모두 `CONTRIBUTING.md`의 파일 이름 표에 적었다. 표에는 예시도 함께 넣었다(`postsApi.ts`, `activity/model.ts`, `weather/forecast.ts`).
 
 ## 다음 단계에서 얻은 효과
 
-바로 다음 3단계에서 앱마다 흩어진 `fetch`를 `shared/api/client.ts`의 `api()` 하나로 모았다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)). 이때 수정할 파일을 찾는 작업이 `*Api.ts` 검색으로 끝났다. 이후 응답 모양을 `packages/contracts`의 스키마로 옮길 때([contracts 패키지](/memo/contracts-comments))도 `*Api.ts`만 열면 됐다. 현재 `activityApi.ts`는 응답 타입을 `@macfolio/contracts`에서 가져와 다시 내보내기만 한다.
+바로 다음 3단계에서 앱마다 흩어진 `fetch`를 `shared/api/client.ts`의 `api()` 하나로 모았다([공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)). 이때 수정할 파일을 찾는 작업이 `*Api.ts` 검색으로 끝났다. 이후 응답 모양을 `packages/contracts`의 스키마로 옮길 때([contracts 패키지](/memo/contracts-package#댓글좋아요-스키마-200))도 `*Api.ts`만 열면 됐다. 현재 `activityApi.ts`는 응답 타입을 `@macfolio/contracts`에서 가져와 다시 내보내기만 한다.
 
 ## 남은 것, 배운 것
 
 - 규칙을 린트로 강제하지 않는다. `*Api.ts` 밖에서 `fetch`를 호출하면 오류를 내는 린트 규칙을 검토했지만, 외부 서비스(날씨, 효과음)와 `/health` 확인처럼 예외가 있어 문서로만 관리한다.
 - memo(파일 77개)와 safari(101개)는 이미 하위 폴더로 나뉘어 있었다. 둘 다 "조각이 셋 이상이면 `components/`" 규칙에 맞아 수정하지 않았다.
-- 구조를 맞출 때 "모든 앱을 같은 모양으로"보다 "함께 바뀌는 파일을 가까이"를 우선했다. 겉모양을 맞추는 규칙은 작은 앱에 빈 폴더를 만들고, 실제로 혼란을 주던 이름은 그대로 남긴다.
+- 구조를 맞출 때 "모든 앱을 같은 모양으로"보다 =="함께 바뀌는 파일을 가까이"를 우선==했다. 겉모양을 맞추는 규칙은 작은 앱에 빈 폴더를 만들고, 실제로 혼란을 주던 이름은 그대로 남긴다.
 
 ## 규칙 적용하기
 
@@ -125,6 +154,8 @@ export const fetchLive = (minutes = 30) => get<LiveVisit[]>(`/analytics/live?min
 | React 없는 계산  | `model.ts` (+ `model.test.ts`) | `activity/model.ts`                      |
 | 훅               | `use<무엇>.ts`                 | `useServerResources.ts`, `usePopover.ts` |
 
+예를 들어 날씨 앱에 "검색한 도시를 서버에 저장"하는 기능을 추가한다면, 요청 함수는 `weatherApi.ts`에, 저장 목록을 정렬하는 함수는 `places.ts`에, 둘을 묶어 컴포넌트에 넘기는 훅은 `useSavedPlaces.ts` 같은 새 파일에 둔다.
+
 규칙을 지키고 있는지는 파일 이름으로 검색해 확인한다.
 
 ```bash
@@ -135,16 +166,30 @@ find . -name '*Api.ts' | head                  # 서버 호출 파일
 pnpm cycles                                    # 이름을 바꾸면서 순환 import가 생기지 않았는지
 ```
 
-파일을 옮길 때는 `git mv`를 사용해야 이력이 이어진다. 되돌릴 때도 `git mv`를 반대 방향으로 실행한다.
+> [!TIP]
+> 파일을 옮길 때는 `git mv`를 사용해야 이력이 이어진다. 되돌릴 때도 `git mv`를 반대 방향으로 실행한다.
 
 ## 관련 글
 
-- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-step2-structure)
-- [api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-step3-foundation)
-- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-api-client)
-- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-comments)
+- [순환 의존 차단과 큰 파일 분할로 정리한 모듈 구조](/memo/refactor-retrospective#2단계-폴더-구조와-의존)
+- [api() 요청 함수와 저장소·미디어 쿼리 공통 함수로 기반 코드 통합하기](/memo/refactor-retrospective#3단계-공통-기반-코드)
+- [공통 API 클라이언트 api()·apiFetch()로 fetch 호출과 401 처리 통합하기](/memo/shared-modules#서버-호출-apiapifetch)
+- [zod 스키마 패키지 @macfolio/contracts로 서버 검증과 화면 타입 공유하기](/memo/contracts-package#댓글좋아요-스키마-200)
 - [madge로 찾은 순환 import를 셋째 파일로 끊고 CI에서 막기](/memo/break-import-cycles)
 
+[^react-structure]: 기능·화면별로 묶는 방식과 파일 종류별로 묶는 방식을 소개하고, 자주 함께 바뀌는 파일을 가까이 두라고 권한다. [React 문서(구판): File Structure](https://legacy.reactjs.org/docs/faq-structure.html)
+
 [^rename]: git은 이름 변경을 별도로 기록하지 않고, 삭제된 파일과 추가된 파일의 내용이 50% 이상 같으면 이름 변경으로 표시한다. 내용을 거의 바꾸지 않아야 `git log --follow`로 이력이 이어진다. [git diff 문서의 `-M` 옵션](https://git-scm.com/docs/git-diff)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [React 문서(구판): File Structure](https://legacy.reactjs.org/docs/faq-structure.html)
+- [React: Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks)
+- [React: useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore)
+- [git diff 문서: -M, --find-renames](https://git-scm.com/docs/git-diff)
+- [git mv 문서](https://git-scm.com/docs/git-mv)
+
+</details>
 
 #MacFolio #리팩터링 #React

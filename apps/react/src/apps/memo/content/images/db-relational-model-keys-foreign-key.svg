@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">등록의 외래 키가 학생·과목의 기본 키를 참조한다</text>
+  <g font-size="12" fill="#1d1d1f">
+    <!-- 학생 -->
+    <text x="30" y="58" font-size="13" font-weight="600">학생 (피참조)</text>
+    <rect x="30" y="66" width="150" height="24" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="40" y="83" font-weight="600" text-decoration="underline">학번</text><text x="100" y="83" font-weight="600">이름</text>
+    <rect x="30" y="90" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="40" y="107">100</text><text x="100" y="107">나수영</text>
+    <rect x="30" y="114" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="40" y="131">200</text><text x="100" y="131">이찬수</text>
+    <rect x="30" y="138" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="40" y="155">300</text><text x="100" y="155">정기태</text>
+    <rect x="30" y="162" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="40" y="179">400</text><text x="100" y="179">송병길</text>
+    <rect x="30" y="186" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="40" y="203">500</text><text x="100" y="203">박종화</text>
+    <!-- 등록 -->
+    <text x="245" y="58" font-size="13" font-weight="600">등록 (참조)</text>
+    <rect x="245" y="66" width="150" height="24" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="255" y="83" font-weight="600" fill="#0a84ff">학번</text><text x="315" y="83" font-weight="600" fill="#0a84ff">과목번호</text>
+    <rect x="245" y="90" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="255" y="107">100</text><text x="315" y="107">C413</text>
+    <rect x="245" y="114" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="255" y="131">100</text><text x="315" y="131">E412</text>
+    <rect x="245" y="138" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="255" y="155">200</text><text x="315" y="155">C123</text>
+    <rect x="245" y="162" width="150" height="24" fill="#fff" stroke="#6e6e73"/><text x="255" y="179">300</text><text x="315" y="179">C312</text>
+    <rect x="245" y="196" width="150" height="24" fill="#fff0ef" stroke="#ff3b30" stroke-width="1.5"/><text x="255" y="213" fill="#ff3b30">600</text><text x="315" y="213" fill="#ff3b30">C413</text>
+    <!-- 과목 -->
+    <text x="470" y="58" font-size="13" font-weight="600">과목 (피참조)</text>
+    <rect x="470" y="66" width="140" height="24" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="480" y="83" font-weight="600" text-decoration="underline">과목번호</text>
+    <rect x="470" y="90" width="140" height="24" fill="#fff" stroke="#6e6e73"/><text x="480" y="107">C123</text>
+    <rect x="470" y="114" width="140" height="24" fill="#fff" stroke="#6e6e73"/><text x="480" y="131">C312</text>
+    <rect x="470" y="138" width="140" height="24" fill="#fff" stroke="#6e6e73"/><text x="480" y="155">C324</text>
+    <rect x="470" y="162" width="140" height="24" fill="#fff" stroke="#6e6e73"/><text x="480" y="179">C413</text>
+    <rect x="470" y="186" width="140" height="24" fill="#fff" stroke="#6e6e73"/><text x="480" y="203">E412</text>
+  </g>
+  <g fill="none" stroke-width="1.5">
+    <path d="M250 102 C 215 102, 215 102, 182 102" stroke="#0a84ff" marker-end="url(#a)"/>
+    <path d="M250 150 C 215 150, 215 128, 182 128" stroke="#0a84ff" marker-end="url(#a)"/>
+    <path d="M370 102 C 420 102, 430 174, 468 174" stroke="#0a84ff" marker-end="url(#a)"/>
+    <path d="M370 174 C 420 174, 430 126, 468 126" stroke="#0a84ff" marker-end="url(#a)"/>
+    <path d="M250 208 C 215 208, 210 240, 182 232" stroke="#ff3b30" stroke-dasharray="4 3" marker-end="url(#r)"/>
+  </g>
+  <text x="30" y="246" font-size="12" fill="#ff3b30">학생에 600이 없다</text>
+  <rect x="30" y="262" width="580" height="52" rx="8" fill="#f2f2f7"/>
+  <text x="46" y="284" font-size="12" fill="#1d1d1f">파란 화살표: 외래 키 값이 피참조 릴레이션의 기본 키 값과 일치 (참조 무결성 만족)</text>
+  <text x="46" y="303" font-size="12" fill="#ff3b30">빨간 행 (600, C413): 가리킬 학생 튜플이 없으므로 DBMS가 삽입을 거부한다</text>
+</svg>

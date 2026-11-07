@@ -106,7 +106,8 @@ test.describe('메모 (블로그)', () => {
 		const memo = await openMemo(page);
 		await memo.locator('.memo-item', { hasText: 'CRA에서 Vite로 옮기기' }).click();
 
-		const image = memo.getByRole('img', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });
+		const graph = page.getByRole('img', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });
+		const image = memo.locator(graph);
 		await image.scrollIntoViewIfNeeded();
 		await expect(image).toBeVisible();
 		// 글 파일 기준 상대 경로가 실제로 불러와졌다
@@ -114,7 +115,10 @@ test.describe('메모 (블로그)', () => {
 		const imageBox = (await image.boundingBox())!;
 		const readerBox = (await memo.locator('.memo-markdown').boundingBox())!;
 		expect(imageBox.width).toBeLessThanOrEqual(readerBox.width + 1);
-		await expect(memo.locator('.memo-caption').first()).toHaveText('dev 서버 시작과 프로덕션 빌드 시간 (초)');
+		// 캡션은 그 이미지의 것을 본다 (글 앞쪽에 다른 그림이 더해져도 흔들리지 않게)
+		await expect(memo.locator('.memo-figure', { has: graph }).locator('.memo-caption')).toHaveText(
+			'dev 서버 시작과 프로덕션 빌드 시간 (초)'
+		);
 
 		await memo.getByRole('button', { name: 'CRA와 Vite의 빌드 시간 비교 그래프 크게 보기' }).click();
 		const lightbox = page.getByRole('dialog', { name: 'CRA와 Vite의 빌드 시간 비교 그래프' });

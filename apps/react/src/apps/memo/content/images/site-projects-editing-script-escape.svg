@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>프로젝트 이름에 &lt;/script&gt;가 들어 있을 때, 그대로 넣으면 HTML 파서가 데이터 태그를 거기서 닫고 뒤의 script를 실행하지만, &lt;를 \u003c로 바꾸면 JSON 문자열 안에 남는다</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">값 안의 &lt;/script&gt;가 태그를 닫지 못하게</text>
+<text x="24" y="62" font-size="12" fill="#6e6e73">프로젝트 이름 = </text>
+<text x="118" y="62" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">"A&lt;/script&gt;&lt;script&gt;alert(1)&lt;/script&gt;"</text>
+<rect x="24" y="78" width="592" height="102" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="40" y="100" font-size="13" font-weight="700" fill="#ff3b30">그대로 넣으면</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="40" y="124">&lt;script type="application/json" id="site-content"&gt;</text>
+<text x="56" y="144">{"name":"A<tspan fill="#ff3b30" font-weight="700">&lt;/script&gt;</tspan><tspan fill="#ff3b30">&lt;script&gt;alert(1)&lt;/script&gt;</tspan>"}</text>
+<text x="40" y="164">&lt;/script&gt;</text>
+</g>
+<text x="420" y="164" font-size="12" fill="#ff3b30">첫 &lt;/script&gt;에서 태그가 닫히고</text>
+<text x="420" y="100" font-size="12" fill="#ff3b30">뒤의 &lt;script&gt;가 실행된다</text>
+<rect x="24" y="196" width="592" height="118" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="40" y="218" font-size="13" font-weight="700" fill="#34c759">&lt;를 \u003c로 바꾸면</text>
+<g font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">
+<text x="40" y="242">&lt;script type="application/json" id="site-content"&gt;</text>
+<text x="56" y="262">{"name":"A<tspan fill="#0a84ff">\u003c</tspan>/script&gt;<tspan fill="#0a84ff">\u003c</tspan>script&gt;alert(1)<tspan fill="#0a84ff">\u003c</tspan>/script&gt;"}</text>
+<text x="40" y="282">&lt;/script&gt;</text>
+</g>
+<text x="40" y="304" font-size="12" fill="#6e6e73">HTML 파서는 &lt;/script&gt;를 찾지 못해 태그 끝까지 데이터로 읽고, JSON.parse는 \u003c를 다시 &lt;로 복원한다.</text>
+</svg>

@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>page.mouse.move의 steps 옵션이 만든 이동 단계별 마우스 y 좌표, 포인터 아래 요소, 발생한 드래그 이벤트</title>
+  <rect width="640" height="400" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">이동 단계별로 기록한 드래그 이벤트</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">page.mouse.move(x, y, { steps: 12 })는 출발점과 도착점 사이를 12번으로 나눠 mousemove를 보낸다</text>
+
+  <!-- 머리 열 -->
+  <g font-size="12" fill="#6e6e73">
+    <text x="24" y="98">이동 단계</text>
+    <text x="24" y="134">마우스 y</text>
+    <text x="24" y="170">포인터 아래</text>
+    <text x="24" y="214">발생한 이벤트</text>
+  </g>
+
+  <!-- 단계 열: x 시작 112, 간격 74 -->
+  <g font-size="13" text-anchor="middle">
+    <text x="140" y="98" fill="#1d1d1f">7</text>
+    <text x="214" y="98" fill="#1d1d1f">8</text>
+    <text x="288" y="98" fill="#1d1d1f">9</text>
+    <text x="362" y="98" fill="#1d1d1f">10</text>
+    <text x="436" y="98" fill="#1d1d1f">11</text>
+    <text x="510" y="98" fill="#1d1d1f" font-weight="700">12 (마지막)</text>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">
+    <text x="140" y="134">393</text><text x="214" y="134">409</text><text x="288" y="134">425</text>
+    <text x="362" y="134">441</text><text x="436" y="134">457</text><text x="510" y="134">473</text>
+  </g>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">
+    <text x="140" y="170">IMG</text><text x="214" y="170">IMG</text><text x="288" y="170">SPAN</text>
+    <text x="362" y="170">DIV</text><text x="436" y="170">DIV</text><text x="510" y="170">H2</text>
+  </g>
+  <!-- 경계 표시 -->
+  <g stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3">
+    <line x1="251" y1="80" x2="251" y2="288"/>
+    <line x1="325" y1="80" x2="325" y2="288"/>
+    <line x1="473" y1="80" x2="473" y2="288"/>
+  </g>
+  <!-- 이벤트 칩 -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="108" y="196" width="64" height="24" rx="5" fill="#e8f8ec"/><text x="140" y="213" fill="#1d1d1f">dragover</text>
+    <rect x="182" y="196" width="64" height="24" rx="5" fill="#e8f8ec"/><text x="214" y="213" fill="#1d1d1f">dragover</text>
+    <rect x="256" y="196" width="64" height="24" rx="5" fill="#f2f2f7"/><text x="288" y="213" fill="#1d1d1f">dragenter</text>
+    <rect x="256" y="226" width="64" height="24" rx="5" fill="#ffecea"/><text x="288" y="243" fill="#ff3b30">dragleave</text>
+    <rect x="330" y="196" width="64" height="24" rx="5" fill="#f2f2f7"/><text x="362" y="213" fill="#1d1d1f">dragenter</text>
+    <rect x="330" y="226" width="64" height="24" rx="5" fill="#ffecea"/><text x="362" y="243" fill="#ff3b30">dragleave</text>
+    <rect x="404" y="196" width="64" height="24" rx="5" fill="#e8f8ec"/><text x="436" y="213" fill="#1d1d1f">dragover</text>
+    <rect x="478" y="196" width="64" height="24" rx="5" fill="#f2f2f7"/><text x="510" y="213" fill="#1d1d1f">dragenter</text>
+    <rect x="478" y="226" width="64" height="24" rx="5" fill="#ffecea"/><text x="510" y="243" fill="#ff3b30">dragleave</text>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#ff3b30">
+    <text x="288" y="266">dragover</text><text x="288" y="282">없음</text>
+    <text x="362" y="266">dragover</text><text x="362" y="282">없음</text>
+    <text x="510" y="266">dragover</text><text x="510" y="282">없음</text>
+  </g>
+  <!-- 추가 이동 -->
+  <rect x="556" y="80" width="72" height="208" rx="8" fill="#e5f1ff" stroke="#0a84ff"/>
+  <text x="592" y="98" font-size="12" text-anchor="middle" fill="#0a84ff" font-weight="600">수정 후</text>
+  <text x="592" y="134" font-size="12" text-anchor="middle" fill="#1d1d1f">+1px 이동</text>
+  <text x="592" y="170" font-size="12" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">H2</text>
+  <rect x="562" y="196" width="60" height="24" rx="5" fill="#e8f8ec"/><text x="592" y="213" font-size="12" text-anchor="middle" fill="#1d1d1f">dragover</text>
+
+  <text x="24" y="314" font-size="12" fill="#c27100">주황 점선: 요소 경계. 경계를 넘은 단계(9, 10, 12)에는 dragenter·dragleave만 있고 dragover가 없다</text>
+  <text x="24" y="338" font-size="12" fill="#1d1d1f">마지막 단계 12가 경계를 넘으면 dragleave가 예약한 숨기기(30ms)를 취소할 dragover가 오지 않는다.</text>
+  <text x="24" y="358" font-size="12" fill="#1d1d1f">제자리에서 1px 더 움직이면 같은 요소(H2) 위에서 dragover가 한 번 발생해 숨기기가 취소된다.</text>
+  <text x="24" y="384" font-size="12" fill="#6e6e73">값은 캡처 단계 리스너로 기록한 로그(시각 6750~6756ms)에서 가져왔다</text>
+</svg>

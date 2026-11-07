@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker></defs>
+<title>시험이 실패한 커밋의 처리. 전에는 시험과 배포가 따로 실행되어 배포되고, 후에는 배포가 시험 통과를 기다려 배포되지 않는다</title>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">시험이 실패한 커밋을 main에 push하면</text>
+<text x="20" y="62" font-size="13" font-weight="700" fill="#1d1d1f">전: Cloudflare Git 연결</text>
+<rect x="20" y="74" width="110" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="75" y="101" font-size="13" fill="#1d1d1f" text-anchor="middle">push</text>
+<line x1="130" y1="90" x2="196" y2="82" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<line x1="130" y1="104" x2="196" y2="126" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="200" y="64" width="190" height="34" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+<text x="295" y="86" font-size="12" fill="#1d1d1f" text-anchor="middle">GitHub Actions 시험: 실패</text>
+<rect x="200" y="110" width="190" height="34" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="295" y="132" font-size="12" fill="#1d1d1f" text-anchor="middle">Workers Builds 빌드</text>
+<line x1="390" y1="127" x2="446" y2="127" stroke="#ff3b30" stroke-width="2" marker-end="url(#r)"/>
+<rect x="450" y="110" width="170" height="34" rx="8" fill="#ff3b30"/>
+<text x="535" y="132" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">사이트에 배포됨</text>
+<text x="200" y="164" font-size="12" fill="#6e6e73">두 실행은 서로의 결과를 확인하지 않는다</text>
+<line x1="20" y1="180" x2="620" y2="180" stroke="#d1d1d6"/>
+<text x="20" y="208" font-size="13" font-weight="700" fill="#1d1d1f">후: GitHub Actions에서 needs로 순서 지정</text>
+<rect x="20" y="222" width="110" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="75" y="249" font-size="13" fill="#1d1d1f" text-anchor="middle">push</text>
+<line x1="130" y1="244" x2="196" y2="244" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="200" y="227" width="150" height="34" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+<text x="275" y="249" font-size="12" fill="#1d1d1f" text-anchor="middle">시험 작업: 실패</text>
+<line x1="350" y1="244" x2="406" y2="244" stroke="#6e6e73" stroke-width="2" stroke-dasharray="4 4" marker-end="url(#a)"/>
+<rect x="410" y="227" width="210" height="34" rx="8" fill="#f2f2f7" stroke="#34c759" stroke-width="2"/>
+<text x="515" y="249" font-size="12" fill="#1d1d1f" text-anchor="middle">배포 작업: 실행하지 않음</text>
+<text x="200" y="288" font-size="12" fill="#6e6e73">배포 작업은 needs: 시험 작업이 성공해야 시작한다</text>
+</svg>

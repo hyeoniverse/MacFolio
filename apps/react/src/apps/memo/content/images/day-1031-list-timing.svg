@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>메모 목록이 그려지기까지 걸린 시간, 목록용 색인 전후</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">메모 목록이 그려지기까지 (배포 뒤, 3회 중앙값, 초)</text>
+<line x1="250.0" y1="50" x2="250.0" y2="270" stroke="#e5e5ea"/><text x="250.0" y="288" font-size="12" fill="#6e6e73" text-anchor="middle">0</text>
+<line x1="323.3" y1="50" x2="323.3" y2="270" stroke="#e5e5ea"/><text x="323.3" y="288" font-size="12" fill="#6e6e73" text-anchor="middle">2</text>
+<line x1="396.7" y1="50" x2="396.7" y2="270" stroke="#e5e5ea"/><text x="396.7" y="288" font-size="12" fill="#6e6e73" text-anchor="middle">4</text>
+<line x1="470.0" y1="50" x2="470.0" y2="270" stroke="#e5e5ea"/><text x="470.0" y="288" font-size="12" fill="#6e6e73" text-anchor="middle">6</text>
+<line x1="543.3" y1="50" x2="543.3" y2="270" stroke="#e5e5ea"/><text x="543.3" y="288" font-size="12" fill="#6e6e73" text-anchor="middle">8</text>
+<text x="20" y="86" font-size="13" fill="#1d1d1f">네트워크만 10Mbps, 지연 100ms</text>
+<rect x="250" y="60" width="113.3" height="18" rx="3" fill="#ff9f0a"/><text x="369.3" y="74" font-size="12" fill="#1d1d1f">3.09</text>
+<rect x="250" y="84" width="48.0" height="18" rx="3" fill="#0a84ff"/><text x="304.0" y="98" font-size="12" fill="#1d1d1f">1.31</text>
+<text x="20" y="156" font-size="13" fill="#1d1d1f">CPU 6배, 5Mbps, 지연 150ms</text>
+<rect x="250" y="130" width="303.2" height="18" rx="3" fill="#ff9f0a"/><text x="559.2" y="144" font-size="12" fill="#1d1d1f">8.27</text>
+<rect x="250" y="154" width="92.8" height="18" rx="3" fill="#0a84ff"/><text x="348.8" y="168" font-size="12" fill="#1d1d1f">2.53</text>
+<text x="20" y="226" font-size="13" fill="#1d1d1f">같은 조건, 글 주소로 들어옴</text>
+<rect x="250" y="200" width="89.1" height="18" rx="3" fill="#ff9f0a"/><text x="345.1" y="214" font-size="12" fill="#1d1d1f">2.43</text>
+<rect x="250" y="224" width="40.3" height="18" rx="3" fill="#0a84ff"/><text x="296.3" y="238" font-size="12" fill="#1d1d1f">1.10</text>
+<rect x="250" y="304" width="14" height="10" rx="2" fill="#ff9f0a"/><text x="270" y="314" font-size="12" fill="#1d1d1f">전: 원문 묶음을 받은 뒤 목록</text>
+<rect x="440" y="304" width="14" height="10" rx="2" fill="#0a84ff"/><text x="460" y="314" font-size="12" fill="#1d1d1f">후: 목록용 색인으로 먼저</text>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">4000바이트 데이터를 MTU 1500 링크로 보내는 경우의 단편화</text>
+  <text x="20" y="62" font-size="12" fill="#6e6e73">원래 데이터그램: 전체 길이(Total Length) 4020</text>
+  <rect x="20" y="70" width="40" height="34" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="40" y="92" text-anchor="middle" font-size="11" fill="#1d1d1f">IP 20</text>
+  <rect x="60" y="70" width="560" height="34" fill="#e8f2ff" stroke="#1d1d1f"/>
+  <text x="340" y="92" text-anchor="middle" font-size="13" fill="#1d1d1f">데이터 4000바이트 (0~3999)</text>
+  <line x1="267" y1="70" x2="267" y2="104" stroke="#0a84ff" stroke-dasharray="4 3"/>
+  <line x1="474" y1="70" x2="474" y2="104" stroke="#0a84ff" stroke-dasharray="4 3"/>
+  <text x="267" y="118" text-anchor="middle" font-size="11" fill="#0a84ff">1480</text>
+  <text x="474" y="118" text-anchor="middle" font-size="11" fill="#0a84ff">2960</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="20" y="140" width="40" height="34" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="40" y="162" text-anchor="middle" font-size="11">IP 20</text>
+    <rect x="60" y="140" width="207" height="34" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="163" y="162" text-anchor="middle">데이터 0~1479 (1480)</text>
+    <text x="290" y="154">단편 1  전체 길이 1500</text>
+    <text x="290" y="170" fill="#0a84ff">오프셋 0 (0 ÷ 8)   MF = 1</text>
+
+    <rect x="20" y="196" width="40" height="34" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="40" y="218" text-anchor="middle" font-size="11">IP 20</text>
+    <rect x="60" y="196" width="207" height="34" fill="#e8f2ff" stroke="#0a84ff"/>
+    <text x="163" y="218" text-anchor="middle">데이터 1480~2959 (1480)</text>
+    <text x="290" y="210">단편 2  전체 길이 1500</text>
+    <text x="290" y="226" fill="#0a84ff">오프셋 185 (1480 ÷ 8)   MF = 1</text>
+
+    <rect x="20" y="252" width="40" height="34" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="40" y="274" text-anchor="middle" font-size="11">IP 20</text>
+    <rect x="60" y="252" width="146" height="34" fill="#fff4e5" stroke="#ff9f0a"/>
+    <text x="133" y="274" text-anchor="middle">2960~3999 (1040)</text>
+    <text x="290" y="266">단편 3  전체 길이 1060</text>
+    <text x="290" y="282" fill="#ff9f0a">오프셋 370 (2960 ÷ 8)   MF = 0 (마지막)</text>
+  </g>
+  <text x="20" y="316" font-size="12" fill="#6e6e73">세 단편 모두 식별자(Identification)가 같고, 마지막을 제외한 단편의 데이터 크기는 8의 배수다.</text>
+</svg>

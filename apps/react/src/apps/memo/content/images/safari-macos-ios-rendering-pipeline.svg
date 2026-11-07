@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">브라우저가 HTML·CSS를 화면 픽셀로 바꾸는 단계</text>
+
+  <g font-size="12" text-anchor="middle">
+    <rect x="16" y="48" width="104" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="68" y="72" fill="#1d1d1f" font-weight="600">① 파싱</text><text x="68" y="91" fill="#6e6e73">HTML → DOM 트리</text>
+    <rect x="140" y="48" width="104" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="192" y="72" fill="#1d1d1f" font-weight="600">② 스타일 계산</text><text x="192" y="91" fill="#6e6e73">요소별 CSS 값</text>
+    <rect x="264" y="48" width="104" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="316" y="72" fill="#1d1d1f" font-weight="600">③ 레이아웃</text><text x="316" y="91" fill="#6e6e73">위치와 크기</text>
+    <rect x="388" y="48" width="104" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="440" y="72" fill="#1d1d1f" font-weight="600">④ 페인트</text><text x="440" y="91" fill="#6e6e73">레이어마다 그리기</text>
+    <rect x="512" y="48" width="112" height="58" rx="8" fill="#0a84ff"/>
+    <text x="568" y="72" fill="#fff" font-weight="600">⑤ 합성</text><text x="568" y="91" fill="#fff">GPU가 레이어 합치기</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5">
+    <line x1="120" y1="77" x2="138" y2="77" marker-end="url(#a)"/>
+    <line x1="244" y1="77" x2="262" y2="77" marker-end="url(#a)"/>
+    <line x1="368" y1="77" x2="386" y2="77" marker-end="url(#a)"/>
+    <line x1="492" y1="77" x2="510" y2="77" marker-end="url(#a)"/>
+  </g>
+  <text x="320" y="132" text-anchor="middle" font-size="12" fill="#6e6e73">①~③은 엔진이 같으면 결과가 거의 같다. ④·⑤에서 어떤 요소를 별도 레이어로 나누는지는 플랫폼마다 다르다.</text>
+
+  <!-- 예시 -->
+  <text x="24" y="166" font-size="13" font-weight="600" fill="#1d1d1f">예: 둥근 카드(overflow: hidden; border-radius) 안에 filter: blur()가 걸린 이미지</text>
+
+  <text x="160" y="194" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">레이어 하나에 함께 그린 경우</text>
+  <rect x="40" y="206" width="240" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="160" y="231" text-anchor="middle" font-size="12" fill="#1d1d1f">카드 + 블러 이미지 (같은 레이어)</text>
+  <rect x="100" y="266" width="120" height="70" rx="18" fill="#34c759"/>
+  <text x="160" y="306" text-anchor="middle" font-size="12" fill="#1d1d1f">모서리가 둥글다</text>
+
+  <text x="480" y="194" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">이미지를 별도 레이어로 나눈 경우</text>
+  <rect x="360" y="206" width="114" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="417" y="231" text-anchor="middle" font-size="12" fill="#1d1d1f">카드 레이어</text>
+  <rect x="486" y="206" width="114" height="40" rx="6" fill="#ff9f0a"/>
+  <text x="543" y="231" text-anchor="middle" font-size="12" fill="#1d1d1f">블러 레이어</text>
+  <rect x="420" y="266" width="120" height="70" rx="18" fill="#f2f2f7" stroke="#6e6e73"/>
+  <rect x="420" y="266" width="120" height="70" fill="#ff9f0a" opacity="0.85"/>
+  <text x="480" y="300" text-anchor="middle" font-size="12" fill="#1d1d1f">블러 레이어가</text>
+  <text x="480" y="316" text-anchor="middle" font-size="12" fill="#1d1d1f">사각형으로 남는다</text>
+  <line x1="320" y1="182" x2="320" y2="346" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+</svg>

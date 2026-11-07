@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">› 를 0.3초 간격으로 두 번 눌렀을 때 호출되는 처리기</text>
+<text x="320" y="48" font-size="12" fill="#6e6e73" text-anchor="middle">ProseMirror는 직전 클릭과 500ms 안에, 가까운 위치에서 누르면 더블클릭으로 판정한다</text>
+<line x1="40" y1="96" x2="600" y2="96" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="604" y="114" font-size="12" fill="#6e6e73" text-anchor="end">시각</text>
+<circle cx="120" cy="96" r="7" fill="#0a84ff"/><text x="120" y="80" font-size="13" fill="#1d1d1f" text-anchor="middle">첫 클릭 (0ms)</text>
+<circle cx="330" cy="96" r="7" fill="#ff9f0a"/><text x="330" y="80" font-size="13" fill="#1d1d1f" text-anchor="middle">두 번째 클릭 (300ms)</text>
+<line x1="120" y1="112" x2="540" y2="112" stroke="#34c759" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+<text x="540" y="132" font-size="12" fill="#34c759" text-anchor="end">500ms 판정 구간</text>
+<text x="40" y="168" font-size="13" font-weight="600" fill="#ff3b30">수정 전</text>
+<rect x="40" y="178" width="250" height="52" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="165" y="200" font-size="13" fill="#1d1d1f" text-anchor="middle">handleClickOn → 펼침</text>
+<text x="165" y="219" font-size="12" fill="#6e6e73" text-anchor="middle">singleClick</text>
+<rect x="320" y="178" width="280" height="52" rx="8" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="460" y="200" font-size="13" fill="#1d1d1f" text-anchor="middle">handleDoubleClickOn → 처리기 없음</text>
+<text x="460" y="219" font-size="12" fill="#ff3b30" text-anchor="middle">doubleClick · 접히지 않는다</text>
+<text x="40" y="262" font-size="13" font-weight="600" fill="#34c759">수정 후</text>
+<rect x="40" y="272" width="250" height="44" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="165" y="299" font-size="13" fill="#1d1d1f" text-anchor="middle">handleClickOn → toggleOnClick</text>
+<rect x="320" y="272" width="280" height="44" rx="8" fill="#fff" stroke="#34c759" stroke-width="1.5"/>
+<text x="460" y="299" font-size="13" fill="#1d1d1f" text-anchor="middle">handleDoubleClickOn → toggleOnClick</text>
+</svg>

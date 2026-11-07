@@ -4,6 +4,7 @@ import { useDismiss } from '@/shared/ui/popover/useDismiss';
 import { activeHeading, showsToc, tocBarItems, tocPosition, tocSiblings, type TocEntry } from '../toc';
 import type { useTocHeadings } from '../useTocHeadings';
 import { useTocDisclosure } from '../useTocDisclosure';
+import { scrollToSettled } from '../scrollToSettled';
 
 /** 붙은 막대 아래 끝에서 이만큼 내려온 선을 지난 제목을 읽는 중으로 본다 (제목 한 줄과 위 여백) */
 const ACTIVE_ROOM = 48;
@@ -102,6 +103,9 @@ const MemoToc = ({
 	const [peek, setPeek] = useState<{ owner: number; list: number[]; left: number } | null>(null);
 	const peekList = useRef<HTMLOListElement>(null);
 	const peekTimer = useRef(0);
+	/** 목차로 넘긴 제목을 붙잡아 두는 것을 그만둔다 (scrollToSettled) */
+	const stopSettle = useRef<() => void>(() => undefined);
+	useEffect(() => () => stopSettle.current(), []);
 	const crumbs = section >= 0 ? [section, ...trail] : [];
 	const peekOf = (index: number) => {
 		const list = tocSiblings(entries, index);
@@ -196,7 +200,15 @@ const MemoToc = ({
 		setOpen(false);
 		closePeek();
 		if (!heading) return;
-		heading.scrollIntoView({ block: 'start', behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
+		// 늦게 받아지는 그림이 위쪽 본문을 늘려도 제목이 맨 위에 오게, 본문 높이가 자리 잡을 때까지 다시 맞춘다
+		stopSettle.current();
+		const body = bodyRef.current;
+		stopSettle.current = scrollToSettled(
+			heading,
+			body,
+			body?.closest<HTMLElement>('.memo-scroll') ?? null,
+			!prefersReducedMotion()
+		);
 		if (editor) {
 			// 편집기: 제목 맨 앞에 커서를 둔다. 편집기는 초점을 받을 때 화면의 커서를 읽는다
 			const body = heading.closest<HTMLElement>('.ProseMirror');

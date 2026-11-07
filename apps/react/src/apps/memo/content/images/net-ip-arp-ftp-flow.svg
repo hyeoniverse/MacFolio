@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 510" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="510" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#34c759"/></marker>
+  </defs>
+
+  <!-- 송신 호스트 -->
+  <text x="300" y="20" text-anchor="middle" font-size="12.5" fill="#1d1d1f">사용자가 <tspan font-family="ui-monospace, Menlo, monospace">% ftp bsdi</tspan> 입력</text>
+  <line x1="300" y1="26" x2="300" y2="49" stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)"/>
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="40" y="50" width="120" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="100" y="69">리졸버(resolver)</text>
+    <rect x="250" y="50" width="100" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="300" y="69">FTP</text>
+    <rect x="250" y="105" width="100" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="300" y="124">TCP</text>
+    <rect x="250" y="160" width="100" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="300" y="179">IP</text>
+    <rect x="150" y="205" width="80" height="28" rx="6" fill="#fff" stroke="#0a84ff" stroke-width="1.6"/>
+    <text x="190" y="224">ARP</text>
+    <rect x="150" y="255" width="200" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="250" y="274">이더넷 드라이버</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.4" marker-end="url(#k)">
+    <line x1="250" y1="58" x2="161" y2="58"/>
+    <line x1="160" y1="71" x2="249" y2="71"/>
+    <line x1="300" y1="78" x2="300" y2="104"/>
+    <line x1="300" y1="133" x2="300" y2="159"/>
+    <line x1="255" y1="188" x2="231" y2="208"/>
+  </g>
+  <g font-size="11.5" fill="#6e6e73" text-anchor="middle">
+    <text x="205" y="50">호스트 이름</text>
+    <text x="205" y="90">IP 주소</text>
+  </g>
+  <text x="362" y="172" font-size="11.5" fill="#6e6e73">IP 데이터그램을</text>
+  <text x="362" y="187" font-size="11.5" fill="#6e6e73">목적지 IP 주소로 전송</text>
+
+  <!-- 이더넷 -->
+  <line x1="20" y1="300" x2="620" y2="300" stroke="#1d1d1f" stroke-width="3"/>
+  <line x1="30" y1="292" x2="610" y2="292" stroke="#6e6e73" stroke-width="1.3" stroke-dasharray="4 3" marker-start="url(#g)" marker-end="url(#g)"/>
+  <text x="612" y="285" text-anchor="end" font-size="12" fill="#6e6e73">ARP 요청(이더넷 브로드캐스트)</text>
+
+  <!-- 다른 호스트 -->
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="30" y="335" width="140" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="100" y="354">이더넷 드라이버</text>
+    <rect x="60" y="410" width="80" height="28" rx="6" fill="#fff" stroke="#1d1d1f"/>
+    <text x="100" y="429">ARP</text>
+  </g>
+  <text x="100" y="458" text-anchor="middle" font-size="11.5" fill="#6e6e73">타깃 IP가 아니므로 무시</text>
+
+  <!-- 타깃 호스트 bsdi -->
+  <g font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="300" y="335" width="200" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="400" y="354">이더넷 드라이버</text>
+    <rect x="300" y="410" width="80" height="28" rx="6" fill="#fff" stroke="#0a84ff" stroke-width="1.6"/>
+    <text x="340" y="429">ARP</text>
+    <rect x="420" y="410" width="80" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="460" y="429">IP</text>
+    <rect x="420" y="465" width="80" height="28" rx="6" fill="#f2f2f7" stroke="#1d1d1f"/>
+    <text x="460" y="484">TCP</text>
+  </g>
+  <text x="512" y="354" font-size="12" font-weight="600" fill="#1d1d1f">bsdi</text>
+
+  <!-- 요청 경로 -->
+  <g stroke="#6e6e73" stroke-width="1.3" stroke-dasharray="4 3" marker-end="url(#g)">
+    <line x1="175" y1="233" x2="175" y2="254"/>
+    <line x1="175" y1="283" x2="175" y2="299"/>
+    <line x1="100" y1="301" x2="100" y2="334"/>
+    <line x1="100" y1="363" x2="100" y2="409"/>
+    <line x1="325" y1="301" x2="325" y2="334"/>
+    <line x1="325" y1="363" x2="325" y2="409"/>
+  </g>
+
+  <!-- 응답 경로 -->
+  <g stroke="#0a84ff" stroke-width="1.8" fill="none">
+    <line x1="360" y1="410" x2="360" y2="364" marker-end="url(#b)"/>
+    <polyline points="360,335 360,308 210,308 210,284" marker-end="url(#b)"/>
+    <line x1="210" y1="255" x2="210" y2="234" marker-end="url(#b)"/>
+  </g>
+  <text x="372" y="326" font-size="12" fill="#0a84ff">ARP 응답(IP 주소와 하드웨어 주소)</text>
+
+  <!-- 이후 데이터그램 -->
+  <g stroke="#34c759" stroke-width="1.6" marker-end="url(#n)">
+    <line x1="460" y1="363" x2="460" y2="409"/>
+    <line x1="460" y1="438" x2="460" y2="464"/>
+  </g>
+  <text x="510" y="484" font-size="11.5" fill="#34c759">TCP 연결 요청 도착</text>
+</svg>

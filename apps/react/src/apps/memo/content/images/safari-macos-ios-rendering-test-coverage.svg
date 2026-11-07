@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">테스트 환경별로 재현되는 차이</text>
+
+  <!-- 머리 -->
+  <g font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <text x="300" y="58">화면 크기·터치</text>
+    <text x="400" y="58">WebKit CSS 지원</text>
+    <text x="500" y="58">iOS 레이어 합성</text>
+    <text x="590" y="50">키보드·</text><text x="590" y="66">주소 표시줄</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="24" y="100">Chrome 기기 모드 (Blink)</text>
+    <text x="24" y="144">Playwright Chromium 에뮬레이션</text>
+    <text x="24" y="188">Playwright WebKit (데스크톱)</text>
+    <text x="24" y="232">Xcode iOS 시뮬레이터</text>
+    <text x="24" y="276">실제 iPhone</text>
+  </g>
+  <g stroke="#e5e5ea"><line x1="24" y1="78" x2="616" y2="78"/><line x1="24" y1="122" x2="616" y2="122"/><line x1="24" y1="166" x2="616" y2="166"/><line x1="24" y1="210" x2="616" y2="210"/><line x1="24" y1="254" x2="616" y2="254"/><line x1="24" y1="298" x2="616" y2="298"/></g>
+
+  <!-- 칸: 초록=재현, 주황=일부, 회색=불가 -->
+  <g>
+    <!-- 행1 -->
+    <rect x="270" y="86" width="60" height="22" rx="5" fill="#34c759"/><rect x="370" y="86" width="60" height="22" rx="5" fill="#e5e5ea"/><rect x="470" y="86" width="60" height="22" rx="5" fill="#e5e5ea"/><rect x="560" y="86" width="60" height="22" rx="5" fill="#e5e5ea"/>
+    <!-- 행2 -->
+    <rect x="270" y="130" width="60" height="22" rx="5" fill="#34c759"/><rect x="370" y="130" width="60" height="22" rx="5" fill="#e5e5ea"/><rect x="470" y="130" width="60" height="22" rx="5" fill="#e5e5ea"/><rect x="560" y="130" width="60" height="22" rx="5" fill="#e5e5ea"/>
+    <!-- 행3 -->
+    <rect x="270" y="174" width="60" height="22" rx="5" fill="#34c759"/><rect x="370" y="174" width="60" height="22" rx="5" fill="#34c759"/><rect x="470" y="174" width="60" height="22" rx="5" fill="#e5e5ea"/><rect x="560" y="174" width="60" height="22" rx="5" fill="#e5e5ea"/>
+    <!-- 행4 -->
+    <rect x="270" y="218" width="60" height="22" rx="5" fill="#34c759"/><rect x="370" y="218" width="60" height="22" rx="5" fill="#34c759"/><rect x="470" y="218" width="60" height="22" rx="5" fill="#ff9f0a"/><rect x="560" y="218" width="60" height="22" rx="5" fill="#34c759"/>
+    <!-- 행5 -->
+    <rect x="270" y="262" width="60" height="22" rx="5" fill="#34c759"/><rect x="370" y="262" width="60" height="22" rx="5" fill="#34c759"/><rect x="470" y="262" width="60" height="22" rx="5" fill="#34c759"/><rect x="560" y="262" width="60" height="22" rx="5" fill="#34c759"/>
+  </g>
+  <g font-size="12">
+    <rect x="24" y="308" width="14" height="14" rx="3" fill="#34c759"/><text x="44" y="320" fill="#1d1d1f">재현된다</text>
+    <rect x="120" y="308" width="14" height="14" rx="3" fill="#ff9f0a"/><text x="140" y="320" fill="#1d1d1f">대부분 재현 (실기기 GPU·메모리 조건 제외)</text>
+    <rect x="420" y="308" width="14" height="14" rx="3" fill="#e5e5ea"/><text x="440" y="320" fill="#1d1d1f">재현되지 않는다</text>
+  </g>
+</svg>

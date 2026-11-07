@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">ping 10.4.2.99 → 192.168.60.6 하나를 read()로 읽은 결과</text>
+
+  <!-- TUN -->
+  <text x="16" y="66" font-size="13" font-weight="700" fill="#1d1d1f">TUN (3계층)</text>
+  <text x="16" y="82" font-size="12" fill="#6e6e73">84바이트</text>
+  <rect x="200" y="50" width="250" height="44" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="325" y="68" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">IP 헤더 20</text>
+  <text x="325" y="85" text-anchor="middle" font-size="12" fill="#1d1d1f">45 00 00 54 … 0a 04 02 63 c0 a8 3c 06</text>
+  <rect x="450" y="50" width="174" height="44" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="537" y="68" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">ICMP echo 64</text>
+  <text x="537" y="85" text-anchor="middle" font-size="12" fill="#1d1d1f">08 00 …</text>
+
+  <!-- TAP -->
+  <text x="16" y="140" font-size="13" font-weight="700" fill="#1d1d1f">TAP (2계층)</text>
+  <text x="16" y="156" font-size="12" fill="#6e6e73">98바이트</text>
+  <rect x="112" y="124" width="88" height="44" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="156" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">이더넷 14</text>
+  <text x="156" y="159" text-anchor="middle" font-size="12" fill="#1d1d1f">MAC 12 + 08 00</text>
+  <rect x="200" y="124" width="250" height="44" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="325" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">IP 헤더 20</text>
+  <text x="325" y="159" text-anchor="middle" font-size="12" fill="#1d1d1f">TUN과 같은 바이트</text>
+  <rect x="450" y="124" width="174" height="44" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="537" y="150" text-anchor="middle" font-size="12" font-weight="700" fill="#1d1d1f">ICMP echo 64</text>
+  <text x="112" y="186" font-size="12" fill="#0a84ff">목적지·출발지 MAC 6바이트씩, type 08 00(IPv4) 2바이트</text>
+
+  <!-- 바이트 해설 -->
+  <rect x="16" y="206" width="608" height="110" rx="8" fill="#f2f2f7"/>
+  <text x="30" y="230" font-size="12" fill="#1d1d1f"><tspan font-weight="700">45</tspan>  IPv4(4) + 헤더 길이 5워드(20바이트)</text>
+  <text x="30" y="250" font-size="12" fill="#1d1d1f"><tspan font-weight="700">00 54</tspan>  전체 길이 0x54 = 84 = IP 헤더 20 + ICMP 헤더 8 + 데이터 56</text>
+  <text x="30" y="270" font-size="12" fill="#1d1d1f"><tspan font-weight="700">0a 04 02 63</tspan>  출발지 10.4.2.99 (VPN 클라이언트의 tun0)</text>
+  <text x="30" y="290" font-size="12" fill="#1d1d1f"><tspan font-weight="700">c0 a8 3c 06</tspan>  목적지 192.168.60.6 (사설망의 호스트 V)</text>
+  <text x="30" y="308" font-size="12" fill="#6e6e73">IFF_NO_PI 플래그를 주면 앞에 붙는 4바이트 패킷 정보가 빠져 첫 바이트가 바로 45다.</text>
+</svg>

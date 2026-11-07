@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>'노원'을 입력하는 동안 입력 칸 값은 ㄴ, 노, 농, 노워, 노원으로 바뀌고 isComposing이 참이다. 수정 전에는 입력이 멈출 때마다 조합 중인 값으로 Open-Meteo에 요청했고, 수정 후에는 내장 도시 검색만 매번 하고 Open-Meteo 요청은 조합이 끝난 두 글자 이상의 값으로 한 번 한다</title>
+<rect width="640" height="350" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">'노원'을 입력하는 동안 입력 칸의 값과 요청</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">한글 입력기는 자모를 조합하는 동안에도 입력 이벤트를 보낸다</text>
+
+<text x="24" y="92" font-size="12" font-weight="700" fill="#6e6e73">누른 키</text>
+<text x="24" y="132" font-size="12" font-weight="700" fill="#6e6e73">입력 칸 값</text>
+<text x="24" y="166" font-size="12" font-weight="700" fill="#6e6e73">isComposing</text>
+
+<g font-size="14" text-anchor="middle">
+<text x="146" y="92" fill="#1d1d1f">ㄴ</text>
+<text x="236" y="92" fill="#1d1d1f">ㅗ</text>
+<text x="326" y="92" fill="#1d1d1f">ㅇ</text>
+<text x="416" y="92" fill="#1d1d1f">ㅝ</text>
+<text x="506" y="92" fill="#1d1d1f">ㄴ</text>
+<text x="584" y="92" font-size="12" fill="#1d1d1f">조합 종료</text>
+</g>
+<g>
+<rect x="114" y="108" width="64" height="36" rx="7" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="204" y="108" width="64" height="36" rx="7" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="294" y="108" width="64" height="36" rx="7" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="384" y="108" width="64" height="36" rx="7" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="474" y="108" width="64" height="36" rx="7" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="552" y="108" width="64" height="36" rx="7" fill="#eef6ff" stroke="#0a84ff" stroke-width="1.5"/>
+</g>
+<g font-size="15" text-anchor="middle" fill="#1d1d1f">
+<text x="146" y="132">ㄴ</text>
+<text x="236" y="132">노</text>
+<text x="326" y="132">농</text>
+<text x="416" y="132">노워</text>
+<text x="506" y="132">노원</text>
+<text x="584" y="132" font-weight="700" fill="#0a84ff">노원</text>
+</g>
+<g font-size="12" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">
+<text x="146" y="166" fill="#c46f00">true</text>
+<text x="236" y="166" fill="#c46f00">true</text>
+<text x="326" y="166" fill="#c46f00">true</text>
+<text x="416" y="166" fill="#c46f00">true</text>
+<text x="506" y="166" fill="#c46f00">true</text>
+<text x="584" y="166" fill="#0a84ff">false</text>
+</g>
+
+<rect x="24" y="186" width="592" height="66" rx="9" fill="#fff5f4" stroke="#ff3b30"/>
+<text x="40" y="208" font-size="13" font-weight="700" fill="#ff3b30">수정 전</text>
+<text x="40" y="228" font-size="12" fill="#1d1d1f">입력이 0.3초 멈출 때마다 그 시각의 값으로 Open-Meteo에 요청한다</text>
+<text x="40" y="244" font-size="12" fill="#6e6e73">'농', '노워'처럼 조합 중인 글자도 요청 대상이 되고, 요청마다 1~10초를 기다린다</text>
+
+<rect x="24" y="264" width="592" height="72" rx="9" fill="#f0faf2" stroke="#34c759"/>
+<text x="40" y="286" font-size="13" font-weight="700" fill="#248a3d">수정 후</text>
+<text x="40" y="306" font-size="12" fill="#1d1d1f">내장 도시 211곳 검색은 매 입력마다 즉시 ('노' → 노원구)</text>
+<text x="40" y="324" font-size="12" fill="#1d1d1f">Open-Meteo 요청은 조합이 끝나고 두 글자 이상일 때, 0.25초 멈춘 뒤 한 번 ('노원')</text>
+</svg>

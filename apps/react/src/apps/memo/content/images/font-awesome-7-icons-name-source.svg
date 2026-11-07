@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">글꼴 이름을 지정하는 CSS가 어디에 있는가</text>
+
+  <rect x="170" y="48" width="300" height="44" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+  <text x="320" y="68" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">package.json: @fortawesome/fontawesome-free</text>
+  <text x="320" y="85" font-size="12" fill="#6e6e73" text-anchor="middle">6.7.2 → 7.3.1 (Dependabot #217)</text>
+  <line x1="240" y1="94" x2="170" y2="128" stroke="#34c759" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="150" y="112" font-size="12" fill="#34c759" text-anchor="middle">함께 바뀐다</text>
+  <line x1="400" y1="94" x2="470" y2="128" stroke="#c7c7cc" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="500" y="112" font-size="12" fill="#ff3b30" text-anchor="middle">영향 없음</text>
+
+  <rect x="20" y="132" width="290" height="190" rx="10" fill="#eafaef" stroke="#34c759"/>
+  <text x="165" y="156" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">HTML 아이콘 (버튼 등)</text>
+  <text x="36" y="182" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;i class="fa-solid fa-globe"&gt;</text>
+  <text x="36" y="210" font-size="12" fill="#6e6e73">글꼴 이름을 정하는 곳: 패키지의 all.min.css</text>
+  <rect x="32" y="220" width="266" height="58" rx="6" fill="#fff" stroke="#c7c7cc"/>
+  <text x="42" y="240" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">.fa-solid { font-family:</text>
+  <text x="42" y="256" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">  "Font Awesome 7 Free" }</text>
+  <text x="42" y="272" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">.fa-globe { --fa: "\f0ac" }</text>
+  <text x="165" y="306" font-size="12" font-weight="600" fill="#34c759" text-anchor="middle">업그레이드 후에도 정상</text>
+
+  <rect x="330" y="132" width="290" height="190" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+  <text x="475" y="156" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">SVG 구조도 아이콘</text>
+  <text x="346" y="182" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;text class="cr-node-icon"&gt;</text>
+  <text x="346" y="210" font-size="12" fill="#6e6e73">글꼴 이름을 정하는 곳: 저장소의 CSS 파일</text>
+  <rect x="342" y="220" width="266" height="58" rx="6" fill="#fff" stroke="#c7c7cc"/>
+  <text x="352" y="240" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">.cr-node-icon { font-family:</text>
+  <text x="352" y="256" font-size="12" fill="#ff3b30" font-family="ui-monospace, Menlo, monospace">  'Font Awesome 6 Free' }</text>
+  <text x="352" y="272" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">(CreativeArchitecture.css)</text>
+  <text x="475" y="306" font-size="12" font-weight="600" fill="#ff3b30" text-anchor="middle">6의 이름이 남아 아이콘이 깨짐</text>
+
+  <text x="320" y="352" font-size="12" fill="#6e6e73" text-anchor="middle">패키지를 올리면 패키지 안의 CSS만 바뀐다. 저장소에 직접 적은 글꼴 이름은 사람이 고쳐야 한다</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>제목 형식으로 판별하던 연재와 머리말 칸으로 옮긴 연재</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">전: 제목이 연재 정보를 겸한다</text>
+<g font-size="13">
+<rect x="20" y="44" width="600" height="100" rx="10" fill="#f2f2f7"/>
+<text x="36" y="70" fill="#1d1d1f" font-family="SFMono-Regular, Menlo, monospace">title: 트래픽 분석 2 - sendBeacon으로 5초마다 묶어 보내는 방문 이벤트</text>
+<text x="36" y="94" fill="#6e6e73">'이름 번호 - 제목' 형식을 읽어 연재 이름 '트래픽 분석', 순서 2로 판별</text>
+<text x="36" y="118" fill="#ff3b30">제목을 '트래픽 분석 2: sendBeacon으로 …'으로 고치면 형식이 깨져 연재에서 빠진다</text>
+<text x="36" y="136" fill="#ff3b30" font-size="12">순서를 바꾸려면 제목을 고쳐야 한다</text>
+</g>
+<text x="20" y="180" font-size="15" font-weight="700" fill="#1d1d1f">후: 제목과 연재 칸을 나눈다</text>
+<g font-size="13">
+<rect x="20" y="194" width="600" height="120" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="36" y="220" fill="#1d1d1f" font-family="SFMono-Regular, Menlo, monospace">title: sendBeacon으로 5초마다 묶어 보내는 방문 이벤트</text>
+<text x="36" y="242" fill="#0a84ff" font-family="SFMono-Regular, Menlo, monospace">series: 트래픽 분석</text>
+<text x="36" y="264" fill="#0a84ff" font-family="SFMono-Regular, Menlo, monospace">seriesOrder: 2</text>
+<text x="300" y="242" fill="#1d1d1f">서버: Post의 series·seriesOrder 열</text>
+<text x="300" y="264" fill="#1d1d1f">(임시본은 draftSeries·draftSeriesOrder)</text>
+<text x="36" y="296" fill="#34c759" font-weight="700">제목을 고쳐도 연재는 그대로, 순서는 숫자 칸만 고친다</text>
+</g>
+</svg>

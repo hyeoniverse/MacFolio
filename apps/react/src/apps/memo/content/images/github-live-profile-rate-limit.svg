@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>브라우저 직접 호출과 서버 캐시의 GitHub 요청 수 비교</title>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">한 시간 동안 GitHub가 받는 요청 수 (토큰 없음, 한도 60회)</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">GitHub 앱을 한 번 열 때 필요한 요청을 6회(계정·README·저장소 목록·개별 저장소)로 가정한 계산</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="70" width="290" height="290" rx="10" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="36" y="96" font-size="14" font-weight="700" fill="#ff3b30">브라우저가 직접 호출</text>
+<text x="36" y="118">한도는 방문자 IP마다 적용된다</text>
+<text x="36" y="142">같은 회사망에서 방문자 10명 (IP 1개)</text>
+<g>
+<rect x="36" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="62" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="88" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="114" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="140" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="166" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="192" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="218" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="244" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/><rect x="270" y="154" width="22" height="22" rx="4" fill="#ff9f0a"/>
+</g>
+<text x="36" y="204" font-family="ui-monospace, Menlo, monospace" font-size="13">10명 × 6회 = 60회</text>
+<rect x="36" y="216" width="258" height="16" rx="4" fill="#ffffff" stroke="#6e6e73"/>
+<rect x="36" y="216" width="258" height="16" rx="4" fill="#ff3b30"/>
+<text x="36" y="250" fill="#ff3b30" font-weight="700">한도 60회 도달</text>
+<text x="36" y="274">11번째 방문자부터 GitHub가 403·429로 응답</text>
+<text x="36" y="298">방문자가 늘수록 요청 수도 비례해 증가</text>
+<text x="36" y="334" fill="#6e6e73">요청 수 = 방문자 수 × 6</text>
+
+<rect x="330" y="70" width="290" height="290" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="346" y="96" font-size="14" font-weight="700" fill="#0a84ff">API 서버가 조회해 캐시</text>
+<text x="346" y="118">한도는 서버 IP 하나에만 적용된다</text>
+<text x="346" y="142">캐시 30분 → 1시간에 갱신 최대 2번</text>
+<rect x="346" y="154" width="22" height="22" rx="4" fill="#0a84ff"/><rect x="372" y="154" width="22" height="22" rx="4" fill="#0a84ff"/>
+<text x="402" y="171" fill="#6e6e73">방문자 수와 무관</text>
+<text x="346" y="204" font-family="ui-monospace, Menlo, monospace" font-size="13">2번 × 6회 = 12회</text>
+<rect x="346" y="216" width="258" height="16" rx="4" fill="#ffffff" stroke="#6e6e73"/>
+<rect x="346" y="216" width="51.6" height="16" rx="4" fill="#0a84ff"/>
+<text x="346" y="250" fill="#0a84ff" font-weight="700">한도의 20%</text>
+<text x="346" y="274">방문자 10명이든 1,000명이든 12회</text>
+<text x="346" y="298">나머지 방문자는 캐시된 값을 받는다</text>
+<text x="346" y="334" fill="#6e6e73">요청 수 = (60분 ÷ 캐시 시간) × 6</text>
+</g>
+</svg>

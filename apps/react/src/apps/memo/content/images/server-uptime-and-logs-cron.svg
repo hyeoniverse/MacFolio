@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>cron 식 */10 * * * *의 다섯 칸과 실행 시각 예시</title>
+<rect width="640" height="270" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">cron 식 '*/10 * * * *'의 다섯 칸</text>
+<g font-family="SFMono-Regular, Menlo, monospace" font-size="22" font-weight="700" text-anchor="middle">
+<rect x="20" y="50" width="112" height="50" rx="8" fill="#e5f1ff" stroke="#0a84ff"/><text x="76" y="83" fill="#0a84ff">*/10</text>
+<rect x="144" y="50" width="112" height="50" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/><text x="200" y="83" fill="#1d1d1f">*</text>
+<rect x="268" y="50" width="112" height="50" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/><text x="324" y="83" fill="#1d1d1f">*</text>
+<rect x="392" y="50" width="112" height="50" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/><text x="448" y="83" fill="#1d1d1f">*</text>
+<rect x="516" y="50" width="104" height="50" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/><text x="568" y="83" fill="#1d1d1f">*</text>
+</g>
+<g font-size="13" text-anchor="middle" fill="#1d1d1f">
+<text x="76" y="122" font-weight="700">분 (0–59)</text><text x="76" y="140" fill="#6e6e73">0부터 10씩</text><text x="76" y="156" fill="#6e6e73">0,10,20,…,50</text>
+<text x="200" y="122" font-weight="700">시 (0–23)</text><text x="200" y="140" fill="#6e6e73">모든 시</text>
+<text x="324" y="122" font-weight="700">일 (1–31)</text><text x="324" y="140" fill="#6e6e73">모든 날</text>
+<text x="448" y="122" font-weight="700">월 (1–12)</text><text x="448" y="140" fill="#6e6e73">모든 달</text>
+<text x="568" y="122" font-weight="700">요일 (0–6)</text><text x="568" y="140" fill="#6e6e73">모든 요일</text>
+</g>
+<line x1="20" y1="176" x2="620" y2="176" stroke="#e5e5ea"/>
+<text x="20" y="200" font-size="13" font-weight="700" fill="#1d1d1f">실행 예정 시각 (UTC 기준, 한 시간에 6번, 하루 144번)</text>
+<g font-size="12" text-anchor="middle" fill="#1d1d1f">
+<line x1="40" y1="232" x2="600" y2="232" stroke="#6e6e73"/>
+<g fill="#0a84ff"><circle cx="40" cy="232" r="5"/><circle cx="133" cy="232" r="5"/><circle cx="227" cy="232" r="5"/><circle cx="320" cy="232" r="5"/><circle cx="413" cy="232" r="5"/><circle cx="507" cy="232" r="5"/><circle cx="600" cy="232" r="5"/></g>
+<text x="40" y="256">09:00</text><text x="133" y="256">09:10</text><text x="227" y="256">09:20</text><text x="320" y="256">09:30</text><text x="413" y="256">09:40</text><text x="507" y="256">09:50</text><text x="600" y="256">10:00</text>
+</g>
+<text x="620" y="218" font-size="12" text-anchor="end" fill="#ff9f0a">GitHub 부하에 따라 몇 분씩 늦게 시작될 수 있다</text>
+</svg>

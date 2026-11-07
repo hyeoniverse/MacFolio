@@ -1,0 +1,331 @@
+---
+title: 빌드 CSS md5·getComputedStyle·PostCSS로 검증하며 CSS 파일 분할과 중복·미사용 규칙 삭제하기
+date: 2026-10-17
+category: 개발 기록/MacFolio/화면·스타일
+series: CSS 정리
+seriesOrder: 4
+summary: 4,600줄 Memo.css를 구역 경계에서 열다섯 파일로 나눠 빌드 CSS md5로 동일성을 확인했다. Safari 페이지의 중복 규칙 103개와 미사용 클래스 9개의 규칙 24개는 PostCSS로 삭제하고 계산된 스타일 비교와 시험으로 검증했다.
+---
+
+리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150))에서 CSS를 세 번 정리했다. 큰 파일 나누기, 파일 간 중복 규칙 삭제, 사용하지 않는 규칙 삭제다. 세 작업 모두 화면을 바꾸지 않는 것이 조건이었고, 화면을 육안으로 비교하는 대신 작업마다 결과가 같다는 것을 기계적으로 검증하는 방법을 정했다.
+
+| 작업                             | 대상                                 | 검증 방법                         | PR                                                       |
+| -------------------------------- | ------------------------------------ | --------------------------------- | -------------------------------------------------------- |
+| 큰 CSS 파일 분할                 | `Memo.css` 4,600줄                   | 분할 전후 빌드 CSS의 md5 비교     | [#238](https://github.com/hyeoniverse/MacFolio/pull/238) |
+| 파일 간 중복 규칙 삭제           | `HyeoniversePage.css`의 복사본 103개 | 요소 3,720개의 계산된 스타일 비교 | [#241](https://github.com/hyeoniverse/MacFolio/pull/241) |
+| 사용하지 않는 클래스의 규칙 삭제 | CSS 클래스 2,761개 중 9개            | 재검색, 단위 시험·E2E             | [#242](https://github.com/hyeoniverse/MacFolio/pull/242) |
+
+## 배경: 세 가지 검증 도구
+
+CSS 리팩터링(동작을 바꾸지 않고 코드 구조만 바꾸는 작업)은 결과가 같아야 성공이다. 이 글은 결과가 같은지를 세 가지 방법으로 확인한다.
+
+| 도구              | 무엇을 비교하나                                     | 예                                                                                                  |
+| ----------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **해시(md5)**     | 빌드한 CSS 파일의 바이트 전체                       | 문자열 `hello`의 md5는 `5d41402a…`, `world`는 `7d793037…`처럼 내용이 다르면 32자리 값이 전혀 다르다 |
+| **계산된 스타일** | 브라우저가 요소마다 최종 적용한 속성 값             | 같은 버튼에서 `color: rgb(43, 33, 0)`, `font-size: 11px`처럼 규칙이 모두 적용된 결과                |
+| **PostCSS**       | CSS를 트리 구조로 읽어 규칙·선택자·선언 단위로 편집 | `.a, .b { … }`를 "선택자 배열 `['.a', '.b']` + 선언 목록"으로 다룬다                                |
+
+**해시**는 임의 길이의 데이터를 고정 길이 값으로 바꾸는 함수의 결과다. 같은 입력은 항상 같은 값을 내고, 내용이 조금만 달라도 값이 완전히 달라진다. 빌드 결과 두 개의 md5가 같으면 두 파일은 내용이 같다고 판단할 수 있다.
+
+**계산된 스타일**(computed style)은 캐스케이드[^cascade]를 모두 거친 뒤 요소에 남는 값이다. 브라우저의 [`getComputedStyle(요소)`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)로 읽는다. CSS 파일 내용이 달라도 요소마다 계산된 스타일이 같으면 화면은 같다.
+
+**PostCSS**는 CSS를 AST(추상 구문 트리: 코드를 문법 단위의 노드로 나눈 트리)로 읽고, 노드를 수정한 뒤 다시 CSS 문자열로 출력하는 도구다. 문자열을 직접 자르고 붙이지 않으므로 중괄호나 쉼표를 잘못 남기는 실수가 생기지 않는다.
+
+## Memo.css 분할: 선언 순서 유지
+
+### 주제별 이동이 화면을 바꾸는 이유
+
+메모 앱은 이 사이트에서 가장 큰 앱이다. 스타일도 `Memo.css` 한 파일에 4,600줄이 모여 있어서, 휴대폰 목록 화면의 여백 하나를 수정하려 해도 4,600줄 파일을 검색해야 했다. [리팩터링 계획](/memo/refactor-retrospective#2단계-폴더-구조와-의존)의 "큰 파일 나누기"에서 이 파일이 가장 컸다.
+
+CSS는 명시도가 같은 선택자가 둘이면 **뒤에 선언된 규칙이 적용된다**[^cascade]. 휴대폰 규칙이 데스크톱 규칙보다 뒤에 있어야 덮어쓸 수 있고, 나중에 추가한 규칙이 앞의 규칙을 덮어쓰는 곳도 있다. 그래서 "사이드바 규칙은 모두 sidebar.css로"처럼 ==흩어진 규칙을 한 파일로 모으면 선언 순서가 바뀌어 화면이 달라질 수 있다==. 큰 파일을 분할할 때 "어디로 옮길까"보다 "무엇이 바뀌면 안 되나"를 먼저 정했고, CSS에서는 그것이 선언 순서였다.
+
+![주제별 이동과 경계 분할](./images/memo-css-split-order-risk.svg '주제별로 모으면 선언 순서가 바뀌어 화면이 달라질 수 있다. 경계에서 분할만 하면 순서는 그대로다')
+
+| 방법                                            | 장점                                          | 단점                                                                                                |
+| ----------------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| 컴포넌트마다 CSS를 붙인다 (`Sidebar.css` 등)    | 컴포넌트와 스타일이 함께 있다                 | 규칙이 여러 컴포넌트에 걸친 곳이 많고, 적용 순서가 import 순서에 따라 바뀐다                        |
+| CSS Modules로 바꾼다                            | 이름이 겹치지 않는다                          | 클래스 이름이 바뀌어 E2E 선택자와 다른 앱의 규칙이 깨진다. 4,600줄을 한 번에 옮기기에는 범위가 크다 |
+| **구역 경계에서 분할하고 `@import`로 순서대로** | 빌드 결과를 바이트 단위로 같게 유지할 수 있다 | 파일 안에 "나중에 추가한 규칙"이 그대로 남는다                                                      |
+
+### 구역 경계 분할과 @import 목록
+
+규칙을 옮기지 않고, 파일을 **구역 경계에서 분할했다**. 원래 파일에는 `/* ─── 폴더 사이드바 ─── */` 같은 구역 제목 주석이 있었고, 분할 위치가 `@media`·`@layer` 블록 안이 아닌지(중괄호 깊이가 0인지) 확인했다.
+
+> [!WARNING] 블록 안에서 분할하지 않는다
+> `@media (max-width: …) { … }` 안에서 분할하면 앞 파일은 `{`가 열린 채 끝나고 뒤 파일은 `}`로 시작해 두 파일 모두 문법 오류가 있는 CSS가 되기 때문이다.
+
+| 순서  | 파일                                                  | 줄    | 내용                                        |
+| ----- | ----------------------------------------------------- | ----- | ------------------------------------------- |
+| 1     | `theme.css`                                           | 149   | 색 변수, 플로팅 칸 배치, 칸 너비 핸들       |
+| 2–4   | `toolbar`·`sidebar`·`list`                            | 924   | 도구 막대, 폴더 사이드바, 글 목록           |
+| 5–9   | `note`·`format`·`editor-blocks`·`comments`·`markdown` | 2,099 | 본문, 서식 도구, 편집기 블록, 댓글, 본문 글 |
+| 10    | `gallery.css`                                         | 130   | 갤러리                                      |
+| 11–13 | `compact`·`phone-note`·`phone-lists`                  | 981   | 좁은 창, 휴대폰 본문, 휴대폰 목록           |
+| 14–15 | `highlight`·`late`                                    | 333   | 코드 하이라이트, 나중에 추가한 규칙         |
+
+![열다섯 파일의 줄 수 막대](./images/memo-css-split-order.svg '순서를 바꾸지 않고 구역 경계에서만 분할했다')
+
+`Memo.css`는 열다섯 줄의 [`@import`](https://developer.mozilla.org/en-US/docs/Web/CSS/@import) 목록이 되었다. Vite는 빌드 과정에서 CSS `@import`를 인라인으로 펼쳐([Vite 문서: `@import` Inlining and Rebasing](https://vite.dev/guide/features#import-inlining-and-rebasing)) 이 목록을 순서대로 한 파일로 합친다.
+
+```css
+/* 메모 앱의 스타일. 파일 차례가 곧 적용 차례라(뒤에 온 같은 선택자가 이긴다) 원래 한 파일이던 차례 그대로 불러온다 */
+@import './styles/theme.css';
+@import './styles/toolbar.css';
+@import './styles/sidebar.css';
+/* … */
+@import './styles/highlight.css';
+@import './styles/late.css';
+```
+
+> [!IMPORTANT]
+> 맨 위 주석이 이 파일의 유일한 규칙이다. 순서를 바꾸지 않는다. 새 규칙은 해당 구역 파일에 추가하되, 같은 선택자를 덮어쓰는 규칙이 뒤 파일에 있는지 먼저 확인한다.
+
+### 빌드 CSS md5 비교
+
+분할 전과 후에 빌드한 CSS 파일의 해시(md5)를 비교했다. 두 값이 같았다. 주석은 빌드 결과에서 제거되므로, 규칙과 순서가 하나도 바뀌지 않았다는 뜻이다. 빌드한 파일 이름(내용 해시가 포함된다)도 같았다. ==결과물이 같다는 것을 해시로 검증할 수 있는 리팩터링은 화면을 하나씩 확인할 필요가 없다==. 해시가 다르면 빌드 결과를 `diff`로 비교해 달라진 위치를 찾는다.
+
+| 검증 방법              | 확인 범위                     | 소요 시간           |
+| ---------------------- | ----------------------------- | ------------------- |
+| 화면 스크린샷 비교     | 시험이 지나가는 화면의 규칙만 | 화면 수만큼 캡처    |
+| **빌드 CSS 해시 비교** | 빌드 결과의 모든 규칙과 순서  | 빌드 2회와 해시 1회 |
+
+PR([#238](https://github.com/hyeoniverse/MacFolio/pull/238))의 변경 규모는 27개 파일, 4,689줄 추가, 4,619줄 삭제다. 추가한 줄이 70줄 많은 이유는 파일마다 붙인 구역 주석과 `@import` 줄이다. 코드 주석 여덟 곳에서 "`Memo.css`의 … 규칙"이라고 적은 부분을 분할한 파일 이름(`styles/compact.css`, `styles/theme.css` 등)으로 수정했다. `CONTRIBUTING.md`의 파일 이름 규칙 표에는 "스타일이 길면(2,000줄 넘게) `styles/`에 나누고 원래 `.css`는 `@import` 목록"이라는 줄을 추가했다.
+
+### late.css에 남은 규칙
+
+맨 뒤의 `late.css`에는 새 메모·검색 칸 애니메이션, 이미지 틀, 캡션처럼 나중에 추가한 규칙이 섞여 있다. 각 규칙을 해당 구역 파일(목록, 본문)로 옮기면 파일 구성은 주제별로 정리되지만 선언 순서가 바뀐다. 옮길 때는 규칙 하나씩, 덮어쓰는 규칙이 없는지 확인하면서 진행한다. 나중에 정리할 대상을 파일 이름으로 드러내면 다음 작업자가 찾기 쉽다.
+
+10월 19일 기준 열다섯 파일의 합계는 4,644줄이다. 가장 큰 것은 `note.css`(612줄)와 `phone-lists.css`(580줄)다.
+
+## 중복 규칙 삭제: CreativeParts.css와 HyeoniversePage.css
+
+### 공유 컴포넌트 CSS의 복사본
+
+Safari 앱의 프로젝트 페이지는 CSS가 2만 8천 줄을 넘는다. 리팩터링 이슈에 "공통 부분 통합"을 기록해 두었는데, 통합 대상을 추측으로 정하지 않고 파일 간 실제 중복부터 집계했다.
+
+Safari 앱은 프로젝트마다 소개 페이지를 표시한다. 기존 일곱 프로젝트는 각각 직접 작성한 전용 페이지(`safari/project/custom/`)가 있고, 새 프로젝트용으로는 신문·칸반·터미널 같은 템플릿 열두 개가 있다. 그 사이에 여러 페이지가 공유하는 컴포넌트 모음 `CreativeParts.tsx`가 있다. 라이트·다크 비교 슬라이더(`Compare`), 스크롤 장면(`ScrollFrames`), 막대 그래프(`Bars`), 대형 이미지(`FeatureMedia`) 등이다.
+
+화면상 문제는 없었다. 다만 공유 컴포넌트의 스타일을 수정할 때 어느 파일을 수정해야 하는지 불명확했다. 두 파일에 같은 선택자가 있어서, 한쪽만 수정하면 다른 쪽이 덮어쓰는지를 매번 확인해야 했다.
+
+모든 CSS 파일에서 규칙(선택자와 선언 블록)을 추출해, 두 파일 간 **선택자와 선언이 모두 같은** 규칙 수를 파일 쌍마다 집계했다.
+
+| 파일 쌍                                     | 동일 규칙 |
+| ------------------------------------------- | --------- |
+| `CreativeParts.css` ↔ `HyeoniversePage.css` | 106       |
+| 그 밖의 모든 쌍                             | 5개 이하  |
+
+템플릿 열두 개(신문, 칸반, 터미널 등)는 의도적으로 서로 다르게 디자인한 페이지라 중복 규칙이 거의 없었다. "공통 부분 통합"이라는 추상적인 작업은 ==집계하면 구체적인 위치 하나로 좁혀진다==.
+
+### 중복 발생 원인
+
+비교 슬라이더, 스크롤 장면, 레이아웃 도식 같은 컴포넌트는 처음에 HYEONIVERSE 페이지 안에서 구현했다. 다른 페이지에서도 사용하려고 `CreativeParts.tsx`로 이동하면서 CSS도 `CreativeParts.css`로 복사했는데, 원래 위치의 규칙을 삭제하지 않았다. HYEONIVERSE 페이지는 이제 그 컴포넌트를 `CreativeParts`에서 import하므로, 컴포넌트의 CSS도 함께 로드된다.
+
+```tsx
+// apps/react/src/apps/safari/project/custom/HyeoniversePage.tsx
+import '@/apps/safari/project/custom/HyeoniversePage.css';
+import { Bars, Compare, FeatureMedia, ScrollFrames } from '@/apps/safari/project/CreativeParts';
+// CreativeParts.tsx 안에서 import '@/apps/safari/project/CreativeParts.css';
+```
+
+같은 규칙이 두 번 로드되어도 값이 같으므로 화면은 동일하다. 그래서 오랫동안 발견되지 않았다. 비용은 두 가지였다.
+
+1. 같은 내용이 페이지 CSS에 한 번 더 포함되어 전송량이 늘어난다.
+2. 컴포넌트 스타일을 수정할 때 두 곳을 함께 수정하지 않으면, [캐스케이드](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade) 순서상 나중에 로드되는 파일에 따라 수정 사항이 적용되거나 적용되지 않는다.
+
+![HyeoniversePage.css가 먼저, CreativeParts.css가 나중에 실린다. 같은 규칙이 두 번 있으면 나중 것이 이긴다](./images/creative-css-dedupe-order.svg '같은 선택자·같은 값이면 어느 쪽을 지워도 결과는 같다. 지우는 쪽은 페이지 전용 파일')
+
+| 방법                                             | 장점                                                      | 단점                                                            |
+| ------------------------------------------------ | --------------------------------------------------------- | --------------------------------------------------------------- |
+| `CreativeParts.css` 쪽을 삭제                    | 페이지 파일은 그대로                                      | 컴포넌트를 사용하는 다른 페이지(템플릿)의 스타일이 사라진다     |
+| 공통 부분을 새 파일로 분리하고 두 파일이 import  | 구조가 명확해 보인다                                      | 이미 `CreativeParts.css`가 그 역할이다. 파일만 하나 늘어난다    |
+| `HyeoniversePage.css`의 복사본만 삭제 (**채택**) | 컴포넌트 스타일의 소유 파일(`CreativeParts`)이 명확해진다 | 페이지 전용으로 덮어쓰던 규칙이 섞여 있으면 결과가 바뀔 수 있다 |
+
+세 번째 방법을 채택했다. 마지막 단점의 위험은 아래 계산된 스타일 비교로 확인했다.
+
+### PostCSS로 선별한 103개 삭제
+
+규칙의 동일 여부는 문자열 비교가 아니라 CSS 파서([PostCSS](https://postcss.org/))로 판정했다. `@media` 안의 규칙은 같은 조건의 `@media` 안 규칙과만 동일한 것으로 본다. 이렇게 선별한 103개를 `HyeoniversePage.css`에서 삭제했고, 파일은 1,444줄에서 735줄이 됐다. 삭제한 규칙은 `.cr-feature-media > img`, `.cr-compare`, `.cr-compare-dark`, `.cr-compare-handle`처럼 모두 `cr-` 접두사가 붙은 컴포넌트 선택자였다. `@keyframes`도 여섯 개 삭제했는데, 역시 컴포넌트가 사용하는 애니메이션이었다.
+
+| 항목                        | 전       | 후                   |
+| --------------------------- | -------- | -------------------- |
+| `HyeoniversePage.css` 줄 수 | 1,444    | 735                  |
+| 파일 크기                   | 29,590 B | 16,192 B             |
+| gzip -9                     | 8,053 B  | 5,144 B              |
+| 커밋 변경                   |          | +41 / −710 (글 포함) |
+
+![HyeoniversePage.css의 줄 수와 크기가 절반 가까이 줄었다](./images/creative-css-dedupe-size.svg '지운 뒤 줄 수는 51%, gzip 크기는 64%가 남았다')
+
+### 계산된 스타일 비교
+
+같은 규칙이 다른 파일에 남아 있어도, 삭제한 규칙이 다른 규칙을 다시 덮어쓰던 위치였다면 결과가 바뀔 수 있다. 이 작업은 빌드 결과 자체가 달라지므로 md5 비교를 쓸 수 없고, **브라우저가 계산한 스타일**을 비교했다.
+
+1. 삭제 전 빌드로 HYEONIVERSE 페이지를 열고, 페이지 안의 모든 요소(1,860개)마다 [`getComputedStyle`](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)의 모든 속성을 기록한다.
+2. 라이트·다크 모드, 데스크톱과 휴대폰 두 기종(iPhone·Pixel)에서 각각 실행한다.
+3. 삭제 후 빌드로 같은 작업을 실행하고 결과를 비교한다.
+
+==모든 조건에서 3,720개 요소의 계산된 스타일이 같았다==. 계산된 스타일을 기록해 비교하면, 삭제한 규칙이 결과에 영향을 주지 않았다는 것을 수치로 제시할 수 있다.
+
+| 검증 방법          | 화면 밖 요소 | 숨겨진 상태의 값 | 글꼴 렌더링 차이의 영향 |
+| ------------------ | ------------ | ---------------- | ----------------------- |
+| 스크린숏 비교      | 확인 불가    | 확인 불가        | 오탐 발생               |
+| 계산된 스타일 비교 | 확인         | 확인             | 영향 없음               |
+
+![지운 전후의 계산된 스타일 비교 흐름](./images/creative-css-dedupe-compare.svg '전후 빌드를 같은 조건에서 열고 요소마다 계산된 스타일을 기록해 맞춰 보았다')
+
+다른 파일 쌍의 중복 규칙(5개 이하)은 그대로 두었다. 템플릿마다 우연히 같은 선언(`display: flex` 등)을 사용한 것이라, 통합하면 오히려 템플릿 간 의존이 생긴다. `CreativeParts.css`(879줄)는 여전히 크다. 컴포넌트별 파일 분리는 컴포넌트가 더 늘어나면 진행한다.
+
+## 사용하지 않는 CSS 클래스 삭제
+
+### Stylelint로 찾을 수 없는 미사용 선택자
+
+리팩터링 계획 5단계 "스타일"에 "쓰지 않는 선택자 지우기 (Stylelint 도입 검토)" 항목이 있다. 작업 시각 기준으로 `apps/react/src` 아래 CSS 파일은 92개, 합계 5만 줄에 가까웠다. 화면을 여러 차례 재작성하면서(프로젝트 페이지를 템플릿으로 전환, Launchpad와 창 최소화 재구현, 메모 도구 막대 재구성) 이전 화면의 규칙이 남아 있을 것으로 추정했지만, 어떤 규칙이 남았는지는 확인하지 못한 상태였다.
+
+사용하지 않는 규칙은 화면에 영향을 주지 않지만 두 가지 비용이 있다.
+
+1. **번들 크기**: 사용하지 않는 규칙도 CSS 파일에 포함되어 전송된다.
+2. **유지보수 비용**: 비슷한 이름의 규칙이 두 벌 있으면 어느 쪽을 수정해야 화면이 바뀌는지 매번 확인해야 한다.
+
+[Stylelint](https://stylelint.io/)는 CSS 파일만 분석한다. 어떤 클래스를 HTML이나 컴포넌트가 사용하는지는 알 수 없으므로 "사용하지 않는 선택자" 규칙이 없다. 그 일을 하는 도구([PurgeCSS](https://purgecss.com/) 등)는 소스에서 클래스 이름을 문자열로 검색하는데, 이 사이트는 클래스 이름을 조합해 만드는 곳이 많아 그대로 적용하면 ==사용 중인 규칙까지 삭제한다==. 그래서 한 번 직접 집계했다.
+
+| 방법                                      | 장점                           | 단점                                                                          |
+| ----------------------------------------- | ------------------------------ | ----------------------------------------------------------------------------- |
+| Stylelint 도입                            | CSS 문법·순서 규칙을 검사한다  | 사용 여부는 알 수 없다                                                        |
+| PurgeCSS를 빌드에 추가                    | 빌드마다 자동으로 삭제한다     | 조합한 이름을 인식하지 못해 사용 중인 규칙까지 삭제한다. 예외 목록이 길어진다 |
+| 브라우저 커버리지(개발자 도구)[^coverage] | 실제로 적용된 규칙을 확인한다  | 모든 앱·모든 상태를 열어야 한다. 휴대폰·다크 모드까지                         |
+| 한 번 직접 집계하고 사람이 확인           | 조합 규칙을 작성자가 알고 있다 | 자동화되지 않는다                                                             |
+
+![Chrome 개발자 도구의 Coverage 패널](./images/css-cleanup-tools-coverage.jpg '파일마다 전체 바이트와 사용하지 않은 바이트(Unused Bytes), 사용 비율 막대를 표시한다. 페이지를 조작한 동안 실행·적용된 부분만 사용한 것으로 집계한다')
+
+Coverage 패널은 기록하는 동안 실제로 적용된 규칙만 "사용함"으로 표시한다. 휴대폰 화면 전용 규칙이나 오류 상태의 규칙은 그 화면을 열지 않으면 "사용하지 않음"으로 남으므로, 이 결과만으로 삭제 대상을 정할 수 없다.
+
+자동화를 채택하지 않은 이유는 아래 그림 한 장으로 설명된다.
+
+![CSS의 .sky-rain이 코드에서는 sky-와 값을 합쳐 만들어져, 문자열 검색이 놓치는 예](./images/unused-css-selectors-assembled.svg '조합한 이름은 문자열 검색으로 찾을 수 없다')
+
+### 1단계: 문자열 검색
+
+스크립트의 동작은 세 단계다.
+
+1. CSS 파일에서 주석을 제거한다.
+2. `{` 앞의 선택자에서 `.이름` 형태를 모두 추출한다.
+3. 소스 파일 전체를 하나의 문자열로 합쳐, 그 이름이 포함되어 있는지 검사한다.
+
+```python
+for sel in re.findall(r'([^{}]+)\{', css_text):
+    for name in re.findall(r'\.(-?[_a-zA-Z][\w-]*)', sel):
+        names.add(name)
+missing = [n for n in names if n not in source_blob]
+```
+
+CSS의 모든 선택자에서 클래스 이름 2,761개를 추출하고, `.ts`·`.tsx`·`.md` 어디에도 그 문자열이 없는 것을 필터링했다. 결과는 150개였다.
+
+### 2단계: 조합하는 이름 제외
+
+150개 대부분은 코드가 런타임에 이름을 조합해 붙이는 클래스였다.
+
+| 종류                   | 예                                                          | 코드                                                                              |
+| ---------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 앞부분 + 값            | `sky-rain`, `rank-1`, `view-gallery`                        | `` `weather sky-${weather.sky}` ``                                                |
+| 템플릿 접두사 + 뒷부분 | `mg-trouble`, `pp-member`                                   | `cx(prefix, 'trouble')`                                                           |
+| 라이브러리가 붙임      | `hljs-keyword`, `ProseMirror-selectednode`, `resize-cursor` | [highlight.js](https://highlightjs.org/), [ProseMirror](https://prosemirror.net/) |
+
+`이름-${` 형태와 `cx(prefix, '이름')` 형태를 코드에서 수집해 이것으로 만들 수 있는 클래스를 제외하고, 라이브러리 클래스를 제외하자 9개가 남았다. 9개는 하나씩 코드를 읽어 실제로 사용하지 않는지 확인했다.
+
+| 클래스                                    | 파일                               | 용도                                                   |
+| ----------------------------------------- | ---------------------------------- | ------------------------------------------------------ |
+| `sp-hero-main`, `sp-tiles`, `sp-timeline` | `safari/ProjectPage.css`           | 프로젝트 페이지를 템플릿으로 바꾸기 전의 공통 레이아웃 |
+| `minimized-container`, `dock-launchpad`   | `desktop/dock/DockItem.css`        | 이전 창 최소화 미리보기와 이전 Launchpad 버튼          |
+| `cd-lock`, `cd-voice-script`              | `project/creative/demos.css`       | 데모의 이전 잠금 표시와 음성 대본                      |
+| `tm-jump`                                 | `project/custom/DevCoursePage.css` | DevCourse 터미널의 이전 바로 가기                      |
+| `memo-toolbar-title`                      | `memo/styles/toolbar.css`          | 메모 도구 막대의 이전 제목                             |
+
+![클래스 2,761개에서 150개, 9개로 줄이고 규칙 24개를 삭제한 단계](./images/unused-css-selectors-funnel.svg '단계마다 남은 수')
+
+### PostCSS로 선택자 목록에서 제거
+
+직접 편집하지 않고 CSS 파서(PostCSS)로 이 클래스만 사용하는 규칙 24개를 삭제하고, 다른 선택자와 함께 묶인 곳(`.minimized-container i, .dock-item i`)은 해당 선택자만 제거했다.
+
+![PostCSS가 선택자 목록에서 항목 하나만 지우는 과정](./images/css-cleanup-tools-postcss-ast.svg '규칙의 선택자를 배열로 다루므로 쉼표를 직접 편집하지 않는다. 배열이 비면 규칙째 삭제한다') `minimized-container`만 사용하던 배경 이미지(`imgs/minimize.JPG`, 58KB)도 삭제했다.
+
+> [!WARNING] 선택자 목록의 쉼표
+> 직접 편집하지 않은 이유는 선택자 목록[^selector-list] 때문이다. `.minimized-container i, .dock-item i`에서 앞쪽만 삭제하다 쉼표 하나를 잘못 남기면 규칙 전체가 무효가 되어 `.dock-item i`까지 적용되지 않는다. 파서는 선택자 목록을 배열로 처리하므로 이런 실수가 발생하지 않는다.
+
+```css
+/* 전 */
+.minimized-container i,
+.dock-item i { … }
+
+/* 후: 선택자 하나만 제거 */
+.dock-item i { … }
+```
+
+| 파일                                           | 삭제한 줄 |
+| ---------------------------------------------- | --------- |
+| `apps/safari/ProjectPage.css`                  | 78        |
+| `apps/safari/project/creative/demos.css`       | 51        |
+| `apps/safari/project/custom/DevCoursePage.css` | 16        |
+| `desktop/dock/DockItem.css`                    | 11        |
+| `apps/memo/styles/toolbar.css`                 | 10        |
+| 합계                                           | 166       |
+
+### 미사용 클래스 삭제 확인
+
+- 삭제한 9개 클래스를 `.ts`·`.tsx`에서 다시 검색해 결과가 없는 것을 확인했다. 조합하는 곳(`` `sp-${` ``, `cx(prefix, …)`)에서도 이 뒷부분을 만드는 값이 없는지 별도로 확인했다.
+- 단위 시험 642개와 브라우저 E2E 47개(`safari.spec`·`project-apps.spec`·`desktop.spec`)가 통과했다. 이 작업은 CSS만 삭제하므로, 시험이 실패한다면 그 클래스를 어딘가에서 사용하고 있었다는 뜻이다.
+- 공개 폴더에서 `imgs/minimize.JPG`(58,836바이트)가 삭제됐다.
+
+같은 방식으로 다시 집계하면, 현재 CSS 클래스는 2,850개이고 문자열 검색으로 찾지 못하는 것이 169개다. 그사이 새 화면이 추가돼 수가 늘었다. 169개도 2단계의 조합 이름 제외를 거치지 않은 수라, 대부분 조합하는 이름으로 추정한다(2단계 이후 수는 집계하지 않았다). 1년에 한두 번은 같은 순서로 다시 집계할 계획이다.
+
+## 정리
+
+| 작업           | 바뀌면 안 되는 것       | 검증                             |
+| -------------- | ----------------------- | -------------------------------- |
+| 파일 분할      | 규칙과 선언 순서        | 빌드 CSS md5가 같다              |
+| 중복 규칙 삭제 | 요소마다 적용되는 값    | 기기·테마별 계산된 스타일이 같다 |
+| 미사용 삭제    | 사용 중인 클래스의 규칙 | 재검색 결과 없음, 시험 통과      |
+
+- CSS를 삭제하거나 옮길 때 "화면이 같아 보인다"는 확인만으로는 부족하다. 빌드 결과가 같으면 해시로, 다르면 계산된 스타일로 비교한다.
+- 선택자 목록과 `@media` 블록이 있는 CSS는 문자열로 편집하지 않고 파서(PostCSS)로 처리한다.
+- 사용하지 않는 규칙은 이름을 조합하는 코드 때문에 자동으로 찾기 어렵다. 다음에 정리할 때도 이 순서(문자열 검색, 조합하는 이름 제외, 하나씩 코드 확인)를 반복한다. 값이 몇 개뿐이면 `{ rain: 'sky-rain', … }`처럼 전체 이름을 명시하는 편이 나중에 검색하기 쉽다.
+- 도구를 도입하기 전에 "이 도구가 실제로 그 질문에 답하는가"를 먼저 확인한다. Stylelint는 CSS 문법 검사 도구로는 유용하지만 사용 여부 판단은 할 수 없었다.
+- 이 작업 이후 간격·그림자 값을 `--space-*`·`--shadow-*` 토큰으로 바꾸는 정리가 이어졌다([그림자와 간격 값을 집계해 CSS 변수 디자인 토큰으로 이름 붙이기](/memo/design-tokens#그림자와-간격---shadow---space--248)). 중복 복사본이 남아 있었다면 같은 값을 두 번 치환해야 했다.
+
+## 관련 글
+
+- [리팩터링 2단계: 구조](/memo/refactor-retrospective#2단계-폴더-구조와-의존)
+- [폴더 사이드바와 휴대폰 사진 앱 나누기](/memo/module-splitting#서로-쓰는-타입은-model-파일로-폴더-사이드바와-사진-앱)
+- [둘 이상이 쓰는 코드만 공유 모듈로 추출해 큰 데모 파일 분리하기](/memo/module-splitting#둘-이상이-쓰는-코드만-공유-모듈로-creativedemos): 프로젝트 데모 파일 분리
+- [CSS @layer로 명시도와 무관하게 앱 기본값의 우선순위 낮추기](/memo/css-layer-reset)
+- [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
+- [직접 쓴 hex 색을 --color-* 디자인 토큰과 Apple 시스템 색 이름으로 바꾸기](/memo/design-tokens#색---color--토큰과-apple-시스템-색-이름-249)
+
+PR: [#238](https://github.com/hyeoniverse/MacFolio/pull/238), [#241](https://github.com/hyeoniverse/MacFolio/pull/241), [#242](https://github.com/hyeoniverse/MacFolio/pull/242)
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
+- MDN, [@import](https://developer.mozilla.org/en-US/docs/Web/CSS/@import)
+- MDN, [Window: getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- MDN, [Selector list](https://developer.mozilla.org/en-US/docs/Web/CSS/Selector_list)
+- Vite, [Features: @import Inlining and Rebasing](https://vite.dev/guide/features#import-inlining-and-rebasing)
+- PostCSS, [PostCSS API](https://postcss.org/api/)
+- Chrome for Developers, [Coverage: Find unused JavaScript and CSS](https://developer.chrome.com/docs/devtools/coverage)
+- RFC 1321, [The MD5 Message-Digest Algorithm](https://www.rfc-editor.org/rfc/rfc1321)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Chrome 개발자 도구의 Coverage 패널: Chrome for Developers, [Coverage: Find unused JavaScript and CSS](https://developer.chrome.com/docs/devtools/coverage), CC BY 4.0
+
+</details>
+
+[^cascade]: CSS 캐스케이드는 출처·`!important`, 캐스케이드 레이어, 명시도, 선언 순서 차례로 비교한다. 앞 단계가 모두 같을 때만 선언 순서로 정해진다. [MDN: Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
+
+[^coverage]: Chrome 개발자 도구의 Coverage 패널은 페이지를 조작하는 동안 실제로 사용된 CSS·JS 바이트를 기록한다. [Chrome DevTools: Coverage](https://developer.chrome.com/docs/devtools/coverage)
+
+[^selector-list]: 쉼표로 구분한 여러 선택자에 같은 선언을 적용하는 문법. 목록 중 하나라도 잘못되면 규칙 전체가 무효가 된다. [MDN: Selector list](https://developer.mozilla.org/en-US/docs/Web/CSS/Selector_list)
+
+#MacFolio #CSS #리팩터링

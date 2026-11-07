@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Markdown 글이 화면이 되기까지 거치는 단계와 새 표기가 처리되는 자리</title>
+<rect width="640" height="470" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">읽기 화면의 Markdown 처리 단계</text>
+<g font-size="13" fill="#1d1d1f">
+<rect x="24" y="56" width="128" height="52" rx="10" fill="#f2f2f7"/><text x="88" y="78" text-anchor="middle">Markdown 글자</text><text x="88" y="97" text-anchor="middle" font-size="12" fill="#6e6e73">.md 파일</text>
+<rect x="180" y="56" width="128" height="52" rx="10" fill="#e6f2ff" stroke="#0a84ff"/><text x="244" y="78" text-anchor="middle">mdast</text><text x="244" y="97" text-anchor="middle" font-size="12" fill="#6e6e73">Markdown 트리</text>
+<rect x="336" y="56" width="128" height="52" rx="10" fill="#e6f2ff" stroke="#0a84ff"/><text x="400" y="78" text-anchor="middle">hast</text><text x="400" y="97" text-anchor="middle" font-size="12" fill="#6e6e73">HTML 트리</text>
+<rect x="492" y="56" width="124" height="52" rx="10" fill="#f2f2f7"/><text x="554" y="78" text-anchor="middle">React 요소</text><text x="554" y="97" text-anchor="middle" font-size="12" fill="#6e6e73">화면</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a)"><path d="M154 82 H176"/><path d="M310 82 H332"/><path d="M466 82 H488"/></g>
+<text x="165" y="128" font-size="12" text-anchor="middle" fill="#6e6e73">remark-parse</text>
+<text x="321" y="128" font-size="12" text-anchor="middle" fill="#6e6e73">remark-rehype</text>
+<text x="477" y="128" font-size="12" text-anchor="middle" fill="#6e6e73">react-markdown</text>
+<text x="244" y="160" font-size="13" font-weight="700" text-anchor="middle" fill="#0a84ff">remark 플러그인</text>
+<text x="400" y="160" font-size="13" font-weight="700" text-anchor="middle" fill="#0a84ff">rehype 단계</text>
+<path d="M244 112 V146" stroke="#0a84ff" stroke-dasharray="4 3"/><path d="M400 112 V146" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<g font-size="12.5">
+<text x="24" y="196" font-weight="700" fill="#1d1d1f">표기</text><text x="196" y="196" font-weight="700" fill="#1d1d1f">처리하는 곳</text><text x="350" y="196" font-weight="700" fill="#1d1d1f">결과 HTML</text>
+<line x1="24" y1="206" x2="616" y2="206" stroke="#d1d1d6"/>
+<g font-family="ui-monospace, Menlo, monospace" font-size="12">
+<text x="24" y="232" fill="#1d1d1f">==핵심==</text><text x="350" y="232" fill="#1d1d1f">&lt;mark class="memo-highlight"&gt;</text>
+<text x="24" y="270" fill="#1d1d1f">## 데이터와 정보</text><text x="350" y="270" fill="#1d1d1f">&lt;h2 id="user-content-데이터와-정보"&gt;</text>
+<text x="24" y="308" fill="#1d1d1f">`SELECT 1{:sql}`</text><text x="350" y="308" fill="#1d1d1f">&lt;code&gt; + lowlight 색 class</text>
+<text x="24" y="346" fill="#1d1d1f">```math / `식{:math}`</text><text x="350" y="346" fill="#1d1d1f">&lt;memo-math&gt; 자리 표시</text>
+<text x="24" y="384" fill="#1d1d1f">&gt; [!NOTE] 제목</text><text x="350" y="384" fill="#1d1d1f">콜아웃 상자 (종류별 색)</text>
+</g>
+<text x="196" y="232" fill="#0a84ff">remarkHighlight</text>
+<text x="196" y="270" fill="#0a84ff">remarkHeadingIds</text>
+<text x="196" y="308" fill="#6e6e73">인라인 코드 꼬리표</text>
+<text x="196" y="346" fill="#6e6e73">rehype 단계</text>
+<text x="196" y="384" fill="#6e6e73">인용 블록 첫머리</text>
+<g stroke="#e5e5ea"><line x1="24" y1="246" x2="616" y2="246"/><line x1="24" y1="284" x2="616" y2="284"/><line x1="24" y1="322" x2="616" y2="322"/><line x1="24" y1="360" x2="616" y2="360"/></g>
+</g>
+<rect x="24" y="404" width="592" height="48" rx="10" fill="#fff4e5"/>
+<text x="40" y="425" font-size="12.5" fill="#1d1d1f">&lt;memo-math&gt;가 있는 글을 처음 열 시각에만 import('katex')로 KaTeX와 CSS를 불러와</text>
+<text x="40" y="443" font-size="12.5" fill="#1d1d1f">수식을 그린다. 불러오기 전과 식이 틀린 경우에는 원문을 코드로 보인다.</text>
+</svg>

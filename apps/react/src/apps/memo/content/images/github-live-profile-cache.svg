@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Cached 클래스의 시간축 동작: 캐시 적중, 동시 요청 합치기, 실패 시 마지막 값</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1d1d1f"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">캐시 30분 동안 요청이 처리되는 방식</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">아래 화살표: 방문자 요청. 위쪽 상자: 서버가 GitHub에 보내는 조회</text>
+<line x1="40" y1="204" x2="620" y2="204" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<g font-size="12" fill="#6e6e73" text-anchor="middle">
+<text x="60" y="192">0분</text><text x="240" y="192">20분</text><text x="330" y="192">30분</text><text x="420" y="192">40분</text><text x="600" y="192">60분</text>
+</g>
+<rect x="60" y="140" width="270" height="22" rx="4" fill="#effaf2" stroke="#34c759"/>
+<text x="195" y="156" font-size="12" text-anchor="middle" fill="#1d1d1f">값 A 보관 (30분간 그대로 응답)</text>
+<rect x="330" y="140" width="270" height="22" rx="4" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="465" y="156" font-size="12" text-anchor="middle" fill="#1d1d1f">값 B 보관 (60분 시점 갱신 실패 시에도 응답)</text>
+<rect x="36" y="80" width="72" height="30" rx="6" fill="#eaf3ff" stroke="#0a84ff"/>
+<text x="72" y="100" font-size="12" text-anchor="middle" fill="#0a84ff">조회 → A</text>
+<rect x="312" y="80" width="56" height="30" rx="6" fill="#eaf3ff" stroke="#0a84ff"/>
+<text x="340" y="100" font-size="12" text-anchor="middle" fill="#0a84ff">조회 1번</text>
+<line x1="340" y1="112" x2="340" y2="138" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="376" y="100" font-size="12" fill="#0a84ff">→ 값 B</text>
+<rect x="572" y="80" width="56" height="30" rx="6" fill="#fff0ef" stroke="#ff3b30"/>
+<text x="600" y="100" font-size="12" text-anchor="middle" fill="#ff3b30">실패</text>
+<g stroke="#ff9f0a" stroke-width="2">
+<line x1="60" y1="240" x2="60" y2="206"/><line x1="150" y1="240" x2="150" y2="206"/><line x1="240" y1="240" x2="240" y2="206"/>
+<line x1="330" y1="240" x2="330" y2="206"/><line x1="336" y1="240" x2="336" y2="206"/><line x1="342" y1="240" x2="342" y2="206"/>
+<line x1="600" y1="240" x2="600" y2="206"/>
+</g>
+<g font-size="12" fill="#1d1d1f">
+<text x="60" y="262">①</text>
+<text x="150" y="262" text-anchor="middle">② 캐시 응답</text>
+<text x="240" y="262" text-anchor="middle">② 캐시 응답</text>
+<text x="336" y="262" text-anchor="middle">③ 동시 3건</text>
+<text x="600" y="262" text-anchor="end">④</text>
+<text x="20" y="290">① 캐시가 비어 있어 GitHub에 조회  ② 30분 이내라 GitHub에 묻지 않음</text>
+<text x="20" y="310">③ 만료 직후 동시 요청 3건이 진행 중인 조회 1번을 함께 기다림  ④ 갱신 실패 시 마지막 값 반환</text>
+</g>
+</svg>

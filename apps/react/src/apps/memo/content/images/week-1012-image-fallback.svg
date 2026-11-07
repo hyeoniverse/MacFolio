@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker></defs>
+<title>CI가 Postgres 이미지를 세 저장소에서 차례로 내려받는 순서와, services 방식과 작업 단계 방식의 실패 범위 비교</title>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">Postgres 이미지 내려받기 (#240)</text>
+<text x="20" y="50" font-size="12" fill="#6e6e73">한 저장소가 한도 오류를 반환하면 다음 저장소에서 같은 이미지를 받는다</text>
+<rect x="20" y="66" width="160" height="50" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+<text x="100" y="88" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">ECR Public</text>
+<text x="100" y="106" font-size="12" fill="#6e6e73" text-anchor="middle">1순위</text>
+<line x1="180" y1="91" x2="236" y2="91" stroke="#ff3b30" stroke-width="2" marker-end="url(#r)"/>
+<text x="208" y="82" font-size="12" fill="#ff3b30" text-anchor="middle">실패</text>
+<rect x="240" y="66" width="160" height="50" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+<text x="320" y="88" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">mirror.gcr.io</text>
+<text x="320" y="106" font-size="12" fill="#6e6e73" text-anchor="middle">2순위</text>
+<line x1="400" y1="91" x2="456" y2="91" stroke="#ff3b30" stroke-width="2" marker-end="url(#r)"/>
+<text x="428" y="82" font-size="12" fill="#ff3b30" text-anchor="middle">실패</text>
+<rect x="460" y="66" width="160" height="50" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+<text x="540" y="88" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">Docker Hub</text>
+<text x="540" y="106" font-size="12" fill="#6e6e73" text-anchor="middle">3순위</text>
+<text x="20" y="140" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">오류 예: toomanyrequests: Data limit exceeded</text>
+<rect x="20" y="158" width="290" height="126" rx="12" fill="#f2f2f7"/>
+<text x="36" y="184" font-size="14" font-weight="700" fill="#1d1d1f">전: services로 실행</text>
+<text x="36" y="210" font-size="12" fill="#1d1d1f">작업 시작 전에 이미지를 받는다.</text>
+<text x="36" y="230" font-size="12" fill="#1d1d1f">받지 못하면 작업 전체가 시작되지 않아</text>
+<rect x="36" y="244" width="258" height="28" rx="6" fill="#ff3b30"/>
+<text x="165" y="263" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">형식 검사·시험 모두 실행 안 됨</text>
+<rect x="330" y="158" width="290" height="126" rx="12" fill="#f2f2f7"/>
+<text x="346" y="184" font-size="14" font-weight="700" fill="#1d1d1f">후: 작업 단계(step)로 실행</text>
+<text x="346" y="210" font-size="12" fill="#1d1d1f">앞 단계의 검사가 먼저 실행된다.</text>
+<text x="346" y="230" font-size="12" fill="#1d1d1f">세 저장소 모두 실패해도</text>
+<rect x="346" y="244" width="258" height="28" rx="6" fill="#34c759"/>
+<text x="475" y="263" font-size="12" font-weight="700" fill="#ffffff" text-anchor="middle">DB가 필요한 단계만 실패</text>
+</svg>

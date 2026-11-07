@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 500" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="500" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">daytime 서버와 클라이언트의 호출 순서와 TCP 세그먼트</text>
+  <g font-size="13" font-weight="600" text-anchor="middle">
+    <rect x="40" y="42" width="160" height="32" rx="6" fill="#e5e5ea"/><text x="120" y="63" fill="#1d1d1f">클라이언트</text>
+    <rect x="440" y="42" width="160" height="32" rx="6" fill="#0a84ff"/><text x="520" y="63" fill="#fff">서버 (포트 13)</text>
+  </g>
+  <g stroke="#c7c7cc" stroke-width="1.5" stroke-dasharray="4 4"><line x1="200" y1="80" x2="200" y2="446"/><line x1="440" y1="80" x2="440" y2="446"/></g>
+  <g font-size="12" font-family="Menlo, monospace" fill="#1d1d1f">
+    <text x="450" y="102">socket()</text>
+    <text x="450" y="120">bind(*:13)</text>
+    <text x="450" y="138">listen()</text>
+    <text x="450" y="160" fill="#0a84ff">accept() 대기</text>
+    <text x="190" y="184" text-anchor="end">socket()</text>
+    <text x="190" y="206" text-anchor="end" fill="#0a84ff">connect() 대기</text>
+    <text x="190" y="262" text-anchor="end">connect() 반환</text>
+    <text x="450" y="290">accept() 반환 → connfd</text>
+    <text x="450" y="312">time(), ctime()</text>
+    <text x="450" y="334">write(connfd)</text>
+    <text x="190" y="362" text-anchor="end">read() → 출력</text>
+    <text x="450" y="372">close(connfd)</text>
+    <text x="190" y="438" text-anchor="end">read() = 0 → 종료</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)">
+    <line x1="200" y1="214" x2="438" y2="230"/>
+    <line x1="440" y1="238" x2="202" y2="254"/>
+    <line x1="200" y1="262" x2="438" y2="278"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle">
+    <text x="320" y="214">SYN</text><text x="320" y="238">SYN+ACK</text><text x="320" y="264">ACK</text>
+  </g>
+  <line x1="440" y1="338" x2="202" y2="354" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/>
+  <text x="320" y="338" text-anchor="middle" font-size="12" fill="#0a84ff">"Fri Nov  5 10:20:30 2021\r\n"</text>
+  <g stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)">
+    <line x1="440" y1="380" x2="202" y2="396"/>
+    <line x1="200" y1="404" x2="438" y2="420"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f" text-anchor="middle"><text x="320" y="382">FIN</text><text x="320" y="406">ACK</text></g>
+  <text x="320" y="462" text-anchor="middle" font-size="12" fill="#6e6e73">클라이언트도 close()하면 FIN·ACK가 한 번 더 오간다 (그림에서는 생략)</text>
+  <text x="320" y="488" text-anchor="middle" font-size="12" fill="#6e6e73">서버는 close() 뒤 다시 accept()로 돌아가 다음 연결을 기다린다</text>
+</svg>

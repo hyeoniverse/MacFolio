@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>버튼 숨김과 서버 차단의 역할 분담</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">화면은 버튼만 숨기고, 저장 허용은 서버가 정한다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">폴더 이름을 바꾸는 요청 하나의 경로</text>
+  <rect x="24" y="76" width="180" height="120" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="114" y="100" font-size="13" font-weight="700" text-anchor="middle" fill="#1d1d1f">브라우저</text>
+  <text x="114" y="124" font-size="12" text-anchor="middle" fill="#1d1d1f">useCanEditMemo()</text>
+  <text x="114" y="142" font-size="12" text-anchor="middle" fill="#6e6e73">false → 버튼 숨김</text>
+  <text x="114" y="160" font-size="12" text-anchor="middle" fill="#6e6e73">true → 버튼 표시</text>
+  <text x="114" y="182" font-size="12" text-anchor="middle" fill="#ff9f0a">(안내 역할)</text>
+  <path d="M204 136 H286" stroke="#1d1d1f" stroke-width="2"/><path d="M294 136 l-10 -5 v10z" fill="#1d1d1f"/>
+  <text x="248" y="122" font-size="12" text-anchor="middle" fill="#6e6e73">쓰기 요청</text>
+  <text x="248" y="156" font-size="12" text-anchor="middle" fill="#6e6e73">+ 세션 쿠키</text>
+  <rect x="296" y="76" width="320" height="120" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/>
+  <text x="312" y="100" font-size="13" font-weight="700" fill="#1d1d1f">API 서버 · AdminGuard</text>
+  <text x="312" y="124" font-size="12" fill="#1d1d1f">1. 쿠키 macfolio_session의 토큰을 SHA-256 해시</text>
+  <text x="312" y="144" font-size="12" fill="#1d1d1f">2. DB의 AdminSession에서 해시 조회</text>
+  <text x="312" y="164" font-size="12" fill="#1d1d1f">3. 만료 전이고 지정한 GitHub 계정인가</text>
+  <text x="312" y="184" font-size="12" fill="#0a84ff">(차단 역할)</text>
+  <path d="M380 196 V236" stroke="#34c759" stroke-width="2"/><path d="M380 244 l-5 -10 h10z" fill="#34c759"/>
+  <path d="M540 196 V236" stroke="#ff3b30" stroke-width="2"/><path d="M540 244 l-5 -10 h10z" fill="#ff3b30"/>
+  <rect x="296" y="246" width="160" height="60" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="2"/>
+  <text x="376" y="272" font-size="13" font-weight="700" text-anchor="middle" fill="#34c759">통과</text>
+  <text x="376" y="292" font-size="12" text-anchor="middle" fill="#1d1d1f">컨트롤러가 저장</text>
+  <rect x="466" y="246" width="150" height="60" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="541" y="272" font-size="13" font-weight="700" text-anchor="middle" fill="#ff3b30">401</text>
+  <text x="541" y="292" font-size="12" text-anchor="middle" fill="#1d1d1f">관리자 로그인이 필요합니다.</text>
+  <rect x="24" y="214" width="250" height="92" rx="10" fill="#f2f2f7"/>
+  <text x="40" y="238" font-size="12" font-weight="700" fill="#1d1d1f">버튼을 숨겨도</text>
+  <text x="40" y="258" font-size="12" fill="#6e6e73">curl이나 개발자 도구로 같은</text>
+  <text x="40" y="276" font-size="12" fill="#6e6e73">요청을 직접 보낼 수 있다.</text>
+  <text x="40" y="294" font-size="12" fill="#6e6e73">그 요청은 오른쪽에서 막힌다</text>
+  <text x="24" y="338" font-size="12" fill="#6e6e73">AdminGuard는 관리자 경로마다 붙어 요청이 올 때마다 DB와 대조한다</text>
+</svg>

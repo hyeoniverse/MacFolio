@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>서명 URL로 R2에 직접 올리는 요청 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<rect x="20" y="16" width="140" height="40" rx="8" fill="#f2f2f7"/>
+<text x="90" y="41" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">브라우저 (관리자)</text>
+<rect x="250" y="16" width="140" height="40" rx="8" fill="#f2f2f7"/>
+<text x="320" y="41" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">API 서버 (VM)</text>
+<rect x="480" y="16" width="140" height="40" rx="8" fill="#f2f2f7"/>
+<text x="550" y="41" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">Cloudflare R2</text>
+<line x1="90" y1="56" x2="90" y2="316" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="320" y1="56" x2="320" y2="316" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="550" y1="56" x2="550" y2="316" stroke="#c7c7cc" stroke-dasharray="4 4"/>
+<line x1="90" y1="96" x2="316" y2="96" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="100" y="88" font-size="12" fill="#1d1d1f">① 폴더·파일 이름·크기</text>
+<rect x="330" y="76" width="200" height="54" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="340" y="96" font-size="12" fill="#1d1d1f">관리자 세션, 파일 종류,</text>
+<text x="340" y="114" font-size="12" fill="#1d1d1f">20MB 이하인지 확인</text>
+<line x1="320" y1="156" x2="94" y2="156" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="100" y="148" font-size="12" fill="#1d1d1f">② 5분 동안 유효한 서명 URL</text>
+<text x="100" y="174" font-size="12" fill="#6e6e73">…?X-Amz-Expires=300&amp;X-Amz-Signature=…</text>
+<line x1="90" y1="226" x2="546" y2="226" stroke="#0a84ff" stroke-width="2.5" marker-end="url(#b)"/>
+<text x="100" y="216" font-size="12" fill="#0a84ff">③ PUT 서명 URL, 파일 본문 (최대 20MB)</text>
+<text x="330" y="246" font-size="12" fill="#6e6e73">API 서버를 거치지 않는다</text>
+<line x1="550" y1="276" x2="94" y2="276" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="360" y="268" font-size="12" fill="#1d1d1f">④ 200 저장 완료</text>
+<text x="20" y="308" font-size="12" fill="#6e6e73">서버는 권한만 확인하고, 큰 파일 전송은 브라우저와 R2 사이에서 일어난다</text>
+</svg>

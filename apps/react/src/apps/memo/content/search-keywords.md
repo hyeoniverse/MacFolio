@@ -3,17 +3,37 @@ title: 리퍼러 검색어와 Search Console API로 유입 검색어 수집하�
 date: 2026-10-22
 category: 개발 기록/MacFolio/서버·API
 series: 트래픽 분석
-seriesOrder: 8
-summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 리퍼러에 검색어가 있을 때만 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져온다. SDK 없이 서명한 서비스 계정 JWT, 설정 순서, 도메인 속성에서 이 사이트만 거르는 방법을 정리했다.
+seriesOrder: 6
+summary: 유입 경로에는 www.google.com만 보이고 검색어는 알 수 없었다. 리퍼러에 검색어가 있을 때만 수집하고, 구글 검색어는 서버가 6시간마다 Search Console API에서 가져온다. SDK 없이 서명한 서비스 계정 JWT, 설정 순서, 도메인 속성에서 이 사이트만 필터링하는 방법을 정리했다.
 ---
 
-활동 상태 보기의 유입 경로에는 `www.google.com`, `search.naver.com` 같은 호스트가 표시된다. 검색으로 유입된 방문이 있다는 사실까지는 확인할 수 있지만, 검색어는 알 수 없었다. 이름으로 검색했는지, 블로그 글의 주제로 검색했는지에 따라 다음에 작성할 글의 주제가 달라진다([#327](https://github.com/hyeoniverse/MacFolio/pull/327)).
+MacFolio의 활동 상태 보기는 macOS 활동 상태 보기 모양을 한 방문 분석 화면이다. 관리자는 여기서 방문 개요, 유입 경로(방문자가 어느 사이트를 거쳐 들어왔는지), 앱·글별 조회, 지역·기기 같은 탭을 확인한다. 유입 경로에는 `www.google.com`, `search.naver.com` 같은 호스트가 표시된다. 검색으로 유입된 방문이 있다는 사실까지는 확인할 수 있지만, 검색어는 알 수 없었다.
+
+검색어를 알면 블로그 운영 판단이 달라진다. 예를 들어 유입 대부분이 이름 검색이면 포트폴리오 자체를 찾는 방문이고, "prisma 마이그레이션 롤백" 같은 기술 검색어가 많으면 그 주제의 글을 더 작성할 근거가 된다. [#327](https://github.com/hyeoniverse/MacFolio/pull/327)에서 검색어를 두 경로로 수집하는 기능을 추가했다.
 
 ## 검색어가 전달되지 않는 이유
 
-사이트가 유입 경로를 알 수 있는 수단은 `document.referrer`[^referrer] 하나다. 현재 브라우저는 다른 사이트로 이동할 때 기본으로 주소의 origin(스킴·호스트·포트)만 전달한다(Referrer-Policy 기본값 `strict-origin-when-cross-origin`). 그래서 구글 검색 결과에서 유입되면 `https://www.google.com/`만 전달된다. 구글과 빙은 검색 결과 페이지에서도 검색어를 전달하지 않도록 설정되어 있다.
+사이트가 유입 경로를 알 수 있는 수단은 `document.referrer`[^referrer] 하나다. 방문자가 다른 페이지의 링크를 눌러 이동하면, 브라우저는 직전 페이지의 주소를 `Referer` 요청 헤더로 서버에 보내고 같은 값을 페이지 코드의 `document.referrer`로 제공한다. 이 값을 리퍼러라고 한다.
+
+리퍼러에 주소의 어느 부분까지 담을지는 떠나는 쪽 페이지의 리퍼러 정책(Referrer-Policy)이 정한다. 현재 브라우저는 페이지가 정책을 지정하지 않으면 기본값 `strict-origin-when-cross-origin`을 적용해, 다른 사이트로 이동할 때 주소의 출처(스킴·호스트·포트)만 전달한다. 경로와 `?` 뒤의 쿼리 문자열은 빠진다. 그래서 구글 검색 결과에서 유입되면 `https://www.google.com/`만 전달된다. ==구글과 빙은 검색 결과 페이지에서도 검색어를 전달하지 않도록 설정되어 있다==.
+
+| 리퍼러 정책 (예)                  | 검색 결과 `https://search.naver.com/search.naver?query=macfolio`에서 이동하면 |
+| --------------------------------- | ----------------------------------------------------------------------------- |
+| `unsafe-url`                      | 전체 주소. 검색어 `macfolio`가 남는다                                         |
+| `strict-origin-when-cross-origin` | `https://search.naver.com/`. 검색어가 빠진다                                  |
+| `no-referrer`                     | 빈 문자열                                                                     |
 
 검색엔진이 전체 주소를 전달하도록 설정한 경우에는 주소의 검색어 파라미터(네이버의 `query`, 다음의 `q` 등)가 남으므로 사이트에서 바로 읽을 수 있다. 구글 검색어는 사이트에서 알 수 없고, 구글이 검색 결과 노출·클릭을 집계한 Google Search Console에서 가져와야 한다.
+
+![리퍼러 정책별 전달 범위](./images/search-keywords-referrer.svg '왼쪽: 검색엔진이 전체 주소를 허용하면 searchTermOf가 query 파라미터에서 검색어를 읽는다. 오른쪽: 출처만 전달되면 검색어가 없다')
+
+Google Search Console은 Google 검색 결과에서 사이트가 어떻게 노출되는지 사이트 소유자에게 보여 주는 무료 서비스다. 검색어마다 다음 세 지표를 날짜·페이지별로 제공한다.
+
+| 지표      | 뜻                                                   | 예                                                 |
+| --------- | ---------------------------------------------------- | -------------------------------------------------- |
+| 노출      | 검색 결과 화면에 이 사이트의 링크가 표시된 횟수      | "macfolio" 검색 결과에 3번 표시되면 3              |
+| 클릭      | 그 링크를 눌러 사이트로 이동한 횟수                  | 3번 표시 중 1번 눌리면 1                           |
+| 평균 순위 | 노출된 시각의 검색 결과 위치를 평균한 값 (1이 맨 위) | 첫 번째 결과로 표시되면 1, 두 번째 쪽 첫 결과면 11 |
 
 ![검색어를 아는 두 길](./images/search-keywords-paths.svg '방문 시각에 사이트가 읽는 검색어와, 서버가 Search Console에서 가져오는 검색어')
 
@@ -62,13 +82,17 @@ export function searchTermOf(referrer: string): string | undefined {
 
 ### 서비스 계정 토큰 직접 서명
 
-Search Console API는 OAuth 접근 토큰이 필요하다. 서버가 사용자 개입 없이 호출하므로 사람의 로그인 대신 서비스 계정[^sa]을 사용한다. 서비스 계정은 개인 키로 서명한 JWT[^jwt]를 Google 토큰 엔드포인트에 보내 유효 시간 1시간의 접근 토큰을 발급받는다.
+Search Console API는 OAuth 2.0 접근 토큰이 필요하다. OAuth 2.0은 프로그램이 사용자의 비밀번호를 받지 않고, 권한 범위(scope)가 제한된 접근 토큰으로 API를 호출하게 하는 표준 인증 규격이다. 보통은 사람이 Google 로그인 화면에서 "이 앱이 Search Console 데이터를 읽도록 허용"을 누르는 단계가 있다. 서버가 6시간마다 사용자 개입 없이 호출하므로 사람의 로그인 대신 서비스 계정[^sa]을 사용한다.
+
+서비스 계정은 개인 키로 서명한 JWT[^jwt]를 Google 토큰 엔드포인트에 보내 유효 시간 1시간의 접근 토큰을 발급받는다. Google은 서비스 계정을 만들 때 보관한 공개 키로 서명을 검증하므로, 개인 키를 가진 쪽만 유효한 JWT를 만들 수 있다.
+
+![JWT 구조와 토큰 교환](./images/search-keywords-jwt.svg 'JWT의 헤더·페이로드·서명과, 그 JWT를 접근 토큰으로 교환해 Search Console API를 호출하는 세 단계')
 
 | 방법                                   | 장점                         | 단점                                             |
 | -------------------------------------- | ---------------------------- | ------------------------------------------------ |
 | `googleapis` 패키지                    | 토큰·재시도·타입을 모두 제공 | API 하나를 호출하려고 대형 패키지를 추가한다     |
 | `google-auth-library`만                | 토큰 발급만 위임             | 의존성이 추가되고, API 요청은 결국 직접 작성한다 |
-| `node:crypto`로 JWT를 직접 서명 (선택) | 의존성이 없다                | 서명 검증을 직접 시험해야 한다                   |
+| `node:crypto`로 JWT를 직접 서명 (채택) | 의존성이 없다                | 서명 검증을 직접 시험해야 한다                   |
 
 [Oracle 요청 서명](/memo/oci-billing)과 같은 판단이다. JWT는 헤더와 페이로드를 base64url로 인코딩해 `.`으로 연결하고 RS256으로 서명하면 완성되므로 직접 구현했다(`apps/api/src/analytics/search-console.ts`).
 
@@ -88,7 +112,7 @@ export function serviceAccountAssertion(credentials: SearchConsoleCredentials, n
 }
 ```
 
-범위(scope)는 읽기 전용(`webmasters.readonly`)이고, Search Console에도 서비스 계정을 "제한됨" 권한으로만 추가한다. 시험에서는 키 쌍을 새로 생성해 서명하고, 공개 키로 서명을 검증한다. 실제 키는 시험 코드에 포함하지 않는다.
+범위(scope)는 읽기 전용(`webmasters.readonly`)이고, Search Console에도 서비스 계정을 "제한됨" 권한으로만 추가한다. 시험에서는 키 쌍을 새로 생성해 서명하고, 공개 키로 서명을 검증한다. ==실제 키는 시험 코드에 포함하지 않는다==.
 
 ### 일별 저장과 기간 집계
 
@@ -98,11 +122,20 @@ export function serviceAccountAssertion(credentials: SearchConsoleCredentials, n
 | --------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
 | 첫 실행   | 어제부터 480일 전까지 (`BACKFILL_DAYS`)            | Search Console 보관 기간(16개월) 전체. 25,000행씩 요청하고, 응답이 25,000행이면 다음 페이지 요청               |
 | 이후 실행 | 마지막 저장일 7일 전부터 어제까지 (`REFRESH_DAYS`) | 최근 자료는 확정되면서 값이 바뀐다(`dataState: 'all'`로 확정 전 자료도 수신). 해당 날짜 행을 삭제 후 다시 저장 |
-| 실패      | —                                                  | 삭제·저장이 한 트랜잭션이라 기존 행은 유지. Google이 반환한 오류 메시지를 화면 상태 줄 아래에 표시             |
+| 실패      | 해당 없음                                          | 삭제·저장이 한 트랜잭션이라 기존 행은 유지. Google이 반환한 오류 메시지를 화면 상태 줄 아래에 표시             |
 
 ![첫 실행은 480일 전체, 이후 실행은 마지막 저장일 7일 전부터 어제까지를 삭제 후 다시 저장하는 구간 도식](./images/search-keywords-sync.svg '첫 실행과 이후 실행의 요청 구간')
 
-기간으로 집계할 때 클릭과 노출은 합산하면 되지만, 평균 순위를 단순 평균하면 값이 틀린다. 노출 1회에 1위인 날과 노출 100회에 9위인 날이 같은 가중치를 갖기 때문이다. 단순 평균은 5위, 노출 가중 평균은 약 8.9위다. 그래서 노출 수로 가중 평균한다.
+기간으로 집계할 때 클릭과 노출은 합산하면 되지만, 평균 순위를 단순 평균하면 값이 틀린다. 노출 1회에 1위인 날과 노출 100회에 9위인 날이 같은 가중치를 갖기 때문이다. 두 날을 합친 101번의 노출 가운데 100번이 9위였으므로, 실제 평균 순위는 9위에 가까워야 한다.
+
+```math
+\begin{aligned}
+\text{단순 평균} &= \frac{1 + 9}{2} = 5 \\
+\text{노출 가중 평균} &= \frac{1 \times 1 + 9 \times 100}{1 + 100} = \frac{901}{101} \approx 8.92
+\end{aligned}
+```
+
+그래서 ==노출 수로 가중 평균한다==. SQL의 `SUM("position" * "impressions") / SUM("impressions")`가 위 식의 오른쪽이다.
 
 ```sql
 SELECT "query", "page",
@@ -205,7 +238,8 @@ Search Console에서 **속성 추가**를 누르면 두 종류 중 하나를 고
 4. 다음 화면의 **프로젝트 액세스 권한(역할)**과 **사용자 액세스 권한**은 비워 두고 완료한다. Search Console 권한은 Google Cloud 역할이 아니라 4단계에서 준다
 5. 만든 계정 → **Keys → Add key → Create new key → JSON**. 이 파일은 다시 내려받을 수 없고, 비밀번호와 같으므로 저장소나 채팅에 붙여 넣지 않는다
 
-기존 프로젝트를 쓰더라도 서비스 계정은 MacFolio 전용으로 만든다. 키를 교체하거나 폐기할 때 다른 서비스에 영향이 없다.
+> [!TIP] 서비스 계정은 전용으로
+> 기존 프로젝트를 쓰더라도 서비스 계정은 MacFolio 전용으로 만든다. 키를 교체하거나 폐기할 때 다른 서비스에 영향이 없다.
 
 ### 4. Search Console에 서비스 계정 추가
 
@@ -223,7 +257,10 @@ Google Cloud가 아니라 **Search Console 사이트**에서 한다.
 
 ### 5. 서버에 넣기
 
-키 파일을 서버로 옮긴 뒤 필요한 두 값(`client_email`, `private_key`)과 속성 주소만 `~/deploy/api.env`에 넣고 파일은 삭제한다. 명령은 [배포 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md#검색어-google-search-console)의 "검색어 (Google Search Console)" 절에 있다.
+> [!CAUTION] 키 파일은 남기지 않는다
+> 키 파일을 서버로 옮긴 뒤 필요한 두 값(`client_email`, `private_key`)과 속성 주소만 `~/deploy/api.env`에 넣고 파일은 삭제한다.
+
+명령은 [배포 문서](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md#검색어-google-search-console)의 "검색어 (Google Search Console)" 절에 있다.
 
 ```bash
 # Mac
@@ -244,11 +281,11 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 ## 도메인 속성에서 이 사이트 검색어만 받기
 
-처음 구현에서 서버는 Search Console API의 `searchAnalytics.query`를 속성 단위로 호출하고, 응답을 페이지 주소로 거르지 않았다. 그래서 `sc-domain:hyeoniverse.com` 같은 도메인 속성을 연결하면 `www`, `blog` 같은 다른 하위 도메인의 검색어도 MacFolio의 검색어 탭에 함께 표시되었다.
+처음 구현에서 서버는 Search Console API의 `searchAnalytics.query`를 속성 단위로 호출하고, 응답을 페이지 주소로 필터링하지 않았다. 그래서 `sc-domain:hyeoniverse.com` 같은 도메인 속성을 연결하면 `www`, `blog` 같은 ==다른 하위 도메인의 검색어도 MacFolio의 검색어 탭에 함께 표시==되었다.
 
 두 가지 해결 방법을 비교했다.
 
-|                     | URL 접두어 속성 추가                              | 도메인 속성 + 서버에서 거르기 (선택)  |
+|                     | URL 접두어 속성 추가                              | 도메인 속성 + 서버에서 필터링 (채택)  |
 | ------------------- | ------------------------------------------------- | ------------------------------------- |
 | Search Console 설정 | 속성 추가, 서비스 계정 권한 추가, 사이트맵 재제출 | 변경 없음                             |
 | 지난 자료           | 새 속성이라 보장되지 않음                         | 도메인 속성에 쌓인 자료를 그대로 사용 |
@@ -270,30 +307,43 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 }
 ```
 
-| 연결한 속성                 | 거르는 주소                                           |
+| 연결한 속성                 | 필터링 조건 주소                                      |
 | --------------------------- | ----------------------------------------------------- |
 | 도메인 속성 (`sc-domain:…`) | `FRONTEND_URL`(기본은 `CORS_ORIGINS`의 첫 주소) + `/` |
-| URL 접두어 속성             | 거르지 않음 (이미 이 주소만 담는다)                   |
-| `GSC_PAGE_PREFIX`를 지정    | 그 값 (빈 값이면 거르지 않음)                         |
+| URL 접두어 속성             | 필터링하지 않음 (이미 이 주소만 담는다)               |
+| `GSC_PAGE_PREFIX`를 지정    | 그 값 (빈 값이면 필터링하지 않음)                     |
 
-- **이미 가져 둔 자료:** 거르기 전에 저장한 다른 하위 도메인의 줄은 화면에 보내기 전에 같은 조건(`starts_with`)으로 빼고, 다음 가져오기에서 DB에서도 지운다. 배포 직후부터 이 사이트 검색어만 보인다
-- **성능:** 요청은 서버가 6시간마다 한 번 보내는 백그라운드 작업이라 방문자 화면과 관계없다. Google이 조건에 맞는 줄만 돌려주므로 받는 양은 오히려 줄어든다
+- **이미 가져 둔 자료:** 필터링 전에 저장한 다른 하위 도메인의 행은 화면에 보내기 전에 같은 조건(`starts_with`)으로 제외하고, 다음 가져오기에서 DB에서도 삭제한다. 배포 직후부터 이 사이트 검색어만 표시된다
+- **성능:** 요청은 서버가 6시간마다 한 번 보내는 백그라운드 작업이라 방문자 화면과 관계없다. Google이 조건에 맞는 행만 돌려주므로 받는 양은 오히려 줄어든다
 
 ## 남은 과제
 
 - **네이버의 검색어 전달 여부:** 주소의 검색어 파라미터 파싱은 시험했지만, 현재 네이버가 전체 주소를 리퍼러로 전달하는지는 배포 후 집계값으로 확인해야 한다. 전달하지 않으면 이 표는 비어 있게 된다
 - **네이버 검색어 API:** 네이버 서치어드바이저에는 검색어를 조회하는 API가 없다. 리퍼러로 전달받지 못하면 서치어드바이저 웹 화면에서 확인한다
 
-참고 문서: [서비스 계정으로 토큰 받기](https://developers.google.com/identity/protocols/oauth2/service-account#httprest), [Search Analytics: query](https://developers.google.com/webmaster-tools/v1/searchanalytics/query), [Referrer-Policy](https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy), [Search Console 도움말: 속성 추가](https://support.google.com/webmasters/answer/34592), [사이트 소유권 확인](https://support.google.com/webmasters/answer/9008080), [사이트맵 관리](https://support.google.com/webmasters/answer/7451001), [URL 검사 도구](https://support.google.com/webmasters/answer/9012289), [Google Cloud: 서비스 계정 만들기](https://cloud.google.com/iam/docs/service-accounts-create).
-
 ## 관련 글
 
-- [쿠키 없이 하루 해시로 순방문자를 집계하는 분석 API](/memo/analytics-api)
+- [쿠키 없는 하루 해시 순방문자 집계와 세션별로 응답 범위를 나누는 분석 API](/memo/analytics-api)
 - [sendBeacon으로 5초마다 묶어 보내는 방문 이벤트](/memo/analytics-collect)
 - [node:crypto로 SDK 없이 Oracle API 요청 서명 만들고 문서 시험 값으로 검증하기](/memo/oci-billing)
 - [차트 라이브러리 없이 SVG 하나로 그리는 지표 그래프](/memo/analytics-activity-monitor)
 - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](/memo/seo-crawlable)
 - [부트 볼륨을 임시 VM에 연결해 authorized_keys를 고치는 Oracle 서버 SSH 키 복구](/memo/oracle-ssh-key-recovery)
+
+<details>
+<summary>참고 문헌</summary>
+
+- Google, [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/oauth2/service-account#httprest)
+- Google, [Search Analytics: query](https://developers.google.com/webmaster-tools/v1/searchanalytics/query)
+- Google Search Console 도움말, [속성 추가](https://support.google.com/webmasters/answer/34592), [사이트 소유권 확인](https://support.google.com/webmasters/answer/9008080), [사이트맵 관리](https://support.google.com/webmasters/answer/7451001), [URL 검사 도구](https://support.google.com/webmasters/answer/9012289), [실적 보고서의 측정항목](https://support.google.com/webmasters/answer/7042828)
+- Google Cloud, [Create service accounts](https://cloud.google.com/iam/docs/service-accounts-create)
+- MDN, [Referrer-Policy](https://developer.mozilla.org/docs/Web/HTTP/Headers/Referrer-Policy)
+- MDN, [Document: referrer property](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer)
+- RFC 6749, [The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749)
+- RFC 7519, [JSON Web Token (JWT)](https://www.rfc-editor.org/rfc/rfc7519)
+- RFC 7523, [JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants](https://www.rfc-editor.org/rfc/rfc7523)
+
+</details>
 
 [^referrer]: 현재 페이지로 이동하기 직전 페이지의 주소. 브라우저가 `Referer` 요청 헤더와 `document.referrer`로 제공한다([MDN](https://developer.mozilla.org/en-US/docs/Web/API/Document/referrer)).
 
@@ -301,6 +351,6 @@ GSC_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n"
 
 [^jwt]: JSON Web Token. 헤더·페이로드·서명 세 부분을 `.`으로 연결한 토큰 형식([RFC 7519](https://www.rfc-editor.org/rfc/rfc7519)).
 
-[^filter]: 검색 결과를 차원(날짜·검색어·페이지·국가·기기) 값으로 거르는 조건. `includingRegex`는 RE2 정규식에 맞는 값만 남긴다([searchAnalytics.query](https://developers.google.com/webmaster-tools/v1/searchanalytics/query)).
+[^filter]: 검색 결과를 차원(날짜·검색어·페이지·국가·기기) 값으로 필터링하는 조건. `includingRegex`는 RE2 정규식에 맞는 값만 남긴다([searchAnalytics.query](https://developers.google.com/webmaster-tools/v1/searchanalytics/query)).
 
 #MacFolio #백엔드 #트래픽분석 #SearchConsole #SEO

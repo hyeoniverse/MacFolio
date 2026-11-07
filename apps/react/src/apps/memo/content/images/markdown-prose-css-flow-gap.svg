@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">문서 보기의 블록 간격: 아래 여백 방식에서 흐름 간격 방식으로</text>
+  <g font-size="12">
+    <text x="40" y="60" font-weight="600" fill="#1d1d1f">변경 전: 블록마다 아래 여백</text>
+    <rect x="40" y="72" width="240" height="34" fill="#f2f2f7"/><text x="52" y="94" fill="#1d1d1f">h2  (margin-bottom 0.6em)</text>
+    <rect x="40" y="106" width="240" height="14" fill="#ff9f0a" opacity="0.35"/>
+    <rect x="40" y="120" width="240" height="34" fill="#f2f2f7"/><text x="52" y="142" fill="#1d1d1f">p  (margin: 0 0 1em)</text>
+    <rect x="40" y="154" width="240" height="24" fill="#ff9f0a" opacity="0.35"/>
+    <rect x="40" y="178" width="240" height="34" fill="#f2f2f7"/><text x="52" y="200" fill="#1d1d1f">pre  (margin: 0 0 1em)</text>
+    <rect x="40" y="212" width="240" height="24" fill="#ff9f0a" opacity="0.35"/>
+    <text x="290" y="117" fill="#ff9f0a">0.6em</text>
+    <text x="290" y="170" fill="#ff9f0a">1em</text>
+    <text x="290" y="228" fill="#ff3b30">1em 남음</text>
+    <text x="40" y="256" fill="#6e6e73">마지막 블록 아래에도 1em이 붙는다</text>
+    <text x="360" y="60" font-weight="600" fill="#1d1d1f">변경 후: 다음 블록의 위 여백</text>
+    <rect x="360" y="72" width="240" height="34" fill="#f2f2f7"/><text x="372" y="94" fill="#1d1d1f">h2</text>
+    <rect x="360" y="106" width="240" height="14" fill="#0a84ff" opacity="0.3"/>
+    <rect x="360" y="120" width="240" height="34" fill="#f2f2f7"/><text x="372" y="142" fill="#1d1d1f">p  (제목 다음: --prose-heading-gap)</text>
+    <rect x="360" y="154" width="240" height="24" fill="#0a84ff" opacity="0.3"/>
+    <rect x="360" y="178" width="240" height="34" fill="#f2f2f7"/><text x="372" y="200" fill="#1d1d1f">pre  (* + *: --prose-flow-gap)</text>
+    <text x="605" y="117" fill="#0a84ff">0.6em</text>
+    <text x="605" y="170" fill="#0a84ff">1em</text>
+    <text x="360" y="256" fill="#6e6e73">끝의 1em은 본문 아래 패딩 calc(48px + 1em)으로 이동</text>
+  </g>
+  <rect x="30" y="282" width="580" height="74" rx="8" fill="#f2f2f7"/>
+  <text x="46" y="306" font-size="12" fill="#1d1d1f">:where(.prose) &gt; * + *  { margin-top: var(--prose-flow-gap) }</text>
+  <text x="46" y="326" font-size="12" fill="#1d1d1f">:where(.prose) &gt; :where(h1, …, h6) + *  { margin-top: var(--prose-heading-gap) }</text>
+  <text x="46" y="346" font-size="12" fill="#6e6e73">문서 보기 1em·0.6em, 블로그 0.9em·0.9em. 블록 사이 거리는 변경 전과 같다</text>
+</svg>

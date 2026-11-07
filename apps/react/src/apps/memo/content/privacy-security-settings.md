@@ -5,17 +5,49 @@ category: 개발 기록/MacFolio/서버·API
 summary: 메일에만 있던 Cloudflare Turnstile 사람 확인을 댓글·메시지에도 걸 수 있게 하고, macOS '개인정보 보호 및 보안' 모양 화면에서 관리자가 곳마다 켜고 끄게 했다. 설정은 서버 DB의 한 행짜리 테이블에 저장하고, 확인은 requireHuman 함수 하나로 통합했다.
 ---
 
-메일 앱의 연락 메일에는 Cloudflare Turnstile[^turnstile]로 사람인지 확인하는 단계가 있었다. 댓글과 메시지에는 IP마다 1분당 요청 횟수를 제한하는 장치만 있었다. 사이트가 Cloudflare 프록시를 거쳐도, 스크립트가 API에 직접 보내는 정상 형식의 요청은 프록시가 차단하지 않는다. 이 요청을 차단하는 수단이 사람 확인이다.
+MacFolio에서 방문자가 서버에 글을 남기는 경로는 세 곳이다. 메일 앱의 연락 메일, 블로그 글의 댓글, 메시지 앱의 피드백과 답글이다. 이 가운데 연락 메일에만 Cloudflare Turnstile[^turnstile]로 사람인지 확인하는 단계가 있었고, 댓글과 메시지에는 IP마다 1분당 요청 횟수를 제한하는 장치만 있었다. [#168](https://github.com/hyeoniverse/MacFolio/pull/168)에서 세 경로 모두에 사람 확인을 걸 수 있게 하고, 관리자가 경로마다 켜고 끄는 설정 화면을 추가했다.
 
-다만 처음부터 모든 쓰기 경로에 적용하면 댓글을 작성할 때마다 확인 단계가 하나 추가된다. 그래서 적용 위치를 **설정으로 켜고 끄도록** 했다. 스팸이 들어오는 경로에만 켜면 된다([#168](https://github.com/hyeoniverse/MacFolio/pull/168)).
+## 배경
+
+### 요청 제한만으로 막지 못하는 요청
+
+사이트는 Cloudflare 프록시를 거친다. 프록시는 알려진 공격 패턴이나 비정상적으로 많은 요청을 차단하지만, 스크립트가 API에 직접 보내는 정상 형식의 요청은 사람이 보낸 요청과 구별하지 못한다. 예를 들어 다음 요청은 형식상 화면에서 댓글을 작성한 요청과 같다.
+
+```bash
+curl -X POST https://api.example.com/posts/hello/comments \
+  -H 'Content-Type: application/json' \
+  -d '{"body":"광고 문구 …"}'
+```
+
+IP마다 1분에 5회로 제한해도, IP를 바꿔 가며 보내는 스크립트는 IP 수만큼 더 보낼 수 있다. ==스크립트가 보낸 정상 형식의 요청을 차단하는 수단이 사람 확인이다==.
+
+### CAPTCHA와 Turnstile
+
+사람 확인의 전통적인 방식은 CAPTCHA다. CAPTCHA(Completely Automated Public Turing test to tell Computers and Humans Apart)는 일그러진 글자를 읽게 하거나 신호등이 있는 사진을 고르게 하는 문제를 내고, 맞히면 사람으로 판단한다.
+
+![CAPTCHA 예](./images/privacy-security-settings-captcha.jpg '전통적인 CAPTCHA의 예. 배경 무늬와 선을 겹친 일그러진 글자를 읽어 입력하게 한다. 방문자는 문제를 풀어야 글을 남길 수 있다')
+
+Cloudflare Turnstile은 문제를 내지 않는다. 페이지에 넣은 위젯이 Cloudflare 서버(`challenges.cloudflare.com`)와 통신하며 브라우저 안에서 자동 검사를 실행하고, 통과하면 토큰(무작위 문자열)을 발급한다. 방문자는 대부분 아무것도 누르지 않고, 위젯에 "성공" 표시가 나타나는 것을 확인할 뿐이다.
+
+![Turnstile 구조](./images/privacy-security-settings-turnstile-flow.png 'Cloudflare가 공개한 Turnstile 구조. 페이지의 위젯이 사이트 키로 검사를 받아 토큰을 받고, 사이트 서버(Origin)는 그 토큰과 비밀 키를 Siteverify API에 보내 검증한다')
+
+| 구성 요소 | 위치                          | 역할                                                       |
+| --------- | ----------------------------- | ---------------------------------------------------------- |
+| 사이트 키 | 화면 코드 (공개)              | 위젯이 어느 사이트의 위젯인지 Cloudflare에 알린다          |
+| 토큰      | 방문자 브라우저 → 사이트 서버 | 검사 통과 증명. 300초 동안 유효하고 한 번만 검증할 수 있다 |
+| 비밀 키   | 사이트 서버 (비공개)          | 서버가 Siteverify API에 토큰을 검증 요청할 때 함께 보낸다  |
+
+### 적용 위치를 설정으로 정한 이유
+
+처음부터 모든 쓰기 경로에 적용하면 댓글을 작성할 때마다 위젯이 검사를 마칠 때까지 기다리는 단계가 하나 추가된다. 그래서 적용 위치를 **설정으로 켜고 끄도록** 했다. 스팸이 들어오는 경로에만 켜면 된다.
 
 설정을 저장할 위치는 세 가지를 비교했다.
 
-| 방법                                                | 좋은 점                                               | 문제                                                                     |
+| 방법                                                | 장점                                                  | 단점                                                                     |
 | --------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------ |
 | 모든 곳에 항상 적용한다                             | 설정이 필요 없다                                      | 스팸이 없을 때도 방문자가 매번 확인을 기다린다                           |
 | 서버 환경 변수로 켜고 끈다                          | 코드가 짧다                                           | 바꿀 때마다 서버를 재시작해야 한다. 방문자는 현재 적용 위치를 알 수 없다 |
-| DB 한 행에 저장하고 관리자가 화면에서 바꾼다 (선택) | 즉시 적용되고, 방문자도 같은 화면에서 상태를 확인한다 | 테이블·API·화면이 하나씩 추가된다                                        |
+| DB 한 행에 저장하고 관리자가 화면에서 바꾼다 (채택) | 즉시 적용되고, 방문자도 같은 화면에서 상태를 확인한다 | 테이블·API·화면이 하나씩 추가된다                                        |
 
 ## 설정 화면
 
@@ -33,7 +65,9 @@ macOS 시스템 설정의 **개인정보 보호 및 보안** 화면을 재현했
 
 ## 서버
 
-설정은 행이 하나뿐인 테이블(`id = 1`)에 저장한다.
+### 설정 테이블
+
+설정은 행이 하나뿐인 테이블(`id = 1`)에 저장한다. 사이트 전체에 설정 묶음이 하나뿐이므로 행도 하나다.
 
 ```prisma
 model SecuritySetting {
@@ -44,7 +78,7 @@ model SecuritySetting {
 }
 ```
 
-행이 없으면 기본값(메일만 켜짐)을 사용한다. 메일은 사이트 밖으로 발송되므로 처음부터 켜 둔다.
+행이 없으면 기본값(메일만 켜짐)을 사용한다. 메일은 댓글·메시지와 달리 사이트 밖으로 발송되므로 처음부터 켜 둔다.
 
 | 요청            | 권한   | 동작                                                   |
 | --------------- | ------ | ------------------------------------------------------ |
@@ -52,6 +86,8 @@ model SecuritySetting {
 | `PUT /security` | 관리자 | `{ comment: true }`처럼 바꿀 경로만 전송               |
 
 쓰기 요청마다 DB를 조회하지 않도록 설정은 메모리에 캐시하고(`SecurityService.cache`), 관리자가 값을 바꾸면 캐시를 비워 다음 요청에서 다시 조회한다.
+
+### requireHuman 하나로 확인
 
 확인은 `SecurityService.requireHuman(경로, 토큰, IP, 관리자)` 하나로 처리한다. 메일·댓글·메시지(새 피드백과 답글)의 서비스가 입력 검사 뒤에 호출한다.
 
@@ -67,7 +103,7 @@ async requireHuman(check: HumanCheck, token: string | undefined, ip: string, adm
 }
 ```
 
-입력 검사 뒤에 호출하므로, 내용이 비었거나 너무 긴 요청은 Cloudflare에 조회하지 않고 400으로 종료된다.
+입력 검사 뒤에 호출하므로, 내용이 비었거나 너무 긴 요청은 ==Cloudflare에 조회하지 않고 400으로 종료된다==. Siteverify 요청은 외부 서버까지 왕복하므로, 이미 거절할 요청에 그 시간을 쓰지 않는다.
 
 | 조건                     | 결과                                                             |
 | ------------------------ | ---------------------------------------------------------------- |
@@ -78,7 +114,29 @@ async requireHuman(check: HumanCheck, token: string | undefined, ip: string, adm
 
 ![쓰기 요청이 입력 검사 뒤 requireHuman에서 관리자, 꺼짐, 키 없음이면 통과하고 아니면 siteverify에 묻는 흐름](./images/privacy-security-settings-flow.svg '설정 한 행을 메모리에 캐시하고, 쓰기 요청마다 세 조건을 검사한 뒤 Cloudflare에 조회한다')
 
-메일 서비스 안에 있던 Turnstile 검증 코드는 `common/turnstile.ts`로 분리해 세 서비스가 공유한다. 메일의 `GET /contact`도 이 설정을 따른다. 메일의 사람 확인을 끄면 응답에 사이트 키를 넣지 않으므로, 화면에 위젯이 렌더링되지 않는다.
+### 검증 함수 공유
+
+메일 서비스 안에 있던 Turnstile 검증 코드는 `common/turnstile.ts`로 분리해 세 서비스가 공유한다. 토큰이 없거나, Cloudflare에 10초 안에 닿지 못하거나, 응답의 `success`가 `true`가 아니면 모두 `false`다.
+
+```ts
+export async function verifyTurnstile(secret: string, token: string | undefined, ip: string): Promise<boolean> {
+	if (!token) return false;
+	try {
+		const response = await fetch(TURNSTILE_URL, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ secret, response: token, remoteip: ip || undefined }),
+			signal: AbortSignal.timeout(TIMEOUT_MS),
+		});
+		const result = (await response.json()) as { success?: boolean };
+		return result.success === true;
+	} catch {
+		return false;
+	}
+}
+```
+
+메일의 `GET /contact`도 이 설정을 따른다. 메일의 사람 확인을 끄면 응답에 사이트 키를 넣지 않으므로, 화면에 위젯이 렌더링되지 않는다.
 
 ## 화면
 
@@ -95,14 +153,40 @@ async requireHuman(check: HumanCheck, token: string | undefined, ip: string, adm
 
 ## 시험에서 발견한 가짜 위젯의 순서 오류
 
-E2E에서는 외부 Turnstile 스크립트 대신 가짜 스크립트를 사용한다. 이 가짜가 실제 위젯과 다른 순서로 동작해 시험이 두 번 실패했다.
+E2E 시험은 외부 Turnstile 스크립트(`challenges.cloudflare.com/turnstile/**`) 요청을 Playwright로 가로채 가짜 스크립트로 응답한다. 실제 Cloudflare 검사를 시험마다 실행할 수 없기 때문이다. 이 가짜가 실제 위젯과 다른 순서로 동작해 시험이 두 번 실패했다.
+
+![가짜 위젯의 순서](./images/privacy-security-settings-fake-widget.svg '수정 전 가짜는 글자를 0ms에 표시하고 토큰을 50ms에 전달했다. 시험은 글자를 보고 바로 눌러 토큰 없는 전송이 차단됐다')
 
 | 증상                                    | 원인                                                                            | 수정                               |
 | --------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------- |
 | 첫 댓글 전송이 "기다려 주세요"로 차단됨 | 가짜가 렌더링 즉시 '사람 확인 완료'를 표시하고, 토큰은 50ms 뒤에 전달했다       | 토큰을 전달한 **뒤에** 글자를 표시 |
 | 두 번째 댓글도 같은 증상                | 새 토큰을 받으려고 위젯을 다시 렌더링해도 이전 위젯의 '사람 확인 완료'가 남았다 | 가짜의 `remove()`가 글자를 삭제    |
 
-두 경우 모두 앱은 토큰이 없는 전송을 정상적으로 차단했고, 시험은 가짜가 표시한 글자만 보고 전송했다. 수정 뒤 6회 반복 실행해 36건 모두 통과했다.
+수정한 가짜 스크립트는 위젯마다 다른 토큰(`human-1`, `human-2`, …)을 발급하고, 토큰을 전달한 뒤에 글자를 표시한다.
+
+```js
+let n = 0;
+const boxes = {};
+window.turnstile = {
+	render(el, o) {
+		const id = 'w' + ++n;
+		const token = 'human-' + n;
+		boxes[id] = el;
+		setTimeout(() => {
+			if (!boxes[id]) return;
+			o.callback(token);
+			el.textContent = '사람 확인 완료';
+		}, 50);
+		return id;
+	},
+	remove(id) {
+		if (boxes[id]) boxes[id].textContent = '';
+		delete boxes[id];
+	},
+};
+```
+
+두 경우 모두 앱은 토큰이 없는 전송을 정상적으로 차단했고, ==시험은 가짜가 표시한 글자만 보고 전송했다==. 수정 뒤 6회 반복 실행해 36건 모두 통과했다.
 
 ## 시험
 
@@ -122,7 +206,9 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 
 ## 남은 과제와 정리
 
-- 서버에 Turnstile 키가 없으면 켜 두어도 확인하지 않는다. 쓰기는 차단되지 않지만 사람 확인도 없는 상태이므로, 관리자는 화면의 "켜도 확인하지 않는다" 안내를 확인해야 한다.
+> [!WARNING] 키가 없으면 켜도 확인하지 않는다
+> 서버에 Turnstile 키가 없으면 켜 두어도 확인하지 않는다. 쓰기는 차단되지 않지만 사람 확인도 없는 상태이므로, 관리자는 화면의 "켜도 확인하지 않는다" 안내를 확인해야 한다.
+
 - 설정은 메모리에 캐시하고 관리자가 바꿀 때만 다시 조회한다. API 서버가 한 대이기 때문에 가능한 방식이다. 서버가 여러 대가 되면 변경을 처리하지 않은 서버의 캐시는 갱신되지 않는다.
 - 시험용 가짜 스크립트도 실제 위젯과 같은 순서(토큰 전달 → 완료 표시)로 동작해야 시험 결과를 신뢰할 수 있다. 순서가 다르면 앱이 정상적으로 차단해도 시험이 실패한다.
 - 쓰기를 제한하는 장치는 사람 확인 외에 요청 제한이 있고, 두 장치를 함께 적용한다([@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)).
@@ -133,15 +219,39 @@ API 시험 이름은 "처음에는 메일만 확인한다. 누구나 읽고, 바
 2. 서버 `~/deploy/api.env`에 `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`를 추가하고 `docker compose up -d api`로 재시작한다
 3. 관리자로 로그인해 시스템 설정 → 개인정보 보호 및 보안에서 메일·댓글·메시지별로 켠다
 
-확인은 로그아웃한 창에서 댓글을 작성해 본다. 입력 칸 아래에 사람 확인 위젯이 표시되고, 확인이 끝나기 전에 전송하면 대기 안내가 나와야 한다. 되돌리려면 설정에서 끄거나, 두 키를 비워 서버가 확인 자체를 건너뛰게 한다. 서버 쪽은 [apps/api/src/common/turnstile.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/turnstile.ts), 시험은 `cd apps/react && npx playwright test e2e/privacy.spec.ts`와 [apps/api/test/security.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/security.e2e.test.ts). 수집하는 정보는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
+로그아웃한 창에서 댓글을 작성해 동작을 확인한다. 입력 칸 아래에 사람 확인 위젯이 표시되고, 확인이 끝나기 전에 전송하면 대기 안내가 나와야 한다.
 
-참고 문서: [Cloudflare Turnstile 시작하기](https://developers.cloudflare.com/turnstile/get-started/), [서버 쪽 검증](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/), [Prisma 모델 정의](https://www.prisma.io/docs/orm/prisma-schema/data-model/models).
+> [!TIP] 되돌리기
+> 되돌리려면 설정에서 끄거나, 두 키를 비워 서버가 확인 자체를 건너뛰게 한다.
+
+서버 쪽은 [apps/api/src/common/turnstile.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/src/common/turnstile.ts), 시험은 `cd apps/react && npx playwright test e2e/privacy.spec.ts`와 [apps/api/test/security.e2e.test.ts](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/test/security.e2e.test.ts). 수집하는 정보는 [docs/privacy.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/privacy.md)에 있다.
 
 ## 관련 글
 
 - [@RateLimit 데코레이터와 ThrottlerGuard로 모든 쓰기 경로에 요청 제한 걸기](/memo/rate-limit-all-writes)
 - [scrypt 비밀번호 해시와 IP HMAC만 저장하는 가입 없는 댓글](/memo/post-comments)
 - [첫 요청 실패와 사용 중 연결 끊김을 구분하는 메시지 앱 오류 처리](/memo/messages-offline)
+
+<details>
+<summary>참고 문헌</summary>
+
+- Cloudflare, [Turnstile: Get started](https://developers.cloudflare.com/turnstile/get-started/)
+- Cloudflare, [Turnstile: Server-side validation](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/)
+- Cloudflare Blog, [Announcing Turnstile, a user-friendly, privacy-preserving alternative to CAPTCHA](https://blog.cloudflare.com/turnstile-private-captcha-alternative/) (2022-09-28)
+- Wikipedia, [CAPTCHA](https://en.wikipedia.org/wiki/CAPTCHA)
+- Prisma, [Models](https://www.prisma.io/docs/orm/prisma-schema/data-model/models)
+- Playwright, [Network: Modify responses](https://playwright.dev/docs/network#modify-responses)
+- MDN, [Navigator: globalPrivacyControl](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/globalPrivacyControl)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- CAPTCHA 예: Damian Yerrick, Wikimedia Commons, [DY CAPTCHA example.jpg](https://commons.wikimedia.org/wiki/File:DY_CAPTCHA_example.jpg), 퍼블릭 도메인
+- Turnstile 구조: Cloudflare Blog, [Announcing Turnstile, a user-friendly, privacy-preserving alternative to CAPTCHA](https://blog.cloudflare.com/turnstile-private-captcha-alternative/) 본문 그림, 출처 표기
+
+</details>
 
 [^turnstile]: Cloudflare가 제공하는 CAPTCHA 대체 서비스. 방문자 브라우저에서 위젯이 토큰을 발급하고, 서버가 그 토큰을 Cloudflare에 보내 사람인지 검증한다.
 

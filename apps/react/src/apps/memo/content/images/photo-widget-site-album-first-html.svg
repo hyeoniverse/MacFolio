@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>사이트 기본값이 첫 HTML에 실려 위젯까지 가는 순서</title>
+  <rect width="640" height="400" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">첫 HTML에 실린 기본값이 위젯까지 가는 순서</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">아이폰 Safari가 처음 접속한 경우. 별도 API 요청 없이 위젯이 처음부터 기본값을 안다</text>
+  <defs><marker id="d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6e6e73"/></marker></defs>
+  <!-- lanes -->
+  <g font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <rect x="24" y="72" width="140" height="32" rx="8" fill="#f2f2f7"/><text x="94" y="93">브라우저</text>
+    <rect x="250" y="72" width="140" height="32" rx="8" fill="#f2f2f7"/><text x="320" y="93">Cloudflare Worker</text>
+    <rect x="476" y="72" width="140" height="32" rx="8" fill="#f2f2f7"/><text x="546" y="93">API (GET /site)</text>
+  </g>
+  <g stroke="#c7c7cc" stroke-width="1.5" stroke-dasharray="4 4">
+    <line x1="94" y1="104" x2="94" y2="250"/><line x1="320" y1="104" x2="320" y2="250"/><line x1="546" y1="104" x2="546" y2="250"/>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <path d="M94 128 H314" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#d)"/>
+    <text x="104" y="122">① GET / (index.html)</text>
+    <path d="M320 160 H540" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#d)"/>
+    <text x="330" y="154">② GET /site (1분 캐시)</text>
+    <path d="M546 192 H326" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#d)"/>
+    <text x="356" y="186" fill="#0a84ff">{ …, widgets: { photoAlbum } }</text>
+    <path d="M320 232 H100" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#d)"/>
+    <text x="110" y="226" fill="#0a84ff">③ JSON을 넣은 HTML</text>
+  </g>
+  <!-- html sample -->
+  <rect x="24" y="266" width="592" height="62" rx="8" fill="#f2f2f7"/>
+  <text x="38" y="290" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">&lt;script type="application/json" id="site-content"&gt;</text>
+  <text x="38" y="310" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">  {…,"widgets":{"photoAlbum":"folder:widget01"}}&lt;/script&gt;&lt;/head&gt;</text>
+  <!-- client steps -->
+  <g font-size="12" text-anchor="middle">
+    <rect x="24" y="344" width="176" height="40" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+    <text x="112" y="369" fill="#1d1d1f">applySiteContent</text>
+    <rect x="232" y="344" width="176" height="40" rx="8" fill="#eaf3ff" stroke="#0a84ff"/>
+    <text x="320" y="369" fill="#1d1d1f">widgetDefaultsStore</text>
+    <rect x="440" y="344" width="176" height="40" rx="8" fill="#eaf8ee" stroke="#34c759"/>
+    <text x="528" y="369" fill="#1d1d1f">Widget.tsx 첫 렌더링</text>
+  </g>
+  <path d="M200 364 H226" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#d)"/>
+  <path d="M408 364 H434" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#d)"/>
+</svg>

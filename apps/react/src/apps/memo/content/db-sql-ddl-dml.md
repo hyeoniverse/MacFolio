@@ -1,13 +1,28 @@
 ---
 title: SQL 데이터 정의문과 SELECT·INSERT·UPDATE 조작문
 date: 2023-04-18
-category: CS/데이터베이스
+category: 학습/CS/데이터베이스
 series: 데이터베이스 기초
 seriesOrder: 5
-summary: SQL의 특징, CREATE·ALTER·DROP과 외래 키의 ON DELETE·ON UPDATE 옵션, Oracle의 VARCHAR2·NUMBER·제약조건 이름, SELECT의 조인·집계·GROUP BY·부속 질의·NULL·EXISTS·UNION, INSERT·UPDATE·DELETE를 예제 결과와 함께 정리하고 6장 연습문제를 풀었다.
+summary: SQL의 특징, CREATE·ALTER·DROP과 외래 키의 ON DELETE·ON UPDATE 옵션, Oracle의 VARCHAR2·NUMBER·제약조건 이름, SELECT의 논리적 처리 순서와 조인·집계·GROUP BY·부속 질의·NULL·EXISTS·UNION, INSERT·UPDATE·DELETE를 예제 결과와 함께 정리하고 연습문제를 풀었다.
 ---
 
-데이터베이스 기초 연재의 다섯 번째 글로, 6장(SQL) 앞부분을 다룬다. 예제의 테이블은 다음과 같다.
+## 들어가기 전에
+
+SQL(Structured Query Language)은 관계 데이터베이스에 데이터를 정의하고 조회·변경하도록 요청하는 표준 언어다. 데이터베이스 서버는 SQL 문 하나를 받아 해석하고, 필요한 행을 찾아 결과 테이블을 돌려준다.
+
+SQL의 가장 큰 특징은 원하는 결과만 적고 찾는 방법은 적지 않는다는 점이다. "컴퓨터학과 4학년 학생의 학번과 이름"을 구할 때 C나 Java라면 파일을 열고, 레코드를 하나씩 읽어 학과와 학년을 비교하고, 맞으면 출력하는 반복문을 작성해야 한다. SQL에서는 다음 한 문장이면 된다. 어느 인덱스를 쓰고 어떤 순서로 행을 읽을지는 DBMS의 질의 최적화기가 정한다.
+
+```sql
+SELECT Sno, Sname FROM STUDENT WHERE Dept = '컴퓨터' AND Year = 4;
+-- (100, 나수영), (400, 송병길)
+```
+
+SQL 문은 다루는 대상에 따라 세 갈래로 나뉜다. 테이블 같은 구조를 만드는 데이터 정의문(DDL), 행을 검색하고 바꾸는 데이터 조작문(DML), 권한과 트랜잭션을 다루는 데이터 제어문(DCL)이다. 여기서는 DDL과 DML을 다룬다.
+
+![DDL(CREATE·ALTER·DROP), DML(SELECT·INSERT·UPDATE·DELETE), DCL(GRANT·REVOKE·COMMIT·ROLLBACK)이 각각 구조, 행, 권한·트랜잭션을 다루는 구분](./images/db-sql-ddl-dml-statement-kinds.svg 'DDL은 테이블 정의를, DML은 테이블에 저장된 행을 바꾼다')
+
+예제는 대학 데이터베이스의 세 테이블을 쓴다. 학생 5명, 과목 5개, 수강 등록 11건이 들어 있다.
 
 ```text
 STUDENT (Sno 학번, Sname 이름, Year 학년, Dept 학과)
@@ -17,14 +32,14 @@ ENROL   (Sno 학번, Cno 과목번호, Grade 성적, Midterm 중간성적, Final
 
 ## SQL의 역사와 특징
 
-SQL(Structured Query Language)은 1974년 IBM 연구소가 발표한 SEQUEL(Structured English QUEry Language)에서 시작했다. IBM은 SEQUEL을 실험적 관계 DBMS인 System R의 인터페이스로 설계·구현했다.
+SQL은 1974년 IBM 연구소가 발표한 SEQUEL(Structured English QUEry Language)에서 시작했다. IBM은 SEQUEL을 실험적 관계 DBMS인 System R의 인터페이스로 설계·구현했다.
 
-| 표준          | 연도 | 비고                               |
-| ------------- | ---- | ---------------------------------- |
-| SQL-86 (SQL1) | 1986 | 최초의 표준                        |
-| SQL-92 (SQL2) | 1992 | 개정                               |
-| SQL-99 (SQL3) | 1999 |                                    |
-| SQL:2003      | 2003 | 객체 개념 지원 추가, 강의록은 SQL4 |
+| 표준          | 연도 | 비고                                           |
+| ------------- | ---- | ---------------------------------------------- |
+| SQL-86 (SQL1) | 1986 | 최초의 표준                                    |
+| SQL-92 (SQL2) | 1992 | 개정                                           |
+| SQL-99 (SQL3) | 1999 | 트리거, 재귀 질의, 일부 객체 지향 기능 추가    |
+| SQL:2003      | 2003 | XML 관련 기능, 윈도 함수 추가. SQL4로도 부른다 |
 
 현재 ANSI와 ISO가 관계 데이터베이스의 표준 언어로 채택했다. IBM의 DB2와 SQL/DS가 데이터 언어로 사용하고, Oracle, Informix, Sybase 같은 주요 상용 DBMS도 모두 채택했다.
 
@@ -45,7 +60,7 @@ SQL에서는 관계 모델의 공식 용어 대신 릴레이션은 테이블, �
 스키마(schema)는 하나의 응용(사용자)에 속하는 테이블과 기타 구성 요소의 그룹이다. 스키마 이름, 소유자(authorization identifier), 테이블·뷰·도메인 등의 기술자(descriptor)를 포함한다. DBA에게 허가를 받은 사용자만 스키마를 소유할 수 있다.
 
 ```sql
-CREATE SCHEMA UNIVERSITY AUTHORIZATION SHLEE;
+CREATE SCHEMA UNIVERSITY AUTHORIZATION DBADMIN;
 ```
 
 `CREATE SCHEMA{:sql}` 대신 `CREATE DATABASE{:sql}`를 쓰는 DBMS도 있다. 카탈로그(catalog)는 SQL 시스템 안의 스키마 집합이며, 카탈로그 안의 모든 스키마 정보를 제공하는 특별한 스키마 `INFORMATION_SCHEMA`를 반드시 포함한다.
@@ -68,7 +83,7 @@ CREATE DOMAIN DEPT CHAR(4)
 - 학과 도메인 DEPT를 네 자리 문자열로 정의한다.
 - 값을 주지 않으면 기본값은 `NULL`이지만, 여기서는 `'???'`로 지정했다.
 - `CHECK (VALUE IN (…)){:sql}`은 목록에 있는 값만 허용해, 사용자가 임의의 학과명을 넣지 못하게 한다.
-- 강의록은 제약조건 이름을 `VALID-DEPT`로 썼지만, 따옴표 없는 식별자에는 `-`를 쓸 수 없으므로 `VALID_DEPT`로 적었다.
+- 따옴표 없는 식별자에는 하이픈(`-`)을 쓸 수 없으므로 제약조건 이름은 `VALID_DEPT`처럼 밑줄로 잇는다. `VALID-DEPT`처럼 쓰면 문법 오류가 난다.
 
 도메인은 `ALTER DOMAIN DEPT …{:sql}`로 변경하고, `DROP DOMAIN 도메인_이름 RESTRICT | CASCADE{:sql}`로 삭제한다.
 
@@ -146,7 +161,16 @@ CREATE TABLE ENROL
    CHECK (Grade >= 0 AND Grade <= 100));
 ```
 
-학생이나 과목이 삭제되면 그 학생·과목의 등록 행도 함께 삭제된다.
+학생이나 과목이 삭제되면 그 학생·과목의 등록 행도 함께 삭제된다. 같은 `DELETE{:sql}` 문이라도 외래 키에 지정한 옵션에 따라 ENROL에 남는 행이 달라진다.
+
+![학번 100 학생을 삭제할 때 CASCADE는 ENROL의 100번 행 2개를 함께 삭제하고, SET NULL은 Sno를 NULL로 바꾸려 하고, NO ACTION은 삭제를 거부하는 비교](./images/db-sql-ddl-dml-on-delete.svg 'SET NULL은 외래 키가 기본 키에 포함되지 않은 테이블에서만 쓸 수 있다')
+
+옵션을 생략한 외래 키(NO ACTION)가 있는 상태에서 참조되는 학생을 삭제하면, PostgreSQL 17은 다음 오류를 돌려주고 삭제를 취소한다.
+
+```text
+ERROR:  update or delete on table "student" violates foreign key constraint "enrol2_sno_fkey" on table "enrol2"
+DETAIL:  Key (sno)=(300) is still referenced from table "enrol2".
+```
 
 ### 테이블과 스키마의 변경·제거
 
@@ -182,7 +206,7 @@ ALTER TABLE ENROL DROP Grade CASCADE;            -- 열 삭제
 | DATE, TIMESTAMP | DATE         | 날짜와 시각을 1초 단위로 보관한다                                            |
 
 > [!WARNING] CHAR와 VARCHAR2의 비교
-> ==CHAR는 짧은 쪽 끝에 공백을 채워 비교하므로 끝의 공백만 다른 두 문자열이 같고, VARCHAR2는 공백도 문자로 비교하므로 다르다.== `'AA' = 'AA   '`은 CHAR에서 참, VARCHAR2에서 거짓이다.
+> ==CHAR는 짧은 쪽 끝에 공백을 채워 비교하므로 끝의 공백만 다른 두 문자열이 같고, VARCHAR2는 공백도 문자로 비교하므로 다르다.== `'AA' = 'AA   '`은 CHAR에서 참, VARCHAR2에서 거짓이다. PostgreSQL 17에서도 `'AA'::char(5) = 'AA   '::char(5){:sql}`는 참, `'AA'::varchar = 'AA   '::varchar{:sql}`는 거짓이다.
 
 길이가 다양한 열에는 저장 공간이 실제 데이터 크기만큼만 드는 VARCHAR2가 적합하다.
 
@@ -203,7 +227,7 @@ CREATE TABLE PLAYER
 
 `NOT NULL{:sql}`처럼 열 정의 뒤에 쓰는 제약조건을 열 수준(column level), `CONSTRAINT PLAYER_PK …{:sql}`처럼 열 정의를 마친 뒤 모아 쓰는 제약조건을 테이블 수준(table level) 제약조건이라 한다. 두 방식은 기능이 같고 한 문장 안에서 섞어 쓸 수 있다. ==`CONSTRAINT 이름{:sql}`으로 제약조건에 이름을 붙이면 나중에 그 이름으로 제약조건을 삭제하거나 다시 추가할 수 있다.== 이름을 생략하면 Oracle은 `SYS_C0012345` 같은 이름을 자동으로 붙인다.
 
-| 제약조건    | Oracle 강의록의 설명                                                                                    |
+| 제약조건    | Oracle에서의 동작                                                                                       |
 | ----------- | ------------------------------------------------------------------------------------------------------- |
 | PRIMARY KEY | 테이블당 하나. DBMS가 UNIQUE 인덱스를 자동으로 만들고 NULL을 금지한다. 기본 키 제약 = UNIQUE + NOT NULL |
 | UNIQUE      | 행을 고유하게 식별한다. NULL은 대상이 아니라 NULL인 행이 여러 개여도 위반이 아니다                      |
@@ -236,7 +260,7 @@ DROP TABLE TEAM CASCADE CONSTRAINTS;                      -- 참조하는 외래
 - `DROP COLUMN{:sql}`은 열 하나를 지정하고, 삭제한 뒤에도 테이블에 열이 하나 이상 남아야 한다.
 - `RENAME COLUMN`은 관련 제약조건의 열 이름도 함께 바꾸지만, ANSI/ISO 표준이 아니라 Oracle 등 일부 DBMS만 지원한다.
 - SQL Server는 `MODIFY` 대신 `ALTER TABLE … ALTER COLUMN{:sql}`을 쓰고, 테이블 구조는 `sp_help`로 조회한다.
-- 강의록은 `DROP TABLE … [CASCADE CONSTRAINT]{:sql}`로 적었지만 Oracle의 키워드는 `CASCADE CONSTRAINTS{:sql}`다.
+- 참조하는 외래 키 제약조건까지 함께 삭제하는 Oracle의 키워드는 복수형 `CASCADE CONSTRAINTS{:sql}`다.
 
 </details>
 
@@ -252,11 +276,11 @@ FROM   테이블_리스트
 
 `ALL`은 기본 옵션이라 생략할 수 있고 중복 행을 모두 출력한다. SELECT의 결과도 테이블이므로, SQL은 결과가 다시 테이블이 되는 **폐쇄 시스템(closed system)** 이다. 이 성질이 중첩 질의(nested query)의 이론적 기초다.
 
-![SQL 예제용 학생(STUDENT) 테이블(학번·이름·학년·학과 5행)](./images/db-sql-ddl-dml-note-01.jpg 'SQL 예제용 학생(STUDENT) 테이블(학번·이름·학년·학과 5행) (강의 자료)')
+![SQL 예제용 학생(STUDENT) 테이블(학번·이름·학년·학과 5행)](./images/db-sql-ddl-dml-note-01.jpg 'SQL 예제용 학생(STUDENT) 테이블(학번·이름·학년·학과 5행)')
 
-![SQL 예제용 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)](./images/db-sql-ddl-dml-note-02.jpg 'SQL 예제용 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행) (강의 자료)')
+![SQL 예제용 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)](./images/db-sql-ddl-dml-note-02.jpg 'SQL 예제용 과목(COURSE) 테이블(과목번호·과목이름·학점·학과·담당교수 5행)')
 
-![SQL 예제용 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)](./images/db-sql-ddl-dml-note-03.jpg 'SQL 예제용 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행) (강의 자료)')
+![SQL 예제용 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)](./images/db-sql-ddl-dml-note-03.jpg 'SQL 예제용 등록(ENROL) 테이블(학번·과목번호·성적·중간성적·기말성적 11행)')
 
 ### SQL 테이블과 릴레이션의 차이
 
@@ -299,7 +323,7 @@ FROM   ENROL
 WHERE  Cno = 'C312';
 ```
 
-![컴퓨터 학과 학생 검색 결과(Sname·Sno: 나수영 100, 정기태 300, 송병길 400)](./images/db-sql-ddl-dml-note-04.jpg '컴퓨터 학과 학생 검색 결과(Sname·Sno: 나수영 100, 정기태 300, 송병길 400) (강의 자료)')
+![컴퓨터 학과 학생 검색 결과(Sname·Sno: 나수영 100, 정기태 300, 송병길 400)](./images/db-sql-ddl-dml-note-04.jpg '컴퓨터 학과 학생 검색 결과(Sname·Sno: 나수영 100, 정기태 300, 송병길 400)')
 
 정렬 질의와 마지막 질의의 결과는 다음과 같다.
 
@@ -372,6 +396,10 @@ SELECT AVG(Midterm) AS 중간평균 FROM ENROL WHERE Cno = 'C413';  -- (90 + 95 
 ```
 
 `GROUP BY{:sql}`는 지정한 열의 값이 같은 행끼리 그룹으로 묶고, 그룹마다 집계 함수를 적용한다. `HAVING{:sql}`은 그룹에 대한 조건이다.
+
+SELECT 문은 `SELECT{:sql}` 절부터 적지만 DBMS는 FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY 순서로 논리적으로 처리한다. 아래 "수강생이 3명 이상인 과목의 기말성적 평균" 질의를 이 순서로 따라가면 행 수가 11행, 5그룹, 2그룹으로 줄어든다.
+
+![FROM으로 ENROL 11행을 읽고, GROUP BY Cno로 5그룹을 만들고, HAVING COUNT(*) >= 3으로 C312·C413 2그룹을 남긴 뒤 SELECT에서 평균 90을 계산하는 단계](./images/db-sql-ddl-dml-select-order.svg 'SELECT 절의 별칭을 WHERE에서 쓸 수 없는 것도 SELECT가 WHERE보다 뒤에 처리되기 때문이다')
 
 > [!IMPORTANT]
 > ==행에 대한 조건인 `WHERE{:sql}`는 그룹을 만들기 전에, `HAVING{:sql}`은 그룹을 만든 뒤에 적용된다.==
@@ -475,15 +503,17 @@ NOT 미정은 미정이다.
 SELECT Sno, Sname FROM STUDENT WHERE Dept IS NULL;
 ```
 
+PostgreSQL 17에서 `SELECT NULL = NULL, NULL IS NULL{:sql}`을 실행하면 첫 열은 빈칸(NULL, 곧 미정)이고 둘째 열만 참(`t`)이다. NULL끼리 비교해도 참이 되지 않는다.
+
 > [!WARNING]
 > ==NULL 검사는 `열_이름 IS [NOT] NULL{:sql}` 형식만 허용한다.== 표준 SQL에서 `Dept = NULL{:sql}`은 잘못된 문법이고, 이 식을 실행하는 DBMS에서도 결과가 미정이라 행을 하나도 반환하지 않는다.
 
 - 조건식에서 NULL을 비교 연산자와 쓰면 결과가 미정이 되고, WHERE 절은 참인 행만 반환하므로 그 행은 결과에서 제외된다.
 - 예제 STUDENT에는 Dept가 NULL인 행이 없어 위 질의의 결과는 공집합이다.
 
-![NULL이 추가된 3값 논리(T·F·U)의 AND·OR·NOT 진리표](./images/db-sql-ddl-dml-note-05.jpg 'NULL이 추가된 3값 논리(T·F·U)의 AND·OR·NOT 진리표 (강의 자료)')
+![NULL이 추가된 3값 논리(T·F·U)의 AND·OR·NOT 진리표](./images/db-sql-ddl-dml-note-05.jpg 'NULL이 추가된 3값 논리(T·F·U)의 AND·OR·NOT 진리표')
 
-![Year가 널이면 Year>3·Year≤3·Year=3·Year≠3은 모두 거짓이고 Year=NULL·Year≠NULL은 불법이라는 설명 박스](./images/db-sql-ddl-dml-note-06.jpg 'Year가 널이면 Year>3·Year≤3·Year=3·Year≠3은 모두 거짓이고 Year=NULL·Year≠NULL은 불법이라는 설명 박스 (강의 자료)')
+![Year가 널이면 Year>3·Year≤3·Year=3·Year≠3은 모두 거짓이고 Year=NULL·Year≠NULL은 불법이라는 설명 박스](./images/db-sql-ddl-dml-note-06.jpg 'Year가 널이면 Year>3·Year≤3·Year=3·Year≠3은 모두 거짓이고 Year=NULL·Year≠NULL은 불법이라는 설명 박스')
 
 ### EXISTS
 
@@ -512,7 +542,7 @@ UNION
 SELECT Sno FROM ENROL   WHERE Cno = 'C324';
 ```
 
-3학년은 200, C324 등록 학생은 300과 400이다. 강의록의 예제는 `Year = 1`로, 1학년 300과 C324의 300, 400을 합쳐 중복된 300을 한 번만 남긴 300, 400이 결과다.
+3학년은 200, C324 등록 학생은 300과 400이다. 조건을 `Year = 1`로 바꾸면 1학년 300과 C324 등록 학생 300, 400이 합쳐지고, 중복된 300은 한 번만 남아 결과가 300, 400이 된다. 중복을 남기려면 `UNION ALL{:sql}`을 쓴다.
 
 ## 데이터 삽입·갱신·삭제
 
@@ -605,7 +635,7 @@ Oracle은 `DELETE ENROL;{:sql}`처럼 `FROM{:sql}`을 생략해도 된다.
 
 ## 연습문제 풀이
 
-교재 6장 연습문제 가운데 과제로 나온 1·5·6번을 풀었다. 번호는 교재 번호 그대로이고, 같은 장의 2·3·4번은 [뷰·커서 글](/memo/db-sql-view-cursor)에서 푼다.
+SQL 단원 연습문제 가운데 1·5·6번을 풀었다. 같은 단원의 2·3·4번은 [뷰·커서 글](/memo/db-sql-view-cursor)에서 푼다.
 
 <details>
 <summary>1. SQL 테이블과 릴레이션의 차이</summary>
@@ -705,7 +735,7 @@ WHERE  P.Pname = 'Nut';
 
 ## 실습 풀이
 
-6·7주차 수업의 실습 과제 2개를 풀었다.
+예제 테이블을 DDL로 직접 정의하고, 본문의 검색문 15개를 예제 데이터에 적용한 결과를 확인했다.
 
 <details>
 <summary>1. 예제 테이블을 DDL로 정의</summary>
@@ -809,6 +839,17 @@ CREATE TABLE ENROL
 ## 관련 글
 
 - [관계 대수의 연산자와 폐쇄 성질](/memo/db-relational-algebra): SQL의 이론적 기초인 관계 대수
-- [SQL 뷰의 갱신 가능 조건과 삽입 SQL의 커서](/memo/db-sql-view-cursor): 6장 뒷부분을 다룬 다음 글
+- [SQL 뷰의 갱신 가능 조건과 삽입 SQL의 커서](/memo/db-sql-view-cursor): 뷰, 삽입 SQL, 커서를 다룬 다음 글
+
+<details>
+<summary>참고 문헌</summary>
+
+- Wikipedia, [SQL](https://en.wikipedia.org/wiki/SQL): 표준의 연도별 변경 사항
+- PostgreSQL 문서, [CREATE TABLE](https://www.postgresql.org/docs/current/sql-createtable.html), [5.5. Constraints](https://www.postgresql.org/docs/current/ddl-constraints.html)
+- PostgreSQL 문서, [SELECT](https://www.postgresql.org/docs/current/sql-select.html)
+- Microsoft Learn, [SELECT (Transact-SQL): Logical processing order of the SELECT statement](https://learn.microsoft.com/en-us/sql/t-sql/queries/select-transact-sql#logical-processing-order-of-the-select-statement)
+- Oracle Database SQL Language Reference, [DROP TABLE](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/DROP-TABLE.html)
+
+</details>
 
 #데이터베이스 #SQL #CS

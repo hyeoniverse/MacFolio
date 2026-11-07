@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">편집기의 문서·화면·저장값</text>
+<text x="320" y="48" font-size="12" fill="#6e6e73" text-anchor="middle">장식은 화면(DOM)에만 더해지고, 문서와 저장되는 Markdown은 주소 한 줄이다</text>
+<text x="20" y="84" font-size="13" font-weight="600" fill="#6e6e73">ProseMirror 문서</text>
+<rect x="20" y="94" width="180" height="150" rx="8" fill="#f2f2f7"/>
+<text x="34" y="122" font-size="13" fill="#1d1d1f">paragraph</text>
+<text x="48" y="146" font-size="12.5" fill="#1d1d1f">text "https://youtu…"</text>
+<text x="48" y="168" font-size="12.5" fill="#0a84ff">마크: link</text>
+<text x="48" y="190" font-size="12.5" fill="#0a84ff">href = 글자</text>
+<text x="34" y="222" font-size="13" fill="#1d1d1f">paragraph (다음 문단)</text>
+<line x1="206" y1="160" x2="236" y2="160" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ar)"/>
+<text x="240" y="84" font-size="13" font-weight="600" fill="#6e6e73">화면 DOM</text>
+<rect x="240" y="94" width="380" height="40" rx="8" fill="#fff" stroke="#ff9f0a" stroke-dasharray="5 4"/>
+<text x="254" y="113" font-size="12.5" fill="#1d1d1f">p.memo-embed-source</text>
+<text x="254" y="128" font-size="12" fill="#ff9f0a">Decoration.node · 커서가 없으면 높이 0</text>
+<rect x="240" y="142" width="380" height="74" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="2"/>
+<text x="254" y="164" font-size="12.5" fill="#1d1d1f">figure.memo-embed &gt; iframe</text>
+<text x="254" y="184" font-size="12" fill="#0a84ff">Decoration.widget(문단 바로 뒤, side −1)</text>
+<text x="254" y="203" font-size="12" fill="#0a84ff">key = embed:https://www.youtube-nocookie.com/…</text>
+<rect x="240" y="224" width="380" height="24" rx="6" fill="#f2f2f7"/>
+<text x="254" y="241" font-size="12.5" fill="#1d1d1f">p (다음 문단)</text>
+<text x="20" y="290" font-size="13" font-weight="600" fill="#6e6e73">저장되는 Markdown</text>
+<rect x="20" y="300" width="600" height="34" rx="8" fill="#f2f2f7"/>
+<text x="34" y="322" font-size="12.5" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://www.youtube.com/watch?v=nYkdrAPrdcw</text>
+<text x="20" y="366" font-size="12.5" fill="#1d1d1f">다른 문단에 글자를 입력하면 장식 계산이 다시 실행되지만 key가 같아 기존 iframe DOM을 재사용한다.</text>
+<text x="20" y="386" font-size="12.5" fill="#1d1d1f">주소를 고치면 key가 바뀌어 새 iframe을 만든다.</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="420" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">관계의 원소 수에 따라 외래 키가 들어가는 위치</text>
+
+  <!-- 1:1 -->
+  <text x="20" y="62" font-size="13" font-weight="600" fill="#0a84ff">1:1 관리</text>
+  <text x="20" y="80" font-size="12" fill="#6e6e73">전체 참여하는 프로젝트 쪽</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="200" y="48" width="420" height="24" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="210" y="65">PROJECT.Pno</text><text x="320" y="65">Pname</text><text x="420" y="65" fill="#0a84ff" font-weight="600">Manager (FK, UNIQUE)</text>
+    <rect x="200" y="72" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="89">P230001</text><text x="320" y="89">물류시스템</text><text x="420" y="89" fill="#0a84ff">E230001</text>
+    <rect x="200" y="96" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="113">P230002</text><text x="320" y="113">모바일앱</text><text x="420" y="113" fill="#0a84ff">E230002</text>
+  </g>
+  <text x="200" y="138" font-size="12" fill="#6e6e73">사원 쪽에 두면 관리자가 아닌 사원 2명의 칸이 NULL이 된다</text>
+
+  <!-- 1:N -->
+  <text x="20" y="176" font-size="13" font-weight="600" fill="#ff9f0a">1:N 소속</text>
+  <text x="20" y="194" font-size="12" fill="#6e6e73">N 쪽인 사원 쪽</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="200" y="162" width="420" height="24" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="210" y="179">EMPLOYEE.Eno</text><text x="320" y="179">Ename</text><text x="420" y="179" fill="#c46c00" font-weight="600">Dept (FK)</text>
+    <rect x="200" y="186" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="203">E230002</text><text x="320" y="203">이나래</text><text x="420" y="203" fill="#c46c00">D02</text>
+    <rect x="200" y="210" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="227">E230004</text><text x="320" y="227">최라온</text><text x="420" y="227" fill="#c46c00">D02</text>
+    <rect x="200" y="234" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="251">E230005</text><text x="320" y="251">정마루</text><text x="420" y="251" fill="#c46c00">D02</text>
+  </g>
+  <text x="200" y="276" font-size="12" fill="#6e6e73">부서 쪽에 두면 D02 한 칸에 사원번호 3개가 들어가야 한다</text>
+
+  <!-- M:N -->
+  <text x="20" y="314" font-size="13" font-weight="600" fill="#34a853">M:N 근무</text>
+  <text x="20" y="332" font-size="12" fill="#6e6e73">별도 관계 릴레이션</text>
+  <g font-size="12" fill="#1d1d1f">
+    <rect x="200" y="300" width="420" height="24" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="210" y="317" fill="#248a3d" font-weight="600">CONDUCT.Pno (FK)</text><text x="340" y="317" fill="#248a3d" font-weight="600">Eno (FK)</text><text x="440" y="317">Role</text><text x="530" y="317">Period</text>
+    <rect x="200" y="324" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="341">P230001</text><text x="340" y="341">E230004</text><text x="440" y="341">개발</text><text x="530" y="341">6</text>
+    <rect x="200" y="348" width="420" height="24" fill="#fff" stroke="#6e6e73"/>
+    <text x="210" y="365">P230002</text><text x="340" y="365">E230004</text><text x="440" y="365">개발</text><text x="530" y="365">4</text>
+  </g>
+  <text x="200" y="392" font-size="12" fill="#6e6e73">E230004는 프로젝트 2개에, P230002에는 사원 3명이 참여한다</text>
+  <text x="200" y="410" font-size="12" fill="#6e6e73">어느 한쪽 릴레이션에 넣어도 한 칸에 값이 여러 개가 된다</text>
+</svg>

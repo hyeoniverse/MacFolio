@@ -7,7 +7,24 @@ seriesOrder: 1
 summary: 게시 버튼 글자가 흐린 원인은 앱 루트의 .memo button { color: inherit }(0,1,1)이 버튼 클래스(0,1,0)를 이긴 데 있었다. 같은 구조로 !important가 72개 쌓여 있었다. 앱 기본값 규칙을 @layer reset으로 옮기고 화면 58장을 픽셀 단위로 비교했다.
 ---
 
-메모 편집기를 다듬는 PR([#55](https://github.com/hyeoniverse/MacFolio/pull/55))에서 게시 버튼 하나의 글자색을 고쳤고, 그 원인인 앱 루트의 기본값 규칙은 공통 컴포넌트 작업([#57](https://github.com/hyeoniverse/MacFolio/pull/57))의 첫 커밋에서 CSS 층으로 옮겼다. 두 작업은 같은 날(10월 1일) 진행했다. 이 글은 증상에서 원인, 임시 수정, 근본 수정까지를 순서대로 정리한 것이다.
+메모 편집기를 다듬는 PR([#55](https://github.com/hyeoniverse/MacFolio/pull/55))에서 게시 버튼 하나의 글자색을 고쳤고, 그 원인인 앱 루트의 기본값 규칙은 공통 컴포넌트 작업([#57](https://github.com/hyeoniverse/MacFolio/pull/57))의 첫 커밋에서 CSS 층으로 옮겼다. 두 작업은 같은 날(10월 1일) 진행했다.
+
+## 배경: 브라우저가 규칙 하나를 고르는 순서
+
+한 요소에 같은 속성(예: `color`)을 지정하는 규칙이 여러 개 일치하면, 브라우저는 그중 하나의 값만 적용한다. 이 선택 규칙을 **캐스케이드**(cascade)라고 한다. 비교는 다음 순서로 진행하고, 앞 단계에서 승부가 나면 뒤 단계는 확인하지 않는다.
+
+| 순서 | 비교 항목                   | 예                                                                         |
+| ---- | --------------------------- | -------------------------------------------------------------------------- |
+| 1    | 출처와 `!important`         | 브라우저 기본 스타일 < 사이트 CSS < 사이트 CSS의 `!important`              |
+| 2    | 캐스케이드 레이어(`@layer`) | 사이트 CSS 안에서 먼저 선언한 층 < 나중에 선언한 층 < 층 밖의 규칙         |
+| 3    | 명시도(specificity)         | `.memo-writer-publish`(클래스 1개) < `.memo button`(클래스 1개 + 태그 1개) |
+| 4    | 선언 순서                   | 1~3이 모두 같으면 파일에서 나중에 나온 규칙                                |
+
+![캐스케이드의 출처와 층 우선순위](./images/css-layer-reset-cascade-origins.jpg '왼쪽이 가장 약하고 오른쪽이 가장 강하다. 사이트 CSS(site) 안에서는 @layer 규칙이 층 밖의 일반 규칙(normal)보다 약하고, !important를 붙이면 순서가 뒤집힌다')
+
+**명시도**는 선택자가 요소를 얼마나 구체적으로 지목하는지를 (ID 수, 클래스·속성·의사 클래스 수, 태그 수) 세 자리 숫자로 나타낸 값이다. `.memo button`은 (0, 1, 1), `.memo-writer-publish`는 (0, 1, 0)이다. 앞자리부터 비교하므로 클래스 수가 같으면 태그가 하나 더 있는 쪽이 우선한다.
+
+**`!important`**는 선언 하나를 1단계에서 이기게 만드는 표시다. 명시도와 층을 모두 건너뛰므로, 한 번 쓰면 그 값을 다시 바꾸려는 규칙에도 `!important`가 필요해진다. 이 글의 문제는 3단계(명시도)에서 의도와 반대로 승부가 난 것이고, 해결은 2단계(층)를 이용한 것이다.
 
 ## 증상: 게시 버튼 글자가 흐림
 
@@ -60,11 +77,13 @@ for (const sheet of document.styleSheets)
 | `.memo button`         | 1      | 1    | **(0, 1, 1)** |
 | `.memo-writer-publish` | 1      | 0    | **(0, 1, 0)** |
 
-클래스 수가 같으면 태그가 하나 더 있는 `.memo button`이 우선한다. 파일 안의 선언 순서는 명시도가 같을 때만 비교한다. 그래서 갈색 대신 `inherit`이 적용되어 부모의 보조 글자색을 상속했다.
+클래스 수가 같으면 태그가 하나 더 있는 `.memo button`이 우선한다. ==파일 안의 선언 순서는 명시도가 같을 때만 비교한다.== 그래서 갈색 대신 `inherit`이 적용되어 부모의 보조 글자색을 상속했다.
 
 ![두 규칙의 명시도](./images/memo-button-specificity.svg '클래스 수가 같으면 태그 수로 우선순위가 정해진다')
 
-`font: inherit`도 같은 방식으로 덮어쓰고 있었다. `font`는 **`font-size`·`font-weight`까지 함께 지정하는** [단축 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties)이다. 게시 버튼에는 `font-size: 11px; font-weight: 600`을 지정했지만, 계산된 값은 부모를 상속한 `12px`, `400`이었다.
+`font: inherit`도 같은 방식으로 덮어쓰고 있었다. `font`는 **`font-size`·`font-weight`까지 함께 지정하는** [단축 속성](https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties)(여러 하위 속성을 한 줄로 지정하는 속성)이다. `font: inherit` 한 줄은 하위 속성 일곱 개에 모두 `inherit`을 지정한 것과 같다. 게시 버튼에는 `font-size: 11px; font-weight: 600`을 지정했지만, 계산된 값은 부모를 상속한 `12px`, `400`이었다.
+
+![font: inherit가 하위 속성을 모두 덮어쓰는 과정](./images/css-layer-reset-font-shorthand.svg '명시도가 높은 .memo button의 font: inherit가 font-size·font-weight까지 inherit로 지정해, 버튼 클래스의 11px·600을 이긴다')
 
 ## 당장의 수정과 한계
 
@@ -94,11 +113,11 @@ for (const sheet of document.styleSheets)
 | ---- | ---- | ------ | ---- | ------ | ---- | ------ | ------ |
 | 개수 | 27   | 13     | 11   | 7      | 6    | 4      | 4      |
 
-대부분이 버튼·링크의 색과 글꼴이었다. 원인은 기본값 규칙 여섯 개이고, 이 규칙의 우선순위를 낮추지 않으면 `!important`는 계속 늘어난다.
+대부분이 버튼·링크의 색과 글꼴이었다. ==원인은 기본값 규칙 여섯 개==이고, 이 규칙의 우선순위를 낮추지 않으면 `!important`는 계속 늘어난다.
 
 ## 명시도 대신 층
 
-CSS 층([`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer))을 사용하면 규칙 간 비교 순서가 바뀐다. 브라우저는 **층을 먼저 비교하고**, 같은 층일 때만 명시도를 비교한다. 층 밖에 있는 일반 규칙은 어느 층의 규칙보다도 우선한다.
+CSS 층([`@layer`](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer))은 규칙을 이름 붙은 묶음에 넣는 문법이다. 배경 절의 표처럼 브라우저는 **층을 먼저 비교하고**, 같은 층일 때만 명시도를 비교한다. ==층 밖에 있는 일반 규칙은 어느 층의 규칙보다도 우선한다.==
 
 ![층 밖의 규칙이 층 안의 규칙을 이긴다](./images/css-layer-cascade.svg '기본값만 reset 층에 넣으면 점수가 높아도 진다')
 
@@ -138,7 +157,8 @@ import './styles/motion.css';
 import './index.css';
 ```
 
-이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
+> [!WARNING] 빌드 결과의 로드 순서
+> 이 "가장 먼저"가 빌드 결과에서는 보장되지 않는다는 사실은 11일 뒤에 발견했다([CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)).
 
 이제 게시 버튼 규칙은 `.memo-writer-publish` 하나만으로도 `reset` 층의 `.memo button`보다 우선한다. 앞에서 추가한 `.memo-writer-actions .memo-writer-publish`는 명시도가 높아도 부작용이 없어 주석과 함께 남겨 두었다.
 
@@ -165,7 +185,7 @@ for (let i = 0; i < a.length; i += 4) {
 }
 ```
 
-먼저 **코드를 변경하지 않고** 두 번 캡처해 비교했다. 거의 모든 장면에서 0.03% 차이가 나왔다. 원인은 메뉴 막대의 시계였다. 캡처할 때마다 분이 바뀌거나 1초 단위로 다시 렌더링된다. Playwright의 [`page.clock.setFixedTime()`](https://playwright.dev/docs/clock)으로 시각을 고정하자 차이가 0.001%만 남았다. 이 기준선 이후의 차이는 모두 실제 변경으로 판단할 수 있다.
+먼저 **코드를 변경하지 않고** 두 번 캡처해 비교했다. 거의 모든 장면에서 0.03% 차이가 나왔다. ==원인은 메뉴 막대의 시계였다.== 캡처할 때마다 분이 바뀌거나 1초 단위로 다시 렌더링된다. Playwright의 [`page.clock.setFixedTime()`](https://playwright.dev/docs/clock)으로 시각을 고정하자 차이가 0.001%만 남았다. 이 기준선 이후의 차이는 모두 실제 변경으로 판단할 수 있다.
 
 ![같은 장면을 전후로 찍고, 시각을 고정하고, 픽셀 차이를 세는 순서](./images/css-layer-reset-compare-steps.svg '먼저 같은 코드로 두 번 찍어 잡음을 없앤 뒤 전후를 비교했다')
 
@@ -218,13 +238,16 @@ for (let i = 0; i < a.length; i += 4) {
 
 ## !important는 이 커밋에서 유지
 
-이제 `!important` 대부분은 불필요하다. 하지만 한꺼번에 삭제하지 않았다. `!important`는 기본값뿐 아니라 **같은 버튼의 다른 상태**(hover, active) 규칙과도 우선순위를 다투고 있을 수 있다. 하나씩 삭제하면서 해당 버튼의 모든 상태를 확인해야 한다.
+이제 `!important` 대부분은 불필요하다. 하지만 한꺼번에 삭제하지 않았다.
+
+> [!WARNING] 상태 규칙과의 우선순위
+> `!important`는 기본값뿐 아니라 **같은 버튼의 다른 상태**(hover, active) 규칙과도 우선순위를 다투고 있을 수 있다. 하나씩 삭제하면서 해당 버튼의 모든 상태를 확인해야 한다.
 
 다음 단계에서 공통 컴포넌트(`IconButton`, `Button`, `Menu`)를 구현하고 버튼을 이전한다. 그 과정에서 버튼 CSS를 새로 작성하며 `!important`를 제거한다. 전후 비교도 같은 방법으로 진행한다.
 
 ## 이후 !important 감소 추이
 
-이 글을 보완하면서 저장소의 CSS에서 `!important`가 포함된 줄을 다시 집계했다(`git grep -c`). 글 작성 시각에 집계한 72개는 앱 CSS만 대상이었고, 전역 CSS까지 줄 단위로 집계하면 74줄이다.
+저장소의 CSS에서 `!important`가 포함된 줄을 `git grep -c`로 다시 집계했다. 앞에서 집계한 72개는 앱 CSS만 대상이었고, 전역 CSS까지 줄 단위로 집계하면 74줄이다.
 
 ![!important가 든 줄: 이 커밋 전 74, 공통 IconButton PR 뒤 4, 지금 23](./images/css-layer-reset-important-count.svg '줄 단위로 센 !important. 지금 남은 것은 대부분 Safari 프로젝트 페이지와 움직임 줄이기 규칙')
 
@@ -248,11 +271,31 @@ for (let i = 0; i < a.length; i += 4) {
 
 ## 관련 글
 
-- [계산된 스타일 비교로 차이를 찾으며 !important 일괄 삭제하기](/memo/shared-button)
+- [계산된 스타일 비교로 !important를 일괄 삭제하고 IconButton·Button 공통 버튼 추출하기](/memo/shared-button)
 - [계산된 스타일 비교와 명시도 0인 :where() 규칙으로 버튼 75곳을 IconButton·Button으로 옮기기](/memo/icon-button-migrate)
 - [CSS 파일 로드 순서와 무관하게 @layer 순서를 index.html에서 먼저 선언하기](/memo/css-layer-order-fix)
-- [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/memo-css-split)
+- [@import 순서를 유지한 CSS 파일 분할과 빌드 결과 md5 비교 검증](/memo/css-cleanup-tools#memocss-분할-선언-순서-유지)
 
 [^specificity]: 같은 요소에 여러 규칙이 일치할 때 어느 규칙을 적용할지 정하는 점수. (ID 수, 클래스·속성·의사 클래스 수, 태그·의사 요소 수) 세 자리를 앞자리부터 비교한다. 자세한 계산 방법은 [MDN의 Specificity 문서](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)에 있다.
+
+<details>
+<summary>참고 문헌</summary>
+
+- MDN, [Introducing the CSS Cascade](https://developer.mozilla.org/en-US/docs/Web/CSS/Cascade)
+- MDN, [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity)
+- MDN, [@layer](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer)
+- MDN, [:where()](https://developer.mozilla.org/en-US/docs/Web/CSS/:where)
+- MDN, [Shorthand properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties)
+- MDN, [Window: getComputedStyle()](https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle)
+- Playwright, [Clock](https://playwright.dev/docs/clock)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 캐스케이드의 출처와 층 우선순위: Una Kravets, Chrome for Developers, [Cascade layers are coming to your browser](https://developer.chrome.com/blog/cascade-layers), CC BY 4.0
+
+</details>
 
 #MacFolio #메모앱 #CSS #공통컴포넌트 #트러블슈팅

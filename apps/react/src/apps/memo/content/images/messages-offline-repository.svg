@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>VITE_MESSAGES_STORE로 저장소를 고르는 경로</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">저장소를 고르는 곳은 한 군데</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">값 'local'만 브라우저 저장소, 나머지(비움·server·오타)는 모두 서버</text>
+  <defs><marker id="c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6e6e73"/></marker></defs>
+  <rect x="24" y="78" width="180" height="62" rx="10" fill="#f2f2f7"/>
+  <text x="38" y="102" font-size="13" font-weight="600" fill="#1d1d1f">.env.local</text>
+  <text x="38" y="124" font-size="12" fill="#1d1d1f">VITE_MESSAGES_STORE=local</text>
+  <rect x="230" y="78" width="180" height="62" rx="10" fill="#f2f2f7"/>
+  <text x="244" y="102" font-size="13" font-weight="600" fill="#1d1d1f">shared/config/env.ts</text>
+  <text x="244" y="124" font-size="12" fill="#1d1d1f">messagesStore: 'local' | 'server'</text>
+  <rect x="436" y="78" width="180" height="62" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="450" y="102" font-size="13" font-weight="600" fill="#0a84ff">repository/index.ts</text>
+  <text x="450" y="124" font-size="12" fill="#1d1d1f">getConversationRepository()</text>
+  <path d="M204 109 H224" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#c)"/>
+  <path d="M410 109 H430" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#c)"/>
+  <text x="24" y="162" font-size="12" fill="#6e6e73">E2E는 __MACFOLIO_MESSAGES_STORE__ 전역 변수로 덮어쓴다</text>
+  <path d="M526 140 V172 H200 V196" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#c)"/>
+  <path d="M526 172 H440 V196" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#c)"/>
+  <rect x="96" y="200" width="208" height="70" rx="10" fill="#fff" stroke="#34c759" stroke-width="1.5"/>
+  <text x="110" y="224" font-size="13" font-weight="600" fill="#1d1d1f">'local'</text>
+  <text x="110" y="244" font-size="12" fill="#1d1d1f">localConversationRepository</text>
+  <text x="110" y="262" font-size="12" fill="#6e6e73">이 브라우저의 localStorage</text>
+  <rect x="336" y="200" width="208" height="70" rx="10" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+  <text x="350" y="224" font-size="13" font-weight="600" fill="#1d1d1f">'server' (배포 기본값)</text>
+  <text x="350" y="244" font-size="12" fill="#1d1d1f">apiConversationRepository</text>
+  <text x="350" y="262" font-size="12" fill="#6e6e73">VITE_API_URL + /messages</text>
+  <rect x="96" y="284" width="448" height="34" rx="8" fill="#f2f2f7"/>
+  <text x="320" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">둘 다 ConversationRepository 구현 → Messages.tsx는 저장 위치를 모른다</text>
+</svg>

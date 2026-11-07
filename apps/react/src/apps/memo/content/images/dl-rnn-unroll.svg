@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="360" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker></defs>
+<text x="80" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">접은 그림</text>
+<text x="410" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">시간 축으로 펼친 그림 (many to one)</text>
+<!-- folded -->
+<rect x="50" y="250" width="60" height="40" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/><text x="80" y="275" text-anchor="middle" font-size="14" fill="#1d1d1f">xₜ</text>
+<rect x="45" y="150" width="70" height="50" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="80" y="181" text-anchor="middle" font-size="14" fill="#1d1d1f">hₜ</text>
+<rect x="50" y="60" width="60" height="40" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/><text x="80" y="85" text-anchor="middle" font-size="14" fill="#1d1d1f">yₜ</text>
+<line x1="80" y1="250" x2="80" y2="203" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/><text x="88" y="232" font-size="12" fill="#6e6e73">U</text>
+<line x1="80" y1="150" x2="80" y2="103" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/><text x="88" y="132" font-size="12" fill="#6e6e73">V</text>
+<path d="M115,165 C150,150 150,205 117,190" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#b)"/><text x="150" y="182" font-size="13" fill="#0a84ff">W</text>
+<text x="80" y="320" text-anchor="middle" font-size="12" fill="#6e6e73">은닉 상태가 자기 자신에게</text>
+<text x="80" y="336" text-anchor="middle" font-size="12" fill="#6e6e73">되돌아간다</text>
+<line x1="185" y1="50" x2="185" y2="340" stroke="#f2f2f7" stroke-width="2"/>
+<!-- unrolled -->
+<g font-size="13" fill="#1d1d1f">
+<rect x="225" y="250" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/><text x="270" y="268" text-anchor="middle">x₁</text><text x="270" y="284" text-anchor="middle" font-size="12" fill="#6e6e73">0일 3772.9</text>
+<rect x="365" y="250" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/><text x="410" y="268" text-anchor="middle">x₂</text><text x="410" y="284" text-anchor="middle" font-size="12" fill="#6e6e73">1일 3799.7</text>
+<rect x="505" y="250" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/><text x="550" y="268" text-anchor="middle">x₃</text><text x="550" y="284" text-anchor="middle" font-size="12" fill="#6e6e73">2일 3811.6</text>
+<rect x="235" y="150" width="70" height="50" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="270" y="181" text-anchor="middle">h₁</text>
+<rect x="375" y="150" width="70" height="50" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="410" y="181" text-anchor="middle">h₂</text>
+<rect x="515" y="150" width="70" height="50" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="2"/><text x="550" y="181" text-anchor="middle">h₃</text>
+<rect x="505" y="60" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/><text x="550" y="78" text-anchor="middle">y</text><text x="550" y="94" text-anchor="middle" font-size="12" fill="#6e6e73">다음 날 가격</text>
+<rect x="200" y="160" width="20" height="30" rx="4" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="3 3"/><text x="210" y="215" text-anchor="middle" font-size="12" fill="#6e6e73">h₀=0</text>
+</g>
+<g stroke="#1d1d1f" stroke-width="1.5">
+<line x1="270" y1="250" x2="270" y2="203" marker-end="url(#a)"/><line x1="410" y1="250" x2="410" y2="203" marker-end="url(#a)"/><line x1="550" y1="250" x2="550" y2="203" marker-end="url(#a)"/>
+<line x1="550" y1="150" x2="550" y2="103" marker-end="url(#a)"/>
+</g>
+<g stroke="#0a84ff" stroke-width="2"><line x1="220" y1="175" x2="232" y2="175" marker-end="url(#b)"/><line x1="305" y1="175" x2="372" y2="175" marker-end="url(#b)"/><line x1="445" y1="175" x2="512" y2="175" marker-end="url(#b)"/></g>
+<g font-size="12"><text x="278" y="232" fill="#6e6e73">U</text><text x="418" y="232" fill="#6e6e73">U</text><text x="558" y="232" fill="#6e6e73">U</text><text x="558" y="132" fill="#6e6e73">V</text>
+<text x="338" y="168" text-anchor="middle" fill="#0a84ff">W</text><text x="478" y="168" text-anchor="middle" fill="#0a84ff">W</text></g>
+<text x="410" y="322" text-anchor="middle" font-size="12" fill="#1d1d1f">세 시점이 같은 U, W, V를 공유한다. 길이가 7이면 같은 칸을 7번 반복한다</text>
+<text x="410" y="340" text-anchor="middle" font-size="12" fill="#6e6e73">출력은 마지막 시점 h₃에서만 계산한다</text>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="370" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <text x="180" y="24" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">트랜스포머 인코더 블록</text>
+  <rect x="80" y="42" width="200" height="262" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="90" y="60" font-size="12" fill="#1d1d1f">L×</text>
+  <g stroke="#1d1d1f" stroke-width="1.3">
+    <line x1="180" y1="318" x2="180" y2="283" marker-end="url(#a)"/>
+    <line x1="180" y1="257" x2="180" y2="245"/>
+    <line x1="150" y1="245" x2="210" y2="245"/>
+    <line x1="150" y1="245" x2="150" y2="235" marker-end="url(#a)"/>
+    <line x1="180" y1="245" x2="180" y2="235" marker-end="url(#a)"/>
+    <line x1="210" y1="245" x2="210" y2="235" marker-end="url(#a)"/>
+    <line x1="180" y1="197" x2="180" y2="189"/>
+    <line x1="180" y1="167" x2="180" y2="158" marker-end="url(#a)"/>
+    <line x1="180" y1="132" x2="180" y2="113" marker-end="url(#a)"/>
+    <line x1="180" y1="87" x2="180" y2="80"/>
+    <line x1="180" y1="58" x2="180" y2="34" marker-end="url(#a)"/>
+    <polyline points="180,294 260,294 260,177 192,177" fill="none" marker-end="url(#a)"/>
+    <polyline points="180,162 260,162 260,68 192,68" fill="none" marker-end="url(#a)"/>
+  </g>
+  <rect x="115" y="257" width="130" height="24" rx="5" fill="#fff4c2" stroke="#1d1d1f"/>
+  <text x="180" y="274" text-anchor="middle" font-size="12" fill="#1d1d1f">층 정규화(LN)</text>
+  <rect x="110" y="197" width="140" height="36" rx="5" fill="#d8f2d8" stroke="#1d1d1f"/>
+  <text x="180" y="213" text-anchor="middle" font-size="12" fill="#1d1d1f">멀티 헤드</text>
+  <text x="180" y="227" text-anchor="middle" font-size="12" fill="#1d1d1f">셀프 어텐션(MSA)</text>
+  <circle cx="180" cy="177" r="11" fill="#fff" stroke="#1d1d1f" stroke-width="1.3"/>
+  <text x="180" y="182" text-anchor="middle" font-size="15" fill="#1d1d1f">+</text>
+  <rect x="115" y="132" width="130" height="24" rx="5" fill="#fff4c2" stroke="#1d1d1f"/>
+  <text x="180" y="149" text-anchor="middle" font-size="12" fill="#1d1d1f">층 정규화(LN)</text>
+  <rect x="115" y="87" width="130" height="24" rx="5" fill="#d6ebff" stroke="#1d1d1f"/>
+  <text x="180" y="104" text-anchor="middle" font-size="12" fill="#1d1d1f">MLP</text>
+  <circle cx="180" cy="68" r="11" fill="#fff" stroke="#1d1d1f" stroke-width="1.3"/>
+  <text x="180" y="73" text-anchor="middle" font-size="15" fill="#1d1d1f">+</text>
+  <rect x="125" y="318" width="110" height="34" rx="6" fill="#ffecec" stroke="#1d1d1f"/>
+  <text x="180" y="340" text-anchor="middle" font-size="12" fill="#1d1d1f">임베딩된 패치</text>
+  <!-- 잔차 연결 표시 -->
+  <text x="288" y="236" font-size="11" fill="#6e6e73">잔차 연결</text>
+  <text x="288" y="122" font-size="11" fill="#6e6e73">잔차 연결</text>
+  <!-- 식 -->
+  <g font-size="14" fill="#1d1d1f" font-style="italic">
+    <text x="370" y="200">z′<tspan font-size="10" dy="4">ℓ</tspan><tspan dy="-4"> = MSA(LN(z</tspan><tspan font-size="10" dy="4">ℓ−1</tspan><tspan dy="-4">)) + z</tspan><tspan font-size="10" dy="4">ℓ−1</tspan></text>
+    <text x="370" y="110">z<tspan font-size="10" dy="4">ℓ</tspan><tspan dy="-4"> = MLP(LN(z′</tspan><tspan font-size="10" dy="4">ℓ</tspan><tspan dy="-4">)) + z′</tspan><tspan font-size="10" dy="4">ℓ</tspan></text>
+  </g>
+  <g font-size="11.5" fill="#6e6e73">
+    <text x="370" y="220">정규화한 입력으로 MSA를 계산하고 입력을 더한다</text>
+    <text x="370" y="130">정규화한 z′ℓ로 MLP를 계산하고 z′ℓ를 더한다</text>
+  </g>
+</svg>

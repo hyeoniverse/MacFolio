@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="290" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">좁은 표 셀에서 word-break 값에 따른 한국어 줄바꿈</text>
+  <g font-size="14">
+    <text x="40" y="66" font-size="13" font-weight="600" fill="#ff3b30">word-break: normal (기본값)</text>
+    <rect x="40" y="78" width="70" height="80" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="48" y="102" fill="#1d1d1f">메모를</text>
+    <text x="48" y="124" fill="#1d1d1f">그리</text>
+    <text x="48" y="146" fill="#1d1d1f">는 곳</text>
+    <text x="124" y="124" font-size="12" fill="#ff3b30">← 음절 사이 어디서나 줄을 바꾼다</text>
+    <text x="340" y="66" font-size="13" font-weight="600" fill="#34c759">keep-all + min-width: 7.5em</text>
+    <rect x="340" y="78" width="112" height="58" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="348" y="102" fill="#1d1d1f">메모를 그리는</text>
+    <text x="348" y="124" fill="#1d1d1f">곳</text>
+    <text x="466" y="100" font-size="12" fill="#34c759">공백에서만 줄을 바꾼다</text>
+    <text x="466" y="118" font-size="12" fill="#6e6e73">셀은 7.5em보다 좁아지지 않는다</text>
+  </g>
+  <rect x="40" y="186" width="560" height="80" rx="8" fill="#f2f2f7"/>
+  <text x="56" y="210" font-size="12" fill="#1d1d1f">표 전체 폭이 화면보다 넓어지면 table { display: block; overflow-x: auto }로 표만 가로 스크롤한다</text>
+  <text x="56" y="232" font-size="12" fill="#1d1d1f">처음 지정한 min-width 4.5em은 셀을 더 좁게 만들어 줄바꿈이 늘었고, 7.5em으로 고쳤다</text>
+  <text x="56" y="254" font-size="12" fill="#6e6e73">CJK(한중일) 글자는 기본값에서 글자 사이마다 줄바꿈 기회가 있고, keep-all은 그 기회를 없앤다</text>
+</svg>

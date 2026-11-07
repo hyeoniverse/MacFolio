@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 460" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>찾기·대치를 앞에서부터 하는 경우와 뒤에서부터 하는 경우</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="460" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">"a a a"에서 "a"를 "abc"로 모두 대치 (찾은 위치 0, 2, 4)</text>
+<rect x="16" y="52" width="300" height="360" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="32" y="78" font-size="14" fill="#ff3b30" text-anchor="start" font-weight="700">앞에서부터 교체</text>
+<text x="32" y="104" font-size="12" fill="#6e6e73" text-anchor="start">처음 문자열</text>
+<rect x="32" y="112" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="44" y="131" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="44" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">0</text>
+<rect x="58" y="112" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="70" y="131" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="70" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">1</text>
+<rect x="84" y="112" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="96" y="131" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="96" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">2</text>
+<rect x="110" y="112" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="122" y="131" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="122" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">3</text>
+<rect x="136" y="112" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="148" y="131" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="148" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">4</text>
+<text x="32" y="186" font-size="12" fill="#6e6e73" text-anchor="start">위치 0 교체 후 (2글자 늘어남)</text>
+<rect x="32" y="194" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="44" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="44" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">0</text>
+<rect x="58" y="194" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="70" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">b</text>
+<text x="70" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">1</text>
+<rect x="84" y="194" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="96" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">c</text>
+<text x="96" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">2</text>
+<rect x="110" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="122" y="213" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="122" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">3</text>
+<rect x="136" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="148" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="148" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">4</text>
+<rect x="162" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="174" y="213" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="174" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">5</text>
+<rect x="188" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="200" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="200" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">6</text>
+<text x="32" y="266" font-size="12" fill="#6e6e73" text-anchor="start">기록한 위치 2를 교체하면</text>
+<rect x="32" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="44" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="44" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">0</text>
+<rect x="58" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="70" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">b</text>
+<text x="70" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">1</text>
+<rect x="84" y="274" width="24" height="28" rx="4" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="96" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">c</text>
+<text x="96" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">2</text>
+<rect x="110" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="122" y="293" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="122" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">3</text>
+<rect x="136" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="148" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="148" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">4</text>
+<rect x="162" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="174" y="293" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="174" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">5</text>
+<rect x="188" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="200" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="200" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">6</text>
+<text x="32" y="346" font-size="13" fill="#ff3b30" text-anchor="start">위치 2는 이제 "c"다.</text>
+<text x="32" y="366" font-size="13" fill="#1d1d1f" text-anchor="start">원래의 두 번째 "a"는 위치 4로</text>
+<text x="32" y="386" font-size="13" fill="#1d1d1f" text-anchor="start">밀려나 잘못된 자리를 교체한다</text>
+<rect x="324" y="52" width="300" height="360" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="340" y="78" font-size="14" fill="#248a3d" text-anchor="start" font-weight="700">뒤에서부터 교체</text>
+<text x="340" y="104" font-size="12" fill="#6e6e73" text-anchor="start">처음 문자열</text>
+<rect x="340" y="112" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="352" y="131" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="352" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">0</text>
+<rect x="366" y="112" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="131" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="378" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">1</text>
+<rect x="392" y="112" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="404" y="131" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="404" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">2</text>
+<rect x="418" y="112" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="430" y="131" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="430" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">3</text>
+<rect x="444" y="112" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="456" y="131" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="456" y="156" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">4</text>
+<text x="340" y="186" font-size="12" fill="#6e6e73" text-anchor="start">위치 4 교체 후</text>
+<rect x="340" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="352" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="352" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">0</text>
+<rect x="366" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="213" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="378" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">1</text>
+<rect x="392" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="404" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="404" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">2</text>
+<rect x="418" y="194" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="430" y="213" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="430" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">3</text>
+<rect x="444" y="194" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="456" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="456" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">4</text>
+<rect x="470" y="194" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="482" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">b</text>
+<text x="482" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">5</text>
+<rect x="496" y="194" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="508" y="213" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">c</text>
+<text x="508" y="238" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">6</text>
+<text x="340" y="266" font-size="12" fill="#6e6e73" text-anchor="start">위치 2, 0 순서로 교체</text>
+<rect x="340" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="352" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="352" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">0</text>
+<rect x="366" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="378" y="293" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="378" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">1</text>
+<rect x="392" y="274" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="404" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="404" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">2</text>
+<rect x="418" y="274" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="430" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">b</text>
+<text x="430" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">3</text>
+<rect x="444" y="274" width="24" height="28" rx="4" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="456" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">c</text>
+<text x="456" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">4</text>
+<rect x="470" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="482" y="293" font-size="14" fill="#aeaeb2" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">␣</text>
+<text x="482" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">5</text>
+<rect x="496" y="274" width="24" height="28" rx="4" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2"/>
+<text x="508" y="293" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">a</text>
+<text x="508" y="318" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="SFMono-Regular, Menlo, monospace">6</text>
+<text x="340" y="346" font-size="13" fill="#248a3d" text-anchor="start">늘어난 글자는 모두 뒤쪽에 생긴다.</text>
+<text x="340" y="366" font-size="13" fill="#1d1d1f" text-anchor="start">앞쪽 위치 0, 2는 변하지 않아</text>
+<text x="340" y="386" font-size="13" fill="#1d1d1f" text-anchor="start">기록한 위치를 그대로 사용한다</text>
+<text x="24" y="440" font-size="13" fill="#6e6e73" text-anchor="start">최종 결과: "abc abc abc" (뒤에서부터 교체한 경우)</text>
+</svg>

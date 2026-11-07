@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>ss -lntu 출력의 수신 주소 읽는 법: 0.0.0.0과 [::]는 모든 네트워크 인터페이스에서 받으므로 외부에 열린 것이고, 127.0.0.53 같은 루프백 주소와 172.16~31 대역의 docker 내부 주소는 서버 안에서만 접근할 수 있다. audit.sh는 외부에 열린 것만 남겨 22번 외에 있으면 확인으로 출력한다</title>
+<rect width="640" height="320" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">수신 대기 주소로 외부 노출 여부를 판정한다</text>
+<rect x="24" y="50" width="592" height="30" rx="6" fill="#1d1d1f"/>
+<text x="36" y="70" font-size="12" fill="#ffffff" font-family="ui-monospace, Menlo, monospace">$ ss -Hlntu   (줄마다 프로토콜과 "주소:포트")</text>
+<g font-size="12">
+<rect x="24" y="92" width="592" height="40" rx="6" fill="#ff3b30" fill-opacity="0.07" stroke="#ff3b30"/>
+<text x="36" y="117" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">tcp 0.0.0.0:111</text>
+<text x="230" y="117" fill="#ff3b30" font-weight="600">모든 인터페이스 → 외부에 열림 (rpcbind) → 확인</text>
+<rect x="24" y="140" width="592" height="40" rx="6" fill="#34c759" fill-opacity="0.1" stroke="#34c759"/>
+<text x="36" y="165" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">tcp 0.0.0.0:22</text>
+<text x="230" y="165" fill="#1d1d1f" font-weight="600">외부에 열림, 유일하게 허용한 SSH → OK</text>
+<rect x="24" y="188" width="592" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="36" y="213" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">udp 127.0.0.53:53</text>
+<text x="230" y="213" fill="#6e6e73">루프백 → 서버 안에서만 (systemd-resolved) → 제외</text>
+<rect x="24" y="236" width="592" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="36" y="261" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">tcp 172.18.0.1:…</text>
+<text x="230" y="261" fill="#6e6e73">docker 내부 대역 (172.16~31) → 제외</text>
+</g>
+<text x="24" y="302" font-size="12" fill="#6e6e73">처음 정규식은 127.0.0.1만 제외하고 :53을 통째로 뺐다. 지금은 127. 대역 전체를 제외하고 :53 예외는 없다</text>
+</svg>

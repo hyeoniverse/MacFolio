@@ -16,7 +16,7 @@ test('모바일: 앱은 아이콘에서 커지고, 홈으로 가면 아이콘으
 		.poll(() => page.locator('.mobile-home').evaluate((el) => getComputedStyle(el).transform))
 		.not.toBe('none');
 
-	await memo.getByRole('button', { name: '홈 화면으로' }).tap();
+	await memo.getByRole('button', { name: '홈 화면으로', exact: true }).tap();
 	await expect(memo).toHaveClass(/closing/);
 	await expect(memo).toBeHidden();
 	await expect

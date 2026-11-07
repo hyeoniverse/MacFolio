@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 362" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>제목에 줄바꿈과 Bcc 헤더를 넣으면 문자열로 헤더를 이어 붙이는 서버에서는 헤더가 하나 더 생긴다. MacFolio는 한 줄이 아닌 제목을 400으로 거절한다</title>
+<defs>
+<marker id="ja" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="362" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">줄바꿈 하나로 헤더가 늘어나는 원리</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">메일 헤더는 "이름: 값" 한 줄이 헤더 하나다 (줄 끝은 CRLF, \r\n)</text>
+
+<text x="24" y="86" font-size="13" font-weight="700" fill="#1d1d1f">방문자가 보낸 제목 칸</text>
+<rect x="24" y="96" width="592" height="34" rx="6" fill="#f2f2f7"/>
+<text x="38" y="118" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">"문의<tspan fill="#ff3b30" font-weight="700">\r\n</tspan>Bcc: a@b.c"</text>
+
+<path d="M164 136 L100 162" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ja)"/>
+<path d="M476 136 L540 162" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ja)"/>
+
+<rect x="24" y="166" width="288" height="150" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="38" y="190" font-size="12" font-weight="700" fill="#ff3b30">헤더를 문자열로 잇는 서버</text>
+<g font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">
+<text x="38" y="216">To: 운영자</text>
+<text x="38" y="236">Subject: [MacFolio] 문의</text>
+<rect x="34" y="244" width="200" height="22" rx="4" fill="#ff3b30" fill-opacity="0.14"/>
+<text x="38" y="260" fill="#ff3b30" font-weight="700">Bcc: a@b.c</text>
+</g>
+<text x="38" y="290" font-size="12" fill="#1d1d1f">숨은 참조 수신자가 추가된다</text>
+<text x="38" y="306" font-size="12" fill="#6e6e73">폼이 제3자에게 스팸을 보내는 경로가 된다</text>
+
+<rect x="328" y="166" width="288" height="150" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="342" y="190" font-size="12" font-weight="700" fill="#248a3d">MacFolio의 POST /contact</text>
+<text x="342" y="216" font-size="12" fill="#1d1d1f">contracts의 oneLine 규칙에 걸린다</text>
+<rect x="338" y="228" width="268" height="44" rx="6" fill="#f2f2f7"/>
+<text x="350" y="246" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">400</text>
+<text x="350" y="264" font-size="12" fill="#1d1d1f">이름과 제목은 한 줄로 써 주세요.</text>
+<text x="342" y="294" font-size="12" fill="#6e6e73">Resend에는 JSON의 subject 값으로만</text>
+<text x="342" y="310" font-size="12" fill="#6e6e73">전달하므로 이중으로 막힌다</text>
+<text x="24" y="346" font-size="12" fill="#6e6e73">이름 칸도 같은 규칙이다. 줄바꿈이 아닌 제어 문자(예: \u0007)도 400으로 거절한다</text>
+</svg>

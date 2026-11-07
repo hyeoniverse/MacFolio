@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>zod 스키마 CommentInput 하나가 실행 시에는 서버의 parse로 요청 본문을 검사하고, 컴파일 시에는 z.infer로 TypeScript 타입이 되어 화면이 import type으로 가져간다</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">스키마 하나의 두 가지 쓰임</text>
+
+<rect x="170" y="46" width="300" height="70" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="182" y="66" font-size="12" font-weight="700" fill="#0a84ff">packages/contracts/src/comments.ts</text>
+<text style="white-space:pre" x="182" y="86" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">CommentInput = requestBody({</text>
+<text style="white-space:pre" x="182" y="103" font-size="12" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">  body: 1~500자, turnstileToken? })</text>
+<line x1="250" y1="116" x2="160" y2="150" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="390" y1="116" x2="480" y2="150" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+<text x="20" y="168" font-size="13" font-weight="700" fill="#1d1d1f">실행 시 (서버, 값으로 사용)</text>
+<text x="340" y="168" font-size="13" font-weight="700" fill="#1d1d1f">컴파일 시 (화면, 타입으로 사용)</text>
+
+<g font-size="12">
+<rect x="20" y="178" width="290" height="104" rx="8" fill="#f2f2f7"/>
+<text x="32" y="198" fill="#6e6e73">입력</text>
+<text style="white-space:pre" x="32" y="216" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">{ body: '  좋은 글입니다  ',</text>
+<text style="white-space:pre" x="32" y="232" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">  name: '익명', password: '1234' }</text>
+<text x="32" y="254" fill="#6e6e73">parse(CommentInput, 입력) 결과</text>
+<text x="32" y="272" font-family="SFMono-Regular, Menlo, monospace" fill="#248a3d">{ value: { body: '좋은 글입니다' } }</text>
+
+<rect x="20" y="290" width="290" height="58" rx="8" fill="#f2f2f7"/>
+<text x="32" y="310" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">{ body: '' }</text>
+<text x="32" y="332" font-family="SFMono-Regular, Menlo, monospace" fill="#ff3b30">{ errors: ['내용을 입력해주세요.'] }</text>
+
+<rect x="340" y="178" width="280" height="104" rx="8" fill="#f2f2f7"/>
+<text x="352" y="198" fill="#6e6e73">z.infer가 만드는 타입</text>
+<text x="352" y="218" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">type CommentInput = {</text>
+<text style="white-space:pre" x="352" y="234" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">  body: string;</text>
+<text style="white-space:pre" x="352" y="250" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">  turnstileToken?: string;</text>
+<text x="352" y="266" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">}</text>
+
+<rect x="340" y="290" width="280" height="58" rx="8" fill="#f2f2f7"/>
+<text x="352" y="310" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">import type { Comment } from …</text>
+<text x="352" y="332" fill="#0a84ff">컴파일 후 삭제, 번들에 zod 0바이트</text>
+</g>
+
+<line x1="20" y1="370" x2="620" y2="370" stroke="#e5e5ea"/>
+<text x="20" y="392" font-size="12" fill="#6e6e73">서버는 스키마 객체를 실행해 공백 제거, 모르는 필드 제거, 오류 문구 생성을 한다</text>
+<text x="20" y="410" font-size="12" fill="#6e6e73">화면은 같은 스키마에서 추론한 타입만 사용하므로 서버와 필드 이름이 다르면 tsc가 오류를 낸다</text>
+</svg>

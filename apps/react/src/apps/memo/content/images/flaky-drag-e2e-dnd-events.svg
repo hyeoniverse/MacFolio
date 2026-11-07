@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>HTML 드래그 앤 드롭 이벤트 순서: dragstart, dragenter, dragover, dragleave, drop, dragend</title>
+  <defs>
+    <marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">드래그 앤 드롭 이벤트 순서</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">이미지를 문단 A에서 소제목 B 위로 끌어 놓을 때 브라우저가 보내는 이벤트</text>
+
+  <!-- 레인 이름 -->
+  <g font-size="12" fill="#1d1d1f" font-weight="600">
+    <text x="24" y="104">끄는 이미지</text>
+    <text x="24" y="176">문단 A</text>
+    <text x="24" y="248">소제목 B</text>
+  </g>
+  <g stroke="#e5e5ea" stroke-width="1.5">
+    <line x1="110" y1="100" x2="620" y2="100"/>
+    <line x1="110" y1="172" x2="620" y2="172"/>
+    <line x1="110" y1="244" x2="620" y2="244"/>
+  </g>
+  <path d="M110 290 H620" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m)"/>
+  <text x="620" y="310" font-size="12" text-anchor="end" fill="#6e6e73">시간</text>
+
+  <g font-size="12" text-anchor="middle">
+    <!-- 이미지 레인 -->
+    <rect x="114" y="86" width="76" height="26" rx="5" fill="#e5f1ff" stroke="#0a84ff"/><text x="152" y="104" fill="#1d1d1f">dragstart</text>
+    <rect x="544" y="86" width="72" height="26" rx="5" fill="#e5f1ff" stroke="#0a84ff"/><text x="580" y="104" fill="#1d1d1f">dragend</text>
+    <!-- A 레인 -->
+    <rect x="200" y="158" width="72" height="26" rx="5" fill="#f2f2f7"/><text x="236" y="176" fill="#1d1d1f">dragenter</text>
+    <rect x="278" y="158" width="68" height="26" rx="5" fill="#e8f8ec"/><text x="312" y="176" fill="#1d1d1f">dragover</text>
+    <text x="358" y="176" fill="#6e6e73">…</text>
+    <rect x="372" y="158" width="72" height="26" rx="5" fill="#ffecea"/><text x="408" y="176" fill="#ff3b30">dragleave</text>
+    <!-- B 레인 -->
+    <rect x="372" y="230" width="72" height="26" rx="5" fill="#f2f2f7"/><text x="408" y="248" fill="#1d1d1f">dragenter</text>
+    <rect x="450" y="230" width="68" height="26" rx="5" fill="#e8f8ec"/><text x="484" y="248" fill="#1d1d1f">dragover</text>
+    <rect x="524" y="230" width="48" height="26" rx="5" fill="#34c759"/><text x="548" y="248" fill="#ffffff">drop</text>
+  </g>
+  <path d="M408 186 V226" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="300" y="214" font-size="12" fill="#c27100">경계를 넘는 순간: B에 dragenter, A에 dragleave</text>
+
+  <text x="24" y="340" font-size="12" fill="#1d1d1f">dragover는 마우스가 놓을 수 있는 요소 위에 있는 동안 반복해서 발생한다. 표시선 라이브러리는</text>
+  <text x="24" y="360" font-size="12" fill="#1d1d1f">dragover를 받으면 선을 그리고, dragleave 뒤 30ms 안에 dragover가 없으면 선을 숨긴다.</text>
+</svg>

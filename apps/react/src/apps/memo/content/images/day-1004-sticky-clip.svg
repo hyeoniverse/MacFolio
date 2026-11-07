@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 394" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>sticky 장면과 overflow clip의 브라우저별 결과</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="394" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">position: sticky가 붙는 기준과 Safari에서 확인한 차이</text>
+<rect x="24" y="52" width="288" height="300" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="40" y="76" font-size="13" fill="#248a3d" text-anchor="start" font-weight="700">Chromium</text>
+<rect x="40" y="90" width="256" height="196" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.6"/>
+<rect x="52" y="100" width="232" height="176" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="64" y="268" font-size="12" fill="#c27400" text-anchor="start">페이지 전체: overflow-x: clip</text>
+<rect x="68" y="108" width="200" height="52" rx="6" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="168" y="130" font-size="12" fill="#0a84ff" text-anchor="middle">장면 (sticky; top: 0)</text>
+<text x="168" y="150" font-size="12" fill="#1d1d1f" text-anchor="middle">창 위쪽에 고정</text>
+<text x="40" y="312" font-size="12" fill="#1d1d1f" text-anchor="start">스크롤하는 동안 장면이 고정되고</text>
+<text x="40" y="332" font-size="12" fill="#6e6e73" text-anchor="start">진행도에 따라 세 장면이 바뀐다</text>
+<rect x="328" y="52" width="288" height="300" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="344" y="76" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="700">Safari (같은 CSS)</text>
+<rect x="344" y="90" width="256" height="196" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.6"/>
+<rect x="356" y="100" width="232" height="176" rx="4" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="368" y="268" font-size="12" fill="#c27400" text-anchor="start">페이지 전체: overflow-x: clip</text>
+<rect x="372" y="108" width="200" height="52" rx="6" fill="#ffffff" stroke="#c7c7cc" stroke-width="1.2" stroke-dasharray="4 3"/>
+<text x="472" y="138" font-size="12" fill="#6e6e73" text-anchor="middle">고정되어야 할 위치</text>
+<clipPath id="cp328"><rect x="344" y="90" width="256" height="196"/></clipPath>
+<g clip-path="url(#cp328)"><rect x="372" y="64" width="200" height="52" rx="6" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.6"/>
+<text x="472" y="106" font-size="12" fill="#ff3b30" text-anchor="middle">장면이 위로 밀려 나감</text>
+</g>
+<line x1="472" y1="190" x2="472" y2="166" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="480" y="186" font-size="12" fill="#ff3b30" text-anchor="start">스크롤</text>
+<text x="344" y="312" font-size="12" fill="#1d1d1f" text-anchor="start">장면이 일반 요소처럼 함께 올라가</text>
+<text x="344" y="332" font-size="12" fill="#6e6e73" text-anchor="start">"따라 움직이는" 효과가 멈춘다</text>
+<text x="24" y="378" font-size="12" fill="#6e6e73" text-anchor="start">최종 수정: 어떤 레이어에도 clip을 두지 않고, 가로 스크롤은 스크롤 컨테이너 자체에서 막았다.</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>글자 크기 zoom 안에 떠 있는 게시 알약과 역수 zoom</title>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">글자를 한 단계 줄인 상태 (--memo-text-scale = s, s &lt; 1)</text>
+<g font-size="13">
+<rect x="20" y="48" width="290" height="230" rx="10" fill="#f2f2f7"/>
+<text x="36" y="74" font-weight="700" fill="#1d1d1f">전</text>
+<rect x="36" y="88" width="258" height="170" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<text x="48" y="110" fill="#6e6e73" font-size="12">.memo-writer-meta  zoom: s</text>
+<rect x="186" y="126" width="92" height="30" rx="15" fill="#ff3b30"/>
+<text x="232" y="146" text-anchor="middle" fill="#ffffff" font-size="12">게시</text>
+<text x="48" y="186" fill="#1d1d1f" font-size="12">알약 크기·top·right도 s배</text>
+<text x="48" y="206" fill="#ff3b30" font-size="12">y 50 → 43, 높이 44 → 37px</text>
+<text x="48" y="226" fill="#ff3b30" font-size="12">옆 알약과 10px 겹침</text>
+<rect x="330" y="48" width="290" height="230" rx="10" fill="#e8f2ff"/>
+<text x="346" y="74" font-weight="700" fill="#0a84ff">후</text>
+<rect x="346" y="88" width="258" height="170" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<text x="358" y="110" fill="#6e6e73" font-size="12">.memo-writer-meta  zoom: s</text>
+<rect x="476" y="122" width="114" height="38" rx="19" fill="#0a84ff"/>
+<text x="533" y="146" text-anchor="middle" fill="#ffffff" font-size="12">게시</text>
+<text x="358" y="186" fill="#1d1d1f" font-size="12">알약 zoom: calc(1 / s)</text>
+<text x="358" y="206" fill="#1d1d1f" font-size="12">겹친 zoom은 곱해진다: s × 1/s = 1</text>
+<text x="358" y="226" fill="#34c759" font-size="12" font-weight="700">원래 크기와 자리 (y 50, 높이 44px)</text>
+</g>
+</svg>

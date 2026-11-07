@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>출처와 사이트의 차이. macfolio와 macfolio-api는 출처는 다르지만 등록 가능한 도메인 hyeoniverse.com이 같아 같은 사이트다</title>
+<rect width="640" height="420" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">출처(origin)와 사이트(site)</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">출처는 스킴·호스트·포트 전체, 사이트는 스킴과 등록 가능한 도메인(공개 접미사 + 한 단계)</text>
+
+<g font-family="ui-monospace, Menlo, monospace" font-size="14">
+<text x="40" y="104" fill="#6e6e73">https://</text>
+<text x="112" y="104" fill="#1d1d1f">macfolio-api.</text>
+<text x="229" y="104" fill="#0a84ff" font-weight="700">hyeoniverse.</text>
+<text x="337" y="104" fill="#ff9f0a" font-weight="700">com</text>
+</g>
+<path d="M40 114 H104" stroke="#6e6e73" stroke-width="2"/>
+<path d="M112 114 H224" stroke="#1d1d1f" stroke-width="2"/>
+<path d="M229 114 H362" stroke="#0a84ff" stroke-width="2"/>
+<path d="M337 122 H362" stroke="#ff9f0a" stroke-width="2"/>
+<g font-size="12">
+<text x="40" y="136" fill="#6e6e73">스킴</text>
+<text x="112" y="136" fill="#1d1d1f">하위 도메인</text>
+<text x="229" y="142" fill="#0a84ff">등록 가능한 도메인</text>
+<text x="380" y="126" fill="#ff9f0a">공개 접미사</text>
+</g>
+
+<g font-size="12" fill="#1d1d1f">
+<rect x="24" y="166" width="592" height="30" rx="6" fill="#f2f2f7"/>
+<text x="36" y="186" font-weight="700">API 주소 (사이트는 macfolio.hyeoniverse.com)</text>
+<text x="400" y="186" font-weight="700">출처</text>
+<text x="460" y="186" font-weight="700">사이트</text>
+<text x="528" y="186" font-weight="700">Lax 쿠키</text>
+
+<text x="36" y="226" font-family="ui-monospace, Menlo, monospace">macfolio-api.hyeoniverse.com</text>
+<text x="400" y="226" fill="#ff9f0a">다름</text>
+<text x="460" y="226" fill="#34c759" font-weight="700">같음</text>
+<text x="528" y="226" fill="#34c759" font-weight="700">전송</text>
+<line x1="24" y1="242" x2="616" y2="242" stroke="#e5e5ea"/>
+
+<text x="36" y="268" font-family="ui-monospace, Menlo, monospace">macfolio-api.&lt;계정&gt;.workers.dev</text>
+<text x="400" y="268" fill="#ff9f0a">다름</text>
+<text x="460" y="268" fill="#ff3b30" font-weight="700">다름</text>
+<text x="528" y="268" fill="#ff3b30" font-weight="700">전송 안 함</text>
+<line x1="24" y1="284" x2="616" y2="284" stroke="#e5e5ea"/>
+
+<text x="36" y="310" font-family="ui-monospace, Menlo, monospace">203.0.113.10 (IP 주소)</text>
+<text x="400" y="310" fill="#ff9f0a">다름</text>
+<text x="460" y="310" fill="#ff3b30" font-weight="700">다름</text>
+<text x="528" y="310" fill="#ff3b30" font-weight="700">전송 안 함</text>
+</g>
+
+<rect x="24" y="334" width="592" height="70" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="38" y="358" font-size="12" fill="#1d1d1f">workers.dev는 공개 접미사 목록에 있어, 등록 가능한 도메인이 &lt;계정&gt;.workers.dev가 된다.</text>
+<text x="38" y="378" font-size="12" fill="#1d1d1f">IP 주소는 도메인이 아니므로 IP 자체가 사이트다. 203.0.113.10은 문서용 예시 주소(RFC 5737).</text>
+<text x="38" y="396" font-size="12" fill="#6e6e73">fetch(credentials: 'include')에 Lax 쿠키가 실리고, 응답은 서버가 CORS로 허용해야 읽힌다.</text>
+</svg>

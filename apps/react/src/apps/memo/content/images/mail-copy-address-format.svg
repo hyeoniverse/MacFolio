@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>RFC 5322 주소 형식의 구성 요소</title>
+<defs><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker><marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker><marker id="agr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="600" fill="#1d1d1f">화면에 보이는 받는 사람 문자열의 구성 (RFC 5322 §3.4)</text>
+<rect x="24" y="58" width="592" height="56" rx="10" fill="#f2f2f7"/>
+<text x="64" y="94" font-size="20" fill="#6e6e73">김정현</text>
+<text x="136" y="94" font-size="20" fill="#ff9f0a" font-family="'SF Mono', Menlo, Consolas, monospace">&lt;</text>
+<text x="152" y="94" font-size="20" fill="#0a84ff" font-family="'SF Mono', Menlo, Consolas, monospace">hyeoniverse.dev@gmail.com</text>
+<text x="452" y="94" font-size="20" fill="#ff9f0a" font-family="'SF Mono', Menlo, Consolas, monospace">&gt;</text>
+<path d="M60 124 V132 H118 V124" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="46" y="154" font-size="12.5" fill="#6e6e73" font-weight="600">display-name</text>
+<text x="46" y="172" font-size="12" fill="#6e6e73">표시 이름</text>
+<path d="M134 124 V198 H468 V124" fill="none" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="250" y="218" font-size="12.5" fill="#ff9f0a" font-weight="600">angle-addr: 꺾쇠로 감싼 주소</text>
+<path d="M152 124 V160 H448 V124" fill="none" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="226" y="180" font-size="12.5" fill="#0a84ff" font-weight="600">addr-spec = 실제 이메일 주소</text>
+<text x="24" y="252" font-size="13" fill="#1d1d1f">name-addr = [display-name] angle-addr</text>
+<text x="24" y="274" font-size="13" fill="#1d1d1f">복사하는 값은 파란 부분(addr-spec)만이다:</text>
+<rect x="290" y="258" width="230" height="24" rx="6" fill="#e5f1ff"/>
+<text x="300" y="275" font-size="13" fill="#0a84ff" font-family="'SF Mono', Menlo, Consolas, monospace">hyeoniverse.dev@gmail.com</text>
+<text x="24" y="306" font-size="12" fill="#6e6e73">예: 웹 양식의 &lt;input type="email"&gt;은 표시 이름이 붙은 문자열을 유효한 값으로 받지 않는다.</text>
+</svg>

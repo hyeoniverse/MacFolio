@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 532" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="532" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">ICMP 메시지 유형 (2) 유형 5~18</text>
+  <rect x="20" y="44" width="600" height="28" fill="#f2f2f7"/>
+  <g font-size="12.5" font-weight="600" fill="#1d1d1f" text-anchor="middle">
+    <text x="48" y="63">유형</text><text x="92" y="63">코드</text>
+    <text x="317" y="63">설명</text>
+    <text x="540" y="63">질의</text><text x="596" y="63">오류</text>
+  </g>
+  <rect x="20" y="44" width="600" height="468" fill="none" stroke="#1d1d1f"/>
+  <g stroke="#1d1d1f" stroke-width="1">
+    <line x1="512" y1="44" x2="512" y2="512"/><line x1="568" y1="44" x2="568" y2="512"/>
+    <line x1="20" y1="72" x2="620" y2="72"/>
+    <line x1="20" y1="182" x2="620" y2="182"/>
+    <line x1="20" y1="204" x2="620" y2="204"/>
+    <line x1="20" y1="248" x2="620" y2="248"/>
+    <line x1="20" y1="314" x2="620" y2="314"/>
+    <line x1="20" y1="380" x2="620" y2="380"/>
+    <line x1="20" y1="424" x2="620" y2="424"/>
+    <line x1="20" y1="468" x2="620" y2="468"/>
+    <line x1="20" y1="512" x2="620" y2="512"/>
+  </g>
+  <g font-size="12.5" fill="#1d1d1f">
+    <text x="48" y="87.5" text-anchor="middle">5</text>
+    <text x="122" y="87.5" font-weight="600">재지정(redirect)</text>
+    <text x="92" y="109.5" text-anchor="middle">0</text>
+    <text x="138" y="109.5">네트워크에 대한 재지정</text>
+    <circle cx="596" cy="105" r="4" fill="#ff9f0a"/>
+    <text x="92" y="131.5" text-anchor="middle">1</text>
+    <text x="138" y="131.5">호스트에 대한 재지정</text>
+    <circle cx="596" cy="127" r="4" fill="#ff9f0a"/>
+    <text x="92" y="153.5" text-anchor="middle">2</text>
+    <text x="138" y="153.5">서비스 유형(TOS)과 네트워크에 대한 재지정</text>
+    <circle cx="596" cy="149" r="4" fill="#ff9f0a"/>
+    <text x="92" y="175.5" text-anchor="middle">3</text>
+    <text x="138" y="175.5">서비스 유형(TOS)과 호스트에 대한 재지정</text>
+    <circle cx="596" cy="171" r="4" fill="#ff9f0a"/>
+    <text x="48" y="197.5" text-anchor="middle">8</text>
+    <text x="92" y="197.5" text-anchor="middle">0</text>
+    <text x="122" y="197.5">에코 요청(echo request): ping 요청</text>
+    <circle cx="540" cy="193" r="4" fill="#0a84ff"/>
+    <text x="48" y="219.5" text-anchor="middle">9</text>
+    <text x="92" y="219.5" text-anchor="middle">0</text>
+    <text x="122" y="219.5">라우터 광고(router advertisement)</text>
+    <circle cx="540" cy="215" r="4" fill="#0a84ff"/>
+    <text x="48" y="241.5" text-anchor="middle">10</text>
+    <text x="92" y="241.5" text-anchor="middle">0</text>
+    <text x="122" y="241.5">라우터 청원(router solicitation)</text>
+    <circle cx="540" cy="237" r="4" fill="#0a84ff"/>
+    <text x="48" y="263.5" text-anchor="middle">11</text>
+    <text x="122" y="263.5" font-weight="600">시간 초과(time exceeded)</text>
+    <text x="92" y="285.5" text-anchor="middle">0</text>
+    <text x="138" y="285.5">전송 중 TTL이 0이 됨(traceroute가 이용)</text>
+    <circle cx="596" cy="281" r="4" fill="#ff9f0a"/>
+    <text x="92" y="307.5" text-anchor="middle">1</text>
+    <text x="138" y="307.5">재조립 중 TTL이 0이 됨</text>
+    <circle cx="596" cy="303" r="4" fill="#ff9f0a"/>
+    <text x="48" y="329.5" text-anchor="middle">12</text>
+    <text x="122" y="329.5" font-weight="600">매개변수 문제(parameter problem)</text>
+    <text x="92" y="351.5" text-anchor="middle">0</text>
+    <text x="138" y="351.5">IP 헤더 오류(포괄 오류)</text>
+    <circle cx="596" cy="347" r="4" fill="#ff9f0a"/>
+    <text x="92" y="373.5" text-anchor="middle">1</text>
+    <text x="138" y="373.5">필수 옵션 누락</text>
+    <circle cx="596" cy="369" r="4" fill="#ff9f0a"/>
+    <text x="48" y="395.5" text-anchor="middle">13</text>
+    <text x="92" y="395.5" text-anchor="middle">0</text>
+    <text x="122" y="395.5">타임스탬프 요청(timestamp request)</text>
+    <circle cx="540" cy="391" r="4" fill="#0a84ff"/>
+    <text x="48" y="417.5" text-anchor="middle">14</text>
+    <text x="92" y="417.5" text-anchor="middle">0</text>
+    <text x="122" y="417.5">타임스탬프 응답(timestamp reply)</text>
+    <circle cx="540" cy="413" r="4" fill="#0a84ff"/>
+    <text x="48" y="439.5" text-anchor="middle">15</text>
+    <text x="92" y="439.5" text-anchor="middle">0</text>
+    <text x="122" y="439.5">정보 요청(information request, 폐지)</text>
+    <circle cx="540" cy="435" r="4" fill="#0a84ff"/>
+    <text x="48" y="461.5" text-anchor="middle">16</text>
+    <text x="92" y="461.5" text-anchor="middle">0</text>
+    <text x="122" y="461.5">정보 응답(information reply, 폐지)</text>
+    <circle cx="540" cy="457" r="4" fill="#0a84ff"/>
+    <text x="48" y="483.5" text-anchor="middle">17</text>
+    <text x="92" y="483.5" text-anchor="middle">0</text>
+    <text x="122" y="483.5">주소 마스크 요청(address mask request)</text>
+    <circle cx="540" cy="479" r="4" fill="#0a84ff"/>
+    <text x="48" y="505.5" text-anchor="middle">18</text>
+    <text x="92" y="505.5" text-anchor="middle">0</text>
+    <text x="122" y="505.5">주소 마스크 응답(address mask reply)</text>
+    <circle cx="540" cy="501" r="4" fill="#0a84ff"/>
+  </g>
+</svg>

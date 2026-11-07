@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 318" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>uploadIdsIn 정규식이 전체 주소와 경로 형식에서 id를 찾고, 같은 id는 한 번만 남기며, 16자 뒤에 문자가 더 붙은 주소는 제외하는 예</title>
+<rect width="640" height="318" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">uploadIdsIn이 본문에서 파일 id를 찾는 예</text>
+<rect x="24" y="50" width="592" height="34" rx="8" fill="#f2f2f7"/>
+<text x="40" y="72" font-size="13" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f">/\/files\/(<tspan fill="#0a84ff">[\w-]{16}</tspan>)<tspan fill="#ff9f0a">(?![\w-])</tspan>/g</text>
+<text x="350" y="72" font-size="12" fill="#6e6e73"><tspan fill="#0a84ff">id 16자</tspan> + <tspan fill="#ff9f0a">뒤에 같은 종류 문자가 없어야 함</tspan></text>
+<text x="40" y="110" font-size="12" font-weight="700" fill="#6e6e73">본문 안의 문자열</text>
+<text x="420" y="110" font-size="12" font-weight="700" fill="#6e6e73">결과</text>
+<line x1="24" y1="118" x2="616" y2="118" stroke="#d1d1d6"/>
+<g font-family="SFMono-Regular, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<text x="40" y="144">![](https://api…/files/Xq3k9Lm2Pz0aB7cD)</text>
+<text x="40" y="188">[첨부](/files/Xq3k9Lm2Pz0aB7cD)</text>
+<text x="40" y="232">/files/Xq3k9Lm2Pz0aB7cD_v2</text>
+</g>
+<text x="40" y="162" font-size="12" fill="#6e6e73">전체 주소 형식</text>
+<text x="40" y="206" font-size="12" fill="#6e6e73">경로 형식, 위와 같은 id</text>
+<text x="40" y="250" font-size="12" fill="#6e6e73">16자 뒤에 _v2가 이어짐</text>
+<rect x="408" y="130" width="200" height="26" rx="6" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="420" y="148" font-size="12" fill="#1d1d1f">일치: <tspan font-family="SFMono-Regular, Menlo, monospace">Xq3k9Lm2Pz0aB7cD</tspan></text>
+<rect x="408" y="174" width="200" height="26" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="420" y="192" font-size="12" fill="#1d1d1f">일치, Set이 중복 제거</text>
+<rect x="408" y="218" width="200" height="26" rx="6" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="420" y="236" font-size="12" fill="#1d1d1f">일치 없음 (다른 주소)</text>
+<line x1="24" y1="266" x2="616" y2="266" stroke="#d1d1d6"/>
+<text x="40" y="294" font-size="13" fill="#1d1d1f">반환값: <tspan font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">['Xq3k9Lm2Pz0aB7cD']</tspan></text>
+</svg>

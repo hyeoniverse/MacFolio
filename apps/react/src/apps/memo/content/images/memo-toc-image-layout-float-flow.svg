@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">#float-left 이미지 옆으로 흐르는 블록과 아래로 내려가는 블록</text>
+  <rect x="40" y="48" width="560" height="320" rx="8" fill="#fff" stroke="#d1d1d6"/>
+  <text x="48" y="64" font-size="12" fill="#6e6e73">본문 폭 100%</text>
+  <rect x="56" y="74" width="210" height="150" rx="6" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="161" y="146" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">이미지 (40%)</text>
+  <text x="161" y="166" text-anchor="middle" font-size="12" fill="#0a84ff">float: left</text>
+  <path d="M266 232 H290 M266 226 V238 M290 226 V238" stroke="#ff9f0a"/>
+  <text x="296" y="237" font-size="12" fill="#ff9f0a">이미지 오른쪽 여백 1.4em</text>
+  <g font-size="12">
+    <rect x="290" y="78" width="290" height="10" rx="3" fill="#e5e5ea"/>
+    <rect x="290" y="94" width="280" height="10" rx="3" fill="#e5e5ea"/>
+    <rect x="290" y="110" width="250" height="10" rx="3" fill="#e5e5ea"/>
+    <text x="290" y="138" fill="#1d1d1f">문단: 남은 폭으로 줄이 흐른다</text>
+    <rect x="290" y="152" width="290" height="58" rx="4" fill="#f2f2f7" stroke="#34c759"/>
+    <text x="302" y="174" fill="#1d1d1f">• 목록 (display: flow-root)</text>
+    <text x="302" y="196" fill="#6e6e73">글머리 기호가 이미지에 겹치지 않는다</text>
+    <rect x="56" y="250" width="524" height="30" rx="4" fill="#fff0ef" stroke="#ff3b30"/>
+    <text x="68" y="270" fill="#1d1d1f">## 다음 제목 (clear: both): 이미지 아래에서 시작</text>
+    <rect x="56" y="292" width="524" height="10" rx="3" fill="#e5e5ea"/>
+    <rect x="56" y="308" width="500" height="10" rx="3" fill="#e5e5ea"/>
+    <text x="56" y="346" fill="#6e6e73">본문 끝 ::after { clear: both }: 짧은 글에서도 이미지가 좋아요·댓글 영역으로 넘치지 않는다</text>
+  </g>
+  <text x="320" y="390" text-anchor="middle" font-size="12" fill="#6e6e73">한 칸 보기(메모 칸 700px 이하)에서는 float: none, 폭은 본문 폭으로 되돌린다</text>
+</svg>

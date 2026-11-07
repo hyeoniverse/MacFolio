@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>UTM 링크 하나를 주소, 쿼리 문자열, 매개변수 세 개로 나누고 각각이 분석 앱의 출처·매체·캠페인 값이 되는 구조</title>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">UTM 링크 하나의 구조</text>
+<rect x="24" y="52" width="592" height="64" rx="10" fill="#f2f2f7"/>
+<text x="40" y="78" font-size="13" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f"><tspan fill="#6e6e73">https://macfolio.hyeoniverse.com/</tspan><tspan fill="#1d1d1f" font-weight="700">?</tspan><tspan fill="#0a84ff">utm_source=linkedin</tspan>&amp;</text>
+<text x="40" y="102" font-size="13" font-family="SFMono-Regular, Menlo, monospace" fill="#1d1d1f"><tspan fill="#ff9f0a">utm_medium=post</tspan>&amp;<tspan fill="#34c759">utm_campaign=resume-2026</tspan></text>
+<text x="40" y="142" font-size="12" fill="#6e6e73">? 뒤가 쿼리 문자열. 이름=값 쌍을 &amp;로 잇는다. 페이지 내용은 같고, 이 값은 방문 기록에만 쓰인다.</text>
+<line x1="24" y1="158" x2="616" y2="158" stroke="#d1d1d6"/>
+<text x="40" y="182" font-size="12" font-weight="700" fill="#6e6e73">매개변수</text>
+<text x="210" y="182" font-size="12" font-weight="700" fill="#6e6e73">값</text>
+<text x="350" y="182" font-size="12" font-weight="700" fill="#6e6e73">답하는 질문</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="210" font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">utm_source</text><text x="210" y="210" font-family="SFMono-Regular, Menlo, monospace">linkedin</text><text x="350" y="210">어느 사이트·문서에 건 링크인가 (출처)</text>
+<text x="40" y="240" font-family="SFMono-Regular, Menlo, monospace" fill="#ff9f0a">utm_medium</text><text x="210" y="240" font-family="SFMono-Regular, Menlo, monospace">post</text><text x="350" y="240">어떤 형태의 링크인가 (매체)</text>
+<text x="40" y="270" font-family="SFMono-Regular, Menlo, monospace" fill="#34c759">utm_campaign</text><text x="210" y="270" font-family="SFMono-Regular, Menlo, monospace">resume-2026</text><text x="350" y="270">어떤 목적·시기의 링크인가 (캠페인)</text>
+</g>
+<line x1="24" y1="286" x2="616" y2="286" stroke="#d1d1d6"/>
+<text x="40" y="310" font-size="12" fill="#1d1d1f">조합 표의 한 행: <tspan font-family="SFMono-Regular, Menlo, monospace" fill="#0a84ff">linkedin / post / resume-2026</tspan></text>
+</svg>

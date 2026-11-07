@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="280" fill="#ffffff"/>
+<text x="20" y="30" font-size="14" font-weight="600" fill="#1d1d1f">테스트 세트 3,109문장 중 학습 세트에도 있는 문장</text>
+<!-- normal 1760 : width scale 580/1760 -->
+<text x="20" y="62" font-size="13" fill="#1d1d1f">실제 정상 1,760</text>
+<rect x="20" y="70" width="580" height="34" rx="4" fill="#f2f2f7"/>
+<rect x="20" y="70" width="2" height="34" fill="#ff3b30"/>
+<text x="30" y="92" font-size="12" fill="#6e6e73">학습 세트와 겹침 1문장 (0.06%)</text>
+<text x="20" y="136" font-size="13" fill="#1d1d1f">실제 악성 1,349</text>
+<rect x="20" y="144" width="444.5" height="34" rx="4" fill="#f2f2f7"/>
+<rect x="20" y="144" width="141.7" height="34" rx="4" fill="#ff3b30"/>
+<text x="90" y="166" text-anchor="middle" font-size="12" fill="#ffffff">겹침 430 (31.9%)</text>
+<text x="312" y="166" text-anchor="middle" font-size="12" fill="#6e6e73">처음 보는 문장 919</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="20" y="212">원인: 데이터셋 1이 데이터셋 2의 욕설 문장 2,032개를 포함하는데, 중복 삭제를 분할 뒤 세트 안에서만 했다</text>
+<text x="20" y="234">결과: 악성 재현율 90.3%의 일부는 학습 중에 정답과 함께 본 문장에서 나왔다</text>
+<text x="20" y="256" fill="#6e6e73">개선: 분할 전에 전체 데이터에서 중복을 삭제하면 테스트 세트에는 학습에서 본 적 없는 문장만 남는다</text>
+</g>
+</svg>

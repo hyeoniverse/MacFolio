@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">목록 핸들을 누른 순간 정하는 최대 너비 (본문 최소 360px)</text>
+  <text x="30" y="62" font-size="13" font-weight="600" fill="#1d1d1f">① 메모 창 폭 900px, 사이드바 180px</text>
+  <rect x="30" y="74" width="108" height="40" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="84" y="99" text-anchor="middle" font-size="12" fill="#1d1d1f">사이드바 180</text>
+  <rect x="138" y="74" width="216" height="40" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="246" y="99" text-anchor="middle" font-size="12" fill="#0a84ff">목록 최대 360</text>
+  <rect x="354" y="74" width="216" height="40" fill="#fff" stroke="#6e6e73" stroke-dasharray="4 3"/>
+  <text x="462" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">본문 최소 360</text>
+  <text x="30" y="140" font-size="12" fill="#1d1d1f">room = 900 − 180 − 360 = 360 → 칸 범위 상한 440보다 작으므로 360까지</text>
+  <text x="30" y="160" font-size="12" fill="#6e6e73">500px 위치까지 끌어도 min(440, 360) = 360에서 멈춘다</text>
+  <text x="30" y="200" font-size="13" font-weight="600" fill="#1d1d1f">② 메모 창 폭 1440px, 사이드바 208px</text>
+  <rect x="30" y="212" width="83" height="40" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="71" y="237" text-anchor="middle" font-size="12" fill="#1d1d1f">208</text>
+  <rect x="113" y="212" width="176" height="40" fill="#eaf3ff" stroke="#0a84ff"/>
+  <text x="201" y="237" text-anchor="middle" font-size="12" fill="#0a84ff">목록 최대 440</text>
+  <rect x="289" y="212" width="321" height="40" fill="#fff" stroke="#6e6e73"/>
+  <text x="449" y="237" text-anchor="middle" font-size="12" fill="#6e6e73">본문 792 (최소 360보다 넓음)</text>
+  <text x="30" y="278" font-size="12" fill="#1d1d1f">room = 1440 − 208 − 360 = 872 → 칸 범위 상한 440이 먼저 적용된다</text>
+  <text x="30" y="310" font-size="12" fill="#6e6e73">fit(next) = min(clamp(next, 220, 440), max(220, room)). 그림의 칸 폭은 창 폭에 비례해 줄였다</text>
+</svg>

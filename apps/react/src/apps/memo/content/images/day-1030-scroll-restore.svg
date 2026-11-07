@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>돌아온 글의 스크롤 위치를 한 번만 맞추는 경우와 매 프레임 맞추는 경우</title>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">기록에 저장한 위치 900px로 돌아가는 경우 (편집 화면 예)</text>
+<g font-size="13">
+<text x="20" y="64" font-weight="700" fill="#1d1d1f">한 번만 맞춤</text>
+<rect x="140" y="48" width="120" height="26" rx="6" fill="#f2f2f7"/><text x="200" y="66" text-anchor="middle" fill="#1d1d1f">scrollTop = 900</text>
+<rect x="270" y="48" width="200" height="26" rx="6" fill="#f2f2f7"/><text x="370" y="66" text-anchor="middle" fill="#1d1d1f">편집기·목차가 늦게 그려짐</text>
+<rect x="480" y="48" width="140" height="26" rx="6" fill="#fff4f3" stroke="#ff3b30"/><text x="550" y="66" text-anchor="middle" fill="#ff3b30" font-weight="700">950px로 밀림</text>
+<text x="140" y="96" font-size="12" fill="#6e6e73">위쪽 내용의 높이가 바뀌면 스크롤 앵커링이 보던 문단을 따라 위치를 옮긴다</text>
+<text x="20" y="144" font-weight="700" fill="#1d1d1f">매 프레임 맞춤</text>
+</g>
+<g font-size="12">
+<rect x="140" y="128" width="480" height="26" rx="6" fill="#e8f2ff" stroke="#0a84ff"/>
+<g fill="#0a84ff">
+<rect x="146" y="134" width="8" height="14" rx="2"/><rect x="158" y="134" width="8" height="14" rx="2"/><rect x="170" y="134" width="8" height="14" rx="2"/><rect x="182" y="134" width="8" height="14" rx="2"/><rect x="194" y="134" width="8" height="14" rx="2"/><rect x="206" y="134" width="8" height="14" rx="2"/>
+</g>
+<text x="230" y="146" fill="#1d1d1f">… 약 0.6초(40프레임) 동안 매 프레임 scrollTop = 900</text>
+<text x="140" y="178" fill="#6e6e73">늦게 그려진 내용이 높이를 바꿔도 다음 프레임에 900px로 되돌린다</text>
+<rect x="140" y="198" width="480" height="40" rx="6" fill="#ffffff" stroke="#ff9f0a"/>
+<text x="156" y="223" fill="#1d1d1f">그사이 휠·터치 입력이 있으면 즉시 멈춘다 (사용자 스크롤이 우선)</text>
+<rect x="140" y="250" width="480" height="40" rx="6" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="156" y="275" fill="#1d1d1f">목록에서 새로 연 글은 맞추지 않고 맨 위에서 시작한다</text>
+</g>
+</svg>

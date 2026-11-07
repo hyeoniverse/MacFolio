@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>관리자가 계정 이름을 바꾸고 다른 사람이 옛 이름을 등록할 때 이름 비교와 숫자 ID 비교의 결과</title>
+<rect width="640" height="360" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">계정 이름은 바뀌고, 숫자 ID는 바뀌지 않는다</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">ID 1001과 2002는 설명용 예시 값</text>
+
+<!-- 단계 머리 -->
+<g font-size="12" text-anchor="middle">
+<rect x="176" y="72" width="140" height="74" rx="8" fill="#f2f2f7"/>
+<text x="246" y="92" font-weight="600" fill="#1d1d1f">① 처음</text>
+<text x="246" y="112" fill="#1d1d1f">관리자</text>
+<text x="246" y="130" fill="#6e6e73">hyeoniverse · 1001</text>
+<rect x="326" y="72" width="140" height="74" rx="8" fill="#f2f2f7"/>
+<text x="396" y="92" font-weight="600" fill="#1d1d1f">② 이름 변경</text>
+<text x="396" y="112" fill="#1d1d1f">관리자</text>
+<text x="396" y="130" fill="#6e6e73">new-name · 1001</text>
+<rect x="476" y="72" width="140" height="74" rx="8" fill="#fff4e5" stroke="#ff9f0a"/>
+<text x="546" y="92" font-weight="600" fill="#1d1d1f">③ 옛 이름 등록</text>
+<text x="546" y="112" fill="#1d1d1f">다른 사람</text>
+<text x="546" y="130" fill="#6e6e73">hyeoniverse · 2002</text>
+</g>
+<path d="M316 109 h8" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M466 109 h8" stroke="#6e6e73" stroke-width="1.5"/>
+
+<!-- 이름 비교 -->
+<text x="24" y="186" font-size="13" font-weight="600" fill="#1d1d1f">이름으로 비교</text>
+<text x="24" y="204" font-size="12" fill="#6e6e73">login === 'hyeoniverse'</text>
+<g font-size="12" text-anchor="middle">
+<rect x="176" y="172" width="140" height="40" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+<text x="246" y="197" fill="#1d1d1f">관리자로 인증</text>
+<rect x="326" y="172" width="140" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="396" y="197" fill="#1d1d1f">관리자 본인 거부</text>
+<rect x="476" y="172" width="140" height="40" rx="8" fill="#ffebea" stroke="#ff3b30" stroke-width="2"/>
+<text x="546" y="197" fill="#ff3b30" font-weight="600">다른 사람을 인증</text>
+</g>
+
+<!-- ID 비교 -->
+<text x="24" y="256" font-size="13" font-weight="600" fill="#1d1d1f">숫자 ID로 비교</text>
+<text x="24" y="274" font-size="12" fill="#6e6e73">id === 1001</text>
+<g font-size="12" text-anchor="middle">
+<rect x="176" y="242" width="140" height="40" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+<text x="246" y="267" fill="#1d1d1f">관리자로 인증</text>
+<rect x="326" y="242" width="140" height="40" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+<text x="396" y="267" fill="#1d1d1f">관리자로 인증</text>
+<rect x="476" y="242" width="140" height="40" rx="8" fill="#e8f8ec" stroke="#34c759"/>
+<text x="546" y="267" fill="#1d1d1f">거부 (세션 없음)</text>
+</g>
+<text x="24" y="318" font-size="12" fill="#6e6e73">GitHub는 계정을 만들 때 숫자 ID를 정하고, 이름을 바꿔도 ID는 그대로 둔다.</text>
+<text x="24" y="338" font-size="12" fill="#6e6e73">그래서 ADMIN_GITHUB_ID에는 이름 대신 숫자 ID를 넣는다.</text>
+</svg>

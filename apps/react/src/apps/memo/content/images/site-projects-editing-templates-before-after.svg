@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>4단계 전에는 템플릿마다 Project 필드를 골라 읽어 조작법·폴더 구조 같은 칸이 일부 템플릿에서만 표시되었고, 4단계 후에는 landingOf가 Project를 구역 목록으로 바꾸고 모든 템플릿이 구역 종류마다 렌더링 함수를 갖도록 타입이 강제한다</title>
+<defs>
+<marker id="ba-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="ba-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+</defs>
+<rect width="640" height="400" fill="#ffffff"/>
+<text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">템플릿이 프로젝트 내용을 읽는 방식</text>
+
+<text x="24" y="66" font-size="13" font-weight="700" fill="#ff3b30">전: 템플릿마다 필드를 골라 읽음</text>
+<rect x="24" y="78" width="120" height="150" rx="9" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="84" y="98" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">Project</text>
+<text x="36" y="122" font-size="12" fill="#1d1d1f">highlights</text>
+<text x="36" y="144" font-size="12" fill="#1d1d1f">gallery</text>
+<text x="36" y="166" font-size="12" fill="#ff3b30">controls</text>
+<text x="36" y="188" font-size="12" fill="#ff3b30">structure</text>
+<text x="36" y="210" font-size="12" fill="#ff3b30">credits</text>
+
+<rect x="214" y="84" width="96" height="36" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="262" y="107" font-size="12" fill="#1d1d1f" text-anchor="middle">템플릿 A</text>
+<rect x="214" y="136" width="96" height="36" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="262" y="159" font-size="12" fill="#1d1d1f" text-anchor="middle">템플릿 B</text>
+<rect x="214" y="188" width="96" height="36" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="262" y="211" font-size="12" fill="#1d1d1f" text-anchor="middle">템플릿 C</text>
+
+<g stroke="#6e6e73" stroke-width="1.2" fill="none">
+<path d="M136 118 L212 100"/><path d="M136 118 L212 152"/><path d="M136 118 L212 204"/>
+<path d="M136 140 L212 102"/><path d="M136 140 L212 154"/>
+</g>
+<g stroke="#ff3b30" stroke-width="1.2" fill="none" stroke-dasharray="4 3">
+<path d="M136 162 L212 106"/>
+<path d="M136 184 L212 158"/>
+<path d="M136 206 L212 210"/>
+</g>
+<text x="24" y="252" font-size="12" fill="#1d1d1f">빨간 필드는 한 템플릿만 읽는다</text>
+<text x="24" y="270" font-size="12" fill="#ff3b30">모양을 바꾸면 그 칸의 내용이 화면에서 사라짐</text>
+
+<line x1="336" y1="60" x2="336" y2="380" stroke="#e5e5ea"/>
+
+<text x="352" y="66" font-size="13" font-weight="700" fill="#248a3d">후: 공통 내용 모델</text>
+<rect x="352" y="78" width="100" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="402" y="103" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">Project</text>
+<path d="M452 98 H480" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ba-b)"/>
+<rect x="484" y="78" width="132" height="40" rx="8" fill="#eef6ff" stroke="#0a84ff"/>
+<text x="550" y="103" font-size="12" font-weight="700" fill="#0a84ff" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">landingOf()</text>
+<path d="M550 118 V140" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ba-b)"/>
+<rect x="352" y="144" width="264" height="78" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="364" y="164" font-size="12" font-weight="700" fill="#1d1d1f">Landing: 첫 화면 + 구역 목록 + 마무리</text>
+<text x="364" y="184" font-size="12" fill="#1d1d1f">features, screens, controls,</text>
+<text x="364" y="202" font-size="12" fill="#1d1d1f">tech, credits … (빈 구역은 제외)</text>
+<path d="M484 222 V244" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#ba-g)"/>
+<rect x="352" y="248" width="264" height="56" rx="8" fill="#f0faf2" stroke="#34c759"/>
+<text x="364" y="270" font-size="12" font-weight="700" fill="#248a3d">모든 템플릿: 구역 종류마다 렌더링 함수</text>
+<text x="364" y="290" font-size="12" fill="#1d1d1f">하나라도 빠지면 타입 오류</text>
+<text x="352" y="330" font-size="12" fill="#1d1d1f">모양을 바꿔도 채운 칸은 모두 표시</text>
+<text x="352" y="350" font-size="12" fill="#6e6e73">새 템플릿 = 폴더 하나 + E2E 한 파일</text>
+</svg>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 220" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+	<rect width="640" height="220" fill="#ffffff" />
+	<defs>
+		<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f" /></marker>
+	</defs>
+	<text x="320" y="24" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">분류용 CNN은 영상 전체에 부류 하나를 출력한다</text>
+	<!-- 입력 -->
+	<rect x="20" y="82" width="64" height="64" rx="4" fill="#f2f2f7" stroke="#1d1d1f" />
+	<text x="52" y="118" font-size="12" fill="#1d1d1f" text-anchor="middle">입력 영상</text>
+	<text x="52" y="170" font-size="12" fill="#6e6e73" text-anchor="middle">227×227</text>
+	<!-- 컨볼루션 구간 -->
+	<line x1="104" y1="56" x2="402" y2="56" stroke="#34c759" stroke-width="3" />
+	<text x="253" y="48" font-size="13" font-weight="600" fill="#34c759" text-anchor="middle">컨볼루션층</text>
+	<g fill="#ffffff" stroke="#34c759" stroke-width="1.5">
+		<path d="M110,96 h44 v44 h-44 z M110,96 l12,-10 h44 l-12,10 M154,96 l12,-10 v44 l-12,10" />
+		<path d="M184,100 h36 v34 h-36 z M184,100 l14,-14 h36 l-14,14 M220,100 l14,-14 v34 l-14,14" />
+		<path d="M252,108 h28 v22 h-28 z M252,108 l18,-18 h28 l-18,18 M280,108 l18,-18 v22 l-18,18" />
+		<path d="M310,108 h26 v22 h-26 z M310,108 l18,-18 h26 l-18,18 M336,108 l18,-18 v22 l-18,18" />
+		<path d="M366,112 h22 v18 h-22 z M366,112 l12,-12 h22 l-12,12 M388,112 l12,-12 v18 l-12,12" />
+	</g>
+	<!-- 완전연결 구간 -->
+	<line x1="414" y1="56" x2="540" y2="56" stroke="#0a84ff" stroke-width="3" />
+	<text x="477" y="48" font-size="13" font-weight="600" fill="#0a84ff" text-anchor="middle">완전연결층</text>
+	<g stroke="#0a84ff" stroke-width="2.5">
+		<line x1="418" y1="150" x2="468" y2="76" />
+		<line x1="472" y1="150" x2="522" y2="76" />
+		<line x1="516" y1="134" x2="538" y2="110" />
+	</g>
+	<line x1="544" y1="118" x2="562" y2="118" stroke="#1d1d1f" marker-end="url(#a)" />
+	<!-- 출력 -->
+	<text x="600" y="108" font-size="12" fill="#6e6e73" text-anchor="middle">부류 하나</text>
+	<text x="600" y="128" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">얼룩고양이</text>
+	<text x="600" y="146" font-size="11" fill="#6e6e73" text-anchor="middle">(tabby cat)</text>
+	<text x="320" y="204" font-size="12" fill="#6e6e73" text-anchor="middle">완전연결층에서 공간 정보가 사라져 화소별 예측을 할 수 없다</text>
+</svg>

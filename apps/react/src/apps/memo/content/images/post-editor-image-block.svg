@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="340" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">이미지만 있는 문단을 편집기 안에서 다루는 두 방식</text>
+<text x="165" y="62" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">수정 전: 문단 안의 인라인 이미지</text>
+<rect x="20" y="76" width="290" height="150" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="34" y="96" font-size="12" fill="#6e6e73">paragraph</text>
+<rect x="88" y="110" width="154" height="96" rx="6" fill="#d8e9ff"/>
+<text x="165" y="163" font-size="13" fill="#1d1d1f" text-anchor="middle">image (인라인)</text>
+<line x1="76" y1="110" x2="76" y2="206" stroke="#ff9f0a" stroke-width="3"/>
+<line x1="254" y1="110" x2="254" y2="206" stroke="#ff9f0a" stroke-width="3"/>
+<text x="56" y="222" font-size="12" fill="#c46f00" text-anchor="middle">커서</text>
+<text x="274" y="222" font-size="12" fill="#c46f00" text-anchor="middle">커서</text>
+<text x="165" y="250" font-size="12" fill="#ff3b30" text-anchor="middle">→ 입력이 앞 문단으로 들어가기도 함</text>
+<text x="165" y="268" font-size="12" fill="#ff3b30" text-anchor="middle">앞뒤 빈 요소로 문단이 80px 더 높음</text>
+<text x="475" y="62" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">수정 후: 이미지 블록 노드</text>
+<rect x="330" y="76" width="290" height="110" rx="10" fill="#e5f1ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="344" y="96" font-size="12" fill="#0a84ff">image block (한 덩어리로 선택)</text>
+<rect x="398" y="104" width="154" height="62" rx="6" fill="#d8e9ff"/>
+<text x="475" y="140" font-size="13" fill="#1d1d1f" text-anchor="middle">이미지 + 캡션</text>
+<rect x="330" y="196" width="290" height="36" rx="8" fill="#fff" stroke="#34c759" stroke-dasharray="5 3"/>
+<text x="475" y="219" font-size="12" fill="#248a3d" text-anchor="middle">글 끝에 항상 남겨 두는 빈 문단</text>
+<text x="475" y="258" font-size="12" fill="#6e6e73" text-anchor="middle">앞뒤 커서 위치가 없고, 아래 문단에 이어서 입력</text>
+<rect x="120" y="290" width="400" height="36" rx="8" fill="#f2f2f7"/>
+<text x="320" y="313" font-size="13" fill="#1d1d1f" text-anchor="middle">저장 형식은 둘 다 <tspan font-family="SFMono-Regular, Menlo, monospace">![alt](url "caption")</tspan> 한 줄</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>클릭재킹: 공격 사이트가 MacFolio를 투명한 iframe으로 겹쳐 놓고, 사용자가 보이는 경품 버튼을 누르면 실제로는 iframe 안의 글 삭제 버튼이 눌린다. frame-ancestors 'self'가 있으면 브라우저가 iframe에 MacFolio를 그리지 않는다</title>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">클릭재킹과 frame-ancestors</text>
+<text x="24" y="62" font-size="13" font-weight="700" fill="#ff3b30">헤더가 없을 때</text>
+<rect x="24" y="74" width="280" height="200" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="40" y="96" font-size="12" fill="#6e6e73">evil.example (공격 사이트)</text>
+<rect x="74" y="160" width="180" height="40" rx="8" fill="#ff9f0a"/>
+<text x="164" y="185" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">경품 받기</text>
+<rect x="56" y="110" width="216" height="140" rx="6" fill="#0a84ff" fill-opacity="0.06" stroke="#0a84ff" stroke-dasharray="5 4"/>
+<text x="64" y="126" font-size="12" fill="#0a84ff">투명 iframe: MacFolio</text>
+<rect x="74" y="160" width="180" height="40" rx="8" fill="none" stroke="#0a84ff" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="164" y="242" font-size="12" fill="#0a84ff" text-anchor="middle">같은 자리에 "글 삭제" 버튼</text>
+<path d="M200 192 l0 22 l6 -6 l8 14 l5 -3 l-8 -14 l9 -1 z" fill="#1d1d1f" stroke="#ffffff" stroke-width="1"/>
+<text x="24" y="298" font-size="12" fill="#1d1d1f">사용자는 경품 버튼을 눌렀다고 생각하지만</text>
+<text x="24" y="316" font-size="12" fill="#ff3b30">로그인된 MacFolio의 버튼이 눌린다</text>
+<line x1="320" y1="56" x2="320" y2="330" stroke="#d1d1d6"/>
+<text x="336" y="62" font-size="13" font-weight="700" fill="#34c759">frame-ancestors 'self'</text>
+<rect x="336" y="74" width="280" height="200" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="352" y="96" font-size="12" fill="#6e6e73">evil.example (공격 사이트)</text>
+<rect x="368" y="110" width="216" height="140" rx="6" fill="#ffffff" stroke="#ff3b30"/>
+<path d="M462 150 l24 24 M486 150 l-24 24" stroke="#ff3b30" stroke-width="3"/>
+<text x="476" y="200" font-size="12" font-weight="600" fill="#ff3b30" text-anchor="middle">브라우저가 그리지 않음</text>
+<text x="476" y="220" font-size="12" fill="#6e6e73" text-anchor="middle">부모가 MacFolio 출처가 아니다</text>
+<text x="336" y="298" font-size="12" fill="#1d1d1f">MacFolio 응답의 CSP가</text>
+<text x="336" y="316" font-size="12" fill="#34c759">자기 출처 안에서만 iframe 표시를 허락한다</text>
+</svg>

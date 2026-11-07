@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">recv() 경계와 명령 경계는 다르다: 개행으로 다시 자르는 프레이밍</text>
+  <!-- row labels -->
+  <g font-size="12" fill="#6e6e73">
+    <text x="20" y="74">send() 3번</text>
+    <text x="20" y="154">recv() 3번</text>
+    <text x="20" y="254">명령 처리</text>
+  </g>
+  <!-- sent -->
+  <g font-family="Menlo, monospace" font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="110" y="54" width="132" height="30" fill="#e8f2ff" stroke="#0a84ff"/><text x="176" y="74">QUERY\n</text>
+    <rect x="242" y="54" width="176" height="30" fill="#fff" stroke="#0a84ff"/><text x="330" y="74">POLLING\n</text>
+    <rect x="418" y="54" width="176" height="30" fill="#e8f2ff" stroke="#0a84ff"/><text x="506" y="74">POLLING\n</text>
+  </g>
+  <text x="352" y="106" text-anchor="middle" font-size="12" fill="#6e6e73">TCP는 22바이트를 경계 없는 바이트 스트림으로 전달한다</text>
+  <!-- received chunks -->
+  <g font-family="Menlo, monospace" font-size="13" text-anchor="middle" fill="#1d1d1f">
+    <rect x="110" y="134" width="66" height="30" fill="#fff4e0" stroke="#ff9f0a"/><text x="143" y="154">QUE</text>
+    <rect x="176" y="134" width="330" height="30" fill="#fff" stroke="#ff9f0a"/><text x="341" y="154">RY\nPOLLING\nPOL</text>
+    <rect x="506" y="134" width="88" height="30" fill="#fff4e0" stroke="#ff9f0a"/><text x="550" y="154">LING\n</text>
+  </g>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="143" y="182">3바이트</text><text x="341" y="182">14바이트</text><text x="550" y="182">5바이트</text>
+  </g>
+  <!-- buffer -->
+  <text x="352" y="212" text-anchor="middle" font-size="12" fill="#1d1d1f">클라이언트별 버퍼 c-&gt;buf에 이어 붙이고 \n 위치마다 한 명령씩 잘라 낸다</text>
+  <g font-family="Menlo, monospace" font-size="13" text-anchor="middle" fill="#fff">
+    <rect x="110" y="234" width="132" height="30" rx="6" fill="#34c759"/><text x="176" y="254">QUERY</text>
+    <rect x="242" y="234" width="176" height="30" rx="6" fill="#34c759" stroke="#fff"/><text x="330" y="254">POLLING</text>
+    <rect x="418" y="234" width="176" height="30" rx="6" fill="#34c759" stroke="#fff"/><text x="506" y="254">POLLING</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="20" y="292">첫 recv() 뒤: 버퍼 "QUE", 개행 없음 → 처리 대기</text>
+    <text x="20" y="312">둘째 recv() 뒤: QUERY·POLLING 처리, "POL" 남김 → 셋째 recv() 뒤 POLLING 처리</text>
+  </g>
+</svg>

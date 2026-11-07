@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+  <rect width="640" height="360" fill="#fff"/>
+  <text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">cssVars()로 값만 넘기고 규칙은 CSS가 적용하는 과정</text>
+  <text x="20" y="60" font-size="13" font-weight="600" fill="#0a84ff">언어가 TypeScript일 때</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <rect x="20" y="70" width="140" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="30" y="92">cssVars({</text><text x="30" y="110">  color: '#3178c6'</text><text x="30" y="128">})</text>
+    <rect x="178" y="70" width="140" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="188" y="100">{ '--color':</text><text x="188" y="118">  '#3178c6' }</text>
+    <rect x="336" y="70" width="140" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="346" y="92">&lt;span style=</text><text x="346" y="110">"--color:</text><text x="346" y="128"> #3178c6"&gt;</text>
+  </g>
+  <line x1="161" y1="105" x2="175" y2="105" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="319" y1="105" x2="333" y2="105" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="477" y1="105" x2="491" y2="105" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="494" y="70" width="126" height="70" rx="8" fill="#eafaef" stroke="#34c759"/>
+  <circle cx="520" cy="105" r="11" fill="#3178c6"/>
+  <text x="538" y="101" font-size="12" fill="#1d1d1f">파란 점</text>
+  <text x="538" y="119" font-size="12" fill="#6e6e73">--color 사용</text>
+  <g font-size="12" fill="#6e6e73" text-anchor="middle">
+    <text x="90" y="158">JSX에서 호출</text><text x="248" y="158">-- 붙인 style 객체</text><text x="406" y="158">렌더링된 DOM</text><text x="557" y="158">CSS 결과</text>
+  </g>
+
+  <text x="20" y="196" font-size="13" font-weight="600" fill="#ff9f0a">색 표에 없는 언어일 때</text>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12" fill="#1d1d1f">
+    <rect x="20" y="206" width="140" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="30" y="228">cssVars({</text><text x="30" y="246">  color: undefined</text><text x="30" y="264">})</text>
+    <rect x="178" y="206" width="140" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="188" y="245">{ }  (키 제외)</text>
+    <rect x="336" y="206" width="140" height="70" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+    <text x="346" y="236">&lt;span&gt;</text><text x="346" y="254">(style 비어 있음)</text>
+  </g>
+  <line x1="161" y1="241" x2="175" y2="241" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="319" y1="241" x2="333" y2="241" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="477" y1="241" x2="491" y2="241" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="494" y="206" width="126" height="70" rx="8" fill="#fff6e8" stroke="#ff9f0a"/>
+  <circle cx="520" cy="241" r="11" fill="#59636e"/>
+  <text x="538" y="237" font-size="12" fill="#1d1d1f">회색 점</text>
+  <text x="538" y="255" font-size="12" fill="#6e6e73">기본값 사용</text>
+
+  <rect x="20" y="292" width="600" height="52" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="320" y="314" font-size="12" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">.gh-language-dot { background-color: var(--color, var(--gh-muted)); }</text>
+  <text x="320" y="334" font-size="12" fill="#6e6e73" text-anchor="middle">var()의 두 번째 값은 변수가 정의되지 않았을 때의 기본값이다 (--gh-muted: #59636e)</text>
+</svg>

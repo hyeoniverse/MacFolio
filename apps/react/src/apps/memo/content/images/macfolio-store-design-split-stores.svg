@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <defs>
+    <marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#c7c7cc"/></marker>
+  </defs>
+  <rect width="640" height="380" fill="#fff"/>
+  <text x="320" y="28" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">알림 하나가 새로 왔을 때 호출되는 구독자</text>
+
+  <!-- 왼쪽: 관심사별 store -->
+  <rect x="12" y="44" width="300" height="290" rx="10" fill="#f2f2f7"/>
+  <text x="162" y="68" font-size="13" font-weight="700" fill="#0a84ff" text-anchor="middle">관심사별 store (MacFolio)</text>
+  <rect x="28" y="88" width="112" height="46" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="84" y="116" font-size="13" fill="#1d1d1f" text-anchor="middle">창 store</text>
+  <rect x="28" y="168" width="112" height="46" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="84" y="196" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">알림 store</text>
+  <rect x="28" y="248" width="112" height="46" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="84" y="276" font-size="13" fill="#1d1d1f" text-anchor="middle">로그인 store</text>
+  <rect x="184" y="88" width="112" height="46" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="240" y="108" font-size="13" fill="#1d1d1f" text-anchor="middle">Dock</text>
+  <text x="240" y="125" font-size="12" fill="#6e6e73" text-anchor="middle">호출되지 않음</text>
+  <rect x="184" y="168" width="112" height="46" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="240" y="188" font-size="13" fill="#1d1d1f" text-anchor="middle">알림 배너</text>
+  <text x="240" y="205" font-size="12" fill="#ff9f0a" text-anchor="middle">다시 그림</text>
+  <rect x="184" y="248" width="112" height="46" rx="8" fill="#fff" stroke="#c7c7cc"/>
+  <text x="240" y="268" font-size="13" fill="#1d1d1f" text-anchor="middle">Apple 메뉴</text>
+  <text x="240" y="285" font-size="12" fill="#6e6e73" text-anchor="middle">호출되지 않음</text>
+  <line x1="140" y1="111" x2="182" y2="111" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#g)"/>
+  <line x1="140" y1="191" x2="182" y2="191" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+  <line x1="140" y1="271" x2="182" y2="271" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="162" y="318" font-size="12" fill="#1d1d1f" text-anchor="middle">바뀐 store의 구독자만 알림을 받는다</text>
+
+  <!-- 오른쪽: 단일 store -->
+  <rect x="328" y="44" width="300" height="290" rx="10" fill="#f2f2f7"/>
+  <text x="478" y="68" font-size="13" font-weight="700" fill="#1d1d1f" text-anchor="middle">단일 store (Redux 권장 방식)</text>
+  <rect x="344" y="88" width="112" height="206" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="400" y="112" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">store 하나</text>
+  <text x="400" y="150" font-size="12" fill="#6e6e73" text-anchor="middle">windows</text>
+  <text x="400" y="196" font-size="12" fill="#ff9f0a" text-anchor="middle">notifications</text>
+  <text x="400" y="242" font-size="12" fill="#6e6e73" text-anchor="middle">auth</text>
+  <rect x="500" y="88" width="112" height="46" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="556" y="108" font-size="13" fill="#1d1d1f" text-anchor="middle">Dock</text>
+  <text x="556" y="125" font-size="12" fill="#6e6e73" text-anchor="middle">selector 비교 후 생략</text>
+  <rect x="500" y="168" width="112" height="46" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="556" y="188" font-size="13" fill="#1d1d1f" text-anchor="middle">알림 배너</text>
+  <text x="556" y="205" font-size="12" fill="#ff9f0a" text-anchor="middle">다시 그림</text>
+  <rect x="500" y="248" width="112" height="46" rx="8" fill="#fff" stroke="#6e6e73"/>
+  <text x="556" y="268" font-size="13" fill="#1d1d1f" text-anchor="middle">Apple 메뉴</text>
+  <text x="556" y="285" font-size="12" fill="#6e6e73" text-anchor="middle">selector 비교 후 생략</text>
+  <line x1="456" y1="111" x2="498" y2="111" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+  <line x1="456" y1="191" x2="498" y2="191" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+  <line x1="456" y1="271" x2="498" y2="271" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+  <text x="478" y="318" font-size="12" fill="#1d1d1f" text-anchor="middle">구독자 전부 호출, 각자 selector로 판단</text>
+
+  <text x="320" y="362" font-size="12" fill="#6e6e73" text-anchor="middle">주황색이 이번 변경으로 실행되는 경로다. 다시 그리는 컴포넌트는 두 구조에서 같다</text>
+</svg>

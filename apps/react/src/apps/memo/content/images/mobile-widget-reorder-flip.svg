@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">FLIP: 비켜 주는 소개 위젯이 한 줄 아래로 이동할 때</text>
+<text x="320" y="46" font-size="12" fill="#6e6e73" text-anchor="middle">iPhone 13 기준 줄 높이 117px + 간격 16px = 한 줄 아래 133px</text>
+<rect x="12" y="62" width="148" height="256" rx="10" fill="#f2f2f7"/>
+<text x="86.0" y="86" font-size="14" font-weight="700" fill="#0a84ff" text-anchor="middle">1. First</text>
+<text x="86.0" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">이전 위치 기록</text>
+<rect x="26" y="120" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="26" y="186" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="26" y="120" width="120" height="56" rx="8" fill="#0a84ff"/><text x="86.0" y="153.0" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">소개</text>
+<text x="86.0" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">y = 0</text>
+<rect x="169" y="62" width="148" height="256" rx="10" fill="#f2f2f7"/>
+<text x="243.0" y="86" font-size="14" font-weight="700" fill="#0a84ff" text-anchor="middle">2. Last</text>
+<text x="243.0" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">새 레이아웃의 위치 측정</text>
+<rect x="183" y="120" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="183" y="186" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="183" y="120" width="120" height="56" rx="8" fill="#ff9f0a"/><text x="243.0" y="153.0" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">음악 (끄는 위젯)</text>
+<rect x="183" y="186" width="120" height="56" rx="8" fill="#0a84ff"/><text x="243.0" y="219.0" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">소개</text>
+<text x="243.0" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">y = 133</text>
+<rect x="326" y="62" width="148" height="256" rx="10" fill="#f2f2f7"/>
+<text x="400.0" y="86" font-size="14" font-weight="700" fill="#0a84ff" text-anchor="middle">3. Invert</text>
+<text x="400.0" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">차이만큼 되돌려 그림</text>
+<rect x="340" y="120" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="340" y="186" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="340" y="186" width="120" height="56" rx="8" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 3"/>
+<rect x="340" y="120" width="120" height="56" rx="8" fill="#0a84ff"/><text x="400.0" y="153.0" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">소개</text>
+<text x="400.0" y="219.0" font-size="12" fill="#0a84ff" text-anchor="middle">레이아웃 자리</text>
+<text x="400.0" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">translate: 0 −133px</text>
+<rect x="483" y="62" width="148" height="256" rx="10" fill="#f2f2f7"/>
+<text x="557.0" y="86" font-size="14" font-weight="700" fill="#0a84ff" text-anchor="middle">4. Play</text>
+<text x="557.0" y="104" font-size="12" fill="#1d1d1f" text-anchor="middle">차이를 0까지 줄임</text>
+<rect x="497" y="120" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="497" y="186" width="120" height="56" rx="8" fill="none" stroke="#c7c7cc" stroke-dasharray="4 3"/>
+<rect x="497" y="120" width="120" height="56" rx="8" fill="#0a84ff" opacity="0.25"/>
+<rect x="497" y="186" width="120" height="56" rx="8" fill="#0a84ff"/><text x="557.0" y="219.0" font-size="13" font-weight="600" fill="#fff" text-anchor="middle">소개</text>
+<line x1="603" y1="130" x2="603" y2="192" stroke="#0a84ff" stroke-width="2" marker-end="url(#ar)"/>
+<text x="557.0" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">0.24초, Web Animations</text>
+<text x="86" y="298" font-size="12" fill="#6e6e73" text-anchor="middle">지난 렌더링의 offsetTop</text>
+<text x="243" y="298" font-size="12" fill="#6e6e73" text-anchor="middle">useLayoutEffect에서 측정</text>
+<text x="400" y="298" font-size="12" fill="#6e6e73" text-anchor="middle">화면은 아직 옛 자리</text>
+<text x="557" y="298" font-size="12" fill="#6e6e73" text-anchor="middle">화면에서 미끄러져 내려옴</text>
+</svg>

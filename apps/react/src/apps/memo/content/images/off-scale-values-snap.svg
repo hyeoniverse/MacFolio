@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>간격 값을 가까운 토큰 단계로 옮기는 규칙</title>
+  <rect width="640" height="300" fill="#ffffff"/>
+  <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#ff9f0a"/></marker></defs>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">간격: 단계 사이의 숫자를 가까운 단계로, 거리가 같으면 작은 쪽으로</text>
+  <text x="24" y="54" font-size="12" fill="#6e6e73">파란 점은 --space-* 토큰, 주황 점은 옮기기 전의 숫자</text>
+  <rect x="52.9" y="110" width="21.5" height="20" fill="#e8f8ec"/>
+  <text x="63.7" y="150" font-size="12" fill="#34c759" text-anchor="middle">1·1.5px 허용</text>
+  <line x1="40" y1="120" x2="600" y2="120" stroke="#6e6e73"/>
+  <line x1="40.0" y1="116" x2="40.0" y2="124" stroke="#6e6e73"/>
+  <text x="40.0" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">0</text>
+  <line x1="83.1" y1="116" x2="83.1" y2="124" stroke="#6e6e73"/>
+  <text x="83.1" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">2</text>
+  <line x1="126.2" y1="116" x2="126.2" y2="124" stroke="#6e6e73"/>
+  <text x="126.2" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">4</text>
+  <line x1="169.2" y1="116" x2="169.2" y2="124" stroke="#6e6e73"/>
+  <text x="169.2" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">6</text>
+  <line x1="212.3" y1="116" x2="212.3" y2="124" stroke="#6e6e73"/>
+  <text x="212.3" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">8</text>
+  <line x1="255.4" y1="116" x2="255.4" y2="124" stroke="#6e6e73"/>
+  <text x="255.4" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">10</text>
+  <line x1="298.5" y1="116" x2="298.5" y2="124" stroke="#6e6e73"/>
+  <text x="298.5" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">12</text>
+  <line x1="341.5" y1="116" x2="341.5" y2="124" stroke="#6e6e73"/>
+  <text x="341.5" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">14</text>
+  <line x1="384.6" y1="116" x2="384.6" y2="124" stroke="#6e6e73"/>
+  <text x="384.6" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">16</text>
+  <line x1="427.7" y1="116" x2="427.7" y2="124" stroke="#6e6e73"/>
+  <text x="427.7" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">18</text>
+  <line x1="470.8" y1="116" x2="470.8" y2="124" stroke="#6e6e73"/>
+  <text x="470.8" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">20</text>
+  <line x1="513.8" y1="116" x2="513.8" y2="124" stroke="#6e6e73"/>
+  <text x="513.8" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">22</text>
+  <line x1="556.9" y1="116" x2="556.9" y2="124" stroke="#6e6e73"/>
+  <text x="556.9" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">24</text>
+  <line x1="600.0" y1="116" x2="600.0" y2="124" stroke="#6e6e73"/>
+  <text x="600.0" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">26</text>
+  <circle cx="83.1" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="126.2" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="169.2" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="212.3" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="255.4" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="298.5" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="341.5" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="384.6" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="470.8" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="556.9" cy="120" r="6" fill="#0a84ff"/>
+  <circle cx="104.6" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="104.6" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">3</text>
+  <path d="M104.6 99 L83.1 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="147.7" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="147.7" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">5</text>
+  <path d="M147.7 99 L126.2 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="190.8" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="190.8" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">7</text>
+  <path d="M190.8 99 L169.2 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="233.8" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="233.8" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">9</text>
+  <path d="M233.8 99 L212.3 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="276.9" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="276.9" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">11</text>
+  <path d="M276.9 99 L255.4 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="320.0" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="320.0" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">13</text>
+  <path d="M320.0 99 L298.5 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <circle cx="513.8" cy="92" r="6" fill="#ff9f0a"/>
+  <text x="513.8" y="80" font-size="12" fill="#1d1d1f" text-anchor="middle">22</text>
+  <path d="M513.8 99 L470.8 112" stroke="#ff9f0a" stroke-width="1.5" fill="none" marker-end="url(#ar)"/>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="40" y="214" font-weight="600" font-size="13">예: 5px은 4와 6 사이 정가운데 → 작은 쪽 4px(--space-4)</text>
+    <text x="40" y="236">7px → 6px, 13px → 12px, 22px → 20px (20과 24의 정가운데라 작은 쪽)</text>
+    <text x="40" y="258">26px 이상은 레이아웃 치수로 보고 숫자 그대로 둔다</text>
+  </g>
+</svg>

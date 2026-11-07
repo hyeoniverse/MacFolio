@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 352" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>사용 제한과 공급자 대체 순서</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="352" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">음성 생성 요청 하나의 처리 순서 (SpeechService)</text>
+<rect x="24" y="56" width="132" height="54" rx="8" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="90" y="80" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">POST 요청</text>
+<text x="90" y="98" font-size="12" fill="#6e6e73" text-anchor="middle">80자 이하 문장</text>
+<line x1="156" y1="83" x2="194" y2="83" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#ar)"/>
+<rect x="196" y="48" width="240" height="70" rx="8" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.6"/>
+<text x="316" y="72" font-size="13" fill="#c27400" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">DailyQuota.take(IP 해시)</text>
+<text x="316" y="92" font-size="12" fill="#1d1d1f" text-anchor="middle">IP당 하루 3회, 사이트 전체 50회</text>
+<text x="316" y="108" font-size="12" fill="#6e6e73" text-anchor="middle">날짜(UTC)가 바뀌면 0부터</text>
+<line x1="436" y1="83" x2="474" y2="83" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="476" y="56" width="140" height="54" rx="8" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="546" y="80" font-size="14" fill="#ff3b30" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">429</text>
+<text x="546" y="98" font-size="12" fill="#1d1d1f" text-anchor="middle">남은 횟수 없음</text>
+<line x1="316" y1="118" x2="316" y2="150" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<text x="324" y="138" font-size="12" fill="#248a3d" text-anchor="start">통과 (1회 차감)</text>
+<rect x="24" y="154" width="124" height="60" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="86" y="180" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">Fish</text>
+<text x="86" y="200" font-size="12" fill="#6e6e73" text-anchor="middle">1순위</text>
+<line x1="148" y1="184" x2="182" y2="184" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="165" y="176" font-size="12" fill="#ff3b30" text-anchor="middle">실패</text>
+<line x1="86" y1="214" x2="86" y2="250" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="184" y="154" width="124" height="60" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="246" y="180" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">Google</text>
+<text x="246" y="200" font-size="12" fill="#6e6e73" text-anchor="middle">2순위</text>
+<line x1="308" y1="184" x2="342" y2="184" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="325" y="176" font-size="12" fill="#ff3b30" text-anchor="middle">실패</text>
+<line x1="246" y1="214" x2="246" y2="250" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="344" y="154" width="124" height="60" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.6"/>
+<text x="406" y="180" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">Edge</text>
+<text x="406" y="200" font-size="12" fill="#6e6e73" text-anchor="middle">3순위</text>
+<line x1="468" y1="184" x2="502" y2="184" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<text x="485" y="176" font-size="12" fill="#ff3b30" text-anchor="middle">실패</text>
+<line x1="406" y1="214" x2="406" y2="250" stroke="#34c759" stroke-width="1.6" marker-end="url(#arg)"/>
+<rect x="504" y="154" width="112" height="60" rx="8" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="560" y="178" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700">셋 다 실패</text>
+<text x="560" y="198" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">502</text>
+<rect x="24" y="252" width="444" height="56" rx="8" fill="#eaf8ee" stroke="#34c759" stroke-width="1.2"/>
+<text x="40" y="276" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">성공: 음성(base64), 시도 기록, 남은 횟수</text>
+<text x="40" y="296" font-size="12" fill="#6e6e73" text-anchor="start">시도 기록 예: fish 실패 → google 성공</text>
+<line x1="560" y1="214" x2="560" y2="250" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#arr)"/>
+<rect x="484" y="252" width="132" height="56" rx="8" fill="#ffffff" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="550" y="276" font-size="12" fill="#1d1d1f" text-anchor="middle">차감한 1회를</text>
+<text x="550" y="294" font-size="12" fill="#1d1d1f" text-anchor="middle">되돌린다</text>
+<text x="24" y="336" font-size="12" fill="#6e6e73" text-anchor="start">키가 없거나 막아 둔 공급자는 시도하지 않고 건너뛴다(skip). 번역·요약도 하루 IP 3회·전체 50회, AI 커버는 전체 10회다.</text>
+</svg>

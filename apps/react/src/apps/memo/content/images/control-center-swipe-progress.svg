@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>쓴 거리 0~240px이 패널 표시 비율 0~1로 비례하고, 60px에서 0.25, 240px 이후는 1로 고정된다. 60px 이상에서 손을 떼면 열린다</title>
+<rect width="640" height="360" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">쓴 거리와 패널 표시 비율 (progress)</text>
+<!-- plot area: x 80..560 for 0..320px (1.5px per px); y 300..80 for 0..1 (220 per 1) -->
+<rect x="80" y="80" width="90" height="220" fill="#ff9f0a" opacity="0.10"/>
+<rect x="170" y="80" width="400" height="220" fill="#34c759" opacity="0.08"/>
+<line x1="80" y1="300" x2="580" y2="300" stroke="#1d1d1f" stroke-width="1.2"/>
+<line x1="80" y1="300" x2="80" y2="70" stroke="#1d1d1f" stroke-width="1.2"/>
+<g font-size="12" fill="#6e6e73" text-anchor="middle">
+<text x="80" y="318">0</text><text x="170" y="318">60</text><text x="260" y="318">120</text><text x="350" y="318">180</text><text x="440" y="318">240</text><text x="530" y="318">300</text>
+</g>
+<text x="580" y="340" font-size="12" fill="#6e6e73" text-anchor="end">쓴 거리 (px)</text>
+<g font-size="12" fill="#6e6e73" text-anchor="end">
+<text x="72" y="304">0</text><text x="72" y="249">0.25</text><text x="72" y="194">0.5</text><text x="72" y="139">0.75</text><text x="72" y="84">1</text>
+</g>
+<line x1="80" y1="245" x2="170" y2="245" stroke="#6e6e73" stroke-dasharray="3 3"/>
+<line x1="170" y1="245" x2="170" y2="300" stroke="#6e6e73" stroke-dasharray="3 3"/>
+<line x1="80" y1="300" x2="440" y2="80" stroke="#0a84ff" stroke-width="3"/>
+<line x1="440" y1="80" x2="570" y2="80" stroke="#0a84ff" stroke-width="3"/>
+<circle cx="170" cy="245" r="5" fill="#ff9f0a"/>
+<circle cx="440" cy="80" r="5" fill="#0a84ff"/>
+<line x1="92" y1="300" x2="92" y2="292" stroke="#ff3b30" stroke-width="2"/>
+<text x="125" y="124" font-size="12" fill="#ff3b30" text-anchor="middle">빨간 눈금 8px 전:</text><text x="125" y="140" font-size="12" fill="#ff3b30" text-anchor="middle">판정 보류</text>
+<text x="184" y="272" font-size="12" fill="#1d1d1f">60px (PULL_OPEN_PX): 0.25</text>
+<text x="184" y="288" font-size="12" fill="#6e6e73">이 거리 이상에서 손을 떼면 열림</text>
+<text x="430" y="104" font-size="12" fill="#1d1d1f" text-anchor="end">240px (60 × 4): 1</text>
+<text x="125" y="104" font-size="12" fill="#ff9f0a" text-anchor="middle">떼면 다시 닫힘</text>
+<text x="370" y="214" font-size="12" fill="#34c759">손을 떼면 남은 거리를</text>
+<text x="370" y="230" font-size="12" fill="#34c759">CSS 트랜지션으로 이어서 열림</text>
+</svg>

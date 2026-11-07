@@ -7,9 +7,21 @@ seriesOrder: 1
 summary: 저장소의 Markdown 글은 그대로 두고 관리자가 작성하거나 수정한 글만 서버에 저장해 겹쳐 표시한다. 편집 버튼 없이 Milkdown으로 보이는 그대로 수정하고 입력이 0.8초 멈추면 저장하며, 편집 화면과 읽기 화면의 문단 위치를 측정해 일치시켰다.
 ---
 
-[폴더 정리 기능](/memo/memo-organization-api)을 추가한 뒤 관리자로 로그인해도 글쓰기 버튼이 없었다. 새 글 작성도, 오타 수정도 불가능했다. 글을 수정하려면 저장소의 Markdown 파일을 수정해 커밋하고 배포를 기다려야 했다. 이 글은 [PR #44](https://github.com/hyeoniverse/MacFolio/pull/44)에서 추가한 관리자 글쓰기를 정리한다.
+[폴더 정리 기능](/memo/memo-organization-api)을 추가한 뒤 관리자로 로그인해도 글쓰기 버튼이 없었다. 새 글 작성도, 오타 수정도 불가능했다. 글을 수정하려면 저장소의 Markdown 파일을 수정해 커밋하고 배포를 기다려야 했다. [PR #44](https://github.com/hyeoniverse/MacFolio/pull/44)에서 관리자가 사이트 안에서 바로 글을 쓰고 고치는 기능을 추가했다.
 
 ![관리자가 보는 글](./images/memo-editor.jpg '관리자로 로그인하면 글이 곧 편집기다. 제목도 본문도 보이는 그대로 고친다')
+
+## 배경
+
+이 블로그의 글은 Markdown 파일이다. Markdown은 `## 제목`, `**굵게**`, `- 목록`처럼 기호 몇 개로 서식을 적는 텍스트 형식이고, 사이트는 빌드할 때 이 파일을 읽어 HTML로 바꿔 보여 준다. 파일은 Git 저장소에 있으므로, 글 하나를 고치는 과정은 다음과 같았다.
+
+1. 컴퓨터에서 `content/post-editor.md` 같은 파일을 수정한다.
+2. 커밋하고 GitHub에 올린다.
+3. Cloudflare가 사이트를 다시 빌드해 배포할 때까지 기다린다.
+
+오타 한 글자를 고쳐도 같은 과정을 거쳐야 하고, 휴대폰에서는 고칠 수 없다. 관리자 글쓰기는 이 과정 없이 사이트에서 글을 열어 바로 고치고, 저장한 내용이 즉시 반영되게 한다.
+
+화면의 편집 방식으로는 WYSIWYG(What You See Is What You Get, 보이는 그대로 편집)를 택했다. Markdown 원문(`**굵게**`)을 직접 입력하는 대신, 굵게 표시된 글자를 화면에서 바로 고치는 방식이다. 워드프로세서나 macOS 메모 앱이 이 방식이다.
 
 ## 파일은 그대로 두고 서버 글을 겹친다
 
@@ -21,7 +33,7 @@ summary: 저장소의 Markdown 글은 그대로 두고 관리자가 작성하거
 | 편집기가 [GitHub API](https://docs.github.com/en/rest/repos/contents)로 Markdown 파일을 커밋 | 저장소 하나로 관리된다                                        | 수정할 때마다 빌드·배포를 기다린다. 서버에 GitHub 쓰기 토큰을 보관해야 한다     |
 | **파일은 그대로, 서버 글을 겹침** (채택)                                                     | 서버가 없어도 저장소 글은 표시된다. 수정 내용이 즉시 반영된다 | 목록 병합 규칙과 "삭제 표시"가 필요하다                                         |
 
-DB로 이전하지 않고, [정리 내용](/memo/memo-organization-api)과 같은 방식으로 **겹치기**를 택했다.
+DB로 이전하지 않고, [정리 내용](/memo/memo-organization-api)과 같은 방식으로 **겹치기**를 택했다. 겹치기는 기본 자료(저장소 글) 위에 변경분(서버 글)만 덮어 최종 목록을 만드는 방식이다. 예를 들어 저장소에 글이 100편 있고 관리자가 그중 2편을 고쳤다면, 서버에는 고친 2편만 저장되고 화면에는 98편의 파일 글과 2편의 서버 글이 합쳐진 100편이 보인다.
 
 ![겹치기](./images/post-editor-overlay.svg '서버는 바뀐 것만 들고, 목록은 저장소 글 위에 서버 글을 덮어 만든다')
 
@@ -31,6 +43,8 @@ DB로 이전하지 않고, [정리 내용](/memo/memo-organization-api)과 같�
 | 저장소 글 수정 | **같은 slug**의 서버 글                                    | 서버 글이 파일 글을 대체                          |
 | 저장소 글 삭제 | **삭제 표시**(`deleted`). 파일은 저장소에 그대로 남는다    | 목록에서 제외                                     |
 
+slug는 글 주소의 마지막 부분(`/memo/post-editor`의 `post-editor`)이고, 저장소 글은 파일 이름이 slug다. 같은 slug를 열쇠로 삼아 서버 글과 파일 글을 대응시킨다. 병합은 slug를 열쇠로 한 `Map`에 파일 글을 먼저 넣고, 서버 목록을 차례로 반영한다.
+
 ```ts
 for (const item of server) {
 	if (item.deleted)
@@ -39,7 +53,7 @@ for (const item of server) {
 }
 ```
 
-이 구조에서는 서버가 중단되어도 저장소의 글은 그대로 표시된다. 서버는 변경분만 보관한다.
+이 구조에서는 ==서버가 중단되어도 저장소의 글은 그대로 표시된다==. 서버는 변경분만 보관한다.
 
 ## API
 
@@ -50,9 +64,10 @@ for (const item of server) {
 | `PUT /posts/:slug`    | 관리자 | 수정. 서버에 없던 저장소 글이면 새로 생성한다 |
 | `DELETE /posts/:slug` | 관리자 | 삭제 표시                                     |
 
+> [!NOTE] 이후 변경
 > 이 API는 이후 임시 저장·게시·버전 기록 구조로 바뀌었다. 저장하는 즉시 공개되던 문제를 해결하는 과정에서다([게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)).
 
-서버는 다음 규칙을 검사한다. 위반한 규칙은 모두 수집해 반환하고, 편집 화면은 입력 내용을 유지한다.
+서버는 다음 규칙을 검사한다. 위반한 규칙은 모두 수집해 반환하고, 편집 화면은 입력 내용을 유지한다. 예를 들어 제목을 비우고 날짜를 2월 30일로 저장하면 두 오류를 한 번에 돌려주므로, 하나를 고치고 다시 저장해서야 다음 오류를 알게 되는 일이 없다.
 
 | 항목 | 규칙                                   |
 | ---- | -------------------------------------- |
@@ -76,7 +91,11 @@ for (const item of server) {
 | 저장      | 입력이 0.8초(`SAVE_DELAY_MS = 800`) 멈추면 저장한다(현재는 임시 저장). 제목이나 본문이 비어 있으면 저장하지 않고 이유를 같은 줄에 표시한다                                                                             |
 | 새 메모   | 클릭 즉시 빈 메모가 열리고 제목에 커서가 놓인다. 제목에서 Enter를 누르면 본문으로 이동한다. 첫 저장 시각에 slug가 생성되고, 이후에는 같은 글을 수정한다                                                                |
 
-편집기는 관리자에게만 필요하므로 처음 사용하는 시각에 별도로 불러온다([`React.lazy`](https://react.dev/reference/react/lazy)). 방문자가 내려받는 번들 크기는 변하지 않는다.
+"입력이 멈추면 저장"은 디바운스(debounce)라는 방법이다. 키를 누를 때마다 0.8초 타이머를 새로 시작하고, 타이머가 끝까지 흐르면 그때 한 번 저장한다. 키를 누를 때마다 저장 요청을 보내면 "안녕하세요" 다섯 글자에 요청 다섯 번이 나가지만, 디바운스를 쓰면 다섯 글자를 연달아 입력하고 멈춘 뒤 한 번만 나간다.
+
+![키 입력 네 번 뒤 0.8초 대기 후 한 번 저장하는 디바운스, 그리고 v1 요청이 늦게 도착해 v2를 덮어쓰는 동시 전송과 v1 응답 뒤 v2를 보내는 순차 전송](./images/post-editor-autosave.svg '위: 입력이 멈춘 뒤에만 저장한다. 아래: 저장 요청을 하나씩 보내 늦게 도착한 옛 내용이 새 내용을 덮어쓰지 않게 한다')
+
+편집기는 관리자에게만 필요하므로 처음 사용하는 시각에 별도로 불러온다([`React.lazy`](https://react.dev/reference/react/lazy)). `React.lazy`는 컴포넌트 코드를 별도 파일(청크)로 나눠 두고 실제로 렌더링할 때 내려받게 하는 기능이다. 방문자는 편집기를 렌더링하지 않으므로 그 파일을 내려받지 않고, ==방문자가 내려받는 번들 크기는 변하지 않는다==.
 
 ### 보이는 그대로 수정할 때의 처리
 
@@ -86,6 +105,12 @@ for (const item of server) {
 | 저장소 글의 이미지는 `./images/a.jpg`처럼 글 파일 기준 상대 경로라 편집기 안에서 표시되지 않는다                  | 편집기에 넣는 시각에 빌드된 주소로 바꾸고, 저장하는 시각에 원래 경로로 되돌린다 |
 | 새 메모는 첫 저장 시각에 slug가 생긴다. slug로 편집기를 구분하면 그 순간 편집기가 다시 렌더링되어 커서가 사라진다 | 새 메모의 편집기 key를 기억해 두고 slug가 생긴 뒤에도 같은 key를 사용한다       |
 | 빠르게 수정하면 요청 도착 순서가 뒤바뀌어 이전 내용이 최신 내용을 덮어쓸 수 있다                                  | **저장 요청을 순차 전송**한다. 다른 글로 이동하면 남은 편집을 즉시 전송한다     |
+
+첫 행의 직렬화(serialization)는 편집기 안의 문서 구조를 다시 Markdown 텍스트로 바꾸는 과정이다. 같은 내용이라도 목록 기호(`*`와 `-`), 강조 기호(`*`와 `_`), 빈 줄 수 같은 표기가 원문과 달라질 수 있다. 열기만 해도 저장하면 내용을 고치지 않은 글이 서버 글이 되어 저장소 파일을 가리게 되므로, 실제 입력이 있을 때만 저장한다.
+
+셋째 행의 key는 React가 컴포넌트를 구분하는 값이다. key가 바뀌면 React는 이전 컴포넌트를 버리고 새로 만들므로, 편집기 안의 커서 위치와 입력 상태가 사라진다.
+
+넷째 행의 순차 전송은 저장 요청을 Promise 사슬에 이어 붙이는 방식이다(`useMemoLibrary.ts`의 `saveQueue.current = saveQueue.current.then(…)`). 앞 요청의 응답이 온 뒤에 다음 요청을 보내므로, 서버에는 항상 마지막으로 보낸 내용이 남는다.
 
 ### 서식 도구 막대
 
@@ -98,15 +123,17 @@ for (const item of server) {
 
 ![가가 메뉴](./images/editor-format-menu.jpg '가가 메뉴. 커서가 체크리스트 안에 있어서 체크리스트에 표시가 붙었다')
 
+두 번째 항목의 원인은 브라우저의 포커스 이동 순서다. 버튼을 누르면 `pointerdown`의 기본 동작으로 포커스가 버튼으로 옮겨 가고, 편집기는 포커스와 함께 선택 영역(커서 위치)을 잃는다. 이 상태에서 '굵게'를 실행하면 적용할 대상이 없다. `pointerdown`에서 `preventDefault()`를 호출하면 포커스가 편집기에 남는다.
+
 도구 막대는 편집기 바깥(창 상단)에 있으므로, 둘을 작은 상태 저장소(store)로 연결했다. 편집기는 커서 위치의 서식과 명령 실행 함수를 저장소에 기록하고, 도구 막대는 그 값을 구독해 렌더링한다.
 
 처음에는 머리말을 선택해도 메뉴의 체크 표시가 '본문'에 머물렀다. 원인은 다음 순서였다.
 
 1. 편집기가 명령 함수를 저장소에 기록하는 `useEffect`의 의존성 배열에 `useEditor`의 `get`이 있었다.
 2. `get`은 렌더링마다 새 함수이므로 effect가 렌더링마다 다시 실행됐다.
-3. effect의 정리(cleanup) 함수가 서식 상태를 빈 값으로 초기화하므로, 기록한 서식이 곧바로 삭제됐다.
+3. effect의 정리(cleanup) 함수가 서식 상태를 빈 값으로 초기화하므로, ==기록한 서식이 곧바로 삭제됐다==.
 
-명령 함수는 처음 한 번만 기록하고, `get`은 ref로 읽도록 수정했다([React: Effect 의존성에서 함수 제거](https://react.dev/learn/removing-effect-dependencies)).
+명령 함수는 처음 한 번만 기록하고, `get`은 ref로 읽도록 수정했다([React: Effect 의존성에서 함수 제거](https://react.dev/learn/removing-effect-dependencies)). ref는 렌더링과 관계없이 같은 객체를 유지하는 상자라, 의존성 배열에 넣지 않아도 항상 최신 `get`을 읽을 수 있다.
 
 ### 표 편집
 
@@ -118,15 +145,22 @@ for (const item of server) {
 | 칸 안에서 Enter를 누르면 **표를 빠져나간다**                                                                      | Markdown 표의 칸은 줄바꿈을 지원하지 않으므로, 스프레드시트처럼 아래 칸으로 이동한다. 마지막 행이면 행을 추가한다. 마지막 칸의 Tab도 행을 추가한다                              |
 | 행·열 추가·삭제 버튼이 없다                                                                                       | 커서가 표 안에 있으면 표 버튼이 **표 편집** 메뉴로 바뀐다. 위·아래 행 추가, 왼쪽·오른쪽 열 추가, 행·열 삭제, 열 정렬, 표 삭제. 메뉴를 연 채로 다른 칸을 클릭하며 편집할 수 있다 |
 
-[GFM 표](https://github.github.com/gfm/#tables-extension-)는 머리글 한 행과 구분선이 반드시 있어야 하고, 이 편집기는 본문 한 행 이상을 유지한다. 그래서 머리글 행, 마지막 본문 행, 마지막 열은 메뉴에서 삭제 항목을 비활성화한다. 표 전체를 없애려면 표 삭제를 사용한다.
+[GFM 표](https://github.github.com/gfm/#tables-extension-)는 머리글 한 행과 구분선이 반드시 있어야 하고, 이 편집기는 본문 한 행 이상을 유지한다. 그래서 머리글 행, 마지막 본문 행, 마지막 열은 메뉴에서 삭제 항목을 비활성화한다. 표 전체를 없애려면 표 삭제를 사용한다. GFM(GitHub Flavored Markdown)은 GitHub가 표준 Markdown에 표·체크리스트·취소선 등을 더한 확장 문법이다. 예를 들어 다음 세 줄이 머리글 한 행, 구분선, 본문 한 행으로 이루어진 가장 작은 표다.
+
+```md
+| 항목 | 규칙    |
+| ---- | ------- |
+| 제목 | 1~100자 |
+```
 
 ### 이미지 업로드와 파일 첨부
 
 이전에는 이미지를 주소로만 삽입할 수 있었다. 이제 **파일 선택, 붙여넣기(스크린샷), 끌어다 놓기**로 이미지를 API에 업로드하고 커서 위치에 삽입한다. 클립 버튼으로는 임의의 파일을 첨부한다. 첨부 파일은 파일 이름을 텍스트로 한 링크가 되고, 링크 제목(`"첨부 파일 · 2 KB"`)으로 첨부 파일임을 식별해 읽기·편집 화면 모두 같은 카드 모양으로 렌더링한다.
 
-업로드한 파일은 DB(`bytea`)에 저장한다. 배포 환경이 정해지지 않았고, 서버 디스크는 배포 환경에 따라 재시작 시 삭제될 수 있기 때문이다. 파일 크기는 10MB(10,485,760바이트)까지이며, API와 DB CHECK 제약 양쪽에서 검사한다.
+업로드한 파일은 DB(`bytea`)에 저장한다. `bytea`는 PostgreSQL의 바이너리 열 형식으로, 이미지 같은 바이트 열을 행 안에 그대로 저장한다. 배포 환경이 정해지지 않았고, 서버 디스크는 배포 환경에 따라 재시작 시 삭제될 수 있기 때문이다. 파일 크기는 10MB(10,485,760바이트)까지이며, API와 DB CHECK 제약 양쪽에서 검사한다.
 
-업로드한 파일은 누구나 내려받을 수 있으므로, 브라우저에서 스크립트로 실행되지 않게 했다.
+> [!IMPORTANT] 업로드 파일은 스크립트로 실행하지 않는다
+> 업로드한 파일은 누구나 내려받을 수 있으므로, 브라우저에서 스크립트로 실행되지 않게 했다. 예를 들어 `<script>`가 든 HTML 파일을 올린 뒤 그 주소를 다른 사람에게 보내면, 받은 사람의 브라우저는 그 페이지를 API 주소의 출처에서 실행한다. 이 스크립트는 같은 출처의 쿠키와 API를 사용할 수 있다.
 
 ![업로드한 파일의 형식 판별과 응답 헤더](./images/post-editor-upload-headers.svg '이미지는 앞부분 바이트로만 판별하고, 그 밖의 파일은 내려받기만 허용한다')
 
@@ -137,19 +171,30 @@ for (const item of server) {
 | 교차 출처 로드     | [helmet](https://helmetjs.github.io/)의 기본값 [`Cross-Origin-Resource-Policy: same-origin`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Resource-Policy)에서는 다른 출처(사이트)의 `<img>`가 이미지를 불러오지 못한다. 파일 응답에만 `cross-origin`을 지정한다                                                                                            |
 | 한글 파일 이름     | [multer](https://github.com/expressjs/multer)는 파일 이름을 latin1로 해석해 한글 이름이 깨진다. UTF-8로 다시 디코딩하고, 내려받을 때는 `filename*=UTF-8''…`(RFC 5987) 형식으로 반환한다                                                                                                                                                                                                         |
 
+표의 용어를 풀면 다음과 같다.
+
+- **MIME 타입**: `image/png`, `text/html`처럼 파일 형식을 나타내는 문자열이다. 업로드 요청의 MIME 타입은 보내는 쪽이 임의로 적을 수 있으므로, HTML 파일을 `image/png`라고 속여 보낼 수 있다. 그래서 파일 내용의 앞부분 바이트로 직접 판별한다.
+- **`nosniff`**: 브라우저는 응답 헤더의 형식과 내용이 다르면 내용을 보고 형식을 추측(sniffing)하기도 한다. `nosniff`는 이 추측을 금지해, 헤더에 적힌 형식대로만 처리하게 한다.
+- **`Content-Security-Policy: sandbox`**: 이 헤더가 붙은 문서는 스크립트 실행이 차단된 격리 환경(sandbox)에서 열린다.
+- **한글 파일 이름 깨짐의 예**: UTF-8로 3바이트인 '가'(`EA B0 80`)를 latin1로 해석하면 바이트마다 한 글자로 읽혀 `ê°` 같은 문자열이 된다.
+
 ### 이미지 블록과 표 손잡이
 
 사용해 보니 이미지와 표에 세 가지 문제가 남아 있었다.
 
-**이미지 옆의 불필요한 커서 위치.** Markdown에서 이미지는 인라인 요소이므로, 이미지만 있는 문단에도 이미지 앞뒤에 커서 위치가 생긴다. 이미지를 클릭하고 →를 눌러 입력하면 **앞 문단**에 입력되기도 했고, 글이 이미지로 끝나면 그 아래에 이어서 입력할 수 없었다.
+**이미지 옆의 불필요한 커서 위치.** Markdown에서 이미지는 인라인 요소(문장 안에 글자처럼 놓이는 요소)이므로, 이미지만 있는 문단에도 이미지 앞뒤에 커서 위치가 생긴다. 이미지를 클릭하고 →를 눌러 입력하면 **앞 문단**에 입력되기도 했고, 글이 이미지로 끝나면 그 아래에 이어서 입력할 수 없었다.
+
+![수정 전에는 문단 안의 인라인 이미지 앞뒤에 커서 위치가 생기고, 수정 후에는 이미지 블록 노드 하나와 글 끝의 빈 문단으로 바뀐다](./images/post-editor-image-block.svg '편집기 안의 구조만 바꾸고 저장하는 Markdown은 그대로다')
 
 - 이미지 하나만 있는 문단은 편집기 안에서 **이미지 블록** 노드로 변환해 처리하고, 저장하는 시각에 다시 `![설명](주소 "캡션")` 한 줄로 직렬화한다
 - Milkdown에도 이미지 블록이 있지만 비율 값을 설명(alt) 위치에 저장하므로 사용하지 않았다
 - 글 끝에는 항상 빈 문단을 유지해 이어서 입력할 수 있다
 
+노드(node)는 ProseMirror가 문서를 표현하는 단위다. 문서는 문단, 머리말, 목록, 이미지 같은 노드의 트리이고, 커서는 노드 사이나 글자 사이에 놓인다. 이미지 블록을 문단과 같은 층의 노드로 두면 이미지 앞뒤에 글자 단위 커서 위치가 생기지 않는다.
+
 **업로드한 이미지에 설명을 입력할 수 없음.** 파일을 선택하는 즉시 업로드해 삽입했기 때문이다. 이제 출처(내 파일, 주소, Unsplash, Pexels)와 관계없이 미리 보기에서 설명과 캡션을 입력한 뒤 삽입한다. 삽입한 이미지를 선택하면 이미지 버튼이 '이미지 편집'으로 바뀌어 설명·캡션을 수정할 수 있다.
 
-**표에서 현재 칸을 알 수 없음.** 읽기 화면처럼 가로줄만 있어 빈 칸의 경계가 보이지 않았다. 커서가 있는 표에만 칸 경계선과 현재 칸의 옅은 배경을 표시하고, macOS 메모처럼 현재 열 위와 현재 행 왼쪽에 **손잡이**를 배치한다. 손잡이를 클릭하면 해당 열·행만 편집하는 메뉴가 열린다. 경계선은 레이아웃에 영향을 주지 않는 `box-shadow`로 그려 표 크기가 읽기 화면과 같다.
+**표에서 현재 칸을 알 수 없음.** 읽기 화면처럼 가로줄만 있어 빈 칸의 경계가 보이지 않았다. 커서가 있는 표에만 칸 경계선과 현재 칸의 옅은 배경을 표시하고, macOS 메모처럼 현재 열 위와 현재 행 왼쪽에 **손잡이**를 배치한다. 손잡이를 클릭하면 해당 열·행만 편집하는 메뉴가 열린다. 경계선은 레이아웃에 영향을 주지 않는 `box-shadow`로 그려 표 크기가 읽기 화면과 같다. `border`로 1px 선을 그리면 칸마다 1px씩 커져 표 전체가 읽기 화면보다 넓어지지만, `box-shadow`는 상자 크기를 바꾸지 않고 바깥에 그림자만 그린다.
 
 표를 수정하면 편집기가 모든 열을 왼쪽 정렬(`:--`)로 직렬화해 목록 미리 보기에 `:`가 남았다. 왼쪽 정렬은 정렬 없음과 표시 결과가 같으므로 저장하는 시각에 `---`로 되돌린다.
 
@@ -160,7 +205,7 @@ for (const item of server) {
 
 ### Unsplash, Pexels 사진 검색
 
-이미지 삽입 창에서 Unsplash와 Pexels를 바로 검색한다. 두 API 키는 서버(API)에만 보관하고, 프런트엔드는 API 서버에 검색을 요청한다. 키가 없으면 해당 서비스 탭에 설정할 환경 변수 이름을 표시한다.
+이미지 삽입 창에서 Unsplash와 Pexels를 바로 검색한다. 두 서비스는 사진가가 올린 사진을 무료로 쓸 수 있게 제공하고, 개발자용 검색 API를 공개한다. API 키는 서버(API)에만 보관하고, 프런트엔드는 API 서버에 검색을 요청한다. 키를 브라우저 코드에 넣으면 누구나 개발자 도구에서 키를 읽어 쓸 수 있기 때문이다. 키가 없으면 해당 서비스 탭에 설정할 환경 변수 이름을 표시한다.
 
 두 서비스의 API 가이드라인([Unsplash](https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines), [Pexels](https://www.pexels.com/api/documentation/))을 따른다.
 
@@ -169,7 +214,7 @@ for (const item of server) {
 
 ### 코드 복사 버튼
 
-코드 블록 오른쪽 위에 복사 버튼을 추가했다. 읽기 화면과 편집기 모두 같은 위치, 같은 모양이다. 마우스를 올리면 표시되고, 터치 기기에서는 항상 표시된다.
+코드 블록 오른쪽 위에 복사 버튼을 추가했다. 읽기 화면과 편집기 모두 같은 위치, 같은 모양이다. 마우스를 올리면 표시되고, 터치 기기에서는 항상 표시된다. 터치 기기에는 마우스를 올리는 동작(hover)이 없으므로, 올렸을 때만 보이게 하면 버튼을 찾을 수 없다.
 
 ### 편집 화면과 읽기 화면 일치
 
@@ -182,9 +227,13 @@ for (const item of server) {
 | 이미지 문단이 80px 더 높음             | 편집기가 커서 위치용으로 이미지 앞뒤에 빈 요소를 삽입해 빈 줄 두 개가 생겼다                                                                                                                                                   | 이미지 문단에서는 이 요소를 숨긴다. 이미지 모양(가운데 정렬, 둥근 모서리, 하단 캡션)도 읽기 화면과 같은 DOM 구조로 렌더링한다         |
 | 코드 강조·체크 항목·날짜 줄            | 강조 라이브러리와 체크 표시 모양이 달랐고, 저장 상태 표시가 날짜·폴더 줄을 가운데에서 밀어냈다                                                                                                                                 | 코드 강조는 읽기 화면과 같은 lowlight 사용, 체크 항목은 두 화면 모두 원 모양, 저장 상태는 오른쪽 끝으로 이동                          |
 
-수정 후 글 네 편에서 모든 문단의 위치와 높이가 두 화면에서 같다.
+둘째 행의 명시도(specificity)는 같은 요소에 여러 CSS 규칙이 걸릴 때 어느 규칙을 적용할지 정하는 점수다. 선택자 안의 ID, 클래스, 태그 수를 세 자리 숫자처럼 (ID-클래스-태그)로 비교하고, 왼쪽 자리부터 큰 쪽이 이긴다. `:where()`는 괄호 안 선택자의 명시도를 0으로 만드는 가상 클래스라, 대상을 좁히면서 점수는 올리지 않을 때 쓴다.
 
-필수 항목(제목·날짜·폴더·본문)은 세 단계에서 검사한다. 화면에서 먼저 막고, API가 같은 규칙으로 400을 반환하고, DB의 CHECK 제약이 두 단계를 거치지 않은 쓰기까지 막는다.
+![.memo-markdown h2는 0-1-1, .memo-markdown .ProseMirror > * + *는 0-2-0으로 머리말 간격을 덮어쓰고, :where로 감싼 규칙은 0-1-0이라 머리말 간격이 유지된다](./images/post-editor-specificity.svg '같은 h2에 걸린 세 선택자. 가운데 자리(클래스 수)가 승패를 가른다')
+
+수정 후 글 네 편에서 ==모든 문단의 위치와 높이가 두 화면에서 같다==.
+
+필수 항목(제목·날짜·폴더·본문)은 세 단계에서 검사한다. 화면에서 먼저 막고, API가 같은 규칙으로 400을 반환하고, DB의 CHECK 제약이 두 단계를 거치지 않은 쓰기까지 막는다. CHECK 제약은 열 값이 조건을 만족하지 않으면 DB가 쓰기 자체를 거절하는 규칙이다. 예를 들어 운영 중에 SQL로 직접 제목을 빈 문자열로 바꾸려 해도 DB가 거절한다.
 
 ## 로그인 상태 표시
 
@@ -192,7 +241,7 @@ for (const item of server) {
 
 ## 시험
 
-[PR #44](https://github.com/hyeoniverse/MacFolio/pull/44)는 이 글의 기능 외에 댓글·폴더 정리 등을 함께 포함한 큰 PR이다. 이 글과 관련된 커밋은 다음과 같다. 서버의 `Post` 테이블과 API는 하루 전 [PR #37](https://github.com/hyeoniverse/MacFolio/pull/37)의 NestJS·Prisma 기본 구조 위에 추가했다.
+[PR #44](https://github.com/hyeoniverse/MacFolio/pull/44)는 글쓰기 외에 댓글·폴더 정리 등을 함께 포함한 큰 PR이다. 글쓰기와 관련된 커밋은 다음과 같다. 서버의 `Post` 테이블과 API는 하루 전 [PR #37](https://github.com/hyeoniverse/MacFolio/pull/37)의 NestJS·Prisma 기본 구조 위에 추가했다.
 
 | 커밋        | 내용                              |
 | ----------- | --------------------------------- |
@@ -209,7 +258,7 @@ for (const item of server) {
 
 </details>
 
-편집 화면과 읽기 화면은 글 네 편에서 문단마다 위치와 높이를 측정해 같은지 확인했다(위 "편집 화면과 읽기 화면 일치").
+편집 화면과 읽기 화면은 글 네 편에서 문단마다 위치와 높이를 측정해 같은지 확인했다(위 [편집 화면과 읽기 화면 일치](#편집-화면과-읽기-화면-일치)).
 
 ## 남은 것·배운 것
 
@@ -227,8 +276,6 @@ cd apps/react && npx playwright test e2e/memo-editor.spec.ts e2e/memo-publish.sp
 
 로컬에서 관리자로 사용하려면 `apps/api/.env`에 GitHub OAuth App 값을 입력하고 메뉴 막대에서 로그인한다(생성 방법은 [docs/deployment.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/deployment.md)의 'GitHub OAuth App'). 서버에 저장한 글은 같은 slug의 Markdown 파일 대신 표시되고, 서버 글을 삭제하면 파일 글이 다시 표시된다. 서버 설계는 [docs/backend-design.md](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md).
 
-참고 문서: [GitHub OAuth App 만들기](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app), [NestJS 파일 업로드](https://docs.nestjs.com/techniques/file-upload), [Milkdown](https://milkdown.dev), [ProseMirror 가이드](https://prosemirror.net/docs/guide/).
-
 ## 관련 글
 
 - [게시본과 임시본을 한 행에 담고 CHECK 제약으로 지키는 Post 테이블](/memo/drafts-and-versions)
@@ -240,5 +287,22 @@ cd apps/react && npx playwright test e2e/memo-editor.spec.ts e2e/memo-publish.sp
 [^milkdown]: [ProseMirror](https://prosemirror.net/) 위에 만든 WYSIWYG Markdown 편집기. 문서를 ProseMirror 노드 트리로 편집하고, remark로 Markdown과 상호 변환한다.
 
 [^magic]: 파일 형식마다 파일 앞부분에 고정된 바이트 열이 있다. PNG는 `89 50 4E 47 0D 0A 1A 0A`, JPEG는 `FF D8 FF`, GIF는 `47 49 46 38`(`GIF8`), WebP는 `RIFF` 뒤 8번째 바이트부터 `WEBP`다([파일 시그니처 목록](https://en.wikipedia.org/wiki/List_of_file_signatures)).
+
+<details>
+<summary>참고 문헌</summary>
+
+- [GitHub OAuth App 만들기](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app)
+- [NestJS 파일 업로드](https://docs.nestjs.com/techniques/file-upload)
+- [Milkdown](https://milkdown.dev), [ProseMirror 가이드](https://prosemirror.net/docs/guide/)
+- React, [lazy](https://react.dev/reference/react/lazy), [Removing Effect Dependencies](https://react.dev/learn/removing-effect-dependencies)
+- GitHub, [GitHub Flavored Markdown Spec: Tables](https://github.github.com/gfm/#tables-extension-)
+- MDN, [Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Specificity), [:where()](https://developer.mozilla.org/en-US/docs/Web/CSS/:where)
+- MDN, [Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Disposition), [X-Content-Type-Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options), [Content-Security-Policy: sandbox](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy/sandbox), [Cross-Origin-Resource-Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cross-Origin-Resource-Policy)
+- MDN, [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/MIME_types)
+- IETF, [RFC 5987: Character Set and Language Encoding for HTTP Header Field Parameters](https://www.rfc-editor.org/rfc/rfc5987)
+- PostgreSQL, [Binary Data Types (bytea)](https://www.postgresql.org/docs/current/datatype-binary.html)
+- Unsplash, [API Guidelines](https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines); Pexels, [API Documentation](https://www.pexels.com/api/documentation/)
+
+</details>
 
 #MacFolio #백엔드 #메모앱 #편집기

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>API 문서를 가져오는 두 방식</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="360" fill="#ffffff"/>
+<text x="20" y="32" font-size="15" font-weight="700" fill="#1d1d1f">① iframe 방식: 문서를 API 서버에서 받아 온다</text>
+<rect x="20" y="48" width="170" height="92" rx="10" fill="#f2f2f7"/>
+<text x="105" y="74" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">사이트 (Cloudflare)</text>
+<rect x="38" y="86" width="134" height="40" rx="6" fill="#ffffff" stroke="#6e6e73"/>
+<text x="105" y="111" font-size="12" fill="#1d1d1f" text-anchor="middle">API 문서 창 = iframe</text>
+<line x1="190" y1="106" x2="400" y2="106" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="295" y="98" font-size="12" fill="#6e6e73" text-anchor="middle">GET /docs (Swagger UI)</text>
+<text x="295" y="126" font-size="12" fill="#6e6e73" text-anchor="middle">X-Frame-Options 예외 필요</text>
+<rect x="404" y="48" width="216" height="92" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="512" y="80" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">API 서버 (VM)</text>
+<text x="512" y="104" font-size="12" fill="#ff3b30" text-anchor="middle">서버가 중단되면</text>
+<text x="512" y="122" font-size="12" fill="#ff3b30" text-anchor="middle">iframe이 빈 창이 된다</text>
+<line x1="20" y1="170" x2="620" y2="170" stroke="#e5e5ea"/>
+<text x="20" y="200" font-size="15" font-weight="700" fill="#1d1d1f">② 사이트 포함 방식: 빌드할 때 문서를 사이트에 넣는다</text>
+<rect x="20" y="216" width="150" height="72" rx="10" fill="#f2f2f7"/>
+<text x="95" y="244" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">API 코드</text>
+<text x="95" y="264" font-size="12" fill="#6e6e73" text-anchor="middle">컨트롤러·DTO</text>
+<line x1="170" y1="252" x2="236" y2="252" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="203" y="244" font-size="12" fill="#0a84ff" text-anchor="middle">생성</text>
+<rect x="240" y="216" width="150" height="72" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="315" y="244" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">openapi.json</text>
+<text x="315" y="264" font-size="12" fill="#6e6e73" text-anchor="middle">저장소에 커밋</text>
+<line x1="390" y1="252" x2="456" y2="252" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="423" y="244" font-size="12" fill="#0a84ff" text-anchor="middle">번들</text>
+<rect x="460" y="216" width="160" height="72" rx="10" fill="#f2f2f7"/>
+<text x="540" y="244" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">사이트의 API 문서 앱</text>
+<text x="540" y="264" font-size="12" fill="#34c759" text-anchor="middle">Scalar로 렌더링, 서버 불필요</text>
+<rect x="240" y="304" width="150" height="40" rx="8" fill="#fff4e5" stroke="#ff9f0a"/>
+<text x="315" y="322" font-size="12" fill="#1d1d1f" text-anchor="middle">단위 시험이 코드와 비교</text>
+<text x="315" y="337" font-size="12" fill="#6e6e73" text-anchor="middle">다르면 CI 실패</text>
+</svg>

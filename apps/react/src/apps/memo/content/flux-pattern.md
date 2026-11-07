@@ -5,6 +5,8 @@ category: 인사이트/프론트엔드
 summary: 상태 관리 라이브러리는 Flux에서 Redux, Zustand로 바뀌었지만 좋은 상태 관리 코드의 조건은 같다. 변경 경로가 정해져 있고, 상태를 원본이 있는 곳에 두고, 필요한 값만 구독한다. 조건마다 지키는 코드와 어기는 코드를 비교하고, 2026년 수치로 현재의 선택을 분석했다.
 ---
 
+웹 화면의 상태(state)는 화면이 기억하고 있는 값이다. 쇼핑몰 화면이라면 장바구니에 담긴 상품 3개, 로그인한 사용자 이름, 켜 둔 다크 모드, 검색 칸에 입력 중인 글자가 모두 상태다. React에서 컴포넌트는 화면의 한 부분을 그리는 함수이고, 상태가 바뀌면 React가 그 함수를 다시 실행해(다시 렌더링) 화면을 갱신한다. 장바구니 개수처럼 헤더의 배지, 장바구니 페이지, 결제 버튼이 함께 쓰는 상태가 생기면 "누가 이 값을 바꾸고, 누가 바뀐 값을 받아 가는가"를 정하는 규칙이 필요하다. 이 규칙과 그것을 구현한 도구를 상태 관리(state management)라 한다.
+
 상태 관리 라이브러리는 자주 바뀌었다. 2014년의 Flux, 2015년의 Redux, 2019년의 Zustand, 2022년 React 18의 `useSyncExternalStore`가 차례로 등장했고, 2026년에는 zustand의 npm 다운로드가 redux를 추월했다. 라이브러리 목록만 보면 매번 새 방식을 배워야 하는 것처럼 보인다.
 
 그러나 각 라이브러리의 공식 문서를 비교하면 좋은 상태 관리 코드가 지켜야 하는 조건은 Flux 때부터 크게 바뀌지 않았다.
@@ -13,7 +15,7 @@ summary: 상태 관리 라이브러리는 Flux에서 Redux, Zustand로 바뀌었
 2. **상태를 원본이 있는 곳에 둔다.** 서버 데이터는 서버 데이터를 관리하는 도구에, 한 화면의 상태는 그 화면에 둔다.
 3. **컴포넌트는 필요한 값만 구독한다.** 상태 하나가 바뀌었을 때 관련 없는 화면은 다시 렌더링되지 않는다.
 
-라이브러리가 바뀐 이유는 대부분 이 조건을 더 적은 코드로 지키기 위해서였다. 이 글은 각 조건이 어떤 문제에서 나왔는지, 조건을 지키는 코드와 어기는 코드가 어떻게 다른지, 2026년의 수치가 어떤 선택을 보여 주는지 차례로 설명한다.
+라이브러리가 바뀐 이유는 대부분 이 조건을 더 적은 코드로 지키기 위해서였다. 아래에서는 조건마다 그 조건이 나온 문제, 조건을 지키는 코드와 어기는 코드, 2026년의 다운로드·설문 수치를 차례로 비교한다.
 
 ![Flux에서 useSyncExternalStore까지](./images/flux-pattern-evolution.svg 'Flux(2014년 5월 React 블로그), Redux 1.0.0(2015년 8월), Zustand 1.0.0(2019년 6월), React 18(2022년 3월)에서 각각 제거·변경·추가된 요소. 네 단계 모두 View가 상태를 직접 변경하지 않는다')
 
@@ -79,7 +81,7 @@ AppDispatcher.register((action) => {
 TodoStore.on('change', () => render(TodoStore.getAll()));
 ```
 
-View는 `todos` 배열에 직접 접근하지 않는다. 할 일 목록이 잘못 표시되면 `'todo/create'`를 처리하는 Store 콜백만 확인하면 되고, Dispatcher를 통과한 Action을 기록하면 어떤 상태가 어떤 순서로 바뀌었는지 재현할 수 있다. 상태를 바꾸는 경로가 정해져 있다는 조건이 주는 이점은 이 추적 가능성이다.
+View는 `todos` 배열에 직접 접근하지 않는다. 할 일 목록이 잘못 표시되면 `'todo/create'`를 처리하는 Store 콜백만 확인하면 되고, Dispatcher를 통과한 Action을 기록하면 어떤 상태가 어떤 순서로 바뀌었는지 재현할 수 있다. ==상태를 바꾸는 경로가 정해져 있다는 조건이 주는 이점은 이 추적 가능성이다.==
 
 Flux에도 비용이 있었다. Store가 여러 개이면 한 Store가 다른 Store의 갱신 결과에 의존한다. [Dispatcher 문서](https://facebookarchive.github.io/flux/docs/dispatcher)의 예에서는 나라를 바꾸면 도시 Store가 기본 도시를 선택하고, 가격 Store가 그 도시의 항공권 가격을 계산한다. 가격 Store가 도시 Store보다 먼저 실행되면 이전 도시의 가격이 남는다. Flux는 `waitFor()`로 Store 콜백의 실행 순서를 개발자가 직접 지정하게 했고, In-Depth Overview는 이 메서드가 "크고 복잡한 애플리케이션에서 필수"(becomes vital in a larger, more complex application)라고 설명한다.
 
@@ -136,7 +138,10 @@ function todosReducer(state = [], action) {
 store.dispatch({ type: 'todo/add', text: '장보기' });
 ```
 
-`state.push(...)`로 기존 배열을 직접 수정하고 같은 배열을 반환하면, Redux와 react-redux는 이전 상태와 다음 상태가 같은 객체라고 판단해 화면을 갱신하지 않는다. 불변 상태는 문법 규칙이 아니라 "무엇이 바뀌었는가"를 참조 비교 한 번으로 판단하기 위한 조건이다. 이 덕분에 Action마다 이전 상태와 다음 상태를 보존할 수 있고, Redux DevTools는 이 기록으로 time travel 디버깅을 제공한다.
+> [!WARNING] 기존 배열을 직접 수정한 reducer
+> `state.push(...)`로 기존 배열을 직접 수정하고 같은 배열을 반환하면, Redux와 react-redux는 이전 상태와 다음 상태가 같은 객체라고 판단해 화면을 갱신하지 않는다.
+
+==불변 상태는 문법 규칙이 아니라 "무엇이 바뀌었는가"를 참조 비교 한 번으로 판단하기 위한 조건==이다. 이 덕분에 Action마다 이전 상태와 다음 상태를 보존할 수 있고, Redux DevTools는 이 기록으로 time travel 디버깅을 제공한다.
 
 ![Redux DevTools 확장](./images/flux-pattern-redux-devtools.jpg 'Redux DevTools 확장의 공식 데모 화면(TodoMVC 예제). 가운데 Inspector는 @@INIT, ADD_TODO, COMPLETE_TODO 순으로 dispatch된 Action 목록과 선택한 Action의 내용을 보여 주고, 오른쪽 Diff 탭은 그 Action으로 completed가 false에서 true로 바뀐 것을 보여 준다. 아래 슬라이더를 움직이면 기록된 Action의 순서대로 앞뒤 상태로 이동한다. reduxjs/redux-devtools 저장소의 extension README에서 2026년 10월 30일 캡처')
 
@@ -164,7 +169,7 @@ const addTodo = useTodoStore((state) => state.addTodo);
 addTodo('장보기');
 ```
 
-같은 Zustand를 쓰더라도 조건 1을 어길 수 있다. store action 없이 컴포넌트마다 `useTodoStore.setState({ todos: [...] })`를 직접 호출하면, 할 일 목록을 바꾸는 코드가 컴포넌트 곳곳으로 흩어진다. 라이브러리는 조건을 지키기 쉽게 만들 뿐이고, 조건을 지키는 것은 코드를 작성하는 방식이다.
+같은 Zustand를 쓰더라도 조건 1을 어길 수 있다. store action 없이 컴포넌트마다 `useTodoStore.setState({ todos: [...] })`를 직접 호출하면, 할 일 목록을 바꾸는 코드가 컴포넌트 곳곳으로 흩어진다. ==라이브러리는 조건을 지키기 쉽게 만들 뿐이고, 조건을 지키는 것은 코드를 작성하는 방식이다.==
 
 2026년 npm 다운로드는 업계가 이 비용과 이점 사이에서 어떤 선택을 했는지 보여 준다. npm registry API로 최근 3년의 분기별 다운로드를 집계했다[^npm].
 
@@ -176,7 +181,10 @@ addTodo('장보기');
 | TanStack Query ÷ redux |         0.26 |         1.54 |
 | Redux Toolkit ÷ redux  |         0.33 |         0.66 |
 
-2026년에는 다섯 패키지의 다운로드가 모두 3~5배 증가했다. 개별 라이브러리의 사용 증가보다 CI·자동화 도구로 인한 npm 전체 설치량 증가의 영향이 크므로, 절대값 대신 redux 대비 배수를 비교했다. zustand는 2023년 4분기에 redux의 0.28배였고, 2026년 2분기에 처음 redux보다 많이 다운로드되었다(4.70억 회 대 4.24억 회). 같은 기간 Redux 안에서도 Redux Toolkit의 비중이 0.33배에서 0.66배로 늘었다. Redux Toolkit은 Action 타입과 reducer를 한 번에 정의하는 `createSlice`로 Redux의 작성량을 줄인 공식 도구다. 두 수치 모두 조건 1은 유지하면서 그에 드는 코드를 줄이는 쪽으로 이동했다는 근거다. 다운로드 수에는 의존성 설치와 CI 재설치가 포함되므로, 사용자 수가 아니라 증감 방향을 보는 지표로만 사용했다.
+2026년에는 다섯 패키지의 다운로드가 모두 3~5배 증가했다. 개별 라이브러리의 사용 증가보다 CI·자동화 도구로 인한 npm 전체 설치량 증가의 영향이 크므로, 절대값 대신 redux 대비 배수를 비교했다. zustand는 2023년 4분기에 redux의 0.28배였고, 2026년 2분기에 처음 redux보다 많이 다운로드되었다(4.70억 회 대 4.24억 회). 같은 기간 Redux 안에서도 Redux Toolkit의 비중이 0.33배에서 0.66배로 늘었다. Redux Toolkit은 Action 타입과 reducer를 한 번에 정의하는 `createSlice`로 Redux의 작성량을 줄인 공식 도구다. 두 수치 모두 조건 1은 유지하면서 그에 드는 코드를 줄이는 쪽으로 이동했다는 근거다.
+
+> [!NOTE] 다운로드 수의 해석
+> 다운로드 수에는 의존성 설치와 CI 재설치가 포함되므로, 사용자 수가 아니라 증감 방향을 보는 지표로만 사용했다.
 
 ## 조건 2. 상태를 원본이 있는 곳에 둔다
 
@@ -228,7 +236,11 @@ queryClient.invalidateQueries({ queryKey: ['posts'] });
 - Zustand는 사용률이 빠르게 증가했고 만족도가 가장 높았다.
 - 이번 설문은 예년보다 늦게 진행되어 응답 수가 적었다. 비율은 이 표본 안에서만 유효하다.
 
-조건 2를 지키면 "어떤 상태 관리 라이브러리를 쓸까"라는 질문의 상당 부분이 사라진다. 상태마다 원본이 어디인지 먼저 정하면 둘 곳이 정해진다. 블로그 앱을 예로 들면 다음과 같다.
+조건 2를 지키면 "어떤 상태 관리 라이브러리를 쓸까"라는 질문의 상당 부분이 사라진다. ==상태마다 원본이 어디인지 먼저 정하면 둘 곳이 정해진다.== 아래 순서도는 원본을 묻는 질문을 위에서부터 차례로 적용한다. 다섯 번째 칸까지 내려온 상태만 Zustand나 Redux 같은 외부 store의 대상이 된다.
+
+![상태의 원본에 따라 서버 상태 라이브러리, useSyncExternalStore, useState, useReducer와 Context, 외부 store 중 하나로 정하는 순서도](./images/flux-pattern-state-placement.svg '질문 ①~④에서 "예"가 나오면 그 칸의 도구에 둔다. 오른쪽 칸의 예는 아래 표의 블로그 앱 예와 같다')
+
+블로그 앱을 예로 들면 다음과 같다.
 
 | 상태의 원본             | 두는 곳                 | 예                                      |
 | ----------------------- | ----------------------- | --------------------------------------- |
@@ -257,6 +269,10 @@ const { user } = useShopStore();
 // 조건을 지키는 코드: selector로 사용하는 값만 구독한다. 장바구니가 바뀌어도 헤더는 그대로다
 const userName = useShopStore((state) => state.user.name);
 ```
+
+![store 전체를 구독하면 장바구니 변경에 Header, CartBadge, Theme이 모두 다시 렌더링되고, selector로 cart.length만 구독하면 CartBadge만 다시 렌더링되는 비교](./images/flux-pattern-subscription-scope.svg '같은 store, 같은 변경(장바구니에 상품 추가)에서 구독 방식만 다르다')
+
+위 그림의 왼쪽은 세 컴포넌트가 모두 `useShopStore()`로 store 전체를 받는다. 장바구니 배열이 바뀌면 store 객체가 새로 만들어지므로, 사용자 이름만 쓰는 `Header`와 테마만 쓰는 `Theme`도 다시 렌더링된다. 오른쪽은 각 컴포넌트가 selector로 자기 값만 받는다. Zustand는 selector가 반환한 값을 이전 값과 `Object.is`로 비교하므로, 값이 그대로인 `Header`와 `Theme`은 렌더링을 건너뛴다.
 
 React Context도 같은 문제를 갖는다. Context 값이 바뀌면 그 Context를 사용하는 모든 컴포넌트가 다시 렌더링되므로, 자주 바뀌는 값과 거의 바뀌지 않는 값을 하나의 Context에 넣으면 거의 바뀌지 않는 값만 쓰는 컴포넌트도 매번 다시 렌더링된다.
 
@@ -325,7 +341,8 @@ const isOnline = useSyncExternalStore(subscribe, () => navigator.onLine);
 const snapshot = useSyncExternalStore(store.subscribe, () => ({ todos: store.todos }));
 ```
 
-두 번째 코드는 React가 렌더링을 반복하다 오류를 발생시킨다. `() => store.todos`처럼 store가 보관한 값을 그대로 반환해야 한다. "필요한 값만, 바뀌었을 때만 새 값으로" 반환하는 것이 구독 코드의 기본 규칙이다.
+> [!WARNING] 매번 새 객체를 반환하는 getSnapshot
+> 두 번째 코드는 React가 렌더링을 반복하다 오류를 발생시킨다. `() => store.todos`처럼 store가 보관한 값을 그대로 반환해야 한다. "필요한 값만, 바뀌었을 때만 새 값으로" 반환하는 것이 구독 코드의 기본 규칙이다.
 
 ## 마치며: 상태 관리 코드를 검토할 때 확인할 질문
 
@@ -340,10 +357,36 @@ Flux가 2014년에 제시한 핵심은 라이브러리보다 규칙이었다. 12
 
 2026년의 수치는 이 기준의 방향과 일치한다. 서버 상태 라이브러리(TanStack Query, redux 대비 1.54배)와 store action 방식(zustand, 1.24배)의 다운로드가 늘었고, 설문 응답자의 33.8%는 상태 관리 라이브러리 없이 개발한다. 앞으로 TC39 Signals 제안이 Stage 2 이상으로 진행되면 조건 3을 언어 수준에서 지원하게 되고, 컴포넌트 단위로 다시 렌더링하는 React의 방식도 다시 논의될 수 있다. 어느 경우에도 좋은 상태 관리 코드를 판단하는 기준은 세 가지 조건으로 유지될 것이다.
 
-## 관련 글
+<details>
+<summary>참고 문헌</summary>
 
-- [createStore와 useSyncExternalStore 기반 store에서 Flux·Redux를 따른 것과 뺀 것](/memo/macfolio-store-design): 세 가지 조건을 MacFolio의 창 관리 store에 적용한 개발기
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows): `createStore`와 `useSyncExternalStore`를 고른 과정
+- Bill Fisher, Jing Chen, [Flux: An Application Architecture for React](https://legacy.reactjs.org/blog/2014/05/06/flux.html), React Blog, 2014
+- Facebook, [Flux In-Depth Overview](https://facebookarchive.github.io/flux/docs/in-depth-overview), [Dispatcher](https://facebookarchive.github.io/flux/docs/dispatcher)
+- Redux, [Prior Art](https://redux.js.org/understanding/history-and-design/prior-art), [FAQ: When should I use Redux?](https://redux.js.org/faq/general#when-should-i-use-redux), [Redux Fundamentals Part 2: Concepts and Data Flow](https://redux.js.org/tutorials/fundamentals/part-2-concepts-data-flow)
+- Zustand, [README](https://github.com/pmndrs/zustand), [Flux inspired practice](https://zustand.docs.pmnd.rs/guides/flux-inspired-practice)
+- TanStack Query, [Overview](https://tanstack.com/query/latest/docs/framework/react/overview)
+- React, [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore), [Scaling Up with Reducer and Context](https://react.dev/learn/scaling-up-with-reducer-and-context)
+- TC39, [Signals proposal](https://github.com/tc39/proposal-signals)
+- Devographics, [State of React 2025: State Management](https://2025.stateofreact.com/en-US/libraries/state-management/)
+- npm, [registry download counts API](https://github.com/npm/registry/blob/main/docs/download-counts.md)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- 2014년 Flux 발표 글: React Blog, [Flux: An Application Architecture for React](https://legacy.reactjs.org/blog/2014/05/06/flux.html), 출처 표기
+- Flux 공식 구조도, 보관된 저장소 화면: GitHub facebookarchive, [facebookarchive/flux](https://github.com/facebookarchive/flux), 출처 표기
+- Redux DevTools 데모 화면: reduxjs, [redux-devtools extension README](https://github.com/reduxjs/redux-devtools/tree/main/extension), 출처 표기
+- Redux 데이터 흐름 그림: Redux 문서, [Redux Fundamentals Part 2](https://redux.js.org/tutorials/fundamentals/part-2-concepts-data-flow), 출처 표기
+- Zustand README: pmndrs, [pmndrs/zustand](https://github.com/pmndrs/zustand), 출처 표기
+- State of React 2025 그래프: Devographics, [State of React 2025: State Management](https://2025.stateofreact.com/en-US/libraries/state-management/), 출처 표기
+- Jotai 홈페이지: pmndrs, [jotai.org](https://jotai.org), 출처 표기
+- TC39 Signals 제안 README: TC39, [tc39/proposal-signals](https://github.com/tc39/proposal-signals), 출처 표기
+- useSyncExternalStore 문서: React, [useSyncExternalStore](https://react.dev/reference/react/useSyncExternalStore), 출처 표기
+- F8 2014 세션 영상: Facebook Developers, [Hacker Way: Rethinking Web App Development at Facebook](https://www.youtube.com/watch?v=nYkdrAPrdcw), 2014년 공개
+
+</details>
 
 [^npm]: [npm registry downloads API](https://github.com/npm/registry/blob/main/docs/download-counts.md). `https://api.npmjs.org/downloads/range/<기간>/<패키지>`로 일별 다운로드를 받아 분기별로 합산했다(2026년 10월 29일 조회).
 

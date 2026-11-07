@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>HTML에서 접근성 트리를 거쳐 스크린 리더가 읽는 문장까지</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+  </defs>
+  <rect width="640" height="420" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">같은 휴지통 버튼, 이름 유무에 따라 다르게 읽힌다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">브라우저는 DOM에서 접근성 트리를 만들고, 스크린 리더는 트리의 역할·이름·상태만 읽는다</text>
+
+  <text x="110" y="92" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">HTML</text>
+  <text x="352" y="92" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">접근성 트리 노드</text>
+  <text x="540" y="92" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">스크린 리더</text>
+
+  <!-- row 1 -->
+  <rect x="24" y="108" width="196" height="120" rx="10" fill="#f2f2f7"/>
+  <text x="36" y="132" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;button&gt;</text>
+  <text x="48" y="152" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;i class="fa-</text>
+  <text x="48" y="170" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">  trash-can"</text>
+  <text x="48" y="188" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">  aria-hidden&gt;</text>
+  <text x="36" y="208" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;/button&gt;</text>
+  <line x1="222" y1="168" x2="262" y2="168" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="266" y="128" width="172" height="80" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="280" y="154" font-size="12" fill="#1d1d1f">역할: button</text>
+  <text x="280" y="176" font-size="12" fill="#ff3b30">이름: (없음)</text>
+  <text x="280" y="198" font-size="12" fill="#6e6e73">아이콘은 aria-hidden이라 제외</text>
+  <line x1="440" y1="168" x2="472" y2="168" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="476" y="146" width="140" height="44" rx="22" fill="#ffffff" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="546" y="173" font-size="13" fill="#ff3b30" text-anchor="middle">"버튼"</text>
+
+  <!-- row 2 -->
+  <rect x="24" y="248" width="196" height="136" rx="10" fill="#f2f2f7"/>
+  <text x="36" y="272" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;button</text>
+  <text x="48" y="290" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">aria-label=</text>
+  <text x="48" y="308" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">  "메모 삭제"&gt;</text>
+  <text x="48" y="328" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;i … aria-hidden&gt;</text>
+  <text x="36" y="364" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">&lt;/button&gt;</text>
+  <line x1="222" y1="316" x2="262" y2="316" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="266" y="276" width="172" height="80" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="280" y="302" font-size="12" fill="#1d1d1f">역할: button</text>
+  <text x="280" y="324" font-size="12" fill="#0a84ff">이름: 메모 삭제</text>
+  <text x="280" y="346" font-size="12" fill="#6e6e73">aria-label에서 계산</text>
+  <line x1="440" y1="316" x2="472" y2="316" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+  <rect x="476" y="294" width="140" height="44" rx="22" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+  <text x="546" y="321" font-size="13" fill="#0a84ff" text-anchor="middle">"메모 삭제, 버튼"</text>
+
+  <text x="24" y="408" font-size="12" fill="#6e6e73">화면에는 두 버튼이 똑같이 휴지통 아이콘으로 보인다. 차이는 접근성 트리에만 있다</text>
+</svg>

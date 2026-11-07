@@ -3,15 +3,17 @@ title: package.json exports 조건으로 Vite에는 소스, Node에는 빌드한
 date: 2026-10-09
 category: 개발 기록/MacFolio/구조·상태 관리
 series: desktop-core
-seriesOrder: 4
+seriesOrder: 2
 summary: 폴더 3단·이름 30자·제목 100자 같은 규칙이 화면 코드와 서버 코드에 각각 정의되어 있었다. desktop-core 한 곳으로 옮겨 둘이 함께 사용하게 했다. 화면(Vite)은 TypeScript 소스를, 서버(Node)는 빌드한 JS를 읽도록 package.json exports 조건으로 분리했다.
 ---
 
-desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-windows), [메모](/memo/desktop-core-memo), [음악](/memo/desktop-core-music)을 옮긴 뒤 [이슈 #16](https://github.com/hyeoniverse/MacFolio/issues/16)에 항목 하나가 남았다. "백엔드와 함께 쓸 타입의 위치를 정한다."
+MacFolio 저장소는 화면(`apps/react`), 서버(`apps/api`), 공유 패키지(`packages/*`)를 한 저장소에 모은 **모노레포**다. pnpm의 워크스페이스 기능으로 각 폴더를 독립된 패키지로 관리하고, 한 패키지가 다른 패키지를 `@macfolio/desktop-core` 같은 이름으로 import한다[^workspace]. 이때 "그 이름이 어떤 파일을 가리키는가"는 패키지의 `package.json`에 적힌 `exports` 필드가 정한다.
+
+desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore), [메모](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리), [음악](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store)을 옮긴 뒤 [이슈 #16](https://github.com/hyeoniverse/MacFolio/issues/16)에 항목 하나가 남았다. "백엔드와 함께 쓸 타입의 위치를 정한다." 이 항목을 처리하면서 같은 패키지를 화면은 TypeScript 소스로, 서버는 빌드한 JavaScript로 읽게 만들었다.
 
 ## 두 곳에 정의된 규칙
 
-메모 앱의 규칙 중 일부는 화면과 서버가 모두 검사한다. 화면은 저장 전에 칸별 오류를 표시하기 위해, 서버는 화면을 거치지 않은 요청도 거절하기 위해 검사한다. 문제는 그 규칙이 두 곳에 각각 정의되어 있었다는 점이다.
+메모 앱의 규칙 중 일부는 화면과 서버가 모두 검사한다. 화면은 저장 전에 칸별 오류를 표시하기 위해, 서버는 화면을 거치지 않은 요청도 거절하기 위해 검사한다. 예를 들어 관리자가 글을 4단 폴더로 옮기려 하면 화면은 저장 버튼 옆에 오류를 표시하고, `curl`로 같은 요청을 직접 보내도 서버가 400으로 거절해야 한다. 문제는 그 규칙이 두 곳에 각각 정의되어 있었다는 점이다.
 
 | 규칙                            | 화면 (desktop-core)                          | 서버 (apps/api)                                  |
 | ------------------------------- | -------------------------------------------- | ------------------------------------------------ |
@@ -20,7 +22,9 @@ desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-windows), [메모
 | 글 길이                         | `{ title: 100, summary: 200, body: 50_000 }` | `{ title: { min: 1, max: 100 }, ... }`           |
 | 실제 날짜인지 (2026-02-30 거절) | `postRules.ts`의 `isDate`                    | `posts/rules.ts`의 `isDate` (코드가 완전히 동일) |
 
-주석에는 "서버와 같은 규칙"이라고 적혀 있었지만, 두 값이 같은지 검사하는 코드나 시험은 없었다. 폴더를 4단까지 허용하려면 두 파일을 함께 수정해야 하고, 한쪽만 수정하면 화면은 통과시키고 서버는 거절하는 상태가 된다.
+주석에는 "서버와 같은 규칙"이라고 적혀 있었지만, ==두 값이 같은지 검사하는 코드나 시험은 없었다.== 폴더를 4단까지 허용하려면 두 파일을 함께 수정해야 하고, 한쪽만 수정하면 화면은 통과시키고 서버는 거절하는 상태가 된다.
+
+![화면 쪽 상수만 4로 바꾸면 화면은 a/b/c/d를 통과시키고 서버는 400으로 거절한다. 한 파일로 모으면 양쪽이 같은 값을 읽는다](./images/desktop-core-shared-rules-drift.svg '위: 복사본 하나만 고친 가정의 요청과 응답. 아래: rules.ts 한 파일을 화면과 서버가 함께 import하는 구조')
 
 ## 공유 방법 비교
 
@@ -31,7 +35,7 @@ desktop-core[^desktop-core]로 [창 관리](/memo/desktop-core-windows), [메모
 | 서버를 번들러로 번들링해 core를 포함               | 서버 이미지에 core가 별도로 없다       | NestJS·Prisma 번들링 설정이 복잡하다. 데코레이터 메타데이터가 유실될 수 있다     |
 | **core가 `dist`를 빌드하고 exports 조건으로 분리** | 화면은 소스, 서버는 JS. 표준 Node 방식 | 빌드 순서(core 먼저)를 여러 설정에 명시해야 한다                                 |
 
-네 번째 방법을 선택했다. 화면 개발 환경(소스 수정이 즉시 반영되는 HMR)은 유지하고, 서버만 빌드 결과를 읽게 하는 방법이다.
+네 번째 방법을 선택했다. 화면 개발 환경(소스 수정이 브라우저에 즉시 반영되는 HMR[^hmr])은 유지하고, 서버만 빌드 결과를 읽게 하는 방법이다.
 
 ## 규칙을 한 파일로
 
@@ -45,7 +49,7 @@ import { folderPathError, isCalendarDate, POST_LIMITS, POST_SLUG } from '@macfol
 
 ## Vite는 소스를, Node는 JS를
 
-이 단계에서 핵심 문제가 드러났다. 기존 desktop-core는 빌드 단계가 없는 패키지였다. `package.json`의 진입점이 TypeScript 파일을 직접 가리켰다.
+이 단계에서 핵심 문제가 드러났다. ==기존 desktop-core는 빌드 단계가 없는 패키지==였다. `package.json`의 진입점이 TypeScript 파일을 직접 가리켰다.
 
 ```json
 "exports": { ".": "./src/index.ts" }
@@ -53,7 +57,7 @@ import { folderPathError, isCalendarDate, POST_LIMITS, POST_SLUG } from '@macfol
 
 React 앱은 Vite가 TypeScript를 요청 시점에 변환하므로 문제가 없었다. 서버는 `tsc`로 컴파일한 JS를 `node dist/main.js`로 실행한다. 배포 이미지 안에서 desktop-core는 `node_modules` 아래에 복사되는데, Node는 `node_modules` 안의 `.ts` 파일을 실행하지 않는다.
 
-그래서 desktop-core도 `dist`를 빌드하게 하고, 읽는 쪽에 따라 진입점을 분리했다([Node.js 조건부 exports](https://nodejs.org/api/packages.html#conditional-exports)).
+그래서 desktop-core도 `dist`를 빌드하게 하고, 읽는 쪽에 따라 진입점을 분리했다. Node.js의 **조건부 exports**[^conditional]는 `exports`의 한 항목 안에 "조건 이름 → 파일 경로" 쌍을 여러 개 적어 두고, 읽는 도구가 자기가 켠 조건과 맞는 경로를 고르게 하는 기능이다.
 
 ```json
 "./memo": {
@@ -63,12 +67,17 @@ React 앱은 Vite가 TypeScript를 요청 시점에 변환하므로 문제가 �
 }
 ```
 
-`source`는 표준 조건이 아니라 이 저장소에서 정한 이름이다. React 앱만 이 조건을 활성화한다.
+> [!NOTE] 저장소에서 정한 조건 이름
+> `source`는 표준 조건이 아니라 이 저장소에서 정한 이름이다. React 앱만 이 조건을 활성화한다.
+
+조건을 고르는 규칙은 하나다. ==키를 적힌 순서대로 확인해, 처음으로 맞는 키의 경로를 사용한다.== Node 문서는 "`exports` 객체 안에서 키 순서가 중요하며, 앞쪽 항목이 우선한다"고 설명한다. 그래서 `source`를 맨 앞에 두면 이 조건을 켠 도구만 소스를 읽고, 나머지 도구는 `source`를 모르는 키로 건너뛰어 `types`나 `default`로 내려간다.
 
 | 설정 파일        | 설정                                                                                                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `vite.config.ts` | [`resolve.conditions`](https://vite.dev/config/shared-options.html#resolve-conditions): `['source', ...defaultClientConditions]` (Vitest용으로 `ssr.resolve.conditions`도) |
 | `tsconfig.json`  | [`"customConditions": ["source"]`](https://www.typescriptlang.org/tsconfig/#customConditions)                                                                              |
+
+![Vite와 React 앱의 tsc는 source에서, API의 tsc는 types에서, Node는 default에서 멈춘다](./images/desktop-core-shared-rules-conditions.svg '같은 import 문이 읽는 도구마다 다른 파일로 해석된다. 각 도구가 켠 조건과 키 순서가 결과를 정한다')
 
 서버는 이 조건을 사용하지 않으므로 `types`와 `default`, 즉 빌드 결과를 읽는다. React 쪽은 개발 서버를 실행할 때 core를 별도로 빌드하지 않아도 되고, 소스 수정이 즉시 반영된다. `dist`를 삭제한 상태에서 React의 타입 검사·빌드·시험을 실행해, 실제로 소스만 읽는다는 것도 확인했다.
 
@@ -83,7 +92,7 @@ error TS2835: Relative import paths need explicit file extensions in ECMAScript 
 when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './posts.js'?
 ```
 
-두 곳도 수정해 core 안의 상대 경로는 모두 `.js`로 끝난다. 소스 파일은 `.ts`인데 import 경로는 `.js`로 적는 방식이지만, TypeScript와 Vite 모두 `./posts.js`를 `posts.ts`로 해석한다.
+두 곳도 수정해 core 안의 상대 경로는 모두 `.js`로 끝난다. 소스 파일은 `.ts`인데 import 경로는 `.js`로 적는 방식이지만, TypeScript와 Vite 모두 `./posts.js`를 `posts.ts`로 해석한다. 컴파일 후에는 `posts.ts`가 `posts.js`가 되므로 Node가 읽는 시점에는 경로와 실제 파일이 일치한다.
 
 | import 문             | `moduleResolution: bundler` (이전) | `NodeNext` (이후)       |
 | --------------------- | ---------------------------------- | ----------------------- |
@@ -92,7 +101,9 @@ when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './posts.js'?
 
 ## 빌드 순서와 배포
 
-서버가 core의 `dist`를 읽게 되면서, core가 먼저 빌드되어 있어야 하는 지점이 세 곳 생겼다.
+서버가 core의 `dist`를 읽게 되면서, core가 먼저 빌드되어 있어야 하는 지점이 세 곳 생겼다. Turborepo는 모노레포의 작업(빌드·시험·타입 검사)을 패키지 의존 관계에 따라 순서대로 실행하는 도구다. `dependsOn: ["^build"]`라고 적으면 "이 작업 전에 내가 의존하는 패키지들의 `build`를 먼저 실행한다"는 뜻이 된다.
+
+![Turborepo의 작업 그래프. apps/web의 build가 packages/ui와 packages/utils의 build에 연결되어 있다](./images/desktop-core-shared-rules-turbo-task-graph.jpg 'Turborepo 문서의 작업 그래프 예시. 앱의 build는 의존 패키지의 build가 끝난 뒤 실행된다. MacFolio에서는 apps/api가 apps/web, desktop-core가 packages/ui 자리다')
 
 | 위치               | 변경 내용                                                                                                                    |
 | ------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
@@ -100,7 +111,8 @@ when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './posts.js'?
 | API Dockerfile     | core의 `package.json`을 함께 복사해 설치하고, core를 빌드한 뒤 API를 빌드한다                                                |
 | CI의 API 변경 감지 | `packages/desktop-core`가 바뀌어도 API 이미지를 새로 빌드한다                                                                |
 
-마지막 행은 누락하기 쉬운 항목이다. CI는 서버에서 실행 중인 버전과 비교해 `apps/api`가 바뀌었을 때만 API를 배포한다. 이제 폴더 규칙을 core에서 수정하면 서버 동작도 바뀌는데, 감지 경로에 core가 없으면 화면만 새 규칙으로 배포되고 서버는 이전 규칙으로 남는다. 규칙을 한 곳에 모은 의미가 사라진다.
+> [!WARNING] CI의 변경 감지 경로
+> 마지막 행은 누락하기 쉬운 항목이다. CI는 서버에서 실행 중인 버전과 비교해 `apps/api`가 바뀌었을 때만 API를 배포한다. 이제 폴더 규칙을 core에서 수정하면 서버 동작도 바뀌는데, 감지 경로에 core가 없으면 화면만 새 규칙으로 배포되고 서버는 이전 규칙으로 남는다. 규칙을 한 곳에 모은 의미가 사라진다.
 
 ## 이미지에서 확인
 
@@ -112,7 +124,13 @@ api rules {"errors":["날짜가 올바르지 않습니다.","폴더는 3단까�
 app module ok [ 'AppModule' ]
 ```
 
-서버의 글 검사가 core의 날짜·폴더 규칙으로 거절하고, 서버 전체 모듈(`AppModule`)도 정상적으로 로드됐다. 시험은 core 127개, 화면 290개, 서버 128개(7개는 core로 이동), Playwright 352개가 통과했다.
+| 출력 줄         | 확인한 것                                                                    |
+| --------------- | ---------------------------------------------------------------------------- |
+| `core ok`       | 컨테이너의 Node가 `@macfolio/desktop-core/memo`를 `dist`에서 읽었다          |
+| `api rules`     | 서버의 글 검사가 core의 날짜 규칙과 폴더 규칙(`a/b/c/d`)으로 입력을 거절했다 |
+| `app module ok` | 서버 전체 모듈(`AppModule`)이 정상적으로 로드됐다                            |
+
+시험은 core 127개, 화면 290개, 서버 128개(7개는 core로 이동), Playwright 352개가 통과했다.
 
 ![core를 먼저 빌드하고, 서버는 dist를, 화면은 src를 읽는 순서](./images/desktop-core-shared-rules-build-order.svg 'Turborepo의 ^build가 core를 먼저 만든다. CI는 core가 바뀌어도 API 이미지를 새로 만든다')
 
@@ -120,11 +138,12 @@ app module ok [ 'AppModule' ]
 
 ## 남은 과제와 배운 점
 
-- 이후 [API 요청·응답 형식을 zod 스키마로 모은 contracts 패키지](/memo/contracts-posts)가 추가됐다. contracts도 같은 `source`/`dist` 조건을 사용한다. 이 글에서 정한 방식이 두 번째 공유 패키지의 기본 구조가 됐다.
+- 이후 [API 요청·응답 형식을 zod 스키마로 모은 contracts 패키지](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201)가 추가됐다. contracts도 같은 `source`/`dist` 조건을 사용한다. 이 글에서 정한 방식이 두 번째 공유 패키지의 기본 구조가 됐다.
 - `source`는 이 저장소에서 정의한 조건 이름이다. 새 도구(예: 다른 시험 도구)를 추가하면 그 도구에도 조건을 설정해야 한다. 설정하지 않으면 그 도구는 `dist`를 읽고, `dist`가 최신이 아니면 이전 규칙으로 실행된다.
 - 화면 쪽은 `dist`가 없어도 동작하는 것을 확인했지만, 서버 쪽은 `dist`가 갱신되지 않으면 오류 없이 이전 규칙을 사용한다. Turborepo의 `^build`가 이를 방지한다.
 
-배운 점: "규칙을 한 곳에"는 코드 이동으로 끝나지 않는다. 그 파일이 바뀌었을 때 사용하는 모든 패키지가 다시 빌드·배포되는지까지 확인해야 한다. CI의 변경 감지 경로 한 줄을 누락했다면, 규칙은 한 곳에 있지만 서버와 화면이 서로 다른 버전을 사용하는 상태가 됐을 것이다.
+> [!IMPORTANT] 배운 점
+> "규칙을 한 곳에"는 코드 이동으로 끝나지 않는다. 그 파일이 바뀌었을 때 사용하는 모든 패키지가 다시 빌드·배포되는지까지 확인해야 한다. CI의 변경 감지 경로 한 줄을 누락했다면, 규칙은 한 곳에 있지만 서버와 화면이 서로 다른 버전을 사용하는 상태가 됐을 것이다.
 
 ## 따라 해 보기
 
@@ -137,16 +156,42 @@ pnpm typecheck
 pnpm --filter @macfolio/api test:e2e test/posts.e2e.test.ts   # DB가 필요하다 (db:up)
 ```
 
-화면(Vite)은 소스를 직접 읽으므로 빌드 없이도 반영된다. 서버만 이전 규칙으로 남는 상황을 막기 위해 API 이미지 빌드에서도 패키지를 먼저 빌드한다([apps/api/Dockerfile](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/Dockerfile)). 워크스페이스 구성은 [pnpm workspace 문서](https://pnpm.io/workspaces)를 참고했다.
+화면(Vite)은 소스를 직접 읽으므로 빌드 없이도 반영된다. 서버만 이전 규칙으로 남는 상황을 막기 위해 API 이미지 빌드에서도 패키지를 먼저 빌드한다([apps/api/Dockerfile](https://github.com/hyeoniverse/MacFolio/blob/main/apps/api/Dockerfile)).
 
 ## 관련 글
 
-- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-windows)
-- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-memo)
-- [음악 플레이어를 둘로 나누기 - 무엇을 틀지와 어떻게 틀지](/memo/desktop-core-music)
-- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-posts)
+- [창 관리 규칙을 useSyncExternalStore로 구독하는 프레임워크 무관 패키지로 옮기기](/memo/desktop-core-stores#창-관리-작은-store와-usesyncexternalstore)
+- [desktop-core로 메모 로직을 옮기며 값 검사와 localStorage 읽기·쓰기 나누기](/memo/desktop-core-stores#메모-값-검사와-localstorage-읽기쓰기-분리)
+- [음악 플레이어를 둘로 나누기 - 무엇을 틀지와 어떻게 틀지](/memo/desktop-core-stores#음악-결과-값을-돌려주는-플레이어-store)
+- [ZodType<PostContent>로 기존 타입과 zod 스키마의 일치를 tsc로 검사하기](/memo/contracts-package#블로그-글-스키마를-desktop-core-타입에-고정하기-201)
 - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](/memo/backend-design)
 
+<details>
+<summary>참고 문헌</summary>
+
+- Node.js 문서, [Packages: Conditional exports](https://nodejs.org/api/packages.html#conditional-exports)
+- Node.js 문서, [ECMAScript modules: Mandatory file extensions](https://nodejs.org/api/esm.html#mandatory-file-extensions)
+- Vite 문서, [resolve.conditions](https://vite.dev/config/shared-options.html#resolve-conditions)
+- TypeScript 문서, [customConditions](https://www.typescriptlang.org/tsconfig/#customConditions)
+- Turborepo 문서, [Package and Task Graphs](https://turborepo.com/docs/core-concepts/package-and-task-graph)
+- Turborepo 문서, [Configuration: dependsOn](https://turborepo.com/docs/reference/configuration)
+- pnpm 문서, [Workspace](https://pnpm.io/workspaces)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Turborepo 작업 그래프: Vercel / Turborepo 문서, [Package and Task Graphs](https://turborepo.com/docs/core-concepts/package-and-task-graph), 출처 표기
+
+</details>
+
+[^workspace]: pnpm 워크스페이스는 저장소 루트의 `pnpm-workspace.yaml`에 적힌 폴더들을 패키지로 인식하고, 서로를 `node_modules`의 링크로 연결한다. 설명은 [pnpm 문서: Workspace](https://pnpm.io/workspaces)에 있다.
+
 [^desktop-core]: `packages/desktop-core`는 React·Vue 같은 UI 프레임워크에 의존하지 않는 로직(상태 저장소, 창 관리, 메모 규칙, 음악 재생 목록)을 모은 워크스페이스 패키지다. ESLint 규칙으로 React와 `@/*` import를 금지한다.
+
+[^hmr]: Hot Module Replacement. 개발 서버가 수정된 모듈만 브라우저에 다시 보내 페이지를 새로 고치지 않고 화면을 갱신하는 기능이다.
+
+[^conditional]: Node가 기본으로 인식하는 조건은 `node`, `import`, `require`, `module-sync`, `default` 등이고, 그 밖의 이름은 도구가 직접 켜야 한다. [Node.js 문서: Conditional exports](https://nodejs.org/api/packages.html#conditional-exports)
 
 #MacFolio #백엔드 #리팩터링 #배포

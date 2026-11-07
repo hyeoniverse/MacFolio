@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 372" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>휴지통이 목록을 받은 뒤 다른 탭에서 그 파일을 글에 넣으면, 휴지통 화면에는 지우기 버튼이 남아 있지만 서버가 DELETE를 받는 시각에 다시 검사해 409로 거절하는 순서</title>
+<defs>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker>
+<marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+</defs>
+<rect width="640" height="372" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">화면에 버튼이 남아 있어도 서버가 다시 검사한다</text>
+<rect x="24" y="52" width="160" height="36" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="104" y="75" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">휴지통 (탭 1)</text>
+<rect x="240" y="52" width="160" height="36" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="320" y="75" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">메모 편집기 (탭 2)</text>
+<rect x="456" y="52" width="160" height="36" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="536" y="75" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">서버 (API)</text>
+<g stroke="#d1d1d6" stroke-dasharray="4 4"><line x1="104" y1="88" x2="104" y2="356"/><line x1="320" y1="88" x2="320" y2="356"/><line x1="536" y1="88" x2="536" y2="356"/></g>
+<line x1="104" y1="118" x2="532" y2="118" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="120" y="112" font-size="12" fill="#1d1d1f">① GET /files</text>
+<line x1="536" y1="150" x2="108" y2="150" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+<text x="120" y="144" font-size="12" fill="#1d1d1f">② 파일 A: usedBy.posts = [] → 지우기 버튼 표시</text>
+<line x1="320" y1="196" x2="532" y2="196" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="330" y="190" font-size="12" fill="#1d1d1f">③ 글 b 저장 (본문에 A 추가)</text>
+<line x1="104" y1="242" x2="532" y2="242" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<text x="120" y="236" font-size="12" fill="#1d1d1f">④ DELETE /files/A (화면의 목록은 ② 시각 그대로)</text>
+<rect x="452" y="256" width="168" height="44" rx="8" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="536" y="275" font-size="12" fill="#1d1d1f" text-anchor="middle">⑤ 글을 다시 스캔</text>
+<text x="536" y="292" font-size="12" fill="#6e6e73" text-anchor="middle">A는 글 b가 참조</text>
+<line x1="536" y1="330" x2="108" y2="330" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="120" y="324" font-size="12" fill="#ff3b30">⑥ 409 Conflict "글에서 쓰는 파일입니다: b"</text>
+</svg>

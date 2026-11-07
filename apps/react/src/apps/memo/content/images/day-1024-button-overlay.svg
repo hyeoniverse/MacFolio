@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#ffffff"/>
+  <line x1="320" y1="16" x2="320" y2="314" stroke="#e5e5ea" stroke-width="2"/>
+
+  <!-- before -->
+  <text x="20" y="34" font-size="15" font-weight="700" fill="#ff3b30">변경 전: 단추 안 단추</text>
+  <rect x="20" y="52" width="280" height="190" rx="10" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="34" y="74" font-size="12" fill="#ff3b30" font-family="Menlo, monospace">&lt;button&gt; 위젯 더하기</text>
+  <rect x="40" y="88" width="240" height="134" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="54" y="110" font-size="12" fill="#1d1d1f">음악 위젯 미리보기</text>
+  <rect x="54" y="170" width="70" height="32" rx="16" fill="#ffffff" stroke="#ff3b30" stroke-width="2"/>
+  <text x="89" y="191" font-size="12" text-anchor="middle" fill="#ff3b30">▶ 재생</text>
+  <text x="136" y="186" font-size="12" fill="#ff3b30">안쪽 &lt;button&gt;</text>
+  <text x="20" y="266" font-size="12" fill="#1d1d1f">HTML 명세: button의 내용에는</text>
+  <text x="20" y="284" font-size="12" fill="#1d1d1f">대화형 요소가 올 수 없다</text>
+  <text x="20" y="302" font-size="12" fill="#6e6e73">→ React 개발 모드 경고 반복</text>
+
+  <!-- after: side view -->
+  <text x="340" y="34" font-size="15" font-weight="700" fill="#0a84ff">변경 후: 형제로 겹치기</text>
+  <text x="340" y="62" font-size="12" fill="#1d1d1f" font-family="Menlo, monospace">.widget-gallery-item (relative)</text>
+
+  <!-- layer: add button (top) -->
+  <path d="M350 76 L590 76 L620 126 L380 126 Z" fill="#0a84ff" fill-opacity="0.12" stroke="#0a84ff" stroke-width="2"/>
+  <text x="386" y="96" font-size="12" fill="#0a84ff" font-family="Menlo, monospace">button.widget-gallery-add</text>
+  <text x="380" y="116" font-size="12" fill="#0a84ff" font-family="Menlo, monospace">absolute; inset: 0; z-index: 1</text>
+
+  <!-- layer: preview -->
+  <path d="M350 138 L590 138 L620 200 L380 200 Z" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.5"/>
+  <text x="386" y="158" font-size="12" fill="#1d1d1f" font-family="Menlo, monospace">span.widget-gallery-preview</text>
+  <text x="384" y="176" font-size="12" fill="#1d1d1f" font-family="Menlo, monospace">isolation: isolate; inert</text>
+  <rect x="440" y="182" width="130" height="16" rx="4" fill="#ffffff" stroke="#ff9f0a"/>
+  <text x="505" y="194" font-size="12" text-anchor="middle" fill="#ff9f0a">z-index가 있는 요소</text>
+
+  <text x="340" y="222" font-size="12" fill="#1d1d1f">미리보기 안의 z-index는 미리보기가 만든</text>
+  <text x="340" y="240" font-size="12" fill="#1d1d1f">쌓임 맥락 안에서만 비교된다.</text>
+  <text x="340" y="264" font-size="12" fill="#1d1d1f">밖에서 보면 미리보기 전체가 z-index auto 한 층이라</text>
+  <text x="340" y="282" font-size="12" fill="#1d1d1f">z-index 1인 단추가 항상 위에서 클릭을 받는다.</text>
+  <text x="340" y="304" font-size="12" fill="#6e6e73">미리보기에는 inert를 붙여 초점·클릭을 받지 않는다</text>
+</svg>

@@ -9,11 +9,25 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 
 메모 앱은 넓은 창을 기준으로 설계했고, 창이 좁아지면 한 칸씩 전환하는 화면(폴더 → 목록 → 본문)으로 바뀐다. 데스크톱에서 창 폭을 줄여 가며 확인했지만, 휴대폰에서 관리자로 열어 보니 iOS 메모와 배치가 다른 곳이 여러 군데 있었다. 본문 도구 배치는 10월 1일([#66](https://github.com/hyeoniverse/MacFolio/pull/66))에, 목록·폴더 화면과 ••• 메뉴는 다음 날 태그 기능과 함께([#67](https://github.com/hyeoniverse/MacFolio/pull/67)) 수정했다.
 
+## 배경: 휴대폰 셸과 한 칸 보기
+
+MacFolio는 화면 폭이 767px 이하이면 macOS 데스크톱 대신 iOS 홈 화면을 흉내 낸 **휴대폰 셸**을 그린다. 셸은 상태 표시줄(시계·배터리), 앱 화면 틀, 화면 맨 아래의 홈 인디케이터(가로 막대)를 그리고, 앱은 그 틀 안에 내용을 채운다. 셸은 앱 화면 위쪽에 "< 모든 글 | 메모" 같은 **제목 막대**도 그린다. 앱은 `MobileNavigation` 컴포넌트로 막대에 표시할 뒤로 가기 문구와 동작을 셸에 전달한다.
+
+메모 앱은 넓은 창에서 사이드바(폴더)·목록·본문 세 칸을 나란히 보여 준다. 메모 칸의 폭이 700px 이하이면 세 칸 중 하나만 보여 주는 **한 칸 보기**(코드에서는 `compact`)로 바뀐다. 세로로 든 휴대폰에서는 항상 한 칸 보기다.
+
+| 화면 상태            | 보이는 칸      | 예                                |
+| -------------------- | -------------- | --------------------------------- |
+| 넓은 창 (701px 이상) | 폴더·목록·본문 | 1440px 데스크톱에서 최대화한 창   |
+| 좁은 창 (700px 이하) | 한 칸씩 전환   | 데스크톱에서 폭을 600px로 줄인 창 |
+| 휴대폰 (390px 등)    | 한 칸씩 전환   | iPhone 13 세로 화면               |
+
+좁은 창과 휴대폰은 같은 한 칸 보기지만, 휴대폰에서는 iOS 메모처럼 보이도록 버튼 배치와 바탕을 따로 정했다. 코드에서는 휴대폰 여부(`phone`)와 한 칸 보기 여부(`compact`)를 함께 확인한다.
+
 ![본문 전후](./images/memo-mobile-tools.jpg '전: 제목 막대 아래 두 줄로 흩어진 도구 / 후: 플로팅 버튼, ••• 메뉴')
 
 ## 본문은 iOS 메모처럼
 
-수정 전에는 휴대폰 셸의 제목 막대("< 모든 글 | 메모") 아래에 새 메모, 서식(가가), 삭제, 고정, 공유가 한 줄로 있었다. 고정과 공유만 크기와 위 여백이 달라 높이가 맞지 않았고, 게시 버튼은 공유 아이콘 아래 별도 줄에 있었다. 처음에는 버튼 크기와 정렬만 맞췄는데, 실제 iOS 메모와 나란히 비교하니 화면 구조 자체가 달랐다. iOS 메모의 본문에는 제목 막대가 없다.
+수정 전에는 휴대폰 셸의 제목 막대("< 모든 글 | 메모") 아래에 새 메모, 서식(가가), 삭제, 고정, 공유가 한 줄로 있었다. 고정과 공유만 크기와 위 여백이 달라 높이가 맞지 않았고, 게시 버튼은 공유 아이콘 아래 별도 줄에 있었다. 처음에는 버튼 크기와 정렬만 맞췄는데, 실제 iOS 메모와 나란히 비교하니 화면 구조 자체가 달랐다. ==iOS 메모의 본문에는 제목 막대가 없다==.
 
 | 위치        | 요소                                                                 |
 | ----------- | -------------------------------------------------------------------- |
@@ -22,6 +36,8 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 | ••• 메뉴    | 상단 아이콘 행(메모 고정, 잠그기), 그 아래 메모에서 찾기와 빨간 삭제 |
 | 아래 왼쪽   | 서식 알약 (가가, 체크리스트, 표, 이미지, 첨부)                       |
 | 아래 오른쪽 | 원형 새 메모 버튼                                                    |
+
+![휴대폰 메모 본문의 배치](./images/memo-mobile-layout.svg '도식. 위쪽에 원형 뒤로 가기, 게시 알약, 공유·••• 알약, 그 아래 날짜·폴더 줄. 아래쪽에 서식 알약과 새 메모 버튼이 본문 위에 떠 있다')
 
 처음 배치에서는 게시 버튼이 날짜 줄 위에 별도의 한 줄을 차지해서, 날짜·폴더 줄이 플로팅 버튼보다 한 줄 아래로 밀렸다. 글자 크기도 넓은 창과 같은 12px라 휴대폰에서는 작았다. 수정 내용은 다음과 같다.
 
@@ -33,6 +49,8 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 | 저장 상태 문구   | 알약 안 ("임시 저장됨" 등으로 알약이 길어짐) | 스크린 리더에만 전달                                                |
 | 변경 사항 버리기 | 글자 버튼                                    | 되돌리기 아이콘                                                     |
 
+이렇게 다른 요소 위에 겹쳐 떠 있는 버튼 묶음을 이 글에서는 **플로팅 막대**라고 부른다. 본문은 그 아래에서 스크롤되고, 막대는 화면의 같은 자리에 남는다.
+
 제목 막대는 모든 앱이 공유하는 휴대폰 셸의 요소라서, 앱이 "이 화면에서는 막대를 플로팅으로 표시"하도록 요청하는 속성(`floating`)을 추가했다. 앱이 뒤로 가기 문구를 지정할 때 쓰던 `MobileNavigation`에 함께 전달한다. 셸은 막대를 본문 위에 겹쳐 배치하고(`position: absolute`), 배경을 투명하게 하고, 뒤로 가기 버튼만 원형으로 렌더링한다. 뒤로 가기 문구("모든 글")는 스크린 리더용으로만 남긴다.
 
 ```tsx
@@ -43,7 +61,12 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 
 하단 알약의 가가를 누르면 서식 팝오버가 버튼 아래로 열려 화면 밖에 표시됐다. 팝오버를 버튼 아래에 배치하는 함수(`placeBelow`)가 가로 방향만 화면 안으로 보정했기 때문이다. 아래로 넘치고 위에 공간이 있으면 버튼 위에 배치하도록 수정했다.
 
-처음에는 "휴대폰 화면인지"를 셸이 제공하는 [Context](https://react.dev/learn/passing-data-deeply-with-context)로 판별하려 했는데, 버튼이 하나도 렌더링되지 않았다. Context 값은 Provider의 **하위 트리**에만 전달된다. 메모 컴포넌트는 창(`AppWindow`)을 렌더링하는 쪽이라 Provider 바깥에 있다. 그래서 화면 폭으로 판별하는 기존 훅(`useIsMobile`)을 사용했다.
+> [!WARNING] Provider 바깥에서는 받을 수 없는 Context
+> 처음에는 "휴대폰 화면인지"를 셸이 제공하는 [Context](https://react.dev/learn/passing-data-deeply-with-context)로 판별하려 했는데, 버튼이 하나도 렌더링되지 않았다. Context 값은 Provider의 **하위 트리**에만 전달된다. 메모 컴포넌트는 창(`AppWindow`)을 렌더링하는 쪽이라 Provider 바깥에 있다. 그래서 화면 폭으로 판별하는 기존 훅(`useIsMobile`)을 사용했다.
+
+React의 Context는 부모 컴포넌트가 값을 `Provider`로 감싸 두면, 그 아래 어느 깊이의 컴포넌트든 `useContext`로 값을 읽게 하는 기능이다. 휴대폰 셸은 `MobileAppFrame` 안에서 `MobileNavContext.Provider`를 렌더링한다. 메모 컴포넌트가 반환한 JSX는 `AppWindow`의 `children`으로 전달되어 Provider 안에 놓이지만, 메모 컴포넌트의 함수 본체는 Provider보다 바깥에서 실행된다.
+
+![Context Provider의 범위](./images/memo-mobile-context.svg '도식. Memo가 AppWindow를, AppWindow가 MobileAppFrame과 Provider를 렌더링한다. Memo 본체의 useContext는 null을 받고, Provider 안에 놓인 자식만 값을 받는다')
 
 본문을 수정한 다음 날(10월 2일) 휴대폰으로 다시 열어 보니 목록과 폴더 화면에 필요한 버튼이 없었다. 목록 화면에는 검색 칸과 글쓰기 버튼이 없었고, 폴더 화면에는 글쓰기·새 폴더·편집 버튼이 없었다. 글자를 넣은 게시 버튼은 폭이 부족했다. iOS 메모의 편집 화면과 ••• 메뉴 스크린샷을 기준으로 버튼을 복원하고, 정렬 버튼은 ••• 메뉴와 별도로 배치했다. 폴더 화면의 뒤로 가기는 iOS에서는 하단 막대를 위로 스와이프하는 방식이지만, 버튼이 함께 있어도 충돌하지 않아 유지했다.
 
@@ -61,9 +84,13 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 
 한 칸씩 전환하는 화면이라 선택한 폴더·메모에 노란 강조 표시를 하지 않는다. 대신 폴더 행 끝에 ›를 표시해 누르면 다음 화면으로 이동한다는 것을 나타낸다.
 
-검색 칸과 정렬·새 메모 버튼은 원래 목록 맨 위의 한 줄(`.memo-compact-tools`)에 함께 있다. 처음에는 이 줄에 [`display: contents`](https://developer.mozilla.org/en-US/docs/Web/CSS/display#contents)를 지정해 래퍼 상자를 없애고 버튼마다 `position: absolute`로 배치했다. 래퍼 상자가 생성되지 않으므로 위치 기준이 목록 칸이 되어 데스크톱 Chrome에서는 정상으로 표시됐지만, 실제 휴대폰에서는 검색 알약이 표시되지 않았다. 그 줄이 목록의 스크롤 컨테이너(`overflow: auto`) **안**에 있었기 때문이다. 스크롤 컨테이너 안의 요소를 컨테이너 밖 기준으로 배치하면 브라우저마다 렌더링 결과가 다를 수 있다.
+검색 칸과 정렬·새 메모 버튼은 원래 목록 맨 위의 한 줄(`.memo-compact-tools`)에 함께 있다. 처음에는 이 줄에 [`display: contents`](https://developer.mozilla.org/en-US/docs/Web/CSS/display#contents)를 지정해 래퍼 상자를 없애고 버튼마다 `position: absolute`로 배치했다. 래퍼 상자가 생성되지 않으므로 위치 기준이 목록 칸이 되어 데스크톱 Chrome에서는 정상으로 표시됐지만, 실제 휴대폰에서는 검색 알약이 표시되지 않았다. 그 줄이 목록의 스크롤 컨테이너(`overflow: auto`) **안**에 있었기 때문이다. ==스크롤 컨테이너 안의 요소를 컨테이너 밖 기준으로 배치하면 브라우저마다 렌더링 결과가 다를 수 있다==.
+
+**스크롤 컨테이너**는 `overflow: auto`처럼 넘치는 내용을 잘라 내고 스크롤 막대로 보여 주는 상자다. 그 안의 자손은 컨테이너의 스크롤 위치와 잘라 내는 범위의 영향을 받는다. `position: absolute` 요소는 가장 가까운 위치 지정 조상(`position`이 `static`이 아닌 조상)을 기준으로 배치되는데, 기준 상자가 스크롤 컨테이너 밖에 있으면 자른 범위와 기준 상자가 서로 다른 상자가 된다. 이때 어느 범위로 잘라 그릴지가 브라우저마다 달랐다.
 
 그래서 휴대폰에서는 그 줄을 숨기고, 정렬과 검색 알약·새 메모를 스크롤 컨테이너 **밖**(목록 칸의 직계 자식)에 별도로 렌더링한다. 본문의 플로팅 버튼도 처음부터 같은 구조로 배치했다.
+
+![스크롤 컨테이너 안과 밖](./images/memo-mobile-scroll-container.svg '도식. 왼쪽: 버튼 줄이 overflow: auto인 div.memo-scroll 안에 있어 휴대폰에서 보이지 않았다. 오른쪽: 정렬 줄과 검색·새 메모 줄을 section.memo-list의 직계 자식으로 옮겼다')
 
 ```tsx
 <section className="memo-list">
@@ -80,7 +107,7 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 </section>
 ```
 
-방문자 화면에는 새 메모 버튼이 없으므로 [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)로 그 상태를 판별해 검색 알약을 오른쪽 끝까지 늘린다.
+방문자 화면에는 새 메모 버튼이 없으므로 [`:has()`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)로 그 상태를 판별해 검색 알약을 오른쪽 끝까지 늘린다. `:has()`는 "특정 자손을 가진 요소"를 고르는 선택자다. 실제 규칙의 `.memo-list-bottom:not(:has(.memo-phone-compose)) .memo-search`는 새 메모 버튼(`.memo-phone-compose`)이 없는 하단 줄의 검색 칸만 고른다.
 
 ### 목록의 ••• 와 폴더 편집
 
@@ -118,9 +145,14 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 }
 ```
 
-[`word-break: keep-all`](https://developer.mozilla.org/en-US/docs/Web/CSS/word-break)로 단어 중간에서는 줄을 바꾸지 않고, 셀마다 최소 폭을 지정해 넘치면 표만 가로로 스크롤되도록 했다. 처음에는 최소 폭을 4.5em으로 지정했는데 셀이 오히려 더 좁아져 줄바꿈이 더 많아졌다. 이 문제는 전후 스크린샷을 나란히 비교한 뒤에 발견했다.
+![word-break 값에 따른 줄바꿈](./images/memo-mobile-keep-all.svg '도식. 기본값에서는 한국어 음절 사이 어디서나 줄이 바뀌고, keep-all에서는 공백에서만 바뀐다. 셀 최소 폭 7.5em을 넘는 표는 가로로 스크롤한다')
 
-처음에는 선택자를 `.memo-markdown table`로 작성했는데, 넓은 창의 편집기에서 표 편집 시험이 실패했다. 이 규칙은 `@container (max-width: 700px)` 안에 있는데, 컨테이너 쿼리는 **가장 가까운** 조상 컨테이너를 측정한다. 편집기(`.memo-writer`)도 날짜 줄 배치 때문에 컨테이너로 지정되어 있었고, 본문 칸은 넓은 창에서도 700px보다 좁다. 그래서 휴대폰이 아닌데도 편집기 안의 표가 `display: block`이 되었고, 시험은 표 셀을 클릭하지 못한 채 시간 초과로 실패했다. 선택자를 읽기 화면의 본문(`.memo-reader-body > .memo-markdown`)으로 한정해 수정했다.
+브라우저는 기본값(`word-break: normal`)에서 한국어·중국어·일본어 글자 사이마다 줄을 바꿀 수 있는 위치로 본다. 영어는 공백에서만 줄을 바꾸지만 한국어는 "그리는"의 '그리'와 '는' 사이에서도 줄을 바꾼다. [`word-break: keep-all`](https://developer.mozilla.org/en-US/docs/Web/CSS/word-break)은 이런 글자 사이의 줄바꿈 위치를 없애 공백에서만 줄을 바꾼다. 이 값으로 단어 중간에서는 줄을 바꾸지 않고, 셀마다 최소 폭을 지정해 넘치면 표만 가로로 스크롤되도록 했다. ==처음에는 최소 폭을 4.5em으로 지정했는데 셀이 오히려 더 좁아져 줄바꿈이 더 많아졌다==. 이 문제는 전후 스크린샷을 나란히 비교한 뒤에 발견했다.
+
+[컨테이너 쿼리](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)(`@container`)는 화면 전체 폭 대신 조상 요소(컨테이너)의 폭을 조건으로 쓰는 CSS 문법이다. `container-type: inline-size`를 지정한 요소가 컨테이너가 되고, `@container (max-width: 700px) { … }` 안의 규칙은 그 컨테이너 폭이 700px 이하일 때만 적용된다. 메모 앱은 창 크기를 사용자가 바꿀 수 있어 화면 폭보다 메모 칸 폭이 기준으로 맞다.
+
+> [!WARNING] 가장 가까운 컨테이너를 측정하는 쿼리
+> 처음에는 선택자를 `.memo-markdown table`로 작성했는데, 넓은 창의 편집기에서 표 편집 시험이 실패했다. 이 규칙은 `@container (max-width: 700px)` 안에 있는데, 컨테이너 쿼리는 **가장 가까운** 조상 컨테이너를 측정한다. 편집기(`.memo-writer`)도 날짜 줄 배치 때문에 컨테이너로 지정되어 있었고, 본문 칸은 넓은 창에서도 700px보다 좁다. 그래서 휴대폰이 아닌데도 편집기 안의 표가 `display: block`이 되었고, 시험은 표 셀을 클릭하지 못한 채 시간 초과로 실패했다. 선택자를 읽기 화면의 본문(`.memo-reader-body > .memo-markdown`)으로 한정해 수정했다.
 
 ![가장 가까운 컨테이너](./images/memo-mobile-container.svg '편집기도 컨테이너라 넓은 창에서도 700px 조건이 참이 됐다')
 
@@ -150,20 +182,33 @@ summary: 휴대폰 메모 본문의 도구가 두 줄로 흩어져 있었다. iO
 
 </details>
 
-시험은 390×844 휴대폰 화면에서 터치 입력을 활성화하고 실행한다. 표 규칙이 편집기에 적용된 문제는 넓은 창의 표 편집 시험이 검출했다. 휴대폰 시험만 있었다면 발견하지 못했을 문제다.
+시험은 390×844 휴대폰 화면에서 터치 입력을 활성화하고 실행한다. 표 규칙이 편집기에 적용된 문제는 넓은 창의 표 편집 시험이 검출했다. ==휴대폰 시험만 있었다면 발견하지 못했을 문제==다.
 
 ## 남은 것·정리
 
 - 스크롤 컨테이너(`overflow: auto`) 안의 요소를 컨테이너 밖 기준으로 배치하면 브라우저마다 결과가 다르다. 데스크톱 Chrome에서 정상이던 배치가 휴대폰에서는 표시되지 않았다. 플로팅 버튼은 처음부터 스크롤 컨테이너 밖에 배치한다.
 - 컨테이너 쿼리의 기준은 "가장 가까운 컨테이너"다. 컨테이너를 하나 추가하면 그 하위의 컨테이너 쿼리가 모두 새 컨테이너를 측정한다.
 - 실제 앱(iOS 메모)과 나란히 비교하는 방법이 가장 빨랐다. 버튼 크기만 맞추다가 나란히 비교한 뒤에야 화면 구조 자체가 다르다는 것을 확인했다.
-- 이후 키보드 위 서식 막대와 문단 도구를 추가했다([레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/memo-keyboard-toolbar)).
+- 이후 키보드 위 서식 막대와 문단 도구를 추가했다([레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/ios-keyboard-viewport#메모-서식-막대를-키보드-위에-붙이기)).
 
 ## 관련 글
 
-- [휴대폰 앱들을 iOS처럼](/memo/mobile-apps-ios-style)
-- [메모 태그](/memo/memo-tags)
-- [레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/memo-keyboard-toolbar)
-- [메뉴·팝오버를 공통 Menu로](/memo/shared-menu)
+- [셸 공통 CSS 사용자 정의 속성으로 휴대폰 앱의 바탕·카드 색 통일하기](/memo/mobile-apps-ios-style)
+- [저장하지 않고 본문에서 추출하는 #태그와 포함·제외·미선택 세 상태 필터](/memo/memo-tags)
+- [레이아웃 뷰포트 대신 visualViewport로 iOS Safari 키보드 높이 측정하기](/memo/ios-keyboard-viewport#메모-서식-막대를-키보드-위에-붙이기)
+- [placement·useDismiss·Menu 세 모듈로 중복된 메뉴 구현 합치기](/memo/shared-menu)
+
+<details>
+<summary>참고 문헌</summary>
+
+- React, [Passing Data Deeply with Context](https://react.dev/learn/passing-data-deeply-with-context)
+- MDN, [display: contents](https://developer.mozilla.org/en-US/docs/Web/CSS/display#contents)
+- MDN, [overflow](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow)
+- MDN, [Containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block)
+- MDN, [CSS container queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries)
+- MDN, [word-break](https://developer.mozilla.org/en-US/docs/Web/CSS/word-break)
+- MDN, [:has()](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)
+
+</details>
 
 #MacFolio #메모앱 #휴대폰

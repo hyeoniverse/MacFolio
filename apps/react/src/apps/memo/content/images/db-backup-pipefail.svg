@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>pipefail이 없으면 파이프의 결과는 마지막 명령 gzip의 종료 코드 0, pipefail이 있으면 실패한 pg_dump의 1이다</title>
+<rect width="640" height="300" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">파이프의 종료 코드: pg_dump가 실패하고 gzip은 성공한 경우</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">예: DB 이름이 틀려 pg_dump가 1로 끝나도 gzip은 받은 빈 입력을 압축하고 0으로 끝난다</text>
+<rect x="24" y="76" width="140" height="44" rx="8" fill="#ffecea" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="94" y="96" font-size="12.5" font-weight="600" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">pg_dump</text>
+<text x="94" y="113" font-size="12" text-anchor="middle" fill="#ff3b30">종료 코드 1</text>
+<text x="182" y="104" font-size="18" text-anchor="middle" fill="#6e6e73">|</text>
+<rect x="200" y="76" width="140" height="44" rx="8" fill="#eafaef" stroke="#34c759" stroke-width="1.5"/>
+<text x="270" y="96" font-size="12.5" font-weight="600" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">gzip -9</text>
+<text x="270" y="113" font-size="12" text-anchor="middle" fill="#34c759">종료 코드 0</text>
+<rect x="24" y="144" width="290" height="120" rx="10" fill="#f2f2f7"/>
+<text x="40" y="168" font-size="13" font-weight="600" fill="#1d1d1f">pipefail 없음 (bash 기본값)</text>
+<text x="40" y="192" font-size="12" fill="#1d1d1f">파이프 결과 = 마지막 명령의 종료 코드</text>
+<text x="40" y="216" font-size="13" font-weight="700" fill="#ff3b30">0 → 성공으로 처리</text>
+<text x="40" y="240" font-size="12" fill="#6e6e73">내용 없는 백업이 정상 파일처럼 남는다</text>
+<rect x="326" y="144" width="290" height="120" rx="10" fill="#ffffff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="342" y="168" font-size="13" font-weight="600" fill="#1d1d1f">set -o pipefail (backup.sh)</text>
+<text x="342" y="192" font-size="12" fill="#1d1d1f">파이프 결과 = 0이 아닌 마지막 종료 코드</text>
+<text x="342" y="216" font-size="13" font-weight="700" fill="#0a84ff">1 → || fail "pg_dump" 실행</text>
+<text x="342" y="240" font-size="12" fill="#6e6e73">set -e와 함께 스크립트가 즉시 중단된다</text>
+<text x="24" y="288" font-size="12" fill="#6e6e73">출처: Bash 매뉴얼 Pipelines 절의 pipefail 설명</text>
+</svg>

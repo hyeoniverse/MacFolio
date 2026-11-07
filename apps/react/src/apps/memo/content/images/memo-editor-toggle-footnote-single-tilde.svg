@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f" text-anchor="middle">같은 문장을 remark-gfm 옵션별로 읽은 결과</text>
+<text x="20" y="66" font-size="13" font-weight="600" fill="#6e6e73">Markdown 원문</text>
+<rect x="20" y="76" width="600" height="40" rx="8" fill="#f2f2f7"/>
+<text x="36" y="101" font-size="14" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">사이드바 180<tspan fill="#ff9f0a" font-weight="700">~</tspan>360px, 목록 220<tspan fill="#ff9f0a" font-weight="700">~</tspan>440px</text>
+<text x="20" y="152" font-size="13" font-weight="600" fill="#ff3b30">singleTilde: true (기본값)</text>
+<rect x="20" y="162" width="600" height="40" rx="8" fill="#fff" stroke="#ff3b30"/>
+<text x="36" y="187" font-size="14" fill="#1d1d1f">사이드바 180<tspan text-decoration="line-through" fill="#ff3b30">360px, 목록 220</tspan>440px</text>
+<text x="604" y="187" font-size="12" fill="#ff3b30" text-anchor="end">~ 두 개 사이가 &lt;del&gt;</text>
+<text x="20" y="238" font-size="13" font-weight="600" fill="#34c759">singleTilde: false (GFM_OPTIONS)</text>
+<rect x="20" y="248" width="600" height="40" rx="8" fill="#fff" stroke="#34c759"/>
+<text x="36" y="273" font-size="14" fill="#1d1d1f">사이드바 180~360px, 목록 220~440px</text>
+<text x="604" y="273" font-size="12" fill="#34c759" text-anchor="end">~~ 두 개짜리만 취소선</text>
+</svg>

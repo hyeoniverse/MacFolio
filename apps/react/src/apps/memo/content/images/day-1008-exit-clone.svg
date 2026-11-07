@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>ref 정리 함수에서 복제본을 만들어 퇴장 애니메이션을 적용하는 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<text x="20" y="28" font-size="13" font-weight="700" fill="#1d1d1f">open이 false가 된 뒤 (여는 쪽 코드: {open &amp;&amp; &lt;Menu /&gt;})</text>
+<g font-size="12">
+<rect x="20" y="46" width="140" height="150" rx="10" fill="#f2f2f7"/>
+<text x="90" y="68" font-weight="600" fill="#1d1d1f" text-anchor="middle">① 정리 함수 호출</text>
+<rect x="44" y="84" width="92" height="64" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+<text x="90" y="112" fill="#1d1d1f" text-anchor="middle">원래 메뉴</text>
+<text x="90" y="130" fill="#6e6e73" text-anchor="middle">아직 문서에 있음</text>
+<text x="90" y="180" fill="#6e6e73" text-anchor="middle">React가 ref 정리</text>
+<line x1="160" y1="120" x2="186" y2="120" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="190" y="46" width="140" height="150" rx="10" fill="#f2f2f7"/>
+<text x="260" y="68" font-weight="600" fill="#1d1d1f" text-anchor="middle">② cloneNode</text>
+<rect x="210" y="84" width="92" height="64" rx="6" fill="#ffffff" stroke="#0a84ff"/>
+<rect x="222" y="94" width="92" height="64" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-dasharray="4 3"/>
+<text x="268" y="122" fill="#1d1d1f" text-anchor="middle">복제본</text>
+<text x="268" y="140" fill="#6e6e73" text-anchor="middle">같은 위치</text>
+<text x="260" y="180" fill="#6e6e73" text-anchor="middle">바로 옆에 삽입</text>
+<line x1="330" y1="120" x2="356" y2="120" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="360" y="46" width="120" height="150" rx="10" fill="#f2f2f7"/>
+<text x="420" y="68" font-weight="600" fill="#1d1d1f" text-anchor="middle">③ 원본 제거</text>
+<rect x="382" y="94" width="76" height="54" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-dasharray="4 3" opacity="0.7"/>
+<text x="420" y="125" fill="#1d1d1f" text-anchor="middle">사라지는 중</text>
+<text x="420" y="180" fill="#6e6e73" text-anchor="middle">상태는 이미 닫힘</text>
+<line x1="480" y1="120" x2="506" y2="120" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="510" y="46" width="110" height="150" rx="10" fill="#f2f2f7"/>
+<text x="565" y="68" font-weight="600" fill="#1d1d1f" text-anchor="middle">④ 종료</text>
+<text x="565" y="125" fill="#6e6e73" text-anchor="middle">애니메이션 끝에</text>
+<text x="565" y="143" fill="#6e6e73" text-anchor="middle">복제본 스스로 제거</text>
+</g>
+<rect x="20" y="214" width="600" height="72" rx="10" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="36" y="238" font-size="12" fill="#1d1d1f">복제본은 겉모습만 같은 DOM 조각이다. pointer-events: none으로 클릭되지 않고,</text>
+<text x="36" y="258" font-size="12" fill="#1d1d1f">aria-hidden으로 스크린 리더에도 노출되지 않는다. 포커스와 시험은 닫힌 상태를 기준으로 동작한다</text>
+<text x="36" y="278" font-size="12" fill="#6e6e73">React 19부터 ref 콜백이 정리 함수를 반환할 수 있다</text>
+</svg>

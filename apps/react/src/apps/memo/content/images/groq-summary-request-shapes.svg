@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>Groq(OpenAI 호환)와 Gemini의 요약 요청·응답 형식 비교</title>
+<rect width="640" height="440" fill="#ffffff"/>
+<text x="20" y="32" font-size="16" font-weight="700" fill="#1d1d1f">같은 프롬프트, 다른 요청 형식</text>
+<text x="20" y="52" font-size="12" fill="#6e6e73">summaryPrompt(text)와 readSummary()는 공유하고, 주소·인증·본문·응답 경로만 공급자마다 다르다</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="66" width="295" height="350" rx="10" fill="#eaf3ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="34" y="90" font-size="14" font-weight="700" fill="#0a84ff">Groq (OpenAI 호환)</text>
+<text x="34" y="114" font-weight="700">주소</text>
+<text x="34" y="132" font-family="ui-monospace, Menlo, monospace">POST api.groq.com/openai/v1</text>
+<text x="34" y="148" font-family="ui-monospace, Menlo, monospace">     /chat/completions</text>
+<text x="34" y="174" font-weight="700">인증 헤더</text>
+<text x="34" y="192" font-family="ui-monospace, Menlo, monospace">Authorization: Bearer gsk_…</text>
+<text x="34" y="218" font-weight="700">본문</text>
+<g font-family="ui-monospace, Menlo, monospace" xml:space="preserve">
+<text x="34" y="236">{ "model": "openai/gpt-oss-120b",</text>
+<text x="34" y="252">  "messages": [{ "role": "user",</text>
+<text x="34" y="268">     "content": "&lt;프롬프트&gt;" }],</text>
+<text x="34" y="284">  "temperature": 0.2,</text>
+<text x="34" y="300">  "response_format":</text>
+<text x="34" y="316">     { "type": "json_object" } }</text>
+</g>
+<text x="34" y="344" font-weight="700">응답에서 글을 꺼내는 경로</text>
+<rect x="34" y="354" width="268" height="26" rx="5" fill="#ffffff"/>
+<text x="42" y="372" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff">choices[0].message.content</text>
+<text x="34" y="404" fill="#6e6e73">OpenAI용 코드에서 주소와 키만 바꾸면 된다</text>
+
+<rect x="325" y="66" width="295" height="350" rx="10" fill="#fff8ec" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="339" y="90" font-size="14" font-weight="700" fill="#ff9f0a">Gemini</text>
+<text x="339" y="114" font-weight="700">주소</text>
+<text x="339" y="132" font-family="ui-monospace, Menlo, monospace">POST generativelanguage.</text>
+<text x="339" y="148" font-family="ui-monospace, Menlo, monospace">googleapis.com/v1beta/models/</text>
+<text x="339" y="164" font-family="ui-monospace, Menlo, monospace">{model}:generateContent</text>
+<text x="339" y="190" font-weight="700">인증 헤더</text>
+<text x="339" y="208" font-family="ui-monospace, Menlo, monospace">x-goog-api-key: …</text>
+<text x="339" y="234" font-weight="700">본문 (모델은 주소에)</text>
+<g font-family="ui-monospace, Menlo, monospace" xml:space="preserve">
+<text x="339" y="252">{ "contents": [{ "parts":</text>
+<text x="339" y="268">    [{ "text": "&lt;프롬프트&gt;" }] }],</text>
+<text x="339" y="284">  "generationConfig": {</text>
+<text x="339" y="300">    "temperature": 0.2,</text>
+<text x="339" y="316">    "responseMimeType":</text>
+<text x="339" y="332">       "application/json" } }</text>
+</g>
+<text x="339" y="352" font-weight="700">응답에서 글을 꺼내는 경로</text>
+<rect x="339" y="360" width="268" height="26" rx="5" fill="#ffffff"/>
+<text x="347" y="378" font-family="ui-monospace, Menlo, monospace" fill="#ff9f0a">candidates[0].content.parts[0].text</text>
+<text x="339" y="406" fill="#6e6e73">404면 응답이 권하는 모델로 한 번 재시도</text>
+</g>
+</svg>

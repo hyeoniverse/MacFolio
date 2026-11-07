@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>다른 출처 첨부 파일을 Blob 임시 주소로 내려받는 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">첨부 파일 주소는 페이지와 출처가 다르다</text>
+<g font-size="13">
+<rect x="20" y="46" width="600" height="72" rx="10" fill="#fff4f3" stroke="#ff3b30"/>
+<text x="36" y="70" fill="#1d1d1f" font-family="SFMono-Regular, Menlo, monospace">&lt;a href="https://(API 서버)/files/…" download="report.pdf"&gt;</text>
+<text x="36" y="96" fill="#ff3b30">페이지 출처와 다른 주소라 download 속성을 무시하고, 링크를 열듯이 이동한다</text>
+<text x="20" y="150" font-size="15" font-weight="700" fill="#1d1d1f">내려받기 버튼의 처리</text>
+<rect x="20" y="166" width="140" height="68" rx="10" fill="#f2f2f7"/>
+<text x="90" y="194" text-anchor="middle" font-weight="700" fill="#1d1d1f">fetchFileBlob</text>
+<text x="90" y="216" text-anchor="middle" fill="#6e6e73">파일 내용을 받음</text>
+<rect x="180" y="166" width="140" height="68" rx="10" fill="#f2f2f7"/>
+<text x="250" y="194" text-anchor="middle" font-weight="700" fill="#1d1d1f">Blob</text>
+<text x="250" y="216" text-anchor="middle" fill="#6e6e73">메모리의 파일 데이터</text>
+<rect x="340" y="166" width="140" height="68" rx="10" fill="#f2f2f7"/>
+<text x="410" y="194" text-anchor="middle" font-weight="700" fill="#1d1d1f">blob: 임시 주소</text>
+<text x="410" y="216" text-anchor="middle" fill="#6e6e73">페이지와 같은 출처</text>
+<rect x="500" y="166" width="120" height="68" rx="10" fill="#e8f2ff" stroke="#0a84ff"/>
+<text x="560" y="194" text-anchor="middle" font-weight="700" fill="#0a84ff">a download</text>
+<text x="560" y="216" text-anchor="middle" fill="#1d1d1f">파일 이름으로 저장</text>
+<line x1="160" y1="200" x2="178" y2="200" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="320" y1="200" x2="338" y2="200" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="480" y1="200" x2="498" y2="200" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="256" width="600" height="56" rx="10" fill="#ffffff" stroke="#ff9f0a"/>
+<text x="36" y="280" fill="#1d1d1f">받지 못하면: 새 탭에서 파일 주소를 연다</text>
+<text x="36" y="300" fill="#6e6e73">API가 Content-Disposition: attachment로 응답해 브라우저가 내려받는다</text>
+</g>
+</svg>

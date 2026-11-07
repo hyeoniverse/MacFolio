@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="330" fill="#ffffff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<text x="95" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">① trimap 원본</text>
+<text x="95" y="68" text-anchor="middle" font-size="12" fill="#6e6e73">1 동물, 2 배경, 3 경계</text>
+<rect x="20" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="35" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="50" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="65" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="80" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="95" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="110" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="125" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="140" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="155" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="20" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="35" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="50" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="65" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="80" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="95" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="110" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="125" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="140" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="155" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="20" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="35" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="50" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="65" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="80" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="95" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="110" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="125" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="140" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="155" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="20" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="35" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="50" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="65" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="80" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="95" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="110" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="125" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="140" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="155" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="20" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="35" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="50" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="65" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="80" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="95" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="110" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="125" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">3</text>
+<rect x="140" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="155" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<text x="315" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">② y[j] -= 1</text>
+<text x="315" y="68" text-anchor="middle" font-size="12" fill="#6e6e73">0 동물, 1 배경, 2 경계</text>
+<rect x="240" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="255" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="270" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="285" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="300" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="315" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="330" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="345" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="360" y="80" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="375" y="100" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="240" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="255" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="270" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="285" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="300" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="315" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="330" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="345" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="360" y="110" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="375" y="130" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="240" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="255" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="270" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="285" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">0</text>
+<rect x="300" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="315" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">0</text>
+<rect x="330" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="345" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">0</text>
+<rect x="360" y="140" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="375" y="160" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="240" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="255" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="270" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="285" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">0</text>
+<rect x="300" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="315" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">0</text>
+<rect x="330" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="345" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">0</text>
+<rect x="360" y="170" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="375" y="190" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="240" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="255" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<rect x="270" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="285" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="300" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="315" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="330" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="345" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">2</text>
+<rect x="360" y="200" width="30" height="30" fill="#f2f2f7" stroke="#ffffff"/><text x="375" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">1</text>
+<text x="535" y="50" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">③ 예측 표시 (BGR)</text>
+<text x="535" y="68" text-anchor="middle" font-size="12" fill="#6e6e73">확률 × 255를 색 채널로</text>
+<rect x="460" y="80" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="490" y="80" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="520" y="80" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="550" y="80" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="580" y="80" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="460" y="110" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="490" y="110" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="520" y="110" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="550" y="110" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="580" y="110" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="460" y="140" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="490" y="140" width="30" height="30" fill="#0a84ff" stroke="#ffffff"/>
+<rect x="520" y="140" width="30" height="30" fill="#0a84ff" stroke="#ffffff"/>
+<rect x="550" y="140" width="30" height="30" fill="#0a84ff" stroke="#ffffff"/>
+<rect x="580" y="140" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="460" y="170" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="490" y="170" width="30" height="30" fill="#0a84ff" stroke="#ffffff"/>
+<rect x="520" y="170" width="30" height="30" fill="#0a84ff" stroke="#ffffff"/>
+<rect x="550" y="170" width="30" height="30" fill="#0a84ff" stroke="#ffffff"/>
+<rect x="580" y="170" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="460" y="200" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<rect x="490" y="200" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="520" y="200" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="550" y="200" width="30" height="30" fill="#ff3b30" stroke="#ffffff"/>
+<rect x="580" y="200" width="30" height="30" fill="#34c759" stroke="#ffffff"/>
+<line x1="178" y1="155" x2="232" y2="155" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<line x1="398" y1="155" x2="452" y2="155" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="425" y="145" text-anchor="middle" font-size="12" fill="#6e6e73">U-Net</text>
+<g font-size="12" fill="#1d1d1f"><rect x="20" y="252" width="12" height="12" fill="#0a84ff"/><text x="38" y="262">채널 0(동물) → OpenCV의 B 채널 → 파랑</text>
+<rect x="20" y="272" width="12" height="12" fill="#34c759"/><text x="38" y="282">채널 1(배경) → G 채널 → 초록</text>
+<rect x="20" y="292" width="12" height="12" fill="#ff3b30"/><text x="38" y="302">채널 2(경계) → R 채널 → 빨강</text>
+<text x="330" y="262" fill="#6e6e73">sparse_categorical_crossentropy는</text><text x="330" y="282" fill="#6e6e73">0부터 시작하는 정수 레이블을 요구하므로</text><text x="330" y="302" fill="#6e6e73">1을 빼서 0, 1, 2로 맞춘다</text></g>
+</svg>

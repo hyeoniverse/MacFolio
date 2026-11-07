@@ -3,15 +3,32 @@ title: 빌드 시각에 만든 목록용 색인과 글별 청크로 원문 묶�
 date: 2026-10-31
 category: 개발 기록/MacFolio/테스트·보안·성능
 series: 성능 최적화
-seriesOrder: 6
+seriesOrder: 4
 summary: 배포 사이트에서 메모 목록이 늦게 표시되었다. 목록 하나를 그리려고 글 247편의 원문 3.76MB를 받고 있었다. 빌드 시각에 목록용 색인을 만들고, 연 글의 원문만 글별 청크로 받고, 전체 원문은 뒤에서 받도록 바꿔 목록 표시를 4.6초에서 2.3초로 줄였다.
 ---
 
-배포 사이트에서 메모 앱을 열면 창은 바로 뜨지만 목록이 비어 있는 시간이 길었다. 원인은 목록을 그리기 전에 글 247편의 원문을 담은 청크(`contentFiles`)를 모두 받는 구조였다. 이 글은 원문 없이 목록을 그리는 색인을 빌드 시각에 만들고, 본문은 연 글만 받도록 바꾼 과정을 정리한다.
+배포 사이트에서 메모 앱을 열면 창은 바로 뜨지만 목록이 비어 있는 시간이 길었다. 원인은 목록을 그리기 전에 글 247편의 원문을 담은 청크(`contentFiles`)를 모두 받는 구조였다. 목록에 필요한 정보만 담은 색인을 빌드 시각에 만들고, 본문은 연 글만 받도록 바꿨다. 결과는 중급 휴대폰을 가정한 조건에서 목록 표시 ==4.64초 → 2.30초==, 글 주소로 들어온 경우 2.66초 → 0.08초다.
+
+## 배경
+
+### 번들, 청크, 동적 import
+
+웹 앱의 소스 코드는 수백 개의 파일이지만, 브라우저가 파일마다 요청을 보내면 느리므로 빌드 도구(MacFolio는 Vite와 Vite 8에 들어 있는 번들러 Rolldown)가 파일을 몇 개의 큰 JavaScript 파일로 합친다. 합친 결과를 **번들**, 번들을 이루는 파일 하나하나를 **청크(chunk)**라 한다.
+
+모든 코드를 첫 방문에 받을 필요는 없다. `import('./Memo')`처럼 함수 형태로 쓰는 **동적 import**는 그 코드가 실행되는 시각에 모듈을 받는다. 번들러는 동적 import의 대상을 별도 청크로 분리하므로, 메모 앱 코드는 사용자가 메모를 여는 시각에 처음 내려받는다. 이를 코드 분할(code splitting)이라 한다.
+
+| 방식        | 코드                                  | 받는 시각               |
+| ----------- | ------------------------------------- | ----------------------- |
+| 정적 import | `import { listPosts } from './posts'` | 이 파일을 불러오는 시각 |
+| 동적 import | `const mod = await import('./posts')` | 이 줄이 실행되는 시각   |
+
+### 전송량과 압축
+
+서버는 텍스트 파일을 압축해 보낸다. brotli는 Google이 만든 압축 형식으로, 브라우저가 요청 헤더 `Accept-Encoding: br`로 지원을 알리면 서버가 `Content-Encoding: br`로 압축한 응답을 보낸다. 이 글의 크기는 "압축 전 / brotli 압축 후"로 구분해 적는다. 예를 들어 글 원문 묶음은 압축 전 3.76MB, brotli 압축 후 805KB다. 실제 네트워크로 전송되는 양은 압축 후 크기다.
 
 ## 측정: 네트워크가 느릴수록 목록이 늦다
 
-Playwright로 배포 사이트를 열고, Chrome DevTools Protocol의 `Emulation.setCPUThrottlingRate`와 `Network.emulateNetworkConditions`로 CPU와 네트워크를 제한했다. 측정값은 Dock에서 메모를 누른 시각부터의 경과 시간이다.
+Playwright로 배포 사이트를 열고, Chrome DevTools Protocol의 `Emulation.setCPUThrottlingRate`와 `Network.emulateNetworkConditions`로 CPU와 네트워크를 제한했다. 두 명령은 Chrome 개발자 도구의 Performance 패널에 있는 CPU 제한과 Network 패널에 있는 회선 제한을 코드로 실행한다. `setCPUThrottlingRate(4)`는 CPU를 4배 느리게, `emulateNetworkConditions`는 다운로드 속도와 지연 시간(latency)을 지정한다. 측정값은 Dock에서 메모를 누른 시각부터의 경과 시간이다.
 
 | 조건                                          | 창 표시 | 목록 표시 |
 | --------------------------------------------- | ------: | --------: |
@@ -20,7 +37,7 @@ Playwright로 배포 사이트를 열고, Chrome DevTools Protocol의 `Emulation
 | 네트워크만 10Mbps, 지연 100ms                 |   0.8초 |     3.1초 |
 | CPU 6배, 5Mbps, 지연 150ms (중급 휴대폰 가정) |   2.9초 |     8.3초 |
 
-CPU만 제한하면 창과 목록이 같은 시각에 표시되고, 네트워크를 제한하면 창이 뜬 뒤 목록까지 2초 넘게 걸린다. 병목은 처리량이 아니라 전송량이다. API 응답(`/posts`, `/memo/organization`)은 0.2~0.4초로 원인이 아니었다.
+CPU만 제한하면 창과 목록이 같은 시각에 표시되고, 네트워크를 제한하면 창이 뜬 뒤 목록까지 2초 넘게 걸린다. ==병목은 처리량이 아니라 전송량이다==. 계산으로도 확인된다. 10Mbps는 초당 약 1.25MB이므로, 배포 사이트에서 1.1MB로 전송되는 원문 묶음은 받는 데만 약 0.9초가 걸리고, 지연 100ms가 요청마다 더해진다. API 응답(`/posts`, `/memo/organization`)은 0.2~0.4초로 원인이 아니었다.
 
 ## 원인: 목록이 원문 묶음을 기다린다
 
@@ -35,7 +52,7 @@ CPU만 제한하면 창과 목록이 같은 시각에 표시되고, 네트워크
 | 검색 조건 (체크리스트·표·이미지·코드·첨부 파일이 있는 메모) | 해당 Markdown 문법이 있는지 (`POST_FILTERS`) |
 | 본문 검색                                                   | 본문 전체                                    |
 
-요약(`summary`)은 머리말에 있거나 본문 앞부분으로 만들기 때문에, 목록이 원문 전체를 필요로 하는 곳은 본문 검색뿐이다.
+요약(`summary`)은 머리말에 있거나 본문 앞부분으로 만들기 때문에, ==목록이 원문 전체를 필요로 하는 곳은 본문 검색뿐이다==.
 
 ## 개선: 색인, 글별 청크, 뒤에서 받는 원문
 
@@ -43,7 +60,7 @@ CPU만 제한하면 창과 목록이 같은 시각에 표시되고, 네트워크
 
 ### 1. 빌드 시각에 만드는 목록용 색인
 
-Vite 플러그인의 가상 모듈(virtual module)로 `virtual:post-list`를 만든다. 가상 모듈은 디스크에 파일이 없고, 플러그인의 `load` 훅이 돌려주는 코드가 모듈 내용이 된다. 빌드 시각에 모든 글을 읽어 정렬한 `Post` 배열을 JSON으로 내보낸다. 위젯용 최근 글(`virtual:recent-posts`)을 만드는 플러그인에 같은 방식으로 더했다.
+Vite 플러그인의 가상 모듈(virtual module)로 `virtual:post-list`를 만든다. 가상 모듈은 디스크에 파일이 없고, 플러그인의 `load` 훅이 돌려주는 코드가 모듈 내용이 된다. 예를 들어 앱 코드가 `import posts from 'virtual:post-list'`를 쓰면, 빌드 도구는 파일을 찾는 대신 플러그인에 이 ID의 내용을 요청하고, 플러그인은 `export default [{ slug: …, title: … }, …]` 형태의 코드 문자열을 반환한다. 빌드 시각에 모든 글을 읽어 정렬한 `Post` 배열을 JSON으로 내보낸다. 위젯용 최근 글(`virtual:recent-posts`)을 만드는 플러그인에 같은 방식으로 더했다.
 
 ```ts
 // apps/react/seo/posts.ts
@@ -85,11 +102,13 @@ export const toListingPost = (post: Post): Post => ({ ...post, body: listBody(po
 #React #상태관리
 ````
 
-`bodyPending: true`는 이 글의 `body`가 원문이 아니라는 표시다. 단위 시험(`listing.test.ts`)은 같은 글의 원문과 색인 본문에 대해 `firstImage`, `tagsOf`, 다섯 가지 검색 조건이 같은 값을 돌려주는지 확인한다. 색인은 메모 앱 청크에 들어가며, 청크는 압축 전 1,410KB에서 1,642KB로, brotli 압축으로는 224KB에서 269KB로 커졌다. 원문 묶음 805KB를 기다리지 않는 대신 45KB를 더 받는다.
+![원문과 색인 본문 비교](./images/memo-post-list-index-listbody.svg '원문에서 목록이 읽는 줄(파란 줄)만 남긴 것이 색인 본문이다. 같은 함수에 넣으면 첫 그림, 태그, 검색 조건이 원문과 같은 값으로 나온다')
+
+`bodyPending: true`는 이 글의 `body`가 원문이 아니라는 표시다. 단위 시험(`listing.test.ts`)은 같은 글의 원문과 색인 본문에 대해 `firstImage`, `tagsOf`, 다섯 가지 검색 조건이 같은 값을 돌려주는지 확인한다. 색인은 메모 앱 청크에 들어가며, 청크는 압축 전 1,410KB에서 1,642KB로, brotli 압축으로는 224KB에서 269KB로 커졌다. ==원문 묶음 805KB를 기다리지 않는 대신 45KB를 더 받는다==.
 
 ### 2. 연 글만 받는 글별 청크
 
-본문을 그리려면 연 글의 원문이 필요하다. [`import.meta.glob`](https://vite.dev/guide/features.html#glob-import)을 `eager` 없이 쓰면 파일마다 동적 `import()` 함수가 생기고, 번들러는 파일마다 청크를 만든다.
+본문을 그리려면 연 글의 원문이 필요하다. [`import.meta.glob`](https://vite.dev/guide/features.html#glob-import)은 Vite가 제공하는 함수로, 경로 패턴에 맞는 파일 목록을 빌드 시각에 객체로 만든다. `eager` 옵션 없이 쓰면 각 값이 파일을 동적 `import()`로 받는 함수가 되고, 번들러는 파일마다 청크를 만든다.
 
 ```ts
 // apps/react/src/apps/memo/repository/postBody.ts
@@ -101,7 +120,9 @@ export async function loadPostBody(slug: PostSlug): Promise<string | null> {
 }
 ```
 
-쿼리를 `?raw`가 아니라 `?raw&single`로 쓴 이유는 모듈 ID를 나누기 위해서다. 전체 원문 묶음(`contentFiles.ts`)도 같은 파일을 `?raw`로 정적으로 가져온다. 모듈 ID가 같으면 Rollup은 그 모듈을 이미 있는 `contentFiles` 청크에 두고, 동적 `import()`는 그 큰 청크를 가리킨다. 쿼리가 다르면 다른 모듈이 되어 글마다 청크가 생긴다. Vite의 `?raw` 처리는 쿼리에 `raw`가 있는지만 보므로 `&single`을 붙여도 원문 문자열을 돌려준다. 빌드 결과 JS 파일은 325개에서 572개로 늘었고, Flux 글의 청크는 33KB(brotli 10KB)다.
+쿼리를 `?raw`가 아니라 `?raw&single`로 쓴 이유는 모듈 ID를 나누기 위해서다. `?raw`는 파일을 JavaScript로 해석하지 않고 내용 그대로 문자열로 가져오라는 Vite의 지시다. 전체 원문 묶음(`contentFiles.ts`)도 같은 파일을 `?raw`로 정적으로 가져온다. 모듈 ID가 같으면 번들러는 그 모듈을 이미 있는 `contentFiles` 청크에 두고, 동적 `import()`는 그 큰 청크를 가리킨다. ==쿼리가 다르면 다른 모듈이 되어 글마다 청크가 생긴다==. Vite의 `?raw` 처리는 쿼리에 `raw`가 있는지만 보므로 `&single`을 붙여도 원문 문자열을 돌려준다. 빌드 결과 JS 파일은 325개에서 572개로 늘었고, Flux 글의 청크는 33KB(brotli 10KB)다.
+
+![모듈 ID와 청크 배치](./images/memo-post-list-index-module-id.svg '같은 ?raw를 두 번 가져오면 모듈 하나가 contentFiles 청크에 들어가 글 하나를 열어도 묶음 전체를 받는다. 쿼리를 ?raw&single로 바꾸면 다른 모듈이 되어 글마다 청크가 생긴다')
 
 메모 앱은 연 글이 `bodyPending`이면 이 함수로 원문을 받아 그 글만 바꾼다.
 
@@ -117,21 +138,24 @@ useEffect(() => {
 
 ### 3. 전체 원문은 뒤에서 받는다
 
-본문 검색과 관리자 편집에는 모든 글의 원문이 필요하다. 메모 앱이 마운트되면 바로 `contentFiles`를 요청하고, 받으면 색인을 원문 글로 바꾼다. 색인이 화면에 있는 동안 본문 검색은 제목·요약·태그로만 찾는다.
+본문 검색과 관리자 편집에는 모든 글의 원문이 필요하다. 메모 앱이 마운트되면 바로 `contentFiles`를 요청하고, 받으면 색인을 원문 글로 바꾼다. 색인이 화면에 있는 동안 본문 검색은 제목·요약·태그로만 찾는다. 예를 들어 "useSyncExternalStore"처럼 본문에만 있는 단어는, 원문 묶음이 도착하기 전에는 검색 결과에 나오지 않고 도착한 뒤에 나온다.
 
 예전에는 `useMemoLibrary.ts`가 `contentFiles`를 정적으로 import해 메모 앱 청크의 의존성으로 만들었다. 이 import를 지우고 목록을 그린 뒤 동적 `import()`로 받는다.
 
 ## 원문을 받기 전의 글을 다루는 규칙
 
-색인 본문은 원문의 일부만 담으므로, 원문으로 착각하면 글이 손상된다. 세 곳에 규칙을 두었다.
+> [!WARNING] 색인 본문과 원문의 구분
+> 색인 본문은 원문의 일부만 담으므로, 원문으로 착각하면 글이 손상된다.
 
-- **편집기:** 관리자 화면에서 `bodyPending`인 글은 편집기(`PostWriter`)에 열지 않는다. 열면 편집기가 색인 본문을 초안으로 읽고, 고친 내용과 함께 서버에 저장할 수 있다. 원문이 오면 편집기를 연다.
+세 곳에 규칙을 두었다.
+
+- **편집기:** 관리자 화면에서 `bodyPending`인 글은 편집기(`PostWriter`)에 열지 않는다. 열면 편집기가 색인 본문을 초안으로 읽고, 고친 내용과 함께 서버에 저장할 수 있다. 예를 들어 원문 15,000자인 글이 그림 한 줄과 태그 한 줄만 남은 상태로 서버에 저장된다. 원문이 오면 편집기를 연다.
 - **스크롤 위치 복원:** 뒤로·앞으로 기록으로 돌아온 글은 떠날 시각의 스크롤 위치에서 시작한다([메모 기록](/memo/memo-history-nav)). 본문이 비어 있으면 그 위치로 스크롤할 수 없으므로, 원문이 온 뒤에 위치를 맞춘다.
 - **로딩 상태 제거:** 목록이 원문을 기다리는 동안 쓰던 `status`(`loading`·`ready`·`error`)와 "불러오는 중…" 표시를 지웠다. 색인이 앱과 함께 오므로 목록은 처음부터 그려진다. 주소 막대 갱신과 기록 정리가 기다리던 `ready` 값도 함께 지웠다.
 
 ## 시행착오: 첫 방문 번들이 4.5KB 늘었다
 
-처음에는 `loadPostBody`를 글 저장소 모듈(`repository/index.ts`)에 두었다. CI의 성능 예산 검사(`pnpm perf:budget`)가 첫 방문 번들 267.8KB로 상한 265KB를 넘었다고 실패했다. 글 저장소는 Finder의 블로그 폴더도 쓰기 때문에 첫 화면 묶음에 들어 있고, 247편의 `import()` 함수 목록이 함께 들어갔다. 이 함수를 메모 앱만 import하는 `postBody.ts`로 옮겨 263.2KB로 되돌렸다.
+처음에는 `loadPostBody`를 글 저장소 모듈(`repository/index.ts`)에 두었다. CI의 성능 예산 검사(`pnpm perf:budget`)가 첫 방문 번들 267.8KB로 상한 265KB를 넘었다고 실패했다. 글 저장소는 Finder의 블로그 폴더도 쓰기 때문에 첫 화면 묶음에 들어 있고, 247편의 `import()` 함수 목록이 함께 들어갔다. 각 함수는 `() => import('./assets/flux-pattern-a1b2c3.js')` 같은 짧은 코드지만 247개가 모이면 수 KB가 된다. 이 함수를 메모 앱만 import하는 `postBody.ts`로 옮겨 263.2KB로 되돌렸다.
 
 ## 결과
 
@@ -143,7 +167,12 @@ useEffect(() => {
 | 네트워크만 10Mbps, 지연 100ms, Dock에서 열기                       |     2.32초 / 2.32초 |     0.81초 / 0.92초 |
 | CPU 6배, 5Mbps, 지연 150ms, 글 주소(`/memo/flux-pattern`)로 들어옴 |     2.66초 / 2.72초 |     0.08초 / 0.12초 |
 
-글 주소로 들어오면 로딩 화면을 보는 동안 메모 앱 청크와 그 글의 청크를 받으므로, 로딩 화면이 걷힌 시각에 목록과 본문이 이미 그려져 있다. 로컬 서버는 배포 사이트보다 응답이 빨라 개선 전 수치(4.6초)가 배포 사이트 측정값(8.3초)보다 작다.
+![조건별 목록 표시 시간](./images/memo-post-list-index-results.svg '세 조건 모두 목록 표시가 빨라졌다. 글 주소로 들어온 경우는 로딩 화면이 걷히는 시각에 목록이 이미 그려져 있어 0.08초다')
+
+글 주소로 들어오면 로딩 화면을 보는 동안 메모 앱 청크와 그 글의 청크를 받으므로, 로딩 화면이 걷힌 시각에 목록과 본문이 이미 그려져 있다.
+
+> [!NOTE] 측정 환경의 차이
+> 로컬 서버는 배포 사이트보다 응답이 빨라 개선 전 수치(4.6초)가 배포 사이트 측정값(8.3초)보다 작다.
 
 ## 남은 것
 
@@ -152,9 +181,22 @@ useEffect(() => {
 
 ## 관련 글
 
-- [글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 글 원문을 첫 방문 번들에서 뺀 이전 단계
-- [#boot-splash 삭제 시각을 늦춰 휴대폰 LCP 후보를 지키고 CI 성능 예산 걸기](/memo/site-performance-lcp-budget): 이번에 첫 방문 번들 증가를 잡아낸 성능 예산
+- [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](/memo/site-performance-diet): 글 원문을 첫 방문 번들에서 뺀 이전 단계
+- [Lighthouse 운영 재측정, 명언 데이터 lazy 분리, #boot-splash 삭제 시각으로 휴대폰 LCP 편차 해결과 CI 성능 예산](/memo/site-performance-lcp-budget): 이번에 첫 방문 번들 증가를 잡아낸 성능 예산
 - [git 첫 커밋 시각을 Vite 가상 모듈로 넣어 같은 날 글 정렬하기](/memo/memo-same-day-order): 색인과 같은 방식의 가상 모듈
 - [브라우저 history 대신 sessionStorage에 쌓는 앱 내부 뒤로·앞으로 기록](/memo/memo-history-nav): 원문이 온 뒤로 미룬 스크롤 위치 복원
+
+<details>
+<summary>참고 문헌</summary>
+
+- Vite, [Features: Glob Import](https://vite.dev/guide/features.html#glob-import), [Importing Asset as String (`?raw`)](https://vite.dev/guide/assets.html#importing-asset-as-string)
+- Vite, [Plugin API: Virtual Modules Convention](https://vite.dev/guide/api-plugin.html#virtual-modules-convention)
+- Rolldown, [Code Splitting](https://rolldown.rs/in-depth/automatic-code-splitting)
+- MDN, [import()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/import)
+- MDN, [Content-Encoding](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Encoding)
+- RFC 7932, [Brotli Compressed Data Format](https://www.rfc-editor.org/rfc/rfc7932)
+- Chrome DevTools Protocol, [Emulation.setCPUThrottlingRate](https://chromedevtools.github.io/devtools-protocol/tot/Emulation/#method-setCPUThrottlingRate), [Network.emulateNetworkConditions](https://chromedevtools.github.io/devtools-protocol/tot/Network/#method-emulateNetworkConditions)
+
+</details>
 
 #MacFolio #성능 #Vite #번들 #메모앱

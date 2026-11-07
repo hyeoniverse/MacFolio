@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>GitHub 아이디 기준 관리자 판정의 위험</title>
+  <rect width="640" height="340" fill="#ffffff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1d1d1f">관리자가 GitHub 아이디를 바꾼 뒤 일어날 수 있는 일 (예시 값)</text>
+  <g font-size="12">
+    <text x="20" y="62" font-weight="600" fill="#1d1d1f">GitHub 계정 상태</text>
+    <rect x="20" y="72" width="190" height="62" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="34" y="92" fill="#1d1d1f">① 관리자 계정</text><text x="34" y="110" fill="#6e6e73">login: site-owner</text><text x="34" y="126" fill="#6e6e73">id: 1000001</text>
+    <rect x="225" y="72" width="190" height="62" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="239" y="92" fill="#1d1d1f">② 관리자가 아이디 변경</text><text x="239" y="110" fill="#6e6e73">login: owner-new</text><text x="239" y="126" fill="#6e6e73">id: 1000001 (그대로)</text>
+    <rect x="430" y="72" width="190" height="62" rx="10" fill="#fff5f5" stroke="#ff3b30"/>
+    <text x="444" y="92" fill="#1d1d1f">③ 다른 사람이 옛 아이디 등록</text><text x="444" y="110" fill="#6e6e73">login: site-owner</text><text x="444" y="126" fill="#6e6e73">id: 2000002</text>
+
+    <text x="20" y="172" font-weight="600" fill="#1d1d1f">③의 사람이 로그인했을 때 서버의 판정</text>
+    <rect x="20" y="184" width="290" height="132" rx="12" fill="#fff5f5" stroke="#ff3b30" stroke-width="2"/>
+    <text x="36" y="208" font-weight="600" fill="#ff3b30">수정 전: login으로 비교</text>
+    <text x="36" y="234" fill="#1d1d1f">설정값 "site-owner"</text>
+    <text x="36" y="254" fill="#1d1d1f">== 로그인한 login "site-owner"</text>
+    <text x="36" y="284" font-weight="600" fill="#ff3b30">→ 관리자로 통과</text>
+    <rect x="330" y="184" width="290" height="132" rx="12" fill="#effaf2" stroke="#34c759" stroke-width="2"/>
+    <text x="346" y="208" font-weight="600" fill="#34c759">수정 후: 숫자 id로 비교</text>
+    <text x="346" y="234" fill="#1d1d1f">설정값 1000001</text>
+    <text x="346" y="254" fill="#1d1d1f">≠ 로그인한 id 2000002</text>
+    <text x="346" y="284" font-weight="600" fill="#34c759">→ 관리자 아님, 차단</text>
+  </g>
+</svg>

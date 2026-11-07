@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>롤백 훈련에서 확인한 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="300" fill="#ffffff"/>
+<rect x="16" y="20" width="140" height="70" rx="10" fill="#ecfaef" stroke="#34c759"/>
+<text x="86" y="44" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">① 훈련 전</text>
+<text x="86" y="62" font-size="12" fill="#1d1d1f" text-anchor="middle">sha-7e7eac0</text>
+<text x="86" y="80" font-size="12" fill="#34c759" text-anchor="middle">healthy</text>
+<line x1="156" y1="55" x2="174" y2="55" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="178" y="20" width="140" height="70" rx="10" fill="#f2f2f7"/>
+<text x="248" y="44" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">② 배포 실행</text>
+<text x="248" y="62" font-size="12" fill="#1d1d1f" text-anchor="middle">sha-dead000</text>
+<text x="248" y="80" font-size="12" fill="#6e6e73" text-anchor="middle">항상 실패하는 이미지</text>
+<line x1="318" y1="55" x2="336" y2="55" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="340" y="20" width="140" height="70" rx="10" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="410" y="44" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">③ 헬스 체크</text>
+<text x="410" y="62" font-size="12" fill="#ff3b30" text-anchor="middle">통과하지 못함</text>
+<text x="410" y="80" font-size="12" fill="#6e6e73" text-anchor="middle">unhealthy</text>
+<line x1="480" y1="55" x2="498" y2="55" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="502" y="20" width="122" height="70" rx="10" fill="#ecfaef" stroke="#34c759"/>
+<text x="563" y="44" font-size="12" font-weight="700" fill="#1d1d1f" text-anchor="middle">④ 되돌림</text>
+<text x="563" y="62" font-size="12" fill="#1d1d1f" text-anchor="middle">sha-7e7eac0</text>
+<text x="563" y="80" font-size="12" fill="#34c759" text-anchor="middle">다시 healthy</text>
+<text x="20" y="130" font-size="13" font-weight="700" fill="#1d1d1f">서버 로그 두 줄의 시각 차이</text>
+<line x1="40" y1="190" x2="600" y2="190" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="120" cy="190" r="6" fill="#ff9f0a"/>
+<text x="120" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">이전 버전으로 되돌린다:</text>
+<text x="120" y="180" font-size="12" fill="#1d1d1f" text-anchor="middle">sha-7e7eac0</text>
+<circle cx="520" cy="190" r="6" fill="#34c759"/>
+<text x="520" y="166" font-size="12" fill="#1d1d1f" text-anchor="middle">배포 실패, 되돌림:</text>
+<text x="520" y="180" font-size="12" fill="#1d1d1f" text-anchor="middle">sha-7e7eac0가 다시 떠 있다</text>
+<line x1="126" y1="214" x2="514" y2="214" stroke="#0a84ff" stroke-width="1.5"/>
+<line x1="126" y1="206" x2="126" y2="222" stroke="#0a84ff" stroke-width="1.5"/>
+<line x1="514" y1="206" x2="514" y2="222" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320" y="240" font-size="14" font-weight="700" fill="#0a84ff" text-anchor="middle">41초</text>
+<text x="20" y="280" font-size="12" fill="#6e6e73">GitHub Actions의 배포 워크플로는 3분 만에 실패로 종료됐다</text>
+</svg>

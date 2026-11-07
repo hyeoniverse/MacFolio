@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 500" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="500" fill="#fff"/>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">iPhone 13 (레이아웃 뷰포트 844px, 키보드 336px)에서 두 함수가 반환하는 값</text>
+  <!-- A -->
+  <text x="30" y="52" font-size="13" font-weight="600" fill="#1d1d1f">① 입력 칸이 위쪽 (offsetTop 0)</text>
+  <rect x="40" y="64" width="110" height="211" rx="8" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.5"/>
+  <rect x="44" y="66" width="102" height="125" rx="5" fill="#fff" stroke="#0a84ff" stroke-width="2" stroke-dasharray="5 3"/>
+  <rect x="40" y="191" width="110" height="84" rx="4" fill="#6e6e73" opacity="0.85"/>
+  <text x="95" y="238" text-anchor="middle" font-size="12" fill="#fff">키보드 336</text>
+  <text x="95" y="132" text-anchor="middle" font-size="12" fill="#0a84ff">보이는 영역 508</text>
+  <line x1="160" y1="64" x2="160" y2="275" stroke="#6e6e73"/>
+  <text x="168" y="172" font-size="12" fill="#1d1d1f">레이아웃 뷰포트</text>
+  <text x="168" y="188" font-size="12" fill="#1d1d1f">844px</text>
+  <text x="168" y="240" font-size="12" fill="#ff3b30">가려진 높이</text>
+  <text x="168" y="256" font-size="12" fill="#ff3b30">336px</text>
+  <!-- B -->
+  <text x="340" y="52" font-size="13" font-weight="600" fill="#1d1d1f">② 입력 칸이 맨 아래 (offsetTop 336)</text>
+  <rect x="350" y="64" width="110" height="211" rx="8" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="1.5"/>
+  <rect x="354" y="148" width="102" height="125" rx="5" fill="#fff" stroke="#0a84ff" stroke-width="2" stroke-dasharray="5 3"/>
+  <rect x="350" y="275" width="110" height="84" rx="4" fill="#6e6e73" opacity="0.85"/>
+  <text x="405" y="322" text-anchor="middle" font-size="12" fill="#fff">키보드 336</text>
+  <text x="405" y="214" text-anchor="middle" font-size="12" fill="#0a84ff">보이는 영역 508</text>
+  <line x1="470" y1="64" x2="470" y2="148" stroke="#ff9f0a" stroke-width="2"/>
+  <text x="478" y="102" font-size="12" fill="#ff9f0a">offsetTop</text>
+  <text x="478" y="118" font-size="12" fill="#ff9f0a">336px</text>
+  <text x="478" y="206" font-size="12" fill="#1d1d1f">레이아웃 뷰포트</text>
+  <text x="478" y="222" font-size="12" fill="#1d1d1f">아래 끝 = 보이는 끝</text>
+  <text x="478" y="322" font-size="12" fill="#6e6e73">키보드는 레이아웃</text>
+  <text x="478" y="338" font-size="12" fill="#6e6e73">뷰포트 밖에 놓인다</text>
+  <!-- values -->
+  <line x1="20" y1="380" x2="620" y2="380" stroke="#d1d1d6"/>
+  <text x="30" y="404" font-size="12" fill="#6e6e73">keyboardInset() = innerHeight − (height + offsetTop)</text>
+  <text x="30" y="426" font-size="13" font-weight="600" fill="#1d1d1f">= 844 − (508 + 0) = 336</text>
+  <text x="30" y="456" font-size="12" fill="#6e6e73">keyboardViewport()</text>
+  <text x="30" y="478" font-size="13" font-weight="600" fill="#1d1d1f">{ top: 0, height: 508 }</text>
+  <text x="340" y="404" font-size="12" fill="#6e6e73">keyboardInset()</text>
+  <text x="340" y="426" font-size="13" font-weight="600" fill="#ff3b30">= 844 − (508 + 336) = 0  키보드를 놓친다</text>
+  <text x="340" y="456" font-size="12" fill="#6e6e73">keyboardViewport() (844 − 508 = 336 ≥ 120)</text>
+  <text x="340" y="478" font-size="13" font-weight="600" fill="#34c759">{ top: 336, height: 508 }</text>
+</svg>

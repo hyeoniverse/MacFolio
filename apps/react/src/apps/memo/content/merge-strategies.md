@@ -1,11 +1,13 @@
 ---
-title: GitHub 병합 방식 세 가지 — Create a merge commit, Squash and merge, Rebase and merge
+title: 'GitHub 병합 방식 세 가지: Create a merge commit, Squash and merge, Rebase and merge'
 date: 2026-10-12
 category: 기술 노트/Git
 summary: GitHub의 세 병합 방식이 main의 커밋 그래프·SHA·커미터·서명과 되돌리기·bisect·blame을 어떻게 바꾸는지 도식과 표로 정리하고, 고르는 질문 세 개, 팀 유형별 선택, 저장소 설정으로 한 방식에 고정하는 절차를 적었다.
 ---
 
-GitHub PR 페이지의 Merge 버튼을 누르면 세 가지 방식 가운데 하나를 선택한다. Create a merge commit, Squash and merge, Rebase and merge. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 어느 것이 맞는지는 저장소마다 다르다. 이 글에서는 무엇이 달라서 답이 갈리는지, 그리고 어떤 질문으로 고르면 되는지 정리한다.
+Git에서 새 기능은 보통 main에서 갈라진 브랜치(branch)에 커밋으로 쌓고, 다 만들면 main에 합친다. 이 합치는 작업이 병합(merge)이다. GitHub에서는 브랜치의 변경을 PR(pull request)로 올려 리뷰를 받고, PR 페이지의 Merge 버튼으로 병합한다.
+
+Merge 버튼 옆 ▾를 누르면 Create a merge commit, Squash and merge, Rebase and merge 세 가지 방식 가운데 하나를 선택한다. 셋 다 "브랜치의 변경을 main에 넣는다"는 결과는 같지만, main의 커밋 기록이 다르게 남는다. 예를 들어 커밋 세 개가 든 PR을 병합하면 main에 커밋이 네 개(Merge commit), 한 개(Squash), 세 개(Rebase) 생긴다. 어느 것이 맞는지는 저장소마다 다르므로, 아래에서는 무엇이 달라서 답이 갈리는지와 어떤 질문으로 고르면 되는지 정리한다.
 
 <details id="terms">
 <summary>먼저 알아 둘 용어</summary>
@@ -74,7 +76,11 @@ A·B·C의 diff[^diff]를 합쳐 커밋 S 하나를 만들어 main 끝에 붙인
 
 ### Rebase and merge
 
-A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 단위는 남고 기록은 직선이지만, 다시 만든 커밋이라 SHA가 모두 바뀐다. 커미터는 병합 버튼을 누른 사용자, 커밋 시각은 병합 시각으로 바뀌고, 원래 SHA에 걸려 있던 GPG 서명은 사라진다.[^gpg] 브랜치 안에 머지 커밋(main을 합친 것)이 있으면 그 머지 커밋은 기록에서 제거되고, 충돌을 해결했던 내용이 앞뒤의 다른 커밋에 섞여 들어간다. 로컬에서 `git rebase`를 실행할 때와 달리 충돌이 발생하면 GitHub에서는 병합할 수 없고, 브랜치에서 먼저 충돌을 해결해야 한다.
+A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 단위는 남고 기록은 직선이지만, 다시 만든 커밋이라 SHA가 모두 바뀐다. 커미터는 병합 버튼을 누른 사용자, 커밋 시각은 병합 시각으로 바뀌고, ==원래 SHA에 걸려 있던 GPG 서명은 사라진다==.[^gpg] 브랜치 안에 머지 커밋(main을 합친 것)이 있으면 그 머지 커밋은 기록에서 제거되고, 충돌을 해결했던 내용이 앞뒤의 다른 커밋에 섞여 들어간다. 로컬에서 `git rebase`를 실행할 때와 달리 충돌이 발생하면 GitHub에서는 병합할 수 없고, 브랜치에서 먼저 충돌을 해결해야 한다.
+
+SHA가 바뀌는 이유는 SHA의 계산 방식에 있다. Git은 커밋을 파일 내용의 스냅숏(tree), 부모 커밋, 작성자, 커미터, 서명, 메시지를 적은 텍스트 객체로 저장하고, 이 텍스트 전체의 해시값을 SHA로 쓴다. Rebase로 A를 M2 뒤에 다시 적용하면 파일 내용과 메시지가 같아도 부모(M1 → M2)와 커미터·커밋 시각이 바뀌므로 해시값이 달라진다.
+
+![커밋 A와 다시 만든 A'의 필드 비교](./images/merge-strategies-sha.svg '파일 내용과 메시지는 같지만 parent, committer, 서명이 바뀌어 SHA가 새로 계산된다')
 
 ## 어느 것을 쓸지 정하는 질문 세 개
 
@@ -94,9 +100,11 @@ A·B·C를 M2 뒤에 하나씩 다시 적용해 A'·B'·C'를 만든다. 커밋 
 
 - **Squash**: 커밋 S 하나가 곧 PR이므로 `git revert S`로 끝난다. 가장 단순하다.
 - **Rebase**: A'·B'·C' 세 개를 범위로 되돌린다. `git revert C'~3..C'`[^range]처럼 적어야 하고, 사이에 다른 PR의 커밋이 끼어 있으면 범위를 잘라 적어야 한다.
-- **Merge commit**: `git revert -m 1 M3`처럼 어느 부모를 기준으로 할지 지정해야 한다. 머지 커밋은 부모가 둘이라 "어느 쪽에 비해 바뀐 것을 되돌릴지"가 정해지지 않기 때문이다. `-m 1`은 첫째 부모(main 쪽)를 기준으로 삼아, 브랜치가 가져온 변경 전체를 되돌린다는 뜻이다. 주의할 점이 하나 있다. 되돌린 뒤 같은 브랜치를 고쳐 다시 병합하면, Git은 브랜치의 예전 커밋들이 이미 병합되었다고 보고 그 변경을 다시 넣지 않는다. 이때는 다시 병합하기 전에 앞서 만든 revert 커밋을 한 번 더 revert해야 한다.[^revert-revert]
+- **Merge commit**: `git revert -m 1 M3`처럼 어느 부모를 기준으로 할지 지정해야 한다. 머지 커밋은 부모가 둘이라 "어느 쪽에 비해 바뀐 것을 되돌릴지"가 정해지지 않기 때문이다. `-m 1`은 첫째 부모(main 쪽)를 기준으로 삼아, 브랜치가 가져온 변경 전체를 되돌린다는 뜻이다. 주의할 점이 하나 있다. 되돌린 뒤 같은 브랜치를 고쳐 다시 병합하면, Git은 브랜치의 예전 커밋들이 이미 병합되었다고 보고 그 변경을 다시 넣지 않는다. 이때는 ==다시 병합하기 전에 앞서 만든 revert 커밋을 한 번 더 revert해야 한다==.[^revert-revert]
 
 `git bisect`[^bisect]로 찾을 때는 반대로 커밋이 잘게 남은 쪽이 유리하다. 찾아낸 커밋의 diff가 작을수록 원인이 되는 줄을 찾는 범위도 좁다. Rebase가 가장 좋고, Merge commit은 `git bisect start --first-parent`로 먼저 어느 PR인지 찾고, 그 PR 안의 커밋으로 다시 좁힐 수 있다. Squash는 PR 하나가 커밋 하나라서 "이 PR이 원인"까지만 좁혀지고, PR의 diff가 크면 그 안에서는 직접 찾아야 한다.
+
+![세 방식에서 bisect가 좁히는 단위](./images/merge-strategies-bisect.svg 'PR 안의 B가 버그를 만든 경우. Merge commit과 Rebase는 B까지, Squash는 PR 전체인 S까지 좁힌다')
 
 ## 줄 단위 이력과 PR 찾기
 
@@ -127,7 +135,7 @@ Squash는 메시지만 조회하면 PR 번호가 나오고, 반대로 PR 안에�
 - **커밋을 정성껏 쪼개는 팀 → Rebase.** 커밋마다 빌드가 되고 뜻이 있는 팀이라면 직선 기록과 커밋 단위를 둘 다 얻는다. 브랜치에서 `git merge main`을 쓰지 않고 `git rebase main`으로 따라가는 규칙이 같이 필요하다.
 - **배포·태그·문서가 SHA에 묶여 있거나 PR 경계를 기록에 남기고 싶은 곳 → Merge commit.** 배포 이미지 태그를 머지 커밋 SHA로 만들거나, PR 본문과 문서에서 커밋 링크를 쓰거나, 서명된 커밋을 유지해야 하면 SHA가 바뀌지 않는 방식이어야 한다. 충돌을 `git merge main`으로 푸는 팀도 여기에 든다.
 
-어느 쪽이든 한 저장소 안에서는 한 가지로 통일하는 편이 좋다. 섞어 쓰면 기록 모양이 PR마다 달라진다. 머지 커밋이 있는 PR과 없는 PR이 섞이면 `--first-parent`로 조회해도 PR 단위로 나뉘지 않고(Rebase로 들어온 PR은 커밋이 여러 줄로 출력된다), `bisect`로 찾은 결과도 PR에 따라 PR 전체이거나 커밋 하나가 되어 해석이 번거롭다.
+어느 쪽이든 ==한 저장소 안에서는 한 가지로 통일하는 편==이 좋다. 섞어 쓰면 기록 모양이 PR마다 달라진다. 머지 커밋이 있는 PR과 없는 PR이 섞이면 `--first-parent`로 조회해도 PR 단위로 나뉘지 않고(Rebase로 들어온 PR은 커밋이 여러 줄로 출력된다), `bisect`로 찾은 결과도 PR에 따라 PR 전체이거나 커밋 하나가 되어 해석이 번거롭다.
 
 ## 저장소 설정으로 고정하기
 
@@ -167,26 +175,24 @@ Squash를 쓰는 저장소는 PR 제목이 곧 main의 커밋 제목이 되므�
 
 </details>
 
-브랜치 규칙으로 방식을 제한할 수도 있다. Ruleset이나 브랜치 보호 규칙에서 **Require linear history**를 켜면 그 브랜치에는 머지 커밋이 들어갈 수 없어, Merge 버튼에서 Create a merge commit을 고를 수 없다. Squash나 Rebase 하나로 정한 저장소라면 이 규칙이 실수로 생기는 머지 커밋까지 막는다.
-
-공식 문서: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Configuring commit merging](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/configuring-commit-merging-for-pull-requests), [Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches), [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
+> [!TIP] Require linear history로 머지 커밋 차단
+> 브랜치 규칙으로 방식을 제한할 수도 있다. Ruleset이나 브랜치 보호 규칙에서 **Require linear history**를 켜면 그 브랜치에는 머지 커밋이 들어갈 수 없어, Merge 버튼에서 Create a merge commit을 고를 수 없다. Squash나 Rebase 하나로 정한 저장소라면 이 규칙이 실수로 생기는 머지 커밋까지 막는다.
 
 ## 정리
 
 - 세 방식은 "변경을 main에 넣는다"는 결과는 같고, main에 남는 기록이 다르다. Merge commit은 커밋과 SHA를 그대로 두고 PR 경계를 머지 커밋으로 남긴다. Squash는 PR 하나를 커밋 하나로 합친다. Rebase는 커밋 단위를 남기되 SHA를 새로 만든다
 - 고를 때는 세 가지를 묻는다. 커밋 단위가 남을 가치가 있는가, SHA를 바깥(배포 태그, 문서 속 커밋 링크, 서명)에서 가리키는가, 브랜치 안에 머지 커밋이 있는가
-- "기록을 어떻게 읽을 것인가"보다 "무엇이 SHA를 가리키는가"로 답이 정해지는 경우가 많다. 바깥에서 SHA를 참조하는 곳(배포 태그, 문서 속 링크, 서명)의 목록부터 정리하면 빨리 정해진다
+- "기록을 어떻게 읽을 것인가"보다 =="무엇이 SHA를 가리키는가"로 답이 정해지는 경우==가 많다. 바깥에서 SHA를 참조하는 곳(배포 태그, 문서 속 링크, 서명)의 목록부터 정리하면 빨리 정해진다
 - Merge commit 방식에서는 브랜치의 커밋이 그대로 main에 남으므로, Squash 방식보다 커밋 하나하나의 메시지 규칙이 더 중요하다
 - 한 저장소 안에서는 한 가지로 통일하고, 저장소 설정에서 나머지 방식을 꺼 두어 실수로 다른 방식을 고르지 않게 한다
 
-## 관련 글
+<details>
+<summary>참고 문헌</summary>
 
-- [main 커밋 기록 집계로 Merge commit 병합 전략 정하기](/memo/macfolio-merge-strategy): 이 글의 기준을 한 저장소의 main 기록에 적용한 사례
+- Git: [git-merge](https://git-scm.com/docs/git-merge), [git-rebase](https://git-scm.com/docs/git-rebase), [git-revert](https://git-scm.com/docs/git-revert), [git-bisect](https://git-scm.com/docs/git-bisect), [git-log](https://git-scm.com/docs/git-log), [git-blame](https://git-scm.com/docs/git-blame), [Pro Git: Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing), [Pro Git: Git Objects](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects) (커밋 객체의 tree·parent·author·committer·메시지)
+- GitHub: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Configuring commit merging](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/configuring-commit-merging-for-pull-requests), [Managing the automatic deletion of branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches), [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets), [Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request), [Reverting a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/reverting-a-pull-request), [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 
-## 참고 문서
-
-- Git: [git-merge](https://git-scm.com/docs/git-merge), [git-rebase](https://git-scm.com/docs/git-rebase), [git-revert](https://git-scm.com/docs/git-revert), [git-bisect](https://git-scm.com/docs/git-bisect), [git-log](https://git-scm.com/docs/git-log), [git-blame](https://git-scm.com/docs/git-blame), [Pro Git: Rebasing](https://git-scm.com/book/en/v2/Git-Branching-Rebasing)
-- GitHub: [About merge methods on GitHub](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github), [Merging a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/merging-a-pull-request), [Reverting a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/incorporating-changes-from-a-pull-request/reverting-a-pull-request), [About protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
+</details>
 
 [^no-ff]: main이 브랜치를 만든 뒤로 바뀌지 않았다면 Git은 머지 커밋 없이 main 포인터만 브랜치 끝으로 옮긴다(fast-forward). `--no-ff`는 이때도 머지 커밋을 꼭 만들라는 옵션이다. GitHub의 Create a merge commit은 늘 이렇게 동작한다.
 

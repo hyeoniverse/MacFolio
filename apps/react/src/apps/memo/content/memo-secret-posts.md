@@ -5,7 +5,7 @@ category: 개발 기록/MacFolio/서버·API
 summary: 서버에 쓴 글을 관리자에게만 보이게 하는 비밀 글을 더했다. 글 주소를 받는 공개 API를 git grep으로 모두 찾아 서버에서 필터링하고, 방문자에게는 없는 글과 같은 응답을 보낸다. 저장소의 Markdown 글은 공개 저장소에 원문이 있어 대상에서 제외했다.
 ---
 
-관리자가 메모 앱에서 쓴 글 가운데 공개하지 않을 글을 **비밀 글**로 지정할 수 있게 했다([#355](https://github.com/hyeoniverse/MacFolio/pull/355)). 비밀 글은 관리자 세션이 있는 요청에만 응답에 포함되고, 그 밖의 요청에는 글 목록·공유 카드·댓글·좋아요·인기글·조회수·트래픽 요약·메모 정리 내용 어디에도 포함되지 않는다.
+MacFolio의 블로그 글은 모두 공개 글이었다. 관리자가 사이트의 메모 앱에서 쓴 글도 저장하는 즉시 방문자 목록에 나타났다. 작성 중인 개인 메모나 아직 공개하지 않을 기록을 사이트에 보관할 방법이 필요해서, 관리자가 메모 앱에서 쓴 글 가운데 공개하지 않을 글을 **비밀 글**로 지정할 수 있게 했다([#355](https://github.com/hyeoniverse/MacFolio/pull/355)). 비밀 글은 관리자 세션이 있는 요청에만 응답에 포함되고, 그 밖의 요청에는 글 목록·공유 카드·댓글·좋아요·인기글·조회수·트래픽 요약·메모 정리 내용 어디에도 포함되지 않는다.
 
 ![비밀 글을 연 관리자 화면](./images/memo-secret-posts-admin.jpg '목록의 제목 앞과 편집기 날짜 줄에 비밀 글 표시가 붙는다')
 
@@ -40,9 +40,18 @@ export const canBeSecret = (post: Post): boolean =>
 
 ## 화면에서 감추면 충분하지 않은 이유
 
-방문자 화면은 API 응답을 그린다. 화면에서 비밀 글을 걸러도 응답에 들어 있으면 개발자 도구의 네트워크 탭이나 `curl`로 그대로 읽힌다. 그래서 필터링은 모두 서버에서 한다. 화면 코드는 바꾸지 않아도 방문자에게 비밀 글이 보이지 않는다.
+이 사이트의 화면은 브라우저에서 실행되는 JavaScript가 API에 요청하고, 받은 JSON을 그리는 구조다. 예를 들어 글 목록을 그리는 화면은 `GET /posts`의 응답 배열을 받아 항목마다 목록 한 줄을 만든다. 화면 코드에 `posts.filter((post) => !post.secret)` 같은 조건을 넣으면 목록에서는 비밀 글이 사라지지만, 그 글은 이미 응답 본문에 들어 있다.
 
-또 하나는 **존재 여부**다. 글 주소는 `2026-10-23-a1b2c3`처럼 날짜와 6자리 16진수다. 비밀 글 주소에 403이나 다른 모양의 응답을 보내면, 주소를 대입해 비밀 글이 있는지 확인할 수 있다. 그래서 방문자에게는 없는 글과 **같은 응답**을 보낸다.
+브라우저의 개발자 도구는 페이지가 주고받은 모든 요청과 응답을 보여 준다. Chrome의 Network 패널에서 요청 하나를 고르고 Response 탭을 열면, 서버가 보낸 본문이 화면에 그려지기 전의 원문 그대로 표시된다.
+
+![Chrome 개발자 도구의 Response 탭](./images/memo-secret-posts-devtools-response.jpg 'Chrome DevTools 문서의 예시 화면. Network 패널에서 요청을 고르면 Response 탭에 서버가 보낸 원문이 표시된다')
+
+> [!IMPORTANT] 필터링 위치는 서버
+> 방문자 화면은 API 응답을 그린다. 화면에서 비밀 글을 걸러도 응답에 들어 있으면 개발자 도구의 네트워크 탭이나 `curl`로 그대로 읽힌다. 그래서 필터링은 모두 서버에서 한다. 화면 코드는 바꾸지 않아도 방문자에게 비밀 글이 보이지 않는다.
+
+또 하나는 **존재 여부**다. 글 주소는 `2026-10-23-a1b2c3`처럼 날짜와 6자리 16진수다(서버의 `newSlug`가 무작위 3바이트를 16진수로 붙인다). 비밀 글 주소에 403이나 다른 모양의 응답을 보내면, 주소를 대입해 비밀 글이 있는지 확인할 수 있다. 내용이 보이지 않아도 "10월 23일에 쓴 비밀 글이 있다"는 사실 자체가 정보다. 그래서 ==방문자에게는 없는 글과 같은 응답==을 보낸다.
+
+![응답 모양에 따른 존재 여부 노출](./images/memo-secret-posts-enumeration.svg '비밀 글에만 403을 보내면 대입한 주소 가운데 응답이 다른 하나가 드러난다. 없는 글과 같은 응답이면 구별할 수 없다')
 
 | 경로                                                         | 없는 글                      | 비밀 글 (방문자)             | 비밀 글 (관리자) |
 | ------------------------------------------------------------ | ---------------------------- | ---------------------------- | ---------------- |
@@ -58,6 +67,14 @@ export const canBeSecret = (post: Post): boolean =>
 [^1]: `GET /posts`는 관리자 세션이어도 비밀 글을 넣지 않는다. 이 응답은 Worker(첫 화면 본문·sitemap·RSS)와 최근 글 위젯이 쿠키 없이 받는 공개 목록이고, 쿠키에 따라 응답이 달라지면 캐시가 섞일 위험이 생긴다. 관리자 화면은 원래 `GET /posts/admin`으로 모든 글을 받는다.
 
 쓰기 요청(댓글 쓰기, 좋아요 누르기)만 404로 차이가 난다. 없는 글에 댓글을 쓰면 지금도 저장되기 때문이다. 이 경로는 IP마다 1분 요청 제한(`@RateLimit('comment')`, `@RateLimit('like')`)이 있어 주소 대입에 쓸 수 있는 횟수가 적다.
+
+날짜 하나에 가능한 주소 수와, 좋아요 경로(1분 30회)로 모두 대입하는 데 걸리는 시간은 다음과 같다.
+
+$$
+16^6 = 2^{24} = 16{,}777{,}216 \text{개}, \qquad \frac{16{,}777{,}216}{30 \text{회/분}} \approx 559{,}241 \text{분} \approx 388 \text{일}
+$$
+
+IP 하나로 날짜 하루치 주소를 모두 확인하는 데 1년 넘게 걸린다. 댓글 경로(1분 5회)는 그 6배다.
 
 ## 필터링할 경로 찾기
 
@@ -113,7 +130,9 @@ export class SecretPosts {
 
 ### 1분 캐시와 순서
 
-조회수와 방문자용 트래픽 요약은 DB 부하를 줄이려고 1분 동안 같은 값을 보낸다. 필터링을 캐시 안에서 하면, 방금 비밀로 지정한 글이 최대 1분 동안 응답에 남는다. 그래서 **캐시에서 꺼낸 뒤에** 비밀 글을 뺀다. 캐시에는 전체 값을 보관하고, 응답할 때마다 비밀 글 주소 목록(`slugs()`)으로 필터링한다.
+조회수와 방문자용 트래픽 요약은 DB 부하를 줄이려고 1분 동안 같은 값을 보낸다. 캐시(cache)는 계산한 결과를 메모리에 보관해 두고, 같은 요청이 오면 다시 계산하지 않고 보관한 값을 반환하는 장치다. 필터링을 캐시 안에서 하면, 방금 비밀로 지정한 글이 최대 1분 동안 응답에 남는다. 그래서 ==캐시에서 꺼낸 뒤에 비밀 글을 뺀다==. 캐시에는 전체 값을 보관하고, 응답할 때마다 비밀 글 주소 목록(`slugs()`)으로 필터링한다.
+
+![캐시와 필터링의 순서](./images/memo-secret-posts-cache-order.svg '필터링을 캐시 앞에 두면 캐시가 만료될 때까지 비밀 글 X가 응답에 남는다. 캐시 뒤에 두면 지정 직후 요청부터 빠진다')
 
 ### 메모 정리 내용
 
@@ -123,13 +142,16 @@ export class SecretPosts {
 
 ## 데이터와 배포
 
-`Post`에 열 하나를 더했다.
+`Post` 테이블에 열 하나를 더했다.
 
 ```sql
 ALTER TABLE "Post" ADD COLUMN "secret" BOOLEAN NOT NULL DEFAULT false;
 ```
 
-기본값이 `false`라 기존 글은 그대로 공개되고, 이전 코드도 이 열을 무시하고 동작한다([배포는 이미지만 되돌리고 DB는 되돌리지 않는다](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md#구성도)). 반대로 배포가 실패해 이미지가 이전 버전으로 돌아가면 이전 코드는 `secret`을 읽지 않으므로, 되돌린 동안 비밀 글이 공개된다. 이 위험은 열을 하나 더하는 방식으로는 피할 수 없어 PR과 [백엔드 설계](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md#설계-결정)에 적었다.
+`NOT NULL DEFAULT false`는 값이 비어 있을 수 없고, 값을 지정하지 않으면 `false`로 채운다는 뜻이다. 기본값이 `false`라 기존 글은 그대로 공개되고, 이전 코드도 이 열을 무시하고 동작한다([배포는 이미지만 되돌리고 DB는 되돌리지 않는다](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md#구성도)).
+
+> [!CAUTION] 이미지를 되돌린 동안의 공개
+> 반대로 배포가 실패해 이미지가 이전 버전으로 돌아가면 이전 코드는 `secret`을 읽지 않으므로, 되돌린 동안 비밀 글이 공개된다. 이 위험은 열을 하나 더하는 방식으로는 피할 수 없어 PR과 [백엔드 설계](https://github.com/hyeoniverse/MacFolio/blob/main/docs/backend-design.md#설계-결정)에 적었다.
 
 | 방식                  | 장점                              | 단점                                                        |
 | --------------------- | --------------------------------- | ----------------------------------------------------------- |
@@ -153,5 +175,25 @@ ALTER TABLE "Post" ADD COLUMN "secret" BOOLEAN NOT NULL DEFAULT false;
 - [최근 삭제된 항목 - 지운 메모를 30일 동안 되살리기](/memo/memo-recently-deleted)
 - [블로그에 좋아요와 인기글 폴더 붙이기](/memo/memo-likes-popular)
 - [Reflect.getMetadata로 읽은 경로·가드를 표 하나로 고정하는 API 시험](/memo/api-route-table-test)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [Chrome DevTools: Inspect network activity](https://developer.chrome.com/docs/devtools/network)
+- [MDN: 404 Not Found](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404)
+- [MDN: 403 Forbidden](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403)
+- [OWASP Web Security Testing Guide: Testing for Account Enumeration and Guessable User Account](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/03-Identity_Management_Testing/04-Testing_for_Account_Enumeration_and_Guessable_User_Account)
+- [NestJS: Providers](https://docs.nestjs.com/providers)
+- [PostgreSQL: ALTER TABLE](https://www.postgresql.org/docs/current/sql-altertable.html)
+- [Node.js: crypto.randomBytes](https://nodejs.org/api/crypto.html#cryptorandombytessize-callback)
+
+</details>
+
+<details>
+<summary>사진 출처</summary>
+
+- Chrome 개발자 도구 Response 탭: Chrome for Developers, [Inspect network activity](https://developer.chrome.com/docs/devtools/network)의 [the-response-tab 이미지](https://developer.chrome.com/static/docs/devtools/network/image/the-response-tab_1440.png), CC BY 4.0
+
+</details>
 
 #MacFolio #메모앱 #보안

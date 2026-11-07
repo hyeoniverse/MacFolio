@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="360" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">0x20 인코딩: 질의 이름의 대소문자를 비밀 값으로 쓴다</text>
+
+  <g font-size="13" font-weight="600" text-anchor="middle">
+    <rect x="24" y="48" width="150" height="34" rx="6" fill="#0a84ff"/><text x="99" y="70" fill="#fff">재귀 리졸버</text>
+    <rect x="466" y="48" width="150" height="34" rx="6" fill="#e5e5ea"/><text x="541" y="70" fill="#1d1d1f">권한 서버</text>
+  </g>
+
+  <line x1="176" y1="110" x2="462" y2="110" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <text x="319" y="102" text-anchor="middle" font-size="13" fill="#1d1d1f">질의: <tspan font-family="Menlo, monospace" font-weight="600" fill="#0a84ff">wWw.ExAmpLe.cOm</tspan></text>
+
+  <line x1="462" y1="150" x2="178" y2="150" stroke="#34c759" stroke-width="1.5" marker-end="url(#g)"/>
+  <text x="319" y="142" text-anchor="middle" font-size="13" fill="#1d1d1f">진짜 응답: <tspan font-family="Menlo, monospace" font-weight="600">wWw.ExAmpLe.cOm</tspan> 그대로 복사</text>
+  <text x="99" y="172" text-anchor="middle" font-size="12" fill="#34c759" font-weight="600">대소문자 일치, 수락</text>
+
+  <rect x="466" y="186" width="150" height="34" rx="6" fill="#1d1d1f"/><text x="541" y="208" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">위조자</text>
+  <line x1="462" y1="232" x2="178" y2="232" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+  <text x="319" y="224" text-anchor="middle" font-size="13" fill="#1d1d1f">위조 응답: <tspan font-family="Menlo, monospace" font-weight="600">www.example.com</tspan> (ID·포트는 맞음)</text>
+  <text x="99" y="254" text-anchor="middle" font-size="12" fill="#ff3b30" font-weight="600">대소문자 불일치, 폐기</text>
+
+  <rect x="24" y="276" width="592" height="68" rx="8" fill="#f2f2f7"/>
+  <text x="40" y="298" font-size="13" fill="#1d1d1f" font-weight="600">대문자와 소문자는 비트 하나(0x20)만 다르다</text>
+  <text x="40" y="318" font-size="12" fill="#1d1d1f" font-family="Menlo, monospace">'w' = 0x77 = 0111 0111</text>
+  <text x="300" y="318" font-size="12" fill="#1d1d1f" font-family="Menlo, monospace">'W' = 0x57 = 0101 0111</text>
+  <text x="40" y="336" font-size="12" fill="#6e6e73">알파벳 13글자 × 1비트 = 13비트가 ID 16비트와 포트 16비트에 더해진다</text>
+</svg>

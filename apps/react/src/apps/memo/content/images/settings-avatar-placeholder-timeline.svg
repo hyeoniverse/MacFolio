@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>load 이벤트를 놓치는 경우와 useLayoutEffect 확인</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">사진이 언제 도착하느냐에 따라 load 이벤트를 받거나 놓친다</text>
+  <line x1="40" y1="70" x2="610" y2="70" stroke="#6e6e73"/>
+  <text x="40" y="62" font-size="12" fill="#6e6e73">시간 →</text>
+  <!-- lane 1 -->
+  <text x="24" y="104" font-size="13" font-weight="600" fill="#1d1d1f">github.com에서 받는 경우 (첫 요청)</text>
+  <rect x="40" y="114" width="150" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="115" y="134" font-size="12" fill="#1d1d1f" text-anchor="middle">img 요소 생성, 요청 시작</text>
+  <rect x="200" y="114" width="130" height="30" rx="6" fill="#e3f0ff" stroke="#0a84ff"/>
+  <text x="265" y="134" font-size="12" fill="#0a84ff" text-anchor="middle">onLoad 연결</text>
+  <rect x="340" y="114" width="130" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="405" y="134" font-size="12" fill="#1d1d1f" text-anchor="middle">수 초 대기</text>
+  <rect x="480" y="114" width="130" height="30" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+  <text x="545" y="134" font-size="12" fill="#1d1d1f" text-anchor="middle">load → loaded</text>
+  <!-- lane 2 -->
+  <text x="24" y="184" font-size="13" font-weight="600" fill="#1d1d1f">브라우저 캐시에 있는 경우</text>
+  <rect x="40" y="194" width="150" height="30" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="115" y="214" font-size="12" fill="#1d1d1f" text-anchor="middle">img 요소 생성</text>
+  <rect x="200" y="194" width="130" height="30" rx="6" fill="#ffe1df" stroke="#ff3b30"/>
+  <text x="265" y="214" font-size="12" fill="#ff3b30" text-anchor="middle">이미 load 발생</text>
+  <rect x="340" y="194" width="130" height="30" rx="6" fill="#e3f0ff" stroke="#0a84ff"/>
+  <text x="405" y="214" font-size="12" fill="#0a84ff" text-anchor="middle">onLoad 연결 (늦음)</text>
+  <rect x="480" y="194" width="130" height="30" rx="6" fill="#e8f8ec" stroke="#34c759"/>
+  <text x="545" y="214" font-size="12" fill="#1d1d1f" text-anchor="middle">useLayoutEffect 확인</text>
+  <text x="530" y="246" font-size="12" fill="#34c759" text-anchor="middle">complete &amp;&amp; naturalWidth &gt; 0</text>
+  <text x="530" y="264" font-size="12" fill="#34c759" text-anchor="middle">→ loaded</text>
+  <rect x="24" y="284" width="592" height="30" rx="6" fill="#f2f2f7"/>
+  <text x="36" y="304" font-size="12" fill="#1d1d1f">이벤트를 놓친 경우에도, 첫 렌더링 직후 img의 현재 상태를 한 번 읽어 같은 결과(loaded)에 도달한다</text>
+</svg>

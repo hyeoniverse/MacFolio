@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="400" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+  </defs>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">TCP 연결 종료: 능동 닫기와 수동 닫기</text>
+  <g text-anchor="middle">
+    <rect x="170" y="44" width="120" height="44" rx="6" fill="#1d1d1f"/>
+    <text x="230" y="63" font-size="13" font-weight="600" fill="#fff">클라이언트</text><text x="230" y="80" font-size="11" fill="#d1d1d6">능동 닫기</text>
+    <rect x="370" y="44" width="120" height="44" rx="6" fill="#0a84ff"/>
+    <text x="430" y="63" font-size="13" font-weight="600" fill="#fff">서버</text><text x="430" y="80" font-size="11" fill="#e8f2ff">수동 닫기</text>
+  </g>
+  <g stroke="#1d1d1f" stroke-width="2.5"><line x1="230" y1="88" x2="230" y2="372"/><line x1="430" y1="88" x2="430" y2="372"/></g>
+  <!-- 세그먼트 -->
+  <g stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)">
+    <line x1="230" y1="150" x2="428" y2="180"/>
+    <line x1="430" y1="204" x2="232" y2="234"/>
+    <line x1="430" y1="272" x2="232" y2="302"/>
+    <line x1="230" y1="318" x2="428" y2="348"/>
+  </g>
+  <g font-size="13" fill="#1d1d1f" text-anchor="middle" font-style="italic">
+    <text x="330" y="156">FIN M</text>
+    <text x="330" y="210">ACK M+1</text>
+    <text x="330" y="278">FIN N</text>
+    <text x="330" y="324">ACK N+1</text>
+  </g>
+  <g font-family="ui-monospace, Menlo, monospace" font-size="12.5" fill="#0a84ff">
+    <text x="222" y="154" text-anchor="end">close()</text>
+    <text x="438" y="276">close()</text>
+  </g>
+  <!-- 상태 -->
+  <g font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">
+    <text x="20" y="118">ESTABLISHED</text>
+    <text x="20" y="162">FIN_WAIT_1</text>
+    <text x="20" y="238">FIN_WAIT_2</text>
+    <text x="20" y="306">TIME_WAIT</text>
+    <text x="500" y="118">ESTABLISHED</text>
+    <text x="500" y="186">CLOSE_WAIT</text>
+    <text x="500" y="278">LAST_ACK</text>
+    <text x="500" y="352">CLOSED</text>
+  </g>
+  <text x="20" y="324" font-size="11" fill="#6e6e73">2MSL 뒤 CLOSED</text>
+  <text x="500" y="204" font-size="11" fill="#6e6e73">read()가 0을 반환</text>
+  <text x="320" y="392" text-anchor="middle" font-size="12" fill="#6e6e73">FIN은 앞서 write()로 보낸 데이터가 모두 나간 뒤에 송신된다</text>
+</svg>

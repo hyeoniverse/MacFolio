@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>API 자동 배포와 롤백 순서</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+<marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" fill="#ffffff"/>
+<rect x="16" y="16" width="608" height="88" rx="12" fill="#f2f2f7"/>
+<text x="30" y="38" font-size="13" font-weight="700" fill="#1d1d1f">GitHub Actions</text>
+<rect x="30" y="50" width="150" height="40" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="105" y="75" font-size="12" fill="#1d1d1f" text-anchor="middle">main에 API 변경</text>
+<line x1="180" y1="70" x2="226" y2="70" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="230" y="50" width="170" height="40" rx="8" fill="#ffffff" stroke="#6e6e73"/>
+<text x="315" y="75" font-size="12" fill="#1d1d1f" text-anchor="middle">Docker 이미지 빌드</text>
+<line x1="400" y1="70" x2="446" y2="70" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="450" y="50" width="160" height="40" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="530" y="68" font-size="12" fill="#1d1d1f" text-anchor="middle">GHCR 업로드</text>
+<text x="530" y="83" font-size="12" fill="#6e6e73" text-anchor="middle">태그 sha-1a2b3c4</text>
+<line x1="530" y1="90" x2="530" y2="140" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="540" y="122" font-size="12" fill="#6e6e73">SSH로 태그만 전달</text>
+<rect x="16" y="144" width="608" height="172" rx="12" fill="#ffffff" stroke="#c7c7cc"/>
+<text x="30" y="166" font-size="13" font-weight="700" fill="#1d1d1f">서버 (ops/deploy.sh)</text>
+<rect x="450" y="176" width="160" height="40" rx="8" fill="#f2f2f7"/>
+<text x="530" y="201" font-size="12" fill="#1d1d1f" text-anchor="middle">① DB 백업</text>
+<line x1="450" y1="196" x2="404" y2="196" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="250" y="176" width="150" height="40" rx="8" fill="#f2f2f7"/>
+<text x="325" y="201" font-size="12" fill="#1d1d1f" text-anchor="middle">② 컨테이너 교체</text>
+<line x1="250" y1="196" x2="204" y2="196" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="30" y="176" width="170" height="40" rx="8" fill="#f2f2f7"/>
+<text x="115" y="194" font-size="12" fill="#1d1d1f" text-anchor="middle">③ 헬스 체크</text>
+<text x="115" y="209" font-size="12" fill="#6e6e73" text-anchor="middle">healthy·버전 확인</text>
+<line x1="115" y1="216" x2="115" y2="252" stroke="#34c759" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="124" y="240" font-size="12" fill="#34c759">성공</text>
+<rect x="30" y="256" width="170" height="40" rx="8" fill="#ecfaef" stroke="#34c759"/>
+<text x="115" y="281" font-size="12" fill="#1d1d1f" text-anchor="middle">새 버전 유지</text>
+<path d="M200 206 C 260 260, 300 270, 330 276" fill="none" stroke="#ff3b30" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="238" y="262" font-size="12" fill="#ff3b30">실패</text>
+<rect x="334" y="256" width="276" height="40" rx="8" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="472" y="281" font-size="12" fill="#1d1d1f" text-anchor="middle">④ 이전 태그로 되돌리고 실패로 종료</text>
+</svg>

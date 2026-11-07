@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<rect width="640" height="380" fill="#fff"/>
+<text x="320" y="26" font-size="15" font-weight="600" fill="#1d1d1f" text-anchor="middle">[작게 A, 작게 B, 중간 C]에서 A를 오른쪽으로 끌 때</text>
+<text x="320" y="46" font-size="12" fill="#6e6e73" text-anchor="middle">좌표는 칸 단위. 작은 위젯 한 칸이 가로·세로 1이다</text>
+<!-- candidate 1 -->
+<text x="160" y="76" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">후보 1: [A, B, C]</text>
+<rect x="70" y="88" width="86" height="56" rx="8" fill="#0a84ff"/><text x="113" y="121" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">A</text>
+<rect x="164" y="88" width="86" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="207" y="121" font-size="14" fill="#1d1d1f" text-anchor="middle">B</text>
+<rect x="70" y="152" width="180" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="160" y="177" font-size="14" fill="#1d1d1f" text-anchor="middle">C</text>
+<text x="160" y="212" font-size="12" fill="#6e6e73" text-anchor="middle">A의 가운데 x = 0.5</text>
+<!-- candidate 2 -->
+<text x="480" y="76" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">후보 2: [B, A, C]</text>
+<rect x="390" y="88" width="86" height="56" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="433" y="121" font-size="14" fill="#1d1d1f" text-anchor="middle">B</text>
+<rect x="484" y="88" width="86" height="56" rx="8" fill="#0a84ff"/><text x="527" y="121" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">A</text>
+<rect x="390" y="152" width="180" height="40" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="480" y="177" font-size="14" fill="#1d1d1f" text-anchor="middle">C</text>
+<text x="480" y="212" font-size="12" fill="#6e6e73" text-anchor="middle">A의 가운데 x = 1.5</text>
+<!-- axis: x from 0.5 (px 80) to 1.5 (px 560): 480px per unit -->
+<text x="60" y="240" font-size="12" fill="#6e6e73">끄는 A의 가운데 x</text>
+<line x1="60" y1="290" x2="580" y2="290" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="80" y="262" width="204" height="16" fill="#e5f1ff"/>
+<rect x="284" y="262" width="72" height="16" fill="#ffd89e"/>
+<rect x="356" y="262" width="204" height="16" fill="#eafaef"/>
+<text x="182" y="256" font-size="12" fill="#0a84ff" text-anchor="middle">후보 1</text><text x="320" y="240" font-size="12" fill="#c46f00" text-anchor="middle">지금 순서 유지</text>
+<text x="458" y="256" font-size="12" fill="#248a3d" text-anchor="middle">후보 2</text>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<line x1="80" y1="284" x2="80" y2="296" stroke="#1d1d1f"/><text x="80" y="312">0.5</text>
+<line x1="320" y1="284" x2="320" y2="296" stroke="#1d1d1f"/><text x="320" y="312">1.0</text>
+<line x1="560" y1="284" x2="560" y2="296" stroke="#1d1d1f"/><text x="560" y="312">1.5</text>
+</g>
+<line x1="284" y1="258" x2="284" y2="300" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3"/>
+<line x1="356" y1="258" x2="356" y2="300" stroke="#ff9f0a" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="356" y="330" font-size="12" fill="#1d1d1f" text-anchor="middle">1.075 (오른쪽으로 갈 때 바뀌는 점)</text>
+<text x="284" y="348" font-size="12" fill="#1d1d1f" text-anchor="middle">0.925 (왼쪽으로 돌아올 때 바뀌는 점)</text>
+<text x="320" y="370" font-size="12" fill="#6e6e73" text-anchor="middle">주황 구간(0.925~1.075)에서는 지금 순서를 유지해 B가 오가며 흔들리지 않는다</text>
+</svg>

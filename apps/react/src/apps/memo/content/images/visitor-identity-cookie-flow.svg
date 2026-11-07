@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>첫 댓글 요청에 쿠키가 없으면 서버가 무작위 토큰을 Set-Cookie로 내려 주고, 다음 요청부터 브라우저가 Cookie 헤더로 그 토큰을 붙이며, 서버는 토큰의 HMAC에서 이름을 정한다</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker>
+<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+</defs>
+<rect width="640" height="470" rx="14" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">방문자 쿠키가 발급되고 쓰이는 순서</text>
+<rect x="40" y="52" width="140" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="110" y="74" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">브라우저</text>
+<rect x="460" y="52" width="140" height="34" rx="8" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="530" y="74" font-size="14" font-weight="600" fill="#1d1d1f" text-anchor="middle">API 서버</text>
+<line x1="110" y1="86" x2="110" y2="452" stroke="#6e6e73" stroke-dasharray="4 4"/>
+<line x1="530" y1="86" x2="530" y2="452" stroke="#6e6e73" stroke-dasharray="4 4"/>
+<!-- 1 -->
+<text x="120" y="112" font-size="13" font-weight="600" fill="#1d1d1f">① POST /posts/hello/comments</text>
+<text x="120" y="129" font-size="12" fill="#6e6e73">Cookie 헤더 없음 (처음 쓰는 댓글)</text>
+<line x1="110" y1="138" x2="528" y2="138" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="352" y="150" width="270" height="44" rx="8" fill="#f2f2f7"/>
+<text x="364" y="168" font-size="12" fill="#1d1d1f">randomToken(24): 24바이트 난수</text>
+<text x="364" y="185" font-size="12" fill="#1d1d1f">→ base64url 32자 <tspan font-family="ui-monospace, Menlo, monospace">k3Jp…5sDf</tspan></text>
+<text x="520" y="216" font-size="13" font-weight="600" fill="#0a84ff" text-anchor="end">② 응답 헤더 Set-Cookie</text>
+<line x1="530" y1="226" x2="112" y2="226" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<rect x="40" y="236" width="560" height="44" rx="8" fill="#ffffff" stroke="#0a84ff"/>
+<text x="52" y="254" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">Set-Cookie: macfolio_visitor=k3Jp…5sDf; Max-Age=31536000;</text>
+<text x="52" y="271" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">  Path=/; Expires=…; HttpOnly; Secure; SameSite=Lax</text>
+<!-- 3 -->
+<text x="120" y="308" font-size="13" font-weight="600" fill="#1d1d1f">③ GET /visitor (이후 모든 요청)</text>
+<text x="120" y="325" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#6e6e73">Cookie: macfolio_visitor=k3Jp…5sDf</text>
+<line x1="110" y1="334" x2="528" y2="334" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="300" y="346" width="322" height="44" rx="8" fill="#f2f2f7"/>
+<text x="312" y="364" font-size="12" fill="#1d1d1f">HMAC-SHA256(비밀 키, "visitor:" + 토큰)</text>
+<text x="312" y="381" font-size="12" fill="#1d1d1f">→ <tspan font-family="ui-monospace, Menlo, monospace">0ce1f996aa01ac52…</tspan> → 이름 결정</text>
+<text x="520" y="414" font-size="13" font-weight="600" fill="#34c759" text-anchor="end">④ 응답 본문</text>
+<line x1="530" y1="424" x2="112" y2="424" stroke="#34c759" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="120" y="446" font-size="12" font-family="ui-monospace, Menlo, monospace" fill="#1d1d1f">{ "name": "🐰 다정한 토끼" }</text>
+</svg>

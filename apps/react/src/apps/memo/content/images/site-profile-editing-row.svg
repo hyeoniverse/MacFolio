@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>SiteContent 테이블에는 id가 1인 행 하나만 있고, profile 열에 jsonb로 프로필 객체가 들어가며, 비어 있으면 화면이 코드의 기본 프로필을 쓴다</title>
+<rect width="640" height="340" fill="#ffffff"/>
+<text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">SiteContent: 행 하나짜리 설정 테이블</text>
+<rect x="24" y="52" width="592" height="30" fill="#f2f2f7" stroke="#d1d1d6"/>
+<g font-size="12" font-weight="700" fill="#6e6e73">
+<text x="36" y="72">id</text><text x="88" y="72">profile (jsonb)</text><text x="404" y="72">updatedAt</text><text x="520" y="72">updatedBy</text>
+</g>
+<rect x="24" y="82" width="592" height="150" fill="#ffffff" stroke="#d1d1d6"/>
+<line x1="76" y1="52" x2="76" y2="232" stroke="#d1d1d6"/><line x1="392" y1="52" x2="392" y2="232" stroke="#d1d1d6"/><line x1="508" y1="52" x2="508" y2="232" stroke="#d1d1d6"/>
+<text x="36" y="104" font-size="13" font-weight="700" fill="#0a84ff">1</text>
+<g font-family="SFMono-Regular, Menlo, monospace" font-size="12" fill="#1d1d1f">
+<text x="88" y="104">{</text>
+<text x="100" y="122">"name": "홍길동",</text>
+<text x="100" y="140">"email": "gildong@example.com",</text>
+<text x="100" y="160">"github": "https://github.com/gildong",</text>
+<text x="100" y="180">"skills": { "backend": ["Go"] },</text>
+<text x="100" y="200">…</text>
+<text x="88" y="226">}</text>
+<text x="404" y="104">2026-10-11T…</text>
+<text x="520" y="104">관리자 로그인</text>
+</g>
+<text x="24" y="258" font-size="12" fill="#6e6e73">행 수는 항상 0 또는 1. 모든 조회와 저장이 where: { id: 1 }을 쓴다.</text>
+<rect x="24" y="274" width="288" height="50" rx="10" fill="#ffffff" stroke="#34c759" stroke-width="1.5"/>
+<text x="168" y="295" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">profile에 값이 있다</text>
+<text x="168" y="313" font-size="12" fill="#6e6e73" text-anchor="middle">→ 그 프로필을 화면에 표시</text>
+<rect x="328" y="274" width="288" height="50" rx="10" fill="#ffffff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="472" y="295" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">행이 없거나 profile이 null</text>
+<text x="472" y="313" font-size="12" fill="#6e6e73" text-anchor="middle">→ 코드의 기본 프로필(PROFILE) 표시</text>
+</svg>

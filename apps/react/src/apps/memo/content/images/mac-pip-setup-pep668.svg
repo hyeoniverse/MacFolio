@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="320" fill="#fff"/>
+  <defs><marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#6e6e73"/></marker></defs>
+  <text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">pip가 설치 여부를 정하는 순서 (PEP 668)</text>
+  <g font-size="12">
+    <rect x="220" y="46" width="200" height="34" rx="8" fill="#f2f2f7" stroke="#d1d1d6"/><text x="320" y="68" text-anchor="middle" fill="#1d1d1f">pip install requests</text>
+    <path d="M320 80 L320 100" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <rect x="190" y="106" width="260" height="40" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="320" y="131" text-anchor="middle" fill="#1d1d1f">가상 환경(venv) 안에서 실행 중인가?</text>
+    <path d="M450 126 L520 126 L520 176" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/><text x="470" y="118" fill="#6e6e73">예</text>
+    <rect x="440" y="182" width="170" height="40" rx="8" fill="#e8f8ec" stroke="#34c759"/><text x="525" y="200" text-anchor="middle" fill="#1d1d1f">설치한다</text><text x="525" y="215" text-anchor="middle" fill="#6e6e73">.venv/lib/…/site-packages</text>
+    <path d="M320 146 L320 176" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><text x="328" y="166" fill="#6e6e73">아니요</text>
+    <rect x="160" y="182" width="260" height="40" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="290" y="200" text-anchor="middle" fill="#1d1d1f">stdlib 폴더에 EXTERNALLY-MANAGED</text><text x="290" y="215" text-anchor="middle" fill="#1d1d1f">파일이 있는가?</text>
+    <path d="M290 222 L290 252" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><text x="298" y="242" fill="#6e6e73">예 (Homebrew Python)</text>
+    <rect x="160" y="258" width="260" height="40" rx="8" fill="#ffecea" stroke="#ff3b30"/><text x="290" y="276" text-anchor="middle" fill="#1d1d1f">설치 거부</text><text x="290" y="291" text-anchor="middle" fill="#ff3b30">externally-managed-environment</text>
+    <path d="M160 202 L60 202 L60 252" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/><text x="80" y="194" fill="#6e6e73">아니요</text>
+    <rect x="10" y="258" width="110" height="40" rx="8" fill="#e8f8ec" stroke="#34c759"/><text x="65" y="282" text-anchor="middle" fill="#1d1d1f">설치한다</text>
+  </g>
+</svg>

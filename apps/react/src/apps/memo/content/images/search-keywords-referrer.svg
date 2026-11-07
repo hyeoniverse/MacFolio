@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>리퍼러 정책에 따라 사이트가 받는 주소</title>
+  <rect width="640" height="380" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">검색 결과 페이지의 리퍼러 정책이 전달 범위를 정한다</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">검색 결과의 링크를 눌러 MacFolio로 이동하는 경우. 정책은 떠나는 쪽(검색엔진) 페이지가 정한다</text>
+  <defs><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#6e6e73"/></marker></defs>
+  <rect x="24" y="74" width="592" height="56" rx="10" fill="#f2f2f7"/>
+  <text x="38" y="96" font-size="12" fill="#6e6e73">검색 결과 페이지 주소 (예)</text>
+  <text x="38" y="118" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://search.naver.com/search.naver?where=nexearch&amp;query=macfolio</text>
+  <path d="M170 130 V164" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <path d="M470 130 V164" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#g)"/>
+  <!-- left -->
+  <rect x="24" y="168" width="284" height="196" rx="10" fill="#eaf8ee" stroke="#34c759" stroke-width="1.5"/>
+  <text x="38" y="192" font-size="13" font-weight="700" fill="#1d1d1f">전체 주소를 허용한 경우</text>
+  <text x="38" y="211" font-size="12" fill="#6e6e73">unsafe-url, no-referrer-when-downgrade 등</text>
+  <text x="38" y="240" font-size="12" fill="#6e6e73">document.referrer</text>
+  <text x="38" y="259" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">…/search.naver?…&amp;query=macfolio</text>
+  <text x="38" y="290" font-size="12" fill="#6e6e73">searchTermOf(referrer)</text>
+  <text x="38" y="312" font-size="14" font-weight="700" fill="#34c759">"macfolio"</text>
+  <text x="38" y="344" font-size="12" fill="#1d1d1f">방문 이벤트의 searchTerm으로 집계</text>
+  <!-- right -->
+  <rect x="332" y="168" width="284" height="196" rx="10" fill="#fff1f0" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="346" y="192" font-size="13" font-weight="700" fill="#1d1d1f">출처만 허용한 경우 (구글·빙)</text>
+  <text x="346" y="211" font-size="12" fill="#6e6e73">origin, strict-origin-when-cross-origin 등</text>
+  <text x="346" y="240" font-size="12" fill="#6e6e73">document.referrer</text>
+  <text x="346" y="259" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://www.google.com/</text>
+  <text x="346" y="290" font-size="12" fill="#6e6e73">searchTermOf(referrer)</text>
+  <text x="346" y="312" font-size="14" font-weight="700" fill="#ff3b30">undefined</text>
+  <text x="346" y="344" font-size="12" fill="#1d1d1f">호스트만 집계, 검색어는 Search Console에서</text>
+</svg>

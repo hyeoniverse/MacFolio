@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>렌더링마다 새로 만드는 함수와 렌더링 사이에 유지되는 ref 객체</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="320" fill="#ffffff"/>
+<text x="24" y="30" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">useEffect는 의존성의 이전 값과 새 값을 Object.is로 비교한다</text>
+<text x="240" y="64" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="700">렌더링 1</text>
+<text x="410" y="64" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="700">렌더링 2</text>
+<text x="560" y="64" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="700">Object.is 결과</text>
+<text x="24" y="110" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">onClose</text>
+<text x="24" y="128" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">() =&gt; setOpen(false)</text>
+<rect x="180" y="92" width="120" height="40" rx="6" fill="#fff" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="240" y="117" font-size="13" fill="#1d1d1f" text-anchor="middle">함수 A</text>
+<rect x="350" y="92" width="120" height="40" rx="6" fill="#fff" stroke="#ff3b30" stroke-width="1.2"/>
+<text x="410" y="117" font-size="13" fill="#1d1d1f" text-anchor="middle">함수 B</text>
+<text x="560" y="110" font-size="13" fill="#ff3b30" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">false</text>
+<text x="560" y="128" font-size="12" fill="#ff3b30" text-anchor="middle">effect 다시 실행</text>
+<text x="24" y="190" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">initialFocus</text>
+<text x="24" y="208" font-size="12" fill="#6e6e73" text-anchor="start" font-family="SFMono-Regular, Menlo, monospace">useRef(null)</text>
+<rect x="180" y="172" width="290" height="40" rx="6" fill="#e5f0ff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="325" y="197" font-size="13" fill="#1d1d1f" text-anchor="middle">같은 ref 객체 { current: input }</text>
+<text x="560" y="190" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">true</text>
+<text x="560" y="208" font-size="12" fill="#34c759" text-anchor="middle">effect 건너뜀</text>
+<text x="24" y="256" font-size="12" fill="#1d1d1f" text-anchor="start">인라인 화살표 함수는 코드가 같아도 렌더링할 때마다 새 함수 객체가 만들어진다.</text>
+<text x="24" y="276" font-size="12" fill="#1d1d1f" text-anchor="start">useRef가 돌려주는 객체는 컴포넌트가 마운트된 동안 같은 객체이고, current 값만 바뀐다.</text>
+<text x="24" y="296" font-size="12" fill="#6e6e73" text-anchor="start">그래서 [onClose]에 의존하는 effect는 부모가 렌더링될 때마다, [initialFocus]는 마운트 때 한 번 실행된다.</text>
+</svg>

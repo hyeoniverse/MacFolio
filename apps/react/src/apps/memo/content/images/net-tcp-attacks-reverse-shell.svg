@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="340" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">역방향 셸: 피해 서버가 바깥으로 연결을 연다</text>
+  <defs>
+    <marker id="r" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#ff3b30"/></marker>
+    <marker id="k" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#6e6e73"/></marker>
+  </defs>
+  <!-- victim -->
+  <rect x="30" y="60" width="210" height="190" rx="8" fill="#f2f2f7" stroke="#1d1d1f"/>
+  <text x="135" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">피해 서버 (텔넷 서버)</text>
+  <rect x="50" y="96" width="170" height="40" rx="6" fill="#fff" stroke="#6e6e73"/>
+  <text x="135" y="121" text-anchor="middle" font-size="13" font-family="Menlo, monospace" fill="#1d1d1f">/bin/bash -i</text>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="56" y="160">fd 0 표준 입력</text>
+    <text x="56" y="180">fd 1 표준 출력</text>
+    <text x="56" y="200">fd 2 표준 오류</text>
+  </g>
+  <rect x="160" y="148" width="66" height="60" rx="6" fill="#ff3b30" fill-opacity="0.12" stroke="#ff3b30"/>
+  <text x="193" y="174" text-anchor="middle" font-size="12" fill="#ff3b30">모두</text>
+  <text x="193" y="192" text-anchor="middle" font-size="12" fill="#ff3b30">TCP 소켓</text>
+  <text x="135" y="236" text-anchor="middle" font-size="12" fill="#6e6e73">하이재킹으로 주입한 명령이 실행</text>
+  <!-- firewall -->
+  <rect x="300" y="50" width="40" height="210" fill="#ff9f0a" fill-opacity="0.18" stroke="#ff9f0a"/>
+  <text x="320" y="280" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">방화벽</text>
+  <text x="320" y="298" text-anchor="middle" font-size="12" fill="#6e6e73">인바운드 새 연결 차단</text>
+  <text x="320" y="314" text-anchor="middle" font-size="12" fill="#6e6e73">아웃바운드 허용</text>
+  <!-- attacker -->
+  <rect x="400" y="60" width="210" height="190" rx="8" fill="#fff" stroke="#ff3b30"/>
+  <text x="505" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">공격자 호스트</text>
+  <text x="505" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">203.0.113.66</text>
+  <rect x="420" y="112" width="170" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/>
+  <text x="505" y="137" text-anchor="middle" font-size="13" font-family="Menlo, monospace" fill="#1d1d1f">nc -lnv 9090</text>
+  <text x="505" y="176" text-anchor="middle" font-size="12" fill="#1d1d1f">9090번 포트에서 대기</text>
+  <text x="505" y="196" text-anchor="middle" font-size="12" fill="#1d1d1f">키보드 입력 → 피해 서버 셸</text>
+  <text x="505" y="216" text-anchor="middle" font-size="12" fill="#1d1d1f">셸 출력 → 공격자 화면</text>
+  <!-- blocked inbound -->
+  <line x1="400" y1="236" x2="350" y2="236" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#k)"/>
+  <text x="362" y="228" font-size="12" fill="#6e6e73" text-anchor="middle">✕</text>
+  <!-- outbound connection -->
+  <line x1="226" y1="178" x2="402" y2="178" stroke="#ff3b30" stroke-width="2.5" marker-end="url(#r)"/>
+  <text x="320" y="170" text-anchor="middle" font-size="12" font-weight="600" fill="#ff3b30">SYN →</text>
+</svg>

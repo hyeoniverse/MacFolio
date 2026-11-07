@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="430" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+  </defs>
+  <rect x="20" y="14" width="600" height="112" rx="6" fill="#f2f2f7"/>
+  <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="11" fill="#1d1d1f">
+    <text x="32" y="34">1  0.0</text><text x="226" y="34">bsdi.1112 &gt; svr4.discard: udp 1471</text>
+    <text x="32" y="51">2  21.008303 (21.0083)</text><text x="226" y="51">bsdi.1114 &gt; svr4.discard: udp 1472</text>
+    <text x="32" y="68">3  50.449704 (29.4414)</text><text x="226" y="68">bsdi.1116 &gt; svr4.discard: udp 1473 (frag 26304:1480@0+)</text>
+    <text x="32" y="85">4  50.450040 ( 0.0003)</text><text x="226" y="85">bsdi &gt; svr4: (frag 26304:1@1480)</text>
+    <text x="32" y="102">5  75.328650 (24.8786)</text><text x="226" y="102">bsdi.1118 &gt; svr4.discard: udp 1474 (frag 26313:1480@0+)</text>
+    <text x="32" y="119">6  75.328982 ( 0.0003)</text><text x="226" y="119">bsdi &gt; svr4: (frag 26313:2@1480)</text>
+  </g>
+  <g font-size="12" fill="#1d1d1f">
+    <text x="20" y="150"><tspan font-family="SFMono-Regular, Menlo, Consolas, monospace" fill="#0a84ff">frag 26304:1480@0+</tspan>  IP ID 26304, IP 데이터 1480바이트, 단편 오프셋 0, <tspan fill="#ff9f0a">+</tspan>는 MF 비트 설정</text>
+    <text x="20" y="168"><tspan font-family="SFMono-Regular, Menlo, Consolas, monospace" fill="#0a84ff">frag 26304:1@1480</tspan>  마지막 단편이라 +가 없다(MF 비트 미설정)</text>
+  </g>
+  <line x1="120" y1="200" x2="520" y2="200" stroke="#1d1d1f" marker-start="url(#a)" marker-end="url(#a)"/>
+  <rect x="285" y="191" width="70" height="16" fill="#fff"/>
+  <text x="320" y="204" text-anchor="middle" font-size="12" fill="#1d1d1f">IP 데이터그램</text>
+  <g stroke="#1d1d1f">
+    <rect x="120" y="214" width="60" height="38" fill="#f2f2f7"/>
+    <rect x="180" y="214" width="56" height="38" fill="#e8f2ff"/>
+    <rect x="236" y="214" width="284" height="38" fill="#fff"/>
+    <rect x="510" y="214" width="10" height="38" fill="#ff9f0a" stroke="none"/>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <text x="150" y="238">IP 헤더</text>
+    <text x="208" y="238">UDP 헤더</text>
+    <text x="370" y="238">UDP 데이터(1473바이트)</text>
+  </g>
+  <g stroke="#6e6e73" stroke-dasharray="4 3">
+    <line x1="120" y1="252" x2="30" y2="316"/>
+    <line x1="149" y1="274" x2="90" y2="316"/>
+    <line x1="205" y1="274" x2="146" y2="316"/>
+    <line x1="510" y1="252" x2="420" y2="316"/>
+    <line x1="510" y1="252" x2="548" y2="316"/>
+    <line x1="520" y1="252" x2="568" y2="316"/>
+  </g>
+  <g font-size="11" text-anchor="middle" fill="#6e6e73" stroke="#fff" stroke-width="5" paint-order="stroke">
+    <text x="150" y="267">20바이트</text>
+    <text x="208" y="267">8바이트</text>
+  </g>
+  <g stroke="#1d1d1f">
+    <rect x="30" y="316" width="60" height="38" fill="#f2f2f7"/>
+    <rect x="90" y="316" width="56" height="38" fill="#e8f2ff"/>
+    <rect x="146" y="316" width="274" height="38" fill="#fff"/>
+    <rect x="488" y="316" width="60" height="38" fill="#f2f2f7"/>
+    <rect x="548" y="316" width="20" height="38" fill="#ff9f0a"/>
+  </g>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <text x="60" y="340">IP 헤더</text>
+    <text x="118" y="340">UDP 헤더</text>
+    <text x="283" y="340">UDP 데이터 1472바이트</text>
+    <text x="518" y="340">IP 헤더</text>
+  </g>
+  <g font-size="11" text-anchor="middle" fill="#6e6e73">
+    <text x="60" y="369">20바이트</text>
+    <text x="118" y="369">8바이트</text>
+    <text x="518" y="369">20바이트</text>
+    <text x="580" y="369">1바이트</text>
+  </g>
+  <line x1="30" y1="390" x2="420" y2="390" stroke="#1d1d1f" marker-start="url(#a)" marker-end="url(#a)"/>
+  <line x1="488" y1="390" x2="568" y2="390" stroke="#1d1d1f" marker-start="url(#a)" marker-end="url(#a)"/>
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <text x="225" y="412">첫 단편: IP 데이터 1480바이트, MF = 1</text>
+    <text x="528" y="412">둘째 단편: 1바이트</text>
+  </g>
+</svg>

@@ -74,6 +74,6 @@ I declared `ImportMetaEnv` in `vite-env.d.ts` so autocompletion works. However, 
 ## Related posts (Korean)
 
 - [CRA에서 Vite로 옮기기](https://macfolio.hyeoniverse.com/memo/cra-to-vite)
-- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-report)
+- [성능 측정 리포트 — 휴대폰 LCP 25.7초에서 3.2초로](https://macfolio.hyeoniverse.com/memo/site-performance-diet#병목-분석)
 
 [^fast-refresh]: React's HMR mode: when a component file changes, only that component is swapped in without reloading the page, and its state is kept. In Vite it is provided by [`@vitejs/plugin-react`](https://github.com/vitejs/vite-plugin-react).

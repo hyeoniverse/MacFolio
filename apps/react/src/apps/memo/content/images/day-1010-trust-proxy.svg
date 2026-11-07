@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>TRUST_PROXY 설정에 따라 요청 제한이 집계하는 IP</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#34c759"/></marker></defs>
+<rect width="640" height="380" fill="#ffffff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">Cloudflare Tunnel 뒤에서 요청 제한이 집계하는 IP</text>
+<rect x="20" y="52" width="110" height="34" rx="8" fill="#f2f2f7"/><text x="75" y="74" font-size="12" fill="#1d1d1f" text-anchor="middle">방문자 A 203.0.113.5</text>
+<rect x="20" y="96" width="110" height="34" rx="8" fill="#f2f2f7"/><text x="75" y="118" font-size="12" fill="#1d1d1f" text-anchor="middle">방문자 B 198.51.100.7</text>
+<rect x="190" y="62" width="130" height="58" rx="8" fill="#f2f2f7" stroke="#6e6e73"/><text x="255" y="86" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">Cloudflare Tunnel</text><text x="255" y="104" font-size="12" fill="#6e6e73" text-anchor="middle">cloudflared 컨테이너</text>
+<path d="M130 69 L186 82" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><path d="M130 113 L186 100" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="380" y="62" width="240" height="58" rx="8" fill="#ffffff" stroke="#6e6e73"/><text x="500" y="84" font-size="12" fill="#1d1d1f" text-anchor="middle">API가 받는 요청</text><text x="500" y="104" font-size="12" fill="#6e6e73" text-anchor="middle">보낸 곳 = 터널 IP 172.18.0.3 (예)</text>
+<path d="M320 91 H376" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="500" y="140" font-size="12" fill="#0a84ff" text-anchor="middle">X-Forwarded-For: 203.0.113.5</text>
+<rect x="20" y="168" width="290" height="190" rx="10" fill="#fff1f0" stroke="#ff3b30"/>
+<text x="36" y="194" font-size="13" font-weight="700" fill="#ff3b30">TRUST_PROXY 값이 없을 때</text>
+<text x="36" y="218" font-size="12" fill="#1d1d1f">X-Forwarded-For를 무시하고</text>
+<text x="36" y="236" font-size="12" fill="#1d1d1f">모든 요청을 터널 IP 하나로 집계</text>
+<rect x="36" y="256" width="258" height="26" rx="6" fill="#ffffff"/><text x="46" y="274" font-size="12" fill="#1d1d1f">172.18.0.3 : A 4회 + B 1회 = 5회</text>
+<text x="36" y="306" font-size="12" fill="#ff3b30">댓글 한도(1분 5회)에 도달하면</text>
+<text x="36" y="324" font-size="12" fill="#ff3b30">A가 보낸 요청 때문에 B도 429를 받는다</text>
+<rect x="330" y="168" width="290" height="190" rx="10" fill="#effaf2" stroke="#34c759"/>
+<text x="346" y="194" font-size="13" font-weight="700" fill="#1f7a3a">TRUST_PROXY=1 일 때</text>
+<text x="346" y="218" font-size="12" fill="#1d1d1f">바로 앞 프록시 1단계를 신뢰하고</text>
+<text x="346" y="236" font-size="12" fill="#1d1d1f">X-Forwarded-For의 IP로 집계</text>
+<rect x="346" y="256" width="258" height="26" rx="6" fill="#ffffff"/><text x="356" y="274" font-size="12" fill="#1d1d1f">203.0.113.5 : 4회</text>
+<rect x="346" y="288" width="258" height="26" rx="6" fill="#ffffff"/><text x="356" y="306" font-size="12" fill="#1d1d1f">198.51.100.7 : 1회</text>
+<text x="346" y="338" font-size="12" fill="#1f7a3a">방문자마다 따로 한도를 적용한다</text>
+</svg>

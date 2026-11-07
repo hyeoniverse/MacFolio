@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>localStorage는 출처와 브라우저마다 따로 있다</title>
+  <rect width="640" height="360" fill="#ffffff"/>
+  <text x="24" y="34" font-size="17" font-weight="700" fill="#1d1d1f">localStorage는 출처 × 브라우저마다 따로</text>
+  <text x="24" y="56" font-size="12" fill="#6e6e73">출처(origin) = 스킴 + 호스트 + 포트. 네 칸은 서로의 값을 읽지 못한다</text>
+  <!-- column headers -->
+  <rect x="190" y="74" width="210" height="46" rx="8" fill="#f2f2f7"/>
+  <text x="295" y="94" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">https://macfolio.hyeoniverse.com</text>
+  <text x="295" y="111" font-size="12" fill="#6e6e73" text-anchor="middle">배포 사이트 (포트 443)</text>
+  <rect x="412" y="74" width="204" height="46" rx="8" fill="#f2f2f7"/>
+  <text x="514" y="94" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="middle">http://localhost:5173</text>
+  <text x="514" y="111" font-size="12" fill="#6e6e73" text-anchor="middle">개발 서버</text>
+  <!-- row headers -->
+  <rect x="24" y="132" width="154" height="92" rx="8" fill="#f2f2f7"/>
+  <text x="101" y="172" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">노트북 Chrome</text>
+  <text x="101" y="192" font-size="12" fill="#6e6e73" text-anchor="middle">관리자가 앨범을 고름</text>
+  <rect x="24" y="236" width="154" height="92" rx="8" fill="#f2f2f7"/>
+  <text x="101" y="276" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">아이폰 Safari</text>
+  <text x="101" y="296" font-size="12" fill="#6e6e73" text-anchor="middle">같은 사이트에 접속</text>
+  <!-- cells -->
+  <rect x="190" y="132" width="210" height="92" rx="8" fill="#eaf8ee" stroke="#34c759" stroke-width="1.5"/>
+  <text x="204" y="156" font-size="12" fill="#6e6e73">macfolio:desktop:widgets</text>
+  <text x="204" y="176" font-size="12" fill="#1d1d1f">album: "folder:widget01"</text>
+  <text x="204" y="206" font-size="12" font-weight="600" fill="#34c759">→ 그림 폴더 사진</text>
+  <rect x="412" y="132" width="204" height="92" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="4 4"/>
+  <text x="426" y="156" font-size="12" fill="#6e6e73">별도 저장소</text>
+  <text x="426" y="176" font-size="12" fill="#6e6e73">배포 사이트 값과 무관</text>
+  <rect x="190" y="236" width="210" height="92" rx="8" fill="#fff1f0" stroke="#ff3b30" stroke-width="1.5"/>
+  <text x="204" y="260" font-size="12" fill="#6e6e73">macfolio:mobile:widgets</text>
+  <text x="204" y="280" font-size="12" fill="#1d1d1f">(키 없음)</text>
+  <text x="204" y="310" font-size="12" font-weight="600" fill="#ff3b30">→ 모든 앨범</text>
+  <rect x="412" y="236" width="204" height="92" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-dasharray="4 4"/>
+  <text x="426" y="260" font-size="12" fill="#6e6e73">별도 저장소</text>
+  <text x="426" y="280" font-size="12" fill="#6e6e73">(접속하지 않음)</text>
+  <text x="24" y="350" font-size="12" fill="#6e6e73">같은 칸 안에서는 데스크톱 UI와 창을 좁힌 휴대폰 UI가 같은 저장소를 읽는다</text>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="350" fill="#fff"/>
+  <defs>
+    <marker id="k" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d1d1f"/></marker>
+    <marker id="ks" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10,0 L0,5 L10,10 z" fill="#1d1d1f"/></marker>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker>
+    <linearGradient id="pipe" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2f2f7"/><stop offset="0.5" stop-color="#a1a1a6"/><stop offset="1" stop-color="#d1d1d6"/></linearGradient>
+  </defs>
+<rect x="20" y="90" width="180" height="250" fill="#eaf4fb" stroke="#1d1d1f" stroke-dasharray="5 3"/>
+<rect x="440" y="90" width="180" height="250" fill="#eaf4fb" stroke="#1d1d1f" stroke-dasharray="5 3"/>
+<text x="110" y="330" text-anchor="middle" font-size="11.5" fill="#1d1d1f">사설망 <tspan font-weight="700">10.0.7.0/24</tspan></text>
+<text x="530" y="330" text-anchor="middle" font-size="11.5" fill="#1d1d1f">사설망 <tspan font-weight="700">10.0.8.0/24</tspan></text>
+<ellipse cx="320" cy="110" rx="80" ry="34" fill="#f2f2f7" stroke="#6e6e73"/>
+<text x="320" y="138" text-anchor="middle" font-size="11" fill="#1d1d1f" font-weight="700">인터넷</text>
+<rect x="150" y="97.0" width="330" height="14" rx="7.0" fill="url(#pipe)" stroke="#6e6e73"/><ellipse cx="473.0" cy="104" rx="6.0" ry="6.0" fill="#8e8e93"/>
+<rect x="150" y="72" width="40" height="24" fill="#e5e5ea" stroke="#1d1d1f"/><text x="170.0" y="82" text-anchor="middle" font-size="8.5" fill="#1d1d1f" font-weight="700">새</text><text x="170.0" y="92" text-anchor="middle" font-size="8.5" fill="#1d1d1f" font-weight="700">헤더</text><rect x="190" y="72" width="30" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="205.0" y="88" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">IP</text><rect x="220" y="72" width="40" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="240.0" y="88" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">데이터</text>
+<rect x="400" y="72" width="40" height="24" fill="#e5e5ea" stroke="#1d1d1f"/><text x="420.0" y="82" text-anchor="middle" font-size="8.5" fill="#1d1d1f" font-weight="700">새</text><text x="420.0" y="92" text-anchor="middle" font-size="8.5" fill="#1d1d1f" font-weight="700">헤더</text><rect x="440" y="72" width="30" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="455.0" y="88" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">IP</text><rect x="470" y="72" width="40" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="490.0" y="88" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">데이터</text>
+<rect x="60" y="94" width="90" height="38" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="105" y="110" text-anchor="middle" font-size="11" fill="#1d1d1f">터널</text><text x="105" y="124" text-anchor="middle" font-size="11" fill="#1d1d1f">응용</text>
+<rect x="490" y="94" width="90" height="38" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="535" y="110" text-anchor="middle" font-size="11" fill="#1d1d1f">터널</text><text x="535" y="124" text-anchor="middle" font-size="11" fill="#1d1d1f">응용</text>
+<rect x="44" y="160" width="124" height="70" fill="#fff" stroke="#1d1d1f" stroke-width="2.5"/><text x="106" y="180" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="700">VPN 클라이언트</text>
+<rect x="76" y="196" width="30" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="91.0" y="212" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">IP</text><rect x="106" y="196" width="40" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="126.0" y="212" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">데이터</text>
+<rect x="472" y="160" width="124" height="70" fill="#fff" stroke="#1d1d1f" stroke-width="2.5"/><text x="534" y="180" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="700">VPN 서버</text>
+<rect x="504" y="196" width="30" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="519.0" y="212" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">IP</text><rect x="534" y="196" width="40" height="24" fill="#d1d1d6" stroke="#1d1d1f"/><text x="554.0" y="212" text-anchor="middle" font-size="9.5" fill="#1d1d1f" font-weight="700">데이터</text>
+<polyline points="105,158 105,134" fill="none" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#k)"/>
+<circle cx="122" cy="146" r="10" fill="#1d1d1f"/><text x="122" y="149.5" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">2A</text>
+<polyline points="535,134 535,158" fill="none" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#k)"/>
+<circle cx="552" cy="146" r="10" fill="#1d1d1f"/><text x="552" y="149.5" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">2B</text>
+<rect x="40" y="252" width="40" height="28" rx="2" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/><rect x="36" y="284" width="48" height="7" rx="1" fill="#e5e5ea" stroke="#1d1d1f"/><text x="60" y="272" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="700">U</text>
+<polyline points="84,268 106,268 106,232" fill="none" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#k)"/>
+<circle cx="122" cy="250" r="10" fill="#1d1d1f"/><text x="122" y="253.5" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1A</text>
+<rect x="560" y="258" width="40" height="28" rx="2" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/><rect x="556" y="290" width="48" height="7" rx="1" fill="#e5e5ea" stroke="#1d1d1f"/><text x="580" y="278" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="700">V</text>
+<polyline points="534,232 534,272 554,272" fill="none" stroke="#1d1d1f" stroke-width="1" stroke-dasharray="2 2" marker-end="url(#k)"/>
+<circle cx="518" cy="252" r="10" fill="#1d1d1f"/><text x="518" y="255.5" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">1B</text>
+<text x="320" y="210" text-anchor="middle" font-size="11" fill="#1d1d1f">새 패킷: <tspan font-weight="700">VPN 클라이언트 → VPN 서버</tspan></text>
+<text x="320" y="230" text-anchor="middle" font-size="11" fill="#1d1d1f">원래 IP 패킷: <tspan font-weight="700">U → V</tspan></text>
+<text x="20" y="26" text-anchor="start" font-size="12.5" fill="#1d1d1f"><tspan fill="#ff3b30">질문:</tspan> 터널 응용은 IP 패킷을</text><text x="20" y="43" text-anchor="start" font-size="12.5" fill="#1d1d1f">어떻게 얻는가?</text>
+<polyline points="40,56 40,124 58,124" fill="none" stroke="#0a84ff" stroke-width="1.4" marker-end="url(#b)"/>
+<text x="620" y="26" text-anchor="end" font-size="12.5" fill="#1d1d1f">평범한 TCP 또는 UDP 기반</text><text x="620" y="43" text-anchor="end" font-size="12.5" fill="#1d1d1f">SSL 연결이다</text>
+<polyline points="520,58 470,96" fill="none" stroke="#0a84ff" stroke-width="1.4" marker-end="url(#b)"/>
+</svg>

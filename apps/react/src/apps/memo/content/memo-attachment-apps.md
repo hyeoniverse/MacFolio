@@ -5,13 +5,26 @@ category: 개발 기록/MacFolio/인터랙션·브라우저 API
 summary: 메모 글에 올린 첨부 파일을 누르면 PDF·그림은 미리보기, md·txt는 텍스트 편집기, html은 Safari 새 탭으로 열리게 했다. 파일 이름의 확장자로 앱을 고르고, HTML은 스크립트를 막은 sandbox iframe의 srcdoc으로 그린다.
 ---
 
-메모 글에는 편집기로 파일을 올려 첨부할 수 있다. 지금까지 첨부 파일 링크를 누르면 브라우저 새 탭이 열려 파일을 내려받았다. 사이트 안에는 PDF를 그리는 미리보기, Markdown을 읽는 텍스트 편집기, 페이지를 보이는 Safari가 이미 있고, Finder에서 파일을 열면 이 앱들이 뜬다. 글의 첨부 파일도 Finder처럼 사이트 안 앱으로 열리게 했다.
+## 배경
+
+MacFolio의 메모 앱은 블로그이고, 관리자는 편집기로 글에 파일을 올려 첨부할 수 있다. 올린 파일은 API 서버에 저장되고, 글에는 `https://…/files/<id>` 형식의 링크로 들어간다. 지금까지 이 링크를 누르면 브라우저 새 탭이 열려 파일을 내려받았다.
+
+한편 사이트 안에는 파일을 표시하는 앱이 이미 있다. PDF를 그리는 미리보기, Markdown을 읽는 텍스트 편집기, 웹 페이지를 표시하는 Safari다. Finder에서 파일을 열면 이 앱들이 열린다. 글의 첨부 파일도 Finder처럼 사이트 안 앱으로 열리게 했다.
 
 ![글의 첨부 파일 링크](./images/memo-attachment-apps-reader.jpg '읽기 화면의 첨부 파일 링크. 클립 아이콘이 붙은 배지 모양이고, 누르면 파일 종류에 맞는 앱이 열린다. archive.zip처럼 맞는 앱이 없는 파일은 지금처럼 새 탭에서 연다')
 
+이 작업에는 브라우저 보안 규칙 몇 가지가 관련된다.
+
+| 용어                  | 뜻                                                                                                     |
+| --------------------- | ------------------------------------------------------------------------------------------------------ |
+| 출처(origin)          | 프로토콜·도메인·포트의 조합. 사이트(`macfolio.hyeoniverse.com`)와 API 서버는 도메인이 달라 다른 출처다 |
+| CORS                  | 다른 출처의 응답을 페이지 코드가 읽어도 되는지, 브라우저가 서버의 허락(응답 헤더)을 확인하는 규칙      |
+| `Content-Disposition` | 응답을 화면에 표시할지(`inline`), 파일로 내려받을지(`attachment`) 서버가 브라우저에 알리는 응답 헤더   |
+| iframe `sandbox`      | iframe 안 문서의 권한(스크립트 실행, 같은 출처 취급, 상위 창 이동 등)을 막는 속성                      |
+
 ## 확장자로 앱을 고른다
 
-macOS에서 파일을 열면 확장자에 등록된 앱이 뜬다. 사이트도 같은 규칙을 쓴다. 판별은 `shared/lib/fileApps.ts`의 `fileAppOf`가 맡는다.
+macOS에서 파일을 두 번 누르면 그 파일의 확장자에 등록된 앱이 열린다. 예를 들어 `report.pdf`는 미리보기, `notes.txt`는 텍스트 편집기로 열린다. 사이트도 같은 규칙을 쓴다. 판별은 `shared/lib/fileApps.ts`의 `fileAppOf`가 맡는다.
 
 | 확장자                                                   | 여는 앱       | 보이는 모양                       |
 | -------------------------------------------------------- | ------------- | --------------------------------- |
@@ -22,27 +35,40 @@ macOS에서 파일을 열면 확장자에 등록된 앱이 뜬다. 사이트도 
 | `html`·`htm`                                             | Safari        | 새 탭의 페이지                    |
 | 그 밖 (`zip` 등)                                         | 없음          | 지금처럼 새 탭에서 연다(내려받기) |
 
-올린 파일의 주소는 `https://…/files/<id>`라 확장자가 없다. 대신 편집기가 파일을 넣을 때 `[notes.md](https://…/files/<id> "첨부 파일 · 1 KB")`처럼 링크 글자를 파일 이름으로, 링크 제목을 '첨부 파일 · 크기'로 적는다. 그래서 링크 제목으로 첨부 파일인지 가리고, 링크 글자의 확장자로 앱을 고른다. 이 표기는 [바깥 링크 임베드](/memo/memo-link-embed)의 영상·음악 재생기도 같은 방식으로 쓴다.
+문제는 올린 파일의 주소 `https://…/files/<id>`에 확장자가 없다는 점이다. 대신 편집기가 파일을 넣을 때 Markdown 링크를 다음처럼 적는다.
 
-⌘·Ctrl·Shift를 누르거나 가운데 버튼으로 누르면 지금처럼 브라우저 기본 동작(새 탭)을 따른다. 사이트 안 앱이 아니라 파일 자체가 필요할 때 쓰는 길이다.
+```md
+[notes.md](https://…/files/<id> '첨부 파일 · 1 KB')
+```
+
+Markdown 링크는 `[링크 글자](주소 "링크 제목")` 형식이고, 링크 제목은 HTML의 `title` 속성이 된다. 편집기는 링크 글자에 파일 이름을, 링크 제목에 '첨부 파일 · 크기'를 적는다. 그래서 ==링크 제목으로 첨부 파일인지 가리고, 링크 글자의 확장자로 앱을 고른다==. 이 표기는 [바깥 링크 임베드](/memo/memo-link-embed)의 영상·음악 재생기도 같은 방식으로 쓴다.
+
+![첨부 파일 링크를 링크 글자, 주소, 링크 제목으로 나누고, 제목 확인과 확장자 판별을 거쳐 앱을 고르는 순서](./images/memo-attachment-apps-routing.svg '링크 제목이 첨부 파일로 시작하면 링크 글자의 확장자로 앱을 고른다. 확장자는 대소문자를 구분하지 않고, 맞는 앱이 없으면 null이라 새 탭에서 연다')
+
+> [!TIP] 파일 자체가 필요할 때
+> ⌘·Ctrl·Shift를 누르거나 가운데 버튼으로 누르면 지금처럼 브라우저 기본 동작(새 탭)을 따른다. 사이트 안 앱이 아니라 파일 자체가 필요할 때 쓰는 길이다.
 
 ## 각 앱에 파일을 넘기는 방법
 
-세 앱은 원래 다른 곳에서 온 파일을 연다. 미리보기는 Finder의 R2 문서 키를, 텍스트 편집기는 저장소 문서 경로(`docs/privacy.md`)를, Safari는 프로젝트 id를 받는다. 글의 첨부 파일은 API 서버의 주소이므로 앱마다 받는 방법을 조금씩 넓혔다.
+세 앱은 원래 다른 곳에서 온 파일을 연다. 미리보기는 Finder의 R2 문서 키를, 텍스트 편집기는 저장소 문서 경로(`docs/privacy.md`)를, Safari는 프로젝트 id를 받는다. 글의 첨부 파일은 API 서버의 주소이므로 앱마다 받는 방법을 넓혔다.
 
 | 앱            | 원래 받던 것           | 첨부 파일                                                                              |
 | ------------- | ---------------------- | -------------------------------------------------------------------------------------- |
 | 미리보기      | R2 키 (`/files/<key>`) | 파일 주소를 키로 그대로 넘긴다. 주소를 만드는 `fileUrl`이 이미 절대 주소를 그대로 쓴다 |
-| 텍스트 편집기 | 저장소 문서 경로       | 기록에 주소를 넣고, 본문을 그릴 때 주소면 API에서 글자를 받는다                        |
+| 텍스트 편집기 | 저장소 문서 경로       | 기록에 주소를 넣고, 본문을 그리는 시각에 주소면 API에서 글자를 받는다                  |
 | Safari        | 프로젝트 id            | `file:<주소>` 탭을 연다. 프로젝트 id와 겹치지 않게 앞머리를 붙인다                     |
 
-텍스트 편집기와 Safari는 주소만 받으므로 창 제목과 탭 이름에 쓸 파일 이름을 따로 알아야 한다. `useOpenAttachment`가 앱을 열 때 주소별 파일 이름을 기억해 두고, 두 앱은 `fileNameOf(주소)`로 이름을 읽는다.
+텍스트 편집기와 Safari는 주소만 받으므로 창 제목과 탭 이름에 쓸 파일 이름을 따로 알아야 한다. `useOpenAttachment`가 앱을 열면서 주소별 파일 이름을 기억해 두고, 두 앱은 `fileNameOf(주소)`로 이름을 읽는다. 기억한 이름이 없으면 주소의 마지막 조각을 이름으로 쓴다.
 
 ![텍스트 편집기로 연 글자 파일](./images/memo-attachment-apps-textedit.jpg 'server.log.txt를 연 텍스트 편집기. 창 제목은 파일 이름이고, 내용은 줄 앞의 공백까지 고정폭 그대로 보인다')
 
-파일 내용은 `shared/api/remoteFileApi.ts`의 `fetchFileText`가 받는다. 사이트의 규칙대로 서버 요청은 공용 클라이언트(`apiFetch`)를 거치고, API 주소로 시작하는 파일만 받는다. API 서버는 사이트 출처에 CORS를 허용하므로 브라우저에서 바로 받을 수 있다.
+파일 내용은 `shared/api/remoteFileApi.ts`의 `fetchFileText`가 받는다. 사이트의 규칙대로 서버 요청은 공용 클라이언트(`apiFetch`)를 거치고, API 주소로 시작하는 파일만 받는다. 사이트와 API 서버는 출처가 다르지만, API 서버가 사이트 출처에 CORS를 허용하므로 브라우저에서 바로 받을 수 있다.
 
-글자 파일은 Markdown으로 그리면 줄바꿈과 들여쓰기가 사라진다. 그래서 코드 블록으로 감싸 고정폭 그대로 보이게 하고, 파일 안에 백틱(`` ` ``)이 있어도 블록이 끊기지 않게 울타리를 그 안의 가장 긴 백틱 줄보다 한 개 길게 만든다.
+### 글자 파일은 코드 블록으로
+
+글자 파일을 Markdown으로 그리면 줄바꿈과 들여쓰기가 사라진다. Markdown은 연속된 공백을 하나로 합치고, 빈 줄 없는 줄바꿈을 같은 문단으로 이어 붙이기 때문이다. 예를 들어 로그 파일의 `    at handler (server.ts:12)`처럼 앞에 공백 4칸이 있는 줄은 공백이 사라지거나 코드 블록으로 바뀐다.
+
+그래서 내용을 코드 블록으로 감싸 고정폭 그대로 보이게 한다. 코드 블록은 백틱(`` ` ``) 3개 이상으로 된 울타리(fence)로 시작하고 끝난다. 파일 안에 백틱 3개로 된 줄이 있으면 그 줄에서 블록이 끝나 버리므로, 울타리를 파일 안의 가장 긴 백틱 줄보다 한 개 길게 만든다.
 
 ```ts
 const longest = Math.max(2, ...(text.match(/`+/g) ?? []).map((run) => run.length));
@@ -50,26 +76,36 @@ const fence = '`'.repeat(longest + 1);
 return `${fence}text\n${text}\n${fence}`;
 ```
 
+| 파일 안의 가장 긴 백틱 줄 | `longest` | 울타리   |
+| ------------------------- | --------- | -------- |
+| 없음                      | 2         | 백틱 3개 |
+| 백틱 3개                  | 3         | 백틱 4개 |
+| 백틱 5개                  | 5         | 백틱 6개 |
+
 ## HTML은 sandbox iframe의 srcdoc으로 그린다
 
-HTML 파일은 그대로 브라우저에 그리면 그 안의 스크립트가 실행된다. 글에 HTML을 올리는 사람은 관리자뿐이지만, 받은 파일이 사이트의 쿠키나 저장소, 다른 창을 건드릴 수 있으면 안 된다.
+HTML 파일을 그대로 브라우저에 그리면 그 안의 스크립트가 실행된다. 글에 HTML을 올리는 사람은 관리자뿐이지만, ==받은 파일이 사이트의 쿠키나 저장소, 다른 창을 건드릴 수 있으면 안 된다==.
 
-API 서버는 파일을 `Content-Disposition: attachment`와 `Content-Security-Policy: sandbox`로 내준다. 이 주소를 iframe에 그대로 넣으면 브라우저가 내려받기를 시작하거나 빈 화면을 보인다. 그래서 Safari의 파일 탭(`apps/safari/FilePage.tsx`)은 HTML을 글자로 받아 iframe의 `srcdoc`에 넣고, `sandbox` 속성으로 권한을 막는다.
+API 서버는 파일을 `Content-Disposition: attachment`와 `Content-Security-Policy: sandbox`로 내준다. 앞의 헤더는 "화면에 표시하지 말고 내려받으라"는 뜻이고, 뒤의 헤더는 그 문서를 sandbox iframe과 같은 제한 아래 둔다. 그래서 이 주소를 iframe의 `src`에 그대로 넣으면 브라우저가 내려받기를 시작하거나 빈 화면을 보인다.
+
+Safari의 파일 탭(`apps/safari/FilePage.tsx`)은 HTML을 글자로 받아 iframe의 `srcdoc` 속성에 넣고, `sandbox` 속성으로 권한을 막는다. `srcdoc`은 주소 대신 HTML 문자열을 직접 넣어 iframe 안에 그리는 속성이다.
 
 ```tsx
 <iframe className="safari-file-frame" title={name} sandbox="allow-popups" srcDoc={text} />
 ```
 
-`sandbox` 속성은 값이 비어 있으면 iframe의 모든 권한을 막고, 적은 권한만 다시 연다. 여기서는 `allow-popups` 하나만 열었다.
+`sandbox` 속성은 값이 비어 있으면 iframe의 모든 권한을 막고, 나열한 권한만 다시 연다. 여기서는 `allow-popups` 하나만 열었다.
 
-| 막는 것                                    | 결과                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------- |
-| 스크립트 (`allow-scripts` 없음)            | 파일 안의 `<script>`가 실행되지 않는다                                     |
-| 같은 출처 (`allow-same-origin` 없음)       | 문서가 고유한 빈 출처가 되어 사이트의 쿠키·`localStorage`에 접근할 수 없다 |
-| 양식 제출 (`allow-forms` 없음)             | 파일 안의 양식을 보낼 수 없다                                              |
-| 상위 창 이동 (`allow-top-navigation` 없음) | 파일이 사이트 페이지를 다른 주소로 바꿀 수 없다                            |
+| 막는 것                                    | 결과                                                                                          |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| 스크립트 (`allow-scripts` 없음)            | 파일 안의 `<script>`가 실행되지 않는다                                                        |
+| 같은 출처 (`allow-same-origin` 없음)       | 문서가 어느 출처와도 같지 않은 특수 출처가 되어 사이트의 쿠키·`localStorage`에 접근할 수 없다 |
+| 양식 제출 (`allow-forms` 없음)             | 파일 안의 양식을 보낼 수 없다                                                                 |
+| 상위 창 이동 (`allow-top-navigation` 없음) | 파일이 사이트 페이지를 다른 주소로 바꿀 수 없다                                               |
 
-`allow-popups`는 파일 안의 링크를 새 창으로 열 수 있게 하려고 남겼다. 또 `srcdoc` 문서는 부모 페이지의 CSP를 물려받는다. 사이트 CSP는 인라인 스크립트를 막고 스타일은 허용하므로, 파일 안의 `<style>`은 적용되고 바깥 스크립트는 불러오지 않는다.
+![sandbox iframe의 srcdoc 문서가 사이트 문서의 쿠키, localStorage, window, 최상위 창 주소에 접근하지 못하고 style 적용과 새 창 링크만 허용되는 도식](./images/memo-attachment-apps-sandbox.svg 'sandbox 속성이 막은 권한은 빨간색, 남긴 권한은 초록색이다. 시험 파일의 parent.hacked = 1은 실행되지 않는다')
+
+`allow-popups`는 파일 안의 링크를 새 창으로 열 수 있게 하려고 남겼다. 또 `srcdoc` 문서는 부모 페이지의 CSP(Content Security Policy: 페이지가 불러오거나 실행할 수 있는 리소스를 제한하는 응답 헤더)를 물려받는다. 사이트 CSP는 인라인 스크립트를 막고 스타일은 허용하므로, 파일 안의 `<style>`은 적용되고 바깥 스크립트는 불러오지 않는다.
 
 ![Safari로 연 HTML 파일](./images/memo-attachment-apps-safari.jpg 'demo.html을 연 Safari. 파일 이름의 탭이 새로 열리고, 주소창에는 파일 아이콘과 이름이 보인다. 파일 안의 <style>(초록 제목)은 적용된다')
 
@@ -79,7 +115,9 @@ Safari의 탭 목록은 시스템 설정에서 프로젝트 목록이 바뀌면 
 
 첨부 파일을 누르면 사이트 안 앱이 열리므로, 파일 자체를 받는 길을 따로 두었다. 첨부 파일 배지 안, 파일 이름 오른쪽에 내려받기 아이콘(받침대 위 화살표) 버튼이 들어간다(`[📎 notes.md ⬇]`). 앱으로 여는 파일, 맞는 앱이 없는 파일(`zip` 등), 재생기 아래 캡션의 영상·음악 파일 모두에 붙는다. 본문 이미지의 내려받기 버튼도 같은 아이콘(`fa-download`)으로 바꿔, 메모 앱의 내려받기 아이콘을 하나로 맞췄다.
 
-HTML에서는 링크(`<a>`) 안에 버튼을 넣을 수 없다. 그래서 버튼을 링크 바로 뒤의 형제로 두고, CSS로 배지 안에 들어간 것처럼 보이게 한다. 배지의 오른쪽 여백을 버튼 폭만큼 넓히고, 버튼을 음수 왼쪽 여백으로 그 여백 안에 당긴다.
+### 링크 뒤에 둔 버튼을 배지 안으로 당기기
+
+HTML 명세는 링크(`<a>`) 안에 버튼 같은 상호작용 요소를 넣는 것을 허용하지 않는다. 그래서 버튼을 링크 바로 뒤의 형제로 두고, CSS로 배지 안에 들어간 것처럼 보이게 한다. 배지의 오른쪽 여백을 버튼 폭만큼 넓히고, 버튼을 음수 왼쪽 여백으로 그 여백 안에 당긴다.
 
 ```tsx
 <span className="memo-attachment">
@@ -108,13 +146,32 @@ HTML에서는 링크(`<a>`) 안에 버튼을 넣을 수 없다. 그래서 버튼
 }
 ```
 
-구분선은 버튼의 `::before` 가상 요소로 그려 버튼과 함께 움직인다. 위젯으로 그리는 편집 화면의 버튼도 같은 클래스라 같은 구분선이 보인다.
+수치는 다음처럼 맞물린다.
 
-처음에는 감싸는 `span`을 `inline-flex`로 두었는데, 재생기 캡션처럼 폭이 내용에 맞춰지는 자리에서 파일 이름이 두 줄로 꺾였다. 플렉스 상자의 폭이 링크 폭에서 음수 여백만큼 줄어든 값으로 잡혀, 링크가 그만큼 좁아졌기 때문이다. 감싸는 `span`을 일반 인라인으로 두어 해결했다.
+| 값                       | 계산                                  |
+| ------------------------ | ------------------------------------- |
+| 링크 오른쪽 여백 40px    | 틈 12px + 버튼 22px + 오른쪽 여백 6px |
+| 버튼 왼쪽 여백 −28px     | 버튼 22px + 오른쪽 여백 6px           |
+| 구분선 위치 `left: -6px` | 틈 12px의 가운데                      |
 
-`<a download>` 속성은 같은 출처의 주소에만 적용된다. 첨부 파일은 API 서버(다른 출처)에 있으므로 이 속성을 붙여도 브라우저가 저장 이름을 바꾸지 않는다. 그래서 `downloadFile`은 파일을 `Blob`으로 받은 뒤 `URL.createObjectURL`로 같은 출처의 임시 주소를 만들고, 그 주소에 `download="notes.md"`를 붙인 링크를 눌러 저장한다. 저장 이름은 링크 글자, 곧 올릴 때의 파일 이름이다. 받지 못하면 파일 주소를 새 탭에서 연다. API가 `Content-Disposition: attachment`로 내주므로 브라우저가 내려받는다. 본문 이미지의 내려받기 버튼도 같은 저장 함수를 쓴다.
+선택자 `a[title^='첨부 파일']:has(+ .memo-attachment-download)`는 "제목이 '첨부 파일'로 시작하고, 바로 뒤에 내려받기 버튼이 있는 링크"를 고른다. 구분선은 버튼의 `::before` 가상 요소로 그려 버튼과 함께 움직인다. 위젯으로 그리는 편집 화면의 버튼도 같은 클래스라 같은 구분선이 보인다.
 
-편집 화면은 문서 내용을 바꾸지 않고 화면에만 버튼을 그리는 ProseMirror 위젯 장식(`writer/attachmentDownload.ts`)으로 같은 버튼을 링크 끝에 붙인다. 버튼은 글에 저장되지 않는다. 위젯의 `marks`를 비워 두지 않으면 링크 표시를 물려받아 `<a>` 안에 그려지고, 링크 끝에 둔 커서가 버튼 뒤로 잡힌다. 그래서 `marks: []`로 링크 바로 뒤에 그린다.
+처음에는 감싸는 `span`을 `inline-flex`로 두었는데, 재생기 캡션처럼 폭이 내용에 맞춰지는 자리에서 파일 이름이 두 줄로 꺾였다. ==플렉스 상자의 폭이 링크 폭에서 음수 여백만큼 줄어든 값으로 잡혀==, 링크가 그만큼 좁아졌기 때문이다. 감싸는 `span`을 일반 인라인으로 두어 해결했다.
+
+### 다른 출처 파일을 원래 이름으로 저장하기
+
+> [!WARNING] 다른 출처에서 적용되지 않는 download 속성
+> `<a download>` 속성은 같은 출처의 주소와 `blob:`·`data:` 주소에만 적용된다. 첨부 파일은 API 서버(다른 출처)에 있으므로 이 속성을 붙여도 브라우저가 저장 이름을 바꾸지 않는다.
+
+그래서 `downloadFile`은 파일을 `Blob`으로 받은 뒤 `URL.createObjectURL`로 같은 출처의 임시 주소를 만들고, 그 주소에 `download="notes.md"`를 붙인 링크를 눌러 저장한다. `Blob`은 브라우저 메모리에 있는 파일 데이터 객체이고, `createObjectURL`은 그 데이터를 가리키는 `blob:https://macfolio.hyeoniverse.com/…` 형식의 주소를 만든다. 저장 이름은 링크 글자, 곧 올릴 때의 파일 이름이다. 받지 못하면 파일 주소를 새 탭에서 연다. API가 `Content-Disposition: attachment`로 내주므로 브라우저가 내려받는다. 본문 이미지의 내려받기 버튼도 같은 저장 함수를 쓴다.
+
+![파일을 Blob으로 받고, blob 주소를 만들어 download 링크를 누르고, 임시 주소를 해제하는 순서와 실패 시 새 탭으로 여는 경로](./images/memo-attachment-apps-download.svg '다른 출처 파일을 같은 출처의 blob 주소로 바꿔 download 속성이 적용되게 한다. 임시 주소는 1초 뒤 해제한다')
+
+### 편집 화면의 버튼
+
+편집 화면은 문서 내용을 바꾸지 않고 화면에만 버튼을 그리는 ProseMirror 위젯 장식(`writer/attachmentDownload.ts`)으로 같은 버튼을 링크 끝에 붙인다. ProseMirror는 편집기 Milkdown의 기반 라이브러리이고, 위젯 장식(widget decoration)은 문서의 특정 위치에 DOM 요소를 끼워 그리되 문서 데이터에는 포함하지 않는 기능이다. 그래서 버튼은 글에 저장되지 않는다.
+
+위젯의 `marks`를 비워 두지 않으면 위젯이 링크 표시(mark)를 물려받아 `<a>` 안에 그려지고, 링크 끝에 둔 커서가 버튼 뒤로 잡힌다. 그래서 `marks: []`로 링크 바로 뒤에 그린다.
 
 ## 편집 화면에서 열기
 
@@ -129,14 +186,31 @@ HTML에서는 링크(`<a>`) 안에 버튼을 넣을 수 없다. 그래서 버튼
 | `fileApps.test.ts`                   | 확장자별 앱(대소문자 무시), 맞는 앱이 없거나 확장자가 없으면 null, 기억한 파일 이름과 주소의 마지막 조각                                                                                                                                                                                                                                                  |
 | `memo-attachment-apps.spec.ts` (E2E) | md는 텍스트 편집기에 서식대로, txt는 들여쓰기까지 고정폭으로, html은 Safari 새 탭(선택된 탭, `sandbox="allow-popups"`, 파일 안 스크립트 미실행), png는 미리보기, zip은 새 탭 링크. 편집 화면의 '텍스트 편집기에서 열기' 버튼. 읽기·편집 화면에서 배지 안의 내려받기 버튼이 배지 안에 있고, 앱을 열지 않고 `notes.md` 이름으로 저장하며 글을 바꾸지 않는지 |
 
-HTML 시험의 파일에는 `<script>parent.hacked = 1</script>`를 넣고, 탭을 연 뒤 사이트 창에 `hacked`가 생기지 않았는지 확인한다.
+HTML 시험의 파일에는 `<script>parent.hacked = 1</script>`를 넣고, 탭을 연 뒤 사이트 창에 `hacked`가 생기지 않았는지 확인한다. 스크립트가 실행되었다면 부모 창(`parent`)에 `hacked` 속성이 생긴다.
 
-이 시험을 처음 돌렸을 때 `localStorage` 보안 오류로 실패했다. 사이트 코드가 아니라 시험 도구가 원인이었다. Playwright의 `addInitScript`는 iframe을 포함한 모든 프레임에서 실행되는데, 공용 초기화 스크립트가 `localStorage.setItem`을 부르고 있었다. 같은 출처 권한이 없는 sandbox iframe에서는 저장소에 접근하면 `SecurityError`가 난다. 초기화 스크립트가 맨 바깥 창(`window === window.top`)에서만 저장소를 쓰도록 고쳤다.
+> [!WARNING] sandbox iframe에서도 실행되는 초기화 스크립트
+> 이 시험을 처음 실행했을 때 `localStorage` 보안 오류로 실패했다. 사이트 코드가 아니라 시험 도구가 원인이었다. Playwright의 `addInitScript`는 iframe을 포함한 모든 프레임에서 실행되는데, 공용 초기화 스크립트가 `localStorage.setItem`을 호출하고 있었다. 같은 출처 권한이 없는 sandbox iframe에서는 저장소에 접근하면 `SecurityError`가 난다. 초기화 스크립트가 맨 바깥 창(`window === window.top`)에서만 저장소를 쓰도록 고쳤다.
 
 ## 관련 글
 
 - [주소에서 ID를 뽑아 만든 iframe 임베드와 ProseMirror 위젯 장식으로 그리는 바깥 링크 미리 보기](/memo/memo-link-embed): 같은 첨부 파일 표기로 영상·음악 파일을 재생기로 그리는 방법
 - [Finder의 이력서 PDF와 그림을 미리보기 앱으로 열기](/memo/finder-files): 미리보기 앱이 PDF를 그리는 방법
 - [글 안의 저장소 문서 링크를 Finder에서 열기](/memo/doc-links-in-finder): 글의 링크를 사이트 안 앱으로 여는 처음 방식
+
+<details>
+<summary>참고 문헌</summary>
+
+- [MDN: &lt;iframe&gt; (sandbox, srcdoc)](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe)
+- [MDN: CSP sandbox](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/sandbox)
+- [MDN: Content-Disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition)
+- [MDN: Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS)
+- [MDN: &lt;a&gt; download 속성](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#download)
+- [MDN: URL.createObjectURL()](https://developer.mozilla.org/en-US/docs/Web/API/URL/createObjectURL_static)
+- [MDN: Blob](https://developer.mozilla.org/en-US/docs/Web/API/Blob)
+- [CommonMark Spec: Fenced code blocks](https://spec.commonmark.org/0.31.2/#fenced-code-blocks)
+- [ProseMirror Reference: Decoration.widget](https://prosemirror.net/docs/ref/#view.Decoration^widget)
+- [Playwright: page.addInitScript](https://playwright.dev/docs/api/class-page#page-add-init-script)
+
+</details>
 
 #MacFolio #메모앱 #React #iframe #보안

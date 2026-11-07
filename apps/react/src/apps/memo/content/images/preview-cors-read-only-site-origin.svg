@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="420" fill="#fff"/>
+  <text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">출처(origin)와 사이트(site)는 다른 단위다</text>
+  <text x="24" y="54" font-size="12" fill="#6e6e73">출처 = 스킴 + 호스트 + 포트 전체. 사이트 = 스킴 + 등록 가능한 도메인(공개 접미사 바로 앞 한 단계까지)</text>
+
+  <line x1="24" y1="68" x2="616" y2="68" stroke="#c7c7cc"/>
+  <text x="316" y="90" font-size="12" font-weight="600" fill="#6e6e73">공개 접미사</text>
+  <text x="420" y="90" font-size="12" font-weight="600" fill="#6e6e73">사이트</text>
+  <text x="24" y="110" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://macfolio.<tspan fill="#0a84ff" font-weight="700">hyeoniverse.com</tspan></text>
+  <text x="24" y="132" font-size="12" fill="#6e6e73">사이트 화면</text>
+  <text x="316" y="132" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">com</text>
+  <rect x="420" y="118" width="196" height="22" rx="6" fill="#e8f2ff"/>
+  <text x="430" y="133" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">hyeoniverse.com</text>
+  <text x="24" y="170" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://macfolio-api.<tspan fill="#0a84ff" font-weight="700">hyeoniverse.com</tspan></text>
+  <text x="24" y="192" font-size="12" fill="#6e6e73">API 서버 (세션 쿠키를 발급)</text>
+  <text x="316" y="192" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">com</text>
+  <rect x="420" y="178" width="196" height="22" rx="6" fill="#e8f2ff"/>
+  <text x="430" y="193" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">hyeoniverse.com</text>
+  <text x="24" y="230" font-size="13" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">https://feat-x-macfolio.<tspan fill="#c77700" font-weight="700">hyeoniverse.workers.dev</tspan></text>
+  <text x="24" y="252" font-size="12" fill="#6e6e73">PR 미리보기</text>
+  <text x="316" y="252" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">workers.dev</text>
+  <rect x="420" y="238" width="196" height="22" rx="6" fill="#fff4e0"/>
+  <text x="430" y="253" font-size="12" fill="#c77700" font-family="ui-monospace, Menlo, monospace">hyeoniverse.workers.dev</text>
+  <line x1="24" y1="292" x2="616" y2="292" stroke="#c7c7cc"/>
+
+  <!-- results -->
+  <rect x="24" y="312" width="288" height="92" rx="8" fill="#f0fbf3" stroke="#34c759"/>
+  <text x="38" y="336" font-size="13" font-weight="700" fill="#1d1d1f">사이트 화면 → API</text>
+  <text x="38" y="357" font-size="12" fill="#1d1d1f">출처는 다르다 (교차 출처, CORS 대상)</text>
+  <text x="38" y="376" font-size="12" fill="#1d1d1f">사이트는 같다 (same-site)</text>
+  <text x="38" y="395" font-size="12" font-weight="600" fill="#248a3d">SameSite=Lax 쿠키 전송됨</text>
+
+  <rect x="328" y="312" width="288" height="92" rx="8" fill="#fff5f4" stroke="#ff3b30"/>
+  <text x="342" y="336" font-size="13" font-weight="700" fill="#1d1d1f">PR 미리보기 → API</text>
+  <text x="342" y="357" font-size="12" fill="#1d1d1f">출처가 다르다 (교차 출처, CORS 대상)</text>
+  <text x="342" y="376" font-size="12" fill="#1d1d1f">사이트도 다르다 (cross-site)</text>
+  <text x="342" y="395" font-size="12" font-weight="600" fill="#ff3b30">SameSite=Lax 쿠키 전송 안 됨</text>
+</svg>

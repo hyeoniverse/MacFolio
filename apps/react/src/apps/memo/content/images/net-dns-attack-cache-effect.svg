@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="640" height="330" fill="#fff"/>
+  <text x="320" y="26" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">같은 이름을 노릴 때와 이름을 바꿀 때의 시도 간격</text>
+
+  <!-- 1행: 같은 이름 -->
+  <text x="24" y="62" font-size="13" font-weight="600" fill="#1d1d1f">① 같은 이름 www.example.com을 반복해 노린다</text>
+  <line x1="24" y1="110" x2="616" y2="110" stroke="#c7c7cc" stroke-width="1.5"/>
+  <rect x="24" y="86" width="56" height="48" rx="6" fill="#ff3b30"/>
+  <text x="52" y="106" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">시도 1</text>
+  <text x="52" y="123" text-anchor="middle" font-size="12" fill="#fff">실패</text>
+  <rect x="84" y="86" width="452" height="48" rx="6" fill="#f2f2f7" stroke="#6e6e73" stroke-dasharray="5 4"/>
+  <text x="310" y="106" text-anchor="middle" font-size="13" fill="#1d1d1f">진짜 응답이 캐시에 들어가 TTL 동안 질의가 나가지 않는다</text>
+  <text x="310" y="124" text-anchor="middle" font-size="12" fill="#6e6e73">TTL 86400초라면 다음 시도까지 하루를 기다린다</text>
+  <rect x="540" y="86" width="56" height="48" rx="6" fill="#ff3b30"/>
+  <text x="568" y="106" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">시도 2</text>
+  <text x="568" y="123" text-anchor="middle" font-size="12" fill="#fff">실패</text>
+  <text x="24" y="156" font-size="12" fill="#6e6e73">하루에 한 번만 시도할 수 있다</text>
+
+  <!-- 2행: Kaminsky -->
+  <text x="24" y="196" font-size="13" font-weight="600" fill="#1d1d1f">② Kaminsky: 매번 캐시에 없는 무작위 이름을 묻는다</text>
+  <line x1="24" y1="244" x2="616" y2="244" stroke="#c7c7cc" stroke-width="1.5"/>
+  <g font-size="12" text-anchor="middle">
+    <rect x="24" y="220" width="84" height="48" rx="6" fill="#ff9f0a"/>
+    <text x="66" y="240" fill="#1d1d1f" font-weight="600">twysw</text><text x="66" y="257" fill="#1d1d1f">실패</text>
+    <rect x="114" y="220" width="84" height="48" rx="6" fill="#ff9f0a"/>
+    <text x="156" y="240" fill="#1d1d1f" font-weight="600">qkfzr</text><text x="156" y="257" fill="#1d1d1f">실패</text>
+    <rect x="204" y="220" width="84" height="48" rx="6" fill="#ff9f0a"/>
+    <text x="246" y="240" fill="#1d1d1f" font-weight="600">mdpae</text><text x="246" y="257" fill="#1d1d1f">실패</text>
+    <rect x="294" y="220" width="84" height="48" rx="6" fill="#ff9f0a"/>
+    <text x="336" y="240" fill="#1d1d1f" font-weight="600">zxcoi</text><text x="336" y="257" fill="#1d1d1f">실패</text>
+    <text x="414" y="249" fill="#6e6e73" font-size="16">…</text>
+    <rect x="450" y="220" width="146" height="48" rx="6" fill="#34c759"/>
+    <text x="523" y="240" fill="#1d1d1f" font-weight="600">454회차 무렵</text><text x="523" y="257" fill="#1d1d1f">ID 일치, NS 캐시</text>
+  </g>
+  <text x="24" y="292" font-size="12" fill="#6e6e73">각 이름은 캐시에 없으므로 실패해도 곧바로 다음 질의가 나간다.</text>
+  <text x="24" y="310" font-size="12" fill="#6e6e73">454회차는 출발지 포트가 고정되고 회차마다 위조 응답 100개를 넣는 경우의 50% 지점이다.</text>
+</svg>

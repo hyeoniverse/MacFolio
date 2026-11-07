@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <title>디자인 토큰 세 층</title>
+  <rect width="640" height="330" fill="#ffffff"/>
+  <text x="24" y="34" font-size="16" font-weight="700" fill="#1d1d1f">값은 원시 → 의미 → 컴포넌트 순서로 이름을 거쳐 쓰인다</text>
+  <g font-size="12">
+    <rect x="24" y="56" width="180" height="200" rx="10" fill="#f2f2f7" stroke="#6e6e73"/>
+    <text x="36" y="80" font-size="13" font-weight="600" fill="#1d1d1f">1층 원시</text>
+    <text x="36" y="98" fill="#6e6e73">primitives.css</text>
+    <text x="36" y="128" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--space-8: 8px</text>
+    <text x="36" y="150" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--radius-8: 8px</text>
+    <text x="36" y="172" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--text-title1: 28px</text>
+    <text x="36" y="194" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--palette-blue-light</text>
+    <text x="36" y="236" fill="#6e6e73">숫자·색 자체</text>
+
+    <rect x="230" y="56" width="180" height="200" rx="10" fill="#e3f0ff" stroke="#0a84ff"/>
+    <text x="242" y="80" font-size="13" font-weight="600" fill="#1d1d1f">2층 의미</text>
+    <text x="242" y="98" fill="#6e6e73">semantic.css</text>
+    <text x="242" y="128" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--color-control-accent</text>
+    <text x="242" y="150" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--z-menu: 10000</text>
+    <text x="242" y="172" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--gradient-graphite</text>
+    <text x="242" y="236" fill="#6e6e73">어디에 쓰는 값인가</text>
+
+    <rect x="436" y="56" width="180" height="200" rx="10" fill="#e8f8ec" stroke="#34c759"/>
+    <text x="448" y="80" font-size="13" font-weight="600" fill="#1d1d1f">3층 컴포넌트</text>
+    <text x="448" y="98" fill="#6e6e73">components.css</text>
+    <text x="448" y="128" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--ui-accent</text>
+    <text x="448" y="150" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--ui-button-radius</text>
+    <text x="448" y="172" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">--ui-modal-z</text>
+    <text x="448" y="236" fill="#6e6e73">부품이 읽는 값, 앱이 덮어쓴다</text>
+  </g>
+  <path d="M204 156 L226 156" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <path d="M410 156 L432 156" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#a)"/>
+  <defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="#1d1d1f"/></marker></defs>
+  <rect x="24" y="274" width="592" height="40" rx="6" fill="#fff4e5"/>
+  <text x="36" y="292" font-size="12" fill="#1d1d1f">예: --palette-blue-light → --color-control-accent → --ui-accent → Button의 배경색</text>
+  <text x="36" y="308" font-size="12" fill="#1d1d1f">메모 앱은 [data-app='memo']에서 --ui-accent만 바꿔 노란 단추를 만든다</text>
+</svg>

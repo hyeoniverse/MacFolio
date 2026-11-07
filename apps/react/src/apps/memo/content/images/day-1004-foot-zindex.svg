@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 640 368" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>발끝 높이로 z-index를 정하는 방식</title>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#6e6e73"/></marker>
+<marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0a84ff"/></marker>
+<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#34c759"/></marker>
+<marker id="aro" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff9f0a"/></marker>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="368" fill="#ffffff"/>
+<text x="24" y="34" font-size="15" fill="#1d1d1f" text-anchor="start" font-weight="700">2D 장면에서 앞뒤 순서를 발끝 높이로 정하기</text>
+<rect x="24" y="52" width="360" height="300" rx="10" fill="#eaf8ee" stroke="#c7c7cc" stroke-width="1.2"/>
+<rect x="150" y="80" width="70" height="120" rx="6" fill="#ffffff" stroke="#248a3d" stroke-width="1.2" stroke-dasharray="4 3"/>
+<circle cx="185" cy="118" r="32" fill="#34c759" opacity="0.7"/>
+<rect x="178" y="146" width="14" height="48" rx="2" fill="#a0522d" stroke="none" stroke-width="1.2"/>
+<line x1="140" y1="194" x2="380" y2="194" stroke="#248a3d" stroke-dasharray="4 3"/>
+<text x="232" y="190" font-size="12" fill="#248a3d" text-anchor="start">나무 발끝 y=194</text>
+<rect x="60" y="120" width="90" height="56" rx="6" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="70" y="130" width="70" height="34" rx="10" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="105" y="152" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">소 A</text>
+<line x1="40" y1="170" x2="150" y2="170" stroke="#6e6e73" stroke-dasharray="4 3"/>
+<text x="40" y="116" font-size="12" fill="#6e6e73" text-anchor="start">발끝 y=170</text>
+<rect x="170" y="196" width="110" height="66" rx="6" fill="#ffffff" stroke="#0a84ff" stroke-width="1.2" stroke-dasharray="4 3"/>
+<rect x="182" y="206" width="86" height="40" rx="10" fill="#ffffff" stroke="#1d1d1f" stroke-width="1.2"/>
+<text x="225" y="231" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="700">소 B</text>
+<line x1="160" y1="256" x2="380" y2="256" stroke="#0a84ff" stroke-dasharray="4 3"/>
+<text x="290" y="252" font-size="12" fill="#0a84ff" text-anchor="start">발끝 y=256</text>
+<text x="40" y="296" font-size="12" fill="#6e6e73" text-anchor="start">점선 상자 = 요소의 상자. 발끝 = 상자 아래 끝에서</text>
+<text x="40" y="314" font-size="12" fill="#6e6e73" text-anchor="start">그림 아래 투명 여백(data-foot)을 뺀 높이</text>
+<text x="40" y="336" font-size="12" fill="#6e6e73" text-anchor="start">아래로 갈수록 화면에서 앞에 있다</text>
+<rect x="404" y="52" width="212" height="300" rx="10" fill="#f2f2f7" stroke="none" stroke-width="1.2"/>
+<text x="420" y="78" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="700">z-index = 발끝 y</text>
+<rect x="420" y="96" width="180" height="50" rx="8" fill="#ffffff" stroke="#0a84ff" stroke-width="1.2"/>
+<text x="436" y="126" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">소 B</text>
+<text x="500" y="126" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">256</text>
+<text x="588" y="126" font-size="12" fill="#6e6e73" text-anchor="end">가장 앞</text>
+<rect x="420" y="158" width="180" height="50" rx="8" fill="#ffffff" stroke="#248a3d" stroke-width="1.2"/>
+<text x="436" y="188" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">나무</text>
+<text x="500" y="188" font-size="13" fill="#248a3d" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">194</text>
+<text x="588" y="188" font-size="12" fill="#6e6e73" text-anchor="end">중간</text>
+<rect x="420" y="220" width="180" height="50" rx="8" fill="#ffffff" stroke="#6e6e73" stroke-width="1.2"/>
+<text x="436" y="250" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">소 A</text>
+<text x="500" y="250" font-size="13" fill="#6e6e73" text-anchor="start" font-weight="700" font-family="SFMono-Regular, Menlo, monospace">170</text>
+<text x="588" y="250" font-size="12" fill="#6e6e73" text-anchor="end">가장 뒤</text>
+<text x="420" y="300" font-size="12" fill="#1d1d1f" text-anchor="start">소 A는 나무 뒤로 지나가고</text>
+<text x="420" y="318" font-size="12" fill="#1d1d1f" text-anchor="start">소 B는 나무 앞으로 지나간다</text>
+</svg>

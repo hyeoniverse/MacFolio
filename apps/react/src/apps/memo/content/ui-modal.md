@@ -1,17 +1,143 @@
 ---
-title: 모달 다이얼로그의 공통 동작을 Modal 컴포넌트로 추출하고 교체 대상 다시 조사하기
+title: shared/ui 사용처 집계로 공통 컴포넌트 후보를 고르고 모달 동작을 Modal 컴포넌트로 추출하기
 date: 2026-10-11
 category: 개발 기록/MacFolio/화면·스타일
 series: 공통 UI 컴포넌트
-seriesOrder: 5
-summary: 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메이션을 각자 구현하고 있었다. 77줄 Modal로 추출하고 덮는 범위는 scope, 색·z-index는 CSS 변수로 지정한다. 일주일 뒤 남은 시트·모달을 다시 조사해 메모 이미지 크게 보기 하나만 옮기고, Esc 처리나 구조가 다른 나머지는 유지했다.
+seriesOrder: 3
+summary: shared/ui 부품 15개, 후보 9개, 직접 작성한 버튼 295곳을 집계해 docs/ui.md에 기록하고 추출 대상을 Sheet·Modal·SearchField로 줄였다. 다이얼로그 5개의 오버레이·포커스·Esc·닫기 애니메이션은 77줄 Modal로 추출하고, 이후 메모 이미지 크게 보기도 옮겼다.
 ---
 
-리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 둘째 항목 "새로 뽑을 것"의 첫 컴포넌트다. [공통 UI 부품 목록 글](/memo/ui-inventory)에서 추출하기로 한 셋(`Modal`·`Sheet`·`SearchField`) 중 새로 작성할 코드가 가장 적은 `Modal`부터 진행했다.
+## 배경: 공통 부품과 모달 다이얼로그
 
-## 다섯 다이얼로그가 같은 동작을 각자 구현
+MacFolio의 화면 코드는 앱마다 폴더가 나뉘어 있고, 여러 앱이 함께 사용하는 부품은 `apps/react/src/shared/ui`에 있다. 버튼(`Button`), 메뉴(`Menu`), 경고창(`AlertDialog`)처럼 모양과 동작이 정해진 부품을 한곳에 두면, 동작을 고칠 때 한 파일만 수정하면 되고 모든 앱이 같은 키보드·스크린 리더 동작을 갖는다. 반대로 겉모양만 비슷한 화면을 억지로 한 부품으로 합치면, 앱마다 다른 부분을 처리하는 옵션이 계속 늘어난다. 그래서 무엇을 공통 부품으로 만들지 결정하는 기준이 필요하다.
 
-화면 가운데에 뜨는 모달 다이얼로그는 다섯 개였다. 앱 안 경고창(`AlertDialog`), 배경화면 이름 바꾸기, 도움말의 키보드 단축키, 로그인 후 결과, Dock의 Launchpad. 다섯 모두 다음 동작이 같다.
+**모달 다이얼로그**(modal dialog)는 화면 가운데에 떠서, 사용자가 응답하거나 닫기 전에는 뒤의 화면을 사용할 수 없게 하는 창이다. "이 메모를 영구적으로 삭제하겠습니까?" 같은 확인창이 대표적이다. 웹에서 모달 다이얼로그는 보통 다음 동작을 갖는다.
+
+| 동작        | 구현                                                             | 예                                                                      |
+| ----------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 뒤를 가림   | 반투명 **오버레이**(화면을 덮는 요소)를 깔고 그 위에 패널을 표시 | 메모 창이 어둡게 덮인다                                                 |
+| 역할 전달   | `role="dialog"`, `aria-modal="true"`, `aria-label`               | 스크린 리더가 창 이름과 대화상자 역할을 알리고, 뒤의 내용은 읽지 않는다 |
+| 포커스 이동 | 열릴 때 패널 안의 요소로 키보드 포커스를 옮김                    | 확인 버튼에 포커스가 있으면 Enter로 바로 확인한다                       |
+| 닫기        | Esc 키, 오버레이 클릭                                            | 바깥을 누르면 취소된다                                                  |
+
+이 동작을 다이얼로그마다 따로 구현하면 일부가 빠지기 쉽다. 이 작업은 리팩터링 계획([#150](https://github.com/hyeoniverse/MacFolio/issues/150)) 4단계 "공통 컴포넌트 설계"의 첫 두 항목이다. 첫 항목은 코드를 바꾸지 않고 현재 부품과 후보의 사용처를 집계해 [`docs/ui.md`](https://github.com/hyeoniverse/MacFolio/blob/main/docs/ui.md)에 기록하는 일이었고([#210](https://github.com/hyeoniverse/MacFolio/pull/210)), 둘째 항목은 그 집계로 고른 세 부품 중 첫 번째인 `Modal`을 추출하는 일이었다([#212](https://github.com/hyeoniverse/MacFolio/pull/212)). 일주일 뒤 남은 시트·모달을 다시 조사해 메모 이미지 크게 보기를 `Modal`로 옮겼다([#247](https://github.com/hyeoniverse/MacFolio/pull/247)).
+
+## 공통 부품 집계
+
+### 코드보다 집계를 먼저 한 이유
+
+4단계 첫 항목은 "지금 있는 것 정리: Button, IconButton, Menu, Popover, Dialog, Reorder의 props와 사용처 목록"이다. [브랜드 타입](/memo/branded-ids)으로 1단계를 끝낸 다음에 시작했다.
+
+둘째 항목에는 새로 추출할 부품 아홉 개가 적혀 있다. `Sheet`, `Modal`, `ListRow`, `SegmentedControl`, `SearchField`, `Switch`, `EmptyState`, `Toolbar`, `Sidebar`. 그런데 이 가운데 다섯 개는 열흘 전 [글자 버튼 글](/memo/shared-button#button-텍스트-버튼-6종-통합)에서 "만들지 않는다"고 결정한 것이다. 결정 근거는 셋이었다.
+
+- 사용처가 한 곳뿐이다 (`Switch`)
+- 감쌀 공통 마크업이 없다 (`EmptyState`)
+- 겉모양은 같아도 스크린 리더에 전달되는 역할(role)이 다르다 (`SegmentedControl`: 탭 목록과 라디오 그룹)
+
+그 뒤로 Finder, 사진·음악 휴대폰 화면, 메일 휴대폰 시트가 추가됐다. 사용처 수가 바뀌었으니 결정도 다시 검토해야 한다. 그래서 첫 항목은 코드를 바꾸지 않고, 현재 부품과 후보의 사용처 수를 기록하는 문서로 정했다.
+
+### grep 집계 방법
+
+도구는 `grep`이다. `grep`은 파일에서 지정한 문자열이 들어 있는 줄을 찾는 명령이다. 부품마다 그 부품을 import하는 줄이 있는 파일 수를 집계했다[^grep-l].
+
+```sh
+grep -rln "from '@/shared/ui/menu/Menu'" --include=*.tsx apps/react/src | wc -l
+```
+
+후보는 단계가 하나 더 필요했다. 예를 들어 `Modal` 후보는 `role="dialog"`를 붙인 파일을 찾은 뒤, 그중 Esc를 직접 처리하는 파일(`'Escape'`)과 바깥 클릭을 직접 판별하는 파일(`event.target === event.currentTarget`)을 따로 집계했다. 숫자만으로는 오판하기 쉬워서, 검색된 파일은 모두 열어 실제로 같은 동작을 하는지 확인했다. "이 Mac에 관하여" 창이 `role="dialog"`인데도 모달이 아니라는 사실은 이 확인 과정에서 발견했다([아래 Modal 대상에서 제외한 창](#modal-대상에서-제외한-창)).
+
+### 현재 부품 15개
+
+`shared/ui`에는 부품이 열다섯 개 있다.
+
+| 분류               | 부품                                                         |
+| ------------------ | ------------------------------------------------------------ |
+| 버튼               | `Button`, `IconButton`, `SidebarToggle`                      |
+| 메뉴와 떠 있는 창  | `Menu`, `useDismiss`, `placement`, `shortcut`, `AlertDialog` |
+| 애니메이션         | `useExitMotion`, `useMoveDirection`                          |
+| 드래그로 순서 변경 | `startPointerReorder`                                        |
+| 그 밖              | `ShareIcon`, `Turnstile`, `WebFrame`                         |
+
+사용처가 가장 많은 부품은 `Menu`(30파일)였고, 그다음은 `IconButton` 15, `useExitMotion` 15, `Button` 10, `AlertDialog` 10 순이다. props는 문서에 표로 기록했다.
+
+기록하면서 중복 하나를 발견했다. 메뉴 막대의 소리 창과 메모의 날짜 선택기가 `placement`(위치 계산)·`useDismiss`(바깥 클릭·Esc로 닫기)·`useExitMotionRef`(닫힘 애니메이션) 세 부품을 똑같이 조립하고 있었다. 메모의 `usePopover`가 바로 이 조립인데, `apps/memo/writer/`에 있어서 다른 앱은 가져다 쓸 수 없다. 사용처가 한 곳 더 생기면 `shared/ui/popover/`로 옮긴다는 조건을 문서에 기록했다.
+
+### 후보 아홉 개 재검토
+
+![후보 아홉 개의 사용처 수와 결정](./images/ui-inventory-candidates.svg '막대 길이는 따로 구현한 곳의 수. 길다고 추출하지는 않는다')
+
+| 후보               | 따로 구현한 곳                                     | 결정 |
+| ------------------ | -------------------------------------------------- | ---- |
+| `Sheet`            | 메일 휴대폰 2, 음악 휴대폰 1                       | 추출 |
+| `Modal`            | 단축키 창, 이 Mac에 관하여, 로그인 결과, Launchpad | 추출 |
+| `SearchField`      | Finder 2, 메시지, 날씨, 사진 휴대폰 (메모는 별도)  | 추출 |
+| `Switch`           | 설정 2                                             | 보류 |
+| `SegmentedControl` | 탭 5, 라디오 2, 눌림 상태 버튼 1                   | 보류 |
+| `EmptyState`       | 10파일                                             | 보류 |
+| `ListRow`          | 메모·메일·메시지·음악·Finder                       | 보류 |
+| `Toolbar`          | 12파일                                             | 보류 |
+| `Sidebar`          | 10파일                                             | 보류 |
+
+막대가 가장 긴 `Toolbar`·`Sidebar`·`EmptyState`는 보류이고, 막대가 짧은 `Sheet`는 추출 대상이다. ==사용처 수가 아니라 구현이 같은가를 기준으로 결정==했기 때문이다.
+
+![사용처가 둘 이상인지, 겉모양과 동작이 같은지, 역할이 같은지를 차례로 판단한 순서](./images/ui-inventory-decide.svg '후보를 결정한 순서')
+
+- **`Sheet`**: 세 곳이 "아래에서 올라오는 레이어, 바깥을 누르면 내려가며 닫힘, `role="dialog"`"를 각자 구현하고 있다. 안쪽 내용은 다르지만 겉은 같다. 겉만 부품으로 만들고 안쪽은 `children`으로 받으면 된다.
+- **`Modal`**: 화면 가운데 뜨는 창 네 개가 Esc와 바깥 클릭을 각자 처리한다(Esc를 직접 처리하는 파일 8개, 바깥 클릭을 판별하는 파일 6개). 기존 `AlertDialog`의 바깥 틀이 이미 그 일을 하므로, 이 틀을 `Modal`로 분리하고 `AlertDialog`가 `Modal`을 사용하게 하면 된다.
+- **`SearchField`**: 지난번에는 "메모와 메시지가 다르다"는 이유로 보류했다. 현재 `<input type="search">`[^search]가 여섯 곳이고, 메모를 제외한 다섯 곳은 돋보기 아이콘·placeholder·`aria-label`이 있는 입력 칸 하나로 구조가 같다. 메모만 검색 조건 칩과 조건 메뉴가 있어 다르다. 다섯 곳을 합치고 메모는 그대로 두기로 했다.
+
+반대로 `Toolbar`는 12파일이지만 높이와 여백이 앱마다 다르고, 창 제목 막대와 합쳐진 앱(메모·Finder)과 분리된 앱(메일·메시지)이 섞여 있다. 지금 합치면 그 차이를 모두 받아 주는 옵션이 늘어난다. 5단계에서 높이·여백을 디자인 토큰으로 통일한 뒤 다시 집계하기로 했다. `Sidebar`와 `EmptyState`도 같은 이유로 보류했다.
+
+### 직접 작성한 버튼 295곳
+
+10월 11일에 올린 문서의 첫 판에는 두 가지 지적이 있었다.
+
+1. "보류. 수가 많아도 모양·뜻이 다르다"로 기록한 후보는 모양을 통일하면 되는 것 아닌가.
+2. 버튼이 공통 컴포넌트의 기본인데 왜 후보에 없는가.
+
+두 번째 지적에 따라 버튼을 직접 집계했고, 결과를 PR 본문에도 기록했다. `Button`·`IconButton`이 있는데도 `<button>`을 직접 작성한 곳이 89파일 295곳 남아 있었다. 3·4단계에서 옮긴 것은 당시 발견한 아이콘 버튼 4종·글자 버튼 6종이었고, 앱마다 흩어진 개별 버튼은 손대지 않았기 때문이다. 295곳을 하나씩 분류했다.
+
+| 분류                                                                             | 곳     |
+| -------------------------------------------------------------------------------- | ------ |
+| Safari 프로젝트 데모 페이지 (다른 사이트의 디자인을 재현한 화면이라 그대로 유지) | 67     |
+| `IconButton`으로 전환 가능 (뒤로 가기, •••, 원형 버튼, 음악 재생 버튼 등)        | 약 60  |
+| `Button`으로 전환 가능 (완료·취소·비우기·되돌리기 등)                            | 약 33  |
+| 앱 고유 (목록 행, 탭, 카드, 썸네일, 타일, 달력 칸)                               | 약 135 |
+
+전환 가능한 93곳은 4단계 마지막 항목에서 PR 두 개로 옮기기로 했다. 집계 중에 추가로 두 가지를 발견했다.
+
+- 날씨 앱의 사이드바 여닫기 버튼 두 개가 기존 `SidebarToggle`을 사용하지 않고 있었다.
+- 떠 있지 않은 원형 버튼(메일 시트의 취소·보내기, 사진, Safari 휴대폰)이 12곳인데, `IconButton`의 `float`(그림자가 있는 떠 있는 원형)와 비슷하지만 그림자가 없다. `variant="circle"`을 하나 추가하면 12곳을 한 번에 전환할 수 있다.
+
+<details>
+<summary>버튼 집계 명령</summary>
+
+`apps/react/src`의 `.tsx`에서 `<button`이 있는 줄을 집계한다. 시험 파일(`*.test.tsx`)과 공통 부품 디렉터리(`shared/ui`)는 제외한다. `docs/ui.md`에 같은 명령을 기록했다.
+
+```sh
+git grep -c '<button' -- 'apps/react/src/**/*.tsx' ':!*.test.tsx' ':!apps/react/src/shared/ui/**'
+```
+
+</details>
+
+### 집계 PR의 변경 내역
+
+추출 대상이 `Sheet`·`Modal`·`SearchField` 세 개로 줄었다. 다음 PR은 `Modal`부터로 정했다. `AlertDialog`에서 바깥 틀을 분리하는 작업이라 새로 작성할 코드가 가장 적고, 창 네 개를 바로 전환할 수 있다.
+
+집계 PR([#210](https://github.com/hyeoniverse/MacFolio/pull/210))은 코드를 한 줄도 바꾸지 않았다. 변경 내역은 다음과 같다(5파일, 207줄 추가).
+
+| 파일                                 | 추가 줄 수 |
+| ------------------------------------ | ---------- |
+| `docs/ui.md`                         | 99         |
+| `ui-inventory.md` (집계 기록 글)     | 63         |
+| `images/ui-inventory-candidates.svg` | 43         |
+| `README.md`, `CONTRIBUTING.md`       | 각 1       |
+
+## Modal 추출
+
+### 다섯 다이얼로그의 각자 구현
+
+`Modal`을 만들 시각에 화면 가운데에 뜨는 모달 다이얼로그는 다섯 개였다. 앱 안 경고창(`AlertDialog`), 배경화면 이름 바꾸기, 도움말의 키보드 단축키, 로그인 후 결과, Dock의 Launchpad. 집계 시각의 후보 네 개 가운데 이 Mac에 관하여가 빠지고 경고창·이름 바꾸기가 추가됐다. 다섯 모두 다음 동작이 같다.
 
 1. 반투명 오버레이를 깔고 그 위에 패널을 가운데 정렬한다
 2. 패널에 `role="dialog"`(또는 `alertdialog`)·`aria-modal`·`aria-label`을 붙인다
@@ -35,11 +161,11 @@ summary: 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메�
 | 로그인 결과 | Enter 키를 별도로 처리했다. 확인 버튼에 포커스가 있으므로 버튼의 기본 동작만으로 충분하다 |
 | 이름 바꾸기 | Esc를 `form`의 `onKeyDown`에서만 수신해, 포커스가 폼 밖에 있으면 닫히지 않았다            |
 
-같은 동작을 다섯 곳에 구현하면 수정도 다섯 곳에서 해야 하고, 하나를 빠뜨리면 위 표처럼 다이얼로그마다 동작이 달라진다. 방문자에게는 "어떤 창은 Esc로 닫히고 어떤 창은 닫히지 않는" 사이트가 된다.
+같은 동작을 다섯 곳에 구현하면 수정도 다섯 곳에서 해야 하고, 하나를 빠뜨리면 위 표처럼 다이얼로그마다 동작이 달라진다. 방문자에게는 "어떤 창은 Esc로 닫히고 어떤 창은 닫히지 않는" 사이트가 된다. 공통 부품으로 추출할 때는 "같은 것"보다 "다른 것"을 먼저 찾는다. ==다섯 구현의 차이가 곧 버그 목록이었다.==
 
 ![공통 동작은 Modal 컴포넌트에, 콘텐츠는 다이얼로그마다](./images/ui-modal-layers.svg '변경 전에는 다섯 다이얼로그가 공통 동작을 각자 구현했고, 변경 후에는 Modal이 공통 동작을 맡고 다이얼로그는 콘텐츠만 렌더링한다')
 
-## 검토한 방법
+### dialog 요소·라이브러리와 비교
 
 | 방법                                | 장점                                            | 단점                                                                  |
 | ----------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------- |
@@ -48,9 +174,9 @@ summary: 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메�
 | 각자 구현을 두고 빠진 동작만 채운다 | 변경 범위가 작다                                | 다음 다이얼로그에서 같은 차이가 또 생긴다                             |
 | 공통 동작만 담은 `Modal`            | 77줄, 스타일은 호출하는 쪽에 그대로 유지        | 포커스 가두기(Tab 순환)는 아직 없다                                   |
 
-[`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)를 가장 먼저 검토했다. 하지만 앱 안 경고창은 macOS처럼 그 앱 창만 어둡게 덮어야 하고, 다른 창은 계속 사용할 수 있어야 한다. [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal)은 다이얼로그를 화면 전체의 최상위 층[^1]에 올리고 나머지 문서를 모두 비활성(inert)으로 만들어서 이 동작과 맞지 않았다.
+[`<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)를 가장 먼저 검토했다. 하지만 앱 안 경고창은 macOS처럼 그 앱 창만 어둡게 덮어야 하고, 다른 창은 계속 사용할 수 있어야 한다. [`showModal()`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal)은 다이얼로그를 화면 전체의 최상위 층[^top-layer]에 올리고 나머지 문서를 모두 비활성(inert)으로 만들어서 이 동작과 맞지 않았다.
 
-## Modal 컴포넌트의 책임
+### Modal 컴포넌트의 책임
 
 ```tsx
 <Modal
@@ -66,9 +192,10 @@ summary: 다이얼로그 5개가 오버레이·포커스·Esc·닫기 애니메�
 ```
 
 - **오버레이와 패널 렌더링**: 패널에 `role`(`dialog`, 응답이 필요한 다이얼로그는 `alertdialog`)·[`aria-modal="true"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-modal)·`aria-label`을 붙인다
-- **scope**: `window`는 오버레이가 `position: absolute`로 가장 가까운 positioned 조상(앱 창)[^2]을 덮고, `screen`은 `position: fixed`로 화면 전체를 덮으며 [`createPortal`](https://react.dev/reference/react-dom/createPortal)로 `document.body`에 렌더링한다. 경고창·이름 바꾸기는 `window`, 나머지 셋은 `screen`
+- **scope**: `window`는 오버레이가 `position: absolute`로 가장 가까운 positioned 조상(앱 창)[^positioned]을 덮고, `screen`은 `position: fixed`로 화면 전체를 덮으며 [`createPortal`](https://react.dev/reference/react-dom/createPortal)로 `document.body`에 렌더링한다. 경고창·이름 바꾸기는 `window`, 나머지 셋은 `screen`
 - **닫기**: `window`의 `keydown`에서 Esc(포커스 위치와 무관), 오버레이 자체의 `pointerdown`(패널 내부 클릭은 제외)
 - **포커스**: `initialFocus` ref가 가리키는 요소로, 없으면 `tabIndex={-1}`인 패널 자신으로. Launchpad도 이제 Esc로 닫힌다
+- **종료 애니메이션**: 오버레이 `fade-out`, 패널 `pop-out`. `motion.css`에서 다섯 다이얼로그의 클래스를 나열하던 선택자가 `[data-exiting] .ui-modal` 하나로 바뀌었다
 
 닫기와 포커스 처리는 다음 몇 줄이 전부다(`apps/react/src/shared/ui/dialog/Modal.tsx`).
 
@@ -90,7 +217,10 @@ onPointerDown={(event) => {
 }}
 ```
 
-[`pointerdown`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)은 누르는 순간의 대상을 기준으로 한다. 그래서 패널 안에서 글자를 드래그해 선택하다 오버레이 위에서 버튼을 놓아도 창이 닫히지 않는다. `click`은 누른 곳과 놓은 곳의 공통 조상에서 발생하므로, `click`을 썼다면 이 경우를 별도로 필터링해야 한다.
+> [!NOTE] click 대신 pointerdown
+> [`pointerdown`](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)은 누르는 순간의 대상을 기준으로 한다. 그래서 패널 안에서 글자를 드래그해 선택하다 오버레이 위에서 버튼을 놓아도 창이 닫히지 않는다. `click`은 누른 곳과 놓은 곳의 공통 조상에서 발생하므로, `click`을 썼다면 이 경우를 별도로 필터링해야 한다.
+
+![패널 안에서 누르고 오버레이에서 놓을 때 pointerdown과 click의 대상](./images/ui-modal-pointerdown.svg '누르는 순간의 대상으로 판단하는 pointerdown은 패널 안에서 시작한 드래그로 창을 닫지 않는다')
 
 `window` 범위가 필요해진 계기는 메모의 휴지통이다. 휴지통에 "즉시 삭제" 버튼을 추가하면서, 누르면 바로 삭제하지 않고 macOS 메모처럼 확인창을 표시하게 했다. 이 확인창은 화면 전체가 아니라 메모 앱 창의 가운데에 표시해야 했다. 다른 창은 계속 사용할 수 있어야 하기 때문이다. 현재 이 확인창은 `useTrash.tsx`가 `AlertDialog`로 표시하고, `AlertDialog`는 `scope="window"`인 `Modal`이다.
 
@@ -98,7 +228,7 @@ onPointerDown={(event) => {
 
 ![scope window는 앱 창만, screen은 화면 전체를 덮는 모습](./images/ui-modal-scope.svg 'scope가 정하는 덮개 범위')
 
-- **종료 애니메이션**: 오버레이 `fade-out`, 패널 `pop-out`. `motion.css`에서 다섯 다이얼로그의 클래스를 나열하던 선택자가 `[data-exiting] .ui-modal` 하나로 바뀌었다
+### 오버레이 색과 z-index는 CSS 변수로
 
 시각 스타일은 Modal이 정하지 않는다. 오버레이 색과 `z-index`는 호출하는 쪽 CSS가 `--ui-modal-dim`·`--ui-modal-z` [변수](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)로 지정한다.
 
@@ -108,15 +238,26 @@ onPointerDown={(event) => {
 | 단축키       | `--color-overlay`                     | 3000           |
 | 로그인 결과  | 오버레이 색과 `backdrop-filter: blur` | 20000          |
 
-패널의 너비·모서리·여백은 기존 클래스(`.ui-alert`, `.keyboard-shortcuts`, `.launchpad-content`)가 그대로 담당한다. 따라서 다섯 CSS에서 제거한 것은 오버레이의 `position`·`inset`·`display`·`animation`과 패널의 `animation` 선언뿐이다.
+패널의 너비·모서리·여백은 기존 클래스(`.ui-alert`, `.keyboard-shortcuts`, `.launchpad-content`)가 그대로 담당한다. 따라서 다섯 CSS에서 제거한 것은 오버레이의 `position`·`inset`·`display`·`animation`과 패널의 `animation` 선언뿐이다. 스타일을 CSS 변수로 노출했기 때문에 다섯 다이얼로그의 화면은 바뀌지 않았다.
 
-## 대상에서 제외한 것
+### Modal 대상에서 제외한 창
 
-**이 Mac에 관하여**는 가운데에 표시되지만 오버레이가 없고, 빈 영역을 드래그해 이동할 수 있으며, 뒤의 다른 창을 클릭할 수 있다. 모달이 아니라 일반 창이다. `role="dialog"`만 같아서 후보에 포함했다가 코드를 확인하고 제외했다. 포함하려면 "오버레이 없음"·"드래그 이동" 옵션이 필요해진다.
+**이 Mac에 관하여**는 가운데에 표시되지만 오버레이가 없고, 빈 영역을 드래그해 이동할 수 있으며, 뒤의 다른 창을 클릭할 수 있다. 모달이 아니라 일반 창(모달리스 창)이다.
+
+![왼쪽 키보드 단축키 창은 오버레이로 뒤를 덮는 모달이고, 오른쪽 이 Mac에 관하여는 오버레이 없이 뒤의 창을 클릭할 수 있는 일반 창](./images/ui-modal-modal-vs-window.svg '둘 다 role="dialog"라 grep 결과에 함께 나왔지만, 뒤의 화면을 사용할 수 있는지가 다르다')
+`role="dialog"`만 같아서 후보에 포함했다가 코드를 확인하고 제외했다. 포함하려면 "오버레이 없음"·"드래그 이동" 옵션이 필요해진다.
 
 **이름 바꾸기의 form**: Modal의 패널은 `div`이므로 `form`이 그 안에 들어간다. 그러자 패널의 `display: grid; gap`이 `form` 하나에만 적용되어 입력 칸과 버튼 사이 간격이 사라졌다. `form`에 같은 grid를 지정해 해결했다. Modal에 `as="form"` prop을 두는 방법도 있지만 호출처가 하나라 추가하지 않았다.
 
-## 추가 교체: 메모 이미지 크게 보기
+### Modal 추출 확인
+
+- 변경된 다섯 다이얼로그가 포함된 E2E(경고창·휴지통·배경화면·메뉴 막대·로그인·Launchpad·애니메이션)를 실행했다
+- 동작이 바뀐 곳은 두 곳이다. 포커스가 다이얼로그 밖에 있어도 Esc로 닫히는 것(이름 바꾸기), Launchpad가 Esc로 닫히는 것. 둘 다 macOS 동작과 같아지는 방향이라 유지했다
+- 다섯 다이얼로그의 변경은 16파일, 368줄 추가와 230줄 삭제였다. 새 `Modal.tsx`(77줄)·`Modal.css`(32줄)를 제외하면 다섯 다이얼로그의 코드는 모두 줄었다. 가장 많이 준 곳은 `KeyboardShortcuts.tsx`(90줄 변경)와 `Dock.tsx`의 Launchpad(62줄 변경)다
+
+## 남은 시트·모달 재조사
+
+### 일주일 뒤 다시 검색한 교체 대상
 
 일주일 뒤(10월 18일) 리팩터링 계획 4단계의 마지막 항목 "앱마다 따로 만든 버튼·시트·목록을 공통 컴포넌트로 바꾸기"를 진행하면서([#247](https://github.com/hyeoniverse/MacFolio/pull/247)), 앱마다 남은 시트와 모달을 다시 조사했다. `apps/react/src/apps`에서 `aria-modal`, `role="dialog"`, 바깥 클릭 시 닫히는 오버레이, `key === 'Escape'` 처리를 검색했다. 메일의 시트와 음악의 지금 재생 중 화면은 이미 `Sheet`를, 단축키 창·로그인 결과·Launchpad는 이미 `Modal`을 사용한다. 그 밖에 검색된 것은 다음과 같다.
 
@@ -129,7 +270,9 @@ onPointerDown={(event) => {
 | 메모 버전 기록·서식·표 패널      | 팝오버                                     | 대상 아님      |
 | Safari 데모 페이지의 창          | 다른 사이트를 재현하는 데모                | 대상 아님      |
 
-계획 작성 시각에는 메일·메시지·음악·설정·휴지통이 각자 시트와 모달을 구현했다고 기록했다. 그 가운데 메일과 음악, 설정의 창들은 `Sheet`·`Modal`을 추출하면서 이미 교체했고, 메시지와 휴지통에는 별도 구현이 남아 있지 않았다. 교체 대상은 하나였다.
+계획 작성 시각에는 메일·메시지·음악·설정·휴지통이 각자 시트와 모달을 구현했다고 기록했다. 그 가운데 메일과 음악, 설정의 창들은 `Sheet`·`Modal`을 추출하면서 이미 교체했고, 메시지와 휴지통에는 별도 구현이 남아 있지 않았다. 교체 대상은 하나였다. ==계획 문서의 교체 대상 목록은 실행 직전에 다시 집계해야 한다.==
+
+### 메모 이미지 크게 보기 교체
 
 메모 본문 이미지를 클릭하면 화면 전체에 어두운 오버레이를 표시하고 가운데에 이미지를 크게 표시한다. 오버레이가 `role="dialog"`였고, 포털·Esc 처리·닫힐 때의 페이드아웃을 직접 구현했다. `Modal`의 `scope="screen"`과 동작이 같다.
 
@@ -186,7 +329,9 @@ useEffect(() => {
 
 달라진 것은 닫힘 애니메이션 하나다. 전체가 함께 페이드아웃되던 것이, 다른 모달과 같이 오버레이는 `fade-out`, 이미지는 `pop-out`으로 사라진다. 이로써 `Modal`을 사용하는 다이얼로그는 여섯 개가 됐다(경고창, 이름 변경, 단축키, 로그인 결과, Launchpad, 메모 이미지 크게 보기).
 
-## 교체하지 않은 시트·모달과 이유
+E2E에서 연 상태의 오버레이와 이미지의 계산된 스타일(위치, 레이어, 여백, 배경색, 커서, 크기, 둥근 모서리, 그림자)을 교체 전후에 기록해 비교했다. 값은 모두 같았고, 스크린샷도 픽셀 단위로 같았다. 접근 가능한 이름(이미지 설명)과 `aria-modal`도 같다. 코드 변경은 `MarkdownImage.tsx`(42줄)와 `markdown.css`(21줄)다.
+
+### 교체하지 않은 시트·모달
 
 설정 프로젝트의 그림 크게 보기는 외형만 보면 같다. 그러나 Esc를 자기 요소에서 받아 [이벤트 전파](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/Events)를 차단한다. 뒤에 프로젝트 시트가 열려 있고, 그 시트도 Esc로 닫히기 때문이다. `Modal`의 Esc는 `window`에서 받으므로 교체하면 Esc 한 번에 둘이 함께 닫힌다. ←·→ 버튼과 닫기 버튼도 그림 상자 바깥에 있어 DOM 구조를 바꿔야 한다.
 
@@ -202,35 +347,63 @@ useEffect(() => {
 | 설정 그림 보기의 구조를 바꿔 맞추기           | 상자 밖의 ←·→·닫기 버튼 배치를 다시 구현해야 하고, 화면이 바뀐다             |
 | 유지하고 이유를 `docs/ui.md`에 기록 (채택)    | 공통 컴포넌트는 단순하게 유지되고, 다음 작업자가 같은 검토를 반복하지 않는다 |
 
-원칙은 "화면은 유지하고, 의미가 같은 것만 교체한다"였다.
+> [!IMPORTANT]
+> 원칙은 "화면은 유지하고, 의미가 같은 것만 교체한다"였다. 외형이 같아도 키 처리(Esc를 어디서 받는가)가 다르면 같은 컴포넌트가 아니다.
 
-## 확인
+## 집계 문서의 결정과 결과
 
-- 변경된 다섯 다이얼로그가 포함된 E2E(경고창·휴지통·배경화면·메뉴 막대·로그인·Launchpad·애니메이션)를 실행했다
-- 동작이 바뀐 곳은 두 곳이다. 포커스가 다이얼로그 밖에 있어도 Esc로 닫히는 것(이름 바꾸기), Launchpad가 Esc로 닫히는 것. 둘 다 macOS 동작과 같아지는 방향이라 유지했다
-- 다섯 다이얼로그의 변경은 16파일, 368줄 추가와 230줄 삭제였다. 새 `Modal.tsx`(77줄)·`Modal.css`(32줄)를 제외하면 다섯 다이얼로그의 코드는 모두 줄었다. 가장 많이 준 곳은 `KeyboardShortcuts.tsx`(90줄 변경)와 `Dock.tsx`의 Launchpad(62줄 변경)다
-- 메모 이미지 크게 보기는 E2E에서 연 상태의 오버레이와 이미지의 계산된 스타일(위치, 레이어, 여백, 배경색, 커서, 크기, 둥근 모서리, 그림자)을 교체 전후에 기록해 비교했다. 값은 모두 같았고, 스크린샷도 픽셀 단위로 같았다. 접근 가능한 이름(이미지 설명)과 `aria-modal`도 같다. 코드 변경은 `MarkdownImage.tsx`(42줄)와 `markdown.css`(21줄)다
+목록을 작성한 뒤 일주일 동안 4단계를 마무리했다. 문서에서 결정한 내용이 그대로 PR이 됐고, 이후 PR마다 `docs/ui.md`의 해당 표를 함께 수정했다.
 
-## 남은 것·배운 것
+| 문서에서 결정한 것                        | 결과                                                                                                                                                               |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Modal`을 먼저 추출한다                   | 가운데 창 다섯 개를 전환했다. 이 Mac에 관하여는 모달이 아니라서 제외했고, 경고창·이름 바꾸기가 추가됐다 ([#212](https://github.com/hyeoniverse/MacFolio/pull/212)) |
+| `Sheet`를 추출한다                        | 메일 2곳, 음악 1곳을 전환했다 ([#220](https://github.com/hyeoniverse/MacFolio/pull/220), [글](/memo/ui-sheet))                                                     |
+| `SearchField`를 추출하고 메모는 유지한다  | 추출했다 ([#223](https://github.com/hyeoniverse/MacFolio/pull/223)). 현재 앱 쪽 7파일이 사용한다                                                                   |
+| `usePopover`는 한 곳 더 생기면 옮긴다     | 현재 `shared/ui/popover/`에 `placement`·`useDismiss`가 있다                                                                                                        |
+| `IconButton`·`Button`으로 93곳을 전환한다 | 아이콘 버튼([#245](https://github.com/hyeoniverse/MacFolio/pull/245))과 글자 버튼([#246](https://github.com/hyeoniverse/MacFolio/pull/246))을 PR 두 개로 전환했다  |
+| `variant="circle"`을 추가한다             | [#245](https://github.com/hyeoniverse/MacFolio/pull/245)에서 추가했다                                                                                              |
+
+글을 쓴 시각에 같은 방법으로 다시 집계한 결과, `IconButton`을 사용하는 파일은 15개에서 34개로, `Button`은 10개에서 25개로 늘었다. 직접 작성한 `<button>`을 처음과 같은 방법으로 집계하면 현재 95파일 289곳이고, 그중 95곳이 Safari 프로젝트 데모 페이지다(그사이 데모 페이지가 늘었다). 데모 페이지를 제외하면 228곳에서 194곳으로 줄었다. 남은 곳은 대부분 표에서 "앱 고유"로 분류한 목록 행·탭·카드이고, 그사이 새로 추가된 화면의 버튼도 포함돼 있다.
+
+## 남은 과제와 정리
 
 - 포커스 가두기(Tab을 눌러도 패널 밖으로 나가지 않게)는 아직 없다. 다섯 곳 모두 원래 없던 기능이라 이번에 추가하지 않았다. WAI-ARIA 작성 지침의 [모달 다이얼로그 패턴](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)은 포커스 가두기를 요구하므로 남은 과제다.
-- 위 `useEffect`는 `onClose`가 바뀔 때마다 다시 실행된다. 호출하는 쪽이 렌더링마다 새 함수를 넘기면 포커스를 다시 옮긴다. 다음에 만든 [`Sheet`](/memo/ui-sheet)는 이 문제를 겪고 최신 `onClose`를 ref에 보관하는 방식으로 해결했다. `Modal`도 같은 방식으로 수정할 후보다.
-- 공통 부품으로 추출할 때는 "같은 것"보다 "다른 것"을 먼저 찾는다. 다섯 구현의 차이(Esc를 안 받는 곳, Enter를 따로 받는 곳)가 곧 버그 목록이었다.
-- 외형이 같아도 키 처리(Esc를 어디서 받는가)가 다르면 같은 컴포넌트가 아니다. 공통 컴포넌트로 교체할지 결정할 때는 키보드 동작부터 확인한다.
-- 스타일은 부품이 정하지 않고 CSS 변수로 노출했다. 그래서 다섯 다이얼로그와 이미지 크게 보기의 화면은 바뀌지 않았다.
-- 계획 문서의 교체 대상 목록은 실행 직전에 다시 집계한다. "앱마다 따로 만든 시트·창"의 대부분은 이미 앞선 PR에서 교체되어 있었다.
+- `Modal`의 `useEffect`는 `onClose`가 바뀔 때마다 다시 실행된다. 호출하는 쪽이 렌더링마다 새 함수를 넘기면 포커스를 다시 옮긴다. 다음에 만든 [`Sheet`](/memo/ui-sheet)는 이 문제를 겪고 최신 `onClose`를 ref에 보관하는 방식으로 해결했다. `Modal`도 같은 방식으로 수정할 후보다.
+- 리팩터링 계획의 후보 목록은 계획을 작성한 날의 코드 기준이다. 실행 직전에 다시 집계하면 결정이 바뀐다. 이번에는 열흘 사이에 화면이 네 개 늘었다.
+- 사용처가 많다고 추출할 이유가 되지는 않는다. 겉모양과 역할이 다르면 공통 부품은 옵션 덩어리가 된다. `Toolbar` 12파일보다 `Sheet` 3곳이 먼저였다.
+- 집계 결과를 문서로 남기면 이후 PR의 근거가 한곳에 모인다.
 
 ## 관련 글
 
-- [shared/ui 사용처 집계로 추출할 공통 컴포넌트 후보 줄이기](/memo/ui-inventory): 추출할 부품을 결정한 목록
+- [PostSlug·FolderPath 브랜드 타입과 검사 지점으로 글 주소 문자열 구분하기](/memo/branded-ids): 1단계를 끝낸 글
+- [계산된 스타일과 스크린샷 비교로 검증한 공통 Button 추출](/memo/shared-button#button-텍스트-버튼-6종-통합): 열흘 전 "만들지 않는다"고 결정한 글
 - [오버레이·닫기·role을 공통 Sheet 컴포넌트로 추출하고 모양은 variant로 나누기](/memo/ui-sheet): 다음 부품
 - [eslint-disable 주석이 가린 useEffect의 onClose 의존성](/memo/modal-focus-eslint-disable): 남은 과제에 적은 `onClose` 의존 문제를 effect 분리로 수정한 일
-- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/z-index-layers): `--ui-modal-z`를 이름으로 정리한 일
-- [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-step4-components): 이미지 크게 보기 교체가 속한 단계
-- PR: [#212](https://github.com/hyeoniverse/MacFolio/pull/212), [#247](https://github.com/hyeoniverse/MacFolio/pull/247)
+- [흩어진 z-index 숫자를 theme.css의 --z-* CSS 변수로 모으기](/memo/design-tokens#z-index-층-흩어진-숫자를---z--변수로-모으기-231): `--ui-modal-z`를 이름으로 정리한 일
+- [계산된 스타일 비교로 검증한 공통 버튼 컴포넌트 교체](/memo/refactor-retrospective#4단계-공통-컴포넌트): 4단계 정리
 
-[^1]: 최상위 층(top layer)은 문서의 z-index와 무관하게 모든 요소 위에 그려지는 별도 층이다. [MDN: Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)
+PR: [#210](https://github.com/hyeoniverse/MacFolio/pull/210), [#212](https://github.com/hyeoniverse/MacFolio/pull/212), [#247](https://github.com/hyeoniverse/MacFolio/pull/247)
 
-[^2]: `position`이 `static`이 아닌 요소. `absolute` 요소는 이 조상을 기준으로 배치된다. [MDN: position](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position)
+[^grep-l]: `grep -l`은 일치하는 줄 대신 일치하는 파일 이름만 출력한다. `wc -l`로 그 줄 수를 집계하면 파일 수가 된다.
+
+[^search]: 검색어 입력에 쓰는 input 종류. [MDN: `<input type="search">`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/search)
+
+[^top-layer]: 최상위 층(top layer)은 문서의 z-index와 무관하게 모든 요소 위에 그려지는 별도 층이다. [MDN: Top layer](https://developer.mozilla.org/en-US/docs/Glossary/Top_layer)
+
+[^positioned]: `position`이 `static`이 아닌 요소. `absolute` 요소는 이 조상을 기준으로 배치된다. [MDN: position](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/position)
+
+<details>
+<summary>참고 문헌</summary>
+
+- [W3C WAI-ARIA APG: Dialog (Modal) Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+- [MDN: `<dialog>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)
+- [MDN: HTMLDialogElement.showModal()](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/showModal)
+- [MDN: aria-modal](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Attributes/aria-modal)
+- [MDN: Element: pointerdown event](https://developer.mozilla.org/en-US/docs/Web/API/Element/pointerdown_event)
+- [MDN: Element: click event](https://developer.mozilla.org/en-US/docs/Web/API/Element/click_event)
+- [MDN: inert](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert)
+- [React: createPortal](https://react.dev/reference/react-dom/createPortal)
+
+</details>
 
 #MacFolio #React #CSS #공통컴포넌트 #리팩터링

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>desktop-core를 화면과 서버가 서로 다른 파일로 불러오는 구조</title>
+<defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker>
+<marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="340" fill="#ffffff"/>
+<rect x="20" y="20" width="200" height="70" rx="10" fill="#f2f2f7"/>
+<text x="120" y="46" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">apps/react (화면)</text>
+<text x="120" y="66" font-size="12" fill="#6e6e73" text-anchor="middle">Vite · 조건 "source"</text>
+<rect x="20" y="230" width="200" height="70" rx="10" fill="#f2f2f7"/>
+<text x="120" y="256" font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle">apps/api (서버)</text>
+<text x="120" y="276" font-size="12" fill="#6e6e73" text-anchor="middle">Node · 조건 "default"</text>
+<rect x="280" y="96" width="340" height="128" rx="10" fill="#ffffff" stroke="#6e6e73"/>
+<text x="296" y="120" font-size="13" font-weight="600" fill="#1d1d1f">packages/desktop-core/package.json</text>
+<text x="296" y="146" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">"./memo": {</text>
+<text x="316" y="166" font-size="12" fill="#0a84ff" font-family="ui-monospace, Menlo, monospace">"source": "./src/memo/index.ts",</text>
+<text x="316" y="184" font-size="12" fill="#6e6e73" font-family="ui-monospace, Menlo, monospace">"types": "./dist/memo/index.d.ts",</text>
+<text x="316" y="202" font-size="12" fill="#ff9f0a" font-family="ui-monospace, Menlo, monospace">"default": "./dist/memo/index.js"</text>
+<path d="M220 55 C 250 55, 250 162, 310 162" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#b)"/>
+<path d="M220 265 C 250 265, 250 198, 310 198" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#o)"/>
+<text x="290" y="252" font-size="12" fill="#1d1d1f">화면: TypeScript 소스를 바로 사용해 수정 즉시 반영</text>
+<text x="290" y="272" font-size="12" fill="#1d1d1f">서버: tsc로 빌드한 JS를 사용 (배포 이미지에 dist 포함)</text>
+<text x="290" y="300" font-size="12" fill="#ff3b30">desktop-core 안에서 react나 window를 쓰면</text>
+<text x="290" y="318" font-size="12" fill="#ff3b30">타입 검사·lint 단계에서 실패</text>
+</svg>

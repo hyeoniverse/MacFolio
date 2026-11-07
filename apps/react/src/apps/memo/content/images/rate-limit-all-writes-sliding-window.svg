@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 310" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>한도 3인 경로에 0초, 20초, 40초, 50초, 65초에 요청이 오면 50초 요청은 살아 있는 기록이 3개라 429, 65초 요청은 0초 기록이 만료되어 허용된다</title>
+<rect width="640" height="310" fill="#ffffff"/>
+<text x="24" y="32" font-size="16" font-weight="700" fill="#1d1d1f">최근 60초 안의 기록 수로 판정한다 (예: 한도 3)</text>
+<text x="24" y="54" font-size="12" fill="#6e6e73">허용한 요청마다 60초 뒤 만료되는 기록을 남기고, 살아 있는 기록이 한도 이상이면 429</text>
+<path d="M462.5 86 V182 M462.5 204 V240" stroke="#6e6e73" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="462.5" y="80" font-size="12" fill="#6e6e73" text-anchor="middle">0초 기록 만료</text>
+<text x="100" y="105" font-size="12" fill="#1d1d1f" text-anchor="end">0초 요청</text>
+<rect x="110" y="92" width="352.5" height="18" rx="4" fill="#0a84ff" fill-opacity="0.18" stroke="#0a84ff"/>
+<circle cx="110" cy="101" r="5" fill="#0a84ff"/>
+<text x="100" y="135" font-size="12" fill="#1d1d1f" text-anchor="end">20초 요청</text>
+<rect x="227.5" y="122" width="352.5" height="18" rx="4" fill="#0a84ff" fill-opacity="0.18" stroke="#0a84ff"/>
+<circle cx="227.5" cy="131" r="5" fill="#0a84ff"/>
+<text x="100" y="165" font-size="12" fill="#1d1d1f" text-anchor="end">40초 요청</text>
+<rect x="345" y="152" width="235" height="18" rx="4" fill="#0a84ff" fill-opacity="0.18" stroke="#0a84ff"/>
+<circle cx="345" cy="161" r="5" fill="#0a84ff"/>
+<text x="100" y="195" font-size="12" fill="#1d1d1f" text-anchor="end">50초 요청</text>
+<path d="M398 186 l12 12 M410 186 l-12 12" stroke="#ff3b30" stroke-width="2.5"/>
+<text x="418" y="197" font-size="12" font-weight="600" fill="#ff3b30">기록 3개 → 429</text>
+<text x="100" y="225" font-size="12" fill="#1d1d1f" text-anchor="end">65초 요청</text>
+<rect x="491.9" y="212" width="88.1" height="18" rx="4" fill="#34c759" fill-opacity="0.2" stroke="#34c759"/>
+<circle cx="491.9" cy="221" r="5" fill="#34c759"/>
+<text x="452" y="225" font-size="12" font-weight="600" fill="#1d1d1f" text-anchor="end">기록 2개 → 허용</text>
+<line x1="110" y1="248" x2="580" y2="248" stroke="#1d1d1f" stroke-width="1.2"/>
+<g font-size="12" fill="#6e6e73" text-anchor="middle">
+<line x1="110" y1="248" x2="110" y2="254" stroke="#1d1d1f"/><text x="110" y="270">0초</text>
+<line x1="168.75" y1="248" x2="168.75" y2="254" stroke="#1d1d1f"/><text x="168.75" y="270">10</text>
+<line x1="227.5" y1="248" x2="227.5" y2="254" stroke="#1d1d1f"/><text x="227.5" y="270">20</text>
+<line x1="286.25" y1="248" x2="286.25" y2="254" stroke="#1d1d1f"/><text x="286.25" y="270">30</text>
+<line x1="345" y1="248" x2="345" y2="254" stroke="#1d1d1f"/><text x="345" y="270">40</text>
+<line x1="403.75" y1="248" x2="403.75" y2="254" stroke="#1d1d1f"/><text x="403.75" y="270">50</text>
+<line x1="462.5" y1="248" x2="462.5" y2="254" stroke="#1d1d1f"/><text x="462.5" y="270">60</text>
+<line x1="521.25" y1="248" x2="521.25" y2="254" stroke="#1d1d1f"/><text x="521.25" y="270">70</text>
+<line x1="580" y1="248" x2="580" y2="254" stroke="#1d1d1f"/><text x="580" y="270">80</text>
+</g>
+<rect x="110" y="284" width="22" height="12" rx="3" fill="#0a84ff" fill-opacity="0.18" stroke="#0a84ff"/>
+<text x="140" y="294" font-size="12" fill="#6e6e73">허용한 요청의 기록이 살아 있는 60초</text>
+<path d="M370 284 l12 12 M382 284 l-12 12" stroke="#ff3b30" stroke-width="2.5"/>
+<text x="392" y="294" font-size="12" fill="#6e6e73">차단 (기록을 남기지 않는다)</text>
+</svg>
