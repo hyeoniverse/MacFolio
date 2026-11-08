@@ -2,7 +2,7 @@
 // 이벤트 묶음의 모양·검사와 응답 모양은 @macfolio/contracts (사이트와 같은 스키마)
 import { createHmac } from 'node:crypto';
 
-import { EventBatch, parse, utmKey } from '@macfolio/contracts';
+import { EventBatch, parse, searchTermItemKey, utmKey } from '@macfolio/contracts';
 
 export { EVENT_TYPES, type EventType, MAX_EVENTS, type EventInput, type EventBatch } from '@macfolio/contracts';
 
@@ -154,6 +154,10 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 	const durations = new Map<string, number>();
 	// 글·프로젝트 보기는 방문마다 한 번: 한 방문에서 같은 글을 여러 번 열어도 조회수 1
 	const viewed = new Set<string>();
+	// 검색어로 들어온 방문의 검색어 (그 방문에서 본 글·프로젝트를 검색어별로 센다). DB에서 읽은 이벤트는 순서가 없어 먼저 모은다
+	const termOf = new Map<string, string>();
+	for (const event of events)
+		if (event.type === 'visit' && event.searchTerm) termOf.set(event.visitId, event.searchTerm);
 	for (const event of events) {
 		visitors.add(event.dayHash);
 		if (event.type === 'visit') {
@@ -185,7 +189,11 @@ export function aggregate(events: StoredEvent[]): StatRow[] {
 			add('app', event.app);
 		} else if (event.type === 'item' && event.app && event.item) {
 			const key = `${event.app}/${event.item}`;
-			if (!viewed.has(`${event.visitId}\u0000${key}`)) add('item', key);
+			if (!viewed.has(`${event.visitId}\u0000${key}`)) {
+				add('item', key);
+				const term = termOf.get(event.visitId);
+				if (term) add('searchTermItem', searchTermItemKey(term, key));
+			}
 			viewed.add(`${event.visitId}\u0000${key}`);
 		} else if (event.type === 'link' && event.item) {
 			add('link', event.item);

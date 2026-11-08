@@ -48,6 +48,13 @@ export const SEARCH_TERM_MAX = 100;
  * 검색어를 다듬는다: 앞뒤 공백을 빼고, 이어진 공백은 하나로, 소문자로, 100자까지. 비면 undefined.
  * 사이트(검색엔진이 넘겨준 주소에서 읽을 때)와 서버(EventInput)가 같은 규칙을 쓴다
  */
+/**
+ * 검색어로 들어온 방문이 본 글·프로젝트(searchTermItem 표)의 키: `검색어\t앱/항목`.
+ * cleanSearchTerm이 공백을 한 칸으로 줄이므로 검색어에는 탭이 없다
+ */
+export const SEARCH_TERM_ITEM_SEPARATOR = '\t';
+export const searchTermItemKey = (term: string, item: string) => `${term}${SEARCH_TERM_ITEM_SEPARATOR}${item}`;
+
 export function cleanSearchTerm(value: string | null | undefined): string | undefined {
 	const cleaned = (value ?? '').trim().replace(/\s+/g, ' ').toLowerCase().slice(0, SEARCH_TERM_MAX).trim();
 	return cleaned || undefined;
@@ -124,11 +131,15 @@ export const EventBatch = z.preprocess(
 );
 export type EventBatch = z.infer<typeof EventBatch>;
 
-/** 요약에 싣는 표 (지표 → 많은 순). referrerGroup은 referrer를 검색·소셜·직접·링크로 묶은 것 */
+/**
+ * 요약에 싣는 표 (지표 → 많은 순). referrerGroup은 referrer를 검색·소셜·직접·링크로 묶은 것.
+ * searchTermItem은 검색어로 들어온 방문이 그 방문에서 본 글·프로젝트 (키는 searchTermItemKey, 방문마다 한 번)
+ */
 export const BREAKDOWNS = [
 	'referrerGroup',
 	'referrer',
 	'searchTerm',
+	'searchTermItem',
 	'source',
 	'medium',
 	'campaign',
@@ -152,6 +163,7 @@ export type Breakdown = (typeof BREAKDOWNS)[number];
 export const ADMIN_ONLY_BREAKDOWNS = [
 	'referrer',
 	'searchTerm',
+	'searchTermItem',
 	'source',
 	'medium',
 	'campaign',

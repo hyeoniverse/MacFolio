@@ -165,7 +165,8 @@ export class AnalyticsStats {
 				const list = [...sums]
 					.map(([key, value]) => ({ key, value }))
 					.sort((a, b) => b.value - a.value || a.key.localeCompare(b.key))
-					.slice(0, 100);
+					// 검색어마다 본 글을 묶어 보이는 표는 검색어 수만큼 줄이 늘어 더 많이 싣는다
+					.slice(0, metric === 'searchTermItem' ? 500 : 100);
 				return [metric, list];
 			})
 		) as Summary['breakdown'];

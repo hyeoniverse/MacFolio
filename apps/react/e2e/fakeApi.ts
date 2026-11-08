@@ -558,7 +558,17 @@ export async function fakeApi(
 				breakdown: Record<string, { key: string; value: number }[]>;
 			};
 			if (!state.signedIn) {
-				const hidden = ['referrer', 'searchTerm', 'source', 'medium', 'campaign', 'utm', 'term', 'content'];
+				const hidden = [
+					'referrer',
+					'searchTerm',
+					'searchTermItem',
+					'source',
+					'medium',
+					'campaign',
+					'utm',
+					'term',
+					'content',
+				];
 				const json = {
 					...summary,
 					scope: 'public',
@@ -1390,7 +1400,13 @@ function fakeAnalyticsSummary() {
 			// 검색엔진이 넘겨준 검색어 (네이버 등)
 			searchTerm: [
 				{ key: 'macfolio', value: 6 },
-				{ key: '김정현 포트폴리오', value: 2 },
+				{ key: 'macos 포트폴리오', value: 2 },
+			],
+			// 검색어로 들어온 방문이 본 글 (검색어\t앱/항목)
+			searchTermItem: [
+				{ key: 'macfolio\tmemo/cra-to-vite', value: 4 },
+				{ key: 'macfolio\tmemo/post-editor', value: 1 },
+				{ key: 'macos 포트폴리오\tsafari/macfolio', value: 2 },
 			],
 			app: [
 				{ key: 'memo', value: 900 },

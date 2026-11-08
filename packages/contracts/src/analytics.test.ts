@@ -57,7 +57,7 @@ describe('이벤트 묶음 검사', () => {
 });
 
 describe('응답 모양', () => {
-	it('요약은 표 열일곱 개를 모두 가진다', () => {
+	it('요약은 표 열여덟 개를 모두 가진다', () => {
 		const totals = { visits: 1, visitors: 1, appOpens: 0, avgDurationSec: null };
 		expect(parse(Totals, totals)).toEqual({ value: totals });
 		const summary = {
@@ -71,6 +71,7 @@ describe('응답 모양', () => {
 				referrerGroup: [{ key: '직접', value: 1 }],
 				referrer: [],
 				searchTerm: [],
+				searchTermItem: [],
 				source: [],
 				medium: [],
 				campaign: [],

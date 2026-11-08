@@ -8,7 +8,7 @@ import { requestOpen } from '@/shared/lib/openRequest';
 import EmptyState from '@/shared/ui/empty-state/EmptyState';
 import StatTable from './StatTable';
 import { ActivityError, fetchSearch, syncSearch, type Row, type SearchKeywords } from './activityApi';
-import { groupSearchRows, memoSlugOf, searchPageLabel, type SearchStat } from './model';
+import { groupSearchRows, itemsOfSearchTerm, memoSlugOf, searchPageLabel, type SearchStat } from './model';
 
 type SortKey = 'name' | 'clicks' | 'impressions' | 'position';
 
@@ -147,25 +147,45 @@ const timeLabel = (iso: string) =>
 
 /**
  * 검색어 탭. 구글·빙은 검색어를 사이트에 넘기지 않아서 Search Console에서 가져온 것(서버가 6시간마다)을 보고,
- * 검색어를 넘겨주는 검색엔진으로 들어온 방문은 그 검색어를 따로 센다 (visitTerms, 요약의 searchTerm 표)
+ * 검색어를 넘겨주는 검색엔진으로 들어온 방문은 그 검색어를 따로 센다 (visitTerms, 요약의 searchTerm 표).
+ * - Search Console: 검색어를 누르면 페이지 표에 그 검색어로 나온 페이지만, 페이지를 누르면 검색어 표에 그 페이지의 검색어만 보인다
+ * - 넘겨준 검색어: 검색어를 누르면 그 검색어로 들어온 방문이 본 글·프로젝트를 옆에 보인다 (요약의 searchTermItem 표)
  */
 const SearchKeywordsPanel = ({
 	from,
 	to,
 	visitTerms,
+	visitTermItems,
 	postTitle,
+	itemLabel,
 	reloads,
 }: {
 	from: string;
 	to: string;
 	visitTerms: Row[];
+	/** 검색어로 들어온 방문이 본 글·프로젝트 (키는 `검색어\t앱/항목`) */
+	visitTermItems: Row[];
 	postTitle: (slug: string) => string;
+	/** 앱/항목 키 → 표에 보일 이름 (글은 제목) */
+	itemLabel: (key: string) => string;
 	reloads: number;
 }) => {
 	const [data, setData] = useState<SearchKeywords | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [syncing, setSyncing] = useState(false);
+	// Search Console 표에서 고른 페이지나 검색어 (하나만: 다른 쪽을 고르면 앞의 것을 푼다)
 	const [page, setPage] = useState<string | null>(null);
+	const [query, setQuery] = useState<string | null>(null);
+	const selectPage = (next: string | null) => {
+		setPage(next);
+		setQuery(null);
+	};
+	const selectQuery = (next: string | null) => {
+		setQuery(next);
+		setPage(null);
+	};
+	// 넘겨준 검색어 표에서 고른 검색어
+	const [term, setTerm] = useState<string | null>(null);
 
 	useEffect(() => {
 		let alive = true;
@@ -251,27 +271,43 @@ const SearchKeywordsPanel = ({
 					<SearchTable
 						title={page ? `검색어 · ${pageName(page)}` : '검색어'}
 						rows={groupSearchRows(data?.rows ?? [], 'query', page)}
-						note="구글 검색 결과에 이 사이트가 나온 검색어. 드문 검색어는 Search Console이 빼고 줍니다."
+						note="구글 검색 결과에 이 사이트가 나온 검색어. 이름을 누르면 페이지 표에 그 검색어로 나온 페이지와 클릭 수가 보입니다. 드문 검색어는 Search Console이 빼고 줍니다."
 						empty={data ? '이 기간에는 없습니다' : '불러오는 중…'}
+						onSelect={selectQuery}
+						selected={query}
 					/>
 					<SearchTable
-						title="페이지"
-						rows={groupSearchRows(data?.rows ?? [], 'page')}
+						title={query ? `페이지 · '${query}'` : '페이지'}
+						rows={groupSearchRows(data?.rows ?? [], 'page', query)}
 						labelFor={pageName}
 						note="이름을 누르면 검색어 표에 그 페이지로 들어온 검색어만 보입니다. 글·프로젝트는 ↗로 엽니다."
 						empty={data ? '이 기간에는 없습니다' : '불러오는 중…'}
-						onSelect={setPage}
+						onSelect={selectPage}
 						selected={page}
 						onOpen={openPage}
 					/>
 				</div>
 			)}
-			<StatTable
-				title="검색엔진이 넘겨준 검색어"
-				rows={visitTerms}
-				metric="searchTerm"
-				note="네이버처럼 들어온 주소에 검색어를 실어 보내는 검색엔진으로 들어온 방문. 구글·빙은 넘기지 않아 여기에 없습니다."
-			/>
+			<div className="activity-columns">
+				<StatTable
+					title="검색엔진이 넘겨준 검색어"
+					rows={visitTerms}
+					metric="searchTerm"
+					note="네이버처럼 들어온 주소에 검색어를 실어 보내는 검색엔진으로 들어온 방문. 구글·빙은 넘기지 않아 여기에 없습니다. 이름을 누르면 그 방문이 본 글이 옆에 보입니다."
+					onSelect={setTerm}
+					selected={term}
+				/>
+				{term !== null && (
+					<StatTable
+						title={`'${term}'(으)로 들어와 본 글`}
+						rows={itemsOfSearchTerm(visitTermItems, term)}
+						labelFor={itemLabel}
+						valueLabel="방문"
+						note="그 검색어로 들어온 방문이 열어 본 글·프로젝트. 한 방문에서 같은 글을 여러 번 열어도 한 번으로 셉니다."
+						empty="이 기간에는 글을 열어 본 방문이 없습니다"
+					/>
+				)}
+			</div>
 		</>
 	);
 };

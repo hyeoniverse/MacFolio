@@ -51,6 +51,7 @@ export class AnalyticsRollup implements OnModuleInit, OnModuleDestroy {
 			select: { day: true },
 		});
 		const doneDays = new Set(done.map(({ day }) => day));
+		await this.backfillSearchTermItems([...doneDays]);
 		for (const { day } of pending) {
 			if (doneDays.has(day)) continue;
 			const events = await this.prisma.analyticsEvent.findMany({ where: { day } });
@@ -66,6 +67,33 @@ export class AnalyticsRollup implements OnModuleInit, OnModuleDestroy {
 			where: { createdAt: { lt: new Date(now.getTime() - IP_RETENTION_DAYS * 24 * HOUR) }, maskedIp: { not: null } },
 			data: { maskedIp: null },
 		});
+	}
+
+	/**
+	 * searchTermItem(검색어로 들어온 방문이 본 글)은 나중에 더한 표라, 그 전에 모은 날에는 없다.
+	 * 이벤트가 아직 남아 있는 날(90일) 가운데 검색어 방문은 있는데 이 표가 없는 날만 다시 모아 그 행만 넣는다
+	 */
+	private async backfillSearchTermItems(days: string[]) {
+		if (!days.length) return;
+		const withTerms = await this.prisma.dailyStat.findMany({
+			where: { metric: 'searchTerm', day: { in: days } },
+			distinct: ['day'],
+			select: { day: true },
+		});
+		if (!withTerms.length) return;
+		const filled = await this.prisma.dailyStat.findMany({
+			where: { metric: 'searchTermItem', day: { in: withTerms.map(({ day }) => day) } },
+			distinct: ['day'],
+			select: { day: true },
+		});
+		const filledDays = new Set(filled.map(({ day }) => day));
+		for (const { day } of withTerms) {
+			if (filledDays.has(day)) continue;
+			const events = await this.prisma.analyticsEvent.findMany({ where: { day } });
+			const rows = aggregate(events).filter((row) => row.metric === 'searchTermItem');
+			if (rows.length)
+				await this.prisma.dailyStat.createMany({ data: rows.map((row) => ({ ...row, day })), skipDuplicates: true });
+		}
 	}
 
 	/** 기간의 (날짜, 지표, 키, 값). 지난 날은 DailyStat, 오늘은 이벤트에서 바로 */

@@ -456,7 +456,9 @@ const Activity = () => {
 						from={summary.from}
 						to={summary.to}
 						visitTerms={breakdown.searchTerm}
+						visitTermItems={breakdown.searchTermItem}
 						postTitle={postTitle}
+						itemLabel={itemLabel}
 						reloads={reloads}
 					/>
 				);

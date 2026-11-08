@@ -201,6 +201,7 @@ describe('트래픽 분석 (e2e)', () => {
 			.query({ from: shiftDay(today, -1), to: today })
 			.expect(200);
 		expect(visitor.body.breakdown.searchTerm).toEqual([]);
+		expect(visitor.body.breakdown.searchTermItem).toEqual([]);
 		expect(visitor.body.breakdown.referrerGroup).toEqual([{ key: '검색', value: 2 }]);
 		expect(JSON.stringify(visitor.body)).not.toContain('포트폴리오');
 
@@ -210,6 +211,8 @@ describe('트래픽 분석 (e2e)', () => {
 			.query({ from: today, to: today })
 			.expect(200);
 		expect(admin.body.breakdown.searchTerm).toEqual([{ key: 'macfolio 포트폴리오', value: 1 }]);
+		// 그 검색어로 들어온 방문이 본 글 (검색어 없이 들어온 v-search02의 글은 세지 않는다)
+		expect(admin.body.breakdown.searchTermItem).toEqual([{ key: 'macfolio 포트폴리오\tmemo/hello', value: 1 }]);
 	});
 
 	it('Search Console 검색어는 관리자만. 서비스 계정이 없으면 configured: false', async () => {
@@ -399,6 +402,30 @@ describe('트래픽 분석 (e2e)', () => {
 		).toMatchObject({
 			value: 1,
 		});
+	});
+
+	it('검색어로 본 글 표가 생기기 전에 모은 날도, 이벤트가 남아 있으면 그 표만 채운다', async () => {
+		const now = new Date();
+		const day = kstDay(new Date(now.getTime() - 3 * 86_400_000));
+		const createdAt = new Date(now.getTime() - 3 * 86_400_000);
+		await prisma.analyticsEvent.createMany({
+			data: [
+				{ type: 'visit', day, dayHash: 'h', visitId: 'v-term', createdAt, searchTerm: 'cors 쿠키' },
+				{ type: 'item', day, dayHash: 'h', visitId: 'v-term', createdAt, app: 'memo', item: 'cors' },
+			],
+		});
+		// 이 표를 모르던 때에 모아 둔 날: visits·searchTerm 행은 있고 searchTermItem 행은 없다
+		await prisma.dailyStat.createMany({
+			data: [
+				{ day, metric: 'visits', key: '', value: 1 },
+				{ day, metric: 'searchTerm', key: 'cors 쿠키', value: 1 },
+			],
+		});
+		await app.get(AnalyticsRollup).maintain(now);
+		const rows = await prisma.dailyStat.findMany({ where: { day, metric: 'searchTermItem' } });
+		expect(rows.map(({ key, value }) => [key, value])).toEqual([['cors 쿠키\tmemo/cors', 1]]);
+		// 다른 지표는 다시 넣지 않는다
+		expect(await prisma.dailyStat.count({ where: { day, metric: 'visits' } })).toBe(1);
 	});
 
 	it('실시간은 가린 IP를 두는 7일까지 거슬러 본다 (기본 30분)', async () => {
