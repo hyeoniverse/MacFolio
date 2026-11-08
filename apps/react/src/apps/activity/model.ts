@@ -1,6 +1,6 @@
 // '활동 상태 보기'의 순수 계산: 기간, 비교, 표에 보이는 이름. 서버 호출은 activityApi.ts
 import { APP_MANIFEST, type AppName } from '@/apps/manifest';
-import { cleanUtm, splitUtmKey, type SearchQueryRow } from '@macfolio/contracts';
+import { cleanUtm, SEARCH_TERM_ITEM_SEPARATOR, splitUtmKey, type SearchQueryRow } from '@macfolio/contracts';
 import type { Breakdown, LiveVisit, Row } from './activityApi';
 
 export const PERIODS = [
@@ -138,12 +138,13 @@ export interface SearchStat {
 
 /**
  * (검색어, 페이지) 줄을 검색어나 페이지로 묶는다. 순위는 노출로 가중한 평균 (소수 한 자리). 노출 많은 순.
- * page를 주면 그 페이지의 검색어만 묶는다
+ * only를 주면 다른 쪽이 그 값인 줄만 묶는다: 검색어로 묶을 때는 그 페이지의 검색어만, 페이지로 묶을 때는 그 검색어로 나온 페이지만
  */
-export function groupSearchRows(rows: SearchQueryRow[], by: 'query' | 'page', page?: string | null): SearchStat[] {
+export function groupSearchRows(rows: SearchQueryRow[], by: 'query' | 'page', only?: string | null): SearchStat[] {
+	const other = by === 'query' ? 'page' : 'query';
 	const groups = new Map<string, { clicks: number; impressions: number; weighted: number }>();
 	for (const row of rows) {
-		if (page && row.page !== page) continue;
+		if (only && row[other] !== only) continue;
 		const key = row[by];
 		const group = groups.get(key) ?? { clicks: 0, impressions: 0, weighted: 0 };
 		group.clicks += row.clicks;
@@ -172,4 +173,15 @@ export function memoSlugOf(page: string): string | null {
 	} catch {
 		return null;
 	}
+}
+
+/**
+ * 검색어로 들어온 방문이 본 글·프로젝트(요약의 searchTermItem, 키는 `검색어\t앱/항목`)에서 그 검색어의 것만
+ * 앱/항목 키로 (item 표와 같은 키라 같은 이름 붙이기를 쓴다)
+ */
+export function itemsOfSearchTerm(rows: Row[], term: string): Row[] {
+	const prefix = term + SEARCH_TERM_ITEM_SEPARATOR;
+	return rows
+		.filter((row) => row.key.startsWith(prefix))
+		.map((row) => ({ key: row.key.slice(prefix.length), value: row.value }));
 }

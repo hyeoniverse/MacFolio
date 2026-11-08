@@ -141,6 +141,25 @@ describe('하루치 집계', () => {
 		]);
 	});
 
+	it('검색어로 들어온 방문이 본 글을 검색어별로 센다 (방문마다 한 번, 이벤트 순서와 무관)', () => {
+		const rows = aggregate([
+			// DB에서 읽은 순서가 섞여 글 보기가 방문보다 먼저 와도 그 방문의 검색어로 센다
+			event({ type: 'item', app: 'memo', item: 'cors' }),
+			event({ referrer: 'search.naver.com', searchTerm: 'cors 쿠키' }),
+			event({ type: 'item', app: 'memo', item: 'cors' }),
+			event({ type: 'item', app: 'memo', item: 'csp' }),
+			event({ visitId: 'v2', referrer: 'search.naver.com', searchTerm: 'cors 쿠키' }),
+			event({ visitId: 'v2', type: 'item', app: 'memo', item: 'cors' }),
+			// 검색어 없이 들어온 방문의 글 보기는 세지 않는다
+			event({ visitId: 'v3', referrer: 'github.com' }),
+			event({ visitId: 'v3', type: 'item', app: 'memo', item: 'cors' }),
+		]);
+		expect(rows.filter((row) => row.metric === 'searchTermItem')).toEqual([
+			{ metric: 'searchTermItem', key: 'cors 쿠키\tmemo/cors', value: 2 },
+			{ metric: 'searchTermItem', key: 'cors 쿠키\tmemo/csp', value: 1 },
+		]);
+	});
+
 	it('들어온 곳 묶음: 검색, 소셜, 직접, 링크', () => {
 		expect(referrerGroup('www.google.com')).toBe('검색');
 		expect(referrerGroup('search.naver.com')).toBe('검색');

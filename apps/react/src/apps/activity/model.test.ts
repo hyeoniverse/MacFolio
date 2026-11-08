@@ -5,6 +5,7 @@ import {
 	eventLabel,
 	formatDuration,
 	groupSearchRows,
+	itemsOfSearchTerm,
 	kstToday,
 	labelOf,
 	memoSlugOf,
@@ -109,6 +110,14 @@ describe('Search Console 검색어', () => {
 		]);
 	});
 
+	it('검색어 하나로 나온 페이지만 볼 수 있다 (클릭 수와 함께)', () => {
+		expect(groupSearchRows(rows, 'page', 'macfolio').map(({ key, clicks }) => [key, clicks])).toEqual([
+			['https://example.com/memo/a', 1],
+			['https://example.com/', 3],
+		]);
+		expect(groupSearchRows(rows, 'page', '포트폴리오').map(({ key }) => key)).toEqual(['https://example.com/']);
+	});
+
 	it('페이지 이름: https://와 끝의 /를 떼고, 블로그 글이면 글 주소를 안다', () => {
 		expect(searchPageLabel('https://example.com/')).toBe('example.com');
 		expect(searchPageLabel('https://example.com/memo/a')).toBe('example.com/memo/a');
@@ -126,5 +135,21 @@ describe('실시간 IP', () => {
 			{ key: '198.51.100.x', value: 1 },
 			{ key: '', value: 1 },
 		]);
+	});
+});
+
+describe('검색어별 본 글', () => {
+	it('검색어로 들어온 방문이 본 글에서 그 검색어의 것만 앱/항목 키로', () => {
+		const rows = [
+			{ key: 'cors 쿠키\tmemo/cors', value: 2 },
+			{ key: 'cors 쿠키\tsafari/macfolio', value: 1 },
+			{ key: 'cors\tmemo/csp', value: 1 },
+		];
+		expect(itemsOfSearchTerm(rows, 'cors 쿠키')).toEqual([
+			{ key: 'memo/cors', value: 2 },
+			{ key: 'safari/macfolio', value: 1 },
+		]);
+		// 앞부분만 같은 다른 검색어('cors')와 섞이지 않는다
+		expect(itemsOfSearchTerm(rows, 'cors')).toEqual([{ key: 'memo/csp', value: 1 }]);
 	});
 });

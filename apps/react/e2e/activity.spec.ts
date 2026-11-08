@@ -352,7 +352,7 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		await activity.getByRole('tab', { name: '서버' }).click();
 		await expect(activity.getByText('서버 자원 사용률과 Oracle 유휴 회수 위험은 관리자에게만 보입니다.')).toBeVisible();
 	});
-	test('관리자: 검색어 탭에서 Search Console의 검색어·페이지를 보고, 페이지를 골라 그 검색어만 보고, 글 페이지를 열고, 지금 가져온다', async ({
+	test('관리자: 검색어 탭에서 Search Console의 검색어·페이지를 보고, 페이지나 검색어를 골라 서로 거르고, 넘겨준 검색어로 본 글을 보고, 지금 가져온다', async ({
 		page,
 	}) => {
 		const api = await fakeApi(page, { signedIn: true });
@@ -397,8 +397,29 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 		// 여는 버튼은 고르기와 따로다: 고른 페이지는 그대로
 		await expect(filtered).toBeVisible();
 
-		// 검색엔진이 넘겨준 방문의 검색어
-		await expect(activity.getByRole('table', { name: '검색엔진이 넘겨준 검색어' })).toContainText('김정현 포트폴리오2');
+		// 연 메모 창을 닫고 활동 상태 보기로 돌아온다
+		await memo.locator('.traffic-lights').getByRole('button', { name: '닫기' }).click();
+
+		// 검색어를 누르면 고른 페이지를 풀고, 페이지 표에 그 검색어로 나온 페이지와 클릭 수만 보인다
+		await filtered.getByRole('button', { name: 'macfolio', exact: true }).click();
+		await expect(activity.getByRole('table', { name: '검색어', exact: true })).toBeVisible();
+		const pagesOfQuery = activity.getByRole('table', { name: "페이지 · 'macfolio'" });
+		await expect(pagesOfQuery.locator('tbody tr')).toHaveText([
+			/^macfolio\.hyeoniverse\.com182401\.4$/,
+			/^메모 › CRA에서 Vite로 옮기기2603\.5$/,
+		]);
+
+		// 검색엔진이 넘겨준 방문의 검색어. 누르면 그 검색어로 들어온 방문이 본 글이 옆에 보인다
+		const visitTerms = activity.getByRole('table', { name: '검색엔진이 넘겨준 검색어' });
+		await expect(visitTerms).toContainText('macos 포트폴리오2');
+		await visitTerms.getByRole('button', { name: 'macfolio', exact: true }).click();
+		const viewed = activity.getByRole('table', { name: "'macfolio'(으)로 들어와 본 글" });
+		await expect(viewed.locator('tbody tr')).toHaveCount(2);
+		await expect(viewed.locator('tbody tr').first()).toContainText('메모 › CRA에서 Vite로 옮기기');
+		await expect(viewed).not.toContainText('macfolio');
+		// 다시 누르면 닫는다
+		await visitTerms.getByRole('button', { name: 'macfolio', exact: true }).click();
+		await expect(viewed).toHaveCount(0);
 
 		await activity.getByRole('button', { name: '지금 가져오기' }).click();
 		await expect.poll(() => api.searchSyncs).toBe(1);
@@ -428,7 +449,7 @@ test.describe("'활동 상태 보기' 앱 (#102)", () => {
 			activity.getByText('검색어는 누가 무엇을 찾다 들어왔는지 드러날 수 있어 관리자에게만 보입니다.')
 		).toBeVisible();
 		await activity.getByRole('tab', { name: '유입 경로' }).click();
-		await expect(activity).not.toContainText(/김정현 포트폴리오|macos 포트폴리오/);
+		await expect(activity).not.toContainText(/macos 포트폴리오/);
 	});
 
 	test('보기 탭은 ←·→ 키로 옮기며 고르고, Tab으로는 고른 탭에만 들어온다', async ({ page }) => {
