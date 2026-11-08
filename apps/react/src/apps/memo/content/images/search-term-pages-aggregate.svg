@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>방문 이벤트에서 검색어별 본 글을 집계하는 과정. 같은 방문의 visit 이벤트에서 검색어를 읽고, 그 방문의 item 이벤트마다 검색어와 글을 묶은 키를 한 번씩 센다</title>
+<rect width="640" height="360" fill="#fff"/>
+<text x="20" y="30" font-size="16" font-weight="700" fill="#1d1d1f">하루치 이벤트 → searchTermItem 행</text>
+<text x="20" y="62" font-size="13" font-weight="600" fill="#6e6e73">방문 v1 (네이버 검색으로 들어옴)</text>
+<rect x="20" y="72" width="280" height="30" rx="6" fill="#f2f2f7"/>
+<text x="32" y="92" font-size="12" fill="#1d1d1f">visit · searchTerm: <tspan fill="#0a84ff" font-weight="600">cors 쿠키</tspan></text>
+<rect x="20" y="108" width="280" height="30" rx="6" fill="#f2f2f7"/>
+<text x="32" y="128" font-size="12" fill="#1d1d1f">item · memo/cors</text>
+<rect x="20" y="144" width="280" height="30" rx="6" fill="#f2f2f7"/>
+<text x="32" y="164" font-size="12" fill="#6e6e73">item · memo/cors (같은 방문에서 다시 열기)</text>
+<rect x="20" y="180" width="280" height="30" rx="6" fill="#f2f2f7"/>
+<text x="32" y="200" font-size="12" fill="#1d1d1f">item · memo/csp</text>
+<text x="20" y="236" font-size="13" font-weight="600" fill="#6e6e73">방문 v2 (github.com에서 들어옴, 검색어 없음)</text>
+<rect x="20" y="246" width="280" height="30" rx="6" fill="#f2f2f7"/>
+<text x="32" y="266" font-size="12" fill="#6e6e73">item · memo/cors → 세지 않는다</text>
+<line x1="306" y1="123" x2="350" y2="140" stroke="#0a84ff" stroke-width="2"/>
+<line x1="306" y1="195" x2="350" y2="196" stroke="#0a84ff" stroke-width="2"/>
+<line x1="306" y1="159" x2="346" y2="159" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="4 3"/>
+<text x="350" y="104" font-size="13" font-weight="600" fill="#1d1d1f">DailyStat (metric = searchTermItem)</text>
+<rect x="350" y="116" width="270" height="42" rx="6" fill="#fff" stroke="#0a84ff"/>
+<text x="362" y="134" font-size="12" fill="#1d1d1f">key: cors 쿠키 ⇥ memo/cors</text>
+<text x="362" y="150" font-size="12" fill="#6e6e73">value: 1 (방문마다 한 번)</text>
+<rect x="350" y="174" width="270" height="42" rx="6" fill="#fff" stroke="#0a84ff"/>
+<text x="362" y="192" font-size="12" fill="#1d1d1f">key: cors 쿠키 ⇥ memo/csp</text>
+<text x="362" y="208" font-size="12" fill="#6e6e73">value: 1</text>
+<text x="350" y="246" font-size="12" fill="#6e6e73">⇥ = 탭 문자. 검색어는 공백을 한 칸으로 줄여</text>
+<text x="350" y="264" font-size="12" fill="#6e6e73">저장하므로 탭이 들어 있지 않다</text>
+<text x="20" y="312" font-size="12" fill="#1d1d1f">DB에서 읽은 이벤트는 순서가 보장되지 않아, visit 이벤트에서 검색어를 먼저 모은 뒤</text>
+<text x="20" y="332" font-size="12" fill="#1d1d1f">item 이벤트를 센다. 화면은 'cors 쿠키⇥'로 시작하는 키만 골라 오른쪽 부분(memo/cors)을 글 제목으로 바꾼다</text>
+</svg>
