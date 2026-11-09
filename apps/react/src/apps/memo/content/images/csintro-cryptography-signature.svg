@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>해시와 개인키로 만드는 전자서명과 검증 과정</title>
+<rect width="640" height="340" fill="#fff"/>
+<g font-size="13" text-anchor="middle">
+<text x="160" y="28" font-size="15" font-weight="600" fill="#0a84ff">서명 (보내는 A)</text>
+<text x="480" y="28" font-size="15" font-weight="600" fill="#34c759">검증 (받는 B)</text>
+<line x1="320" y1="15" x2="320" y2="325" stroke="#f2f2f7" stroke-width="2"/>
+<rect x="90" y="45" width="140" height="40" rx="8" fill="#f2f2f7"/><text x="160" y="70" fill="#1d1d1f">문서</text>
+<rect x="90" y="115" width="140" height="40" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="160" y="140" fill="#1d1d1f">해시 SHA-256</text>
+<rect x="90" y="185" width="140" height="40" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/><text x="160" y="210" fill="#1d1d1f">A의 개인키로 서명</text>
+<rect x="90" y="255" width="140" height="40" rx="8" fill="#f2f2f7" stroke="#0a84ff"/><text x="160" y="280" fill="#1d1d1f">문서 + 서명 전송</text>
+<path d="M160 85V115M160 155V185M160 225V255" stroke="#1d1d1f" stroke-width="2"/>
+<rect x="350" y="45" width="120" height="40" rx="8" fill="#fff" stroke="#1d1d1f"/><text x="410" y="70" fill="#1d1d1f">문서를 해시</text>
+<rect x="490" y="45" width="135" height="40" rx="8" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="557" y="64" fill="#1d1d1f">서명을 A의</text><text x="557" y="79" fill="#1d1d1f">공개키로 검증</text>
+<rect x="400" y="140" width="170" height="44" rx="8" fill="#f2f2f7"/><text x="485" y="167" fill="#1d1d1f">두 해시값 비교</text>
+<path d="M410 85L470 140M557 85L500 140" stroke="#1d1d1f" stroke-width="2" fill="none"/>
+<text x="485" y="220" fill="#34c759" font-weight="600">같으면: 위조·변조 없음, A가 서명함</text>
+<text x="485" y="250" fill="#ff3b30" font-weight="600">다르면: 문서가 바뀌었거나 다른 키</text>
+<path d="M230 275 C300 275 330 200 350 70" stroke="#0a84ff" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+</g></svg>

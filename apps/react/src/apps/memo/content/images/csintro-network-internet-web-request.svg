@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>브라우저가 웹 페이지를 받기까지 DNS 조회, TCP 연결, TLS 핸드셰이크, HTTP 요청과 응답이 오가는 순서</title>
+<rect width="640" height="400" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<rect x="40" y="20" width="120" height="34" rx="6" fill="#0a84ff"/><text x="100" y="42" fill="#fff" font-weight="700">브라우저</text>
+<rect x="260" y="20" width="120" height="34" rx="6" fill="#ff9f0a"/><text x="320" y="42" fill="#fff" font-weight="700">DNS 리졸버</text>
+<rect x="480" y="20" width="120" height="34" rx="6" fill="#34c759"/><text x="540" y="42" fill="#fff" font-weight="700">웹 서버</text>
+<g stroke="#6e6e73" stroke-dasharray="4 4"><line x1="100" y1="54" x2="100" y2="380"/><line x1="320" y1="54" x2="320" y2="124"/><line x1="540" y1="54" x2="540" y2="380"/></g>
+<g stroke-width="2" fill="none">
+<line x1="100" y1="80" x2="318" y2="80" stroke="#ff9f0a" marker-end="url(#a)"/><line x1="320" y1="110" x2="102" y2="110" stroke="#ff9f0a" marker-end="url(#a)"/>
+<line x1="100" y1="150" x2="538" y2="150" stroke="#6e6e73" marker-end="url(#a)"/><line x1="540" y1="170" x2="102" y2="170" stroke="#6e6e73" marker-end="url(#a)"/><line x1="100" y1="190" x2="538" y2="190" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="100" y1="230" x2="538" y2="230" stroke="#6e6e73" marker-end="url(#a)"/><line x1="540" y1="250" x2="102" y2="250" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="100" y1="300" x2="538" y2="300" stroke="#0a84ff" marker-end="url(#a)"/><line x1="540" y1="340" x2="102" y2="340" stroke="#34c759" marker-end="url(#a)"/>
+</g>
+<text x="210" y="74" font-size="12">① example.com의 IP는?</text><text x="210" y="104" font-size="12">198.51.100.20</text>
+<text x="320" y="144" font-size="12">② TCP SYN</text><text x="320" y="164" font-size="12">SYN-ACK</text><text x="320" y="184" font-size="12">ACK (포트 443 연결 수립)</text>
+<text x="320" y="224" font-size="12">③ TLS ClientHello</text><text x="320" y="244" font-size="12">ServerHello, 인증서 (암호화 키 합의)</text>
+<text x="320" y="294" font-size="12" fill="#0a84ff">④ GET /index.html HTTP/1.1  Host: example.com</text>
+<text x="320" y="334" font-size="12" fill="#34c759">⑤ HTTP/1.1 200 OK  Content-Type: text/html</text>
+<text x="320" y="372" font-size="12" fill="#6e6e73">④⑤는 ③에서 합의한 키로 암호화되어 전송된다(HTTPS)</text>
+</g>
+</svg>

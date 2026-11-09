@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>명령어 사이클: 인출, 간접, 실행, 인터럽트</title>
+<rect width="640" height="380" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">명령어 사이클</text>
+<rect x="40" y="70" width="170" height="90" rx="12" fill="#0a84ff"/>
+<text x="125" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#fff">인출 사이클</text>
+<text x="125" y="122" text-anchor="middle" font-size="12" fill="#fff">MAR ← PC</text><text x="125" y="140" text-anchor="middle" font-size="12" fill="#fff">IR ← 메모리, PC ← PC+1</text>
+<rect x="430" y="70" width="170" height="90" rx="12" fill="#fff" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="515" y="100" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">간접 사이클</text>
+<text x="515" y="122" text-anchor="middle" font-size="12" fill="#6e6e73">간접 주소면</text><text x="515" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">실제 주소를 한 번 더 읽음</text>
+<rect x="430" y="230" width="170" height="90" rx="12" fill="#34c759"/>
+<text x="515" y="260" text-anchor="middle" font-size="14" font-weight="600" fill="#fff">실행 사이클</text>
+<text x="515" y="282" text-anchor="middle" font-size="12" fill="#fff">해독 → 제어 신호</text><text x="515" y="300" text-anchor="middle" font-size="12" fill="#fff">ALU 연산·메모리 접근</text>
+<rect x="40" y="230" width="170" height="90" rx="12" fill="#fff" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="125" y="260" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">인터럽트 사이클</text>
+<text x="125" y="282" text-anchor="middle" font-size="12" fill="#6e6e73">인터럽트 요청이 있으면</text><text x="125" y="300" text-anchor="middle" font-size="12" fill="#6e6e73">PC 저장 후 처리 루틴으로</text>
+<g stroke="#6e6e73" stroke-width="2" fill="none">
+<line x1="212" y1="115" x2="426" y2="115" marker-end="url(#a)"/>
+<path d="M190 160 Q320 200 440 228" marker-end="url(#a)"/>
+<line x1="515" y1="162" x2="515" y2="226" marker-end="url(#a)"/>
+<line x1="428" y1="275" x2="214" y2="275" marker-end="url(#a)"/>
+<line x1="125" y1="228" x2="125" y2="164" marker-end="url(#a)"/>
+</g>
+<g font-size="12" fill="#6e6e73"><text x="320" y="106" text-anchor="middle">간접 주소 지정</text><text x="250" y="218" text-anchor="middle">직접 주소 지정</text><text x="320" y="266" text-anchor="middle">실행 완료</text><text x="135" y="200">다음 명령어</text></g>
+<g font-size="12"><rect x="40" y="342" width="14" height="14" fill="#0a84ff"/><text x="60" y="354" fill="#6e6e73">항상 수행</text><rect x="150" y="342" width="14" height="14" fill="#fff" stroke="#ff9f0a" stroke-dasharray="3 2"/><text x="170" y="354" fill="#6e6e73">조건에 따라 수행</text></g>
+</svg>

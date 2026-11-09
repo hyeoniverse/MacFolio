@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>스택 버퍼 오버플로가 반환 주소를 덮어쓰는 과정</title>
+<rect width="640" height="360" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">8바이트 버퍼에 24바이트를 복사하면</text>
+<g font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle"><text x="170" y="58">정상: "Hi" 복사</text><text x="470" y="58">오버플로: "A" 24개 복사</text></g>
+<g font-size="12" text-anchor="middle">
+<rect x="80" y="72" width="180" height="50" fill="#f2f2f7" stroke="#1d1d1f"/><text x="170" y="94" fill="#1d1d1f">반환 주소</text><text x="170" y="112" fill="#6e6e73">0x00401a2c (호출한 함수)</text>
+<rect x="80" y="122" width="180" height="50" fill="#f2f2f7" stroke="#1d1d1f"/><text x="170" y="144" fill="#1d1d1f">이전 프레임 포인터</text><text x="170" y="162" fill="#6e6e73">(저장된 rbp)</text>
+<rect x="80" y="172" width="180" height="60" fill="#fff" stroke="#0a84ff" stroke-width="2"/><text x="170" y="196" fill="#0a84ff">char buf[8]</text><text x="170" y="216" font-family="Menlo, monospace" fill="#1d1d1f">H i \0 · · · · ·</text>
+<rect x="380" y="72" width="180" height="50" fill="#ff3b30"/><text x="470" y="94" fill="#fff">반환 주소 → 0x41414141…</text><text x="470" y="112" fill="#fff">"AAAA…"로 덮임</text>
+<rect x="380" y="122" width="180" height="50" fill="#ff3b30"/><text x="470" y="150" fill="#fff">AAAAAAAA</text>
+<rect x="380" y="172" width="180" height="60" fill="#ff9f0a"/><text x="470" y="206" fill="#fff" font-family="Menlo, monospace">AAAAAAAA</text>
+</g>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker><marker id="g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<line x1="580" y1="228" x2="580" y2="80" stroke="#ff3b30" stroke-width="2" marker-end="url(#a)"/><text x="590" y="160" font-size="12" fill="#ff3b30">쓰기</text><text x="590" y="176" font-size="12" fill="#ff3b30">방향</text>
+<line x1="40" y1="228" x2="40" y2="80" stroke="#6e6e73" marker-end="url(#g)"/><text x="30" y="250" font-size="12" fill="#6e6e73">낮은 주소</text><text x="30" y="70" font-size="12" fill="#6e6e73" text-anchor="start">높은 주소</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="80" y="276">함수가 끝나면 CPU는 반환 주소로 돌아간다.</text>
+<text x="80" y="296">반환 주소가 덮이면 프로그램이 비정상 종료되거나(세그멘테이션 오류),</text>
+<text x="80" y="316">공격자가 고른 주소로 실행 흐름이 넘어갈 수 있다.</text>
+<text x="80" y="342" fill="#6e6e73">방어: 길이 검사(snprintf, strlcpy), 스택 카나리, ASLR, 실행 금지 메모리(NX)</text>
+</g>
+</svg>

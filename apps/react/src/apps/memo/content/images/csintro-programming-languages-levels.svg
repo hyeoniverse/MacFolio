@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>같은 연산을 고급 언어, 어셈블리어, 기계어로 표현한 비교</title>
+<rect width="640" height="340" fill="#fff"/>
+<text x="20" y="30" font-size="15" font-weight="700" fill="#1d1d1f">변수 count를 1 늘리는 연산의 세 가지 표현 (x86-64)</text>
+<rect x="20" y="50" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="36" y="74" font-size="13" font-weight="700" fill="#0a84ff">고급 언어 (C)</text>
+<text x="36" y="98" font-size="15" font-family="Menlo, monospace" fill="#1d1d1f">count = count + 1;</text>
+<text x="604" y="98" font-size="12" fill="#6e6e73" text-anchor="end">변수 이름으로 쓴다</text>
+<rect x="20" y="130" width="600" height="90" rx="8" fill="#f2f2f7"/>
+<text x="36" y="154" font-size="13" font-weight="700" fill="#ff9f0a">어셈블리어</text>
+<text x="36" y="176" font-size="14" font-family="Menlo, monospace" fill="#1d1d1f">mov eax, [rbp-4]</text>
+<text x="36" y="194" font-size="14" font-family="Menlo, monospace" fill="#1d1d1f">add eax, 1</text>
+<text x="36" y="212" font-size="14" font-family="Menlo, monospace" fill="#1d1d1f">mov [rbp-4], eax</text>
+<text x="604" y="176" font-size="12" fill="#6e6e73" text-anchor="end">메모리에서 레지스터로 읽기</text>
+<text x="604" y="194" font-size="12" fill="#6e6e73" text-anchor="end">레지스터 값에 1 더하기</text>
+<text x="604" y="212" font-size="12" fill="#6e6e73" text-anchor="end">결과를 메모리에 쓰기</text>
+<rect x="20" y="240" width="600" height="84" rx="8" fill="#f2f2f7"/>
+<text x="36" y="264" font-size="13" font-weight="700" fill="#34c759">기계어 (16진수 / 2진수)</text>
+<text x="36" y="286" font-size="14" font-family="Menlo, monospace" fill="#1d1d1f">8B 45 FC</text>
+<text x="36" y="304" font-size="14" font-family="Menlo, monospace" fill="#1d1d1f">83 C0 01   = 10000011 11000000 00000001</text>
+<text x="36" y="320" font-size="14" font-family="Menlo, monospace" fill="#1d1d1f">89 45 FC</text>
+<text x="604" y="286" font-size="12" fill="#6e6e73" text-anchor="end">CPU가 직접 해석하는 바이트</text>
+</svg>

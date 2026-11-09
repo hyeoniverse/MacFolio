@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>두 프로세스의 가상 주소 공간이 페이지 테이블을 거쳐 물리 메모리 프레임에 매핑되는 과정</title>
+<rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="80" y="26" font-weight="700" fill="#0a84ff">프로세스 A 가상 주소</text>
+<text x="80" y="196" font-weight="700" fill="#ff9f0a">프로세스 B 가상 주소</text>
+<text x="300" y="26" font-weight="700">페이지 테이블</text>
+<text x="540" y="26" font-weight="700">물리 메모리 (RAM)</text>
+<g fill="#f2f2f7" stroke="#0a84ff"><rect x="30" y="40" width="100" height="30"/><rect x="30" y="70" width="100" height="30"/><rect x="30" y="100" width="100" height="30"/></g>
+<text x="80" y="60">페이지 0</text><text x="80" y="90">페이지 1</text><text x="80" y="120">페이지 2</text>
+<g fill="#f2f2f7" stroke="#ff9f0a"><rect x="30" y="210" width="100" height="30"/><rect x="30" y="240" width="100" height="30"/></g>
+<text x="80" y="230">페이지 0</text><text x="80" y="260">페이지 1</text>
+<g fill="#fff" stroke="#6e6e73"><rect x="230" y="40" width="140" height="90"/><rect x="230" y="210" width="140" height="60"/></g>
+<text x="300" y="60" font-size="12">0 → 프레임 5</text><text x="300" y="90" font-size="12">1 → 프레임 2</text><text x="300" y="120" font-size="12" fill="#ff3b30">2 → 디스크 (없음)</text>
+<text x="300" y="230" font-size="12">0 → 프레임 1</text><text x="300" y="260" font-size="12">1 → 프레임 2 (공유)</text>
+<g stroke="#6e6e73"><rect x="490" y="40" width="100" height="30" fill="#fff"/><rect x="490" y="70" width="100" height="30" fill="#ffe5c2"/><rect x="490" y="100" width="100" height="30" fill="#d7e9ff"/><rect x="490" y="130" width="100" height="30" fill="#fff"/><rect x="490" y="160" width="100" height="30" fill="#fff"/><rect x="490" y="190" width="100" height="30" fill="#cfe9ff"/></g>
+<text x="540" y="60" font-size="12" fill="#6e6e73">프레임 0</text><text x="540" y="90" font-size="12">프레임 1: B0</text><text x="540" y="120" font-size="12">프레임 2: 공유</text><text x="540" y="150" font-size="12" fill="#6e6e73">프레임 3</text><text x="540" y="180" font-size="12" fill="#6e6e73">프레임 4</text><text x="540" y="210" font-size="12">프레임 5: A0</text>
+<line x1="130" y1="85" x2="228" y2="85" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="130" y1="255" x2="228" y2="255" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="370" y1="55" x2="488" y2="205" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="370" y1="85" x2="488" y2="115" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="370" y1="225" x2="488" y2="85" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="370" y1="255" x2="488" y2="118" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="430" y="240" width="190" height="40" rx="6" fill="#f2f2f7"/><text x="525" y="264" font-size="12">디스크 (스왑 영역)</text>
+<path d="M370 115 Q420 150 440 238" fill="none" stroke="#ff3b30" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<text x="320" y="312" font-size="12" fill="#6e6e73">A의 페이지 2에 접근하면 페이지 폴트가 발생하고, 운영체제가 디스크에서 빈 프레임으로 읽어 온다</text>
+</g>
+</svg>

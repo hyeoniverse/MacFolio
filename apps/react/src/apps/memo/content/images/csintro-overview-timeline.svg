@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>계산 기계에서 프로그램 내장식 컴퓨터까지의 연표</title>
+<rect width="640" height="380" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">계산 기계에서 프로그램 내장식 컴퓨터까지</text>
+<line x1="40" y1="190" x2="600" y2="190" stroke="#6e6e73" stroke-width="2"/>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<circle cx="60" cy="190" r="6" fill="#6e6e73"/><text x="60" y="160" font-weight="600">1642</text><text x="60" y="128">파스칼린</text><text x="60" y="144" fill="#6e6e73">덧셈·뺄셈</text>
+<circle cx="130" cy="190" r="6" fill="#6e6e73"/><text x="130" y="222" font-weight="600">1673</text><text x="130" y="240">단계 계산기</text><text x="130" y="256" fill="#6e6e73">곱셈·나눗셈</text>
+<circle cx="200" cy="190" r="6" fill="#6e6e73"/><text x="200" y="160" font-weight="600">1837</text><text x="200" y="112">해석기관 설계</text><text x="200" y="128" fill="#6e6e73">연산·기억·제어</text><text x="200" y="144" fill="#6e6e73">입출력 구분</text>
+<circle cx="270" cy="190" r="6" fill="#6e6e73"/><text x="270" y="222" font-weight="600">1890</text><text x="270" y="240">천공카드</text><text x="270" y="256" fill="#6e6e73">미국 인구조사</text>
+<circle cx="340" cy="190" r="6" fill="#ff9f0a"/><text x="340" y="160" font-weight="600">1936</text><text x="340" y="128">튜링 기계</text><text x="340" y="144" fill="#6e6e73">계산의 이론 모델</text>
+<circle cx="410" cy="190" r="6" fill="#34c759"/><text x="410" y="222" font-weight="600">1942·1944</text><text x="410" y="240">ABC · Mark I</text><text x="410" y="256" fill="#6e6e73">전자식 · 전기기계식</text>
+<circle cx="480" cy="190" r="6" fill="#34c759"/><text x="480" y="160" font-weight="600">1945</text><text x="480" y="128">ENIAC</text><text x="480" y="144" fill="#6e6e73">진공관 약 17,500개</text>
+<circle cx="560" cy="190" r="7" fill="#0a84ff"/><text x="560" y="222" font-weight="600" fill="#0a84ff">1949·1951</text><text x="560" y="240">EDSAC · UNIVAC I</text><text x="560" y="256" fill="#6e6e73">프로그램 내장 · 상업용</text>
+</g>
+<g font-size="12" fill="#6e6e73">
+<rect x="40" y="300" width="14" height="14" fill="#6e6e73"/><text x="60" y="312">기계식 계산기</text>
+<rect x="170" y="300" width="14" height="14" fill="#ff9f0a"/><text x="190" y="312">이론</text>
+<rect x="250" y="300" width="14" height="14" fill="#34c759"/><text x="270" y="312">초기 전자식·전기기계식 컴퓨터</text>
+<rect x="470" y="300" width="14" height="14" fill="#0a84ff"/><text x="490" y="312">프로그램 내장식</text>
+<text x="40" y="350">ENIAC은 1945년 말 가동, 1946년 2월 공개. 해석기관은 설계만 남았다.</text>
+</g>
+</svg>

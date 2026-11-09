@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>RFID 시스템의 동작 순서</title>
+<rect width="640" height="300" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff9f0a"/></marker></defs>
+<rect x="24" y="90" width="120" height="110" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+<text x="84" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">태그</text>
+<text x="84" y="142" text-anchor="middle" font-size="12" fill="#6e6e73">IC 칩 + 안테나</text>
+<text x="84" y="160" text-anchor="middle" font-size="12" fill="#6e6e73">상품 고유 번호</text>
+<text x="84" y="178" text-anchor="middle" font-size="12" fill="#6e6e73">(수동형: 전지 없음)</text>
+<rect x="250" y="90" width="120" height="110" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+<text x="310" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">리더</text>
+<text x="310" y="142" text-anchor="middle" font-size="12" fill="#6e6e73">안테나로 전파 송신</text>
+<text x="310" y="160" text-anchor="middle" font-size="12" fill="#6e6e73">응답 신호 복조</text>
+<rect x="476" y="90" width="140" height="110" rx="10" fill="#f2f2f7" stroke="#1d1d1f"/>
+<text x="546" y="120" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">서버</text>
+<text x="546" y="142" text-anchor="middle" font-size="12" fill="#6e6e73">번호로 상품 정보 조회</text>
+<text x="546" y="160" text-anchor="middle" font-size="12" fill="#6e6e73">재고·물류 갱신</text>
+<line x1="248" y1="118" x2="148" y2="118" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="198" y="108" text-anchor="middle" font-size="12" fill="#0a84ff">① 질의 전파</text>
+<line x1="146" y1="172" x2="246" y2="172" stroke="#ff9f0a" stroke-width="2" marker-end="url(#o)"/>
+<text x="196" y="192" text-anchor="middle" font-size="12" fill="#ff9f0a">② 칩 정보 응답</text>
+<line x1="372" y1="145" x2="472" y2="145" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="422" y="135" text-anchor="middle" font-size="12" fill="#0a84ff">③ 네트워크로 전송</text>
+<text x="546" y="225" text-anchor="middle" font-size="12" fill="#0a84ff">④ 관리자 화면에 표시</text>
+<text x="320" y="40" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">RFID: 접촉 없이 전파로 태그를 읽는다</text>
+<text x="320" y="62" text-anchor="middle" font-size="12" fill="#6e6e73">수동형 태그는 리더가 보낸 전파에서 동작 전력을 얻어 응답한다</text>
+<text x="320" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">바코드와 달리 시야(가시선)가 없어도 되고, 여러 태그를 한 번에 읽을 수 있다</text>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>사물인터넷의 네 단계 구조</title>
+<rect width="640" height="340" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">스마트 팜에서 온도 값이 서비스가 되기까지</text>
+<g font-size="12" fill="#1d1d1f">
+<rect x="20" y="60" width="140" height="150" rx="10" fill="#f2f2f7" stroke="#34c759" stroke-width="2"/>
+<text x="90" y="86" text-anchor="middle" font-size="14" font-weight="600">① 데이터 생성</text>
+<text x="90" y="112" text-anchor="middle">온도 센서가</text><text x="90" y="130" text-anchor="middle">물리량을 측정해</text><text x="90" y="148" text-anchor="middle">디지털 값으로 변환</text>
+<text x="90" y="186" text-anchor="middle" fill="#6e6e73">예: 31.5 ℃</text>
+<rect x="175" y="60" width="140" height="150" rx="10" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+<text x="245" y="86" text-anchor="middle" font-size="14" font-weight="600">② 네트워크 연결</text>
+<text x="245" y="112" text-anchor="middle">Wi-Fi, BLE, LTE,</text><text x="245" y="130" text-anchor="middle">LoRa 같은 무선 통신</text><text x="245" y="148" text-anchor="middle">으로 게이트웨이에 전달</text>
+<text x="245" y="186" text-anchor="middle" fill="#6e6e73">예: MQTT 메시지</text>
+<rect x="330" y="60" width="140" height="150" rx="10" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="2"/>
+<text x="400" y="86" text-anchor="middle" font-size="14" font-weight="600">③ 데이터 처리</text>
+<text x="400" y="112" text-anchor="middle">클라우드에서 수집,</text><text x="400" y="130" text-anchor="middle">저장, 분석</text><text x="400" y="148" text-anchor="middle">(임계값 비교)</text>
+<text x="400" y="186" text-anchor="middle" fill="#6e6e73">예: 30 ℃ 초과 판정</text>
+<rect x="485" y="60" width="140" height="150" rx="10" fill="#f2f2f7" stroke="#1d1d1f" stroke-width="2"/>
+<text x="555" y="86" text-anchor="middle" font-size="14" font-weight="600">④ 서비스 제공</text>
+<text x="555" y="112" text-anchor="middle">환기창 개방 명령,</text><text x="555" y="130" text-anchor="middle">농장주 스마트폰에</text><text x="555" y="148" text-anchor="middle">알림 전송</text>
+<text x="555" y="186" text-anchor="middle" fill="#6e6e73">예: 푸시 알림</text>
+</g>
+<line x1="160" y1="135" x2="173" y2="135" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<line x1="315" y1="135" x2="328" y2="135" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<line x1="470" y1="135" x2="483" y2="135" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<path d="M555,244 C555,292 90,292 90,248" fill="none" stroke="#6e6e73" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<text x="320" y="318" text-anchor="middle" font-size="12" fill="#6e6e73">제어 명령은 반대 방향으로 내려가 구동기(모터, 밸브)를 움직인다</text>
+<g font-size="12" fill="#6e6e73"><text x="90" y="232" text-anchor="middle">센싱 기술</text><text x="245" y="232" text-anchor="middle">네트워킹 기술</text><text x="400" y="232" text-anchor="middle">인터페이스 기술</text><text x="555" y="232" text-anchor="middle">디바이스 기술</text></g>
+</svg>

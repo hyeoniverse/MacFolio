@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>프로세스의 다섯 가지 상태와 상태 전이</title>
+<rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<rect x="20" y="40" width="100" height="44" rx="22" fill="#f2f2f7"/><text x="70" y="60" font-weight="700">생성</text><text x="70" y="76" font-size="12" fill="#6e6e73">new</text>
+<rect x="190" y="40" width="110" height="44" rx="22" fill="#ff9f0a"/><text x="245" y="60" font-weight="700" fill="#fff">준비</text><text x="245" y="76" font-size="12" fill="#fff">ready</text>
+<rect x="380" y="40" width="110" height="44" rx="22" fill="#0a84ff"/><text x="435" y="60" font-weight="700" fill="#fff">실행</text><text x="435" y="76" font-size="12" fill="#fff">running</text>
+<rect x="530" y="40" width="90" height="44" rx="22" fill="#f2f2f7"/><text x="575" y="60" font-weight="700">종료</text><text x="575" y="76" font-size="12" fill="#6e6e73">terminated</text>
+<rect x="285" y="210" width="120" height="44" rx="22" fill="#34c759"/><text x="345" y="230" font-weight="700" fill="#fff">대기</text><text x="345" y="246" font-size="12" fill="#fff">waiting (blocked)</text>
+<line x1="120" y1="62" x2="188" y2="62" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="154" y="54" font-size="12" fill="#6e6e73">승인</text>
+<path d="M300 52 H378" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="340" y="30" font-size="12" fill="#6e6e73">디스패치</text><text x="340" y="44" font-size="12" fill="#6e6e73">(CPU 할당)</text>
+<path d="M380 74 H302" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="340" y="104" font-size="12" fill="#6e6e73">타임 슬라이스 만료·선점</text>
+<line x1="490" y1="62" x2="528" y2="62" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="510" y="54" font-size="12" fill="#6e6e73">exit</text>
+<path d="M450 84 V232 H407" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="530" y="170" font-size="12" fill="#6e6e73">입출력 요청,</text><text x="530" y="186" font-size="12" fill="#6e6e73">자원·이벤트 대기</text>
+<path d="M285 232 H230 V86" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="150" y="170" font-size="12" fill="#6e6e73">입출력 완료,</text><text x="150" y="186" font-size="12" fill="#6e6e73">이벤트 발생</text>
+<text x="320" y="288" font-size="12" fill="#6e6e73">대기 상태에서 곧바로 실행 상태로 가지 않고, 반드시 준비 큐를 거친다</text>
+</g>
+</svg>

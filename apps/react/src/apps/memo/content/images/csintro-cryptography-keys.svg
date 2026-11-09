@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>대칭키 암호와 공개키 암호의 키 사용 방식</title>
+<rect width="640" height="360" fill="#fff"/>
+<g font-size="13" text-anchor="middle">
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f">대칭키: 같은 키로 암호화·복호화</text>
+<rect x="20" y="50" width="100" height="44" rx="8" fill="#f2f2f7"/><text x="70" y="77" fill="#1d1d1f">평문</text>
+<rect x="160" y="50" width="110" height="44" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="2"/><text x="215" y="77" fill="#1d1d1f">암호화(K)</text>
+<rect x="310" y="50" width="100" height="44" rx="8" fill="#f2f2f7"/><text x="360" y="77" fill="#1d1d1f">암호문</text>
+<rect x="450" y="50" width="110" height="44" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="2"/><text x="505" y="77" fill="#1d1d1f">복호화(K)</text>
+<text x="600" y="77" fill="#1d1d1f">평문</text>
+<path d="M120 72H160M270 72H310M410 72H450M560 72H580" stroke="#1d1d1f" stroke-width="2"/>
+<text x="360" y="125" fill="#6e6e73">키 K를 미리 안전하게 나눠 가져야 한다 (DES, AES, SEED)</text>
+<text x="320" y="190" font-size="16" font-weight="600" fill="#1d1d1f">공개키: 공개키로 암호화, 개인키로 복호화</text>
+<rect x="20" y="212" width="100" height="44" rx="8" fill="#f2f2f7"/><text x="70" y="239" fill="#1d1d1f">평문</text>
+<rect x="160" y="212" width="110" height="44" rx="8" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="215" y="239" fill="#1d1d1f">B의 공개키</text>
+<rect x="310" y="212" width="100" height="44" rx="8" fill="#f2f2f7"/><text x="360" y="239" fill="#1d1d1f">암호문</text>
+<rect x="450" y="212" width="110" height="44" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="2"/><text x="505" y="239" fill="#1d1d1f">B의 개인키</text>
+<text x="600" y="239" fill="#1d1d1f">평문</text>
+<path d="M120 234H160M270 234H310M410 234H450M560 234H580" stroke="#1d1d1f" stroke-width="2"/>
+<text x="215" y="285" fill="#34c759">누구나 받아 가도 된다</text>
+<text x="505" y="285" fill="#ff9f0a">B만 보관한다</text>
+<text x="320" y="330" fill="#6e6e73">키 공유 문제는 풀리지만 연산이 느려, 실제로는 대칭키를 전달하는 데 주로 쓴다</text>
+</g></svg>

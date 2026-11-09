@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>4비트 2의 보수 수 원: 비트 패턴과 부호 있는 값의 대응</title>
+<rect width="640" height="440" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">4비트 2의 보수: 비트 패턴과 값의 대응</text>
+<circle cx="230" cy="220" r="120" fill="#f2f2f7" stroke="#6e6e73"/>
+<circle cx="230.0" cy="100.0" r="4" fill="#0a84ff"/>
+<text x="230.0" y="75.0" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0000</text>
+<text x="230.0" y="130.0" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">0</text>
+<circle cx="275.9" cy="109.1" r="4" fill="#0a84ff"/>
+<text x="287.4" y="86.4" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0001</text>
+<text x="266.4" y="137.2" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+1</text>
+<circle cx="314.9" cy="135.1" r="4" fill="#0a84ff"/>
+<text x="336.1" y="118.9" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0010</text>
+<text x="297.2" y="157.8" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+2</text>
+<circle cx="340.9" cy="174.1" r="4" fill="#0a84ff"/>
+<text x="368.6" y="167.6" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0011</text>
+<text x="317.8" y="188.6" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+3</text>
+<circle cx="350.0" cy="220.0" r="4" fill="#0a84ff"/>
+<text x="380.0" y="225.0" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0100</text>
+<text x="325.0" y="225.0" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+4</text>
+<circle cx="340.9" cy="265.9" r="4" fill="#0a84ff"/>
+<text x="368.6" y="282.4" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0101</text>
+<text x="317.8" y="261.4" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+5</text>
+<circle cx="314.9" cy="304.9" r="4" fill="#0a84ff"/>
+<text x="336.1" y="331.1" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0110</text>
+<text x="297.2" y="292.2" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+6</text>
+<circle cx="275.9" cy="330.9" r="4" fill="#0a84ff"/>
+<text x="287.4" y="363.6" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">0111</text>
+<text x="266.4" y="312.8" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">+7</text>
+<circle cx="230.0" cy="340.0" r="4" fill="#ff9f0a"/>
+<text x="230.0" y="375.0" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1000</text>
+<text x="230.0" y="320.0" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-8</text>
+<circle cx="184.1" cy="330.9" r="4" fill="#ff9f0a"/>
+<text x="172.6" y="363.6" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1001</text>
+<text x="193.6" y="312.8" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-7</text>
+<circle cx="145.1" cy="304.9" r="4" fill="#ff9f0a"/>
+<text x="123.9" y="331.1" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1010</text>
+<text x="162.8" y="292.2" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-6</text>
+<circle cx="119.1" cy="265.9" r="4" fill="#ff9f0a"/>
+<text x="91.4" y="282.4" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1011</text>
+<text x="142.2" y="261.4" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-5</text>
+<circle cx="110.0" cy="220.0" r="4" fill="#ff9f0a"/>
+<text x="80.0" y="225.0" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1100</text>
+<text x="135.0" y="225.0" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-4</text>
+<circle cx="119.1" cy="174.1" r="4" fill="#ff9f0a"/>
+<text x="91.4" y="167.6" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1101</text>
+<text x="142.2" y="188.6" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-3</text>
+<circle cx="145.1" cy="135.1" r="4" fill="#ff9f0a"/>
+<text x="123.9" y="118.9" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1110</text>
+<text x="162.8" y="157.8" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-2</text>
+<circle cx="184.1" cy="109.1" r="4" fill="#ff9f0a"/>
+<text x="172.6" y="86.4" text-anchor="middle" font-size="12" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">1111</text>
+<text x="193.6" y="137.2" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">-1</text>
+<line x1="243.7" y1="288.7" x2="256.3" y2="352.4" stroke="#ff3b30" stroke-width="2" stroke-dasharray="4 3"/>
+<text x="230" y="262" text-anchor="middle" font-size="12" fill="#ff3b30">+7 → -8 오버플로</text>
+<text x="230" y="180" text-anchor="middle" font-size="12" fill="#6e6e73">시계 방향 한 칸</text>
+<text x="230" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">= 1을 더한다</text>
+<text x="420" y="110" font-size="13" font-weight="600" fill="#1d1d1f">읽는 법</text>
+<text x="420" y="132" font-size="12" fill="#0a84ff">맨 앞 비트 0: 0~7</text>
+<text x="420" y="154" font-size="12" fill="#ff9f0a">맨 앞 비트 1: -8~-1</text>
+<text x="420" y="198" font-size="13" font-weight="600" fill="#1d1d1f">-3 구하기</text>
+<text x="420" y="220" font-size="12" fill="#6e6e73">+3 = 0011</text>
+<text x="420" y="242" font-size="12" fill="#6e6e73">반전 = 1100</text>
+<text x="420" y="264" font-size="12" fill="#6e6e73">+1 = 1101</text>
+<text x="420" y="308" font-size="13" font-weight="600" fill="#1d1d1f">5 - 3 = 5 + (-3)</text>
+<text x="420" y="330" font-size="12" fill="#6e6e73">0101 + 1101 = 1 0010</text>
+<text x="420" y="352" font-size="12" fill="#6e6e73">넘친 자리올림 버림 → 0010 = 2</text>
+</svg>

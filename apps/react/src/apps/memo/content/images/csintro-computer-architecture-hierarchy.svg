@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>기억장치 계층 구조와 접근 시간·용량</title>
+<rect width="640" height="380" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">기억장치 계층 구조</text>
+<polygon points="200,60 240,60 280,120 160,120" fill="#0a84ff"/>
+<polygon points="160,124 280,124 320,184 120,184" fill="#3d9cff"/>
+<polygon points="120,188 320,188 360,248 80,248" fill="#34c759"/>
+<polygon points="80,252 360,252 400,312 40,312" fill="#8e8e93"/>
+<g text-anchor="middle" font-size="13" font-weight="600" fill="#fff"><text x="220" y="96">레지스터</text><text x="220" y="160">캐시 (SRAM)</text><text x="220" y="224">주기억장치 (DRAM)</text><text x="220" y="288">보조기억장치 (SSD·HDD)</text></g>
+<g font-size="12" fill="#1d1d1f"><text x="420" y="96">1 ns 미만 · 수백 바이트~수 KB</text><text x="420" y="160">약 1~10 ns · 수십 KB~수십 MB</text><text x="420" y="224">약 50~100 ns · 수~수백 GB</text><text x="420" y="288">SSD 수십 μs, HDD 수 ms · TB</text></g>
+<g font-size="12" fill="#6e6e73"><text x="20" y="80">빠름</text><text x="20" y="96">비쌈</text><text x="20" y="334">느림</text><text x="20" y="350">저렴</text></g>
+<line x1="34" y1="104" x2="34" y2="318" stroke="#6e6e73" stroke-width="2"/>
+<text x="80" y="372" font-size="12" fill="#6e6e73">위로 갈수록 CPU에 가깝고 빠르지만 바이트당 가격이 높아 용량이 작다. 수치는 대략적인 크기 단위다.</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>FCFS, SJF, 라운드 로빈 스케줄링의 간트 차트 비교</title><rect width="640" height="320" fill="#fff"/><g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="20" y="26" text-anchor="start" fill="#6e6e73">P1(실행 시간 5), P2(3), P3(1)이 시각 0에 이 순서로 도착</text>
+<text x="80" y="72" text-anchor="end" font-weight="700">FCFS</text>
+<rect x="90" y="50" width="260" height="34" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="220" y="72" fill="#fff" font-weight="700">P1</text>
+<rect x="350" y="50" width="156" height="34" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="428" y="72" fill="#fff" font-weight="700">P2</text>
+<rect x="506" y="50" width="52" height="34" fill="#34c759" stroke="#fff" stroke-width="2"/><text x="532" y="72" fill="#fff" font-weight="700">P3</text>
+<text x="80" y="128" text-anchor="end" font-weight="700">SJF</text>
+<rect x="90" y="106" width="52" height="34" fill="#34c759" stroke="#fff" stroke-width="2"/><text x="116" y="128" fill="#fff" font-weight="700">P3</text>
+<rect x="142" y="106" width="156" height="34" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="220" y="128" fill="#fff" font-weight="700">P2</text>
+<rect x="298" y="106" width="260" height="34" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="428" y="128" fill="#fff" font-weight="700">P1</text>
+<text x="80" y="180" text-anchor="end" font-weight="700">RR</text><text x="80" y="196" text-anchor="end" font-size="12" fill="#6e6e73">q = 2</text>
+<rect x="90" y="162" width="104" height="34" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="142" y="184" fill="#fff" font-weight="700">P1</text>
+<rect x="194" y="162" width="104" height="34" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="246" y="184" fill="#fff" font-weight="700">P2</text>
+<rect x="298" y="162" width="52" height="34" fill="#34c759" stroke="#fff" stroke-width="2"/><text x="324" y="184" fill="#fff" font-weight="700">P3</text>
+<rect x="350" y="162" width="104" height="34" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="402" y="184" fill="#fff" font-weight="700">P1</text>
+<rect x="454" y="162" width="52" height="34" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="480" y="184" fill="#fff" font-weight="700">P2</text>
+<rect x="506" y="162" width="52" height="34" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="532" y="184" fill="#fff" font-weight="700">P1</text>
+<line x1="90" y1="220" x2="558" y2="220" stroke="#6e6e73"/>
+<line x1="90" y1="216" x2="90" y2="224" stroke="#6e6e73"/><text x="90" y="240" font-size="12" fill="#6e6e73">0</text>
+<line x1="142" y1="216" x2="142" y2="224" stroke="#6e6e73"/><text x="142" y="240" font-size="12" fill="#6e6e73">1</text>
+<line x1="194" y1="216" x2="194" y2="224" stroke="#6e6e73"/><text x="194" y="240" font-size="12" fill="#6e6e73">2</text>
+<line x1="246" y1="216" x2="246" y2="224" stroke="#6e6e73"/><text x="246" y="240" font-size="12" fill="#6e6e73">3</text>
+<line x1="298" y1="216" x2="298" y2="224" stroke="#6e6e73"/><text x="298" y="240" font-size="12" fill="#6e6e73">4</text>
+<line x1="350" y1="216" x2="350" y2="224" stroke="#6e6e73"/><text x="350" y="240" font-size="12" fill="#6e6e73">5</text>
+<line x1="402" y1="216" x2="402" y2="224" stroke="#6e6e73"/><text x="402" y="240" font-size="12" fill="#6e6e73">6</text>
+<line x1="454" y1="216" x2="454" y2="224" stroke="#6e6e73"/><text x="454" y="240" font-size="12" fill="#6e6e73">7</text>
+<line x1="506" y1="216" x2="506" y2="224" stroke="#6e6e73"/><text x="506" y="240" font-size="12" fill="#6e6e73">8</text>
+<line x1="558" y1="216" x2="558" y2="224" stroke="#6e6e73"/><text x="558" y="240" font-size="12" fill="#6e6e73">9</text>
+<text x="20" y="278" text-anchor="start">평균 대기 시간: FCFS (0+5+8)/3 = 4.33, SJF (4+1+0)/3 = 1.67, RR (4+5+4)/3 = 4.33</text>
+<text x="20" y="302" text-anchor="start">처음 실행되기까지의 응답 시간(P1·P2·P3): FCFS 0·5·8, SJF 4·1·0, RR 0·2·4</text>
+</g></svg>

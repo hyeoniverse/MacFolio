@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>방화벽, IDS, IPS, VPN의 배치</title>
+<rect width="640" height="380" fill="#fff"/>
+<g font-size="13" text-anchor="middle">
+<rect x="20" y="150" width="90" height="50" rx="10" fill="#f2f2f7" stroke="#6e6e73"/><text x="65" y="180" fill="#1d1d1f">인터넷</text>
+<rect x="140" y="150" width="90" height="50" rx="10" fill="#fff" stroke="#ff3b30" stroke-width="2"/><text x="185" y="172" fill="#1d1d1f">IPS</text><text x="185" y="190" fill="#6e6e73" font-size="12">인라인 차단</text>
+<rect x="260" y="150" width="90" height="50" rx="10" fill="#fff" stroke="#0a84ff" stroke-width="2"/><text x="305" y="172" fill="#1d1d1f">방화벽</text><text x="305" y="190" fill="#6e6e73" font-size="12">규칙 허용·거부</text>
+<rect x="390" y="60" width="110" height="50" rx="10" fill="#f2f2f7" stroke="#6e6e73"/><text x="445" y="82" fill="#1d1d1f">DMZ</text><text x="445" y="100" fill="#6e6e73" font-size="12">웹·메일 서버</text>
+<rect x="390" y="150" width="110" height="50" rx="10" fill="#f2f2f7" stroke="#6e6e73"/><text x="445" y="180" fill="#1d1d1f">내부망</text>
+<rect x="530" y="150" width="90" height="50" rx="10" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="575" y="172" fill="#1d1d1f">IDS</text><text x="575" y="190" fill="#6e6e73" font-size="12">미러링 탐지</text>
+<path d="M110 175H140M230 175H260M350 175H390M350 165L390 90" stroke="#1d1d1f" stroke-width="2" fill="none"/>
+<path d="M500 175H530" stroke="#34c759" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="515" y="225" fill="#34c759" font-size="12">사본만 받음</text>
+<rect x="20" y="290" width="90" height="50" rx="10" fill="#f2f2f7" stroke="#6e6e73"/><text x="65" y="312" fill="#1d1d1f">재택 PC</text><text x="65" y="330" fill="#6e6e73" font-size="12">VPN 클라이언트</text>
+<path d="M110 315 C250 315 330 260 440 200" stroke="#ff9f0a" stroke-width="6" fill="none" opacity="0.5"/>
+<text x="300" y="300" fill="#ff9f0a" font-weight="600">VPN 암호화 터널</text>
+<text x="320" y="30" font-size="16" font-weight="600" fill="#1d1d1f">경계 보안 장비의 배치 예</text>
+</g></svg>
