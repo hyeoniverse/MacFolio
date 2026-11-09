@@ -22,6 +22,11 @@ export interface Post {
 	body: string;
 	/** 목록 맨 위에 고정 (머리말 pinned: true, 방문자가 바꿀 수 있다) */
 	pinned?: boolean;
+	/**
+	 * 저장소 글의 임시 저장 (머리말 published: false). 방문자 목록·검색엔진·RSS·위젯에서 빠지고,
+	 * 관리자 목록에만 '임시 저장'으로 보인다 (mergeAdminPosts, isPublicRepoPost)
+	 */
+	repoDraft?: true;
 	/** 잠김 (관리자가 잠그면 고치거나 지울 수 없다, organize.ts의 locks) */
 	locked?: boolean;
 	/** 관리자에게만: 게시 상태 */
@@ -113,8 +118,12 @@ export function toPost(slug: PostSlug, source: string): Post | null {
 		summary: meta.summary || excerpt(body),
 		body: body.trim(),
 		...(meta.pinned === 'true' && { pinned: true }),
+		...(meta.published === 'false' && { repoDraft: true }),
 	};
 }
+
+/** 방문자에게 보이는 저장소 글인가 (머리말 published: false가 아니다) */
+export const isPublicRepoPost = (post: Pick<Post, 'repoDraft'>): boolean => !post.repoDraft;
 
 /** API의 글 (관리자가 쓰거나 고친 글, 또는 저장소 글을 지운 표시) */
 export interface ServerPost {
@@ -226,7 +235,10 @@ const toListPost = (
  * 게시 상태(임시 저장만 있음, 게시하지 않은 편집, 예약)를 함께 단다. today: 서울 기준 YYYY-MM-DD
  */
 export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: string): Post[] {
-	const bySlug = new Map(posts.map((post) => [post.slug, post]));
+	// 저장소의 임시 저장 글(published: false)은 게시한 적 없는 글로 보인다
+	const bySlug = new Map(
+		posts.map((post) => [post.slug, post.repoDraft ? { ...post, status: { ...NO_STATUS, draftOnly: true } } : post])
+	);
 	const original = new Map(bySlug);
 	for (const item of server) {
 		if (item.deleted) {
@@ -243,7 +255,7 @@ export function mergeAdminPosts(posts: Post[], server: AdminPost[], today: strin
 				content,
 				fromRepo?.pinned,
 				{
-					draftOnly: !item.published && !fromRepo,
+					draftOnly: !item.published && (!fromRepo || Boolean(fromRepo.repoDraft)),
 					changed: item.draft !== null && (item.published !== null || fromRepo !== undefined),
 					scheduled: item.published && item.published.date > today ? item.published.date : null,
 					...(fromRepo && { overridesRepo: true }),

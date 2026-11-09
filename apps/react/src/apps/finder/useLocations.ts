@@ -2,7 +2,7 @@ import { useEffect, useMemo, useSyncExternalStore } from 'react';
 import { createStore } from '@macfolio/desktop-core';
 import { APP_MANIFEST, WINDOW_APP_NAMES } from '@/apps/manifest';
 import { getPostRepository } from '@/apps/memo/repository';
-import { organizePosts, type Post } from '@macfolio/desktop-core/memo';
+import { isPublicRepoPost, organizePosts, type Post } from '@macfolio/desktop-core/memo';
 import { loadStructure, useStructure } from './structure';
 import { PROJECTS } from '@/shared/profile';
 import { useProjectsVersion } from '@/shared/site/siteContent';
@@ -40,7 +40,7 @@ let postsLoading: Promise<void> | null = null;
 const loadPosts = () =>
 	(postsLoading ??= getPostRepository()
 		.list()
-		.then((list) => postsStore.setState({ list }))
+		.then((list) => postsStore.setState({ list: list.filter(isPublicRepoPost) }))
 		.catch(() => {
 			postsLoading = null;
 		}));

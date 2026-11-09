@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	type AdminPost,
 	EMPTY_ORGANIZATION,
+	isPublicRepoPost,
 	mergeAdminPosts,
 	mergeServerPosts,
 	type Organization,
@@ -58,7 +59,11 @@ export function useMemoLibrary() {
 	// 관리자는 임시 저장까지 보이고, 방문자는 게시한 글만 본다.
 	// 저장소 글은 목록용 글로 처음부터 있다: 서버 글만으로 목록을 그렸다가 저장소 글이 뒤늦게 합쳐져 순서가 바뀌는 일이 없다
 	const posts = useMemo(
-		() => (editing ? mergeAdminPosts(repoPosts, adminPosts, todayIso) : mergeServerPosts(repoPosts, publicPosts)),
+		() =>
+			editing
+				? mergeAdminPosts(repoPosts, adminPosts, todayIso)
+				: // 저장소의 임시 저장 글(published: false)은 방문자에게 보이지 않는다
+					mergeServerPosts(repoPosts.filter(isPublicRepoPost), publicPosts),
 		[editing, repoPosts, adminPosts, publicPosts, todayIso]
 	);
 

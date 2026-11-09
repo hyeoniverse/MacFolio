@@ -6,6 +6,7 @@ export * from './media.js';
 export * from './movedPosts.js';
 export * from './find.js';
 export * from './imageLayout.js';
+export * from './folderOrder.js';
 export * from './organize.js';
 export * from './postRules.js';
 export * from './popular.js';

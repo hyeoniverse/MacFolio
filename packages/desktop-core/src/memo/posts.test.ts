@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
 	adjacentPosts,
 	canBeSecret,
+	isPublicRepoPost,
 	mergeAdminPosts,
 	mergeServerPosts,
 	buildFolderTree,
@@ -21,7 +22,7 @@ import {
 	type AdminPost,
 	type Post,
 } from './posts.js';
-import { type PostSlug } from './rules.js';
+import { postSlug, type PostSlug } from './rules.js';
 
 const post = (slug: string, date: string, category: string, title = slug, body = ''): Post => ({
 	slug: slug as PostSlug,
@@ -490,5 +491,22 @@ describe('recentlyDeletedPosts', () => {
 		expect(daysUntilPurge('2026-10-31T00:00:00Z', now)).toBe(30);
 		expect(daysUntilPurge('2026-10-21T00:00:00Z', now)).toBe(20);
 		expect(daysUntilPurge('2026-10-01T12:00:00Z', now)).toBe(1);
+	});
+});
+
+describe('저장소 글의 임시 저장 (published: false)', () => {
+	const source = (published?: string) =>
+		`---\ntitle: 초안\ndate: 2024-11-20\ncategory: 프로젝트/데브코스\n${published ? `published: ${published}\n` : ''}---\n\n`;
+
+	it('머리말 published: false면 repoDraft, 없거나 true면 공개 글', () => {
+		expect(toPost(postSlug('a') as PostSlug, source('false'))).toMatchObject({ repoDraft: true });
+		expect(toPost(postSlug('a') as PostSlug, source())).not.toHaveProperty('repoDraft');
+		expect(toPost(postSlug('a') as PostSlug, source('true'))).not.toHaveProperty('repoDraft');
+		expect(isPublicRepoPost(toPost(postSlug('a') as PostSlug, source('false'))!)).toBe(false);
+	});
+
+	it('관리자 목록에서는 게시한 적 없는 글로 보인다. 서버에서 고쳐도 게시 전까지는 그대로', () => {
+		const draft = toPost(postSlug('a') as PostSlug, source('false'))!;
+		expect(mergeAdminPosts([draft], [], '2026-11-08')[0].status).toMatchObject({ draftOnly: true });
 	});
 });

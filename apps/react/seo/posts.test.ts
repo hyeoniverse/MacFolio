@@ -19,6 +19,15 @@ const post = (title: string, date: string, body: string) =>
 	`---\ntitle: ${title}\ndate: ${date}\ncategory: 개발기\nsummary: ${title} 요약\n---\n\n${body}`;
 
 describe('검색엔진용 파일', () => {
+	it('임시 저장 글(published: false)은 검색엔진용 HTML·위젯 최근 글에서 뺀다', async () => {
+		const files = {
+			'./content/open.md': post('공개 글', '2026-01-01', '본문'),
+			'./content/draft.md': post('초안', '2026-02-01', '').replace('category:', 'published: false\ncategory:'),
+		};
+		expect((await seoPosts(files)).map((item) => item.slug)).toEqual(['open']);
+		expect((await recentPosts(files, 5, '2026-12-31')).map((item) => item.slug)).toEqual(['open']);
+	});
+
 	it('글을 최신 순으로, 태그와 본문 HTML까지', async () => {
 		const posts = await seoPosts({
 			'./content/old.md': post('옛 글', '2026-01-01', '본문'),
@@ -121,9 +130,11 @@ describe('검색엔진용 파일', () => {
 	});
 
 	// 저장소의 글을 모두 HTML로 바꾸므로 글이 늘수록 느려진다. 로컬 1초, CI 3~8초라 기본 5초로는 CI에서 가끔 끊긴다
-	it('저장소의 모든 글과 프로젝트가 sitemap에 있다', { timeout: 30_000 }, async () => {
+	it('저장소의 모든 공개 글과 프로젝트가 sitemap에 있다 (임시 저장 글은 없다)', { timeout: 30_000 }, async () => {
 		const dir = fileURLToPath(new URL('../src/apps/memo/content', import.meta.url));
-		const names = readdirSync(dir).filter((name) => name.endsWith('.md'));
+		const all = readdirSync(dir).filter((name) => name.endsWith('.md'));
+		const drafts = all.filter((name) => /^published:\s*false\s*$/m.test(readFileSync(join(dir, name), 'utf8')));
+		const names = all.filter((name) => !drafts.includes(name));
 		const posts = await seoPosts(
 			Object.fromEntries(names.map((name) => [`./content/${name}`, readFileSync(join(dir, name), 'utf8')]))
 		);
@@ -133,6 +144,8 @@ describe('검색엔진용 파일', () => {
 			DEFAULT_PROJECTS.map((project) => project.id)
 		);
 		for (const name of names) expect(xml).toContain(`/memo/${encodeURIComponent(name.replace(/\.md$/, ''))}</loc>`);
+		for (const name of drafts)
+			expect(xml).not.toContain(`/memo/${encodeURIComponent(name.replace(/\.md$/, ''))}</loc>`);
 		for (const project of DEFAULT_PROJECTS) expect(xml).toContain(`/safari/${project.id}</loc>`);
 	});
 });

@@ -8,6 +8,7 @@ import {
 	ALL_CATEGORY,
 	type Arrangement,
 	buildFolderTree,
+	folderOrderOf,
 	collectTags,
 	EMPTY_TAG_SELECTION,
 	folderName,
@@ -72,7 +73,8 @@ export function useNoteView({
 	const [selectedSlug, setSelectedSlug] = useState<PostSlug | null>(() => postSlug(linkedId('memo')));
 
 	const folders = useMemo(
-		() => buildFolderTree(organized, organization.folders, organization.order),
+		// 관리자가 끌어서 정한 순서, 그다음 저장소의 기본 순서(커리큘럼 등, folderOrder.ts)
+		() => buildFolderTree(organized, organization.folders, folderOrderOf(organization.order)),
 		[organized, organization.folders, organization.order]
 	);
 	const paths = useMemo(() => folderPaths(folders), [folders]);
