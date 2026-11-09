@@ -12,6 +12,7 @@ import {
 	createStaticPostRepository,
 	resolveImageSrc,
 	tagsOf,
+	isPublicRepoPost,
 	toListingPost,
 	type Post,
 } from '../../../packages/desktop-core/src/memo';
@@ -102,8 +103,8 @@ export async function seoPosts(
 	files: Record<string, string>,
 	{ images = {}, updated = {}, created = {} }: SeoPostOptions = {}
 ): Promise<SeoPost[]> {
-	// 사이트의 메모 목록과 같은 순서: 최신 글이 먼저, 같은 날이면 나중에 올린 글이 먼저 (sortPosts)
-	const posts = await createStaticPostRepository(files, undefined, created).list();
+	// 사이트의 메모 목록과 같은 순서: 최신 글이 먼저, 같은 날이면 나중에 올린 글이 먼저 (sortPosts). 임시 저장 글은 뺀다
+	const posts = (await createStaticPostRepository(files, undefined, created).list()).filter(isPublicRepoPost);
 	return posts.map((post) => {
 		const changed = updated[post.slug];
 		const image = cardImage(post.body, images);
@@ -146,7 +147,7 @@ export async function recentPosts(
 ): Promise<RecentPost[]> {
 	const posts = await createStaticPostRepository(files, undefined, created).list();
 	return posts
-		.filter((post) => post.date <= today)
+		.filter((post) => post.date <= today && isPublicRepoPost(post))
 		.slice(0, limit)
 		.map(({ slug, title, date, category }) => ({ slug, title, date, category }));
 }

@@ -41,7 +41,10 @@ describe('저장소 글', () => {
 		const post = toPost(path as PostSlug, source);
 		expect(post).not.toBeNull();
 		const { title, date, category, summary, body } = post!;
-		expect(validateDraft({ title, date, category, summary, body })).toEqual({});
+		// 임시 저장 글(published: false)은 본문이 비어 있어도 된다 (서버의 임시 저장처럼 게시할 때 검사한다)
+		const errors = validateDraft({ title, date, category, summary, body });
+		if (post!.repoDraft) delete errors.body;
+		expect(errors).toEqual({});
 	});
 
 	it.each(Object.entries(files))('%s의 글 링크는 누를 수 있고 있는 글을 가리킨다', (_path, source) => {
