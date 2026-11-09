@@ -5,7 +5,7 @@
 <text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">ARP 스푸핑 전후의 트래픽 경로</text>
 <rect x="30" y="60" width="140" height="50" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
 <text x="100.0" y="80.5" font-size="13" fill="#1d1d1f" text-anchor="middle">피해자 PC</text>
-<text x="100.0" y="98.5" font-size="13" fill="#1d1d1f" text-anchor="middle">192.168.0.23</text>
+<text x="100.0" y="98.5" font-size="13" fill="#1d1d1f" text-anchor="middle">192.168.0.100</text>
 <rect x="470" y="60" width="140" height="50" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
 <text x="540.0" y="80.7" font-size="12" fill="#1d1d1f" text-anchor="middle">게이트웨이</text>
 <text x="540.0" y="97.7" font-size="12" fill="#1d1d1f" text-anchor="middle">192.168.0.1 / MAC …2c:ea</text>

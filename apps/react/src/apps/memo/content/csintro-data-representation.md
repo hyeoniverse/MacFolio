@@ -364,7 +364,7 @@ ASCII(American Standard Code for Information Interchange)는 미국표준협회(
 | 97~122    | 영문 소문자                                      | `'a'` = 97(0x61)                                   |
 | 그 외     | 특수 문자                                        | `'!'` = 33, `'@'` = 64                             |
 
-![ASCII 0~127의 10진수, 2진수, 문자를 네 열로 나열한 코드표. 0~31은 NULL, SOH 같은 제어 문자, 32~126은 공백과 기호, 숫자, 대소문자, 127은 DEL이다](./images/csintro-data-representation-ascii-table.jpg 'ASCII 코드표. 원출처: 『컴퓨터 사이언스』(한빛아카데미) 표 2-4')
+![ASCII 0~127의 10진수, 2진수, 문자를 네 열로 나열한 코드표. 0~31은 NULL, SOH 같은 제어 문자, 32~126은 공백과 기호, 숫자, 대소문자, 127은 DEL이다](./images/csintro-data-representation-ascii-table.jpg 'ASCII 코드표. 18~20번은 DC2~DC4이고, 92번은 역슬래시(\\)로 한국어 글꼴에서 ₩로 보인다. 원출처: 『컴퓨터 사이언스』(한빛아카데미) 표 2-4')
 
 제어 문자는 원래 텔레타이프 같은 장치를 제어하던 신호다. 지금도 쓰이는 것이 몇 개 있다.
 

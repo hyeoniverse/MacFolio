@@ -96,7 +96,7 @@ summary: 운영체제의 정의와 부팅, 처리 방식별 분류와 유닉스�
 
 | 비교        | BIOS                     | UEFI                                          |
 | ----------- | ------------------------ | --------------------------------------------- |
-| 등장        | 1981년 IBM PC            | 2006년 UEFI 2.0 규격 공개, 2010년대 PC의 표준 |
+| 등장        | 1981년 IBM PC의 BIOS     | 2006년 UEFI 2.0 규격 공개, 2010년대 PC의 표준 |
 | 부팅 디스크 | MBR, 2TiB 이하 디스크    | GPT, 2TiB를 넘는 디스크                       |
 | 보안        | 부트 로더 검증 기능 없음 | 보안 부팅(Secure Boot)으로 서명 검증          |
 | 실행 환경   | 16비트 실모드            | 32·64비트 모드, 드라이버와 네트워크 기능 포함 |
@@ -143,7 +143,7 @@ summary: 운영체제의 정의와 부팅, 처리 방식별 분류와 유닉스�
 | 경성(hard) | 시스템 실패. 인명·재산 피해 가능   | 에어백 전개, 항공기 비행 제어, 심박 조율기 |
 | 연성(soft) | 결과의 가치가 떨어지지만 계속 동작 | 영상 통화, 동영상 재생, 온라인 게임        |
 
-에어백은 충돌 감지 후 수십 밀리초 안에 펴져야 하므로, 이 제어기는 VxWorks나 QNX 같은 실시간 운영체제(RTOS)를 쓴다. 동영상은 프레임 하나가 늦게 표시되면 화면이 잠깐 끊길 뿐이므로 일반 운영체제로도 충분하다.
+에어백은 충돌 감지 후 수십 밀리초 안에 펴져야 하므로, 이런 제어기에는 실시간 운영체제(RTOS)를 쓴다. 자동차용으로는 기능 안전 표준 ISO 26262 인증을 받은 VxWorks 같은 RTOS가 있다. 동영상은 프레임 하나가 늦게 표시되면 화면이 잠깐 끊길 뿐이므로 일반 운영체제로도 충분하다.
 
 **분산 처리 시스템**(distributed processing system)은 네트워크로 연결된 여러 컴퓨터에 작업과 자원을 나눠 처리한다. 설계 목적은 자원 공유, 연산 속도와 신뢰성 향상, 통신 기능 활용이다. 검색 엔진이 수천 대 서버에 색인을 나눠 저장하고 검색 요청을 동시에 처리하는 구조, 클라우드의 데이터베이스가 데이터를 세 지역에 복제해 한 지역이 정전되어도 서비스를 유지하는 구조가 예다.
 
@@ -188,7 +188,7 @@ summary: 운영체제의 정의와 부팅, 처리 방식별 분류와 유닉스�
 | Debian      | Debian  | 서버, 안정성 중시                  |
 | Fedora      | Red Hat | 최신 기술을 먼저 적용하는 데스크톱 |
 | RHEL, Rocky | Red Hat | 기업 서버                          |
-| Alpine      | 독자    | 컨테이너 이미지(크기가 수 MB)      |
+| Alpine      | 독자    | 컨테이너 이미지(작은 크기)         |
 
 전 세계 상위 500대 슈퍼컴퓨터가 모두 리눅스를 쓰고, Android 스마트폰도 리눅스 커널 위에서 동작한다.
 
@@ -197,7 +197,7 @@ summary: 운영체제의 정의와 부팅, 처리 방식별 분류와 유닉스�
 
 ### Windows
 
-Microsoft는 1981년 IBM PC용 명령줄 운영체제 MS-DOS를 공급했고, 1984년 Apple 매킨토시가 GUI를 선보이자 MS-DOS 위에서 실행되는 그래픽 환경인 Windows 1.0을 1985년에 출시했다. 이후 Windows는 두 계열로 나뉘어 발전하다가 2001년 Windows XP에서 하나로 합쳐졌다.
+Microsoft는 1981년 IBM PC용 명령줄 운영체제 MS-DOS를 공급했고, 1983년 11월 Windows를 발표한 뒤 MS-DOS 위에서 실행되는 그래픽 환경인 Windows 1.0을 1985년 11월에 출시했다. 이후 Windows는 두 계열로 나뉘어 발전하다가 2001년 Windows XP에서 하나로 합쳐졌다.
 
 | 계열    | 버전               | 특징                                                                           |
 | ------- | ------------------ | ------------------------------------------------------------------------------ |
@@ -205,24 +205,24 @@ Microsoft는 1981년 IBM PC용 명령줄 운영체제 MS-DOS를 공급했고, 19
 | NT 계열 | Windows NT, 2000   | 처음부터 새로 설계한 32비트 커널. NTFS, 사용자 권한, 네트워킹. 업무용          |
 | 통합    | XP 이후 모든 버전  | NT 커널 위에 9x의 편의 기능을 결합                                             |
 
-![Windows 1.0(1985)부터 Windows 2000(2000)까지 버전별 출시 연도와 특징을 정리한 표. Windows NT는 NTFS와 보안 기능을, Windows 98은 FAT32와 USB 지원을 도입했다](./images/csintro-operating-systems-windows-1.jpg 'Windows 버전별 특징 1. 출처: 『컴퓨터 사이언스: 새내기를 위한 최신 컴퓨터 개론』, 한빛아카데미, 표 5-1')
+![Windows 1.0(1985)부터 Windows 2000(2000)까지 버전별 출시 연도와 특징을 정리한 표. Windows NT는 NTFS와 보안 기능을, Windows 98은 FAT32와 USB를 지원했다](./images/csintro-operating-systems-windows-1.jpg 'Windows 버전별 특징 1. Windows 95는 32비트 응용 프로그램을 실행했지만 내부에 16비트 코드가 남아 있었다. 출처: 『컴퓨터 사이언스: 새내기를 위한 최신 컴퓨터 개론』, 한빛아카데미, 표 5-1')
 
 ![Windows XP(2001)부터 Windows Server 2012 R2(2013)까지 버전별 특징을 정리한 표. Windows 8은 ARM 프로세서와 터치스크린을 지원했다](./images/csintro-operating-systems-windows-2.jpg 'Windows 버전별 특징 2. 출처: 같은 책, 표 5-1')
 
-표 이후로는 Windows 10(2015)이 "마지막 Windows"를 표방하며 기능을 꾸준히 업데이트하는 방식으로 바뀌었고, Windows 11(2021)은 TPM 2.0 보안 칩과 보안 부팅을 설치 요구 사항으로 정했다. 보안 측면에서 보면 Windows의 역사는 ==사용자 권한 분리를 강화한 과정==이다. 9x 계열에는 사용자 권한 개념이 사실상 없어 어떤 프로그램이든 시스템 파일을 고칠 수 있었고, Vista의 사용자 계정 컨트롤(UAC)부터 관리자 계정도 평소에는 일반 권한으로 실행하고 필요한 경우에만 확인 창을 띄워 권한을 높인다.
+표 이후로는 Windows 10(2015)이 "마지막 Windows"를 표방하며 기능을 꾸준히 업데이트하는 방식으로 바뀌었고, Windows 11(2021)은 TPM 2.0 보안 칩과 보안 부팅을 지원하는 UEFI 펌웨어를 설치 요구 사항으로 정했다. 보안 측면에서 보면 Windows의 역사는 ==사용자 권한 분리를 강화한 과정==이다. 9x 계열에는 사용자 권한 개념이 사실상 없어 어떤 프로그램이든 시스템 파일을 고칠 수 있었고, Vista의 사용자 계정 컨트롤(UAC)부터 관리자 계정도 평소에는 일반 권한으로 실행하고 필요한 경우에만 확인 창을 띄워 권한을 높인다.
 
 ### macOS
 
 Apple은 1984년 매킨토시와 함께 GUI 운영체제를 내놓았다. 이 운영체제는 두 시기로 나뉜다.
 
-| 시기          | 버전                             | 기반                                                      |
-| ------------- | -------------------------------- | --------------------------------------------------------- |
-| 클래식        | System 1(1984) ~ Mac OS 9        | Apple 자체 코드. 협력형 멀티태스킹, 메모리 보호 없음      |
-| Mac OS X 이후 | Mac OS X 10.0(2001) ~ 현재 macOS | 1997년 인수한 NeXT의 NeXTSTEP. 유닉스 계열, BSD 코드 사용 |
+| 시기          | 버전                             | 기반                                                                            |
+| ------------- | -------------------------------- | ------------------------------------------------------------------------------- |
+| 클래식        | System 1(1984) ~ Mac OS 9        | Apple 자체 코드. System 6의 MultiFinder부터 협력형 멀티태스킹, 메모리 보호 없음 |
+| Mac OS X 이후 | Mac OS X 10.0(2001) ~ 현재 macOS | 1997년 인수한 NeXT의 NeXTSTEP. 유닉스 계열, BSD 코드 사용                       |
 
 클래식 Mac OS는 프로그램이 스스로 CPU를 양보해야 다른 프로그램이 실행되는 협력형(cooperative) 멀티태스킹이었고 메모리 보호가 없어, 프로그램 하나가 멈추면 컴퓨터 전체가 멈췄다. Mac OS X는 운영체제가 CPU를 강제로 회수하는 선점형 멀티태스킹과 프로세스별 메모리 보호를 도입했다. 이 차이는 뒤에서 다룰 선점·비선점 스케줄링, 가상 메모리와 직접 이어진다. iPhone의 iOS, Apple Watch의 watchOS도 같은 XNU 커널을 쓴다.
 
-![여러 창을 한 화면에 펼쳐 보여 주는 Mission Control이 실행된 Mac OS X 데스크톱](./images/csintro-operating-systems-macos.jpg 'Mac OS X 10.11의 실행 화면. 출처: 『컴퓨터 사이언스: 새내기를 위한 최신 컴퓨터 개론』, 한빛아카데미, 그림 5-13')
+![여러 창을 한 화면에 펼쳐 보여 주는 Mission Control이 실행된 Mac OS X 데스크톱](./images/csintro-operating-systems-macos.jpg 'Mac OS X의 Mission Control 화면. 출처: 『컴퓨터 사이언스: 새내기를 위한 최신 컴퓨터 개론』, 한빛아카데미, 그림 5-13')
 
 ## 프로세스
 
@@ -665,8 +665,8 @@ openat(AT_FDCWD, "/home/me/practice/week3.txt", O_WRONLY|O_CREAT|O_TRUNC, 0666) 
 결과에서 확인할 점은 세 가지다.
 
 1. `fopen(name, "w")`은 `openat` 시스템 호출로 바뀌고, `"w"` 모드는 `O_WRONLY|O_CREAT|O_TRUNC`(쓰기 전용, 없으면 생성, 있으면 비우기) 플래그가 된다.
-2. 반환값 3은 파일 디스크립터(file descriptor)다. 0, 1, 2는 표준 입력·출력·오류가 이미 사용하므로 새 파일은 3을 받고, `close`로 반납하면 다음 파일이 다시 3을 받는다. `fclose`를 빠뜨리면 디스크립터가 계속 쌓여, 프로세스당 한도(`ulimit -n`, 흔히 256 또는 1024)에 도달하는 순간 `fopen`이 실패한다.
-3. `-c` 요약에서 `openat`, `write`, `close`가 각각 50번이다. `fputs`는 libc의 버퍼에만 기록하고, `fclose`가 버퍼를 비우면서 `write`를 한 번 실행한다.
+2. 반환값 3은 파일 디스크립터(file descriptor)다. 0, 1, 2는 표준 입력·출력·오류가 이미 사용하므로 새 파일은 3을 받고, `close`로 반납하면 다음 파일이 다시 3을 받는다. `fclose`를 빠뜨리면 디스크립터가 계속 쌓여, 프로세스당 한도(`ulimit -n`, macOS 기본값 256)에 도달하는 순간 `fopen`이 실패한다.
+3. 반복문 안에서는 `openat`, `write`, `close`가 각각 50번 실행된다. `-c` 요약의 `openat`·`close` 횟수는 동적 링커가 공유 라이브러리를 여는 몇 번이 더해져 50보다 조금 크다. `fputs`는 libc의 버퍼에만 기록하고, `fclose`가 버퍼를 비우면서 `write`를 한 번 실행한다.
 
 **5단계: 권한과 보안**
 
@@ -760,7 +760,7 @@ umask
 - The Open Group, [The Open Brand Register: UNIX 03](https://www.opengroup.org/openbrand/register/)
 - 『컴퓨터 사이언스: 새내기를 위한 최신 컴퓨터 개론』, 한빛아카데미 (Windows 버전 표, 교착 상태 그림)
 - UEFI Forum, [UEFI Specification](https://uefi.org/specifications)
-- Apple, [Apple Platform Security: Boot process](https://support.apple.com/guide/security/welcome/web)
+- Apple, [Apple Platform Security: Boot process for a Mac with Apple silicon](https://support.apple.com/guide/security/boot-process-for-a-mac-with-apple-silicon-secac71d5623/web)
 - `strace(1)`, `open(2)`, `umask(2)` 매뉴얼 페이지
 - The Chromium Projects, [Site Isolation](https://www.chromium.org/Home/chromium-security/site-isolation/)
 - `ps(1)`, `ln(1)`, `vm_stat(1)` 매뉴얼 페이지
