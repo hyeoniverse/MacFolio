@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>1969년 ARPANET부터 2008년 Chrome까지 인터넷과 웹의 주요 사건 연표</title>
+<rect width="640" height="420" fill="#fff"/>
+<line x1="120" y1="30" x2="120" y2="400" stroke="#1d1d1f" stroke-width="3"/>
+<circle cx="120" cy="40" r="7" fill="#0a84ff"/>
+<text x="100" y="45" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1969</text>
+<text x="140" y="45" font-size="13" fill="#1d1d1f" text-anchor="start">ARPANET 4개 노드 연결</text>
+<circle cx="120" cy="80" r="7" fill="#0a84ff"/>
+<text x="100" y="85" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1971</text>
+<text x="140" y="85" font-size="13" fill="#1d1d1f" text-anchor="start">네트워크 이메일 (@ 기호)</text>
+<circle cx="120" cy="120" r="7" fill="#0a84ff"/>
+<text x="100" y="125" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1974</text>
+<text x="140" y="125" font-size="13" fill="#1d1d1f" text-anchor="start">TCP/IP 기초 논문</text>
+<circle cx="120" cy="160" r="7" fill="#0a84ff"/>
+<text x="100" y="165" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1983</text>
+<text x="140" y="165" font-size="13" fill="#1d1d1f" text-anchor="start">ARPANET TCP/IP 전환, DNS 설계</text>
+<circle cx="120" cy="200" r="7" fill="#0a84ff"/>
+<text x="100" y="205" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1986</text>
+<text x="140" y="205" font-size="13" fill="#1d1d1f" text-anchor="start">NSFNET 백본</text>
+<circle cx="120" cy="240" r="7" fill="#ff9f0a"/>
+<text x="100" y="245" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1989</text>
+<text x="140" y="245" font-size="13" fill="#1d1d1f" text-anchor="start">WWW 제안</text>
+<circle cx="120" cy="280" r="7" fill="#ff9f0a"/>
+<text x="100" y="285" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1991</text>
+<text x="140" y="285" font-size="13" fill="#1d1d1f" text-anchor="start">첫 웹사이트 공개</text>
+<circle cx="120" cy="320" r="7" fill="#ff9f0a"/>
+<text x="100" y="325" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1993</text>
+<text x="140" y="325" font-size="13" fill="#1d1d1f" text-anchor="start">Mosaic, 웹 공개 이용</text>
+<circle cx="120" cy="360" r="7" fill="#ff9f0a"/>
+<text x="100" y="365" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">1995</text>
+<text x="140" y="365" font-size="13" fill="#1d1d1f" text-anchor="start">NSFNET 종료, 상용화</text>
+<circle cx="120" cy="400" r="7" fill="#ff9f0a"/>
+<text x="100" y="405" font-size="14" fill="#1d1d1f" text-anchor="end" font-weight="700">2008</text>
+<text x="140" y="405" font-size="13" fill="#1d1d1f" text-anchor="start">Chrome 출시</text>
+<text x="620" y="60" font-size="12" fill="#0a84ff" text-anchor="end">파랑: 인터넷 기반 기술</text>
+<text x="620" y="80" font-size="12" fill="#ff9f0a" text-anchor="end">주황: 웹과 대중화</text>
+</svg>

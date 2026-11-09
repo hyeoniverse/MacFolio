@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 340">
+<title>PCB에 레지스터를 저장하고 복원하는 문맥 교환</title>
+<rect width="640" height="340" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="90" y="24" font-weight="700">프로세스 P1</text><text x="550" y="24" font-weight="700">프로세스 P2</text><text x="320" y="24" font-weight="700">운영체제(커널)</text>
+<rect x="60" y="36" width="60" height="70" fill="#0a84ff"/><text x="90" y="76" fill="#fff">실행</text>
+<rect x="60" y="106" width="60" height="120" fill="#f2f2f7"/><text x="90" y="170" fill="#6e6e73">준비</text>
+<rect x="60" y="226" width="60" height="70" fill="#0a84ff"/><text x="90" y="266" fill="#fff">실행</text>
+<rect x="520" y="36" width="60" height="110" fill="#f2f2f7"/><text x="550" y="96" fill="#6e6e73">준비</text>
+<rect x="520" y="146" width="60" height="70" fill="#ff9f0a"/><text x="550" y="186" fill="#fff">실행</text>
+<rect x="520" y="216" width="60" height="80" fill="#f2f2f7"/><text x="550" y="260" fill="#6e6e73">준비</text>
+<rect x="220" y="96" width="200" height="22" rx="4" fill="#f2f2f7"/><text x="320" y="112" font-size="12">P1 레지스터·PC를 PCB1에 저장</text>
+<rect x="220" y="122" width="200" height="22" rx="4" fill="#f2f2f7"/><text x="320" y="138" font-size="12">PCB2에서 레지스터·PC 복원</text>
+<rect x="220" y="206" width="200" height="22" rx="4" fill="#f2f2f7"/><text x="320" y="222" font-size="12">P2 레지스터·PC를 PCB2에 저장</text>
+<rect x="220" y="232" width="200" height="22" rx="4" fill="#f2f2f7"/><text x="320" y="248" font-size="12">PCB1에서 레지스터·PC 복원</text>
+<g stroke="#6e6e73" stroke-width="2" marker-end="url(#a)" fill="none"><path d="M120 104 H218"/><path d="M420 144 H518"/><path d="M520 214 H422"/><path d="M220 254 H122"/></g>
+<text x="170" y="96" font-size="12" fill="#6e6e73">인터럽트</text><text x="470" y="204" font-size="12" fill="#6e6e73">시스템 호출</text>
+
+<text x="320" y="186" font-size="12" fill="#ff3b30">이 구간에는 어느 프로세스도 진행하지 않는다</text>
+<text x="320" y="326" font-size="12" fill="#6e6e73">PCB에는 PID, 상태, 프로그램 카운터, 레지스터, 메모리 정보, 열린 파일 목록이 기록된다</text>
+</g></svg>

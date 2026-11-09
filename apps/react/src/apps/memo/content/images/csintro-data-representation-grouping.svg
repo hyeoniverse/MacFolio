@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>2진수를 3자리씩 묶으면 8진수, 4자리씩 묶으면 16진수</title><rect width="640" height="300" fill="#fff"/><text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">2진수를 3자리씩 묶으면 8진수, 4자리씩 묶으면 16진수</text>
+<g font-family="ui-monospace, Menlo, monospace" font-size="16" fill="#1d1d1f">
+<rect x="80" y="60" width="100" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="130" y="86" text-anchor="middle">101</text>
+<rect x="200" y="60" width="100" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="250" y="86" text-anchor="middle">100</text>
+<rect x="320" y="60" width="100" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="370" y="86" text-anchor="middle">110</text>
+<rect x="440" y="60" width="100" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="490" y="86" text-anchor="middle">111</text>
+<text x="130" y="130" text-anchor="middle" fill="#0a84ff" font-weight="600">5</text>
+<text x="250" y="130" text-anchor="middle" fill="#0a84ff" font-weight="600">4</text>
+<text x="370" y="130" text-anchor="middle" fill="#0a84ff" font-weight="600">6</text>
+<text x="490" y="130" text-anchor="middle" fill="#0a84ff" font-weight="600">7</text>
+<rect x="80" y="170" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="150" y="196" text-anchor="middle">1011</text>
+<rect x="240" y="170" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="310" y="196" text-anchor="middle">0011</text>
+<rect x="400" y="170" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="470" y="196" text-anchor="middle">0111</text>
+<text x="150" y="240" text-anchor="middle" fill="#ff9f0a" font-weight="600">B</text>
+<text x="310" y="240" text-anchor="middle" fill="#ff9f0a" font-weight="600">3</text>
+<text x="470" y="240" text-anchor="middle" fill="#ff9f0a" font-weight="600">7</text>
+</g><text x="320" y="152" text-anchor="middle" font-size="13" fill="#6e6e73">= 5467(8)</text><text x="320" y="270" text-anchor="middle" font-size="13" fill="#6e6e73">= B37(16), 1011 = 11 = B</text></svg>

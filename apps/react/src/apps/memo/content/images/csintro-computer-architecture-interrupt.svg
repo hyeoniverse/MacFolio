@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>인터럽트 처리 과정</title><rect width="640" height="340" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">인터럽트 처리 과정</text>
+<g font-size="13">
+<rect x="30" y="60" width="200" height="240" rx="10" fill="#f2f2f7"/><text x="130" y="85" text-anchor="middle" font-weight="600" fill="#1d1d1f">실행 중인 프로그램</text>
+<text x="50" y="120" fill="#1d1d1f">0x400: ADD</text><text x="50" y="150" fill="#1d1d1f">0x404: STORE</text><text x="50" y="180" fill="#ff3b30" font-weight="600">← 키보드 인터럽트</text><text x="50" y="210" fill="#1d1d1f">0x408: LOAD</text><text x="50" y="240" fill="#1d1d1f">0x40C: ...</text>
+<rect x="410" y="60" width="200" height="240" rx="10" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="510" y="85" text-anchor="middle" font-weight="600" fill="#1d1d1f">인터럽트 처리 루틴</text>
+<text x="430" y="120" fill="#1d1d1f">레지스터 저장</text><text x="430" y="150" fill="#1d1d1f">키 코드 읽기</text><text x="430" y="180" fill="#1d1d1f">버퍼에 저장</text><text x="430" y="210" fill="#1d1d1f">레지스터 복원</text><text x="430" y="240" fill="#1d1d1f">복귀(IRET)</text>
+<path d="M232 205 H406" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/><text x="320" y="172" text-anchor="middle" fill="#0a84ff">① PC(0x408)를 스택에 저장</text><text x="320" y="192" text-anchor="middle" fill="#0a84ff">② PC ← ISR 시작 주소</text>
+<path d="M406 245 H234" fill="none" stroke="#34c759" stroke-width="2" marker-end="url(#a)"/><text x="320" y="268" text-anchor="middle" fill="#34c759">③ 스택에서 PC 복원</text>
+</g>
+<text x="320" y="325" text-anchor="middle" font-size="12" fill="#6e6e73">CPU는 실행 사이클이 끝날 때마다 인터럽트 요청을 확인한다</text>
+</svg>

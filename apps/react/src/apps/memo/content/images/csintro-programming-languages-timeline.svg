@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 330">
+<title>1950년대부터 2010년대까지 주요 프로그래밍 언어의 등장 연표</title>
+<rect width="640" height="330" fill="#fff"/>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<line x1="30" y1="165" x2="620" y2="165" stroke="#6e6e73" stroke-width="2"/>
+<g font-size="13" font-weight="700" fill="#0a84ff">
+<text x="70" y="185">1950s</text><text x="160" y="185">1960s</text><text x="250" y="185">1970s</text><text x="340" y="185">1980s</text><text x="430" y="185">1990s</text><text x="520" y="185">2000s</text><text x="600" y="185">2010s</text></g>
+<g fill="#f2f2f7" stroke="#0a84ff">
+<rect x="22" y="40" width="96" height="110" rx="6"/><rect x="112" y="200" width="96" height="110" rx="6"/><rect x="202" y="40" width="96" height="110" rx="6"/><rect x="292" y="200" width="96" height="110" rx="6"/><rect x="382" y="40" width="96" height="110" rx="6"/><rect x="472" y="200" width="96" height="110" rx="6"/><rect x="560" y="40" width="76" height="110" rx="6"/></g>
+<text x="70" y="62">어셈블리어</text><text x="70" y="82">FORTRAN 57</text><text x="70" y="102">LISP 58</text><text x="70" y="122">COBOL 59</text><text x="70" y="142" fill="#6e6e73">과학·사무</text>
+<text x="160" y="222">ALGOL 60</text><text x="160" y="242">BASIC 64</text><text x="160" y="262">PL/I 64</text><text x="160" y="282">Simula 67</text><text x="160" y="302" fill="#6e6e73">범용화</text>
+<text x="250" y="62">Pascal 70</text><text x="250" y="82">C 72</text><text x="250" y="102">Smalltalk 72</text><text x="250" y="122">Prolog 72</text><text x="250" y="142" fill="#6e6e73">구조적</text>
+<text x="340" y="222">C++ 85</text><text x="340" y="242">Objective-C 84</text><text x="340" y="262">Perl 87</text><text x="340" y="282">SQL 표준 86</text><text x="340" y="302" fill="#6e6e73">객체 지향 확산</text>
+<text x="430" y="62">Python 91</text><text x="430" y="82">Visual Basic 91</text><text x="430" y="102">Java 95</text><text x="430" y="122">JavaScript 95</text><text x="430" y="142" fill="#6e6e73">GUI·웹</text>
+<text x="520" y="222">C# 00</text><text x="520" y="242">Scratch 07</text><text x="520" y="262">Go 09</text><text x="520" y="282">App Inventor 10</text><text x="520" y="302" fill="#6e6e73">플랫폼·교육</text>
+<text x="598" y="62">Rust 15</text><text x="598" y="82">Swift 14</text><text x="598" y="102">Kotlin 16</text><text x="598" y="142" fill="#6e6e73">메모리 안전</text>
+</g></svg>

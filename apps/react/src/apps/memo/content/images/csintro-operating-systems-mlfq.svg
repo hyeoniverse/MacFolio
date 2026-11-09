@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 340">
+<title>다단계 큐와 다단계 피드백 큐의 비교</title>
+<rect width="640" height="340" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f">
+<text x="20" y="24" font-weight="700">다단계 큐 (MLQ): 큐 사이 이동 없음</text>
+<rect x="20" y="36" width="180" height="30" rx="6" fill="#0a84ff"/><text x="30" y="56" fill="#fff">시스템 프로세스</text>
+<rect x="20" y="72" width="180" height="30" rx="6" fill="#ff9f0a"/><text x="30" y="92" fill="#fff">대화형 프로세스 (RR)</text>
+<rect x="20" y="108" width="180" height="30" rx="6" fill="#6e6e73"/><text x="30" y="128" fill="#fff">일괄 처리 (FCFS)</text>
+<text x="20" y="160" font-size="12" fill="#6e6e73">위 큐가 비어야 아래 큐 실행</text>
+<text x="300" y="24" font-weight="700">다단계 피드백 큐 (MLFQ): 강등·승격 허용</text>
+<g font-size="12">
+<rect x="300" y="40" width="190" height="34" rx="6" fill="#0a84ff"/><text x="310" y="62" fill="#fff">큐 0 · 할당량 8ms (RR)</text>
+<rect x="300" y="100" width="190" height="34" rx="6" fill="#ff9f0a"/><text x="310" y="122" fill="#fff">큐 1 · 할당량 16ms (RR)</text>
+<rect x="300" y="160" width="190" height="34" rx="6" fill="#6e6e73"/><text x="310" y="182" fill="#fff">큐 2 · FCFS</text>
+</g>
+<g stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"><path d="M260 57 H298"/><path d="M490 66 Q540 82 470 98"/><path d="M490 126 Q540 142 470 158"/><path d="M300 175 Q250 120 298 70" stroke="#34c759"/><path d="M490 50 H560"/><path d="M490 110 H560"/><path d="M490 170 H560"/></g>
+<text x="230" y="52" font-size="12" fill="#6e6e73">새 작업</text>
+<text x="520" y="92" font-size="12" fill="#ff3b30">할당량 소진</text><text x="520" y="152" font-size="12" fill="#ff3b30">→ 강등</text>
+<text x="205" y="232" font-size="12" fill="#34c759">오래 기다리면 승격(에이징)</text>
+<text x="566" y="54" font-size="12" fill="#6e6e73">완료</text><text x="566" y="114" font-size="12" fill="#6e6e73">완료</text><text x="566" y="174" font-size="12" fill="#6e6e73">완료</text>
+<rect x="20" y="260" width="600" height="60" rx="8" fill="#f2f2f7"/>
+<text x="36" y="284" font-size="12">입출력 위주 프로세스: 할당량을 다 쓰기 전에 입출력으로 CPU를 내놓으므로 상위 큐에 남아 빠르게 응답</text>
+<text x="36" y="306" font-size="12">연산 위주 프로세스: 할당량을 계속 소진해 하위 큐로 내려가고, 긴 할당량으로 한 번에 오래 실행</text>
+</g></svg>

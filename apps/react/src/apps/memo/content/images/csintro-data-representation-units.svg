@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>비트, 니블, 바이트, 워드의 크기</title><rect width="640" height="260" fill="#fff"/><text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">비트, 니블, 바이트, 워드의 크기</text>
+<rect x="40" y="80" width="16" height="30" fill="#e8f8ec" stroke="#6e6e73"/>
+<rect x="58" y="80" width="16" height="30" fill="#fff4e5" stroke="#6e6e73"/>
+<rect x="76" y="80" width="16" height="30" fill="#fff4e5" stroke="#6e6e73"/>
+<rect x="94" y="80" width="16" height="30" fill="#fff4e5" stroke="#6e6e73"/>
+<rect x="112" y="80" width="16" height="30" fill="#e5f1ff" stroke="#6e6e73"/>
+<rect x="130" y="80" width="16" height="30" fill="#e5f1ff" stroke="#6e6e73"/>
+<rect x="148" y="80" width="16" height="30" fill="#e5f1ff" stroke="#6e6e73"/>
+<rect x="166" y="80" width="16" height="30" fill="#e5f1ff" stroke="#6e6e73"/>
+<rect x="184" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="202" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="220" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="238" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="256" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="274" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="292" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="310" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="328" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="346" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="364" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="382" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="400" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="418" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="436" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="454" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="472" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="490" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="508" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="526" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="544" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="562" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="580" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<rect x="598" y="80" width="16" height="30" fill="#f2f2f7" stroke="#6e6e73"/>
+<g font-size="12" fill="#1d1d1f"><path d="M40 120 h16" stroke="#34c759" stroke-width="3"/><text x="40" y="140">비트 1개</text><path d="M40 160 h70" stroke="#ff9f0a" stroke-width="3"/><text x="40" y="180">니블 4비트 = 16진수 1자리</text><path d="M40 200 h142" stroke="#0a84ff" stroke-width="3"/><text x="200" y="205">바이트 8비트 = 256가지 값</text><path d="M40 70 h574" stroke="#6e6e73" stroke-width="2"/><text x="327" y="62" text-anchor="middle">32비트 워드 = 4바이트 (64비트 CPU의 워드는 8바이트)</text></g><text x="320" y="245" text-anchor="middle" font-size="12" fill="#6e6e73">n비트로 2^n가지를 구분한다</text></svg>

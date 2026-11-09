@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>허브는 모든 포트로 프레임을 복제하고 스위치는 MAC 주소 테이블을 보고 목적지 포트로만 보낸다</title>
+<defs><marker id="a0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="aff3b30" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker></defs>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">허브와 스위치의 프레임 전달</text>
+<text x="165" y="62" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">허브 (공유 매체)</text>
+<rect x="105" y="120" width="120" height="44" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="165.0" y="146.6" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">허브</text>
+<rect x="130" y="75" width="70" height="0.1" rx="8" fill="#f2f2f7" stroke="#fff" stroke-width="1.5"/>
+<text x="165.0" y="79.6" font-size="13" fill="#1d1d1f" text-anchor="middle"></text>
+<rect x="30" y="240" width="80" height="40" rx="8" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="70.0" y="264.6" font-size="13" fill="#1d1d1f" text-anchor="middle">A</text>
+<rect x="130" y="240" width="80" height="40" rx="8" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="170.0" y="264.6" font-size="13" fill="#1d1d1f" text-anchor="middle">B</text>
+<rect x="230" y="240" width="80" height="40" rx="8" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="270.0" y="264.6" font-size="13" fill="#ff3b30" text-anchor="middle">공격자</text>
+<line x1="70" y1="238" x2="140" y2="166" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<text x="80" y="205" font-size="12" fill="#0a84ff" text-anchor="start">A→B</text>
+<line x1="170" y1="166" x2="170" y2="238" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<line x1="200" y1="166" x2="270" y2="238" stroke="#ff3b30" stroke-width="1.6" marker-end="url(#aff3b30)"/>
+<text x="248" y="200" font-size="12" fill="#ff3b30" text-anchor="start">복제됨</text>
+<text x="475" y="62" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">스위치</text>
+<rect x="415" y="120" width="120" height="44" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="475.0" y="146.6" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">스위치</text>
+<rect x="440" y="75" width="70" height="0.1" rx="8" fill="#f2f2f7" stroke="#fff" stroke-width="1.5"/>
+<text x="475.0" y="79.6" font-size="13" fill="#1d1d1f" text-anchor="middle"></text>
+<rect x="340" y="240" width="80" height="40" rx="8" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="380.0" y="264.6" font-size="13" fill="#1d1d1f" text-anchor="middle">A</text>
+<rect x="440" y="240" width="80" height="40" rx="8" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="480.0" y="264.6" font-size="13" fill="#1d1d1f" text-anchor="middle">B</text>
+<rect x="540" y="240" width="80" height="40" rx="8" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="580.0" y="264.6" font-size="13" fill="#ff3b30" text-anchor="middle">공격자</text>
+<line x1="380" y1="238" x2="450" y2="166" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<text x="390" y="205" font-size="12" fill="#0a84ff" text-anchor="start">A→B</text>
+<line x1="480" y1="166" x2="480" y2="238" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<text x="580" y="205" font-size="12" fill="#6e6e73" text-anchor="middle">전달 안 됨</text>
+<rect x="545" y="78" width="90" height="34" rx="8" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="590.0" y="90.8" font-size="11" fill="#1d1d1f" text-anchor="middle">MAC 테이블</text>
+<text x="590.0" y="106.8" font-size="11" fill="#1d1d1f" text-anchor="middle">B → 2번 포트</text>
+<text x="320" y="315" font-size="12" fill="#6e6e73" text-anchor="middle">스위치 환경에서 남의 트래픽을 보려면 ARP 스푸핑처럼 트래픽을 자기에게 돌리는 단계가 먼저 필요하다</text>
+</svg>

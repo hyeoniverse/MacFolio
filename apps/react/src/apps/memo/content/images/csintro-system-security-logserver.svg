@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 250"><title>서버와 네트워크 장비가 syslog로 원격 로그 서버에 로그를 실시간 전송하는 구조</title><rect width="640" height="250" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<rect x="20" y="20" width="150" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="95" y="47">라우터·스위치</text>
+<rect x="20" y="90" width="150" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="95" y="117">방화벽</text>
+<rect x="20" y="160" width="150" height="44" rx="6" fill="#ff3b30"/><text x="95" y="180" fill="#fff">웹 서버 (침입당함)</text><text x="95" y="196" font-size="12" fill="#fff">로컬 로그 삭제</text>
+<rect x="420" y="80" width="200" height="64" rx="6" fill="#0a84ff"/><text x="520" y="106" fill="#fff">로그 서버</text><text x="520" y="126" font-size="12" fill="#fff">이미 받은 기록은 그대로</text>
+<g stroke="#0a84ff" marker-end="url(#b)"><line x1="172" y1="42" x2="417" y2="98"/><line x1="172" y1="112" x2="417" y2="112"/><line x1="172" y1="182" x2="417" y2="128"/></g>
+<text x="330" y="212" font-size="12" fill="#0a84ff">syslog (UDP 514 / TLS 6514)</text>
+<text x="320" y="235" font-size="12" fill="#6e6e73">공격자가 한 시스템을 장악해도 다른 시스템에 있는 기록까지 지우기는 어렵다</text>
+</g></svg>

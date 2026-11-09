@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>DES의 한 라운드: 오른쪽 32비트를 F 함수에 넣고 결과를 왼쪽과 XOR한 뒤 좌우를 바꾼다</title>
+<defs><marker id="a6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="aff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="a0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">DES 한 라운드 (페이스텔 구조)</text>
+<rect x="150" y="55" width="120" height="36" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="210.0" y="77.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">L(i-1) 32비트</text>
+<rect x="370" y="55" width="120" height="36" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="430.0" y="77.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">R(i-1) 32비트</text>
+<line x1="430" y1="93" x2="430" y2="330" stroke="#6e6e73" stroke-width="1.6"/>
+<rect x="330" y="120" width="200" height="140" rx="8" fill="#fff" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="430.0" y="194.6" font-size="13" fill="#1d1d1f" text-anchor="middle"></text>
+<text x="540" y="135" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="600">F 함수</text>
+<rect x="345" y="130" width="90" height="28" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="390.0" y="147.8" font-size="11" fill="#1d1d1f" text-anchor="middle">확장 E 32→48</text>
+<rect x="345" y="172" width="90" height="28" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="390.0" y="189.8" font-size="11" fill="#1d1d1f" text-anchor="middle">XOR 라운드 키</text>
+<rect x="345" y="214" width="90" height="28" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="390.0" y="231.8" font-size="11" fill="#1d1d1f" text-anchor="middle">S-박스 48→32</text>
+<rect x="445" y="214" width="70" height="28" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="480.0" y="231.8" font-size="11" fill="#1d1d1f" text-anchor="middle">순열 P</text>
+<line x1="390" y1="160" x2="390" y2="170" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<line x1="390" y1="202" x2="390" y2="212" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<line x1="437" y1="228" x2="443" y2="228" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="560" y="172" width="70" height="28" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="595.0" y="189.8" font-size="11" fill="#ff9f0a" text-anchor="middle">K(i) 48</text>
+<line x1="558" y1="186" x2="437" y2="186" stroke="#ff9f0a" stroke-width="1.6" marker-end="url(#aff9f0a)"/>
+<line x1="430" y1="110" x2="390" y2="128" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<circle cx="210" cy="290" r="14" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/><path d="M196 290h28M210 276v28" stroke="#1d1d1f" stroke-width="1.5"/>
+<line x1="210" y1="93" x2="210" y2="274" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<path d="M480 244 L480 290 L226 290" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<path d="M210 306 L430 360" fill="none" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<path d="M430 330 L210 360" fill="none" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<rect x="150" y="362" width="120" height="32" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="210.0" y="382.2" font-size="12" fill="#1d1d1f" text-anchor="middle">L(i) = R(i-1)</text>
+<rect x="370" y="362" width="120" height="32" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="430.0" y="382.2" font-size="12" fill="#1d1d1f" text-anchor="middle">R(i) = L ⊕ F</text>
+<text x="20" y="150" font-size="12" fill="#6e6e73" text-anchor="start">이 과정을</text>
+<text x="20" y="168" font-size="12" fill="#6e6e73" text-anchor="start" font-weight="600">16번 반복</text>
+<text x="20" y="196" font-size="12" fill="#6e6e73" text-anchor="start">복호화는 같은 구조에</text>
+<text x="20" y="214" font-size="12" fill="#6e6e73" text-anchor="start">라운드 키만 역순</text>
+</svg>

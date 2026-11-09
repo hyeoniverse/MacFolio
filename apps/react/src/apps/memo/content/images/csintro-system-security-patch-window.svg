@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 230"><title>취약점 발견부터 패치 공개, 공격 코드 등장, 패치 적용까지의 위험 구간</title><rect width="640" height="230" fill="#fff"/>
+<line x1="30" y1="110" x2="610" y2="110" stroke="#1d1d1f" stroke-width="2"/>
+<rect x="60" y="95" width="180" height="30" fill="#ff9f0a" opacity="0.35"/><rect x="240" y="95" width="290" height="30" fill="#ff3b30" opacity="0.35"/>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<circle cx="60" cy="110" r="6" fill="#1d1d1f"/><text x="60" y="80">취약점 발견</text>
+<circle cx="240" cy="110" r="6" fill="#0a84ff"/><text x="240" y="80">패치·CVE 공개</text>
+<circle cx="330" cy="110" r="6" fill="#ff3b30"/><text x="330" y="150">패치를 비교해</text><text x="330" y="165">공격 코드 제작</text>
+<circle cx="530" cy="110" r="6" fill="#34c759"/><text x="530" y="80">내 시스템에 패치 적용</text>
+<text x="150" y="150" fill="#ff9f0a">제로데이 구간</text><text x="150" y="165" fill="#6e6e73">패치 없음</text>
+<text x="450" y="150" fill="#ff3b30">가장 위험한 구간</text><text x="450" y="165" fill="#6e6e73">모두가 위치를 안다</text>
+<text x="320" y="205" fill="#6e6e73">Slammer: 패치 공개 2002년 7월 → 공격 2003년 1월 (약 6개월)</text>
+</g></svg>

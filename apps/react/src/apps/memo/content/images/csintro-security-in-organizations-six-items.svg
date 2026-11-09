@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>시스템 보안 6대 항목과 각 항목을 구현하는 보안 솔루션</title>
+<defs></defs>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">시스템 보안 6대 항목과 대표 솔루션</text>
+<rect x="20" y="55" width="190" height="100" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="115.0" y="92.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">① 계정 관리</text>
+<text x="115.0" y="109.2" font-size="12" fill="#1d1d1f" text-anchor="middle">ID·비밀번호, 다중 인증</text>
+<text x="115.0" y="126.2" font-size="12" fill="#1d1d1f" text-anchor="middle">계정관리·추가인증 시스템</text>
+<rect x="225" y="55" width="190" height="100" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320.0" y="92.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">② 세션 관리</text>
+<text x="320.0" y="109.2" font-size="12" fill="#1d1d1f" text-anchor="middle">유휴 세션 종료 시간</text>
+<text x="320.0" y="126.2" font-size="12" fill="#1d1d1f" text-anchor="middle">방화벽·VPN 세션 설정</text>
+<rect x="430" y="55" width="190" height="100" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="525.0" y="92.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">③ 접근 통제</text>
+<text x="525.0" y="109.2" font-size="12" fill="#1d1d1f" text-anchor="middle">네트워크·서버·DB 접근</text>
+<text x="525.0" y="126.2" font-size="12" fill="#1d1d1f" text-anchor="middle">NAC, 서버·DB 접근통제</text>
+<rect x="20" y="170" width="190" height="100" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="115.0" y="207.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">④ 권한 관리</text>
+<text x="115.0" y="224.2" font-size="12" fill="#1d1d1f" text-anchor="middle">최소 권한, 역할별 권한</text>
+<text x="115.0" y="241.2" font-size="12" fill="#1d1d1f" text-anchor="middle">계정·권한 관리 시스템</text>
+<rect x="225" y="170" width="190" height="100" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="320.0" y="207.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">⑤ 로그 관리</text>
+<text x="320.0" y="224.2" font-size="12" fill="#1d1d1f" text-anchor="middle">접근 기록, 감사 증적</text>
+<text x="320.0" y="241.2" font-size="12" fill="#1d1d1f" text-anchor="middle">통합 로그 시스템</text>
+<rect x="430" y="170" width="190" height="100" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="525.0" y="207.2" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">⑥ 취약점 관리</text>
+<text x="525.0" y="224.2" font-size="12" fill="#1d1d1f" text-anchor="middle">OS·애플리케이션 취약점</text>
+<text x="525.0" y="241.2" font-size="12" fill="#1d1d1f" text-anchor="middle">패치 관리, 진단, 모의 해킹</text>
+<text x="320" y="290" font-size="12" fill="#6e6e73" text-anchor="middle">여섯 항목 모두 "허가받지 않은 사용자의 접근을 제한한다"는 목표를 나눠 맡는다</text>
+</svg>

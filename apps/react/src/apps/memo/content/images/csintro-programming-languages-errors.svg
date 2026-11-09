@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 200">
+<title>구문 오류, 실행 시간 오류, 논리 오류가 각각 발견되는 단계</title>
+<rect width="640" height="200" fill="#fff"/><defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<g fill="#f2f2f7"><rect x="20" y="30" width="160" height="44" rx="6"/><rect x="240" y="30" width="160" height="44" rx="6"/><rect x="460" y="30" width="160" height="44" rx="6"/></g>
+<text x="100" y="57">컴파일</text><text x="320" y="57">실행</text><text x="540" y="57">결과 검증(테스트)</text>
+<g stroke="#6e6e73" stroke-width="2" marker-end="url(#b)"><line x1="180" y1="52" x2="238" y2="52"/><line x1="400" y1="52" x2="458" y2="52"/></g>
+<g fill="#fff" stroke="#ff3b30" stroke-width="2"><rect x="20" y="100" width="160" height="70" rx="6"/><rect x="240" y="100" width="160" height="70" rx="6"/><rect x="460" y="100" width="160" height="70" rx="6"/></g>
+<text x="100" y="124" font-weight="700" fill="#ff3b30">구문 오류</text><text x="100" y="144" font-size="12">세미콜론 누락</text><text x="100" y="160" font-size="12">괄호 짝 불일치</text>
+<text x="320" y="124" font-weight="700" fill="#ff3b30">실행 시간 오류</text><text x="320" y="144" font-size="12">0으로 나누기</text><text x="320" y="160" font-size="12">널 포인터 역참조</text>
+<text x="540" y="124" font-weight="700" fill="#ff3b30">논리 오류</text><text x="540" y="144" font-size="12">&lt;= 대신 &lt; 사용</text><text x="540" y="160" font-size="12">프로그램은 정상 종료</text>
+<text x="320" y="192" font-size="12" fill="#6e6e73">뒤 단계에서 발견되는 오류일수록 찾기 어렵다</text>
+</g></svg>

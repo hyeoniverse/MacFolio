@@ -34,14 +34,14 @@ test.describe('태그', () => {
 		const browser = memo.getByRole('navigation', { name: '카테고리' }).getByRole('region', { name: '태그' });
 		await expect(browser.getByRole('button').first()).toHaveText('모든 태그');
 		// 저장소 글의 태그(#MacFolio 등)는 글이 늘면 순서가 바뀌므로, 이 시험의 두 태그끼리만 비교한다
-		await expect(browser.getByRole('button', { name: '#스타일' })).toBeVisible();
+		await expect(browser.getByRole('button', { name: '#스타일', exact: true })).toBeVisible();
 		const chips = await browser.getByRole('button').allTextContents();
 		expect(chips.indexOf('#정리')).toBeGreaterThan(0);
 		expect(chips.indexOf('#정리')).toBeLessThan(chips.indexOf('#스타일'));
 		await expect(browser.getByRole('button', { name: /^#(14|edbb4d)$/ })).toHaveCount(0);
 
 		// 태그를 누르면 그 태그의 글만, 제목은 #태그, 목록 위에 안내
-		await browser.getByRole('button', { name: '#스타일' }).click();
+		await browser.getByRole('button', { name: '#스타일', exact: true }).click();
 		await expect(memo.locator('.memo-item')).toHaveText([/태그 글 하나/]);
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('#스타일');
 		await expect(memo.getByRole('region', { name: '글 목록' })).toContainText(
@@ -55,7 +55,7 @@ test.describe('태그', () => {
 		await expect(memo.locator('.memo-item')).toHaveCount(2);
 
 		// 한 번 더 누르면 제외(그 태그가 없는 글), 또 누르면 풀려서 모든 글로
-		const refactor = browser.getByRole('button', { name: '#정리' });
+		const refactor = browser.getByRole('button', { name: '#정리', exact: true });
 		await refactor.click();
 		await expect(refactor).toHaveAttribute('data-state', 'exclude');
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('1개의 태그');
@@ -76,8 +76,8 @@ test.describe('태그', () => {
 		const browser = memo.getByRole('navigation', { name: '카테고리' }).getByRole('region', { name: '태그' });
 		const titles = memo.locator('.memo-item', { hasText: '태그 글' });
 
-		await browser.getByRole('button', { name: '#가' }).click();
-		await browser.getByRole('button', { name: '#나' }).click();
+		await browser.getByRole('button', { name: '#가', exact: true }).click();
+		await browser.getByRole('button', { name: '#나', exact: true }).click();
 		await expect(memo.locator('.memo-toolbar-heading h2').first()).toHaveText('2개의 태그');
 		await expect(titles).toHaveText([/태그 글 하나/]);
 		await expect(memo.getByRole('region', { name: '글 목록' })).toContainText(
@@ -115,7 +115,7 @@ test.describe('태그', () => {
 		await expect(memo.locator('.ProseMirror .memo-tag')).toHaveText(['#새태그']);
 		await expect.poll(() => api.posts[0]?.body).toContain('#새태그');
 		const browser = memo.getByRole('navigation', { name: '카테고리' }).getByRole('region', { name: '태그' });
-		await expect(browser.getByRole('button', { name: '#새태그' })).toBeVisible();
+		await expect(browser.getByRole('button', { name: '#새태그', exact: true })).toBeVisible();
 	});
 });
 

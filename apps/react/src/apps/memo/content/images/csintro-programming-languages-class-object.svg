@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 260">
+<title>Account 클래스에서 두 객체가 만들어지고 SavingsAccount가 Account를 상속하는 관계</title>
+<rect width="640" height="260" fill="#fff"/><defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f">
+<rect x="30" y="30" width="180" height="120" rx="6" fill="#f2f2f7" stroke="#0a84ff" stroke-width="2"/>
+<text x="120" y="52" text-anchor="middle" font-weight="700">클래스 Account</text>
+<line x1="30" y1="62" x2="210" y2="62" stroke="#0a84ff"/>
+<text x="42" y="84">- balance: long</text><line x1="30" y1="96" x2="210" y2="96" stroke="#0a84ff"/>
+<text x="42" y="118">+ deposit(amount)</text><text x="42" y="138">+ balance()</text>
+<rect x="30" y="190" width="180" height="50" rx="6" fill="#fff" stroke="#ff9f0a" stroke-width="2"/>
+<text x="120" y="212" text-anchor="middle" font-weight="700">SavingsAccount</text><text x="120" y="230" text-anchor="middle" font-size="12" fill="#6e6e73">deposit() 재정의</text>
+<path d="M120 188 V156" stroke="#ff9f0a" stroke-width="2" marker-end="url(#b)"/><text x="128" y="176" font-size="12" fill="#ff9f0a">상속</text>
+<g fill="#fff" stroke="#34c759" stroke-width="2"><rect x="400" y="30" width="200" height="60" rx="6"/><rect x="400" y="120" width="200" height="60" rx="6"/></g>
+<text x="500" y="54" text-anchor="middle" font-weight="700">객체 a1</text><text x="500" y="74" text-anchor="middle" font-size="12">balance = 5,000</text>
+<text x="500" y="144" text-anchor="middle" font-weight="700">객체 a2</text><text x="500" y="164" text-anchor="middle" font-size="12">balance = 120,000</text>
+<g stroke="#6e6e73" stroke-width="2" marker-end="url(#b)" stroke-dasharray="5 4"><path d="M212 70 L396 60"/><path d="M212 110 L396 150"/></g>
+<text x="300" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">new Account()</text>
+<text x="500" y="210" text-anchor="middle" font-size="12" fill="#6e6e73">같은 설계도, 서로 다른 데이터</text>
+</g></svg>

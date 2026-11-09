@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>가정의 LAN이 공유기와 통신사 WAN을 거쳐 웹 서버의 LAN과 연결되는 구조</title>
+<rect width="640" height="300" fill="#fff"/>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<rect x="16" y="40" width="200" height="220" rx="12" fill="#f2f2f7" stroke="#0a84ff" stroke-dasharray="6 4"/>
+<text x="116" y="30" font-weight="700" fill="#0a84ff">가정 LAN 192.168.0.0/24</text>
+<rect x="36" y="60" width="90" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="81" y="83">노트북</text>
+<rect x="36" y="120" width="90" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="81" y="143">스마트폰</text>
+<rect x="36" y="180" width="90" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="81" y="203">프린터</text>
+<text x="81" y="112" font-size="12" fill="#6e6e73">192.168.0.10</text><text x="81" y="172" font-size="12" fill="#6e6e73">192.168.0.11</text><text x="81" y="232" font-size="12" fill="#6e6e73">192.168.0.12</text>
+<rect x="150" y="120" width="56" height="36" rx="6" fill="#0a84ff"/><text x="178" y="143" fill="#fff" font-size="12">공유기</text>
+<g stroke="#0a84ff" stroke-width="2"><line x1="126" y1="78" x2="150" y2="130"/><line x1="126" y1="138" x2="150" y2="138"/><line x1="126" y1="198" x2="150" y2="146"/></g>
+<rect x="250" y="70" width="160" height="140" rx="70" fill="#fff4e0" stroke="#ff9f0a" stroke-width="2"/>
+<text x="330" y="126" font-weight="700" fill="#ff9f0a">통신사 WAN</text><text x="330" y="146" font-size="12" fill="#6e6e73">라우터 여러 대</text><text x="330" y="162" font-size="12" fill="#6e6e73">인터넷 교환 지점</text>
+<line x1="206" y1="138" x2="250" y2="138" stroke="#ff9f0a" stroke-width="3"/>
+<text x="228" y="276" font-size="12" fill="#6e6e73">공인 IP 203.0.113.5</text>
+<line x1="228" y1="262" x2="200" y2="158" stroke="#6e6e73" stroke-dasharray="3 3"/>
+<rect x="444" y="40" width="180" height="220" rx="12" fill="#f2f2f7" stroke="#34c759" stroke-dasharray="6 4"/>
+<text x="534" y="30" font-weight="700" fill="#34c759">데이터센터 LAN</text>
+<rect x="454" y="120" width="56" height="36" rx="6" fill="#34c759"/><text x="482" y="143" fill="#fff" font-size="12">라우터</text>
+<rect x="530" y="70" width="84" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="572" y="93">웹 서버</text>
+<rect x="530" y="170" width="84" height="36" rx="6" fill="#fff" stroke="#6e6e73"/><text x="572" y="193">DB 서버</text>
+<text x="572" y="122" font-size="12" fill="#6e6e73">198.51.100.20</text>
+<g stroke="#34c759" stroke-width="2"><line x1="510" y1="130" x2="530" y2="90"/><line x1="510" y1="146" x2="530" y2="188"/></g>
+<line x1="410" y1="138" x2="454" y2="138" stroke="#ff9f0a" stroke-width="3"/>
+</g>
+</svg>

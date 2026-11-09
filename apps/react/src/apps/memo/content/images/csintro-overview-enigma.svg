@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>에니그마의 암호화 경로: 키보드, 플러그보드, 회전자 3개, 반사판을 거쳐 램프보드로 돌아온다</title>
+<rect width="640" height="320" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">에니그마의 전기 경로 (A를 누른 경우의 예)</text>
+<g font-size="13" text-anchor="middle">
+<rect x="20" y="70" width="90" height="56" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="65" y="94" fill="#1d1d1f">키보드</text><text x="65" y="112" fill="#0a84ff" font-weight="600">A</text>
+<rect x="130" y="70" width="90" height="56" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="175" y="94" fill="#1d1d1f">플러그보드</text><text x="175" y="112" fill="#6e6e73" font-size="12">문자 쌍 교환</text>
+<rect x="250" y="60" width="60" height="76" rx="6" fill="#0a84ff"/><text x="280" y="102" fill="#fff">회전자 R</text>
+<rect x="320" y="60" width="60" height="76" rx="6" fill="#0a84ff"/><text x="350" y="102" fill="#fff">회전자 M</text>
+<rect x="390" y="60" width="60" height="76" rx="6" fill="#0a84ff"/><text x="420" y="102" fill="#fff">회전자 L</text>
+<rect x="480" y="60" width="60" height="76" rx="6" fill="#ff9f0a"/><text x="510" y="102" fill="#fff">반사판</text>
+<rect x="20" y="200" width="90" height="56" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="65" y="224" fill="#1d1d1f">램프보드</text><text x="65" y="242" fill="#34c759" font-weight="600">G</text>
+</g>
+<g stroke="#1d1d1f" stroke-width="2" fill="none"><path d="M110 92 H130"/><path d="M220 92 H250"/><path d="M450 92 H480"/></g>
+<path d="M540 110 C580 110 580 170 510 170 H175 V126" stroke="#34c759" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+<path d="M175 170 V228 H110" stroke="#34c759" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+<text x="360" y="190" text-anchor="middle" font-size="12" fill="#34c759">반사판에서 돌아와 회전자를 역방향으로 통과</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="200" y="222">· 키를 누를 때마다 회전자 R이 한 칸 돌고, 일정 위치에서 M, L도 돈다</text>
+<text x="200" y="242">· 그래서 같은 A라도 누를 때마다 다른 글자가 된다 (다표식 치환)</text>
+<text x="200" y="262">· 반사판 때문에 어떤 글자도 자기 자신으로 암호화되지 않는다</text>
+<text x="200" y="282" fill="#ff3b30">  이 성질은 해독자가 후보 배치를 줄이는 단서가 되었다</text>
+</g>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>OSI 7계층과 TCP/IP 4계층의 대응과 계층별 대표 프로토콜</title>
+<rect width="640" height="360" fill="#fff"/>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="110" y="26" font-weight="700">OSI 7계층</text><text x="310" y="26" font-weight="700">TCP/IP 4계층</text><text x="510" y="26" font-weight="700">대표 프로토콜·장비</text>
+<g fill="#f2f2f7" stroke="#fff" stroke-width="2">
+<rect x="20" y="40" width="180" height="40"/><rect x="20" y="80" width="180" height="40"/><rect x="20" y="120" width="180" height="40"/><rect x="20" y="160" width="180" height="40"/><rect x="20" y="200" width="180" height="40"/><rect x="20" y="240" width="180" height="40"/><rect x="20" y="280" width="180" height="40"/></g>
+<text x="110" y="65">7 응용</text><text x="110" y="105">6 표현</text><text x="110" y="145">5 세션</text><text x="110" y="185">4 전송</text><text x="110" y="225">3 네트워크</text><text x="110" y="265">2 데이터 링크</text><text x="110" y="305">1 물리</text>
+<rect x="220" y="40" width="180" height="120" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="310" y="105" fill="#fff" font-weight="700">응용</text>
+<rect x="220" y="160" width="180" height="40" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="310" y="185" fill="#fff" font-weight="700">전송</text>
+<rect x="220" y="200" width="180" height="40" fill="#34c759" stroke="#fff" stroke-width="2"/><text x="310" y="225" fill="#fff" font-weight="700">인터넷</text>
+<rect x="220" y="240" width="180" height="80" fill="#6e6e73" stroke="#fff" stroke-width="2"/><text x="310" y="285" fill="#fff" font-weight="700">네트워크 접근(링크)</text>
+<text x="510" y="96">HTTP, DNS, SMTP, SSH, TLS</text><text x="510" y="114" font-size="12" fill="#6e6e73">데이터 단위: 메시지</text>
+<text x="510" y="180">TCP, UDP</text><text x="510" y="196" font-size="12" fill="#6e6e73">세그먼트 · 포트 번호</text>
+<text x="510" y="220">IP, ICMP</text><text x="510" y="236" font-size="12" fill="#6e6e73">패킷 · IP 주소 · 라우터</text>
+<text x="510" y="270">이더넷, Wi-Fi(802.11)</text><text x="510" y="288" font-size="12" fill="#6e6e73">프레임 · MAC 주소 · 스위치</text>
+<text x="510" y="306" font-size="12" fill="#6e6e73">케이블, 전파 신호</text>
+<text x="320" y="346" font-size="12" fill="#6e6e73">OSI는 설명용 참조 모델이고, 실제 인터넷은 TCP/IP 프로토콜 묶음으로 동작한다</text>
+</g>
+</svg>

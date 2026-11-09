@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>도착 시각이 다른 네 프로세스의 SJF, SRT, HRN 실행 순서</title>
+<rect width="640" height="300" fill="#fff"/>
+<g font-size="13" fill="#1d1d1f">
+<text x="20" y="24" font-size="12" fill="#6e6e73">도착 시각/실행 시간: P1 0/7, P2 1/4, P3 2/1, P4 3/3</text>
+<text x="20" y="70" font-weight="700">SJF (비선점)</text>
+<rect x="130" y="50" width="210" height="30" fill="#0a84ff" stroke="#fff"/><text x="235.0" y="70" text-anchor="middle" fill="#fff">P1</text>
+<rect x="340" y="50" width="30" height="30" fill="#34c759" stroke="#fff"/><text x="355.0" y="70" text-anchor="middle" fill="#fff">P3</text>
+<rect x="370" y="50" width="90" height="30" fill="#6e6e73" stroke="#fff"/><text x="415.0" y="70" text-anchor="middle" fill="#fff">P4</text>
+<rect x="460" y="50" width="120" height="30" fill="#ff9f0a" stroke="#fff"/><text x="520.0" y="70" text-anchor="middle" fill="#fff">P2</text>
+<text x="130" y="98" font-size="12" fill="#6e6e73">평균 대기 5.00</text>
+<text x="20" y="145" font-weight="700">SRT (선점)</text>
+<rect x="130" y="125" width="30" height="30" fill="#0a84ff" stroke="#fff"/><text x="145.0" y="145" text-anchor="middle" fill="#fff">P1</text>
+<rect x="160" y="125" width="30" height="30" fill="#ff9f0a" stroke="#fff"/><text x="175.0" y="145" text-anchor="middle" fill="#fff">P2</text>
+<rect x="190" y="125" width="30" height="30" fill="#34c759" stroke="#fff"/><text x="205.0" y="145" text-anchor="middle" fill="#fff">P3</text>
+<rect x="220" y="125" width="90" height="30" fill="#ff9f0a" stroke="#fff"/><text x="265.0" y="145" text-anchor="middle" fill="#fff">P2</text>
+<rect x="310" y="125" width="90" height="30" fill="#6e6e73" stroke="#fff"/><text x="355.0" y="145" text-anchor="middle" fill="#fff">P4</text>
+<rect x="400" y="125" width="180" height="30" fill="#0a84ff" stroke="#fff"/><text x="490.0" y="145" text-anchor="middle" fill="#fff">P1</text>
+<text x="130" y="173" font-size="12" fill="#6e6e73">평균 대기 3.00</text>
+<text x="20" y="220" font-weight="700">HRN (비선점)</text>
+<rect x="130" y="200" width="210" height="30" fill="#0a84ff" stroke="#fff"/><text x="235.0" y="220" text-anchor="middle" fill="#fff">P1</text>
+<rect x="340" y="200" width="30" height="30" fill="#34c759" stroke="#fff"/><text x="355.0" y="220" text-anchor="middle" fill="#fff">P3</text>
+<rect x="370" y="200" width="120" height="30" fill="#ff9f0a" stroke="#fff"/><text x="430.0" y="220" text-anchor="middle" fill="#fff">P2</text>
+<rect x="490" y="200" width="90" height="30" fill="#6e6e73" stroke="#fff"/><text x="535.0" y="220" text-anchor="middle" fill="#fff">P4</text>
+<text x="130" y="248" font-size="12" fill="#6e6e73">평균 대기 5.25</text>
+<text x="130" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">0</text>
+<text x="160" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">1</text>
+<text x="190" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">2</text>
+<text x="220" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">3</text>
+<text x="250" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">4</text>
+<text x="280" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">5</text>
+<text x="310" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">6</text>
+<text x="340" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">7</text>
+<text x="370" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">8</text>
+<text x="400" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">9</text>
+<text x="430" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">10</text>
+<text x="460" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">11</text>
+<text x="490" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">12</text>
+<text x="520" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">13</text>
+<text x="550" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">14</text>
+<text x="580" y="280" font-size="12" text-anchor="middle" fill="#6e6e73">15</text>
+<line x1="130" y1="265" x2="580" y2="265" stroke="#6e6e73"/>
+</g></svg>

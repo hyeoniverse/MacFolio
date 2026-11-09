@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>AES 한 라운드의 네 단계: SubBytes, ShiftRows, MixColumns, AddRoundKey</title>
+<defs><marker id="a6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">AES 한 라운드의 네 단계 (4×4 바이트 상태)</text>
+<rect x="43" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="65" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="87" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="109" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="43" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="65" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="87" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="109" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="43" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="65" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="87" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="109" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="43" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="65" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="87" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="109" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="18" y="160" width="140" height="50" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="88.0" y="180.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">SubBytes</text>
+<text x="88.0" y="197.7" font-size="12" fill="#1d1d1f" text-anchor="middle">S-박스로 바이트 치환</text>
+<line x1="159" y1="185" x2="171" y2="185" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="198" y="60" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="220" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="242" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="264" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="198" y="82" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="220" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="242" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="264" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="198" y="104" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="220" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="242" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="264" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="198" y="126" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="220" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="242" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="264" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="173" y="160" width="140" height="50" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="243.0" y="180.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">ShiftRows</text>
+<text x="243.0" y="197.7" font-size="12" fill="#1d1d1f" text-anchor="middle">행마다 0~3칸 왼쪽 회전</text>
+<line x1="314" y1="185" x2="326" y2="185" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="353" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="375" y="60" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="397" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="419" y="60" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="353" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="375" y="82" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="397" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="419" y="82" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="353" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="375" y="104" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="397" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="419" y="104" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="353" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="375" y="126" width="20" height="20" rx="2" fill="#d6ebff" stroke="#c7c7cc"/>
+<rect x="397" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="419" y="126" width="20" height="20" rx="2" fill="#fff" stroke="#c7c7cc"/>
+<rect x="328" y="160" width="140" height="50" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="398.0" y="180.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">MixColumns</text>
+<text x="398.0" y="197.7" font-size="12" fill="#1d1d1f" text-anchor="middle">열마다 행렬 곱으로 섞기</text>
+<line x1="469" y1="185" x2="481" y2="185" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="508" y="60" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="530" y="60" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="552" y="60" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="574" y="60" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="508" y="82" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="530" y="82" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="552" y="82" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="574" y="82" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="508" y="104" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="530" y="104" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="552" y="104" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="574" y="104" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="508" y="126" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="530" y="126" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="552" y="126" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="574" y="126" width="20" height="20" rx="2" fill="#ffe8c7" stroke="#c7c7cc"/>
+<rect x="483" y="160" width="140" height="50" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="553.0" y="180.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">AddRoundKey</text>
+<text x="553.0" y="197.7" font-size="12" fill="#1d1d1f" text-anchor="middle">라운드 키와 XOR</text>
+<text x="320" y="245" font-size="12" fill="#6e6e73" text-anchor="middle">키 길이 128·192·256비트에 따라 10·12·14라운드를 반복한다.</text>
+<text x="320" y="265" font-size="12" fill="#6e6e73" text-anchor="middle">마지막 라운드는 MixColumns를 생략한다.</text>
+</svg>

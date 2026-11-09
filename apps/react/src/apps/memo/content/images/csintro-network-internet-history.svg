@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 200" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>봉화, 전신, 전화, 컴퓨터 네트워크로 이어지는 원격 통신 방식의 변화</title>
+<rect width="640" height="200" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect x="15" y="30" width="140" height="150" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="85" y="62" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">봉화</text>
+<text x="85" y="86" font-size="12" fill="#ff9f0a" text-anchor="middle">불빛과 연기</text>
+<text x="85" y="120" font-size="12" fill="#6e6e73" text-anchor="middle">정해 둔 신호 개수로</text>
+<text x="85" y="138" font-size="12" fill="#6e6e73" text-anchor="middle">정보 하나를 전달</text>
+<line x1="157" y1="105" x2="170" y2="105" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="172" y="30" width="140" height="150" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="242" y="62" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">전신</text>
+<text x="242" y="86" font-size="12" fill="#ff9f0a" text-anchor="middle">1837~ 모스 부호</text>
+<text x="242" y="120" font-size="12" fill="#6e6e73" text-anchor="middle">전기 신호의 길고</text>
+<text x="242" y="138" font-size="12" fill="#6e6e73" text-anchor="middle">짧은 조합으로 문자 전송</text>
+<line x1="314" y1="105" x2="327" y2="105" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="329" y="30" width="140" height="150" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="399" y="62" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">전화</text>
+<text x="399" y="86" font-size="12" fill="#ff9f0a" text-anchor="middle">1876~ 음성</text>
+<text x="399" y="120" font-size="12" fill="#6e6e73" text-anchor="middle">교환원·교환기가</text>
+<text x="399" y="138" font-size="12" fill="#6e6e73" text-anchor="middle">회선을 연결</text>
+<line x1="471" y1="105" x2="484" y2="105" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="486" y="30" width="140" height="150" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="556" y="62" font-size="14" fill="#0a84ff" text-anchor="middle" font-weight="700">컴퓨터 네트워크</text>
+<text x="556" y="86" font-size="12" fill="#ff9f0a" text-anchor="middle">1969~ 패킷</text>
+<text x="556" y="120" font-size="12" fill="#6e6e73" text-anchor="middle">디지털 데이터를</text>
+<text x="556" y="138" font-size="12" fill="#6e6e73" text-anchor="middle">패킷으로 나눠 전송</text>
+</svg>

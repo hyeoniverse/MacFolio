@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 320">
+<title>C 표준 입출력 함수가 시스템 호출로 바뀌는 과정</title>
+<rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="110" y="24" font-weight="700">C 코드 (사용자 모드)</text><text x="320" y="24" font-weight="700">시스템 호출</text><text x="530" y="24" font-weight="700">커널이 하는 일</text>
+<rect x="20" y="40" width="180" height="40" rx="6" fill="#f2f2f7"/><text x="110" y="65">fopen(name, "w")</text>
+<rect x="240" y="40" width="160" height="40" rx="6" fill="#ff9f0a"/><text x="320" y="58" fill="#fff">open(name,</text><text x="320" y="74" fill="#fff" font-size="12">O_CREAT|O_TRUNC …)</text>
+<rect x="440" y="36" width="180" height="48" rx="6" fill="#0a84ff"/><text x="530" y="56" fill="#fff" font-size="12">권한 검사, 아이노드 생성</text><text x="530" y="74" fill="#fff" font-size="12">파일 디스크립터 3 반환</text>
+<rect x="20" y="110" width="180" height="40" rx="6" fill="#f2f2f7"/><text x="110" y="135">fputs("Hello", f)</text>
+<rect x="240" y="110" width="160" height="40" rx="6" fill="#f2f2f7" stroke="#ff9f0a" stroke-dasharray="4 3"/><text x="320" y="128" font-size="12">시스템 호출 없음</text><text x="320" y="144" font-size="12" fill="#6e6e73">libc 버퍼에 5바이트 보관</text>
+<rect x="20" y="180" width="180" height="40" rx="6" fill="#f2f2f7"/><text x="110" y="205">fclose(f)</text>
+<rect x="240" y="170" width="160" height="60" rx="6" fill="#ff9f0a"/><text x="320" y="194" fill="#fff">write(3, "Hello", 5)</text><text x="320" y="214" fill="#fff">close(3)</text>
+<rect x="440" y="170" width="180" height="60" rx="6" fill="#0a84ff"/><text x="530" y="194" fill="#fff" font-size="12">페이지 캐시에 기록</text><text x="530" y="214" fill="#fff" font-size="12">디스크립터 반납</text>
+<g stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"><line x1="200" y1="60" x2="238" y2="60"/><line x1="400" y1="60" x2="438" y2="60"/><line x1="200" y1="200" x2="238" y2="200"/><line x1="400" y1="200" x2="438" y2="200"/><line x1="200" y1="130" x2="238" y2="130"/></g>
+<rect x="20" y="250" width="600" height="50" rx="8" fill="#f2f2f7"/>
+<text x="320" y="272" font-size="12">반복문을 50번 돌면 open·write·close가 각각 50번, 시스템 호출이 모두 150번 실행된다</text>
+<text x="320" y="290" font-size="12" fill="#6e6e73">실제 디스크 기록은 커널이 페이지 캐시를 나중에 내려 쓰는(write-back) 시각에 일어난다</text>
+</g></svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>DRAM 셀과 SRAM 셀</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="160" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">DRAM 셀 (1T1C)</text><text x="480" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">SRAM 셀 (6T)</text>
+<g font-size="13" stroke-width="2">
+<line x1="40" y1="70" x2="280" y2="70" stroke="#6e6e73"/><text x="40" y="62" fill="#6e6e73" stroke="none">워드 라인</text>
+<line x1="70" y1="70" x2="70" y2="250" stroke="#6e6e73"/><text x="78" y="245" fill="#6e6e73" stroke="none">비트 라인</text>
+<rect x="130" y="110" width="60" height="40" fill="#0a84ff" stroke="none"/><text x="160" y="135" text-anchor="middle" fill="#fff" stroke="none">TR</text>
+<line x1="160" y1="70" x2="160" y2="110" stroke="#6e6e73"/><line x1="70" y1="130" x2="130" y2="130" stroke="#6e6e73"/>
+<line x1="160" y1="150" x2="160" y2="180" stroke="#6e6e73"/><line x1="135" y1="180" x2="185" y2="180" stroke="#ff9f0a" stroke-width="4"/><line x1="135" y1="192" x2="185" y2="192" stroke="#ff9f0a" stroke-width="4"/><text x="200" y="192" fill="#ff9f0a" stroke="none">커패시터</text>
+<text x="160" y="280" text-anchor="middle" fill="#1d1d1f" stroke="none">전하가 새므로 주기적 재충전</text>
+<rect x="380" y="90" width="80" height="44" rx="6" fill="#34c759" stroke="none"/><text x="420" y="117" text-anchor="middle" fill="#fff" stroke="none">인버터 1</text>
+<rect x="500" y="90" width="80" height="44" rx="6" fill="#34c759" stroke="none"/><text x="540" y="117" text-anchor="middle" fill="#fff" stroke="none">인버터 2</text>
+<path d="M460 105 H498" stroke="#6e6e73" marker-end="url(#a)"/><path d="M500 122 H462" stroke="#6e6e73" marker-end="url(#a)"/>
+<rect x="340" y="180" width="60" height="36" fill="#0a84ff" stroke="none"/><text x="370" y="203" text-anchor="middle" fill="#fff" stroke="none">TR</text>
+<rect x="560" y="180" width="60" height="36" fill="#0a84ff" stroke="none"/><text x="590" y="203" text-anchor="middle" fill="#fff" stroke="none">TR</text>
+<text x="480" y="203" text-anchor="middle" fill="#6e6e73" stroke="none">접근용 트랜지스터</text>
+<text x="480" y="160" text-anchor="middle" fill="#6e6e73" stroke="none">인버터 2개 = 트랜지스터 4개</text>
+<text x="480" y="280" text-anchor="middle" fill="#1d1d1f" stroke="none">서로를 붙잡아 전원이 있는 동안 유지</text>
+</g></svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 365" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>사설 IP 두 기기가 공유기의 NAT로 공인 IP 하나를 함께 쓰는 과정과 변환표</title>
+<rect width="640" height="365" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect x="20" y="60" width="140" height="56" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="90" y="84" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">노트북</text>
+<text x="90" y="103" font-size="12" fill="#6e6e73" text-anchor="middle">192.168.0.10</text>
+<line x1="160" y1="88" x2="238" y2="140" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="20" y="170" width="140" height="56" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="90" y="194" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">스마트폰</text>
+<text x="90" y="213" font-size="12" fill="#6e6e73" text-anchor="middle">192.168.0.11</text>
+<line x1="160" y1="198" x2="238" y2="140" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="240" y="100" width="140" height="80" rx="8" fill="#ff9f0a" stroke="none"/>
+<text x="310" y="135" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">공유기 (NAT)</text>
+<text x="310" y="155" font-size="12" fill="#fff" text-anchor="middle">공인 203.0.113.5</text>
+<line x1="380" y1="140" x2="470" y2="140" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<rect x="472" y="110" width="150" height="60" rx="8" fill="#0a84ff" stroke="none"/>
+<text x="547" y="136" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">웹 서버</text>
+<text x="547" y="155" font-size="12" fill="#fff" text-anchor="middle">198.51.100.20:443</text>
+<text x="320" y="230" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="700">NAT 변환표</text>
+<rect x="120" y="240" width="400" height="28" rx="2" fill="#1d1d1f" stroke="none"/>
+<text x="220" y="259" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">내부 주소:포트</text>
+<text x="420" y="259" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">바꾼 주소:포트</text>
+<rect x="120" y="268" width="400" height="28" rx="0" fill="#f2f2f7" stroke="none"/>
+<text x="220" y="287" font-size="12" fill="#1d1d1f" text-anchor="middle">192.168.0.10:52344</text>
+<text x="420" y="287" font-size="12" fill="#1d1d1f" text-anchor="middle">203.0.113.5:40001</text>
+<rect x="120" y="296" width="400" height="28" rx="0" fill="#fff" stroke="none"/>
+<text x="220" y="315" font-size="12" fill="#1d1d1f" text-anchor="middle">192.168.0.11:61002</text>
+<text x="420" y="315" font-size="12" fill="#1d1d1f" text-anchor="middle">203.0.113.5:40002</text>
+<text x="320" y="350" font-size="12" fill="#6e6e73" text-anchor="middle">서버는 203.0.113.5만 보고, 응답이 오면 공유기가 변환표로 원래 기기를 찾는다</text>
+</svg>

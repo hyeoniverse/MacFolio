@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>DDoS 공격을 계층별로 나눈 분류와 대표 공격</title>
+<defs></defs>
+<rect width="640" height="290" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">DDoS 공격의 계층별 분류</text>
+<rect x="20" y="55" width="140" height="58" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="90.0" y="88.5" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">L7 애플리케이션</text>
+<rect x="170" y="55" width="450" height="58" rx="8" fill="#fff" stroke="#d1d1d6" stroke-width="1.5"/>
+<text x="395.0" y="79.7" font-size="12" fill="#1d1d1f" text-anchor="middle">HTTP GET 플러딩, 캐시 제어 우회(CC), 느린 요청(Slowloris)</text>
+<text x="395.0" y="96.7" font-size="12" fill="#1d1d1f" text-anchor="middle">고갈 대상: 특정 서비스(웹 서버)의 처리 능력</text>
+<rect x="20" y="125" width="140" height="58" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="90.0" y="158.6" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">L4 전송</text>
+<rect x="170" y="125" width="450" height="58" rx="8" fill="#fff" stroke="#d1d1d6" stroke-width="1.5"/>
+<text x="395.0" y="149.7" font-size="12" fill="#1d1d1f" text-anchor="middle">TCP SYN·SYN-ACK·RST 플러딩, UDP 플러딩</text>
+<text x="395.0" y="166.7" font-size="12" fill="#1d1d1f" text-anchor="middle">고갈 대상: 서버의 연결 테이블, 방화벽 세션</text>
+<rect x="20" y="195" width="140" height="58" rx="8" fill="#f2f2f7" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="90.0" y="228.6" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">L3 네트워크</text>
+<rect x="170" y="195" width="450" height="58" rx="8" fill="#fff" stroke="#d1d1d6" stroke-width="1.5"/>
+<text x="395.0" y="219.7" font-size="12" fill="#1d1d1f" text-anchor="middle">ICMP 플러딩, UDP 반사·증폭(DNS, NTP, Memcached)</text>
+<text x="395.0" y="236.7" font-size="12" fill="#1d1d1f" text-anchor="middle">고갈 대상: 회선 대역폭</text>
+<text x="320" y="278" font-size="12" fill="#6e6e73" text-anchor="middle">계층이 낮을수록 트래픽 양으로, 높을수록 정상처럼 보이는 요청으로 공격한다</text>
+</svg>

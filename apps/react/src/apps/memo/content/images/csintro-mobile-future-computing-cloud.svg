@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>온프레미스와 IaaS, PaaS, SaaS의 관리 책임 범위</title>
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">누가 어느 층을 관리하는가</text>
+<g font-size="13" font-weight="600" fill="#1d1d1f" text-anchor="middle"><text x="200" y="58">온프레미스</text><text x="330" y="58">IaaS</text><text x="460" y="58">PaaS</text><text x="590" y="58">SaaS</text></g>
+<g font-size="12" fill="#1d1d1f">
+<text x="20" y="92">응용 프로그램</text><text x="20" y="126">데이터</text><text x="20" y="160">런타임</text><text x="20" y="194">미들웨어</text><text x="20" y="228">운영체제</text><text x="20" y="262">가상화</text><text x="20" y="296">서버</text><text x="20" y="330">스토리지·네트워크</text>
+</g>
+<g stroke="#fff" stroke-width="2">
+<rect x="145" y="72" width="110" height="272" fill="#ff9f0a"/>
+<rect x="275" y="72" width="110" height="136" fill="#ff9f0a"/><rect x="275" y="208" width="110" height="34" fill="#ff9f0a"/><rect x="275" y="242" width="110" height="102" fill="#0a84ff"/>
+<rect x="405" y="72" width="110" height="68" fill="#ff9f0a"/><rect x="405" y="140" width="110" height="204" fill="#0a84ff"/>
+<rect x="535" y="72" width="90" height="272" fill="#0a84ff"/>
+</g>
+<g stroke="#fff" stroke-width="1" opacity="0.6"><line x1="145" y1="106" x2="625" y2="106"/><line x1="145" y1="140" x2="625" y2="140"/><line x1="145" y1="174" x2="625" y2="174"/><line x1="145" y1="208" x2="625" y2="208"/><line x1="145" y1="242" x2="625" y2="242"/><line x1="145" y1="276" x2="625" y2="276"/><line x1="145" y1="310" x2="625" y2="310"/></g>
+<rect x="150" y="360" width="16" height="16" fill="#ff9f0a"/><text x="174" y="373" font-size="12" fill="#1d1d1f">사용자(고객)가 관리</text>
+<rect x="340" y="360" width="16" height="16" fill="#0a84ff"/><text x="364" y="373" font-size="12" fill="#1d1d1f">클라우드 사업자가 관리</text>
+<g font-size="12" fill="#fff" text-anchor="middle"><text x="330" y="300">예: Amazon EC2</text><text x="460" y="250">예: Heroku,</text><text x="460" y="266">Google App Engine</text><text x="580" y="200">예: Gmail,</text><text x="580" y="216">Microsoft 365</text></g>
+</svg>

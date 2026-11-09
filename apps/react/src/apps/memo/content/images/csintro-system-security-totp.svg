@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 260"><title>서버와 인증 앱이 같은 비밀 키와 현재 시각으로 같은 6자리 번호를 계산하는 TOTP 구조</title><rect width="640" height="260" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="140" y="28" font-weight="600">스마트폰 인증 앱</text><text x="500" y="28" font-weight="600">서버</text>
+<rect x="40" y="45" width="200" height="40" rx="6" fill="#f2f2f7" stroke="#ff9f0a"/><text x="140" y="70">비밀 키 K (등록 시 QR로 공유)</text>
+<rect x="400" y="45" width="200" height="40" rx="6" fill="#f2f2f7" stroke="#ff9f0a"/><text x="500" y="70">비밀 키 K (계정별 보관)</text>
+<rect x="40" y="100" width="200" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="140" y="125">현재 시각 → 30초 단위 번호 T</text>
+<rect x="400" y="100" width="200" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="500" y="125">현재 시각 → 30초 단위 번호 T</text>
+<rect x="40" y="160" width="200" height="40" rx="6" fill="#0a84ff"/><text x="140" y="185" fill="#fff">HMAC(K, T) → 6자리 492039</text>
+<rect x="400" y="160" width="200" height="40" rx="6" fill="#0a84ff"/><text x="500" y="185" fill="#fff">HMAC(K, T) → 6자리 492039</text>
+<line x1="140" y1="142" x2="140" y2="157" stroke="#6e6e73" marker-end="url(#a)"/><line x1="500" y1="142" x2="500" y2="157" stroke="#6e6e73" marker-end="url(#a)"/>
+<line x1="242" y1="180" x2="397" y2="180" stroke="#34c759" stroke-width="2" marker-end="url(#a)"/><text x="320" y="170" font-size="12" fill="#34c759">사용자가 입력</text>
+<text x="320" y="235" font-size="12" fill="#6e6e73">키 K는 네트워크로 다시 오가지 않고, 번호는 30초마다 바뀌어 엿보아도 재사용할 수 없다</text>
+</g></svg>

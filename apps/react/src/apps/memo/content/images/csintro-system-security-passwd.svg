@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>/etc/passwd 한 줄의 일곱 필드</title>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">/etc/passwd 한 줄은 콜론(:)으로 나뉜 일곱 필드</text>
+<g font-family="Menlo, monospace" font-size="18" text-anchor="middle">
+<rect x="30" y="60" width="62" height="40" fill="#0a84ff"/><text x="61" y="87" fill="#fff">root</text>
+<text x="100" y="87" fill="#6e6e73">:</text>
+<rect x="108" y="60" width="34" height="40" fill="#ff9f0a"/><text x="125" y="87" fill="#fff">x</text>
+<text x="150" y="87" fill="#6e6e73">:</text>
+<rect x="158" y="60" width="34" height="40" fill="#ff3b30"/><text x="175" y="87" fill="#fff">0</text>
+<text x="200" y="87" fill="#6e6e73">:</text>
+<rect x="208" y="60" width="34" height="40" fill="#34c759"/><text x="225" y="87" fill="#fff">0</text>
+<text x="250" y="87" fill="#6e6e73">:</text>
+<rect x="258" y="60" width="62" height="40" fill="#6e6e73"/><text x="289" y="87" fill="#fff">root</text>
+<text x="328" y="87" fill="#6e6e73">:</text>
+<rect x="336" y="60" width="78" height="40" fill="#1d1d1f"/><text x="375" y="87" fill="#fff">/root</text>
+<text x="422" y="87" fill="#6e6e73">:</text>
+<rect x="430" y="60" width="120" height="40" fill="#5e5ce6"/><text x="490" y="87" fill="#fff">/bin/bash</text>
+</g>
+<g font-size="14" font-weight="600" text-anchor="middle"><text x="61" y="124" fill="#0a84ff">①</text><text x="125" y="124" fill="#ff9f0a">②</text><text x="175" y="124" fill="#ff3b30">③</text><text x="225" y="124" fill="#34c759">④</text><text x="289" y="124" fill="#6e6e73">⑤</text><text x="375" y="124" fill="#1d1d1f">⑥</text><text x="490" y="124" fill="#5e5ce6">⑦</text></g>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="160">① 사용자 이름(로그인 아이디)</text>
+<text x="40" y="184">② 비밀번호 자리. x는 해시가 /etc/shadow에 있다는 뜻</text>
+<text x="40" y="208">③ UID(사용자 번호). 0이면 관리자(root) 권한</text>
+<text x="40" y="232">④ 기본 그룹의 GID. 그룹 이름은 /etc/group에 정의</text>
+<text x="400" y="160">⑤ 설명(GECOS): 실명·연락처</text>
+<text x="400" y="184">⑥ 홈 디렉터리</text>
+<text x="400" y="208">⑦ 로그인 셸</text>
+</g>
+<text x="320" y="288" text-anchor="middle" font-size="12" fill="#6e6e73">/etc/passwd는 모든 사용자가 읽을 수 있고, /etc/shadow는 root만 읽을 수 있다</text>
+</svg>

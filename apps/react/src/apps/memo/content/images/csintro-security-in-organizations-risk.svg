@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>위험 관리 절차와 위험 처리 방법</title>
+<rect width="640" height="300" fill="#fff"/>
+<g font-size="13" text-anchor="middle">
+<text x="320" y="28" font-size="16" font-weight="600" fill="#1d1d1f">위험 관리 절차</text>
+<rect x="15" y="55" width="110" height="56" rx="10" fill="#f2f2f7"/><text x="70" y="79" fill="#1d1d1f">① 자산 식별</text><text x="70" y="98" fill="#6e6e73" font-size="12">가치 평가</text>
+<rect x="140" y="55" width="110" height="56" rx="10" fill="#f2f2f7"/><text x="195" y="79" fill="#1d1d1f">② 위협 식별</text><text x="195" y="98" fill="#6e6e73" font-size="12">무엇이 해칠까</text>
+<rect x="265" y="55" width="110" height="56" rx="10" fill="#f2f2f7"/><text x="320" y="79" fill="#1d1d1f">③ 취약점 진단</text><text x="320" y="98" fill="#6e6e73" font-size="12">어디가 약한가</text>
+<rect x="390" y="55" width="110" height="56" rx="10" fill="#fff" stroke="#0a84ff" stroke-width="2"/><text x="445" y="79" fill="#1d1d1f">④ 위험 평가</text><text x="445" y="98" fill="#6e6e73" font-size="12">가능성 × 영향</text>
+<rect x="515" y="55" width="110" height="56" rx="10" fill="#fff" stroke="#ff9f0a" stroke-width="2"/><text x="570" y="79" fill="#1d1d1f">⑤ 위험 처리</text><text x="570" y="98" fill="#6e6e73" font-size="12">DoA 승인</text>
+<path d="M125 83H140M250 83H265M375 83H390M500 83H515" stroke="#1d1d1f" stroke-width="2"/>
+<rect x="20" y="160" width="140" height="70" rx="10" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="90" y="187" font-weight="600" fill="#1d1d1f">감소</text><text x="90" y="210" fill="#6e6e73" font-size="12">보호대책 도입</text>
+<rect x="175" y="160" width="140" height="70" rx="10" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="245" y="187" font-weight="600" fill="#1d1d1f">회피</text><text x="245" y="210" fill="#6e6e73" font-size="12">서비스·업무 중단</text>
+<rect x="330" y="160" width="140" height="70" rx="10" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="400" y="187" font-weight="600" fill="#1d1d1f">전가</text><text x="400" y="210" fill="#6e6e73" font-size="12">보험, 외부 위탁</text>
+<rect x="485" y="160" width="140" height="70" rx="10" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="555" y="187" font-weight="600" fill="#1d1d1f">수용</text><text x="555" y="210" fill="#6e6e73" font-size="12">허용 수준 이하는 감수</text>
+<text x="320" y="270" fill="#6e6e73">처리 후 남는 잔여 위험은 경영진이 승인하고, 해마다 다시 평가한다</text>
+</g></svg>

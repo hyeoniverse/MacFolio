@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>IEEE 754 단정밀도 형식과 -6.75의 표현</title>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">IEEE 754 단정밀도(32비트) 형식</text>
+<rect x="30" y="60" width="30" height="44" fill="#ff9f0a"/><rect x="60" y="60" width="160" height="44" fill="#34c759"/><rect x="220" y="60" width="390" height="44" fill="#0a84ff"/>
+<g text-anchor="middle" font-size="13" font-weight="600" fill="#fff"><text x="45" y="87">S</text><text x="140" y="87">지수 E (8비트)</text><text x="415" y="87">가수 M (23비트)</text></g>
+<g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="45" y="122">31</text><text x="140" y="122">30 ~ 23</text><text x="415" y="122">22 ~ 0</text></g>
+<text x="320" y="152" text-anchor="middle" font-size="13" fill="#1d1d1f">값 = (-1)^S × 1.M × 2^(E - 127)</text>
+<text x="30" y="192" font-size="13" font-weight="600" fill="#1d1d1f">예: -6.75</text>
+<g font-size="12" fill="#1d1d1f"><text x="30" y="214">① 2진수: 6.75 = 110.11(2)</text><text x="30" y="234">② 정규화: 1.1011 × 2^2</text><text x="30" y="254">③ S = 1, E = 2 + 127 = 129 = 10000001, M = 1011 뒤에 0을 채움</text></g>
+<g font-family="ui-monospace, Menlo, monospace" font-size="13">
+<rect x="30" y="268" width="30" height="34" fill="#fff4e5" stroke="#ff9f0a"/><text x="45" y="290" text-anchor="middle" fill="#1d1d1f">1</text>
+<rect x="60" y="268" width="160" height="34" fill="#eaf8ee" stroke="#34c759"/><text x="140" y="290" text-anchor="middle" fill="#1d1d1f">10000001</text>
+<rect x="220" y="268" width="390" height="34" fill="#e8f2ff" stroke="#0a84ff"/><text x="415" y="290" text-anchor="middle" fill="#1d1d1f">10110000000000000000000</text>
+</g>
+<text x="610" y="320" text-anchor="end" font-size="12" fill="#6e6e73">16진수 0xC0D80000</text>
+</svg>

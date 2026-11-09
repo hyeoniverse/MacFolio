@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 330">
+<title>사용자 모드와 커널 모드, 시스템 호출로 나뉜 운영체제 구조</title>
+<rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<text x="20" y="28" text-anchor="start" font-weight="700">사용자 모드 (user mode)</text>
+<rect x="20" y="40" width="140" height="50" rx="8" fill="#f2f2f7"/><text x="90" y="62">브라우저</text><text x="90" y="80" font-size="12" fill="#6e6e73">Safari, Chrome</text>
+<rect x="180" y="40" width="140" height="50" rx="8" fill="#f2f2f7"/><text x="250" y="62">편집기</text><text x="250" y="80" font-size="12" fill="#6e6e73">VS Code</text>
+<rect x="340" y="40" width="140" height="50" rx="8" fill="#f2f2f7"/><text x="410" y="62">셸</text><text x="410" y="80" font-size="12" fill="#6e6e73">zsh, bash</text>
+<rect x="500" y="40" width="120" height="50" rx="8" fill="#f2f2f7"/><text x="560" y="62">라이브러리</text><text x="560" y="80" font-size="12" fill="#6e6e73">libc</text>
+<rect x="20" y="110" width="600" height="34" rx="6" fill="#ff9f0a"/><text x="320" y="132" fill="#fff" font-weight="700">시스템 호출 인터페이스: open, read, write, fork, exec, mmap …</text>
+<text x="20" y="170" text-anchor="start" font-weight="700">커널 모드 (kernel mode)</text>
+<rect x="20" y="180" width="140" height="56" rx="8" fill="#0a84ff"/><text x="90" y="204" fill="#fff">프로세스 관리</text><text x="90" y="222" font-size="12" fill="#fff">스케줄러</text>
+<rect x="180" y="180" width="140" height="56" rx="8" fill="#0a84ff"/><text x="250" y="204" fill="#fff">기억장치 관리</text><text x="250" y="222" font-size="12" fill="#fff">가상 메모리</text>
+<rect x="340" y="180" width="140" height="56" rx="8" fill="#0a84ff"/><text x="410" y="204" fill="#fff">입출력 관리</text><text x="410" y="222" font-size="12" fill="#fff">장치 드라이버</text>
+<rect x="500" y="180" width="120" height="56" rx="8" fill="#0a84ff"/><text x="560" y="204" fill="#fff">정보(파일) 관리</text><text x="560" y="222" font-size="12" fill="#fff">파일 시스템</text>
+<rect x="20" y="256" width="600" height="40" rx="6" fill="#34c759"/><text x="320" y="281" fill="#fff" font-weight="700">하드웨어: CPU · 메모리(RAM) · 디스크(SSD) · 키보드 · 네트워크 카드</text>
+<text x="320" y="318" font-size="12" fill="#6e6e73">응용 프로그램은 하드웨어에 직접 접근하지 못하고, 시스템 호출을 거쳐 커널에 요청한다</text>
+</g></svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>OWASP Top 10 2013년판 항목이 2021년판에서 어떻게 바뀌었는지</title>
+<defs><marker id="aaeaeb2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#aeaeb2"/></marker></defs>
+<rect width="640" height="400" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">OWASP Top 10: 2013년판과 2021년판</text>
+<text x="115" y="55" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">2013년판</text>
+<text x="510" y="55" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600">2021년판</text>
+<rect x="10" y="65" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="82.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A1 Injection</text>
+<rect x="10" y="96" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="113.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A2 인증·세션 관리 취약점</text>
+<rect x="10" y="127" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="144.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A3 XSS</text>
+<rect x="10" y="158" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="175.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A4 취약한 직접 객체 참조</text>
+<rect x="10" y="189" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="206.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A5 보안 설정 오류</text>
+<rect x="10" y="220" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="237.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A6 민감 데이터 노출</text>
+<rect x="10" y="251" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="268.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A7 기능 수준 접근 통제 누락</text>
+<rect x="10" y="282" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="299.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A8 CSRF</text>
+<rect x="10" y="313" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="330.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A9 알려진 취약 컴포넌트</text>
+<rect x="10" y="344" width="210" height="26" rx="5" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="115.0" y="361.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A10 검증 안 된 리다이렉트</text>
+<rect x="400" y="65" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="82.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A01 접근 통제 실패</text>
+<rect x="400" y="96" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="113.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A02 암호화 실패</text>
+<rect x="400" y="127" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="144.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A03 인젝션</text>
+<rect x="400" y="158" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="175.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A04 안전하지 않은 설계</text>
+<rect x="400" y="189" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="206.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A05 보안 설정 오류</text>
+<rect x="400" y="220" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="237.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A06 취약하고 오래된 컴포넌트</text>
+<rect x="400" y="251" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="268.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A07 식별·인증 실패</text>
+<rect x="400" y="282" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="299.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A08 소프트웨어·데이터 무결성 실패</text>
+<rect x="400" y="313" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="330.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A09 보안 로깅·모니터링 실패</text>
+<rect x="400" y="344" width="230" height="26" rx="5" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="515.0" y="361.0" font-size="11.5" fill="#1d1d1f" text-anchor="middle">A10 SSRF</text>
+<line x1="222" y1="78" x2="397" y2="140" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="140" x2="397" y2="140" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="109" x2="397" y2="264" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="171" x2="397" y2="78" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="264" x2="397" y2="78" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="202" x2="397" y2="202" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="233" x2="397" y2="109" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<line x1="222" y1="326" x2="397" y2="233" stroke="#aeaeb2" stroke-width="1.1" marker-end="url(#aaeaeb2)"/>
+<text x="310" y="388" font-size="12" fill="#6e6e73" text-anchor="middle">CSRF와 리다이렉트는 독립 항목에서 빠졌고, 설계·무결성·로깅·SSRF가 새로 들어왔다</text>
+</svg>

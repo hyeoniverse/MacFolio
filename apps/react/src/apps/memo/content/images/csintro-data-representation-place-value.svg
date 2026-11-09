@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 310" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>같은 숫자열 1011의 자릿값과 값</title><rect width="640" height="310" fill="#fff"/><text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">같은 숫자열 1011의 자릿값과 값</text>
+<text x="30" y="88" font-size="13" font-weight="600" fill="#1d1d1f">2진수</text>
+<rect x="110" y="60" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="150" y="81" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="150" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">× 8</text>
+<rect x="200" y="60" width="80" height="46" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="240" y="81" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">0</text><text x="240" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">× 4</text>
+<rect x="290" y="60" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="330" y="81" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="330" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">× 2</text>
+<rect x="380" y="60" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="420" y="81" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="420" y="99" text-anchor="middle" font-size="12" fill="#6e6e73">× 1</text>
+<text x="490" y="88" font-size="14" fill="#0a84ff" font-weight="600">= 11</text>
+<text x="30" y="144" font-size="13" font-weight="600" fill="#1d1d1f">8진수</text>
+<rect x="110" y="116" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="150" y="137" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="150" y="155" text-anchor="middle" font-size="12" fill="#6e6e73">× 512</text>
+<rect x="200" y="116" width="80" height="46" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="240" y="137" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">0</text><text x="240" y="155" text-anchor="middle" font-size="12" fill="#6e6e73">× 64</text>
+<rect x="290" y="116" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="330" y="137" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="330" y="155" text-anchor="middle" font-size="12" fill="#6e6e73">× 8</text>
+<rect x="380" y="116" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="420" y="137" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="420" y="155" text-anchor="middle" font-size="12" fill="#6e6e73">× 1</text>
+<text x="490" y="144" font-size="14" fill="#0a84ff" font-weight="600">= 521</text>
+<text x="30" y="200" font-size="13" font-weight="600" fill="#1d1d1f">10진수</text>
+<rect x="110" y="172" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="150" y="193" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="150" y="211" text-anchor="middle" font-size="12" fill="#6e6e73">× 1000</text>
+<rect x="200" y="172" width="80" height="46" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="240" y="193" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">0</text><text x="240" y="211" text-anchor="middle" font-size="12" fill="#6e6e73">× 100</text>
+<rect x="290" y="172" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="330" y="193" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="330" y="211" text-anchor="middle" font-size="12" fill="#6e6e73">× 10</text>
+<rect x="380" y="172" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="420" y="193" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="420" y="211" text-anchor="middle" font-size="12" fill="#6e6e73">× 1</text>
+<text x="490" y="200" font-size="14" fill="#0a84ff" font-weight="600">= 1011</text>
+<text x="30" y="256" font-size="13" font-weight="600" fill="#1d1d1f">16진수</text>
+<rect x="110" y="228" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="150" y="249" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="150" y="267" text-anchor="middle" font-size="12" fill="#6e6e73">× 4096</text>
+<rect x="200" y="228" width="80" height="46" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="240" y="249" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">0</text><text x="240" y="267" text-anchor="middle" font-size="12" fill="#6e6e73">× 256</text>
+<rect x="290" y="228" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="330" y="249" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="330" y="267" text-anchor="middle" font-size="12" fill="#6e6e73">× 16</text>
+<rect x="380" y="228" width="80" height="46" rx="6" fill="#e5f1ff" stroke="#6e6e73"/><text x="420" y="249" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">1</text><text x="420" y="267" text-anchor="middle" font-size="12" fill="#6e6e73">× 1</text>
+<text x="490" y="256" font-size="14" fill="#0a84ff" font-weight="600">= 4113</text>
+<text x="320" y="296" text-anchor="middle" font-size="12" fill="#6e6e73">각 자리의 숫자에 자릿값(밑수의 거듭제곱)을 곱해 더한다</text></svg>

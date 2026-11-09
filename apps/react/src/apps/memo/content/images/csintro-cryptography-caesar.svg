@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>키 3인 시저 암호의 평문 알파벳과 암호문 알파벳 대응</title>
+<defs><marker id="ac7c7cc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#c7c7cc"/></marker><marker id="aff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker></defs>
+<rect width="640" height="250" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">시저 암호 (키 3): 알파벳을 세 칸 민다</text>
+<rect x="56" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="66.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">A</text>
+<rect x="56" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="66.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">D</text>
+<line x1="66" y1="102" x2="66" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="78" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="88.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">B</text>
+<rect x="78" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="88.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">E</text>
+<line x1="88" y1="102" x2="88" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="100" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="110.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">C</text>
+<rect x="100" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="110.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">F</text>
+<line x1="110" y1="102" x2="110" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="122" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="132.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">D</text>
+<rect x="122" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="132.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">G</text>
+<line x1="132" y1="102" x2="132" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="144" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="154.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">E</text>
+<rect x="144" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="154.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">H</text>
+<line x1="154" y1="102" x2="154" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="166" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="176.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">F</text>
+<rect x="166" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="176.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">I</text>
+<line x1="176" y1="102" x2="176" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="188" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="198.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">G</text>
+<rect x="188" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="198.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">J</text>
+<line x1="198" y1="102" x2="198" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="210" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="220.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">H</text>
+<rect x="210" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="220.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">K</text>
+<line x1="220" y1="102" x2="220" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="232" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="242.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">I</text>
+<rect x="232" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="242.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">L</text>
+<line x1="242" y1="102" x2="242" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="254" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="264.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">J</text>
+<rect x="254" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="264.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">M</text>
+<line x1="264" y1="102" x2="264" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="276" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="286.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">K</text>
+<rect x="276" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="286.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">N</text>
+<line x1="286" y1="102" x2="286" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="298" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="308.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">L</text>
+<rect x="298" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="308.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">O</text>
+<line x1="308" y1="102" x2="308" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="320" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="330.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">M</text>
+<rect x="320" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="330.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">P</text>
+<line x1="330" y1="102" x2="330" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="342" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="352.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">N</text>
+<rect x="342" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="352.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">Q</text>
+<line x1="352" y1="102" x2="352" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="364" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="374.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">O</text>
+<rect x="364" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="374.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">R</text>
+<line x1="374" y1="102" x2="374" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="386" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="396.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">P</text>
+<rect x="386" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="396.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">S</text>
+<line x1="396" y1="102" x2="396" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="408" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="418.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">Q</text>
+<rect x="408" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="418.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">T</text>
+<line x1="418" y1="102" x2="418" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="430" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="440.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">R</text>
+<rect x="430" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="440.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">U</text>
+<line x1="440" y1="102" x2="440" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="452" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="462.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">S</text>
+<rect x="452" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="462.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">V</text>
+<line x1="462" y1="102" x2="462" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="474" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="484.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">T</text>
+<rect x="474" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="484.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">W</text>
+<line x1="484" y1="102" x2="484" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="496" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="506.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">U</text>
+<rect x="496" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="506.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">X</text>
+<line x1="506" y1="102" x2="506" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="518" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="528.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">V</text>
+<rect x="518" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="528.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">Y</text>
+<line x1="528" y1="102" x2="528" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="540" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="550.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">W</text>
+<rect x="540" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="550.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">Z</text>
+<line x1="550" y1="102" x2="550" y2="147" stroke="#c7c7cc" stroke-width="1.2" marker-end="url(#ac7c7cc)"/>
+<rect x="562" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="572.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">X</text>
+<rect x="562" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="572.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">A</text>
+<line x1="572" y1="102" x2="572" y2="147" stroke="#ff9f0a" stroke-width="1.2" marker-end="url(#aff9f0a)"/>
+<rect x="584" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="594.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">Y</text>
+<rect x="584" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="594.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">B</text>
+<line x1="594" y1="102" x2="594" y2="147" stroke="#ff9f0a" stroke-width="1.2" marker-end="url(#aff9f0a)"/>
+<rect x="606" y="70" width="20" height="30" rx="3" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="616.0" y="89.5" font-size="13" fill="#1d1d1f" text-anchor="middle">Z</text>
+<rect x="606" y="150" width="20" height="30" rx="3" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="616.0" y="169.6" font-size="13" fill="#1d1d1f" text-anchor="middle">C</text>
+<line x1="616" y1="102" x2="616" y2="147" stroke="#ff9f0a" stroke-width="1.2" marker-end="url(#aff9f0a)"/>
+<text x="50" y="90" font-size="12" fill="#6e6e73" text-anchor="end">평문</text>
+<text x="50" y="170" font-size="12" fill="#6e6e73" text-anchor="end">암호문</text>
+<text x="320" y="215" font-size="12" fill="#6e6e73" text-anchor="middle">X, Y, Z는 26으로 나눈 나머지를 취해 A, B, C로 돌아간다. 예: HELLO → KHOOR</text>
+</svg>

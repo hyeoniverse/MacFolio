@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>프로토콜의 세 단계: 연결 설정, 데이터 전송, 연결 해제</title>
+<rect width="640" height="400" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="120" y="30" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">송신 컴퓨터 A</text>
+<text x="520" y="30" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">수신 컴퓨터 B</text>
+<line x1="120" y1="42" x2="120" y2="390" stroke="#6e6e73" stroke-width="2"/>
+<line x1="520" y1="42" x2="520" y2="390" stroke="#6e6e73" stroke-width="2"/>
+<line x1="122" y1="70" x2="516" y2="84" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="72" font-size="13" fill="#1d1d1f" text-anchor="middle">연결 요청 (통신해도 될까?)</text>
+<line x1="518" y1="105" x2="124" y2="119" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="107" font-size="13" fill="#1d1d1f" text-anchor="middle">연결 허락</text>
+<line x1="122" y1="160" x2="516" y2="174" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="162" font-size="13" fill="#1d1d1f" text-anchor="middle">데이터 조각 1</text>
+<line x1="122" y1="195" x2="516" y2="209" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="197" font-size="13" fill="#1d1d1f" text-anchor="middle">데이터 조각 2</text>
+<line x1="518" y1="230" x2="124" y2="244" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="232" font-size="13" fill="#1d1d1f" text-anchor="middle">수신 확인</text>
+<line x1="122" y1="265" x2="516" y2="279" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="267" font-size="13" fill="#1d1d1f" text-anchor="middle">데이터 조각 3</text>
+<line x1="122" y1="320" x2="516" y2="334" stroke="#34c759" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="322" font-size="13" fill="#1d1d1f" text-anchor="middle">전송 종료 알림</text>
+<line x1="518" y1="355" x2="124" y2="369" stroke="#34c759" stroke-width="2" marker-end="url(#a)"/>
+<text x="320" y="357" font-size="13" fill="#1d1d1f" text-anchor="middle">종료 응답</text>
+<rect x="560" y="72" width="74" height="26" rx="5" fill="#0a84ff" stroke="none"/>
+<text x="597" y="90" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">① 연결 설정</text>
+<rect x="560" y="197" width="74" height="26" rx="5" fill="#ff9f0a" stroke="none"/>
+<text x="597" y="215" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">② 데이터 전송</text>
+<rect x="560" y="322" width="74" height="26" rx="5" fill="#34c759" stroke="none"/>
+<text x="597" y="340" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">③ 연결 해제</text>
+</svg>

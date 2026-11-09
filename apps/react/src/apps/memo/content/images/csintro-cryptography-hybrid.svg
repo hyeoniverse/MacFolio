@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>TLS 같은 하이브리드 방식은 공개키 연산으로 세션 키를 합의하고 데이터는 AES로 암호화한다</title>
+<defs><marker id="aff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="a0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">하이브리드 암호: 키는 공개키로, 데이터는 대칭키로</text>
+<rect x="20" y="60" width="130" height="44" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="85.0" y="86.5" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">클라이언트</text>
+<rect x="490" y="60" width="130" height="44" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="555.0" y="86.5" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600">서버</text>
+<line x1="152" y1="82" x2="487" y2="82" stroke="#ff9f0a" stroke-width="1.6" marker-end="url(#aff9f0a)"/>
+<text x="320" y="74" font-size="12" fill="#ff9f0a" text-anchor="middle">① 공개키 방식(ECDHE·RSA)으로 세션 키 합의</text>
+<rect x="140" y="110" width="360" height="34" rx="8" fill="#fff" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="320.0" y="131.2" font-size="12" fill="#1d1d1f" text-anchor="middle">양쪽이 같은 세션 키 K를 갖는다 (네트워크에 K는 나타나지 않음)</text>
+<line x1="152" y1="180" x2="487" y2="180" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<line x1="487" y1="205" x2="152" y2="205" stroke="#0a84ff" stroke-width="1.6" marker-end="url(#a0a84ff)"/>
+<text x="320" y="172" font-size="12" fill="#0a84ff" text-anchor="middle">② 데이터: AES-GCM(K)로 암호화</text>
+<text x="320" y="225" font-size="12" fill="#0a84ff" text-anchor="middle">응답도 같은 K로 암호화</text>
+<text x="320" y="265" font-size="12" fill="#6e6e73" text-anchor="middle">공개키 연산은 연결마다 한 번, 대량 데이터는 빠른 대칭키 암호가 처리한다</text>
+</svg>
