@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>명령어 파이프라이닝</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">3단계 파이프라인</text>
+<g font-size="13">
+<text x="40" y="70" fill="#6e6e73">클록</text>
+<text x="190" y="70" text-anchor="middle" fill="#6e6e73">1</text><text x="290" y="70" text-anchor="middle" fill="#6e6e73">2</text><text x="390" y="70" text-anchor="middle" fill="#6e6e73">3</text><text x="490" y="70" text-anchor="middle" fill="#6e6e73">4</text><text x="590" y="70" text-anchor="middle" fill="#6e6e73">5</text>
+<text x="40" y="112" fill="#1d1d1f">명령어 1</text><text x="40" y="162" fill="#1d1d1f">명령어 2</text><text x="40" y="212" fill="#1d1d1f">명령어 3</text>
+<rect x="142" y="90" width="96" height="34" fill="#0a84ff"/><text x="190" y="112" text-anchor="middle" fill="#fff">인출</text><rect x="242" y="90" width="96" height="34" fill="#ff9f0a"/><text x="290" y="112" text-anchor="middle" fill="#fff">해독</text><rect x="342" y="90" width="96" height="34" fill="#34c759"/><text x="390" y="112" text-anchor="middle" fill="#fff">실행</text>
+<rect x="242" y="140" width="96" height="34" fill="#0a84ff"/><text x="290" y="162" text-anchor="middle" fill="#fff">인출</text><rect x="342" y="140" width="96" height="34" fill="#ff9f0a"/><text x="390" y="162" text-anchor="middle" fill="#fff">해독</text><rect x="442" y="140" width="96" height="34" fill="#34c759"/><text x="490" y="162" text-anchor="middle" fill="#fff">실행</text>
+<rect x="342" y="190" width="96" height="34" fill="#0a84ff"/><text x="390" y="212" text-anchor="middle" fill="#fff">인출</text><rect x="442" y="190" width="96" height="34" fill="#ff9f0a"/><text x="490" y="212" text-anchor="middle" fill="#fff">해독</text><rect x="542" y="190" width="96" height="34" fill="#34c759"/><text x="590" y="212" text-anchor="middle" fill="#fff">실행</text>
+</g>
+<text x="320" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">파이프라인이 없으면 9클록, 있으면 5클록에 명령어 3개를 끝낸다</text>
+</svg>

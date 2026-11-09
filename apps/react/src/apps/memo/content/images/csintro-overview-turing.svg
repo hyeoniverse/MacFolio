@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>튜링 기계의 구성: 테이프, 헤드, 상태와 규칙표, 그리고 1을 하나 더하는 예</title>
+<rect width="640" height="360" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">튜링 기계: 테이프 · 헤드 · 규칙표</text>
+<g font-size="16" text-anchor="middle" fill="#1d1d1f">
+<rect x="60" y="60" width="520" height="44" fill="#f2f2f7" stroke="#6e6e73"/>
+<line x1="125" y1="60" x2="125" y2="104" stroke="#6e6e73"/><line x1="190" y1="60" x2="190" y2="104" stroke="#6e6e73"/><line x1="255" y1="60" x2="255" y2="104" stroke="#6e6e73"/><line x1="320" y1="60" x2="320" y2="104" stroke="#6e6e73"/><line x1="385" y1="60" x2="385" y2="104" stroke="#6e6e73"/><line x1="450" y1="60" x2="450" y2="104" stroke="#6e6e73"/><line x1="515" y1="60" x2="515" y2="104" stroke="#6e6e73"/>
+<text x="92" y="88">□</text><text x="157" y="88">1</text><text x="222" y="88">1</text><text x="287" y="88">1</text><text x="352" y="88" fill="#0a84ff" font-weight="600">□</text><text x="417" y="88">□</text><text x="482" y="88">□</text><text x="547" y="88">□</text>
+</g>
+<text x="30" y="88" font-size="14" fill="#6e6e73">…</text><text x="596" y="88" font-size="14" fill="#6e6e73">…</text>
+<polygon points="352,110 340,132 364,132" fill="#0a84ff"/>
+<rect x="292" y="132" width="120" height="40" rx="6" fill="#0a84ff"/>
+<text x="352" y="157" text-anchor="middle" font-size="14" fill="#fff" font-weight="600">헤드 (상태 q0)</text>
+<text x="60" y="128" font-size="12" fill="#6e6e73">테이프: 칸마다 기호 하나 (□ = 빈칸)</text>
+<rect x="60" y="196" width="520" height="130" rx="8" fill="#fff" stroke="#6e6e73"/>
+<text x="76" y="218" font-size="13" font-weight="600" fill="#1d1d1f">규칙표 예: 1진수(1의 개수로 수를 표현)에 1을 더한다</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="76" y="242">현재 상태</text><text x="176" y="242">읽은 기호</text><text x="276" y="242">쓸 기호</text><text x="366" y="242">이동</text><text x="436" y="242">다음 상태</text>
+<line x1="76" y1="248" x2="560" y2="248" stroke="#6e6e73"/>
+<text x="76" y="268">q0</text><text x="176" y="268">1</text><text x="276" y="268">1</text><text x="366" y="268">오른쪽</text><text x="436" y="268">q0</text>
+<text x="76" y="290">q0</text><text x="176" y="290">□</text><text x="276" y="290" fill="#0a84ff">1</text><text x="366" y="290">멈춤</text><text x="436" y="290" fill="#34c759">종료</text>
+<text x="76" y="314" fill="#6e6e73">결과: 111(3) 오른쪽 빈칸에 1을 써서 1111(4)이 된다</text>
+</g>
+<text x="320" y="350" text-anchor="middle" font-size="12" fill="#6e6e73">규칙표를 바꾸면 같은 기계가 다른 계산을 한다 (보편 튜링 기계는 규칙표도 테이프에서 읽는다)</text>
+</svg>

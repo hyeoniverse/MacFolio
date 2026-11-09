@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 220">
+<title>C 프로그램이 전처리, 컴파일, 어셈블, 링크를 거쳐 실행 파일이 되는 과정</title>
+<rect width="640" height="220" fill="#fff"/><defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<g fill="#f2f2f7"><rect x="10" y="40" width="90" height="44" rx="6"/><rect x="140" y="40" width="90" height="44" rx="6"/><rect x="270" y="40" width="90" height="44" rx="6"/><rect x="400" y="40" width="90" height="44" rx="6"/></g>
+<rect x="530" y="40" width="100" height="44" rx="6" fill="#0a84ff"/>
+<text x="55" y="60">main.c</text><text x="55" y="76" font-size="12" fill="#6e6e73">소스 코드</text>
+<text x="185" y="60">main.i</text><text x="185" y="76" font-size="12" fill="#6e6e73">전처리 결과</text>
+<text x="315" y="60">main.s</text><text x="315" y="76" font-size="12" fill="#6e6e73">어셈블리어</text>
+<text x="445" y="60">main.o</text><text x="445" y="76" font-size="12" fill="#6e6e73">목적 파일</text>
+<text x="580" y="60" fill="#fff">a.out</text><text x="580" y="76" font-size="12" fill="#fff">실행 파일</text>
+<g stroke="#6e6e73" stroke-width="2" marker-end="url(#b)"><line x1="100" y1="62" x2="138" y2="62"/><line x1="230" y1="62" x2="268" y2="62"/><line x1="360" y1="62" x2="398" y2="62"/><line x1="490" y1="62" x2="528" y2="62"/></g>
+<g font-size="12" fill="#ff9f0a" font-weight="700"><text x="120" y="110">전처리기</text><text x="250" y="110">컴파일러</text><text x="380" y="110">어셈블러</text><text x="510" y="110">링커</text></g>
+<g font-size="12" fill="#6e6e73"><text x="120" y="128">cc -E</text><text x="250" y="128">cc -S</text><text x="380" y="128">cc -c</text><text x="510" y="128">cc</text></g>
+<rect x="400" y="150" width="90" height="36" rx="6" fill="#fff" stroke="#34c759" stroke-width="2"/><text x="445" y="173">libc</text>
+<path d="M490 168 H580 V88" fill="none" stroke="#34c759" stroke-width="2" marker-end="url(#b)"/>
+<text x="250" y="200" font-size="12" fill="#6e6e73">printf 같은 외부 함수는 링크 단계에서 라이브러리와 연결된다</text>
+</g></svg>

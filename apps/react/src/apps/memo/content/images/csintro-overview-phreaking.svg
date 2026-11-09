@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>대역 내 신호 방식의 약점: 음성과 제어 신호(2600Hz)가 같은 회선을 쓰므로 가입자가 제어음을 흉내 낼 수 있다</title>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">대역 내 신호(in-band signaling)와 2600Hz 프리킹</text>
+<rect x="20" y="90" width="110" height="60" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="75" y="118" text-anchor="middle" font-size="13" fill="#1d1d1f">가입자 전화</text><text x="75" y="136" text-anchor="middle" font-size="12" fill="#6e6e73">호루라기 2600Hz</text>
+<rect x="250" y="90" width="140" height="60" rx="6" fill="#0a84ff"/><text x="320" y="118" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">장거리 교환기</text><text x="320" y="136" text-anchor="middle" font-size="12" fill="#fff">2600Hz = 회선 비어 있음</text>
+<rect x="510" y="90" width="110" height="60" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="565" y="124" text-anchor="middle" font-size="13" fill="#1d1d1f">상대 교환기</text>
+<line x1="130" y1="120" x2="250" y2="120" stroke="#1d1d1f" stroke-width="3"/><line x1="390" y1="120" x2="510" y2="120" stroke="#1d1d1f" stroke-width="3"/>
+<text x="190" y="108" text-anchor="middle" font-size="12" fill="#1d1d1f">음성 + 제어음</text><text x="450" y="108" text-anchor="middle" font-size="12" fill="#1d1d1f">같은 회선</text>
+<g font-size="12" fill="#1d1d1f">
+<text x="40" y="190">1. 무료 번호(수신자 부담)로 장거리 전화를 건다</text>
+<text x="40" y="212">2. 수화기에 2600Hz를 불어 넣으면 교환기는 통화가 끝나 회선이 비었다고 판단한다</text>
+<text x="40" y="234">3. 회선을 쥔 상태에서 MF 신호음으로 원하는 번호를 다시 다이얼한다</text>
+<text x="40" y="256" fill="#ff3b30">결과: 과금 기록 없이 임의의 장거리 통화</text>
+</g>
+<text x="320" y="288" text-anchor="middle" font-size="12" fill="#6e6e73">대책: 제어 신호를 별도 채널로 분리한 공통선 신호 방식(CCIS, 이후 SS7)</text>
+</svg>

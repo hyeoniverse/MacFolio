@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 300"><title>안드로이드 소프트웨어 스택: 앱, 자바 API 프레임워크, 네이티브 라이브러리와 ART, HAL, 리눅스 커널</title><rect width="640" height="300" fill="#fff"/>
+<g font-size="13" fill="#1d1d1f" text-anchor="middle">
+<rect x="40" y="15" width="400" height="44" rx="6" fill="#34c759"/><text x="240" y="35" fill="#fff">앱: 카메라 · 메시지 · 내가 설치한 앱</text><text x="240" y="51" fill="#fff" font-size="12">앱마다 다른 리눅스 UID로 실행 (샌드박스)</text>
+<rect x="40" y="69" width="400" height="44" rx="6" fill="#0a84ff"/><text x="240" y="89" fill="#fff">자바 API 프레임워크</text><text x="240" y="105" fill="#fff" font-size="12">액티비티 관리자 · 위치 관리자 · 권한 확인</text>
+<rect x="40" y="123" width="195" height="44" rx="6" fill="#f2f2f7" stroke="#0a84ff"/><text x="137" y="150">네이티브 C/C++ 라이브러리</text>
+<rect x="245" y="123" width="195" height="44" rx="6" fill="#f2f2f7" stroke="#0a84ff"/><text x="342" y="143">안드로이드 런타임(ART)</text><text x="342" y="159" font-size="12" fill="#6e6e73">앱 바이트코드 실행</text>
+<rect x="40" y="177" width="400" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="240" y="197">하드웨어 추상화 계층(HAL)</text><text x="240" y="213" font-size="12" fill="#6e6e73">카메라 · 블루투스 · 센서를 같은 인터페이스로</text>
+<rect x="40" y="231" width="400" height="44" rx="6" fill="#1d1d1f"/><text x="240" y="251" fill="#fff">리눅스 커널</text><text x="240" y="267" fill="#fff" font-size="12">드라이버 · 메모리 · 프로세스 · SELinux</text>
+<g text-anchor="start" font-size="12" fill="#6e6e73"><text x="460" y="42">사용자가 보는 부분</text><text x="460" y="96">앱 개발자가 호출하는 API</text><text x="460" y="204">제조사가 칩에 맞춰 구현</text><text x="460" y="258">오픈 소스(GPL)</text></g>
+</g></svg>

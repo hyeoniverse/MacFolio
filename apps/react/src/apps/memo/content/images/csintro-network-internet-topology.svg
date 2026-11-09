@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>메시형, 스타형, 트리형, 버스형, 링형, 하이브리드형 토폴로지</title>
+<rect width="640" height="430" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs><rect x="20" y="20" width="190" height="190" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="115" y="200" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">메시형</text>
+<line x1="115.0" y1="50.0" x2="167.30810839623345" y2="88.00406530937789" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="115.0" y1="50.0" x2="147.32818887608602" y2="149.4959346906221" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="115.0" y1="50.0" x2="82.67181112391398" y2="149.4959346906221" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="115.0" y1="50.0" x2="62.69189160376655" y2="88.00406530937789" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="167.30810839623345" y1="88.00406530937789" x2="147.32818887608602" y2="149.4959346906221" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="167.30810839623345" y1="88.00406530937789" x2="82.67181112391398" y2="149.4959346906221" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="167.30810839623345" y1="88.00406530937789" x2="62.69189160376655" y2="88.00406530937789" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="147.32818887608602" y1="149.4959346906221" x2="82.67181112391398" y2="149.4959346906221" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="147.32818887608602" y1="149.4959346906221" x2="62.69189160376655" y2="88.00406530937789" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="82.67181112391398" y1="149.4959346906221" x2="62.69189160376655" y2="88.00406530937789" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="115.0" cy="50.0" r="9" fill="#0a84ff"/>
+<circle cx="167.30810839623345" cy="88.00406530937789" r="9" fill="#0a84ff"/>
+<circle cx="147.32818887608602" cy="149.4959346906221" r="9" fill="#0a84ff"/>
+<circle cx="82.67181112391398" cy="149.4959346906221" r="9" fill="#0a84ff"/>
+<circle cx="62.69189160376655" cy="88.00406530937789" r="9" fill="#0a84ff"/>
+<rect x="225" y="20" width="190" height="190" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="320" y="200" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">스타형</text>
+<line x1="320" y1="105" x2="380.0" y2="105.0" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="320" y1="105" x2="350.0" y2="156.96152422706632" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="320" y1="105" x2="290.0" y2="156.96152422706632" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="320" y1="105" x2="260.0" y2="105.00000000000001" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="320" y1="105" x2="290.0" y2="53.038475772933694" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="320" y1="105" x2="350.0" y2="53.03847577293369" stroke="#6e6e73" stroke-width="1.5"/>
+<rect x="298" y="92" width="44" height="26" rx="4" fill="#ff9f0a" stroke="none"/>
+<text x="320" y="110" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">허브</text>
+<circle cx="380.0" cy="105.0" r="9" fill="#0a84ff"/>
+<circle cx="350.0" cy="156.96152422706632" r="9" fill="#0a84ff"/>
+<circle cx="290.0" cy="156.96152422706632" r="9" fill="#0a84ff"/>
+<circle cx="260.0" cy="105.00000000000001" r="9" fill="#0a84ff"/>
+<circle cx="290.0" cy="53.038475772933694" r="9" fill="#0a84ff"/>
+<circle cx="350.0" cy="53.03847577293369" r="9" fill="#0a84ff"/>
+<rect x="430" y="20" width="190" height="190" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="525" y="200" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">트리형</text>
+<line x1="525" y1="50" x2="475" y2="105" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="525" y1="50" x2="575" y2="105" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="475" y1="105" x2="450" y2="155" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="475" y1="105" x2="500" y2="155" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="575" y1="105" x2="550" y2="155" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="575" y1="105" x2="600" y2="155" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="525" cy="50" r="10" fill="#ff9f0a"/>
+<circle cx="475" cy="105" r="9" fill="#ff9f0a"/>
+<circle cx="575" cy="105" r="9" fill="#ff9f0a"/>
+<circle cx="450" cy="155" r="9" fill="#0a84ff"/>
+<circle cx="500" cy="155" r="9" fill="#0a84ff"/>
+<circle cx="550" cy="155" r="9" fill="#0a84ff"/>
+<circle cx="600" cy="155" r="9" fill="#0a84ff"/>
+<rect x="20" y="225" width="190" height="190" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="115" y="405" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">버스형</text>
+<line x1="40" y1="325" x2="190" y2="325" stroke="#1d1d1f" stroke-width="3"/>
+<rect x="32" y="317" width="8" height="16" rx="1" fill="#ff3b30" stroke="none"/>
+<rect x="190" y="317" width="8" height="16" rx="1" fill="#ff3b30" stroke="none"/>
+<line x1="65" y1="325" x2="65" y2="280" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="65" cy="280" r="9" fill="#0a84ff"/>
+<circle cx="65" cy="325" r="4" fill="#ff9f0a"/>
+<line x1="115" y1="325" x2="115" y2="370" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="115" cy="370" r="9" fill="#0a84ff"/>
+<circle cx="115" cy="325" r="4" fill="#ff9f0a"/>
+<line x1="165" y1="325" x2="165" y2="280" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="165" cy="280" r="9" fill="#0a84ff"/>
+<circle cx="165" cy="325" r="4" fill="#ff9f0a"/>
+<text x="115" y="255" font-size="12" fill="#ff3b30" text-anchor="middle">양 끝: 터미네이터</text>
+<rect x="225" y="225" width="190" height="190" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="320" y="405" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">링형</text>
+<line x1="375.0" y1="310.0" x2="347.5" y2="357.6313972081441" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="347.5" y1="357.6313972081441" x2="292.5" y2="357.6313972081441" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="292.5" y1="357.6313972081441" x2="265.0" y2="310.0" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="265.0" y1="310.0" x2="292.5" y2="262.3686027918559" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="292.5" y1="262.3686027918559" x2="347.5" y2="262.3686027918559" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="347.5" y1="262.3686027918559" x2="375.0" y2="310.0" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="375.0" cy="310.0" r="9" fill="#0a84ff"/>
+<circle cx="347.5" cy="357.6313972081441" r="9" fill="#0a84ff"/>
+<circle cx="292.5" cy="357.6313972081441" r="9" fill="#0a84ff"/>
+<circle cx="265.0" cy="310.0" r="9" fill="#0a84ff"/>
+<circle cx="292.5" cy="262.3686027918559" r="9" fill="#0a84ff"/>
+<circle cx="347.5" cy="262.3686027918559" r="9" fill="#0a84ff"/>
+<text x="320" y="315" font-size="12" fill="#6e6e73" text-anchor="middle">한 방향 순환</text>
+<rect x="430" y="225" width="190" height="190" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="525" y="405" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="700">하이브리드형</text>
+<line x1="450" y1="350" x2="600" y2="350" stroke="#1d1d1f" stroke-width="3"/>
+<line x1="485" y1="300" x2="485" y2="350" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="565" y1="300" x2="565" y2="350" stroke="#6e6e73" stroke-width="1.5"/>
+<line x1="485" y1="300" x2="457" y2="265" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="457" cy="265" r="7" fill="#0a84ff"/>
+<line x1="485" y1="300" x2="485" y2="255" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="485" cy="255" r="7" fill="#0a84ff"/>
+<line x1="485" y1="300" x2="513" y2="265" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="513" cy="265" r="7" fill="#0a84ff"/>
+<circle cx="485" cy="300" r="9" fill="#ff9f0a"/>
+<line x1="565" y1="300" x2="537" y2="265" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="537" cy="265" r="7" fill="#0a84ff"/>
+<line x1="565" y1="300" x2="565" y2="255" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="565" cy="255" r="7" fill="#0a84ff"/>
+<line x1="565" y1="300" x2="593" y2="265" stroke="#6e6e73" stroke-width="1.5"/>
+<circle cx="593" cy="265" r="7" fill="#0a84ff"/>
+<circle cx="565" cy="300" r="9" fill="#ff9f0a"/>
+<text x="525" y="372" font-size="12" fill="#6e6e73" text-anchor="middle">스타형 둘을 버스로 연결</text>
+</svg>

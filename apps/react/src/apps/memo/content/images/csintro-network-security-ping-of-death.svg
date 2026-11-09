@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>IP 단편화와 Ping of Death의 재조립 길이 초과</title>
+<defs></defs>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">IP 단편화와 Ping of Death</text>
+<text x="30" y="65" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="600">정상 단편화 (MTU 1,500바이트 링크)</text>
+<rect x="30" y="78" width="580" height="30" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="320.0" y="97.2" font-size="12" fill="#1d1d1f" text-anchor="middle">ICMP 에코 요청 4,000바이트 (IP 헤더 20바이트 + 데이터)</text>
+<rect x="30" y="130" width="200" height="30" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="130.0" y="149.2" font-size="12" fill="#1d1d1f" text-anchor="middle">단편 1: 오프셋 0, MF=1</text>
+<rect x="234" y="130" width="200" height="30" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="334.0" y="149.2" font-size="12" fill="#1d1d1f" text-anchor="middle">단편 2: 오프셋 1480, MF=1</text>
+<rect x="438" y="130" width="176" height="30" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="526.0" y="149.2" font-size="12" fill="#1d1d1f" text-anchor="middle">단편 3: 오프셋 2960, MF=0</text>
+<text x="30" y="182" font-size="12" fill="#6e6e73" text-anchor="start">목적지 호스트만 오프셋 순서대로 재조립한다. 중간 라우터는 다시 합치지 않는다.</text>
+<text x="30" y="220" font-size="13" fill="#ff3b30" text-anchor="start" font-weight="600">Ping of Death</text>
+<rect x="30" y="232" width="500" height="30" rx="8" fill="#fff" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="280.0" y="251.2" font-size="12" fill="#ff3b30" text-anchor="middle">단편들의 (오프셋 + 길이) 합 = 65,535바이트 초과</text>
+<rect x="534" y="232" width="76" height="30" rx="8" fill="#ffe5e3" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="572.0" y="251.2" font-size="12" fill="#ff3b30" text-anchor="middle">넘침</text>
+<text x="30" y="290" font-size="12" fill="#6e6e73" text-anchor="start">IP 헤더의 전체 길이 필드는 16비트이므로 최대 65,535바이트다.</text>
+<text x="30" y="310" font-size="12" fill="#6e6e73" text-anchor="start">마지막 단편의 오프셋을 크게 잡으면 재조립 버퍼를 넘겨 1996년 무렵의 운영체제가 멈췄다.</text>
+</svg>

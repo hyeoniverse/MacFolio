@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>시스템 버스로 메모리를 읽는 과정</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">CPU가 0x1000번지를 읽는 과정</text>
+<rect x="30" y="60" width="140" height="230" rx="12" fill="#0a84ff"/><text x="100" y="170" text-anchor="middle" font-size="15" font-weight="600" fill="#fff">CPU</text><text x="100" y="192" text-anchor="middle" font-size="12" fill="#fff">MAR · MBR</text>
+<rect x="470" y="60" width="140" height="230" rx="12" fill="#f2f2f7" stroke="#6e6e73"/><text x="540" y="160" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">주기억장치</text><text x="540" y="184" text-anchor="middle" font-size="12" fill="#1d1d1f">0x1000: 42</text>
+<line x1="170" y1="95" x2="468" y2="95" stroke="#0a84ff" stroke-width="3" marker-end="url(#a)"/><text x="320" y="86" text-anchor="middle" font-size="13" fill="#1d1d1f">① 주소 버스: 0x1000 (단방향)</text>
+<line x1="170" y1="170" x2="468" y2="170" stroke="#ff9f0a" stroke-width="3" marker-end="url(#a)"/><text x="320" y="161" text-anchor="middle" font-size="13" fill="#1d1d1f">② 제어 버스: 읽기(READ) 신호</text>
+<line x1="468" y1="250" x2="172" y2="250" stroke="#34c759" stroke-width="3" marker-end="url(#a)"/><text x="320" y="241" text-anchor="middle" font-size="13" fill="#1d1d1f">③ 데이터 버스: 값 42 (양방향)</text>
+<text x="320" y="315" text-anchor="middle" font-size="12" fill="#6e6e73">④ CPU는 데이터 버스의 값을 MBR에 받아 레지스터로 옮긴다</text>
+</svg>

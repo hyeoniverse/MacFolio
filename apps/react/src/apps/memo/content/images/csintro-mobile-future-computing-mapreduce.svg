@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 300"><title>MapReduce 단어 세기: 문서를 나눠 각 서버가 단어마다 1을 붙이고, 같은 단어끼리 모아 합산</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker></defs>
+<g font-size="12" fill="#1d1d1f" text-anchor="middle">
+<text x="80" y="22" font-weight="600" font-size="13">입력 조각</text><text x="250" y="22" font-weight="600" font-size="13">Map</text><text x="420" y="22" font-weight="600" font-size="13">셔플 (같은 키끼리)</text><text x="580" y="22" font-weight="600" font-size="13">Reduce</text>
+<rect x="10" y="40" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="80" y="65">"보안 클라우드"</text>
+<rect x="10" y="130" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="80" y="155">"클라우드 보안 보안"</text>
+<rect x="10" y="220" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="80" y="245">"빅데이터 클라우드"</text>
+<rect x="185" y="35" width="130" height="50" rx="6" fill="#0a84ff"/><text x="250" y="55" fill="#fff">(보안,1)</text><text x="250" y="72" fill="#fff">(클라우드,1)</text>
+<rect x="185" y="120" width="130" height="60" rx="6" fill="#0a84ff"/><text x="250" y="139" fill="#fff">(클라우드,1)</text><text x="250" y="155" fill="#fff">(보안,1)</text><text x="250" y="171" fill="#fff">(보안,1)</text>
+<rect x="185" y="215" width="130" height="50" rx="6" fill="#0a84ff"/><text x="250" y="235" fill="#fff">(빅데이터,1)</text><text x="250" y="252" fill="#fff">(클라우드,1)</text>
+<rect x="350" y="45" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#ff9f0a"/><text x="420" y="70">보안: [1, 1, 1]</text>
+<rect x="350" y="130" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#ff9f0a"/><text x="420" y="155">클라우드: [1, 1, 1]</text>
+<rect x="350" y="215" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#ff9f0a"/><text x="420" y="240">빅데이터: [1]</text>
+<rect x="525" y="45" width="110" height="40" rx="6" fill="#34c759"/><text x="580" y="70" fill="#fff">보안 3</text>
+<rect x="525" y="130" width="110" height="40" rx="6" fill="#34c759"/><text x="580" y="155" fill="#fff">클라우드 3</text>
+<rect x="525" y="215" width="110" height="40" rx="6" fill="#34c759"/><text x="580" y="240" fill="#fff">빅데이터 1</text>
+<g stroke="#6e6e73" marker-end="url(#a)"><line x1="152" y1="60" x2="182" y2="60"/><line x1="152" y1="150" x2="182" y2="150"/><line x1="152" y1="240" x2="182" y2="240"/><line x1="492" y1="65" x2="522" y2="65"/><line x1="492" y1="150" x2="522" y2="150"/><line x1="492" y1="235" x2="522" y2="235"/>
+<line x1="317" y1="55" x2="347" y2="62"/><line x1="317" y1="155" x2="347" y2="72"/><line x1="317" y1="72" x2="347" y2="145"/><line x1="317" y1="140" x2="347" y2="150"/><line x1="317" y1="252" x2="347" y2="158"/><line x1="317" y1="235" x2="347" y2="235"/></g>
+<text x="320" y="290" fill="#6e6e73">Map과 Reduce는 각각 여러 서버에서 동시에 실행된다</text>
+</g></svg>

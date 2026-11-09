@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>캐시 적중과 캐시 실패</title><rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">캐시 적중과 캐시 실패</text>
+<g font-size="13">
+<rect x="30" y="110" width="120" height="80" rx="10" fill="#0a84ff"/><text x="90" y="155" text-anchor="middle" fill="#fff" font-weight="600">CPU</text>
+<rect x="260" y="110" width="120" height="80" rx="10" fill="#34c759"/><text x="320" y="145" text-anchor="middle" fill="#fff" font-weight="600">캐시</text><text x="320" y="165" text-anchor="middle" fill="#fff">SRAM</text>
+<rect x="490" y="110" width="120" height="80" rx="10" fill="#f2f2f7" stroke="#6e6e73"/><text x="550" y="145" text-anchor="middle" fill="#1d1d1f" font-weight="600">주기억장치</text><text x="550" y="165" text-anchor="middle" fill="#1d1d1f">DRAM</text>
+<path d="M150 130 H256" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="205" y="122" text-anchor="middle" fill="#6e6e73">요청</text>
+<path d="M256 170 H152" stroke="#34c759" stroke-width="2" marker-end="url(#a)"/><text x="205" y="210" text-anchor="middle" fill="#34c759">적중: 약 1 ns</text>
+<path d="M380 130 H486" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#a)"/><text x="435" y="122" text-anchor="middle" fill="#ff9f0a">실패 시</text>
+<path d="M486 170 H382" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#a)"/><text x="435" y="210" text-anchor="middle" fill="#ff9f0a">64바이트 라인 복사</text><text x="435" y="228" text-anchor="middle" fill="#ff9f0a">약 100 ns</text>
+</g>
+<text x="320" y="285" text-anchor="middle" font-size="12" fill="#6e6e73">실패하면 요청한 바이트 주변(캐시 라인)까지 함께 가져와 다음 접근이 적중하게 한다</text>
+</svg>

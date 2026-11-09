@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>계층을 내려가며 TCP, IP, MAC 헤더가 차례로 붙는 캡슐화</title>
+<rect width="640" height="350" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="22" font-size="12" fill="#6e6e73" text-anchor="middle">보내는 쪽은 위에서 아래로 헤더를 붙이고(캡슐화), 받는 쪽은 아래에서 위로 떼어 낸다(역캡슐화)</text>
+<text x="20" y="64" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">응용</text>
+<rect x="352" y="40" width="216" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/>
+<text x="460.0" y="63" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">데이터</text>
+<text x="20" y="120" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">전송</text>
+<rect x="287" y="96" width="65" height="36" fill="#ff9f0a" stroke="#fff" stroke-width="2"/>
+<text x="319.59999999999997" y="119" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">TCP 헤더</text>
+<rect x="352" y="96" width="216" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/>
+<text x="460.0" y="119" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">데이터</text>
+<text x="20" y="176" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">네트워크</text>
+<rect x="230" y="152" width="58" height="36" fill="#34c759" stroke="#fff" stroke-width="2"/>
+<text x="258.40000000000003" y="175" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">IP 헤더</text>
+<rect x="287" y="152" width="65" height="36" fill="#ff9f0a" stroke="#fff" stroke-width="2"/>
+<text x="319.6" y="175" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">TCP 헤더</text>
+<rect x="352" y="152" width="216" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/>
+<text x="460.00000000000006" y="175" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">데이터</text>
+<text x="20" y="232" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">데이터 링크</text>
+<rect x="143" y="208" width="58" height="36" fill="#8e8e93" stroke="#fff" stroke-width="2"/>
+<text x="172.0" y="231" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">MAC 헤더</text>
+<rect x="201" y="208" width="58" height="36" fill="#34c759" stroke="#fff" stroke-width="2"/>
+<text x="229.59999999999997" y="231" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">IP 헤더</text>
+<rect x="258" y="208" width="65" height="36" fill="#ff9f0a" stroke="#fff" stroke-width="2"/>
+<text x="290.79999999999995" y="231" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">TCP 헤더</text>
+<rect x="323" y="208" width="216" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/>
+<text x="431.2" y="231" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">데이터</text>
+<rect x="539" y="208" width="29" height="36" fill="#8e8e93" stroke="#fff" stroke-width="2"/>
+<text x="553.6" y="231" font-size="12" fill="#fff" text-anchor="middle" font-weight="700">FCS</text>
+<text x="20" y="290" font-size="13" fill="#1d1d1f" text-anchor="start" font-weight="700">물리</text>
+<rect x="150" y="268" width="418" height="36" rx="2" fill="#1d1d1f" stroke="none"/>
+<text x="359" y="291" font-size="12" fill="#fff" text-anchor="middle">0110100101110010 … 전기 신호·빛·전파</text>
+<text x="576" y="116" font-size="12" fill="#6e6e73" text-anchor="start">세그먼트</text>
+<text x="576" y="172" font-size="12" fill="#6e6e73" text-anchor="start">패킷</text>
+<text x="576" y="228" font-size="12" fill="#6e6e73" text-anchor="start">프레임</text>
+<text x="576" y="290" font-size="12" fill="#6e6e73" text-anchor="start">비트</text>
+<text x="320" y="335" font-size="12" fill="#6e6e73" text-anchor="middle">계층마다 붙는 헤더에는 그 계층이 일을 하는 데 필요한 주소·제어 정보가 담긴다</text>
+</svg>

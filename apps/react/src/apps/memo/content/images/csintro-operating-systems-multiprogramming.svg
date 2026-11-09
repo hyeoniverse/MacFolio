@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 300">
+<title>단일 프로그래밍과 다중 프로그래밍의 CPU 사용 비교</title>
+<rect width="640" height="300" fill="#fff"/>
+<g font-size="13" fill="#1d1d1f">
+<text x="20" y="26" font-weight="700">단일 프로그래밍: 프로그램 A만 메모리에 있음</text>
+<text x="20" y="62">CPU</text>
+<rect x="110" y="46" width="80" height="26" fill="#0a84ff"/><rect x="190" y="46" width="120" height="26" fill="#f2f2f7"/><rect x="310" y="46" width="80" height="26" fill="#0a84ff"/><rect x="390" y="46" width="120" height="26" fill="#f2f2f7"/>
+<text x="150" y="64" text-anchor="middle" fill="#fff">A</text><text x="250" y="64" text-anchor="middle" fill="#6e6e73">유휴</text><text x="350" y="64" text-anchor="middle" fill="#fff">A</text><text x="450" y="64" text-anchor="middle" fill="#6e6e73">유휴</text>
+<text x="20" y="96">입출력</text>
+<rect x="190" y="80" width="120" height="26" fill="#34c759"/><rect x="390" y="80" width="120" height="26" fill="#34c759"/><text x="250" y="98" text-anchor="middle" fill="#fff">A 디스크 읽기</text><text x="450" y="98" text-anchor="middle" fill="#fff">A 디스크 읽기</text>
+<text x="520" y="64" font-size="12" fill="#ff3b30">CPU 사용률 40%</text>
+<text x="20" y="156" font-weight="700">다중 프로그래밍: A와 B가 함께 메모리에 있음</text>
+<text x="20" y="192">CPU</text>
+<rect x="110" y="176" width="80" height="26" fill="#0a84ff"/><rect x="190" y="176" width="80" height="26" fill="#ff9f0a"/><rect x="270" y="176" width="40" height="26" fill="#f2f2f7"/><rect x="310" y="176" width="80" height="26" fill="#0a84ff"/><rect x="390" y="176" width="80" height="26" fill="#ff9f0a"/>
+<text x="150" y="194" text-anchor="middle" fill="#fff">A</text><text x="230" y="194" text-anchor="middle" fill="#fff">B</text><text x="350" y="194" text-anchor="middle" fill="#fff">A</text><text x="430" y="194" text-anchor="middle" fill="#fff">B</text>
+<text x="20" y="226">입출력</text>
+<rect x="190" y="210" width="120" height="26" fill="#34c759"/><rect x="390" y="210" width="120" height="26" fill="#34c759"/><text x="250" y="228" text-anchor="middle" fill="#fff">A 디스크 읽기</text><text x="450" y="228" text-anchor="middle" fill="#fff">A 디스크 읽기</text>
+<rect x="270" y="244" width="120" height="20" fill="#34c759" opacity="0.6"/><text x="330" y="259" text-anchor="middle" font-size="12" fill="#fff">B 네트워크 대기</text>
+<text x="520" y="194" font-size="12" fill="#34c759">CPU 사용률 약 80%</text>
+<line x1="110" y1="280" x2="510" y2="280" stroke="#6e6e73"/><text x="110" y="296" font-size="12" fill="#6e6e73">0</text><text x="500" y="296" font-size="12" fill="#6e6e73">시간 →</text>
+</g></svg>

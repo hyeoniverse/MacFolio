@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>입력이 한 글자만 달라도 MD5와 SHA-256 해시값이 전혀 달라진다</title>
+<defs><marker id="a6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="270" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">한 글자 차이와 해시값</text>
+<rect x="20" y="60" width="80" height="40" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="60.0" y="84.9" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600">hello</text>
+<rect x="130" y="60" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="175.0" y="84.2" font-size="12" fill="#1d1d1f" text-anchor="middle">MD5</text>
+<line x1="102" y1="80" x2="128" y2="80" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<line x1="222" y1="80" x2="248" y2="80" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="250" y="60" width="370" height="40" rx="8" fill="#f2f2f7" stroke="#e5e5ea" stroke-width="1.5"/>
+<text x="435.0" y="84.5" font-size="13" fill="#1d1d1f" text-anchor="middle"></text>
+<text x="262" y="85" font-size="12.5" fill="#1d1d1f" text-anchor="start" font-family="ui-monospace, Menlo, monospace">5d41402abc4b2a76b9719d911017c592</text>
+<rect x="20" y="122" width="80" height="40" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="60.0" y="146.9" font-size="14" fill="#ff3b30" text-anchor="middle" font-weight="600">hellp</text>
+<rect x="130" y="122" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="175.0" y="146.2" font-size="12" fill="#1d1d1f" text-anchor="middle">MD5</text>
+<line x1="102" y1="142" x2="128" y2="142" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<line x1="222" y1="142" x2="248" y2="142" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="250" y="122" width="370" height="40" rx="8" fill="#f2f2f7" stroke="#e5e5ea" stroke-width="1.5"/>
+<text x="435.0" y="146.6" font-size="13" fill="#1d1d1f" text-anchor="middle"></text>
+<text x="262" y="147" font-size="12.5" fill="#1d1d1f" text-anchor="start" font-family="ui-monospace, Menlo, monospace">c983190483df167d2a3841463c2a9341</text>
+<rect x="20" y="184" width="80" height="40" rx="8" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="60.0" y="208.9" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600">hello</text>
+<rect x="130" y="184" width="90" height="40" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="175.0" y="208.2" font-size="12" fill="#1d1d1f" text-anchor="middle">SHA-256</text>
+<line x1="102" y1="204" x2="128" y2="204" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<line x1="222" y1="204" x2="248" y2="204" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<rect x="250" y="184" width="370" height="40" rx="8" fill="#f2f2f7" stroke="#e5e5ea" stroke-width="1.5"/>
+<text x="435.0" y="208.6" font-size="13" fill="#1d1d1f" text-anchor="middle"></text>
+<text x="262" y="209" font-size="12.5" fill="#1d1d1f" text-anchor="start" font-family="ui-monospace, Menlo, monospace">2cf24dba5fb0a30e…1fa7425e73043362938b9824</text>
+<text x="320" y="255" font-size="12" fill="#6e6e73" text-anchor="middle">출력 길이는 입력 길이와 관계없이 고정이다. MD5 128비트(16진수 32자), SHA-256 256비트(64자)</text>
+</svg>

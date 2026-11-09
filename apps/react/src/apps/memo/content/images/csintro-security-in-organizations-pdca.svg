@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>정보보호 관리체계는 계획 실행 점검 개선을 반복한다</title>
+<defs><marker id="a6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="30" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600">관리체계의 PDCA 순환</text>
+<rect x="220" y="50" width="200" height="60" rx="8" fill="#f2f2f7" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320.0" y="75.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">Plan 계획</text>
+<text x="320.0" y="92.7" font-size="12" fill="#1d1d1f" text-anchor="middle">정책·범위, 위험 평가, 대책 선정</text>
+<rect x="420" y="130" width="200" height="60" rx="8" fill="#f2f2f7" stroke="#34c759" stroke-width="1.5"/>
+<text x="520.0" y="155.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">Do 실행</text>
+<text x="520.0" y="172.7" font-size="12" fill="#1d1d1f" text-anchor="middle">보호대책 구현·운영, 교육</text>
+<rect x="220" y="210" width="200" height="60" rx="8" fill="#f2f2f7" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="320.0" y="235.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">Check 점검</text>
+<text x="320.0" y="252.7" font-size="12" fill="#1d1d1f" text-anchor="middle">내부 감사, 로그 검토, 인증 심사</text>
+<rect x="20" y="130" width="200" height="60" rx="8" fill="#f2f2f7" stroke="#ff3b30" stroke-width="1.5"/>
+<text x="120.0" y="155.7" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">Act 개선</text>
+<text x="120.0" y="172.7" font-size="12" fill="#1d1d1f" text-anchor="middle">결함 시정, 정책 개정</text>
+<path d="M420 70 Q520 80 530 126" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<path d="M520 192 Q520 240 422 245" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<path d="M218 245 Q120 240 118 194" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+<path d="M118 128 Q120 75 218 72" fill="none" stroke="#6e6e73" stroke-width="1.6" marker-end="url(#a6e6e73)"/>
+</svg>

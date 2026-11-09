@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>처리 성능과 용도에 따른 컴퓨터의 종류: 슈퍼컴퓨터, 메인프레임, 서버·워크스테이션, PC, 모바일·임베디드</title>
+<rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">컴퓨터의 종류</text>
+<g text-anchor="middle" font-size="13">
+<polygon points="250,50 390,50 410,100 230,100" fill="#0a84ff"/><text x="320" y="80" fill="#fff" font-weight="600">슈퍼컴퓨터</text>
+<polygon points="230,104 410,104 430,154 210,154" fill="#5aa9ff"/><text x="320" y="134" fill="#fff" font-weight="600">메인프레임</text>
+<polygon points="210,158 430,158 450,208 190,208" fill="#34c759"/><text x="320" y="188" fill="#fff" font-weight="600">서버 · 워크스테이션</text>
+<polygon points="190,212 450,212 470,262 170,262" fill="#ff9f0a"/><text x="320" y="242" fill="#fff" font-weight="600">개인용 컴퓨터</text>
+<polygon points="170,266 470,266 490,316 150,316" fill="#f2f2f7" stroke="#6e6e73"/><text x="320" y="296" fill="#1d1d1f" font-weight="600">모바일 · 임베디드</text>
+</g>
+<g font-size="12" fill="#6e6e73">
+<text x="430" y="80">기상·신약 시뮬레이션, FLOPS</text>
+<text x="450" y="134">은행 거래, 항공 예약</text>
+<text x="470" y="188">웹 서버, 설계·연구</text>
+<text x="490" y="242">문서, 웹, 게임</text>
+<text x="20" y="80">대수 적음</text><text x="20" y="96">대당 성능 높음</text>
+<text x="20" y="282">대수 많음</text><text x="20" y="298">저전력</text>
+</g>
+<path d="M60 108 V262" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#b)"/>
+<defs><marker id="b" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#6e6e73"/></marker></defs>
+</svg>

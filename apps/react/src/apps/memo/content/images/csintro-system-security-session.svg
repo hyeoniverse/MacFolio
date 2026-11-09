@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" viewBox="0 0 640 280"><title>로그인 후 세션 쿠키로 상태를 유지하고, 가로챈 쿠키로 세션 하이재킹이 일어나는 흐름</title><rect width="640" height="280" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0a84ff"/></marker><marker id="r" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#ff3b30"/></marker></defs>
+<g font-size="13" fill="#1d1d1f">
+<rect x="20" y="20" width="110" height="230" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="75" y="45" text-anchor="middle">브라우저</text>
+<rect x="510" y="20" width="110" height="230" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="565" y="45" text-anchor="middle">웹 서버</text>
+<line x1="132" y1="70" x2="507" y2="70" stroke="#6e6e73" marker-end="url(#a)"/><text x="320" y="64" text-anchor="middle" font-size="12">① 아이디 + 비밀번호</text>
+<line x1="507" y1="105" x2="132" y2="105" stroke="#0a84ff" marker-end="url(#b)"/><text x="320" y="99" text-anchor="middle" font-size="12" fill="#0a84ff">② Set-Cookie: sid=7f3a…</text>
+<line x1="132" y1="140" x2="507" y2="140" stroke="#6e6e73" marker-end="url(#a)"/><text x="320" y="134" text-anchor="middle" font-size="12">③ 이후 요청마다 Cookie: sid=7f3a…</text>
+<rect x="250" y="175" width="140" height="40" rx="6" fill="#ff3b30"/><text x="320" y="200" text-anchor="middle" fill="#fff">공격자 (스니핑)</text>
+<line x1="320" y1="143" x2="320" y2="172" stroke="#ff3b30" stroke-dasharray="4 3" marker-end="url(#r)"/>
+<line x1="392" y1="200" x2="507" y2="200" stroke="#ff3b30" marker-end="url(#r)"/><text x="450" y="230" text-anchor="middle" font-size="12" fill="#ff3b30">④ 같은 sid로</text><text x="450" y="246" text-anchor="middle" font-size="12" fill="#ff3b30">사용자 행세</text>
+</g></svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>URL을 스킴, 호스트, 포트, 경로, 쿼리, 프래그먼트로 나눈 구조</title>
+<rect width="640" height="320" fill="#fff"/>
+<rect x="14" y="40" width="612" height="46" rx="6" fill="#f2f2f7" stroke="none"/>
+<text x="24" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff" textLength="48.0" lengthAdjust="spacingAndGlyphs">https</text>
+<line x1="26" y1="96" x2="70.0" y2="96" stroke="#0a84ff" stroke-width="3"/>
+<text x="48.0" y="118" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">스킴</text>
+<text x="72.0" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#6e6e73" textLength="28.8" lengthAdjust="spacingAndGlyphs">://</text>
+<text x="100.8" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#ff9f0a" textLength="144.0" lengthAdjust="spacingAndGlyphs">www.example.com</text>
+<line x1="102.8" y1="96" x2="242.8" y2="96" stroke="#ff9f0a" stroke-width="3"/>
+<text x="172.8" y="118" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="700">호스트</text>
+<text x="244.8" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#34c759" textLength="38.4" lengthAdjust="spacingAndGlyphs">:443</text>
+<line x1="246.8" y1="96" x2="281.2" y2="96" stroke="#34c759" stroke-width="3"/>
+<text x="264.0" y="118" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">포트</text>
+<text x="283.2" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#0a84ff" textLength="144.0" lengthAdjust="spacingAndGlyphs">/blog/post.html</text>
+<line x1="285.2" y1="96" x2="425.2" y2="96" stroke="#0a84ff" stroke-width="3"/>
+<text x="355.2" y="118" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="700">경로</text>
+<text x="427.2" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#ff9f0a" textLength="67.2" lengthAdjust="spacingAndGlyphs">?page=2</text>
+<line x1="429.2" y1="96" x2="492.4" y2="96" stroke="#ff9f0a" stroke-width="3"/>
+<text x="460.8" y="118" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="700">쿼리</text>
+<text x="494.4" y="70" font-size="16" font-family="ui-monospace, Menlo, monospace" fill="#34c759" textLength="86.4" lengthAdjust="spacingAndGlyphs">#comments</text>
+<line x1="496.4" y1="96" x2="578.8" y2="96" stroke="#34c759" stroke-width="3"/>
+<text x="537.6" y="118" font-size="13" fill="#34c759" text-anchor="middle" font-weight="700">프래그먼트</text>
+<text x="100" y="160" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="700">스킴</text>
+<text x="115" y="160" font-size="13" fill="#6e6e73" text-anchor="start">어떤 프로토콜로 통신할지. https, http, ftp, mailto 등</text>
+<text x="100" y="186" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="700">호스트</text>
+<text x="115" y="186" font-size="13" fill="#6e6e73" text-anchor="start">DNS로 IP 주소를 찾을 서버 이름</text>
+<text x="100" y="212" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="700">포트</text>
+<text x="115" y="212" font-size="13" fill="#6e6e73" text-anchor="start">생략하면 스킴 기본값 (http 80, https 443)</text>
+<text x="100" y="238" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="700">경로</text>
+<text x="115" y="238" font-size="13" fill="#6e6e73" text-anchor="start">서버 안에서 자원의 위치</text>
+<text x="100" y="264" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="700">쿼리</text>
+<text x="115" y="264" font-size="13" fill="#6e6e73" text-anchor="start">서버 프로그램에 넘기는 이름=값 쌍</text>
+<text x="100" y="290" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="700">프래그먼트</text>
+<text x="115" y="290" font-size="13" fill="#6e6e73" text-anchor="start">문서 안의 위치. 서버로 전송되지 않는다</text>
+</svg>

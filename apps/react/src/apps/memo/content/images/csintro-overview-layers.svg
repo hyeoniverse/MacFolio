@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>소프트웨어 계층: 사용자, 응용 소프트웨어, 시스템 소프트웨어(운영체제, 드라이버), 하드웨어</title>
+<rect width="640" height="320" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">하드웨어와 소프트웨어의 계층</text>
+<g font-size="14" text-anchor="middle">
+<rect x="100" y="48" width="440" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="320" y="75" fill="#1d1d1f">사용자</text>
+<rect x="100" y="104" width="440" height="50" rx="6" fill="#ff9f0a"/><text x="320" y="126" fill="#fff" font-weight="600">응용 소프트웨어</text><text x="320" y="144" fill="#fff" font-size="12">브라우저, 워드프로세서, 스프레드시트, 게임</text>
+<rect x="100" y="166" width="440" height="70" rx="6" fill="#0a84ff"/><text x="320" y="188" fill="#fff" font-weight="600">시스템 소프트웨어</text><text x="320" y="206" fill="#fff" font-size="12">운영체제(Windows, macOS, Linux), 장치 드라이버</text><text x="320" y="224" fill="#fff" font-size="12">컴파일러, 링커, 유틸리티</text>
+<rect x="100" y="248" width="440" height="50" rx="6" fill="#1d1d1f"/><text x="320" y="270" fill="#fff" font-weight="600">하드웨어</text><text x="320" y="288" fill="#fff" font-size="12">CPU, 메모리, 저장장치, 입출력장치</text>
+</g>
+<g font-size="12" fill="#6e6e73"><text x="552" y="160">시스템 호출</text><text x="552" y="244">명령어·인터럽트</text></g>
+<path d="M548 152 H540" stroke="#6e6e73"/>
+</svg>

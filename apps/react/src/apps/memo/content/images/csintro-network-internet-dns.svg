@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>브라우저가 리졸버에 묻고, 리졸버가 루트, com, 권한 서버 순서로 질의해 IP 주소를 얻는 DNS 조회 과정</title>
+<rect width="640" height="370" fill="#fff"/>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<rect x="30" y="150" width="160" height="50" rx="8" fill="#0a84ff" stroke="none"/>
+<text x="110" y="180.0" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">브라우저</text>
+<rect x="220" y="150" width="160" height="50" rx="8" fill="#ff9f0a" stroke="none"/>
+<text x="300" y="180.0" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">리졸버</text>
+<rect x="440" y="30" width="160" height="50" rx="8" fill="#6e6e73" stroke="none"/>
+<text x="520" y="60.0" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">루트 서버 (.)</text>
+<rect x="440" y="150" width="160" height="50" rx="8" fill="#6e6e73" stroke="none"/>
+<text x="520" y="180.0" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">com TLD 서버</text>
+<rect x="440" y="270" width="160" height="50" rx="8" fill="#34c759" stroke="none"/>
+<text x="520" y="292.0" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">example.com</text>
+<text x="520" y="308.0" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">권한 서버</text>
+<line x1="190" y1="168" x2="218" y2="168" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="205" y="140" font-size="12" fill="#0a84ff" text-anchor="middle">①</text>
+<line x1="218" y1="186" x2="192" y2="186" stroke="#0a84ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="205" y="222" font-size="12" fill="#0a84ff" text-anchor="middle">⑧ 198.51.100.20</text>
+<line x1="380" y1="152" x2="438" y2="70" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="438" y1="50" x2="370" y2="150" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="380" y1="170" x2="438" y2="170" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="438" y1="185" x2="380" y2="185" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="370" y1="200" x2="438" y2="285" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="438" y1="305" x2="340" y2="200" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="388" y="100" font-size="12" fill="#1d1d1f" text-anchor="middle">② 질의</text>
+<text x="330" y="90" font-size="12" fill="#1d1d1f" text-anchor="middle">③ com 서버로</text>
+<text x="410" y="162" font-size="12" fill="#1d1d1f" text-anchor="middle">④</text>
+<text x="410" y="200" font-size="12" fill="#1d1d1f" text-anchor="middle">⑤</text>
+<text x="430" y="245" font-size="12" fill="#1d1d1f" text-anchor="middle">⑥</text>
+<text x="350" y="270" font-size="12" fill="#1d1d1f" text-anchor="middle">⑦ IP 주소</text>
+<text x="320" y="350" font-size="12" fill="#6e6e73" text-anchor="middle">⑤ 응답은 권한 서버 위치. 리졸버는 결과를 TTL 동안 캐시에 보관한다</text>
+</svg>

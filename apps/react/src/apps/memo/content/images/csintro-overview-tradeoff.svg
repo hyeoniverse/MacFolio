@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+<title>CIA 요소 사이의 충돌 예: 계정 잠금 정책은 기밀성을 높이지만 가용성을 떨어뜨린다</title>
+<rect width="640" height="300" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="16" font-weight="600" fill="#1d1d1f">보안 대책이 요소 사이에 만드는 상충 관계</text>
+<g font-size="12">
+<rect x="20" y="50" width="600" height="70" rx="8" fill="#f2f2f7"/>
+<text x="36" y="74" font-size="13" font-weight="600" fill="#1d1d1f">비밀번호 5회 실패 시 계정 잠금</text>
+<text x="36" y="96" fill="#0a84ff">기밀성 ↑ 무차별 대입으로 비밀번호를 맞히기 어려워진다</text>
+<text x="36" y="112" fill="#ff3b30">가용성 ↓ 공격자가 일부러 틀려 정상 사용자의 계정을 잠글 수 있다</text>
+<rect x="20" y="130" width="600" height="70" rx="8" fill="#f2f2f7"/>
+<text x="36" y="154" font-size="13" font-weight="600" fill="#1d1d1f">모든 데이터를 강하게 암호화하고 키는 한 곳에만 보관</text>
+<text x="36" y="176" fill="#0a84ff">기밀성 ↑ 저장 매체를 도난당해도 내용을 읽을 수 없다</text>
+<text x="36" y="192" fill="#ff3b30">가용성 ↓ 키를 잃으면 정당한 소유자도 데이터를 복구할 수 없다</text>
+<rect x="20" y="210" width="600" height="70" rx="8" fill="#f2f2f7"/>
+<text x="36" y="234" font-size="13" font-weight="600" fill="#1d1d1f">서버를 여러 지역에 복제</text>
+<text x="36" y="256" fill="#34c759">가용성 ↑ 한 지역이 멈춰도 다른 지역이 응답한다</text>
+<text x="36" y="272" fill="#ff3b30">기밀성·무결성 관리 부담 ↑ 사본마다 접근 통제와 동기화를 유지해야 한다</text>
+</g>
+</svg>
