@@ -4,8 +4,10 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 100vw;
+	/* 100vw는 스크롤바 폭까지 넣어 가로로 밀리고, 100vh는 휴대폰에서 주소창이 접힌 높이라 보이는 화면보다 크다 */
+	width: 100%;
 	height: 100vh;
+	height: 100dvh;
 	overflow: hidden;
 }
 

@@ -31,6 +31,12 @@ html {
 	background-position: center;
 	background-size: cover;
 	font-family: var(--font-sans);
+	/*
+	 * 바탕화면 영역(문서)은 스크롤하지 않는다. 끝까지 끌어도 화면 전체가 튕기거나(트랙패드·iOS)
+	 * 당겨서 새로 고침(Android)하지 않고, 창 안에서 끝까지 스크롤해도 바탕이 따라 끌려오지 않는다
+	 */
+	overflow: hidden;
+	overscroll-behavior: none;
 }
 
 /*
