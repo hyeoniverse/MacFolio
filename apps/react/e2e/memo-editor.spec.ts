@@ -887,6 +887,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		const editor = memo.locator('.ProseMirror');
 		const table = editor.locator('table');
 		const gap = editor.locator('.ProseMirror-gapcursor');
+		// 줄 맨 앞으로 가는 키: macOS의 Home은 커서를 옮기지 않고 문서를 스크롤하므로 ⌘←를 쓴다 (CI의 Linux는 Home)
+		const lineStart = process.platform === 'darwin' ? 'Meta+ArrowLeft' : 'Home';
 
 		// 마지막 칸 맨 끝에서 →: 표 오른쪽에 커서 (보이는 커서)
 		await page.keyboard.press('ArrowRight');
@@ -901,8 +903,8 @@ test.describe('바로 고치기 (관리자)', () => {
 		await expect(table.locator('xpath=following-sibling::p[1]')).toHaveText('표 뒤 글');
 
 		// 표 바로 뒤 문단의 맨 앞에서 ←: 다시 표 오른쪽, 한 번 더 ←: 마지막 칸
-		await page.keyboard.press('Home');
-		// Home은 브라우저가 옮기므로 편집기가 커서 자리를 읽을 때까지
+		await page.keyboard.press(lineStart);
+		// 줄 맨 앞으로는 브라우저가 옮기므로 편집기가 커서 자리를 읽을 때까지
 		await page.waitForTimeout(100);
 		await page.keyboard.press('ArrowLeft');
 		await expect(gap).toHaveCount(1);
@@ -913,7 +915,7 @@ test.describe('바로 고치기 (관리자)', () => {
 
 		// 첫 칸 맨 앞에서 ←: 표 왼쪽에 커서
 		await table.locator('th').first().click();
-		await page.keyboard.press('Home');
+		await page.keyboard.press(lineStart);
 		await page.waitForTimeout(100);
 		await page.keyboard.press('ArrowLeft');
 		await expect(gap).toHaveCount(1);
