@@ -106,7 +106,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td valign="top">
       <img src="docs/images/readme-activity.jpg" alt="Activity Monitor: visit counts, graph, most-opened apps, referrers">
       <h4>📈 Activity Monitor</h4>
-      Visits · unique visitors · app opens · time on site, referrers, search terms (Google Search Console), region · device, real time, server status. Counted with a daily hash, no cookies, and refreshed periodically only while the window is visible.
+      Visits · unique visitors · app opens · time on site, referrers, search terms (Google Search Console; click one to see the pages · posts visited from it), region · device, real time, server status. Counted with a daily hash, no cookies, and refreshed periodically only while the window is visible.
     </td>
   </tr>
   <tr>
@@ -649,6 +649,8 @@ pnpm dev:all                                     # Frontend 5173 + API 4000 (doc
 | `pnpm typecheck`                         | Type check                       |
 | `pnpm lint`                              | Lint                             |
 | `pnpm test`                              | Unit tests                       |
+| `pnpm format:check`                      | Format check (Prettier)          |
+| `pnpm cycles`                            | Circular import check (madge)    |
 | `pnpm --filter @macfolio/api test:e2e`   | API e2e (requires DB)            |
 | `pnpm --filter @macfolio/react test:e2e` | Browser E2E (after `pnpm build`) |
 
@@ -671,6 +673,7 @@ date: 2026-09-28
 category: 개발 기록/MacFolio/기능
 summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
 pinned: true # Pin to the top of the list (optional)
+published: false # Draft: visible only to the admin (optional)
 ---
 
 본문은 Markdown으로 씁니다. 표, 코드 블록, 링크를 쓸 수 있습니다.
@@ -682,6 +685,8 @@ pinned: true # Pin to the top of the list (optional)
 
 - `title` and `date` (YYYY-MM-DD) are required. If missing or malformed, the post is left out of the list and a warning appears in the dev server console.
 - `category` becomes the folder on the left. `/` creates subfolders, and selecting a parent folder also shows posts in its subfolders. Without it, the post goes into "기타" (Other).
+- Folders on the same level are ordered by the admin's drag order, then `DEFAULT_FOLDER_ORDER` in `packages/desktop-core/src/memo/folderOrder.ts`, then alphabetically. List folders whose order means something other than their names (like a curriculum) there.
+- A post with `published: false` is left out of the visitor list, search results, sitemap, RSS and widgets, and shows up as a draft only in the admin's list. Remove the line and merge when it's done.
 - Put images in `content/images/` and reference them with a path relative to the post file. In gallery view, the first image in the body becomes the card preview.
 - On build, posts go into the search HTML · sitemap · RSS. The image used when a link is shared is the first photo in the body (JPG · PNG · WebP · GIF), or a card drawn from the title if there's no photo (`packages/og-card`). Cards for posts written on the site are drawn by the API (`GET /posts/<post>/og.png`). The sitemap's `lastmod` is the date of the file's last commit.
 
