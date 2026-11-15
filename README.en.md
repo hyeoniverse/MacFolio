@@ -35,7 +35,7 @@ Open it on a phone and it becomes an iOS home screen.
     <td align="center" width="25%"><h3>1</h3>developer</td>
     <td align="center" width="25%"><h3>$0</h3>running cost</td>
     <td align="center" width="25%"><h3>0</h3>open ports</td>
-    <td align="center" width="25%"><h3>230+</h3>dev log posts</td>
+    <td align="center" width="25%"><h3>200+</h3>dev log posts</td>
   </tr>
 </table>
 
@@ -106,7 +106,7 @@ About 20 apps open as windows, just like on macOS. Every screenshot below was ta
     <td valign="top">
       <img src="docs/images/readme-activity.jpg" alt="Activity Monitor: visit counts, graph, most-opened apps, referrers">
       <h4>📈 Activity Monitor</h4>
-      Visits · unique visitors · app opens · time on site, referrers, search terms (Google Search Console), region · device, real time, server status. Counted with a daily hash, no cookies, and refreshed periodically only while the window is visible.
+      Visits · unique visitors · app opens · time on site, referrers, search terms (Google Search Console; click one to see the pages · posts visited from it), region · device, real time, server status. Counted with a daily hash, no cookies, and refreshed periodically only while the window is visible.
     </td>
   </tr>
   <tr>
@@ -524,7 +524,7 @@ The detailed steps are in [docs/en/deployment.md](docs/en/deployment.md).
 
 - On every PR and push to main, a single `check` job runs dependency vulnerabilities → format → lint → circular deps → type check → unit tests → build → performance budget → API e2e (PostgreSQL service container), while browser E2E runs at the same time split into 6 shards. On failure, the Playwright report is uploaded. On main, E2E isn't rerun if the code is the same as what already passed in the PR
 - The dependency vulnerability check can fail without any code change when a new advisory is published. Transitive dependencies are pinned to fixed versions with `overrides` in `pnpm-workspace.yaml`, in a PR separate from feature work ([#371](https://github.com/hyeoniverse/MacFolio/pull/371), [#374](https://github.com/hyeoniverse/MacFolio/pull/374), [write-up (Korean)](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges))
-- Performance budget: `check` fails if the brotli size of the built `boot` bundle or the first-visit bundle exceeds its limit (`apps/react/scripts/perf/budget.mjs`, [docs/en/performance.md](docs/en/performance.md))
+- Performance budget: `check` fails if the brotli size of the built `boot` bundle or the first-visit bundle exceeds its limit (`apps/react/scripts/perf/budget.mjs`, [docs/en/performance.md](docs/en/performance.md#performance-budget))
 - `conventions`: checks that the branch name, PR title, and commit messages follow the [contribution rules](CONTRIBUTING.md)
 - Commits on main are deployed only after passing tests. If the API changed, the API is deployed first (`api-image` → `api-deploy`), then `deploy` uploads to Cloudflare Workers. This order keeps the new UI from hitting the old API first
 - For PRs from the same repo, `preview` posts a preview URL as a PR comment (only for PRs that change the frontend). Previews are `noindex`, so they don't show up in search
@@ -649,6 +649,8 @@ pnpm dev:all                                     # Frontend 5173 + API 4000 (doc
 | `pnpm typecheck`                         | Type check                       |
 | `pnpm lint`                              | Lint                             |
 | `pnpm test`                              | Unit tests                       |
+| `pnpm format:check`                      | Format check (Prettier)          |
+| `pnpm cycles`                            | Circular import check (madge)    |
 | `pnpm --filter @macfolio/api test:e2e`   | API e2e (requires DB)            |
 | `pnpm --filter @macfolio/react test:e2e` | Browser E2E (after `pnpm build`) |
 
@@ -658,7 +660,7 @@ pnpm dev:all                                     # Frontend 5173 + API 4000 (doc
 
 There are two ways.
 
-- **On the site:** log in as admin and write directly in the Memo app. Posts are saved on the server (DB), and if you edit a repo post, the server post is shown in its place at the same address.
+- **On the site:** log in as admin and write directly in the Memo app. Posts are saved on the server (DB), and if you edit a repo post, the server post is shown in its place at the same address. Later edits to the same post in the repo stay hidden behind the server post, so to show the repo post again, choose **저장소 글로 되돌리기** (Revert to repo post) from the post's context menu (this deletes the server content, draft and version history). A normal delete also removes the repo post from the list.
 - **In the repo:** add a Markdown file to `apps/react/src/apps/memo/content/`. The file name becomes the post's address (e.g. `my-first-post.md`). Merging to main deploys it.
 
 <details>
@@ -668,9 +670,12 @@ There are two ways.
 ---
 title: 글 제목
 date: 2026-09-28
-category: 개발 기록/MacFolio/기능
+category: 개발 기록/MacFolio/화면·스타일
 summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
+series: 보안 점검 # Series name (optional)
+seriesOrder: 3 # Order within the series, 1–999 (optional)
 pinned: true # Pin to the top of the list (optional)
+published: false # Draft: visible only to the admin (optional)
 ---
 
 본문은 Markdown으로 씁니다. 표, 코드 블록, 링크를 쓸 수 있습니다.
@@ -678,10 +683,25 @@ pinned: true # Pin to the top of the list (optional)
 ![이미지 설명](./images/사진.png '이미지 아래 캡션 (선택)')
 ```
 
-(In the example: `title` = post title, `category` = 개발기 (dev log)/MacFolio, `summary` = a one-line summary shown in the list (defaults to the start of the body); the body says it's written in Markdown with tables, code blocks, and links; the image line has alt text and an optional caption shown below the image.)
+(In the example: `title` = post title, `category` = 개발 기록 (dev log)/MacFolio/화면·스타일 (UI · style), `series` = 보안 점검 (security audit), `summary` = a one-line summary shown in the list (defaults to the start of the body); the body says it's written in Markdown with tables, code blocks, and links; the image line has alt text and an optional caption shown below the image.)
 
 - `title` and `date` (YYYY-MM-DD) are required. If missing or malformed, the post is left out of the list and a warning appears in the dev server console.
-- `category` becomes the folder on the left. `/` creates subfolders, and selecting a parent folder also shows posts in its subfolders. Without it, the post goes into "기타" (Other).
+- `category` becomes the folder on the left. `/` creates subfolders up to three levels deep, and selecting a parent folder also shows posts in its subfolders. Without it, the post goes into "기타" (Other). For folders and posts the admin has dragged around, the server's organization data takes precedence over `category`.
+- Folders on the same level are ordered by the admin's drag order, then `DEFAULT_FOLDER_ORDER` in `packages/desktop-core/src/memo/folderOrder.ts`, then alphabetically. List folders whose order means something other than their names (like a curriculum) there.
+- A post with `published: false` is left out of the visitor list, search results, sitemap, RSS and widgets, and shows up as a draft only in the admin's list. Remove the line and merge when it's done.
+- The body can be up to 50,000 characters. Besides GFM (tables · strikethrough · task lists), these notations are supported:
+
+  | Notation                                                     | Result                                 |
+  | ------------------------------------------------------------ | -------------------------------------- |
+  | `==text==`                                                   | Highlight                              |
+  | `> [!NOTE] Title` (`TIP`·`IMPORTANT`·`WARNING`·`CAUTION`)    | Callout                                |
+  | ` ```math ` block, `` `formula{:math}` ``                    | KaTeX math (block · inline)            |
+  | `<details><summary>Title</summary> … </details>`             | Collapsible toggle                     |
+  | A line with only a URL (`https://youtu.be/…`, `.mp4`·`.mp3`) | Video · audio embed                    |
+  | `![alt](./images/a.jpg#float-right)` (`#float-left`)         | Image floated beside the text          |
+  | `#tag`                                                       | Tag (click to show only posts with it) |
+
+- When you merge posts or change an address (file name), add the old address to `packages/desktop-core/src/memo/movedPosts.ts`. The deployed site's Worker 301-redirects the old address to the matching section of the new post, so search indexes and external links don't hit a 404.
 - Put images in `content/images/` and reference them with a path relative to the post file. In gallery view, the first image in the body becomes the card preview.
 - On build, posts go into the search HTML · sitemap · RSS. The image used when a link is shared is the first photo in the body (JPG · PNG · WebP · GIF), or a card drawn from the title if there's no photo (`packages/og-card`). Cards for posts written on the site are drawn by the API (`GET /posts/<post>/og.png`). The sitemap's `lastmod` is the date of the file's last commit.
 
@@ -712,14 +732,14 @@ Everything from creating the VM to the OAuth App, tunnel, environment variables,
 - [Security scan](docs/en/security-scan.md): Semgrep · pnpm audit · osv-scanner results with per-item verdicts, licenses, CI criteria
 - [Privacy](docs/en/privacy.md): what is stored, how, and when it's deleted
 - [API](apps/api/README.md): running locally, tests, structure
-- Dev log: the Memo app on the site → the 개발기 (dev log) folder (`apps/react/src/apps/memo/content/`). Good posts to start with (Korean):
-  - [MacFolio 백엔드 한 장으로 보기](https://macfolio.hyeoniverse.com/memo/backend-design)
-  - [자바스크립트로만 그리는 데스크톱을 검색엔진이 읽게 하기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
-  - [API 서버를 무료로 띄우기 - Oracle VM과 Cloudflare Tunnel](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
-  - [첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
-  - [성능 5차 — 휴대폰 LCP가 4초대로 다시 집계되던 원인과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
-  - [PR을 머지하자 CI가 연달아 실패한 원인 네 가지](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges)
-  - [리팩터링 계획을 마치며 — 일곱 단계 전후](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
+- Dev log: the Memo app on the site → the 개발 기록 › MacFolio (dev log › MacFolio) folder (`apps/react/src/apps/memo/content/`). Alongside folders by the problem a post solved (화면·스타일 UI · style, 서버·API server · API, 테스트·보안·성능 testing · security · performance …), posts centered on tracing a cause are in 트러블슈팅 (troubleshooting), and each day's features, bug fixes and design decisions are in 회고 (retrospectives: daily retrospectives plus the "주간 회고" (weekly retrospective) series that collects only the key points of each week). Good posts to start with (Korean):
+  - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](https://macfolio.hyeoniverse.com/memo/backend-design)
+  - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
+  - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
+  - [Lighthouse 병목 분석과 글꼴 subset·lazy import·modulepreload·WebP로 첫 방문 전송량 9MB를 0.8MB로](https://macfolio.hyeoniverse.com/memo/site-performance-diet)
+  - [Lighthouse 운영 재측정, 명언 데이터 lazy 분리, #boot-splash 삭제 시각으로 휴대폰 LCP 편차 해결과 CI 성능 예산](https://macfolio.hyeoniverse.com/memo/site-performance-lcp-budget)
+  - [CI 아티팩트로 macOS에서 재현되지 않는 E2E 실패 원인 찾기](https://macfolio.hyeoniverse.com/memo/ci-failures-after-merges)
+  - [zod 계약 패키지·공통 기반 코드·디자인 토큰·보안 설정 통일로 진행한 일곱 단계 리팩터링](https://macfolio.hyeoniverse.com/memo/refactor-retrospective)
 
 ### Roadmap
 

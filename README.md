@@ -106,7 +106,7 @@ Dock에서 앱을 열고, 창을 끌어 옮기고, 메모 앱에서 블로그를
     <td valign="top">
       <img src="docs/images/readme-activity.jpg" alt="활동 상태 보기. 방문 수, 그래프, 많이 연 앱, 유입 경로">
       <h4>📈 활동 상태 보기</h4>
-      방문 · 순방문자 · 앱 열기 · 체류 시간, 유입 경로, 검색어(Google Search Console), 지역 · 기기, 실시간, 서버 상태. 쿠키 없이 일별 해시로 집계하고, 창이 보이는 동안만 주기적으로 다시 조회합니다.
+      방문 · 순방문자 · 앱 열기 · 체류 시간, 유입 경로, 검색어(Google Search Console, 누르면 그 검색어로 들어와 본 페이지·글), 지역 · 기기, 실시간, 서버 상태. 쿠키 없이 일별 해시로 집계하고, 창이 보이는 동안만 주기적으로 다시 조회합니다.
     </td>
   </tr>
   <tr>
@@ -647,6 +647,8 @@ pnpm dev:all                                     # 프론트엔드 5173 + API 40
 | `pnpm typecheck`                         | 타입 체크                      |
 | `pnpm lint`                              | 린트                           |
 | `pnpm test`                              | 단위 테스트                    |
+| `pnpm format:check`                      | 포맷 검사 (Prettier)           |
+| `pnpm cycles`                            | 순환 import 검사 (madge)       |
 | `pnpm --filter @macfolio/api test:e2e`   | API e2e (DB 필요)              |
 | `pnpm --filter @macfolio/react test:e2e` | 브라우저 E2E (`pnpm build` 후) |
 
@@ -671,6 +673,7 @@ summary: 목록에 보일 한 줄 요약 (없으면 본문 앞부분)
 series: 보안 점검 # 연재 이름 (선택)
 seriesOrder: 3 # 연재 안의 순서, 1~999 (선택)
 pinned: true # 목록 맨 위에 고정 (선택)
+published: false # 임시 저장: 관리자에게만 보인다 (선택)
 ---
 
 본문은 Markdown으로 씁니다. 표, 코드 블록, 링크를 쓸 수 있습니다.
@@ -680,6 +683,8 @@ pinned: true # 목록 맨 위에 고정 (선택)
 
 - `title`과 `date`(YYYY-MM-DD)는 필수입니다. 없거나 형식이 틀리면 목록에서 빠지고, 개발 서버 콘솔에 경고가 나옵니다.
 - `category`는 왼쪽 폴더가 됩니다. `/`로 하위 폴더를 3단계까지 만들 수 있고, 상위 폴더를 고르면 하위 폴더의 글까지 보입니다. 없으면 "기타"로 들어갑니다. 관리자 화면에서 끌어 옮긴 폴더·글은 서버의 정리 데이터가 `category`보다 우선합니다.
+- 같은 층의 폴더는 관리자가 끌어 정한 순서, `packages/desktop-core/src/memo/folderOrder.ts`의 `DEFAULT_FOLDER_ORDER`, 가나다순의 차례로 정렬됩니다. 커리큘럼처럼 이름이 아닌 순서가 의미 있는 폴더는 이 목록에 적습니다.
+- `published: false`인 글은 방문자 목록·검색 결과·sitemap·RSS·위젯에서 빠지고, 관리자 목록에만 "임시 저장"으로 보입니다. 다 쓰면 이 줄을 지우고 머지합니다.
 - 본문은 5만 자까지입니다. GFM(표·취소선·체크 목록) 외에 아래 표기를 씁니다.
 
   | 표기                                                     | 결과                         |
@@ -723,7 +728,7 @@ VM 만들기부터 OAuth App, 터널, 환경 변수, 문제 해결까지 [docs/d
 - [보안 점검](docs/security-scan.md): Semgrep·pnpm audit·osv-scanner 결과와 항목별 판정, 라이선스, CI 기준
 - [개인정보 처리](docs/privacy.md): 수집 항목, 저장 방식, 보관 기간
 - [API](apps/api/README.md): 로컬 실행, 테스트, 구조
-- 개발기: 사이트의 메모 앱 → 개발 기록 › MacFolio 폴더 (`apps/react/src/apps/memo/content/`). 글이 푼 문제별 폴더(화면·스타일, 서버·API, 테스트·보안·성능 …)와 함께, 원인을 추적한 과정이 중심인 글은 트러블슈팅, 하루의 기능·버그 수정·설계 판단은 회고(일별 회고와 그 주 핵심만 모은 "주간 회고" 연재)에 있습니다. CS 공부를 정리한 연재(데이터베이스·딥러닝·네트워크 보안)는 학습 › CS 폴더에 있습니다. 처음 읽기 좋은 글:
+- 개발기: 사이트의 메모 앱 → 개발 기록 › MacFolio 폴더 (`apps/react/src/apps/memo/content/`). 글이 푼 문제별 폴더(화면·스타일, 서버·API, 테스트·보안·성능 …)와 함께, 원인을 추적한 과정이 중심인 글은 트러블슈팅, 하루의 기능·버그 수정·설계 판단은 회고(일별 회고와 그 주 핵심만 모은 "주간 회고" 연재)에 있습니다. 처음 읽기 좋은 글:
   - [요청 계층과 위험별 설계 결정으로 정리한 MacFolio 백엔드 구성도](https://macfolio.hyeoniverse.com/memo/backend-design)
   - [Cloudflare Worker로 SPA의 HTML에 주소별 메타데이터와 본문 넣기](https://macfolio.hyeoniverse.com/memo/seo-crawlable)
   - [Oracle 무료 VM과 Cloudflare Tunnel로 인바운드 포트 없이 API 서버 배포하기](https://macfolio.hyeoniverse.com/memo/deploy-api-oracle-tunnel)
