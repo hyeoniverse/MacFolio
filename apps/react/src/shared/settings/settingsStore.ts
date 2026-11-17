@@ -13,12 +13,13 @@ function apply(settings: Settings) {
 	const theme = resolveTheme(settings.theme, prefersDarkScheme());
 	root.dataset.theme = theme;
 	const wallpaper = wallpaperCss(settings, theme);
-	// 바뀌면 옛 배경이 흐려지며 새 배경이 드러난다 (처음 그릴 때는 그대로)
+	// 바뀌면 새 그림을 받은 뒤 옛 배경이 흐려지며 새 배경이 드러난다 (처음 그릴 때는 그대로)
 	const old = {
 		desktop: root.style.getPropertyValue('--wallpaper'),
 		mobile: root.style.getPropertyValue('--wallpaper-mobile'),
 	};
-	if (old.desktop && (old.desktop !== wallpaper.desktop || old.mobile !== wallpaper.mobile)) fadeOutWallpaper(old);
+	if (old.desktop && (old.desktop !== wallpaper.desktop || old.mobile !== wallpaper.mobile))
+		fadeOutWallpaper(old, wallpaper);
 	root.style.setProperty('--wallpaper', wallpaper.desktop);
 	root.style.setProperty('--wallpaper-mobile', wallpaper.mobile);
 }

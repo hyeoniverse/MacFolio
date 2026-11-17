@@ -129,26 +129,56 @@ test.describe('움직임: 나타나고 사라지기, 화면 바뀌기', () => {
 		await expect(content).toHaveAttribute('data-direction', 'prev');
 	});
 
-	test('배경화면을 바꾸면 옛 배경이 흐려지며 새 배경이 드러난다', async ({ page }) => {
+	test('배경화면을 바꾸면 새 그림을 받은 뒤에 옛 배경이 흐려지며 새 배경이 드러난다', async ({ page }) => {
 		await enterDesktop(page);
-		await page.evaluate(() => {
-			const seen: string[] = [];
-			(window as unknown as { __fades: string[] }).__fades = seen;
-			new MutationObserver((records) => {
-				for (const record of records)
-					for (const node of record.addedNodes)
-						if (node instanceof HTMLElement && node.classList.contains('wallpaper-fade'))
-							seen.push(node.style.animationName || node.style.animation);
-			}).observe(document.body, { childList: true, subtree: true });
+		// 새 배경화면 그림을 늦게 보낸다: 그동안 덮개(옛 배경)는 흐려지지 않고 그대로 있어야 빈 바탕이 보이지 않는다
+		let release = () => {};
+		const held = new Promise<void>((resolve) => (release = resolve));
+		await page.route('**/imgs/wallpapers/sonoma*.webp', async (route) => {
+			await held;
+			await route.continue();
 		});
 		await dockItem(page, 'settings').click();
 		const settings = appWindow(page, 'settings');
 		await settings.getByRole('button', { name: '배경화면' }).click();
 		await settings.getByRole('radiogroup', { name: 'macOS 배경화면' }).getByRole('radio', { name: 'Sonoma' }).click();
+
+		const fade = page.locator('body > .wallpaper-fade');
+		await expect(fade).toHaveCount(1);
+		await page.waitForTimeout(800);
+		await expect(fade).toHaveCount(1);
+		// animation을 var()로 주면 animationName은 비어 읽히므로 animation 값을 본다
+		expect(await fade.evaluate((element) => element.style.animation)).toBe('');
+
+		release();
+		// 흐려지기 시작했거나 이미 다 흐려져 사라졌다
 		await expect
-			.poll(() => page.evaluate(() => (window as unknown as { __fades: string[] }).__fades.join()))
-			.toContain('fade-out');
+			.poll(() =>
+				page.evaluate(
+					() => (document.querySelector('body > .wallpaper-fade') as HTMLElement | null)?.style.animation ?? 'gone'
+				)
+			)
+			.toMatch(/fade-out|gone/);
 		await expect(page.locator('.wallpaper-fade')).toHaveCount(0);
+	});
+
+	test('데스크톱 배경화면은 문서 배경이 아니라 화면에 고정한 층 하나에 그린다', async ({ page }) => {
+		await enterDesktop(page);
+		const paint = await page.evaluate(() => {
+			const layer = getComputedStyle(document.body, '::before');
+			return {
+				body: getComputedStyle(document.body).backgroundImage,
+				html: getComputedStyle(document.documentElement).backgroundImage,
+				layer: layer.backgroundImage,
+				position: layer.position,
+				willChange: layer.willChange,
+			};
+		});
+		expect(paint.body).toBe('none');
+		expect(paint.html).toBe('none');
+		expect(paint.layer).toContain('/imgs/wallpapers/');
+		expect(paint.position).toBe('fixed');
+		expect(paint.willChange).toBe('transform');
 	});
 
 	test('위젯 갤러리에서 고른 위젯은 미리보기 자리에서 빈 칸으로 날아간 뒤 놓인다', async ({ page }) => {
