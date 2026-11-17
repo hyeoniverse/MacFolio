@@ -27,6 +27,11 @@
 				background: #000 !important;
 			}
 
+			/* 데스크톱 배경화면을 그리는 층(index.css의 body::before)도 숨긴다 */
+			html.booting body::before {
+				display: none !important;
+			}
+
 			/*
 			 * 검색엔진이 읽을 내용 (Worker가 #root 안에 넣는다: worker/seo.ts). 화면과 같은 내용이지만 스크립트를 받는 동안
 			 * 글자가 비치지 않게 숨기고, 화면 읽기 프로그램에는 남긴다. 앱이 그리기 시작하면 React가 #root 안을 바꾼다
