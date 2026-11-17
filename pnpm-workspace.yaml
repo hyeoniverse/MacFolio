@@ -19,6 +19,10 @@ ignoredBuiltDependencies:
 
 # 하위 의존성 취약점 패치 (pnpm audit --prod). 위 패키지가 고친 버전을 받으면 지운다
 overrides:
+  # remark-cjk-friendly 2.3.4 > mdast-util-to-markdown-cjk-friendly 1.0.1부터: 자체 phrasing()이 children 없는 노드(Milkdown이 만드는
+  # 빈 표 칸)에서 parent.children.length를 읽다 멈춰, 표가 있는 글의 메모 편집기가 뜨지 않는다 (기본 처리기는 children || []).
+  # 이 처리가 들어오기 전 버전으로 둔다. 고친 버전이 나오면 지운다
+  mdast-util-to-markdown-cjk-friendly: '1.0.0'
   # prisma > @prisma/config: 재귀 객체 병합 시 스택 소진 (GHSA, high)
   deepmerge-ts: '^8.0.0'
   # prisma: 인증 플러그인 다운그레이드·압축 해제 무제한 (high, moderate). 이 프로젝트는 PostgreSQL이라 실제로 쓰지 않는다
@@ -39,3 +43,12 @@ overrides:
   fast-uri: '^3.1.9'
   # msedge-tts > axios > follow-redirects: 다른 realm의 sensitiveHeaders 배열을 무시해 인증 헤더가 리다이렉트를 따라감 (GHSA-mrwp-f3q8-3g9p, high)
   follow-redirects: '^1.16.2'
+
+# 고친 버전이 아직 없는 취약점 (pnpm audit --prod). 고친 버전이 나오면 Dependabot 보안 업데이트가 PR을 연다.
+# 그때 overrides로 올리고 여기서 지운다
+auditConfig:
+  ignoreGhsas:
+    # scalar 문서 앱 > @unhead/vue > unplugin > picomatch(<=4.0.7 전부): 한 갈래 extglob 반복의 ReDoS (high).
+    # unplugin은 @unhead/vue의 빌드 플러그인 진입점(vite.mjs, bundler.mjs)에서만 불러오고, 배포 번들(dist)에는 picomatch가 없다.
+    # 글롭 패턴도 빌드 설정에 적힌 값뿐이라 사용자 입력이 닿지 않는다
+    - GHSA-fc5q-39xc-vjpf
