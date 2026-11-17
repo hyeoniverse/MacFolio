@@ -74,7 +74,8 @@ test.describe('Settings', () => {
 		await settings.getByRole('button', { name: '배경화면' }).click();
 		await settings.getByRole('radiogroup', { name: 'macOS 배경화면' }).getByRole('radio', { name: 'Sonoma' }).click();
 
-		const background = () => page.evaluate(() => getComputedStyle(document.body).backgroundImage);
+		// 데스크톱 배경화면은 화면에 고정한 층(body::before)에 그린다
+		const background = () => page.evaluate(() => getComputedStyle(document.body, '::before').backgroundImage);
 		await expect.poll(background).toContain('sonoma-light.webp');
 
 		// 다크 모드에서는 어두운 버전
@@ -84,7 +85,10 @@ test.describe('Settings', () => {
 
 		// 다시 열면 로딩 화면을 누르기 전까지는 검은 바탕이다 (index.html의 booting). 누르면 고른 배경화면이다
 		await page.reload();
+		const layerShown = () => page.evaluate(() => getComputedStyle(document.body, '::before').display !== 'none');
+		expect(await layerShown()).toBe(false);
 		await page.locator('.loading-container').click();
+		await expect.poll(layerShown).toBe(true);
 		await expect.poll(background).toContain('sonoma-dark.webp');
 	});
 });
