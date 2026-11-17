@@ -1,4 +1,4 @@
-import { test, expect, appWindow, storeMessagesOnServer } from './fixtures';
+import { test, expect, appWindow, storeMessagesOnServer, isItemPath, waitForLinkedApp } from './fixtures';
 import { fakeApi } from './fakeApi';
 import { fakeWeather } from './fakeWeather';
 import { fakeFiles } from './fakeFiles';
@@ -7,6 +7,7 @@ import type { Page } from '@playwright/test';
 /** 로딩 화면을 탭해 넘기고 홈 화면에 들어간다. */
 async function enterHome(page: Page, path = '/') {
 	await page.goto(path);
+	if (isItemPath(path)) return waitForLinkedApp(page, path);
 	const loading = page.locator('.loading-container');
 	await expect(loading).toContainText('탭하여');
 	await loading.tap();

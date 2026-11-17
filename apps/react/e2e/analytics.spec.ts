@@ -1,4 +1,4 @@
-import { test, expect, enterDesktop, appWindow, dockItem } from './fixtures';
+import { test, expect, enterDesktop, appWindow, dockItem, waitForLinkedApp } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
 
@@ -117,8 +117,8 @@ test.describe('트래픽 분석 수집 (#102)', () => {
 		// 새로 고침: 주소에 utm이 없으니 utm 없는 방문이다
 		const sent = api.analytics.length;
 		await page.reload();
-		await page.locator('.loading-container').click();
-		await expect(page.locator('.loading-container')).toBeHidden({ timeout: 20_000 });
+		// 글 주소라 로딩 화면 없이 바로 글이 열린다
+		await waitForLinkedApp(page, '/memo/cra-to-vite');
 		await hideTab(page);
 		await expect.poll(() => api.analytics.length).toBeGreaterThan(sent);
 		const visits = api.analytics.flatMap((batch) => batch.events).filter((event) => event.type === 'visit');
