@@ -61,8 +61,24 @@ export async function firstVisit(page: Page) {
 }
 
 /** 로딩 화면을 클릭해 넘기고 데스크톱에 들어간다. path로 앱 항목 주소(/memo/<글> 등)를 열 수 있다 */
+/** 글·프로젝트 주소(/memo/<글>, /safari/<프로젝트>)인지. 이 주소로 들어오면 로딩 화면 없이 바로 그 앱이 열린다 (App.tsx의 isLoadingAtStart) */
+export const isItemPath = (path: string) => /^\/(memo|safari)\/[^/?#]+\/?(\?|#|$)/.test(path);
+
+/** 글·프로젝트 주소로 들어온 뒤: 로딩 화면 없이 그 앱이 뜨고, 메모는 본문까지 그려질 때까지 */
+export async function waitForLinkedApp(page: Page, path: string) {
+	await expect(page.locator('#boot-splash')).toHaveCount(0, { timeout: 20_000 });
+	await expect(page.locator('html')).not.toHaveClass(/booting/);
+	await expect(page.locator('.loading-container')).toHaveCount(0);
+	const app = path.split('/')[1];
+	const window = page.locator(`[data-app="${app}"]`).first();
+	await expect(window).toBeVisible({ timeout: 20_000 });
+	if (app === 'memo')
+		await expect(window.locator('.memo-markdown, .ProseMirror').first()).toBeVisible({ timeout: 20_000 });
+}
+
 export async function enterDesktop(page: Page, path = '/') {
 	await page.goto(path);
+	if (isItemPath(path)) return waitForLinkedApp(page, path);
 	const loading = page.locator('.loading-container');
 	await loading.click();
 	// 로딩은 약 3초(진행 막대 + 걷히기). 전체 테스트를 병렬로 돌려 CPU가 바쁘면 더 걸리므로 넉넉히 기다린다

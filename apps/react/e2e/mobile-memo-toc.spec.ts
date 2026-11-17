@@ -1,10 +1,11 @@
-import { test, expect } from './fixtures';
+import { test, expect, isItemPath, waitForLinkedApp } from './fixtures';
 import type { Page } from '@playwright/test';
 import { fakeApi } from './fakeApi';
 import { layoutPost } from './memoLayoutPost';
 
 async function enterHome(page: Page, path: string) {
 	await page.goto(path);
+	if (isItemPath(path)) return waitForLinkedApp(page, path);
 	const loading = page.locator('.loading-container');
 	await expect(loading).toContainText('탭하여');
 	await loading.tap();

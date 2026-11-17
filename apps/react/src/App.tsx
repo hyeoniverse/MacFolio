@@ -6,12 +6,19 @@ import LoginFlow from '@/shared/auth/LoginFlow';
 import { returnedFromLogin } from '@/shared/auth/adminStore';
 import Tour from '@/desktop/tour/Tour';
 import { startFirstVisitTour } from '@/desktop/tour/firstVisit';
+import { linkedApp } from '@/shared/lib/appLink';
 
-/** 처음에 로딩 화면을 띄우는지 (GitHub 로그인에서 돌아왔으면 건너뛴다) */
-const isLoadingAtStart = () => !returnedFromLogin();
+/**
+ * 처음에 로딩 화면을 띄우는지. 건너뛰는 경우:
+ * - GitHub 로그인에서 돌아왔다
+ * - 글·프로젝트 주소(/memo/<글>, /safari/<프로젝트>)로 바로 들어왔다. 검색 결과나 공유 링크로 온 사람이 누르지 않아도 그 글을 바로
+ *   읽고, 검색엔진도 스크립트를 실행한 화면에서 본문을 읽는다 (로딩 화면에서 멈추면 남는 글자가 시작 안내뿐이라 색인되지 않았다).
+ *   시작음·배경 음악은 누른 동작이 있어야 재생할 수 있어 이때는 틀지 않고, 처음 온 사람의 둘러보기도 글을 가리지 않게 띄우지 않는다
+ */
+const isLoadingAtStart = () => !returnedFromLogin() && linkedApp() === null;
 
 const App: React.FC = () => {
-	// GitHub 로그인에서 돌아왔으면 "클릭하여 시작" 로딩 화면을 건너뛰고 바로 결과를 보여 준다
+	// GitHub 로그인에서 돌아왔거나 글 주소로 들어왔으면 "클릭하여 시작" 로딩 화면을 건너뛰고 바로 보여 준다
 	const [isLoading, setIsLoading] = useState(isLoadingAtStart);
 	// 바탕화면(휴대폰은 홈 화면)은 로딩 화면을 눌러 시작한 뒤에 그린다. 그 전에는 로딩 화면이 덮고 있어 보이지 않는데,
 	// 미리 그리면 앱 코드를 다 받아 실행하고 아이콘·위젯 그림까지 받느라 첫 방문의 휴대폰이 바빴다.

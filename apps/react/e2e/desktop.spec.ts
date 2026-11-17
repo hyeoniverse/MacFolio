@@ -12,6 +12,20 @@ test.describe('데스크톱', () => {
 		await expect(loading).toBeHidden({ timeout: 20_000 });
 	});
 
+	test('글 주소로 바로 들어오면 로딩 화면 없이 그 글을 연다 (검색엔진도 스크립트를 실행한 화면에서 본문을 읽는다)', async ({
+		page,
+	}) => {
+		await page.goto('/memo/merge-strategies');
+		await expect(page.locator('.loading-container')).toHaveCount(0);
+		await expect(page.locator('#boot-splash')).toHaveCount(0);
+		await expect(page.locator('html')).not.toHaveClass(/booting/);
+		const memo = page.locator('[data-app="memo"]');
+		await expect(memo.getByRole('heading', { level: 2 }).first()).toBeVisible();
+		await expect(memo).toContainText('GitHub 병합 방식 세 가지');
+		// 처음 온 사람이라도 둘러보기가 글을 가리지 않는다
+		await expect(page.locator('.tour')).toHaveCount(0);
+	});
+
 	test('미리 받은 첫 화면 CSS를 다시 요청하지 않는다 (preload와 stylesheet의 CORS 모드가 같다)', async ({ page }) => {
 		const css: string[] = [];
 		page.on('request', (request) => {
