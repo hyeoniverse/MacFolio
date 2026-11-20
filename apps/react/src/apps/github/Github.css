@@ -721,7 +721,7 @@
 .gh-readme,
 .gh-pinned,
 .gh-activity {
-	animation: rise-in var(--duration-slow) var(--ease-out) both;
+	animation: rise-in var(--duration-slow) var(--ease-out) backwards;
 }
 
 .gh-readme {
