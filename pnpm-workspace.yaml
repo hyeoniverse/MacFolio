@@ -43,6 +43,8 @@ overrides:
   fast-uri: '^3.1.9'
   # msedge-tts > axios > follow-redirects: 다른 realm의 sensitiveHeaders 배열을 무시해 인증 헤더가 리다이렉트를 따라감 (GHSA-mrwp-f3q8-3g9p, high)
   follow-redirects: '^1.16.2'
+  # prisma > @prisma/config > effect(3.20.0 고정): Schema.TemplateLiteral이 만드는 정규식의 ReDoS (GHSA-7589-6fvf-x4pw, high)
+  effect: '^3.22.1'
 
 # 고친 버전이 아직 없는 취약점 (pnpm audit --prod). 고친 버전이 나오면 Dependabot 보안 업데이트가 PR을 연다.
 # 그때 overrides로 올리고 여기서 지운다
