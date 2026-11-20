@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="560" height="410" fill="#fff"/>
+  <text x="280" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">경고에서 공격까지: 냉장 컨트롤러 사건 일지</text>
+
+  <line x1="120" y1="56" x2="120" y2="396" stroke="#c7c7cc" stroke-width="2"/>
+
+  <g font-size="12" fill="#1d1d1f">
+    <!-- 2019 -->
+    <circle cx="120" cy="70" r="6" fill="#8e8e93"/>
+    <text x="104" y="74" text-anchor="end" font-weight="600">2019. 2.</text>
+    <text x="138" y="68" font-weight="600">연구자가 인터넷에 노출된 냉장 관리 시스템 수천 대를 공개</text>
+    <text x="138" y="85" fill="#6e6e73">기본 비밀번호(설명서에 적힌 값)로 들어가 원격 제상을 걸 수 있었다</text>
+
+    <!-- 2025 -->
+    <circle cx="120" cy="118" r="6" fill="#8e8e93"/>
+    <text x="104" y="122" text-anchor="end" font-weight="600">2025. 3.</text>
+    <text x="138" y="116" font-weight="600">Danfoss가 AK-SM800A 취약점 권고 발표, 8월 패치</text>
+    <text x="138" y="133" fill="#6e6e73">AK-SC355(2016)·AK-SM800(2021)은 이미 지원 종료 제품</text>
+
+    <!-- 10/11 -->
+    <circle cx="120" cy="170" r="7" fill="#ff3b30"/>
+    <text x="104" y="174" text-anchor="end" font-weight="600" fill="#ff3b30">2026. 10. 11.</text>
+    <text x="138" y="168" font-weight="600">프랑스 슈퍼마켓 최대 700곳의 냉장 설비가 밤사이 제상 모드로</text>
+    <text x="138" y="185" fill="#6e6e73">6시간 뒤 진열대 온도 50°C, 일부 80°C. 식품 폐기, 일부 매장 화재</text>
+
+    <!-- 10/12 -->
+    <circle cx="120" cy="218" r="6" fill="#0a84ff"/>
+    <text x="104" y="222" text-anchor="end" font-weight="600">10. 12.</text>
+    <text x="138" y="216" font-weight="600">CERT-FR 경보 CERTFR-2026-ALE-012 발행 (13일·16일 갱신)</text>
+    <text x="138" y="233" fill="#6e6e73">Danfoss AK-SM·AK-SC, Copeland·Dixell XWEB 원격 컨트롤러</text>
+
+    <!-- 10/20-30 -->
+    <circle cx="120" cy="266" r="6" fill="#ff9f0a"/>
+    <text x="104" y="270" text-anchor="end" font-weight="600">10. 20.~30.</text>
+    <text x="138" y="264" font-weight="600">유럽 내 허니팟에 냉장 시스템 접속 시도 276건 이상</text>
+    <text x="138" y="281" fill="#6e6e73">다음 공격을 위한 정찰로 추정 (10월 26일 정점)</text>
+
+    <!-- 11/2-3 -->
+    <circle cx="120" cy="314" r="7" fill="#ff3b30"/>
+    <text x="104" y="318" text-anchor="end" font-weight="600" fill="#ff3b30">11. 2.~3.</text>
+    <text x="138" y="312" font-weight="600">유럽 최소 9개국 매장과 프랑스 혈액원 3곳으로 번진 2차 공격</text>
+    <text x="138" y="329" fill="#6e6e73">혈장 냉장고를 110°C로 올리려 했으나 감시 시스템 경보로 막았다</text>
+
+    <!-- 11/9 -->
+    <circle cx="120" cy="362" r="6" fill="#8e8e93"/>
+    <text x="104" y="366" text-anchor="end" font-weight="600">11. 9.</text>
+    <text x="138" y="360" font-weight="600">프랑스 정부가 이란 혁명수비대 연계 조직을 배후로 지목</text>
+    <text x="138" y="377" fill="#6e6e73">민간 보안업체는 러시아 쪽 흔적도 언급. 배후는 아직 논쟁 중</text>
+  </g>
+</svg>
