@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif">
+  <rect width="720" height="400" fill="#fff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker>
+    <marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff3b30"/></marker>
+  </defs>
+  <text x="360" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">공격 경로: 인터넷에 열린 관리 화면 하나면 충분했다</text>
+
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <!-- step boxes -->
+    <rect x="20" y="62" width="120" height="74" rx="8" fill="#e5e5ea"/>
+    <text x="80" y="90" font-weight="600">① 검색</text>
+    <text x="80" y="108">Shodan 같은</text>
+    <text x="80" y="124">장비 검색 엔진</text>
+
+    <rect x="160" y="62" width="120" height="74" rx="8" fill="#e5e5ea"/>
+    <text x="220" y="90" font-weight="600">② 접속</text>
+    <text x="220" y="108">공인 IP로 열린</text>
+    <text x="220" y="124">웹 관리 화면</text>
+
+    <rect x="300" y="62" width="120" height="74" rx="8" fill="#ffd60a"/>
+    <text x="360" y="90" font-weight="600">③ 로그인</text>
+    <text x="360" y="108">기본 계정·약한 비밀번호</text>
+    <text x="360" y="124">또는 알려진 취약점</text>
+
+    <rect x="440" y="62" width="120" height="74" rx="8" fill="#ff9f0a"/>
+    <text x="500" y="90" font-weight="600">④ 설정 변경</text>
+    <text x="500" y="108">장비 자체 기능인</text>
+    <text x="500" y="124">제상(defrost) 실행</text>
+
+    <rect x="580" y="62" width="120" height="74" rx="8" fill="#ff3b30"/>
+    <text x="640" y="90" font-weight="600" fill="#fff">⑤ 물리 피해</text>
+    <text x="640" y="108" fill="#fff">진열대 온도 상승,</text>
+    <text x="640" y="124" fill="#fff">식품 폐기·화재</text>
+  </g>
+  <g stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)">
+    <line x1="140" y1="99" x2="158" y2="99"/>
+    <line x1="280" y1="99" x2="298" y2="99"/>
+    <line x1="420" y1="99" x2="438" y2="99"/>
+    <line x1="560" y1="99" x2="578" y2="99"/>
+  </g>
+  <text x="360" y="160" text-anchor="middle" font-size="12" fill="#6e6e73">악성 코드를 심지 않았다. 관리자가 쓰는 화면에서 관리자가 쓰는 버튼을 눌렀을 뿐이다</text>
+
+  <!-- compare -->
+  <line x1="20" y1="184" x2="700" y2="184" stroke="#e5e5ea"/>
+  <g font-size="13" font-weight="600" fill="#1d1d1f">
+    <text x="190" y="210" text-anchor="middle">노출된 구성 (공격당한 매장)</text>
+    <text x="540" y="210" text-anchor="middle">CERT-FR이 권고한 구성</text>
+  </g>
+
+  <g font-size="12" text-anchor="middle" fill="#1d1d1f">
+    <!-- left -->
+    <rect x="40" y="228" width="100" height="44" rx="8" fill="#e5e5ea"/>
+    <text x="90" y="255">인터넷 누구나</text>
+    <rect x="240" y="228" width="100" height="44" rx="8" fill="#ffd6d3" stroke="#ff3b30"/>
+    <text x="290" y="248">냉장 컨트롤러</text>
+    <text x="290" y="263">(공인 IP)</text>
+    <line x1="140" y1="250" x2="238" y2="250" stroke="#ff3b30" stroke-width="1.8" marker-end="url(#r)"/>
+    <text x="189" y="242" font-size="11" fill="#ff3b30">바로 닿음</text>
+    <rect x="240" y="300" width="100" height="44" rx="8" fill="#f2f2f7"/>
+    <text x="290" y="320">냉장·냉동</text>
+    <text x="290" y="335">진열대</text>
+    <line x1="290" y1="272" x2="290" y2="298" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+
+    <!-- right -->
+    <rect x="390" y="228" width="90" height="44" rx="8" fill="#e5e5ea"/>
+    <text x="435" y="255">인터넷</text>
+    <rect x="500" y="222" width="200" height="132" rx="10" fill="#f2f2f7" stroke="#34c759" stroke-dasharray="5 4"/>
+    <text x="600" y="240" font-size="11" fill="#248a3d">매장 내부망 (외부에서 보이지 않음)</text>
+    <rect x="512" y="250" width="70" height="40" rx="8" fill="#d1f2db" stroke="#34c759"/>
+    <text x="547" y="274">VPN</text>
+    <rect x="610" y="250" width="80" height="40" rx="8" fill="#fff" stroke="#6e6e73"/>
+    <text x="650" y="267">냉장</text>
+    <text x="650" y="282">컨트롤러</text>
+    <line x1="480" y1="270" x2="510" y2="270" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <line x1="582" y1="270" x2="608" y2="270" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+    <text x="600" y="318" font-size="11" fill="#6e6e73">인증된 업체·관리자만 VPN을 거쳐 접속</text>
+    <text x="600" y="334" font-size="11" fill="#6e6e73">기본 비밀번호 변경, 펌웨어 갱신</text>
+  </g>
+  <text x="360" y="384" text-anchor="middle" font-size="11" fill="#8e8e93">도식. 실제 매장마다 업체 원격 관리 방식은 다르다</text>
+</svg>
