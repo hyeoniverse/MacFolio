@@ -608,7 +608,6 @@
 	background: var(--memo-panel-bg);
 	box-shadow: var(--memo-panel-shadow);
 	color: var(--memo-text);
-	backdrop-filter: blur(16px) saturate(180%);
 }
 
 .memo .memo-toc-bar[data-compact] .memo-toc-bar-toggle[aria-expanded='true'] {
@@ -648,7 +647,6 @@
 	background-color: var(--phone-card-bg);
 	box-shadow: var(--shadow-float);
 	font-size: var(--text-title3);
-	backdrop-filter: none;
 }
 
 .container.mobile :where(.memo-shell[data-compact]) .memo-toc-bar .memo-toc-bar-panel {

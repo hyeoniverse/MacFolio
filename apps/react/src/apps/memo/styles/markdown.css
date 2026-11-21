@@ -574,7 +574,6 @@
 	background-color: transparent;
 	color: var(--color-white);
 	opacity: 1;
-	backdrop-filter: none;
 }
 
 .memo .memo-embed-tools .memo-overlay-button:hover {
@@ -736,8 +735,6 @@
 	border-radius: var(--radius-full);
 	background-color: var(--memo-bg);
 	box-shadow: var(--memo-panel-shadow);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
 }
 
 .memo-text-size button {
