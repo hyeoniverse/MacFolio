@@ -496,7 +496,7 @@
 /* ─── 움직임 ─── */
 /* 숫자 카드는 차례로 떠오른다 */
 .activity-stat {
-	animation: rise-in var(--duration) var(--ease-out) both;
+	animation: rise-in var(--duration) var(--ease-out) backwards;
 }
 
 .activity-stat:nth-child(2) {
@@ -517,13 +517,13 @@
 }
 
 .activity-chart path.area {
-	animation: fade-in var(--duration-slow) var(--ease-out) both;
+	animation: fade-in var(--duration-slow) var(--ease-out) backwards;
 }
 
 /* 비율 막대는 왼쪽부터 차오른다 */
 .activity-table td.share .bar > span {
 	transform-origin: left center;
-	animation: grow-x var(--duration-slow) var(--ease-out) both;
+	animation: grow-x var(--duration-slow) var(--ease-out) backwards;
 }
 
 /* 방문을 펼치면 흐름이 위에서 내려온다 */

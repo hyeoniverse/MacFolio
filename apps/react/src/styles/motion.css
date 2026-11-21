@@ -11,7 +11,12 @@
 	--duration-slow: 400ms;
 }
 
-/* 나타나기 */
+/*
+ * 나타나기. 끝 상태가 원래 모양이라(from만 있다) 채우기는 backwards로 쓴다 (지연 동안만 시작 모양을 유지한다).
+ * both·forwards로 두면 끝난 뒤에도 애니메이션이 살아 있어, 브라우저가 그 요소를 GPU 층으로 계속 따로 둔다.
+ * 창 안의 큰 판(README, 카드 목록)이 이런 층으로 남으면 스크롤할 때 Chrome(macOS)이 한 프레임씩 창·Dock을 빼고
+ * 그려 깜빡였다. motion.test.ts가 검사한다
+ */
 @keyframes fade-in {
 	from {
 		opacity: 0;

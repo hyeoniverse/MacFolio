@@ -165,7 +165,7 @@
 }
 
 .terminal-items > li {
-	animation: fade-in var(--duration) var(--ease-out) both;
+	animation: fade-in var(--duration) var(--ease-out) backwards;
 }
 
 .terminal-items > li:nth-child(2) {

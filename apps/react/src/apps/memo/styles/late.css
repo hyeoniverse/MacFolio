@@ -4,7 +4,7 @@
 .memo-new-item {
 	display: grid;
 	grid-template-rows: 1fr;
-	animation: memo-new-item-in var(--duration) var(--ease-out) both;
+	animation: memo-new-item-in var(--duration) var(--ease-out) backwards;
 }
 
 .memo-new-item > .memo-item {
