@@ -130,13 +130,13 @@
 	padding: 0;
 	border: none;
 	border-radius: var(--radius-8);
-	background-color: var(--color-material-hud-subtle);
+	/* 흐림(backdrop-filter) 없이 짙은 바탕으로 읽히게 한다 (apps/memo/styles/backdrop.test.ts) */
+	background-color: var(--color-material-hud);
 	color: var(--color-white);
 	font-size: var(--text-caption);
 	cursor: pointer;
 	opacity: 0;
 	place-items: center;
-	backdrop-filter: blur(8px);
 	transition:
 		opacity var(--duration-fast) var(--ease-out),
 		background-color var(--duration-fast) var(--ease-out);
