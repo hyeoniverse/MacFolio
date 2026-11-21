@@ -66,3 +66,42 @@ test('편집 화면: [!NOTE] 인용 블록은 같은 콜아웃 색으로, 수식
 	expect(saved).toContain('```math\n\\sigma_{\\text{학과}=\\text{컴퓨터}}(\\text{학생})\n```');
 	expect(saved).toContain('`\\pi_{X}(R){:math}`');
 });
+
+test('읽기 화면: 접기 블록 안의 문단·표·콜아웃 사이에도 본문과 같은 간격이 있다', async ({ page }) => {
+	const api = await fakeApi(page);
+	const details = [
+		'<details>',
+		'<summary>정답과 해설</summary>',
+		'',
+		'정답은 ③이다.',
+		'',
+		'| 보기 | 해설 |',
+		'| ---- | ---- |',
+		'| ①   | 틀림 |',
+		'',
+		'> [!NOTE] 개념 요약',
+		'> 결합도는 낮을수록 좋다.',
+		'',
+		'</details>',
+	].join('\n');
+	const content = { title: '접기 간격', date: '2026-11-05', category: '기술 노트/Git', summary: '', body: details };
+	api.posts = [{ slug: 'details-gap-post', ...content, deleted: false, published: content }];
+	await enterDesktop(page);
+	await dockItem(page, 'memo').click();
+	const memo = appWindow(page, 'memo');
+	await memo.locator('.memo-item', { hasText: '접기 간격' }).click();
+	const article = memo.locator('.memo-markdown').first();
+	await article.getByText('정답과 해설').click();
+
+	const table = article.locator('details table').first();
+	const callout = article.locator('details aside.memo-callout');
+	await expect(callout).toBeVisible();
+	const gapAbove = (locator: typeof table) =>
+		locator.evaluate((element) => {
+			const previous = element.closest('details > *')?.previousElementSibling ?? element.previousElementSibling;
+			const block = element.closest('details > *') ?? element;
+			return previous ? block.getBoundingClientRect().top - previous.getBoundingClientRect().bottom : 0;
+		});
+	expect(await gapAbove(table)).toBeGreaterThan(8);
+	expect(await gapAbove(callout)).toBeGreaterThan(8);
+});
