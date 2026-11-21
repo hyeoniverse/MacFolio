@@ -24,6 +24,16 @@
 	transition: translate var(--duration-slow) var(--ease-out);
 }
 
+/*
+ * 다른 창 뒤에 있는 창은 안의 반복 애니메이션(infinite)을 끝낸다. 도는 애니메이션은 GPU 층을 계속 붙잡아,
+ * 처음부터 열려 있는 Safari(프로젝트 페이지의 장식 애니메이션)가 뒤에 있으면 앞 창을 스크롤할 때
+ * Chrome(macOS)이 한 프레임씩 창·Dock을 빼고 그려 깜빡였다. 멈추기(paused)는 층을 놓지 않아서 횟수를 1로 줄인다.
+ * 이미 한 번 넘게 돈 애니메이션은 바로 끝나고, 앞으로 오면 처음부터가 아니라 흐르던 시각에서 이어 돈다
+ */
+.container[data-behind] .content * {
+	animation-iteration-count: 1 !important;
+}
+
 /* 밀려난 창은 어디를 눌러도 안의 것이 아니라 창이 받는다: 눌러서 모든 창을 되돌린다 */
 .container.revealed > * {
 	pointer-events: none;

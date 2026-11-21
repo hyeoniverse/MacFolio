@@ -8,7 +8,7 @@ import { useViewport } from '@/shared/hooks/useViewport';
 import { useIsMobile } from '@/shared/hooks/useIsMobile';
 import MobileAppFrame from '@/desktop/mobile/MobileAppFrame';
 import { switcherStore, useSwitcherOpen } from '@/desktop/mobile/switcherStore';
-import { runningByRecency } from '@macfolio/desktop-core';
+import { foregroundApp, runningByRecency } from '@macfolio/desktop-core';
 import { animateClose, animateOpen } from '@/desktop/window/windowMotion';
 import { useWindowCommands } from '@/desktop/window/windowCommands';
 
@@ -53,6 +53,8 @@ const AppWindow: React.FC<AppWindowProps> = ({ title, appName, children, onClick
 
 	const { isRunning, isMinimized, zIndex } = apps[appName];
 	const visible = isRunning && !isMinimized;
+	// 다른 창 뒤에 있다: 안의 반복 애니메이션을 멈춘다 (Window.css의 [data-behind])
+	const behind = visible && foregroundApp(apps) !== appName;
 	// 모바일 앱 전환기가 열려 있으면 최소화된 앱도 카드로 보인다
 	const cards = isMobile && switcherOpen ? runningByRecency(apps) : [];
 	const cardIndex = cards.indexOf(appName);
@@ -120,6 +122,7 @@ const AppWindow: React.FC<AppWindowProps> = ({ title, appName, children, onClick
 		<div
 			ref={frameRef}
 			data-app={appName}
+			data-behind={behind || undefined}
 			aria-label={chrome === 'unified' ? title : undefined}
 			className={`container ${chrome === 'unified' ? 'unified' : ''}${desktopRevealed ? ' revealed' : ''}`}
 			style={{

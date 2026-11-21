@@ -333,6 +333,30 @@ test.describe('데스크톱', () => {
 		expect(await zIndexOf(page, 'github')).toBeGreaterThan(await zIndexOf(page, 'mail'));
 	});
 
+	test('뒤에 있는 창은 반복 애니메이션을 끝내고, 앞으로 오면 다시 돈다 (도는 애니메이션의 GPU 층이 앞 창 스크롤을 깜빡이게 했다)', async ({
+		page,
+	}) => {
+		// 설정은 움직임을 줄이므로(reducedMotion) 이 시험만 움직임을 켠다
+		await page.emulateMedia({ reducedMotion: 'no-preference' });
+		// 글 주소로 들어오면 Memo가 맨 앞, 처음부터 열리는 Safari(프로젝트 페이지)가 그 뒤에 있다
+		await page.goto('/memo/merge-strategies');
+		const safari = appWindow(page, 'safari');
+		await expect(appWindow(page, 'memo')).not.toHaveAttribute('data-behind');
+		await expect(safari).toHaveAttribute('data-behind', 'true');
+		const looping = () =>
+			safari.evaluate(
+				(el) =>
+					el
+						.getAnimations({ subtree: true })
+						.filter((animation) => animation.effect?.getTiming().iterations === Infinity).length
+			);
+		await expect.poll(looping).toBe(0);
+
+		await dockItem(page, 'safari').click();
+		await expect(safari).not.toHaveAttribute('data-behind');
+		await expect.poll(looping).toBeGreaterThan(0);
+	});
+
 	test('제목 표시줄을 끌어 창을 옮길 수 있다', async ({ page }) => {
 		await enterDesktop(page);
 		await dockItem(page, 'mail').click();
