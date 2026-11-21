@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>CMMI 다섯 단계 성숙도</title><rect width="640" height="300" fill="#fff"/><g font-size="13">
+<rect x="20" y="230" width="116" height="50" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="78" y="250" text-anchor="middle" font-weight="600" fill="#1d1d1f">1 초기</text>
+<text x="78" y="268" text-anchor="middle" font-size="12" fill="#1d1d1f">개인 역량에 의존</text>
+<rect x="140" y="186" width="116" height="94" fill="#e8f2ff" stroke="#c7c7cc"/>
+<text x="198" y="206" text-anchor="middle" font-weight="600" fill="#1d1d1f">2 관리</text>
+<text x="198" y="224" text-anchor="middle" font-size="12" fill="#1d1d1f">프로젝트별 계획·추적</text>
+<rect x="260" y="142" width="116" height="138" fill="#e8f2ff" stroke="#c7c7cc"/>
+<text x="318" y="162" text-anchor="middle" font-weight="600" fill="#1d1d1f">3 정의</text>
+<text x="318" y="180" text-anchor="middle" font-size="12" fill="#1d1d1f">조직 표준 프로세스</text>
+<rect x="380" y="98" width="116" height="182" fill="#fff4e5" stroke="#c7c7cc"/>
+<text x="438" y="118" text-anchor="middle" font-weight="600" fill="#1d1d1f">4 정량적 관리</text>
+<text x="438" y="136" text-anchor="middle" font-size="12" fill="#1d1d1f">수치로 측정·통제</text>
+<rect x="500" y="54" width="116" height="226" fill="#30d158" stroke="#c7c7cc"/>
+<text x="558" y="74" text-anchor="middle" font-weight="600" fill="#fff">5 최적화</text>
+<text x="558" y="92" text-anchor="middle" font-size="12" fill="#fff">지속적 개선</text>
+<text x="20" y="40" font-size="12" fill="#6e6e73">영문 이름: Initial → Managed → Defined → Quantitatively Managed → Optimizing</text>
+<text x="20" y="60" font-size="12" fill="#6e6e73">순서 외우기: 초 · 관 · 정 · 정 · 최 (정의 다음이 정량적 관리)</text>
+</g></svg>

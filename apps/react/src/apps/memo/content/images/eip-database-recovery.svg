@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>검사점 이후 장애가 났을 때 REDO와 UNDO 대상</title><rect width="640" height="340" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">로그 기반 회복: 장애 시각에 각 트랜잭션을 어떻게 처리하는가</text>
+<path d="M60 290 L600 290" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="600" y="310" text-anchor="end" font-size="12" fill="#6e6e73">시간</text>
+<path d="M260 46 L260 290" stroke="#0a84ff" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+<text x="260" y="306" text-anchor="middle" font-size="12" fill="#0a84ff">검사점 tc</text>
+<path d="M520 46 L520 290" stroke="#ff453a" stroke-width="2" fill="none" stroke-dasharray="5 4"/>
+<text x="520" y="306" text-anchor="middle" font-size="12" fill="#ff453a">장애 tf</text>
+<text x="40" y="75" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">T1</text>
+<rect x="80" y="62" width="120" height="16" fill="#e8f2ff" rx="8"/>
+<circle cx="200" cy="70" r="6" fill="#30d158"/>
+<text x="610" y="75" text-anchor="end" font-size="13" fill="#6e6e73" font-weight="600">처리 불필요</text>
+<text x="40" y="117" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">T2</text>
+<rect x="150" y="104" width="230" height="16" fill="#e8f2ff" rx="8"/>
+<circle cx="380" cy="112" r="6" fill="#30d158"/>
+<text x="610" y="117" text-anchor="end" font-size="13" fill="#30d158" font-weight="600">REDO</text>
+<text x="40" y="159" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">T3</text>
+<rect x="300" y="146" width="160" height="16" fill="#e8f2ff" rx="8"/>
+<circle cx="460" cy="154" r="6" fill="#30d158"/>
+<text x="610" y="159" text-anchor="end" font-size="13" fill="#30d158" font-weight="600">REDO</text>
+<text x="40" y="201" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">T4</text>
+<rect x="180" y="188" width="340" height="16" fill="#fff4e5" rx="8"/>
+<text x="514" y="201" text-anchor="end" font-size="13" fill="#ff9f0a">…</text>
+<text x="610" y="201" text-anchor="end" font-size="13" fill="#ff9f0a" font-weight="600">UNDO</text>
+<text x="40" y="243" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">T5</text>
+<rect x="340" y="230" width="180" height="16" fill="#fff4e5" rx="8"/>
+<text x="514" y="243" text-anchor="end" font-size="13" fill="#ff9f0a">…</text>
+<text x="610" y="243" text-anchor="end" font-size="13" fill="#ff9f0a" font-weight="600">UNDO</text>
+<circle cx="80" cy="326" r="5" fill="#30d158"/>
+<text x="92" y="330" text-anchor="start" font-size="12" fill="#6e6e73">COMMIT 기록 있음</text>
+<rect x="240" y="320" width="30" height="12" fill="#fff4e5" rx="6"/>
+<text x="278" y="330" text-anchor="start" font-size="12" fill="#6e6e73">장애 시각까지 COMMIT 없음</text></svg>

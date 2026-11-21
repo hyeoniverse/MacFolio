@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>OSI 7계층별 프로토콜, 데이터 단위, 장비</title><rect width="640" height="370" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<text x="90" y="28" text-anchor="middle" font-size="12" fill="#6e6e73">계층</text><text x="330" y="28" text-anchor="middle" font-size="12" fill="#6e6e73">대표 프로토콜</text><text x="510" y="28" text-anchor="middle" font-size="12" fill="#6e6e73">데이터 단위</text><text x="595" y="28" text-anchor="middle" font-size="12" fill="#6e6e73">장비</text>
+<rect x="20" y="40" width="600" height="40" rx="4" fill="#e8f2ff"/>
+<text x="30" y="65" font-weight="600" fill="#1d1d1f">7 응용</text>
+<text x="150" y="65" font-size="12" fill="#1d1d1f">HTTP, FTP, SMTP, POP3, IMAP, DNS, Telnet, SSH, SNMP</text>
+<text x="510" y="65" text-anchor="middle" font-size="12" fill="#0a84ff">메시지</text>
+<text x="595" y="65" text-anchor="middle" font-size="11" fill="#6e6e73">게이트웨이</text>
+<rect x="20" y="84" width="600" height="40" rx="4" fill="#e8f2ff"/>
+<text x="30" y="109" font-weight="600" fill="#1d1d1f">6 표현</text>
+<text x="150" y="109" font-size="12" fill="#1d1d1f">JPEG, MPEG, ASCII, 암호화·압축</text>
+<text x="510" y="109" text-anchor="middle" font-size="12" fill="#0a84ff">메시지</text>
+<text x="595" y="109" text-anchor="middle" font-size="11" fill="#6e6e73"></text>
+<rect x="20" y="128" width="600" height="40" rx="4" fill="#e8f2ff"/>
+<text x="30" y="153" font-weight="600" fill="#1d1d1f">5 세션</text>
+<text x="150" y="153" font-size="12" fill="#1d1d1f">RPC, NetBIOS, 세션 관리</text>
+<text x="510" y="153" text-anchor="middle" font-size="12" fill="#0a84ff">메시지</text>
+<text x="595" y="153" text-anchor="middle" font-size="11" fill="#6e6e73"></text>
+<rect x="20" y="172" width="600" height="40" rx="4" fill="#fff4e5"/>
+<text x="30" y="197" font-weight="600" fill="#1d1d1f">4 전송</text>
+<text x="150" y="197" font-size="12" fill="#1d1d1f">TCP, UDP</text>
+<text x="510" y="197" text-anchor="middle" font-size="12" fill="#0a84ff">세그먼트</text>
+<text x="595" y="197" text-anchor="middle" font-size="11" fill="#6e6e73"></text>
+<rect x="20" y="216" width="600" height="40" rx="4" fill="#f2f2f7"/>
+<text x="30" y="241" font-weight="600" fill="#1d1d1f">3 네트워크</text>
+<text x="150" y="241" font-size="12" fill="#1d1d1f">IP, ICMP, IGMP, ARP, RIP, OSPF, BGP, IPsec</text>
+<text x="510" y="241" text-anchor="middle" font-size="12" fill="#0a84ff">패킷</text>
+<text x="595" y="241" text-anchor="middle" font-size="11" fill="#6e6e73">라우터</text>
+<rect x="20" y="260" width="600" height="40" rx="4" fill="#f2f2f7"/>
+<text x="30" y="285" font-weight="600" fill="#1d1d1f">2 데이터 링크</text>
+<text x="150" y="285" font-size="12" fill="#1d1d1f">이더넷, HDLC, PPP, 802.11</text>
+<text x="510" y="285" text-anchor="middle" font-size="12" fill="#0a84ff">프레임</text>
+<text x="595" y="285" text-anchor="middle" font-size="11" fill="#6e6e73">스위치·브리지</text>
+<rect x="20" y="304" width="600" height="40" rx="4" fill="#f2f2f7"/>
+<text x="30" y="329" font-weight="600" fill="#1d1d1f">1 물리</text>
+<text x="150" y="329" font-size="12" fill="#1d1d1f">RS-232C, 전기 신호, 케이블</text>
+<text x="510" y="329" text-anchor="middle" font-size="12" fill="#0a84ff">비트</text>
+<text x="595" y="329" text-anchor="middle" font-size="11" fill="#6e6e73">리피터·허브</text>
+<text x="20" y="360" font-size="12" fill="#6e6e73">ARP는 IP와 MAC 주소를 이어 주므로 2계층으로 보는 자료도 있지만, 시험은 보통 3계층으로 분류한다</text>
+</g></svg>

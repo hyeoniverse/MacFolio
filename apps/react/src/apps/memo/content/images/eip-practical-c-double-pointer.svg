@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>이중 포인터 pp가 포인터 p를, p가 변수 a를 가리키는 연결</title><rect width="640" height="330" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">int **pp = &amp;p;  **pp = 9;  *pp = &amp;b;  **pp += 1;</text>
+<text x="95" y="70" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">pp (int **)</text>
+<rect x="40" y="80" width="110" height="46" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="95.0" y="108.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x2000</text>
+<text x="95" y="144" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x3000</text>
+<text x="315" y="70" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p (int *)</text>
+<rect x="260" y="80" width="110" height="46" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="315.0" y="108.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x1000</text>
+<text x="315" y="144" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x2000</text>
+<text x="535" y="70" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a (int)</text>
+<rect x="480" y="80" width="110" height="46" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="535.0" y="108.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">7 → 9</text>
+<text x="535" y="144" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x1000</text>
+<path d="M150 103 H254" fill="none" stroke="#ff9f0a" stroke-width="2" marker-end="url(#mff9f0a)"/>
+<path d="M370 103 H474" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#m0a84ff)"/>
+<text x="535" y="190" font-size="13" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">b (int)</text>
+<rect x="480" y="200" width="110" height="46" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="535.0" y="228.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">20 → 21</text>
+<text x="535" y="264" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x1004</text>
+<path d="M370 115 C420 160 430 210 474 222" fill="none" stroke="#30d158" stroke-width="2" marker-end="url(#m30d158)" stroke-dasharray="5 4"/>
+<text x="330" y="196" font-size="12" fill="#30d158" text-anchor="end" font-weight="600">*pp = &amp;b 이후</text>
+<text x="330" y="212" font-size="12" fill="#30d158" text-anchor="end">p가 b를 가리키게 바뀐다</text>
+<text x="40" y="230" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">pp   → p의 주소</text>
+<text x="40" y="252" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">*pp  → p 자체</text>
+<text x="40" y="274" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">**pp → p가 가리키는 int</text>
+<text x="320" y="316" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="600">* 하나마다 화살표를 하나씩 따라간다</text>
+</svg>

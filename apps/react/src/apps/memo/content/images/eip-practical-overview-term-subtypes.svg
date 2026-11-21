@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>용어 쓰기 문제의 다섯 가지 하위 유형</title><rect width="640" height="400" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">용어 쓰기는 답의 모양에 따라 다섯 가지로 나뉜다</text>
+<g font-size="13" font-weight="600" fill="#6e6e73"><text x="30" y="62">하위 유형</text><text x="200" y="62">문제가 주는 것</text><text x="440" y="62">답안에 쓰는 것</text></g>
+<line x1="20" y1="72" x2="620" y2="72" stroke="#c7c7cc"/>
+<g font-size="13">
+<rect x="20" y="80" width="600" height="56" rx="8" fill="#e8f2ff"/>
+<text x="32" y="113" font-weight="600" fill="#0a84ff">① 설명 보고 쓰기</text>
+<text x="200" y="104" fill="#1d1d1f">개념을 설명한 문장 한두 개</text><text x="200" y="124" fill="#6e6e73">"…하는 테스트 기법을 쓰시오"</text>
+<text x="440" y="113" fill="#1d1d1f">용어 하나: 경계값 분석</text>
+<rect x="20" y="142" width="600" height="56" rx="8" fill="#f2f2f7"/>
+<text x="32" y="175" font-weight="600" fill="#1d1d1f">② 빈칸 채우기</text>
+<text x="200" y="166" fill="#1d1d1f">빈칸 ①②③이 뚫린 설명이나 표</text><text x="200" y="186" fill="#6e6e73">빈칸 수만큼 답을 써야 한다</text>
+<text x="440" y="175" fill="#1d1d1f">빈칸 번호별 용어</text>
+<rect x="20" y="204" width="600" height="56" rx="8" fill="#e8f2ff"/>
+<text x="32" y="237" font-weight="600" fill="#0a84ff">③ 순서대로 쓰기</text>
+<text x="200" y="228" fill="#1d1d1f">순서가 섞인 단계나 등급 목록</text><text x="200" y="248" fill="#6e6e73">"강한 것부터", "절차 순서대로"</text>
+<text x="440" y="237" fill="#1d1d1f">기호를 정해진 순서로</text>
+<rect x="20" y="266" width="600" height="56" rx="8" fill="#f2f2f7"/>
+<text x="32" y="299" font-weight="600" fill="#1d1d1f">④ 보기에서 기호</text>
+<text x="200" y="290" fill="#1d1d1f">설명 여러 개와 보기 목록 ㄱ~ㅅ</text><text x="200" y="310" fill="#6e6e73">보기 수가 설명 수보다 많다</text>
+<text x="440" y="299" fill="#1d1d1f">기호만: ㄹ, ㄱ, ㅁ</text>
+<rect x="20" y="328" width="600" height="56" rx="8" fill="#fff4e5"/>
+<text x="32" y="361" font-weight="600" fill="#c76a00">⑤ 약어 풀어 쓰기</text>
+<text x="200" y="352" fill="#1d1d1f">약어 또는 우리말 설명</text><text x="200" y="372" fill="#6e6e73">"영문 Full-name으로 쓰시오"</text>
+<text x="440" y="352" fill="#1d1d1f">요구한 형태 하나</text><text x="440" y="372" fill="#6e6e73">약어 또는 풀어 쓴 이름</text>
+</g>
+</svg>

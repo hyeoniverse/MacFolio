@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>192.168.10.0/24를 네 개의 /26으로 나누기</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<text x="20" y="30" font-weight="600" fill="#1d1d1f">마지막 옥텟 8비트 중 앞 2비트를 서브넷 번호로 빌린다</text>
+<g font-family="Menlo, monospace" font-size="13">
+<text x="20" y="62" fill="#6e6e73">192.168.10.</text>
+<rect x="120" y="46" width="44" height="24" fill="#ff9f0a"/><text x="142" y="63" text-anchor="middle" fill="#fff">00</text>
+<rect x="164" y="46" width="132" height="24" fill="#e8f2ff" stroke="#0a84ff"/><text x="230" y="63" text-anchor="middle" fill="#0a84ff">hhhhhh</text>
+</g>
+<text x="320" y="56" font-size="12" fill="#ff9f0a">서브넷 2비트 → 2² = 4개</text><text x="320" y="72" font-size="12" fill="#0a84ff">호스트 6비트 → 2⁶ − 2 = 62대</text>
+<text x="20" y="100" font-size="12" fill="#6e6e73">새 서브넷 마스크: /26 = 255.255.255.192 (마지막 옥텟 11000000)</text>
+<rect x="20" y="116" width="146" height="30" fill="#30d158"/><text x="93" y="136" text-anchor="middle" fill="#fff" font-size="12">서브넷 1</text>
+<text x="24" y="166" font-size="12" fill="#6e6e73">네트워크</text><text x="162" y="166" text-anchor="end" font-size="12" fill="#1d1d1f">.0</text>
+<text x="24" y="186" font-size="12" fill="#6e6e73">첫 호스트</text><text x="162" y="186" text-anchor="end" font-size="12" fill="#1d1d1f">.1</text>
+<text x="24" y="206" font-size="12" fill="#6e6e73">마지막 호스트</text><text x="162" y="206" text-anchor="end" font-size="12" fill="#1d1d1f">.62</text>
+<text x="24" y="226" font-size="12" fill="#6e6e73">브로드캐스트</text><text x="162" y="226" text-anchor="end" font-size="12" fill="#ff453a">.63</text>
+<rect x="170" y="116" width="146" height="30" fill="#0a84ff"/><text x="243" y="136" text-anchor="middle" fill="#fff" font-size="12">서브넷 2</text>
+<text x="174" y="166" font-size="12" fill="#6e6e73">네트워크</text><text x="312" y="166" text-anchor="end" font-size="12" fill="#1d1d1f">.64</text>
+<text x="174" y="186" font-size="12" fill="#6e6e73">첫 호스트</text><text x="312" y="186" text-anchor="end" font-size="12" fill="#1d1d1f">.65</text>
+<text x="174" y="206" font-size="12" fill="#6e6e73">마지막 호스트</text><text x="312" y="206" text-anchor="end" font-size="12" fill="#1d1d1f">.126</text>
+<text x="174" y="226" font-size="12" fill="#6e6e73">브로드캐스트</text><text x="312" y="226" text-anchor="end" font-size="12" fill="#ff453a">.127</text>
+<rect x="320" y="116" width="146" height="30" fill="#ff9f0a"/><text x="393" y="136" text-anchor="middle" fill="#fff" font-size="12">서브넷 3</text>
+<text x="324" y="166" font-size="12" fill="#6e6e73">네트워크</text><text x="462" y="166" text-anchor="end" font-size="12" fill="#1d1d1f">.128</text>
+<text x="324" y="186" font-size="12" fill="#6e6e73">첫 호스트</text><text x="462" y="186" text-anchor="end" font-size="12" fill="#1d1d1f">.129</text>
+<text x="324" y="206" font-size="12" fill="#6e6e73">마지막 호스트</text><text x="462" y="206" text-anchor="end" font-size="12" fill="#1d1d1f">.190</text>
+<text x="324" y="226" font-size="12" fill="#6e6e73">브로드캐스트</text><text x="462" y="226" text-anchor="end" font-size="12" fill="#ff453a">.191</text>
+<rect x="470" y="116" width="146" height="30" fill="#ff453a"/><text x="543" y="136" text-anchor="middle" fill="#fff" font-size="12">서브넷 4</text>
+<text x="474" y="166" font-size="12" fill="#6e6e73">네트워크</text><text x="612" y="166" text-anchor="end" font-size="12" fill="#1d1d1f">.192</text>
+<text x="474" y="186" font-size="12" fill="#6e6e73">첫 호스트</text><text x="612" y="186" text-anchor="end" font-size="12" fill="#1d1d1f">.193</text>
+<text x="474" y="206" font-size="12" fill="#6e6e73">마지막 호스트</text><text x="612" y="206" text-anchor="end" font-size="12" fill="#1d1d1f">.254</text>
+<text x="474" y="226" font-size="12" fill="#6e6e73">브로드캐스트</text><text x="612" y="226" text-anchor="end" font-size="12" fill="#ff453a">.255</text>
+<text x="20" y="262" font-size="12" fill="#6e6e73">서브넷 크기 = 256 − 192 = 64 → 네트워크 주소는 0, 64, 128, 192로 64씩 증가</text>
+<text x="20" y="282" font-size="12" fill="#6e6e73">각 서브넷의 첫 주소(네트워크)와 마지막 주소(브로드캐스트)는 호스트에 할당하지 않는다</text>
+</g></svg>

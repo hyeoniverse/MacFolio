@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>업캐스팅한 변수로 필드와 메서드를 호출할 때 고르는 기준</title><rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<rect x="20" y="40" width="250" height="40" fill="#f2f2f7"/>
+<text x="145.0" y="65.04" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">Animal a = new Dog();</text>
+<rect x="40" y="130" width="120" height="44" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="100.0" y="149.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">변수 a</text>
+<text x="100.0" y="164.0" text-anchor="middle" font-size="11" fill="#6e6e73">선언 타입 Animal</text>
+<path d="M160 152 L326 152" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<text x="243" y="144" text-anchor="middle" font-size="12" fill="#0a84ff">참조</text>
+<rect x="330" y="40" width="290" height="230" fill="#fff" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="475" y="62" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">힙의 Dog 객체 (실제 타입 Dog)</text>
+<rect x="345" y="76" width="125" height="54" fill="#f2f2f7"/>
+<text x="407.5" y="100.0" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">Animal 부분</text>
+<text x="407.5" y="116.0" text-anchor="middle" font-size="12" fill="#6e6e73">name = "동물"</text>
+<rect x="480" y="76" width="125" height="54" fill="#fff4e5"/>
+<text x="542.5" y="100.0" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">Dog 부분</text>
+<text x="542.5" y="116.0" text-anchor="middle" font-size="12" fill="#6e6e73">name = "개"</text>
+<rect x="345" y="140" width="125" height="54" fill="#f2f2f7"/>
+<text x="407.5" y="164.0" text-anchor="middle" font-size="12" fill="#1d1d1f">sound()</text>
+<text x="407.5" y="179.0" text-anchor="middle" font-size="11" fill="#6e6e73">"..." (가려짐)</text>
+<rect x="480" y="140" width="125" height="54" fill="#0a84ff"/>
+<text x="542.5" y="164.0" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">sound() 재정의</text>
+<text x="542.5" y="180.0" text-anchor="middle" font-size="12" fill="#fff">"멍멍"</text>
+<rect x="345" y="204" width="125" height="54" fill="#f2f2f7"/>
+<text x="407.5" y="228.0" text-anchor="middle" font-size="12" fill="#1d1d1f">static kind()</text>
+<text x="407.5" y="244.0" text-anchor="middle" font-size="12" fill="#6e6e73">"Animal"</text>
+<rect x="480" y="204" width="125" height="54" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="542.5" y="228.0" text-anchor="middle" font-size="12" fill="#1d1d1f">static kind()</text>
+<text x="542.5" y="244.0" text-anchor="middle" font-size="12" fill="#6e6e73">"Dog"</text>
+<text x="30" y="220" text-anchor="start" font-size="13" fill="#0a84ff" font-weight="600">a.sound() → "멍멍"</text>
+<text x="30" y="238" text-anchor="start" font-size="11" fill="#6e6e73">인스턴스 메서드: 실제 객체 기준</text>
+<text x="30" y="262" text-anchor="start" font-size="13" fill="#1d1d1f" font-weight="600">a.name → "동물",  a.kind() → "Animal"</text>
+<text x="30" y="280" text-anchor="start" font-size="11" fill="#6e6e73">필드·static 메서드: 선언 타입 기준</text>
+<text x="320" y="306" text-anchor="middle" font-size="12" fill="#6e6e73">메서드 오버라이딩만 실행 시각에 실제 객체를 보고 고른다 (동적 바인딩)</text></svg>

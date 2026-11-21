@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>예외가 없을 때와 있을 때 try, catch, finally의 실행 순서</title><rect width="640" height="400" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="160" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">test(2): 예외 없음</text>
+<text x="480" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">test(0): ArithmeticException</text>
+<line x1="320" y1="40" x2="320" y2="380" stroke="#f2f2f7" stroke-width="2"/>
+<rect x="50" y="50" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="160.0" y="74.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">try: &quot;try 2&quot; 출력</text>
+<path d="M160 92 V102" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="50" y="104" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="160.0" y="128.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">r = 10 / 2 = 5</text>
+<path d="M160 146 V156" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="50" y="158" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="160.0" y="182.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">&quot;result 5&quot;, return 5 예약</text>
+<path d="M160 200 V210" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="50" y="212" width="220" height="40" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="160.0" y="236.7" font-size="13" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">catch: 건너뜀</text>
+<path d="M160 254 V264" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="50" y="266" width="220" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="160.0" y="290.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">finally: &quot;finally 2&quot;</text>
+<path d="M160 308 V318" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="50" y="320" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="160.0" y="344.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">반환값 5 → main이 출력</text>
+<rect x="370" y="50" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="480.0" y="74.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">try: &quot;try 0&quot; 출력</text>
+<path d="M480 92 V102" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="370" y="104" width="220" height="40" fill="#ffeceb" stroke="#ff453a" stroke-width="1"/>
+<text x="480.0" y="128.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10 / 0 → 예외 발생</text>
+<path d="M480 146 V156" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="370" y="158" width="220" height="40" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="480.0" y="182.7" font-size="13" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">남은 try 문장 건너뜀</text>
+<path d="M480 200 V210" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="370" y="212" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="480.0" y="236.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">catch: &quot;catch / by zero&quot;</text>
+<path d="M480 254 V264" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="370" y="266" width="220" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="480.0" y="290.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">finally: &quot;finally 0&quot;</text>
+<path d="M480 308 V318" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<rect x="370" y="320" width="220" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="480.0" y="344.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">반환값 -1 → main이 출력</text>
+<text x="320" y="386" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="600">finally는 return이 있어도 메서드가 끝나기 직전에 반드시 실행된다</text>
+</svg>

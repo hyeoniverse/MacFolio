@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>주문 상태 다이어그램</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<circle cx="40" cy="120" r="9" fill="#1d1d1f"/>
+<rect x="90" y="100" width="90" height="40" rx="12" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="135.0" y="124.7" text-anchor="middle" font-size="13" fill="#1d1d1f">결제대기</text>
+<rect x="250" y="100" width="90" height="40" rx="12" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="295.0" y="124.7" text-anchor="middle" font-size="13" fill="#1d1d1f">결제완료</text>
+<rect x="410" y="100" width="90" height="40" rx="12" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="455.0" y="124.7" text-anchor="middle" font-size="13" fill="#1d1d1f">배송중</text>
+<rect x="540" y="100" width="90" height="40" rx="12" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="585.0" y="124.7" text-anchor="middle" font-size="13" fill="#1d1d1f">배송완료</text>
+<rect x="250" y="220" width="90" height="40" rx="12" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="295.0" y="244.7" text-anchor="middle" font-size="13" fill="#1d1d1f">취소</text>
+<path d="M49 120L88 120" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<path d="M180 120L248 120" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="214" y="110" text-anchor="middle" font-size="12" fill="#6e6e73">결제</text>
+<path d="M340 120L408 120" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="374" y="110" text-anchor="middle" font-size="12" fill="#6e6e73">출고</text>
+<path d="M500 120L538 120" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="519" y="110" text-anchor="middle" font-size="12" fill="#6e6e73">수령</text>
+<path d="M135 140V240H248" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="140" y="232" text-anchor="start" font-size="12" fill="#6e6e73">취소 요청</text>
+<path d="M295 140L295 218" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="302" y="185" text-anchor="start" font-size="12" fill="#6e6e73">환불 후 취소</text>
+<path d="M585 140V179" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<circle cx="585" cy="192" r="11" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/><circle cx="585" cy="192" r="6" fill="#1d1d1f"/>
+<path d="M340 240H585V204" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="455" y="280" text-anchor="middle" font-size="12" fill="#ff453a">배송중에는 취소로 가는 전이가 없다</text>
+<text x="320" y="40" text-anchor="middle" font-size="12" fill="#6e6e73">상태(둥근 사각형) 사이를 사건(화살표 위 글자)이 일어날 때마다 옮겨 간다</text>
+</svg>

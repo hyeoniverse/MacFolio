@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>웹 서버, WAS, DB 서버로 구성한 서버 개발 환경</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">요청 하나가 거치는 서버</text>
+<rect x="20" y="50" width="120" height="56" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="80.0" y="75.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">브라우저</text>
+<text x="80.0" y="90.0" text-anchor="middle" font-size="11" fill="#6e6e73">클라이언트</text>
+<path d="M142 78 L176 78" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="180" y="50" width="120" height="56" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="240.0" y="75.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">웹 서버</text>
+<text x="240.0" y="90.0" text-anchor="middle" font-size="11" fill="#6e6e73">Apache, Nginx</text>
+<path d="M302 78 L336 78" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="340" y="50" width="120" height="56" fill="#0a84ff"/>
+<text x="400.0" y="75.0" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">WAS</text>
+<text x="400.0" y="90.0" text-anchor="middle" font-size="11" fill="#fff">Tomcat, JEUS</text>
+<path d="M462 78 L496 78" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="500" y="50" width="120" height="56" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="560.0" y="75.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">DB 서버</text>
+<text x="560.0" y="90.0" text-anchor="middle" font-size="11" fill="#6e6e73">MySQL, Oracle</text>
+<text x="240" y="130" text-anchor="middle" font-size="12" fill="#6e6e73">HTML·CSS·이미지 같은 정적 파일은 웹 서버가 바로 응답</text>
+<text x="400" y="150" text-anchor="middle" font-size="12" fill="#6e6e73">로그인·주문처럼 계산이 필요한 동적 요청은 WAS가 처리</text>
+<text x="560" y="170" text-anchor="middle" font-size="12" fill="#1d1d1f"></text>
+<path d="M20 190 L620 190" stroke="#f2f2f7" stroke-width="2" fill="none"/>
+<text x="320" y="216" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">개발 PC에 갖추는 도구</text>
+<rect x="20" y="230" width="145" height="50" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="92.5" y="252.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">IDE</text>
+<text x="92.5" y="267.0" text-anchor="middle" font-size="11" fill="#6e6e73">Eclipse, IntelliJ, VS Code</text>
+<rect x="175" y="230" width="145" height="50" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="247.5" y="252.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">빌드 도구</text>
+<text x="247.5" y="267.0" text-anchor="middle" font-size="11" fill="#6e6e73">Maven, Gradle</text>
+<rect x="330" y="230" width="145" height="50" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="402.5" y="252.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">형상 관리</text>
+<text x="402.5" y="267.0" text-anchor="middle" font-size="11" fill="#6e6e73">Git, SVN</text>
+<rect x="485" y="230" width="145" height="50" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="557.5" y="252.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">테스트</text>
+<text x="557.5" y="267.0" text-anchor="middle" font-size="11" fill="#6e6e73">JUnit, Postman</text></svg>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 410" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>구조체 배열 box와 구조체 포인터 p가 L11, L12, L13을 거치며 바뀌는 과정</title><rect width="640" height="410" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">struct item box[3]: p가 움직이는 줄과 값이 바뀌는 줄</text>
+<text x="20" y="110" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="600">L11 뒤</text>
+<text x="20" y="130" font-size="12" fill="#6e6e73" text-anchor="start" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p-&gt;qty += 3</text>
+<rect x="150" y="90" width="120" height="56" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="210" y="84" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[0]</text>
+<text x="182" y="124" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'A'</text>
+<text x="240" y="124" font-size="15" fill="#ff9f0a" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">7</text>
+<line x1="210" y1="100" x2="210" y2="138" stroke="#c7c7cc"/>
+<rect x="280" y="90" width="120" height="56" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="340" y="84" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[1]</text>
+<text x="312" y="124" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'B'</text>
+<text x="370" y="124" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">7</text>
+<line x1="340" y1="100" x2="340" y2="138" stroke="#c7c7cc"/>
+<rect x="410" y="90" width="120" height="56" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="470" y="84" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[2]</text>
+<text x="442" y="124" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'C'</text>
+<text x="500" y="124" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<line x1="470" y1="100" x2="470" y2="138" stroke="#c7c7cc"/>
+<line x1="210" y1="168" x2="210" y2="150" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#m0a84ff)"/>
+<text x="224" y="168" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p</text>
+<text x="625" y="124" font-size="12" fill="#ff9f0a" text-anchor="end">값 변경</text>
+<text x="20" y="215" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="600">L12 뒤</text>
+<text x="20" y="235" font-size="12" fill="#6e6e73" text-anchor="start" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p++</text>
+<rect x="150" y="195" width="120" height="56" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="210" y="189" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[0]</text>
+<text x="182" y="229" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'A'</text>
+<text x="240" y="229" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">7</text>
+<line x1="210" y1="205" x2="210" y2="243" stroke="#c7c7cc"/>
+<rect x="280" y="195" width="120" height="56" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="340" y="189" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[1]</text>
+<text x="312" y="229" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'B'</text>
+<text x="370" y="229" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">7</text>
+<line x1="340" y1="205" x2="340" y2="243" stroke="#c7c7cc"/>
+<rect x="410" y="195" width="120" height="56" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="470" y="189" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[2]</text>
+<text x="442" y="229" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'C'</text>
+<text x="500" y="229" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<line x1="470" y1="205" x2="470" y2="243" stroke="#c7c7cc"/>
+<line x1="340" y1="273" x2="340" y2="255" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#m0a84ff)"/>
+<text x="354" y="273" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p</text>
+<text x="625" y="229" font-size="12" fill="#0a84ff" text-anchor="end">포인터 이동</text>
+<text x="20" y="320" font-size="14" fill="#1d1d1f" text-anchor="start" font-weight="600">L13 뒤</text>
+<text x="20" y="340" font-size="12" fill="#6e6e73" text-anchor="start" font-family="ui-monospace, 'SF Mono', Menlo, monospace">++p-&gt;qty</text>
+<rect x="150" y="300" width="120" height="56" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="210" y="294" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[0]</text>
+<text x="182" y="334" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'A'</text>
+<text x="240" y="334" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">7</text>
+<line x1="210" y1="310" x2="210" y2="348" stroke="#c7c7cc"/>
+<rect x="280" y="300" width="120" height="56" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="340" y="294" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[1]</text>
+<text x="312" y="334" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'B'</text>
+<text x="370" y="334" font-size="15" fill="#ff9f0a" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">8</text>
+<line x1="340" y1="310" x2="340" y2="348" stroke="#c7c7cc"/>
+<rect x="410" y="300" width="120" height="56" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="470" y="294" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">box[2]</text>
+<text x="442" y="334" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">'C'</text>
+<text x="500" y="334" font-size="15" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<line x1="470" y1="310" x2="470" y2="348" stroke="#c7c7cc"/>
+<line x1="340" y1="378" x2="340" y2="360" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#m0a84ff)"/>
+<text x="354" y="378" font-size="13" fill="#0a84ff" text-anchor="start" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p</text>
+<text x="625" y="334" font-size="12" fill="#ff9f0a" text-anchor="end">값 변경</text>
+<text x="320" y="398" font-size="12" fill="#6e6e73" text-anchor="middle">각 칸 왼쪽은 code, 오른쪽은 qty. 주황 숫자는 그 줄에서 바뀐 값</text>
+</svg>

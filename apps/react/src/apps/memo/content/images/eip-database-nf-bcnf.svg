@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>결정자가 후보키가 아닌 함수 종속을 제거해 BCNF로 분해</title><rect width="640" height="360" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">레슨(회원, 종목, 코치) · 코치 한 명은 한 종목만 맡는다</text>
+<rect x="40" y="44" width="240" height="26" fill="#e8f2ff"/>
+<text x="80.0" y="61.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">회원</text>
+<text x="160.0" y="61.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">종목</text>
+<text x="240.0" y="61.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">코치</text>
+<text x="80.0" y="87.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<rect x="120" y="70" width="80" height="26" fill="#fff4e5"/>
+<text x="160.0" y="87.32" text-anchor="middle" font-size="12" fill="#1d1d1f">수영</text>
+<text x="240.0" y="87.32" text-anchor="middle" font-size="12" fill="#1d1d1f">박코치</text>
+<text x="80.0" y="113.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="160.0" y="113.32" text-anchor="middle" font-size="12" fill="#1d1d1f">테니스</text>
+<text x="240.0" y="113.32" text-anchor="middle" font-size="12" fill="#1d1d1f">이코치</text>
+<text x="80.0" y="139.32" text-anchor="middle" font-size="12" fill="#1d1d1f">오세진</text>
+<text x="160.0" y="139.32" text-anchor="middle" font-size="12" fill="#1d1d1f">수영</text>
+<text x="240.0" y="139.32" text-anchor="middle" font-size="12" fill="#1d1d1f">정코치</text>
+<text x="80.0" y="165.32" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<rect x="120" y="148" width="80" height="26" fill="#fff4e5"/>
+<text x="160.0" y="165.32" text-anchor="middle" font-size="12" fill="#1d1d1f">수영</text>
+<text x="240.0" y="165.32" text-anchor="middle" font-size="12" fill="#1d1d1f">박코치</text>
+<rect x="40" y="44" width="240" height="130" fill="none" stroke="#c7c7cc"/>
+<line x1="120" y1="44" x2="120" y2="174" stroke="#c7c7cc"/>
+<line x1="200" y1="44" x2="200" y2="174" stroke="#c7c7cc"/>
+<line x1="40" y1="70" x2="280" y2="70" stroke="#c7c7cc"/>
+<line x1="40" y1="96" x2="280" y2="96" stroke="#c7c7cc"/>
+<line x1="40" y1="122" x2="280" y2="122" stroke="#c7c7cc"/>
+<line x1="40" y1="148" x2="280" y2="148" stroke="#c7c7cc"/>
+<rect x="330" y="90" width="80" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="370.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">회원</text>
+<rect x="418" y="90" width="80" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="458.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">종목</text>
+<rect x="506" y="90" width="80" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="546.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f">코치</text>
+<path d="M414.0 90 L414.0 60 L546.0 60 L546.0 86" stroke="#0a84ff" stroke-width="1.6" fill="none" marker-end="url(#b)"/>
+<path d="M546.0 120 L546.0 146 L458.0 146 L458.0 124" stroke="#ff9f0a" stroke-width="1.6" fill="none" marker-end="url(#o)"/>
+<text x="470" y="52" text-anchor="middle" font-size="12" fill="#0a84ff">{회원, 종목} → 코치</text>
+<text x="470" y="166" text-anchor="middle" font-size="12" fill="#ff9f0a">코치 → 종목 (코치는 후보키가 아니다)</text>
+<text x="160" y="190" text-anchor="middle" font-size="12" fill="#ff9f0a">박코치의 종목이 두 행에 중복 저장된다</text>
+<path d="M320 204 L320 230" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="330" y="222" text-anchor="start" font-size="12" fill="#6e6e73">결정자 코치를 키로 하는 릴레이션을 떼어 낸다</text>
+<text x="200" y="252" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">코치배정</text>
+<text x="450" y="252" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">수강</text>
+<rect x="120" y="262" width="160" height="24" fill="#e8f2ff"/>
+<text x="160.0" y="278.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">코치</text>
+<text x="240.0" y="278.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">종목</text>
+<text x="160.0" y="302.32" text-anchor="middle" font-size="12" fill="#1d1d1f">박코치</text>
+<text x="240.0" y="302.32" text-anchor="middle" font-size="12" fill="#1d1d1f">수영</text>
+<text x="160.0" y="326.32" text-anchor="middle" font-size="12" fill="#1d1d1f">이코치</text>
+<text x="240.0" y="326.32" text-anchor="middle" font-size="12" fill="#1d1d1f">테니스</text>
+<text x="160.0" y="350.32" text-anchor="middle" font-size="12" fill="#1d1d1f">정코치</text>
+<text x="240.0" y="350.32" text-anchor="middle" font-size="12" fill="#1d1d1f">수영</text>
+<rect x="120" y="262" width="160" height="96" fill="none" stroke="#c7c7cc"/>
+<line x1="200" y1="262" x2="200" y2="358" stroke="#c7c7cc"/>
+<line x1="120" y1="286" x2="280" y2="286" stroke="#c7c7cc"/>
+<line x1="120" y1="310" x2="280" y2="310" stroke="#c7c7cc"/>
+<line x1="120" y1="334" x2="280" y2="334" stroke="#c7c7cc"/>
+<rect x="370" y="262" width="160" height="22" fill="#e8f2ff"/>
+<text x="410.0" y="277.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">회원</text>
+<text x="490.0" y="277.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">코치</text>
+<text x="410.0" y="299.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="490.0" y="299.32" text-anchor="middle" font-size="12" fill="#1d1d1f">박코치</text>
+<text x="410.0" y="321.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="490.0" y="321.32" text-anchor="middle" font-size="12" fill="#1d1d1f">이코치</text>
+<text x="410.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">오세진</text>
+<text x="490.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">정코치</text>
+<text x="410.0" y="365.32" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<text x="490.0" y="365.32" text-anchor="middle" font-size="12" fill="#1d1d1f">박코치</text>
+<rect x="370" y="262" width="160" height="110" fill="none" stroke="#c7c7cc"/>
+<line x1="450" y1="262" x2="450" y2="372" stroke="#c7c7cc"/>
+<line x1="370" y1="284" x2="530" y2="284" stroke="#c7c7cc"/>
+<line x1="370" y1="306" x2="530" y2="306" stroke="#c7c7cc"/>
+<line x1="370" y1="328" x2="530" y2="328" stroke="#c7c7cc"/>
+<line x1="370" y1="350" x2="530" y2="350" stroke="#c7c7cc"/></svg>

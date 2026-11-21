@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>로그인 시퀀스 다이어그램</title><rect width="640" height="360" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="28" y="20" width="124" height="32" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="90.0" y="40.7" text-anchor="middle" font-size="13" fill="#1d1d1f">사용자</text>
+<path d="M90 52L90 340" fill="none" stroke="#6e6e73" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="188" y="20" width="124" height="32" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="250.0" y="40.7" text-anchor="middle" font-size="13" fill="#1d1d1f">:로그인화면</text>
+<path d="M250 52L250 340" fill="none" stroke="#6e6e73" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="348" y="20" width="124" height="32" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="410.0" y="40.7" text-anchor="middle" font-size="13" fill="#1d1d1f">:인증서비스</text>
+<path d="M410 52L410 340" fill="none" stroke="#6e6e73" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="498" y="20" width="124" height="32" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="560.0" y="40.7" text-anchor="middle" font-size="13" fill="#1d1d1f">:회원DB</text>
+<path d="M560 52L560 340" fill="none" stroke="#6e6e73" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="243" y="80" width="14" height="240" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<rect x="403" y="110" width="14" height="170" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<rect x="553" y="140" width="14" height="50" fill="#fff" stroke="#1d1d1f" stroke-width="1.2"/>
+<path d="M90 85L243 85" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#a)"/>
+<text x="166.5" y="79" text-anchor="middle" font-size="12" fill="#1d1d1f">1: 아이디·비밀번호 입력</text>
+<path d="M257 115L403 115" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#a)"/>
+<text x="330.0" y="109" text-anchor="middle" font-size="12" fill="#1d1d1f">2: 인증요청(id, pw)</text>
+<path d="M417 145L553 145" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#a)"/>
+<text x="485.0" y="139" text-anchor="middle" font-size="12" fill="#1d1d1f">3: 회원조회(id)</text>
+<path d="M553 185L417 185" fill="none" stroke="#1d1d1f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<text x="485.0" y="179" text-anchor="middle" font-size="12" fill="#1d1d1f">4: 해시값 반환</text>
+<path d="M417 215H457V237H425" fill="none" stroke="#1d1d1f" stroke-width="1.2" marker-end="url(#a)"/>
+<text x="463" y="230" text-anchor="start" font-size="12" fill="#1d1d1f">5: 해시 비교</text>
+<path d="M403 275L257 275" fill="none" stroke="#1d1d1f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<text x="330.0" y="269" text-anchor="middle" font-size="12" fill="#1d1d1f">6: 인증결과(성공)</text>
+<path d="M243 315L90 315" fill="none" stroke="#1d1d1f" stroke-width="1.2" stroke-dasharray="6 4" marker-end="url(#a)"/>
+<text x="166.5" y="309" text-anchor="middle" font-size="12" fill="#1d1d1f">7: 메인 화면 표시</text>
+</svg>

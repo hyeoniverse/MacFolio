@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 390" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>부모 타입 참조 변수로 자식 객체의 메서드를 호출할 때 어느 메서드가 실행되는가</title><rect width="640" height="390" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600">Animal a = new Dog();  메서드는 객체(Dog)를, 필드는 변수 타입(Animal)을 따른다</text>
+<rect x="40" y="150" width="130" height="54" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="105.0" y="173.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a</text>
+<text x="105.0" y="190.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">(Animal 타입)</text>
+<rect x="240" y="60" width="360" height="250" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="256" y="82" font-size="13" fill="#0a84ff" font-weight="600">Dog 객체 (힙)</text>
+<rect x="260" y="96" width="320" height="92" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="272" y="116" font-size="12" fill="#6e6e73">Animal에서 물려받은 부분</text>
+<text x="280" y="142" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">name = &quot;animal&quot;</text>
+<text x="280" y="168" font-size="13" fill="#6e6e73" font-family="ui-monospace, 'SF Mono', Menlo, monospace">sound() { &quot;...&quot; }</text>
+<line x1="278" y1="164" x2="432" y2="164" stroke="#ff453a" stroke-width="1.5"/>
+<rect x="260" y="200" width="320" height="92" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="272" y="220" font-size="12" fill="#0a84ff">Dog에서 추가한 부분</text>
+<text x="280" y="246" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">name = &quot;dog&quot;</text>
+<text x="280" y="272" font-size="13" fill="#1d1d1f" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">sound() { &quot;bark&quot; }  재정의</text>
+<path d="M172 170 C210 170 220 140 276 140" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#mff9f0a)"/>
+<text x="186" y="132" font-size="12" fill="#ff9f0a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a.name</text>
+<path d="M172 186 C210 186 220 266 276 266" fill="none" stroke="#30d158" stroke-width="2" marker-end="url(#m30d158)"/>
+<text x="130" y="250" font-size="12" fill="#30d158" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a.sound()</text>
+<text x="320" y="340" font-size="13" fill="#30d158" text-anchor="middle" font-weight="600">a.sound() → bark (실행 시각에 실제 객체의 메서드를 찾는다: 동적 바인딩)</text>
+<text x="320" y="364" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="600">a.name → animal (필드는 재정의되지 않고, 컴파일 시각의 변수 타입으로 결정)</text>
+</svg>

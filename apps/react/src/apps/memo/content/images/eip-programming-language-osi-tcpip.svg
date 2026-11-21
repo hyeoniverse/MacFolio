@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 460" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>OSI 7계층과 TCP/IP 4계층, 계층별 프로토콜과 데이터 단위</title><rect width="640" height="460" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="110" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">OSI 7계층</text>
+<text x="270" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">TCP/IP 4계층</text>
+<text x="440" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">대표 프로토콜·장비</text>
+<text x="590" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">데이터 단위</text>
+<rect x="40" y="40" width="140" height="44" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="66.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">7  응용</text>
+<text x="440" y="67" text-anchor="middle" font-size="12" fill="#1d1d1f">HTTP, FTP, SMTP, DNS</text>
+<text x="590" y="67" text-anchor="middle" font-size="12" fill="#6e6e73">메시지</text>
+<rect x="40" y="90" width="140" height="44" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="116.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">6  표현</text>
+<text x="440" y="117" text-anchor="middle" font-size="12" fill="#1d1d1f">JPEG, MPEG, ASCII, 암호화</text>
+<text x="590" y="117" text-anchor="middle" font-size="12" fill="#6e6e73">메시지</text>
+<rect x="40" y="140" width="140" height="44" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="166.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">5  세션</text>
+<text x="440" y="167" text-anchor="middle" font-size="12" fill="#1d1d1f">세션 연결·동기화</text>
+<text x="590" y="167" text-anchor="middle" font-size="12" fill="#6e6e73">메시지</text>
+<rect x="40" y="190" width="140" height="44" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="216.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">4  전송</text>
+<text x="440" y="217" text-anchor="middle" font-size="12" fill="#1d1d1f">TCP, UDP</text>
+<text x="590" y="217" text-anchor="middle" font-size="12" fill="#6e6e73">세그먼트</text>
+<rect x="40" y="240" width="140" height="44" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="266.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">3  네트워크</text>
+<text x="440" y="267" text-anchor="middle" font-size="12" fill="#1d1d1f">IP, ICMP, ARP, 라우팅</text>
+<text x="590" y="267" text-anchor="middle" font-size="12" fill="#6e6e73">패킷</text>
+<rect x="40" y="290" width="140" height="44" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="316.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">2  데이터 링크</text>
+<text x="440" y="317" text-anchor="middle" font-size="12" fill="#1d1d1f">이더넷, MAC, 스위치</text>
+<text x="590" y="317" text-anchor="middle" font-size="12" fill="#6e6e73">프레임</text>
+<rect x="40" y="340" width="140" height="44" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="110.0" y="366.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">1  물리</text>
+<text x="440" y="367" text-anchor="middle" font-size="12" fill="#1d1d1f">케이블, 허브, 리피터</text>
+<text x="590" y="367" text-anchor="middle" font-size="12" fill="#6e6e73">비트</text>
+<rect x="200" y="40" width="140" height="144" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="270.0" y="116.68" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">응용</text>
+<rect x="200" y="190" width="140" height="44" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="270.0" y="216.68" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">전송</text>
+<rect x="200" y="240" width="140" height="44" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="270.0" y="266.68" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">인터넷</text>
+<rect x="200" y="290" width="140" height="94" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="270.0" y="341.68" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">네트워크 접근</text>
+<text x="320" y="416" text-anchor="middle" font-size="12" fill="#6e6e73">전송 계층은 프로세스 사이(포트 번호), 네트워크 계층은 호스트 사이(IP 주소),</text>
+<text x="320" y="436" text-anchor="middle" font-size="12" fill="#6e6e73">데이터 링크 계층은 직접 연결된 인접 장비 사이(MAC 주소)의 전달을 맡는다</text></svg>

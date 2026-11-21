@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>SAVEPOINT와 ROLLBACK TO의 동작</title><rect width="640" height="240" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="20" y="60" width="72" height="46" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="56.0" y="87.0" text-anchor="middle" font-size="11" fill="#1d1d1f">BEGIN</text>
+<path d="M92 83L96 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="97" y="60" width="72" height="46" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="133.0" y="79.0" text-anchor="middle" font-size="11" fill="#1d1d1f">INSERT</text>
+<text x="133.0" y="95.0" text-anchor="middle" font-size="11" fill="#1d1d1f">OS202</text>
+<path d="M169 83L173 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="174" y="60" width="72" height="46" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="210.0" y="79.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SAVEPOINT</text>
+<text x="210.0" y="95.0" text-anchor="middle" font-size="11" fill="#1d1d1f">sp1</text>
+<path d="M246 83L250 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="251" y="60" width="72" height="46" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="287.0" y="79.0" text-anchor="middle" font-size="11" fill="#1d1d1f">INSERT</text>
+<text x="287.0" y="95.0" text-anchor="middle" font-size="11" fill="#1d1d1f">CG303</text>
+<path d="M323 83L327 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="328" y="60" width="72" height="46" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="364.0" y="79.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SAVEPOINT</text>
+<text x="364.0" y="95.0" text-anchor="middle" font-size="11" fill="#1d1d1f">sp2</text>
+<path d="M400 83L404 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="405" y="60" width="72" height="46" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="441.0" y="79.0" text-anchor="middle" font-size="11" fill="#1d1d1f">DELETE</text>
+<text x="441.0" y="95.0" text-anchor="middle" font-size="11" fill="#1d1d1f">AI401</text>
+<path d="M477 83L481 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="482" y="60" width="72" height="46" fill="#ffe9e7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="518.0" y="79.0" text-anchor="middle" font-size="11" fill="#1d1d1f">ROLLBACK</text>
+<text x="518.0" y="95.0" text-anchor="middle" font-size="11" fill="#1d1d1f">TO sp1</text>
+<path d="M554 83L558 83" fill="none" stroke="#6e6e73" stroke-width="1"/>
+<rect x="559" y="60" width="72" height="46" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="595.0" y="87.0" text-anchor="middle" font-size="11" fill="#1d1d1f">COMMIT</text>
+<path d="M518 108 Q364 190 212 110" fill="none" stroke="#ff453a" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#ar)"/>
+<text x="368" y="170" text-anchor="middle" font-size="12" fill="#ff453a">sp1 이후 작업(CG303 추가, AI401 삭제) 취소</text>
+<text x="320" y="210" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">COMMIT 후 과목 테이블: 기존 4과목 + OS202 = 5행</text>
+<text x="320" y="35" text-anchor="middle" font-size="12" fill="#6e6e73">시간 흐름 →</text>
+</svg>

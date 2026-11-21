@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>결합도와 응집도의 순서</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">결합도 (Coupling): 모듈 사이 의존 정도, 약할수록 좋다</text>
+<rect x="20" y="45" width="92" height="46" fill="#e8f7ec" stroke="#c7c7cc" stroke-width="1"/>
+<text x="66.0" y="63.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">자료</text>
+<text x="66.0" y="81.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Data</text>
+<rect x="120" y="45" width="92" height="46" fill="#e8f7ec" stroke="#c7c7cc" stroke-width="1"/>
+<text x="166.0" y="63.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">스탬프</text>
+<text x="166.0" y="81.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Stamp</text>
+<rect x="220" y="45" width="92" height="46" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="266.0" y="63.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">제어</text>
+<text x="266.0" y="81.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Control</text>
+<rect x="320" y="45" width="92" height="46" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="366.0" y="63.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">외부</text>
+<text x="366.0" y="81.7" text-anchor="middle" font-size="13" fill="#1d1d1f">External</text>
+<rect x="420" y="45" width="92" height="46" fill="#ffe9e7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="466.0" y="63.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">공통</text>
+<text x="466.0" y="81.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Common</text>
+<rect x="520" y="45" width="92" height="46" fill="#ffe9e7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="566.0" y="63.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">내용</text>
+<text x="566.0" y="81.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Content</text>
+<path d="M30 110L610 110" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="30" y="130" text-anchor="start" font-size="12" fill="#30d158">약함 (좋음)</text>
+<text x="610" y="130" text-anchor="end" font-size="12" fill="#ff453a">강함 (나쁨)</text>
+<text x="320" y="180" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">응집도 (Cohesion): 모듈 내부 요소의 관련 정도, 강할수록 좋다</text>
+<rect x="20" y="197" width="80" height="46" fill="#e8f7ec" stroke="#c7c7cc" stroke-width="1"/>
+<text x="60" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">기능적</text>
+<text x="60" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Functional</text>
+<rect x="106" y="197" width="80" height="46" fill="#e8f7ec" stroke="#c7c7cc" stroke-width="1"/>
+<text x="146" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">순차적</text>
+<text x="146" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Sequential</text>
+<rect x="192" y="197" width="80" height="46" fill="#e8f7ec" stroke="#c7c7cc" stroke-width="1"/>
+<text x="232" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">교환적</text>
+<text x="232" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Communication</text>
+<rect x="278" y="197" width="80" height="46" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="318" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">절차적</text>
+<text x="318" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Procedural</text>
+<rect x="364" y="197" width="80" height="46" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="404" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">시간적</text>
+<text x="404" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Temporal</text>
+<rect x="450" y="197" width="80" height="46" fill="#ffe9e7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="490" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">논리적</text>
+<text x="490" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Logical</text>
+<rect x="536" y="197" width="80" height="46" fill="#ffe9e7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="576" y="217" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">우연적</text>
+<text x="576" y="234" text-anchor="middle" font-size="10" fill="#6e6e73">Coincidental</text>
+<path d="M30 262L610 262" fill="none" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="30" y="282" text-anchor="start" font-size="12" fill="#30d158">강함 (좋음)</text>
+<text x="610" y="282" text-anchor="end" font-size="12" fill="#ff453a">약함 (나쁨)</text>
+<text x="320" y="316" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">목표: 결합도는 낮추고 응집도는 높인다 (Low Coupling, High Cohesion)</text>
+</svg>

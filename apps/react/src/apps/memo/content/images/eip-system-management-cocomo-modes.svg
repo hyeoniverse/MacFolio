@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>같은 30KDSI를 COCOMO 세 유형으로 계산한 결과</title><rect width="640" height="300" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">30KDSI, 기본 COCOMO</text>
+<g font-size="13">
+<text x="20" y="62" fill="#6e6e73" font-size="12">노력 E (인월)</text>
+<text x="110" y="92" text-anchor="end" fill="#1d1d1f">조직형</text><rect x="120" y="78" width="171" height="20" fill="#30d158"/><text x="299" y="93" fill="#1d1d1f">85.3</text>
+<text x="110" y="122" text-anchor="end" fill="#1d1d1f">반분리형</text><rect x="120" y="108" width="271" height="20" fill="#ff9f0a"/><text x="399" y="123" fill="#1d1d1f">135.4</text>
+<text x="110" y="152" text-anchor="end" fill="#1d1d1f">내장형</text><rect x="120" y="138" width="426" height="20" fill="#ff453a"/><text x="554" y="153" fill="#1d1d1f">213.2</text>
+<text x="20" y="192" fill="#6e6e73" font-size="12">기간 D (개월)와 평균 인원 N = E ÷ D</text>
+<rect x="20" y="204" width="600" height="80" fill="#f2f2f7"/>
+<text x="120" y="230" text-anchor="middle" fill="#6e6e73" font-size="12">유형</text><text x="300" y="230" text-anchor="middle" fill="#6e6e73" font-size="12">기간 D</text><text x="480" y="230" text-anchor="middle" fill="#6e6e73" font-size="12">평균 인원 N</text>
+<text x="120" y="252" text-anchor="middle" fill="#1d1d1f">조직형 / 반분리형 / 내장형</text><text x="300" y="252" text-anchor="middle" fill="#1d1d1f">13.5 / 13.9 / 13.9</text><text x="480" y="252" text-anchor="middle" fill="#1d1d1f">6.3 / 9.7 / 15.3 명</text>
+<text x="320" y="274" text-anchor="middle" fill="#0a84ff" font-size="12">기간은 거의 같고, 투입 인원(노력)이 크게 달라진다</text>
+</g></svg>

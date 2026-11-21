@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 502" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>비정규 릴레이션을 1NF로 바꾸고 이상 현상을 찾는다</title><rect width="640" height="502" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">비정규 릴레이션: 대여 도서 칸에 값이 여러 개 들어 있다 (반복 그룹)</text>
+<rect x="20" y="40" width="600" height="26" fill="#e8f2ff"/>
+<text x="60.0" y="58" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">회원번호</text>
+<text x="135.0" y="58" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">이름</text>
+<text x="195.0" y="58" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">등급</text>
+<text x="255.0" y="58" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여한도</text>
+<text x="455.0" y="58" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여 도서 (도서번호, 도서명, 대여일)</text>
+<text x="60.0" y="96.0" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="135.0" y="96.0" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="195.0" y="96.0" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<text x="255.0" y="96.0" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="290" y="66" width="330" height="52" fill="#fff4e5"/>
+<text x="455.0" y="84" text-anchor="middle" font-size="12" fill="#1d1d1f">B11 DB 개론 03-02</text>
+<text x="455.0" y="110" text-anchor="middle" font-size="12" fill="#1d1d1f">B20 운영체제 03-05</text>
+<line x1="20" y1="66" x2="620" y2="66" stroke="#c7c7cc"/>
+<text x="60.0" y="135.0" text-anchor="middle" font-size="12" fill="#1d1d1f">M02</text>
+<text x="135.0" y="135.0" text-anchor="middle" font-size="12" fill="#1d1d1f">오세진</text>
+<text x="195.0" y="135.0" text-anchor="middle" font-size="12" fill="#1d1d1f">우수</text>
+<text x="255.0" y="135.0" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+<rect x="290" y="118" width="330" height="26" fill="#fff4e5"/>
+<text x="455.0" y="136" text-anchor="middle" font-size="12" fill="#1d1d1f">B11 DB 개론 03-04</text>
+<line x1="20" y1="118" x2="620" y2="118" stroke="#c7c7cc"/>
+<text x="60.0" y="174.0" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="135.0" y="174.0" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<text x="195.0" y="174.0" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<text x="255.0" y="174.0" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="290" y="144" width="330" height="52" fill="#fff4e5"/>
+<text x="455.0" y="162" text-anchor="middle" font-size="12" fill="#1d1d1f">B35 네트워크 03-06</text>
+<text x="455.0" y="188" text-anchor="middle" font-size="12" fill="#1d1d1f">B20 운영체제 03-07</text>
+<line x1="20" y1="144" x2="620" y2="144" stroke="#c7c7cc"/>
+<rect x="20" y="40" width="600" height="156" fill="none" stroke="#c7c7cc"/>
+<line x1="100" y1="40" x2="100" y2="196" stroke="#c7c7cc"/>
+<line x1="170" y1="40" x2="170" y2="196" stroke="#c7c7cc"/>
+<line x1="220" y1="40" x2="220" y2="196" stroke="#c7c7cc"/>
+<line x1="290" y1="40" x2="290" y2="196" stroke="#c7c7cc"/>
+<path d="M320 204 L320 230" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="330" y="222" text-anchor="start" font-size="12" fill="#6e6e73">반복 그룹을 행으로 펼친다 (모든 값이 원자값)</text>
+<text x="320" y="240" text-anchor="middle" font-size="1" fill="#1d1d1f"></text>
+<rect x="20" y="240" width="600" height="26" fill="#e8f2ff"/>
+<text x="63.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">회원번호</text>
+<text x="146.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">이름</text>
+<text x="216.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">등급</text>
+<text x="286.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여한도</text>
+<text x="369.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">도서번호</text>
+<text x="467.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">도서명</text>
+<text x="571.0" y="257.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여일</text>
+<text x="63.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="146.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="216.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="246" y="266" width="80" height="26" fill="#fff4e5"/>
+<text x="286.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<text x="369.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B11</text>
+<text x="467.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">DB 개론</text>
+<text x="571.0" y="283.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-02</text>
+<text x="63.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="146.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="216.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="246" y="292" width="80" height="26" fill="#fff4e5"/>
+<text x="286.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<text x="369.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B20</text>
+<text x="467.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">운영체제</text>
+<text x="571.0" y="309.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-05</text>
+<rect x="20" y="318" width="86" height="26" fill="#ffe3e0"/>
+<text x="63.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M02</text>
+<rect x="106" y="318" width="80" height="26" fill="#ffe3e0"/>
+<text x="146.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">오세진</text>
+<rect x="186" y="318" width="60" height="26" fill="#ffe3e0"/>
+<text x="216.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">우수</text>
+<rect x="246" y="318" width="80" height="26" fill="#ffe3e0"/>
+<text x="286.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+<rect x="326" y="318" width="86" height="26" fill="#ffe3e0"/>
+<text x="369.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B11</text>
+<rect x="412" y="318" width="110" height="26" fill="#ffe3e0"/>
+<text x="467.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">DB 개론</text>
+<rect x="522" y="318" width="98" height="26" fill="#ffe3e0"/>
+<text x="571.0" y="335.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-04</text>
+<text x="63.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="146.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<text x="216.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="246" y="344" width="80" height="26" fill="#fff4e5"/>
+<text x="286.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<text x="369.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B35</text>
+<text x="467.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">네트워크</text>
+<text x="571.0" y="361.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-06</text>
+<text x="63.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="146.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<text x="216.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="246" y="370" width="80" height="26" fill="#fff4e5"/>
+<text x="286.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<text x="369.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B20</text>
+<text x="467.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">운영체제</text>
+<text x="571.0" y="387.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-07</text>
+<rect x="20" y="240" width="600" height="156" fill="none" stroke="#c7c7cc"/>
+<line x1="106" y1="240" x2="106" y2="396" stroke="#c7c7cc"/>
+<line x1="186" y1="240" x2="186" y2="396" stroke="#c7c7cc"/>
+<line x1="246" y1="240" x2="246" y2="396" stroke="#c7c7cc"/>
+<line x1="326" y1="240" x2="326" y2="396" stroke="#c7c7cc"/>
+<line x1="412" y1="240" x2="412" y2="396" stroke="#c7c7cc"/>
+<line x1="522" y1="240" x2="522" y2="396" stroke="#c7c7cc"/>
+<line x1="20" y1="266" x2="620" y2="266" stroke="#c7c7cc"/>
+<line x1="20" y1="292" x2="620" y2="292" stroke="#c7c7cc"/>
+<line x1="20" y1="318" x2="620" y2="318" stroke="#c7c7cc"/>
+<line x1="20" y1="344" x2="620" y2="344" stroke="#c7c7cc"/>
+<line x1="20" y1="370" x2="620" y2="370" stroke="#c7c7cc"/>
+<text x="320" y="418" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">1NF 대여 릴레이션 · 기본키 {회원번호, 도서번호}</text>
+<rect x="20" y="430" width="12" height="12" fill="#fff4e5"/>
+<text x="40" y="440" text-anchor="start" font-size="12" fill="#1d1d1f">갱신 이상: 일반 등급 한도를 4로 바꾸려면 4행을 모두 고쳐야 한다</text>
+<rect x="20" y="452" width="12" height="12" fill="#ffe3e0"/>
+<text x="40" y="462" text-anchor="start" font-size="12" fill="#1d1d1f">삭제 이상: M02의 대여 기록을 지우면 오세진 회원과 "우수 등급 한도 5"도 사라진다</text>
+<rect x="20" y="474" width="12" height="12" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="40" y="484" text-anchor="start" font-size="12" fill="#1d1d1f">삽입 이상: 아직 빌린 책이 없는 신규 회원은 도서번호(기본키)가 NULL이라 넣을 수 없다</text></svg>

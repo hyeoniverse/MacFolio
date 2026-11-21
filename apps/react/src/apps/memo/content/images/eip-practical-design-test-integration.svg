@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>하향식 통합의 스텁과 상향식 통합의 드라이버</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="155" y="25" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">하향식 (Top-Down)</text>
+<path d="M155 76L80 124" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M155 76L230 124" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M80 156L40 204" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M80 156L120 204" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M230 156L230 204" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<rect x="121" y="44" width="68" height="32" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="155.0" y="64.3" text-anchor="middle" font-size="12" fill="#1d1d1f">M</text>
+<rect x="46" y="124" width="68" height="32" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="80.0" y="144.3" text-anchor="middle" font-size="12" fill="#1d1d1f">A</text>
+<rect x="196" y="124" width="68" height="32" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="230.0" y="144.3" text-anchor="middle" font-size="12" fill="#1d1d1f">B</text>
+<rect x="6" y="204" width="68" height="32" rx="4" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="40.0" y="224.3" text-anchor="middle" font-size="12" fill="#1d1d1f">스텁</text>
+<rect x="86" y="204" width="68" height="32" rx="4" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="120.0" y="224.3" text-anchor="middle" font-size="12" fill="#1d1d1f">스텁</text>
+<rect x="196" y="204" width="68" height="32" rx="4" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="230.0" y="224.3" text-anchor="middle" font-size="12" fill="#1d1d1f">스텁</text>
+<text x="475" y="25" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">상향식 (Bottom-Up)</text>
+<path d="M475 76L400 124" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M475 76L550 124" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M400 156L360 204" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M400 156L440 204" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<path d="M550 156L550 204" fill="none" stroke="#6e6e73" stroke-width="1.5"/>
+<rect x="441" y="44" width="68" height="32" rx="4" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="475.0" y="64.3" text-anchor="middle" font-size="12" fill="#1d1d1f">드라이버</text>
+<rect x="366" y="124" width="68" height="32" rx="4" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="400.0" y="144.3" text-anchor="middle" font-size="12" fill="#1d1d1f">드라이버</text>
+<rect x="516" y="124" width="68" height="32" rx="4" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="550.0" y="144.3" text-anchor="middle" font-size="12" fill="#1d1d1f">드라이버</text>
+<rect x="326" y="204" width="68" height="32" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="360.0" y="224.3" text-anchor="middle" font-size="12" fill="#1d1d1f">A1</text>
+<rect x="406" y="204" width="68" height="32" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="440.0" y="224.3" text-anchor="middle" font-size="12" fill="#1d1d1f">A2</text>
+<rect x="516" y="204" width="68" height="32" rx="4" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="550.0" y="224.3" text-anchor="middle" font-size="12" fill="#1d1d1f">B1</text>
+<path d="M320 40L320 280" fill="none" stroke="#f2f2f7" stroke-width="2"/>
+<text x="155" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">상위 M·A·B를 먼저 시험하고</text>
+<text x="155" y="290" text-anchor="middle" font-size="12" fill="#6e6e73">아직 없는 하위 모듈을 스텁으로 대신</text>
+<text x="475" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">하위 A1·A2·B1을 먼저 시험하고</text>
+<text x="475" y="290" text-anchor="middle" font-size="12" fill="#6e6e73">아직 없는 상위 모듈을 드라이버로 대신</text>
+<text x="320" y="320" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">스텁: 호출당하는 쪽의 가짜 / 드라이버: 호출하는 쪽의 가짜</text>
+</svg>

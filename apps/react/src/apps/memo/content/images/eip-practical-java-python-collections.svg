@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 316" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>파이썬 리스트, 튜플, 딕셔너리, 세트의 표기와 특징 비교</title><rect width="640" height="316" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">네 가지 컬렉션: 괄호 모양과 순서·변경·중복 허용 여부</text>
+<rect x="24" y="52" width="140" height="222" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5" rx="8"/>
+<text x="94" y="82" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">list</text>
+<rect x="36" y="96" width="116" height="34" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="94.0" y="117.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[1, 2, 2]</text>
+<text x="94" y="160" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">순서 있음 (인덱스)</text>
+<text x="94" y="192" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">변경 가능</text>
+<text x="94" y="224" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">중복 허용</text>
+<text x="94" y="256" font-size="12" fill="#6e6e73" text-anchor="middle">append, pop, sort</text>
+<rect x="176" y="52" width="140" height="222" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1.5" rx="8"/>
+<text x="246" y="82" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">tuple</text>
+<rect x="188" y="96" width="116" height="34" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="246.0" y="117.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">(1, 2, 2)</text>
+<text x="246" y="160" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">순서 있음 (인덱스)</text>
+<text x="246" y="192" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">변경 불가</text>
+<text x="246" y="224" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">중복 허용</text>
+<text x="246" y="256" font-size="12" fill="#6e6e73" text-anchor="middle">원소 1개: (5,)</text>
+<rect x="328" y="52" width="140" height="222" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.5" rx="8"/>
+<text x="398" y="82" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">dict</text>
+<rect x="340" y="96" width="116" height="34" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="398.0" y="117.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">{&quot;a&quot;: 1}</text>
+<text x="398" y="160" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">키로 접근</text>
+<text x="398" y="192" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">변경 가능</text>
+<text x="398" y="224" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">키 중복 불가</text>
+<text x="398" y="256" font-size="12" fill="#6e6e73" text-anchor="middle">get, keys, items</text>
+<rect x="480" y="52" width="140" height="222" fill="#e9f9ee" stroke="#30d158" stroke-width="1.5" rx="8"/>
+<text x="550" y="82" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">set</text>
+<rect x="492" y="96" width="116" height="34" fill="#fff" stroke="#30d158" stroke-width="1"/>
+<text x="550.0" y="117.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">{1, 2}</text>
+<text x="550" y="160" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">순서 없음</text>
+<text x="550" y="192" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">변경 가능</text>
+<text x="550" y="224" font-size="12" fill="#1d1d1f" text-anchor="middle" font-weight="600">중복 자동 제거</text>
+<text x="550" y="256" font-size="12" fill="#6e6e73" text-anchor="middle">&amp; | - 집합 연산</text>
+<text x="320" y="300" font-size="12" fill="#ff9f0a" text-anchor="middle" font-weight="600">빈 {} 는 dict이고, 빈 세트는 set() 으로 만든다</text>
+</svg>

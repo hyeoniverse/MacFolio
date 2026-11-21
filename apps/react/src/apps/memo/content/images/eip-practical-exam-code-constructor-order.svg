@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>new Derived() 실행 시 생성자 호출 순서와 본문 실행 순서, 필드 값 변화</title><rect width="640" height="470" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">new Derived(): 호출은 아래로, 본문 실행은 위로</text>
+<text x="250" y="58" font-size="12" fill="#6e6e73" text-anchor="middle">실행 단계</text>
+<text x="490" y="58" font-size="12" fill="#6e6e73" text-anchor="middle">Base.v</text>
+<text x="570" y="58" font-size="12" fill="#6e6e73" text-anchor="middle">Derived.v</text>
+<rect x="60" y="72" width="380" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="40" y="94" font-size="13" fill="#6e6e73" text-anchor="middle">1</text>
+<text x="250" y="94" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Derived() 호출 → 숨은 super()</text>
+<text x="490" y="94" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="570" y="94" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="250" y1="106" x2="250" y2="117" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="118" width="380" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="40" y="140" font-size="13" fill="#6e6e73" text-anchor="middle">2</text>
+<text x="250" y="140" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Base() 호출 → this(10)</text>
+<text x="490" y="140" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="570" y="140" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="250" y1="152" x2="250" y2="163" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="164" width="380" height="34" rx="6" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="40" y="186" font-size="13" fill="#6e6e73" text-anchor="middle">3</text>
+<text x="250" y="186" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Base(int) 호출 → 숨은 super(), Object()</text>
+<text x="490" y="186" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="570" y="186" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="250" y1="198" x2="250" y2="209" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="210" width="380" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="40" y="232" font-size="13" fill="#6e6e73" text-anchor="middle">4</text>
+<text x="250" y="232" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Base 필드 초깃값 v = 1 (L2)</text>
+<text x="490" y="232" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<text x="570" y="232" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="250" y1="244" x2="250" y2="255" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="256" width="380" height="34" rx="6" fill="#f2f2f7" stroke="#ff453a" stroke-width="2"/>
+<text x="40" y="278" font-size="13" fill="#6e6e73" text-anchor="middle">5</text>
+<text x="250" y="278" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Base(int) 본문: v = 10, get() 출력 0</text>
+<text x="490" y="278" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10</text>
+<text x="570" y="278" font-size="14" fill="#ff453a" text-anchor="middle" font-weight="700" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="250" y1="290" x2="250" y2="301" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="302" width="380" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="40" y="324" font-size="13" fill="#6e6e73" text-anchor="middle">6</text>
+<text x="250" y="324" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Base() 본문: "Base() v=10"</text>
+<text x="490" y="324" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10</text>
+<text x="570" y="324" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="250" y1="336" x2="250" y2="347" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="348" width="380" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="40" y="370" font-size="13" fill="#6e6e73" text-anchor="middle">7</text>
+<text x="250" y="370" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Derived 필드 초깃값 v = 2 (L20)</text>
+<text x="490" y="370" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10</text>
+<text x="570" y="370" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<line x1="250" y1="382" x2="250" y2="393" stroke="#6e6e73" stroke-width="1.2" marker-end="url(#m6e6e73)"/>
+<rect x="60" y="394" width="380" height="34" rx="6" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="40" y="416" font-size="13" fill="#6e6e73" text-anchor="middle">8</text>
+<text x="250" y="416" font-size="12.5" fill="#1d1d1f" text-anchor="middle">Derived() 본문: "Derived() v=2 200"</text>
+<text x="490" y="416" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10</text>
+<text x="570" y="416" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<text x="320" y="450" font-size="12" fill="#ff453a" text-anchor="middle">5단계에서 Derived.get()이 실행되지만 Derived.v는 아직 0이라 0 × 100 = 0</text>
+</svg>

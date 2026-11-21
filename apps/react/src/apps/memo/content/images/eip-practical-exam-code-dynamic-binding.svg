@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>s.render() 호출에서 동적 바인딩과 super 호출이 번갈아 적용되는 흐름</title><rect width="640" height="440" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">s.render(): super는 한 번의 호출만 부모로 고정한다</text>
+<text x="160" y="62" font-size="13" fill="#6e6e73" text-anchor="middle">class Widget (부모)</text>
+<text x="480" y="62" font-size="13" fill="#6e6e73" text-anchor="middle">class Button (자식)</text>
+<rect x="380" y="80" width="200" height="50" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="480" y="102" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">render()</text>
+<text x="480" y="120" font-size="12" fill="#6e6e73" text-anchor="middle">B.render 출력</text>
+<rect x="60" y="160" width="200" height="50" rx="8" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="160" y="182" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">render()</text>
+<text x="160" y="200" font-size="12" fill="#6e6e73" text-anchor="middle">W.render 출력</text>
+<rect x="380" y="240" width="200" height="50" rx="8" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="480" y="262" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">border()</text>
+<text x="480" y="280" font-size="12" fill="#6e6e73" text-anchor="middle">B.border 출력</text>
+<rect x="60" y="320" width="200" height="50" rx="8" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="160" y="342" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">border()</text>
+<text x="160" y="360" font-size="12" fill="#6e6e73" text-anchor="middle">W.border 출력</text>
+<line x1="400" y1="130" x2="250" y2="160" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="420" y="150.0" font-size="12" fill="#6e6e73" text-anchor="start" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2. super.render()</text>
+<line x1="250" y1="210" x2="400" y2="240" stroke="#ff9f0a" stroke-width="2" marker-end="url(#mff9f0a)"/>
+<text x="230" y="230.0" font-size="12" fill="#ff9f0a" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3. border(), this는 Button</text>
+<line x1="400" y1="290" x2="250" y2="320" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="420" y="310.0" font-size="12" fill="#6e6e73" text-anchor="start" font-family="ui-monospace, 'SF Mono', Menlo, monospace">4. super.border()</text>
+<line x1="280" y1="105" x2="376" y2="105" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#m0a84ff)"/>
+<text x="270" y="109" font-size="12" fill="#0a84ff" text-anchor="end" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1. main의 s.render()</text>
+<text x="320" y="410" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">출력 순서: B.render  W.render  B.border  W.border</text>
+</svg>

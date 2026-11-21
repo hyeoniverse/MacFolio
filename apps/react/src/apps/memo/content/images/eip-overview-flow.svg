@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>정보처리기사 취득 절차</title><rect width="640" height="250" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">필기에 합격해야 실기에 응시할 수 있다</text>
+<g font-size="13">
+<rect x="20" y="60" width="110" height="70" rx="10" fill="#f2f2f7"/><text x="75" y="90" text-anchor="middle" fill="#1d1d1f" font-weight="600">원서 접수</text><text x="75" y="110" text-anchor="middle" fill="#6e6e73" font-size="12">Q-Net, 응시자격</text>
+<rect x="165" y="60" width="130" height="70" rx="10" fill="#e8f2ff" stroke="#0a84ff"/><text x="230" y="90" text-anchor="middle" fill="#1d1d1f" font-weight="600">필기 (CBT)</text><text x="230" y="110" text-anchor="middle" fill="#6e6e73" font-size="12">객관식 100문항</text>
+<rect x="330" y="60" width="130" height="70" rx="10" fill="#fff4e5" stroke="#ff9f0a"/><text x="395" y="90" text-anchor="middle" fill="#1d1d1f" font-weight="600">실기 (필답형)</text><text x="395" y="110" text-anchor="middle" fill="#6e6e73" font-size="12">주관식 20문항</text>
+<rect x="495" y="60" width="125" height="70" rx="10" fill="#e9f9ee" stroke="#30d158"/><text x="557" y="90" text-anchor="middle" fill="#1d1d1f" font-weight="600">최종 합격</text><text x="557" y="110" text-anchor="middle" fill="#6e6e73" font-size="12">자격증 발급</text>
+<line x1="130" y1="95" x2="162" y2="95" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><line x1="295" y1="95" x2="327" y2="95" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/><line x1="460" y1="95" x2="492" y2="95" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="230" y="160" text-anchor="middle" fill="#0a84ff" font-size="12">과목당 40점 이상</text><text x="230" y="178" text-anchor="middle" fill="#0a84ff" font-size="12">평균 60점 이상</text>
+<text x="395" y="160" text-anchor="middle" fill="#ff9f0a" font-size="12">100점 만점에</text><text x="395" y="178" text-anchor="middle" fill="#ff9f0a" font-size="12">60점 이상</text>
+<path d="M230 190 C230 225 395 225 395 192" fill="none" stroke="#c7c7cc" stroke-dasharray="4 4" marker-end="url(#a)"/><text x="312" y="238" text-anchor="middle" fill="#6e6e73" font-size="12">필기 합격은 발표일부터 2년간 유효 (그 안에 실기를 다시 볼 수 있다)</text>
+</g></svg>

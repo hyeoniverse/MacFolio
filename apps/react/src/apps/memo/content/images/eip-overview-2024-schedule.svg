@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>2024년 제1회 정보처리기사 일정</title><rect width="640" height="230" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">2024년 제1회 정기 기사 일정</text>
+<line x1="40" y1="110" x2="600" y2="110" stroke="#c7c7cc" stroke-width="2"/>
+<g font-size="12" text-anchor="middle">
+<circle cx="60" cy="110" r="6" fill="#6e6e73"/><text x="60" y="88" fill="#1d1d1f">1.23~1.26</text><text x="60" y="140" fill="#6e6e73">필기 접수</text>
+<rect x="130" y="102" width="90" height="16" rx="8" fill="#0a84ff"/><text x="175" y="88" fill="#1d1d1f">2.15~3.7</text><text x="175" y="140" fill="#0a84ff" font-weight="600">필기 시험 (CBT)</text>
+<circle cx="260" cy="110" r="6" fill="#0a84ff"/><text x="260" y="88" fill="#1d1d1f">3.13</text><text x="260" y="140" fill="#6e6e73">필기 발표</text>
+<circle cx="340" cy="110" r="6" fill="#6e6e73"/><text x="340" y="88" fill="#1d1d1f">3.26~3.29</text><text x="340" y="140" fill="#6e6e73">실기 접수</text>
+<circle cx="440" cy="110" r="8" fill="#ff9f0a"/><text x="440" y="88" fill="#1d1d1f">4.27</text><text x="440" y="140" fill="#ff9f0a" font-weight="600">실기 시험</text>
+<circle cx="570" cy="110" r="8" fill="#30d158"/><text x="570" y="88" fill="#1d1d1f">6.18</text><text x="570" y="140" fill="#30d158" font-weight="600">최종 발표</text>
+</g>
+<text x="320" y="182" text-anchor="middle" font-size="12" fill="#6e6e73">필기는 기간 안에 원하는 날짜와 시험장을 골라 CBT로 응시한다</text><text x="320" y="202" text-anchor="middle" font-size="12" fill="#6e6e73">필답형 실기는 정해진 하루에 전국에서 같은 문제로 치른다</text>
+</svg>

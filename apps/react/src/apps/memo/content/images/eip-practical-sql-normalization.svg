@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>정규화 단계별 제거 대상</title><rect width="640" height="380" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="40" y="15" width="170" height="38" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="125.0" y="38.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">비정규 릴레이션</text>
+<text x="240" y="39" text-anchor="start" font-size="13" fill="#1d1d1f">반복 그룹이 있음</text>
+<path d="M125 53L125 65" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="65" width="170" height="38" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="125.0" y="88.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">1NF</text>
+<text x="240" y="89" text-anchor="start" font-size="13" fill="#1d1d1f">모든 속성 값이 원자값</text>
+<path d="M125 103L125 115" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="115" width="170" height="38" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="125.0" y="138.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">2NF</text>
+<text x="240" y="139" text-anchor="start" font-size="13" fill="#1d1d1f">부분 함수 종속 제거</text>
+<path d="M125 153L125 165" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="165" width="170" height="38" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="125.0" y="188.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">3NF</text>
+<text x="240" y="189" text-anchor="start" font-size="13" fill="#1d1d1f">이행 함수 종속 제거</text>
+<path d="M125 203L125 215" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="215" width="170" height="38" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="125.0" y="238.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">BCNF</text>
+<text x="240" y="239" text-anchor="start" font-size="13" fill="#1d1d1f">결정자가 모두 후보 키</text>
+<path d="M125 253L125 265" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="265" width="170" height="38" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="125.0" y="288.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">4NF</text>
+<text x="240" y="289" text-anchor="start" font-size="13" fill="#1d1d1f">다치 종속 제거</text>
+<path d="M125 303L125 315" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="40" y="315" width="170" height="38" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="125.0" y="338.7" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">5NF</text>
+<text x="240" y="339" text-anchor="start" font-size="13" fill="#1d1d1f">조인 종속 이용</text>
+<text x="470" y="60" text-anchor="middle" font-size="13" font-weight="600" fill="#6e6e73">외우는 순서</text>
+<text x="470" y="85" text-anchor="middle" font-size="18" font-weight="600" fill="#0a84ff">도부이결다조</text>
+<text x="470" y="115" text-anchor="middle" font-size="12" fill="#6e6e73">원자값(도메인) → 부분 → 이행</text>
+<text x="470" y="135" text-anchor="middle" font-size="12" fill="#6e6e73">→ 결정자 → 다치 → 조인</text>
+<rect x="400" y="170" width="220" height="150" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="510" y="195" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">이상 현상 (Anomaly)</text>
+<text x="510" y="225" text-anchor="middle" font-size="12" fill="#1d1d1f">삽입 이상: 불필요한 값까지</text>
+<text x="510" y="243" text-anchor="middle" font-size="12" fill="#1d1d1f">함께 넣어야 저장 가능</text>
+<text x="510" y="270" text-anchor="middle" font-size="12" fill="#1d1d1f">삭제 이상: 원치 않는 정보까지 삭제</text>
+<text x="510" y="297" text-anchor="middle" font-size="12" fill="#1d1d1f">갱신 이상: 일부만 바뀌어 불일치</text>
+</svg>

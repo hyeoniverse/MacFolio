@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>스크럼의 한 스프린트</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13">
+<rect x="14" y="110" width="104" height="70" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="66" y="140" text-anchor="middle" fill="#1d1d1f" font-weight="600">제품 백로그</text><text x="66" y="160" text-anchor="middle" font-size="12" fill="#6e6e73">우선순위 목록</text>
+<rect x="150" y="110" width="104" height="70" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="202" y="140" text-anchor="middle" fill="#1d1d1f" font-weight="600">스프린트 계획</text><text x="202" y="160" text-anchor="middle" font-size="12" fill="#6e6e73">이번에 할 항목 선택</text>
+<circle cx="350" cy="145" r="72" fill="#e8f2ff" stroke="#0a84ff" stroke-width="2"/><text x="350" y="132" text-anchor="middle" fill="#1d1d1f" font-weight="600">스프린트</text><text x="350" y="152" text-anchor="middle" font-size="12" fill="#6e6e73">보통 1~4주</text><text x="350" y="172" text-anchor="middle" font-size="12" fill="#0a84ff">매일 15분 스탠드업</text>
+<rect x="452" y="70" width="104" height="54" rx="6" fill="#fff4e5" stroke="#ff9f0a"/><text x="504" y="94" text-anchor="middle" fill="#1d1d1f" font-weight="600">스프린트 리뷰</text><text x="504" y="112" text-anchor="middle" font-size="12" fill="#6e6e73">결과물 시연</text>
+<rect x="452" y="166" width="104" height="54" rx="6" fill="#fff4e5" stroke="#ff9f0a"/><text x="504" y="190" text-anchor="middle" fill="#1d1d1f" font-weight="600">회고</text><text x="504" y="208" text-anchor="middle" font-size="12" fill="#6e6e73">일하는 방식 개선</text>
+<rect x="576" y="118" width="54" height="54" rx="6" fill="#30d158"/><text x="603" y="142" text-anchor="middle" fill="#fff" font-size="12">증분</text><text x="603" y="158" text-anchor="middle" fill="#fff" font-size="12">출시</text>
+<path d="M118 145 H146" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M254 145 H274" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<path d="M418 120 L448 102" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M418 170 L448 188" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M556 97 L580 122" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<path d="M504 222 C504 280 202 280 202 184" fill="none" stroke="#6e6e73" stroke-dasharray="5 4" stroke-width="2" marker-end="url(#a)"/><text x="350" y="292" text-anchor="middle" font-size="12" fill="#6e6e73">다음 스프린트로 반복</text>
+<text x="66" y="40" text-anchor="middle" font-size="12" fill="#6e6e73">제품 책임자(PO)</text><path d="M66 48 V104" stroke="#c7c7cc"/>
+<text x="350" y="40" text-anchor="middle" font-size="12" fill="#6e6e73">개발팀 + 스크럼 마스터(SM)</text><path d="M350 48 V70" stroke="#c7c7cc"/>
+</g></svg>

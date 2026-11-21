@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>map과 filter가 리스트의 각 원소를 처리하는 흐름</title><rect width="640" height="330" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">nums = [3, 8, 1, 6, 5] 에 map과 filter를 적용</text>
+<text x="150" y="74" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">nums</text>
+<rect x="170" y="50" width="50" height="36" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="195.0" y="73.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3</text>
+<rect x="230" y="50" width="50" height="36" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="255.0" y="73.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">8</text>
+<rect x="290" y="50" width="50" height="36" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="315.0" y="73.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="350" y="50" width="50" height="36" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="375.0" y="73.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">6</text>
+<rect x="410" y="50" width="50" height="36" fill="#fff" stroke="#0a84ff" stroke-width="1"/>
+<text x="435.0" y="73.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">5</text>
+<text x="150" y="144" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">map(x * 2)</text>
+<rect x="170" y="120" width="50" height="36" fill="#fff" stroke="#30d158" stroke-width="1"/>
+<text x="195.0" y="143.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">6</text>
+<rect x="230" y="120" width="50" height="36" fill="#fff" stroke="#30d158" stroke-width="1"/>
+<text x="255.0" y="143.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">16</text>
+<rect x="290" y="120" width="50" height="36" fill="#fff" stroke="#30d158" stroke-width="1"/>
+<text x="315.0" y="143.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<rect x="350" y="120" width="50" height="36" fill="#fff" stroke="#30d158" stroke-width="1"/>
+<text x="375.0" y="143.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">12</text>
+<rect x="410" y="120" width="50" height="36" fill="#fff" stroke="#30d158" stroke-width="1"/>
+<text x="435.0" y="143.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10</text>
+<path d="M195 88 V116" fill="none" stroke="#30d158" stroke-width="1.2" marker-end="url(#m30d158)"/>
+<path d="M255 88 V116" fill="none" stroke="#30d158" stroke-width="1.2" marker-end="url(#m30d158)"/>
+<path d="M315 88 V116" fill="none" stroke="#30d158" stroke-width="1.2" marker-end="url(#m30d158)"/>
+<path d="M375 88 V116" fill="none" stroke="#30d158" stroke-width="1.2" marker-end="url(#m30d158)"/>
+<path d="M435 88 V116" fill="none" stroke="#30d158" stroke-width="1.2" marker-end="url(#m30d158)"/>
+<text x="150" y="234" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">filter(x &gt; 4)</text>
+<rect x="170" y="210" width="50" height="36" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="195.0" y="233.4" font-size="15" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3</text>
+<line x1="178" y1="240" x2="212" y2="216" stroke="#ff453a" stroke-width="1.5"/>
+<rect x="230" y="210" width="50" height="36" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="255.0" y="233.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">8</text>
+<rect x="290" y="210" width="50" height="36" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="315.0" y="233.4" font-size="15" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<line x1="298" y1="240" x2="332" y2="216" stroke="#ff453a" stroke-width="1.5"/>
+<rect x="350" y="210" width="50" height="36" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="375.0" y="233.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">6</text>
+<rect x="410" y="210" width="50" height="36" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="435.0" y="233.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">5</text>
+<text x="480" y="234" font-size="13" fill="#ff9f0a" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">→ [8, 6, 5]</text>
+<text x="468" y="144" font-size="12" fill="#30d158" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">→ [6, 16, 2, 12, 10]</text>
+<text x="320" y="290" font-size="13" fill="#30d158" text-anchor="middle">map: 모든 원소에 함수를 적용해 같은 개수의 결과</text>
+<text x="320" y="312" font-size="13" fill="#ff9f0a" text-anchor="middle">filter: 함수가 True를 반환한 원소만 남김. 둘 다 결과를 list()로 감싸야 리스트로 출력된다</text>
+</svg>

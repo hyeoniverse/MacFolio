@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>IPv6 주소를 줄여 쓰는 두 규칙</title><rect width="640" height="270" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<g font-family="Menlo, monospace" font-size="13">
+<text x="20" y="40" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="12">원래 주소 (16비트 × 8묶음 = 128비트, 16진수)</text>
+<text x="20" y="64" fill="#1d1d1f">2001:<tspan fill="#ff9f0a">0</tspan>db8:<tspan fill="#0a84ff">0000:0000:0000</tspan>:ff00:<tspan fill="#ff9f0a">00</tspan>42:8329</text>
+<text x="20" y="110" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="12">규칙 1: 각 묶음 앞쪽의 0은 생략</text>
+<text x="20" y="134" fill="#1d1d1f">2001:db8:<tspan fill="#0a84ff">0:0:0</tspan>:ff00:42:8329</text>
+<text x="20" y="180" fill="#6e6e73" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif" font-size="12">규칙 2: 연속된 0 묶음은 :: 로 한 번만 줄임</text>
+<text x="20" y="204" fill="#1d1d1f">2001:db8<tspan fill="#0a84ff" font-weight="600">::</tspan>ff00:42:8329</text>
+</g>
+<path d="M60 72 V96" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M60 142 V166" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/>
+<text x="20" y="246" font-size="12" fill="#6e6e73">:: 를 두 번 쓰면 각각 몇 묶음인지 알 수 없으므로 금지 · 파이썬 ipaddress 모듈로 확인한 결과: 2001:db8::ff00:42:8329</text>
+</g></svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>피싱과 파밍의 차이</title><rect width="640" height="280" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<text x="160" y="30" text-anchor="middle" font-weight="600" fill="#1d1d1f">피싱: 가짜 주소로 유인</text><text x="480" y="30" text-anchor="middle" font-weight="600" fill="#1d1d1f">파밍: 진짜 주소를 가짜로 연결</text>
+<line x1="320" y1="44" x2="320" y2="260" stroke="#f2f2f7" stroke-width="2"/>
+<rect x="20" y="56" width="280" height="44" rx="6" fill="#f2f2f7"/><text x="30" y="76" font-size="12" fill="#6e6e73">메일·문자의 링크</text><text x="30" y="92" font-size="12" fill="#ff453a" font-family="Menlo, monospace">http://bank-secure-login.example</text>
+<path d="M160 100 V136" stroke="#ff453a" stroke-width="2" marker-end="url(#r)"/>
+<rect x="80" y="140" width="160" height="40" rx="6" fill="#ff453a"/><text x="160" y="165" text-anchor="middle" fill="#fff">가짜 은행 사이트</text>
+<text x="160" y="210" text-anchor="middle" font-size="12" fill="#6e6e73">주소창을 보면 이상함을 알 수 있다</text>
+<text x="160" y="230" text-anchor="middle" font-size="12" fill="#6e6e73">변형: 스피어 피싱, 스미싱(SMS), 큐싱(QR)</text>
+<rect x="340" y="56" width="280" height="44" rx="6" fill="#f2f2f7"/><text x="350" y="76" font-size="12" fill="#6e6e73">사용자가 직접 입력한 주소</text><text x="350" y="92" font-size="12" fill="#30d158" font-family="Menlo, monospace">www.bank.example</text>
+<rect x="390" y="120" width="180" height="40" rx="6" fill="#fff4e5" stroke="#ff9f0a"/><text x="480" y="138" text-anchor="middle" font-size="12" fill="#1d1d1f">변조된 hosts 파일·DNS</text><text x="480" y="153" text-anchor="middle" font-size="11" fill="#ff453a" font-family="Menlo, monospace">→ 203.0.113.66</text>
+<path d="M480 100 V116" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M480 160 V176" stroke="#ff453a" stroke-width="2" marker-end="url(#r)"/>
+<rect x="400" y="180" width="160" height="40" rx="6" fill="#ff453a"/><text x="480" y="205" text-anchor="middle" fill="#fff">가짜 은행 사이트</text>
+<text x="480" y="244" text-anchor="middle" font-size="12" fill="#6e6e73">주소창은 정상이라 알아채기 어렵다</text>
+</g></svg>

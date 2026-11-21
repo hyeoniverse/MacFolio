@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 414" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>문자 배열과 문자열 포인터의 메모리 배치와 sizeof, strlen 값</title><rect width="640" height="414" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">문자열 끝에는 널 문자 \0 이 하나 더 저장된다</text>
+<text x="40" y="82" font-size="13" fill="#1d1d1f" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">char s[] = &quot;hello&quot;;</text>
+<rect x="220" y="62" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="238.0" y="84.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">h</text>
+<text x="238.0" y="56" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[0]</text>
+<rect x="256" y="62" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="274.0" y="84.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">e</text>
+<text x="274.0" y="56" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[1]</text>
+<rect x="292" y="62" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="84.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">l</text>
+<text x="310.0" y="56" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[2]</text>
+<rect x="328" y="62" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="346.0" y="84.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">l</text>
+<text x="346.0" y="56" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[3]</text>
+<rect x="364" y="62" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="382.0" y="84.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">o</text>
+<text x="382.0" y="56" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[4]</text>
+<rect x="400" y="62" width="36" height="34" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="418.0" y="84.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">\0</text>
+<text x="418.0" y="56" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[5]</text>
+<text x="460" y="84" font-size="13" fill="#0a84ff" font-weight="600">sizeof 6, strlen 5</text>
+<text x="40" y="152" font-size="13" fill="#1d1d1f" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">char t[10] = &quot;hi&quot;;</text>
+<rect x="220" y="132" width="30" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="235.0" y="154.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">h</text>
+<text x="235.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[0]</text>
+<rect x="250" y="132" width="30" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="265.0" y="154.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">i</text>
+<text x="265.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[1]</text>
+<rect x="280" y="132" width="30" height="34" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="295.0" y="154.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">\0</text>
+<text x="295.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[2]</text>
+<rect x="310" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="325.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="325.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[3]</text>
+<rect x="340" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="355.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="355.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[4]</text>
+<rect x="370" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="385.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="385.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[5]</text>
+<rect x="400" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="415.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="415.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[6]</text>
+<rect x="430" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="445.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="445.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[7]</text>
+<rect x="460" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="475.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="475.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[8]</text>
+<rect x="490" y="132" width="30" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="505.0" y="154.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace"></text>
+<text x="505.0" y="126" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[9]</text>
+<text x="530" y="154" font-size="13" fill="#0a84ff" font-weight="600">sizeof 10</text>
+<text x="530" y="172" font-size="13" fill="#0a84ff" font-weight="600">strlen 2</text>
+<text x="220" y="186" font-size="12" fill="#6e6e73">남은 칸은 0으로 채워진다</text>
+<text x="40" y="248" font-size="13" fill="#1d1d1f" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">char *p = &quot;hello&quot;;</text>
+<rect x="220" y="228" width="90" height="34" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="265.0" y="249.7" font-size="13" fill="#1d1d1f" text-anchor="middle">주소</text>
+<text x="265" y="222" font-size="11" fill="#6e6e73" text-anchor="middle">p (8바이트)</text>
+<text x="40" y="322" font-size="12" fill="#6e6e73">문자열 상수 영역</text>
+<rect x="220" y="304" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="238.0" y="326.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">h</text>
+<text x="238.0" y="298" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[0]</text>
+<rect x="256" y="304" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="274.0" y="326.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">e</text>
+<text x="274.0" y="298" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[1]</text>
+<rect x="292" y="304" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="326.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">l</text>
+<text x="310.0" y="298" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[2]</text>
+<rect x="328" y="304" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="346.0" y="326.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">l</text>
+<text x="346.0" y="298" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[3]</text>
+<rect x="364" y="304" width="36" height="34" fill="#e8f2ff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="382.0" y="326.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">o</text>
+<text x="382.0" y="298" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[4]</text>
+<rect x="400" y="304" width="36" height="34" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="418.0" y="326.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">\0</text>
+<text x="418.0" y="298" font-size="11" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">[5]</text>
+<path d="M238 262 V284" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#m0a84ff)"/>
+<text x="460" y="250" font-size="13" fill="#0a84ff" font-weight="600">sizeof 8 (포인터 크기)</text>
+<text x="460" y="268" font-size="13" fill="#0a84ff" font-weight="600">strlen 5</text>
+<text x="320" y="372" font-size="13" fill="#1d1d1f" text-anchor="middle">sizeof는 차지한 바이트 수(컴파일 시각에 결정), strlen은 \0 앞까지의 글자 수(실행 중 계산)</text>
+<text x="320" y="394" font-size="12" fill="#6e6e73" text-anchor="middle">sizeof(p)는 64비트 환경 기준 8이며, 32비트 환경이면 4다</text>
+</svg>

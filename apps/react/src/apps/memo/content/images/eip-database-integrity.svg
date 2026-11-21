@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>외래키와 참조 무결성 위반</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="150" y="30" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">학생 (참조하는 릴레이션)</text>
+<text x="520" y="30" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">학과 (참조되는 릴레이션)</text>
+<rect x="30" y="45" width="240" height="26" fill="#e8f2ff"/>
+<text x="65.0" y="62.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">학번</text>
+<text x="145.0" y="62.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">이름</text>
+<text x="230.0" y="62.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">학과코드</text>
+<text x="65.0" y="88.32" text-anchor="middle" font-size="12" fill="#1d1d1f">1001</text>
+<text x="145.0" y="88.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김민준</text>
+<text x="230.0" y="88.32" text-anchor="middle" font-size="12" fill="#1d1d1f">CS</text>
+<text x="65.0" y="114.32" text-anchor="middle" font-size="12" fill="#1d1d1f">1002</text>
+<text x="145.0" y="114.32" text-anchor="middle" font-size="12" fill="#1d1d1f">이서연</text>
+<text x="230.0" y="114.32" text-anchor="middle" font-size="12" fill="#1d1d1f">BA</text>
+<text x="65.0" y="140.32" text-anchor="middle" font-size="12" fill="#1d1d1f">1003</text>
+<text x="145.0" y="140.32" text-anchor="middle" font-size="12" fill="#1d1d1f">박도윤</text>
+<rect x="190" y="123" width="80" height="26" fill="#ffd9d6"/>
+<text x="230.0" y="140.32" text-anchor="middle" font-size="12" fill="#1d1d1f">EE</text>
+<text x="65.0" y="166.32" text-anchor="middle" font-size="12" fill="#1d1d1f">1004</text>
+<text x="145.0" y="166.32" text-anchor="middle" font-size="12" fill="#1d1d1f">최지우</text>
+<rect x="190" y="149" width="80" height="26" fill="#f2f2f7"/>
+<text x="230.0" y="166.32" text-anchor="middle" font-size="12" fill="#1d1d1f">NULL</text>
+<rect x="30" y="45" width="240" height="130" fill="none" stroke="#c7c7cc"/>
+<line x1="100" y1="45" x2="100" y2="175" stroke="#c7c7cc"/>
+<line x1="190" y1="45" x2="190" y2="175" stroke="#c7c7cc"/>
+<line x1="30" y1="71" x2="270" y2="71" stroke="#c7c7cc"/>
+<line x1="30" y1="97" x2="270" y2="97" stroke="#c7c7cc"/>
+<line x1="30" y1="123" x2="270" y2="123" stroke="#c7c7cc"/>
+<line x1="30" y1="149" x2="270" y2="149" stroke="#c7c7cc"/>
+<rect x="430" y="45" width="180" height="26" fill="#e8f2ff"/>
+<text x="470.0" y="62.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">학과코드</text>
+<text x="560.0" y="62.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">학과명</text>
+<text x="470.0" y="88.32" text-anchor="middle" font-size="12" fill="#1d1d1f">CS</text>
+<text x="560.0" y="88.32" text-anchor="middle" font-size="12" fill="#1d1d1f">컴퓨터공학</text>
+<text x="470.0" y="114.32" text-anchor="middle" font-size="12" fill="#1d1d1f">BA</text>
+<text x="560.0" y="114.32" text-anchor="middle" font-size="12" fill="#1d1d1f">경영</text>
+<rect x="430" y="45" width="180" height="78" fill="none" stroke="#c7c7cc"/>
+<line x1="510" y1="45" x2="510" y2="123" stroke="#c7c7cc"/>
+<line x1="430" y1="71" x2="610" y2="71" stroke="#c7c7cc"/>
+<line x1="430" y1="97" x2="610" y2="97" stroke="#c7c7cc"/>
+<path d="M272 84 L426 84" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<path d="M272 110 L426 110" stroke="#0a84ff" stroke-width="1.5" fill="none" marker-end="url(#b)"/>
+<text x="349" y="78" text-anchor="middle" font-size="12" fill="#0a84ff">외래키 → 기본키</text>
+<text x="282" y="140" text-anchor="start" font-size="12" fill="#ff453a">← 학과에 없는 값: 거부</text>
+<text x="282" y="166" text-anchor="start" font-size="12" fill="#6e6e73">← NULL: 허용</text>
+<text x="320" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f">외래키 값은 참조되는 릴레이션의 기본키 값 중 하나이거나 NULL이어야 한다</text>
+<text x="320" y="248" text-anchor="middle" font-size="12" fill="#6e6e73">학과에서 CS 행을 삭제하면 학생 1001이 없는 학과를 가리키게 되므로</text>
+<text x="320" y="268" text-anchor="middle" font-size="12" fill="#6e6e73">RESTRICT(거부), CASCADE(함께 삭제), SET NULL(NULL로 변경) 중 하나로 처리한다</text></svg>

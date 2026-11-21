@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 250" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>멘토학번으로 학생 테이블을 자기 자신과 조인</title><rect width="640" height="250" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="150" y="25" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">학생 AS 후배</text>
+<text x="490" y="25" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">학생 AS 멘토</text>
+<rect x="40" y="45" width="220" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="150.0" y="66.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2402 이도윤  멘토학번 2401</text>
+<rect x="40" y="95" width="220" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="150.0" y="116.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2405 정민서  멘토학번 2401</text>
+<rect x="40" y="145" width="220" height="34" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="150.0" y="166.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2406 한유진  멘토학번 2403</text>
+<rect x="400" y="60" width="180" height="34" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="490.0" y="81.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2401 김하늘</text>
+<rect x="400" y="140" width="180" height="34" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="490.0" y="161.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2403 박서준</text>
+<path d="M262 62L398 77" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<path d="M262 112L398 77" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<path d="M262 162L398 157" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="320" y="215" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">ON 후배.멘토학번 = 멘토.학번</text>
+<text x="320" y="238" text-anchor="middle" font-size="12" fill="#6e6e73">같은 테이블에 별칭을 두 개 붙여 서로 다른 테이블처럼 조인한다</text>
+</svg>

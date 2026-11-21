@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>TCP 3방향 핸드셰이크와 UDP 비교</title><rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="195" y="28" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">TCP: 연결 설정</text>
+<text x="520" y="28" text-anchor="middle" font-size="13" fill="#ff9f0a" font-weight="600">UDP: 연결 설정 없음</text>
+<rect x="40" y="44" width="90" height="30" fill="#f2f2f7"/>
+<text x="85.0" y="63.32" text-anchor="middle" font-size="12" fill="#1d1d1f">클라이언트</text>
+<rect x="260" y="44" width="90" height="30" fill="#f2f2f7"/>
+<text x="305.0" y="63.32" text-anchor="middle" font-size="12" fill="#1d1d1f">서버</text>
+<path d="M85 74 L85 300" stroke="#c7c7cc" stroke-width="1.5" fill="none"/>
+<path d="M305 74 L305 300" stroke="#c7c7cc" stroke-width="1.5" fill="none"/>
+<path d="M85 100 L301 130" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<text x="195" y="104" text-anchor="middle" font-size="12" fill="#0a84ff">① SYN (seq=100)</text>
+<path d="M305 150 L89 180" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<text x="195" y="154" text-anchor="middle" font-size="11" fill="#0a84ff">② SYN+ACK (seq=300, ack=101)</text>
+<path d="M85 200 L301 230" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<text x="195" y="204" text-anchor="middle" font-size="12" fill="#0a84ff">③ ACK (ack=301)</text>
+<text x="195" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">이후 데이터 전송 · 순서 보장 · 재전송</text>
+<rect x="400" y="44" width="90" height="30" fill="#f2f2f7"/>
+<text x="445.0" y="63.32" text-anchor="middle" font-size="12" fill="#1d1d1f">클라이언트</text>
+<rect x="550" y="44" width="80" height="30" fill="#f2f2f7"/>
+<text x="590.0" y="63.32" text-anchor="middle" font-size="12" fill="#1d1d1f">서버</text>
+<path d="M445 74 L445 300" stroke="#c7c7cc" stroke-width="1.5" fill="none"/>
+<path d="M590 74 L590 300" stroke="#c7c7cc" stroke-width="1.5" fill="none"/>
+<path d="M445 100 L586 120" stroke="#ff9f0a" stroke-width="2" fill="none" marker-end="url(#o)"/>
+<text x="517" y="104" text-anchor="middle" font-size="12" fill="#ff9f0a">데이터그램 1</text>
+<path d="M445 140 L586 160" stroke="#ff9f0a" stroke-width="2" fill="none" marker-end="url(#o)"/>
+<text x="517" y="144" text-anchor="middle" font-size="12" fill="#ff9f0a">데이터그램 2</text>
+<path d="M445 180 L586 200" stroke="#ff9f0a" stroke-width="2" fill="none" marker-end="url(#o)"/>
+<text x="517" y="184" text-anchor="middle" font-size="12" fill="#ff9f0a">데이터그램 3</text>
+<text x="517" y="270" text-anchor="middle" font-size="12" fill="#6e6e73">순서·도착 보장 없음</text></svg>

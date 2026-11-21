@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>슈퍼키, 후보키, 기본키, 대체키의 포함 관계</title><rect width="640" height="360" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">회원(회원번호, 이메일, 이름, 전화번호)  · 회원번호와 이메일은 각각 유일하다</text>
+<ellipse cx="320" cy="180" rx="300" ry="135" fill="#f2f2f7" stroke="#c7c7cc"/>
+<ellipse cx="320" cy="200" rx="205" ry="92" fill="#e8f2ff" stroke="#0a84ff"/>
+<ellipse cx="240" cy="205" rx="80" ry="45" fill="#0a84ff"/>
+<ellipse cx="410" cy="205" rx="80" ry="45" fill="#fff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="320" y="76" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">슈퍼키: 유일성만 만족</text>
+<text x="320" y="96" text-anchor="middle" font-size="12" fill="#6e6e73">{회원번호, 이름}, {이메일, 전화번호}, {회원번호, 이메일} …</text>
+<text x="320" y="136" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">후보키: 유일성 + 최소성</text>
+<text x="240" y="201" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">기본키</text>
+<text x="240" y="220" text-anchor="middle" font-size="12" fill="#fff">{회원번호}</text>
+<text x="410" y="201" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">대체키</text>
+<text x="410" y="220" text-anchor="middle" font-size="12" fill="#1d1d1f">{이메일}</text>
+<text x="320" y="342" text-anchor="middle" font-size="12" fill="#6e6e73">후보키 중 하나를 기본키로 고르면 나머지가 대체키가 된다</text></svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 340" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>오버로딩된 add 메서드 중 인자 타입에 맞는 메서드가 선택되는 과정</title><rect width="640" height="340" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">오버로딩: 이름이 같아도 매개변수 목록이 다르면 별개의 메서드</text>
+<rect x="30" y="60" width="170" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="115.0" y="84.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">c.add(1, 2)</text>
+<rect x="330" y="60" width="230" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="445.0" y="84.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">int add(int, int)</text>
+<path d="M202 80 H326" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="580" y="85" font-size="14" fill="#30d158" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3</text>
+<rect x="30" y="122" width="170" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="115.0" y="146.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">c.add(1.0, 2)</text>
+<rect x="330" y="122" width="230" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="445.0" y="146.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">double add(double, double)</text>
+<path d="M202 142 H326" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="580" y="147" font-size="14" fill="#30d158" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3.5</text>
+<rect x="30" y="184" width="170" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="115.0" y="208.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">c.add(&quot;A&quot;, 1 + 2)</text>
+<rect x="330" y="184" width="230" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="445.0" y="208.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">String add(String, int)</text>
+<path d="M202 204 H326" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="580" y="209" font-size="14" fill="#30d158" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">A3</text>
+<rect x="30" y="246" width="170" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="115.0" y="270.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">c.add(1, 2, 3)</text>
+<rect x="330" y="246" width="230" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="445.0" y="270.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">int add(int, int, int)</text>
+<path d="M202 266 H326" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="580" y="271" font-size="14" fill="#30d158" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">6</text>
+<text x="264" y="112" font-size="11" fill="#ff9f0a" text-anchor="middle">2 → 2.0 자동 변환</text>
+<text x="320" y="320" font-size="12" fill="#6e6e73" text-anchor="middle">컴파일러가 인자의 개수와 타입으로 호출할 메서드를 고른다. 반환 타입만 다른 오버로딩은 허용되지 않는다</text>
+</svg>

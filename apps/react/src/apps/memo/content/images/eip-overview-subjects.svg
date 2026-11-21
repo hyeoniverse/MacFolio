@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>필기 5과목과 실기 12개 능력단위의 대응</title><rect width="640" height="330" fill="#fff"/>
+<text x="150" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">필기 5과목 (각 20문항)</text><text x="480" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">실기 12개 능력단위</text>
+<g font-size="13">
+<rect x="30" y="45" width="240" height="44" rx="8" fill="#e8f2ff"/><text x="150" y="72" text-anchor="middle" fill="#1d1d1f">1. 소프트웨어 설계</text>
+<rect x="30" y="100" width="240" height="44" rx="8" fill="#e8f2ff"/><text x="150" y="127" text-anchor="middle" fill="#1d1d1f">2. 소프트웨어 개발</text>
+<rect x="30" y="155" width="240" height="44" rx="8" fill="#e8f2ff"/><text x="150" y="182" text-anchor="middle" fill="#1d1d1f">3. 데이터베이스 구축</text>
+<rect x="30" y="210" width="240" height="44" rx="8" fill="#e8f2ff"/><text x="150" y="237" text-anchor="middle" fill="#1d1d1f">4. 프로그래밍 언어 활용</text>
+<rect x="30" y="265" width="240" height="44" rx="8" fill="#e8f2ff"/><text x="150" y="292" text-anchor="middle" fill="#1d1d1f">5. 정보시스템 구축 관리</text>
+</g>
+<g font-size="12" fill="#1d1d1f">
+<rect x="360" y="45" width="240" height="44" rx="8" fill="#fff4e5"/><text x="480" y="63" text-anchor="middle">요구사항 확인 · 화면 설계</text><text x="480" y="80" text-anchor="middle">애플리케이션 테스트 관리</text>
+<rect x="360" y="100" width="240" height="44" rx="8" fill="#fff4e5"/><text x="480" y="118" text-anchor="middle">데이터 입·출력 구현 · 통합 구현</text><text x="480" y="135" text-anchor="middle">인터페이스 구현 · 제품 SW 패키징</text>
+<rect x="360" y="155" width="240" height="44" rx="8" fill="#fff4e5"/><text x="480" y="182" text-anchor="middle">SQL 응용</text>
+<rect x="360" y="210" width="240" height="44" rx="8" fill="#fff4e5"/><text x="480" y="228" text-anchor="middle">서버 프로그램 구현 · 프로그래밍 언어 활용</text><text x="480" y="245" text-anchor="middle">응용 SW 기초 기술 활용</text>
+<rect x="360" y="265" width="240" height="44" rx="8" fill="#fff4e5"/><text x="480" y="292" text-anchor="middle">소프트웨어 개발 보안 구축</text>
+</g>
+<g stroke="#c7c7cc" stroke-width="1.5"><line x1="270" y1="67" x2="360" y2="67"/><line x1="270" y1="122" x2="360" y2="122"/><line x1="270" y1="177" x2="360" y2="177"/><line x1="270" y1="232" x2="360" y2="232"/><line x1="270" y1="287" x2="360" y2="287"/></g>
+</svg>

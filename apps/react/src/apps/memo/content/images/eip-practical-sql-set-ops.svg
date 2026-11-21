@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>DB101 수강생과 SE301 수강생의 집합 연산</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<circle cx="250" cy="128" r="88" fill="#0a84ff" fill-opacity="0.12" stroke="#0a84ff" stroke-width="1.5"/>
+<circle cx="390" cy="128" r="88" fill="#ff9f0a" fill-opacity="0.12" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="180" y="28" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">DB101 수강</text>
+<text x="460" y="28" text-anchor="middle" font-size="13" font-weight="600" fill="#ff9f0a">SE301 수강</text>
+<text x="200" y="133" text-anchor="middle" font-size="14" fill="#1d1d1f">2402</text>
+<text x="320" y="108" text-anchor="middle" font-size="14" fill="#1d1d1f">2401</text>
+<text x="320" y="133" text-anchor="middle" font-size="14" fill="#1d1d1f">2403</text>
+<text x="320" y="158" text-anchor="middle" font-size="14" fill="#1d1d1f">2405</text>
+<text x="440" y="133" text-anchor="middle" font-size="14" fill="#1d1d1f">2404</text>
+<rect x="15" y="232" width="148" height="58" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="89" y="252" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">UNION  (5행)</text>
+<text x="89" y="274" text-anchor="middle" font-size="11" fill="#6e6e73">2401 ~ 2405 모두</text>
+<rect x="170" y="232" width="148" height="58" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="244" y="252" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">UNION ALL  (8행)</text>
+<text x="244" y="274" text-anchor="middle" font-size="11" fill="#6e6e73">DB101 4행 + SE301 4행</text>
+<rect x="325" y="232" width="148" height="58" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="399" y="252" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">INTERSECT  (3행)</text>
+<text x="399" y="274" text-anchor="middle" font-size="11" fill="#6e6e73">2401 2403 2405</text>
+<rect x="480" y="232" width="148" height="58" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="554" y="252" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">EXCEPT  (1행)</text>
+<text x="554" y="274" text-anchor="middle" font-size="11" fill="#6e6e73">2402</text>
+</svg>

@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>비트 연산자 &amp; | ^ ~ &lt;&lt; &gt;&gt; 를 8비트로 계산한 결과</title><rect width="640" height="440" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">a = 12, b = 10 을 8비트 2진수로 놓고 자리마다 계산</text>
+<text x="100" y="70" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a</text>
+<rect x="112" y="52" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="71.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="52" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="71.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="52" width="28" height="28" fill="#f2f2f7"/>
+<text x="186.0" y="71.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="202" y="52" width="28" height="28" fill="#f2f2f7"/>
+<text x="216.0" y="71.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="232" y="52" width="28" height="28" fill="#0a84ff"/>
+<text x="246.0" y="71.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="262" y="52" width="28" height="28" fill="#0a84ff"/>
+<text x="276.0" y="71.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="292" y="52" width="28" height="28" fill="#f2f2f7"/>
+<text x="306.0" y="71.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="322" y="52" width="28" height="28" fill="#f2f2f7"/>
+<text x="336.0" y="71.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="372" y="71" font-size="14" fill="#1d1d1f" font-weight="600">= 12</text>
+<text x="100" y="112" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">b</text>
+<rect x="112" y="94" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="113.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="94" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="113.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="94" width="28" height="28" fill="#f2f2f7"/>
+<text x="186.0" y="113.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="202" y="94" width="28" height="28" fill="#f2f2f7"/>
+<text x="216.0" y="113.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="232" y="94" width="28" height="28" fill="#0a84ff"/>
+<text x="246.0" y="113.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="262" y="94" width="28" height="28" fill="#f2f2f7"/>
+<text x="276.0" y="113.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="292" y="94" width="28" height="28" fill="#0a84ff"/>
+<text x="306.0" y="113.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="322" y="94" width="28" height="28" fill="#f2f2f7"/>
+<text x="336.0" y="113.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="372" y="113" font-size="14" fill="#1d1d1f" font-weight="600">= 10</text>
+<line x1="110" y1="130" x2="360" y2="130" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="100" y="154" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a &amp; b</text>
+<rect x="112" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="186.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="202" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="216.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="232" y="136" width="28" height="28" fill="#0a84ff"/>
+<text x="246.0" y="155.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="262" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="276.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="292" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="306.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="322" y="136" width="28" height="28" fill="#f2f2f7"/>
+<text x="336.0" y="155.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="372" y="155" font-size="14" fill="#1d1d1f" font-weight="600">= 8</text>
+<text x="440" y="155" font-size="12" fill="#6e6e73">둘 다 1이면 1</text>
+<text x="100" y="196" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a | b</text>
+<rect x="112" y="178" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="197.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="178" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="197.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="178" width="28" height="28" fill="#f2f2f7"/>
+<text x="186.0" y="197.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="202" y="178" width="28" height="28" fill="#f2f2f7"/>
+<text x="216.0" y="197.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="232" y="178" width="28" height="28" fill="#0a84ff"/>
+<text x="246.0" y="197.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="262" y="178" width="28" height="28" fill="#0a84ff"/>
+<text x="276.0" y="197.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="292" y="178" width="28" height="28" fill="#0a84ff"/>
+<text x="306.0" y="197.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="322" y="178" width="28" height="28" fill="#f2f2f7"/>
+<text x="336.0" y="197.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="372" y="197" font-size="14" fill="#1d1d1f" font-weight="600">= 14</text>
+<text x="440" y="197" font-size="12" fill="#6e6e73">하나라도 1이면 1</text>
+<text x="100" y="238" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a ^ b</text>
+<rect x="112" y="220" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="239.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="220" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="239.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="220" width="28" height="28" fill="#f2f2f7"/>
+<text x="186.0" y="239.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="202" y="220" width="28" height="28" fill="#f2f2f7"/>
+<text x="216.0" y="239.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="232" y="220" width="28" height="28" fill="#f2f2f7"/>
+<text x="246.0" y="239.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="262" y="220" width="28" height="28" fill="#0a84ff"/>
+<text x="276.0" y="239.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="292" y="220" width="28" height="28" fill="#0a84ff"/>
+<text x="306.0" y="239.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="322" y="220" width="28" height="28" fill="#f2f2f7"/>
+<text x="336.0" y="239.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="372" y="239" font-size="14" fill="#1d1d1f" font-weight="600">= 6</text>
+<text x="440" y="239" font-size="12" fill="#6e6e73">서로 다르면 1</text>
+<text x="100" y="280" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">~a</text>
+<rect x="112" y="262" width="28" height="28" fill="#ff9f0a"/>
+<text x="126.0" y="281.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="142" y="262" width="28" height="28" fill="#ff9f0a"/>
+<text x="156.0" y="281.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="172" y="262" width="28" height="28" fill="#ff9f0a"/>
+<text x="186.0" y="281.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="202" y="262" width="28" height="28" fill="#ff9f0a"/>
+<text x="216.0" y="281.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="232" y="262" width="28" height="28" fill="#f2f2f7"/>
+<text x="246.0" y="281.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="262" y="262" width="28" height="28" fill="#f2f2f7"/>
+<text x="276.0" y="281.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="292" y="262" width="28" height="28" fill="#ff9f0a"/>
+<text x="306.0" y="281.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="322" y="262" width="28" height="28" fill="#ff9f0a"/>
+<text x="336.0" y="281.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<text x="372" y="281" font-size="14" fill="#1d1d1f" font-weight="600">= -13</text>
+<text x="440" y="281" font-size="12" fill="#6e6e73">모든 비트 반전</text>
+<text x="100" y="322" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a &lt;&lt; 2</text>
+<rect x="112" y="304" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="323.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="304" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="323.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="304" width="28" height="28" fill="#0a84ff"/>
+<text x="186.0" y="323.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="202" y="304" width="28" height="28" fill="#0a84ff"/>
+<text x="216.0" y="323.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="232" y="304" width="28" height="28" fill="#f2f2f7"/>
+<text x="246.0" y="323.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="262" y="304" width="28" height="28" fill="#f2f2f7"/>
+<text x="276.0" y="323.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="292" y="304" width="28" height="28" fill="#f2f2f7"/>
+<text x="306.0" y="323.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="322" y="304" width="28" height="28" fill="#f2f2f7"/>
+<text x="336.0" y="323.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="372" y="323" font-size="14" fill="#1d1d1f" font-weight="600">= 48</text>
+<text x="440" y="323" font-size="12" fill="#6e6e73">왼쪽으로 2칸, ×4</text>
+<text x="100" y="364" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a &gt;&gt; 2</text>
+<rect x="112" y="346" width="28" height="28" fill="#f2f2f7"/>
+<text x="126.0" y="365.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="142" y="346" width="28" height="28" fill="#f2f2f7"/>
+<text x="156.0" y="365.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="172" y="346" width="28" height="28" fill="#f2f2f7"/>
+<text x="186.0" y="365.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="202" y="346" width="28" height="28" fill="#f2f2f7"/>
+<text x="216.0" y="365.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="232" y="346" width="28" height="28" fill="#f2f2f7"/>
+<text x="246.0" y="365.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="262" y="346" width="28" height="28" fill="#f2f2f7"/>
+<text x="276.0" y="365.0" font-size="14" fill="#6e6e73" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<rect x="292" y="346" width="28" height="28" fill="#0a84ff"/>
+<text x="306.0" y="365.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<rect x="322" y="346" width="28" height="28" fill="#0a84ff"/>
+<text x="336.0" y="365.0" font-size="14" fill="#fff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<text x="372" y="365" font-size="14" fill="#1d1d1f" font-weight="600">= 3</text>
+<text x="440" y="365" font-size="12" fill="#6e6e73">오른쪽으로 2칸, ÷4</text>
+<text x="320" y="400" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="600">~a 는 맨 앞(부호) 비트까지 뒤집혀 음수가 된다: 2의 보수에서 ~x = -(x+1)</text>
+</svg>

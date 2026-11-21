@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 492" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>정보처리기사 실기 회차별 문항 유형 구성</title><rect width="640" height="492" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">실기 회차별 20문항의 유형 구성 (수험생 복원 기준)</text>
+<rect x="170" y="44" width="14" height="14" fill="#0a84ff" stroke="#c7c7cc"/><text x="190" y="56" font-size="13" fill="#1d1d1f">C</text>
+<rect x="220" y="44" width="14" height="14" fill="#ff9f0a" stroke="#c7c7cc"/><text x="240" y="56" font-size="13" fill="#1d1d1f">Java</text>
+<rect x="295" y="44" width="14" height="14" fill="#30d158" stroke="#c7c7cc"/><text x="315" y="56" font-size="13" fill="#1d1d1f">Python</text>
+<rect x="385" y="44" width="14" height="14" fill="#ff453a" stroke="#c7c7cc"/><text x="405" y="56" font-size="13" fill="#1d1d1f">SQL</text>
+<rect x="450" y="44" width="14" height="14" fill="#f2f2f7" stroke="#c7c7cc"/><text x="470" y="56" font-size="13" fill="#1d1d1f">이론</text>
+<text x="510" y="88" font-size="12" fill="#6e6e73">코드 · SQL</text>
+<text x="100" y="118" text-anchor="end" font-size="13" fill="#1d1d1f">2024년 1회 *</text>
+<rect x="110" y="100" width="76" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="148.0" y="118" text-anchor="middle" font-size="12" fill="#fff">4</text>
+<rect x="186" y="100" width="57" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="214.5" y="118" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="243" y="100" width="19" height="26" fill="#30d158" stroke="#fff"/>
+<text x="252.5" y="118" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+<rect x="262" y="100" width="38" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="281.0" y="118" text-anchor="middle" font-size="12" fill="#fff">2</text>
+<rect x="300" y="100" width="190" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="395.0" y="118" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="510" y="118" font-size="13" fill="#1d1d1f">8 · <tspan fill="#1d1d1f" font-weight="400">2</tspan></text>
+<text x="100" y="152" text-anchor="end" font-size="13" fill="#1d1d1f">2024년 2회</text>
+<rect x="110" y="134" width="76" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="148.0" y="152" text-anchor="middle" font-size="12" fill="#fff">4</text>
+<rect x="186" y="134" width="76" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="224.0" y="152" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+<rect x="262" y="134" width="19" height="26" fill="#30d158" stroke="#fff"/>
+<text x="271.5" y="152" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+<rect x="281" y="134" width="19" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="290.5" y="152" text-anchor="middle" font-size="12" fill="#fff">1</text>
+<rect x="300" y="134" width="190" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="395.0" y="152" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="510" y="152" font-size="13" fill="#1d1d1f">9 · <tspan fill="#1d1d1f" font-weight="400">1</tspan></text>
+<text x="100" y="186" text-anchor="end" font-size="13" fill="#1d1d1f">2024년 3회 *</text>
+<rect x="110" y="168" width="57" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="138.5" y="186" text-anchor="middle" font-size="12" fill="#fff">3</text>
+<rect x="167" y="168" width="76" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="205.0" y="186" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+<rect x="243" y="168" width="38" height="26" fill="#30d158" stroke="#fff"/>
+<text x="262.0" y="186" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+<rect x="281" y="168" width="19" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="290.5" y="186" text-anchor="middle" font-size="12" fill="#fff">1</text>
+<rect x="300" y="168" width="190" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="395.0" y="186" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="510" y="186" font-size="13" fill="#1d1d1f">9 · <tspan fill="#1d1d1f" font-weight="400">1</tspan></text>
+<text x="100" y="230" text-anchor="end" font-size="13" fill="#1d1d1f">2025년 1회 *</text>
+<rect x="110" y="212" width="76" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="148.0" y="230" text-anchor="middle" font-size="12" fill="#fff">4</text>
+<rect x="186" y="212" width="76" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="224.0" y="230" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+<rect x="262" y="212" width="19" height="26" fill="#30d158" stroke="#fff"/>
+<text x="271.5" y="230" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+<rect x="281" y="212" width="19" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="290.5" y="230" text-anchor="middle" font-size="12" fill="#fff">1</text>
+<rect x="300" y="212" width="190" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="395.0" y="230" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="510" y="230" font-size="13" fill="#1d1d1f">9 · <tspan fill="#1d1d1f" font-weight="400">1</tspan></text>
+<text x="100" y="264" text-anchor="end" font-size="13" fill="#1d1d1f">2025년 2회</text>
+<rect x="110" y="246" width="76" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="148.0" y="264" text-anchor="middle" font-size="12" fill="#fff">4</text>
+<rect x="186" y="246" width="76" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="224.0" y="264" text-anchor="middle" font-size="12" fill="#1d1d1f">4</text>
+<rect x="262" y="246" width="19" height="26" fill="#30d158" stroke="#fff"/>
+<text x="271.5" y="264" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+<rect x="281" y="246" width="209" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="385.5" y="264" text-anchor="middle" font-size="12" fill="#6e6e73">11</text>
+<text x="510" y="264" font-size="13" fill="#1d1d1f">9 · <tspan fill="#1d1d1f" font-weight="400">0</tspan></text>
+<text x="100" y="298" text-anchor="end" font-size="13" fill="#1d1d1f">2025년 3회</text>
+<rect x="110" y="280" width="76" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="148.0" y="298" text-anchor="middle" font-size="12" fill="#fff">4</text>
+<rect x="186" y="280" width="57" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="214.5" y="298" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="243" y="280" width="19" height="26" fill="#30d158" stroke="#fff"/>
+<text x="252.5" y="298" text-anchor="middle" font-size="12" fill="#1d1d1f">1</text>
+<rect x="262" y="280" width="38" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="281.0" y="298" text-anchor="middle" font-size="12" fill="#fff">2</text>
+<rect x="300" y="280" width="190" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="395.0" y="298" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="510" y="298" font-size="13" fill="#1d1d1f">8 · <tspan fill="#1d1d1f" font-weight="400">2</tspan></text>
+<text x="100" y="342" text-anchor="end" font-size="13" fill="#1d1d1f">2026년 1회</text>
+<rect x="110" y="324" width="38" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="129.0" y="342" text-anchor="middle" font-size="12" fill="#fff">2</text>
+<rect x="148" y="324" width="38" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="167.0" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+<rect x="186" y="324" width="57" height="26" fill="#30d158" stroke="#fff"/>
+<text x="214.5" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="243" y="324" width="57" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="271.5" y="342" text-anchor="middle" font-size="12" fill="#fff">3</text>
+<rect x="300" y="324" width="190" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="395.0" y="342" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="510" y="342" font-size="13" fill="#1d1d1f">7 · <tspan fill="#ff453a" font-weight="600">3</tspan></text>
+<text x="100" y="376" text-anchor="end" font-size="13" fill="#1d1d1f">2026년 2회</text>
+<rect x="110" y="358" width="38" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="129.0" y="376" text-anchor="middle" font-size="12" fill="#fff">2</text>
+<rect x="148" y="358" width="57" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="176.5" y="376" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="205" y="358" width="38" height="26" fill="#30d158" stroke="#fff"/>
+<text x="224.0" y="376" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+<rect x="243" y="358" width="76" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="281.0" y="376" text-anchor="middle" font-size="12" fill="#fff">4</text>
+<rect x="319" y="358" width="171" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="404.5" y="376" text-anchor="middle" font-size="12" fill="#6e6e73">9</text>
+<text x="510" y="376" font-size="13" fill="#1d1d1f">7 · <tspan fill="#ff453a" font-weight="600">4</tspan></text>
+<text x="100" y="410" text-anchor="end" font-size="13" fill="#1d1d1f">2026년 3회</text>
+<rect x="110" y="392" width="57" height="26" fill="#0a84ff" stroke="#fff"/>
+<text x="138.5" y="410" text-anchor="middle" font-size="12" fill="#fff">3</text>
+<rect x="167" y="392" width="57" height="26" fill="#ff9f0a" stroke="#fff"/>
+<text x="195.5" y="410" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="224" y="392" width="38" height="26" fill="#30d158" stroke="#fff"/>
+<text x="243.0" y="410" text-anchor="middle" font-size="12" fill="#1d1d1f">2</text>
+<rect x="262" y="392" width="57" height="26" fill="#ff453a" stroke="#fff"/>
+<text x="290.5" y="410" text-anchor="middle" font-size="12" fill="#fff">3</text>
+<rect x="319" y="392" width="171" height="26" fill="#f2f2f7" stroke="#fff"/>
+<text x="404.5" y="410" text-anchor="middle" font-size="12" fill="#6e6e73">9</text>
+<text x="510" y="410" font-size="13" fill="#1d1d1f">8 · <tspan fill="#ff453a" font-weight="600">3</tspan></text>
+<line x1="110" y1="430" x2="490" y2="430" stroke="#c7c7cc"/>
+<text x="110" y="446" text-anchor="middle" font-size="12" fill="#6e6e73">0</text>
+<text x="205" y="446" text-anchor="middle" font-size="12" fill="#6e6e73">5</text>
+<text x="300" y="446" text-anchor="middle" font-size="12" fill="#6e6e73">10</text>
+<text x="395" y="446" text-anchor="middle" font-size="12" fill="#6e6e73">15</text>
+<text x="490" y="446" text-anchor="middle" font-size="12" fill="#6e6e73">20</text>
+<text x="20" y="474" font-size="12" fill="#6e6e73">* 한 곳의 복원 자료로만 확인한 회차 (2025년 1회는 Java 문항 수만 두 곳 일치)</text>
+</svg>

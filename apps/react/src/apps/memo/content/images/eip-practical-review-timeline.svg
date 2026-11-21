@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 230" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>2024년 정보처리기사 준비와 시험 일정</title><rect width="640" height="230" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">공부한 기간은 필기 1주일, 실기 1주일</text>
+<g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="70" y="70">1월</text><text x="170" y="70">2월</text><text x="270" y="70">3월</text><text x="370" y="70">4월</text><text x="470" y="70">5월</text><text x="570" y="70">6월</text></g>
+<g stroke="#e5e5ea"><line x1="120" y1="80" x2="120" y2="180"/><line x1="220" y1="80" x2="220" y2="180"/><line x1="320" y1="80" x2="320" y2="180"/><line x1="420" y1="80" x2="420" y2="180"/><line x1="520" y1="80" x2="520" y2="180"/></g>
+<line x1="20" y1="130" x2="620" y2="130" stroke="#c7c7cc" stroke-width="2"/>
+<rect x="152" y="98" width="24" height="18" rx="4" fill="#0a84ff"/><text x="164" y="92" text-anchor="middle" font-size="12" fill="#0a84ff" font-weight="600">필기 공부</text>
+<rect x="188" y="122" width="105" height="16" rx="8" fill="#e8f2ff" stroke="#0a84ff"/><text x="240" y="160" text-anchor="middle" font-size="12" fill="#1d1d1f">필기 CBT 기간</text><text x="240" y="176" text-anchor="middle" font-size="11" fill="#6e6e73">2.15~3.7</text>
+<rect x="400" y="98" width="24" height="18" rx="4" fill="#ff9f0a"/><text x="404" y="92" text-anchor="middle" font-size="12" fill="#ff9f0a" font-weight="600">실기 공부</text>
+<circle cx="426" cy="130" r="7" fill="#ff9f0a"/><text x="440" y="160" text-anchor="middle" font-size="12" fill="#1d1d1f">실기 4.27</text>
+<circle cx="578" cy="130" r="8" fill="#30d158"/><text x="578" y="160" text-anchor="middle" font-size="12" fill="#30d158" font-weight="600">최종 발표 6.18</text>
+<text x="320" y="210" text-anchor="middle" font-size="12" fill="#6e6e73">필기와 실기 모두 첫 응시에 합격했다</text>
+</svg>
