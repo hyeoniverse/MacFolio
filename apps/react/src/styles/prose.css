@@ -277,6 +277,12 @@
 	border-radius: 0.6em;
 }
 
+/* 접기 블록 안의 블록 사이에도 흐름 간격을 둔다 (전체 초기화로 margin이 0이라 표·콜아웃·문단이 붙는다).
+ * 요약 줄 다음 첫 블록은 요약 줄의 안쪽 여백으로 떨어진다. 점수가 0이라 이미지처럼 따로 여백을 정한 요소는 그 값이 이긴다 */
+:where(.prose) :where(details, .prose-details) > :where(:not(summary, .memo-details-summary)) + * {
+	margin-top: var(--prose-flow-gap);
+}
+
 :where(.prose) details > :last-child:not(summary) {
 	margin-bottom: 0;
 }
