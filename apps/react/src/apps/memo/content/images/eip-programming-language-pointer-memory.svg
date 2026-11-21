@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>배열과 포인터의 메모리 배치</title><rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">int arr[5] = {10, 20, 30, 40, 50}; int *p = arr;</text>
+<rect x="120" y="110" width="90" height="44" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="165.0" y="137.4" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">10</text>
+<text x="165" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">arr[0]</text>
+<text x="165" y="174" text-anchor="middle" font-size="12" fill="#6e6e73">0x1000</text>
+<text x="165" y="194" text-anchor="middle" font-size="12" fill="#0a84ff">p</text>
+<rect x="210" y="110" width="90" height="44" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="255.0" y="137.4" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">20</text>
+<text x="255" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">arr[1]</text>
+<text x="255" y="174" text-anchor="middle" font-size="12" fill="#6e6e73">0x1004</text>
+<text x="255" y="194" text-anchor="middle" font-size="12" fill="#0a84ff">p + 1</text>
+<rect x="300" y="110" width="90" height="44" fill="#fff4e5" stroke="#6e6e73" stroke-width="1"/>
+<text x="345.0" y="137.4" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">30</text>
+<text x="345" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">arr[2]</text>
+<text x="345" y="174" text-anchor="middle" font-size="12" fill="#6e6e73">0x1008</text>
+<text x="345" y="194" text-anchor="middle" font-size="12" fill="#0a84ff">p + 2</text>
+<rect x="390" y="110" width="90" height="44" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="435.0" y="137.4" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">40</text>
+<text x="435" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">arr[3]</text>
+<text x="435" y="174" text-anchor="middle" font-size="12" fill="#6e6e73">0x100c</text>
+<text x="435" y="194" text-anchor="middle" font-size="12" fill="#0a84ff">p + 3</text>
+<rect x="480" y="110" width="90" height="44" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="525.0" y="137.4" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">50</text>
+<text x="525" y="100" text-anchor="middle" font-size="12" fill="#6e6e73">arr[4]</text>
+<text x="525" y="174" text-anchor="middle" font-size="12" fill="#6e6e73">0x1010</text>
+<text x="525" y="194" text-anchor="middle" font-size="12" fill="#0a84ff">p + 4</text>
+<text x="100" y="137" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">arr</text>
+<rect x="83" y="230" width="90" height="36" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="128.0" y="252.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">p</text>
+<path d="M128 230 L128 158" stroke="#0a84ff" stroke-width="2" fill="none" marker-end="url(#b)"/>
+<rect x="253" y="230" width="110" height="36" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="308.0" y="252.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">p += 2 이후</text>
+<path d="M308 230 L308 158" stroke="#ff9f0a" stroke-width="2" fill="none" marker-end="url(#o)"/>
+<text x="320" y="64" text-anchor="middle" font-size="12" fill="#6e6e73">int는 4바이트이므로 p + 1은 주소를 1이 아니라 4만큼 늘린다 (주소 값은 예시)</text>
+<text x="320" y="296" text-anchor="middle" font-size="12" fill="#1d1d1f">*(p + 1) = 20,  p[3] = *(p + 3) = 40,  p += 2 뒤 *p = 30,  *(p - 1) = 20</text></svg>

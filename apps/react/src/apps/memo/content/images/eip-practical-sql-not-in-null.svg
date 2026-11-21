@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>NOT IN 목록에 NULL이 있으면 결과가 비는 이유</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="320" y="25" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">학번 NOT IN (2401, 2401, 2403, NULL, …)</text>
+<text x="320" y="55" text-anchor="middle" font-size="13" fill="#1d1d1f">= 학번 ≠ 2401 AND 학번 ≠ 2403 AND 학번 ≠ NULL</text>
+<rect x="40" y="80" width="170" height="60" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="125.0" y="105.7" text-anchor="middle" font-size="13" fill="#1d1d1f">2404 ≠ 2401</text>
+<text x="125.0" y="123.7" text-anchor="middle" font-size="13" fill="#1d1d1f">TRUE</text>
+<rect x="235" y="80" width="170" height="60" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="320.0" y="105.7" text-anchor="middle" font-size="13" fill="#1d1d1f">2404 ≠ 2403</text>
+<text x="320.0" y="123.7" text-anchor="middle" font-size="13" fill="#1d1d1f">TRUE</text>
+<rect x="430" y="80" width="170" height="60" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="515.0" y="105.7" text-anchor="middle" font-size="13" fill="#1d1d1f">2404 ≠ NULL</text>
+<text x="515.0" y="123.7" text-anchor="middle" font-size="13" fill="#1d1d1f">UNKNOWN</text>
+<text x="320" y="175" text-anchor="middle" font-size="14" font-weight="600" fill="#ff453a">TRUE AND TRUE AND UNKNOWN = UNKNOWN</text>
+<text x="320" y="200" text-anchor="middle" font-size="12" fill="#6e6e73">WHERE는 TRUE인 행만 통과시키므로 어떤 학번도 남지 않는다 (0행)</text>
+<rect x="40" y="220" width="560" height="60" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="320" y="245" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">해결: 하위 질의에 WHERE 멘토학번 IS NOT NULL 추가 → 5행</text>
+<text x="320" y="267" text-anchor="middle" font-size="12" fill="#6e6e73">또는 NOT EXISTS로 바꿔 쓴다</text>
+</svg>

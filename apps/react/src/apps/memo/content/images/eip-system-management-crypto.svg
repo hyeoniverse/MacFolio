@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>대칭 키 암호와 공개 키 암호</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13">
+<text x="20" y="30" font-size="15" font-weight="600" fill="#1d1d1f">대칭 키(비밀 키) 암호: 같은 키로 잠그고 연다</text>
+<rect x="20" y="50" width="90" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="65" y="75" text-anchor="middle" fill="#1d1d1f">평문</text>
+<rect x="160" y="50" width="100" height="40" rx="6" fill="#0a84ff"/><text x="210" y="75" text-anchor="middle" fill="#fff">암호화</text>
+<rect x="310" y="50" width="100" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="360" y="75" text-anchor="middle" fill="#1d1d1f">암호문</text>
+<rect x="460" y="50" width="100" height="40" rx="6" fill="#0a84ff"/><text x="510" y="75" text-anchor="middle" fill="#fff">복호화</text>
+<path d="M110 70 H156" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M260 70 H306" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M410 70 H456" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M560 70 H600" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="618" y="75" text-anchor="middle" fill="#1d1d1f">평문</text>
+<rect x="170" y="104" width="80" height="26" rx="13" fill="#ff9f0a"/><text x="210" y="122" text-anchor="middle" fill="#fff" font-size="12">키 K</text>
+<rect x="470" y="104" width="80" height="26" rx="13" fill="#ff9f0a"/><text x="510" y="122" text-anchor="middle" fill="#fff" font-size="12">같은 키 K</text>
+<text x="20" y="152" font-size="12" fill="#6e6e73">빠르다 · 키를 미리 안전하게 나눠 가져야 한다 · n명이면 키 n(n−1)/2개 · DES, AES, SEED, ARIA</text>
+<line x1="20" y1="168" x2="620" y2="168" stroke="#f2f2f7" stroke-width="2"/>
+<text x="20" y="196" font-size="15" font-weight="600" fill="#1d1d1f">공개 키(비대칭) 암호: 공개 키로 잠그고 개인 키로 연다</text>
+<rect x="20" y="216" width="90" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="65" y="241" text-anchor="middle" fill="#1d1d1f">평문</text>
+<rect x="160" y="216" width="100" height="40" rx="6" fill="#30d158"/><text x="210" y="241" text-anchor="middle" fill="#fff">암호화</text>
+<rect x="310" y="216" width="100" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="360" y="241" text-anchor="middle" fill="#1d1d1f">암호문</text>
+<rect x="460" y="216" width="100" height="40" rx="6" fill="#30d158"/><text x="510" y="241" text-anchor="middle" fill="#fff">복호화</text>
+<path d="M110 236 H156" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M260 236 H306" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M410 236 H456" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><path d="M560 236 H600" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="618" y="241" text-anchor="middle" fill="#1d1d1f">평문</text>
+<rect x="150" y="270" width="120" height="26" rx="13" fill="#e8f2ff" stroke="#0a84ff"/><text x="210" y="288" text-anchor="middle" fill="#0a84ff" font-size="12">받는 사람 공개 키</text>
+<rect x="450" y="270" width="120" height="26" rx="13" fill="#ff453a"/><text x="510" y="288" text-anchor="middle" fill="#fff" font-size="12">받는 사람 개인 키</text>
+<text x="20" y="318" font-size="12" fill="#6e6e73">느리다 · 키 분배 문제가 없다 · n명이면 키 2n개 · RSA, ECC, ElGamal, Diffie-Hellman(키 교환)</text>
+</g></svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>온라인 주문 시스템 클래스 다이어그램</title><rect width="640" height="360" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="20" y="30" width="170" height="90" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="20" y="30" width="170" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="105.0" y="47" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">회원</text>
+<path d="M20 96L190 96" fill="none" stroke="#1d1d1f" stroke-width="1"/>
+<text x="28" y="72" text-anchor="start" font-size="12" fill="#1d1d1f">- 회원번호: int</text>
+<text x="28" y="90" text-anchor="start" font-size="12" fill="#1d1d1f">- 이름: String</text>
+<text x="28" y="114" text-anchor="start" font-size="12" fill="#1d1d1f">+ 주문하기(): 주문</text>
+<rect x="250" y="30" width="150" height="90" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="250" y="30" width="150" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="325.0" y="47" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">주문</text>
+<path d="M250 96L400 96" fill="none" stroke="#1d1d1f" stroke-width="1"/>
+<text x="258" y="72" text-anchor="start" font-size="12" fill="#1d1d1f">- 주문번호: int</text>
+<text x="258" y="90" text-anchor="start" font-size="12" fill="#1d1d1f">- 주문일: Date</text>
+<text x="258" y="114" text-anchor="start" font-size="12" fill="#1d1d1f">+ 총액(): int</text>
+<rect x="460" y="30" width="160" height="90" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="460" y="30" width="160" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="540.0" y="47" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">주문항목</text>
+<path d="M460 96L620 96" fill="none" stroke="#1d1d1f" stroke-width="1"/>
+<text x="468" y="72" text-anchor="start" font-size="12" fill="#1d1d1f">- 수량: int</text>
+<text x="468" y="90" text-anchor="start" font-size="12" fill="#1d1d1f">- 단가: int</text>
+<text x="468" y="114" text-anchor="start" font-size="12" fill="#1d1d1f">+ 소계(): int</text>
+<rect x="250" y="230" width="150" height="70" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="250" y="230" width="150" height="40" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="325.0" y="246" text-anchor="middle" font-size="11" fill="#6e6e73">«interface»</text>
+<text x="325.0" y="263" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">결제</text>
+<path d="M250 276L400 276" fill="none" stroke="#1d1d1f" stroke-width="1"/>
+<text x="258" y="294" text-anchor="start" font-size="12" fill="#1d1d1f">+ 결제하기(금액)</text>
+<rect x="460" y="230" width="160" height="72" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="460" y="230" width="160" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="540.0" y="247" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">카드결제</text>
+<path d="M460 278L620 278" fill="none" stroke="#1d1d1f" stroke-width="1"/>
+<text x="468" y="272" text-anchor="start" font-size="12" fill="#1d1d1f">- 카드번호: String</text>
+<text x="468" y="296" text-anchor="start" font-size="12" fill="#1d1d1f">+ 결제하기(금액)</text>
+<rect x="20" y="230" width="170" height="72" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="20" y="230" width="170" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="105.0" y="247" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">VIP회원</text>
+<path d="M20 278L190 278" fill="none" stroke="#1d1d1f" stroke-width="1"/>
+<text x="28" y="272" text-anchor="start" font-size="12" fill="#1d1d1f">- 할인율: double</text>
+<text x="28" y="296" text-anchor="start" font-size="12" fill="#1d1d1f">+ 할인(): int</text>
+<path d="M191 70L249 70" fill="none" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="200" y="62" text-anchor="start" font-size="12" fill="#6e6e73">1</text>
+<text x="240" y="62" text-anchor="end" font-size="12" fill="#6e6e73">*</text>
+<path d="M401 70L459 70" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-start="url(#diaf)"/>
+<text x="450" y="62" text-anchor="end" font-size="12" fill="#6e6e73">1..*</text>
+<path d="M105 229L105 133" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#tri)"/>
+<path d="M459 270L401 270" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#tri)"/>
+<path d="M325 133L325 229" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="332" y="185" text-anchor="start" font-size="12" fill="#6e6e73">의존</text>
+<text x="118" y="190" text-anchor="start" font-size="12" fill="#6e6e73">일반화</text>
+<text x="430" y="290" text-anchor="middle" font-size="12" fill="#6e6e73">실체화</text>
+<text x="220" y="92" text-anchor="middle" font-size="12" fill="#6e6e73">연관</text>
+<text x="430" y="92" text-anchor="middle" font-size="12" fill="#6e6e73">합성</text>
+</svg>

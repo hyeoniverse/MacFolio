@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 370" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>실기 12개 능력단위와 출제 유형</title><rect width="640" height="370" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">능력단위별로 주로 나오는 문제 형태</text>
+<g font-size="12">
+<rect x="20" y="50" width="190" height="285" rx="10" fill="#e8f2ff"/><text x="115" y="76" text-anchor="middle" font-size="14" font-weight="600" fill="#0a84ff">용어 쓰기</text>
+<g fill="#1d1d1f" text-anchor="middle"><text x="115" y="104">요구사항 확인</text><text x="115" y="127">화면 설계</text><text x="115" y="150">애플리케이션 테스트 관리</text><text x="115" y="173">통합 구현</text><text x="115" y="196">인터페이스 구현</text><text x="115" y="219">서버 프로그램 구현</text><text x="115" y="242">데이터 입·출력 구현</text><text x="115" y="265">소프트웨어 개발 보안 구축</text><text x="115" y="288">응용 SW 기초 기술 활용</text><text x="115" y="311">제품 소프트웨어 패키징</text></g>
+<rect x="225" y="50" width="190" height="285" rx="10" fill="#fff4e5"/><text x="320" y="76" text-anchor="middle" font-size="14" font-weight="600" fill="#ff9f0a">코드 읽기</text>
+<g fill="#1d1d1f" text-anchor="middle"><text x="320" y="108">프로그래밍 언어 활용</text><text x="320" y="180" fill="#6e6e73">C: 포인터·배열·재귀</text><text x="320" y="204" fill="#6e6e73">Java: 상속·오버라이딩</text><text x="320" y="228" fill="#6e6e73">Python: 리스트·슬라이싱</text></g>
+<rect x="430" y="50" width="190" height="285" rx="10" fill="#e9f9ee"/><text x="525" y="76" text-anchor="middle" font-size="14" font-weight="600" fill="#30d158">SQL</text>
+<g fill="#1d1d1f" text-anchor="middle"><text x="525" y="108">SQL 응용</text><text x="525" y="134">데이터 입·출력 구현</text>
+<text x="525" y="180" fill="#6e6e73">SQL 문 빈칸 채우기</text><text x="525" y="204" fill="#6e6e73">결과 행 수·값 쓰기</text><text x="525" y="228" fill="#6e6e73">관계대수 기호</text><text x="525" y="252" fill="#6e6e73">정규화·이상 현상</text></g>
+</g>
+<text x="320" y="358" text-anchor="middle" font-size="12" fill="#6e6e73">데이터 입·출력 구현처럼 용어 쓰기와 SQL에 함께 걸치는 능력단위도 있다</text>
+</svg>

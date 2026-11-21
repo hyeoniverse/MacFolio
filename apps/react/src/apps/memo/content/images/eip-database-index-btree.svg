@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>B+ 트리 인덱스에서 키 50을 찾는 경로</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">고객ID 인덱스 (B+ 트리)</text>
+<rect x="260" y="50" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="280.0" y="70.68" text-anchor="middle" font-size="13" fill="#1d1d1f">30</text>
+<rect x="300" y="50" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="320.0" y="70.68" text-anchor="middle" font-size="13" fill="#1d1d1f">60</text>
+<rect x="260" y="50" width="80" height="32" fill="none" stroke="#0a84ff" stroke-width="2.5"/>
+<rect x="40" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="60.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">10</text>
+<rect x="80" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="100.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">20</text>
+<rect x="200" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="220.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">30</text>
+<rect x="240" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="260.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">40</text>
+<rect x="280" y="150" width="40" height="32" fill="#0a84ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="300.0" y="170.68" text-anchor="middle" font-size="13" fill="#fff">50</text>
+<rect x="420" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="440.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">60</text>
+<rect x="460" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="480.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">70</text>
+<rect x="500" y="150" width="40" height="32" fill="#fff" stroke="#6e6e73" stroke-width="1"/>
+<text x="520.0" y="170.68" text-anchor="middle" font-size="13" fill="#1d1d1f">80</text>
+<rect x="200" y="150" width="120" height="32" fill="none" stroke="#0a84ff" stroke-width="2.5"/>
+<path d="M268 82 L90 146" stroke="#6e6e73" stroke-width="2" fill="none"/>
+<path d="M300 82 L260 146" stroke="#0a84ff" stroke-width="2.5" fill="none" marker-end="url(#b)"/>
+<path d="M332 82 L480 146" stroke="#6e6e73" stroke-width="2" fill="none"/>
+<text x="130" y="112" text-anchor="middle" font-size="12" fill="#6e6e73">&lt; 30</text>
+<text x="292" y="122" text-anchor="start" font-size="12" fill="#0a84ff">30 ≤ k &lt; 60</text>
+<text x="430" y="110" text-anchor="middle" font-size="12" fill="#6e6e73">≥ 60</text>
+<path d="M120 166 L196 166" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<path d="M320 166 L416 166" stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+<text x="368" y="158" text-anchor="middle" font-size="12" fill="#6e6e73">리프 연결</text>
+<path d="M60 182 L60 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="42" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="60.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M100 182 L100 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="82" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="100.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M220 182 L220 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="202" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="220.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M260 182 L260 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="242" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="260.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M300 182 L300 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="282" y="224" width="36" height="22" fill="#fff4e5"/>
+<text x="300.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M440 182 L440 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="422" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="440.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M480 182 L480 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="462" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="480.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<path d="M520 182 L520 222" stroke="#c7c7cc" stroke-width="1" fill="none"/>
+<rect x="502" y="224" width="36" height="22" fill="#f2f2f7"/>
+<text x="520.0" y="238.96" text-anchor="middle" font-size="11" fill="#1d1d1f">행</text>
+<text x="320" y="276" text-anchor="middle" font-size="13" fill="#1d1d1f">루트 → 리프 2번의 노드 읽기로 키 50인 행의 위치를 찾는다</text>
+<text x="320" y="302" text-anchor="middle" font-size="12" fill="#6e6e73">인덱스가 없으면 테이블의 모든 행을 처음부터 끝까지 읽는다 (전체 스캔)</text></svg>

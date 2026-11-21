@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>개발 방법론의 흐름</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">무엇을 중심으로 시스템을 나누는가</text>
+<rect x="10" y="50" width="116" height="210" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="68" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">구조적</text>
+<text x="68" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">1970년대</text>
+<line x1="22" y1="116" x2="114" y2="116" stroke="#c7c7cc"/>
+<text x="68" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">중심 단위</text>
+<text x="68" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">기능·처리 흐름</text>
+<text x="68" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">대표 산출물</text>
+<text x="68" y="218" text-anchor="middle" font-size="13" fill="#1d1d1f">DFD</text>
+<text x="68" y="238" text-anchor="middle" font-size="12" fill="#1d1d1f">자료 사전</text>
+<rect x="136" y="50" width="116" height="210" rx="8" fill="#f2f2f7" stroke="#c7c7cc"/>
+<text x="194" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">정보공학</text>
+<text x="194" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">1980년대</text>
+<line x1="148" y1="116" x2="240" y2="116" stroke="#c7c7cc"/>
+<text x="194" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">중심 단위</text>
+<text x="194" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">데이터</text>
+<text x="194" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">대표 산출물</text>
+<text x="194" y="218" text-anchor="middle" font-size="13" fill="#1d1d1f">ERD</text>
+<text x="194" y="238" text-anchor="middle" font-size="12" fill="#1d1d1f">전사 정보 계획</text>
+<rect x="262" y="50" width="116" height="210" rx="8" fill="#e8f2ff" stroke="#c7c7cc"/>
+<text x="320" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">객체지향</text>
+<text x="320" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">1990년대</text>
+<line x1="274" y1="116" x2="366" y2="116" stroke="#c7c7cc"/>
+<text x="320" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">중심 단위</text>
+<text x="320" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">객체</text>
+<text x="320" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">대표 산출물</text>
+<text x="320" y="218" text-anchor="middle" font-size="13" fill="#1d1d1f">UML</text>
+<text x="320" y="238" text-anchor="middle" font-size="12" fill="#1d1d1f">클래스 다이어그램</text>
+<rect x="388" y="50" width="116" height="210" rx="8" fill="#e8f2ff" stroke="#c7c7cc"/>
+<text x="446" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">CBD</text>
+<text x="446" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">1990년대 후반</text>
+<line x1="400" y1="116" x2="492" y2="116" stroke="#c7c7cc"/>
+<text x="446" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">중심 단위</text>
+<text x="446" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">컴포넌트</text>
+<text x="446" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">대표 산출물</text>
+<text x="446" y="218" text-anchor="middle" font-size="13" fill="#1d1d1f">컴포넌트 명세</text>
+<text x="446" y="238" text-anchor="middle" font-size="12" fill="#1d1d1f">인터페이스</text>
+<rect x="514" y="50" width="116" height="210" rx="8" fill="#fff4e5" stroke="#c7c7cc"/>
+<text x="572" y="80" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">애자일</text>
+<text x="572" y="102" text-anchor="middle" font-size="12" fill="#6e6e73">2001년 선언</text>
+<line x1="526" y1="116" x2="618" y2="116" stroke="#c7c7cc"/>
+<text x="572" y="140" text-anchor="middle" font-size="12" fill="#6e6e73">중심 단위</text>
+<text x="572" y="162" text-anchor="middle" font-size="13" font-weight="600" fill="#0a84ff">짧은 반복</text>
+<text x="572" y="196" text-anchor="middle" font-size="12" fill="#6e6e73">대표 산출물</text>
+<text x="572" y="218" text-anchor="middle" font-size="13" fill="#1d1d1f">사용자 스토리</text>
+<text x="572" y="238" text-anchor="middle" font-size="12" fill="#1d1d1f">백로그</text>
+<path d="M20 274 H620" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="20" y="294" font-size="12" fill="#6e6e73">문서·계획 중심</text><text x="620" y="294" text-anchor="end" font-size="12" fill="#6e6e73">재사용·변화 대응 중심</text>
+</svg>

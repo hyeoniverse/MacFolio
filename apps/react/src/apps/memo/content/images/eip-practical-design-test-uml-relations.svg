@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>UML 관계 6가지 표기법</title><rect width="640" height="420" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="20" y="42" text-anchor="start" font-size="13" font-weight="600" fill="#1d1d1f">연관 (Association)</text>
+<text x="20" y="62" text-anchor="start" font-size="12" fill="#6e6e73">실선, 방향이 있으면 열린 화살표</text>
+<rect x="330" y="30" width="100" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="380.0" y="52.3" text-anchor="middle" font-size="12" fill="#1d1d1f">학생</text>
+<rect x="510" y="30" width="115" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="567.5" y="52.3" text-anchor="middle" font-size="12" fill="#1d1d1f">강의</text>
+<path d="M431 48L509 48" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="20" y="108" text-anchor="start" font-size="13" font-weight="600" fill="#1d1d1f">집합 (Aggregation)</text>
+<text x="20" y="128" text-anchor="start" font-size="12" fill="#6e6e73">빈 마름모가 전체 쪽, 부분은 따로 존재</text>
+<rect x="330" y="96" width="100" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="380.0" y="118.3" text-anchor="middle" font-size="12" fill="#1d1d1f">팀</text>
+<rect x="510" y="96" width="115" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="567.5" y="118.3" text-anchor="middle" font-size="12" fill="#1d1d1f">선수</text>
+<path d="M431 114L509 114" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-start="url(#dia)"/>
+<text x="20" y="174" text-anchor="start" font-size="13" font-weight="600" fill="#1d1d1f">포함·합성 (Composition)</text>
+<text x="20" y="194" text-anchor="start" font-size="12" fill="#6e6e73">채운 마름모, 전체가 사라지면 부분도 사라짐</text>
+<rect x="330" y="162" width="100" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="380.0" y="184.3" text-anchor="middle" font-size="12" fill="#1d1d1f">주문</text>
+<rect x="510" y="162" width="115" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="567.5" y="184.3" text-anchor="middle" font-size="12" fill="#1d1d1f">주문항목</text>
+<path d="M431 180L509 180" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-start="url(#diaf)"/>
+<text x="20" y="240" text-anchor="start" font-size="13" font-weight="600" fill="#1d1d1f">일반화 (Generalization)</text>
+<text x="20" y="260" text-anchor="start" font-size="12" fill="#6e6e73">실선 + 빈 삼각형, 자식 → 부모</text>
+<rect x="330" y="228" width="100" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="380.0" y="250.3" text-anchor="middle" font-size="12" fill="#1d1d1f">고양이</text>
+<rect x="510" y="228" width="115" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="567.5" y="250.3" text-anchor="middle" font-size="12" fill="#1d1d1f">동물</text>
+<path d="M431 246L509 246" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#tri)"/>
+<text x="20" y="306" text-anchor="start" font-size="13" font-weight="600" fill="#1d1d1f">의존 (Dependency)</text>
+<text x="20" y="326" text-anchor="start" font-size="12" fill="#6e6e73">점선 + 열린 화살표, 잠깐 사용</text>
+<rect x="330" y="294" width="100" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="380.0" y="316.3" text-anchor="middle" font-size="12" fill="#1d1d1f">주문서비스</text>
+<rect x="510" y="294" width="115" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="567.5" y="316.3" text-anchor="middle" font-size="12" fill="#1d1d1f">결제API</text>
+<path d="M431 312L509 312" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#open)"/>
+<text x="20" y="372" text-anchor="start" font-size="13" font-weight="600" fill="#1d1d1f">실체화 (Realization)</text>
+<text x="20" y="392" text-anchor="start" font-size="12" fill="#6e6e73">점선 + 빈 삼각형, 구현 클래스 → 인터페이스</text>
+<rect x="330" y="360" width="100" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="380.0" y="382.3" text-anchor="middle" font-size="12" fill="#1d1d1f">카드결제</text>
+<rect x="510" y="360" width="115" height="36" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="567.5" y="382.3" text-anchor="middle" font-size="12" fill="#1d1d1f">«interface» 결제</text>
+<path d="M431 378L509 378" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#tri)"/>
+</svg>

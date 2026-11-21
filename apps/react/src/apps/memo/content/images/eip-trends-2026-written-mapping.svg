@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 470" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>정보처리기사 필기 5과목과 2027년 4과목의 대응</title><rect width="640" height="470" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker></defs>
+<text x="145" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">2026년까지 필기 5과목</text>
+<text x="145" y="50" text-anchor="middle" font-size="12" fill="#6e6e73">100문항 · 2시간 30분</text>
+<text x="495" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">2027~2029년 필기 4과목</text>
+<text x="495" y="50" text-anchor="middle" font-size="12" fill="#6e6e73">80문항 · 2시간</text>
+<g font-size="13">
+<rect x="40" y="80" width="210" height="44" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="145" y="107" text-anchor="middle" fill="#1d1d1f">1과목 소프트웨어 설계</text>
+<rect x="40" y="140" width="210" height="44" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="145" y="167" text-anchor="middle" fill="#1d1d1f">2과목 소프트웨어 개발</text>
+<rect x="40" y="200" width="210" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="145" y="227" text-anchor="middle" fill="#1d1d1f">3과목 데이터베이스 구축</text>
+<rect x="40" y="260" width="210" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="145" y="287" text-anchor="middle" fill="#1d1d1f">4과목 프로그래밍 언어 활용</text>
+<rect x="40" y="320" width="210" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="145" y="347" text-anchor="middle" fill="#1d1d1f">5과목 정보시스템 구축 관리</text>
+<rect x="390" y="80" width="210" height="104" rx="6" fill="#0a84ff"/><text x="495" y="128" text-anchor="middle" fill="#fff" font-weight="600">1과목 소프트웨어 개발</text><text x="495" y="148" text-anchor="middle" fill="#fff" font-size="12">설계 내용 흡수</text>
+<rect x="390" y="200" width="210" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="495" y="227" text-anchor="middle" fill="#1d1d1f">2과목 데이터베이스 구축</text>
+<rect x="390" y="260" width="210" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="495" y="287" text-anchor="middle" fill="#1d1d1f">3과목 프로그래밍 언어 활용</text>
+<rect x="390" y="320" width="210" height="44" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="495" y="347" text-anchor="middle" fill="#1d1d1f">4과목 정보시스템 구축관리</text>
+</g>
+<g stroke-width="2" fill="none">
+<path d="M250 102 L386 108" stroke="#0a84ff" marker-end="url(#a)"/>
+<path d="M250 162 L386 156" stroke="#0a84ff" marker-end="url(#a)"/>
+<path d="M250 222 H386" stroke="#6e6e73" marker-end="url(#a)"/>
+<path d="M250 282 H386" stroke="#6e6e73" marker-end="url(#a)"/>
+<path d="M250 342 H386" stroke="#6e6e73" marker-end="url(#a)"/>
+<path d="M250 174 C310 180 320 266 386 272" stroke="#ff9f0a" stroke-dasharray="5 4" marker-end="url(#o)"/>
+<path d="M250 354 C330 360 300 182 386 172" stroke="#ff9f0a" stroke-dasharray="5 4" marker-end="url(#o)"/>
+</g>
+<g font-size="12" fill="#ff9f0a">
+<text x="262" y="204" stroke="#fff" stroke-width="5" paint-order="stroke">자료구조</text>
+<text x="258" y="378">개발 방법론 활용</text>
+</g>
+<rect x="40" y="388" width="560" height="64" rx="6" fill="#fff4e5"/>
+<text x="56" y="412" font-size="13" fill="#1d1d1f"><tspan fill="#ff453a" font-weight="600">삭제</tspan>  현행 시스템 분석(1과목), 데이터 입출력 구현(2과목)</text>
+<text x="56" y="436" font-size="13" fill="#1d1d1f"><tspan font-weight="600">유지</tspan>  과목당 20문항, 과목당 40점 이상 · 전 과목 평균 60점 이상</text>
+</svg>

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 374" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>구조체 배열 st와 구조체 포인터 p, 화살표 연산자</title><rect width="640" height="374" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">struct student st[3];  struct student *p = st;  p++;</text>
+<rect x="40" y="70" width="180" height="110" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="130" y="62" font-size="12" fill="#6e6e73" text-anchor="middle" font-weight="600">st[0]  (주소 +0)</text>
+<rect x="52" y="84" width="156" height="36" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="130.0" y="106.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">name = &quot;Kim&quot;</text>
+<rect x="52" y="130" width="156" height="36" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="130.0" y="152.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">score = 90</text>
+<rect x="230" y="70" width="180" height="110" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="320" y="62" font-size="12" fill="#0a84ff" text-anchor="middle" font-weight="600">st[1]  (주소 +16)</text>
+<rect x="242" y="84" width="156" height="36" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="320.0" y="106.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">name = &quot;Lee&quot;</text>
+<rect x="242" y="130" width="156" height="36" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="320.0" y="152.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">score = 75</text>
+<rect x="420" y="70" width="180" height="110" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="510" y="62" font-size="12" fill="#6e6e73" text-anchor="middle" font-weight="600">st[2]  (주소 +32)</text>
+<rect x="432" y="84" width="156" height="36" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="510.0" y="106.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">name = &quot;Park&quot;</text>
+<rect x="432" y="130" width="156" height="36" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="510.0" y="152.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">score = 85</text>
+<text x="320" y="330" font-size="12" fill="#6e6e73" text-anchor="middle">char name[10] 10바이트 + 빈칸 2바이트(정렬) + int score 4바이트 = sizeof 16</text>
+<rect x="250" y="240" width="140" height="40" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="320.0" y="265.4" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p</text>
+<path d="M320 238 V184" fill="none" stroke="#ff9f0a" stroke-width="2" marker-end="url(#mff9f0a)"/>
+<text x="420" y="248" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p-&gt;score  = 75</text>
+<text x="420" y="268" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">(*p).name = &quot;Lee&quot;</text>
+<text x="420" y="288" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">(p+1)-&gt;score = 85</text>
+<text x="40" y="258" font-size="13" fill="#6e6e73">p++ 하면 주소가</text>
+<text x="40" y="278" font-size="13" fill="#6e6e73">16바이트 증가</text>
+<text x="320" y="356" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="600">p-&gt;멤버 는 (*p).멤버 의 줄임 표기</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 270" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>트랜잭션의 다섯 가지 상태</title><rect width="640" height="270" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<rect x="30" y="110" width="100" height="44" fill="#0a84ff" rx="22"/>
+<text x="80.0" y="129.0" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">활동</text>
+<text x="80.0" y="144.0" text-anchor="middle" font-size="11" fill="#fff">Active</text>
+<rect x="220" y="40" width="120" height="44" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1" rx="22"/>
+<text x="280.0" y="59.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">부분 완료</text>
+<text x="280.0" y="73.0" text-anchor="middle" font-size="10" fill="#6e6e73">Partially Committed</text>
+<rect x="450" y="40" width="120" height="44" fill="#30d158" rx="22"/>
+<text x="510.0" y="59.0" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">완료</text>
+<text x="510.0" y="74.0" text-anchor="middle" font-size="11" fill="#fff">Committed</text>
+<rect x="220" y="180" width="120" height="44" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1" rx="22"/>
+<text x="280.0" y="199.0" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">실패</text>
+<text x="280.0" y="214.0" text-anchor="middle" font-size="11" fill="#6e6e73">Failed</text>
+<rect x="450" y="180" width="120" height="44" fill="#ff453a" rx="22"/>
+<text x="510.0" y="199.0" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">철회</text>
+<text x="510.0" y="214.0" text-anchor="middle" font-size="11" fill="#fff">Aborted</text>
+<path d="M130 122 L216 70" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="96" y="60" text-anchor="start" font-size="12" fill="#6e6e73">마지막 연산 실행</text>
+<path d="M340 62 L446 62" stroke="#30d158" stroke-width="2" fill="none" marker-end="url(#g)"/>
+<text x="393" y="54" text-anchor="middle" font-size="12" fill="#30d158">COMMIT</text>
+<path d="M130 142 L216 196" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="100" y="200" text-anchor="start" font-size="12" fill="#6e6e73">오류 발생</text>
+<path d="M280 84 L280 176" stroke="#ff9f0a" stroke-width="2" fill="none" marker-end="url(#o)"/>
+<text x="290" y="134" text-anchor="start" font-size="12" fill="#ff9f0a">반영 중 장애</text>
+<path d="M340 202 L446 202" stroke="#ff453a" stroke-width="2" fill="none" marker-end="url(#r)"/>
+<text x="393" y="194" text-anchor="middle" font-size="12" fill="#ff453a">ROLLBACK</text>
+<text x="320" y="256" text-anchor="middle" font-size="12" fill="#6e6e73">철회된 트랜잭션은 시작 직전 상태로 되돌린 뒤 재시작하거나 폐기한다</text></svg>

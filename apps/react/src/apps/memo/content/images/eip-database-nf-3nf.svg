@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>이행적 함수 종속을 제거해 3NF로 분해</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">2NF 회원 릴레이션의 이행적 함수 종속</text>
+<rect x="60" y="90" width="90" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="105.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">회원번호</text>
+<rect x="158" y="90" width="80" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="198.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f">이름</text>
+<rect x="246" y="90" width="80" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="286.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f">등급</text>
+<rect x="334" y="90" width="90" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="379.0" y="109.32" text-anchor="middle" font-size="12" fill="#1d1d1f">대여한도</text>
+<path d="M105.0 90 L105.0 56 L286.0 56 L286.0 86" stroke="#0a84ff" stroke-width="1.6" fill="none" marker-end="url(#b)"/>
+<path d="M198.0 56 L198.0 86" stroke="#0a84ff" stroke-width="1.6" fill="none" marker-end="url(#b)"/>
+<path d="M286.0 120 L286.0 146 L379.0 146 L379.0 124" stroke="#ff9f0a" stroke-width="1.6" fill="none" marker-end="url(#o)"/>
+<text x="429.0" y="70" text-anchor="start" font-size="12" fill="#0a84ff">회원번호 → 등급</text>
+<text x="429.0" y="140" text-anchor="start" font-size="12" fill="#ff9f0a">등급 → 대여한도</text>
+<text x="429.0" y="160" text-anchor="start" font-size="12" fill="#6e6e73">∴ 회원번호 → 대여한도 (이행)</text>
+<path d="M320 170 L320 196" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="170" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">회원</text>
+<text x="470" y="220" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">등급</text>
+<rect x="60" y="230" width="220" height="24" fill="#e8f2ff"/>
+<text x="100.0" y="246.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">회원번호</text>
+<text x="180.0" y="246.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">이름</text>
+<text x="250.0" y="246.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">등급</text>
+<text x="100.0" y="270.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="180.0" y="270.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="250.0" y="270.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<text x="100.0" y="294.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M02</text>
+<text x="180.0" y="294.32" text-anchor="middle" font-size="12" fill="#1d1d1f">오세진</text>
+<text x="250.0" y="294.32" text-anchor="middle" font-size="12" fill="#1d1d1f">우수</text>
+<text x="100.0" y="318.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="180.0" y="318.32" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<text x="250.0" y="318.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="60" y="230" width="220" height="96" fill="none" stroke="#c7c7cc"/>
+<line x1="140" y1="230" x2="140" y2="326" stroke="#c7c7cc"/>
+<line x1="220" y1="230" x2="220" y2="326" stroke="#c7c7cc"/>
+<line x1="60" y1="254" x2="280" y2="254" stroke="#c7c7cc"/>
+<line x1="60" y1="278" x2="280" y2="278" stroke="#c7c7cc"/>
+<line x1="60" y1="302" x2="280" y2="302" stroke="#c7c7cc"/>
+<rect x="390" y="230" width="160" height="24" fill="#e8f2ff"/>
+<text x="425.0" y="246.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">등급</text>
+<text x="505.0" y="246.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여한도</text>
+<text x="425.0" y="270.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="460" y="254" width="90" height="24" fill="#fff4e5"/>
+<text x="505.0" y="270.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<text x="425.0" y="294.32" text-anchor="middle" font-size="12" fill="#1d1d1f">우수</text>
+<text x="505.0" y="294.32" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+<rect x="390" y="230" width="160" height="72" fill="none" stroke="#c7c7cc"/>
+<line x1="460" y1="230" x2="460" y2="302" stroke="#c7c7cc"/>
+<line x1="390" y1="254" x2="550" y2="254" stroke="#c7c7cc"/>
+<line x1="390" y1="278" x2="550" y2="278" stroke="#c7c7cc"/>
+<text x="470" y="318" text-anchor="middle" font-size="12" fill="#ff9f0a">일반 등급 한도 변경은 이제 1행만 고친다</text></svg>

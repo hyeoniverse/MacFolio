@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>Python 리스트 얕은 복사의 참조 구조</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker></defs>
+<text x="320" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">b = a.copy() 뒤 b[0].append(9), b[1] = [0] 실행 결과</text>
+<g font-size="13">
+<text x="40" y="96" fill="#1d1d1f" font-weight="600">a</text>
+<rect x="70" y="74" width="60" height="34" fill="#f2f2f7" stroke="#6e6e73"/><text x="100" y="96" text-anchor="middle" fill="#6e6e73">[0]</text>
+<rect x="130" y="74" width="60" height="34" fill="#f2f2f7" stroke="#6e6e73"/><text x="160" y="96" text-anchor="middle" fill="#6e6e73">[1]</text>
+<text x="40" y="256" fill="#1d1d1f" font-weight="600">b</text>
+<rect x="70" y="234" width="60" height="34" fill="#e8f2ff" stroke="#0a84ff"/><text x="100" y="256" text-anchor="middle" fill="#0a84ff">[0]</text>
+<rect x="130" y="234" width="60" height="34" fill="#e8f2ff" stroke="#0a84ff"/><text x="160" y="256" text-anchor="middle" fill="#0a84ff">[1]</text>
+<rect x="320" y="140" width="140" height="40" rx="6" fill="#fff4e5" stroke="#ff9f0a" stroke-width="2"/><text x="390" y="166" text-anchor="middle" fill="#1d1d1f">[1, 2, 9]</text>
+<rect x="320" y="70" width="140" height="40" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="390" y="96" text-anchor="middle" fill="#1d1d1f">[3, 4]</text>
+<rect x="320" y="230" width="140" height="40" rx="6" fill="#e8f2ff" stroke="#0a84ff"/><text x="390" y="256" text-anchor="middle" fill="#1d1d1f">[0]</text>
+</g>
+<g stroke-width="2" fill="none">
+<path d="M100 108 C140 150 260 160 316 160" stroke="#ff9f0a" marker-end="url(#o)"/>
+<path d="M100 234 C140 190 260 166 316 166" stroke="#ff9f0a" marker-end="url(#o)"/>
+<path d="M190 91 H316" stroke="#6e6e73" marker-end="url(#a)"/>
+<path d="M190 251 H316" stroke="#0a84ff" marker-end="url(#b)"/>
+</g>
+<g font-size="12">
+<text x="476" y="158" fill="#ff9f0a">a와 b가 공유</text><text x="476" y="174" fill="#ff9f0a">append가 양쪽에 보임</text>
+<text x="476" y="88" fill="#6e6e73">a[1]이 가리키는 리스트</text>
+<text x="476" y="248" fill="#0a84ff">b[1]에 새 리스트</text><text x="476" y="264" fill="#0a84ff">대입 (a는 그대로)</text>
+</g>
+<text x="320" y="310" text-anchor="middle" font-size="12" fill="#6e6e73">copy()는 바깥 리스트만 새로 만들고, 안쪽 리스트는 같은 객체를 참조한다</text>
+</svg>

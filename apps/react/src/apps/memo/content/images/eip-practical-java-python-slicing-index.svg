@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>문자열 PYTHON의 양수 인덱스, 음수 인덱스와 슬라이싱 경계</title><rect width="640" height="380" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">s = &quot;PYTHON&quot;: 인덱스는 글자를, 슬라이스 경계는 글자 사이를 가리킨다</text>
+<rect x="140" y="90" width="60" height="50" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="170.0" y="122.2" font-size="20" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">P</text>
+<text x="170" y="78" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<text x="170" y="162" font-size="13" fill="#ff453a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">-6</text>
+<rect x="200" y="90" width="60" height="50" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="230.0" y="122.2" font-size="20" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Y</text>
+<text x="230" y="78" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<text x="230" y="162" font-size="13" fill="#ff453a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">-5</text>
+<rect x="260" y="90" width="60" height="50" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="290.0" y="122.2" font-size="20" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">T</text>
+<text x="290" y="78" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<text x="290" y="162" font-size="13" fill="#ff453a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">-4</text>
+<rect x="320" y="90" width="60" height="50" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="350.0" y="122.2" font-size="20" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">H</text>
+<text x="350" y="78" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3</text>
+<text x="350" y="162" font-size="13" fill="#ff453a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">-3</text>
+<rect x="380" y="90" width="60" height="50" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="410.0" y="122.2" font-size="20" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">O</text>
+<text x="410" y="78" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">4</text>
+<text x="410" y="162" font-size="13" fill="#ff453a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">-2</text>
+<rect x="440" y="90" width="60" height="50" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="470.0" y="122.2" font-size="20" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">N</text>
+<text x="470" y="78" font-size="13" fill="#0a84ff" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">5</text>
+<text x="470" y="162" font-size="13" fill="#ff453a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">-1</text>
+<text x="120" y="78" font-size="12" fill="#0a84ff" text-anchor="end">양수 인덱스</text>
+<text x="120" y="162" font-size="12" fill="#ff453a" text-anchor="end">음수 인덱스</text>
+<line x1="140" y1="180" x2="140" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="140" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0</text>
+<line x1="200" y1="180" x2="200" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="200" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">1</text>
+<line x1="260" y1="180" x2="260" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="260" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">2</text>
+<line x1="320" y1="180" x2="320" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="320" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">3</text>
+<line x1="380" y1="180" x2="380" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="380" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">4</text>
+<line x1="440" y1="180" x2="440" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="440" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">5</text>
+<line x1="500" y1="180" x2="500" y2="200" stroke="#6e6e73" stroke-width="1.5"/>
+<text x="500" y="216" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">6</text>
+<text x="120" y="216" font-size="12" fill="#6e6e73" text-anchor="end">슬라이스 경계</text>
+<path d="M260 230 V246 H440 V230" fill="none" stroke="#ff9f0a" stroke-width="2"/>
+<text x="350" y="266" font-size="13" fill="#ff9f0a" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">s[2:5] → &quot;THO&quot; (5번 글자 N은 제외)</text>
+<text x="150" y="296" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">s[0]  s[-1]</text>
+<text x="330" y="296" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">→ P  N</text>
+<text x="150" y="316" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">s[:3]  s[3:]</text>
+<text x="330" y="316" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">→ PYT  HON</text>
+<text x="150" y="336" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">s[-3:]  s[:-2]</text>
+<text x="330" y="336" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">→ HON  PYTH</text>
+<text x="150" y="356" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">s[10:]  s[5:2]</text>
+<text x="330" y="356" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">→ &quot;&quot;  &quot;&quot; (범위 밖은 빈 문자열)</text>
+</svg>

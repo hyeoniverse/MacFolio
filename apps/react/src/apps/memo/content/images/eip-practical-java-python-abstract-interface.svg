@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>추상 클래스 Shape와 인터페이스 Drawable, 구현 클래스 Rect와 Circle의 관계</title><rect width="640" height="330" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">추상 클래스는 extends 로 하나만, 인터페이스는 implements 로 여러 개</text>
+<rect x="60" y="56" width="220" height="70" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="170.0" y="78.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">«abstract» Shape</text>
+<text x="170.0" y="95.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">abstract double area()</text>
+<text x="170.0" y="112.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">void print()</text>
+<rect x="380" y="56" width="200" height="70" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="480.0" y="78.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">«interface» Drawable</text>
+<text x="480.0" y="95.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">int LINE = 2</text>
+<text x="480.0" y="112.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">void draw()</text>
+<rect x="40" y="220" width="170" height="64" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="125.0" y="248.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Circle</text>
+<text x="125.0" y="265.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">area(): 3 × r × r</text>
+<rect x="300" y="220" width="170" height="64" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="385.0" y="239.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Rect</text>
+<text x="385.0" y="256.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">area(): w × h</text>
+<text x="385.0" y="273.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">draw()</text>
+<path d="M125 218 V130" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#m1d1d1f)"/>
+<path d="M350 218 L250 130" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#m1d1d1f)"/>
+<path d="M430 218 L478 130" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)" stroke-dasharray="5 4"/>
+<text x="133" y="180" font-size="12" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">extends</text>
+<text x="250" y="196" font-size="12" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">extends</text>
+<text x="462" y="186" font-size="12" fill="#6e6e73" font-family="ui-monospace, 'SF Mono', Menlo, monospace">implements</text>
+<text x="320" y="316" font-size="12" fill="#6e6e73" text-anchor="middle">new Shape() 는 컴파일 오류. 추상 메서드를 모두 구현한 Rect, Circle만 객체를 만들 수 있다</text>
+</svg>

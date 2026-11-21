@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>switch 문에서 break가 없을 때 아래 case로 흘러내리는 경로</title><rect width="640" height="420" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">switch (i): 들어가는 곳은 case 값이 정하고, 나가는 곳은 break가 정한다</text>
+<rect x="200" y="52" width="230" height="34" fill="#e8f2ff" stroke="#6e6e73" stroke-width="1"/>
+<text x="315.0" y="73.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">case 1: total += 1</text>
+<rect x="200" y="102" width="230" height="34" fill="#e8f2ff" stroke="#6e6e73" stroke-width="1"/>
+<text x="315.0" y="123.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">case 2: total += 10</text>
+<rect x="200" y="152" width="230" height="34" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="315.0" y="173.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">break;</text>
+<rect x="200" y="202" width="230" height="34" fill="#e8f2ff" stroke="#6e6e73" stroke-width="1"/>
+<text x="315.0" y="223.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">case 3: total += 100</text>
+<rect x="200" y="252" width="230" height="34" fill="#e8f2ff" stroke="#6e6e73" stroke-width="1"/>
+<text x="315.0" y="273.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">default: total += 1000</text>
+<rect x="200" y="302" width="230" height="34" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="315.0" y="323.7" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">} switch 끝</text>
+<path d="M150 69 H196" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#m0a84ff)"/>
+<text x="40" y="74" font-size="13" fill="#0a84ff" font-weight="600">i = 1</text>
+<path d="M150 119 H196" fill="none" stroke="#30d158" stroke-width="1.5" marker-end="url(#m30d158)"/>
+<text x="40" y="124" font-size="13" fill="#30d158" font-weight="600">i = 2</text>
+<path d="M150 219 H196" fill="none" stroke="#ff453a" stroke-width="1.5" marker-end="url(#mff453a)"/>
+<text x="40" y="224" font-size="13" fill="#ff453a" font-weight="600">i = 3</text>
+<path d="M150 269 H196" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)"/>
+<text x="40" y="266" font-size="13" fill="#6e6e73" font-weight="600">i = 4</text>
+<text x="40" y="282" font-size="11" fill="#6e6e73">(일치 없음)</text>
+<path d="M434 69 H452 V169 H434" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#m0a84ff)"/>
+<text x="476" y="87" font-size="12" fill="#0a84ff">i=1: +1, +10 실행</text>
+<text x="476" y="103" font-size="12" fill="#0a84ff">후 break</text>
+<path d="M434 169 H470 V319 H434" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#mff9f0a)" stroke-dasharray="5 4"/>
+<text x="476" y="174" font-size="12" fill="#ff9f0a">break → 끝으로</text>
+<path d="M434 219 H452 V269 H434" fill="none" stroke="#ff453a" stroke-width="1.5" marker-end="url(#mff453a)"/>
+<text x="476" y="237" font-size="12" fill="#ff453a">+100 실행 뒤 break가</text>
+<text x="476" y="253" font-size="12" fill="#ff453a">없어 +1000까지 실행</text>
+<text x="320" y="368" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600">누적 total: i=1 → 11, i=2 → 21, i=3 → 1121, i=4 → 2121</text>
+</svg>

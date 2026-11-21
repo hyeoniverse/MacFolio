@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>수강 ÷ 3학점 과목: 3학점 과목을 모두 수강한 학생</title><rect width="640" height="290" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="130" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">수강 (학번, 과목코드)</text>
+<rect x="20" y="34" width="60" height="28" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="50.0" y="52.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2401</text>
+<rect x="88" y="34" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="115.0" y="52.0" text-anchor="middle" font-size="11" fill="#1d1d1f">DB101</text>
+<rect x="146" y="34" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="173.0" y="52.0" text-anchor="middle" font-size="11" fill="#1d1d1f">NW201</text>
+<rect x="204" y="34" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="231.0" y="52.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SE301</text>
+<rect x="20" y="68" width="60" height="28" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="50.0" y="86.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2402</text>
+<rect x="88" y="68" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="115.0" y="86.0" text-anchor="middle" font-size="11" fill="#1d1d1f">DB101</text>
+<rect x="146" y="68" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="173.0" y="86.0" text-anchor="middle" font-size="11" fill="#1d1d1f">NW201</text>
+<rect x="204" y="68" width="54" height="28" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="231.0" y="86.0" text-anchor="middle" font-size="11" fill="#6e6e73">없음</text>
+<rect x="20" y="102" width="60" height="28" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="50.0" y="120.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2403</text>
+<rect x="88" y="102" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="115.0" y="120.0" text-anchor="middle" font-size="11" fill="#1d1d1f">DB101</text>
+<rect x="146" y="102" width="54" height="28" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="173.0" y="120.0" text-anchor="middle" font-size="11" fill="#6e6e73">없음</text>
+<rect x="204" y="102" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="231.0" y="120.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SE301</text>
+<rect x="20" y="136" width="60" height="28" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="50.0" y="154.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2404</text>
+<rect x="88" y="136" width="54" height="28" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="115.0" y="154.0" text-anchor="middle" font-size="11" fill="#6e6e73">없음</text>
+<rect x="146" y="136" width="54" height="28" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="173.0" y="154.0" text-anchor="middle" font-size="11" fill="#6e6e73">없음</text>
+<rect x="204" y="136" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="231.0" y="154.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SE301</text>
+<rect x="20" y="170" width="60" height="28" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="50.0" y="188.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2405</text>
+<rect x="88" y="170" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="115.0" y="188.0" text-anchor="middle" font-size="11" fill="#1d1d1f">DB101</text>
+<rect x="146" y="170" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="173.0" y="188.0" text-anchor="middle" font-size="11" fill="#1d1d1f">NW201</text>
+<rect x="204" y="170" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="231.0" y="188.0" text-anchor="middle" font-size="11" fill="#1d1d1f">SE301</text>
+<rect x="20" y="204" width="60" height="28" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="50.0" y="222.3" text-anchor="middle" font-size="12" fill="#1d1d1f">2406</text>
+<rect x="88" y="204" width="54" height="28" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="115.0" y="222.0" text-anchor="middle" font-size="11" fill="#6e6e73">없음</text>
+<rect x="146" y="204" width="54" height="28" fill="#e8f7ec" stroke="#30d158" stroke-width="1"/>
+<text x="173.0" y="222.0" text-anchor="middle" font-size="11" fill="#1d1d1f">NW201</text>
+<rect x="204" y="204" width="54" height="28" fill="#fff" stroke="#c7c7cc" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="231.0" y="222.0" text-anchor="middle" font-size="11" fill="#6e6e73">없음</text>
+<text x="285" y="140" text-anchor="middle" font-size="28" font-weight="600" fill="#ff9f0a">÷</text>
+<text x="390" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">3학점 과목</text>
+<rect x="355" y="40" width="70" height="28" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="390.0" y="58.3" text-anchor="middle" font-size="12" fill="#1d1d1f">DB101</text>
+<rect x="355" y="74" width="70" height="28" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="390.0" y="92.3" text-anchor="middle" font-size="12" fill="#1d1d1f">NW201</text>
+<rect x="355" y="108" width="70" height="28" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="390.0" y="126.3" text-anchor="middle" font-size="12" fill="#1d1d1f">SE301</text>
+<text x="390" y="165" text-anchor="middle" font-size="11" fill="#6e6e73">(AI401은 2학점)</text>
+<text x="450" y="140" text-anchor="middle" font-size="22" font-weight="600" fill="#1d1d1f">=</text>
+<text x="545" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">결과 (학번)</text>
+<rect x="505" y="60" width="80" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="545.0" y="79.7" text-anchor="middle" font-size="13" fill="#1d1d1f">2401</text>
+<rect x="505" y="100" width="80" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="545.0" y="119.7" text-anchor="middle" font-size="13" fill="#1d1d1f">2405</text>
+<text x="320" y="262" text-anchor="middle" font-size="12" fill="#6e6e73">세 과목 칸이 모두 초록인 학번만 남는다</text>
+</svg>

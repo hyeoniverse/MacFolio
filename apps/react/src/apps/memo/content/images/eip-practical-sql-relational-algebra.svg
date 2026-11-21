@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>관계대수 연산자와 SQL 대응</title><rect width="640" height="400" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="20" y="15" width="600" height="28" fill="#0a84ff"/>
+<text x="50" y="34" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">기호</text>
+<text x="160" y="34" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">연산</text>
+<text x="345" y="34" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">뜻</text>
+<text x="530" y="34" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">SQL</text>
+<rect x="20" y="43" width="600" height="40" fill="#f2f2f7"/>
+<text x="50" y="70" text-anchor="middle" font-size="20" font-weight="600" fill="#0a84ff">σ</text>
+<text x="160" y="68" text-anchor="middle" font-size="12" fill="#1d1d1f">셀렉트 (Select)</text>
+<text x="345" y="68" text-anchor="middle" font-size="12" fill="#1d1d1f">조건에 맞는 행(튜플) 선택</text>
+<text x="530" y="68" text-anchor="middle" font-size="12" fill="#6e6e73">WHERE</text>
+<rect x="20" y="83" width="600" height="40" fill="#fff"/>
+<text x="50" y="110" text-anchor="middle" font-size="20" font-weight="600" fill="#0a84ff">π</text>
+<text x="160" y="108" text-anchor="middle" font-size="12" fill="#1d1d1f">프로젝트 (Project)</text>
+<text x="345" y="108" text-anchor="middle" font-size="12" fill="#1d1d1f">원하는 열(속성) 선택</text>
+<text x="530" y="108" text-anchor="middle" font-size="12" fill="#6e6e73">SELECT 열 목록 (DISTINCT)</text>
+<rect x="20" y="123" width="600" height="40" fill="#f2f2f7"/>
+<text x="50" y="150" text-anchor="middle" font-size="20" font-weight="600" fill="#0a84ff">⋈</text>
+<text x="160" y="148" text-anchor="middle" font-size="12" fill="#1d1d1f">조인 (Join)</text>
+<text x="345" y="148" text-anchor="middle" font-size="12" fill="#1d1d1f">공통 속성으로 두 릴레이션 결합</text>
+<text x="530" y="148" text-anchor="middle" font-size="12" fill="#6e6e73">JOIN … ON</text>
+<rect x="20" y="163" width="600" height="40" fill="#fff"/>
+<text x="50" y="190" text-anchor="middle" font-size="20" font-weight="600" fill="#0a84ff">÷</text>
+<text x="160" y="188" text-anchor="middle" font-size="12" fill="#1d1d1f">디비전 (Division)</text>
+<text x="345" y="188" text-anchor="middle" font-size="12" fill="#1d1d1f">B의 모든 값과 연관된 A의 행</text>
+<text x="530" y="188" text-anchor="middle" font-size="12" fill="#6e6e73">NOT EXISTS 이중 부정</text>
+<path d="M20 203L620 203" fill="none" stroke="#ff9f0a" stroke-width="2"/>
+<rect x="20" y="203" width="600" height="40" fill="#f2f2f7"/>
+<text x="50" y="230" text-anchor="middle" font-size="20" font-weight="600" fill="#ff9f0a">∪</text>
+<text x="160" y="228" text-anchor="middle" font-size="12" fill="#1d1d1f">합집합 (Union)</text>
+<text x="345" y="228" text-anchor="middle" font-size="12" fill="#1d1d1f">두 릴레이션의 행을 합침, 중복 제거</text>
+<text x="530" y="228" text-anchor="middle" font-size="12" fill="#6e6e73">UNION</text>
+<rect x="20" y="243" width="600" height="40" fill="#fff"/>
+<text x="50" y="270" text-anchor="middle" font-size="20" font-weight="600" fill="#ff9f0a">∩</text>
+<text x="160" y="268" text-anchor="middle" font-size="12" fill="#1d1d1f">교집합 (Intersection)</text>
+<text x="345" y="268" text-anchor="middle" font-size="12" fill="#1d1d1f">양쪽에 모두 있는 행</text>
+<text x="530" y="268" text-anchor="middle" font-size="12" fill="#6e6e73">INTERSECT</text>
+<rect x="20" y="283" width="600" height="40" fill="#f2f2f7"/>
+<text x="50" y="310" text-anchor="middle" font-size="20" font-weight="600" fill="#ff9f0a">−</text>
+<text x="160" y="308" text-anchor="middle" font-size="12" fill="#1d1d1f">차집합 (Difference)</text>
+<text x="345" y="308" text-anchor="middle" font-size="12" fill="#1d1d1f">왼쪽에만 있는 행</text>
+<text x="530" y="308" text-anchor="middle" font-size="12" fill="#6e6e73">EXCEPT (MINUS)</text>
+<rect x="20" y="323" width="600" height="40" fill="#fff"/>
+<text x="50" y="350" text-anchor="middle" font-size="20" font-weight="600" fill="#ff9f0a">×</text>
+<text x="160" y="348" text-anchor="middle" font-size="12" fill="#1d1d1f">교차곱 (Cartesian Product)</text>
+<text x="345" y="348" text-anchor="middle" font-size="12" fill="#1d1d1f">모든 행의 조합, 행 수는 곱</text>
+<text x="530" y="348" text-anchor="middle" font-size="12" fill="#6e6e73">CROSS JOIN</text>
+<text x="20" y="380" text-anchor="start" font-size="12" fill="#6e6e73">위 4개는 관계 연산자(순수 관계 연산자), 아래 4개는 일반 집합 연산자</text>
+</svg>

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 500" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>부분 함수 종속을 제거해 2NF로 분해</title><rect width="640" height="500" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">1NF 대여 릴레이션의 함수 종속</text>
+<rect x="24" y="110" width="78" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="63.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">회원번호</text>
+<rect x="110" y="110" width="78" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="149.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">도서번호</text>
+<rect x="196" y="110" width="64" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="228.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f">이름</text>
+<rect x="268" y="110" width="60" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="298.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f">등급</text>
+<rect x="336" y="110" width="74" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="373.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f">대여한도</text>
+<rect x="418" y="110" width="70" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="453.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f">도서명</text>
+<rect x="496" y="110" width="70" height="30" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="531.0" y="129.32" text-anchor="middle" font-size="12" fill="#1d1d1f">대여일</text>
+<path d="M63.0 110 L63.0 60 L298.0 60 L298.0 106" stroke="#ff9f0a" stroke-width="1.6" fill="none" marker-end="url(#o)"/>
+<path d="M228.0 60 L228.0 106" stroke="#ff9f0a" stroke-width="1.6" fill="none" marker-end="url(#o)"/>
+<text x="71.0" y="54" text-anchor="start" font-size="12" fill="#ff9f0a">회원번호 → 이름, 등급 (부분 종속)</text>
+<path d="M149.0 140 L149.0 168 L453.0 168 L453.0 144" stroke="#ff9f0a" stroke-width="1.6" fill="none" marker-end="url(#o)"/>
+<text x="453.0" y="186" text-anchor="end" font-size="12" fill="#ff9f0a">도서번호 → 도서명 (부분 종속)</text>
+<path d="M106.0 140 L106.0 200 L531.0 200 L531.0 144" stroke="#0a84ff" stroke-width="1.6" fill="none" marker-end="url(#b)"/>
+<text x="531.0" y="218" text-anchor="end" font-size="12" fill="#0a84ff">{회원번호, 도서번호} → 대여일 (완전 종속)</text>
+<path d="M298.0 140 L298.0 152 L373.0 152 L373.0 144" stroke="#6e6e73" stroke-width="1.2" fill="none" marker-end="url(#a)"/>
+<text x="413.0" y="158" text-anchor="middle" font-size="12" fill="#1d1d1f"></text>
+<path d="M320 236 L320 262" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="330" y="254" text-anchor="start" font-size="12" fill="#6e6e73">기본키의 일부에만 종속된 속성을 떼어 낸다</text>
+<text x="110" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">회원</text>
+<text x="345" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">도서</text>
+<text x="520" y="290" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">대여</text>
+<rect x="10" y="300" width="224" height="26" fill="#e8f2ff"/>
+<text x="40.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">회원번호</text>
+<text x="99.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">이름</text>
+<text x="150.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">등급</text>
+<text x="203.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여한도</text>
+<text x="40.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="99.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">김하늘</text>
+<text x="150.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="172" y="326" width="62" height="26" fill="#fff4e5"/>
+<text x="203.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<text x="40.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M02</text>
+<text x="99.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">오세진</text>
+<text x="150.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">우수</text>
+<text x="203.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">5</text>
+<text x="40.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="99.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">한유나</text>
+<text x="150.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">일반</text>
+<rect x="172" y="378" width="62" height="26" fill="#fff4e5"/>
+<text x="203.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">3</text>
+<rect x="10" y="300" width="224" height="104" fill="none" stroke="#c7c7cc"/>
+<line x1="70" y1="300" x2="70" y2="404" stroke="#c7c7cc"/>
+<line x1="128" y1="300" x2="128" y2="404" stroke="#c7c7cc"/>
+<line x1="172" y1="300" x2="172" y2="404" stroke="#c7c7cc"/>
+<line x1="10" y1="326" x2="234" y2="326" stroke="#c7c7cc"/>
+<line x1="10" y1="352" x2="234" y2="352" stroke="#c7c7cc"/>
+<line x1="10" y1="378" x2="234" y2="378" stroke="#c7c7cc"/>
+<rect x="260" y="300" width="156" height="26" fill="#e8f2ff"/>
+<text x="293.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">도서번호</text>
+<text x="371.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">도서명</text>
+<text x="293.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B11</text>
+<text x="371.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">DB 개론</text>
+<text x="293.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B20</text>
+<text x="371.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">운영체제</text>
+<text x="293.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B35</text>
+<text x="371.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">네트워크</text>
+<rect x="260" y="300" width="156" height="104" fill="none" stroke="#c7c7cc"/>
+<line x1="326" y1="300" x2="326" y2="404" stroke="#c7c7cc"/>
+<line x1="260" y1="326" x2="416" y2="326" stroke="#c7c7cc"/>
+<line x1="260" y1="352" x2="416" y2="352" stroke="#c7c7cc"/>
+<line x1="260" y1="378" x2="416" y2="378" stroke="#c7c7cc"/>
+<rect x="440" y="300" width="180" height="26" fill="#e8f2ff"/>
+<text x="471.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">회원번호</text>
+<text x="533.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600" text-decoration="underline">도서번호</text>
+<text x="592.0" y="317.32" text-anchor="middle" font-size="12" fill="#1d1d1f" font-weight="600">대여일</text>
+<text x="471.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="533.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B11</text>
+<text x="592.0" y="343.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-02</text>
+<text x="471.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M01</text>
+<text x="533.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B20</text>
+<text x="592.0" y="369.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-05</text>
+<text x="471.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M02</text>
+<text x="533.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B11</text>
+<text x="592.0" y="395.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-04</text>
+<text x="471.0" y="421.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="533.0" y="421.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B35</text>
+<text x="592.0" y="421.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-06</text>
+<text x="471.0" y="447.32" text-anchor="middle" font-size="12" fill="#1d1d1f">M03</text>
+<text x="533.0" y="447.32" text-anchor="middle" font-size="12" fill="#1d1d1f">B20</text>
+<text x="592.0" y="447.32" text-anchor="middle" font-size="12" fill="#1d1d1f">03-07</text>
+<rect x="440" y="300" width="180" height="156" fill="none" stroke="#c7c7cc"/>
+<line x1="502" y1="300" x2="502" y2="456" stroke="#c7c7cc"/>
+<line x1="564" y1="300" x2="564" y2="456" stroke="#c7c7cc"/>
+<line x1="440" y1="326" x2="620" y2="326" stroke="#c7c7cc"/>
+<line x1="440" y1="352" x2="620" y2="352" stroke="#c7c7cc"/>
+<line x1="440" y1="378" x2="620" y2="378" stroke="#c7c7cc"/>
+<line x1="440" y1="404" x2="620" y2="404" stroke="#c7c7cc"/>
+<line x1="440" y1="430" x2="620" y2="430" stroke="#c7c7cc"/>
+<text x="117" y="425" text-anchor="middle" font-size="12" fill="#ff9f0a">등급 → 대여한도가 아직 남아 있다</text>
+<text x="320" y="488" text-anchor="middle" font-size="12" fill="#6e6e73">신규 회원은 회원 릴레이션에만 넣으면 되고, 대여 기록을 지워도 회원 정보는 남는다</text></svg>

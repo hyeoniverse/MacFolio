@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>솔트가 없을 때와 있을 때의 해시값</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<text x="20" y="30" font-weight="600" fill="#1d1d1f">솔트 없음: 같은 비밀번호 → 같은 해시값</text>
+<g font-family="Menlo, monospace" font-size="12">
+<rect x="20" y="42" width="110" height="28" rx="4" fill="#f2f2f7"/><text x="30" y="61" fill="#1d1d1f">password123</text><text x="140" y="61" fill="#6e6e73">→ SHA-256 →</text><text x="240" y="61" fill="#ff453a">ef92b778bafe771e89245b89ecbc08a4…</text>
+<rect x="20" y="76" width="110" height="28" rx="4" fill="#f2f2f7"/><text x="30" y="95" fill="#1d1d1f">password123</text><text x="140" y="95" fill="#6e6e73">→ SHA-256 →</text><text x="240" y="95" fill="#ff453a">ef92b778bafe771e89245b89ecbc08a4…</text>
+<rect x="20" y="110" width="110" height="28" rx="4" fill="#f2f2f7"/><text x="30" y="129" fill="#1d1d1f">password124</text><text x="140" y="129" fill="#6e6e73">→ SHA-256 →</text><text x="240" y="129" fill="#0a84ff">33631376724e5d5480fa397dfcf03b66…</text>
+</g>
+<text x="20" y="160" font-size="12" fill="#6e6e73">한 글자만 달라도 완전히 다른 값(눈사태 효과) · 같은 입력은 항상 같은 값 → 미리 계산한 레인보우 테이블로 역추적 가능</text>
+<text x="20" y="200" font-weight="600" fill="#1d1d1f">솔트 추가: 사용자마다 다른 무작위 값을 붙여 해시</text>
+<g font-family="Menlo, monospace" font-size="12">
+<rect x="20" y="212" width="160" height="28" rx="4" fill="#e8f2ff"/><text x="30" y="231" fill="#0a84ff">a1f9<tspan fill="#1d1d1f">+password123</tspan></text><text x="190" y="231" fill="#6e6e73">→</text><text x="210" y="231" fill="#30d158">cd24bf0b02f1cf51152b538cd65c6299…</text>
+<rect x="20" y="246" width="160" height="28" rx="4" fill="#e8f2ff"/><text x="30" y="265" fill="#0a84ff">7c3e<tspan fill="#1d1d1f">+password123</tspan></text><text x="190" y="265" fill="#6e6e73">→</text><text x="210" y="265" fill="#30d158">2d9356f42ac0decab0cabce078fb127b…</text>
+</g>
+<text x="20" y="292" font-size="12" fill="#6e6e73">DB에는 (솔트, 해시값)을 함께 보관 · 같은 비밀번호도 해시값이 달라 레인보우 테이블이 무력화된다</text>
+</g></svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>SQL 삽입으로 쿼리의 의미가 바뀌는 과정</title><rect width="640" height="260" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<text x="20" y="34" fill="#6e6e73" font-size="12">아이디 입력칸</text>
+<rect x="110" y="18" width="160" height="26" rx="4" fill="#fff" stroke="#6e6e73"/><text x="120" y="36" fill="#ff453a" font-family="Menlo, monospace">admin' --</text>
+<text x="300" y="34" fill="#6e6e73" font-size="12">비밀번호</text><rect x="360" y="18" width="120" height="26" rx="4" fill="#fff" stroke="#6e6e73"/><text x="370" y="36" fill="#1d1d1f">아무거나</text>
+<text x="20" y="82" fill="#1d1d1f" font-weight="600">문자열을 이어 붙여 만든 SQL</text>
+<rect x="20" y="94" width="600" height="40" rx="6" fill="#f2f2f7"/>
+<g font-family="Menlo, monospace" font-size="12"><text x="30" y="119" fill="#1d1d1f">SELECT name FROM users WHERE id = '<tspan fill="#ff453a" font-weight="600">admin'</tspan> <tspan fill="#ff453a" font-weight="600">--</tspan><tspan fill="#c7c7cc">' AND pw = '아무거나'</tspan></text></g>
+<path d="M300 140 V160" stroke="#ff453a" stroke-width="2" marker-end="url(#r)"/><text x="310" y="156" font-size="12" fill="#ff453a">작은따옴표가 문자열을 닫고, -- 뒤는 주석으로 무시된다</text>
+<rect x="20" y="170" width="600" height="34" rx="6" fill="#fff4e5" stroke="#ff9f0a"/><text x="30" y="192" fill="#1d1d1f" font-family="Menlo, monospace" font-size="12">실제 실행되는 조건: WHERE id = 'admin'</text><text x="610" y="192" text-anchor="end" fill="#ff453a" font-size="12">비밀번호 검사 사라짐</text>
+<text x="20" y="236" font-size="12" fill="#6e6e73">대책: 준비된 문(Prepared Statement)으로 입력값을 SQL 구조와 분리 · 입력값 검증 · 최소 권한 DB 계정</text>
+</g></svg>

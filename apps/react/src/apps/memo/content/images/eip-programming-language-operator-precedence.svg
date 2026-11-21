@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>C·Java 연산자 우선순위</title><rect width="640" height="420" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="14" fill="#1d1d1f" font-weight="600">위에 있을수록 먼저 계산한다</text>
+<rect x="60" y="44" width="90" height="32" fill="#0a84ff"/>
+<text x="105.0" y="64.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">단항</text>
+<rect x="160" y="44" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="64.68" text-anchor="middle" font-size="13" fill="#1d1d1f">! ~ ++ -- sizeof (형변환)</text>
+<text x="470" y="65" text-anchor="start" font-size="12" fill="#ff9f0a">오른쪽 → 왼쪽</text>
+<rect x="60" y="82" width="90" height="32" fill="#2f95ff"/>
+<text x="105.0" y="102.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">산술</text>
+<rect x="160" y="82" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="102.68" text-anchor="middle" font-size="13" fill="#1d1d1f">* / %   →   + -</text>
+<text x="470" y="103" text-anchor="start" font-size="12" fill="#6e6e73">왼쪽 → 오른쪽</text>
+<rect x="60" y="120" width="90" height="32" fill="#4fa5ff"/>
+<text x="105.0" y="140.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">시프트</text>
+<rect x="160" y="120" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="140.68" text-anchor="middle" font-size="13" fill="#1d1d1f">&lt;&lt; &gt;&gt;</text>
+<text x="470" y="141" text-anchor="start" font-size="12" fill="#6e6e73">왼쪽 → 오른쪽</text>
+<rect x="60" y="158" width="90" height="32" fill="#6fb5ff"/>
+<text x="105.0" y="178.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">관계</text>
+<rect x="160" y="158" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="178.68" text-anchor="middle" font-size="13" fill="#1d1d1f">&lt; &lt;= &gt; &gt;=   →   == !=</text>
+<text x="470" y="179" text-anchor="start" font-size="12" fill="#6e6e73">왼쪽 → 오른쪽</text>
+<rect x="60" y="196" width="90" height="32" fill="#8fc5ff"/>
+<text x="105.0" y="216.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">비트</text>
+<rect x="160" y="196" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="216.68" text-anchor="middle" font-size="13" fill="#1d1d1f">&amp;   →   ^   →   |</text>
+<text x="470" y="217" text-anchor="start" font-size="12" fill="#6e6e73">왼쪽 → 오른쪽</text>
+<rect x="60" y="234" width="90" height="32" fill="#aad3ff"/>
+<text x="105.0" y="254.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">논리</text>
+<rect x="160" y="234" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="254.68" text-anchor="middle" font-size="13" fill="#1d1d1f">&amp;&amp;   →   ||</text>
+<text x="470" y="255" text-anchor="start" font-size="12" fill="#6e6e73">왼쪽 → 오른쪽</text>
+<rect x="60" y="272" width="90" height="32" fill="#c2e0ff"/>
+<text x="105.0" y="292.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">조건</text>
+<rect x="160" y="272" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="292.68" text-anchor="middle" font-size="13" fill="#1d1d1f">? :</text>
+<text x="470" y="293" text-anchor="start" font-size="12" fill="#ff9f0a">오른쪽 → 왼쪽</text>
+<rect x="60" y="310" width="90" height="32" fill="#d8ebff"/>
+<text x="105.0" y="330.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">대입</text>
+<rect x="160" y="310" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="330.68" text-anchor="middle" font-size="13" fill="#1d1d1f">= += -= *= /= %=</text>
+<text x="470" y="331" text-anchor="start" font-size="12" fill="#ff9f0a">오른쪽 → 왼쪽</text>
+<rect x="60" y="348" width="90" height="32" fill="#e8f2ff"/>
+<text x="105.0" y="368.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">순서</text>
+<rect x="160" y="348" width="300" height="32" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="310.0" y="368.68" text-anchor="middle" font-size="13" fill="#1d1d1f">,</text>
+<text x="470" y="369" text-anchor="start" font-size="12" fill="#6e6e73">왼쪽 → 오른쪽</text>
+<path d="M40 50 L40 380" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="30" y="60" text-anchor="end" font-size="11" fill="#6e6e73">높음</text>
+<text x="30" y="384" text-anchor="end" font-size="11" fill="#6e6e73">낮음</text>
+<text x="320" y="404" text-anchor="middle" font-size="12" fill="#6e6e73">머리글자 "단산시관비논조대순" · 주황색은 결합 방향이 오른쪽에서 왼쪽인 연산자</text></svg>

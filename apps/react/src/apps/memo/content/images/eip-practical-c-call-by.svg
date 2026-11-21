@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>swap 함수에 값을 전달할 때와 주소를 전달할 때의 차이</title><rect width="640" height="380" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="160" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">값 전달 swapValue(a, b)</text>
+<text x="480" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">주소 전달 swapAddress(&amp;a, &amp;b)</text>
+<line x1="320" y1="40" x2="320" y2="360" stroke="#f2f2f7" stroke-width="2"/>
+<text x="30" y="64" font-size="12" fill="#6e6e73" font-weight="600">main</text>
+<rect x="20" y="70" width="280" height="80" fill="#f2f2f7"/>
+<rect x="50" y="90" width="90" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="95.0" y="115.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a = 1</text>
+<rect x="180" y="90" width="90" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="225.0" y="115.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">b = 2</text>
+<text x="30" y="190" font-size="12" fill="#6e6e73" font-weight="600">swap 함수</text>
+<rect x="20" y="196" width="280" height="80" fill="#fff4e5"/>
+<rect x="50" y="216" width="90" height="40" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="95.0" y="241.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">x = 1→2</text>
+<rect x="180" y="216" width="90" height="40" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="225.0" y="241.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">y = 2→1</text>
+<path d="M95 132 V212" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)" stroke-dasharray="5 4"/>
+<path d="M225 132 V212" fill="none" stroke="#6e6e73" stroke-width="1.5" marker-end="url(#m6e6e73)" stroke-dasharray="5 4"/>
+<text x="160" y="176" font-size="12" fill="#6e6e73" text-anchor="middle">값을 복사</text>
+<text x="160" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">복사본만 바뀌고 함수가 끝나면 사라진다</text>
+<text x="160" y="330" font-size="14" fill="#ff453a" text-anchor="middle" font-weight="600">출력: 1 2</text>
+<text x="350" y="64" font-size="12" fill="#6e6e73" font-weight="600">main</text>
+<rect x="340" y="70" width="280" height="80" fill="#f2f2f7"/>
+<rect x="370" y="90" width="90" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="415.0" y="115.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a = 1→2</text>
+<rect x="500" y="90" width="90" height="40" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="545.0" y="115.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">b = 2→1</text>
+<text x="350" y="190" font-size="12" fill="#6e6e73" font-weight="600">swap 함수</text>
+<rect x="340" y="196" width="280" height="80" fill="#fff4e5"/>
+<rect x="370" y="216" width="90" height="40" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="415.0" y="241.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">x = &amp;a</text>
+<rect x="500" y="216" width="90" height="40" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="545.0" y="241.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">y = &amp;b</text>
+<path d="M415 214 V136" fill="none" stroke="#ff9f0a" stroke-width="2" marker-end="url(#mff9f0a)"/>
+<path d="M545 214 V136" fill="none" stroke="#ff9f0a" stroke-width="2" marker-end="url(#mff9f0a)"/>
+<text x="480" y="176" font-size="12" fill="#ff9f0a" text-anchor="middle">*x, *y 로 원본 접근</text>
+<text x="480" y="306" font-size="12" fill="#1d1d1f" text-anchor="middle">*x = *y 가 main의 a를 직접 바꾼다</text>
+<text x="480" y="330" font-size="14" fill="#30d158" text-anchor="middle" font-weight="600">출력: 2 1</text>
+</svg>

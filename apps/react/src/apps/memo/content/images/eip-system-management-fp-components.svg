@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>기능 점수의 다섯 가지 기능 유형</title><rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<g font-size="13">
+<rect x="20" y="120" width="96" height="70" rx="6" fill="#f2f2f7" stroke="#6e6e73"/><text x="68" y="150" text-anchor="middle" fill="#1d1d1f" font-weight="600">사용자</text><text x="68" y="170" text-anchor="middle" font-size="12" fill="#6e6e73">화면·다른 시스템</text>
+<rect x="190" y="50" width="270" height="230" rx="10" fill="#e8f2ff" stroke="#0a84ff" stroke-width="2" stroke-dasharray="6 4"/><text x="325" y="74" text-anchor="middle" fill="#0a84ff" font-weight="600">측정 대상 애플리케이션 경계</text>
+<rect x="250" y="190" width="150" height="60" rx="6" fill="#fff" stroke="#0a84ff"/><text x="325" y="215" text-anchor="middle" fill="#1d1d1f" font-weight="600">ILF 내부 논리 파일</text><text x="325" y="235" text-anchor="middle" font-size="12" fill="#6e6e73">예: 회원 테이블</text>
+<rect x="504" y="190" width="120" height="60" rx="6" fill="#fff4e5" stroke="#ff9f0a"/><text x="564" y="215" text-anchor="middle" fill="#1d1d1f" font-weight="600">EIF 외부 파일</text><text x="564" y="235" text-anchor="middle" font-size="12" fill="#6e6e73">예: 결제사 정보</text>
+<path d="M116 132 H300" stroke="#30d158" stroke-width="2" marker-end="url(#a)"/><text x="200" y="124" fill="#1d1d1f">EI 외부 입력</text><text x="330" y="136" font-size="12" fill="#6e6e73">등록·수정·삭제</text>
+<path d="M300 158 H120" stroke="#ff9f0a" stroke-width="2" marker-end="url(#a)"/><text x="200" y="152" fill="#1d1d1f">EO 외부 출력</text><text x="330" y="162" font-size="12" fill="#6e6e73">계산이 들어간 보고서</text>
+<path d="M120 182 H160 M160 182 H300" stroke="#6e6e73" stroke-width="2" stroke-dasharray="4 3"/><path d="M300 182 H120" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)" stroke-dasharray="4 3"/><text x="200" y="178" fill="#1d1d1f">EQ 외부 조회</text><text x="330" y="186" font-size="12" fill="#6e6e73">가공 없는 조회</text>
+<path d="M400 220 H500" stroke="#6e6e73" stroke-width="2" marker-end="url(#a)"/><text x="564" y="272" text-anchor="middle" font-size="12" fill="#6e6e73">경계 밖, 참조만 한다</text>
+<text x="320" y="306" text-anchor="middle" font-size="12" fill="#6e6e73">거래 기능(EI·EO·EQ)과 데이터 기능(ILF·EIF)으로 나누어 개수와 복잡도를 집계한다</text>
+</g></svg>

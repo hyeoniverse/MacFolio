@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>실기 150분 시간 배분 예시</title><rect width="640" height="300" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">150분 배분 예시: 확실한 점수부터, 시간 드는 문제는 가운데에</text>
+<g font-size="12" fill="#6e6e73" text-anchor="middle"><text x="20" y="66">0</text><text x="40" y="66">5</text><text x="140" y="66">30</text><text x="240" y="66">55</text><text x="440" y="66">105</text><text x="540" y="66">130</text><text x="620" y="66">150</text></g>
+<g stroke="#c7c7cc"><line x1="20" y1="72" x2="20" y2="80"/><line x1="40" y1="72" x2="40" y2="80"/><line x1="140" y1="72" x2="140" y2="80"/><line x1="240" y1="72" x2="240" y2="80"/><line x1="440" y1="72" x2="440" y2="80"/><line x1="540" y1="72" x2="540" y2="80"/><line x1="620" y1="72" x2="620" y2="80"/></g>
+<rect x="20" y="82" width="20" height="56" fill="#c7c7cc"/>
+<rect x="42" y="82" width="96" height="56" fill="#0a84ff"/>
+<rect x="142" y="82" width="96" height="56" fill="#30d158"/>
+<rect x="242" y="82" width="196" height="56" fill="#ff9f0a"/>
+<rect x="442" y="82" width="96" height="56" fill="#0a84ff" opacity="0.55"/>
+<rect x="542" y="82" width="78" height="56" fill="#6e6e73"/>
+<g font-size="13" fill="#fff" font-weight="600" text-anchor="middle"><text x="90" y="115">용어 1차</text><text x="190" y="115">SQL</text><text x="340" y="115">코드 읽기</text><text x="490" y="115" fill="#1d1d1f">용어 2차</text><text x="581" y="115">점검</text></g>
+<g font-size="12" fill="#1d1d1f">
+<line x1="30" y1="140" x2="30" y2="160" stroke="#c7c7cc"/><text x="20" y="176">훑기 5분: 전체 문항 수와 유형을 확인한다 (가로축 단위: 분)</text>
+<text x="20" y="206">용어 1차 25분: 바로 떠오르는 용어 문제만 쓴다</text>
+<text x="20" y="226">SQL 25분: 표가 작아 손으로 결과를 계산할 수 있다</text>
+<text x="20" y="246">코드 50분: 여백에 변수 추적 표를 그린다</text>
+<text x="20" y="266">용어 2차 25분: 비워 둔 문항에 가장 가까운 용어를 쓴다</text>
+<text x="20" y="286">점검 20분: 문항 번호, 약어 형태, 순서, 출력 공백을 다시 확인한다</text>
+</g>
+</svg>

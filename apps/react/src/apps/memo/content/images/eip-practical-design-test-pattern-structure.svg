@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 450" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>싱글턴, 어댑터, 옵서버 패턴의 구조</title><rect width="640" height="450" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="110" y="25" text-anchor="middle" font-size="14" font-weight="600" fill="#0a84ff">싱글턴 (생성)</text>
+<rect x="20" y="40" width="180" height="86" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="20" y="40" width="180" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="110.0" y="57" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Config</text>
+<text x="28" y="82" text-anchor="start" font-size="12" fill="#1d1d1f">- instance: Config</text>
+<text x="28" y="100" text-anchor="start" font-size="12" fill="#1d1d1f">- Config()</text>
+<text x="28" y="118" text-anchor="start" font-size="12" fill="#1d1d1f">+ getInstance(): Config</text>
+<text x="110" y="145" text-anchor="middle" font-size="12" fill="#6e6e73">생성자를 private으로 막고</text>
+<text x="110" y="163" text-anchor="middle" font-size="12" fill="#6e6e73">정적 메서드로 하나만 돌려준다</text>
+<text x="430" y="25" text-anchor="middle" font-size="14" font-weight="600" fill="#ff9f0a">어댑터 (구조)</text>
+<rect x="250" y="40" width="110" height="50" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="250" y="40" width="110" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="305.0" y="57" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Client</text>
+<text x="258" y="82" text-anchor="start" font-size="12" fill="#1d1d1f">+ run()</text>
+<rect x="400" y="40" width="110" height="64" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="400" y="40" width="110" height="38" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="455.0" y="55" text-anchor="middle" font-size="11" fill="#6e6e73">«interface»</text>
+<text x="455.0" y="71" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Target</text>
+<text x="408" y="96" text-anchor="start" font-size="12" fill="#1d1d1f">+ request()</text>
+<rect x="400" y="140" width="110" height="50" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="400" y="140" width="110" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="455.0" y="157" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Adapter</text>
+<text x="408" y="182" text-anchor="start" font-size="12" fill="#1d1d1f">+ request()</text>
+<rect x="530" y="140" width="100" height="50" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="530" y="140" width="100" height="24" fill="#fff4e5" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="580.0" y="157" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Adaptee</text>
+<text x="538" y="182" text-anchor="start" font-size="12" fill="#1d1d1f">+ oldCall()</text>
+<path d="M361 60L399 60" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#open)"/>
+<path d="M455 139L455 99" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#tri)"/>
+<path d="M511 165L529 165" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="440" y="222" text-anchor="middle" font-size="12" fill="#6e6e73">request()가 oldCall()을 대신 호출</text>
+<text x="320" y="262" text-anchor="middle" font-size="14" font-weight="600" fill="#30d158">옵서버 (행위)</text>
+<rect x="40" y="280" width="190" height="68" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="40" y="280" width="190" height="24" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="135.0" y="297" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Subject</text>
+<text x="48" y="322" text-anchor="start" font-size="12" fill="#1d1d1f">+ attach(o: Observer)</text>
+<text x="48" y="340" text-anchor="start" font-size="12" fill="#1d1d1f">+ notify()</text>
+<rect x="320" y="280" width="140" height="64" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="320" y="280" width="140" height="38" fill="#e8f2ff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="390.0" y="295" text-anchor="middle" font-size="11" fill="#6e6e73">«interface»</text>
+<text x="390.0" y="311" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">Observer</text>
+<text x="328" y="336" text-anchor="start" font-size="12" fill="#1d1d1f">+ update()</text>
+<rect x="260" y="385" width="110" height="50" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="260" y="385" width="110" height="24" fill="#e8f7ec" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="315.0" y="402" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">메일알림</text>
+<text x="268" y="427" text-anchor="start" font-size="12" fill="#1d1d1f">+ update()</text>
+<rect x="400" y="385" width="110" height="50" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<rect x="400" y="385" width="110" height="24" fill="#e8f7ec" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="455.0" y="402" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">앱푸시</text>
+<text x="408" y="427" text-anchor="start" font-size="12" fill="#1d1d1f">+ update()</text>
+<path d="M231 300L319 300" fill="none" stroke="#1d1d1f" stroke-width="1.5" marker-end="url(#open)"/>
+<text x="275" y="292" text-anchor="middle" font-size="12" fill="#6e6e73">1  *</text>
+<path d="M315 384L370 346" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#tri)"/>
+<path d="M455 384L410 346" fill="none" stroke="#1d1d1f" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#tri)"/>
+<text x="560" y="300" text-anchor="middle" font-size="12" fill="#6e6e73">상태가 바뀌면</text>
+<text x="560" y="318" text-anchor="middle" font-size="12" fill="#6e6e73">notify()가 등록된</text>
+<text x="560" y="336" text-anchor="middle" font-size="12" fill="#6e6e73">모든 update() 호출</text>
+</svg>

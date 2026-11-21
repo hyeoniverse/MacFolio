@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>정보처리기사 실기 회차별 합격률</title><rect width="640" height="400" fill="#fff"/>
+<text x="320" y="30" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">실기 회차별 합격률 (2024년 1회 ~ 2026년 2회)</text>
+<text x="320" y="52" text-anchor="middle" font-size="12" fill="#6e6e73">회차별 값은 수험생 사이트 집계, 연간 값은 Q-Net 수험자동향</text>
+<line x1="70" y1="320.0" x2="606" y2="320.0" stroke="#f2f2f7"/><text x="62" y="324.0" text-anchor="end" font-size="12" fill="#6e6e73">0%</text>
+<line x1="70" y1="260.0" x2="606" y2="260.0" stroke="#f2f2f7"/><text x="62" y="264.0" text-anchor="end" font-size="12" fill="#6e6e73">10%</text>
+<line x1="70" y1="200.0" x2="606" y2="200.0" stroke="#f2f2f7"/><text x="62" y="204.0" text-anchor="end" font-size="12" fill="#6e6e73">20%</text>
+<line x1="70" y1="140.0" x2="606" y2="140.0" stroke="#f2f2f7"/><text x="62" y="144.0" text-anchor="end" font-size="12" fill="#6e6e73">30%</text>
+<line x1="70" y1="80.0" x2="606" y2="80.0" stroke="#f2f2f7"/><text x="62" y="84.0" text-anchor="end" font-size="12" fill="#6e6e73">40%</text>
+<line x1="76" y1="148.4" x2="228" y2="148.4" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="5 4"/>
+<line x1="262" y1="187.4" x2="414" y2="187.4" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="5 4"/>
+<polyline fill="none" stroke="#0a84ff" stroke-width="2.5" points="90,99.2 152,153.8 214,195.8 276,229.4 338,153.2 400,176.6 462,211.4 524,111.8"/>
+<text x="90" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">1회</text>
+<circle cx="90" cy="99.2" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="90" y="87.2" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">36.8%</text>
+<text x="152" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">2회</text>
+<circle cx="152" cy="153.8" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="152" y="175.8" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">27.7%</text>
+<text x="214" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">3회</text>
+<circle cx="214" cy="195.8" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="214" y="183.8" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">20.7%</text>
+<text x="276" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">1회</text>
+<circle cx="276" cy="229.4" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="276" y="251.4" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">15.1%</text>
+<text x="338" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">2회</text>
+<circle cx="338" cy="153.2" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="338" y="141.2" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">27.8%</text>
+<text x="400" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">3회</text>
+<circle cx="400" cy="176.6" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="400" y="164.6" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">23.9%</text>
+<text x="462" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">1회</text>
+<circle cx="462" cy="211.4" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="462" y="233.4" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">18.1%</text>
+<text x="524" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">2회</text>
+<circle cx="524" cy="111.8" r="5" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="524" y="99.8" text-anchor="middle" font-size="12" font-weight="600" fill="#1d1d1f">34.7%</text>
+<text x="586" y="342" text-anchor="middle" font-size="12" fill="#1d1d1f">3회</text>
+<circle cx="586" cy="200.0" r="5" fill="#fff" stroke="#6e6e73" stroke-dasharray="2 2"/><text x="586" y="186.0" text-anchor="middle" font-size="12" fill="#6e6e73">12월 18일</text><text x="586" y="222.0" text-anchor="middle" font-size="12" fill="#6e6e73">발표 예정</text>
+<text x="152" y="364" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">2024년</text>
+<text x="338" y="364" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">2025년</text>
+<line x1="245.0" y1="70" x2="245.0" y2="370" stroke="#c7c7cc" stroke-dasharray="2 3"/>
+<text x="524" y="364" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1d1f">2026년</text>
+<line x1="431.0" y1="70" x2="431.0" y2="370" stroke="#c7c7cc" stroke-dasharray="2 3"/>
+<line x1="150" y1="392" x2="180" y2="392" stroke="#ff9f0a" stroke-width="2" stroke-dasharray="5 4"/><text x="188" y="396" font-size="12" fill="#1d1d1f">연간 실기 합격률 (Q-Net): 2024년 28.6%, 2025년 22.1%</text>
+</svg>

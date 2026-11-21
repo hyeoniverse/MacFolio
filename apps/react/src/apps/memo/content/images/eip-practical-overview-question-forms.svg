@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 290" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>같은 개념을 필기와 실기가 묻는 방식</title><rect width="640" height="290" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">개념: 결합도 (모듈 사이의 의존 정도)</text>
+<rect x="20" y="50" width="290" height="220" rx="10" fill="#e8f2ff"/><text x="165" y="76" text-anchor="middle" font-size="14" font-weight="600" fill="#0a84ff">필기: 고르기</text>
+<g font-size="13" fill="#1d1d1f"><text x="40" y="106">결합도가 가장 낮은 것은?</text>
+<text x="52" y="136">① 내용 결합도</text><text x="52" y="160">② 공통 결합도</text><text x="52" y="184" font-weight="600" fill="#0a84ff">③ 자료 결합도  ✓</text><text x="52" y="208">④ 제어 결합도</text>
+<text x="40" y="250" font-size="12" fill="#6e6e73">보기를 보고 알아보기만 하면 된다</text></g>
+<rect x="330" y="50" width="290" height="220" rx="10" fill="#fff4e5"/><text x="475" y="76" text-anchor="middle" font-size="14" font-weight="600" fill="#ff9f0a">실기: 직접 쓰기</text>
+<g font-size="13" fill="#1d1d1f"><text x="350" y="106">결합도를 낮은 것부터 순서대로</text><text x="350" y="126">쓰시오.</text>
+<rect x="350" y="140" width="250" height="70" rx="6" fill="#fff" stroke="#ff9f0a"/>
+<text x="362" y="164" font-size="12">자료 → 스탬프 → 제어 →</text><text x="362" y="186" font-size="12">외부 → 공통 → 내용</text>
+<text x="350" y="236" font-size="12" fill="#6e6e73">용어 여섯 개와 순서를 모두 외워야</text><text x="350" y="254" font-size="12" fill="#6e6e73">점수를 받는다</text></g>
+</svg>

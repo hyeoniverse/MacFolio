@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>SELECT 문의 실행 순서</title><rect width="640" height="360" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">적힌 순서와 실행 순서</text>
+<g font-size="13">
+<text x="40" y="60" fill="#6e6e73">실행 순서</text><text x="280" y="60" fill="#6e6e73">하는 일</text><text x="460" y="60" fill="#6e6e73">남는 것</text>
+<rect x="40" y="72" width="220" height="36" fill="#f2f2f7" stroke="#6e6e73"/><text x="56" y="95" fill="#1d1d1f">1. FROM 성적</text><text x="280" y="95" fill="#1d1d1f">테이블 전체를 읽음</text><text x="460" y="95" fill="#1d1d1f">10행</text>
+<rect x="40" y="118" width="220" height="36" fill="#f2f2f7" stroke="#c7c7cc"/><text x="56" y="141" fill="#6e6e73">2. WHERE (없음)</text><text x="280" y="141" fill="#1d1d1f">행 단위로 거름</text><text x="460" y="141" fill="#1d1d1f">10행</text>
+<rect x="40" y="164" width="220" height="36" fill="#e8f2ff" stroke="#0a84ff"/><text x="56" y="187" fill="#1d1d1f">3. GROUP BY 과목</text><text x="280" y="187" fill="#1d1d1f">같은 과목끼리 묶음</text><text x="460" y="187" fill="#1d1d1f">3그룹</text>
+<rect x="40" y="210" width="220" height="36" fill="#fff4e5" stroke="#ff9f0a" stroke-width="2"/><text x="56" y="233" fill="#1d1d1f">4. HAVING AVG ≥ 80</text><text x="280" y="233" fill="#1d1d1f">그룹 단위로 거름</text><text x="460" y="233" fill="#ff453a">2그룹 (운영체제 제외)</text>
+<rect x="40" y="256" width="220" height="36" fill="#f2f2f7" stroke="#6e6e73"/><text x="56" y="279" fill="#1d1d1f">5. SELECT 과목, MIN, MAX</text><text x="280" y="279" fill="#1d1d1f">출력할 열 계산</text><text x="460" y="279" fill="#1d1d1f">2행 × 3열</text>
+<rect x="40" y="302" width="220" height="36" fill="#f2f2f7" stroke="#6e6e73"/><text x="56" y="325" fill="#1d1d1f">6. ORDER BY 과목</text><text x="280" y="325" fill="#1d1d1f">정렬</text><text x="460" y="325" fill="#1d1d1f">네트워크, 자료구조</text>
+<path d="M30 90 V320" stroke="#c7c7cc" stroke-width="2" marker-end="url(#a)"/>
+</g></svg>

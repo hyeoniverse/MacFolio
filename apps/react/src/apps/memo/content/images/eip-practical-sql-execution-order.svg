@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 310" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>SELECT 문의 작성 순서와 논리적 처리 순서</title><rect width="640" height="310" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<text x="120" y="25" text-anchor="middle" font-size="13" font-weight="600" fill="#6e6e73">작성 순서</text>
+<text x="520" y="25" text-anchor="middle" font-size="13" font-weight="600" fill="#6e6e73">처리 순서</text>
+<rect x="40" y="40" width="160" height="30" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="120.0" y="59.7" text-anchor="middle" font-size="13" fill="#1d1d1f">SELECT</text>
+<rect x="40" y="80" width="160" height="30" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="120.0" y="99.7" text-anchor="middle" font-size="13" fill="#1d1d1f">FROM</text>
+<rect x="40" y="120" width="160" height="30" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="120.0" y="139.7" text-anchor="middle" font-size="13" fill="#1d1d1f">WHERE</text>
+<rect x="40" y="160" width="160" height="30" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="120.0" y="179.7" text-anchor="middle" font-size="13" fill="#1d1d1f">GROUP BY</text>
+<rect x="40" y="200" width="160" height="30" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="120.0" y="219.7" text-anchor="middle" font-size="13" fill="#1d1d1f">HAVING</text>
+<rect x="40" y="240" width="160" height="30" fill="#f2f2f7" stroke="#6e6e73" stroke-width="1"/>
+<text x="120.0" y="259.7" text-anchor="middle" font-size="13" fill="#1d1d1f">ORDER BY</text>
+<rect x="440" y="40" width="160" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="520.0" y="59.7" text-anchor="middle" font-size="13" fill="#1d1d1f">1. FROM</text>
+<path d="M202 95C320 95 320 55 438 55" fill="none" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="440" y="80" width="160" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="520.0" y="99.7" text-anchor="middle" font-size="13" fill="#1d1d1f">2. WHERE</text>
+<path d="M202 135C320 135 320 95 438 95" fill="none" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="440" y="120" width="160" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="520.0" y="139.7" text-anchor="middle" font-size="13" fill="#1d1d1f">3. GROUP BY</text>
+<path d="M202 175C320 175 320 135 438 135" fill="none" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="440" y="160" width="160" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="520.0" y="179.7" text-anchor="middle" font-size="13" fill="#1d1d1f">4. HAVING</text>
+<path d="M202 215C320 215 320 175 438 175" fill="none" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="440" y="200" width="160" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="520.0" y="219.7" text-anchor="middle" font-size="13" fill="#1d1d1f">5. SELECT</text>
+<path d="M202 55C320 55 320 215 438 215" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#ao)"/>
+<rect x="440" y="240" width="160" height="30" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="520.0" y="259.7" text-anchor="middle" font-size="13" fill="#1d1d1f">6. ORDER BY</text>
+<path d="M202 255C320 255 320 255 438 255" fill="none" stroke="#c7c7cc" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="320" y="298" text-anchor="middle" font-size="12" fill="#6e6e73">SELECT의 별칭은 처리 순서상 뒤에 오는 ORDER BY에서만 안전하게 쓸 수 있다</text>
+</svg>

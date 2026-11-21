@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>데이터베이스 설계 5단계와 단계별 산출물</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="15" fill="#1d1d1f" font-weight="600">데이터베이스 설계 순서</text>
+<rect x="20" y="60" width="104" height="48" fill="#f2f2f7"/>
+<text x="72.0" y="88.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">요구 조건 분석</text>
+<rect x="20" y="140" width="104" height="40" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="72.0" y="164.32" text-anchor="middle" font-size="12" fill="#1d1d1f">요구 조건 명세서</text>
+<path d="M72 108 L72 136" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<path d="M124 84 L140 84" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="144" y="60" width="104" height="48" fill="#0a84ff"/>
+<text x="196.0" y="88.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">개념적 설계</text>
+<rect x="144" y="140" width="104" height="40" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="196.0" y="164.32" text-anchor="middle" font-size="12" fill="#1d1d1f">E-R 다이어그램</text>
+<path d="M196 108 L196 136" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<path d="M248 84 L264 84" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="268" y="60" width="104" height="48" fill="#0a84ff"/>
+<text x="320.0" y="88.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">논리적 설계</text>
+<rect x="268" y="140" width="104" height="40" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="320.0" y="164.32" text-anchor="middle" font-size="12" fill="#1d1d1f">릴레이션 스키마</text>
+<path d="M320 108 L320 136" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<path d="M372 84 L388 84" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="392" y="60" width="104" height="48" fill="#0a84ff"/>
+<text x="444.0" y="88.68" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">물리적 설계</text>
+<rect x="392" y="140" width="104" height="40" fill="#fff4e5" stroke="#c7c7cc" stroke-width="1"/>
+<text x="444.0" y="164.32" text-anchor="middle" font-size="12" fill="#1d1d1f">인덱스·저장 구조</text>
+<path d="M444 108 L444 136" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<path d="M496 84 L512 84" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<rect x="516" y="60" width="104" height="48" fill="#f2f2f7"/>
+<text x="568.0" y="88.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">구현</text>
+<rect x="516" y="140" width="104" height="40" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="568.0" y="164.32" text-anchor="middle" font-size="12" fill="#1d1d1f">DDL 실행</text>
+<path d="M568 108 L568 136" stroke="#6e6e73" stroke-width="2" fill="none" marker-end="url(#a)"/>
+<text x="320" y="214" text-anchor="middle" font-size="12" fill="#6e6e73">개념적 설계: DBMS와 무관하게 개체·관계를 찾는다 (예: 학생은 여러 과목을 수강한다)</text>
+<text x="320" y="238" text-anchor="middle" font-size="12" fill="#6e6e73">논리적 설계: 목표 DBMS의 데이터 모델(관계형)에 맞춰 테이블·키·정규화 결정</text>
+<text x="320" y="262" text-anchor="middle" font-size="12" fill="#6e6e73">물리적 설계: 저장 장치에 어떻게 둘지 결정 (인덱스, 파티션, 레코드 크기, 접근 경로)</text>
+<rect x="144" y="48" width="372" height="142" fill="none" stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="330" y="290" text-anchor="middle" font-size="12" fill="#0a84ff">시험에 가장 자주 나오는 구간은 파란 점선 안의 세 단계와 각 단계의 산출물이다</text></svg>

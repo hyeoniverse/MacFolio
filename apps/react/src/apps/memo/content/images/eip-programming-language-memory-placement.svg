@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>최초 적합, 최적 적합, 최악 적합으로 12KB 프로세스 배치</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<text x="320" y="26" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">12KB 프로세스를 어느 빈 공간에 넣는가</text>
+<text x="80" y="72" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">최초 적합</text>
+<rect x="95" y="50" width="40" height="34" fill="#d1d1d6"/>
+<text x="115.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">OS</text>
+<rect x="135" y="50" width="60" height="34" fill="#0a84ff"/>
+<text x="165.0" y="65" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">12KB</text>
+<text x="165.0" y="79" text-anchor="middle" font-size="10" fill="#fff">4KB 남음</text>
+<rect x="195" y="50" width="40" height="34" fill="#d1d1d6"/>
+<text x="215.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="235" y="50" width="50" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="260.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">10KB</text>
+<rect x="285" y="50" width="40" height="34" fill="#d1d1d6"/>
+<text x="305.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="325" y="50" width="110" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="380.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">30KB</text>
+<rect x="435" y="50" width="40" height="34" fill="#d1d1d6"/>
+<text x="455.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="475" y="50" width="60" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="505.0" y="70.96" text-anchor="middle" font-size="11" fill="#1d1d1f">13KB</text>
+<rect x="95" y="50" width="440" height="34" fill="none" stroke="#6e6e73"/>
+<text x="80" y="142" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">최적 적합</text>
+<rect x="95" y="120" width="40" height="34" fill="#d1d1d6"/>
+<text x="115.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">OS</text>
+<rect x="135" y="120" width="60" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="165.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">16KB</text>
+<rect x="195" y="120" width="40" height="34" fill="#d1d1d6"/>
+<text x="215.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="235" y="120" width="50" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="260.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">10KB</text>
+<rect x="285" y="120" width="40" height="34" fill="#d1d1d6"/>
+<text x="305.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="325" y="120" width="110" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="380.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">30KB</text>
+<rect x="435" y="120" width="40" height="34" fill="#d1d1d6"/>
+<text x="455.0" y="140.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="475" y="120" width="60" height="34" fill="#0a84ff"/>
+<text x="505.0" y="135" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">12KB</text>
+<text x="505.0" y="149" text-anchor="middle" font-size="10" fill="#fff">1KB 남음</text>
+<rect x="95" y="120" width="440" height="34" fill="none" stroke="#6e6e73"/>
+<text x="80" y="212" text-anchor="end" font-size="13" fill="#1d1d1f" font-weight="600">최악 적합</text>
+<rect x="95" y="190" width="40" height="34" fill="#d1d1d6"/>
+<text x="115.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">OS</text>
+<rect x="135" y="190" width="60" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="165.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">16KB</text>
+<rect x="195" y="190" width="40" height="34" fill="#d1d1d6"/>
+<text x="215.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="235" y="190" width="50" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="260.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">10KB</text>
+<rect x="285" y="190" width="40" height="34" fill="#d1d1d6"/>
+<text x="305.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="325" y="190" width="110" height="34" fill="#0a84ff"/>
+<text x="380.0" y="205" text-anchor="middle" font-size="11" fill="#fff" font-weight="600">12KB</text>
+<text x="380.0" y="219" text-anchor="middle" font-size="10" fill="#fff">18KB 남음</text>
+<rect x="435" y="190" width="40" height="34" fill="#d1d1d6"/>
+<text x="455.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">사용</text>
+<rect x="475" y="190" width="60" height="34" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="505.0" y="210.96" text-anchor="middle" font-size="11" fill="#1d1d1f">13KB</text>
+<rect x="95" y="190" width="440" height="34" fill="none" stroke="#6e6e73"/>
+<text x="320" y="260" text-anchor="middle" font-size="12" fill="#6e6e73">최초 적합: 처음 만나는 충분한 공간 · 최적 적합: 단편화가 가장 작은 공간 · 최악 적합: 가장 큰 공간</text>
+<text x="320" y="282" text-anchor="middle" font-size="12" fill="#6e6e73">배치하고 남는 4KB, 1KB, 18KB가 각 기법의 단편화 크기다</text></svg>

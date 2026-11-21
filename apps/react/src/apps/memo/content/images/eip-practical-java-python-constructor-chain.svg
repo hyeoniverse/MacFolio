@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 380" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>new Child() 실행 시 생성자가 호출되는 순서와 출력 순서</title><rect width="640" height="380" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">new Child(): 호출은 자식에서 부모로, 본문 실행은 부모에서 자식으로</text>
+<rect x="60" y="56" width="230" height="60" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="175.0" y="82.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Child()</text>
+<text x="175.0" y="99.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">super(5); 를 먼저 실행</text>
+<path d="M120 118 V142" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#m0a84ff)"/>
+<text x="130" y="135" font-size="12" fill="#0a84ff">호출</text>
+<rect x="60" y="146" width="230" height="60" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="175.0" y="172.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Parent(int x)</text>
+<text x="175.0" y="189.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">this(); 를 먼저 실행</text>
+<path d="M120 208 V232" fill="none" stroke="#0a84ff" stroke-width="2" marker-end="url(#m0a84ff)"/>
+<text x="130" y="225" font-size="12" fill="#0a84ff">호출</text>
+<rect x="60" y="236" width="230" height="60" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="175.0" y="262.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Parent()</text>
+<text x="175.0" y="279.2" font-size="13" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">본문: &quot;Parent()&quot; 출력</text>
+<rect x="360" y="248" width="36" height="36" fill="#30d158" rx="18"/>
+<text x="378.0" y="271.4" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">1</text>
+<text x="410" y="271" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Parent()</text>
+<rect x="360" y="158" width="36" height="36" fill="#30d158" rx="18"/>
+<text x="378.0" y="181.4" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">2</text>
+<text x="410" y="181" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Parent(int) x=5</text>
+<rect x="360" y="68" width="36" height="36" fill="#30d158" rx="18"/>
+<text x="378.0" y="91.4" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">3</text>
+<text x="410" y="91" font-size="13" fill="#1d1d1f" font-family="ui-monospace, 'SF Mono', Menlo, monospace">Child() x=20 super.x=5</text>
+<path d="M300 266 H352" fill="none" stroke="#30d158" stroke-width="1.5" marker-end="url(#m30d158)"/>
+<path d="M300 176 H352" fill="none" stroke="#30d158" stroke-width="1.5" marker-end="url(#m30d158)"/>
+<path d="M300 86 H352" fill="none" stroke="#30d158" stroke-width="1.5" marker-end="url(#m30d158)"/>
+<path d="M590 250 V100" fill="none" stroke="#30d158" stroke-width="2" marker-end="url(#m30d158)"/>
+<text x="600" y="180" font-size="12" fill="#30d158" font-weight="600">출력</text>
+<text x="600" y="196" font-size="12" fill="#30d158" font-weight="600">순서</text>
+<text x="320" y="340" font-size="13" fill="#6e6e73" text-anchor="middle">생성자의 첫 줄에 super(...)나 this(...)가 없으면 컴파일러가 super()를 넣는다</text>
+<text x="320" y="362" font-size="13" fill="#6e6e73" text-anchor="middle">Child의 x(20)와 Parent의 x(5)는 이름만 같은 별개의 필드</text>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>필기 합격 발표부터 실기 시험까지 기간 활용 예시</title><rect width="640" height="330" fill="#fff"/>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">2024년 제1회: 필기 발표 3월 13일부터 실기 4월 27일까지 45일</text>
+<line x1="28.0" y1="150" x2="620.5" y2="150" stroke="#c7c7cc"/>
+<rect x="40.9" y="120" width="139.9" height="60" rx="4" fill="#0a84ff"/>
+<text x="110.85000000000001" y="146" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">코드 읽기</text><text x="110.85000000000001" y="166" text-anchor="middle" font-size="12" fill="#fff">11일</text>
+<rect x="182.8" y="120" width="88.3" height="60" rx="4" fill="#30d158"/>
+<text x="226.95" y="146" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">SQL</text><text x="226.95" y="166" text-anchor="middle" font-size="12" fill="#fff">7일</text>
+<rect x="273.1" y="120" width="217.3" height="60" rx="4" fill="#ff9f0a"/>
+<text x="381.75" y="146" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">용어 묶음 암기</text><text x="381.75" y="166" text-anchor="middle" font-size="12" fill="#fff">17일</text>
+<rect x="492.4" y="120" width="88.3" height="60" rx="4" fill="#c76a00"/>
+<text x="536.55" y="146" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">모의 시험</text><text x="536.55" y="166" text-anchor="middle" font-size="12" fill="#fff">7일</text>
+<rect x="582.7" y="120" width="23.8" height="60" rx="4" fill="#6e6e73"/>
+<text x="594.6" y="155" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">2일</text>
+<line x1="28.0" y1="96" x2="28.0" y2="196" stroke="#0a84ff" stroke-dasharray="3 3"/>
+<text x="28.0" y="88" text-anchor="start" font-size="13" fill="#0a84ff" font-weight="600">3.13 필기 발표</text>
+<line x1="614.5" y1="96" x2="614.5" y2="196" stroke="#ff453a" stroke-dasharray="3 3"/>
+<text x="622.5" y="88" text-anchor="end" font-size="13" fill="#ff453a" font-weight="600">4.27 실기</text>
+<rect x="195.7" y="186" width="51.6" height="6" rx="2" fill="#6e6e73"/><text x="253.29999999999998" y="194" font-size="12" fill="#6e6e73">실기 원서 접수 3.26~3.29</text>
+<text x="20" y="234" font-size="12" fill="#1d1d1f">코드 읽기 11일: 언어마다 함정 유형을 정리하고 추적 표로 출력값을 계산한다</text>
+<text x="20" y="254" font-size="12" fill="#1d1d1f">SQL 7일: 실행 순서대로 행 수를 적는 연습, 관계대수 기호와 정규형 이름</text>
+<text x="20" y="274" font-size="12" fill="#1d1d1f">용어 17일: 12개 능력단위를 묶음으로 나눠 설명→용어 방향으로 반복한다</text>
+<text x="20" y="294" font-size="12" fill="#1d1d1f">모의 시험 7일: 실제 시간 150분을 재고 풀고, 틀린 답을 형식 규칙과 대조한다</text>
+<text x="20" y="314" font-size="12" fill="#1d1d1f">점검 2일: 헷갈리는 짝 비교 표와 답안 작성 규칙만 다시 확인한다</text>
+</svg>

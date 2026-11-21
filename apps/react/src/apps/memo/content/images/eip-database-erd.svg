@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>학과, 학생, 과목의 E-R 다이어그램</title><rect width="640" height="330" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="o" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker></defs>
+<rect x="30" y="150" width="100" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="80.0" y="174.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">학과</text>
+<rect x="270" y="150" width="100" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="320.0" y="174.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">학생</text>
+<rect x="510" y="150" width="100" height="40" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="560.0" y="174.68" text-anchor="middle" font-size="13" fill="#1d1d1f" font-weight="600">과목</text>
+<path d="M135 170 L185 142 L235 170 L185 198z" fill="#fff4e5" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="185" y="175" text-anchor="middle" font-size="13" fill="#1d1d1f">소속</text>
+<path d="M375 170 L425 142 L475 170 L425 198z" fill="#fff4e5" stroke="#1d1d1f" stroke-width="1.5"/>
+<text x="425" y="175" text-anchor="middle" font-size="13" fill="#1d1d1f">수강</text>
+<path d="M130 170 L135 170" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M235 170 L270 170" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M370 170 L375 170" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<path d="M475 170 L510 170" stroke="#1d1d1f" stroke-width="1.5" fill="none"/>
+<text x="140" y="160" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">1</text>
+<text x="258" y="160" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">N</text>
+<text x="382" y="160" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">N</text>
+<text x="498" y="160" text-anchor="middle" font-size="13" fill="#0a84ff" font-weight="600">M</text>
+<ellipse cx="46" cy="80" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="46" y="84" text-anchor="middle" font-size="12" fill="#1d1d1f" text-decoration="underline">학과코드</text>
+<ellipse cx="142" cy="80" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="142" y="84" text-anchor="middle" font-size="12" fill="#1d1d1f">학과명</text>
+<ellipse cx="270" cy="80" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="270" y="84" text-anchor="middle" font-size="12" fill="#1d1d1f" text-decoration="underline">학번</text>
+<ellipse cx="370" cy="80" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="370" y="84" text-anchor="middle" font-size="12" fill="#1d1d1f">이름</text>
+<ellipse cx="320" cy="260" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<ellipse cx="320" cy="260" rx="38" ry="12" fill="none" stroke="#6e6e73"/>
+<text x="320" y="264" text-anchor="middle" font-size="12" fill="#1d1d1f">전화번호</text>
+<ellipse cx="530" cy="80" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="530" y="84" text-anchor="middle" font-size="12" fill="#1d1d1f" text-decoration="underline">과목코드</text>
+<ellipse cx="560" cy="260" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="560" y="264" text-anchor="middle" font-size="12" fill="#1d1d1f">학점</text>
+<ellipse cx="425" cy="260" rx="42" ry="16" fill="#fff" stroke="#6e6e73"/>
+<text x="425" y="264" text-anchor="middle" font-size="12" fill="#1d1d1f">성적</text>
+<path d="M46 96 L65 150" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M142 96 L115 150" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M270 96 L300 150" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M370 96 L340 150" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M320 244 L320 190" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M530 96 L550 150" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M560 244 L570 190" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<path d="M425 244 L425 198" stroke="#6e6e73" stroke-width="1" fill="none"/>
+<text x="320" y="310" text-anchor="middle" font-size="12" fill="#6e6e73">사각형 개체 · 마름모 관계 · 타원 속성 · 밑줄 기본키 · 이중 타원 다중값 속성 · 숫자 대응 수</text>
+<text x="320" y="30" text-anchor="middle" font-size="12" fill="#6e6e73">성적은 학생 한 명과 과목 하나의 조합에 붙는 관계 속성이다</text></svg>

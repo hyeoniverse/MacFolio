@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>스머핑, 랜드 어택, 티어드롭의 패킷 구조</title><rect width="640" height="320" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs><g font-size="13">
+<text x="107" y="28" text-anchor="middle" font-weight="600" fill="#1d1d1f">스머핑</text><text x="320" y="28" text-anchor="middle" font-weight="600" fill="#1d1d1f">랜드 어택</text><text x="533" y="28" text-anchor="middle" font-weight="600" fill="#1d1d1f">티어드롭</text>
+<line x1="213" y1="40" x2="213" y2="300" stroke="#f2f2f7" stroke-width="2"/><line x1="427" y1="40" x2="427" y2="300" stroke="#f2f2f7" stroke-width="2"/>
+<rect x="20" y="44" width="70" height="30" rx="5" fill="#ff453a"/><text x="55" y="64" text-anchor="middle" fill="#fff" font-size="12">공격자</text>
+<rect x="110" y="98" width="90" height="30" rx="5" fill="#f2f2f7" stroke="#6e6e73"/><text x="155" y="118" text-anchor="middle" font-size="12" fill="#1d1d1f">브로드캐스트</text>
+<path d="M70 74 L120 96" stroke="#ff453a" stroke-width="2" marker-end="url(#r)"/><text x="20" y="98" font-size="11" fill="#ff453a">출발지 = 대상</text>
+<circle cx="40" cy="160" r="10" fill="#0a84ff"/><circle cx="80" cy="170" r="10" fill="#0a84ff"/><circle cx="120" cy="160" r="10" fill="#0a84ff"/><circle cx="160" cy="170" r="10" fill="#0a84ff"/><circle cx="195" cy="160" r="10" fill="#0a84ff"/>
+<g stroke="#6e6e73" stroke-width="1.5"><path d="M155 128 L44 152"/><path d="M155 128 L82 160"/><path d="M155 128 L121 150"/><path d="M155 128 L159 160"/><path d="M155 128 L192 151"/></g>
+<rect x="60" y="230" width="94" height="34" rx="5" fill="#1d1d1f"/><text x="107" y="252" text-anchor="middle" fill="#fff" font-size="12">공격 대상</text>
+<path d="M40 172 L90 228" stroke="#ff453a" stroke-width="1.5" marker-end="url(#r)"/><path d="M80 182 L100 228" stroke="#ff453a" stroke-width="1.5" marker-end="url(#r)"/><path d="M120 172 L112 228" stroke="#ff453a" stroke-width="1.5" marker-end="url(#r)"/><path d="M160 182 L124 228" stroke="#ff453a" stroke-width="1.5" marker-end="url(#r)"/><path d="M195 172 L138 228" stroke="#ff453a" stroke-width="1.5" marker-end="url(#r)"/>
+<text x="107" y="288" text-anchor="middle" font-size="12" fill="#6e6e73">ICMP 응답이 대상에 몰림(증폭)</text>
+<rect x="240" y="50" width="160" height="60" rx="5" fill="#fff4e5" stroke="#ff9f0a"/><text x="250" y="72" font-size="12" fill="#1d1d1f">출발지 IP 10.0.0.5</text><text x="250" y="92" font-size="12" fill="#1d1d1f">목적지 IP 10.0.0.5</text>
+<rect x="270" y="160" width="100" height="40" rx="6" fill="#1d1d1f"/><text x="320" y="185" text-anchor="middle" fill="#fff" font-size="12">10.0.0.5</text>
+<path d="M320 110 V156" stroke="#ff453a" stroke-width="2" marker-end="url(#r)"/>
+<path d="M370 190 C420 190 420 240 320 240 C220 240 220 190 266 190" fill="none" stroke="#ff453a" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#r)"/>
+<text x="320" y="268" text-anchor="middle" font-size="12" fill="#6e6e73">자기 자신에게 응답을 반복</text><text x="320" y="288" text-anchor="middle" font-size="12" fill="#6e6e73">대책: 출발지 = 목적지 패킷 차단</text>
+<text x="440" y="62" font-size="12" fill="#30d158">정상 조각</text>
+<rect x="440" y="70" width="80" height="24" fill="#30d158"/><text x="480" y="86" text-anchor="middle" fill="#fff" font-size="11">0~799</text><rect x="520" y="70" width="80" height="24" fill="#30d158" stroke="#fff"/><text x="560" y="86" text-anchor="middle" fill="#fff" font-size="11">800~1599</text>
+<text x="440" y="130" font-size="12" fill="#ff453a">조작된 조각</text>
+<rect x="440" y="138" width="80" height="24" fill="#ff9f0a"/><text x="465" y="154" text-anchor="middle" fill="#fff" font-size="11">0~799</text><rect x="490" y="166" width="100" height="24" fill="#ff453a"/><text x="557" y="182" text-anchor="middle" fill="#fff" font-size="11">500~1299</text>
+<rect x="490" y="138" width="30" height="52" fill="none" stroke="#1d1d1f" stroke-dasharray="3 2"/>
+<text x="533" y="230" text-anchor="middle" font-size="12" fill="#6e6e73">오프셋이 겹쳐 재조립 불가</text><text x="533" y="250" text-anchor="middle" font-size="12" fill="#6e6e73">→ 시스템 오류·중단</text>
+<text x="533" y="288" text-anchor="middle" font-size="12" fill="#6e6e73">대책: 겹치는 조각 폐기</text>
+</g></svg>

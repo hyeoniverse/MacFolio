@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>bin(13) 재귀 호출 추적</title><rect width="640" height="400" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker></defs>
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">내려갈 때는 호출만 하고, 올라오면서 printf가 실행된다</text>
+<g font-size="13" font-weight="600" fill="#6e6e73"><text x="40" y="60">호출 (n &gt; 1이면 bin(n / 2))</text><text x="440" y="60">복귀하며 출력하는 n % 2</text></g>
+<g font-size="14">
+<rect x="40" y="76" width="150" height="44" rx="8" fill="#e8f2ff" stroke="#0a84ff"/><text x="115" y="103" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bin(13)</text>
+<rect x="100" y="146" width="150" height="44" rx="8" fill="#e8f2ff" stroke="#0a84ff"/><text x="175" y="173" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bin(6)</text>
+<rect x="160" y="216" width="150" height="44" rx="8" fill="#e8f2ff" stroke="#0a84ff"/><text x="235" y="243" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bin(3)</text>
+<rect x="220" y="286" width="150" height="44" rx="8" fill="#fff4e5" stroke="#ff9f0a"/><text x="295" y="313" text-anchor="middle" fill="#1d1d1f" font-family="ui-monospace, Menlo, monospace">bin(1)</text>
+</g>
+<g stroke="#6e6e73" stroke-width="1.5" fill="none" marker-end="url(#a)"><path d="M90 120V168H96"/><path d="M150 190V238H156"/><path d="M210 260V308H216"/></g>
+<g font-size="12" fill="#6e6e73"><text x="20" y="150">13 / 2 = 6</text><text x="80" y="220">6 / 2 = 3</text><text x="140" y="290">3 / 2 = 1</text><text x="230" y="350">1 &gt; 1 거짓: 더 호출하지 않음</text></g>
+<g font-size="14">
+<rect x="440" y="286" width="170" height="44" rx="8" fill="#f2f2f7"/><text x="452" y="313" fill="#1d1d1f">❶ 1 % 2 = <tspan fill="#0a84ff" font-weight="600">1</tspan></text>
+<rect x="440" y="216" width="170" height="44" rx="8" fill="#f2f2f7"/><text x="452" y="243" fill="#1d1d1f">❷ 3 % 2 = <tspan fill="#0a84ff" font-weight="600">1</tspan></text>
+<rect x="440" y="146" width="170" height="44" rx="8" fill="#f2f2f7"/><text x="452" y="173" fill="#1d1d1f">❸ 6 % 2 = <tspan fill="#0a84ff" font-weight="600">0</tspan></text>
+<rect x="440" y="76" width="170" height="44" rx="8" fill="#f2f2f7"/><text x="452" y="103" fill="#1d1d1f">❹ 13 % 2 = <tspan fill="#0a84ff" font-weight="600">1</tspan></text>
+</g>
+<g stroke="#0a84ff" stroke-width="1.5" stroke-dasharray="4 3" fill="none" marker-end="url(#b)"><path d="M370 308H436"/><path d="M310 238H436"/><path d="M250 168H436"/><path d="M190 98H436"/></g>
+<rect x="160" y="362" width="320" height="30" rx="8" fill="#e8f2ff"/><text x="320" y="382" text-anchor="middle" font-size="14" font-weight="600" fill="#0a84ff">출력 순서 ❶❷❸❹ → 1101</text>
+</svg>

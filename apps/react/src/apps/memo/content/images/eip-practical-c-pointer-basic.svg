@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>변수 a와 포인터 p의 주소와 값, 역참조</title><rect width="640" height="300" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">int a = 10;  int *p = &amp;a;  *p = *p + 5;</text>
+<text x="140" y="70" font-size="13" fill="#6e6e73" text-anchor="middle">변수 a</text>
+<rect x="80" y="80" width="120" height="50" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="140.0" y="110.8" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10 → 15</text>
+<text x="140" y="150" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">주소 0x1000</text>
+<text x="460" y="70" font-size="13" fill="#6e6e73" text-anchor="middle">포인터 p</text>
+<rect x="400" y="80" width="120" height="50" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="460.0" y="110.8" font-size="16" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x1000</text>
+<text x="460" y="150" font-size="12" fill="#6e6e73" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">주소 0x2000</text>
+<path d="M396 105 H206" fill="none" stroke="#ff9f0a" stroke-width="2" marker-end="url(#mff9f0a)"/>
+<text x="300" y="98" font-size="12" fill="#ff9f0a" text-anchor="middle">p가 a를 가리킨다</text>
+<text x="150" y="180" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">a</text>
+<text x="170" y="180" font-size="13" fill="#0a84ff" font-family="ui-monospace, 'SF Mono', Menlo, monospace">10 → 15</text>
+<text x="280" y="180" font-size="13" fill="#6e6e73">a에 저장된 값</text>
+<text x="150" y="202" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">&amp;a</text>
+<text x="170" y="202" font-size="13" fill="#0a84ff" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x1000</text>
+<text x="280" y="202" font-size="13" fill="#6e6e73">a의 주소</text>
+<text x="150" y="224" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">p</text>
+<text x="170" y="224" font-size="13" fill="#0a84ff" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x1000</text>
+<text x="280" y="224" font-size="13" fill="#6e6e73">p에 저장된 값 = a의 주소</text>
+<text x="150" y="246" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">*p</text>
+<text x="170" y="246" font-size="13" fill="#0a84ff" font-family="ui-monospace, 'SF Mono', Menlo, monospace">15</text>
+<text x="280" y="246" font-size="13" fill="#6e6e73">p가 가리키는 곳의 값 = a</text>
+<text x="150" y="268" font-size="13" fill="#1d1d1f" text-anchor="end" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">&amp;p</text>
+<text x="170" y="268" font-size="13" fill="#0a84ff" font-family="ui-monospace, 'SF Mono', Menlo, monospace">0x2000</text>
+<text x="280" y="268" font-size="13" fill="#6e6e73">p 자신의 주소</text>
+</svg>

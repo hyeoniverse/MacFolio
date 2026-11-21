@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>예제 스키마: 학과, 학생, 과목, 수강</title><rect width="640" height="300" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="20" y="40" width="150" height="26" fill="#0a84ff"/>
+<text x="95.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">학과</text>
+<rect x="20" y="66" width="150" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="30" y="83" text-anchor="start" font-size="12" fill="#1d1d1f">학과코드</text>
+<text x="162" y="83" text-anchor="end" font-size="11" fill="#ff9f0a">PK</text>
+<rect x="20" y="90" width="150" height="24" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="30" y="107" text-anchor="start" font-size="12" fill="#1d1d1f">학과명</text>
+<text x="162" y="107" text-anchor="end" font-size="11" fill="#6e6e73">UNIQUE</text>
+<rect x="235" y="40" width="170" height="26" fill="#0a84ff"/>
+<text x="320.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">학생</text>
+<rect x="235" y="66" width="170" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="245" y="83" text-anchor="start" font-size="12" fill="#1d1d1f">학번</text>
+<text x="397" y="83" text-anchor="end" font-size="11" fill="#ff9f0a">PK</text>
+<rect x="235" y="90" width="170" height="24" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="245" y="107" text-anchor="start" font-size="12" fill="#1d1d1f">이름</text>
+<text x="397" y="107" text-anchor="end" font-size="11" fill="#6e6e73">NOT NULL</text>
+<rect x="235" y="114" width="170" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="245" y="131" text-anchor="start" font-size="12" fill="#1d1d1f">학과코드</text>
+<text x="397" y="131" text-anchor="end" font-size="11" fill="#0a84ff">FK</text>
+<rect x="235" y="138" width="170" height="24" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="245" y="155" text-anchor="start" font-size="12" fill="#1d1d1f">학년</text>
+<text x="397" y="155" text-anchor="end" font-size="11" fill="#6e6e73">CHECK 1~4</text>
+<rect x="235" y="162" width="170" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="245" y="179" text-anchor="start" font-size="12" fill="#1d1d1f">멘토학번</text>
+<text x="397" y="179" text-anchor="end" font-size="11" fill="#0a84ff">FK</text>
+<rect x="235" y="186" width="170" height="24" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="245" y="203" text-anchor="start" font-size="12" fill="#1d1d1f">연락처</text>
+<text x="397" y="203" text-anchor="end" font-size="11" fill="#6e6e73">NULL 허용</text>
+<rect x="470" y="40" width="150" height="26" fill="#0a84ff"/>
+<text x="545.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">수강</text>
+<rect x="470" y="66" width="150" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="480" y="83" text-anchor="start" font-size="12" fill="#1d1d1f">학번</text>
+<text x="612" y="83" text-anchor="end" font-size="11" fill="#ff9f0a">PK, FK</text>
+<rect x="470" y="90" width="150" height="24" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="480" y="107" text-anchor="start" font-size="12" fill="#1d1d1f">과목코드</text>
+<text x="612" y="107" text-anchor="end" font-size="11" fill="#ff9f0a">PK, FK</text>
+<rect x="470" y="114" width="150" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="480" y="131" text-anchor="start" font-size="12" fill="#1d1d1f">점수</text>
+<text x="612" y="131" text-anchor="end" font-size="11" fill="#6e6e73">CHECK 0~100</text>
+<rect x="470" y="200" width="150" height="26" fill="#0a84ff"/>
+<text x="545.0" y="218" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">과목</text>
+<rect x="470" y="226" width="150" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="480" y="243" text-anchor="start" font-size="12" fill="#1d1d1f">과목코드</text>
+<text x="612" y="243" text-anchor="end" font-size="11" fill="#ff9f0a">PK</text>
+<rect x="470" y="250" width="150" height="24" fill="#fff" stroke="#c7c7cc" stroke-width="1"/>
+<text x="480" y="267" text-anchor="start" font-size="12" fill="#1d1d1f">과목명</text>
+<text x="612" y="267" text-anchor="end" font-size="11" fill="#6e6e73">NOT NULL</text>
+<rect x="470" y="274" width="150" height="24" fill="#f2f2f7" stroke="#c7c7cc" stroke-width="1"/>
+<text x="480" y="291" text-anchor="start" font-size="12" fill="#1d1d1f">학점</text>
+<text x="612" y="291" text-anchor="end" font-size="11" fill="#6e6e73">DEFAULT 3</text>
+<path d="M235 126H200V78H172" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="95" y="140" text-anchor="middle" font-size="11" fill="#6e6e73">ON DELETE SET NULL</text>
+<path d="M235 174H220V84H233" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="320" y="232" text-anchor="middle" font-size="11" fill="#6e6e73">멘토학번 → 학번 (자기 참조)</text>
+<path d="M470 78L407 78" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="437" y="68" text-anchor="middle" font-size="11" fill="#ff453a">CASCADE</text>
+<path d="M620 102H633V238H622" fill="none" stroke="#0a84ff" stroke-width="1.5" marker-end="url(#ab)"/>
+<text x="545" y="175" text-anchor="middle" font-size="11" fill="#ff453a">ON DELETE RESTRICT</text>
+<text x="20" y="285" text-anchor="start" font-size="12" fill="#6e6e73">PK: 기본 키, FK: 외래 키 (화살표는 참조하는 쪽 → 참조되는 쪽)</text>
+</svg>

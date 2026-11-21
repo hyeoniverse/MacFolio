@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 350" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>정보처리기사 연도별 필기·실기 합격률</title><rect width="640" height="350" fill="#fff"/>
+<text x="30" y="28" font-size="15" font-weight="600" fill="#1d1d1f">정보처리기사 연도별 합격률 (2019~2023)</text>
+<rect x="440" y="16" width="12" height="12" fill="#0a84ff"/><text x="458" y="27" font-size="12" fill="#1d1d1f">필기</text><rect x="510" y="16" width="12" height="12" fill="#ff9f0a"/><text x="528" y="27" font-size="12" fill="#1d1d1f">실기</text>
+<g font-size="12" fill="#6e6e73" text-anchor="end">
+<line x1="70" y1="280" x2="610" y2="280" stroke="#c7c7cc"/><text x="62" y="284">0%</text>
+<line x1="70" y1="236" x2="610" y2="236" stroke="#f2f2f7"/><text x="62" y="240">20%</text>
+<line x1="70" y1="192" x2="610" y2="192" stroke="#f2f2f7"/><text x="62" y="196">40%</text>
+<line x1="70" y1="148" x2="610" y2="148" stroke="#f2f2f7"/><text x="62" y="152">60%</text>
+<line x1="70" y1="104" x2="610" y2="104" stroke="#f2f2f7"/><text x="62" y="108">80%</text>
+<line x1="70" y1="60" x2="610" y2="60" stroke="#f2f2f7"/><text x="62" y="64">100%</text>
+</g>
+<rect x="84" y="152.0" width="36" height="128.0" fill="#0a84ff"/><text x="102" y="146.0" font-size="12" text-anchor="middle" fill="#1d1d1f">58.2</text>
+<rect x="128" y="166.9" width="36" height="113.1" fill="#ff9f0a"/><text x="146" y="160.9" font-size="12" text-anchor="middle" fill="#1d1d1f">51.4</text>
+<text x="124" y="300" font-size="13" text-anchor="middle" fill="#1d1d1f">2019</text>
+<rect x="192" y="153.9" width="36" height="126.1" fill="#0a84ff"/><text x="210" y="147.9" font-size="12" text-anchor="middle" fill="#1d1d1f">57.3</text>
+<rect x="236" y="241.1" width="36" height="38.9" fill="#ff9f0a"/><text x="254" y="235.1" font-size="12" text-anchor="middle" fill="#1d1d1f">17.7</text>
+<text x="232" y="300" font-size="13" text-anchor="middle" fill="#1d1d1f">2020</text>
+<rect x="300" y="140.1" width="36" height="139.9" fill="#0a84ff"/><text x="318" y="134.1" font-size="12" text-anchor="middle" fill="#1d1d1f">63.6</text>
+<rect x="344" y="212.2" width="36" height="67.8" fill="#ff9f0a"/><text x="362" y="206.2" font-size="12" text-anchor="middle" fill="#1d1d1f">30.8</text>
+<text x="340" y="300" font-size="13" text-anchor="middle" fill="#1d1d1f">2021</text>
+<rect x="408" y="156.6" width="36" height="123.4" fill="#0a84ff"/><text x="426" y="150.6" font-size="12" text-anchor="middle" fill="#1d1d1f">56.1</text>
+<rect x="452" y="234.2" width="36" height="45.8" fill="#ff9f0a"/><text x="470" y="228.2" font-size="12" text-anchor="middle" fill="#1d1d1f">20.8</text>
+<text x="448" y="300" font-size="13" text-anchor="middle" fill="#1d1d1f">2022</text>
+<rect x="516" y="150.2" width="36" height="129.8" fill="#0a84ff"/><text x="534" y="144.2" font-size="12" text-anchor="middle" fill="#1d1d1f">59.0</text>
+<rect x="560" y="233.8" width="36" height="46.2" fill="#ff9f0a"/><text x="578" y="227.8" font-size="12" text-anchor="middle" fill="#1d1d1f">21.0</text>
+<text x="556" y="300" font-size="13" text-anchor="middle" fill="#1d1d1f">2023</text>
+<text x="124" y="316" font-size="12" text-anchor="middle" fill="#6e6e73">개편 전 실기</text>
+<text x="30" y="338" font-size="12" fill="#6e6e73">자료: 한국산업인력공단 Q-Net 종목별 검정현황 (합격률 = 합격자 ÷ 응시자)</text>
+</svg>

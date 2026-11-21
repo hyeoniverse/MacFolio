@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>GoF 디자인 패턴 23개 분류</title><rect width="640" height="400" fill="#fff"/><defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="open" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="10" markerHeight="10" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="tri" viewBox="0 0 14 14" refX="13" refY="7" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 1L13 7L1 13z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="dia" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#fff" stroke="#1d1d1f" stroke-width="1.5"/></marker><marker id="diaf" viewBox="0 0 20 12" refX="1" refY="6" markerWidth="18" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M1 6L10 1L19 6L10 11z" fill="#1d1d1f" stroke="#1d1d1f" stroke-width="1.5"/></marker></defs>
+<rect x="15" y="15" width="200" height="46" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1.5"/>
+<text x="115.0" y="33.5" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">생성 패턴 5</text>
+<text x="115.0" y="52.5" text-anchor="middle" font-size="14" fill="#1d1d1f">Creational</text>
+<rect x="15" y="70" width="200" height="36" fill="#f2f2f7"/>
+<text x="115.0" y="92.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Abstract Factory</text>
+<rect x="15" y="112" width="200" height="36" fill="#f2f2f7"/>
+<text x="115.0" y="134.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Builder</text>
+<rect x="15" y="154" width="200" height="36" fill="#f2f2f7"/>
+<text x="115.0" y="176.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Factory Method</text>
+<rect x="15" y="196" width="200" height="36" fill="#f2f2f7"/>
+<text x="115.0" y="218.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Prototype</text>
+<rect x="15" y="238" width="200" height="36" fill="#f2f2f7"/>
+<text x="115.0" y="260.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Singleton</text>
+<rect x="225" y="15" width="200" height="46" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1.5"/>
+<text x="325.0" y="33.5" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">구조 패턴 7</text>
+<text x="325.0" y="52.5" text-anchor="middle" font-size="14" fill="#1d1d1f">Structural</text>
+<rect x="225" y="70" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="92.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Adapter</text>
+<rect x="225" y="112" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="134.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Bridge</text>
+<rect x="225" y="154" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="176.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Composite</text>
+<rect x="225" y="196" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="218.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Decorator</text>
+<rect x="225" y="238" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="260.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Facade</text>
+<rect x="225" y="280" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="302.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Flyweight</text>
+<rect x="225" y="322" width="200" height="36" fill="#f2f2f7"/>
+<text x="325.0" y="344.7" text-anchor="middle" font-size="13" fill="#1d1d1f">Proxy</text>
+<rect x="435" y="15" width="200" height="46" fill="#e8f7ec" stroke="#30d158" stroke-width="1.5"/>
+<text x="535.0" y="33.5" text-anchor="middle" font-size="14" font-weight="600" fill="#1d1d1f">행위 패턴 11</text>
+<text x="535.0" y="52.5" text-anchor="middle" font-size="14" fill="#1d1d1f">Behavioral</text>
+<rect x="435" y="70" width="98" height="40" fill="#f2f2f7"/>
+<text x="484.0" y="86.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Chain of</text>
+<text x="484.0" y="102.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Responsibility</text>
+<rect x="435" y="118" width="98" height="40" fill="#f2f2f7"/>
+<text x="484.0" y="142.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Command</text>
+<rect x="435" y="166" width="98" height="40" fill="#f2f2f7"/>
+<text x="484.0" y="190.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Interpreter</text>
+<rect x="435" y="214" width="98" height="40" fill="#f2f2f7"/>
+<text x="484.0" y="238.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Iterator</text>
+<rect x="435" y="262" width="98" height="40" fill="#f2f2f7"/>
+<text x="484.0" y="286.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Mediator</text>
+<rect x="435" y="310" width="98" height="40" fill="#f2f2f7"/>
+<text x="484.0" y="334.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Memento</text>
+<rect x="537" y="70" width="98" height="40" fill="#f2f2f7"/>
+<text x="586.0" y="94.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Observer</text>
+<rect x="537" y="118" width="98" height="40" fill="#f2f2f7"/>
+<text x="586.0" y="142.0" text-anchor="middle" font-size="11" fill="#1d1d1f">State</text>
+<rect x="537" y="166" width="98" height="40" fill="#f2f2f7"/>
+<text x="586.0" y="190.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Strategy</text>
+<rect x="537" y="214" width="98" height="40" fill="#f2f2f7"/>
+<text x="586.0" y="230.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Template</text>
+<text x="586.0" y="246.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Method</text>
+<rect x="537" y="262" width="98" height="40" fill="#f2f2f7"/>
+<text x="586.0" y="286.0" text-anchor="middle" font-size="11" fill="#1d1d1f">Visitor</text>
+<text x="320" y="392" text-anchor="middle" font-size="12" fill="#6e6e73">객체를 만드는 방법 / 클래스·객체를 조합하는 구조 / 객체 사이의 책임 분배와 통신</text>
+</svg>

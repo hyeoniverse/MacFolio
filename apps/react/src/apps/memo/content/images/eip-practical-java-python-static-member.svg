@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 320" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>static 필드는 클래스에 하나만 있고 모든 객체가 공유하는 구조</title><rect width="640" height="320" fill="#fff"/><defs><marker id="m6e6e73" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6e6e73"/></marker><marker id="m0a84ff" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0a84ff"/></marker><marker id="mff9f0a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff9f0a"/></marker><marker id="m30d158" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#30d158"/></marker><marker id="mff453a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#ff453a"/></marker><marker id="m1d1d1f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1d1d1f"/></marker></defs>
+<text x="320" y="28" font-size="15" fill="#1d1d1f" text-anchor="middle" font-weight="600">static int total 은 클래스에 1개, int id 는 객체마다 1개</text>
+<rect x="200" y="52" width="240" height="74" fill="#fff4e5" stroke="#ff9f0a" stroke-width="1"/>
+<text x="214" y="74" font-size="12" fill="#ff9f0a" font-weight="600">Member 클래스 영역</text>
+<rect x="240" y="84" width="160" height="32" fill="#fff" stroke="#ff9f0a" stroke-width="1"/>
+<text x="320.0" y="105.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-weight="600" font-family="ui-monospace, 'SF Mono', Menlo, monospace">static total = 3</text>
+<rect x="60" y="190" width="140" height="56" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="130.0" y="214.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">m1 객체</text>
+<text x="130.0" y="232.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">id = 1</text>
+<path d="M130 188 L280 128" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#mff9f0a)" stroke-dasharray="5 4"/>
+<rect x="250" y="190" width="140" height="56" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="320.0" y="214.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">m2 객체</text>
+<text x="320.0" y="232.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">id = 2</text>
+<path d="M320 188 L320 128" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#mff9f0a)" stroke-dasharray="5 4"/>
+<rect x="440" y="190" width="140" height="56" fill="#e8f2ff" stroke="#0a84ff" stroke-width="1"/>
+<text x="510.0" y="214.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">m3 객체</text>
+<text x="510.0" y="232.0" font-size="14" fill="#1d1d1f" text-anchor="middle" font-family="ui-monospace, 'SF Mono', Menlo, monospace">id = 3</text>
+<path d="M510 188 L360 128" fill="none" stroke="#ff9f0a" stroke-width="1.5" marker-end="url(#mff9f0a)" stroke-dasharray="5 4"/>
+<text x="320" y="280" font-size="13" fill="#1d1d1f" text-anchor="middle">Member.total, m1.total, m2.total 은 모두 같은 변수 하나를 가리킨다</text>
+<text x="320" y="302" font-size="13" fill="#6e6e73" text-anchor="middle">생성자가 실행될 때마다 total++ 이므로 객체마다 id가 1, 2, 3으로 달라진다</text>
+</svg>

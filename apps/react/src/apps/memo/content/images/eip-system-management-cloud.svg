@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 330" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>IaaS·PaaS·SaaS에서 사용자가 관리하는 범위</title><rect width="640" height="330" fill="#fff"/><g font-size="13">
+<text x="105" y="34" text-anchor="middle" font-weight="600" fill="#1d1d1f">온프레미스</text>
+<rect x="40" y="48" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="105" y="69" text-anchor="middle" font-size="12" fill="#fff">애플리케이션</text>
+<rect x="40" y="86" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="105" y="107" text-anchor="middle" font-size="12" fill="#fff">데이터</text>
+<rect x="40" y="124" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="105" y="145" text-anchor="middle" font-size="12" fill="#fff">런타임·미들웨어</text>
+<rect x="40" y="162" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="105" y="183" text-anchor="middle" font-size="12" fill="#fff">운영체제</text>
+<rect x="40" y="200" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="105" y="221" text-anchor="middle" font-size="12" fill="#fff">가상화</text>
+<rect x="40" y="238" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="105" y="259" text-anchor="middle" font-size="12" fill="#fff">서버·스토리지·네트워크</text>
+<text x="255" y="34" text-anchor="middle" font-weight="600" fill="#1d1d1f">IaaS</text>
+<rect x="190" y="48" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="255" y="69" text-anchor="middle" font-size="12" fill="#fff">애플리케이션</text>
+<rect x="190" y="86" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="255" y="107" text-anchor="middle" font-size="12" fill="#fff">데이터</text>
+<rect x="190" y="124" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="255" y="145" text-anchor="middle" font-size="12" fill="#fff">런타임·미들웨어</text>
+<rect x="190" y="162" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="255" y="183" text-anchor="middle" font-size="12" fill="#fff">운영체제</text>
+<rect x="190" y="200" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="255" y="221" text-anchor="middle" font-size="12" fill="#6e6e73">가상화</text>
+<rect x="190" y="238" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="255" y="259" text-anchor="middle" font-size="12" fill="#6e6e73">서버·스토리지·네트워크</text>
+<text x="405" y="34" text-anchor="middle" font-weight="600" fill="#1d1d1f">PaaS</text>
+<rect x="340" y="48" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="405" y="69" text-anchor="middle" font-size="12" fill="#fff">애플리케이션</text>
+<rect x="340" y="86" width="130" height="32" rx="4" fill="#0a84ff" stroke="#c7c7cc"/><text x="405" y="107" text-anchor="middle" font-size="12" fill="#fff">데이터</text>
+<rect x="340" y="124" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="405" y="145" text-anchor="middle" font-size="12" fill="#6e6e73">런타임·미들웨어</text>
+<rect x="340" y="162" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="405" y="183" text-anchor="middle" font-size="12" fill="#6e6e73">운영체제</text>
+<rect x="340" y="200" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="405" y="221" text-anchor="middle" font-size="12" fill="#6e6e73">가상화</text>
+<rect x="340" y="238" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="405" y="259" text-anchor="middle" font-size="12" fill="#6e6e73">서버·스토리지·네트워크</text>
+<text x="555" y="34" text-anchor="middle" font-weight="600" fill="#1d1d1f">SaaS</text>
+<rect x="490" y="48" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="555" y="69" text-anchor="middle" font-size="12" fill="#6e6e73">애플리케이션</text>
+<rect x="490" y="86" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="555" y="107" text-anchor="middle" font-size="12" fill="#6e6e73">데이터</text>
+<rect x="490" y="124" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="555" y="145" text-anchor="middle" font-size="12" fill="#6e6e73">런타임·미들웨어</text>
+<rect x="490" y="162" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="555" y="183" text-anchor="middle" font-size="12" fill="#6e6e73">운영체제</text>
+<rect x="490" y="200" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="555" y="221" text-anchor="middle" font-size="12" fill="#6e6e73">가상화</text>
+<rect x="490" y="238" width="130" height="32" rx="4" fill="#e8f2ff" stroke="#c7c7cc"/><text x="555" y="259" text-anchor="middle" font-size="12" fill="#6e6e73">서버·스토리지·네트워크</text>
+<rect x="40" y="290" width="14" height="14" fill="#0a84ff"/><text x="60" y="302" font-size="12" fill="#1d1d1f">사용자가 관리</text><rect x="170" y="290" width="14" height="14" fill="#e8f2ff" stroke="#c7c7cc"/><text x="190" y="302" font-size="12" fill="#1d1d1f">클라우드 사업자가 관리</text>
+<text x="360" y="302" font-size="12" fill="#6e6e73">예: EC2(IaaS), Heroku(PaaS), Gmail(SaaS)</text>
+</g></svg>

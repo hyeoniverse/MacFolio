@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" font-family="-apple-system, 'Apple SD Gothic Neo', sans-serif"><title>SJF와 SRT 간트 차트</title><rect width="640" height="280" fill="#fff"/>
+<g font-size="13">
+<text x="320" y="28" text-anchor="middle" font-size="15" font-weight="600" fill="#1d1d1f">같은 입력의 SJF와 SRT 실행 순서</text>
+<text x="78" y="94" text-anchor="end" font-weight="600" fill="#1d1d1f">SJF</text>
+<rect x="90" y="70" width="156" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="168.0" y="93" text-anchor="middle" fill="#fff" font-weight="600">P1</text>
+<rect x="246" y="70" width="52" height="36" fill="#ff453a" stroke="#fff" stroke-width="2"/><text x="272.0" y="93" text-anchor="middle" fill="#fff" font-weight="600">P4</text>
+<rect x="298" y="70" width="78" height="36" fill="#30d158" stroke="#fff" stroke-width="2"/><text x="337.0" y="93" text-anchor="middle" fill="#fff" font-weight="600">P2</text>
+<rect x="376" y="70" width="208" height="36" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="480.0" y="93" text-anchor="middle" fill="#fff" font-weight="600">P3</text>
+<text x="90" y="124" text-anchor="middle" fill="#6e6e73" font-size="12">0</text>
+<text x="246" y="124" text-anchor="middle" fill="#6e6e73" font-size="12">6</text>
+<text x="298" y="124" text-anchor="middle" fill="#6e6e73" font-size="12">8</text>
+<text x="376" y="124" text-anchor="middle" fill="#6e6e73" font-size="12">11</text>
+<text x="584" y="124" text-anchor="middle" fill="#6e6e73" font-size="12">19</text>
+<text x="90" y="146" fill="#1d1d1f">평균 대기 4.5</text>
+<text x="78" y="194" text-anchor="end" font-weight="600" fill="#1d1d1f">SRT</text>
+<rect x="90" y="170" width="26" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="103.0" y="193" text-anchor="middle" fill="#fff" font-weight="600">P1</text>
+<rect x="116" y="170" width="78" height="36" fill="#30d158" stroke="#fff" stroke-width="2"/><text x="155.0" y="193" text-anchor="middle" fill="#fff" font-weight="600">P2</text>
+<rect x="194" y="170" width="52" height="36" fill="#ff453a" stroke="#fff" stroke-width="2"/><text x="220.0" y="193" text-anchor="middle" fill="#fff" font-weight="600">P4</text>
+<rect x="246" y="170" width="130" height="36" fill="#0a84ff" stroke="#fff" stroke-width="2"/><text x="311.0" y="193" text-anchor="middle" fill="#fff" font-weight="600">P1</text>
+<rect x="376" y="170" width="208" height="36" fill="#ff9f0a" stroke="#fff" stroke-width="2"/><text x="480.0" y="193" text-anchor="middle" fill="#fff" font-weight="600">P3</text>
+<text x="90" y="224" text-anchor="middle" fill="#6e6e73" font-size="12">0</text>
+<text x="116" y="224" text-anchor="middle" fill="#6e6e73" font-size="12">1</text>
+<text x="194" y="224" text-anchor="middle" fill="#6e6e73" font-size="12">4</text>
+<text x="246" y="224" text-anchor="middle" fill="#6e6e73" font-size="12">6</text>
+<text x="376" y="224" text-anchor="middle" fill="#6e6e73" font-size="12">11</text>
+<text x="584" y="224" text-anchor="middle" fill="#6e6e73" font-size="12">19</text>
+<text x="90" y="246" fill="#1d1d1f">평균 대기 3.5</text>
+
+<text x="90" y="260" fill="#6e6e73" font-size="12">도착 시각: P1 0, P2 1, P3 2, P4 4 (SRT는 도착마다 남은 시간을 비교해 P1을 1에서 멈춘다)</text>
+</g></svg>
