@@ -91,7 +91,8 @@ describe('check', () => {
 	});
 
 	it('4차의 회귀(명언 365개가 boot에 포함, +19KB)는 두 상한 모두에 걸린다', () => {
-		expect(check(result(49.4 + 19, [251.6 - 49.4]), BUDGET)).toHaveLength(2);
+		// 2026년 11월 23일 값(boot 53.8KB, 첫 방문 번들 265.2KB)에 같은 크기의 회귀가 더해진 경우
+		expect(check(result(53.8 + 19, [265.2 - 53.8]), BUDGET)).toHaveLength(2);
 	});
 });
 
