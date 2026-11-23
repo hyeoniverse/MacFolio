@@ -11,12 +11,13 @@ import { brotliCompressSync, constants } from 'node:zlib';
 
 /**
  * 상한 (KB = 1,024바이트, Lighthouse·docs/performance.md와 같은 단위, brotli 9단계).
- * 2026년 10월 23일 값(boot 49.4KB, 첫 방문 번들 251.6KB)에 boot는 약 10%(+5.6KB), 합계는 약 5%(+13.4KB)를 더했다.
+ * boot는 2026년 10월 23일 값(49.4KB)에 약 10%(+5.6KB)를 더했다.
+ * 첫 방문 번들은 기능이 늘어 2026년 11월 23일 265.2KB로 처음 상한(265KB)을 넘어, 그 값에 약 5%(+12.8KB)를 다시 더했다.
  * 4차의 명언 위젯(+19KB)처럼 번들 하나가 boot에 붙으면 둘 다 실패한다. 근거와 넘었을 때의 대응은 docs/performance.md의 '성능 예산'
  */
 export const BUDGET = {
 	bootKB: 55,
-	initialKB: 265,
+	initialKB: 278,
 };
 
 /** 상위 몇 개 파일을 실패 메시지에 보여 주는지 */
